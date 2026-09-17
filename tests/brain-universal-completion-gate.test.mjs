@@ -1,8 +1,25 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { REQUIRED_COMPLETION_CATEGORIES, evaluateUniversalCompletion, assertUniversalCompletion } from '../scripts/brain/powerhouse-universal-completion-gate.mjs';
+import { bindPowerhouseSession } from '../scripts/brain/powerhouse-session-gateway.mjs';
 
 const evidence = (extra = {}) => ({ state: 'COMPLETE', evidence: [{ source: 'test', observedAt: '2026-09-17T09:15:00Z', ...extra }] });
+
+function receipt(runId = 'run-1', candidateId = 'sha-abc') {
+  return bindPowerhouseSession({
+    sessionId: 'chat-test',
+    runId,
+    observedAt: '2026-09-17T09:14:00Z',
+    candidateId,
+    preflightPacket: {
+      status: 'READY',
+      fastExecution: { version: 'POWERHOUSE-FAST-EXECUTION-v1' },
+      universalCompletion: { version: 'POWERHOUSE-UNIVERSAL-COMPLETION-v1' },
+      sessionBinding: { version: 'POWERHOUSE-SESSION-BINDING-v1' },
+      sources: [], fingerprints: [], preventions: [], blockers: [], resume_contracts: []
+    }
+  });
+}
 
 function completeManifest() {
   return {
@@ -10,6 +27,7 @@ function completeManifest() {
     runId: 'run-1',
     terminalState: 'LIVE & BEWEZEN',
     candidateId: 'sha-abc',
+    sessionReceipt: receipt(),
     categories: Object.fromEntries(REQUIRED_COMPLETION_CATEGORIES.map(name => [name, evidence()])),
     openObligations: [],
     canonicalWriteback: ['brain/learning/example.json'],
@@ -55,6 +73,20 @@ test('LIVE & BEWEZEN requires zero open obligations, canonical writeback and exa
   const staleCandidate = completeManifest();
   staleCandidate.productionReadback.candidateId = 'sha-other';
   assert.equal(evaluateUniversalCompletion(staleCandidate).ok, false);
+});
+
+test('terminal completion requires a matching verified Powerhouse session receipt', () => {
+  const missing = completeManifest();
+  delete missing.sessionReceipt;
+  assert.equal(evaluateUniversalCompletion(missing).ok, false);
+
+  const wrongRun = completeManifest();
+  wrongRun.sessionReceipt = receipt('different-run', 'sha-abc');
+  assert.equal(evaluateUniversalCompletion(wrongRun).ok, false);
+
+  const wrongCandidate = completeManifest();
+  wrongCandidate.sessionReceipt = receipt('run-1', 'sha-other');
+  assert.equal(evaluateUniversalCompletion(wrongCandidate).ok, false);
 });
 
 test('material changes or failures make learning writeback mandatory', () => {
