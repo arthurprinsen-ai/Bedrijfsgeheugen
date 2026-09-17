@@ -2,6 +2,7 @@
   "fingerprint": "delivery-classifier-repository-writer-contract-gap-v1",
   "date": "2026-09-17",
   "obligation_id": "powerhouse-one-loop-v1",
+  "writeback_obligation_id": "powerhouse-one-loop-v1-terminal-writeback",
   "pull_request": 1968,
   "status": "LIVE_PROVEN",
   "scope": "canonical delivery lane classification and versioned scope authority for repository-writer governance tests",
