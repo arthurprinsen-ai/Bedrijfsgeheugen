@@ -47,7 +47,7 @@
       "id": "function:powerhouse-content-orchestrator",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-orchestrator/index.ts",
-      "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
       "required": true
     },
     {
@@ -61,7 +61,7 @@
       "id": "rpc:bg_geheim",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
       "required": true
     },
     {
