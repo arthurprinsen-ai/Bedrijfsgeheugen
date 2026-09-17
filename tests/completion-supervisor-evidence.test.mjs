@@ -41,3 +41,12 @@ test('outcome obligation sweep resolves squash-merge candidate identity from exa
   assert.match(workflow, /if length == 1 then \.\[0\]\.head\.sha else empty end/);
   assert.match(workflow, /COMPLETION_CANDIDATE_IDENTITY_MISSING/);
 });
+
+test('merged branch cleanup emits operator-visible error evidence on every non-zero exit', () => {
+  const workflow = readFileSync('.github/workflows/powerhouse-merged-branch-cleanup.yml', 'utf8');
+  assert.match(workflow, /cleanup_evidence\(\)/);
+  assert.match(workflow, /if \[ "\$rc" -ne 0 \]; then/);
+  assert.match(workflow, /::error::Powerhouse merged branch cleanup failed:/);
+  assert.match(workflow, /state=\$state detail=\$\{detail:-UNKNOWN\} branch=\$HEAD_REF expected_head=\$EXPECTED_HEAD_SHA/);
+  assert.match(workflow, /write_evidence "\$rc"/);
+});
