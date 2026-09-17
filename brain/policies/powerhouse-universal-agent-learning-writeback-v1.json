@@ -1,10 +1,11 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
+  "revision": 2,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
-  "purpose": "Make shared learning operational rather than conversational: every material worker reads current canonical state before work, records what it does, persists every material error/decision/outcome/learning after work, refreshes shared context and proves that the next worker can discover the result.",
+  "purpose": "Make shared learning operational rather than conversational: every material worker reads current canonical state before work, records what it does, persists every material error/decision/outcome/learning after work, refreshes shared context and proves that the next worker can discover the result quickly and securely.",
   "invariants": [
     "NO_AGENT_STARTS_BLIND",
     "NO_MATERIAL_ACTION_WITHOUT_PREFLIGHT_RECEIPT",
@@ -15,18 +16,41 @@
     "NO_COMPLETION_WITHOUT_SHARED_CONTEXT_REFRESH",
     "NO_COMPLETION_UNTIL_NEXT_AGENT_DISCOVERABILITY_IS_PROVEN",
     "NO_PARALLEL_MEMORY_TRUTH",
-    "CURRENT_RUNTIME_TRUTH_OUTRANKS_STALE_CHAT_TEXT"
+    "CURRENT_RUNTIME_TRUTH_OUTRANKS_STALE_CHAT_TEXT",
+    "CANONICAL_AUTHORITY_ID_FIRST",
+    "SEARCH_MISS_IS_NOT_NONEXISTENCE",
+    "EVERY_MATERIAL_SOURCE_HAS_PROVENANCE_FRESHNESS_CONFIDENCE_AND_SECURITY_CLASS",
+    "SECRETS_AND_SENSITIVE_DATA_NEVER_ENTER_GENERAL_LEARNING_PAYLOADS",
+    "ONE_COMPACT_CURRENT_STATE_PER_MATERIAL_SCOPE"
   ],
+  "canonical_authorities": {
+    "notion": {
+      "workspace_id": "950da36a-ac8a-816b-ac6e-0003f91dfb3d",
+      "master_register_page_id": "3c3da36a-ac8a-81dd-a3fe-c4fc12bba5df",
+      "human_manual_page_id": "3dcda36a-ac8a-81ac-aad1-c88751e9e814",
+      "system_map_page_id": "3dcda36a-ac8a-8152-be3d-edbb32b06239"
+    },
+    "discovery_order": [
+      "DIRECT_ID_FETCH",
+      "KNOWN_PARENT_DESCENDANT_LOOKUP",
+      "BOUNDED_SEARCH_RECOVERY",
+      "HUMAN_ESCALATION_IF_AUTHORITY_ID_AND_SEARCH_BOTH_FAIL"
+    ],
+    "search_miss_semantics": "UNKNOWN_NOT_MISSING",
+    "duplicate_creation_on_search_miss": "FORBIDDEN",
+    "authority_change_rule": "An authority ID may change only through an explicit migration/ADR with old-to-new lineage, readback and next-agent discoverability proof."
+  },
   "mandatory_preflight_receipt": {
     "required": true,
     "must_read": [
-      "canonical system contract and System Map",
+      "canonical system contract and System Map by canonical ID where available",
       "current runtime/CurrentState projection",
       "open outcome/recovery/delivery obligations",
       "relevant incident/error fingerprints and proven fixes",
       "relevant decisions/ADRs and prevention rules",
       "latest material agent activity for the touched component",
-      "existing owner/component/data/deploy/provider/outcome/learning routes"
+      "existing owner/component/data/deploy/provider/outcome/learning routes",
+      "source registry/provenance/security classification for every material internal or external data source used"
     ],
     "receipt_fields": [
       "run_id",
@@ -38,7 +62,9 @@
       "matched_learning_fingerprints",
       "open_obligations_seen",
       "existing_components_reused",
-      "planned_delta"
+      "planned_delta",
+      "authority_ids_used",
+      "security_boundaries_seen"
     ],
     "failure_code": "POWERHOUSE_PREFLIGHT_RECEIPT_MISSING"
   },
@@ -46,13 +72,77 @@
     "required": true,
     "append_only_audit": true,
     "minimum_events": ["STARTED", "ACTION", "ERROR", "RECOVERY", "DECISION", "TEST", "PROMOTION_OR_PUBLICATION", "READBACK", "WRITEBACK", "COMPLETED_OR_BLOCKED"],
-    "event_fields": ["run_id", "timestamp", "component", "event_type", "action", "evidence_refs", "result", "next_obligation"],
+    "event_fields": ["run_id", "timestamp", "component", "event_type", "action", "evidence_refs", "result", "next_obligation", "actor_or_agent", "authority_identity"],
     "rule": "Record material actions as they happen; do not reconstruct the full audit trail only at the end."
+  },
+  "data_and_evidence_contract": {
+    "required": true,
+    "internal_and_external_sources_must_be_registered": true,
+    "required_metadata": [
+      "source_id",
+      "source_type",
+      "authority",
+      "provenance",
+      "freshness",
+      "confidence",
+      "security_classification",
+      "retention_or_ttl",
+      "evidence_ref"
+    ],
+    "source_types": ["internal_database", "repository", "runtime", "provider", "notion", "api", "web", "file", "human_input", "model_output", "derived_metric"],
+    "security_classifications": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED_SECRET"],
+    "raw_secret_storage_in_learning": "FORBIDDEN",
+    "sensitive_payload_default": "REFERENCE_NOT_COPY",
+    "personal_or_confidential_data_rule": "Store only the minimum necessary metadata and evidence reference allowed by purpose, access control and retention policy; do not duplicate raw sensitive payloads into general-purpose learning stores.",
+    "external_data_rule": "External information must retain source/provenance, observed_at or freshness, confidence and evidence reference so later agents can distinguish source fact from derived inference.",
+    "derived_data_rule": "Derived metrics, scores, model outputs and recommendations must retain lineage to inputs, version/formula/model where relevant, timestamp and confidence."
+  },
+  "current_state_contract": {
+    "required": true,
+    "one_record_per_material_scope": true,
+    "required_fields": [
+      "what_is_live",
+      "what_is_being_changed",
+      "why",
+      "owner",
+      "last_verified_identity",
+      "open_obligations",
+      "known_errors",
+      "next_safe_action",
+      "updated_at"
+    ],
+    "rule": "Keep current state compact and decision-ready. Historical details belong in append-only activity/incident/learning lineage; current state points to them instead of copying them.",
+    "stale_state_rule": "A state record without fresh verification identity is not production truth."
+  },
+  "incident_learning_contract": {
+    "required": true,
+    "required_fields": [
+      "fingerprint",
+      "symptom",
+      "impact",
+      "root_cause",
+      "failed_approaches",
+      "fix",
+      "tests",
+      "production_readback",
+      "prevention",
+      "regression",
+      "status"
+    ],
+    "rule": "Every material incident becomes a reusable learning object. Known fingerprints are checked before diagnosis; repeated incidents must strengthen prevention or regression coverage."
   },
   "error_learning_contract": {
     "every_material_error_requires": ["fingerprint", "symptom", "failure_class", "root_cause_or_open_root_cause_obligation", "failed_approaches", "fix_or_recovery", "tests", "evidence", "prevention_rule", "regression_contract_or_not_feasible_reason", "owner", "status"],
     "known_error_rule": "Match fingerprint before diagnosis and reuse a proven recovery before inventing a new one unless fresh evidence invalidates it.",
     "repeat_error_rule": "A repeated known error without fingerprint reuse is itself a material learning failure and must create a prevention action."
+  },
+  "security_and_access_contract": {
+    "least_privilege": true,
+    "fail_closed": true,
+    "secrets_reference_only": true,
+    "no_auth_or_security_gate_weakening_for_green": true,
+    "required_for_material_change": ["access_boundary_identified", "sensitive_data_classified", "secret_handling_checked", "security_regression_or_explicit_not_applicable", "audit_evidence_ref"],
+    "rule": "Security is part of the same delivery path, not a later checklist. Never copy credentials, tokens, raw secrets or unnecessary personal/confidential payloads into chat, Notion, logs or learning records."
   },
   "mandatory_postflight_writeback": {
     "required": true,
@@ -80,13 +170,16 @@
       "regression_and_prevention",
       "decision_or_adr_updates",
       "last_verified_identity",
-      "next_safe_action"
+      "next_safe_action",
+      "authority_ids_written",
+      "source_and_security_metadata"
     ],
     "failure_code": "POWERHOUSE_POSTFLIGHT_WRITEBACK_MISSING"
   },
   "next_agent_discoverability_gate": {
     "required": true,
-    "rule": "After writeback, refresh the shared context and perform a read-after-write from the same canonical discovery path used by a new worker. Completion is blocked unless the new state/learning fingerprint is discoverable there.",
+    "rule": "After writeback, refresh the shared context and perform a read-after-write from the same canonical ID-first discovery path used by a new worker. Completion is blocked unless the new state/learning fingerprint is discoverable there.",
+    "receipt_fields": ["authority_id", "fingerprint_or_record_id", "written_at", "read_back_at", "readback_result", "evidence_ref"],
     "failure_code": "POWERHOUSE_NEXT_AGENT_CANNOT_DISCOVER_WRITEBACK"
   },
   "terminal_status_gate": {
@@ -95,6 +188,7 @@
       "activity_ledger_complete_for_material_events",
       "all_material_errors_normalized_or_explicit_root_cause_obligation_open",
       "tests_and_required_gates_green",
+      "security_contract_satisfied",
       "production_or_provider_readback_valid_when_applicable",
       "canonical_postflight_writeback_present",
       "shared_context_refreshed",
@@ -102,12 +196,13 @@
       "no_critical_unrecorded_gap"
     ],
     "production_green_without_writeback": "NOT_TERMINAL",
-    "deployment_without_learning": "NOT_LIVE_BEWEZEN"
+    "deployment_without_learning": "NOT_LIVE_BEWEZEN",
+    "documentation_search_miss_without_id_fetch": "NOT_EVIDENCE_OF_ABSENCE"
   },
   "no_duplicate_truth": {
-    "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler or learning plane."
+    "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler, documentation tree or learning plane."
   },
-  "prevention": "Treat documentation, activity logging and reusable learning as part of execution itself. A worker that did useful work but failed to make that work discoverable to the next worker has not completed the task.",
+  "prevention": "Treat structured current state, source lineage, security, activity logging, incident learning, human documentation and read-after-write discoverability as part of execution itself. A worker that did useful work but failed to make that work securely discoverable to the next worker has not completed the task.",
   "linked_learning_sources": [
     "brain/policies/chat-to-brain-completeness-v1.json",
     "brain/policies/powerhouse-agent-continuity-v1.json",
