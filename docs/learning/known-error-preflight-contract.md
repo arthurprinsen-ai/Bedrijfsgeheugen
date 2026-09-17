@@ -94,6 +94,30 @@ Required prevention: create a non-main candidate branch from current main before
 
 Evidence rule: governed repository delivery requires an explicit candidate branch, exact tested candidate SHA and authorized promotion/readback. Connector-write success alone is never sufficient production evidence.
 
+### `delivery-unclassified-regression-test-path-v1`
+Symptom: `Required test` fails in `Classify independent delivery lanes` before the intended product/backend test executes.
+
+Root cause: a newly added regression-test path is not covered by any canonical lane/shared/ignored pattern in `config/brain-delivery-system.json`.
+
+Required diagnosis: inspect changed paths first. Distinguish delivery classification failure from product/test failure before changing implementation logic.
+
+Required prevention: every new regression test must have a canonical delivery owner. Prefer extending an existing owned contract when semantics match instead of creating a parallel test surface. Never weaken the fail-closed unclassified-path guard merely to make CI green.
+
+Proven example: Instagram/Mira exact-final-media hardening on 2026-09-17. The standalone `tests/bg-pre-publish-review-mira-exact-final-media.test.mjs` path was removed and its assertions folded into `tests/supabase-powerhouse-content-edge-surface-contract.test.mjs`, already owned by the backend lane. Protected merge landed through PR #1913 at `eeadabbb7dbef337953dd6abbfb0445bfe673296`.
+
+Regression rules: `NEW_REGRESSION_TEST_MUST_HAVE_CANONICAL_DELIVERY_OWNER`, `UNCLASSIFIED_DELIVERY_PATH_FAILS_CLOSED`, `REUSE_EXISTING_TEST_CONTRACT_BEFORE_CREATING_PARALLEL_TEST_SURFACE`.
+
+## Media proof governance
+
+### `instagram-exact-final-media-proof-v1`
+Provider `sent` or post existence is transport evidence only. It never proves that exact final bytes/frames passed Mira identity and visual-format checks.
+
+Required proof for Instagram publication PASS: exact canonical Buffer channel, final-media digest, exact-final-media proof, exact final asset binding, verified visual evidence/evidence references, Mira daily-life identity, publish-format proof and, for reel/video, verified start/middle/end frame evidence.
+
+If exact final bytes/frames cannot be independently read back, status remains `UNPROVEN/BLOCKED`. Never regenerate, replace or republish an existing item merely to manufacture proof.
+
+Regression rules: `PROVIDER_TRANSPORT_IS_NOT_FINAL_MEDIA_IDENTITY_PROOF`, `INSTAGRAM_EXACT_FINAL_MEDIA_PROOF_REQUIRED`, `NO_GREEN_BY_REPUBLISH`.
+
 ## Incident state semantics
 
 ### `incident-open-selection-semantic-mismatch-v1`
