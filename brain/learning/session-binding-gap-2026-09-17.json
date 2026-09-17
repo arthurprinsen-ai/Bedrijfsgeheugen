@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "SESSION-BINDING-GAP-2026-09-17-v1",
+  "fingerprint": "powerhouse|session-binding|context-known-but-governance-unbound|v1",
+  "status": "CANDIDATE",
+  "symptom": "A new chat could know recent Powerhouse context and completion/delivery rules yet still ask for redundant approval such as 'if this v2 design is approved', proving that context availability was being mistaken for active runtime governance.",
+  "rootCause": "Powerhouse had strong preflight, continuity and universal completion contracts, but no mandatory per-run startup receipt that cryptographically bound a specific chat/agent run to the actual canonical preflight/current-state/authority snapshot. Native chat context could therefore influence reasoning without proving that the Powerhouse runtime contract was active.",
+  "failedApproach": "Treat memory, prior conversation context or policy awareness as sufficient evidence that a new chat is governed, and rely on agent discipline not to repeat approval questions.",
+  "fix": "Introduce POWERHOUSE-SESSION-BINDING-v1 with a fail-closed session gateway, canonical preflight receipt, authority resolver, no-repeat-approval gate, Agent Fabric completion enforcement and Universal Completion receipt enforcement. Context-only sessions are explicitly POWERHOUSE_UNBOUND.",
+  "preventionRule": "No material Powerhouse execution or terminal claim may rely on context alone. Bind the run to a verified POWERHOUSE-PREFLIGHT-RECEIPT-v1 first. Before asking the user for approval, resolve canonical authority; if existing authority covers the decision, continue autonomously and block the approval request.",
+  "regressionContract": [
+    "tests/brain-session-binding.test.mjs",
+    "tests/brain-session-binding-integration.test.mjs",
+    "tests/brain-universal-completion-gate.test.mjs",
+    "tests/completion-supervisor.test.mjs",
+    "tests/agent-fabric.test.mjs"
+  ],
+  "evidence": [
+    "2026-09-17 user screenshot: new chat referenced current Powerhouse completion/delivery state but still asked whether a v2 design was approved before implementation.",
+    "Repository inspection showed mandatory preflight and universal completion existed but no per-run startup receipt/authority binding contract existed."
+  ],
+  "owner": "agent-reliability",
+  "canonicalComponents": [
+    "config/powerhouse-session-binding-v1.json",
+    "scripts/brain/powerhouse-session-gateway.mjs",
+    "scripts/brain/powerhouse-chat-bootstrap.mjs",
+    "scripts/brain/chat-learning-preflight.mjs",
+    "scripts/brain/powerhouse-universal-completion-gate.mjs",
+    "platform/agents/completion-supervisor.mjs",
+    "docs/brain/powerhouse-session-binding.md"
+  ],
+  "open_obligation": "Run protected exact-head gates, merge the candidate, read back policy/runtime/preflight/completion integration from main, then update this learning to LIVE_AND_PROVEN with open_obligation null."
+}
