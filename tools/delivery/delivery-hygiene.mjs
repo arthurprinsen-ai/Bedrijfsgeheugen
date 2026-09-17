@@ -193,11 +193,17 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
       && Number(other.number) !== predecessorNumber
       && isOpenExecutable(other, policy)
     );
+    // Development remains parallel by default. Integration pressure is scoped to
+    // candidates that share an explicit conflict contract with this candidate;
+    // unrelated work must never consume this candidate's integration WIP budget.
+    const integrationPressure = activeExecutable.filter(other =>
+      overlap(candidate.conflictContracts ?? [], other.conflictContracts ?? [])
+    );
     const maxExecutable = Number(policy?.wip?.maxExecutable ?? 0);
-    const finishingCandidates = activeExecutable.filter(isFinishingCandidate);
+    const finishingCandidates = integrationPressure.filter(isFinishingCandidate);
     const pressure = evaluateFinishingPressure({
       maxExecutable,
-      admittedExecutable: activeExecutable.length,
+      admittedExecutable: integrationPressure.length,
       finishing: finishingCandidates.length,
       candidate: {
         lane: candidate.metadata.deliveryLane,
