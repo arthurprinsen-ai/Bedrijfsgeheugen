@@ -9,6 +9,9 @@ function executionComplete(e={}){
   const proof=e.execution_proof;
   return proof?.accepted===true&&proof?.executed===true&&clean(proof.authority)!==''&&exactRevision(proof.candidate_revision)&&clean(proof.verified_at)!=='';
 }
+function retired(platformConfig={}){
+  return clean(platformConfig.lifecycle)==='LEGACY_RETIRED_PATH'||platformConfig.production_execution_allowed===false||platformConfig.direct_promotion===false&&clean(platformConfig.authority)==='NONE';
+}
 function evaluate(platformConfig,evidence,required){
   const e=evidence||{};const missing=[];const blocked=[];
   const checks={
@@ -28,6 +31,7 @@ function evaluate(platformConfig,evidence,required){
   for(const key of required) if(checks[key]!==true) missing.push(key);
   if(clean(e.capacity)&&clean(e.capacity)!=='available') blocked.push('capacity_available');
   if(e.execution_proof&&(e.execution_proof.accepted===false||e.execution_proof.executed===false)) blocked.push('execution_proof');
+  if(retired(platformConfig)) blocked.push('retired_execution_authority');
   const productionReady=missing.length===0&&blocked.length===0;
   return Object.freeze({platform:clean(platformConfig?.platform),status:productionReady?'READY':blocked.length?'BLOCKED':'INCOMPLETE',productionReady,missing:Object.freeze(missing),blocked:Object.freeze([...new Set(blocked)]),revision:exactRevision(e.revision)?clean(e.revision):null,lastVerifiedAt:clean(e.last_verified_at)||null});
 }
