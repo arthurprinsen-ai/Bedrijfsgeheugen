@@ -13,8 +13,8 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}-${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
-  # Evidence is SHA-specific: a stale queued run must never block the current candidate.
+  group: required-test-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.run_id }}
+  # Single-flight is PR-scoped; exact candidate identity remains enforced inside the gates below.
   cancel-in-progress: true
 
 jobs:
