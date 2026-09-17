@@ -10,6 +10,9 @@ create table if not exists public.bg_post_kenmerken (
   bron text default 'manual'::text,
   bijgewerkt_op timestamptz not null default now()
 );
+alter table public.bg_post_kenmerken enable row level security;
+revoke all on table public.bg_post_kenmerken from public, anon, authenticated;
+grant all on table public.bg_post_kenmerken to service_role;
 
 alter table public.bg_post_kenmerken
   add column if not exists persona text,
