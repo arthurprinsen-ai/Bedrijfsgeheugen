@@ -151,7 +151,7 @@
     {
       "id": "table:public.bg_buffer_sync",
       "type": "table",
-      "authority": "supabase/migrations/20260917154000_production_schema_replay-parity-v1.sql",
+      "authority": "supabase/migrations/20260917154000_production_schema_replay_parity_v1.sql",
       "evidence_contract": "tests/supabase-production-schema-replay-parity-v1.test.mjs",
       "required": true
     },
