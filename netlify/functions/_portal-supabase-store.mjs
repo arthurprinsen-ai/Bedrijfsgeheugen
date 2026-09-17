@@ -28,23 +28,28 @@ export function createSupabasePortalProjectionStore({
     const data=await gateway({action:'resource_business_value',tenantId:String(tenantId)});
     return data.resourceBusinessValue||null;
   }
+  async function getResourceIntelligence(tenantId){
+    const data=await gateway({action:'resource_intelligence',tenantId:String(tenantId)});
+    return data.resourceIntelligence||null;
+  }
   async function putLayer(tenantId,layer,next){
     const payload={...next,origin:layer};
     const data=await gateway({action:'put',tenantId:String(tenantId),layer,payload});
     return {stored:Boolean(data.stored),stale:Boolean(data.stale),record:data.record||payload};
   }
   return Object.freeze({
-    getLayer,getGovernance,getResourceBusinessValue,
+    getLayer,getGovernance,getResourceBusinessValue,getResourceIntelligence,
     async get(tenantId){
-      const [legacy,canonical,aiGovernance,resourceBusinessValue]=await Promise.all([
+      const [legacy,canonical,aiGovernance,resourceBusinessValue,resourceIntelligence]=await Promise.all([
         getLayer(tenantId,PORTAL_LAYERS.LEGACY),
         getLayer(tenantId,PORTAL_LAYERS.CANONICAL),
         getGovernance(tenantId),
-        getResourceBusinessValue(tenantId)
+        getResourceBusinessValue(tenantId),
+        getResourceIntelligence(tenantId)
       ]);
       if(!legacy&&!canonical)return null;
-      const data={...composePortalProjectionLayers({legacy,canonical}),aiGovernance,resourceBusinessValue};
-      const sourceUpdatedAt=data.sourceMeta?.updatedAt||canonical?.sourceUpdatedAt||legacy?.sourceUpdatedAt||resourceBusinessValue?.latest_observed_at||'';
+      const data={...composePortalProjectionLayers({legacy,canonical}),aiGovernance,resourceBusinessValue,resourceIntelligence};
+      const sourceUpdatedAt=data.sourceMeta?.updatedAt||canonical?.sourceUpdatedAt||legacy?.sourceUpdatedAt||resourceIntelligence?.resource?.latest_observed_day||resourceBusinessValue?.latest_observed_at||'';
       return {schemaVersion:2,tenantId,origin:canonical?'composed':'legacy-migration',sourceUpdatedAt,updatedAt:sourceUpdatedAt,data};
     },
     put:(tenantId,next)=>putLayer(tenantId,PORTAL_LAYERS.LEGACY,next),
