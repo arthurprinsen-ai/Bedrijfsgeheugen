@@ -3,7 +3,7 @@
   "date": "2026-09-17",
   "obligation_id": "powerhouse-one-loop-v1",
   "pull_request": 1968,
-  "status": "IMPLEMENTING",
+  "status": "VERIFIED",
   "scope": "canonical delivery lane classification and versioned scope authority for repository-writer governance tests",
   "symptom": "Required preflight first failed closed because three repository-writer governance test paths were absent from the delivery lane classifier. After that classifier gap was fixed and this canonical learning artifact was written, preflight correctly failed closed again because the active versioned deliveryCandidate.expectedPaths authority had not yet admitted the new learning artifact, even though the PR body Change-Scope already covered brain/learning/**.",
   "root_causes": [
@@ -44,6 +44,19 @@
     "versioned_scope_unexpected_path": "brain/learning/2026-09-17-delivery-classifier-repository-writer-contract-v1.json",
     "versioned_scope_fix_commit": "6dfb61d5f7010eeb1200d53cd460ff6e5faf4faa",
     "versioned_scope_fix": "config/powerhouse-one-loop-v1.json now admits the exact learning artifact and retains maxFiles=64."
+  },
+  "completion_evidence": {
+    "exact_head_sha": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+    "required_test_run_id": 35271798560,
+    "required_test_conclusion": "success",
+    "brain_delivery_run_id": 35271798909,
+    "brain_delivery_conclusion": "success",
+    "protected_merge_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+    "main_readback_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+    "runtime_reconciliation_fingerprint": "pr1968-required-gate-recovery-v1",
+    "runtime_reconciliation_status": "resolved",
+    "runtime_readback_verified": true,
+    "parallel_candidate_created": false
   },
   "terminal_acceptance": "Update status only after Required and BRAIN delivery are terminal green on one exact head, protected merge succeeds with expected-head identity, current main contains the candidate ancestry, and main/runtime readback is green."
 }
