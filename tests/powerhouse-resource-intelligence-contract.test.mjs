@@ -62,12 +62,14 @@ test('daily workflow and deterministic audit are wired', () => {
   assert.match(audit, /BG169/);
 });
 
-test('all-agent Brain contract is explicit and closed-loop', () => {
+test('all-agent Brain contract is explicit, mandatory in preflight and closed-loop', () => {
   const contract = JSON.parse(read(agentContractPath));
+  const preflight = read('scripts/brain/chat-learning-preflight.mjs');
   assert.equal(contract.$id, 'BRAIN-RESOURCE-INTELLIGENCE-v1');
   assert.match(contract.scope, /all_current_and_future_agents_chats_workflows_and_apps/);
   assert.equal(contract.authority.production, 'BG169');
   assert.ok(contract.decision_rules.includes('unknown_energy_or_water_is_NULL_not_zero'));
   assert.equal(contract.daily_cycle.enabled, true);
   assert.ok(contract.after_outcome.includes('refresh_shared_context'));
+  assert.match(preflight, /brain\/contracts\/resource-intelligence-v1\.json/);
 });
