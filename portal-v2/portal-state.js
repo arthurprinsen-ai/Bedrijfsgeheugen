@@ -1,6 +1,6 @@
 import { DEMO_PORTAL_STATE, DEMO_USER } from './demo-state.js';
 import { createPortalProjectClient, mergeProjectState } from './project-state.js';
-import { savePortalBusinessInput } from '../portal-next/portal-business-input-store.js';
+import { savePortalBusinessInput } from './business-input-store.js';
 
 const API_URL='/api/portal-state';
 export const PORTAL_STATE_MODES=Object.freeze(['authenticated','preview','empty','error']);

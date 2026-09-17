@@ -5,7 +5,7 @@ const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(val
 const normalizeState=value=>isObject(value)?clone(value):{};
 const parts=path=>String(path||'').split('.').map(part=>part.trim()).filter(Boolean);
 const slug=value=>String(value??'').trim().replace(/([a-z0-9])([A-Z])/g,'$1-$2').replace(/[^a-zA-Z0-9]+/g,'-').replace(/^-+|-+$/g,'').toLowerCase()||'unknown';
-const defaultBusinessInputStoreLoader=()=>import('../portal-next/portal-business-input-store.js');
+const defaultBusinessInputStoreLoader=()=>import('./business-input-store.js');
 
 function readPath(source,path){
  let current=source;
