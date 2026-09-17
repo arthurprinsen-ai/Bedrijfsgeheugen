@@ -31,6 +31,10 @@ export async function validateFastDevelopmentProtocolV2() {
   if (policy.testing?.full_release_gates_at_promotion_boundary !== true) errors.push('full release boundary must remain enabled');
   if (policy.testing?.fast_path_never_replaces_release_gates !== true) errors.push('fast path may not replace release gates');
   if (policy.execution?.parallel_by_default !== true) errors.push('parallel-by-default drift');
+  if (policy.evidence_cache?.persistent_semantics !== true) errors.push('persistent proof cache semantics drift');
+  if (policy.evidence_cache?.persistence_authority !== 'brain_outcome_obligation_evidence') errors.push('proof cache persistence authority drift');
+  if (policy.evidence_cache?.persistence_adapter !== 'PersistentEvidenceCache') errors.push('proof cache adapter drift');
+  if (policy.evidence_cache?.append_only_invalidation !== true) errors.push('proof cache invalidation must remain append-only');
   if (!policy.evidence_cache?.non_cacheable?.includes('EXACT_SHA_PROD_READBACK')) errors.push('production readback must be non-cacheable');
   if (policy.writeback?.mode !== 'DELTA_ONLY') errors.push('writeback must be delta only');
   if (policy.telemetry?.is_release_authority !== false) errors.push('telemetry may not become release authority');
@@ -54,6 +58,7 @@ export async function validateFastDevelopmentProtocolV2() {
     engineering_os: engineeringOS.fingerprint,
     delivery: engineeringOS.delivery_contract,
     production_promotion: policy.authority?.production_promotion ?? null,
+    proof_cache_authority: policy.evidence_cache?.persistence_authority ?? null,
     production_readback_cacheable: !policy.evidence_cache?.non_cacheable?.includes('EXACT_SHA_PROD_READBACK'),
     errors
   };
