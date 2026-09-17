@@ -1,4 +1,5 @@
 import { pageMetrics, pageWorklist, hasPageData, emptyStateCopy } from './page-metrics.js';
+import { buildBcgModel } from './models/bcg.js';
 
 /**
  * Navigatie per pagina: de primaire actie en de drie vervolgstappen.
@@ -24,7 +25,8 @@ export const PAGE_NAVIGATION = Object.freeze({
   "compliance-command-center":["Open auditpakket",[["Open compliance","compliance-governance"],["Open audit","audit"],["Open acties","actieve-acties"]]],
   "ai-capabilities":["Beoordeel capability",[["Open Brain","brain-verwerking"],["Open agentstatus","agentstatus"],["Open AI-scan","ai-scan"]]],
   strategiemodellen:["Open strategiemodel",[["Open canvassen","canvassen"],["Open eindconclusie","eindconclusie"],["Vertaal naar uitvoering","strategie-naar-maandagochtend"]]],
-  modellen:["Kies model",[["Open strategiemodellen","strategiemodellen"],["Open canvassen","canvassen"],["Open onderzoek","onderzoek"]]],
+  modellen:["Kies model",[["Open BCG-matrix","model-bcg"],["Open strategiemodellen","strategiemodellen"],["Open onderzoek","onderzoek"]]],
+  "model-bcg":["Beoordeel portfolio",[["Open alle modellen","modellen"],["Maak scenario","businesscase"],["Vertaal naar roadmap","roadmap"]]],
   canvassen:["Werk canvas bij",[["Open strategiemodellen","strategiemodellen"],["Open roadmap","roadmap"],["Vertaal naar uitvoering","strategie-naar-maandagochtend"]]],
   eindconclusie:["Bespreek conclusie",[["Open roadmap","roadmap"],["Open advies","advies"],["Bekijk management summary","brain-verwerking"]]],
   "due-diligence":["Open dossier",[["Open waarde","waarde-financiering"],["Open audit","audit"],["Open exit","exit"]]],
@@ -61,15 +63,28 @@ function currentState(state){
   try{return globalThis.__BG_PORTAL_DOMAIN_STATE__?.get?.()||{};}catch{return {};}
 }
 
+function bcgContent(model,primaryAction,actions){
+  const bcg=buildBcgModel(model);
+  const structural=bcg.quadrants.map(q=>[q.label,q.items.length?`${q.items.length} portfolio-item${q.items.length===1?'':'s'}`:'Geen onderbouwde items']);
+  const itemRows=bcg.items.map(item=>[
+    item.name,
+    `${item.quadrant} · aandeel ${item.relativeMarketShare.toLocaleString('nl-NL')}× · groei ${item.marketGrowthPct.toLocaleString('nl-NL')}%${item.evidenceRef?` · bewijs ${item.evidenceRef}`:''}`
+  ]);
+  const blocks=[
+    {type:'worklist',title:'BCG-matrix — Sterren · Cash cows · Vraagtekens · Dogs',items:structural,derived:bcg.derived},
+  ];
+  if(itemRows.length)blocks.push({type:'worklist',title:'Portfolio-classificatie',items:itemRows,derived:true});
+  else blocks.push({type:'empty',title:'Nog geen portfolio-data',copy:'Vul per portfolio-item relatieve marktaandeel en marktgroei in. Portal V2 toont geen voorbeeldposities of verzonnen cijfers.'});
+  blocks.push({type:'actions',title:'Volgende acties',items:actions});
+  return {primaryAction,blocks,derived:bcg.derived,bcg};
+}
+
 function specialistContent(pageId,model,navigation){
   const [primaryAction,actions]=navigation;
   if(pageId==='billing'){
     const billing=model?.portal?.admin?.billing ?? model?.admin?.billing ?? null;
     const hasBilling=Boolean(billing&&typeof billing==='object'&&(billing.plan||billing.status));
-    const metrics=[
-      ['Abonnement',String(billing?.plan||'—')],
-      ['Status',String(billing?.status||'—')]
-    ];
+    const metrics=[['Abonnement',String(billing?.plan||'—')],['Status',String(billing?.status||'—')]];
     const blocks=[{type:'metrics',title:'Stand van zaken',items:metrics,derived:hasBilling}];
     if(!hasBilling)blocks.push({type:'empty',title:'Nog geen abonnementsbron gekoppeld',copy:'De bestaande abonnementsstatus is nog niet gekoppeld. Er wordt geen pakket of betaalstatus verondersteld.'});
     blocks.push({type:'actions',title:'Volgende acties',items:actions});
@@ -91,10 +106,11 @@ function specialistContent(pageId,model,navigation){
 export function nativePageContent(pageId,state){
   const navigation=PAGE_NAVIGATION[pageId];
   if(!navigation)return null;
+  const [primaryAction,actions]=navigation;
   const model=currentState(state);
+  if(pageId==='model-bcg')return bcgContent(model,primaryAction,actions);
   const specialist=specialistContent(pageId,model,navigation);
   if(specialist)return specialist;
-  const [primaryAction,actions]=navigation;
   const metrics=pageMetrics(pageId,model);
   const worklist=pageWorklist(pageId,model);
   const populated=hasPageData(pageId,model);
