@@ -1,0 +1,44 @@
+{
+  "version": "POWERHOUSE-PR-WORKFLOW-BUDGET-v1",
+  "canonicalRequiredOrchestrator": ".github/workflows/required-test.yml",
+  "principle": "parallel-development-minimal-serialized-integration",
+  "developmentConcurrency": {
+    "agentTarget": ">=10",
+    "cappedByIntegrationWip": false
+  },
+  "prWorkflowClasses": {
+    "required-child": [
+      ".github/workflows/powerhouse-delivery-hygiene.yml",
+      ".github/workflows/lane-backend.yml",
+      ".github/workflows/lane-portal.yml",
+      ".github/workflows/lane-automation.yml",
+      ".github/workflows/lane-website.yml"
+    ],
+    "narrow-security-check": [
+      ".github/workflows/codeql.yml",
+      ".github/workflows/powerhouse-codeql.yml"
+    ],
+    "canonical-delivery": [
+      ".github/workflows/unified-brain-delivery.yml"
+    ]
+  },
+  "invariants": [
+    "one-obligation-one-active-executable-candidate",
+    "no-broad-duplicate-heavy-pr-fanout",
+    "pr-single-flight-by-pr-identity",
+    "exact-head-remains-gate-evidence",
+    "queued-is-recoverable-not-terminal",
+    "stale-queue-reconciles-before-retry",
+    "security-integrity-truth-release-evidence-gates-never-weakened"
+  ],
+  "queue": {
+    "staleAfterMs": 120000,
+    "staleAction": "RECONCILE",
+    "blindRetry": false
+  },
+  "slo": {
+    "admissionMs": 30000,
+    "queueToStartMsWhenCapacityAvailable": 60000,
+    "staleQueueRecoveryMs": 120000
+  }
+}
