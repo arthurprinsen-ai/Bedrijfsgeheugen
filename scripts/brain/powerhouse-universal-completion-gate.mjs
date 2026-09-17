@@ -1,3 +1,5 @@
+import { verifySessionReceipt } from './powerhouse-session-gateway.mjs';
+
 export const UNIVERSAL_COMPLETION_VERSION = 'POWERHOUSE-UNIVERSAL-COMPLETION-v1';
 
 export const REQUIRED_COMPLETION_CATEGORIES = Object.freeze([
@@ -49,6 +51,9 @@ export function evaluateUniversalCompletion(manifest = {}) {
   if (!nonEmptyString(manifest.runId)) failures.push('runId is required');
   if (!['LIVE & BEWEZEN', 'BLOCKED_HARD_BOUNDARY'].includes(manifest.terminalState)) failures.push('terminalState must be LIVE & BEWEZEN or BLOCKED_HARD_BOUNDARY');
   if (!manifest.categories || typeof manifest.categories !== 'object' || Array.isArray(manifest.categories)) failures.push('categories object is required');
+
+  const session = verifySessionReceipt(manifest.sessionReceipt, { runId: manifest.runId, candidateId: manifest.candidateId ?? null });
+  if (!session.ok) failures.push(`verified session binding required: ${session.failures.join(', ')}`);
 
   for (const category of REQUIRED_COMPLETION_CATEGORIES) {
     const entry = manifest?.categories?.[category];
