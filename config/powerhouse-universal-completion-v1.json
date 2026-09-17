@@ -5,9 +5,16 @@
   "default_enabled": true,
   "fail_closed": true,
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse chats, agents, workflows, scenarios, incidents, recoveries, development runs and production verifications",
-  "purpose": "Make complete canonical closure mandatory. No material run may claim a terminal state until every required accountability category is explicitly COMPLETE with evidence or NOT_APPLICABLE with reason, canonical writeback is performed, open obligations are terminal, and exact production readback is present where LIVE & BEWEZEN is claimed.",
+  "purpose": "Make complete canonical closure mandatory. No material run may claim a terminal state until it has a verified matching Powerhouse session receipt, every required accountability category is explicitly COMPLETE with evidence or NOT_APPLICABLE with reason, canonical writeback is performed, open obligations are terminal, and exact production readback is present where LIVE & BEWEZEN is claimed.",
   "entrypoint": "scripts/brain/powerhouse-universal-completion-gate.mjs",
   "manifest_version": "POWERHOUSE-UNIVERSAL-COMPLETION-MANIFEST-v1",
+  "required_session_binding": {
+    "policy": "config/powerhouse-session-binding-v1.json",
+    "receipt_version": "POWERHOUSE-PREFLIGHT-RECEIPT-v1",
+    "must_match_run_id": true,
+    "must_match_candidate_when_candidate_bound": true,
+    "missing_or_invalid_receipt_blocks_terminal_status": true
+  },
   "required_categories": [
     "goal_context",
     "actions",
@@ -34,6 +41,7 @@
   "category_rule": "Every required category must exist. COMPLETE requires evidence with source and observedAt. NOT_APPLICABLE requires an explicit reason. Omission is failure.",
   "terminal_rule": {
     "LIVE & BEWEZEN": [
+      "verified matching POWERHOUSE-PREFLIGHT-RECEIPT-v1 present",
       "all required categories accounted for",
       "zero non-terminal open obligations",
       "canonical writeback references present",
@@ -41,6 +49,7 @@
       "material learning persisted when any material trigger exists"
     ],
     "BLOCKED_HARD_BOUNDARY": [
+      "verified matching POWERHOUSE-PREFLIGHT-RECEIPT-v1 present",
       "all required categories accounted for",
       "hard boundary reason present",
       "current evidence present",
@@ -58,6 +67,7 @@
     "cost_performance"
   ],
   "invariants": [
+    "NO_TERMINAL_STATUS_WITHOUT_VERIFIED_SESSION_BINDING",
     "NO_TERMINAL_STATUS_WITHOUT_UNIVERSAL_MANIFEST",
     "NO_SILENT_OMISSION",
     "NO_CHAT_ONLY_MATERIAL_LEARNING",
