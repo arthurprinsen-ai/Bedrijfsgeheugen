@@ -3,8 +3,8 @@
 import importlib.util
 from pathlib import Path
 
-SCRIPT = Path(__file__).with_name('seocontrole_registry.py')
-spec = importlib.util.spec_from_file_location('seocontrole_registry', SCRIPT)
+SCRIPT = Path(__file__).with_name('seocontrole_registry_v2.py')
+spec = importlib.util.spec_from_file_location('seocontrole_registry_v2', SCRIPT)
 seo = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(seo)
 
@@ -63,8 +63,6 @@ def test_retired_prototype_is_not_public_seo_surface():
 
 
 def test_blog_index_is_in_candidate_set_when_present():
-    # Repository fixture itself contains blog/index.html; this pins the regression
-    # that previously omitted the canonical /blog registry surface.
     assert 'blog/index.html' in seo.candidate_files()
 
 
