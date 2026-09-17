@@ -1,0 +1,51 @@
+{
+  "type": "FailureClass",
+  "version": "POWERHOUSE-PRODUCTION-LEDGER-LINEAGE-SUPERSESSION-v1",
+  "fingerprint": "powerhouse-production-ledger-lineage-supersession-v1",
+  "observedAt": "2026-09-17T09:04:00+02:00",
+  "status": "VERIFIED_LEARNING",
+  "subject": "Supabase production migration identity reconciliation",
+  "symptom": "A migration-lineage repair branch correctly identified production/Git timestamp drift but accumulated unrelated stale quality-surface changes while protected main moved, making the branch unsafe as the canonical merge candidate.",
+  "rootCause": "Two independent concerns were mixed: immutable production-ledger identity reconciliation and unrelated test/quality-surface repairs. Because migration identity is source/provenance reconciliation rather than semantic DDL work, expanding the repair scope increased stale-branch and moving-main risk without improving production truth.",
+  "failedApproach": "Continue extending or forcing a stale reconciliation branch through after unrelated scope has accumulated, even when one subset of the branch remains technically correct.",
+  "provenFix": {
+    "historicalPr": 1796,
+    "canonicalSuccessorPr": 1859,
+    "mergeSha": "6fe90c543fbaf9d75ef1e117a0fda02927b2d3c0",
+    "strategy": "Start from current protected main, transplant only the still-valid migration-identity delta, reuse the exact existing SQL blobs under production ledger identities, remove stale aliases, run protected gates, merge with exact-head protection, then read back Git main and live Supabase migration history.",
+    "productionIdentities": [
+      "20260916195037_powerhouse_closure_a_f",
+      "20260916195048_powerhouse_closure_strict_cycle",
+      "20260916195056_powerhouse_closure_legacy_learning_seed"
+    ],
+    "staleAliases": [
+      "20260916220000_powerhouse_closure_a_f",
+      "20260916220100_powerhouse_closure_strict_cycle",
+      "20260916220200_powerhouse_closure_legacy_learning_seed"
+    ]
+  },
+  "preventionRules": [
+    "PRODUCTION_LEDGER_IDENTITY_IS_IMMUTABLE_AUTHORITY",
+    "STALE_RECONCILIATION_BRANCHES_ARE_NOT_MERGE_CANDIDATES",
+    "FRESH_MAIN_MINIMAL_DELTA_ONLY",
+    "NO_UNRELATED_GATE_FIXES_IN_LINEAGE_REPAIR",
+    "EXACT_IDENTITY_READBACK_BEFORE_CLOSURE",
+    "SUPERSESSION_IS_EXPLICIT_LINEAGE"
+  ],
+  "evidence": [
+    "PR #1796 closed unmerged as superseded",
+    "PR #1859 merged successfully",
+    "merge 6fe90c543fbaf9d75ef1e117a0fda02927b2d3c0",
+    "Git main readback contains exact production identities",
+    "live Supabase migration history readback matches the same identities",
+    "old 220000/220100/220200 aliases absent"
+  ],
+  "reuseTargets": [
+    "docs/learning/2026-09-15-production-github-migration-lineage-reconciliation-v1.md",
+    "config/supabase-production-migration-lineage.json",
+    "tests/supabase-production-migration-lineage-contract.test.mjs",
+    "Powerhouse Menselijk Handboek",
+    "Powerhouse Direct Knowledge Base"
+  ],
+  "openObligations": []
+}
