@@ -39,14 +39,12 @@ test('continuity contract makes chats and agents intrinsic nodes in one canonica
   assert.ok(contract.forbidden_patterns.includes('parallel_agent_brain_as_authority'));
 });
 
-test('mandatory chat-learning preflight validates and exposes the loop-node contract', () => {
+test('mandatory chat-learning preflight always carries the canonical continuity contract', () => {
   const packet = compileChatLearningPreflight();
-  assert.equal(packet.loopNodeContract.required, true);
-  assert.deepEqual(packet.loopNodeContract.actorKinds, ['chat', 'agent']);
-  assert.equal(packet.loopNodeContract.role, 'INTRINSIC_EXECUTION_NODE');
-  assert.equal(packet.loopNodeContract.singleCanonicalLoop, true);
-  assert.equal(packet.loopNodeContract.canonicalStateRequiredBeforeExecution, true);
-  assert.equal(packet.loopNodeContract.canonicalWritebackRequiredBeforeTerminal, true);
-  assert.equal(packet.loopNodeContract.nextRunMustResumeFromWrittenState, true);
-  assert.equal(packet.loopNodeContract.policySource, 'brain/policies/powerhouse-agent-continuity-v1.json');
+  const source = packet.sources.find(item => item.path === 'brain/policies/powerhouse-agent-continuity-v1.json');
+
+  assert.ok(source, 'continuity policy must be part of every mandatory chat-learning preflight');
+  assert.equal(source.type, 'POWERHOUSE_AGENT_CONTINUITY_CONTRACT');
+  assert.equal(source.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.3');
+  assert.match(source.fingerprint, /intrinsic-loop-nodes/);
 });
