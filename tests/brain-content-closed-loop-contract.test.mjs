@@ -11,9 +11,7 @@ test('personal LinkedIn requires explicit verified truth in source, artifact and
   const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   const review = read('supabase/functions/bg-pre-publish-review/index.ts');
   const publisher = read('supabase/functions/powerhouse-social-publisher/index.ts');
-  for (const [name, text] of [['orchestrator', orchestrator], ['review', review], ['publisher', publisher]]) {
-    assert.match(text, /personal_truth_verified/, `${name} must enforce personal_truth_verified`);
-  }
+  for (const [name, text] of [['orchestrator', orchestrator], ['review', review], ['publisher', publisher]]) assert.match(text, /personal_truth_verified/, `${name} must enforce personal_truth_verified`);
   assert.match(orchestrator, /personal_truth_verified\s*===\s*true/);
   assert.match(review, /PERSONAL_TRUTH_UNVERIFIED/);
 });
@@ -32,6 +30,11 @@ test('publisher recovers provider lineage from obligation external_id when decis
   assert.match(publisher, /obligationByChannel/);
   assert.match(publisher, /clean\(row\.delivery_ref\)\s*\|\|\s*clean\(obligationByChannel\.get\(obligationChannels\[row\.channel\]\)\?\.external_id\)/);
   assert.match(publisher, /delivery_ref:\s*ref/);
+});
+
+test('orchestrator preserves content_ready until an executor consumes the artifact', () => {
+  const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
+  assert.match(orchestrator, /COVERED_STATES\s*=\s*new Set\(\[[^\]]*'content_ready'/);
 });
 
 test('orchestrator exposes unsupported channel obligations as machine-readable hard boundaries rather than silent hold', () => {
@@ -57,15 +60,7 @@ test('single scheduler replaces parallel content-control cron lanes', () => {
   const scheduler = read('supabase/migrations/20260917235902_content_closed_loop_scheduler.sql');
   assert.match(scheduler, /powerhouse-content-closed-loop-v1/);
   assert.match(scheduler, /powerhouse_content_closed_loop_tick_v1/);
-  for (const legacy of [
-    'powerhouse-content-orchestrator-daily',
-    'powerhouse-social-publisher-daytime',
-    'bg-buffer-sync-hourly-daytime',
-    'powerhouse-linkedin-company-daily-guard-v1',
-    'powerhouse-linkedin-personal-daily-guard-v1',
-    'powerhouse-blog-daily-guard-v1',
-    'powerhouse-instagram-daily-guard-v1',
-  ]) assert.match(scheduler, new RegExp(legacy));
+  for (const legacy of ['powerhouse-content-orchestrator-daily','powerhouse-social-publisher-daytime','bg-buffer-sync-hourly-daytime','powerhouse-linkedin-company-daily-guard-v1','powerhouse-linkedin-personal-daily-guard-v1','powerhouse-blog-daily-guard-v1','powerhouse-instagram-daily-guard-v1']) assert.match(scheduler, new RegExp(legacy));
   assert.match(scheduler, /LEGACY_CONTENT_CONTROL_SCHEDULER_STILL_ACTIVE/);
 });
 
@@ -84,9 +79,9 @@ test('supervisor audits provider truth before orchestrator can replan existing d
   const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
   const audit = loop.indexOf("'powerhouse-social-publisher', { runDate, mode: 'audit_only' }");
   const orchestrate = loop.indexOf("'powerhouse-content-orchestrator', { runDate }");
-  assert.ok(audit >= 0, 'pre-orchestration provider audit must exist');
-  assert.ok(orchestrate >= 0, 'orchestrator invocation must exist');
-  assert.ok(audit < orchestrate, 'provider audit must happen before orchestration');
+  assert.ok(audit >= 0);
+  assert.ok(orchestrate >= 0);
+  assert.ok(audit < orchestrate);
 });
 
 test('public APIs keep provider and backend diagnostics internal', () => {
