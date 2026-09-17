@@ -42,6 +42,7 @@ jobs:
             '.github/workflows/production-release-readback.yml',
             'brain/contracts/production-readback-v1.json',
             'tests/brain-production-release-readback-scope.test.mjs',
+            'tests/brain-production-promotion-observability.test.mjs',
             'tools/site-shell/verify-production-release.mjs',
           ]);
           const readbackControlPlaneOnly=changedPaths.length>0 && changedPaths.every(path => readbackControlPlanePaths.has(path));
@@ -65,8 +66,28 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
           console.log(JSON.stringify({changedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,website_required:websiteRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
+      - name: Persist promotion-required state before waiting
+        if: steps.scope.outputs.deployment_required == 'true'
+        env:
+          EXPECTED_COMMIT: ${{ github.sha }}
+        run: |
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { writeFile } from 'node:fs/promises';
+          const state={
+            promotion_state:'promotion_required',
+            provider:'netlify',
+            expected_sha:process.env.EXPECTED_COMMIT,
+            deployed_sha:null,
+            netlify_deploy_id:null,
+            deployment_required:true,
+            observed_at:new Date().toISOString(),
+          };
+          await writeFile('.artifacts/production-promotion-state.json',`${JSON.stringify(state,null,2)}\n`);
+          console.log(JSON.stringify(state));
+          NODE
       - id: deploy
-        name: Wait for exact live release marker
+        name: Wait for exact live release marker and deploy identity
         if: steps.scope.outputs.deployment_required == 'true'
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
@@ -76,21 +97,51 @@ jobs:
             nonce="${EXPECTED_COMMIT}-${attempt}-$(date +%s)"
             if curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/?bg_release_readback=${nonce}" -o live-home.html \
               && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?bg_release_readback=${nonce}" -o live-prijzen.html \
-              && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_release_readback=${nonce}" -o live-over-ons.html; then
+              && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/over-ons?bg_release_readback=${nonce}" -o live-over-ons.html \
+              && curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?bg_release_readback=${nonce}" -o live-release.json; then
               if EXPECTED_COMMIT="${EXPECTED_COMMIT}" node tools/site-shell/check-live-production.mjs; then
-                echo "deployed_sha=${EXPECTED_COMMIT}" >> "$GITHUB_OUTPUT"
-                echo "status=ready" >> "$GITHUB_OUTPUT"
-                exit 0
+                if EXPECTED_COMMIT="${EXPECTED_COMMIT}" node --input-type=module - <<'NODE'
+          import { appendFile, readFile, writeFile } from 'node:fs/promises';
+          const release=JSON.parse(await readFile('live-release.json','utf8'));
+          if(release.commit_ref !== process.env.EXPECTED_COMMIT) throw new Error(`release.json commit_ref mismatch: ${release.commit_ref}`);
+          if(release.context !== 'production') throw new Error(`release.json context is not production: ${release.context}`);
+          const deployId=String(release.deploy_id||'').trim();
+          if(!deployId) throw new Error('release.json deploy_id is missing');
+          await appendFile(process.env.GITHUB_OUTPUT,`deploy_id=${deployId}\n`);
+          const state={
+            promotion_state:'observed_exact_deploy',
+            provider:'netlify',
+            expected_sha:process.env.EXPECTED_COMMIT,
+            deployed_sha:release.commit_ref,
+            netlify_deploy_id:deployId,
+            deployment_required:true,
+            release_context:release.context,
+            observed_at:new Date().toISOString(),
+          };
+          await writeFile('.artifacts/production-promotion-state.json',`${JSON.stringify(state,null,2)}\n`);
+          console.log(JSON.stringify(state));
+          NODE
+                then
+                  echo "deployed_sha=${EXPECTED_COMMIT}" >> "$GITHUB_OUTPUT"
+                  echo "status=ready" >> "$GITHUB_OUTPUT"
+                  exit 0
+                fi
               fi
             fi
-            echo "Production is not ready for ${EXPECTED_COMMIT}; retry ${attempt}/40"
+            echo "Production is not ready with exact deploy identity for ${EXPECTED_COMMIT}; retry ${attempt}/40"
             sleep 15
           done
-          echo "Production never exposed release marker ${EXPECTED_COMMIT}" >&2
+          echo "Production never exposed exact release marker + deploy identity for ${EXPECTED_COMMIT}" >&2
           exit 1
       - name: Record exact deployment not applicable
         if: steps.scope.outputs.deployment_required != 'true'
-        run: echo 'No Netlify-hosted production delivery is affected; exact SHA deployment is not applicable.'
+        run: |
+          mkdir -p .artifacts
+          echo 'No Netlify-hosted production delivery is affected; exact SHA deployment is not applicable.'
+          node --input-type=module - <<'NODE'
+          import { writeFile } from 'node:fs/promises';
+          await writeFile('.artifacts/production-promotion-state.json',`${JSON.stringify({promotion_state:'not_applicable',provider:'netlify',expected_sha:process.env.GITHUB_SHA,deployment_required:false,observed_at:new Date().toISOString()},null,2)}\n`);
+          NODE
       - name: Verify live connector readiness contract
         run: |
           set -euo pipefail
@@ -147,6 +198,7 @@ jobs:
           --merge-sha '${{ github.sha }}'
           --deployed-sha '${{ steps.deploy.outputs.deployed_sha }}'
           --deploy-status '${{ steps.deploy.outputs.status }}'
+          --deploy-id '${{ steps.deploy.outputs.deploy_id }}'
           --deployment-required 'true'
           --routes-json '${{ steps.scope.outputs.routes }}'
           --routes-ok '${{ steps.routes.outcome == 'success' }}'
@@ -158,6 +210,7 @@ jobs:
           --merge-sha '${{ github.sha }}'
           --deployed-sha '${{ steps.deploy.outputs.deployed_sha }}'
           --deploy-status '${{ steps.deploy.outputs.status }}'
+          --deploy-id '${{ steps.deploy.outputs.deploy_id }}'
           --deployment-required 'true'
           --routes-json '[]'
           --routes-ok 'true'
