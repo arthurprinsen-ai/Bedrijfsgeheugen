@@ -1,6 +1,11 @@
 {
-  "version": "make-cost-governance-v1",
-  "required_fields": [
+  "version": "make-cost-governance-v2",
+  "state": "LEGACY_RETIRED_PATH",
+  "authority": "NONE",
+  "production_execution_allowed": false,
+  "purpose": "Preserve historical Make cost semantics and evidence without allowing Make entitlements, credits or provider state to drive current Powerhouse execution decisions.",
+  "current_cost_authority": "Powerhouse/Supabase canonical cost projection and whole-brain outcome obligations",
+  "required_historical_fields": [
     "credit_budget",
     "data_transfer_budget",
     "max_payload_policy",
@@ -19,5 +24,12 @@
     "STANDARD_OPERATIONAL",
     "DISCRETIONARY_ENRICHMENT"
   ],
-  "note": "Numeric entitlements must be explicit or read from Make; never inferred silently."
+  "resume_policy": "EXPLICIT_REENABLE_THROUGH_CURRENT_GATES_ONLY",
+  "rules": {
+    "make_entitlement_is_current_authority": false,
+    "provider_isActive_is_current_authority": false,
+    "historical_cost_evidence_preserved": true,
+    "paid_capacity_increase_allowed_autonomously": false
+  },
+  "note": "Historical numeric entitlements must remain explicit and never be inferred. They are provenance only until Make is explicitly re-enabled in the canonical runtime authority contract."
 }
