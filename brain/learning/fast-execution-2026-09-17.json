@@ -1,0 +1,14 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "FAST-EXECUTION-LEARNING-2026-09-17-v1",
+  "fingerprint": "powerhouse|latency|bounded-hot-state|fresh-evidence|parallel-readonly|2026-09-17",
+  "status": "CANDIDATE_VERIFIED",
+  "context": "Powerhouse continuity already requires current-state-first, delta-only, interruption recovery and safe parallel verification. The remaining gap was a reusable execution envelope that operationalizes these rules with task classes, bounded context, freshness-aware evidence reuse, candidate identity, parallel read-only retrieval and latency instrumentation.",
+  "root_cause": "Latency controls existed as policy concepts but were not exposed through a canonical reusable runtime primitive and mandatory shared preflight metadata.",
+  "decision": "Add POWERHOUSE-FAST-EXECUTION-v1 as an optimization projection on the existing canonical Brain, never as a second memory, queue, orchestrator or truth store.",
+  "implementation": ["scripts/brain/powerhouse-fast-execution.mjs","config/powerhouse-fast-execution-v1.json","tests/brain-fast-execution.test.mjs","tests/brain-fast-execution-integration.test.mjs","docs/brain/powerhouse-fast-execution.md","scripts/brain/chat-learning-preflight.mjs"],
+  "prevention": "All material agents and chats obtain the default fast-execution policy through the existing mandatory chat-learning preflight. Performance work may bound, cache, reuse and parallelize canonical reads, but may not bypass required direct observation, candidate identity, security, truth, release, interruption recovery, production readback or learning gates.",
+  "success_evidence": ["FAST/STANDARD/DEEP classification is deterministic","context and tool output are bounded","expired, unbound or candidate-mismatched release evidence is rejected","independent state adapters execute concurrently","latency trace exposes context/reasoning/tool/test/deploy/readback/total SLI fields","mandatory preflight fail-closes unless fast-execution policy is ACTIVE and default-enabled","mandatory preflight exposes fastExecution metadata to every material agent/chat entrypoint"],
+  "open_obligation": null,
+  "linked_learning_sources": []
+}
