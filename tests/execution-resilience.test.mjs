@@ -12,6 +12,7 @@ import {
 } from '../brain/guards/execution-resilience.mjs';
 
 const contract = JSON.parse(fs.readFileSync('config/powerhouse-execution-resilience-v1.json', 'utf8'));
+const continuity = JSON.parse(fs.readFileSync('brain/policies/powerhouse-agent-continuity-v1.json', 'utf8'));
 const preflightSource = fs.readFileSync('scripts/brain/chat-learning-preflight.mjs', 'utf8');
 
 test('canonical resilience contract is active and mandatory for every material agent preflight', () => {
@@ -20,6 +21,15 @@ test('canonical resilience contract is active and mandatory for every material a
   assert.ok(contract.scope.includes('all_current_and_future_chats'));
   assert.ok(contract.scope.includes('all_current_and_future_agents'));
   assert.ok(preflightSource.includes("'config/powerhouse-execution-resilience-v1.json'"));
+});
+
+test('canonical agent continuity contract requires resumable interrupted execution', () => {
+  assert.equal(continuity.status, 'ACTIVE');
+  assert.equal(continuity.interruption_continuity_rule.required, true);
+  assert.equal(continuity.interruption_continuity_rule.canonical_contract, 'config/powerhouse-execution-resilience-v1.json');
+  assert.ok(continuity.invariants.includes('INTERRUPTION_IS_NOT_COMPLETION'));
+  assert.ok(continuity.invariants.includes('READBACK_BEFORE_MUTATING_REPLAY'));
+  assert.ok(continuity.terminal_green_requires.includes('no_unreconciled_interrupted_non_terminal_run'));
 });
 
 test('classifies visible ChatGPT interruption modes as recoverable classes', () => {
