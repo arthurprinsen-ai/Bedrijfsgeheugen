@@ -1,0 +1,76 @@
+{
+  "learning_id": "page-seo-registry-supporting-owner-recovery-2026-09-17",
+  "date": "2026-09-17",
+  "status": "RECOVERY_IN_PROGRESS",
+  "scope": "Pagina- en SEO-controle diagnose / registry-driven SEO ownership / PR #1919",
+  "fingerprint": "page-seo-registry-supporting-owner-false-positive-v1",
+  "source_run": {
+    "original_failed_run_id": 35215955894,
+    "artifact": "pagina-seo-diagnose",
+    "original_head_sha": "fa10d4c0d1d35331a052c2caf121b1a540542929",
+    "fresh_failed_run_id": 35232171230,
+    "fresh_failed_head_sha": "0a7ae2d6981efd679cd0ba841e4d0c77a7b877aa",
+    "fresh_artifact_digest": "sha256:cc8db587ef7571657fb467eca6cb4e2b0c3d4f216b49a53e85fe681f2485d8c9"
+  },
+  "canonical_lineage": {
+    "pull_request": 1919,
+    "branch": "fix/seo-diagnostic-baseline-20260917",
+    "current_recovery_head": "f7e9e1a0539d2809077fde43963fbd7d941bc37b",
+    "base_main_at_pr_open": "2deab5704dac8e21c90b0904da70c01eef7a6b88",
+    "parallel_pr_or_branch_created": false
+  },
+  "symptom": "The Page/SEO workflow built the production site and passed the browser page check, but the registry-driven SEO check still reported high-severity duplicate keyword-cluster ownership for supporting pages that intentionally project the keyword cluster of their exact registry owner.",
+  "impact": "PR #1919 remains unmerged and the Page/SEO gate remains fail-closed until exact-head evidence proves the corrected ownership semantics. No gate was bypassed and no SEO threshold was weakened.",
+  "root_cause": "The registry checker treated every page that projected an owner's primary keyword as an independent duplicate owner. It did not distinguish an explicitly registered supporting route from an independent SEO surface. This conflated keyword projection for supporting intent with keyword ownership.",
+  "diagnostic_lessons": [
+    "Separate browser/canonical-shell evidence from SEO ownership evidence; a green page/render gate does not make a red SEO ownership gate irrelevant.",
+    "When a broad class of failures shares one semantic pattern, inspect the registry/authority contract before editing many pages individually.",
+    "Supporting content may reuse the owner's keyword cluster only when the relationship is explicit in the canonical registry; inferred or mismatched ownership must remain blocking.",
+    "Do not convert a semantic false positive into green by weakening severity, disabling sitemap/orphan checks or excluding large page classes."
+  ],
+  "fix": {
+    "implementation_commit": "f7e9e1a0539d2809077fde43963fbd7d941bc37b",
+    "behavior": "seocontrole_registry.py now derives exact supporting-route -> owner relationships from the registry and uses keyword_owner_finding() to permit duplicate keyword projection only for intent_role=supporting with intent_owner equal to the canonical primary owner. Wrong or absent owner relationships still fail closed.",
+    "regression_contract": ".github/scripts/test_seocontrole_contract.py",
+    "tests_pinned": [
+      "supporting page may project owner keyword when owner matches",
+      "supporting page fails closed when owner does not match",
+      "non-supporting duplicate keyword remains blocking",
+      "retired prototype remains outside public SEO surface",
+      "blog index remains part of candidate set"
+    ]
+  },
+  "prevention_rules": [
+    "SEO_PRIMARY_KEYWORD_OWNERSHIP_MUST_COME_FROM_CANONICAL_REGISTRY",
+    "SUPPORTING_KEYWORD_PROJECTION_REQUIRES_EXACT_REGISTERED_OWNER",
+    "WRONG_OR_MISSING_SUPPORT_OWNER_FAILS_CLOSED",
+    "DO_NOT_FIX_SYSTEMIC_REGISTRY_DRIFT_BY_EDITING_MANY_CONTENT_PAGES",
+    "BROWSER_SHELL_GREEN_AND_SEO_GREEN_ARE_SEPARATE_EVIDENCE_BOUNDARIES",
+    "NO_GATE_BYPASS_OR_SEVERITY_DOWNGRADE_TO_GET_GREEN",
+    "EXACT_HEAD_EVIDENCE_REQUIRED_BEFORE_MERGE",
+    "MERGE_AND_PRODUCTION_READBACK_REQUIRED_BEFORE_LIVE_AND_PROVEN"
+  ],
+  "evidence_so_far": {
+    "production_build_before_latest_fix": "success",
+    "seo_contract_tests_before_latest_fix": "red as expected for missing supporting-owner semantics",
+    "browser_page_check_on_fresh_diagnosis": "success",
+    "engineering_supply_chain_on_current_head": "success observed",
+    "final_page_seo_gate_on_current_head": "not yet recorded in this learning",
+    "required_and_brain_on_current_head": "not yet recorded in this learning",
+    "protected_merge": false,
+    "production_readback": false
+  },
+  "open_obligations": [
+    "Read exact current-head Page/SEO workflow result and artifact after f7e9e1a0539d2809077fde43963fbd7d941bc37b.",
+    "If red, isolate only the first remaining concrete assertion/contract breach and repair on PR #1919 lineage.",
+    "Require exact-head Page/SEO, Required and BRAIN delivery gates terminal green.",
+    "Merge with expected-head identity only after gates are green.",
+    "Verify current main contains the exact candidate ancestry and perform production/main readback.",
+    "Update this learning to LIVE_AND_PROVEN only after merge + production/readback evidence is present."
+  ],
+  "terminal_status": {
+    "repository_learning": "RECORDED_ON_ACTIVE_RECOVERY_LINEAGE",
+    "delivery": "INCOMPLETE_RECOVERABLE",
+    "live_and_proven": false
+  }
+}
