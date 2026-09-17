@@ -52,7 +52,7 @@ select
   subject_id,
   state,
   classification,
-  classification in ('CURRENT_DEFECT', 'CURRENT_EXTERNAL_BOUNDARY', 'EVIDENCE_MISSING')
+  classification not in ('PROVEN_FIXED', 'SYNTHETIC_TEST_STATE', 'SUPERSEDED', 'RETIRED_DEPENDENCY')
     and state not in ('FULFILLED', 'CANCELLED', 'RESOLVED') as material,
   source_updated_at,
   evidence
@@ -62,4 +62,4 @@ revoke all on public.powerhouse_material_claims_v1 from public, anon, authentica
 grant select on public.powerhouse_material_claims_v1 to service_role;
 
 comment on view public.powerhouse_material_claims_v1 is
-  'Canonical read model for current Powerhouse obligation/blocker materiality. Classification is evidence-backed; unclassified non-terminal claims fail closed as EVIDENCE_MISSING. Fingerprint powerhouse-canonical-truth-closure-v1.';
+  'Canonical read model for current Powerhouse obligation/blocker materiality. Only explicit terminal classifications can be non-material; unknown/unclassified non-terminal claims fail closed. Fingerprint powerhouse-canonical-truth-closure-v1.';
