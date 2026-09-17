@@ -65,10 +65,12 @@ test('blocks cross-obligation supersession', () => {
   assert.equal(result.state, 'BLOCKED_LINEAGE_AMBIGUOUS');
 });
 
-test('enforces executable WIP but excludes docs and dependency candidates', () => {
+test('applies recoverable capacity waiting to executable WIP but excludes docs and dependency candidates', () => {
   const openCandidates = [1, 2, 3, 4, 5].map(number => candidate({ number, obligationId: `BG-${number}` }));
-  const blocked = evaluateAdmission({ candidate: candidate({ number: 6, obligationId: 'BG-6' }), openCandidates, policy, currentMainSha: SHA_A });
-  assert.equal(blocked.state, 'BLOCKED_WIP_LIMIT');
+  const waiting = evaluateAdmission({ candidate: candidate({ number: 6, obligationId: 'BG-6' }), openCandidates, policy, currentMainSha: SHA_A });
+  assert.equal(waiting.ok, false);
+  assert.equal(waiting.state, 'WAITING_CAPACITY');
+  assert.equal(waiting.reason, 'EXECUTABLE_WIP_FULL');
   const docs = evaluateAdmission({ candidate: candidate({ number: 7, obligationId: 'DOC-1', lane: 'docs', type: 'docs' }), openCandidates, policy, currentMainSha: SHA_A });
   assert.equal(docs.state, 'ADMITTED');
 });
