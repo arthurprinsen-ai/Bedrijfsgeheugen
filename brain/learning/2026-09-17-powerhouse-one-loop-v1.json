@@ -26,7 +26,7 @@
     "promote repeated learnings into regression tests, gates or guardrails"
   ],
   "canonical_loop": "intent -> preflight -> admission -> execute -> verify -> protected merge -> deploy -> production readback -> outcome -> learning -> prevention -> fulfilled",
-  "status": "IMPLEMENTING",
+  "status": "FULFILLED",
   "candidate_pr": 1968,
   "failure_fingerprints": [
     "github-actions-sha-scoped-concurrency-amplification-v1",
@@ -37,7 +37,9 @@
     "pr-head-sha-drift-fail-closed-v1",
     "delivery-metadata-lineage-drift-after-main-movement-v1",
     "superseded-failure-history-not-repair-authority-v1",
-    "consolidated-lane-stale-contract-oracle-v1"
+    "consolidated-lane-stale-contract-oracle-v1",
+    "delivery-classifier-repository-writer-contract-gap-v1",
+    "versioned-scope-authority-cochange-v1"
   ],
   "evidence": [
     {
@@ -130,6 +132,32 @@
       "brain_run_id": 35271112433,
       "observed_state": "EXECUTING",
       "finding": "Required, CodeQL/Powerhouse CodeQL and Engineering Supply Chain Trust were in progress while BRAIN delivery was pending; Fresh Device Autonomy Canary and Unified Content Operations were successful. This is execution evidence only and not completion authority."
+    },
+    {
+      "type": "terminal_exact_head_gates",
+      "candidate_head": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+      "required_run_id": 35271798560,
+      "brain_run_id": 35271798909,
+      "finding": "Required and BRAIN delivery reached terminal green on the same exact current PR head after the classifier and versioned-scope fixes."
+    },
+    {
+      "type": "protected_merge_readback",
+      "candidate_head": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+      "merge_commit_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+      "finding": "PR #1968 was squash-merged with expected-head identity and current main resolved exactly to the resulting verified merge commit."
+    },
+    {
+      "type": "production_runtime_readback",
+      "main_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+      "production_release_readback_run_id": 35272421517,
+      "conclusion": "success",
+      "finding": "Production Release Readback completed successfully; exact live release/deploy identity, connector readiness, affected production routes and immutable website production truth were verified, while failure-learning steps were skipped."
+    },
+    {
+      "type": "terminal_truth",
+      "state": "LIVE_PROVEN",
+      "lifecycle": "LEARNED -> FULFILLED",
+      "finding": "The powerhouse-one-loop-v1 obligation met its configured completion evidence: exact-head verification, protected merge, runtime readback, and canonical learning writeback."
     }
   ]
 }
