@@ -1,0 +1,71 @@
+{
+  "learning_id": "approved-blog-core-boundary-test-oracle-recovery-2026-09-17",
+  "date": "2026-09-17",
+  "status": "CANONICAL_REPOSITORY_LEARNING",
+  "scope": "approved central blog publisher / protected delivery / test-oracle recovery",
+  "fingerprint": "delivery-recovery|pipeline|backend|approved-blog-core-boundary-oracle-v1",
+  "source_failure_fingerprint": "delivery-failure|pipeline|backend|3797d5966563185e",
+  "delivery_candidate": {
+    "obligation_id": "learning-writeback-approved-blog-recovery-v1",
+    "delivery_lane": "backend",
+    "candidate_type": "recovery",
+    "base_sha": "b573a31d0547979bf9c708e4f56da0fa27502688",
+    "supersedes": null
+  },
+  "symptom": "Protected delivery for the approved-blog stale-reconciliation fix was blocked by Required/BRAIN tests even though the recovery behavior itself was correct.",
+  "impact": "PR #1970 could not merge until the stale test-oracle defect was corrected. The already-published article and its production content were not changed by this recovery.",
+  "root_cause": "Two regression tests asserted that faq_items() and source_contract() were implemented literally in scripts/publish_approved_blog_v2.py. Those functions had intentionally moved to scripts/brain/publish_approved_blog_v2_core.py and were re-exported by the wrapper, so the tests encoded implementation location instead of the public wrapper-to-core contract.",
+  "failed_approaches": [
+    "Treating the red gate as proof of a publication/product defect without inspecting the BRAIN failure artifact.",
+    "Changing delivery metadata or product code to satisfy a stale oracle instead of correcting the oracle at the module boundary."
+  ],
+  "fix": "Updated tests/brain-change-scoped-release-lanes.test.mjs to prove the wrapper import boundary and validate FAQ/source-contract implementation in the core module. The stale scheduler regression now explicitly proves skip-and-continue semantics. No published article text was changed.",
+  "tests": {
+    "corrective_head_sha": "c94c2226412681fa0a6a21532b4ef3c9237002ca",
+    "brain_delivery_run_id": 35264652041,
+    "brain_delivery_result": "SUCCESS",
+    "required_test_run_id": 35264652088,
+    "required_test_result": "SUCCESS",
+    "required_evidence": [
+      "admission success",
+      "independent delivery-lane classification success",
+      "Supabase security gates success",
+      "backend success",
+      "portal success",
+      "automation success",
+      "website static/baseline/page-SEO success",
+      "full browser regression success including public rendering, desktop/mobile routes and readable header menus"
+    ]
+  },
+  "production_readback": {
+    "pull_request": 1970,
+    "protected_merge_expected_head_sha": "c94c2226412681fa0a6a21532b4ef3c9237002ca",
+    "merge_sha": "b573a31d0547979bf9c708e4f56da0fa27502688",
+    "merged_at": "2026-09-17T19:31:44Z",
+    "main_behavior_verified": [
+      "select_due_slug skips stale queue rows when blog/<slug>/index.html already exists and continues to later due work",
+      "exact-slug recovery validates title, H1, canonical and content-id fail-closed",
+      "distribution repair reuses the canonical updater idempotently",
+      "reconciled state with no repository delta emits SEALED"
+    ],
+    "post_merge_workflows": "18 workflows for the merge SHA reached terminal state with no failure, queued, in-progress or cancelled state observed; Outcome Obligation Sweep concluded success"
+  },
+  "outcome": "The approved-blog stale-reconciliation recovery is merged to protected main and repository/runtime checks are green. The publication artifact itself remained unchanged.",
+  "prevention": "MODULE_EXTRACTION_TESTS_ASSERT_PUBLIC_BOUNDARY_AND_BEHAVIOR_NOT_IMPLEMENTATION_LOCATION. Diagnose test-harness/test-oracle defects independently from product defects. For approved-blog scheduling, stale rows already materialized on main are skipped; exact-slug recovery remains the identity-validating reconciliation path.",
+  "regression": "tests/brain-change-scoped-release-lanes.test.mjs is the executable regression contract and passed on exact corrective head c94c2226412681fa0a6a21532b4ef3c9237002ca before protected merge.",
+  "security": "No integrity, security or release gate was weakened; CodeQL, Powerhouse CodeQL and Supabase security checks stayed green.",
+  "cost": "No duplicate publication or extra production content deploy was created; the existing canonical candidate lineage was reused.",
+  "writeback_lineage": {
+    "historical_pr": 1965,
+    "canonical_pr": 1970,
+    "corrective_commit": "c94c2226412681fa0a6a21532b4ef3c9237002ca",
+    "main_merge": "b573a31d0547979bf9c708e4f56da0fa27502688",
+    "runtime_learning_route": "BG168 -> BG166 -> BG167",
+    "runtime_writeback_attempt": "BLOCKED_HARD_BOUNDARY",
+    "runtime_writeback_blocker": "Make organization/team paused because operations or data-transfer limit is exceeded",
+    "retry_policy": "Do not create proof traffic or retry bursts while Make remains capacity-paused; replay this exact fingerprint once the canonical learning plane is available."
+  },
+  "open_obligations": [
+    "Replay this exact recovery learning through BG168 -> BG166 after Make capacity is restored, then read back BG166/BG167 shared context by canonical authority and record next-agent discoverability."
+  ]
+}
