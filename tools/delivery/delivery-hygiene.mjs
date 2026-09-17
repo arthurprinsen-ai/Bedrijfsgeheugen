@@ -25,7 +25,7 @@ function pathMatches(path, pattern) {
   if (!cleanPath || !cleanPattern) return false;
   if (cleanPattern.endsWith('/')) return cleanPath.startsWith(cleanPattern);
   if (cleanPattern.endsWith('/**')) return cleanPath.startsWith(cleanPattern.slice(0, -3));
-  if (cleanPattern.endsWith('-')) return cleanPath.startsWith(cleanPattern);
+  if (cleanPattern.endsWith('-')) return cleanPath.startsWith(cleanPattern.slice(0, -1));
   return cleanPath === cleanPattern || cleanPath.startsWith(`${cleanPattern}/`);
 }
 
@@ -205,9 +205,20 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
       },
     });
 
-    // Recovery/security work keeps explicit priority, but ordinary development is
-    // never globally blocked just because unrelated work is finishing. Actual
-    // integration serialization is enforced above by conflict-domain overlap.
+    if (pressure.decision === 'WAITING_CAPACITY') {
+      return Object.freeze({
+        ok: false,
+        state: 'WAITING_CAPACITY',
+        reason: pressure.reason,
+        obligationId: candidate.metadata.obligationId,
+        candidateNumber: Number(candidate.number),
+        candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
+        immutableBaseSha: normalize(candidate.baseSha).toLowerCase(),
+        observedMainSha: normalize(currentMainSha).toLowerCase(),
+        predecessorNumber,
+      });
+    }
+
     if (pressure.decision === 'ADMIT_PRIORITY_RECOVERY') {
       return Object.freeze({
         ok: true,
@@ -219,7 +230,7 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
         candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
         immutableBaseSha: normalize(candidate.baseSha).toLowerCase(),
         observedMainSha: normalize(currentMainSha).toLowerCase(),
-        predecessorNumber: predecessor ? Number(predecessor.number) : null,
+        predecessorNumber,
       });
     }
   }
