@@ -147,7 +147,9 @@ begin
 end;
 $$;
 
-revoke all on function public.powerhouse_reconcile_content_outcomes_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_reconcile_content_outcomes_v1(date) from public;
+revoke execute on function public.powerhouse_reconcile_content_outcomes_v1(date) from anon;
+revoke execute on function public.powerhouse_reconcile_content_outcomes_v1(date) from authenticated;
 grant execute on function public.powerhouse_reconcile_content_outcomes_v1(date) to service_role;
 
 -- Guards now reconcile canonical truth before deciding any recovery action.
@@ -163,6 +165,10 @@ begin
   else v_action:='already_covered'; end if;
   return jsonb_build_object('ok',v_ob.status not in ('BLOCKED','FAILED'),'action',v_action,'status',v_ob.status,'publication_date',v_date,'external_id',v_ob.external_id,'provider_truth_verified',coalesce((v_ob.evidence->>'provider_truth_verified')::boolean,false));
 end $$;
+revoke execute on function public.powerhouse_linkedin_personal_daily_guard_v1(timestamptz) from public;
+revoke execute on function public.powerhouse_linkedin_personal_daily_guard_v1(timestamptz) from anon;
+revoke execute on function public.powerhouse_linkedin_personal_daily_guard_v1(timestamptz) from authenticated;
+grant execute on function public.powerhouse_linkedin_personal_daily_guard_v1(timestamptz) to service_role;
 
 create or replace function public.powerhouse_linkedin_company_daily_guard_v1(p_now timestamptz default now())
 returns jsonb language plpgsql security definer set search_path=public,pg_catalog as $$
@@ -176,6 +182,10 @@ begin
   else v_action:='already_covered'; end if;
   return jsonb_build_object('ok',v_ob.status not in ('BLOCKED','FAILED'),'action',v_action,'status',v_ob.status,'publication_date',v_date,'external_id',v_ob.external_id,'provider_truth_verified',coalesce((v_ob.evidence->>'provider_truth_verified')::boolean,false));
 end $$;
+revoke execute on function public.powerhouse_linkedin_company_daily_guard_v1(timestamptz) from public;
+revoke execute on function public.powerhouse_linkedin_company_daily_guard_v1(timestamptz) from anon;
+revoke execute on function public.powerhouse_linkedin_company_daily_guard_v1(timestamptz) from authenticated;
+grant execute on function public.powerhouse_linkedin_company_daily_guard_v1(timestamptz) to service_role;
 
 create or replace function public.powerhouse_instagram_daily_guard_v1(p_now timestamptz default now())
 returns jsonb language plpgsql security definer set search_path=public,pg_catalog as $$
@@ -190,6 +200,10 @@ begin
   else v_action:='already_covered'; end if;
   return jsonb_build_object('ok',v_ob.status not in ('BLOCKED','FAILED'),'action',v_action,'status',v_ob.status,'publication_date',v_date,'external_id',v_ob.external_id,'provider_truth_verified',coalesce((v_ob.evidence->>'provider_truth_verified')::boolean,false));
 end $$;
+revoke execute on function public.powerhouse_instagram_daily_guard_v1(timestamptz) from public;
+revoke execute on function public.powerhouse_instagram_daily_guard_v1(timestamptz) from anon;
+revoke execute on function public.powerhouse_instagram_daily_guard_v1(timestamptz) from authenticated;
+grant execute on function public.powerhouse_instagram_daily_guard_v1(timestamptz) to service_role;
 
 create or replace function public.powerhouse_blog_daily_guard_v1(p_now timestamptz default now())
 returns jsonb language plpgsql security definer set search_path=public,pg_catalog as $$
@@ -201,6 +215,10 @@ begin
   if v_ob.status in ('PLANNED','GENERATED','APPROVED','BLOCKED','FAILED') then v_action:='canonical_loop_required'; else v_action:='already_covered'; end if;
   return jsonb_build_object('ok',v_ob.status not in ('BLOCKED','FAILED'),'action',v_action,'status',v_ob.status,'publication_date',v_date,'slug',v_ob.slug,'external_id',v_ob.external_id);
 end $$;
+revoke execute on function public.powerhouse_blog_daily_guard_v1(timestamptz) from public;
+revoke execute on function public.powerhouse_blog_daily_guard_v1(timestamptz) from anon;
+revoke execute on function public.powerhouse_blog_daily_guard_v1(timestamptz) from authenticated;
+grant execute on function public.powerhouse_blog_daily_guard_v1(timestamptz) to service_role;
 
 -- The single supervisor calls one Edge Function; source/metrics jobs stay independent.
 create or replace function public.powerhouse_content_closed_loop_tick_v1(p_now timestamptz default now())
@@ -216,6 +234,7 @@ begin
   ) into v_request;
   return v_request;
 end $$;
-
-revoke all on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from public,anon,authenticated;
+revoke execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from public;
+revoke execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from anon;
+revoke execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from authenticated;
 grant execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) to service_role;
