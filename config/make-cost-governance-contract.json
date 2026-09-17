@@ -5,6 +5,17 @@
   "production_execution_allowed": false,
   "purpose": "Preserve historical Make cost semantics and evidence without allowing Make entitlements, credits or provider state to drive current Powerhouse execution decisions.",
   "current_cost_authority": "Powerhouse/Supabase canonical cost projection and whole-brain outcome obligations",
+  "required_fields": [
+    "credit_budget",
+    "data_transfer_budget",
+    "max_payload_policy",
+    "page_batch_window_limit",
+    "dedupe_key",
+    "criticality_class",
+    "degradation_strategy",
+    "outcome_proof_signal",
+    "universal_event_ingest"
+  ],
   "required_historical_fields": [
     "credit_budget",
     "data_transfer_budget",
@@ -31,5 +42,5 @@
     "historical_cost_evidence_preserved": true,
     "paid_capacity_increase_allowed_autonomously": false
   },
-  "note": "Historical numeric entitlements must remain explicit and never be inferred. They are provenance only until Make is explicitly re-enabled in the canonical runtime authority contract."
+  "note": "Historical numeric entitlements must remain explicit and never be inferred. required_fields is retained as a backward-compatible producer-validation alias; it does not grant execution authority. Both field lists are provenance only until Make is explicitly re-enabled in the canonical runtime authority contract."
 }
