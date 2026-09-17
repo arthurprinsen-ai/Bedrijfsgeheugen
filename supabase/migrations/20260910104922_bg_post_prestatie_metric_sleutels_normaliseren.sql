@@ -1,3 +1,28 @@
+-- Replay compatibility baseline: social_metric_snapshots existed in production
+-- before it was captured in migration history. A fresh Supabase branch must
+-- recreate the proven production shape before bg_post_prestatie depends on it.
+create table if not exists public.social_metric_snapshots (
+  tenant_id text not null,
+  snapshot_id text not null,
+  post_id text not null,
+  observed_at timestamptz not null,
+  source text not null,
+  source_event_id text not null,
+  data_quality text not null default 'OBSERVED'::text,
+  metrics jsonb not null,
+  created_at timestamptz not null default now(),
+  age_hours double precision,
+  primary key (tenant_id, snapshot_id),
+  unique (tenant_id, source_event_id)
+);
+
+create index if not exists social_snapshots_post_observed_idx
+  on public.social_metric_snapshots (tenant_id, post_id, observed_at desc);
+
+alter table public.social_metric_snapshots enable row level security;
+revoke all on table public.social_metric_snapshots from anon, authenticated;
+grant all on table public.social_metric_snapshots to service_role;
+
 create or replace view public.bg_post_prestatie as
 WITH laatste AS (
   SELECT DISTINCT ON (s.post_id) s.post_id, s.metrics, s.observed_at
@@ -21,5 +46,8 @@ SELECT p.post_id, p.platform, p.published_at,
   COALESCE(m.profielbezoek,0) AS profielbezoek,
   round(100.0 * (COALESCE(m.likes,0) + COALESCE(m.reacties,0) + COALESCE(m.gedeeld,0)) / NULLIF(COALESCE(m.impressies,0),0), 2) AS interactie_pct
 FROM social_posts p LEFT JOIN m ON m.post_id = p.post_id;
+alter view public.bg_post_prestatie set (security_invoker = true);
+revoke all on table public.bg_post_prestatie from public, anon, authenticated;
+grant select on table public.bg_post_prestatie to service_role;
 comment on view public.bg_post_prestatie is 'Prestatie per post voor bg_content_lessen. Leest metric-sleutels in beide schrijfwijzen (Buffer: Impressions/Reach/Reactions/Comments/Shares, intern: impressions/reach/likes/comments/shares). Hersteld 10 sept 2026: daarvoor telde de helft van de posts als nul bereik.';
 select count(*) as posts, count(*) filter (where impressies>0) as met_bereik from public.bg_post_prestatie;
