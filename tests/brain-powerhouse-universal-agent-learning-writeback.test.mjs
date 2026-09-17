@@ -8,8 +8,10 @@ import { compileChatLearningPreflight } from '../scripts/brain/chat-learning-pre
 const here = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(here, '..');
 const policyPath = path.join(rootDir, 'brain/policies/powerhouse-universal-agent-learning-writeback-v1.json');
+const continuityPolicyPath = path.join(rootDir, 'brain/policies/powerhouse-agent-continuity-v1.json');
 const preflightPath = path.join(rootDir, 'scripts/brain/chat-learning-preflight.mjs');
 const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
+const continuityPolicy = JSON.parse(fs.readFileSync(continuityPolicyPath, 'utf8'));
 const preflightSource = fs.readFileSync(preflightPath, 'utf8');
 
 const REQUIRED_INVARIANTS = [
@@ -47,6 +49,37 @@ test('universal learning/writeback contract remains active and fail-closed', () 
   assert.equal(policy.next_agent_discoverability_gate.required, true);
   assert.equal(policy.terminal_status_gate.production_green_without_writeback, 'NOT_TERMINAL');
   assert.equal(policy.terminal_status_gate.deployment_without_learning, 'NOT_LIVE_BEWEZEN');
+});
+
+test('chats and agents are intrinsic execution nodes in one canonical Powerhouse loop', () => {
+  const contract = continuityPolicy.loop_node_contract;
+  assert.equal(continuityPolicy.status, 'ACTIVE');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.3');
+  assert.match(continuityPolicy.fingerprint, /intrinsic-loop-nodes/);
+  assert.equal(contract.required, true);
+  assert.deepEqual(contract.actor_kinds, ['chat', 'agent']);
+  assert.equal(contract.role, 'INTRINSIC_EXECUTION_NODE');
+  assert.equal(contract.single_canonical_loop, true);
+  assert.equal(contract.canonical_state_required_before_execution, true);
+  assert.equal(contract.canonical_writeback_required_before_terminal, true);
+  assert.equal(contract.next_run_must_resume_from_written_state, true);
+  assert.deepEqual(contract.execution_sequence, [
+    'intent_or_obligation',
+    'existing_state_preflight',
+    'retrieve_relevant_knowledge_and_lineage',
+    'bounded_execution',
+    'tests_and_gates',
+    'merge_deploy_or_promote_when_applicable',
+    'production_or_provider_readback_and_evidence',
+    'outcome_and_value',
+    'root_cause_learning_and_prevention',
+    'canonical_writeback',
+    'next_run_from_updated_canonical_state'
+  ]);
+  assert.ok(contract.forbidden_terminal_states.includes('CHAT_ENDED_WITHOUT_CANONICAL_WRITEBACK'));
+  assert.ok(contract.forbidden_terminal_states.includes('AGENT_ENDED_WITHOUT_CANONICAL_WRITEBACK'));
+  assert.ok(contract.forbidden_patterns.includes('isolated_chat_memory_as_authority'));
+  assert.ok(contract.forbidden_patterns.includes('parallel_agent_brain_as_authority'));
 });
 
 test('already-authorized Powerhouse work proceeds without redundant confirmation loops', () => {
@@ -96,12 +129,18 @@ test('current-state and incident records remain compact, complete and discoverab
   }
 });
 
-test('chat-learning preflight cannot silently omit universal learning/writeback policy', () => {
+test('chat-learning preflight cannot silently omit universal learning/writeback or continuity authority', () => {
   const relativePolicyPath = 'brain/policies/powerhouse-universal-agent-learning-writeback-v1.json';
+  const relativeContinuityPath = 'brain/policies/powerhouse-agent-continuity-v1.json';
   assert.match(preflightSource, new RegExp(relativePolicyPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(preflightSource, new RegExp(relativeContinuityPath.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
   const packet = compileChatLearningPreflight({ rootDir });
   const source = packet.sources.find(item => item.path === relativePolicyPath);
+  const continuitySource = packet.sources.find(item => item.path === relativeContinuityPath);
   assert.ok(source, 'universal learning/writeback policy missing from compiled preflight packet');
+  assert.ok(continuitySource, 'agent continuity policy missing from compiled preflight packet');
   assert.equal(source.fingerprint, policy.fingerprint);
+  assert.equal(continuitySource.fingerprint, continuityPolicy.fingerprint);
   assert.ok(packet.fingerprints.includes(policy.fingerprint), 'policy fingerprint missing from preflight signals');
+  assert.ok(packet.fingerprints.includes(continuityPolicy.fingerprint), 'continuity fingerprint missing from preflight signals');
 });

@@ -1,10 +1,10 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.2",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|fast-continuation|resumable-execution|v1.2",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.3",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|v1.3",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
-  "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions.",
+  "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
   "invariants": [
     "CURRENT_STATE_BEFORE_WORK",
     "REUSE_BEFORE_BUILD",
@@ -13,6 +13,9 @@
     "AUTONOMOUS_BUILD_MUST_JOIN_POWERHOUSE",
     "NO_UNREGISTERED_MATERIAL_CAPABILITY",
     "NO_AGENT_STARTS_FROM_SCRATCH",
+    "CHAT_AND_AGENT_ARE_INTRINSIC_LOOP_NODES",
+    "ONE_CANONICAL_POWERHOUSE_LOOP",
+    "NO_ISOLATED_CHAT_OR_AGENT_AUTHORITY",
     "NO_REANALYSIS_OF_VERIFIED_STATE_WITHOUT_NEW_EVIDENCE",
     "NO_LIVE_WITHOUT_READBACK",
     "NO_DONE_WITHOUT_HANDOFF",
@@ -32,6 +35,43 @@
     "compute only the delta between verified current state and the requested outcome",
     "skip rediscovery and redesign of already verified state unless fresh evidence invalidates it"
   ],
+  "loop_node_contract": {
+    "required": true,
+    "actor_kinds": ["chat", "agent"],
+    "role": "INTRINSIC_EXECUTION_NODE",
+    "single_canonical_loop": true,
+    "canonical_state_required_before_execution": true,
+    "canonical_writeback_required_before_terminal": true,
+    "next_run_must_resume_from_written_state": true,
+    "execution_sequence": [
+      "intent_or_obligation",
+      "existing_state_preflight",
+      "retrieve_relevant_knowledge_and_lineage",
+      "bounded_execution",
+      "tests_and_gates",
+      "merge_deploy_or_promote_when_applicable",
+      "production_or_provider_readback_and_evidence",
+      "outcome_and_value",
+      "root_cause_learning_and_prevention",
+      "canonical_writeback",
+      "next_run_from_updated_canonical_state"
+    ],
+    "forbidden_terminal_states": [
+      "CHAT_ENDED_WITHOUT_CANONICAL_WRITEBACK",
+      "AGENT_ENDED_WITHOUT_CANONICAL_WRITEBACK",
+      "LOCAL_CHAT_STATE_ONLY",
+      "LOCAL_AGENT_STATE_ONLY"
+    ],
+    "forbidden_patterns": [
+      "isolated_chat_memory_as_authority",
+      "parallel_agent_brain_as_authority",
+      "alternative_truth_outside_powerhouse",
+      "restart_from_zero_when_canonical_state_exists",
+      "terminal_success_without_outcome_learning_and_writeback"
+    ],
+    "authority_rule": "A chat or agent may reason and execute, but it never becomes a separate source of truth. Canonical Powerhouse state, evidence, obligations and learning remain authoritative before, during and after the run.",
+    "handoff_rule": "A material chat or agent run is functionally complete only after its verified state, evidence, outcome, learning, prevention and remaining obligations are written back so the next capable run can continue from that updated canonical state without reconstructing prior work."
+  },
   "fast_continuation_rule": {
     "required": true,
     "default_strategy": "continue-from-canonical-current-state",
@@ -114,7 +154,7 @@
     "no_critical_unrecorded_gap"
   ],
   "failure_behavior": "If any mandatory handoff, registration, evidence, recovery or learning step cannot be completed, preserve an explicit canonical open obligation and downgrade status from LIVE_BEWEZEN to DEELS_LIVE or GEBLOKKEERD. Never hide the missing continuity step behind a successful deploy or a stopped chat/model run.",
-  "prevention": "Do not let autonomous work end as undocumented implementation knowledge inside one chat or one agent. Persist how it works, its last verified checkpoint, already-proven side effects and verified operating state in the existing Powerhouse truth, evidence, architecture and learning paths so the next agent continues immediately from canonical state, executes only the necessary delta and reaches verified production through the shortest safe route.",
+  "prevention": "Do not let autonomous work end as undocumented implementation knowledge inside one chat or one agent. Treat every chat and agent as an intrinsic execution node in the single canonical Powerhouse loop. Persist how it works, its last verified checkpoint, already-proven side effects and verified operating state in the existing Powerhouse truth, evidence, architecture and learning paths so the next agent continues immediately from canonical state, executes only the necessary delta and reaches verified production through the shortest safe route.",
   "linked_learning_sources": [
     "config/powerhouse-execution-resilience-v1.json",
     "brain/learning/execution-resilience-2026-09-17.json"
