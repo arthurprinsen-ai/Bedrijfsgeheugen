@@ -27,31 +27,31 @@ Deno.serve(async (req) => {
   let input: any = {};
   try { input = await req.json(); } catch { /* default */ }
   const runDate = clean(input.runDate) || localDate();
-  const execution: any[] = [];
+  const stepResults: any[] = [];
 
   try {
     const first = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
     if (first.error) throw new Error('RECONCILE_PRE_FAILED');
-    execution.push({ name: 'reconcile_pre', ok: true, body: first.data });
+    stepResults.push({ name: 'reconcile_pre', ok: true, body: first.data });
 
     for (let i = 0; i < 5; i++) {
       const step = await invoke(url, expected, 'powerhouse-content-orchestrator', { runDate });
-      execution.push(step);
+      stepResults.push(step);
       if (!step.ok || step.body?.generated !== true) break;
     }
 
-    execution.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate }));
-    execution.push(await invoke(url, expected, 'powerhouse-blog-queue', { runDate }));
+    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate }));
+    stepResults.push(await invoke(url, expected, 'powerhouse-blog-queue', { runDate }));
 
     const sync = await fetch(`${url}/functions/v1/bg-buffer-sync`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
     const syncBody = await sync.json().catch(() => ({}));
-    execution.push({ name: 'bg-buffer-sync', http: sync.status, ok: sync.ok && syncBody?.ok !== false, body: syncBody });
+    stepResults.push({ name: 'bg-buffer-sync', http: sync.status, ok: sync.ok && syncBody?.ok !== false, body: syncBody });
 
-    execution.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
+    stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 
     const final = await db.rpc('powerhouse_reconcile_content_outcomes_v1', { p_date: runDate });
     if (final.error) throw new Error('RECONCILE_POST_FAILED');
-    execution.push({ name: 'reconcile_post', ok: true, body: final.data });
+    stepResults.push({ name: 'reconcile_post', ok: true, body: final.data });
 
     const [{ data: obligations, error: obligationsError }, { data: decisions, error: decisionsError }] = await Promise.all([
       db.from('content_publication_obligations').select('channel,status,external_id,evidence,last_error,next_action,updated_at').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', OPERATIONAL_CHANNELS),
@@ -83,7 +83,6 @@ Deno.serve(async (req) => {
       hardBoundaries,
       obligations: obligations || [],
       decisions: decisions || [],
-      execution,
     };
 
     await db.from('brain_records').upsert({
@@ -96,7 +95,7 @@ Deno.serve(async (req) => {
     return json(result, result.ok ? 200 : 409);
   } catch (error) {
     const message = String((error as Error)?.message || error).slice(0, 500);
-    console.error('CONTENT_LOOP_ERROR', message);
+    console.error('CONTENT_LOOP_ERROR', message, stepResults);
     try {
       await db.from('brain_records').upsert({
         tenant_id: 'canonical', record_id: `content-closed-loop:${runDate}`, record_type: 'Verification', record_kind: 'verification', subject_id: runDate,
