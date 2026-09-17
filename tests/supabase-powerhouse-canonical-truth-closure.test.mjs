@@ -18,8 +18,7 @@ test('closure read model reuses canonical obligations and blockers', async () =>
 test('closure read model is invoker-safe and not client-executable', async () => {
   const text = await sql();
   assert.match(text, /security_invoker\s*=\s*true/i);
-  assert.match(text, /revoke\s+all\s+on\s+public\.powerhouse_material_claims_v1\s+from\s+anon/i);
-  assert.match(text, /revoke\s+all\s+on\s+public\.powerhouse_material_claims_v1\s+from\s+authenticated/i);
+  assert.match(text, /revoke\s+all\s+on\s+public\.powerhouse_material_claims_v1\s+from\s+public\s*,\s*anon\s*,\s*authenticated/i);
   assert.match(text, /grant\s+select\s+on\s+public\.powerhouse_material_claims_v1\s+to\s+service_role/i);
 });
 
