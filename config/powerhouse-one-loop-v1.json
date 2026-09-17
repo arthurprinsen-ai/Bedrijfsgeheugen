@@ -48,7 +48,7 @@
       "tools/delivery/one-loop-reconcile.mjs",
       "tools/delivery/one-loop.mjs"
     ],
-    "maxFiles": 60
+    "maxFiles": 64
   },
   "terminalStates": ["LIVE_PROVEN", "FULFILLED", "BLOCKED_EXTERNAL"],
   "recoverableStates": [
