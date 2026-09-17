@@ -25,6 +25,15 @@ test('publisher treats missing provider readback as stale state instead of a suc
   assert.match(publisher, /provider_truth_verified/);
 });
 
+test('publisher recovers provider lineage from obligation external_id when decision delivery_ref is missing', () => {
+  const publisher = read('supabase/functions/powerhouse-social-publisher/index.ts');
+  assert.match(publisher, /content_publication_obligations/);
+  assert.match(publisher, /external_id/);
+  assert.match(publisher, /obligationByChannel/);
+  assert.match(publisher, /clean\(row\.delivery_ref\)\s*\|\|\s*clean\(obligationByChannel\.get\(obligationChannels\[row\.channel\]\)\?\.external_id\)/);
+  assert.match(publisher, /delivery_ref:\s*ref/);
+});
+
 test('orchestrator exposes unsupported channel obligations as machine-readable hard boundaries rather than silent hold', () => {
   const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   assert.match(orchestrator, /BLOCKED_HARD_BOUNDARY/);
