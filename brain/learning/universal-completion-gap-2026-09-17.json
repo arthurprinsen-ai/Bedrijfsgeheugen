@@ -1,0 +1,27 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "UNIVERSAL-COMPLETION-GAP-2026-09-17-v1",
+  "fingerprint": "powerhouse|completion|partial-writeback-despite-policy|universal-manifest-required-v1",
+  "status": "CANDIDATE",
+  "symptom": "Materiële Powerhouse-wijzigingen konden inhoudelijk live en grotendeels geborgd zijn terwijl een deel van documentatie, learning, evidence, root cause, obligations of andere accountability-categorieën pas later alsnog expliciet werd vastgelegd.",
+  "rootCause": "De bestaande policies maakten preflight, postflight en learning-writeback verplicht, maar completion werd niet door één actuele exhaustive manifest-validator geblokkeerd wanneer één categorie stil ontbrak. Deelgates en historische checkpoints bewezen subsets, niet volledige run-completeness.",
+  "failedApproach": "Vertrouw op meerdere losse policies, CI-gates en menselijke/agentmatige discipline om alle writeback-categorieën impliciet compleet te houden.",
+  "fix": "Introduceer POWERHOUSE-UNIVERSAL-COMPLETION-v1: iedere materiële chat/agent/run moet vóór terminalisatie alle verplichte categorieën expliciet als COMPLETE met evidence of NOT_APPLICABLE met reden opnemen. LIVE & BEWEZEN vereist daarnaast zero open obligations, canonical writeback en exact-candidate production readback.",
+  "preventionRule": "Geen enkele materiële Powerhouse chat, agent, workflow, incident, recovery of development run mag een terminale status claimen zonder succesvolle fail-closed universal completion validation. Omission is failure, niet een impliciete N/A.",
+  "regressionContract": [
+    "tests/brain-universal-completion-gate.test.mjs",
+    "tests/brain-universal-completion-integration.test.mjs"
+  ],
+  "evidence": [
+    "2026-09-17: fast-execution runtime was LIVE & BEWEZEN terwijl aanvullende human-readable documentation pas in een vervolgstap expliciet werd gesynchroniseerd.",
+    "Existing chat-to-brain-completeness-v1 required postflight/writeback but had no exhaustive per-run category manifest."
+  ],
+  "owner": "agent-reliability",
+  "canonicalComponents": [
+    "config/powerhouse-universal-completion-v1.json",
+    "scripts/brain/powerhouse-universal-completion-gate.mjs",
+    "brain/policies/chat-to-brain-completeness-v1.json",
+    "scripts/brain/chat-learning-preflight.mjs"
+  ],
+  "open_obligation": "Promote candidate through protected gates, merge to main, read back canonical policy/runtime/docs/learning and update this record to LIVE_AND_PROVEN."
+}
