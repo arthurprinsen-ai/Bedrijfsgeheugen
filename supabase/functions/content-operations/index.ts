@@ -35,7 +35,10 @@ async function rest(path: string, options: { method?: string; body?: unknown } =
     body: options.body === undefined ? undefined : JSON.stringify(options.body),
   });
   const text = await res.text();
-  if (!res.ok) throw new Error(`SUPABASE_${res.status}:${text}`);
+  if (!res.ok) {
+    console.error('CONTENT_OPERATIONS_SUPABASE_ERROR', res.status);
+    throw new Error('SUPABASE_REQUEST_FAILED');
+  }
   return text ? JSON.parse(text) : null;
 }
 
@@ -119,6 +122,9 @@ Deno.serve(async (req: Request) => {
     if (action === 'record_delivery_state') return json(await recordDeliveryState(body));
     return json({ ok: false, error: 'INVALID_ACTION' }, 400);
   } catch (e) {
-    return json({ ok: false, error: String((e as Error)?.message || e) }, 500);
+    const internal = String((e as Error)?.message || e);
+    console.error('CONTENT_OPERATIONS_ERROR', internal);
+    const clientSafe = ['INVALID_DATE','INVALID_DATE_RANGE','INVALID_SOCIAL_CHANNEL','STATUS_REQUIRED','PROVIDER_TRUTH_REQUIRED'].includes(internal) ? internal : 'INTERNAL_ERROR';
+    return json({ ok: false, error: clientSafe }, clientSafe === 'INTERNAL_ERROR' ? 500 : 400);
   }
 });
