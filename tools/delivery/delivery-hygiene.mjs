@@ -73,6 +73,7 @@ function isNonProduct(candidate, policy) {
 
 function isOpenExecutable(candidate, policy) {
   if (!candidate || candidate.state === 'closed') return false;
+  if (!validateDeliveryMetadata(candidate.metadata, policy).ok) return false;
   if (candidate.executable === false) return false;
   return !isNonProduct(candidate, policy);
 }
