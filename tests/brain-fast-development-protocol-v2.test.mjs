@@ -27,6 +27,14 @@ test('Fast Development Protocol v2 preserves canonical authorities and flow', as
   assert.equal(policy.creates_parallel_authority, false);
 });
 
+test('Engineering OS packet discovers the fast protocol without replacing Engineering OS authority', () => {
+  const packet = JSON.parse(execFileSync(process.execPath, ['scripts/brain/powerhouse-engineering-os.mjs', '--packet'], { encoding: 'utf8' }));
+  assert.equal(packet.status, 'ENGINEERING_OS_READY');
+  assert.equal(packet.contract.fingerprint, 'powerhouse-engineering-os-v1');
+  assert.equal(packet.fast_development_protocol.fingerprint, 'powerhouse-fast-development-protocol-v2');
+  assert.deepEqual(packet.fast_development_protocol.canonical_flow, flow);
+});
+
 test('executable protocol validator proves integration without creating new authority', () => {
   const result = JSON.parse(execFileSync(process.execPath, ['scripts/brain/powerhouse-fast-development-protocol-v2.mjs', '--check'], { encoding: 'utf8' }));
   assert.equal(result.status, 'FAST_DEVELOPMENT_PROTOCOL_READY');
@@ -34,6 +42,7 @@ test('executable protocol validator proves integration without creating new auth
   assert.equal(result.engineering_os, 'powerhouse-engineering-os-v1');
   assert.equal(result.delivery, 'BRAIN-DELIVERY-v2');
   assert.equal(result.production_promotion, 'BG169');
+  assert.equal(result.proof_cache_authority, 'brain_outcome_obligation_evidence');
   assert.equal(result.production_readback_cacheable, false);
 });
 
