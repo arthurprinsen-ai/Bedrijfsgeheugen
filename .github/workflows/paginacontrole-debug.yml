@@ -13,6 +13,7 @@ on:
       - '.github/canoniek/**'
       - '.github/scripts/paginacontrole.py'
       - '.github/scripts/seocontrole.py'
+      - '.github/scripts/test_seocontrole_contract.py'
       - '.github/workflows/paginacontrole-debug.yml'
   workflow_dispatch:
 
@@ -48,6 +49,8 @@ jobs:
       - uses: actions/setup-python@v6
         with:
           python-version: '3.12'
+      - name: SEO diagnostic contract tests
+        run: python .github/scripts/test_seocontrole_contract.py
       - name: Playwright installeren
         run: |
           pip install --quiet playwright
