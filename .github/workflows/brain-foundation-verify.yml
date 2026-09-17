@@ -14,25 +14,12 @@ on:
       - 'supabase/migrations/**'
       - 'docs/brain/**'
       - '.github/workflows/brain-foundation-verify.yml'
-  pull_request:
-    paths:
-      - 'brain/**'
-      - 'config/brain-*.json'
-      - 'platform/api/brain-operating-*.mjs'
-      - 'netlify/functions/brain-operating-*.mjs'
-      - 'scripts/brain/**'
-      - 'tests/brain/**'
-      - 'tests/chat-to-brain-*.test.mjs'
-      - 'tests/whole-brain-*.test.mjs'
-      - 'supabase/migrations/**'
-      - 'docs/brain/**'
-      - '.github/workflows/brain-foundation-verify.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: brain-foundation-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  group: brain-foundation-${{ github.event_name }}-${{ github.run_id }}
   cancel-in-progress: true
 
 jobs:
