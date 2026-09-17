@@ -34,12 +34,13 @@ test('all chats and agents inherit autonomous completion and no-repeat-approval 
   ]);
 });
 
-test('autonomous completion authority is exposed through the canonical agent contract', async () => {
-  const agents = await readFile(new URL('../AGENTS.md', import.meta.url), 'utf8');
-  assert.match(agents, /powerhouse-autonomous-completion-authority-v1/);
-  assert.match(agents, /geen herhaalde goedkeuring/i);
-  assert.match(agents, /LIVE & BEWEZEN/);
-  assert.match(agents, /menselijk én machineleesbaar/i);
+test('autonomous completion authority has reusable human-readable canonical documentation', async () => {
+  const docs = await readFile(new URL('../docs/development-autonomous-completion-authority.md', import.meta.url), 'utf8');
+  assert.match(docs, /powerhouse-autonomous-completion-authority-v1/);
+  assert.match(docs, /herhaalde goedkeuring/i);
+  assert.match(docs, /LIVE & BEWEZEN/);
+  assert.match(docs, /menselijk én machineleesbaar/i);
+  assert.match(docs, /volgende chats\/agents/i);
 });
 
 test('Required CI executes the autonomous completion authority regression contract', async () => {
