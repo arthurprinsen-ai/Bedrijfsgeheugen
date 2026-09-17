@@ -103,6 +103,11 @@ function isOpenExecutable(candidate, policy) {
   return !isNonProduct(candidate, policy);
 }
 
+function isFinishingCandidate(candidate) {
+  const type = candidate?.metadata?.candidateType;
+  return type === 'promotion' || type === 'recovery';
+}
+
 function overlap(left = [], right = []) {
   const rightSet = new Set(right);
   return left.some(item => rightSet.has(item));
@@ -189,10 +194,11 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
       && isOpenExecutable(other, policy)
     );
     const maxExecutable = Number(policy?.wip?.maxExecutable ?? 0);
+    const finishingCandidates = activeExecutable.filter(isFinishingCandidate);
     const pressure = evaluateFinishingPressure({
       maxExecutable,
       admittedExecutable: activeExecutable.length,
-      finishing: activeExecutable.length,
+      finishing: finishingCandidates.length,
       candidate: {
         lane: candidate.metadata.deliveryLane,
         type: candidate.metadata.candidateType,
@@ -203,6 +209,7 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
         ok: false,
         state: 'WAITING_CAPACITY',
         reason: pressure.reason,
+        blockers: finishingCandidates.map(item => Number(item.number)).sort((a, b) => a - b),
         wipCount: activeExecutable.length,
         maxExecutable,
       });
