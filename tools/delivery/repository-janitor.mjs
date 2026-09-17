@@ -9,9 +9,19 @@ export function planRepositoryCleanup({ candidates = [], policy = {}, mode = 'dr
   const legacyUnclassified = [];
 
   for (const candidate of normalized) {
-    if (!validateDeliveryMetadata(candidate.metadata, policy).ok) {
+    const valid = validateDeliveryMetadata(candidate.metadata, policy).ok;
+    if (!valid) {
       legacyUnclassified.push(Number(candidate.number));
-      reviewRequired.push({ prNumber: Number(candidate.number), reason: 'LEGACY_UNCLASSIFIED' });
+      if (candidate.uniqueCommits === false) {
+        actions.push({
+          type: 'CLOSE_PR',
+          prNumber: Number(candidate.number),
+          reason: 'ALREADY_CONTAINED_IN_MAIN',
+          perform,
+        });
+      } else {
+        reviewRequired.push({ prNumber: Number(candidate.number), reason: 'LEGACY_UNCLASSIFIED' });
+      }
     }
   }
 
@@ -39,19 +49,19 @@ export function planRepositoryCleanup({ candidates = [], policy = {}, mode = 'dr
   }
 
   for (const candidate of normalized) {
-    if (!fulfilled.has(candidate.metadata?.obligationId)) continue;
     if (actions.some(action => action.prNumber === Number(candidate.number))) continue;
     if (candidate.uniqueCommits === false) {
       actions.push({
         type: 'CLOSE_PR',
         prNumber: Number(candidate.number),
-        obligationId: candidate.metadata.obligationId,
-        reason: 'FULFILLED_NO_UNIQUE_COMMITS',
+        obligationId: candidate.metadata?.obligationId || undefined,
+        reason: 'ALREADY_CONTAINED_IN_MAIN',
         perform,
       });
-    } else {
-      reviewRequired.push({ prNumber: Number(candidate.number), reason: 'FULFILLED_WITH_UNIQUE_COMMITS' });
+      continue;
     }
+    if (!fulfilled.has(candidate.metadata?.obligationId)) continue;
+    reviewRequired.push({ prNumber: Number(candidate.number), reason: 'FULFILLED_WITH_UNIQUE_COMMITS' });
   }
 
   const groups = new Map();
@@ -73,7 +83,10 @@ export function planRepositoryCleanup({ candidates = [], policy = {}, mode = 'dr
   ).length;
 
   const dedupedActions = actions.filter((action, index, all) => all.findIndex(other => other.type === action.type && other.prNumber === action.prNumber) === index);
-  const dedupedReviews = reviewRequired.filter((row, index, all) => all.findIndex(other => other.prNumber === row.prNumber && other.reason === row.reason) === index);
+  const actionPrs = new Set(dedupedActions.map(action => action.prNumber));
+  const dedupedReviews = reviewRequired
+    .filter(row => !actionPrs.has(row.prNumber))
+    .filter((row, index, all) => all.findIndex(other => other.prNumber === row.prNumber && other.reason === row.reason) === index);
 
   return Object.freeze({
     version: policy.version ?? 'POWERHOUSE-DELIVERY-HYGIENE-v1',
