@@ -1,0 +1,48 @@
+{
+  "type": "LEARNING_RECORD",
+  "version": "1.0.0",
+  "fingerprint": "chat-agent-interruption-resumable-execution-v1",
+  "date": "2026-09-17",
+  "status": "ACTIVE_PREVENTION",
+  "context": "User-observed ChatGPT execution interruptions during Powerhouse work, including network loss, interrupted streaming, failed reasoning and unexpected stop of reasoning.",
+  "observed_signals": [
+    "De netwerkverbinding is verbroken",
+    "Streaming onderbroken",
+    "Redeneren mislukt",
+    "Gestopt met nadenken"
+  ],
+  "risk": [
+    "lost_task_context",
+    "silent_abandonment",
+    "false_completion",
+    "duplicate_mutating_side_effects_after_manual_retry",
+    "open_obligation_loss",
+    "repeated_blind_retry_cost"
+  ],
+  "root_cause_class": "EPHEMERAL_EXECUTION_CHANNEL_USED_AS_IF_IT_WERE_DURABLE_PROCESS_STATE",
+  "failed_pattern": "Treating a chat/model/stream lifetime as the lifetime and source of truth of the underlying task.",
+  "fix": "Move task continuity to canonical durable Powerhouse state with checkpoints, obligations, heartbeat/watchdog detection, side-effect readback, idempotency/dedupe guards, bounded retries and explicit recovery state.",
+  "prevention": "Every material chat and agent must ingest powerhouse-execution-resilience-v1 via the existing chat-learning preflight; an interrupted non-terminal run becomes RECOVERY_REQUIRED and may resume only after canonical state and side-effect reconciliation.",
+  "regression_test": "tests/execution-resilience-guard.test.mjs",
+  "runtime_guard": "brain/guards/execution-resilience.mjs",
+  "canonical_contract": "config/powerhouse-execution-resilience-v1.json",
+  "documentation": "docs/brain/execution-resilience.md",
+  "resume_contract": [
+    "read canonical current state",
+    "load last verified checkpoint",
+    "reconcile open obligations",
+    "read back side effects",
+    "apply idempotency or dedupe guard",
+    "resume only remaining work",
+    "verify outcome",
+    "write back recovery and prevention"
+  ],
+  "evidence": {
+    "local_regression_run": "6/6 PASS after expanding interruption classifier to recognize Dutch network wording",
+    "important_test_learning": "The first regression run failed because the classifier only recognized English network terms. The test correctly exposed a localization gap; network/netwerk/verbinding matching was then added and the suite passed.",
+    "ci_coverage_learning": "Shared Agent Memory CI correctly failed when the new resilience test was not selected by any workflow. The test was moved into the existing *guard*.test.mjs regression family so future changes are automatically executed by governed CI instead of relying on a one-off workflow edit."
+  },
+  "linked_learning_sources": [
+    "docs/brain/execution-resilience.md"
+  ]
+}
