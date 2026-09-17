@@ -32,18 +32,18 @@ test('security/operations closure contract is fail-closed while required evidenc
   assert.ok([...requiredClosed].every((id) => closed.has(id)));
 });
 
-test('Buffer credential exposure is explicitly recorded and remains fail-closed', () => {
+test('Buffer credential rotation is secret-protected and runtime-proven but remains fail-closed until revocation', () => {
   const contract = JSON.parse(fs.readFileSync(contractPath, 'utf8'));
   const rotation = contract.obligations.find((item) => item.id === 'credential_rotation_end_to_end');
   assert.ok(rotation, 'credential_rotation_end_to_end obligation must exist');
   assert.equal(rotation.status, 'OPEN');
   assert.match(rotation.latest_readback, /BUFFER_API_KEY/);
-  assert.match(rotation.latest_readback, /is_secret=false/);
+  assert.match(rotation.latest_readback, /is_secret=true/);
   assert.match(rotation.latest_readback, /buffer-social-collect/);
-  assert.match(rotation.latest_readback, /Bearer credential/);
-  assert.match(rotation.latest_readback, /classification-only management write did not persist/i);
-  assert.match(rotation.latest_readback, /replacement\/rotation/i);
-  assert.match(rotation.latest_readback, /revocation|unusability/i);
+  assert.match(rotation.latest_readback, /source=buffer/);
+  assert.match(rotation.latest_readback, /data_quality=OBSERVED/);
+  assert.match(rotation.latest_readback, /rotated credential works in production/i);
+  assert.match(rotation.latest_readback, /revoked|unusable/i);
   assert.ok(rotation.evidence_required.some((item) => /secret protections/i.test(item)));
   assert.ok(rotation.evidence_required.some((item) => /post-rotation|consumer/i.test(item)));
   assert.ok(rotation.evidence_required.some((item) => /superseded credentials/i.test(item)));

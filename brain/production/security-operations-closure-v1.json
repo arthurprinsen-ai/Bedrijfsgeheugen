@@ -10,7 +10,7 @@
       "id": "isolated_restore_dr_exercise",
       "status": "OPEN",
       "owner_plane": "Supabase backup and disaster recovery",
-      "latest_readback": "2026-09-17: backup availability remains proven, but no safe isolated restore target is available through the current connector without creating a separate paid project/branch or using a production-overwriting restore path. No destructive restore was attempted.",
+      "latest_readback": "2026-09-17: backup availability remains proven, but no isolated restore has yet been executed. The current safe non-production Supabase branch path costs 0.01344 per hour and requires explicit cost confirmation before creation; no destructive production restore was attempted.",
       "evidence_required": [
         "dated isolated restore succeeds without overwriting production",
         "restored application and representative data are validated",
@@ -22,7 +22,7 @@
       "id": "credential_rotation_end_to_end",
       "status": "OPEN",
       "owner_plane": "Cross-provider secrets and credentials",
-      "latest_readback": "2026-09-17 fresh Netlify provider readback for project bedrijfsgeheugen confirms BUFFER_API_KEY remains present with is_secret=false across its configured contexts; other sensitive credentials on the same project return is_secret=true and masked values, proving secret classification is supported on this project. Production includes the deployed buffer-social-collect consumer and repository runtime code uses BUFFER_API_KEY as a Bearer credential for api.buffer.com. A prior classification-only management write did not persist secret classification, so the defect is not treated as fixed. No credential value is stored in this contract. Safe closure requires provider-side replacement/rotation, secret classification, successful consumer readback, and revocation or proof of unusability of the superseded credential.",
+      "latest_readback": "2026-09-17: BUFFER_API_KEY has been replaced and Netlify provider readback now reports is_secret=true; production, branch-deploy and deploy-preview values are masked and the deployed buffer-social-collect scheduled function remains present. Supabase runtime evidence recorded fresh source=buffer, data_quality=OBSERVED social metric snapshots at 2026-09-17 12:31:27.614+00, after the Netlify secret update at 2026-09-17 12:29:14Z, proving the rotated credential works in production. No credential value is stored in this contract. This obligation remains OPEN only until the superseded Buffer credential is provider-side revoked or otherwise proven unusable; broader in-scope credential inventory remains fail-closed until each credential's rotation requirement is evidenced.",
       "evidence_required": [
         "each in-scope credential has provider-side rotation evidence",
         "each runtime credential is stored with provider secret protections where supported",
@@ -35,7 +35,7 @@
       "id": "cross_platform_iam_review",
       "status": "OPEN",
       "owner_plane": "GitHub, Netlify, Notion, Buffer, Supabase and other active provider access planes",
-      "latest_readback": "2026-09-17: GitHub repository identity arthurprinsen-ai has current admin permission on arthurprinsen-ai/Bedrijfsgeheugen and main remains protected with required test status. Fresh Netlify readback confirms personal MFA enabled and Team PrinsenCo enforce_mfa=enforced with one standing member. Supabase sole-Owner personal MFA and organization-wide Require MFA enforcement were enabled in provider UI and saved by the standing Owner; the management connector still does not expose organization-member MFA state. Notion still contains one human plus eight bots/integrations, including legacy Make while Make is retired in the Powerhouse architecture; the connected Notion management surface can inventory users/bots but exposes no workspace-connection disconnect action. A fresh plugin-directory search on 2026-09-17 returned no Buffer management/IAM connector, so Buffer account IAM remains unverified. Least-privilege cleanup therefore remains open for stale/inaccessible provider identities and evidence that cannot yet be executed or read back through the connected management planes.",
+      "latest_readback": "2026-09-17: GitHub main remains protected with required test status. Netlify personal MFA remains enabled and Team PrinsenCo MFA enforcement remains enabled. Supabase sole-Owner personal MFA and organization-wide Require MFA remain evidenced. Fresh Notion inventory still contains one human plus eight bots/integrations, including legacy Make while Make is retired in the Powerhouse architecture; the connected Notion management surface inventories users/bots but exposes no disconnect action. Fresh plugin-directory search still exposes no Buffer management/IAM connector, so Buffer account IAM and old-key revocation cannot be read back through the current connected management planes. Least-privilege cleanup therefore remains open for stale or inaccessible provider identities and access that cannot yet be removed or verified through connected tools.",
       "evidence_required": [
         "standing human and service identities are inventoried",
         "roles and permissions are reviewed for least privilege",
