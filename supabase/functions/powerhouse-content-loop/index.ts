@@ -101,7 +101,7 @@ Deno.serve(async (req) => {
       await db.from('brain_records').upsert({
         tenant_id: 'canonical', record_id: `content-closed-loop:${runDate}`, record_type: 'Verification', record_kind: 'verification', subject_id: runDate,
         status: 'BLOCKED', observed_at: new Date().toISOString(), executed: true, verified: false,
-        result: { loop_state: 'RED', internal_error: message, execution, truth_contract: 'GREEN MEANS OUTCOME VERIFIED' },
+        result: { loop_state: 'RED', error: 'CONTENT_LOOP_INTERNAL_ERROR', truth_contract: 'GREEN MEANS OUTCOME VERIFIED' },
         payload: { run_date: runDate, supervisor: 'powerhouse-content-loop-v1' }, idempotency_key: `content-closed-loop:${runDate}`, source_revision: 'powerhouse-content-loop-v1', stored_at: new Date().toISOString(), updated_at: new Date().toISOString(),
       }, { onConflict: 'tenant_id,record_id' });
     } catch { /* preserve original failure */ }
