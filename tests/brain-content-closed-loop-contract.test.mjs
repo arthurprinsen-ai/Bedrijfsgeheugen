@@ -34,6 +34,15 @@ test('publisher recovers provider lineage from obligation external_id when decis
   assert.match(publisher, /delivery_ref:\s*ref/);
 });
 
+test('instagram transport readback never promotes identity-unproven media to PUBLISHED', () => {
+  const publisher = read('supabase/functions/powerhouse-social-publisher/index.ts');
+  assert.match(publisher, /EXACT_FINAL_MEDIA_PROOF_REQUIRED/);
+  assert.match(publisher, /instagramIdentityProven/);
+  assert.match(publisher, /row\.channel\s*===\s*'instagram_company'/);
+  assert.match(publisher, /transport_verified_identity_unproven/);
+  assert.match(publisher, /recordObligation\(db,\s*runDate,\s*row\.channel,\s*'BLOCKED'/);
+});
+
 test('orchestrator exposes unsupported channel obligations as machine-readable hard boundaries rather than silent hold', () => {
   const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   assert.match(orchestrator, /BLOCKED_HARD_BOUNDARY/);
