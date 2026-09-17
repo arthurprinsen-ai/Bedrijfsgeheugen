@@ -13,9 +13,10 @@
       ".github/workflows/powerhouse-merged-branch-cleanup.yml",
       "config/powerhouse-one-loop-v1.json",
       "docs/learning/2026-09-17-squash-merge-completion-identity-recovery-v1.md",
-      "tests/completion-supervisor-evidence.test.mjs"
+      "tests/completion-supervisor-evidence.test.mjs",
+      "tests/powerhouse-one-loop-versioned-metadata-authority.test.mjs"
     ],
-    "maxFiles": 5
+    "maxFiles": 6
   },
   "terminalStates": ["LIVE_PROVEN", "FULFILLED", "BLOCKED_EXTERNAL"],
   "recoverableStates": [
