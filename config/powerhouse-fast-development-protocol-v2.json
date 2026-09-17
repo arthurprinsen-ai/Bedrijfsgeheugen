@@ -26,8 +26,11 @@
   },
   "evidence_cache": {
     "persistent_semantics": true,
+    "persistence_authority": "brain_outcome_obligation_evidence",
+    "persistence_adapter": "PersistentEvidenceCache",
     "identity_fields": ["candidate_sha", "environment", "config_digest", "schema_digest", "dependency_digest", "gate_or_test_version", "relevant_contract_digest"],
     "ttl_or_invalidation_required": true,
+    "append_only_invalidation": true,
     "non_cacheable": ["EXACT_SHA_PROD_READBACK", "SECURITY_FRESHNESS", "CURRENT_PROVIDER_OUTCOME", "EXACT_FINAL_MEDIA_PROOF"]
   },
   "writeback": {
