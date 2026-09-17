@@ -1,0 +1,137 @@
+name: Powerhouse Delivery Hygiene
+
+on:
+  workflow_call:
+    outputs:
+      state:
+        description: Canonical delivery-hygiene state
+        value: ${{ jobs.admission.outputs.state }}
+      admitted:
+        description: Whether the candidate is admitted
+        value: ${{ jobs.admission.outputs.admitted }}
+      obligation_id:
+        description: Canonical obligation id
+        value: ${{ jobs.admission.outputs.obligation_id }}
+      candidate_head_sha:
+        description: Exact candidate head SHA
+        value: ${{ jobs.admission.outputs.candidate_head_sha }}
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pull-requests: read
+
+jobs:
+  admission:
+    runs-on: ubuntu-latest
+    outputs:
+      state: ${{ steps.admit.outputs.state }}
+      admitted: ${{ steps.admit.outputs.admitted }}
+      obligation_id: ${{ steps.admit.outputs.obligation_id }}
+      candidate_head_sha: ${{ steps.admit.outputs.candidate_head_sha }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - id: admit
+        name: Admit one canonical candidate before expensive CI
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          if [ "$EVENT_NAME" = "merge_group" ]; then
+            printf 'state=MERGE_GROUP_PREVALIDATED\nadmitted=true\nobligation_id=merge-group\ncandidate_head_sha=%s\n' "${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            printf '{"state":"MERGE_GROUP_PREVALIDATED","admitted":true,"head_sha":"%s"}\n' "$GITHUB_SHA" > .artifacts/powerhouse-delivery-hygiene.json
+            exit 0
+          fi
+          if [ -z "${PR_NUMBER:-}" ]; then
+            printf 'state=MANUAL_DIAGNOSTIC\nadmitted=true\nobligation_id=manual\ncandidate_head_sha=%s\n' "${GITHUB_SHA}" >> "$GITHUB_OUTPUT"
+            printf '{"state":"MANUAL_DIAGNOSTIC","admitted":true,"head_sha":"%s"}\n' "$GITHUB_SHA" > .artifacts/powerhouse-delivery-hygiene.json
+            exit 0
+          fi
+          git fetch origin main --no-tags
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { readFile, writeFile, appendFile } from 'node:fs/promises';
+          import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission } from './tools/delivery/delivery-hygiene.mjs';
+
+          const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8'}).trim();
+          const gh = path => JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8'}));
+          const matches = (path, pattern) => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(`${pattern}/`);
+          const contractsFor = (paths, brainPolicy) => (brainPolicy.conflictContracts || [])
+            .filter(contract => (contract.paths || []).some(pattern => paths.some(path => matches(path, pattern))))
+            .map(contract => contract.id);
+
+          const policy = JSON.parse(await readFile('config/powerhouse-delivery-hygiene-v1.json','utf8'));
+          const brainPolicy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
+          const prNumber = Number(process.env.PR_NUMBER);
+          const pr = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
+          const open = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
+          const headSha = sh('git','rev-parse','HEAD');
+          const currentMainSha = sh('git','rev-parse','origin/main');
+          const immutableBaseSha = sh('git','merge-base','origin/main','HEAD');
+          const changedPaths = sh('git','diff','--name-only',`${immutableBaseSha}...${headSha}`).split(/\r?\n/).filter(Boolean);
+          const currentContracts = contractsFor(changedPaths, brainPolicy);
+
+          const normalized = [];
+          for (const item of open) {
+            const metadata = parseDeliveryMetadata(item.body || '');
+            let conflictContracts = [];
+            if (metadata.candidateType === 'promotion') {
+              try {
+                const files = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${item.number}/files?per_page=100`);
+                conflictContracts = contractsFor(files.map(file => file.filename), brainPolicy);
+              } catch {}
+            }
+            normalized.push(classifyCandidate({
+              number: item.number,
+              state: item.state,
+              body: item.body || '',
+              baseSha: item.number === prNumber ? immutableBaseSha : (metadata.baseSha || item.base?.sha || ''),
+              headSha: item.head?.sha || '',
+              conflictContracts,
+            }, policy));
+          }
+
+          const candidate = classifyCandidate({
+            number: prNumber,
+            state: pr.state,
+            body: process.env.PR_BODY || pr.body || '',
+            baseSha: immutableBaseSha,
+            headSha,
+            conflictContracts: currentContracts,
+          }, policy);
+          const result = evaluateAdmission({candidate,openCandidates:normalized,policy,currentMainSha});
+          const evidence = {
+            version: policy.version,
+            observed_at: new Date().toISOString(),
+            repository: process.env.GITHUB_REPOSITORY,
+            pr_number: prNumber,
+            immutable_base_sha: immutableBaseSha,
+            current_main_sha: currentMainSha,
+            changed_paths: changedPaths,
+            conflict_contracts: currentContracts,
+            legacy_unclassified_open_prs: normalized.filter(item => !item.metadata?.obligationId).map(item => item.number),
+            ...result,
+          };
+          await writeFile('.artifacts/powerhouse-delivery-hygiene.json', `${JSON.stringify(evidence,null,2)}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT, `state=${result.state}\nadmitted=${result.ok}\nobligation_id=${candidate.metadata.obligationId || ''}\ncandidate_head_sha=${headSha}\n`);
+          console.log(JSON.stringify(evidence,null,2));
+          if (!result.ok) process.exit(78);
+          NODE
+      - name: Upload admission evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-delivery-hygiene-${{ github.run_id }}
+          path: .artifacts/powerhouse-delivery-hygiene.json
+          if-no-files-found: error
