@@ -10,21 +10,17 @@ const resourceSurfacePaths = [
 ];
 
 test('Resource Intelligence runtime surfaces stay registered in the Quality control plane', () => {
-  const files = resourceSurfacePaths.map(path => ({
-    path,
-    content: fs.readFileSync(path, 'utf8'),
-  }));
+  const files = resourceSurfacePaths.map(path => ({ path, content: fs.readFileSync(path, 'utf8') }));
   const registry = JSON.parse(fs.readFileSync(registryPath, 'utf8'));
   const discovered = discoverQualitySurfaces({ files });
 
-  assert.deepEqual(
-    discovered.map(surface => surface.id),
-    [
-      'function:portal-state-eu',
-      'function:resource-usage-eu',
-      'rpc:brain_record_resource_usage',
-    ],
-  );
+  assert.deepEqual(discovered.map(surface => surface.id), [
+    'function:portal-state-eu',
+    'function:resource-usage-eu',
+    'rpc:bg_portal_state_get_internal',
+    'rpc:bg_portal_state_put_internal',
+    'rpc:brain_record_resource_usage',
+  ]);
 
   const notRegistered = buildDiscoveryObligations({
     discovered,

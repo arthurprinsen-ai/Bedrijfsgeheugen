@@ -54,6 +54,8 @@ test('portal gateway returns only tenant-scoped resource, value, compliance and 
   assert.match(code,/resource_intelligence/);
   assert.match(code,/compliance_evidence/);
   assert.match(code,/recommendations/);
+  assert.match(code,/bg_portal_state_get_internal/);
+  assert.match(code,/bg_portal_state_put_internal/);
 });
 
 test('real tenant context never falls back to fake sustainability metrics',()=>{
