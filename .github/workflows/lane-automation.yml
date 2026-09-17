@@ -44,6 +44,9 @@ jobs:
           tests/repo-writer-governance.test.mjs
           tests/repo-writer-candidate.test.mjs
           tests/menu-writer-candidate-mode.test.mjs
+          tests/menu-balk-writer-noop-proof.test.mjs
+          tests/menu-writer-self-pr-proof-state.test.mjs
+          tests/menu-writer-shadow-pr-identity.test.mjs
           tests/regulation-writer-candidate-mode.test.mjs
           tests/seo-writer-candidate-mode.test.mjs
           tests/approved-central-blog-candidate-mode.test.mjs
@@ -52,6 +55,9 @@ jobs:
           tests/paginacontrole-writer-candidate-mode.test.mjs
           tests/repository-protection-readiness.test.mjs
           tests/repository-writer-structural-parity.test.mjs
+          tests/repository-writer-generic-shadow-handoff-v2.test.mjs
+          tests/repository-writer-permission-boundary.test.mjs
+          tests/repository-writer-slow-canary-sla.test.mjs
           tests/repo-writer-shadow.test.mjs
           tests/repo-writer-operational-harness.test.mjs
           tests/content-writer-operational-fixture.test.mjs
@@ -75,6 +81,7 @@ jobs:
       - name: Verify consolidated governance classifiers and trust contracts
         run: >-
           node --test
+          tests/approved-blog-delivery-classification.test.mjs
           tests/make-agent-learning-promotion-contract.test.mjs
           tests/chat-learning-completeness-addendum.test.mjs
           tests/brain-learning-contract-delivery-classification.test.mjs
