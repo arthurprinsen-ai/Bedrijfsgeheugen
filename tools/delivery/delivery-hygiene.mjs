@@ -137,16 +137,19 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
     return Object.freeze({ ok: false, state: 'BLOCKED_METADATA_INVALID', reasons: validation.errors });
   }
 
-  if (normalize(candidate.baseSha).toLowerCase() !== normalize(candidate.metadata.baseSha).toLowerCase()) {
+  const authoritativeBaseSha = normalize(candidate.baseSha).toLowerCase();
+  if (!SHA40.test(authoritativeBaseSha) || !SHA40.test(normalize(candidate.headSha).toLowerCase())) {
     return Object.freeze({
       ok: false,
       state: 'BLOCKED_STALE_IDENTITY',
-      reasons: ['DECLARED_BASE_SHA_MISMATCH'],
-      actualBaseSha: normalize(candidate.baseSha).toLowerCase(),
-      declaredBaseSha: normalize(candidate.metadata.baseSha).toLowerCase(),
-      observedMainSha: normalize(currentMainSha).toLowerCase(),
+      reasons: ['MISSING_IMMUTABLE_CANDIDATE_IDENTITY'],
     });
   }
+
+  const declaredBaseSha = normalize(candidate.metadata.baseSha).toLowerCase();
+  const metadataBaseDrift = declaredBaseSha !== authoritativeBaseSha
+    ? Object.freeze({ declaredBaseSha, authoritativeBaseSha })
+    : null;
 
   const supersedingCandidate = candidates.find(other => evaluateSupersession({ successor: other, predecessor: candidate }).safe);
   if (supersedingCandidate) {
@@ -219,9 +222,10 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
         obligationId: candidate.metadata.obligationId,
         candidateNumber: Number(candidate.number),
         candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
-        immutableBaseSha: normalize(candidate.baseSha).toLowerCase(),
+        immutableBaseSha: authoritativeBaseSha,
         observedMainSha: normalize(currentMainSha).toLowerCase(),
         predecessorNumber,
+        metadataBaseDrift,
       });
     }
 
@@ -234,9 +238,10 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
         obligationId: candidate.metadata.obligationId,
         candidateNumber: Number(candidate.number),
         candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
-        immutableBaseSha: normalize(candidate.baseSha).toLowerCase(),
+        immutableBaseSha: authoritativeBaseSha,
         observedMainSha: normalize(currentMainSha).toLowerCase(),
         predecessorNumber,
+        metadataBaseDrift,
       });
     }
   }
@@ -247,8 +252,9 @@ export function evaluateAdmission({ candidate: rawCandidate, openCandidates = []
     obligationId: candidate.metadata.obligationId,
     candidateNumber: Number(candidate.number),
     candidateHeadSha: normalize(candidate.headSha).toLowerCase(),
-    immutableBaseSha: normalize(candidate.baseSha).toLowerCase(),
+    immutableBaseSha: authoritativeBaseSha,
     observedMainSha: normalize(currentMainSha).toLowerCase(),
     predecessorNumber: predecessor ? Number(predecessor.number) : null,
+    metadataBaseDrift,
   });
 }
