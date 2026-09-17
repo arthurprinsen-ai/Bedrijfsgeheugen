@@ -2,6 +2,11 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import {
+  FAST_EXECUTION_VERSION,
+  LatencyTrace,
+  buildExecutionPacketV2
+} from './powerhouse-fast-execution.mjs';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const FAST_EXECUTION_POLICY_SOURCE = 'config/powerhouse-fast-execution-v1.json';
@@ -97,7 +102,52 @@ function validateUniversalCompletionPolicy(policy) {
   });
 }
 
-export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000 } = {}) {
+function buildFastDevelopmentSession(executionContext = {}) {
+  const executionPacket = buildExecutionPacketV2({
+    taskId: executionContext.taskId,
+    intent: executionContext.intent,
+    executionClass: executionContext.executionClass,
+    risk: executionContext.risk,
+    waitingExternal: executionContext.waitingExternal,
+    impactedContracts: executionContext.impactedContracts,
+    mainSha: executionContext.mainSha,
+    lastVerifiedSha: executionContext.lastVerifiedSha,
+    lastVerifiedStateId: executionContext.lastVerifiedStateId,
+    currentStateId: executionContext.currentStateId,
+    componentIds: executionContext.componentIds,
+    deliveryLanes: executionContext.deliveryLanes,
+    changedPaths: executionContext.changedPaths ?? executionContext.touchedResources,
+    resourceRefs: executionContext.resourceRefs,
+    openObligations: executionContext.openObligations,
+    relevantLearningFingerprints: executionContext.relevantLearningFingerprints ?? executionContext.relevantFingerprints,
+    knownBlockers: executionContext.knownBlockers,
+    requiredGates: executionContext.requiredGates ?? executionContext.applicableGates,
+    configDigest: executionContext.configDigest,
+    schemaDigest: executionContext.schemaDigest,
+    dependencyDigest: executionContext.dependencyDigest,
+    testPolicyDigest: executionContext.testPolicyDigest,
+    freshness: executionContext.freshness,
+    lazyLoadRefs: executionContext.lazyLoadRefs
+  });
+  const telemetry = new LatencyTrace();
+  return Object.freeze({
+    protocol_version: FAST_EXECUTION_VERSION,
+    execution_packet: executionPacket,
+    telemetry_session: Object.freeze({
+      protocol_version: FAST_EXECUTION_VERSION,
+      task_id: executionContext.taskId ?? null,
+      candidate_id: executionContext.candidateId ?? null,
+      candidate_sha: executionContext.candidateSha ?? null,
+      metrics: Object.freeze(telemetry.snapshot()),
+      cache_hit_rate: 0,
+      context_bytes: 0,
+      context_tokens: 0,
+      duplicate_work_avoided: 0
+    })
+  });
+}
+
+export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000, executionContext = {} } = {}) {
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
   if (!Number.isInteger(maxBytes) || maxBytes < 1) throw new Error('maxBytes must be a positive integer');
   const contractLocation = normalizeSourcePath(rootDir, contractPath);
@@ -149,12 +199,14 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   const completionEntrypoint = normalizeSourcePath(rootDir, universalCompletion.entrypoint);
   if (!fs.existsSync(completionEntrypoint.absolute)) throw new Error(`missing universal-completion entrypoint: ${universalCompletion.entrypoint}`);
 
+  const fastDevelopment = buildFastDevelopmentSession(executionContext);
   const packet = {
     version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1',
     status: 'READY',
     contract: contractPath,
     sourceBytes,
     fastExecution,
+    fastDevelopment,
     universalCompletion,
     sources,
     fingerprints: stableUnique(signals.fingerprints).sort(),
