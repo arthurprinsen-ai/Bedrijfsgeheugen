@@ -1,0 +1,91 @@
+name: Powerhouse delivery hygiene readback
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/powerhouse-delivery-hygiene-readback.yml'
+      - '.github/workflows/required-test.yml'
+      - '.github/workflows/unified-brain-delivery.yml'
+      - 'tools/delivery/**'
+      - 'tools/delivery-branch-hygiene-guard.mjs'
+      - 'tests/delivery-hygiene-*.test.mjs'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: delivery-hygiene-readback-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: true
+
+jobs:
+  isolate-control-plane-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Install runtime dependencies once
+        run: npm install --no-audit --no-fund --silent
+      - name: brain-fast-development-protocol-v2
+        continue-on-error: true
+        run: node --test tests/brain-fast-development-protocol-v2.test.mjs
+      - name: brain-fast-execution
+        continue-on-error: true
+        run: node --test tests/brain-fast-execution.test.mjs
+      - name: brain-powerhouse-engineering-os-contract
+        continue-on-error: true
+        run: node --test tests/brain-powerhouse-engineering-os-contract.test.mjs
+      - name: brain-powerhouse-autonomous-completion-authority
+        continue-on-error: true
+        run: node --test tests/brain-powerhouse-autonomous-completion-authority.test.mjs
+      - name: brain-autonomous-improvement-runtime
+        continue-on-error: true
+        run: node --test tests/brain-autonomous-improvement-runtime.test.mjs
+      - name: completion-supervisor
+        continue-on-error: true
+        run: node --test tests/completion-supervisor.test.mjs
+      - name: completion-supervisor-evidence
+        continue-on-error: true
+        run: node --test tests/completion-supervisor-evidence.test.mjs
+      - name: completion-supervisor-backfill
+        continue-on-error: true
+        run: node --test tests/completion-supervisor-backfill.test.mjs
+      - name: brain-parallel-engineering-fabric
+        continue-on-error: true
+        run: node --test tests/brain-parallel-engineering-fabric.test.mjs
+      - name: delivery-github-event-context
+        continue-on-error: true
+        run: node --test tests/delivery-github-event-context.test.mjs
+      - name: delivery-driftless-merge-candidate
+        continue-on-error: true
+        run: node --test tests/delivery-driftless-merge-candidate.test.mjs
+      - name: delivery-branch-hygiene-guard
+        continue-on-error: true
+        run: node --test tests/delivery-branch-hygiene-guard.test.mjs
+      - name: delivery-required-branch-hygiene-wiring
+        continue-on-error: true
+        run: node --test tests/delivery-required-branch-hygiene-wiring.test.mjs
+      - name: delivery-hygiene-policy
+        continue-on-error: true
+        run: node --test tests/delivery-hygiene-policy.test.mjs
+      - name: brain-change-scoped-release-lanes
+        continue-on-error: true
+        run: node --test tests/brain-change-scoped-release-lanes.test.mjs
+      - name: brain-moving-main-successor-guard
+        continue-on-error: true
+        run: node --test tests/brain-moving-main-successor-guard.test.mjs
+      - name: brain-composable-release-control-plane
+        continue-on-error: true
+        run: node --test tests/brain-composable-release-control-plane.test.mjs
+      - name: brain-agents-delivery-contract
+        continue-on-error: true
+        run: node --test tests/brain-agents-delivery-contract.test.mjs
+      - name: portal-v2-release-identity-invariant
+        continue-on-error: true
+        run: node --test tests/portal-v2-release-identity-invariant.test.mjs
+      - name: website-static-syntax-preflight
+        continue-on-error: true
+        run: node --test tests/website-static-syntax-preflight.test.mjs
