@@ -29,6 +29,7 @@
   ],
   "native_chat_boundary": "Repository code cannot rewrite the native ChatGPT product runtime. Any material Powerhouse execution invoked from a native chat must enter the managed Powerhouse ingress/control-plane before mutation.",
   "linked_learning_sources": [
+    "brain/learning/universal-runtime-ingress-2026-09-17.json",
     "brain/policies/powerhouse-agent-continuity-v1.json"
   ]
 }
