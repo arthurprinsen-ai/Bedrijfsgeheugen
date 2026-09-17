@@ -4,7 +4,7 @@
 
 Deze standaard voorkomt dat tijdelijke client-, netwerk-, streaming-, sessie-, tool-, worker- of modelonderbrekingen leiden tot verloren werk, dubbele side effects, een valse eindstatus of een workflow die stilvalt.
 
-De canonieke machineleesbare authority is `config/powerhouse-execution-resilience-v1.json`. Runtime-beslislogica staat in `brain/guards/execution-resilience.mjs`. De duurzame databaseprojectie staat in `supabase/migrations/20260917083000_powerhouse_execution_resilience_v1.sql`. Regressiedekking staat in `tests/execution-resilience.test.mjs`.
+De canonieke machineleesbare authority is `config/powerhouse-execution-resilience-v1.json`. Runtime-beslislogica staat in `brain/guards/execution-resilience.mjs`. De duurzame databaseprojectie staat in `supabase/migrations/20260917083000_powerhouse_execution_resilience_v1.sql`. Regressiedekking staat in `tests/execution-resilience-guard.test.mjs` en valt bewust onder de bestaande `*guard*.test.mjs` CI-familie.
 
 ## Niet-onderhandelbare regel
 
@@ -86,6 +86,8 @@ Iedere materiële interruption/recovery legt minimaal vast: run-id, correlation-
 
 Een terugkerende fout mag niet slechts opnieuw worden geretryd; hij moet waar technisch mogelijk leiden tot een structurele guard, test, contract- of runtimeverbetering. De eerste implementatietest vond direct een lokalisatiegat: de classifier herkende aanvankelijk Engelse netwerktermen, maar niet `netwerk`/`verbinding`. Dat is als regressie vastgelegd en structureel gecorrigeerd.
 
+De eerste Shared Agent Memory-run vond daarna een tweede governancefout: de nieuwe regressietest bestond wel, maar draaide nog nergens in CI. In plaats van een losse nieuwe workflow toe te voegen is de test onder de bestaande guard-regressiefamilie gebracht. Daarmee wordt hij automatisch door de reeds beheerde shared-memory CI uitgevoerd en bewaakt de bestaande test-coverage guard dat dit zo blijft.
+
 ## Harde grenzen
 
 Autonome recovery stopt alleen op de bestaande harde grenzen: ontbrekende secrets/credentials/permissies, het verzwakken van security-controls, destructieve of onomkeerbare datamutaties, verhoging van betaalde externe resources of juridisch/financieel bindende acties. De open obligation en het exacte hervatpunt blijven dan duurzaam bewaard.
@@ -96,6 +98,7 @@ Execution resilience is pas groen wanneer:
 
 - de contractbron actief en door de chat-learning preflight verplicht ingelezen wordt;
 - regressietests de bekende netwerk-, streaming- en reasoning-interruptions herkennen;
+- de resilience-regressie door een bestaande verplichte CI-familie wordt uitgevoerd;
 - niet-terminale interruption altijd naar `RECOVERY_REQUIRED` gaat;
 - muterende replay zonder readback/idempotency/dedupe wordt geblokkeerd;
 - durable checkpoints in de bestaande canonical Brain runtime kunnen worden geschreven;
