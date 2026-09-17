@@ -16,6 +16,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:portal-business-input",
+      "type": "netlify_function",
+      "authority": "netlify/functions/portal-business-input.mjs",
+      "evidence_contract": "tests/portal-business-input.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:content-operations",
       "type": "function",
       "authority": "supabase/functions/content-operations/index.ts",
@@ -144,7 +151,7 @@
     {
       "id": "table:public.bg_buffer_sync",
       "type": "table",
-      "authority": "supabase/migrations/20260917154000_production_schema_replay_parity_v1.sql",
+      "authority": "supabase/migrations/20260917154000_production_schema_replay-parity-v1.sql",
       "evidence_contract": "tests/supabase-production-schema-replay-parity-v1.test.mjs",
       "required": true
     },
