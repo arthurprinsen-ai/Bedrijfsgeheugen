@@ -68,6 +68,18 @@ When a head moves, stop using stale assumptions. Re-read the actual PR head and 
 
 No patch, merge or completion claim may rely on evidence from an earlier candidate SHA after branch mutation.
 
+### 5. `canonical-learning-writeback-repeat-is-idempotent-v1`
+
+A repeated request to borg, log and document an already `LIVE_BEWEZEN` learning must not create a second canonical truth, duplicate learning record or parallel documentation path.
+
+**Proven fix**
+
+Re-read the existing canonical learning and its human-readable documentation first. When both remain verified, reuse the same lineage and add only genuinely new evidence or a new reusable learning. For this repeated request the existing PR #1911 learning remained intact on protected `main`, so the same lineage was extended with this idempotency rule rather than duplicated.
+
+**Prevention rule**
+
+Repeated borg/log/document requests are idempotent: `EXISTING_CANONICAL_LINEAGE_FIRST`, `NO_DUPLICATE_LEARNING_RECORDS`, `NO_PARALLEL_DOCUMENTATION_FOR_SAME_FACT`, and `NEW_EVIDENCE_MAY_EXTEND_EXISTING_LINEAGE`.
+
 ## Release-contract lessons
 
 - Mandatory red gates block merge even if a headline `Required test` is green.
@@ -76,6 +88,7 @@ No patch, merge or completion claim may rely on evidence from an earlier candida
 - Production readback is part of completion, not an optional postscript.
 - Canonical learning writeback is part of Definition of Done.
 - Existing state and lineage must be extended; do not create parallel truth stores, queues, dashboards or memories.
+- Repeated writeback requests are verification/extension events, not permission to create duplicate canonical truth.
 
 ## Canonical Powerhouse writeback
 
@@ -83,6 +96,8 @@ The existing canonical records were extended rather than duplicated:
 
 - `learning:pr-1911-release-contract-fail-closed-v1` → `LEARNED`, `LIVE_BEWEZEN`;
 - `learning:powerhouse-canonical-truth-closure-v1` → `LEARNED`, `LIVE_BEWEZEN`;
-- four reusable failure fingerprints were registered in `brain_failure_registry` with maturity `PROVEN` and one observed occurrence each.
+- four original reusable failure fingerprints were registered in `brain_failure_registry` with maturity `PROVEN`;
+- `learning:canonical-learning-writeback-idempotency-v1` records the idempotent re-borging behavior;
+- `canonical-learning-writeback-repeat-is-idempotent-v1` is registered as a proven prevention rule.
 
 The authoritative machine-readable learning remains Supabase `brain_records` / `brain_failure_registry`; this document is the human-readable repository companion.
