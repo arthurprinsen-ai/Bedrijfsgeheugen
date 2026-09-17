@@ -3,20 +3,38 @@
   "version": "POWERHOUSE-RUNTIME-LEARNING-v1",
   "fingerprint": "powerhouse|runtime-ingress|policy-without-preflight-proof",
   "date": "2026-09-17",
+  "status": "LIVE_AND_PROVEN",
   "problem": "Powerhouse policies required shared context, chat-learning preflight, control-plane binding and universal completion, but a canonical operation binding alone did not prove that the current material run actually executed the latest preflight before mutation.",
   "impact": "Chats and agents could appear governed at repository/control-plane level while users observed little behavioral difference, because policy presence and runtime consumption were not the same evidence class.",
   "rootCause": "Preflight and completion were independently mandatory contracts without one identity-bound runtime receipt connecting preflight, mutation admission and postflight completion.",
   "failedApproach": "Treating broad policy scope, PR-time preflight CI or database operation binding as sufficient proof that every live material execution had consumed current Powerhouse learning.",
-  "fix": "Use one Powerhouse universal runtime ingress receipt created from the canonical READY chat-learning preflight, bind it to run/actor/candidate identity, require it before Agent Fabric material commands, and require exact run/candidate continuity again at universal completion.",
-  "prevention": "A material Powerhouse-managed execution without a valid ADMITTED ingress receipt is not execution-ready evidence. A terminal completion with another run/candidate receipt is invalid. Read-only queries may remain outside the mutation admission path.",
+  "fix": "Use one Powerhouse universal runtime ingress receipt created from the canonical READY chat-learning preflight, bind it to run/actor/candidate identity, require it before Agent Fabric material commands, and require exact run/candidate continuity again at universal completion. The Agent Fabric gateway imports the canonical ingress directly so callers cannot inject an alternate adapter to bypass admission.",
+  "prevention": "A material Powerhouse-managed execution without a valid ADMITTED ingress receipt is not execution-ready evidence. A terminal completion with another run/candidate receipt is invalid. Read-only queries may remain outside the mutation admission path. Policy presence, CI preflight, operation binding and runtime consumption are separate evidence classes and may never be substituted for each other.",
+  "delivery_learning": {
+    "problem": "Opening the delivery PR during the RED/GREEN TDD sequence caused many intermediate commits to trigger the repository-wide workflow set, creating avoidable CI queue and cost noise.",
+    "recovery": "The noisy PR #1958 was closed unmerged and replaced by clean verification PR #1959 using the same reviewed candidate lineage. The final protected candidate was merged only after required verification.",
+    "prevention": "For broad-workflow repositories, perform bounded RED/GREEN iteration before opening the protected verification PR where safe. Once a verification PR is open, keep one stable candidate SHA; if intermediate-run noise becomes material, preserve exact candidate identity and supersede cleanly rather than creating divergent implementation lineages.",
+    "rule": "CI queue pressure is an operational cost signal, not a reason to weaken gates. Reduce redundant runs while preserving exact-head verification and protected merge semantics."
+  },
   "evidence": [
     "tests/brain-universal-completion-ingress.test.mjs",
     "tests/agent-fabric-gateway.test.mjs",
     "scripts/brain/powerhouse-universal-runtime-ingress.mjs",
     "config/powerhouse-universal-ingress-v1.json",
     "platform/api/agent-fabric-gateway.mjs",
-    "PR #1958"
+    "PR #1958 RED/intermediate lineage",
+    "PR #1959 protected verification and merge",
+    "PR #1959 merged_at 2026-09-17T18:07:39Z",
+    "PR #1959 merge_commit 568bc7fdd9a489a3b94dba911feb3f1ef9fe4e2b",
+    "main readback 5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9"
   ],
+  "production_readback": {
+    "state": "PROVEN_ON_MAIN",
+    "verified_at": "2026-09-17T21:46:00+02:00",
+    "current_main_sha": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
+    "merged_pr": 1959,
+    "merge_commit_sha": "568bc7fdd9a489a3b94dba911feb3f1ef9fe4e2b"
+  },
   "boundary": "Repository code cannot alter the native ChatGPT product runtime. The enforceable invariant is that any material Powerhouse mutation invoked from such a chat must cross the managed ingress/control-plane before mutation.",
-  "reuse_rule": "Future agent/chat runtime work must distinguish policy presence, preflight execution proof, mutation admission proof and terminal completion proof; never infer one from another."
+  "reuse_rule": "Future agent/chat runtime work must distinguish policy presence, preflight execution proof, mutation admission proof and terminal completion proof; never infer one from another. Preserve one canonical delivery lineage, minimize redundant CI runs, and never trade exact-head evidence for speed or cost reduction."
 }
