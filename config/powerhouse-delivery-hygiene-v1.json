@@ -6,5 +6,16 @@
   "priorityLanes": ["security", "incident"],
   "nonProductLanes": ["dependency", "docs"],
   "allowedLanes": ["backend", "portal", "website", "automation", "security", "incident", "dependency", "docs"],
-  "allowedCandidateTypes": ["implementation", "recovery", "security", "dependency", "docs", "promotion"]
+  "allowedCandidateTypes": ["implementation", "recovery", "security", "dependency", "docs", "promotion"],
+  "deliveryControlPlanePaths": [
+    "config/powerhouse-delivery-hygiene-v1.json",
+    "tools/delivery/",
+    "tools/delivery-branch-hygiene-guard.mjs",
+    ".github/workflows/powerhouse-delivery-hygiene.yml",
+    ".github/workflows/powerhouse-repository-janitor.yml",
+    ".github/workflows/required-test.yml",
+    ".github/workflows/unified-brain-delivery.yml",
+    "tests/delivery-hygiene-",
+    "docs/superpowers/specs/2026-09-17-powerhouse-delivery-hygiene-v1-design.md"
+  ]
 }
