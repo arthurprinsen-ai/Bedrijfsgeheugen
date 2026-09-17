@@ -1,7 +1,6 @@
 name: Engineering Intelligence and Trust
 
 on:
-  pull_request:
   push:
     branches: [main]
 
@@ -9,7 +8,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: engineering-intelligence-trust-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  group: engineering-intelligence-trust-${{ github.event_name }}-${{ github.run_id }}
   cancel-in-progress: true
 
 jobs:
