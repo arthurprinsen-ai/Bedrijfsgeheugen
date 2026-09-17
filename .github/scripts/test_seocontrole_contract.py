@@ -3,8 +3,8 @@
 import importlib.util
 from pathlib import Path
 
-SCRIPT = Path(__file__).with_name('seocontrole_v2.py')
-spec = importlib.util.spec_from_file_location('seocontrole_v2', SCRIPT)
+SCRIPT = Path(__file__).with_name('seocontrole_registry.py')
+spec = importlib.util.spec_from_file_location('seocontrole_registry', SCRIPT)
 seo = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(seo)
 
@@ -30,8 +30,15 @@ def test_retired_prototype_is_not_public_seo_surface():
     assert 'prototype-v18-stable' in seo.OVERSLAAN
 
 
+def test_blog_index_is_in_candidate_set_when_present():
+    # Repository fixture itself contains blog/index.html; this pins the regression
+    # that previously omitted the canonical /blog registry surface.
+    assert 'blog/index.html' in seo.candidate_files()
+
+
 if __name__ == '__main__':
     test_self_canonical_contract()
     test_registry_owner_is_only_blocking_orphan_type()
     test_retired_prototype_is_not_public_seo_surface()
+    test_blog_index_is_in_candidate_set_when_present()
     print('SEO diagnostic contract tests: PASS')
