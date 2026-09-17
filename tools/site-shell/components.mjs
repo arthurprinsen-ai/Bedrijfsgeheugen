@@ -19,7 +19,7 @@ header.v17-header .brand{text-decoration:none}
 </style>`;
 
 export function renderFooterContact() {
-  return `<div class="bg-uniform-footer-contact"><span>Bedrijfsgeheugen · Enschede</span><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 27 48 33 45</a><span>ma–vr 08:00–18:00</span></div>`;
+  return `<div class="bg-uniform-footer-contact"><span>Bedrijfsgeheugen · Enschede</span><a href="/oplossingen">Oplossingen</a><a href="/meer">Alles op één plek</a><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 27 48 33 45</a><span>ma–vr 08:00–18:00</span></div>`;
 }
 
 function openingForComponent(html, name) {
