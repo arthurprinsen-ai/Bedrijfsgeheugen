@@ -1,11 +1,11 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 2,
+  "revision": 3,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
-  "purpose": "Make shared learning operational rather than conversational: every material worker reads current canonical state before work, records what it does, persists every material error/decision/outcome/learning after work, refreshes shared context and proves that the next worker can discover the result quickly and securely.",
+  "purpose": "Make shared learning operational rather than conversational: every material worker reads current canonical state before work, executes already-authorized work without redundant confirmation loops, records what it does, persists every material error/decision/outcome/learning after work, refreshes shared context and proves that the next worker can discover the result quickly and securely.",
   "invariants": [
     "NO_AGENT_STARTS_BLIND",
     "NO_MATERIAL_ACTION_WITHOUT_PREFLIGHT_RECEIPT",
@@ -21,8 +21,44 @@
     "SEARCH_MISS_IS_NOT_NONEXISTENCE",
     "EVERY_MATERIAL_SOURCE_HAS_PROVENANCE_FRESHNESS_CONFIDENCE_AND_SECURITY_CLASS",
     "SECRETS_AND_SENSITIVE_DATA_NEVER_ENTER_GENERAL_LEARNING_PAYLOADS",
-    "ONE_COMPACT_CURRENT_STATE_PER_MATERIAL_SCOPE"
+    "ONE_COMPACT_CURRENT_STATE_PER_MATERIAL_SCOPE",
+    "NO_RECONFIRMATION_FOR_ALREADY_AUTHORIZED_POWERHOUSE_EXECUTION"
   ],
+  "autonomous_execution_contract": {
+    "required": true,
+    "default_for_existing_powerhouse_authority": "EXECUTE_WITHOUT_RECONFIRMATION",
+    "ask_again_for_continue_or_borging": "FORBIDDEN",
+    "stop_at_plan_for_confirmation": "FORBIDDEN_WHEN_WITHIN_EXISTING_AUTHORITY",
+    "execute_through_live_and_proven_where_technically_possible": true,
+    "applies_to": [
+      "analysis",
+      "code",
+      "configuration",
+      "tests",
+      "security_hardening",
+      "migrations",
+      "documentation",
+      "learning_writeback",
+      "incident_recovery",
+      "release_and_deploy",
+      "production_or_provider_readback",
+      "outcome_validation",
+      "regression_and_prevention"
+    ],
+    "allowed_confirmation_boundaries": [
+      "EXTERNAL_PLATFORM_REQUIRES_EXPLICIT_USER_AUTHORIZATION",
+      "IRREVERSIBLE_OR_HIGH_IMPACT_ACTION_OUTSIDE_EXISTING_AUTHORITY",
+      "MATERIAL_NEW_BUSINESS_CHOICE_WITH_NO_CANONICAL_RULE_OR_SAFE_DEFAULT"
+    ],
+    "boundary_rule": "Do not ask the user to reconfirm work already authorized by the standing Powerhouse operating contract. Continue independently through the existing secure delivery path. Ask only when a real authorization or decision boundary exists; when blocked technically, provide evidence and the minimal required action instead of generic confirmation-seeking.",
+    "anti_patterns": [
+      "SHALL_I_CONTINUE",
+      "DO_YOU_WANT_ME_TO_BORGEN",
+      "CAN_I_IMPLEMENT_THIS_ALREADY_AUTHORIZED_FIX",
+      "STOP_AFTER_PLAN_WHEN_EXECUTION_IS_ALREADY_AUTHORIZED",
+      "ASK_USER_TO_REPEAT_EXISTING_POWERHOUSE_RULES"
+    ]
+  },
   "canonical_authorities": {
     "notion": {
       "workspace_id": "950da36a-ac8a-816b-ac6e-0003f91dfb3d",
@@ -71,8 +107,30 @@
   "mandatory_activity_ledger": {
     "required": true,
     "append_only_audit": true,
-    "minimum_events": ["STARTED", "ACTION", "ERROR", "RECOVERY", "DECISION", "TEST", "PROMOTION_OR_PUBLICATION", "READBACK", "WRITEBACK", "COMPLETED_OR_BLOCKED"],
-    "event_fields": ["run_id", "timestamp", "component", "event_type", "action", "evidence_refs", "result", "next_obligation", "actor_or_agent", "authority_identity"],
+    "minimum_events": [
+      "STARTED",
+      "ACTION",
+      "ERROR",
+      "RECOVERY",
+      "DECISION",
+      "TEST",
+      "PROMOTION_OR_PUBLICATION",
+      "READBACK",
+      "WRITEBACK",
+      "COMPLETED_OR_BLOCKED"
+    ],
+    "event_fields": [
+      "run_id",
+      "timestamp",
+      "component",
+      "event_type",
+      "action",
+      "evidence_refs",
+      "result",
+      "next_obligation",
+      "actor_or_agent",
+      "authority_identity"
+    ],
     "rule": "Record material actions as they happen; do not reconstruct the full audit trail only at the end."
   },
   "data_and_evidence_contract": {
@@ -89,8 +147,25 @@
       "retention_or_ttl",
       "evidence_ref"
     ],
-    "source_types": ["internal_database", "repository", "runtime", "provider", "notion", "api", "web", "file", "human_input", "model_output", "derived_metric"],
-    "security_classifications": ["PUBLIC", "INTERNAL", "CONFIDENTIAL", "RESTRICTED_SECRET"],
+    "source_types": [
+      "internal_database",
+      "repository",
+      "runtime",
+      "provider",
+      "notion",
+      "api",
+      "web",
+      "file",
+      "human_input",
+      "model_output",
+      "derived_metric"
+    ],
+    "security_classifications": [
+      "PUBLIC",
+      "INTERNAL",
+      "CONFIDENTIAL",
+      "RESTRICTED_SECRET"
+    ],
     "raw_secret_storage_in_learning": "FORBIDDEN",
     "sensitive_payload_default": "REFERENCE_NOT_COPY",
     "personal_or_confidential_data_rule": "Store only the minimum necessary metadata and evidence reference allowed by purpose, access control and retention policy; do not duplicate raw sensitive payloads into general-purpose learning stores.",
@@ -132,7 +207,20 @@
     "rule": "Every material incident becomes a reusable learning object. Known fingerprints are checked before diagnosis; repeated incidents must strengthen prevention or regression coverage."
   },
   "error_learning_contract": {
-    "every_material_error_requires": ["fingerprint", "symptom", "failure_class", "root_cause_or_open_root_cause_obligation", "failed_approaches", "fix_or_recovery", "tests", "evidence", "prevention_rule", "regression_contract_or_not_feasible_reason", "owner", "status"],
+    "every_material_error_requires": [
+      "fingerprint",
+      "symptom",
+      "failure_class",
+      "root_cause_or_open_root_cause_obligation",
+      "failed_approaches",
+      "fix_or_recovery",
+      "tests",
+      "evidence",
+      "prevention_rule",
+      "regression_contract_or_not_feasible_reason",
+      "owner",
+      "status"
+    ],
     "known_error_rule": "Match fingerprint before diagnosis and reuse a proven recovery before inventing a new one unless fresh evidence invalidates it.",
     "repeat_error_rule": "A repeated known error without fingerprint reuse is itself a material learning failure and must create a prevention action."
   },
@@ -141,7 +229,13 @@
     "fail_closed": true,
     "secrets_reference_only": true,
     "no_auth_or_security_gate_weakening_for_green": true,
-    "required_for_material_change": ["access_boundary_identified", "sensitive_data_classified", "secret_handling_checked", "security_regression_or_explicit_not_applicable", "audit_evidence_ref"],
+    "required_for_material_change": [
+      "access_boundary_identified",
+      "sensitive_data_classified",
+      "secret_handling_checked",
+      "security_regression_or_explicit_not_applicable",
+      "audit_evidence_ref"
+    ],
     "rule": "Security is part of the same delivery path, not a later checklist. Never copy credentials, tokens, raw secrets or unnecessary personal/confidential payloads into chat, Notion, logs or learning records."
   },
   "mandatory_postflight_writeback": {
@@ -179,7 +273,14 @@
   "next_agent_discoverability_gate": {
     "required": true,
     "rule": "After writeback, refresh the shared context and perform a read-after-write from the same canonical ID-first discovery path used by a new worker. Completion is blocked unless the new state/learning fingerprint is discoverable there.",
-    "receipt_fields": ["authority_id", "fingerprint_or_record_id", "written_at", "read_back_at", "readback_result", "evidence_ref"],
+    "receipt_fields": [
+      "authority_id",
+      "fingerprint_or_record_id",
+      "written_at",
+      "read_back_at",
+      "readback_result",
+      "evidence_ref"
+    ],
     "failure_code": "POWERHOUSE_NEXT_AGENT_CANNOT_DISCOVER_WRITEBACK"
   },
   "terminal_status_gate": {
@@ -202,7 +303,7 @@
   "no_duplicate_truth": {
     "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler, documentation tree or learning plane."
   },
-  "prevention": "Treat structured current state, source lineage, security, activity logging, incident learning, human documentation and read-after-write discoverability as part of execution itself. A worker that did useful work but failed to make that work securely discoverable to the next worker has not completed the task.",
+  "prevention": "Treat autonomous execution within existing authority, structured current state, source lineage, security, activity logging, incident learning, human documentation and read-after-write discoverability as part of execution itself. A worker that needlessly stops for reconfirmation or that did useful work but failed to make that work securely discoverable to the next worker has not completed the task.",
   "linked_learning_sources": [
     "brain/policies/chat-to-brain-completeness-v1.json",
     "brain/policies/powerhouse-agent-continuity-v1.json",
