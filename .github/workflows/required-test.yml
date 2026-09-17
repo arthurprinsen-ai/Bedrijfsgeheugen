@@ -10,6 +10,7 @@ on:
 permissions:
   contents: read
   statuses: read
+  pull-requests: read
 
 concurrency:
   group: required-test-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.ref }}-${{ github.event.pull_request.head.sha || github.event.merge_group.head_sha || github.sha }}
@@ -17,7 +18,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  hygiene:
+    uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
+
   preflight:
+    needs: hygiene
+    if: needs.hygiene.outputs.admitted == 'true'
     runs-on: ubuntu-latest
     outputs:
       backend: ${{ steps.scope.outputs.backend }}
@@ -90,17 +96,6 @@ jobs:
         run: python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
       - name: Enforce Supabase migration security contract
         run: python3 scripts/brain/check_powerhouse_supabase_security.py "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
-      # Website contract ownership remains visible here for the stable Required test
-      # contract while execution is delegated to .github/workflows/lane-website.yml:
-      # tests/v18-megamenu-heading-contract.test.mjs
-      # tools/site-shell/v18-megamenu-browser-check.mjs
-      # Deze suite draaide nergens: 46 testbestanden werden door geen enkele
-      # workflow genoemd en bewaakten dus niets. tests/delivery-test-coverage-guard.test.mjs
-      # faalt zodra dat opnieuw gebeurt.
-      # Vier van deze tests laden netlify/functions en hebben daarom de twee
-      # runtime-dependencies uit package.json nodig.
-      # De 140 tests onder portal-v2/tests draaiden nergens in CI: alleen een
-      # Python-pariteitsscript keek naar dat portaal.
       - name: Verify Portal V2 suite
         run: node --test portal-v2/tests/*.test.mjs
       - name: Install runtime dependencies for the unwired contracts
@@ -156,7 +151,28 @@ jobs:
           tests/v18-standalone-compositor-safety.test.mjs
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
-        run: node --test tests/brain-fast-development-protocol-v2.test.mjs tests/brain-fast-execution.test.mjs tests/brain-powerhouse-engineering-os-contract.test.mjs tests/brain-powerhouse-autonomous-completion-authority.test.mjs tests/brain-autonomous-improvement-runtime.test.mjs tests/completion-supervisor.test.mjs tests/completion-supervisor-evidence.test.mjs tests/completion-supervisor-backfill.test.mjs tests/brain-parallel-engineering-fabric.test.mjs tests/delivery-github-event-context.test.mjs tests/delivery-driftless-merge-candidate.test.mjs tests/delivery-branch-hygiene-guard.test.mjs tests/delivery-required-branch-hygiene-wiring.test.mjs tests/brain-change-scoped-release-lanes.test.mjs tests/brain-moving-main-successor-guard.test.mjs tests/brain-composable-release-control-plane.test.mjs tests/brain-agents-delivery-contract.test.mjs tests/portal-v2-release-identity-invariant.test.mjs tests/website-static-syntax-preflight.test.mjs
+        run: >-
+          node --test --test-concurrency=1
+          tests/brain-fast-development-protocol-v2.test.mjs
+          tests/brain-fast-execution.test.mjs
+          tests/brain-powerhouse-engineering-os-contract.test.mjs
+          tests/brain-powerhouse-autonomous-completion-authority.test.mjs
+          tests/brain-autonomous-improvement-runtime.test.mjs
+          tests/completion-supervisor.test.mjs
+          tests/completion-supervisor-evidence.test.mjs
+          tests/completion-supervisor-backfill.test.mjs
+          tests/brain-parallel-engineering-fabric.test.mjs
+          tests/delivery-github-event-context.test.mjs
+          tests/delivery-driftless-merge-candidate.test.mjs
+          tests/delivery-branch-hygiene-guard.test.mjs
+          tests/delivery-required-branch-hygiene-wiring.test.mjs
+          tests/delivery-hygiene-policy.test.mjs
+          tests/brain-change-scoped-release-lanes.test.mjs
+          tests/brain-moving-main-successor-guard.test.mjs
+          tests/brain-composable-release-control-plane.test.mjs
+          tests/brain-agents-delivery-contract.test.mjs
+          tests/portal-v2-release-identity-invariant.test.mjs
+          tests/website-static-syntax-preflight.test.mjs
       - name: Verify Fast Development Protocol v2 authority contract
         run: node scripts/brain/powerhouse-fast-development-protocol-v2.mjs --check
 
@@ -194,9 +210,11 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [preflight, backend, portal, automation, website]
+    needs: [hygiene, preflight, backend, portal, automation, website]
     runs-on: ubuntu-latest
     env:
+      HYGIENE: ${{ needs.hygiene.result }}
+      ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
@@ -207,12 +225,14 @@ jobs:
       AUTOMATION: ${{ needs.automation.result }}
       WEBSITE: ${{ needs.website.result }}
     steps:
-      - name: Aggregate only selected lane results
+      - name: Aggregate admission and selected lane results
         run: |
           set -euo pipefail
+          test "$HYGIENE" = success
+          test "$ADMITTED" = true
           test "$PREFLIGHT" = success
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
           [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
           [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
           [ "$SELECT_WEBSITE" != true ] || [ "$WEBSITE" = success ]
-          echo "Selected release lanes are green."
+          echo "Delivery hygiene and selected release lanes are green."

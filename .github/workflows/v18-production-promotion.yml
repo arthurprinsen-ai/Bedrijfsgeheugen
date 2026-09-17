@@ -7,6 +7,33 @@ on:
   pull_request:
     branches:
       - main
+    paths:
+      - 'components/**'
+      - 'assets/**'
+      - 'pages/**'
+      - 'site/**'
+      - 'blog/**'
+      - 'kennis/**'
+      - 'portal/**'
+      - 'portal-next/**'
+      - 'portal-v2/**'
+      - 'klantportaal.html'
+      - 'klantenportaal-*'
+      - '*.html'
+      - 'styles.css'
+      - 'script.js'
+      - 'netlify.toml'
+      - 'tools/site-shell/**'
+      - 'tools/bouw-v18-*.mjs'
+      - 'tools/v18-*.mjs'
+      - 'tools/customer-portal-*'
+      - 'tools/bouw-powerhouse-auth.mjs'
+      - 'tests/v18-*.test.mjs'
+      - 'tests/site-shell-*.test.mjs'
+      - 'tests/portal-*.test.mjs'
+      - 'tests/klantportaal-*.test.mjs'
+      - 'tests/canonical-portal-*.test.mjs'
+      - '.github/workflows/v18-production-promotion.yml'
 
 permissions:
   contents: read
