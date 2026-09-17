@@ -18,9 +18,20 @@ Portal V2 closed-loop Business Operating System was released through PR #1847. R
 
 Release #1847 added the Executive Cockpit, versioned Impact Engine, immutable Scenario Simulator, governed Next Best Actions, monitoring/learning, evidence health, capability graph and canonical `os:*` routing without creating a parallel database, CRM, AI brain, workflow engine, queue, calendar or learning store.
 
-## Learning: a green release is not equivalent to a fully closed Powerhouse
+Full legacy + Powerhouse parity is independently already LIVE & BEWEZEN through PR #1846:
 
-The release is LIVE & BEWEZEN for the delivered scope. It does not prove that every historical Portal/Powerhouse obligation is complete. Future agents must distinguish:
+- candidate: `568aed3bbab56c6233e98cc10f829b31bc239f02`
+- protected merge SHA: `05f9cc58c629e6ab9991b7ca1d6bc6e9222a336b`
+- immutable legacy baseline retained
+- all 24 protected legacy capabilities re-proven against Portal V2 with required functional/persistence/browser/production evidence
+
+Therefore **legacy parity is not an open closure gap** in this record. It becomes a permanent regression invariant.
+
+## Learning: current truth must win over conversational assumptions
+
+A green release is not equivalent to a fully closed Powerhouse, but neither may an older assumption override newer verified evidence. During creation of this learning record, an initial hypothesis incorrectly treated legacy parity as still open. Readback of the canonical Notion handbook and PR #1846 proved parity already closed. The record was corrected before merge.
+
+Future agents must distinguish:
 
 1. `release scope proven live`;
 2. `whole capability parity proven`;
@@ -28,19 +39,17 @@ The release is LIVE & BEWEZEN for the delivered scope. It does not prove that ev
 4. `historic obligation register reconciled with current truth`;
 5. `learning/control-plane debt retired or migrated`.
 
-Never infer 2–5 only from 1.
+Never infer 2–5 only from 1, and never downgrade a proven item without newer contrary evidence.
+
+Permanent meta-prevention rule: `CURRENT_VERIFIED_STATE_SUPERSEDES_STALE_ASSUMPTION`.
 
 ## Remaining canonical gaps
 
-### A. Full legacy parity closure
+### A. Preserve legacy parity as a hard regression invariant
 
-Requirement: every legacy Portal capability must have one machine-verifiable disposition:
+Current state: `LIVE_VERIFIED` through PR #1846, not open work.
 
-- `NATIVE_VERIFIED` — implemented in Portal V2 with functional + browser/readback evidence;
-- `SUPERSEDED_VERIFIED` — intentionally replaced by a named newer capability with equivalent/stronger outcome;
-- `RETIRED_APPROVED` — explicitly retired with rationale and no required user journey left behind.
-
-No capability may disappear by omission. Build/maintain a canonical parity matrix containing old capability id, new authority, required read/write/interactions, evidence, disposition and last verification SHA. Specific analytical/model surfaces such as BCG must be covered if they existed in the prior portal experience or requirement lineage.
+Every future Portal change must preserve the proven 24-capability parity baseline: fields, models, calculations, actions, dependencies, persistence and browser/production evidence. If capability disposition changes intentionally, it must remain explicit and evidence-backed (`NATIVE_VERIFIED`, `SUPERSEDED_VERIFIED`, or `RETIRED_APPROVED`). No capability may disappear by omission.
 
 Prevention rule: `PORTAL_PARITY_REQUIRES_EXPLICIT_DISPOSITION_AND_EVIDENCE`.
 
@@ -116,13 +125,13 @@ Prevention rule: `RELEASE_GREEN_DOES_NOT_TRANSITIVELY_CLOSE_SECURITY_OBLIGATIONS
 
 ## Canonical priority order
 
-1. Full Legacy Parity Closure
-2. Canonical backend closed-loop persistence/execution/readback
-3. Increase real outcome/value evidence density
-4. Reconcile stale obligations against current truth
-5. Migrate/supersede legacy Make learning obligations
-6. Close independent security/data-governance findings
-7. Extend autonomous Quality Intelligence from every escaped defect/outcome
+1. Canonical backend closed-loop persistence/execution/readback
+2. Increase real outcome/value evidence density
+3. Reconcile stale obligations against current truth
+4. Migrate/supersede legacy Make learning obligations
+5. Close independent security/data-governance findings
+6. Extend autonomous Quality Intelligence from every escaped defect/outcome
+7. Continuously preserve the already-proven Portal legacy parity baseline
 
 ## Agent operating contract
 
@@ -133,18 +142,19 @@ All relevant agents/chats must:
 - CANONICAL-INTEGRATION: every new portal capability must identify its source authority, write authority, evidence lineage and outcome owner;
 - CLOSED-LOOP: do not stop at UI/code/merge; verify production behavior and write learning/prevention back;
 - CURRENT-TRUTH-FIRST: revalidate historical issues before treating them as active blockers;
+- preserve proven statuses unless newer evidence invalidates them;
 - fail closed on identity, tenant, permissions, destination, realized-value attribution and material external execution.
 
-## Definition of done for the gap set
+## Definition of done for the open gap set
 
-This learning set is fully closed only when evidence proves:
+This open improvement set is fully closed only when evidence proves:
 
-- every legacy Portal capability has an explicit verified disposition;
 - material Portal actions traverse the persistent canonical backend loop;
 - realized value is based on observed outcomes and feeds calibration;
 - stale historical obligations are reconciled/closed/superseded with evidence;
 - legacy Make-based learning obligations are migrated or explicitly superseded without restoring Make dependency;
 - independent security/data-governance obligations are resolved with live verification;
-- new escaped defects automatically enrich tests/guards/learning lineage.
+- new escaped defects automatically enrich tests/guards/learning lineage;
+- the already-proven legacy parity baseline remains green on relevant Portal changes.
 
-Until then, each item remains an active improvement obligation, not a reason to downgrade the proven LIVE status of release #1847.
+Until then, each open item remains an active improvement obligation, not a reason to downgrade the proven LIVE status of Portal V2 releases #1846/#1847.
