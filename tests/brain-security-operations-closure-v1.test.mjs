@@ -6,6 +6,7 @@ import { createDeliveryPlan } from '../tools/brain-delivery-system.mjs';
 const contractPath = new URL('../brain/production/security-operations-closure-v1.json', import.meta.url);
 const workflowPath = new URL('../.github/workflows/powerhouse-security-operations-closure.yml', import.meta.url);
 const deliveryPolicyPath = new URL('../config/brain-delivery-system.json', import.meta.url);
+const socialMetricReplayPath = new URL('../supabase/migrations/20260910104922_bg_post_prestatie_metric_sleutels_normaliseren.sql', import.meta.url);
 
 const requiredOpen = new Set([
   'isolated_restore_dr_exercise',
@@ -53,6 +54,19 @@ test('closure contract never stores credential values', () => {
   const raw = fs.readFileSync(contractPath, 'utf8');
   assert.doesNotMatch(raw, /"(?:secret|token|password|api_key)_value"\s*:/i);
   assert.doesNotMatch(raw, /Bearer\s+[A-Za-z0-9._~+\/-]{20,}/);
+});
+
+test('social metric snapshot replay baseline exists before the dependent performance view', () => {
+  const sql = fs.readFileSync(socialMetricReplayPath, 'utf8');
+  const tableAt = sql.search(/create table if not exists public\.social_metric_snapshots/i);
+  const viewAt = sql.search(/create or replace view public\.bg_post_prestatie/i);
+  assert.ok(tableAt >= 0, 'fresh replay must create social_metric_snapshots before the view depends on it');
+  assert.ok(viewAt > tableAt, 'social_metric_snapshots baseline must precede bg_post_prestatie');
+  assert.match(sql, /primary key \(tenant_id, snapshot_id\)/i);
+  assert.match(sql, /unique \(tenant_id, source_event_id\)/i);
+  assert.match(sql, /enable row level security/i);
+  assert.match(sql, /revoke all on table public\.social_metric_snapshots from anon, authenticated/i);
+  assert.match(sql, /grant all on table public\.social_metric_snapshots to service_role/i);
 });
 
 test('CI gate runs the closure test read-only', () => {
