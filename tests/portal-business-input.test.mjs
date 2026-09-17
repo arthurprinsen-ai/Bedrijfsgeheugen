@@ -62,8 +62,14 @@ test('legacy portal browser states become migratable BusinessInputs without lead
   assert.equal(inputs.length,1);assert.equal(inputs[0].modelId,'bg_portaal_acme');assert.equal(inputs[0].inputType,'LegacyPortalState');assert.deepEqual(inputs[0].answers.beleid,{aibeleid:2});
 });
 
-test('portal domain state exposes one authenticated BusinessInput write seam instead of per-form stores', async () => {
-  const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'})};
-  const domain=createPortalDomainState(stateClient);
-  assert.equal(typeof domain.saveBusinessInput,'function');
+test('portal domain state sends authenticated BusinessInput through one canonical writer seam', async () => {
+  const writes=[];
+  const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
+  const businessInputSaver=async(input,options)=>{writes.push({input,options});return{stored:true,objectId:'PORTAL_INPUT-StrategyModel-business-model-primary'};};
+  const domain=createPortalDomainState(stateClient,{businessInputSaver});
+  const result=await domain.saveBusinessInput({inputType:'StrategyModel',modelId:'business-model',answers:{customer:'MKB'},sourcePortal:'portal-v2'});
+  assert.equal(result.stored,true);
+  assert.equal(writes.length,1);
+  assert.equal(writes[0].options.authorization,'Bearer live');
+  assert.deepEqual(writes[0].input.answers,{customer:'MKB'});
 });
