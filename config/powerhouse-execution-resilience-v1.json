@@ -110,6 +110,16 @@
     "WRITEBACK_INCIDENT_RECOVERY_AND_PREVENTION",
     "REFRESH_SHARED_TEAM_CONTEXT"
   ],
+  "resume_contract": [
+    "read canonical current state",
+    "load last verified checkpoint",
+    "reconcile open obligations",
+    "read back side effects",
+    "apply idempotency or dedupe guard",
+    "resume only remaining work",
+    "verify outcome",
+    "write back recovery and prevention"
+  ],
   "incident_writeback_required_fields": [
     "run_id",
     "correlation_id_if_available",
@@ -132,7 +142,8 @@
     "legally_or_financially_binding_action"
   ],
   "linked_learning_sources": [
-    "docs/execution-resilience.md"
+    "docs/execution-resilience.md",
+    "brain/learning/execution-resilience-2026-09-17.json"
   ],
   "runtime_helper": "brain/guards/execution-resilience.mjs",
   "regression_test": "tests/execution-resilience.test.mjs"
