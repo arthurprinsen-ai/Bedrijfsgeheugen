@@ -1,7 +1,7 @@
 {
   "learning_id": "approved-blog-core-boundary-test-oracle-recovery-2026-09-17",
   "date": "2026-09-17",
-  "status": "CANONICAL_REPOSITORY_LEARNING",
+  "status": "LIVE_AND_PROVEN_REPOSITORY_LEARNING_RUNTIME_REPLAY_BLOCKED_EXTERNAL",
   "scope": "approved central blog publisher / protected delivery / test-oracle recovery",
   "fingerprint": "delivery-recovery|pipeline|backend|approved-blog-core-boundary-oracle-v1",
   "source_failure_fingerprint": "delivery-failure|pipeline|backend|3797d5966563185e",
@@ -50,20 +50,50 @@
     ],
     "post_merge_workflows": "18 workflows for the merge SHA reached terminal state with no failure, queued, in-progress or cancelled state observed; Outcome Obligation Sweep concluded success"
   },
-  "outcome": "The approved-blog stale-reconciliation recovery is merged to protected main and repository/runtime checks are green. The publication artifact itself remained unchanged.",
+  "learning_writeback": {
+    "pull_request": 1975,
+    "corrective_head_sha": "ae76f85e9da5aa1e9a6c681d8977f5b1d648e053",
+    "protected_merge_sha": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
+    "merged_at": "2026-09-17T19:42:19Z",
+    "repository_readback": "brain/learning/approved-blog-core-boundary-test-oracle-recovery-2026-09-17.json is present on protected main",
+    "post_merge_state": "18 workflows terminal with no failure, queued or in-progress state observed; Outcome Obligation Sweep succeeded",
+    "canonical_store": "repository learning record on protected main; no parallel learning store created"
+  },
+  "outcome": "The approved-blog stale-reconciliation recovery is merged to protected main and repository/runtime checks are green. The publication artifact itself remained unchanged. The reusable learning is also merged and readable on protected main.",
   "prevention": "MODULE_EXTRACTION_TESTS_ASSERT_PUBLIC_BOUNDARY_AND_BEHAVIOR_NOT_IMPLEMENTATION_LOCATION. Diagnose test-harness/test-oracle defects independently from product defects. For approved-blog scheduling, stale rows already materialized on main are skipped; exact-slug recovery remains the identity-validating reconciliation path.",
   "regression": "tests/brain-change-scoped-release-lanes.test.mjs is the executable regression contract and passed on exact corrective head c94c2226412681fa0a6a21532b4ef3c9237002ca before protected merge.",
   "security": "No integrity, security or release gate was weakened; CodeQL, Powerhouse CodeQL and Supabase security checks stayed green.",
-  "cost": "No duplicate publication or extra production content deploy was created; the existing canonical candidate lineage was reused.",
+  "cost": "No duplicate publication or extra production content deploy was created; the existing canonical candidate lineage was reused. Runtime learning replay must not generate proof traffic while Make remains capacity-paused.",
   "writeback_lineage": {
     "historical_pr": 1965,
     "canonical_pr": 1970,
     "corrective_commit": "c94c2226412681fa0a6a21532b4ef3c9237002ca",
     "main_merge": "b573a31d0547979bf9c708e4f56da0fa27502688",
+    "learning_pr": 1975,
+    "learning_head": "ae76f85e9da5aa1e9a6c681d8977f5b1d648e053",
+    "learning_main_merge": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
     "runtime_learning_route": "BG168 -> BG166 -> BG167",
     "runtime_writeback_attempt": "BLOCKED_HARD_BOUNDARY",
     "runtime_writeback_blocker": "Make organization/team paused because operations or data-transfer limit is exceeded",
     "retry_policy": "Do not create proof traffic or retry bursts while Make remains capacity-paused; replay this exact fingerprint once the canonical learning plane is available."
+  },
+  "recovery_watchdog": {
+    "status": "ACTIVE",
+    "cadence": "hourly condition watch",
+    "behavior": "Check the existing canonical Make learning route. While capacity remains unavailable, do nothing and do not create proof traffic. Once capacity is available, replay exactly this learning fingerprint through BG168 -> BG166 -> BG167, perform read-after-write and verify next-agent discoverability.",
+    "dedupe_key": "delivery-recovery|pipeline|backend|approved-blog-core-boundary-oracle-v1",
+    "forbidden_actions": [
+      "do not regenerate publication content",
+      "do not create a second learning record",
+      "do not create a parallel database, queue or learning plane",
+      "do not retry in bursts while external capacity is blocked"
+    ]
+  },
+  "terminal_status": {
+    "publication_chain": "LIVE_AND_PROVEN",
+    "repository_learning": "LIVE_AND_PROVEN",
+    "runtime_learning_writeback": "BLOCKED_EXTERNAL_WITH_AUTOMATIC_RECOVERY",
+    "blocker_classification": "genuine external capacity boundary, not an internal execution failure"
   },
   "open_obligations": [
     "Replay this exact recovery learning through BG168 -> BG166 after Make capacity is restored, then read back BG166/BG167 shared context by canonical authority and record next-agent discoverability."
