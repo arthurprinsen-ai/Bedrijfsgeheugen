@@ -4,6 +4,37 @@
   "status": "canonical_candidate",
   "purpose": "Make trusted-advisor behavior a cross-cutting Powerhouse contract across memory, portal, agents, recommendations and content without creating a parallel truth system.",
   "scope": ["brain", "memory", "portal", "agents", "recommendations", "posts", "thought_leadership", "sales_guidance", "client_follow_up"],
+  "researchProvenance": {
+    "retrievedAt": "2026-09-17",
+    "policy": "Reference provenance is retained in the canonical contract. Runtime advice still requires current evidence, source freshness and explicit uncertainty where material.",
+    "sources": [
+      {
+        "model": "trust_equation",
+        "publisher": "Trusted Advisor Associates",
+        "url": "https://trustedadvisor.com/trustmatters/is-self-orientation-killing-your-trustworthiness"
+      },
+      {
+        "model": "trust_equation_temperaments",
+        "publisher": "Trusted Advisor Associates",
+        "url": "https://trustedadvisor.com/public/2025/02/Trusted-Advisors_The-Six-Temperaments_2-9-18.pdf"
+      },
+      {
+        "model": "mayer_davis_schoorman_1995",
+        "publisher": "Academy of Management Review",
+        "url": "https://journals.aom.org/doi/10.5465/AMR.1995.9508080335"
+      },
+      {
+        "model": "mayer_davis_schoorman_2007",
+        "publisher": "Academy of Management Review",
+        "url": "https://journals.aom.org/doi/10.5465/AMR.2007.24348410"
+      },
+      {
+        "model": "trust_brokering_2026_netherlands",
+        "publisher": "Edelman",
+        "url": "https://www.edelman.com/nl/trust/2026/trust-barometer"
+      }
+    ]
+  },
   "canonicalTruth": {
     "reuseExistingState": true,
     "parallelTrustDatabaseAllowed": false,
