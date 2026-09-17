@@ -3,7 +3,7 @@
   "date": "2026-09-17",
   "obligation_id": "powerhouse-one-loop-v1",
   "problem": "Material work could stop at commits, open PRs, queued CI, stopped chats, timeouts or lost workers while multiple agents created parallel delivery state. GitHub Actions additionally accumulated stale PR-head runs because top-level workflows either had no concurrency guard or keyed concurrency on the candidate SHA itself.",
-  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries. For GitHub Actions, SHA-scoped concurrency made every new head a new concurrency group, so cancel-in-progress could not supersede older heads; other fan-out workflows had no PR single-flight guard at all.",
+  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries. For GitHub Actions, SHA-scoped concurrency made every new head a new concurrency group, so cancel-in-progress could not supersede older heads; other fan-out workflows had no PR single-flight guard at all. A second observed failure mode was operational misclassification: an implementation candidate in WAITING_CAPACITY/FINISH_EXISTING_WORK_FIRST can look like a runner or CI blockage while admission is intentionally yielding to a live recovery candidate.",
   "prevention": [
     "one obligation, one active executable candidate",
     "incomplete delivery/runtime states are recoverable, never terminal",
@@ -13,6 +13,10 @@
     "all top-level PR fan-out workflows use PR-scoped single-flight concurrency with cancel-in-progress=true",
     "candidate SHA remains an exact-head verification input inside delivery gates, never the PR concurrency identity",
     "freeze the current candidate while checks are queued, pending or in-progress; mutate only after terminal defect evidence",
+    "before repairing CI, classify the blocker as admission, deterministic test failure, transient runner/platform failure, stale/superseded run or external dependency",
+    "if finish-before-start is caused by a live recovery candidate, finish or deterministically supersede that recovery first; never bypass the admission rule to make the implementation candidate run",
+    "after any recovery merge or main movement, reread current main, candidate head and current workflow state before acting so stale failures never become repair authority",
+    "for a real failing job, isolate the first concrete assertion/contract break from the current exact-head run and repair only that cause on the same canonical lineage",
     "normalize GitHub delivery telemetry into deterministic learning evidence",
     "promote repeated learnings into regression tests, gates or guardrails"
   ],
@@ -21,7 +25,9 @@
   "candidate_pr": 1968,
   "failure_fingerprints": [
     "github-actions-sha-scoped-concurrency-amplification-v1",
-    "github-actions-pre-run-capacity-wait-v1"
+    "github-actions-pre-run-capacity-wait-v1",
+    "recovery-first-admission-misread-as-ci-blockage-v1",
+    "stale-run-repair-authority-v1"
   ],
   "evidence": [
     {
@@ -38,6 +44,25 @@
       "type": "regression_contract",
       "path": "tests/delivery-github-actions-single-flight.test.mjs",
       "finding": "requires all ten known PR fan-out workflows to key concurrency on pull-request identity, cancel stale work, and preserve exact-head verification in Required/Unified"
+    },
+    {
+      "type": "admission_recovery_incident",
+      "implementation_pr": 1968,
+      "recovery_pr": 1970,
+      "observed_state": "WAITING_CAPACITY / FINISH_EXISTING_WORK_FIRST",
+      "finding": "PR #1968 was intentionally held because recovery PR #1970 was the live recovery candidate. The correct action was to trace and finish the recovery candidate rather than weaken admission or blindly rerun implementation CI."
+    },
+    {
+      "type": "recovery_completion_readback",
+      "recovery_pr": 1970,
+      "merged": true,
+      "merge_commit_sha": "b573a31d0547979bf9c708e4f56da0fa27502688",
+      "finding": "the recovery candidate completed and merged, proving the finish-before-start blocker was recoverable work, not a terminal CI/runner blockage"
+    },
+    {
+      "type": "post_recovery_main_readback",
+      "main_sha": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
+      "finding": "main advanced through follow-up learning PR #1975; PR #1968 was reread afterward and remains open, mergeable, and rebased logically on the current main lineage rather than on stale failure evidence"
     }
   ]
 }
