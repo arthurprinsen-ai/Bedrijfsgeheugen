@@ -26,7 +26,7 @@
     "promote repeated learnings into regression tests, gates or guardrails"
   ],
   "canonical_loop": "intent -> preflight -> admission -> execute -> verify -> protected merge -> deploy -> production readback -> outcome -> learning -> prevention -> fulfilled",
-  "status": "IMPLEMENTING",
+  "status": "FULFILLED",
   "candidate_pr": 1968,
   "failure_fingerprints": [
     "github-actions-sha-scoped-concurrency-amplification-v1",
@@ -130,6 +130,40 @@
       "brain_run_id": 35271112433,
       "observed_state": "EXECUTING",
       "finding": "Required, CodeQL/Powerhouse CodeQL and Engineering Supply Chain Trust were in progress while BRAIN delivery was pending; Fresh Device Autonomy Canary and Unified Content Operations were successful. This is execution evidence only and not completion authority."
+    },
+    {
+      "type": "terminal_exact_head_verification",
+      "candidate_head": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+      "required_run_id": 35271798560,
+      "brain_delivery_run_id": 35271798909,
+      "finding": "Required and BRAIN delivery reached terminal SUCCESS on one exact head; automation including Shared Agent Memory, backend, portal, website static/page/browser contracts, CodeQL, Powerhouse CodeQL and Engineering Supply Chain Trust were green before merge."
+    },
+    {
+      "type": "protected_merge_and_main_readback",
+      "candidate_head": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+      "merge_commit_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+      "main_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+      "finding": "PR #1968 merged after terminal exact-head gates; protected main readback points exactly at the merge commit, so candidate ancestry and active main identity are proven."
+    },
+    {
+      "type": "runtime_reconciliation",
+      "fingerprint": "pr1968-required-gate-recovery-v1",
+      "status": "resolved",
+      "finding": "The existing canonical runtime obligation was reconciled in place with exact-head, Required/BRAIN, protected merge, current-main and runtime-readback evidence. No duplicate obligation, learning store, queue or parallel candidate was created."
     }
-  ]
+  ],
+  "completion_evidence": {
+    "exact_head_sha": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+    "required_test_run_id": 35271798560,
+    "required_test_conclusion": "success",
+    "brain_delivery_run_id": 35271798909,
+    "brain_delivery_conclusion": "success",
+    "protected_merge_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+    "main_readback_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+    "runtime_reconciliation_fingerprint": "pr1968-required-gate-recovery-v1",
+    "runtime_reconciliation_status": "resolved",
+    "runtime_readback_verified": true,
+    "learning_writeback_verified": true,
+    "parallel_runtime_obligation_created": false
+  }
 }
