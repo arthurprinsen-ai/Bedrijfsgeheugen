@@ -1,0 +1,33 @@
+name: Runtime Authority Governance Tests
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'config/powerhouse-runtime-authority.json'
+      - 'config/brain-platform-adapters.json'
+      - 'config/make-agent-resume-learning-guard.json'
+      - 'brain/operating-loop/runtime-authority-governance.mjs'
+      - 'brain/operating-loop/adapter-conformance.mjs'
+      - 'tests/brain-runtime-authority-governance.test.mjs'
+      - 'tests/brain-adapter-conformance.test.mjs'
+      - '.github/workflows/runtime-authority-governance-tests.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: runtime-authority-governance-${{ github.event.pull_request.number || github.ref }}-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Enforce runtime authority and retired adapter invariants
+        run: node --test tests/brain-runtime-authority-governance.test.mjs tests/brain-adapter-conformance.test.mjs

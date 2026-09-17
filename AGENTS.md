@@ -116,7 +116,7 @@ De canonieke regel is **independent delivery, shared intelligence**:
 - contract/schema, kwaliteit/tests, security, kosten/performance, preview/runtime, rollback readiness en production verification zijn verplichte gates;
 - onbekende actieve scope of ongeregistreerde nieuwe component faalt gesloten vóór productie;
 - nieuwe componenten registreren automatisch in het gezamenlijke Brain en zijn niet production-ready zonder shared-context read, cost/security governance, rollback en learning writeback;
-- bestaande Make-scenario's blijven via de dynamische BG159 Cost/Brain-inventaris zichtbaar en worden compatibility-first onder deze centrale poorten gebracht; geen dure destructieve bulk-rewrite per scenario;
+- bestaande Make-scenario's blijven uitsluitend zichtbaar als historische provenance. `config/powerhouse-runtime-authority.json` classificeert Make als `LEGACY_RETIRED_PATH`, met `authority=NONE` en `production_execution_allowed=false`; providerstatus, team-capaciteitsherstel of `isActive=true` mogen Make nooit stil als executor herstellen. Herinschakeling vereist een expliciete authority-contractwijziging plus alle actuele ownership-, security-, cost-, dedupe-, rollback-, execution-proof- en outcome-writeback-gates;
 - Notion is kennis-, audit- en projectielaag, nooit de autoriteit voor de werkelijk gedeployde identiteit.
 
 Geen agent, chat, workflow, scenario of toekomstige app/dienst mag een productieactie buiten deze v2-deliveryregels uitvoeren. Lopend werk hoeft niet opnieuw te worden gebouwd wanneer zijn exact geteste scope aantoonbaar niet conflicteert; bij de eerstvolgende productieactie gelden de v2-gates wel verplicht.
@@ -187,15 +187,16 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 ## Verplichte leesvolgorde
 1. `AGENTS.md`
 2. `config/brain-chat-learning-contract.json`
-3. `docs/development-operating-system.md`
-4. `docs/development-ledger.md`
-5. `docs/self-healing-agents.md`
-6. `docs/outcome-obligations.md`
-7. `config/outcome-obligations.json`
-8. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
-9. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
-10. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
-11. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
+3. `config/powerhouse-runtime-authority.json`
+4. `docs/development-operating-system.md`
+5. `docs/development-ledger.md`
+6. `docs/self-healing-agents.md`
+7. `docs/outcome-obligations.md`
+8. `config/outcome-obligations.json`
+9. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
+10. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
+11. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
+12. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-experiment al in de repo of gedeelde teamcontext is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.

@@ -1,0 +1,191 @@
+{
+  "version": "POWERHOUSE-RUNTIME-AUTHORITY-v1",
+  "fingerprint": "powerhouse-agent-scheduler-authority-drift-2026-09-17-v1",
+  "status": "ACTIVE",
+  "source_of_truth": "GitHub contract + Supabase/Brain runtime evidence",
+  "material_obligations": [
+    "daily_growth_intelligence_coordination",
+    "gmail_action_ingest",
+    "seven_channel_daily_decision",
+    "social_delivery",
+    "social_delivery_recovery_watch",
+    "blog_delivery",
+    "runtime_authority_reconciliation",
+    "interrupted_run_recovery"
+  ],
+  "components": [
+    {
+      "id": "chatgpt-powerhouse-growth-revenue-os",
+      "runtime": "chatgpt_automation",
+      "classification": "ACTIVE_COORDINATOR",
+      "authority": "ACTIVE",
+      "production_execution_allowed": false,
+      "obligations": ["daily_growth_intelligence_coordination"],
+      "role": "decision/intelligence/learning coordination; never substitutes production provider evidence"
+    },
+    {
+      "id": "chatgpt-powerhouse-gmail-ingest",
+      "runtime": "chatgpt_automation",
+      "classification": "ACTIVE",
+      "authority": "ACTIVE",
+      "production_execution_allowed": true,
+      "obligations": ["gmail_action_ingest"],
+      "role": "privacy-filtered Gmail discovery -> deduplicated canonical powerhouse_sales_actions write -> existing bg-notion-sync projection; never sends or replies to email"
+    },
+    {
+      "id": "powerhouse-content-orchestrator",
+      "runtime": "supabase",
+      "classification": "ACTIVE",
+      "authority": "ACTIVE",
+      "production_execution_allowed": true,
+      "obligations": ["seven_channel_daily_decision"],
+      "role": "exactly one publish|skip|hold decision per daily channel; publish only when an allowed executor exists"
+    },
+    {
+      "id": "powerhouse-social-publisher",
+      "runtime": "supabase_buffer",
+      "classification": "ACTIVE",
+      "authority": "ACTIVE",
+      "production_execution_allowed": true,
+      "obligations": ["social_delivery"],
+      "role": "canonical social provider delivery for supported social channels"
+    },
+    {
+      "id": "chatgpt-powerhouse-social-delivery",
+      "runtime": "chatgpt_automation",
+      "classification": "ACTIVE_COORDINATOR",
+      "authority": "ACTIVE",
+      "production_execution_allowed": false,
+      "obligations": ["social_delivery_recovery_watch"],
+      "role": "recovery/readback coordinator around canonical social delivery; not a second publication authority"
+    },
+    {
+      "id": "approved-central-blog",
+      "runtime": "github_actions",
+      "classification": "ACTIVE",
+      "authority": "ACTIVE",
+      "production_execution_allowed": true,
+      "obligations": ["blog_delivery"],
+      "role": "approved-central queue -> candidate PR -> protected promotion -> production readback"
+    },
+    {
+      "id": "powerhouse-autonomous-improvement-cycle-v1",
+      "runtime": "supabase_pg_cron",
+      "classification": "ACTIVE",
+      "authority": "ACTIVE",
+      "production_execution_allowed": true,
+      "obligations": ["runtime_authority_reconciliation"],
+      "role": "existing hourly canonical improvement/reconciliation cycle"
+    },
+    {
+      "id": "brain-obligation-runtime",
+      "runtime": "supabase",
+      "classification": "ACTIVE",
+      "authority": "ACTIVE",
+      "production_execution_allowed": true,
+      "obligations": ["interrupted_run_recovery"],
+      "role": "existing durable obligation/evidence/transition runtime; resumes incomplete material work idempotently"
+    },
+    {
+      "id": "make-powerhouse-legacy-estate",
+      "runtime": "make",
+      "classification": "LEGACY_RETIRED_PATH",
+      "authority": "NONE",
+      "production_execution_allowed": false,
+      "resume_policy": "EXPLICIT_REENABLE_THROUGH_CURRENT_GATES_ONLY",
+      "obligations": [],
+      "role": "all Make scenarios historically belonging to the Powerhouse/BG/PH execution estate are provenance only; team pause or isActive flags are never execution truth",
+      "known_retired_agents": [
+        "PH Agent 01 - Frontend UX v3 stable runner",
+        "PH Agent 02 - Frontend Wiring v3 stable runner",
+        "PH Agent 03 - Intelligence v3 stable runner",
+        "PH Agent 04 - LinkedIn Feed v3 stable runner",
+        "PH Agent 05 - LinkedIn DM v3 stable runner",
+        "PH Agent 06 - Composer Human Send v3 stable runner",
+        "PH Agent 07 - Signal Ingest v3 stable runner",
+        "PH Agent 08 - DM History Backend v3 stable runner",
+        "PH Agent 09 - Telemetry Self-Healing v3 stable runner",
+        "PH Agent 10 - Calendar Content v3 stable runner",
+        "PH Agent 11 - QA Regression v3 stable runner",
+        "PH Agent 12 - Knowledge Governance v3 stable runner",
+        "PH Agent 13 - Architect Integrator v3 stable runner",
+        "PH Agent 14 - Make Cost Optimizer v3 stable runner",
+        "PH Agent 15 - Post Guardian v3 stable runner",
+        "PH Agent 16 - System Performance Optimizer v3 stable runner"
+      ]
+    }
+  ],
+  "make_classification_policy": {
+    "powerhouse_bg_ph_execution_estate_default": "LEGACY_RETIRED_PATH",
+    "archived_historical_only": "HISTORICAL_PROVENANCE",
+    "tmp_staging_canary_probe": "TEST_CANARY",
+    "clearly_non_powerhouse_business_or_private_utility": "NON_POWERHOUSE",
+    "active": "FORBIDDEN_UNLESS_EXPLICITLY_REENABLED_IN_THIS_CONTRACT",
+    "unknown_make_scenario": "LEGACY_RETIRED_PATH",
+    "history_delete_allowed": false,
+    "provider_isActive_or_team_resume_confers_authority": false
+  },
+  "channels": [
+    {
+      "channel": "email_newsletter",
+      "owner_component_id": "powerhouse-content-orchestrator",
+      "delivery_runtime": "UNSUPPORTED_FAIL_CLOSED_HOLD_ONLY",
+      "autonomous_publish_allowed": false,
+      "evidence_policy": "publish is forbidden until an explicitly governed email executor has delivery and readback proof; daily decision must be hold or skip"
+    },
+    {
+      "channel": "linkedin_personal",
+      "owner_component_id": "powerhouse-social-publisher",
+      "delivery_runtime": "supabase_buffer",
+      "autonomous_publish_allowed": true,
+      "evidence_policy": "identity gate + Buffer delivery id + due time + post-due provider/live readback"
+    },
+    {
+      "channel": "linkedin_company",
+      "owner_component_id": "powerhouse-social-publisher",
+      "delivery_runtime": "supabase_buffer",
+      "autonomous_publish_allowed": true,
+      "evidence_policy": "company identity gate + Buffer delivery id + due time + post-due provider/live readback"
+    },
+    {
+      "channel": "linkedin_article_personal",
+      "owner_component_id": "powerhouse-content-orchestrator",
+      "delivery_runtime": "UNSUPPORTED_FAIL_CLOSED_HOLD_ONLY",
+      "autonomous_publish_allowed": false,
+      "evidence_policy": "publish is forbidden until a governed LinkedIn article executor with exact live readback exists; daily decision must be hold or skip"
+    },
+    {
+      "channel": "linkedin_article_company",
+      "owner_component_id": "powerhouse-content-orchestrator",
+      "delivery_runtime": "UNSUPPORTED_FAIL_CLOSED_HOLD_ONLY",
+      "autonomous_publish_allowed": false,
+      "evidence_policy": "publish is forbidden until a governed company-article executor with exact live readback exists; daily decision must be hold or skip"
+    },
+    {
+      "channel": "instagram_company",
+      "owner_component_id": "powerhouse-social-publisher",
+      "delivery_runtime": "supabase_buffer",
+      "autonomous_publish_allowed": true,
+      "evidence_policy": "Mira identity gate + exact-final-media proof + Buffer delivery + provider/live readback"
+    },
+    {
+      "channel": "blog",
+      "owner_component_id": "approved-central-blog",
+      "delivery_runtime": "github_actions",
+      "autonomous_publish_allowed": true,
+      "evidence_policy": "approved slug + candidate PR + protected merge + exact production readback"
+    }
+  ],
+  "controls": {
+    "single_owner_gate": "FAIL_CLOSED",
+    "runtime_drift_detector": "ENABLED",
+    "runtime_drift_owner": "powerhouse-autonomous-improvement-cycle-v1",
+    "runtime_drift_inputs": ["repository_contract", "supabase_runtime", "chatgpt_schedulers", "provider_bindings", "open_obligations"],
+    "interrupted_run_recovery": "EXISTING_BRAIN_OBLIGATION_RUNTIME",
+    "recovery_requires": ["durable_obligation", "idempotency_identity", "last_verified_checkpoint", "side_effect_readback", "terminal_state_or_hard_boundary"],
+    "writeback_route": "public.brain_append_record",
+    "writeback_record_kind": "runtime_authority_governance",
+    "historical_evidence_delete_allowed": false,
+    "unknown_runtime_authority": "FAIL_CLOSED"
+  }
+}

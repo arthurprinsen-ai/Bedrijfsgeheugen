@@ -6,31 +6,35 @@ import {evaluateAdapterConformance} from '../brain/operating-loop/adapter-confor
 const registry=JSON.parse(await readFile('config/brain-platform-adapters.json','utf8'));
 const completeEvidence=platform=>({platform,compatibility_mapping:true,regression_contract:true,shared_memory:true,universal_event_ingest:true,source_reference_contract:true,normalized_knowledge_event_v1:true,health:'healthy',freshness:'fresh',error:null,owner:'Integration Guardian',cost:0,revision:'a'.repeat(40),capacity:'available',execution_proof:{accepted:true,executed:true,authority:'BG169',candidate_revision:'a'.repeat(40),verified_at:'2026-09-01T06:00:00Z'},exact_revision_evidence:true,rollback_verified:true,whole_brain_lineage_verified:true,last_verified_at:'2026-09-01T06:00:00Z'});
 
-test('every registered adapter receives exactly one conformance result',()=>{
+test('every registered adapter receives exactly one conformance result and retired adapters never become production ready',()=>{
   const evidence=Object.fromEntries(registry.platforms.map(p=>[p.platform,completeEvidence(p.platform)]));
   const result=evaluateAdapterConformance(registry,evidence);
   assert.equal(result.platforms.length,registry.platforms.length);
   assert.equal(new Set(result.platforms.map(x=>x.platform)).size,registry.platforms.length);
-  assert.ok(result.platforms.every(x=>x.status==='READY'&&x.productionReady===true));
+  const make=result.platforms.find(x=>x.platform==='make');
+  assert.equal(make.status,'BLOCKED');
+  assert.equal(make.productionReady,false);
+  assert.ok(make.blocked.includes('retired_execution_authority'));
+  assert.ok(result.platforms.filter(x=>x.platform!=='make').every(x=>x.status==='READY'&&x.productionReady===true));
 });
 
 test('registration alone never proves production readiness',()=>{
   const result=evaluateAdapterConformance(registry,{});
   assert.ok(result.platforms.every(x=>x.productionReady===false));
-  assert.ok(result.platforms.every(x=>x.status==='INCOMPLETE'));
-  assert.ok(result.platforms.every(x=>x.missing.includes('health_freshness_error_owner_cost_revision')));
-  assert.ok(result.platforms.every(x=>x.missing.includes('universal_event_ingest')));
-  assert.ok(result.platforms.every(x=>x.missing.includes('source_reference_contract')));
-  assert.ok(result.platforms.every(x=>x.missing.includes('normalized_knowledge_event_v1')));
+  assert.ok(result.platforms.every(x=>['INCOMPLETE','BLOCKED'].includes(x.status)));
+  assert.ok(result.platforms.filter(x=>x.platform!=='make').every(x=>x.missing.includes('health_freshness_error_owner_cost_revision')));
+  assert.ok(result.platforms.filter(x=>x.platform!=='make').every(x=>x.missing.includes('universal_event_ingest')));
+  assert.ok(result.platforms.filter(x=>x.platform!=='make').every(x=>x.missing.includes('source_reference_contract')));
+  assert.ok(result.platforms.filter(x=>x.platform!=='make').every(x=>x.missing.includes('normalized_knowledge_event_v1')));
 });
 
-test('unavailable capacity or unverified execution blocks production',()=>{
-  const make={...completeEvidence('make'),capacity:'paused'};
+test('retired Make remains blocked even when capacity and execution proof look healthy',()=>{
+  const make=completeEvidence('make');
   const result=evaluateAdapterConformance(registry,{make});
   const item=result.platforms.find(x=>x.platform==='make');
   assert.equal(item.status,'BLOCKED');
   assert.equal(item.productionReady,false);
-  assert.ok(item.blocked.includes('capacity_available'));
+  assert.ok(item.blocked.includes('retired_execution_authority'));
 });
 
 test('unknown adapters fail closed and cannot self-promote',()=>{
