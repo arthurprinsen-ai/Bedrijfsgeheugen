@@ -73,3 +73,44 @@ test('portal domain state sends authenticated BusinessInput through one canonica
   assert.equal(writes[0].options.authorization,'Bearer live');
   assert.deepEqual(writes[0].input.answers,{customer:'MKB'});
 });
+
+test('portal flush automatically persists each changed canvas as separate SourceTruth', async () => {
+  const writes=[];
+  const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
+  const domain=createPortalDomainState(stateClient,{businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});
+  domain.set('portal.canvases.bmc.answer','Wij bedienen maakbedrijven');
+  domain.set('portal.canvases.lean.answer','Eerst validatie');
+  await domain.flush();
+  assert.deepEqual(writes.map(item=>item.modelId).sort(),['canvas-bmc','canvas-lean']);
+  assert.equal(writes.every(item=>item.inputType==='StrategyCanvas'),true);
+  assert.deepEqual(writes.find(item=>item.modelId==='canvas-bmc').answers,{answer:'Wij bedienen maakbedrijven'});
+});
+
+test('portal flush classifies Strategy DNA and EU AI Act context semantically', async () => {
+  const writes=[];
+  const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
+  const domain=createPortalDomainState(stateClient,{businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});
+  domain.set('portal.strategy.dna.ambition','Verdubbelen zonder extra complexiteit');
+  domain.set('portal.aiAct.riskClass','limited');
+  await domain.flush();
+  const strategy=writes.find(item=>item.modelId==='strategy-dna');
+  const aiAct=writes.find(item=>item.modelId==='eu-ai-act');
+  assert.equal(strategy.inputType,'StrategyModel');
+  assert.deepEqual(strategy.answers,{ambition:'Verdubbelen zonder extra complexiteit'});
+  assert.equal(aiAct.inputType,'AIActAssessment');
+  assert.deepEqual(aiAct.answers,{riskClass:'limited'});
+});
+
+test('demo flush remains non-durable while authenticated missing-token flush fails closed', async () => {
+  const writes=[];
+  const demoClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({}),isDemo:()=>true};
+  const demo=createPortalDomainState(demoClient,{businessInputSaver:async input=>{writes.push(input);return{stored:true};}});
+  demo.set('portal.profile.employees',12);
+  await demo.flush();
+  assert.equal(writes.length,0);
+
+  const realClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({}),isDemo:()=>false};
+  const real=createPortalDomainState(realClient,{businessInputSaver:async input=>{writes.push(input);return{stored:true};}});
+  real.set('portal.profile.employees',12);
+  await assert.rejects(()=>real.flush(),/PORTAL_BUSINESS_INPUT_AUTH_REQUIRED/);
+});
