@@ -1,0 +1,116 @@
+{
+  "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
+  "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
+  "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
+  "status": "ACTIVE",
+  "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
+  "purpose": "Make shared learning operational rather than conversational: every material worker reads current canonical state before work, records what it does, persists every material error/decision/outcome/learning after work, refreshes shared context and proves that the next worker can discover the result.",
+  "invariants": [
+    "NO_AGENT_STARTS_BLIND",
+    "NO_MATERIAL_ACTION_WITHOUT_PREFLIGHT_RECEIPT",
+    "NO_MATERIAL_ACTION_WITHOUT_ACTIVITY_LEDGER",
+    "NO_ERROR_WITHOUT_ROOT_CAUSE_OR_OPEN_ROOT_CAUSE_OBLIGATION",
+    "NO_FIX_WITHOUT_REGRESSION_OR_EXPLICIT_NOT_FEASIBLE_EVIDENCE",
+    "NO_COMPLETION_WITHOUT_CANONICAL_WRITEBACK",
+    "NO_COMPLETION_WITHOUT_SHARED_CONTEXT_REFRESH",
+    "NO_COMPLETION_UNTIL_NEXT_AGENT_DISCOVERABILITY_IS_PROVEN",
+    "NO_PARALLEL_MEMORY_TRUTH",
+    "CURRENT_RUNTIME_TRUTH_OUTRANKS_STALE_CHAT_TEXT"
+  ],
+  "mandatory_preflight_receipt": {
+    "required": true,
+    "must_read": [
+      "canonical system contract and System Map",
+      "current runtime/CurrentState projection",
+      "open outcome/recovery/delivery obligations",
+      "relevant incident/error fingerprints and proven fixes",
+      "relevant decisions/ADRs and prevention rules",
+      "latest material agent activity for the touched component",
+      "existing owner/component/data/deploy/provider/outcome/learning routes"
+    ],
+    "receipt_fields": [
+      "run_id",
+      "worker_id_or_role",
+      "task_fingerprint",
+      "started_at",
+      "current_state_identity",
+      "sources_read",
+      "matched_learning_fingerprints",
+      "open_obligations_seen",
+      "existing_components_reused",
+      "planned_delta"
+    ],
+    "failure_code": "POWERHOUSE_PREFLIGHT_RECEIPT_MISSING"
+  },
+  "mandatory_activity_ledger": {
+    "required": true,
+    "append_only_audit": true,
+    "minimum_events": ["STARTED", "ACTION", "ERROR", "RECOVERY", "DECISION", "TEST", "PROMOTION_OR_PUBLICATION", "READBACK", "WRITEBACK", "COMPLETED_OR_BLOCKED"],
+    "event_fields": ["run_id", "timestamp", "component", "event_type", "action", "evidence_refs", "result", "next_obligation"],
+    "rule": "Record material actions as they happen; do not reconstruct the full audit trail only at the end."
+  },
+  "error_learning_contract": {
+    "every_material_error_requires": ["fingerprint", "symptom", "failure_class", "root_cause_or_open_root_cause_obligation", "failed_approaches", "fix_or_recovery", "tests", "evidence", "prevention_rule", "regression_contract_or_not_feasible_reason", "owner", "status"],
+    "known_error_rule": "Match fingerprint before diagnosis and reuse a proven recovery before inventing a new one unless fresh evidence invalidates it.",
+    "repeat_error_rule": "A repeated known error without fingerprint reuse is itself a material learning failure and must create a prevention action."
+  },
+  "mandatory_postflight_writeback": {
+    "required": true,
+    "write_to_existing_authorities": [
+      "canonical Brain/Supabase learning and CurrentState when runtime/data learning applies",
+      "Powerhouse Agent Activity Log for human-operational traceability",
+      "Powerhouse Latest Verified State when verified state changes",
+      "Canonical System Map when architecture/ownership/routes change",
+      "Menselijk Handboek when human-readable operating knowledge changes",
+      "repository learning/policy/regression artifacts when machine enforcement changes"
+    ],
+    "fields": [
+      "run_id",
+      "task_fingerprint",
+      "goal_and_context",
+      "actions_performed",
+      "components_changed",
+      "errors_and_failure_classes",
+      "root_causes",
+      "fixes_and_failed_attempts",
+      "tests_and_gates",
+      "production_or_provider_readback",
+      "outcome",
+      "open_obligations",
+      "regression_and_prevention",
+      "decision_or_adr_updates",
+      "last_verified_identity",
+      "next_safe_action"
+    ],
+    "failure_code": "POWERHOUSE_POSTFLIGHT_WRITEBACK_MISSING"
+  },
+  "next_agent_discoverability_gate": {
+    "required": true,
+    "rule": "After writeback, refresh the shared context and perform a read-after-write from the same canonical discovery path used by a new worker. Completion is blocked unless the new state/learning fingerprint is discoverable there.",
+    "failure_code": "POWERHOUSE_NEXT_AGENT_CANNOT_DISCOVER_WRITEBACK"
+  },
+  "terminal_status_gate": {
+    "live_and_proven_requires": [
+      "preflight_receipt_present",
+      "activity_ledger_complete_for_material_events",
+      "all_material_errors_normalized_or_explicit_root_cause_obligation_open",
+      "tests_and_required_gates_green",
+      "production_or_provider_readback_valid_when_applicable",
+      "canonical_postflight_writeback_present",
+      "shared_context_refreshed",
+      "next_agent_discoverability_proven",
+      "no_critical_unrecorded_gap"
+    ],
+    "production_green_without_writeback": "NOT_TERMINAL",
+    "deployment_without_learning": "NOT_LIVE_BEWEZEN"
+  },
+  "no_duplicate_truth": {
+    "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler or learning plane."
+  },
+  "prevention": "Treat documentation, activity logging and reusable learning as part of execution itself. A worker that did useful work but failed to make that work discoverable to the next worker has not completed the task.",
+  "linked_learning_sources": [
+    "brain/policies/chat-to-brain-completeness-v1.json",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    "config/chat-learning-completeness-guard.json"
+  ]
+}
