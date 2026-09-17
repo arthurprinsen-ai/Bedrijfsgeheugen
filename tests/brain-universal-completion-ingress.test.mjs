@@ -97,31 +97,26 @@ test('completeMaterialRun requires exact ingress/run/candidate continuity', () =
   );
 });
 
-test('Agent Fabric material commands fail closed without runtime ingress', () => {
-  assert.throws(() => createAgentFabricGateway({ fabric: fakeFabric() }), /runtimeIngress\.beginMaterialRun is required/i);
+test('Agent Fabric material commands fail closed without runtime identity', async () => {
+  const gateway = createAgentFabricGateway({ fabric: fakeFabric(), rootDir });
+  await assert.rejects(
+    () => gateway.command({ type: AGENT_FABRIC_COMMANDS.INTAKE_SIGNAL, payload: { tenantId: 'A' } }),
+    /runtime identity is required/i,
+  );
 });
 
-test('Agent Fabric command admits before mutation and injects the receipt', async () => {
-  const calls = [];
-  const runtimeIngress = {
-    beginMaterialRun(payload) {
-      calls.push(payload);
-      return Object.freeze({
-        version: 'POWERHOUSE-UNIVERSAL-INGRESS-v1', status: 'ADMITTED', runId: payload.runId,
-        actorKind: payload.actorKind, actorId: payload.actorId, candidateId: payload.candidateId,
-        preflightVersion: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1', preflightStatus: 'READY',
-        preflightDigest: 'a'.repeat(64), receiptDigest: 'b'.repeat(64), observedAt,
-      });
-    },
-  };
-  const gateway = createAgentFabricGateway({ fabric: fakeFabric(), runtimeIngress });
+test('Agent Fabric command runs canonical preflight before mutation and injects its receipt', async () => {
+  const gateway = createAgentFabricGateway({ fabric: fakeFabric(), rootDir });
   const result = await gateway.command({
     type: AGENT_FABRIC_COMMANDS.INTAKE_SIGNAL,
     runtime: { runId: 'run-gw', actorKind: 'agent', actorId: 'agent:gateway', candidateId: 'sha-gw' },
     payload: { tenantId: 'A' },
   });
-  assert.equal(calls.length, 1);
   assert.equal(result.tenantId, 'A');
+  assert.equal(result.runtimeIngressReceipt.version, 'POWERHOUSE-UNIVERSAL-INGRESS-v1');
   assert.equal(result.runtimeIngressReceipt.status, 'ADMITTED');
+  assert.equal(result.runtimeIngressReceipt.preflightStatus, 'READY');
   assert.equal(result.runtimeIngressReceipt.runId, 'run-gw');
+  assert.equal(result.runtimeIngressReceipt.candidateId, 'sha-gw');
+  assert.match(result.runtimeIngressReceipt.preflightDigest, /^[a-f0-9]{64}$/);
 });
