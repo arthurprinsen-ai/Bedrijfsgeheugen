@@ -1,0 +1,25 @@
+{
+  "type": "POWERHOUSE_FAST_EXECUTION_POLICY",
+  "version": "POWERHOUSE-FAST-EXECUTION-v1",
+  "fingerprint": "powerhouse|fast-execution|bounded-context|fresh-evidence|parallel-readonly|v1",
+  "status": "ACTIVE",
+  "default_enabled": true,
+  "scope": "all current and future material Bedrijfsgeheugen Powerhouse chats, agents, workflows and engineering lanes",
+  "purpose": "Reduce end-to-end execution latency through canonical current-state reuse, task-delta context, safe parallel read-only retrieval and fresh evidence reuse without weakening truth, security, quality, release, production-readback or learning obligations.",
+  "entrypoint": "scripts/brain/powerhouse-fast-execution.mjs",
+  "mandatory_preflight_integration": "scripts/brain/chat-learning-preflight.mjs",
+  "execution_classes": {
+    "FAST": {"use_for":["status","readback","lookup","health","bounded current-state inspection","small deterministic checks"],"reasoning_budget":"minimal sufficient","retrieval":"hot-state first; fetch only missing or expired evidence","tests":"targeted plus mandatory release gates when mutation occurs"},
+    "STANDARD": {"use_for":["bugfix","feature","content or code change","routine deploy","ordinary integration change"],"reasoning_budget":"normal","retrieval":"canonical current state plus scoped delta evidence","tests":"changed-scope tests plus declared dependencies and mandatory release gates"},
+    "DEEP": {"use_for":["security","identity","schema migration","destructive-risk work","incident root cause","architecture boundary change","rollback-sensitive work"],"reasoning_budget":"deep","retrieval":"full relevant evidence classes with direct platform observation where required","tests":"full relevant regression, security, migration, rollback and production verification"}
+  },
+  "invariants": ["EXISTING_STATE_FIRST","REUSE_FIRST","CANONICAL_INTEGRATION","CLOSED_LOOP","HOT_STATE_FIRST","DELTA_FIRST","DETERMINISTIC_BEFORE_MODEL","LAZY_TOOL_DISCOVERY","PARALLEL_READ_ONLY_RETRIEVAL","BOUNDED_CONTEXT","BOUNDED_TOOL_OUTPUT","FRESH_EVIDENCE_REUSE","NO_REUSE_ACROSS_CANDIDATE_IDENTITY","NO_SPEED_BY_SKIPPING_GATES","LIVE_AND_BEWEZEN_IS_TERMINAL_SUCCESS"],
+  "context_policy": {"stable_policy_prefix":true,"task_scoped_context_pack":true,"prefer_hot_state_projection":true,"prefer_delta_over_full_history":true,"max_default_context_chars":24000,"tool_output_default_max_chars":12000,"tool_output_default_max_lines":300,"forbidden":["reloading complete historical chat transcripts when canonical current state suffices","reparsing unrelated learning shards for a scoped task","passing unbounded tool responses into reasoning","creating a second persistent memory or truth store for speed"]},
+  "evidence_cache_policy": {"allowed":true,"cache_is_projection_not_truth":true,"requires_observed_at":true,"requires_expiry":true,"candidate_bound_when_candidate_specific":true,"invalidate_on":["expiry","candidate identity change","source version change","explicit contradictory evidence","material state mutation"],"never_substitutes_required_direct_observation":true},
+  "parallelism_policy": {"parallel_by_default":["independent read-only current-state adapters","independent evidence reads","independent non-mutating health checks"],"serialize":["writes to the same canonical state","dependent migrations","promotion after required gates","readback that depends on a mutation"],"mutation_dedupe_required":true},
+  "latency_sli": ["context-build-ms","reasoning-ms","tool-wait-ms","test-ms","deploy-ms","readback-ms","total-ms"],
+  "learning_rule": "Every material latency regression, stale-evidence incident, unnecessary repeated retrieval, excessive context or avoidable serial wait becomes canonical learning with root cause, fix, prevention and measured evidence where available.",
+  "safety_rule": "Performance optimization may remove redundant work, not required work. Security, identity, truth, quality, exact-candidate, permission, rollback, production-readback, interruption-recovery and learning gates remain authoritative.",
+  "terminal_states": ["LIVE & BEWEZEN","BLOCKED_HARD_BOUNDARY"],
+  "linked_learning_sources": ["brain/learning/fast-execution-2026-09-17.json","brain/policies/powerhouse-agent-continuity-v1.json"]
+}
