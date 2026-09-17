@@ -17,14 +17,18 @@ const REQUIRED_INVARIANTS = [
   'NO_MATERIAL_ACTION_WITHOUT_PREFLIGHT_RECEIPT',
   'NO_MATERIAL_ACTION_WITHOUT_ACTIVITY_LEDGER',
   'NO_ERROR_WITHOUT_ROOT_CAUSE_OR_OPEN_ROOT_CAUSE_OBLIGATION',
+  'NO_FIX_WITHOUT_REGRESSION_OR_EXPLICIT_NOT_FEASIBLE_EVIDENCE',
   'NO_COMPLETION_WITHOUT_CANONICAL_WRITEBACK',
   'NO_COMPLETION_WITHOUT_SHARED_CONTEXT_REFRESH',
   'NO_COMPLETION_UNTIL_NEXT_AGENT_DISCOVERABILITY_IS_PROVEN',
+  'NO_PARALLEL_MEMORY_TRUTH',
+  'CURRENT_RUNTIME_TRUTH_OUTRANKS_STALE_CHAT_TEXT',
   'CANONICAL_AUTHORITY_ID_FIRST',
   'SEARCH_MISS_IS_NOT_NONEXISTENCE',
   'EVERY_MATERIAL_SOURCE_HAS_PROVENANCE_FRESHNESS_CONFIDENCE_AND_SECURITY_CLASS',
   'SECRETS_AND_SENSITIVE_DATA_NEVER_ENTER_GENERAL_LEARNING_PAYLOADS',
-  'ONE_COMPACT_CURRENT_STATE_PER_MATERIAL_SCOPE'
+  'ONE_COMPACT_CURRENT_STATE_PER_MATERIAL_SCOPE',
+  'NO_RECONFIRMATION_FOR_ALREADY_AUTHORIZED_POWERHOUSE_EXECUTION'
 ];
 
 const EXPECTED_NOTION_AUTHORITIES = {
@@ -43,6 +47,20 @@ test('universal learning/writeback contract remains active and fail-closed', () 
   assert.equal(policy.next_agent_discoverability_gate.required, true);
   assert.equal(policy.terminal_status_gate.production_green_without_writeback, 'NOT_TERMINAL');
   assert.equal(policy.terminal_status_gate.deployment_without_learning, 'NOT_LIVE_BEWEZEN');
+});
+
+test('already-authorized Powerhouse work proceeds without redundant confirmation loops', () => {
+  const autonomy = policy.autonomous_execution_contract;
+  assert.equal(autonomy.required, true);
+  assert.equal(autonomy.default_for_existing_powerhouse_authority, 'EXECUTE_WITHOUT_RECONFIRMATION');
+  assert.equal(autonomy.ask_again_for_continue_or_borging, 'FORBIDDEN');
+  assert.equal(autonomy.stop_at_plan_for_confirmation, 'FORBIDDEN_WHEN_WITHIN_EXISTING_AUTHORITY');
+  assert.equal(autonomy.execute_through_live_and_proven_where_technically_possible, true);
+  assert.deepEqual(autonomy.allowed_confirmation_boundaries, [
+    'EXTERNAL_PLATFORM_REQUIRES_EXPLICIT_USER_AUTHORIZATION',
+    'IRREVERSIBLE_OR_HIGH_IMPACT_ACTION_OUTSIDE_EXISTING_AUTHORITY',
+    'MATERIAL_NEW_BUSINESS_CHOICE_WITH_NO_CANONICAL_RULE_OR_SAFE_DEFAULT'
+  ]);
 });
 
 test('canonical Notion authorities are fixed and retrieved id-first', () => {
