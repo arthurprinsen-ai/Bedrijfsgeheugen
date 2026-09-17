@@ -5,6 +5,7 @@
   "source_of_truth": "GitHub contract + Supabase/Brain runtime evidence",
   "material_obligations": [
     "daily_growth_intelligence_coordination",
+    "gmail_action_ingest",
     "seven_channel_daily_decision",
     "social_delivery",
     "social_delivery_recovery_watch",
@@ -21,6 +22,15 @@
       "production_execution_allowed": false,
       "obligations": ["daily_growth_intelligence_coordination"],
       "role": "decision/intelligence/learning coordination; never substitutes production provider evidence"
+    },
+    {
+      "id": "chatgpt-powerhouse-gmail-ingest",
+      "runtime": "chatgpt_automation",
+      "classification": "ACTIVE",
+      "authority": "ACTIVE",
+      "production_execution_allowed": true,
+      "obligations": ["gmail_action_ingest"],
+      "role": "privacy-filtered Gmail discovery -> deduplicated canonical powerhouse_sales_actions write -> existing bg-notion-sync projection; never sends or replies to email"
     },
     {
       "id": "powerhouse-content-orchestrator",
@@ -84,7 +94,7 @@
       "production_execution_allowed": false,
       "resume_policy": "EXPLICIT_REENABLE_THROUGH_CURRENT_GATES_ONLY",
       "obligations": [],
-      "role": "historical provenance only; team pause or isActive flags are never execution truth",
+      "role": "all Make scenarios historically belonging to the Powerhouse/BG/PH execution estate are provenance only; team pause or isActive flags are never execution truth",
       "known_retired_agents": [
         "PH Agent 01 - Frontend UX v3 stable runner",
         "PH Agent 02 - Frontend Wiring v3 stable runner",
@@ -105,6 +115,16 @@
       ]
     }
   ],
+  "make_classification_policy": {
+    "powerhouse_bg_ph_execution_estate_default": "LEGACY_RETIRED_PATH",
+    "archived_historical_only": "HISTORICAL_PROVENANCE",
+    "tmp_staging_canary_probe": "TEST_CANARY",
+    "clearly_non_powerhouse_business_or_private_utility": "NON_POWERHOUSE",
+    "active": "FORBIDDEN_UNLESS_EXPLICITLY_REENABLED_IN_THIS_CONTRACT",
+    "unknown_make_scenario": "LEGACY_RETIRED_PATH",
+    "history_delete_allowed": false,
+    "provider_isActive_or_team_resume_confers_authority": false
+  },
   "channels": [
     {
       "channel": "email_newsletter",
