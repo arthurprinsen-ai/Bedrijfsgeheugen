@@ -16,5 +16,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Fast v2 chat preflight regression
+        run: node --test tests/brain-chat-learning-fast-v2-wiring.test.mjs
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
