@@ -72,73 +72,115 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
+          import { setTimeout as sleep } from 'node:timers/promises';
           import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts } from './tools/delivery/delivery-hygiene.mjs';
 
           const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8'}).trim();
-          const gh = path => JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8'}));
+          const transientApiFailure = error => /HTTP\s+(?:502|503|504)\b|upstream connect error|connection (?:refused|reset)|ECONNRESET|ETIMEDOUT|socket hang up/i.test(`${error?.message || ''}\n${error?.stderr || ''}\n${error?.stdout || ''}`);
+          const gh = async path => {
+            const delays = [250, 500, 1000];
+            for (let attempt = 0; attempt <= delays.length; attempt += 1) {
+              try {
+                return JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8'}));
+              } catch (error) {
+                if (!transientApiFailure(error) || attempt === delays.length) throw error;
+                console.warn(`Transient GitHub API failure for ${path}; retry ${attempt + 1}/${delays.length}`);
+                await sleep(delays[attempt]);
+              }
+            }
+            throw new Error(`GITHUB_API_RETRY_EXHAUSTED:${path}`);
+          };
+          const errorSummary = error => String(error?.stderr || error?.stdout || error?.message || error).replace(/\s+/g, ' ').trim().slice(0, 1200);
           const policy = JSON.parse(await readFile('config/powerhouse-delivery-hygiene-v1.json','utf8'));
           const brainPolicy = JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const prNumber = Number(process.env.PR_NUMBER);
-          const pr = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
-          const open = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
           const headSha = sh('git','rev-parse','HEAD');
-          if (process.env.EXPECTED_HEAD_SHA && headSha !== process.env.EXPECTED_HEAD_SHA) {
-            throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
-          }
-          if (pr.head?.sha !== headSha) {
-            throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
-          }
           const currentMainSha = sh('git','rev-parse','origin/main');
           const immutableBaseSha = sh('git','merge-base','origin/main','HEAD');
           const changedRaw = sh('git','diff','--name-only',`${immutableBaseSha}...${headSha}`);
           const changedPaths = changedRaw ? changedRaw.split(/\r?\n/).filter(Boolean) : [];
           const currentContracts = deriveHygieneConflictContracts(changedPaths, brainPolicy, policy);
 
-          const normalized = [];
-          for (const item of open) {
-            const metadata = parseDeliveryMetadata(item.body || '');
-            let conflictContracts = [];
-            if (validateDeliveryMetadata(metadata, policy).ok) {
-              try {
-                const files = gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${item.number}/files?per_page=100`);
-                conflictContracts = deriveHygieneConflictContracts(files.map(file => file.filename), brainPolicy, policy);
-              } catch {}
-            }
-            normalized.push(classifyCandidate({
-              number: item.number,
-              state: item.state,
-              body: item.body || '',
-              baseSha: item.number === prNumber ? immutableBaseSha : (metadata.baseSha || item.base?.sha || ''),
-              headSha: item.head?.sha || '',
-              conflictContracts,
-            }, policy));
-          }
-
-          const candidate = classifyCandidate({
-            number: prNumber,
-            state: pr.state,
-            body: pr.body || '',
-            baseSha: immutableBaseSha,
-            headSha,
-            conflictContracts: currentContracts,
-          }, policy);
-          const result = evaluateAdmission({candidate,openCandidates:normalized,policy,currentMainSha});
-          const evidence = {
-            version: policy.version,
-            observed_at: new Date().toISOString(),
-            repository: process.env.GITHUB_REPOSITORY,
-            pr_number: prNumber,
-            immutable_base_sha: immutableBaseSha,
-            current_main_sha: currentMainSha,
-            changed_paths: changedPaths,
-            conflict_contracts: currentContracts,
-            legacy_unclassified_open_prs: normalized.filter(item => !item.metadata?.obligationId).map(item => item.number),
-            ...result,
+          const writeFailureEvidence = async (state, error) => {
+            const evidence = {
+              version: policy.version,
+              observed_at: new Date().toISOString(),
+              repository: process.env.GITHUB_REPOSITORY,
+              pr_number: prNumber,
+              immutable_base_sha: immutableBaseSha,
+              current_main_sha: currentMainSha,
+              candidate_head_sha: headSha,
+              changed_paths: changedPaths,
+              conflict_contracts: currentContracts,
+              state,
+              ok: false,
+              admitted: false,
+              failure_fingerprint: transientApiFailure(error) ? 'github-api-transient-unavailable-v1' : 'delivery-hygiene-admission-error-v1',
+              error: errorSummary(error),
+            };
+            await writeFile('.artifacts/powerhouse-delivery-hygiene.json', `${JSON.stringify(evidence,null,2)}\n`);
+            await appendFile(process.env.GITHUB_OUTPUT, `state=${state}\nadmitted=false\nobligation_id=\ncandidate_head_sha=${headSha}\n`);
+            console.error(JSON.stringify(evidence,null,2));
           };
-          await writeFile('.artifacts/powerhouse-delivery-hygiene.json', `${JSON.stringify(evidence,null,2)}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT, `state=${result.state}\nadmitted=${result.ok}\nobligation_id=${candidate.metadata.obligationId || ''}\ncandidate_head_sha=${headSha}\n`);
-          console.log(JSON.stringify(evidence,null,2));
-          if (!result.ok) process.exit(78);
+
+          try {
+            if (process.env.EXPECTED_HEAD_SHA && headSha !== process.env.EXPECTED_HEAD_SHA) {
+              throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
+            }
+            const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
+            const open = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
+            if (pr.head?.sha !== headSha) {
+              throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
+            }
+
+            const normalized = [];
+            for (const item of open) {
+              const metadata = parseDeliveryMetadata(item.body || '');
+              let conflictContracts = [];
+              if (validateDeliveryMetadata(metadata, policy).ok) {
+                const files = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${item.number}/files?per_page=100`);
+                conflictContracts = deriveHygieneConflictContracts(files.map(file => file.filename), brainPolicy, policy);
+              }
+              normalized.push(classifyCandidate({
+                number: item.number,
+                state: item.state,
+                body: item.body || '',
+                baseSha: item.number === prNumber ? immutableBaseSha : (metadata.baseSha || item.base?.sha || ''),
+                headSha: item.head?.sha || '',
+                conflictContracts,
+              }, policy));
+            }
+
+            const candidate = classifyCandidate({
+              number: prNumber,
+              state: pr.state,
+              body: pr.body || '',
+              baseSha: immutableBaseSha,
+              headSha,
+              conflictContracts: currentContracts,
+            }, policy);
+            const result = evaluateAdmission({candidate,openCandidates:normalized,policy,currentMainSha});
+            const evidence = {
+              version: policy.version,
+              observed_at: new Date().toISOString(),
+              repository: process.env.GITHUB_REPOSITORY,
+              pr_number: prNumber,
+              immutable_base_sha: immutableBaseSha,
+              current_main_sha: currentMainSha,
+              changed_paths: changedPaths,
+              conflict_contracts: currentContracts,
+              legacy_unclassified_open_prs: normalized.filter(item => !item.metadata?.obligationId).map(item => item.number),
+              ...result,
+            };
+            await writeFile('.artifacts/powerhouse-delivery-hygiene.json', `${JSON.stringify(evidence,null,2)}\n`);
+            await appendFile(process.env.GITHUB_OUTPUT, `state=${result.state}\nadmitted=${result.ok}\nobligation_id=${candidate.metadata.obligationId || ''}\ncandidate_head_sha=${headSha}\n`);
+            console.log(JSON.stringify(evidence,null,2));
+            if (!result.ok) process.exitCode = 78;
+          } catch (error) {
+            const state = transientApiFailure(error) ? 'CONTROL_PLANE_API_UNAVAILABLE' : 'CONTROL_PLANE_ADMISSION_ERROR';
+            await writeFailureEvidence(state, error);
+            process.exitCode = 1;
+          }
           NODE
       - name: Upload admission evidence
         if: always()
