@@ -4,6 +4,7 @@ import { resolveDeliveryMetadataAuthority } from '../tools/delivery/delivery-met
 
 const SHA_OLD = 'a'.repeat(40);
 const SHA_CURRENT = 'b'.repeat(40);
+const SHA_RECOVERY = 'c'.repeat(40);
 
 const stalePrBody = `Obligation-ID: powerhouse-one-loop-v1
 Delivery-Lane: automation
@@ -24,7 +25,7 @@ const manifest = {
   maxFiles: 60,
 };
 
-test('versioned exact-head manifest overrides stale mutable PR delivery metadata for the same obligation', () => {
+test('versioned exact-head manifest overrides stale mutable PR delivery metadata for the same implementation obligation', () => {
   const resolved = resolveDeliveryMetadataAuthority({ prBody: stalePrBody, manifest });
 
   assert.equal(resolved.source, 'versioned-manifest');
@@ -35,6 +36,44 @@ test('versioned exact-head manifest overrides stale mutable PR delivery metadata
   assert.equal(resolved.prBodyDrift.baseSha, true);
   assert.equal(resolved.prBodyDrift.expectedPaths, true);
   assert.equal(resolved.prBodyDrift.maxFiles, true);
+});
+
+test('validated recovery metadata for the same obligation becomes current authority after the implementation manifest was merged', () => {
+  const recoveryPrBody = `Obligation-ID: powerhouse-one-loop-v1
+Delivery-Lane: automation
+Candidate-Type: recovery
+Base-SHA: ${SHA_RECOVERY}
+Supersedes: none
+Change-Scope: .github/workflows/outcome-obligation-sweep.yml,tools/delivery/delivery-metadata-authority.mjs
+Scope-Budget: 5`;
+
+  const resolved = resolveDeliveryMetadataAuthority({ prBody: recoveryPrBody, manifest });
+
+  assert.equal(resolved.source, 'pr-body-recovery');
+  assert.equal(resolved.delivery.obligationId, manifest.obligationId);
+  assert.equal(resolved.delivery.deliveryLane, manifest.deliveryLane);
+  assert.equal(resolved.delivery.candidateType, 'recovery');
+  assert.equal(resolved.delivery.baseSha, SHA_RECOVERY);
+  assert.deepEqual(resolved.expectedPaths, [
+    '.github/workflows/outcome-obligation-sweep.yml',
+    'tools/delivery/delivery-metadata-authority.mjs',
+  ]);
+  assert.equal(resolved.maxFiles, 5);
+});
+
+test('recovery metadata cannot take authority when its lane differs from the versioned obligation lane', () => {
+  const invalidRecovery = `Obligation-ID: powerhouse-one-loop-v1
+Delivery-Lane: website
+Candidate-Type: recovery
+Base-SHA: ${SHA_RECOVERY}
+Supersedes: none
+Change-Scope: website/**
+Scope-Budget: 5`;
+
+  assert.throws(
+    () => resolveDeliveryMetadataAuthority({ prBody: invalidRecovery, manifest }),
+    /DELIVERY_RECOVERY_AUTHORITY_INVALID:DELIVERY_LANE_MISMATCH/,
+  );
 });
 
 test('versioned manifest never takes authority over a different obligation', () => {
