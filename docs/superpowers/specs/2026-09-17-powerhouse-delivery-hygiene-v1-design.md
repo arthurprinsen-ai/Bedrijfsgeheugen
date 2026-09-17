@@ -1,8 +1,8 @@
 # POWERHOUSE-DELIVERY-HYGIENE-v1
 
 Date: 2026-09-17
-Status: Approved design, implementation not started
-Base main SHA: 6c71a2d3f741d2a4959fe53470ee0be641da2015
+Status: Approved design
+Base main SHA: fb0c1684dc9697df55ec831ff4dff70c126ce46c
 
 ## Problem
 
@@ -68,161 +68,57 @@ The cheap admission gate executes before broad suites and returns one terminal d
 - `BLOCKED_METADATA_INVALID`
 - `BLOCKED_LINEAGE_AMBIGUOUS`
 
-### Duplicate obligation rule
+For an executable PR with `Obligation-ID=X`, at most one can be active. A successor is admissible only when it explicitly declares `Supersedes` and the predecessor is proven to own the same obligation. The predecessor is not closed until successor identity and lineage pass validation.
 
-For an executable PR with `Obligation-ID=X`, query open executable PRs for the same exact canonical obligation. At most one can be active. A successor is admissible only when it explicitly declares `Supersedes` and the referenced predecessor has the same obligation or an explicitly linked predecessor obligation recorded by canonical delivery lineage.
-
-The predecessor is not closed until successor identity and lineage pass validation.
-
-### Repository WIP limit
-
-Default executable WIP limit: 5 open admitted product/recovery/security/incident PRs repository-wide.
-
-The following are counted separately and do not consume the normal product WIP budget:
-
-- dependency maintenance
-- non-executable documentation-only work
-
-Security and incident recovery are priority lanes. They may pre-empt admission of new normal product work, but they do not bypass integrity or test gates.
-
-WIP values live in `config/powerhouse-delivery-hygiene-v1.json` and are covered by regression tests.
+Default executable WIP limit: 5 open admitted product/recovery/security/incident PRs repository-wide. Dependency maintenance and non-executable documentation are counted separately. Security and incident recovery have priority but never bypass integrity or test gates.
 
 ## Promotion serialization
 
-Only one promotion-eligible candidate may hold the promotion lease for a conflicting contract scope at a time.
-
-The lease is derived from GitHub-visible canonical state, not a new queue. It is represented by candidate metadata/status plus exact SHA and conflict-contract membership. A newer candidate cannot enter production-like promotion verification while an admitted candidate with overlapping conflict contracts is still in a non-terminal promotion state.
-
-Non-overlapping lanes may continue in parallel when existing BRAIN conflict logic proves independence.
+Only one promotion-eligible candidate may hold promotion authority for overlapping conflict-contract scope at a time. The lease is derived from GitHub-visible canonical state plus exact SHA and conflict-contract membership; there is no new queue. Non-overlapping lanes may proceed when BRAIN conflict logic proves independence.
 
 ## CI budgeting
 
-The hygiene gate must complete before expensive workflow fan-out.
+1. docs-only/non-executable changes run cheap contract/documentation checks only;
+2. lane-specific changes run selected lane plus mandatory cross-cutting security/governance checks;
+3. full repository verification is reserved for promotion-eligible candidates or delivery-control-plane/shared conflict changes;
+4. production/readback workflows do not run automatically for ordinary PRs;
+5. duplicate/superseded/stale candidates fail before expensive installation/build/test work where technically possible.
 
-Rules:
-
-1. docs-only/non-executable changes run only cheap contract and documentation checks.
-2. lane-specific changes run only their selected lane plus mandatory cross-cutting security/governance checks.
-3. full repository verification is reserved for promotion-eligible candidates or changes touching the delivery control plane/shared conflict contracts.
-4. production/readback workflows must not run automatically for every ordinary PR; they run only from explicit promotion authority or existing production triggers.
-5. duplicate/superseded/stale candidates must fail before package install, large Node suites, preview deploys or production-like checks whenever possible.
-
-Existing `Required test` remains the protected branch aggregator. Delivery Hygiene becomes an input/precondition, not a competing required-check authority.
+`Required test` remains the protected branch aggregator. Hygiene is a precondition, not a competing required-check authority.
 
 ## Failure deduplication
 
-A deterministic failure fingerprint maps to one canonical recovery obligation. If an open recovery candidate already owns that fingerprint/obligation, new agents must reuse that lineage rather than create another independent candidate.
-
-The design reuses existing Powerhouse failure-learning/writeback. GitHub is an execution surface, not the canonical learning database.
+A deterministic failure fingerprint maps to one canonical recovery obligation. Existing Powerhouse failure-learning/writeback remains authoritative; GitHub is execution surface only.
 
 ## Repository Janitor
 
-The janitor runs on schedule and via manual dispatch. Its default mode is evidence-first.
+The janitor runs scheduled and manually. Default is evidence-first. It may close/mark only deterministic same-obligation supersession, exact linked duplicate lineage, fulfilled obligation with no unique commits, or previously machine-proven superseded state. It never auto-closes by similar title, filenames, age, red CI, branch-name similarity, or inferred prose intent. Ambiguous cases remain open as `REVIEW_REQUIRED`.
 
-### Safe automatic actions
-
-It may mark/close a PR only when at least one of these deterministic proofs is true:
-
-1. PR explicitly declares `Supersedes: N` and validated successor lineage proves same obligation.
-2. candidate head SHA/content is an exact duplicate of the canonical successor candidate and predecessor is explicitly linked.
-3. canonical obligation is already `FULFILLED` and the PR contains no unique commits absent from fulfilled lineage.
-4. PR was previously machine-marked superseded by the hygiene contract and no ambiguity remains.
-
-### Never auto-close on
-
-- similar title
-- overlapping filenames alone
-- age alone
-- red CI alone
-- branch name similarity
-- inferred intent from prose
-
-Ambiguous cases are emitted as `REVIEW_REQUIRED` evidence and remain open.
-
-### Cleanup outputs
-
-Each run produces structured evidence containing:
-
-- observed open PRs
-- obligation/candidate classification
-- WIP count
-- duplicate groups
-- safe supersession actions
-- ambiguous candidates
-- stale promotion state
-- cleanup actions performed
-- remaining obligations
+Each run emits open PR classification, WIP count, duplicate groups, safe actions, ambiguous candidates, stale promotion state, performed actions and remaining obligations.
 
 ## Required-test integration
 
-`required-test.yml` will add an early hygiene job or invoke the reusable hygiene workflow before current preflight. Current lane derivation, Supabase security gate, portal suite, selected lane jobs and final `test` aggregator remain intact.
-
-The protected status context stays `test`. A hygiene failure therefore blocks merge through the existing required check rather than adding branch-protection fragmentation.
+`required-test.yml` gets early hygiene before current preflight. Current lane derivation, Supabase security gate, portal suite, selected jobs and final `test` aggregator remain intact. Protected context stays `test`.
 
 ## Unified Brain Delivery integration
 
-`unified-brain-delivery.yml` will verify that the candidate is still the admitted canonical candidate before expensive lane execution and again before handoff/promotion. This prevents a candidate that became superseded after initial PR admission from continuing to production authority.
-
-Current exact-SHA, branch-drift and main-protection checks remain authoritative.
+`unified-brain-delivery.yml` verifies candidate admission before expensive lane execution and again before handoff/promotion. Existing exact-SHA, branch-drift and main-protection checks remain authoritative.
 
 ## Backlog recovery
 
-After deployment, run the janitor in dry-run mode over all currently open PRs.
-
-Sequence:
-
-1. classify every open PR without mutating it;
-2. group exact obligation/supersession lineages;
-3. identify deterministic duplicates and already-fulfilled work;
-4. close only safe superseded candidates;
-5. preserve unique or ambiguous work;
-6. choose one active candidate per remaining canonical obligation;
-7. bring candidates through serialized delivery against current main;
-8. write cleanup outcome and remaining obligations back through existing Powerhouse learning/evidence channels.
-
-The initial cleanup must not bulk-close old PRs by age or title.
+After deployment, run janitor dry-run over all open PRs, classify without mutation, group exact lineages, identify deterministic duplicates/fulfilled work, close only safe superseded candidates, preserve unique/ambiguous work, select one active candidate per obligation, serialize remaining delivery, and write outcome/evidence through existing Powerhouse mechanisms.
 
 ## Test strategy
 
-Minimum regression coverage:
-
-1. one obligation with one candidate => admitted;
-2. second active candidate for same obligation => blocked;
-3. explicit valid successor => successor admitted, predecessor eligible for safe supersession;
-4. invalid cross-obligation `Supersedes` => blocked;
-5. repository WIP below/equal/above limit;
-6. dependency/docs exclusions from product WIP;
-7. stale declared base/candidate identity => blocked where policy requires freshness;
-8. overlapping promotion contract => serialized;
-9. non-overlapping contract scopes => parallelism retained;
-10. docs-only change => expensive lanes not selected;
-11. janitor dry-run mutates nothing;
-12. janitor exact proof can close safe superseded candidate;
-13. similar title/path without lineage never auto-closes;
-14. fulfilled obligation with unique unmerged commits remains review-required;
-15. Required test retains final `test` aggregator semantics;
-16. Unified Brain Delivery rechecks admission before handoff.
+Regression coverage must include single candidate admission, duplicate block, valid/invalid supersession, WIP boundaries, dependency/docs exclusions, stale identity, promotion conflict/non-conflict, docs-only CI budget, janitor dry-run, safe exact cleanup, no heuristic closure, fulfilled obligation with unique commits, stable `test` aggregator, and Unified Brain recheck before handoff.
 
 ## Acceptance criteria
 
-The implementation is complete only when:
-
-1. all new delivery-hygiene tests pass;
-2. existing delivery, branch-hygiene, moving-main, Required-test and Brain-delivery tests remain green;
-3. branch protection still requires the stable `test` context;
-4. an intentionally duplicated obligation is blocked before expensive lane work;
-5. a docs-only candidate does not trigger broad delivery work;
-6. a valid successor produces deterministic supersession evidence;
-7. janitor dry-run over the live repository produces a complete classification without unsafe mutations;
-8. approved safe cleanup actions are executed and read back from GitHub;
-9. remaining active candidates respect WIP and one-candidate-per-obligation rules;
-10. production promotion/readback for the control-plane change is exact-SHA verified;
-11. learning/evidence is written back through existing canonical Powerhouse mechanisms;
-12. final status includes repository hygiene evidence and no known technically-solvable duplicate-lane blocker.
+Complete only when new tests pass, existing delivery/moving-main/branch-hygiene tests stay green, branch protection still requires `test`, duplicate obligation blocks before expensive work, docs-only work avoids broad CI, safe supersession evidence is deterministic, live janitor dry-run classifies without unsafe mutation, safe cleanup is read back, WIP/one-candidate rules hold, exact-SHA control-plane promotion is verified, canonical learning/evidence is written back, and no known technically-solvable duplicate-lane blocker remains.
 
 ## Rollback
 
-The hygiene policy is additive to existing protected delivery. Rollback consists of disabling/removing the admission and janitor workflow wiring while leaving existing Required test, Unified Brain Delivery, branch protection and Powerhouse state untouched. The janitor must never perform destructive branch deletion as part of v1, so rollback cannot lose unique code.
+Disable/remove admission and janitor wiring while leaving existing Required test, Unified Brain Delivery, branch protection and Powerhouse state untouched. V1 never deletes branches automatically.
 
 ## Non-goals
 
@@ -231,5 +127,5 @@ The hygiene policy is additive to existing protected delivery. Rollback consists
 - auto-merging every green PR
 - deleting branches automatically in v1
 - inferring supersession from semantic similarity
-- relaxing Supabase/security/quality/release gates to reduce CI load
+- relaxing Supabase/security/quality/release gates
 - reducing evidence quality for speed or cost
