@@ -1,4 +1,5 @@
 import { createHash } from 'node:crypto';
+import { verifySessionReceipt } from '../../scripts/brain/powerhouse-session-gateway.mjs';
 
 const REQUIRED_EVIDENCE = Object.freeze([
   'CANDIDATE_TESTS',
@@ -103,7 +104,7 @@ function acceptedEvidence(evidence, obligationId, candidateIdentity, productionI
 
 function nextAction(required) {
   if (required.includes('IDENTITY_MATCH')) return 'READBACK';
-  if (required.includes('NEW_HYPOTHESIS_OR_FALLBACK') || required.includes('RECOVERY_PACKET') || required.includes('CANDIDATE_TESTS') || required.includes('OBLIGATIONS_COMPLETE')) return 'RECOVER';
+  if (required.includes('SESSION_BINDING') || required.includes('NEW_HYPOTHESIS_OR_FALLBACK') || required.includes('RECOVERY_PACKET') || required.includes('CANDIDATE_TESTS') || required.includes('OBLIGATIONS_COMPLETE')) return 'RECOVER';
   if (required.includes('PROTECTED_DELIVERY')) return 'PROMOTE';
   if (required.includes('PRODUCTION_IDENTITY') || required.includes('FUNCTIONAL_READBACK')) return 'READBACK';
   if (required.includes('CAPABILITY_HANDOFF') || required.includes('LEARNING_WRITEBACK')) return 'WRITEBACK';
@@ -131,6 +132,7 @@ export function evaluateCompletion(input = {}) {
   const boundaryProven = input.hardBoundary?.present === true
     && input.hardBoundary?.proven === true
     && populated(input.hardBoundary?.evidence);
+  const sessionValidation = verifySessionReceipt(input.sessionReceipt, { runId: obligationId || workId, candidateId: candidateIdentity || null });
 
   const baseKeyInput = {
     obligationId,
@@ -138,13 +140,14 @@ export function evaluateCompletion(input = {}) {
     claim:text(input.claim).toUpperCase(),
     candidateIdentity,
     productionIdentity,
+    sessionReceipt:input.sessionReceipt ?? null,
     evidence:(Array.isArray(input.evidence) ? input.evidence : []).filter(item => text(item?.type).toUpperCase() !== 'SUPERVISOR_DECISION'),
     materialObligations:input.materialObligations ?? [],
     hardBoundary:input.hardBoundary ?? null,
     retry:input.retry ?? null,
   };
 
-  if (boundaryProven && packetValidation.valid) {
+  if (boundaryProven && packetValidation.valid && sessionValidation.ok) {
     return Object.freeze({
       success:false,
       candidateIdentity,
@@ -162,8 +165,9 @@ export function evaluateCompletion(input = {}) {
 
   const { accepted, identityMismatch } = acceptedEvidence(input.evidence, obligationId, candidateIdentity, productionIdentity);
   const required = REQUIRED_EVIDENCE.filter(type => !accepted.has(type));
+  if (!sessionValidation.ok) required.unshift('SESSION_BINDING');
   if (!obligationId || !workId || !candidateIdentity) required.unshift('IDENTITY');
-  if (!productionIdentity && required.some(type => !['IDENTITY','CANDIDATE_TESTS','PROTECTED_DELIVERY'].includes(type))) required.push('PRODUCTION_IDENTITY');
+  if (!productionIdentity && required.some(type => !['IDENTITY','SESSION_BINDING','CANDIDATE_TESTS','PROTECTED_DELIVERY'].includes(type))) required.push('PRODUCTION_IDENTITY');
   if (identityMismatch) required.push('IDENTITY_MATCH');
   if (open.length > 0 && !required.includes('OBLIGATIONS_COMPLETE')) required.push('OBLIGATIONS_COMPLETE');
   if (boundaryProven && !packetValidation.valid) required.push('RECOVERY_PACKET');
