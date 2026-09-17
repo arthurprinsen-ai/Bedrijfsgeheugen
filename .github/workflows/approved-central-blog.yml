@@ -147,19 +147,25 @@ jobs:
 
       - name: Deterministic contract checks
         if: steps.render.outputs.changed == 'true'
+        env:
+          FORCE_SLUG: ${{ steps.resolve.outputs.slug }}
         run: |
           set -euo pipefail
           python3 - <<'PY'
-          import json, pathlib, re, subprocess
+          import json, os, pathlib, re, subprocess
           tracked = subprocess.check_output(['git','diff','--name-only'], text=True).splitlines()
           untracked = subprocess.check_output(['git','ls-files','--others','--exclude-standard'], text=True).splitlines()
           changed = sorted(set(tracked + untracked))
           allowed_exact = {'blog/index.html','blog/rss.xml','sitemap.xml'}
-          article = [p for p in changed if re.fullmatch(r'blog/[a-z0-9-]+/index\.html', p)]
-          unexpected = [p for p in changed if p not in allowed_exact and p not in article]
-          assert len(article) == 1, f'exact één artikelbestand vereist, gevonden={article}; changed={changed}'
+          article_changes = [p for p in changed if re.fullmatch(r'blog/[a-z0-9-]+/index\.html', p)]
+          unexpected = [p for p in changed if p not in allowed_exact and p not in article_changes]
+          assert len(article_changes) <= 1, f'maximaal één artikelbestand toegestaan, gevonden={article_changes}; changed={changed}'
           assert not unexpected, f'onverwachte bestanden gewijzigd: {unexpected}'
-          text = pathlib.Path(article[0]).read_text(encoding='utf-8')
+          slug = os.environ.get('FORCE_SLUG','').strip()
+          article_path = article_changes[0] if article_changes else f'blog/{slug}/index.html'
+          assert slug or article_changes, 'slug of gewijzigd artikelbestand vereist'
+          assert pathlib.Path(article_path).is_file(), f'artikelbestand ontbreekt: {article_path}'
+          text = pathlib.Path(article_path).read_text(encoding='utf-8')
           assert len(re.findall(r'<h1(?:\s|>)', text)) == 1, 'exact één h1 vereist'
           m = re.search(r'<link rel="canonical" href="([^"]+)">', text)
           assert m and m.group(1).endswith('/'), 'geldige canonical vereist'
@@ -168,7 +174,7 @@ jobs:
           assert ld, 'JSON-LD ontbreekt'
           json.loads(ld.group(1))
           pathlib.Path('/tmp/validated-approved-blog-files').write_text('\n'.join(changed) + '\n', encoding='utf-8')
-          print('CONTRACT_OK', article[0], m.group(1), changed)
+          print('CONTRACT_OK', article_path, m.group(1), changed)
           PY
 
       - name: Commit validated candidate

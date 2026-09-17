@@ -4,6 +4,7 @@ import fs from 'node:fs';
 
 const workflow = fs.readFileSync('.github/workflows/daily-blog-publisher.yml', 'utf8');
 const publisher = fs.readFileSync('scripts/publish_approved_blog_v2.py', 'utf8');
+const publisherCore = fs.readFileSync('scripts/brain/publish_approved_blog_v2_core.py', 'utf8');
 
 test('daily publisher requires a learning-driven candidate selection before render', () => {
   assert.match(workflow, /content-learning/i, 'daily workflow must fetch or materialize content learning before selection');
@@ -13,7 +14,8 @@ test('daily publisher requires a learning-driven candidate selection before rend
 });
 
 test('approved publisher no longer owns implicit oldest-first production selection', () => {
-  assert.match(publisher, /def get_queue\(force=''/);
+  assert.match(publisher, /publish_approved_blog_v2_core/, 'wrapper must delegate queue mechanics to the canonical publisher core');
+  assert.match(publisherCore, /def get_queue\(force=''/, 'publisher core must keep exact-slug queue selection');
   assert.match(publisher, /if not force:/, 'unforced render must be rejected so production cannot silently fall back to rows[0]');
   assert.match(publisher, /learning-driven selection required/i);
 });

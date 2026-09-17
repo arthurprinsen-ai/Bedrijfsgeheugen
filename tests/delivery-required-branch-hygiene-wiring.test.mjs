@@ -5,6 +5,9 @@ import { readFileSync } from 'node:fs';
 const workflow = readFileSync('.github/workflows/required-test.yml', 'utf8');
 const hygieneWorkflow = readFileSync('.github/workflows/powerhouse-delivery-hygiene.yml', 'utf8');
 const mergedBranchCleanup = readFileSync('.github/workflows/powerhouse-merged-branch-cleanup.yml', 'utf8');
+const engineeringIntelligence = readFileSync('.github/workflows/engineering-intelligence-trust.yml', 'utf8');
+const supplyChain = readFileSync('.github/workflows/engineering-supply-chain-trust.yml', 'utf8');
+const learningClassifier = readFileSync('.github/workflows/learning-contract-delivery-classifier-tests.yml', 'utf8');
 
 test('Required preflight enforces branch hygiene before lane execution', () => {
   assert.match(workflow, /delivery-branch-hygiene-guard\.mjs/);
@@ -17,8 +20,22 @@ test('Required preflight enforces branch hygiene before lane execution', () => {
 
 test('Required evidence is latest-head-wins so obsolete candidate proof cannot block the current SHA', () => {
   assert.match(workflow, /group:\s*required-test-/);
+  assert.match(workflow, /github\.event\.pull_request\.head\.sha/);
   assert.match(workflow, /cancel-in-progress:\s*true/);
   assert.doesNotMatch(workflow, /cancel-in-progress:\s*false/);
+});
+
+test('non-required PR runner fanout stays path-scoped and latest-head-wins', () => {
+  for (const [name, yml] of [
+    ['engineering intelligence', engineeringIntelligence],
+    ['supply chain', supplyChain],
+    ['learning classifier', learningClassifier],
+  ]) {
+    assert.match(yml, /pull_request:[\s\S]*?paths:/, `${name} must be path-scoped for pull requests`);
+    assert.match(yml, /concurrency:[\s\S]*?cancel-in-progress:\s*true/, `${name} must cancel stale runs`);
+  }
+  assert.match(supplyChain, /dependency-review:[\s\S]*?if:\s*github\.event_name == 'pull_request'/);
+  assert.match(supplyChain, /provenance:[\s\S]*?if:\s*github\.event_name == 'push'/);
 });
 
 test('delivery hygiene retries transient GitHub API failures and preserves fail-closed evidence', () => {

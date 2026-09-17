@@ -24,22 +24,24 @@ test('a later save of the same model instance replaces the projected input inste
   assert.equal(first.id,second.id);assert.equal(state.businessInputs.length,1);assert.deepEqual(state.businessInputs[0].answers,{score:4});
 });
 
-test('authenticated ingest writes immutable Brain authority first, derives tenant from identity and persists canonical projection', async () => {
-  let stored=null;let authorityWrite=null;
+test('authenticated ingest writes immutable Brain authority first, feeds Powerhouse and persists canonical projection', async () => {
+  let stored=null;const authorityWrites=[];
   const store={async getLayer(){return null;},async putCanonical(tenantId,record){stored={tenantId,record};return{stored:true,stale:false,record};}};
-  const authority={async append(input){authorityWrite=input;return{authority:'supabase:brain_records',record:input.record};}};
+  const authority={async append(input){authorityWrites.push(input);return{authority:'supabase:brain_records',record:input.record};}};
   const handler=createPortalBusinessInputHandler({getUser:async()=>({id:'user-1',app_metadata:{tenantId:'tenant-real'}}),store,authority,now:()=> '2026-09-17T15:50:00.000Z'});
   const request=new Request('https://example.test/api/portal-business-input',{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer test'},body:JSON.stringify({tenantId:'tenant-forged',inputType:'StrategyModel',modelId:'business-model',answers:{customer:'SME'},sourcePortal:'portal-next'})});
   const response=await handler(request);const payload=await response.json();
-  assert.equal(response.status,200);assert.equal(authorityWrite.record.tenantId,'tenant-real');assert.equal(authorityWrite.record.type,'BusinessInput');assert.equal(authorityWrite.record.kind,'SourceTruth');assert.equal(authorityWrite.record.subjectId,'PORTAL_INPUT-StrategyModel-business-model-primary');assert.equal(stored.tenantId,'tenant-real');assert.equal(stored.record.origin,'canonical-brain');assert.equal(stored.record.data.businessInputs[0].truthClass,'SourceTruth');assert.equal(stored.record.data.businessInputs[0].answers.customer,'SME');assert.equal(stored.record.data.businessInputs[0].metadata.brainRecordId,payload.brainRecordId);assert.equal(payload.authorityStored,true);assert.equal(payload.stored,true);
+  assert.equal(response.status,200);assert.equal(authorityWrites.length,2);assert.equal(authorityWrites[0].record.tenantId,'tenant-real');assert.equal(authorityWrites[0].record.type,'BusinessInput');assert.equal(authorityWrites[0].record.kind,'SourceTruth');assert.equal(authorityWrites[0].record.subjectId,'PORTAL_INPUT-StrategyModel-business-model-primary');assert.equal(authorityWrites[1].record.type,'CurrentState');assert.deepEqual(authorityWrites[1].record.predecessorIds,[authorityWrites[0].record.id]);assert.equal(stored.tenantId,'tenant-real');assert.equal(stored.record.origin,'canonical-brain');assert.equal(stored.record.data.businessInputs[0].truthClass,'SourceTruth');assert.equal(stored.record.data.businessInputs[0].answers.customer,'SME');assert.equal(stored.record.data.businessInputs[0].metadata.brainRecordId,payload.brainRecordId);assert.equal(stored.record.data.businessInputs[0].metadata.currentStateRecordId,payload.currentStateRecordId);assert.equal(payload.authorityStored,true);assert.equal(payload.powerhouseFeedStored,true);assert.equal(payload.stored,true);
 });
 
-test('identical portal content gets the same authority revision id for idempotent retry', async () => {
-  const ids=[];const store={async getLayer(){return null;},async putCanonical(_tenantId,record){return{stored:true,record};}};const authority={async append({record}){ids.push(record.id);return{authority:'supabase:brain_records',record};}};
+test('identical portal content gets the same authority and current-state revision ids for idempotent retry', async () => {
+  const writes=[];const store={async getLayer(){return null;},async putCanonical(_tenantId,record){return{stored:true,record};}};const authority={async append(input){writes.push(input);return{authority:'supabase:brain_records',record:input.record};}};
   const handler=createPortalBusinessInputHandler({getUser:async()=>({id:'user-1',app_metadata:{tenantId:'tenant-1'}}),store,authority,now:()=>new Date().toISOString()});
   const body={inputType:'AIActAssessment',modelId:'eu-ai-act',answers:{risk:'limited'},sourcePortal:'portal-next'};
   for(const authorization of ['Bearer a','Bearer b'])await handler(new Request('https://example.test/api/portal-business-input',{method:'POST',headers:{'content-type':'application/json',authorization},body:JSON.stringify(body)}));
-  assert.equal(ids.length,2);assert.equal(ids[0],ids[1]);
+  const sourceWrites=writes.filter(({record})=>record.type==='BusinessInput');const currentStateWrites=writes.filter(({record})=>record.type==='CurrentState');
+  assert.equal(sourceWrites.length,2);assert.equal(sourceWrites[0].record.id,sourceWrites[1].record.id);assert.equal(sourceWrites[0].idempotencyKey,sourceWrites[1].idempotencyKey);
+  assert.equal(currentStateWrites.length,2);assert.equal(currentStateWrites[0].record.id,currentStateWrites[1].record.id);assert.equal(currentStateWrites[0].idempotencyKey,currentStateWrites[1].idempotencyKey);
 });
 
 test('canonical read-repair reconstructs a missing BusinessInput projection from Brain authority and keeps the newest revision', () => {
