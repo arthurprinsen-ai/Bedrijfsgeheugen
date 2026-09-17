@@ -32,7 +32,10 @@ async function callAI(key: string, model: string, system: string, user: unknown,
     body: JSON.stringify({ model, max_tokens: maxTokens, system, messages: [{ role:'user', content:JSON.stringify(user) }], tools:[tool], tool_choice:{ type:'tool', name:tool.name } }),
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) throw new Error(`AI_${response.status}:${clean(body?.error?.message).slice(0,220)}`);
+  if (!response.ok) {
+    console.error('ORCHESTRATOR_AI_PROVIDER_ERROR', response.status);
+    throw new Error('AI_PROVIDER_REQUEST_FAILED');
+  }
   const result = (body.content || []).find((x: any) => x.type === 'tool_use' && x.name === tool.name);
   if (!result?.input) throw new Error('AI_TOOL_OUTPUT_MISSING');
   return result.input;
@@ -141,12 +144,12 @@ Deno.serve(async (req) => {
       const {error} = await db.from('powerhouse_channel_decisions').upsert({ run_date:runDate,channel,decision:decision.decision,state:decision.state,priority:decision.priority,
         confidence:decision.confidence,topic_key:decision.topic_key,rationale:decision.rationale,scheduled_for:`${runDate}T${hour}:00:00+02:00`,delivery_ref:stale?null:previous?.delivery_ref||null,
         delivery_evidence:evidence,source_recommendation_ids:recs.map((r:any)=>r.recommendation_id),updated_at:new Date().toISOString() });
-      if (error) throw new Error(`DECISION_WRITE:${channel}:${error.message}`);
+      if (error) throw new Error(`DECISION_WRITE:${channel}`);
     }
 
     stage = 'select-pending';
     const {data:pending,error:pendingError} = await db.from('powerhouse_channel_decisions').select('*').eq('run_date',runDate).eq('decision','publish').eq('state','decided').order('priority',{ascending:false}).limit(1).maybeSingle();
-    if (pendingError) throw new Error(`PENDING_READ:${pendingError.message}`);
+    if (pendingError) throw new Error('PENDING_READ_FAILED');
     if (!pending) return json({ok:true,runDate,generated:false,reason:'NO_PENDING_ARTIFACT',executor_capabilities,personal_source_ready:!!personalSource});
     if (pending.channel === 'linkedin_personal' && !personalSource) throw new Error('PERSONAL_TRUTH_SOURCE_UNVERIFIED');
     if (pending.channel === 'instagram_company' && instagramProof.exact_final_media_proven !== true) throw new Error('EXACT_FINAL_MEDIA_PROOF_REQUIRED');
@@ -170,14 +173,15 @@ Deno.serve(async (req) => {
     const {error:artifactError} = await db.from('powerhouse_content_artifacts').upsert({run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
       content_brief:pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:gov.model_id,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
       recommendation_id:recommendation?.recommendation_id||null,identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},status:'content_ready',updated_at:new Date().toISOString()});
-    if (artifactError) throw new Error(`ARTIFACT_WRITE:${artifactError.message}`);
+    if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
     const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},updated_at:new Date().toISOString()})
       .eq('run_date',runDate).eq('channel',pending.channel).eq('state','decided');
-    if (decisionError) throw new Error(`DECISION_STATE_WRITE:${decisionError.message}`);
+    if (decisionError) throw new Error('DECISION_STATE_WRITE_FAILED');
     return json({ok:true,runDate,generated:true,channel:pending.channel,title:artifact.title,executor_capabilities,personal_truth_verified:pending.channel==='linkedin_personal'?true:null});
   } catch (error) {
     const message = String((error as Error)?.message||error).slice(0,500);
+    console.error('ORCHESTRATOR_ERROR',stage,message);
     try { await db.from('bg_gezondheid').insert({gemeten_op:new Date().toISOString(),onderdeel:'powerhouse-content-orchestrator',soort:'edge-function',status:'fout',detail:`${stage}:${message}`.slice(0,400),gegevens:{runDate,version:VERSION,stage}}); } catch {}
-    return json({ok:false,error:message,stage,runDate},500);
+    return json({ok:false,error:'ORCHESTRATOR_INTERNAL_ERROR',stage,runDate},500);
   }
 });
