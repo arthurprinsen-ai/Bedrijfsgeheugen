@@ -5,6 +5,7 @@ import { isDemoCustomer, renderDemoOverview } from './overview-demo.js';
 import { directievragenMarkup, DIRECTIEVRAGEN_STIJL } from './directievragen.js';
 import { openPortalPage } from '../page-shell.js';
 import { mountExecutiveCockpit } from '../operating-system/executive-cockpit.js';
+import { mountResourceIntelligenceCockpit } from './resource-intelligence.js';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);
@@ -70,6 +71,7 @@ export function applyOverviewDashboard(root=document,state={}){
  ensureCompanyCockpit(root);
  renderDirectievragen(root,state);
  mountExecutiveCockpit(root,state);
+ mountResourceIntelligenceCockpit(root,state);
  if(isDemoCustomer(state)&&renderDemoOverview(root)){bindPageButtons(root.querySelector?.('.ovz'));return true;}
  const model=overviewViewModel(state);
  if(!model||!root?.querySelectorAll)return false;
