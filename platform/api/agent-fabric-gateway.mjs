@@ -1,3 +1,5 @@
+import { beginMaterialRun } from '../../scripts/brain/powerhouse-universal-runtime-ingress.mjs';
+
 export const AGENT_FABRIC_COMMANDS = Object.freeze({
   INTAKE_SIGNAL:'INTAKE_SIGNAL',
   INTAKE_OPPORTUNITY:'INTAKE_OPPORTUNITY',
@@ -48,16 +50,16 @@ function requireIngressReceipt(receipt, runtime) {
   return receipt;
 }
 
-export function createAgentFabricGateway({ fabric, runtimeIngress } = {}) {
+export function createAgentFabricGateway({ fabric, rootDir = process.cwd() } = {}) {
   for (const method of ['intake','intakeOpportunity','transition','recordLearning','getWork','listWork','suggestLearning']) {
     requireMethod(fabric, method);
   }
-  if (typeof runtimeIngress?.beginMaterialRun !== 'function') throw new TypeError('runtimeIngress.beginMaterialRun is required');
 
   async function command(request) {
     if (!request || typeof request.type !== 'string') throw new TypeError('Agent Fabric command type is required');
+    if (!Object.values(AGENT_FABRIC_COMMANDS).includes(request.type)) throw unsupported('command', request.type);
     const runtime = requireRuntimeIdentity(request.runtime);
-    const receipt = requireIngressReceipt(await runtimeIngress.beginMaterialRun(runtime), runtime);
+    const receipt = requireIngressReceipt(beginMaterialRun({ ...runtime, rootDir }), runtime);
     const payload = Object.freeze({ ...(request.payload ?? {}), runtimeIngressReceipt: receipt });
     switch (request.type) {
       case AGENT_FABRIC_COMMANDS.INTAKE_SIGNAL:
