@@ -49,6 +49,9 @@ jobs:
             rc=$?
             trap - EXIT
             write_evidence "$rc"
+            if [ "$rc" -ne 0 ]; then
+              echo "::error::Powerhouse merged branch cleanup failed: state=$state detail=${detail:-UNKNOWN} branch=$HEAD_REF expected_head=$EXPECTED_HEAD_SHA"
+            fi
             exit "$rc"
           }
           trap cleanup_evidence EXIT
