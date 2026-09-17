@@ -4,6 +4,7 @@ import { createPortalBusinessInput } from '../platform/contracts/portal-business
 import { projectCanonicalObject } from '../platform/read-models/portal-projection-layers.mjs';
 import { createPortalBusinessInputHandler } from '../platform/api/portal-business-input-handler.mjs';
 import { readLegacyPortalBusinessInputs } from '../portal-next/portal-business-input-store.js';
+import { repairBusinessInputsFromAuthority } from '../supabase/functions/portal-state-eu/business-input-read-repair.js';
 
 test('portal business input is stored as SourceTruth with model lineage and raw answers', () => {
   const object=createPortalBusinessInput({tenantId:'tenant-1',userId:'user-1',inputType:'AIActAssessment',modelId:'eu-ai-act',instanceId:'primary',schemaVersion:3,answers:{usesAI:true,humanOversight:false},sourcePortal:'portal-next',submittedAt:'2026-09-17T15:40:00.000Z'});
@@ -39,6 +40,20 @@ test('identical portal content gets the same authority revision id for idempoten
   const body={inputType:'AIActAssessment',modelId:'eu-ai-act',answers:{risk:'limited'},sourcePortal:'portal-next'};
   for(const authorization of ['Bearer a','Bearer b'])await handler(new Request('https://example.test/api/portal-business-input',{method:'POST',headers:{'content-type':'application/json',authorization},body:JSON.stringify(body)}));
   assert.equal(ids.length,2);assert.equal(ids[0],ids[1]);
+});
+
+test('canonical read-repair reconstructs a missing BusinessInput projection from Brain authority and keeps the newest revision', () => {
+  const current={businessInputs:[{id:'PORTAL_INPUT-StrategyModel-business-model-primary',modelId:'business-model',instanceId:'primary',answers:{customer:'Old'},updatedAt:'2026-09-17T15:00:00.000Z'}],sourceMeta:{updatedAt:'2026-09-17T15:00:00.000Z'}};
+  const records=[
+    {record_id:'PORTAL_INPUT_RECORD-old',record_type:'BusinessInput',record_kind:'SourceTruth',subject_id:'PORTAL_INPUT-StrategyModel-business-model-primary',owner_id:'user-1',observed_at:'2026-09-17T15:10:00.000Z',updated_at:'2026-09-17T15:10:00.000Z',source_revision:'old',provenance:{sourceType:'PortalInput'},payload:{canonicalObjectId:'PORTAL_INPUT-StrategyModel-business-model-primary',inputType:'StrategyModel',modelId:'business-model',instanceId:'primary',answers:{customer:'SME'},sourcePortal:'portal-next',submittedAt:'2026-09-17T15:10:00.000Z',truthClass:'SourceTruth'}},
+    {record_id:'PORTAL_INPUT_RECORD-new',record_type:'BusinessInput',record_kind:'SourceTruth',subject_id:'PORTAL_INPUT-StrategyModel-business-model-primary',owner_id:'user-1',observed_at:'2026-09-17T15:20:00.000Z',updated_at:'2026-09-17T15:20:00.000Z',source_revision:'new',provenance:{sourceType:'PortalInput'},payload:{canonicalObjectId:'PORTAL_INPUT-StrategyModel-business-model-primary',inputType:'StrategyModel',modelId:'business-model',instanceId:'primary',answers:{customer:'MKB'},sourcePortal:'portal-next',submittedAt:'2026-09-17T15:20:00.000Z',truthClass:'SourceTruth'}}
+  ];
+  const repaired=repairBusinessInputsFromAuthority(current,records);
+  assert.equal(repaired.businessInputs.length,1);
+  assert.deepEqual(repaired.businessInputs[0].answers,{customer:'MKB'});
+  assert.equal(repaired.businessInputs[0].metadata.brainRecordId,'PORTAL_INPUT_RECORD-new');
+  assert.equal(repaired.sourceMeta.kind,'canonical-brain');
+  assert.equal(repaired.sourceMeta.updatedAt,'2026-09-17T15:20:00.000Z');
 });
 
 test('legacy portal browser states become migratable BusinessInputs without lead/auth keys', () => {
