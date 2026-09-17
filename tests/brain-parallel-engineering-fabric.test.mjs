@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { execFileSync } from 'node:child_process';
 import {
   buildExecutionPlan,
+  executePlanWaves,
   buildImpactGraph,
   selectAffectedTests,
   buildCacheIdentity,
@@ -49,6 +50,25 @@ test('independent backend and website packages execute in the same wave', () => 
     { id:'B', paths:['site/home.js'], baseSha:'base', candidateSha:'b' }
   ], deliveryConfig, policy });
   assert.deepEqual(plan.waves.map(w => w.map(p => p.id)), [['A','B']]);
+});
+
+test('coordinator executes independent specialist packages concurrently and waves sequentially', async () => {
+  const plan = buildExecutionPlan({ workPackages: [
+    { id:'A', paths:['brain/a.mjs'], baseSha:'base', candidateSha:'a', specialist:'backend' },
+    { id:'B', paths:['site/b.js'], baseSha:'base', candidateSha:'b', specialist:'website' },
+    { id:'C', paths:['brain/c.mjs'], dependsOn:['A'], baseSha:'base', candidateSha:'c', specialist:'backend' }
+  ], deliveryConfig, policy });
+  const starts = []; const finishes = [];
+  const workers = {
+    backend: async pkg => { starts.push(pkg.id); await new Promise(resolve => setTimeout(resolve, 20)); finishes.push(pkg.id); return `done:${pkg.id}`; },
+    website: async pkg => { starts.push(pkg.id); await new Promise(resolve => setTimeout(resolve, 20)); finishes.push(pkg.id); return `done:${pkg.id}`; }
+  };
+  const result = await executePlanWaves(plan, workers);
+  assert.deepEqual(starts.slice(0, 2).sort(), ['A','B']);
+  assert.equal(starts[2], 'C');
+  assert.ok(finishes.indexOf('A') < starts.indexOf('C'));
+  assert.deepEqual(result.results, { A:'done:A', B:'done:B', C:'done:C' });
+  assert.equal(result.promotionAuthority, false);
 });
 
 test('path contract dependency and mutable-resource conflicts serialize deterministically', () => {
