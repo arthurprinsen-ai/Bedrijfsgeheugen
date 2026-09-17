@@ -6,12 +6,14 @@ import { fileURLToPath } from 'node:url';
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const FAST_EXECUTION_POLICY_SOURCE = 'config/powerhouse-fast-execution-v1.json';
 const UNIVERSAL_COMPLETION_POLICY_SOURCE = 'config/powerhouse-universal-completion-v1.json';
+const SESSION_BINDING_POLICY_SOURCE = 'config/powerhouse-session-binding-v1.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'config/powerhouse-engineering-os.json',
   'config/powerhouse-truth-status-contract.json',
   'config/powerhouse-execution-resilience-v1.json',
   FAST_EXECUTION_POLICY_SOURCE,
   UNIVERSAL_COMPLETION_POLICY_SOURCE,
+  SESSION_BINDING_POLICY_SOURCE,
   'brain/policies/powerhouse-system-contract-v1.json',
   'brain/policies/live-completion-learning-contract-v1.json',
   'brain/policies/powerhouse-agent-continuity-v1.json',
@@ -66,15 +68,7 @@ function validateFastExecutionPolicy(policy) {
   if (policy.default_enabled !== true) throw new Error('fast-execution policy is not default enabled');
   if (typeof policy.scope !== 'string' || !/chats/i.test(policy.scope) || !/agents/i.test(policy.scope)) throw new Error('fast-execution policy scope does not cover chats and agents');
   if (typeof policy.entrypoint !== 'string' || !policy.entrypoint) throw new Error('fast-execution policy entrypoint is missing');
-  return Object.freeze({
-    version: policy.version,
-    status: policy.status,
-    defaultEnabled: policy.default_enabled,
-    executionClassDefault: 'STANDARD',
-    policySource: FAST_EXECUTION_POLICY_SOURCE,
-    entrypoint: policy.entrypoint,
-    failClosed: true
-  });
+  return Object.freeze({ version: policy.version, status: policy.status, defaultEnabled: policy.default_enabled, executionClassDefault: 'STANDARD', policySource: FAST_EXECUTION_POLICY_SOURCE, entrypoint: policy.entrypoint, failClosed: true });
 }
 
 function validateUniversalCompletionPolicy(policy) {
@@ -84,16 +78,17 @@ function validateUniversalCompletionPolicy(policy) {
   if (typeof policy.scope !== 'string' || !/chats/i.test(policy.scope) || !/agents/i.test(policy.scope)) throw new Error('universal-completion scope does not cover chats and agents');
   if (!Array.isArray(policy.required_categories) || policy.required_categories.length < 20) throw new Error('universal-completion required categories are incomplete');
   if (typeof policy.entrypoint !== 'string' || !policy.entrypoint) throw new Error('universal-completion entrypoint is missing');
-  return Object.freeze({
-    version: policy.version,
-    status: policy.status,
-    defaultEnabled: policy.default_enabled,
-    failClosed: policy.fail_closed,
-    manifestVersion: policy.manifest_version,
-    requiredCategories: [...policy.required_categories],
-    policySource: UNIVERSAL_COMPLETION_POLICY_SOURCE,
-    entrypoint: policy.entrypoint
-  });
+  return Object.freeze({ version: policy.version, status: policy.status, defaultEnabled: policy.default_enabled, failClosed: policy.fail_closed, manifestVersion: policy.manifest_version, requiredCategories: [...policy.required_categories], policySource: UNIVERSAL_COMPLETION_POLICY_SOURCE, entrypoint: policy.entrypoint });
+}
+
+function validateSessionBindingPolicy(policy) {
+  if (!policy || policy.type !== 'POWERHOUSE_SESSION_BINDING_POLICY') throw new Error('session-binding policy missing or wrong type');
+  if (policy.version !== 'POWERHOUSE-SESSION-BINDING-v1') throw new Error(`unsupported session-binding policy version: ${policy.version ?? 'missing'}`);
+  if (policy.status !== 'ACTIVE' || policy.default_enabled !== true || policy.fail_closed !== true) throw new Error('session-binding policy must be ACTIVE, default enabled and fail-closed');
+  if (typeof policy.scope !== 'string' || !/chats/i.test(policy.scope) || !/agents/i.test(policy.scope)) throw new Error('session-binding scope does not cover chats and agents');
+  if (!Array.isArray(policy.binding_requires) || policy.binding_requires.length < 8) throw new Error('session-binding required receipt fields are incomplete');
+  if (typeof policy.entrypoint !== 'string' || !policy.entrypoint) throw new Error('session-binding entrypoint is missing');
+  return Object.freeze({ version: policy.version, status: policy.status, defaultEnabled: policy.default_enabled, failClosed: policy.fail_closed, receiptVersion: policy.receipt_version, unboundState: policy.unbound_state, boundState: policy.bound_state, policySource: SESSION_BINDING_POLICY_SOURCE, entrypoint: policy.entrypoint });
 }
 
 export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000 } = {}) {
@@ -113,6 +108,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   const signals = { fingerprints: [], preventions: [], blockers: [], resumeContracts: [] };
   let fastExecutionPolicy = null;
   let universalCompletionPolicy = null;
+  let sessionBindingPolicy = null;
   let sourceBytes = Buffer.byteLength(contractRaw, 'utf8');
   while (queue.length) {
     const requested = queue.shift();
@@ -128,6 +124,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
       try { parsed = JSON.parse(raw); } catch (error) { throw new Error(`invalid JSON learning source ${normalized}: ${error.message}`); }
       if (normalized === FAST_EXECUTION_POLICY_SOURCE) fastExecutionPolicy = parsed;
       if (normalized === UNIVERSAL_COMPLETION_POLICY_SOURCE) universalCompletionPolicy = parsed;
+      if (normalized === SESSION_BINDING_POLICY_SOURCE) sessionBindingPolicy = parsed;
       collectSignals(parsed, signals);
       if (Array.isArray(parsed.linked_learning_sources)) {
         for (const linked of parsed.linked_learning_sources) {
@@ -148,6 +145,10 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   const completionEntrypoint = normalizeSourcePath(rootDir, universalCompletion.entrypoint);
   if (!fs.existsSync(completionEntrypoint.absolute)) throw new Error(`missing universal-completion entrypoint: ${universalCompletion.entrypoint}`);
 
+  const sessionBinding = validateSessionBindingPolicy(sessionBindingPolicy);
+  const sessionEntrypoint = normalizeSourcePath(rootDir, sessionBinding.entrypoint);
+  if (!fs.existsSync(sessionEntrypoint.absolute)) throw new Error(`missing session-binding entrypoint: ${sessionBinding.entrypoint}`);
+
   const packet = {
     version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1',
     status: 'READY',
@@ -155,6 +156,7 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     sourceBytes,
     fastExecution,
     universalCompletion,
+    sessionBinding,
     sources,
     fingerprints: stableUnique(signals.fingerprints).sort(),
     preventions: stableUnique(signals.preventions).sort(),
