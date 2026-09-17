@@ -457,7 +457,9 @@
         "automation/",
         "make/",
         "notion/",
-        "tests/delivery-"
+        "tests/delivery-",
+        "tests/powerhouse-one-loop-",
+        "tests/powerhouse-github-learning.test.mjs"
       ],
       "requiredContracts": [
         "BG166",
