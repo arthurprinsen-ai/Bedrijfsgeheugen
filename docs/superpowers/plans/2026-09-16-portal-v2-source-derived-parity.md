@@ -30,25 +30,33 @@
 - Produces helpers to derive protected panel editable field ids, extract exact/wildcard inventory field contracts and match them fail-closed.
 - `main()` reports the exact panel and missing field ids when legacy editable state has no V2 contract.
 
-- [ ] Add source-derived extraction and matching helpers.
-- [ ] Require every legacy editable field to match an exact or wildcard `legacyFieldId` contract.
-- [ ] Preserve the existing 24-panel, global capability, overview semantics and implementation/evidence checks.
-- [ ] Run `python .github/scripts/portal_parity.py` and confirm green only when source-derived field coverage is complete.
+- [x] Add source-derived extraction and matching helpers.
+- [x] Require every legacy editable field to match an exact or wildcard `legacyFieldId` contract.
+- [x] Preserve the existing 24-panel, global capability, overview semantics and implementation/evidence checks.
+- [x] Wire the source-derived gate and self-tests into the required portal lane.
 
 ### Task 2: CI trigger completeness
 
 **Files:**
 - Modify: `.github/workflows/portal-parity.yml`
 
-- [ ] Trigger on `portal-v2/parity-gate.js` and `portal-v2/tests/parity-gate.test.mjs` changes as well as the legacy source, inventory and ledger.
-- [ ] Keep the source-derived Python gate as the workflow command.
+- [x] Trigger on `portal-v2/parity-gate.js` and `portal-v2/tests/parity-gate.test.mjs` changes as well as the legacy source, inventory and ledger.
+- [x] Trigger on the modular 15-capability mapping, V2 registry and modular parity test.
+- [x] Keep the source-derived Python gate as the workflow command and execute the modular parity test in the same fail-closed workflow.
 
-### Task 3: Production proof linkage
+### Task 3: Modular 15-capability route retention
+
+- [x] Add an explicit mapping for all 15 `LEGACY_CAPABILITIES` to existing Portal V2 destinations.
+- [x] Add native V2 destinations for `facturen-abonnement` and `frisse-blik` without introducing parallel state.
+- [x] Preserve current-main BCG functionality while reconciling overlapping portal files.
+- [x] Expose retained admin destinations through the existing `Meer` hub.
+
+### Task 4: Production proof linkage
 
 **Files:**
 - Verify: `.github/workflows/portal-v2-production-dom-readback.yml`
 - Verify: `tests/integration/portal-v2-production-*.spec.js`
 
-- [ ] Confirm exact-SHA immutable deployment resolution remains present.
-- [ ] Confirm production DOM/mobile/visual readback remains present.
-- [ ] Treat missing production evidence as an open obligation; source parity alone is never completion proof.
+- [x] Confirm exact-SHA immutable deployment resolution remains present.
+- [x] Confirm production DOM/mobile/visual readback remains present.
+- [ ] Record final exact-head/post-merge production evidence before declaring `LIVE & BEWEZEN`.
