@@ -13,6 +13,9 @@ create table if not exists public.notion_synced_posts (
   synced_at timestamptz not null default now(),
   synced_from text default 'notion'::text
 );
+alter table public.notion_synced_posts enable row level security;
+revoke all on table public.notion_synced_posts from public, anon, authenticated;
+grant all on table public.notion_synced_posts to service_role;
 
 alter table public.notion_synced_posts
   add column if not exists platform text,
