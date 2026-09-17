@@ -43,6 +43,11 @@ const personalArtifact = {
   generation_evidence:{ identity_gate_result:'PASS', concrete_personal_anchor:true, corporate_style:false, personal_truth_verified:true },
 };
 
+const companyArtifact = {
+  channel:'linkedin_company', artifact_type:'linkedin_post', body:'company copy', status:'content_ready',
+  generation_evidence:{ final_copy_approved:true },
+};
+
 const instagramArtifact = {
   channel:'instagram', artifact_type:'instagram_post', body:'Mira zoekt de laatste versie.', status:'content_ready',
   generation_evidence:{ instagram_publish_gate_input:{
@@ -88,9 +93,9 @@ test('Instagram requires exact verified Mira daily-life final asset evidence', (
   assert.equal(source.kind,'artifact'); assert.deepEqual(source.media,[{type:'image',url:'https://cdn.example/final.jpg',alt:null}]);
 });
 
-test('existing company provider coverage dedupes before any create action', () => {
-  const decision=deliveryDecision({channel:'linkedin_company',posts:[{id:'post-1',status:'scheduled'}],idea:{id:'idea-company',content:{text:'company copy'}}});
-  assert.equal(decision.action,'NONE'); assert.equal(decision.reason,'PROVIDER_COVERED');
+test('existing company provider coverage dedupes only when it matches the approved final artifact', () => {
+  const decision=deliveryDecision({channel:'linkedin_company',posts:[{id:'post-1',status:'scheduled',text:companyArtifact.body}],artifact:companyArtifact});
+  assert.equal(decision.action,'NONE'); assert.equal(decision.reason,'PROVIDER_COVERED_VERIFIED');
 });
 
 test('personal provider coverage only satisfies delivery when provider text equals the PASS artifact', () => {

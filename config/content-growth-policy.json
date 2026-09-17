@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "timeZone": "Europe/Amsterdam",
   "explorationRatio": 0.2,
   "horizonsDays": [1, 3, 7, 30],
@@ -16,5 +16,26 @@
     "revenue": 1
   },
   "minimumSupport": 3,
-  "revenueCurrency": "EUR"
+  "revenueCurrency": "EUR",
+  "trustedAdvisor": {
+    "contract": "config/trusted-advisor-os.json",
+    "requiredBeforeOptimization": true,
+    "principle": "Growth optimization must never outrank truth, stakeholder value, evidence quality, uncertainty transparency, channel identity, safety or integrity.",
+    "failClosedOn": [
+      "fabricated_proof",
+      "untraceable_customer_claim",
+      "unverifiable_metric",
+      "manufactured_urgency",
+      "fabricated_social_proof",
+      "unsupported_causal_claim",
+      "disguised_sales_pressure"
+    ],
+    "requiredSignalsForSubstantiveContent": [
+      "firsthand_operational_evidence",
+      "cited_external_evidence",
+      "transparent_reasoning",
+      "concrete_pattern_or_example",
+      "clearly_labeled_opinion_or_hypothesis"
+    ]
+  }
 }

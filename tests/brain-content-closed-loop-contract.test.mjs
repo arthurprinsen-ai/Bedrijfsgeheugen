@@ -25,6 +25,25 @@ test('publisher treats missing provider readback as stale state instead of a suc
   assert.match(publisher, /provider_truth_verified/);
 });
 
+test('publisher recovers provider lineage from obligation external_id when decision delivery_ref is missing', () => {
+  const publisher = read('supabase/functions/powerhouse-social-publisher/index.ts');
+  assert.match(publisher, /content_publication_obligations/);
+  assert.match(publisher, /external_id/);
+  assert.match(publisher, /obligationByChannel/);
+  assert.match(publisher, /const\s+obligation[^=]*=\s*obligationByChannel\.get\(obligationChannels\[row\.channel\]\)/);
+  assert.match(publisher, /clean\(row\.delivery_ref\)\s*\|\|\s*clean\(obligation\?\.external_id\)/);
+  assert.match(publisher, /delivery_ref:\s*ref/);
+});
+
+test('instagram transport readback never promotes identity-unproven media to PUBLISHED', () => {
+  const publisher = read('supabase/functions/powerhouse-social-publisher/index.ts');
+  assert.match(publisher, /EXACT_FINAL_MEDIA_PROOF_REQUIRED/);
+  assert.match(publisher, /instagramIdentityProven/);
+  assert.match(publisher, /row\.channel\s*===\s*'instagram_company'/);
+  assert.match(publisher, /transport_verified_identity_unproven/);
+  assert.match(publisher, /recordObligation\(db,\s*runDate,\s*row\.channel,\s*'BLOCKED'/);
+});
+
 test('orchestrator exposes unsupported channel obligations as machine-readable hard boundaries rather than silent hold', () => {
   const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   assert.match(orchestrator, /BLOCKED_HARD_BOUNDARY/);
@@ -69,6 +88,15 @@ test('single content supervisor drains generation, dispatches, readbacks and rec
   assert.match(loop, /bg-buffer-sync/);
   assert.match(loop, /GREEN MEANS OUTCOME VERIFIED/);
   assert.match(loop, /loop_state/);
+});
+
+test('supervisor audits provider truth before orchestrator can replan existing delivery state', () => {
+  const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
+  const audit = loop.indexOf("'powerhouse-social-publisher', { runDate, mode: 'audit_only' }");
+  const orchestrate = loop.indexOf("'powerhouse-content-orchestrator', { runDate }");
+  assert.ok(audit >= 0, 'pre-orchestration provider audit must exist');
+  assert.ok(orchestrate >= 0, 'orchestrator invocation must exist');
+  assert.ok(audit < orchestrate, 'provider audit must happen before orchestration');
 });
 
 test('public APIs keep provider and backend diagnostics internal', () => {

@@ -102,6 +102,19 @@ test('exact artifact build owns modern SEO validation while browser consumes the
   assert.doesNotMatch(browser, /https:\/\/deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
 });
 
+test('Netlify preview failure falls through to exact local candidate verification', () => {
+  const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
+  const previewReadyStart = website.indexOf('\n  preview-ready:');
+  const pageSeoStart = website.indexOf('\n  page-seo:', previewReadyStart);
+  assert.notEqual(previewReadyStart, -1);
+  assert.notEqual(pageSeoStart, -1);
+  const previewReady = website.slice(previewReadyStart, pageSeoStart);
+  assert.match(previewReady, /\['failure','error'\]\.includes\(status\?\.state\)/);
+  assert.doesNotMatch(previewReady, /\['failure','error'\]\.includes\(status\?\.state\)\) throw new Error/);
+  assert.match(previewReady, /Netlify preview .*exact local candidate fallback/);
+  assert.match(previewReady, /preview_mode=local-exact-candidate/);
+});
+
 test('production readback is serialized and never cancelled mid-flight', () => {
   const production = readFileSync('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(production, /group:\s*production-release-readback\s*$/m);
