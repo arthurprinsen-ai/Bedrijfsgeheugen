@@ -9,6 +9,19 @@ Scope: Completion Supervisor, Outcome Obligation Sweep, active backfill/resume, 
 
 Dit document is de menselijk leesbare recovery- en evidence-samenvatting voor volgende Powerhouse-agents. Het vervangt geen GitHub Actions evidence, Supabase obligation/evidence lineage of production readback. Bij verschil wint actuele runtime evidence.
 
+## Final authority
+
+De finale authority is de later bewezen productieclosure uit het bestaande Powerhouse Menselijk Handboek / Latest Verified State-lineage:
+- candidate SHA `f8996e811d64010a9c3f2a57ff2474216e0a46fa`;
+- production SHA `d66e3e050b0505043ff4ed0196f8ada26a2f8fca`;
+- Production Release Readback run `35129283647`;
+- obligation state `OBLIGATIONS_COMPLETE`;
+- completion state `LIVE_VERIFIED`;
+- next action `NONE`;
+- open obligation `null`.
+
+De eerdere runs/SHAs hieronder blijven historische bewijsstappen van de recovery. Zij worden niet weggegooid, maar zijn niet langer de final closure authority wanneer latere exact-production evidence bestaat.
+
 ## Oorspronkelijk probleem
 
 Powerhouse kon technisch werk lokaal afronden terwijl productie-readback, durable writeback of een andere outcome obligation nog open stond. Een bewezen harde externe boundary kon daardoor te vroeg als eindstatus worden behandeld. De kernfout was dat lokale voortgang, wachttoestand en succesvolle completion niet hard genoeg waren gescheiden.
@@ -89,7 +102,7 @@ Completion Supervisor is de fail-closed completion decision binnen dezelfde best
 - Geen reeds toegepaste Supabase DDL replayen om alleen source/ledger identity drift te corrigeren.
 - Geen nieuwe brain, queue, completion store, scheduler of recovery database naast Agent Fabric + Outcome Obligations + Supabase lineage bouwen.
 
-## Production evidence die de closure bewees
+## Historische production evidence uit de recovery
 
 ### Protected delivery / merges
 
@@ -125,7 +138,7 @@ Bewezen succesvolle stappen:
 - `Evaluate obligations without production mutation`
 - `Reconcile partial decisions into the same obligation lineage`
 
-Dit is het bewijs dat de recovery niet eindigde bij code/CI, maar in dezelfde duurzame Powerhouse obligation/evidence lineage is teruggeschreven.
+Deze historische evidence bewijst de recoveryketen; de final authority blijft de latere exact-production closure hierboven.
 
 ## Supabase production-ledger reconciliation
 
@@ -147,6 +160,7 @@ Regel: source-control identity mag met production ledger truth worden gereconcil
 8. **Synchroniseer fresh main alleen wanneer nodig.** Geen force/bypass; preserve unique delta en herbewijs exact head.
 9. **Bij runnerqueue: verander niets.** Poll dezelfde SHA; fix alleen een bewezen failure.
 10. **Schrijf learning terug.** Symptom, root cause, failed approach, fix, evidence, prevention en reusable rule horen in dezelfde Powerhouse lineage.
+11. **Respecteer evidence recency.** Nieuwere exact-production evidence supersedeert oudere runtime proof als final authority, maar verwijdert de historische lineage niet.
 
 ## Canonieke verwijzingen
 
@@ -158,6 +172,7 @@ Regel: source-control identity mag met production ledger truth worden gereconcil
 - Active backfill: `tools/outcome-obligation-completion-supervisor-backfill.mjs`
 - Backfill workflow: `.github/workflows/completion-supervisor-backfill-shadow.yml`
 - Outcome sweep: `.github/workflows/outcome-obligation-sweep.yml`
+- Human authority: Notion `Powerhouse Menselijk Handboek — Processen, Data, Intelligentie, Algoritmen & Samenhang`.
 
 ## Closure rule
 
