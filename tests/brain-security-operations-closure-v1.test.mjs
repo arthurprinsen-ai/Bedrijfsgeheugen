@@ -9,6 +9,7 @@ const deliveryPolicyPath = new URL('../config/brain-delivery-system.json', impor
 const socialMetricReplayPath = new URL('../supabase/migrations/20260910104922_bg_post_prestatie_metric_sleutels_normaliseren.sql', import.meta.url);
 const notionReplayPath = new URL('../supabase/migrations/20260909181648_notion_post_feature_staging.sql', import.meta.url);
 const postFeaturesReplayPath = new URL('../supabase/migrations/20260911101107_revenue_content_intelligence_20260911_v2.sql', import.meta.url);
+const offertesAkkoordReplayPath = new URL('../supabase/migrations/20260915111957_offertes_akkoord_op_replay_baseline.sql', import.meta.url);
 
 const requiredOpen = new Set([
   'isolated_restore_dr_exercise',
@@ -93,6 +94,14 @@ test('post feature replay baseline is secure before revenue intelligence ALTER s
   assert.match(sql, /alter table public\.bg_post_kenmerken enable row level security/i);
   assert.match(sql, /revoke all on table public\.bg_post_kenmerken from public, anon, authenticated/i);
   assert.match(sql, /grant all on table public\.bg_post_kenmerken to service_role/i);
+});
+
+test('offertes akkoord timestamp exists before commercial learning pricing view depends on it', () => {
+  const sql = fs.readFileSync(offertesAkkoordReplayPath, 'utf8');
+  assert.match(sql, /alter table public\.offertes/i);
+  assert.match(sql, /add column if not exists akkoord_op timestamptz/i);
+  assert.doesNotMatch(sql, /default\s+/i);
+  assert.doesNotMatch(sql, /not null/i);
 });
 
 test('CI gate runs the closure test read-only', () => {
