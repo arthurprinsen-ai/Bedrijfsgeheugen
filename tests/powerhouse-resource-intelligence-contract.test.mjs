@@ -6,6 +6,7 @@ const migrationPath = 'supabase/migrations/20260917093000_powerhouse_resource_in
 const configPath = 'config/powerhouse-resource-intelligence-v1.json';
 const workflowPath = '.github/workflows/powerhouse-resource-intelligence.yml';
 const auditPath = 'scripts/brain/resource-intelligence-audit.mjs';
+const agentContractPath = 'brain/contracts/resource-intelligence-v1.json';
 
 function read(path) {
   assert.ok(fs.existsSync(path), `missing ${path}`);
@@ -61,9 +62,12 @@ test('daily workflow and deterministic audit are wired', () => {
   assert.match(audit, /BG169/);
 });
 
-test('all-agent contract is explicit', () => {
-  const agents = read('AGENTS.md');
-  assert.match(agents, /Powerhouse Resource Intelligence v1/i);
-  assert.match(agents, /NULL/i);
-  assert.match(agents, /BG169/i);
+test('all-agent Brain contract is explicit and closed-loop', () => {
+  const contract = JSON.parse(read(agentContractPath));
+  assert.equal(contract.$id, 'BRAIN-RESOURCE-INTELLIGENCE-v1');
+  assert.match(contract.scope, /all_current_and_future_agents_chats_workflows_and_apps/);
+  assert.equal(contract.authority.production, 'BG169');
+  assert.ok(contract.decision_rules.includes('unknown_energy_or_water_is_NULL_not_zero'));
+  assert.equal(contract.daily_cycle.enabled, true);
+  assert.ok(contract.after_outcome.includes('refresh_shared_context'));
 });
