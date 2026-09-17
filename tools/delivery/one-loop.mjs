@@ -80,7 +80,24 @@ export function evaluateExecutionLease(run, now = Date.now()) {
   return 'HEALTHY';
 }
 
-export function evaluateGitHubQueueRecovery(snapshot = {}) {
+export function evaluateGitHubQueueRecovery(snapshot = {}, now = Date.now()) {
+  if (snapshot.status === 'queued') {
+    const queuedAt = Date.parse(snapshot.queuedAt ?? '');
+    const staleAfterMs = Number(snapshot.staleAfterMs ?? 0);
+    const stale = Number.isFinite(queuedAt)
+      && Number.isFinite(staleAfterMs)
+      && staleAfterMs > 0
+      && now - queuedAt >= staleAfterMs;
+    if (stale) {
+      return {
+        state: 'RECONCILING',
+        action: 'RECOVER',
+        retry: false,
+        reason: 'GITHUB_ACTIONS_QUEUE_STALE_RECONCILE',
+      };
+    }
+  }
+
   if (snapshot.status === 'queued' || snapshot.status === 'in_progress') {
     return {
       state: snapshot.status === 'queued' ? 'WAITING_CAPACITY' : 'EXECUTING',
@@ -108,8 +125,6 @@ export function evaluateGitHubQueueRecovery(snapshot = {}) {
 }
 
 export function evaluateFinishingPressure(snapshot = {}) {
-  const maxExecutable = Number(snapshot.maxExecutable ?? 0);
-  const admittedExecutable = Number(snapshot.admittedExecutable ?? 0);
   const finishing = Number(snapshot.finishing ?? 0);
   const lane = snapshot.candidate?.lane;
   const type = snapshot.candidate?.type;
@@ -123,11 +138,7 @@ export function evaluateFinishingPressure(snapshot = {}) {
     return { decision: 'WAITING_CAPACITY', reason: 'FINISH_EXISTING_WORK_FIRST' };
   }
 
-  if (maxExecutable > 0 && admittedExecutable >= maxExecutable) {
-    return { decision: 'WAITING_CAPACITY', reason: 'EXECUTABLE_CAPACITY_EXHAUSTED' };
-  }
-
-  return { decision: 'ADMIT', reason: 'CAPACITY_AVAILABLE' };
+  return { decision: 'ADMIT', reason: 'DEVELOPMENT_CAPACITY_INDEPENDENT' };
 }
 
 export function reconcileExecution(snapshot = {}) {
