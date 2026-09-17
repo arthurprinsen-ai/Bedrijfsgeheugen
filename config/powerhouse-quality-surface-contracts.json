@@ -16,6 +16,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:portal-business-input",
+      "type": "netlify_function",
+      "authority": "netlify/functions/portal-business-input.mjs",
+      "evidence_contract": "tests/portal-business-input.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:content-operations",
       "type": "function",
       "authority": "supabase/functions/content-operations/index.ts",
@@ -40,7 +47,7 @@
       "id": "function:powerhouse-content-orchestrator",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-orchestrator/index.ts",
-      "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
       "required": true
     },
     {
@@ -51,10 +58,17 @@
       "required": true
     },
     {
+      "id": "function:portal-state-eu",
+      "type": "function",
+      "authority": "supabase/functions/portal-state-eu/index.ts",
+      "evidence_contract": "tests/portal-business-input.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:bg_geheim",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
       "required": true
     },
     {
@@ -76,6 +90,20 @@
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-content-loop/index.ts",
       "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:bg_portal_state_get_internal",
+      "type": "rpc",
+      "authority": "supabase/functions/portal-state-eu/index.ts",
+      "evidence_contract": "tests/portal-business-input.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:bg_portal_state_put_internal",
+      "type": "rpc",
+      "authority": "supabase/functions/portal-state-eu/index.ts",
+      "evidence_contract": "tests/portal-business-input.test.mjs",
       "required": true
     },
     {
