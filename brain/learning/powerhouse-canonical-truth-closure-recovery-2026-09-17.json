@@ -1,0 +1,97 @@
+{
+  "learning_id": "powerhouse-canonical-truth-closure-recovery-2026-09-17",
+  "date": "2026-09-17",
+  "status": "CANONICAL_LEARNING",
+  "scope": "Bedrijfsgeheugen Powerhouse / GitHub / Supabase / BRAIN delivery / completion supervision",
+  "primary_fingerprint": "powerhouse-canonical-truth-closure-recovery-v1",
+  "related_fingerprints": [
+    "supabase-migration-version-lineage-drift-v1",
+    "migration-rename-test-reference-drift-v1",
+    "content-loop-shared-diagnostics-leak-v1",
+    "powerhouse-canonical-truth-closure-v1"
+  ],
+  "incident": {
+    "summary": "Canonical truth-closure release #1911 initially could not be safely merged because the Supabase migration version collided with an existing migration and BRAIN exposed multiple independent backend-contract failures during exact-head verification.",
+    "symptoms": [
+      "duplicate Supabase migration version 20260916215000",
+      "BRAIN public diagnostics contract rejected raw backend diagnostics persistence",
+      "after migration rename, regression test still referenced the old migration filename",
+      "materiality contract required explicit CURRENT_DEFECT and CURRENT_EXTERNAL_BOUNDARY classifications",
+      "production migration ledger later proved a different already-applied canonical version than the temporary repository version"
+    ]
+  },
+  "root_causes": [
+    {
+      "fingerprint": "supabase-migration-version-lineage-drift-v1",
+      "cause": "Repository migration identity and already-applied production ledger identity diverged during concurrent recovery. The correct authority was the production ledger; replaying DDL or weakening duplicate-version validation would have created a second truth."
+    },
+    {
+      "fingerprint": "migration-rename-test-reference-drift-v1",
+      "cause": "An exact-file regression test retained the pre-rename migration path, so BRAIN failed after the migration itself had been corrected."
+    },
+    {
+      "fingerprint": "content-loop-shared-diagnostics-leak-v1",
+      "cause": "The content-loop persisted raw internal error/step diagnostics into shared result state instead of retaining detailed diagnostics only in server logging and exposing a stable generic code."
+    },
+    {
+      "fingerprint": "materiality-classification-contract-drift-v1",
+      "cause": "The SQL read model was semantically fail-closed but did not explicitly encode the same canonical material classifications already defined by the truth classifier, causing contract mismatch."
+    }
+  ],
+  "fixes": [
+    "kept duplicate migration validation fail-closed; never loosened the validator",
+    "moved backend/provider diagnostics to server logs and persisted/returned CONTENT_LOOP_INTERNAL_ERROR only",
+    "updated the regression test to follow the renamed canonical migration file",
+    "aligned SQL materiality semantics with CURRENT_DEFECT, CURRENT_EXTERNAL_BOUNDARY and EVIDENCE_MISSING while preserving unknown-state fail-closed behavior",
+    "merged #1911 only after exact-head Required, BRAIN, Supabase Preview/Security, RLS, CodeQL and trust/quality gates were terminal green",
+    "used #1921 to reconcile repository migration identity to the already-proven production ledger identity 20260917123749 without replaying production DDL"
+  ],
+  "verified_release_lineage": {
+    "pr_1911_head": "94db12f646f95915c449663bb8e1862eee3ce75e",
+    "pr_1911_merge_sha": "37215eb18054ae6513b4e5dff71a2335ed01bbbe",
+    "pr_1921_head": "02224ec4b076c6926a4d8a7297b18464e37737ca",
+    "pr_1921_merge_sha": "b1790e23916f0f4a2350a10e1c4b7f7431dbebc0",
+    "production_migration_version": "20260917123749",
+    "production_migration_name": "powerhouse_canonical_truth_closure_v1",
+    "production_content_loop_version": 2,
+    "release_status": "LIVE_VERIFIED",
+    "manual_production_ddl_replay": false
+  },
+  "truth_semantics": {
+    "release_scope": "LIVE_VERIFIED",
+    "whole_powerhouse_scope": "BLOCKED",
+    "whole_powerhouse_material_obligations_after_release": 14,
+    "rule": "A verified release may be LIVE_VERIFIED while the broader Completion Supervisor remains BLOCKED by unrelated material obligations. Never promote whole-system status from a narrower release proof."
+  },
+  "permanent_prevention_rules": [
+    "MIGRATION_VERSION_COLLISION_FAILS_CLOSED",
+    "PRODUCTION_MIGRATION_LEDGER_OUTRANKS_TEMPORARY_REPOSITORY_ALIAS",
+    "NO_ALREADY_APPLIED_DDL_REPLAY_FOR_LINEAGE_RECONCILIATION",
+    "MIGRATION_RENAME_UPDATES_EXACT_FILE_TEST_REFERENCES_ATOMICALLY",
+    "PUBLIC_ERROR_CONTRACT_NEVER_PERSISTS_RAW_INTERNAL_DIAGNOSTICS",
+    "TEST_ORACLE_IS_NOT_WEAKENED_TO_MAKE_RELEASE_GREEN",
+    "TRUTH_CLASSIFIER_AND_SQL_MATERIALITY_MODEL_SHARE_THE_SAME_CANONICAL_CLASSIFICATIONS",
+    "EXACT_HEAD_GATES_MUST_BE_TERMINAL_GREEN_BEFORE_PROTECTED_MERGE",
+    "RELEASE_STATUS_AND_WHOLE_POWERHOUSE_STATUS_ARE_SEPARATE_TRUTH_SCOPES",
+    "POST_MERGE_PRODUCTION_READBACK_AND_CANONICAL_WRITEBACK_ARE_DEFINITION_OF_DONE"
+  ],
+  "reusable_diagnostic_sequence": [
+    "read current PR head and current protected main before every release decision",
+    "if Supabase preview fails, distinguish migration identity/version collision from SQL semantic failure",
+    "if BRAIN fails, inspect the exact failing assertion and changed lane before modifying tests or product code",
+    "after a migration rename, search all exact path references before rerunning CI",
+    "compare SQL materiality labels with the canonical truth-classifier constants",
+    "require fresh exact-head Required/BRAIN/security/trust evidence after every head movement",
+    "after merge, read production migration ledger, live Edge Function version and material-claims view",
+    "reconcile repository lineage to production truth without replaying already-applied DDL",
+    "write release evidence into the existing Completion Supervisor obligation while preserving unrelated blockers"
+  ],
+  "canonical_writeback": {
+    "completion_supervisor_obligation_id": "f463f2e4-6664-46f8-bbdf-dd269f6378a0",
+    "completion_supervisor_version_after_writeback": 6,
+    "completion_supervisor_state": "BLOCKED",
+    "release_closure_status": "LIVE_VERIFIED",
+    "production_lineage_matches_repository": true,
+    "parallel_learning_store_created": false
+  }
+}

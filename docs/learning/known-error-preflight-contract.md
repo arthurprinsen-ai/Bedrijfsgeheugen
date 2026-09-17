@@ -107,6 +107,52 @@ Proven example: Instagram/Mira exact-final-media hardening on 2026-09-17. The st
 
 Regression rules: `NEW_REGRESSION_TEST_MUST_HAVE_CANONICAL_DELIVERY_OWNER`, `UNCLASSIFIED_DELIVERY_PATH_FAILS_CLOSED`, `REUSE_EXISTING_TEST_CONTRACT_BEFORE_CREATING_PARALLEL_TEST_SURFACE`.
 
+## Truth-closure and migration lineage governance
+
+### `supabase-migration-version-lineage-drift-v1`
+Symptom: repository migration identity differs from an already-applied production migration ledger entry for the same semantic migration, or a candidate collides with an existing migration version.
+
+Root cause: concurrent recovery or rename work allowed repository filename/version lineage to drift from runtime truth.
+
+Required diagnosis: read the production `supabase_migrations.schema_migrations` ledger before deciding whether the problem is a new migration, duplicate version, or lineage mismatch.
+
+Required prevention: duplicate versions fail closed. If production already applied the intended semantic migration, reconcile repository lineage to the proven production ledger identity. Do not weaken duplicate-version validation and do not replay already-applied DDL merely to align names.
+
+Proven example: `powerhouse_canonical_truth_closure_v1` was reconciled through PR #1921 to production version `20260917123749` without manual production DDL replay.
+
+Regression rules: `MIGRATION_VERSION_COLLISION_FAILS_CLOSED`, `PRODUCTION_MIGRATION_LEDGER_OUTRANKS_TEMPORARY_REPOSITORY_ALIAS`, `NO_ALREADY_APPLIED_DDL_REPLAY_FOR_LINEAGE_RECONCILIATION`.
+
+### `migration-rename-test-reference-drift-v1`
+Symptom: BRAIN or another exact-file contract remains red after a migration rename even though the migration itself is valid.
+
+Root cause: regression tests or other exact-path references still point at the pre-rename migration filename.
+
+Required diagnosis: after any migration rename, search the repository for all exact old filename/path references before interpreting subsequent failures as product defects.
+
+Required prevention: migration rename and exact-file regression reference updates are one atomic change lineage.
+
+Regression rule: `MIGRATION_RENAME_UPDATES_EXACT_FILE_TEST_REFERENCES_ATOMICALLY`.
+
+### `materiality-classification-contract-drift-v1`
+Symptom: canonical truth-classifier tests and SQL material-claims/read-model tests disagree about which non-terminal classifications are material.
+
+Root cause: classifier constants and SQL materiality logic encode different vocabularies or implicit semantics.
+
+Required prevention: the truth classifier and SQL read model share the same canonical material classifications. `CURRENT_DEFECT`, `CURRENT_EXTERNAL_BOUNDARY` and `EVIDENCE_MISSING` remain material while non-terminal; unknown classifications fail closed unless explicitly terminal/superseded by canonical policy.
+
+Regression rule: `TRUTH_CLASSIFIER_AND_SQL_MATERIALITY_MODEL_SHARE_THE_SAME_CANONICAL_CLASSIFICATIONS`.
+
+### `release-vs-whole-powerhouse-truth-scope-v1`
+Symptom: a successful release is used to mark the entire Powerhouse green even though unrelated material obligations remain.
+
+Root cause: release-scoped evidence and whole-system Completion Supervisor state are conflated.
+
+Required prevention: preserve separate truth scopes. A release can be `LIVE_VERIFIED` while the wider Completion Supervisor remains `BLOCKED`. Never close unrelated obligations from narrower release proof.
+
+Proven example: after PRs #1911 and #1921, the truth-closure release was `LIVE_VERIFIED` while `completion-supervisor-v1` correctly remained `BLOCKED` with 14 other material obligations.
+
+Regression rules: `RELEASE_STATUS_AND_WHOLE_POWERHOUSE_STATUS_ARE_SEPARATE_TRUTH_SCOPES`, `NO_FALSE_WHOLE_SYSTEM_GREEN_FROM_NARROW_RELEASE_PROOF`.
+
 ## Media proof governance
 
 ### `instagram-exact-final-media-proof-v1`
