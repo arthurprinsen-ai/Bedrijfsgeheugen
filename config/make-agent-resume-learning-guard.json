@@ -1,8 +1,9 @@
 {
-  "version": "MAKE-AGENT-RESUME-LEARNING-GUARD-v1",
-  "state": "BLOCKED_PENDING_CALLER_GUARDS_AND_RUNTIME_EVIDENCE",
+  "version": "MAKE-AGENT-RESUME-LEARNING-GUARD-v2",
+  "state": "LEGACY_RETIRED_PATH",
   "resumeAllowed": false,
-  "purpose": "Prevent Make team-capacity recovery from automatically re-exposing PH01-PH16 stable runners that currently invoke BG168 for every AI result, including non-material outcomes.",
+  "purpose": "Preserve PH01-PH16 Make runner evidence as historical provenance while preventing team-capacity recovery, isActive drift or manual resume from restoring production authority.",
+  "authorityContract": "config/powerhouse-runtime-authority.json",
   "confirmedAffectedScenarioIds": [7088501,7088523,7088532,7088535,7088538,7088545,7088548,7088553,7088558,7088567,7088574,7088579,7088585,7088656,7089001,7089148],
   "confirmedAffectedAgents": [
     "PH Agent 01 - Frontend UX v3 stable runner",
@@ -27,36 +28,33 @@
     "confirmedAffected": 16,
     "totalInScope": 16,
     "complete": true,
-    "evidenceMethod": "individual Make scenario_get blueprint readback"
+    "evidenceMethod": "individual Make scenario_get blueprint readback",
+    "classification": "LEGACY_RETIRED_PATH"
   },
   "observedTeamState": {
     "status": "paused",
-    "isActive": true,
-    "meaning": "External/team-capacity suspension is containing execution, but logical activation remains. Pause is not a structural fix."
+    "historicalIsActiveObservation": true,
+    "meaning": "Pause/isActive are provider state only and never establish Powerhouse execution authority."
   },
-  "requiredCallerTopology": "AI result -> deterministic materiality classification -> branch; NON_MATERIAL returns exact primary result without BG168; MATERIAL may invoke BG168 once and always preserves exact primary result if learning fails.",
   "invariants": {
-    "nonMaterialOutcomeBG168Calls": 0,
-    "materialOutcomeBG168CallsMax": 1,
-    "learningFailurePreservesPrimaryResult": true,
+    "productionExecutionAllowed": false,
+    "authority": "NONE",
+    "historicalEvidencePreserved": true,
     "pausedWithIsActiveTrueCountsAsDisabled": false,
-    "resumeRequiresCallerGuards": true,
-    "resumeRequiresRuntimeEvidence": true,
-    "resumeRequiresBoundedCreditSlope": true,
+    "silentResumeAllowed": false,
     "paidCapacityIncreaseAllowedAutonomously": false,
     "secretsMayBePersistedInLearningOrRepo": false
   },
-  "resumeGate": {
-    "requiredBeforeNormalService": [
-      "Treat all PH01-PH16 stable runners as affected until each caller is guarded or explicitly exempt with exact evidence.",
-      "Migrate the canonical agent template so materiality is decided before paid BG168 invocation.",
-      "Verify NON_MATERIAL produces the exact primary result with zero BG168 calls.",
-      "Verify MATERIAL produces at most one BG168 call and still returns the exact primary result.",
-      "Verify BG168 failure or unavailability never suppresses the primary agent result.",
-      "Verify bounded credits per logical outcome under controlled runtime proof.",
-      "Verify no uncontrolled burst or 429 occurs during staged resume."
+  "reenableGate": {
+    "policy": "EXPLICIT_REENABLE_THROUGH_CURRENT_GATES_ONLY",
+    "required": [
+      "Explicitly change the canonical runtime authority contract from LEGACY_RETIRED_PATH to ACTIVE.",
+      "Prove one material obligation has exactly one owner after the change.",
+      "Pass current shared-context, security, cost, dedupe, rollback, execution-proof and outcome-writeback gates.",
+      "Stage an inactive canary first and prove bounded runtime behavior.",
+      "Verify exact production execution/readback before any normal service activation."
     ],
-    "rollout": "One inactive staging/canary template first, then small-batch agent rollout with exact blueprint readback and runtime evidence; no big-bang reactivation."
+    "automaticProviderResume": false
   },
   "security": {
     "rule": "Capability-, token-, credential- and secret-like values observed in connected runtime configuration must never be copied into repository artifacts, learning records, logs or user-visible evidence.",
