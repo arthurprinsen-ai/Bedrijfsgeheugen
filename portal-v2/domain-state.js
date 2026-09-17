@@ -83,6 +83,7 @@ function businessInputBinding(path){
   if(detail==='execution')return Object.freeze({key:'strategy:execution',inputType:'StrategyExecution',modelId:'strategy-execution',statePath:'portal.strategy.execution'});
   return Object.freeze({key:'strategy:operating-model',inputType:'StrategyModel',modelId:'strategy-operating-model',statePath:'portal.strategy'});
  }
+ if(section==='dataAiPassport'&&detail==='aiAct')return Object.freeze({key:'compliance:eu-ai-act',inputType:'AIActAssessment',modelId:'eu-ai-act',statePath:'portal.dataAiPassport.aiAct'});
  if(section==='aiAct'||section==='ai-act'||section==='euAiAct')return Object.freeze({key:'compliance:eu-ai-act',inputType:'AIActAssessment',modelId:'eu-ai-act',statePath:`portal.${section}`});
  if(section==='compliance'&&['aiAct','ai-act','euAiAct'].includes(detail))return Object.freeze({key:'compliance:eu-ai-act',inputType:'AIActAssessment',modelId:'eu-ai-act',statePath:`portal.compliance.${detail}`});
  const semantic=SECTION_BINDINGS[section];
