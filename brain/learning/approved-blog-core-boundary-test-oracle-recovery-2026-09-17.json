@@ -5,6 +5,13 @@
   "scope": "approved central blog publisher / protected delivery / test-oracle recovery",
   "fingerprint": "delivery-recovery|pipeline|backend|approved-blog-core-boundary-oracle-v1",
   "source_failure_fingerprint": "delivery-failure|pipeline|backend|3797d5966563185e",
+  "delivery_candidate": {
+    "obligation_id": "learning-writeback-approved-blog-recovery-v1",
+    "delivery_lane": "backend",
+    "candidate_type": "recovery",
+    "base_sha": "b573a31d0547979bf9c708e4f56da0fa27502688",
+    "supersedes": null
+  },
   "symptom": "Protected delivery for the approved-blog stale-reconciliation fix was blocked by Required/BRAIN tests even though the recovery behavior itself was correct.",
   "impact": "PR #1970 could not merge until the stale test-oracle defect was corrected. The already-published article and its production content were not changed by this recovery.",
   "root_cause": "Two regression tests asserted that faq_items() and source_contract() were implemented literally in scripts/publish_approved_blog_v2.py. Those functions had intentionally moved to scripts/brain/publish_approved_blog_v2_core.py and were re-exported by the wrapper, so the tests encoded implementation location instead of the public wrapper-to-core contract.",
