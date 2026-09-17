@@ -12,29 +12,20 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
   status,
   headers: { 'content-type': 'application/json', 'cache-control': 'no-store' },
 });
-
 async function digest(value: string) {
   const data = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
   return [...new Uint8Array(data)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
 const aliases: Record<string, string> = {
-  linkedin_personal: 'linkedin_personal',
-  [PERSONAL_CHANNEL]: 'linkedin_personal',
-  arthurprinsen: 'linkedin_personal',
-  linkedin_company: 'linkedin_company',
-  [COMPANY_CHANNEL]: 'linkedin_company',
-  bedrijfsgeheugen: 'linkedin_company',
-  instagram_company: 'instagram_company',
-  instagram: 'instagram_company',
-  [INSTAGRAM_CHANNEL]: 'instagram_company',
-  'bedrijfsgeheugen.nl': 'instagram_company',
+  linkedin_personal: 'linkedin_personal', [PERSONAL_CHANNEL]: 'linkedin_personal', arthurprinsen: 'linkedin_personal',
+  linkedin_company: 'linkedin_company', [COMPANY_CHANNEL]: 'linkedin_company', bedrijfsgeheugen: 'linkedin_company',
+  instagram_company: 'instagram_company', instagram: 'instagram_company', [INSTAGRAM_CHANNEL]: 'instagram_company', 'bedrijfsgeheugen.nl': 'instagram_company',
 };
 
 function businessSignal(text: string) {
   return /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|digitalisering|AI|data|dashboard|frisse blik|scan|afspraak|offerte)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text);
 }
-
 function personalViolations(text: string, body: any, finalHash: string) {
   const out: Array<{ code: string; message: string }> = [];
   const require = (ok: boolean, code: string, message: string) => { if (!ok) out.push({ code, message }); };
@@ -60,12 +51,9 @@ function personalViolations(text: string, body: any, finalHash: string) {
   if (businessSignal(text)) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
   return out;
 }
-
 function otherIdentityViolations(channel: string, text: string, body: any) {
   const out: Array<{ code: string; message: string }> = [];
-  if (channel === 'linkedin_company' && /\bik (heb|had|was|ben|ging|kwam|zat|voelde|dacht)\b/i.test(text) && !/\bArthur\b/i.test(text)) {
-    out.push({ code: 'COMPANY_CHANNEL_PERSONAL_DIARY_VOICE', message: 'Bedrijfspagina mag niet ongemarkeerd als Arthurs dagboekstem publiceren.' });
-  }
+  if (channel === 'linkedin_company' && /\bik (heb|had|was|ben|ging|kwam|zat|voelde|dacht)\b/i.test(text) && !/\bArthur\b/i.test(text)) out.push({ code: 'COMPANY_CHANNEL_PERSONAL_DIARY_VOICE', message: 'Bedrijfspagina mag niet ongemarkeerd als Arthurs dagboekstem publiceren.' });
   if (channel === 'instagram_company') {
     if (body.mira_gate_passed !== true) out.push({ code: 'MIRA_GATE_NOT_PROVEN', message: 'Mira hard gate ontbreekt.' });
     if (!clean(body.final_media_sha256)) out.push({ code: 'FINAL_MEDIA_DIGEST_REQUIRED', message: 'Exact finale-media digest ontbreekt.' });
@@ -73,7 +61,7 @@ function otherIdentityViolations(channel: string, text: string, body: any) {
     const mediaType = clean(body.media_type).toLowerCase();
     const source = clean(body.media_source).toLowerCase();
     if ((mediaType === 'reel' || mediaType === 'video') && source !== 'openart') out.push({ code: 'INSTAGRAM_VIDEO_SOURCE_INVALID', message: 'Mira video/reel moet OpenArt zijn.' });
-    if (['static', 'carousel', 'image'].includes(mediaType) && source !== 'placid') out.push({ code: 'INSTAGRAM_STATIC_SOURCE_INVALID', message: 'Mira static/carousel moet Placid zijn.' });
+    if (['static','carousel','image'].includes(mediaType) && source !== 'placid') out.push({ code: 'INSTAGRAM_STATIC_SOURCE_INVALID', message: 'Mira static/carousel moet Placid zijn.' });
   }
   return out;
 }
@@ -85,22 +73,19 @@ Deno.serve(async (req) => {
   if (!url || !key) return json({ ok: false, can_generate: false, can_publish: false, error: 'SERVER_CONFIG' }, 503);
   let body: any = {};
   try { body = await req.json(); } catch { return json({ ok: false, can_generate: false, can_publish: false, error: 'INVALID_JSON' }, 400); }
-
   const db = createClient(url, key, { auth: { persistSession: false, autoRefreshToken: false } });
   const raw = clean(body.channel || body.channel_id || body.buffer_channel_id).toLowerCase();
   const channel = aliases[raw];
   if (!channel) return json({ ok: false, can_generate: false, can_publish: false, error: 'CHANNEL_REQUIRED_OR_UNKNOWN' }, 422);
 
   const [{ data: contracts, error: contractError }, { data: rules, error: rulesError }] = await Promise.all([
-    db.from('brain_records').select('record_id,status,verified,result').eq('tenant_id', 'canonical').in('record_id', [PARENT_CONTRACT, PERSONAL_CONTRACT]),
-    db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status,bijgewerkt_op').eq('status', 'actief').order('vertrouwen', { ascending: false }).limit(24),
+    db.from('brain_records').select('record_id,status,verified,result').eq('tenant_id','canonical').in('record_id',[PARENT_CONTRACT,PERSONAL_CONTRACT]),
+    db.from('bg_schrijfregels').select('regel_id,onderwerp,regel,vertrouwen,status,bijgewerkt_op').eq('status','actief').order('vertrouwen',{ ascending: false }).limit(24),
   ]);
   if (contractError) return json({ ok: false, can_publish: false, error: 'CHANNEL_IDENTITY_CONTRACT_UNAVAILABLE' }, 503);
   const parent = (contracts || []).find((x: any) => x.record_id === PARENT_CONTRACT);
   const personal = (contracts || []).find((x: any) => x.record_id === PERSONAL_CONTRACT);
-  if (!parent || parent.status !== 'VERIFIED' || parent.verified !== true || parent.result?.enforcement !== 'FAIL_CLOSED' || !personal || personal.status !== 'VERIFIED' || personal.verified !== true) {
-    return json({ ok: false, can_publish: false, error: 'CHANNEL_IDENTITY_CONTRACT_UNAVAILABLE' }, 503);
-  }
+  if (!parent || parent.status !== 'VERIFIED' || parent.verified !== true || parent.result?.enforcement !== 'FAIL_CLOSED' || !personal || personal.status !== 'VERIFIED' || personal.verified !== true) return json({ ok: false, can_publish: false, error: 'CHANNEL_IDENTITY_CONTRACT_UNAVAILABLE' }, 503);
   if (rulesError || !(rules || []).length) return json({ ok: false, can_publish: false, error: 'RULE_CONTEXT_UNAVAILABLE' }, 503);
   const newest = Math.max(...(rules || []).map((r: any) => Date.parse(r.bijgewerkt_op)).filter(Number.isFinite));
   if (!Number.isFinite(newest) || Date.now() - newest > MAX_RULE_AGE_MS) return json({ ok: false, can_publish: false, error: 'RULE_CONTEXT_STALE' }, 503);
@@ -109,9 +94,18 @@ Deno.serve(async (req) => {
   const finalHash = await digest(text);
   if (!text) return json({ ok: true, can_generate: true, can_publish: false, identity_gate_decision: 'BLOCKED_IDENTITY_GATE', channel, final_text_hash: finalHash }, 200);
 
-  const blockers = channel === 'linkedin_personal'
-    ? personalViolations(text, body, finalHash)
-    : otherIdentityViolations(channel, text, body);
+  const identityBlockers = channel === 'linkedin_personal' ? personalViolations(text, body, finalHash) : otherIdentityViolations(channel, text, body);
+  let genericBlockers: any[] = [];
+  if (channel !== 'linkedin_personal') {
+    const { data: violations, error: ruleError } = await db.rpc('bg_brein_regels_check', {
+      p_connectie_id: clean(body.connectie_id) || null,
+      p_tekst: text,
+      p_haaktype: clean(body.hook_type) || null,
+    });
+    if (ruleError) return json({ ok: false, can_generate: false, can_publish: false, error: 'RULE_CHECK_FAILED', channel }, 503);
+    genericBlockers = (violations || []).filter((v: any) => v.violation);
+  }
+  const blockers = [...identityBlockers, ...genericBlockers];
   const pass = blockers.length === 0;
   return json({
     ok: pass,
@@ -124,6 +118,6 @@ Deno.serve(async (req) => {
     final_text_hash: finalHash,
     violations: blockers,
     personal_truth_verified: channel === 'linkedin_personal' ? body.personal_truth_verified === true : null,
-    rule_context: { source_updated_at: new Date(newest).toISOString() },
+    rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel !== 'linkedin_personal' },
   }, pass ? 200 : 422);
 });
