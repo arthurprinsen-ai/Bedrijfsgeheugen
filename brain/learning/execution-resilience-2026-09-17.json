@@ -26,7 +26,7 @@
   "regression_test": "tests/execution-resilience.test.mjs",
   "runtime_guard": "brain/guards/execution-resilience.mjs",
   "canonical_contract": "config/powerhouse-execution-resilience-v1.json",
-  "documentation": "docs/execution-resilience.md",
+  "documentation": "docs/brain/execution-resilience.md",
   "resume_contract": [
     "read canonical current state",
     "load last verified checkpoint",
@@ -42,6 +42,6 @@
     "important_test_learning": "The first regression run failed because the classifier only recognized English network terms. The test correctly exposed a localization gap; network/netwerk/verbinding matching was then added and the suite passed."
   },
   "linked_learning_sources": [
-    "docs/execution-resilience.md"
+    "docs/brain/execution-resilience.md"
   ]
 }
