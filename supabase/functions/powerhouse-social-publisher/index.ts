@@ -6,18 +6,11 @@ const COMPANY = '6a70381699afb44349f0fb36';
 const INSTAGRAM = '6a70384d99afb44349f0fba9';
 const GATE = 'channel-identity-hard-gate-v3';
 const CONTRACT = 'arthur-personal-linkedin-identity-v4';
-const channelIds: Record<string,string> = {
-  linkedin_personal: PERSONAL,
-  linkedin_company: COMPANY,
-  instagram_company: INSTAGRAM,
-};
-const obligationChannels: Record<string,string> = {
-  linkedin_personal: 'linkedin_personal',
-  linkedin_company: 'linkedin_company',
-  instagram_company: 'instagram',
-};
+const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedin_company: COMPANY, instagram_company: INSTAGRAM };
+const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
 
 const clean = (value: unknown) => String(value ?? '').trim();
+const esc = (value: unknown) => String(value ?? '').replaceAll('\\','\\\\').replaceAll('"','\\"').replaceAll('\n','\\n').replaceAll('\r','');
 const json = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const today = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 
@@ -25,21 +18,19 @@ async function digest(value: string) {
   const data = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
   return [...new Uint8Array(data)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
-
-async function bufferRequest(token: string, query: string, variables: Record<string,unknown> = {}) {
+async function bufferRequest(token: string, query: string, variables?: Record<string,unknown>) {
   const response = await fetch('https://api.buffer.com', {
     method: 'POST',
     headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' },
-    body: JSON.stringify({ query, variables }),
+    body: JSON.stringify(variables ? { query, variables } : { query }),
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) throw new Error(`BUFFER_HTTP_${response.status}`);
   return body;
 }
-
 async function getPost(token: string, id: string) {
   if (!clean(id)) return null;
-  const body = await bufferRequest(token, 'query($id:ID!){post(input:{id:$id}){id text status dueAt channelId}}', { id });
+  const body = await bufferRequest(token, `query { post(input:{id:"${esc(id)}"}) { id text status dueAt channelId } }`);
   if (body?.errors?.length) {
     const message = clean(body.errors[0]?.message).toLowerCase();
     if (message.includes('not found') || message.includes('could not find') || message.includes('unknown post')) return null;
@@ -47,7 +38,6 @@ async function getPost(token: string, id: string) {
   }
   return body?.data?.post || null;
 }
-
 async function createPost(token: string, input: Record<string,unknown>) {
   const body = await bufferRequest(token,
     'mutation($input:CreatePostInput!){createPost(input:$input){__typename ... on PostActionSuccess{post{id text status dueAt channelId}} ... on MutationError{message}}}',
@@ -56,39 +46,26 @@ async function createPost(token: string, input: Record<string,unknown>) {
   const action = body?.data?.createPost || {};
   return { post: action.post || null, error: action.message || null };
 }
-
 async function deletePost(token: string, id: string) {
-  const body = await bufferRequest(token, 'mutation($id:ID!){deletePost(input:{id:$id}){__typename ... on DeletePostSuccess{id} ... on VoidMutationError{message}}}', { id });
+  const body = await bufferRequest(token, `mutation { deletePost(input:{id:"${esc(id)}"}) { __typename ... on DeletePostSuccess { id } ... on VoidMutationError { message } } }`);
   const result = body?.data?.deletePost || {};
   return { ok: result.__typename === 'DeletePostSuccess' && result.id === id, id: result.id || null, error: result.message || body?.errors?.[0]?.message || null };
 }
-
 async function review(url: string, payload: any) {
   const response = await fetch(`${url}/functions/v1/bg-pre-publish-review`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) });
   const body = await response.json().catch(() => ({}));
   return { http: response.status, ...body };
 }
-
 async function recordObligation(db: any, runDate: string, channel: string, status: string, externalId: string | null, evidence: any, nextAction: string | null, error: string | null = null) {
   const mapped = obligationChannels[channel];
   if (!mapped) return;
   const { error: rpcError } = await db.rpc('record_content_publication_state', {
-    p_tenant_id: 'canonical',
-    p_publication_date: runDate,
-    p_channel: mapped,
-    p_status: status,
-    p_content_id: null,
-    p_slug: null,
-    p_external_id: externalId,
-    p_canonical_url: null,
-    p_evidence: evidence || {},
-    p_metrics: {},
-    p_next_action: nextAction,
-    p_error: error,
+    p_tenant_id: 'canonical', p_publication_date: runDate, p_channel: mapped, p_status: status,
+    p_content_id: null, p_slug: null, p_external_id: externalId, p_canonical_url: null,
+    p_evidence: evidence || {}, p_metrics: {}, p_next_action: nextAction, p_error: error,
   });
   if (rpcError) throw new Error(`OBLIGATION_WRITE:${rpcError.message}`);
 }
-
 async function reconcileExistingProviderTruth(db: any, token: string, runDate: string) {
   const { data: rows, error } = await db.from('powerhouse_channel_decisions')
     .select('channel,decision,state,delivery_ref,delivery_evidence')
@@ -103,13 +80,9 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
     const provider = await getPost(token, ref);
     if (!provider) {
       const evidence = {
-        ...(row.delivery_evidence || {}),
-        provider: 'buffer',
-        provider_truth_verified: false,
-        provider_truth_checked_at: new Date().toISOString(),
-        error: 'PROVIDER_RECORD_MISSING',
-        stale_delivery_ref: true,
-        stale_delivery_ref_value: ref,
+        ...(row.delivery_evidence || {}), provider: 'buffer', provider_truth_verified: false,
+        provider_truth_checked_at: new Date().toISOString(), error: 'PROVIDER_RECORD_MISSING',
+        stale_delivery_ref: true, stale_delivery_ref_value: ref,
         recovery_policy: row.channel === 'linkedin_personal' ? 'FAIL_CLOSED_NO_REPLACEMENT_WITHOUT_PERSONAL_TRUTH' : 'REENTER_CANONICAL_LOOP_IDEMPOTENTLY',
       };
       await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
@@ -120,14 +93,9 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
     const status = clean(provider.status).toLowerCase();
     const providerTruth = provider.id === ref && provider.channelId === channelIds[row.channel];
     const evidence = {
-      ...(row.delivery_evidence || {}),
-      provider: 'buffer',
-      provider_truth_verified: providerTruth,
-      provider_truth_checked_at: new Date().toISOString(),
-      provider_status: status,
-      provider_post_id: provider.id,
-      provider_due_at: provider.dueAt || null,
-      stale_delivery_ref: false,
+      ...(row.delivery_evidence || {}), provider: 'buffer', provider_truth_verified: providerTruth,
+      provider_truth_checked_at: new Date().toISOString(), provider_status: status,
+      provider_post_id: provider.id, provider_due_at: provider.dueAt || null, stale_delivery_ref: false,
     };
     const nextState = status === 'sent' ? 'published' : ['scheduled','sending'].includes(status) ? 'scheduled' : row.state;
     await db.from('powerhouse_channel_decisions').update({ state: nextState, delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
@@ -136,7 +104,6 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
   }
   return results;
 }
-
 function instagramInput(art: any, due: Date, future: boolean) {
   const proof = art?.generation_evidence?.instagram_media_proof || {};
   const mediaType = clean(proof.media_type || proof.buffer_media_type).toLowerCase();
@@ -144,12 +111,8 @@ function instagramInput(art: any, due: Date, future: boolean) {
   if (!(proof.exact_final_media_proven === true && clean(proof.final_media_sha256) && mediaUrl)) throw new Error('EXACT_FINAL_MEDIA_PROOF_REQUIRED');
   const assetKind = ['reel','video'].includes(mediaType) ? 'video' : 'image';
   return {
-    text: clean(art.body),
-    channelId: INSTAGRAM,
-    schedulingType: 'automatic',
-    mode: future ? 'customScheduled' : 'shareNow',
-    ...(future ? { dueAt: due.toISOString() } : {}),
-    metadata: { instagram: { type: mediaType || 'post', shouldShareToFeed: true } },
+    text: clean(art.body), channelId: INSTAGRAM, schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow',
+    ...(future ? { dueAt: due.toISOString() } : {}), metadata: { instagram: { type: mediaType || 'post', shouldShareToFeed: true } },
     assets: [{ [assetKind]: { url: mediaUrl } }],
   };
 }
@@ -175,11 +138,8 @@ Deno.serve(async (req) => {
 
   const { data: rows, error: rowsError } = await db.from('powerhouse_channel_decisions')
     .select('channel,scheduled_for,delivery_evidence,powerhouse_content_artifacts(body,generation_evidence,status)')
-    .eq('run_date', runDate)
-    .eq('decision', 'publish')
-    .eq('state', 'content_ready')
-    .in('channel', ['linkedin_personal','linkedin_company','instagram_company'])
-    .order('priority', { ascending: false });
+    .eq('run_date', runDate).eq('decision', 'publish').eq('state', 'content_ready')
+    .in('channel', ['linkedin_personal','linkedin_company','instagram_company']).order('priority', { ascending: false });
   if (rowsError) throw new Error(`CONTENT_READY_READ:${rowsError.message}`);
   const results: any[] = [];
 
@@ -204,15 +164,9 @@ Deno.serve(async (req) => {
     } else if (row.channel === 'instagram_company') {
       const proof = row.delivery_evidence?.instagram_media_proof || art.generation_evidence?.instagram_media_proof || {};
       reviewPayload = {
-        ...proof,
-        channel_id: INSTAGRAM,
-        channel_kind: 'instagram_company',
-        post_text: art.body,
-        mira_gate_passed: proof.mira_gate_passed === true,
-        exact_final_media_proven: proof.exact_final_media_proven === true,
-        final_media_sha256: clean(proof.final_media_sha256),
-        media_type: proof.media_type,
-        media_source: proof.media_provider || proof.media_source,
+        ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body,
+        mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true,
+        final_media_sha256: clean(proof.final_media_sha256), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source,
       };
     }
 
@@ -226,17 +180,8 @@ Deno.serve(async (req) => {
     }
 
     let input: Record<string,unknown>;
-    if (row.channel === 'instagram_company') {
-      input = instagramInput(art, due, future);
-    } else {
-      input = {
-        text: clean(art.body),
-        channelId: channelIds[row.channel],
-        schedulingType: 'automatic',
-        mode: future ? 'customScheduled' : 'shareNow',
-        ...(future ? { dueAt: due.toISOString() } : {}),
-      };
-    }
+    if (row.channel === 'instagram_company') input = instagramInput(art, due, future);
+    else input = { text: clean(art.body), channelId: channelIds[row.channel], schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}) };
 
     const created = await createPost(bufferToken, input);
     if (!created.post?.id) {
@@ -260,16 +205,9 @@ Deno.serve(async (req) => {
 
     const providerStatus = clean(readback.status).toLowerCase();
     const evidence = {
-      ...(row.delivery_evidence || {}),
-      provider: 'buffer',
-      provider_post_id: readback.id,
-      provider_status: providerStatus,
-      provider_due_at: readback.dueAt || null,
-      provider_truth_verified: true,
-      provider_truth_checked_at: new Date().toISOString(),
-      stale_delivery_ref: false,
-      pre_publish_gate: 'passed',
-      final_text_hash: textHash,
+      ...(row.delivery_evidence || {}), provider: 'buffer', provider_post_id: readback.id, provider_status: providerStatus,
+      provider_due_at: readback.dueAt || null, provider_truth_verified: true, provider_truth_checked_at: new Date().toISOString(),
+      stale_delivery_ref: false, pre_publish_gate: 'passed', final_text_hash: textHash,
       personal_truth_verified: row.channel === 'linkedin_personal' ? true : null,
     };
     const decisionState = providerStatus === 'sent' ? 'published' : 'scheduled';
