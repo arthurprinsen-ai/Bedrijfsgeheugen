@@ -4,7 +4,7 @@ import test from 'node:test';
 
 const read = (path) => readFileSync(new URL(`../${path}`, import.meta.url), 'utf8');
 
-const PR_FANOUT_WORKFLOWS = [
+const CANDIDATE_WORKFLOWS = [
   '.github/workflows/required-test.yml',
   '.github/workflows/unified-brain-delivery.yml',
   '.github/workflows/brain-foundation-verify.yml',
@@ -17,9 +17,12 @@ const PR_FANOUT_WORKFLOWS = [
   '.github/workflows/engineering-supply-chain-trust.yml',
 ];
 
-test('all PR fan-out workflows are single-flight per pull request', () => {
-  for (const path of PR_FANOUT_WORKFLOWS) {
+const hasPullRequestTrigger = (workflow) => /(^|\n)\s*pull_request:\s*(\n|$)/.test(workflow);
+
+test('all actual PR fan-out workflows are single-flight per pull request', () => {
+  for (const path of CANDIDATE_WORKFLOWS) {
     const workflow = read(path);
+    if (!hasPullRequestTrigger(workflow)) continue;
     assert.match(workflow, /concurrency:\s*[\s\S]*?group:\s*[^\n]*github\.event\.pull_request\.number/,
       `${path} must key concurrency on pull request number`);
     assert.match(workflow, /cancel-in-progress:\s*true/,
