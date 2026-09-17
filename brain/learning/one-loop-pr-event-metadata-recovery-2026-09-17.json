@@ -13,7 +13,8 @@
     "scripts/publish_approved_blog_v2.py was a legitimate changed path but was omitted from an earlier declared Change-Scope, producing SCOPE_CONTAMINATED during Required preflight.",
     "Editing the PR body does not mutate an already-created pull_request event payload, and rerunning an existing workflow attempt can therefore reuse stale event metadata.",
     "A concurrent metadata writer later regressed the live PR Base-SHA to cd2a1aa82662235744a93ea4981af954ec56b857, which BRAIN admission independently proved as DECLARED_BASE_SHA_MISMATCH against actual base 5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9.",
-    "A synchronize event created before corrected PR metadata is persisted can still carry stale event payload even if live PR metadata is fixed seconds later."
+    "A synchronize event created before corrected PR metadata is persisted can still carry stale event payload even if live PR metadata is fixed seconds later.",
+    "Required run 35267316514 on head 139586eb18aa8fefa335276369a5c901c62d8b97 proved the event-snapshot boundary directly: live PR metadata already had Base-SHA 5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9 and the complete 54-file Change-Scope, while preflight job 105357798137 still received the earlier PR_BODY snapshot with Base-SHA cd2a1aa82662235744a93ea4981af954ec56b857 and the old incomplete Change-Scope."
   ],
   "fix": "Keep the existing canonical PR and branch. Persist the exact current Base-SHA and complete exact changed-path Change-Scope in the live PR first, verify that readback, then create this legitimate same-lineage learning writeback so GitHub emits a new synchronize event after metadata persistence. No parallel branch, PR, queue or product-lineage is created.",
   "prevention": [
@@ -23,12 +24,13 @@
     "Before expensive CI, compare changed paths with declared Change-Scope and report the first unexpected path exactly.",
     "Persist PR metadata before creating the synchronize event that is intended to validate it.",
     "Use a legitimate same-lineage writeback/synchronize event rather than close-reopen, force-push or parallel candidates when fresh PR event context is required.",
-    "If another writer moves the branch or rewrites PR metadata, re-read head/base/body and reconcile; never overwrite a moved head blindly."
+    "If another writer moves the branch or rewrites PR metadata, re-read head/base/body and reconcile; never overwrite a moved head blindly.",
+    "A failed run whose embedded pull_request body differs from current raw PR readback is stale evidence: do not repair current code or metadata from that run; create or use the next legitimate synchronize event after correct metadata persistence."
   ],
   "evidence": {
     "reconciled_head_before_writeback": "30cf68a25ca2031403c41198bd1c8860ed65d992",
     "current_base_sha": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
-    "current_changed_paths_count": 53,
+    "current_changed_paths_count": 54,
     "current_scope_budget": 60,
     "current_live_pr_metadata_readback_correct_before_writeback": true,
     "failed_required_run_id": 35266534507,
@@ -41,12 +43,17 @@
     "stale_synchronize_required_run_id": 35266834231,
     "stale_synchronize_preflight_job_id": 105356147309,
     "stale_synchronize_event_body_base_sha": "b573a31d0547979bf9c708e4f56da0fa27502688",
-    "stale_synchronize_event_body_missing_scope_path": "scripts/publish_approved_blog_v2.py",
     "regressed_live_metadata_head": "6dbf461fdee3e42bbf87b417bf687a4357d3c447",
     "regressed_live_declared_base_sha": "cd2a1aa82662235744a93ea4981af954ec56b857",
     "regressed_live_brain_run_id": 35266990573,
     "regressed_live_brain_admission_job_id": 105356579174,
     "regressed_live_brain_failure": "DECLARED_BASE_SHA_MISMATCH",
+    "latest_stale_event_head": "139586eb18aa8fefa335276369a5c901c62d8b97",
+    "latest_stale_event_required_run_id": 35267316514,
+    "latest_stale_event_preflight_job_id": 105357798137,
+    "latest_stale_event_body_base_sha": "cd2a1aa82662235744a93ea4981af954ec56b857",
+    "latest_live_body_base_sha_at_failure_readback": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
+    "latest_live_body_scope_was_complete_at_failure_readback": true,
     "live_pr_metadata_corrected_before_next_synchronize": true
   },
   "terminal_acceptance": "Remain RECOVERY_IN_PROGRESS until the new exact head has fresh Required and BRAIN delivery checks terminal green, is protected-merged with exact-head identity, and main/readback confirms the One Loop control-plane on protected main."
