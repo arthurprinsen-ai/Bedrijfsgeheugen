@@ -14,7 +14,7 @@ test('personal LinkedIn requires explicit verified truth in source, artifact and
   for (const [name, text] of [['orchestrator', orchestrator], ['review', review], ['publisher', publisher]]) {
     assert.match(text, /personal_truth_verified/, `${name} must enforce personal_truth_verified`);
   }
-  assert.match(orchestrator, /personal_truth_verified===true/);
+  assert.match(orchestrator, /personal_truth_verified\s*===\s*true/);
   assert.match(review, /PERSONAL_TRUTH_UNVERIFIED/);
 });
 
@@ -42,6 +42,18 @@ test('database has one canonical reconciliation loop and guards invoke it before
   assert.match(migration, /powerhouse_linkedin_company_daily_guard_v1/);
   assert.match(migration, /powerhouse_blog_daily_guard_v1/);
   assert.match(migration, /powerhouse_instagram_daily_guard_v1/);
+  assert.match(migration, /powerhouse_content_closed_loop_tick_v1/);
+});
+
+test('single content supervisor drains generation, dispatches, readbacks and reconciles', () => {
+  const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
+  assert.match(loop, /powerhouse_reconcile_content_outcomes_v1/);
+  assert.match(loop, /powerhouse-content-orchestrator/);
+  assert.match(loop, /powerhouse-social-publisher/);
+  assert.match(loop, /powerhouse-blog-queue/);
+  assert.match(loop, /bg-buffer-sync/);
+  assert.match(loop, /GREEN MEANS OUTCOME VERIFIED/);
+  assert.match(loop, /loop_state/);
 });
 
 test('cockpit health is outcome-based and never counts DISPATCHED as green', () => {
