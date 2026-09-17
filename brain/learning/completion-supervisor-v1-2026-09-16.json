@@ -3,7 +3,7 @@
   "version": "POWERHOUSE-COMPLETION-SUPERVISOR-v1",
   "fingerprint": "powerhouse-completion-supervisor-v1",
   "observedAt": "2026-09-16T14:00:00+02:00",
-  "resolvedAt": "2026-09-16T19:27:00+02:00",
+  "resolvedAt": "2026-09-17T07:06:00+02:00",
   "documentedAt": "2026-09-17T09:03:00+02:00",
   "status": "LIVE_VERIFIED",
   "symptom": "Materieel AgentWork kon lokaal groen of bij een bewezen hard boundary als Resolved eindigen terwijl productie-readback, writeback of andere outcome obligations nog open waren.",
@@ -75,26 +75,30 @@
     "trustedArtifactIngestionResult": "Outcome Obligation Sweep persisted trusted completion evidence and reconciled partial decisions in the existing durable lineage.",
     "supabaseSecurityResult": "Supabase security/preview/RLS and production-ledger identity gates were required during the protected release chain; already-applied DDL was not replayed.",
     "engineeringOsValidator": "Engineering/release trust gates remained protected; no branch-protection or integrity bypass was used.",
-    "productionEvidence": {
+    "historicalProductionEvidence": {
       "completionSupervisorMerge": "PR #1797 protected merge; production release readback passed on merge SHA 37240d47...",
       "hardBoundaryRepairMerge": "PR #1828 protected merge 42da631...",
       "immutableEvidenceRepairMerge": "PR #1835 protected merge 560e9657c50c6bcf406591c0502478c38b78bdba",
-      "finalCurrentMainAtRuntimeProof": "374d6b1dae19290b3bc1560fb0c44f08ba50965d",
+      "runtimeProofMain": "374d6b1dae19290b3bc1560fb0c44f08ba50965d",
       "activeBackfillRun": "35128198434",
       "activeBackfillResult": "success",
       "activeBackfillArtifact": "completion-supervisor-backfill-resume-35128198434",
       "artifactDigest": "sha256:8cd5b9b28f7ec42f42505935c2f4f91cbf7f034293d8d2a02290f282309841ff",
       "outcomeObligationSweepRun": "35128230584",
-      "outcomeObligationSweepResult": "success",
-      "verifiedSteps": [
-        "Verify Completion Supervisor active backfill contracts",
-        "Collect existing authorities and resume canonical obligations idempotently",
-        "Upload immutable reconciliation and resume evidence",
-        "Persist trusted completion evidence in the existing obligation lineage",
-        "Evaluate obligations without production mutation",
-        "Reconcile partial decisions into the same obligation lineage"
-      ]
+      "outcomeObligationSweepResult": "success"
     }
+  },
+  "finalAuthority": {
+    "fingerprint": "completion-supervisor-hidden-artifact-evidence-v1",
+    "source": "Powerhouse Menselijk Handboek / Latest Verified State lineage",
+    "candidateSha": "f8996e811d64010a9c3f2a57ff2474216e0a46fa",
+    "productionSha": "d66e3e050b0505043ff4ed0196f8ada26a2f8fca",
+    "productionReleaseReadbackRun": "35129283647",
+    "obligationState": "OBLIGATIONS_COMPLETE",
+    "completionState": "LIVE_VERIFIED",
+    "nextAction": "NONE",
+    "openObligation": null,
+    "authorityRule": "Latere exact-production evidence supersedeert eerdere historische runtime-proof als final closure authority zonder de eerdere evidence-lineage te wissen."
   },
   "reusableLessons": [
     "Waiting is not success; a hard boundary remains active work.",
@@ -103,7 +107,8 @@
     "Normalize legacy schema at ingress, not inside canonical policy.",
     "A successful runtime without durable evidence upload is not a completed closed loop.",
     "Recovery executors must be idempotent and non-recursive.",
-    "Do not create replacement authorities to repair closure; extend the existing Agent Fabric, Outcome Obligations, BRAIN delivery and Supabase lineage."
+    "Do not create replacement authorities to repair closure; extend the existing Agent Fabric, Outcome Obligations, BRAIN delivery and Supabase lineage.",
+    "When newer exact-production evidence exists, preserve older evidence as historical lineage but point final authority to the newest proven production state."
   ],
   "openObligations": []
 }
