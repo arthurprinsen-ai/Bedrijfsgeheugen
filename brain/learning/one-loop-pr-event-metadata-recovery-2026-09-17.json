@@ -11,24 +11,28 @@
   "root_causes": [
     "The first recovery merge changed the effective PR base from b573a31d0547979bf9c708e4f56da0fa27502688 to 5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9 while the original workflow event still carried the old declared Base-SHA.",
     "scripts/publish_approved_blog_v2.py was a legitimate changed path but was omitted from the declared Change-Scope, producing SCOPE_CONTAMINATED during Required preflight.",
-    "Editing the PR body does not create a fresh run for workflows that use the default pull_request activity types, and rerunning an existing workflow attempt reuses the original event payload."
+    "Editing the PR body does not create a fresh run for workflows that use the default pull_request activity types, and rerunning an existing workflow attempt reuses the original event payload.",
+    "A concurrent PR-metadata writer restored an older Change-Scope after the first correction, so live metadata must be read back immediately before creating the synchronize event."
   ],
-  "fix": "Updated the existing PR metadata in place with the exact current Base-SHA and the missing approved-blog publisher path, then created this canonical learning writeback on the same branch so GitHub emits a normal synchronize event whose payload contains the corrected metadata. No parallel branch, PR, queue or product-lineage was created.",
+  "fix": "Updated the existing PR metadata in place with the exact current Base-SHA and the missing approved-blog publisher path, read it back, then advanced this canonical learning writeback on the same branch to create a normal synchronize event whose payload contains the corrected metadata. No parallel branch, PR, queue or product-lineage was created.",
   "prevention": [
     "When protected CI consumes github.event.pull_request.body, treat the event payload as immutable per workflow run and never assume a later live PR edit changes an existing attempt.",
     "After an effective base change, update Base-SHA before requesting fresh protected checks.",
     "Before expensive CI, compare changed paths with declared Change-Scope and report the first unexpected path exactly.",
-    "Use a legitimate same-lineage writeback/synchronize event rather than close-reopen or empty commits when a fresh PR event context is required."
+    "Use a legitimate same-lineage writeback/synchronize event rather than close-reopen or empty commits when a fresh PR event context is required.",
+    "After mutating delivery metadata, perform raw PR readback before the synchronize trigger so concurrent-writer drift is detected rather than silently inherited."
   ],
   "evidence": {
     "reconciled_head_before_writeback": "94958ba187b09d69e6a9081821951473d39c67d8",
+    "first_learning_head": "2a5a74bf4b31030223cc0f2e7fb532edda25b605",
     "current_base_sha": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
     "failed_required_run_id": 35266534507,
     "failed_required_job_id": 105355182810,
     "failed_required_state": "SCOPE_CONTAMINATED",
     "unexpected_path": "scripts/publish_approved_blog_v2.py",
     "stale_brain_run_id": 35266534452,
-    "stale_declared_base_sha": "b573a31d0547979bf9c708e4f56da0fa27502688"
+    "stale_declared_base_sha": "b573a31d0547979bf9c708e4f56da0fa27502688",
+    "concurrent_metadata_drift_observed": true
   },
   "terminal_acceptance": "Remain RECOVERY_IN_PROGRESS until the new exact head has fresh Required and BRAIN delivery checks terminal green, is protected-merged with exact-head identity, and main/readback confirms the One Loop control-plane on protected main."
 }
