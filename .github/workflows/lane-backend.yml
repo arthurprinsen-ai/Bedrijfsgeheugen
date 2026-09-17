@@ -25,6 +25,7 @@ jobs:
           tests/brain-adapter-conformance.test.mjs
           tests/brain-platform-adapters.test.mjs
           tests/brain-error-learning-contract.test.mjs
+          tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs
           tests/universal-event-envelope.test.mjs
           tests/event-retention-policy.test.mjs
           tests/event-retention-expiry.test.mjs
