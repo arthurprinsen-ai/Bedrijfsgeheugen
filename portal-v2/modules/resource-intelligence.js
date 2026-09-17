@@ -46,7 +46,13 @@ export function mountResourceIntelligenceCockpit(root=document,state={}){
  let section=main.querySelector('.ri-cockpit');
  if(!model){section?.remove();return false;}
  installStyle(root.ownerDocument||document);
- if(!section){section=(root.ownerDocument||document).createElement('section');section.className='ri-cockpit';section.setAttribute('aria-label','Resource Intelligence, duurzaamheid en compliance');const anchor=main.querySelector('.kpis');anchor?.after?.(section)||main.prepend(section);}
+ if(!section){
+  section=(root.ownerDocument||document).createElement('section');
+  section.className='ri-cockpit';
+  section.setAttribute('aria-label','Resource Intelligence, duurzaamheid en compliance');
+  const anchor=main.querySelector('.kpis');
+  if(anchor)anchor.after(section);else main.prepend(section);
+ }
  section.innerHTML=`<div class="ri-head"><div><h3>Impact & Governance</h3><p>Realtime Powerhouse-inzicht in Kosten & waarde, Energie, CO₂e, Water, autonome optimalisaties en evidence readiness. Meetwaarden tonen alleen aantoonbare data; onbekend blijft onbekend.</p></div></div><div class="ri-grid">${model.cards.map(card=>metric(card.label,card.value,card.note)).join('')}</div><div class="ri-frameworks">${model.frameworks.map(frameworkCard).join('')}</div><div class="ri-foot">Bewijsdekking is een transparantie- en readiness-indicator. Geen juridische conformiteitsverklaring. Productiewijzigingen blijven onder BG169, security-, truth- en release-gates.</div>`;
  return true;
 }
