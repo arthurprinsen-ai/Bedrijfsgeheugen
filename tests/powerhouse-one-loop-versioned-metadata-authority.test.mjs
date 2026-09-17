@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { resolveDeliveryMetadataAuthority } from '../tools/delivery/delivery-hygiene.mjs';
+import { resolveDeliveryMetadataAuthority } from '../tools/delivery/delivery-metadata-authority.mjs';
 
 const SHA_OLD = 'a'.repeat(40);
 const SHA_CURRENT = 'b'.repeat(40);
@@ -32,4 +32,7 @@ test('versioned exact-head manifest overrides stale mutable PR delivery metadata
   assert.equal(resolved.delivery.baseSha, SHA_CURRENT);
   assert.deepEqual(resolved.expectedPaths, manifest.expectedPaths);
   assert.equal(resolved.maxFiles, 60);
+  assert.equal(resolved.prBodyDrift.baseSha, true);
+  assert.equal(resolved.prBodyDrift.expectedPaths, true);
+  assert.equal(resolved.prBodyDrift.maxFiles, true);
 });
