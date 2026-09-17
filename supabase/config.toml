@@ -9,3 +9,8 @@ entrypoint = "./functions/powerhouse-predictive-engine/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/powerhouse-forecast-calibrator/index.ts"
+
+[functions.bg-pre-publish-review]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-pre-publish-review/index.ts"
