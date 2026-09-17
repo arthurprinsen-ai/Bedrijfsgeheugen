@@ -29,6 +29,12 @@ test('unclassified open state fails closed as evidence missing', async () => {
   assert.match(text, /CURRENT_DEFECT/);
 });
 
+test('only explicit terminal classifications can become non-material', async () => {
+  const text = await sql();
+  assert.match(text, /classification\s+not\s+in\s*\(\s*'PROVEN_FIXED'\s*,\s*'SYNTHETIC_TEST_STATE'\s*,\s*'SUPERSEDED'\s*,\s*'RETIRED_DEPENDENCY'\s*\)/i);
+  assert.match(text, /state\s+not\s+in\s*\(\s*'FULFILLED'\s*,\s*'CANCELLED'\s*,\s*'RESOLVED'\s*\)/i);
+});
+
 test('migration never reintroduces Make as an execution dependency', async () => {
   const text = await sql();
   assert.doesNotMatch(text, /BG168|BG166|hook\.eu|make\.com/i);
