@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { deriveTrustedCompletionEvidence } from '../tools/completion-supervisor-evidence.mjs';
 
 const CANDIDATE = 'a'.repeat(40);
@@ -29,4 +30,23 @@ test('exact successful production readback mints protected production identity, 
 test('failed or mismatched source evidence mints nothing and fails closed', () => {
   assert.deepEqual(deriveTrustedCompletionEvidence({ ...base, sourceWorkflow:'Unified Brain Delivery', conclusion:'failure' }), []);
   assert.throws(() => deriveTrustedCompletionEvidence({ ...base, sourceWorkflow:'Production Release Readback', conclusion:'success', readback:{ merge_sha:CANDIDATE, status:'LIVE_VERIFIED', routes_ok:true } }), /production identity mismatch/);
+});
+
+test('outcome obligation sweep resolves squash-merge candidate identity from exactly one associated merged PR', () => {
+  const workflow = readFileSync('.github/workflows/outcome-obligation-sweep.yml', 'utf8');
+  assert.match(workflow, /pull-requests: read/);
+  assert.match(workflow, /git rev-parse \"\$\{SOURCE_HEAD_SHA\}\^2\" 2>\/dev\/null \|\| true/);
+  assert.match(workflow, /commits\/\$\{SOURCE_HEAD_SHA\}\/pulls/);
+  assert.match(workflow, /\.merge_commit_sha == \$merge/);
+  assert.match(workflow, /if length == 1 then \.\[0\]\.head\.sha else empty end/);
+  assert.match(workflow, /COMPLETION_CANDIDATE_IDENTITY_MISSING/);
+});
+
+test('merged branch cleanup emits operator-visible error evidence on every non-zero exit', () => {
+  const workflow = readFileSync('.github/workflows/powerhouse-merged-branch-cleanup.yml', 'utf8');
+  assert.match(workflow, /cleanup_evidence\(\)/);
+  assert.match(workflow, /if \[ "\$rc" -ne 0 \]; then/);
+  assert.match(workflow, /::error::Powerhouse merged branch cleanup failed:/);
+  assert.match(workflow, /state=\$state detail=\$\{detail:-UNKNOWN\} branch=\$HEAD_REF expected_head=\$EXPECTED_HEAD_SHA/);
+  assert.match(workflow, /write_evidence "\$rc"/);
 });
