@@ -4,9 +4,26 @@ import {
   evaluateCompletion,
   validateRecoveryPacket,
 } from '../platform/agents/completion-supervisor.mjs';
+import { bindPowerhouseSession } from '../scripts/brain/powerhouse-session-gateway.mjs';
 
 const CANDIDATE = 'candidate-abc123';
 const PRODUCTION = 'production-def456';
+
+function sessionReceipt(runId = 'O1', candidateId = CANDIDATE) {
+  return bindPowerhouseSession({
+    sessionId:'completion-supervisor-test',
+    runId,
+    observedAt:'2026-09-17T11:40:00+02:00',
+    candidateId,
+    preflightPacket:{
+      status:'READY',
+      fastExecution:{ version:'POWERHOUSE-FAST-EXECUTION-v1' },
+      universalCompletion:{ version:'POWERHOUSE-UNIVERSAL-COMPLETION-v1' },
+      sessionBinding:{ version:'POWERHOUSE-SESSION-BINDING-v1' },
+      sources:[], fingerprints:[], preventions:[], blockers:[], resume_contracts:[]
+    }
+  });
+}
 
 function proof(type, producer, extra = {}) {
   return {
@@ -27,6 +44,7 @@ function liveVerifiedFixture(overrides = {}) {
     claim:'DEPLOYED_UNVERIFIED',
     candidateIdentity:CANDIDATE,
     productionIdentity:PRODUCTION,
+    sessionReceipt:sessionReceipt(),
     materialObligations:[{ id:'O1', status:'COMPLETED' }],
     evidence:[
       proof('CANDIDATE_TESTS', 'BRAIN_DELIVERY'),
@@ -65,7 +83,7 @@ test('localGreen and every partial claim remain active without trusted productio
   }
 });
 
-test('only a complete identity-bound trusted evidence bundle becomes LIVE_VERIFIED', () => {
+test('only a complete identity-bound trusted evidence bundle with session binding becomes LIVE_VERIFIED', () => {
   const result = evaluateCompletion(liveVerifiedFixture());
   assert.equal(result.success, true);
   assert.equal(result.normalized_state, 'LIVE_VERIFIED');
@@ -75,6 +93,14 @@ test('only a complete identity-bound trusted evidence bundle becomes LIVE_VERIFI
   assert.equal(result.canWait, false);
   assert.equal(result.candidateIdentity, CANDIDATE);
   assert.equal(result.productionIdentity, PRODUCTION);
+});
+
+test('missing session binding blocks otherwise complete evidence bundle', () => {
+  const input = liveVerifiedFixture();
+  delete input.sessionReceipt;
+  const result = evaluateCompletion(input);
+  assert.equal(result.success, false);
+  assert.ok(result.required_evidence.includes('SESSION_BINDING'));
 });
 
 test('identity mismatch stays active and requests readback', () => {
@@ -101,6 +127,7 @@ test('a proven hard boundary waits but never completes', () => {
     workId:'W1',
     claim:'BLOCKED_HARD_BOUNDARY',
     candidateIdentity:CANDIDATE,
+    sessionReceipt:sessionReceipt(),
     hardBoundary:{ present:true, proven:true, evidence:'provider-readback:403', recovery_packet:recoveryPacket() },
   });
   assert.equal(result.success, false);
@@ -111,12 +138,23 @@ test('a proven hard boundary waits but never completes', () => {
   assert.deepEqual(result.resume_when, recoveryPacket().resume_when);
 });
 
+test('hard boundary cannot enter governed wait without session binding', () => {
+  const result = evaluateCompletion({
+    obligationId:'O1', workId:'W1', candidateIdentity:CANDIDATE,
+    hardBoundary:{ present:true, proven:true, evidence:'provider-readback:403', recovery_packet:recoveryPacket() },
+  });
+  assert.equal(result.canWait, false);
+  assert.ok(result.required_evidence.includes('SESSION_BINDING'));
+});
+
 test('an incomplete hard-boundary packet remains recovery work', () => {
   const packet = recoveryPacket();
   delete packet.minimum_human_action;
   const result = evaluateCompletion({
     obligationId:'O1',
     workId:'W1',
+    candidateIdentity:CANDIDATE,
+    sessionReceipt:sessionReceipt(),
     hardBoundary:{ present:true, proven:true, evidence:'provider-readback:403', recovery_packet:packet },
   });
   assert.equal(result.success, false);
@@ -139,6 +177,7 @@ test('retry budget requires a new hypothesis after two identical attempts', () =
     obligationId:'O1',
     workId:'W1',
     candidateIdentity:CANDIDATE,
+    sessionReceipt:sessionReceipt(),
     retry:{ hypothesis:'retry-the-same-deploy', attemptCount:2, newEvidence:false },
   });
   assert.equal(result.success, false);
