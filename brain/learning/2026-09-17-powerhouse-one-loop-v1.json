@@ -3,7 +3,7 @@
   "date": "2026-09-17",
   "obligation_id": "powerhouse-one-loop-v1",
   "problem": "Material work could stop at commits, open PRs, queued CI, stopped chats, timeouts or lost workers while multiple agents created parallel delivery state. GitHub Actions additionally accumulated stale PR-head runs because top-level workflows either had no concurrency guard or keyed concurrency on the candidate SHA itself.",
-  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries. For GitHub Actions, SHA-scoped concurrency made every new head a new concurrency group, so cancel-in-progress could not supersede older heads; other fan-out workflows had no PR single-flight guard at all. A second observed failure mode was operational misclassification: an implementation candidate in WAITING_CAPACITY/FINISH_EXISTING_WORK_FIRST can look like a runner or CI blockage while admission is intentionally yielding to a live recovery candidate. During recovery, a source refactor also exposed a stale test oracle: the approved-blog wrapper delegated implementation to publish_approved_blog_v2_core.py while change-scoped release tests still asserted implementation symbols in the thin wrapper.",
+  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries. For GitHub Actions, SHA-scoped concurrency made every new head a new concurrency group, so cancel-in-progress could not supersede older heads; other fan-out workflows had no PR single-flight guard at all. A second observed failure mode was operational misclassification: an implementation candidate in WAITING_CAPACITY/FINISH_EXISTING_WORK_FIRST can look like a runner or CI blockage while admission is intentionally yielding to a live recovery candidate. During recovery, source and workflow consolidation exposed stale test oracles, classifier authority drift, versioned-scope drift, and finally a squash-merge completion-identity assumption that treated every production merge as a two-parent merge.",
   "prevention": [
     "one obligation, one active executable candidate",
     "incomplete delivery/runtime states are recoverable, never terminal",
@@ -22,12 +22,17 @@
     "SUPERSEDED_FAILURE_IS_HISTORY_NOT_REPAIR_AUTHORITY: after a live candidate head change, retain earlier failures only as lineage evidence; they cannot authorize code mutation, rerun policy, merge or release evidence for the new head",
     "STALE_ASSERTION_MUST_FOLLOW_VERIFIED_ARCHITECTURE: after verified workflow consolidation or boundary movement, repair stale test/oracle assertions to the canonical architecture; never reintroduce redundant fan-out, weaken gates or misclassify the stale assertion as a product regression merely to make CI green",
     "declared delivery metadata must be reconciled after legitimate main/head lineage movement rather than weakening exact-head or identity checks",
+    "CLASSIFIER_COCHANGE_REQUIRED: material governance tests receive canonical lane classification in the same bounded change",
+    "VERSIONED_SCOPE_COCHANGE_REQUIRED: canonical recovery or learning artifacts are admitted explicitly in versioned scope authority",
+    "SQUASH_MERGE_IDENTITY_FALLBACK: when a production commit has no second parent, resolve candidate identity only from exactly one associated merged PR whose merge_commit_sha equals the production SHA, otherwise fail closed",
+    "POST_MERGE_FAILURES_MUST_BE_OPERATOR_VISIBLE: cleanup failures persist durable evidence and emit a concrete GitHub error annotation",
     "normalize GitHub delivery telemetry into deterministic learning evidence",
     "promote repeated learnings into regression tests, gates or guardrails"
   ],
   "canonical_loop": "intent -> preflight -> admission -> execute -> verify -> protected merge -> deploy -> production readback -> outcome -> learning -> prevention -> fulfilled",
-  "status": "IMPLEMENTING",
+  "status": "FULFILLED",
   "candidate_pr": 1968,
+  "recovery_pr": 1984,
   "failure_fingerprints": [
     "github-actions-sha-scoped-concurrency-amplification-v1",
     "github-actions-pre-run-capacity-wait-v1",
@@ -37,7 +42,11 @@
     "pr-head-sha-drift-fail-closed-v1",
     "delivery-metadata-lineage-drift-after-main-movement-v1",
     "superseded-failure-history-not-repair-authority-v1",
-    "consolidated-lane-stale-contract-oracle-v1"
+    "consolidated-lane-stale-contract-oracle-v1",
+    "delivery-classifier-repository-writer-contract-gap-v1",
+    "versioned-scope-authority-cochange-v1",
+    "squash-merge-second-parent-assumption-v1",
+    "merged-branch-cleanup-nonzero-without-annotation-v1"
   ],
   "evidence": [
     {
@@ -48,59 +57,37 @@
     {
       "type": "github_supersession_readback",
       "candidate_head": "b95f32cb880cdd0504e15d7b0f9f58fbc0e0886e",
-      "finding": "after PR-single-flight was added to the fan-out workflows, newer head creation caused Brain foundation, Shared Agent Memory, BG168, Learning Classifier, CodeQL, Powerhouse CodeQL, Engineering Intelligence and Engineering Supply Chain runs for the stale head to finish as cancelled"
+      "finding": "after PR-single-flight was added to the fan-out workflows, newer head creation caused stale-head fan-out runs to finish as cancelled"
     },
     {
       "type": "regression_contract",
       "path": "tests/delivery-github-actions-single-flight.test.mjs",
-      "finding": "requires all ten known PR fan-out workflows to key concurrency on pull-request identity, cancel stale work, and preserve exact-head verification in Required/Unified"
+      "finding": "requires known PR fan-out workflows to key concurrency on pull-request identity, cancel stale work, and preserve exact-head verification in Required/Unified"
     },
     {
       "type": "admission_recovery_incident",
       "implementation_pr": 1968,
       "recovery_pr": 1970,
       "observed_state": "WAITING_CAPACITY / FINISH_EXISTING_WORK_FIRST",
-      "finding": "PR #1968 was intentionally held because recovery PR #1970 was the live recovery candidate. The correct action was to trace and finish the recovery candidate rather than weaken admission or blindly rerun implementation CI."
+      "finding": "PR #1968 was intentionally held because recovery PR #1970 was the live recovery candidate; recovery was finished rather than admission being bypassed"
     },
     {
       "type": "recovery_root_cause",
       "recovery_pr": 1970,
       "initial_head": "a4bf8eedfe7243805aeb44894644a3180c0bfad9",
       "repaired_exact_head": "c94c2226412681fa0a6a21532b4ef3c9237002ca",
-      "finding": "Required test and BRAIN delivery shared the same stale test-oracle failure: tests searched implementation symbols such as faq_items and source_contract in the thin publish_approved_blog_v2.py wrapper after those implementations had moved to scripts/brain/publish_approved_blog_v2_core.py. The repair updated the oracle at the implementation boundary without broad product changes."
-    },
-    {
-      "type": "recovery_gate_readback",
-      "recovery_pr": 1970,
-      "candidate_head": "c94c2226412681fa0a6a21532b4ef3c9237002ca",
-      "finding": "Required test and BRAIN delivery reached terminal SUCCESS on the same exact head before protected merge; older failed runs were ignored as stale evidence."
+      "finding": "Required and BRAIN shared the same stale approved-blog test-oracle failure after implementation moved behind the canonical core module; the oracle was repaired without broad product changes"
     },
     {
       "type": "recovery_completion_readback",
       "recovery_pr": 1970,
       "merged": true,
       "merge_commit_sha": "b573a31d0547979bf9c708e4f56da0fa27502688",
-      "finding": "the recovery candidate completed through protected merge with expected-head identity and main readback, proving the finish-before-start blocker was recoverable work, not a terminal CI/runner blockage"
-    },
-    {
-      "type": "post_recovery_re_admission",
-      "implementation_pr": 1968,
-      "observed_exact_head": "2a5a74bf4b31030223cc0f2e7fb532edda25b605",
-      "finding": "after #1970 completion, #1968 was automatically admitted again by the existing hygiene/admission gate and preflight started; no admission bypass was used"
+      "finding": "the recovery candidate completed through protected merge with expected-head identity and main readback"
     },
     {
       "type": "stale_run_fail_closed_evidence",
-      "finding": "when the live #1968 head moved during an older Required attempt, the control plane emitted PR_HEAD_SHA_DRIFT and rejected the stale run as authority. This behavior is correct and must be preserved."
-    },
-    {
-      "type": "post_recovery_main_readback",
-      "main_sha": "5e9ae9f2633ffb1b0bdd07c2ba8b44b934d927b9",
-      "finding": "main advanced through follow-up learning work; PR #1968 was reread afterward and remained open/mergeable on the current lineage. Subsequent candidate heads must always supersede the concrete SHAs recorded here for promotion decisions."
-    },
-    {
-      "type": "documentation_contract",
-      "path": "docs/learning/2026-09-17-github-actions-runnerqueue-one-loop-v1.md",
-      "finding": "human-readable incident, root-cause, recovery and prevention record linked to the same powerhouse-one-loop-v1 obligation; it complements rather than duplicates this machine-readable learning"
+      "finding": "when the live #1968 head moved during an older Required attempt, PR_HEAD_SHA_DRIFT rejected the stale run as authority"
     },
     {
       "type": "superseded_shared_agent_memory_failure_checkpoint",
@@ -108,28 +95,96 @@
       "required_job_id": 105362635664,
       "observed_step": "Verify consolidated Shared Agent Memory contracts",
       "authority": "HISTORICAL_SUPERSEDED",
-      "finding": "the observed deterministic failure belonged to an older head. Once PR #1968 moved, this result ceased to be valid repair or promotion authority; no root cause is inferred from the stale result."
-    },
-    {
-      "type": "exact_head_admission_checkpoint",
-      "candidate_head": "7991126e846e59f94ef21ff322dc8c5743c5600d",
-      "required_run_id": 35270822607,
-      "admission_job_id": 105369402433,
-      "preflight_job_id": 105369489405,
-      "finding": "canonical admission completed successfully on the exact head. Preflight was observed queued at readback and therefore remained a valid non-terminal WAIT state; no blind retry, no-op commit, bypass or terminal blocker classification was justified."
+      "finding": "the deterministic failure belonged to an older head and ceased to be repair or promotion authority after supersession"
     },
     {
       "type": "consolidated_contract_recovery_checkpoint",
       "candidate_head": "ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded",
-      "finding": "PR recovery readback records that prior terminal automation failures were stale contract assertions against verified consolidated architecture: shared-memory verification belongs to Required/automation, menu-writer identity uses canonical action outputs, the GitHub Actions PR-creation hard boundary is RESOLVED_VERIFIED, and writer operational SLA is enforced by the consolidated dispatch job. Assertions were repaired on the same lineage without weakening gates."
+      "finding": "stale contract assertions were aligned with the verified consolidated architecture without weakening gates"
     },
     {
-      "type": "exact_head_nonterminal_gate_readback",
-      "candidate_head": "ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded",
-      "required_run_id": 35271112297,
-      "brain_run_id": 35271112433,
-      "observed_state": "EXECUTING",
-      "finding": "Required, CodeQL/Powerhouse CodeQL and Engineering Supply Chain Trust were in progress while BRAIN delivery was pending; Fresh Device Autonomy Canary and Unified Content Operations were successful. This is execution evidence only and not completion authority."
+      "type": "implementation_terminal_exact_head_gates",
+      "candidate_head": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+      "required_run_id": 35271798560,
+      "brain_run_id": 35271798909,
+      "finding": "Required and BRAIN delivery reached terminal green on the same exact current PR #1968 head"
+    },
+    {
+      "type": "implementation_protected_merge_readback",
+      "candidate_head": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+      "merge_commit_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+      "finding": "PR #1968 was squash-merged with expected-head identity and current main resolved to the resulting merge commit"
+    },
+    {
+      "type": "post_implementation_production_readback",
+      "main_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+      "production_release_readback_run_id": 35272421517,
+      "conclusion": "success",
+      "finding": "Production Release Readback completed successfully, exposing the remaining downstream squash-identity completion gap rather than a product/runtime regression"
+    },
+    {
+      "type": "post_merge_completion_identity_incident",
+      "main_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+      "outcome_sweep_run_id": 35272598381,
+      "outcome_sweep_job_id": 105375341647,
+      "finding": "Outcome Obligation Sweep failed because candidate identity was resolved unconditionally from SOURCE_HEAD_SHA^2 although the protected merge was a one-parent squash commit"
+    },
+    {
+      "type": "post_merge_cleanup_observability_incident",
+      "config_wacht_run_id": 35272421591,
+      "config_wacht_job_id": 105374772960,
+      "finding": "merged branch cleanup could exit nonzero while only writing an artifact, without a concrete operator-visible GitHub error annotation"
+    },
+    {
+      "type": "recovery_pr_terminal_exact_head_gates",
+      "recovery_pr": 1984,
+      "candidate_head": "97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04",
+      "required_run_id": 35274102801,
+      "brain_run_id": 35274102768,
+      "powerhouse_codeql_run_id": 35274102310,
+      "finding": "Required, BRAIN delivery and Powerhouse CodeQL were terminal green on the same exact recovery head"
+    },
+    {
+      "type": "recovery_protected_merge_readback",
+      "recovery_pr": 1984,
+      "candidate_head": "97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04",
+      "merge_commit_sha": "4fda9309eefa259b2a7f492ca929b8d472055d5e",
+      "finding": "PR #1984 was protected-merged from the verified exact head and current main resolved exactly to the resulting merge commit"
+    },
+    {
+      "type": "recovery_production_runtime_readback",
+      "main_sha": "4fda9309eefa259b2a7f492ca929b8d472055d5e",
+      "production_release_readback_run_id": 35274800041,
+      "conclusion": "success",
+      "finding": "exact live deploy identity, connector readiness, affected production routes and immutable production truth all succeeded"
+    },
+    {
+      "type": "recovery_outcome_obligation_sweep",
+      "main_sha": "4fda9309eefa259b2a7f492ca929b8d472055d5e",
+      "outcome_obligation_sweep_run_id": 35274960927,
+      "conclusion": "success",
+      "finding": "the workflow_run path successfully resolved immutable completion lineage for the squash merge, persisted trusted evidence in the existing obligation lineage, evaluated obligations and reconciled partial decisions"
+    },
+    {
+      "type": "recovery_config_wacht",
+      "main_sha": "4fda9309eefa259b2a7f492ca929b8d472055d5e",
+      "config_wacht_run_id": 35274800039,
+      "conclusion": "success",
+      "finding": "configuration validation succeeded, no failure issue was created, and the healthy-state close step succeeded"
+    },
+    {
+      "type": "recovery_merged_branch_cleanup",
+      "candidate_head": "97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04",
+      "merged_branch_cleanup_run_id": 35274800189,
+      "conclusion": "success",
+      "finding": "Powerhouse Merged Branch Cleanup completed successfully and the exact merged recovery branch is absent on readback"
+    },
+    {
+      "type": "terminal_truth",
+      "state": "LIVE_PROVEN",
+      "lifecycle": "LEARNED -> FULFILLED",
+      "production_main_sha": "4fda9309eefa259b2a7f492ca929b8d472055d5e",
+      "finding": "The powerhouse-one-loop-v1 obligation met its completion contract end-to-end: exact-head verification, protected merge, live production readback, squash-safe completion evidence persistence, obligation reconciliation, configuration verification, merged-branch cleanup, and canonical learning closure."
     }
   ]
 }

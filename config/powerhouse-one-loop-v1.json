@@ -5,17 +5,15 @@
     "version": "POWERHOUSE-DELIVERY-CANDIDATE-v1",
     "obligationId": "powerhouse-one-loop-v1",
     "deliveryLane": "automation",
-    "candidateType": "recovery",
-    "baseSha": "6ae18de754cb33044108d85ba704c965a5287b88",
+    "candidateType": "docs",
+    "baseSha": "4fda9309eefa259b2a7f492ca929b8d472055d5e",
     "supersedes": null,
     "expectedPaths": [
-      ".github/workflows/outcome-obligation-sweep.yml",
-      ".github/workflows/powerhouse-merged-branch-cleanup.yml",
       "config/powerhouse-one-loop-v1.json",
-      "docs/learning/2026-09-17-squash-merge-completion-identity-recovery-v1.md",
-      "tests/completion-supervisor-evidence.test.mjs"
+      "brain/learning/2026-09-17-powerhouse-one-loop-v1.json",
+      "brain/learning/2026-09-17-delivery-classifier-repository-writer-contract-v1.json"
     ],
-    "maxFiles": 5
+    "maxFiles": 3
   },
   "terminalStates": ["LIVE_PROVEN", "FULFILLED", "BLOCKED_EXTERNAL"],
   "recoverableStates": [
