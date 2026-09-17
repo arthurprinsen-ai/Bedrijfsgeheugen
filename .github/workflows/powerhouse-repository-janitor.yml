@@ -1,0 +1,106 @@
+name: Powerhouse Repository Janitor
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'dry-run emits evidence only; apply-safe closes only deterministic safe actions'
+        required: true
+        default: dry-run
+        type: choice
+        options:
+          - dry-run
+          - apply-safe
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: powerhouse-repository-janitor
+  cancel-in-progress: false
+
+jobs:
+  janitor:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 1
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Classify repository delivery hygiene
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          REQUESTED_MODE: ${{ github.event.inputs.mode }}
+          EVENT_NAME: ${{ github.event_name }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          mode="${REQUESTED_MODE:-dry-run}"
+          if [ "$EVENT_NAME" = schedule ]; then mode=dry-run; fi
+          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs.json
+          MODE="$mode" node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
+          import { planRepositoryCleanup } from './tools/delivery/repository-janitor.mjs';
+          const policy=JSON.parse(await readFile('config/powerhouse-delivery-hygiene-v1.json','utf8'));
+          const raw=JSON.parse(await readFile('.artifacts/open-prs.json','utf8'));
+          const candidates=raw.map(pr=>({
+            number:pr.number,
+            state:pr.state,
+            title:pr.title,
+            body:pr.body||'',
+            baseSha:parseDeliveryMetadata(pr.body||'').baseSha || pr.base?.sha || '',
+            headSha:pr.head?.sha||'',
+          }));
+          const plan=planRepositoryCleanup({candidates,policy,mode:process.env.MODE||'dry-run'});
+          const evidence={
+            observed_at:new Date().toISOString(),
+            repository:process.env.GITHUB_REPOSITORY,
+            open_pr_count:candidates.length,
+            ...plan,
+          };
+          await writeFile('.artifacts/powerhouse-repository-janitor.json',`${JSON.stringify(evidence,null,2)}\n`);
+          console.log(JSON.stringify(evidence,null,2));
+          NODE
+      - name: Apply deterministic safe cleanup
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          jq -c '.actions[] | select(.perform == true)' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
+            pr="$(jq -r '.prNumber' <<<"$action")"
+            reason="$(jq -r '.reason' <<<"$action")"
+            successor="$(jq -r '.successorNumber // empty' <<<"$action")"
+            current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+            [ "$(jq -r '.state' <<<"$current")" = open ] || continue
+            if [ -n "$successor" ]; then
+              successor_state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${successor}")"
+              [ "$(jq -r '.state' <<<"$successor_state")" = open ] || { echo "::error::Successor #${successor} is no longer open"; exit 78; }
+            fi
+            gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=closed >/dev/null
+            printf 'closed_pr=%s reason=%s successor=%s\n' "$pr" "$reason" "${successor:-none}"
+          done
+      - name: Read back applied cleanup
+        if: github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          jq -c '.actions[] | select(.perform == true)' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
+            pr="$(jq -r '.prNumber' <<<"$action")"
+            state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.state')"
+            [ "$state" = closed ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:${state}"; exit 1; }
+          done
+      - name: Upload janitor evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-repository-janitor-${{ github.run_id }}
+          path: .artifacts/powerhouse-repository-janitor.json
+          if-no-files-found: error
