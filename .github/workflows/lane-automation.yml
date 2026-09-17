@@ -18,4 +18,9 @@ jobs:
         with:
           node-version: '22'
       - name: Verify automation delivery contracts
-        run: node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
+        run: >-
+          node --test
+          tests/delivery-*.test.mjs
+          tests/brain-delivery-system.test.mjs
+          tests/powerhouse-one-loop-*.test.mjs
+          tests/powerhouse-github-learning.test.mjs
