@@ -21,3 +21,15 @@ test('approved blog publisher family and recovery tests stay classified as gover
     );
   }
 });
+
+test('approved blog classification stays bounded and unrelated scripts remain fail-closed', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  assert.throws(
+    () => createDeliveryPlan({ changedPaths: ['scripts/unowned_future_publisher.py'], headSha: 'abc123def4567890', policy }),
+    /unclassified delivery path/,
+  );
+  assert.throws(
+    () => createDeliveryPlan({ changedPaths: ['tests/unowned-future-content.test.mjs'], headSha: 'abc123def4567890', policy }),
+    /unclassified delivery path/,
+  );
+});
