@@ -29,13 +29,15 @@ test('Required evidence is latest-head-wins so obsolete candidate proof cannot b
   assert.doesNotMatch(workflow, /cancel-in-progress:\s*false/);
 });
 
-test('non-required PR runner fanout stays path-scoped and latest-head-wins', () => {
+test('governance PR fanout is consolidated behind Required while narrow supply-chain security remains PR-scoped', () => {
+  assert.doesNotMatch(engineeringIntelligence, /^\s*pull_request\s*:/m);
+  assert.doesNotMatch(learningClassifier, /^\s*pull_request\s*:/m);
+  assert.match(supplyChain, /pull_request:[\s\S]*?paths:/);
   for (const [name, yml] of [
     ['engineering intelligence', engineeringIntelligence],
     ['supply chain', supplyChain],
     ['learning classifier', learningClassifier],
   ]) {
-    assert.match(yml, /pull_request:[\s\S]*?paths:/, `${name} must be path-scoped for pull requests`);
     assert.match(yml, /concurrency:[\s\S]*?cancel-in-progress:\s*true/, `${name} must cancel stale runs`);
   }
   assert.match(supplyChain, /dependency-review:[\s\S]*?if:\s*github\.event_name == 'pull_request'/);
