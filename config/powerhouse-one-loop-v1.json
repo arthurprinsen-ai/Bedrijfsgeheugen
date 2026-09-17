@@ -42,6 +42,7 @@
       "scripts/publish_approved_blog_v2.py",
       "tools/delivery/README-one-loop-v1.md",
       "tools/delivery/delivery-hygiene.mjs",
+      "tools/delivery/delivery-metadata-authority.mjs",
       "tools/delivery/github-learning.mjs",
       "tools/delivery/one-loop-check.mjs",
       "tools/delivery/one-loop-reconcile.mjs",
