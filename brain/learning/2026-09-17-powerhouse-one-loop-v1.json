@@ -1,0 +1,19 @@
+{
+  "fingerprint": "stranded-delivery-or-interrupted-execution-v1",
+  "date": "2026-09-17",
+  "obligation_id": "powerhouse-one-loop-v1",
+  "problem": "Material work could stop at commits, open PRs, queued CI, stopped chats, timeouts or lost workers while multiple agents created parallel delivery state.",
+  "root_cause": "Repository hygiene and universal ingress existed, but no single cross-surface lifecycle/recovery contract made incomplete execution non-terminal and finishing-first across agent/chat/GitHub/runtime boundaries.",
+  "prevention": [
+    "one obligation, one active executable candidate",
+    "incomplete delivery/runtime states are recoverable, never terminal",
+    "durable heartbeat/lease/checkpoint plus idempotent readback before retry",
+    "finish existing admitted work before lower-priority starts under capacity pressure",
+    "normalize GitHub delivery telemetry into deterministic learning evidence",
+    "promote repeated learnings into regression tests, gates or guardrails"
+  ],
+  "canonical_loop": "intent -> preflight -> admission -> execute -> verify -> protected merge -> deploy -> production readback -> outcome -> learning -> prevention -> fulfilled",
+  "status": "IMPLEMENTING",
+  "candidate_pr": 1968,
+  "evidence": []
+}
