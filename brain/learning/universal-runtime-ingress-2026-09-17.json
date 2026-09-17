@@ -13,10 +13,74 @@
     "tests/brain-universal-completion-ingress.test.mjs",
     "tests/agent-fabric-gateway.test.mjs",
     "scripts/brain/powerhouse-universal-runtime-ingress.mjs",
+    "scripts/brain/chat-learning-preflight.mjs",
     "config/powerhouse-universal-ingress-v1.json",
     "platform/api/agent-fabric-gateway.mjs",
-    "PR #1958"
+    ".github/workflows/shared-agent-memory-tests.yml",
+    "PR #1958 red TDD predecessor",
+    "PR #1959 final delivery lineage",
+    "candidate head 3e7a25692254140becc419ec692039f2e23d4b7d",
+    "merge/main SHA 568bc7fdd9a489a3b94dba911feb3f1ef9fe4e2b",
+    "Required test run 35256077615 terminal success",
+    "BRAIN delivery run 35256077589 terminal success"
   ],
+  "delivery_recovery": {
+    "state_before_recovery": "recoverable incomplete execution; PR #1959 had previously passed substantive ingress checks but main advanced and the candidate had to be rebased without broadening scope",
+    "canonical_candidate_rule": "Preserve one delivery lineage and one exact candidate. Rebase the same 10-file universal-ingress scope onto current main rather than opening a parallel implementation path.",
+    "rebased_candidate_sha": "3e7a25692254140becc419ec692039f2e23d4b7d",
+    "scope": {
+      "commits": 1,
+      "changed_files": 10,
+      "additions": 481,
+      "deletions": 9
+    },
+    "admission_failure": {
+      "fingerprint": "delivery-hygiene|missing-pr-metadata|admission-block",
+      "symptom": "The new Powerhouse delivery-hygiene admission job failed before expensive CI lanes even though the source change itself was valid.",
+      "root_cause": "PR #1959 did not yet contain the mandatory delivery metadata introduced on newer main.",
+      "fix": "Add the exact canonical PR metadata without changing code or candidate SHA: Obligation-ID, Delivery-Lane, Candidate-Type, Base-SHA and Supersedes.",
+      "result": "The same exact candidate was re-admitted; hygiene/admission became green and the protected required lanes continued.",
+      "prevention": "Every future material or learning/writeback PR must read the current delivery-hygiene contract before admission and include the required metadata from the start. A metadata admission failure is a delivery-contract failure, not a reason to fork a new implementation lineage."
+    },
+    "protected_gate_evidence": {
+      "required_test_run_id": 35256077615,
+      "required_test_run_number": 4449,
+      "required_test_conclusion": "success",
+      "final_test_aggregator": "success",
+      "brain_delivery_run_id": 35256077589,
+      "brain_delivery_conclusion": "success",
+      "shared_agent_memory": "success",
+      "chat_learning_preflight": "success",
+      "codeql": "success",
+      "powerhouse_codeql": "success",
+      "browser_regression": "success"
+    }
+  },
+  "closure": {
+    "terminal_status": "LIVE & BEWEZEN",
+    "pr": 1959,
+    "merged": true,
+    "candidate_sha": "3e7a25692254140becc419ec692039f2e23d4b7d",
+    "merge_sha": "568bc7fdd9a489a3b94dba911feb3f1ef9fe4e2b",
+    "merged_at": "2026-09-17T18:07:39Z",
+    "main_readback": {
+      "main_sha_at_closure": "568bc7fdd9a489a3b94dba911feb3f1ef9fe4e2b",
+      "policy_active_fail_closed": true,
+      "runtime_receipt_requires_ready_preflight": true,
+      "agent_fabric_material_commands_require_runtime_identity": true,
+      "agent_fabric_has_no_raw_execution_or_internal_memory_bypass": true,
+      "preflight_validates_ingress_policy": true,
+      "run_candidate_identity_continuity_tested": true,
+      "regression_tests_wired_into_shared_agent_memory_ci": true,
+      "canonical_learning_present": true
+    },
+    "recovery_watch": {
+      "title": "Finish Powerhouse Ingress",
+      "automation_id": "6aac176e31a4819182997a1ccf1852a1",
+      "final_state": "disabled after proven closure"
+    },
+    "open_obligations": []
+  },
   "boundary": "Repository code cannot alter the native ChatGPT product runtime. The enforceable invariant is that any material Powerhouse mutation invoked from such a chat must cross the managed ingress/control-plane before mutation.",
-  "reuse_rule": "Future agent/chat runtime work must distinguish policy presence, preflight execution proof, mutation admission proof and terminal completion proof; never infer one from another."
+  "reuse_rule": "Future agent/chat runtime work must distinguish policy presence, preflight execution proof, mutation admission proof and terminal completion proof; never infer one from another. Preserve one canonical candidate lineage; when main advances, rebase or reconstruct the exact scoped candidate on current main, satisfy current delivery-hygiene metadata, rerun exact-head protected gates, merge with expected-head identity, read back main, and only then assign LIVE & BEWEZEN."
 }
