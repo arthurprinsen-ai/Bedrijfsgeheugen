@@ -13,18 +13,18 @@ Supersedes: none
 Change-Scope: tools/legacy/**
 Scope-Budget: 10`;
 
-test('versioned exact-head manifest overrides stale mutable PR delivery metadata for the same obligation', () => {
-  const manifest = {
-    version: 'POWERHOUSE-DELIVERY-CANDIDATE-v1',
-    obligationId: 'powerhouse-one-loop-v1',
-    deliveryLane: 'automation',
-    candidateType: 'implementation',
-    baseSha: SHA_CURRENT,
-    supersedes: null,
-    expectedPaths: ['tools/delivery/**', 'config/powerhouse-one-loop-v1.json'],
-    maxFiles: 60,
-  };
+const manifest = {
+  version: 'POWERHOUSE-DELIVERY-CANDIDATE-v1',
+  obligationId: 'powerhouse-one-loop-v1',
+  deliveryLane: 'automation',
+  candidateType: 'implementation',
+  baseSha: SHA_CURRENT,
+  supersedes: null,
+  expectedPaths: ['tools/delivery/**', 'config/powerhouse-one-loop-v1.json'],
+  maxFiles: 60,
+};
 
+test('versioned exact-head manifest overrides stale mutable PR delivery metadata for the same obligation', () => {
   const resolved = resolveDeliveryMetadataAuthority({ prBody: stalePrBody, manifest });
 
   assert.equal(resolved.source, 'versioned-manifest');
@@ -35,4 +35,23 @@ test('versioned exact-head manifest overrides stale mutable PR delivery metadata
   assert.equal(resolved.prBodyDrift.baseSha, true);
   assert.equal(resolved.prBodyDrift.expectedPaths, true);
   assert.equal(resolved.prBodyDrift.maxFiles, true);
+});
+
+test('versioned manifest never takes authority over a different obligation', () => {
+  const otherPrBody = `Obligation-ID: other-obligation
+Delivery-Lane: website
+Candidate-Type: implementation
+Base-SHA: ${SHA_OLD}
+Supersedes: none
+Change-Scope: website/**
+Scope-Budget: 12`;
+
+  const resolved = resolveDeliveryMetadataAuthority({ prBody: otherPrBody, manifest });
+
+  assert.equal(resolved.source, 'pr-body');
+  assert.equal(resolved.delivery.obligationId, 'other-obligation');
+  assert.equal(resolved.delivery.deliveryLane, 'website');
+  assert.equal(resolved.delivery.baseSha, SHA_OLD);
+  assert.deepEqual(resolved.expectedPaths, ['website/**']);
+  assert.equal(resolved.maxFiles, 12);
 });
