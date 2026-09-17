@@ -109,14 +109,17 @@ begin
   where id = p_operation_id
   returning * into v_operation;
 
-  v_job_key := 'execution-resilience:' || p_operation_id::text;
+  -- Versioned job identity permits more than one independent interruption/recovery
+  -- cycle for the same durable operation without mutating a resolved historical job.
+  v_job_key := 'execution-resilience:' || p_operation_id::text || ':v' || v_operation.version::text;
   v_job := public.brain_schedule_reconciliation(
     v_job_key,
     p_operation_id,
-    'EXECUTION_INTERRUPTED',
+    'EXECUTION_RESILIENCE_RECOVERY',
     5,
     jsonb_build_object(
       'contract', 'powerhouse-execution-resilience-v1',
+      'trigger', 'EXPLICIT_INTERRUPTION',
       'interruption_class', p_interruption_class,
       'last_verified_checkpoint', p_checkpoint,
       'side_effect_state', p_side_effect_state,
@@ -138,6 +141,7 @@ language plpgsql
 as $$
 declare
   v_candidate record;
+  v_operation public.brain_operations;
   v_job public.brain_reconciliation_jobs;
   v_job_key text;
 begin
@@ -173,15 +177,21 @@ begin
         ),
         version = o.version + 1,
         updated_at = now()
-    where o.id = v_candidate.id;
+    where o.id = v_candidate.id
+    returning * into v_operation;
 
-    v_job_key := 'execution-resilience:' || v_candidate.id::text;
+    v_job_key := 'execution-resilience:' || v_candidate.id::text || ':v' || v_operation.version::text;
     v_job := public.brain_schedule_reconciliation(
       v_job_key,
       v_candidate.id,
-      'STALE_EXECUTION_HEARTBEAT',
+      'EXECUTION_RESILIENCE_RECOVERY',
       5,
-      jsonb_build_object('contract','powerhouse-execution-resilience-v1','watchdog',true,'readback_before_replay',true)
+      jsonb_build_object(
+        'contract','powerhouse-execution-resilience-v1',
+        'trigger','STALE_HEARTBEAT',
+        'watchdog',true,
+        'readback_before_replay',true
+      )
     );
 
     operation_id := v_candidate.id;
