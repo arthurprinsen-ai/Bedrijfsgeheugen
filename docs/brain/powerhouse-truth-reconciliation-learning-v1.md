@@ -3,6 +3,9 @@
 Fingerprint: `powerhouse-truth-reconciliation-stale-state-v1`
 Date: 2026-09-17
 Authority: Bedrijfsgeheugen Powerhouse / Supabase canonical state
+Runtime reconciliation authority: `powerhouse-canonical-truth-closure-v1`
+
+This document records a specific stale-state failure class and its prevention rules. It does **not** create a parallel runtime authority. The existing `powerhouse-canonical-truth-closure-v1` remains the canonical reconciliation authority.
 
 ## Problem
 
@@ -12,13 +15,12 @@ A technically healthy production estate can still be operationally unsafe when s
 
 - Protected `main` is current and healthy, while older open issues still state that main protection is absent.
 - Make is retired from the canonical Powerhouse architecture, while older open issues still prescribe BG168/BG166/Make replay routes.
-- Supabase contained 4 ACTIVE blockers with explicitly synthetic scopes from 2026-08-31.
-- Supabase still contained OPEN/BLOCKED obligations spanning current work and historical recovery state; current state therefore needs reconciliation rather than blind execution.
-- Current real open work includes Supabase Auth hardening, social provider readback, whole-brain runtime proof and other production-verification obligations.
+- Four historical `synthetic:` blocker records were already reconciled to `RESOLVED` by the existing canonical truth-closure flow; they remain as evidence, not actionable recovery state.
+- Supabase still contains current OPEN obligations under `powerhouse-canonical-truth-closure-v1`, including `powerhouse-business-outcome-loop-v1` and `powerhouse-operations-assurance-v1`. These are real evidence gaps and must remain open until production evidence satisfies their completion gates.
 
 ## Root cause
 
-The system previously treated durable incident/history records and current executable obligations as if they were the same authority. State transitions were not always reconciled when architecture, provider authority or production evidence changed. Historical recovery instructions could therefore outlive the component or provider they referenced.
+The failure class is treating durable incident/history records and current executable obligations as if they were the same authority. Historical recovery instructions can outlive the component, provider or governance state they referenced unless current truth is reconciled back into executable state.
 
 ## Canonical prevention rules
 
@@ -29,7 +31,7 @@ The system previously treated durable incident/history records and current execu
 5. **No stale P0/P1 authority.** Open GitHub issues describing controls that have since changed must be reconciled against fresh platform readback before they may drive recovery work.
 6. **Every reconciliation is evidence-backed.** Closure/supersession records must contain current readback, reason, successor authority where relevant, and timestamp.
 7. **Completion is bidirectional.** A change is not fully complete until both production truth and obligation/issue truth agree.
-8. **Autonomous agents fail closed on ambiguity.** If current platform truth conflicts with an old issue/obligation, do not execute the old recovery path; create/continue one reconciliation obligation instead.
+8. **Autonomous agents fail closed on ambiguity.** If current platform truth conflicts with an old issue/obligation, do not execute the old recovery path; continue the existing canonical truth-closure flow instead of creating another reconciliation system.
 
 ## Required reconciliation loop
 
@@ -50,8 +52,13 @@ The Powerhouse should continuously assert that:
 - no actionable obligation references Make or another retired provider;
 - no current-main governance issue contradicts direct GitHub branch-protection readback;
 - open obligations are periodically reconciled against current production evidence;
-- issue/obligation closure never deletes the underlying learning or evidence lineage.
+- issue/obligation closure never deletes the underlying learning or evidence lineage;
+- no agent creates a second truth-reconciliation authority when `powerhouse-canonical-truth-closure-v1` already owns the concern.
+
+## Applied learning in this session
+
+A new `powerhouse-truth-reconciliation-v1` obligation was initially created while documenting this learning. Fresh readback then showed that `powerhouse-canonical-truth-closure-v1` already owned the runtime concern and had already reconciled the synthetic blockers. Following REUSE-FIRST / CANONICAL-INTEGRATION, the new obligation was immediately marked `FULFILLED` with classification `SUPERSEDED_BY_EXISTING_CANONICAL_AUTHORITY` and successor evidence pointing to the existing truth-closure flow. This is intentional evidence that duplicate authorities must be removed as soon as they are detected.
 
 ## Definition of done for this learning
 
-This learning is considered implemented only when the canonical Supabase learning/failure registry contains this fingerprint, one durable reconciliation obligation exists, and this documentation is merged through the protected-main path. Individual stale obligations/issues remain separate recovery work and must not be silently bulk-closed without evidence.
+The learning is documented when its failure fingerprint is present in the canonical learning/failure registry and this human-readable record is merged through protected `main`. Runtime work continues only through the existing `powerhouse-canonical-truth-closure-v1` obligations; no parallel reconciliation queue, scheduler or authority is introduced.
