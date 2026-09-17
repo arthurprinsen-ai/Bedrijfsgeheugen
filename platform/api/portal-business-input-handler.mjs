@@ -35,14 +35,19 @@ export function createPortalBusinessInputHandler({getUser,store,authority,maxByt
     try{authorityResult=await authority.append({record:authorityRecord,idempotencyKey:`portal-business-input:${sourceRevision}`,sourceRevision,request});}
     catch(error){return json({error:'CANONICAL_AUTHORITY_WRITE_FAILED',message:error instanceof Error?error.message:String(error)},502)}
 
+    const currentStateRecordId=`PORTAL_CURRENT_STATE-${sourceRevision}`;
+    const currentStateRecord={schemaVersion:'brain-record.v1',tenantId,type:'CurrentState',kind:'current_state',id:currentStateRecordId,subjectId:object.id,correlationId:authorityRecord.correlationId,predecessorIds:[brainRecordId],owner:user.id,status:'OBSERVED',observedAt:object.data.submittedAt,executed:false,verified:false,result:null,evidenceIds:[brainRecordId],provenance:{...object.provenance,source:'portal-business-input',sourceId:brainRecordId},payload:{sourceRecordId:brainRecordId,sourceRevision,inputType:object.data.inputType,modelId:object.data.modelId,instanceId:object.data.instanceId,schemaVersion:object.data.schemaVersion,answers:object.data.answers,metadata:object.data.metadata,sourcePortal:object.data.sourcePortal,stateType:'PortalBusinessInput'}};
+    try{await authority.append({record:currentStateRecord,idempotencyKey:`portal-business-current-state:${sourceRevision}`,sourceRevision,request});}
+    catch(error){return json({error:'POWERHOUSE_FEED_WRITE_FAILED',authorityStored:true,powerhouseFeedStored:false,brainRecordId,currentStateRecordId,sourceRevision,message:error instanceof Error?error.message:String(error)},502)}
+
     const current=await store.getLayer(tenantId,PORTAL_LAYERS.CANONICAL);
-    const projectionObject={...object,data:{...object.data,metadata:{...object.data.metadata,brainRecordId,sourceRevision}}};
+    const projectionObject={...object,data:{...object.data,metadata:{...object.data.metadata,brainRecordId,currentStateRecordId,sourceRevision}}};
     const projected=projectCanonicalObject(current?.data||current||{},projectionObject);
     const canonical=sanitizePortalProjection(projected,{tenantId,userId:user.id,origin:PORTAL_LAYERS.CANONICAL,now});
     let result;
     try{result=await store.putCanonical(tenantId,canonical);}
-    catch(error){return json({error:'CANONICAL_PROJECTION_WRITE_FAILED',authorityStored:true,brainRecordId,sourceRevision,message:error instanceof Error?error.message:String(error)},502)}
+    catch(error){return json({error:'CANONICAL_PROJECTION_WRITE_FAILED',authorityStored:true,powerhouseFeedStored:true,brainRecordId,currentStateRecordId,sourceRevision,message:error instanceof Error?error.message:String(error)},502)}
     const record=result?.record||canonical;
-    return json({stored:Boolean(result?.stored),stale:Boolean(result?.stale),authorityStored:true,authority:authorityResult?.authority||'supabase:brain_records',brainRecordId,objectId:object.id,truthClass:object.truthClass,sourceRevision,sourceUpdatedAt:record.sourceUpdatedAt});
+    return json({stored:Boolean(result?.stored),stale:Boolean(result?.stale),authorityStored:true,powerhouseFeedStored:true,authority:authorityResult?.authority||'supabase:brain_records',brainRecordId,currentStateRecordId,objectId:object.id,truthClass:object.truthClass,sourceRevision,sourceUpdatedAt:record.sourceUpdatedAt});
   };
 }
