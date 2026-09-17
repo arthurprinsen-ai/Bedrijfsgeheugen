@@ -91,7 +91,7 @@ test('portal flush classifies Strategy DNA and EU AI Act context semantically', 
   const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
   const domain=createPortalDomainState(stateClient,{businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});
   domain.set('portal.strategy.dna.ambition','Verdubbelen zonder extra complexiteit');
-  domain.set('portal.aiAct.riskClass','limited');
+  domain.set('portal.dataAiPassport.aiAct.riskClass','limited');
   await domain.flush();
   const strategy=writes.find(item=>item.modelId==='strategy-dna');
   const aiAct=writes.find(item=>item.modelId==='eu-ai-act');
