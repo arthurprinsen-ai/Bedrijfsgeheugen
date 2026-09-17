@@ -1,3 +1,5 @@
+const nonEmpty=v=>typeof v==='string'&&v.trim()!=='';
+
 export function evaluateRuntimeAuthority(registry){
   const violations=[];
   const components=Array.isArray(registry?.components)?registry.components:[];
@@ -16,6 +18,11 @@ export function evaluateRuntimeAuthority(registry){
         violations.push({code:'MAKE_RESUME_POLICY_MISSING',component_id:component.id});
       }
     }
+    if(component.authority==='ACTIVE'){
+      const certified=nonEmpty(component.id)&&nonEmpty(component.runtime)&&nonEmpty(component.classification)&&
+        typeof component.production_execution_allowed==='boolean'&&Array.isArray(component.obligations)&&nonEmpty(component.role);
+      if(!certified) violations.push({code:'UNCERTIFIED_ACTIVE_COMPONENT',component_id:component.id||null});
+    }
   }
 
   for(const obligation of material){
@@ -24,12 +31,14 @@ export function evaluateRuntimeAuthority(registry){
     if(owners.length>1) violations.push({code:'DUPLICATE_MATERIAL_OWNER',obligation,owners:owners.map(x=>x.id)});
   }
 
-  const ids=new Set(components.map(x=>x.id));
+  const byId=new Map(components.map(x=>[x.id,x]));
   const seenChannels=new Set();
   for(const channel of registry?.channels||[]){
     if(seenChannels.has(channel.channel)) violations.push({code:'DUPLICATE_CHANNEL_BINDING',channel:channel.channel});
     seenChannels.add(channel.channel);
-    if(!ids.has(channel.owner_component_id)) violations.push({code:'UNKNOWN_CHANNEL_OWNER',channel:channel.channel,owner:channel.owner_component_id});
+    const owner=byId.get(channel.owner_component_id);
+    if(!owner) violations.push({code:'UNKNOWN_CHANNEL_OWNER',channel:channel.channel,owner:channel.owner_component_id});
+    else if(owner.authority!=='ACTIVE') violations.push({code:'CHANNEL_OWNER_NOT_ACTIVE',channel:channel.channel,owner:channel.owner_component_id});
     if(String(channel.delivery_runtime||'').startsWith('UNSUPPORTED')&&channel.autonomous_publish_allowed!==false){
       violations.push({code:'UNSUPPORTED_CHANNEL_NOT_FAIL_CLOSED',channel:channel.channel});
     }
