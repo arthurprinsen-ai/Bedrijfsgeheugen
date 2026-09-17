@@ -8,6 +8,7 @@ import { classifyCandidate, evaluateAdmission } from '../tools/delivery/delivery
 const evidence = { exactHeadVerified: true, protectedMergeVerified: true, runtimeReadbackVerified: true, learningWritebackVerified: true };
 const baseSha = 'a'.repeat(40);
 const policy = JSON.parse(readFileSync(new URL('../config/powerhouse-delivery-hygiene-v1.json', import.meta.url), 'utf8'));
+const workflowBudget = JSON.parse(readFileSync(new URL('../config/powerhouse-pr-workflow-budget-v1.json', import.meta.url), 'utf8'));
 const workflow = (name) => readFileSync(new URL(`../.github/workflows/${name}`, import.meta.url), 'utf8');
 
 function candidate(number, obligationId, candidateType, lane = 'automation') {
@@ -63,6 +64,21 @@ test('GitHub Actions queue is never a terminal external blocker and never causes
   assert.equal(failed.retry, true);
 });
 
+test('stale GitHub queue reconciles before any retry', () => {
+  const now = Date.parse('2026-09-17T20:00:00Z');
+  const queued = evaluateGitHubQueueRecovery({
+    status: 'queued',
+    queuedAt: '2026-09-17T19:55:00Z',
+    staleAfterMs: 120000,
+  }, now);
+  assert.deepEqual(queued, {
+    state: 'RECONCILING',
+    action: 'RECOVER',
+    retry: false,
+    reason: 'GITHUB_ACTIONS_QUEUE_STALE_RECONCILE',
+  });
+});
+
 test('PR governance fan-out is admitted once through Required before duplicate contract suites consume runners', () => {
   for (const name of [
     'brain-foundation-verify.yml',
@@ -101,6 +117,14 @@ test('delivery lane preserves finish-before-start and single-candidate recovery'
   assert.ok(policy.deliveryControlPlanePaths.includes('config/powerhouse-one-loop-v1.json'));
 });
 
+test('parallel development is not capped by integration WIP', () => {
+  const subject = candidate(99, 'parallel-new', 'implementation', 'backend');
+  const open = Array.from({ length: 12 }, (_, index) => candidate(index + 1, `parallel-${index + 1}`, 'implementation', 'backend'));
+  const result = evaluateAdmission({ candidate: subject, openCandidates: open, policy, currentMainSha: baseSha });
+  assert.equal(result.ok, true);
+  assert.equal(result.state, 'ADMITTED');
+});
+
 test('canonical delivery hygiene holds new implementation while promotion or recovery is finishing', () => {
   const implementation = candidate(20, 'new-feature', 'implementation');
   const promotion = candidate(10, 'release-existing', 'promotion');
@@ -112,6 +136,14 @@ test('canonical delivery hygiene holds new implementation while promotion or rec
   const recovery = candidate(30, 'incident-fix', 'recovery', 'incident');
   const priority = evaluateAdmission({ candidate: recovery, openCandidates: [promotion], policy, currentMainSha: baseSha });
   assert.equal(priority.ok, true);
+});
+
+test('workflow budget codifies one orchestrator and uncapped development', () => {
+  assert.equal(workflowBudget.canonicalRequiredOrchestrator, '.github/workflows/required-test.yml');
+  assert.equal(workflowBudget.developmentConcurrency.cappedByIntegrationWip, false);
+  assert.equal(workflowBudget.queue.staleAction, 'RECONCILE');
+  assert.equal(workflowBudget.queue.blindRetry, false);
+  assert.ok(workflowBudget.invariants.includes('no-broad-duplicate-heavy-pr-fanout'));
 });
 
 test('GitHub failures generate stable reusable delivery fingerprints', () => {
