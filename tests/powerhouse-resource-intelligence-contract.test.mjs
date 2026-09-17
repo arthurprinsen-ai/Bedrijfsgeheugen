@@ -13,16 +13,30 @@ function read(path) {
   return fs.readFileSync(path, 'utf8');
 }
 
-test('physical telemetry is nullable and provenance-aware', () => {
+test('resource intelligence composes canonical production views without mutating them', () => {
   const sql = read(migrationPath);
-  assert.match(sql, /energy_wh\s+numeric/i);
-  assert.match(sql, /water_ml\s+numeric/i);
-  assert.doesNotMatch(sql, /energy_wh\s+numeric[^,;]*default\s+0/i);
-  assert.doesNotMatch(sql, /water_ml\s+numeric[^,;]*default\s+0/i);
-  for (const field of ['energy_method', 'energy_provenance', 'energy_confidence', 'water_method', 'water_provenance', 'water_confidence', 'co2e_method', 'co2e_provenance', 'co2e_confidence']) {
-    assert.match(sql, new RegExp(`\\b${field}\\b`, 'i'));
-  }
+  assert.doesNotMatch(sql, /alter\s+table\s+public\.powerhouse_resource_impact_v1/i);
+  assert.match(sql, /from\s+public\.powerhouse_resource_impact_v1/i);
+  assert.match(sql, /from\s+public\.powerhouse_action_business_value_v1/i);
+  assert.match(sql, /energy_kwh/i);
+  assert.match(sql, /water_liters/i);
+  assert.match(sql, /co2e_kg/i);
+  assert.match(sql, /factor_coverage/i);
+  assert.match(sql, /observed_cost_eur/i);
+  assert.match(sql, /realized_roi/i);
   assert.match(sql, /powerhouse_resource_intelligence_daily_v1/i);
+  assert.match(sql, /powerhouse_business_value_intelligence_v1/i);
+});
+
+test('unknown physical telemetry stays unknown and provenance-aware', () => {
+  const sql = read(migrationPath);
+  assert.match(sql, /sum\(energy_kwh\)\s+filter\s*\(where energy_kwh is not null\)/i);
+  assert.match(sql, /sum\(water_liters\)\s+filter\s*\(where water_liters is not null\)/i);
+  assert.match(sql, /sum\(co2e_kg\)\s+filter\s*\(where co2e_kg is not null\)/i);
+  assert.match(sql, /min\(confidence\)\s+filter\s*\(where factor_id is not null\)/i);
+  assert.doesNotMatch(sql, /coalesce\(energy_kwh\s*,\s*0\)/i);
+  assert.doesNotMatch(sql, /coalesce\(water_liters\s*,\s*0\)/i);
+  assert.doesNotMatch(sql, /coalesce\(co2e_kg\s*,\s*0\)/i);
 });
 
 test('compliance evidence and optimization remain evidence- and safety-bounded', () => {
