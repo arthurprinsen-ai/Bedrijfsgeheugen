@@ -142,7 +142,7 @@
     "legally_or_financially_binding_action"
   ],
   "linked_learning_sources": [
-    "docs/execution-resilience.md",
+    "docs/brain/execution-resilience.md",
     "brain/learning/execution-resilience-2026-09-17.json"
   ],
   "runtime_helper": "brain/guards/execution-resilience.mjs",
