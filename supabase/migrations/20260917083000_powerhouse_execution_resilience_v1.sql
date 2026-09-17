@@ -10,6 +10,7 @@ create or replace function public.powerhouse_execution_heartbeat_v1(
 )
 returns public.brain_operations
 language plpgsql
+set search_path = public, pg_catalog
 as $$
 declare
   v_current public.brain_operations;
@@ -63,6 +64,7 @@ create or replace function public.powerhouse_mark_execution_interrupted_v1(
 )
 returns jsonb
 language plpgsql
+set search_path = public, pg_catalog
 as $$
 declare
   v_current public.brain_operations;
@@ -138,6 +140,7 @@ create or replace function public.powerhouse_execution_resilience_watchdog_v1(
 )
 returns table(operation_id uuid, reconciliation_job_id uuid, action text)
 language plpgsql
+set search_path = public, pg_catalog
 as $$
 declare
   v_candidate record;
@@ -201,6 +204,14 @@ begin
   end loop;
 end;
 $$;
+
+-- Mutating resilience RPCs are internal/server-side only. Keep them outside browser roles.
+revoke execute on function public.powerhouse_execution_heartbeat_v1(uuid,bigint,text,text,jsonb) from public, anon, authenticated;
+revoke execute on function public.powerhouse_mark_execution_interrupted_v1(uuid,bigint,text,text,text,jsonb) from public, anon, authenticated;
+revoke execute on function public.powerhouse_execution_resilience_watchdog_v1(timestamptz,integer,integer) from public, anon, authenticated;
+grant execute on function public.powerhouse_execution_heartbeat_v1(uuid,bigint,text,text,jsonb) to service_role;
+grant execute on function public.powerhouse_mark_execution_interrupted_v1(uuid,bigint,text,text,text,jsonb) to service_role;
+grant execute on function public.powerhouse_execution_resilience_watchdog_v1(timestamptz,integer,integer) to service_role;
 
 comment on function public.powerhouse_execution_heartbeat_v1(uuid,bigint,text,text,jsonb) is
   'Records durable execution checkpoint/heartbeat in canonical brain_operations evidence.';
