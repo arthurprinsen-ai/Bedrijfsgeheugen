@@ -51,6 +51,16 @@ test('machine-readable policy is null-not-zero and subordinate to existing produ
   assert.equal(config.autonomy.allow_destructive_irreversible_changes, false);
 });
 
+test('daily autonomous opportunity generation is idempotent and authority-bounded', () => {
+  const sql = read(migrationPath);
+  assert.match(sql, /powerhouse_generate_resource_optimization_candidates_v1/i);
+  assert.match(sql, /on conflict \(source_key\) do nothing/i);
+  assert.match(sql, /powerhouse-resource-intelligence-daily-v1/i);
+  assert.match(sql, /cron\.schedule/i);
+  assert.match(sql, /BG169/);
+  assert.match(sql, /expected impact expresses direction only, not an invented savings claim/i);
+});
+
 test('daily workflow and deterministic audit are wired', () => {
   const workflow = read(workflowPath);
   const audit = read(auditPath);
