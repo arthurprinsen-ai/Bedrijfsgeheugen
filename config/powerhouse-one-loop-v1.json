@@ -22,6 +22,7 @@
       ".github/workflows/required-test.yml",
       ".github/workflows/shared-agent-memory-tests.yml",
       ".github/workflows/unified-brain-delivery.yml",
+      "brain/learning/2026-09-17-delivery-classifier-repository-writer-contract-v1.json",
       "brain/learning/2026-09-17-powerhouse-one-loop-v1.json",
       "brain/learning/2026-09-17-recovery-watcher-slot-exhaustion-v1.json",
       "brain/learning/one-loop-pr-event-metadata-recovery-2026-09-17.json",
