@@ -6,6 +6,7 @@ import {
   buildStablePolicyPrefix,
   compactToolOutput,
   EvidenceCache,
+  PersistentEvidenceCache,
   LatencyTrace,
   runParallelStateRetrieval,
   buildMinimalContextPack,
@@ -78,6 +79,33 @@ test('evidence cache expires invalidates identity and never serves forbidden pro
   assert.equal(cache.get(identity, { identity: 'other', evidenceType: 'unit-test' }), null);
   assert.equal(cache.put(identity + ':prod', { green: true }, { ttlMs: 100, evidenceType: 'production-readback', identity }), null);
   now = 1101; assert.equal(cache.get(identity, { identity, evidenceType: 'unit-test' }), null);
+});
+
+test('persistent evidence cache reuses canonical outcome evidence store without a new store', async () => {
+  let now = 1000;
+  const records = [];
+  const evidenceStore = {
+    async list(idempotencyKey) { return records.filter(record => record.idempotencyKey === idempotencyKey); },
+    async putIfAbsent(record) {
+      const existing = records.find(item => item.idempotencyKey === record.idempotencyKey && item.ref === record.ref);
+      if (existing) return { created: false, record: existing };
+      records.push(structuredClone(record));
+      return { created: true, record };
+    }
+  };
+  const cache = new PersistentEvidenceCache({ evidenceStore, now: () => now });
+  const identity = buildEvidenceIdentity({ candidateSha: 'c1', environment: 'preview', configDigest: 'cfg', schemaDigest: 'sch', dependencyDigest: 'dep', gateVersion: 'g1', contractDigest: 'ct' });
+  await cache.put('gate:unit', { green: true }, { ttlMs: 100, evidenceType: 'unit-test', identity, invalidation: ['schema:sch'] });
+  assert.deepEqual(await cache.get('gate:unit', { identity, evidenceType: 'unit-test' }), { green: true });
+  assert.equal(await cache.get('gate:unit', { identity: 'wrong', evidenceType: 'unit-test' }), null);
+  assert.equal(await cache.put('gate:prod', { green: true }, { ttlMs: 100, evidenceType: 'production-readback', identity }), null);
+  await cache.invalidate('gate:unit', { reason: 'schema-changed' });
+  assert.equal(await cache.get('gate:unit', { identity, evidenceType: 'unit-test' }), null);
+  now = 1200;
+  await cache.put('gate:unit-2', { green: true }, { ttlMs: 50, evidenceType: 'unit-test', identity });
+  now = 1251;
+  assert.equal(await cache.get('gate:unit-2', { identity, evidenceType: 'unit-test' }), null);
+  assert.ok(records.every(record => record.producer === 'POWERHOUSE_FAST_DEVELOPMENT_V2'));
 });
 
 test('state retrieval starts independent adapters concurrently', async () => {
