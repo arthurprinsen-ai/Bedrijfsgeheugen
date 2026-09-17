@@ -34,6 +34,16 @@ function validPersonalArtifact(artifact) {
   );
 }
 
+function validCompanyArtifact(artifact) {
+  const evidence = artifact?.generation_evidence || {};
+  return Boolean(
+    artifactUsable(artifact) &&
+    artifact.channel === 'linkedin_company' &&
+    artifact.artifact_type === 'linkedin_post' &&
+    evidence.final_copy_approved === true,
+  );
+}
+
 function validInstagramArtifact(artifact) {
   const evidence = artifact?.generation_evidence || {};
   const gateInput = evidence.instagram_publish_gate_input;
@@ -68,6 +78,11 @@ export function selectDeliverySource({ channel, artifact = null, idea = null } =
     return { kind: 'artifact', text: artifact.body, ideaId: null, media: [], artifact };
   }
 
+  if (channel === 'linkedin_company') {
+    if (!validCompanyArtifact(artifact)) return null;
+    return { kind: 'artifact', text: artifact.body, ideaId: null, media: [], artifact };
+  }
+
   if (channel === 'instagram') {
     if (!validInstagramArtifact(artifact)) return null;
     return { kind: 'artifact', text: artifact.body, ideaId: null, media: instagramMediaFromArtifact(artifact), artifact };
@@ -90,6 +105,14 @@ function providerCoverageDecision({ channel, posts, artifact }) {
     if (!validPersonalArtifact(artifact)) return { action: 'BLOCK', reason: 'PERSONAL_TRUTH_ARTIFACT_REQUIRED' };
     const exact = covered.find((post) => normalizeText(post?.text) === normalizeText(artifact.body));
     if (!exact) return { action: 'BLOCK', reason: 'PERSONAL_PROVIDER_ARTIFACT_MISMATCH' };
+    return { action: 'NONE', reason: 'PROVIDER_COVERED_VERIFIED', providerPostId: exact.id || null };
+  }
+
+  if (channel === 'linkedin_company') {
+    if (!artifact) return { action: 'BLOCK', reason: 'CANONICAL_FINAL_ARTIFACT_REQUIRED' };
+    if (!validCompanyArtifact(artifact)) return { action: 'BLOCK', reason: 'COMPANY_FINAL_COPY_APPROVAL_REQUIRED' };
+    const exact = covered.find((post) => normalizeText(post?.text) === normalizeText(artifact.body));
+    if (!exact) return { action: 'BLOCK', reason: 'COMPANY_PROVIDER_ARTIFACT_MISMATCH' };
     return { action: 'NONE', reason: 'PROVIDER_COVERED_VERIFIED', providerPostId: exact.id || null };
   }
 
@@ -123,6 +146,8 @@ export function deliveryDecision({ channel, posts = [], artifact = null, idea = 
   if (!source) {
     const reason = channel === 'linkedin_personal'
       ? 'PERSONAL_TRUTH_ARTIFACT_REQUIRED'
+      : channel === 'linkedin_company'
+        ? (artifact ? 'COMPANY_FINAL_COPY_APPROVAL_REQUIRED' : 'CANONICAL_FINAL_ARTIFACT_REQUIRED')
       : channel === 'instagram'
         ? 'INSTAGRAM_MIRA_ARTIFACT_REQUIRED'
         : 'CONTENT_REQUIRED';
