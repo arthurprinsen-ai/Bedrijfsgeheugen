@@ -25,7 +25,6 @@ const TEST_DIRS = ['tests', 'portal-v2/tests'];
  * onzichtbaar. Deze lijst hoort korter te worden, nooit langer.
  */
 const BEKEND_ROOD = Object.freeze({
-  'tests/seo-estate-policy-v3.test.mjs': 'GEDRAGSVERANDERING: classifyCanonical geeft een onbekende commercieel ogende route nu automatisch page_class support in plaats van null; de fail-closed regel geldt niet meer',
   'tests/social-learning-evaluate.test.mjs': 'bij commerciele tegenspraak schrijft de evaluator helemaal geen learning weg; de test verwacht een niet-PROVEN learning op effectMetric revenue'
 });
 

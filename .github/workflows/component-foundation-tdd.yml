@@ -8,7 +8,8 @@ on:
     branches:
       - main
     paths:
-      - 'config/**'
+      - 'config/component-ownership.json'
+      - 'config/change-classes.json'
       - 'components/_schema/**'
       - 'pages/**'
       - 'preview/**'

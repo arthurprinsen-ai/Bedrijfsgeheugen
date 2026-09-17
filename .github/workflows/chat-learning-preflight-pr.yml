@@ -3,6 +3,14 @@ name: Chat learning preflight PR
 on:
   pull_request:
     branches: [main]
+    paths:
+      - 'AGENTS.md'
+      - 'config/brain-chat-learning-contract.json'
+      - 'config/chat-learning-completeness-guard.json'
+      - 'scripts/brain/chat-learning-preflight.mjs'
+      - 'tests/chat-learning-*.test.mjs'
+      - 'tests/chat-to-brain-*.test.mjs'
+      - '.github/workflows/chat-learning-preflight-pr.yml'
 
 permissions:
   contents: read

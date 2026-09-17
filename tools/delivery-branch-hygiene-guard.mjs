@@ -1,3 +1,5 @@
+import { parseDeliveryMetadata } from './delivery/delivery-hygiene.mjs';
+
 function normalizePath(value) {
   return String(value || '').trim().replace(/^\.\//, '');
 }
@@ -27,7 +29,7 @@ export function isVerificationArtifact(path) {
 }
 
 export function parseScopeMetadata(body = '') {
-  const result = {};
+  const result = { delivery: parseDeliveryMetadata(body) };
   for (const rawLine of String(body).split(/\r?\n/)) {
     const line = rawLine.trim();
     const scope = line.match(/^Change-Scope:\s*(.+)$/i);

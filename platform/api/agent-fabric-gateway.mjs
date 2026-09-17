@@ -1,3 +1,5 @@
+import { beginMaterialRun } from '../../scripts/brain/powerhouse-universal-runtime-ingress.mjs';
+
 export const AGENT_FABRIC_COMMANDS = Object.freeze({
   INTAKE_SIGNAL:'INTAKE_SIGNAL',
   INTAKE_OPPORTUNITY:'INTAKE_OPPORTUNITY',
@@ -21,14 +23,44 @@ function unsupported(kind, value) {
   return error;
 }
 
-export function createAgentFabricGateway({ fabric } = {}) {
+function requireRuntimeIdentity(runtime) {
+  if (!runtime || typeof runtime !== 'object') throw new TypeError('Agent Fabric material command runtime identity is required');
+  for (const field of ['runId', 'actorKind', 'actorId', 'candidateId']) {
+    if (typeof runtime[field] !== 'string' || !runtime[field].trim()) throw new TypeError(`Agent Fabric runtime.${field} is required`);
+  }
+  return Object.freeze({
+    runId: runtime.runId.trim(),
+    actorKind: runtime.actorKind.trim(),
+    actorId: runtime.actorId.trim(),
+    candidateId: runtime.candidateId.trim(),
+  });
+}
+
+function requireIngressReceipt(receipt, runtime) {
+  if (!receipt || typeof receipt !== 'object') throw new Error('UNIVERSAL_INGRESS_ADMISSION_FAILED missing receipt');
+  if (receipt.version !== 'POWERHOUSE-UNIVERSAL-INGRESS-v1' || receipt.status !== 'ADMITTED' || receipt.preflightStatus !== 'READY') {
+    throw new Error('UNIVERSAL_INGRESS_ADMISSION_FAILED invalid receipt state');
+  }
+  for (const field of ['runId', 'actorKind', 'actorId', 'candidateId']) {
+    if (receipt[field] !== runtime[field]) throw new Error(`UNIVERSAL_INGRESS_ADMISSION_FAILED ${field} mismatch`);
+  }
+  if (!/^[a-f0-9]{64}$/.test(receipt.preflightDigest ?? '') || !/^[a-f0-9]{64}$/.test(receipt.receiptDigest ?? '')) {
+    throw new Error('UNIVERSAL_INGRESS_ADMISSION_FAILED invalid receipt digest');
+  }
+  return receipt;
+}
+
+export function createAgentFabricGateway({ fabric, rootDir = process.cwd() } = {}) {
   for (const method of ['intake','intakeOpportunity','transition','recordLearning','getWork','listWork','suggestLearning']) {
     requireMethod(fabric, method);
   }
 
   async function command(request) {
     if (!request || typeof request.type !== 'string') throw new TypeError('Agent Fabric command type is required');
-    const payload = Object.freeze({ ...(request.payload ?? {}) });
+    if (!Object.values(AGENT_FABRIC_COMMANDS).includes(request.type)) throw unsupported('command', request.type);
+    const runtime = requireRuntimeIdentity(request.runtime);
+    const receipt = requireIngressReceipt(beginMaterialRun({ ...runtime, rootDir }), runtime);
+    const payload = Object.freeze({ ...(request.payload ?? {}), runtimeIngressReceipt: receipt });
     switch (request.type) {
       case AGENT_FABRIC_COMMANDS.INTAKE_SIGNAL:
         return fabric.intake(payload);
