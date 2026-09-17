@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
-import { classifyTerminalState, evaluateExecutionLease, evaluateFinishingPressure, reconcileExecution } from '../tools/delivery/one-loop.mjs';
+import { classifyTerminalState, evaluateExecutionLease, evaluateFinishingPressure, evaluateGitHubQueueRecovery, reconcileExecution } from '../tools/delivery/one-loop.mjs';
 import { normalizeGitHubDeliveryTelemetry } from '../tools/delivery/github-learning.mjs';
 import { classifyCandidate, evaluateAdmission } from '../tools/delivery/delivery-hygiene.mjs';
 
@@ -27,6 +27,39 @@ test('delivery lane treats stranded states as recoverable and evidence-backed fu
   }
   assert.equal(classifyTerminalState('FULFILLED', evidence).valid, true);
   assert.equal(evaluateExecutionLease({ state: 'EXECUTING', leaseExpiresAt: '2026-09-17T17:59:00Z' }, Date.parse('2026-09-17T18:00:00Z')), 'RECOVER');
+});
+
+test('GitHub Actions queue is never a terminal external blocker and never causes retry amplification', () => {
+  const blocked = classifyTerminalState('BLOCKED_EXTERNAL', {
+    externalBlockerVerified: true,
+    blockerClass: 'GITHUB_ACTIONS_QUEUE',
+    recoveryPath: 'Keep the same exact-head obligation active until runner capacity returns.',
+  });
+  assert.equal(blocked.valid, false);
+  assert.equal(blocked.recoveryRequired, true);
+
+  const queued = evaluateGitHubQueueRecovery({
+    status: 'queued',
+    headSha: 'sha-a',
+    currentHeadSha: 'sha-a',
+    runAttempt: 1,
+  });
+  assert.deepEqual(queued, {
+    state: 'WAITING_CAPACITY',
+    action: 'WAIT',
+    retry: false,
+    reason: 'GITHUB_ACTIONS_QUEUE_NON_TERMINAL',
+  });
+
+  const failed = evaluateGitHubQueueRecovery({
+    status: 'completed',
+    conclusion: 'failure',
+    headSha: 'sha-a',
+    currentHeadSha: 'sha-a',
+    runAttempt: 1,
+  });
+  assert.equal(failed.action, 'RECOVER');
+  assert.equal(failed.retry, true);
 });
 
 test('delivery lane preserves finish-before-start and single-candidate recovery', () => {
