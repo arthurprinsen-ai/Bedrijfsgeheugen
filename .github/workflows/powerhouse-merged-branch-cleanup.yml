@@ -1,0 +1,147 @@
+name: Powerhouse Merged Branch Cleanup
+
+on:
+  pull_request:
+    types: [closed]
+
+permissions:
+  contents: write
+  pull-requests: read
+
+concurrency:
+  group: powerhouse-merged-branch-cleanup-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.event.pull_request.head.ref != github.event.repository.default_branch
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      HEAD_REF: ${{ github.event.pull_request.head.ref }}
+      EXPECTED_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+    steps:
+      - name: Delete exact merged same-repository branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          state=STARTED
+          detail=''
+          write_evidence() {
+            local rc="$1"
+            jq -n \
+              --arg state "$state" \
+              --arg detail "$detail" \
+              --arg repository "$GITHUB_REPOSITORY" \
+              --arg branch "$HEAD_REF" \
+              --arg expected_head_sha "$EXPECTED_HEAD_SHA" \
+              --arg default_branch "$DEFAULT_BRANCH" \
+              --argjson exit_code "$rc" \
+              '{state:$state,detail:$detail,repository:$repository,branch:$branch,expected_head_sha:$expected_head_sha,default_branch:$default_branch,exit_code:$exit_code}' \
+              > .artifacts/powerhouse-merged-branch-cleanup.json
+          }
+          cleanup_evidence() {
+            rc=$?
+            trap - EXIT
+            write_evidence "$rc"
+            exit "$rc"
+          }
+          trap cleanup_evidence EXIT
+
+          [ -n "$HEAD_REF" ] || { state=BLOCKED; detail=EMPTY_HEAD_REF; exit 78; }
+          [ "$HEAD_REF" != "$DEFAULT_BRANCH" ] || { state=BLOCKED; detail=DEFAULT_BRANCH_DELETE_FORBIDDEN; exit 78; }
+
+          api_get_ref() {
+            local out err attempt delay
+            out="$(mktemp)"
+            err="$(mktemp)"
+            for attempt in 1 2 3 4; do
+              if gh api "repos/${GITHUB_REPOSITORY}/git/ref/heads/${HEAD_REF}" >"$out" 2>"$err"; then
+                cat "$out"
+                rm -f "$out" "$err"
+                return 0
+              fi
+              if grep -Eq 'HTTP 404' "$err"; then
+                cat "$err" >&2
+                rm -f "$out" "$err"
+                return 44
+              fi
+              if grep -Eq 'HTTP (502|503|504)|connection (refused|reset)|ECONNRESET|ETIMEDOUT|socket hang up' "$err" && [ "$attempt" -lt 4 ]; then
+                delay=$((attempt * 2))
+                sleep "$delay"
+                continue
+              fi
+              cat "$err" >&2
+              rm -f "$out" "$err"
+              return 1
+            done
+          }
+
+          set +e
+          ref_json="$(api_get_ref)"
+          ref_rc=$?
+          set -e
+          if [ "$ref_rc" -eq 44 ]; then
+            state=ALREADY_ABSENT
+            detail=BRANCH_ALREADY_CLEAN
+            exit 0
+          fi
+          [ "$ref_rc" -eq 0 ] || { state=BLOCKED; detail=REF_READ_FAILED; exit 1; }
+
+          current_sha="$(jq -r '.object.sha' <<<"$ref_json")"
+          [ "$current_sha" = "$EXPECTED_HEAD_SHA" ] || {
+            state=BLOCKED
+            detail="HEAD_DRIFT:${EXPECTED_HEAD_SHA}:${current_sha}"
+            exit 78
+          }
+
+          delete_err="$(mktemp)"
+          deleted=false
+          for attempt in 1 2 3 4; do
+            if gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${HEAD_REF}" >/dev/null 2>"$delete_err"; then
+              deleted=true
+              break
+            fi
+            if grep -Eq 'HTTP 404' "$delete_err"; then
+              deleted=true
+              break
+            fi
+            if grep -Eq 'HTTP (502|503|504)|connection (refused|reset)|ECONNRESET|ETIMEDOUT|socket hang up' "$delete_err" && [ "$attempt" -lt 4 ]; then
+              sleep $((attempt * 2))
+              continue
+            fi
+            cat "$delete_err" >&2
+            state=BLOCKED
+            detail=DELETE_FAILED
+            rm -f "$delete_err"
+            exit 1
+          done
+          rm -f "$delete_err"
+          [ "$deleted" = true ] || { state=BLOCKED; detail=DELETE_RETRY_EXHAUSTED; exit 1; }
+
+          set +e
+          api_get_ref >/tmp/powerhouse-branch-readback.json 2>/tmp/powerhouse-branch-readback.err
+          readback_rc=$?
+          set -e
+          if [ "$readback_rc" -ne 44 ]; then
+            state=BLOCKED
+            detail="DELETE_READBACK_FAILED:${readback_rc}"
+            cat /tmp/powerhouse-branch-readback.err >&2 || true
+            exit 1
+          fi
+
+          state=DELETED
+          detail=EXACT_MERGED_HEAD_REMOVED
+
+      - name: Upload merged branch cleanup evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-merged-branch-cleanup-${{ github.event.pull_request.number }}-${{ github.run_id }}
+          path: .artifacts/powerhouse-merged-branch-cleanup.json
+          if-no-files-found: error
