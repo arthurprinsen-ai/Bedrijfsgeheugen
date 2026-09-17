@@ -5,6 +5,9 @@ import { projectCanonicalObject } from '../platform/read-models/portal-projectio
 import { createPortalBusinessInputHandler } from '../platform/api/portal-business-input-handler.mjs';
 import { readLegacyPortalBusinessInputs } from '../portal-next/portal-business-input-store.js';
 import { repairBusinessInputsFromAuthority } from '../supabase/functions/portal-state-eu/business-input-read-repair.js';
+import { createPortalDomainState } from '../portal-v2/domain-state.js';
+
+// Current-main replay preserves the BusinessInput -> CurrentState feed and proves semantic portal bindings.
 
 test('portal business input is stored as SourceTruth with model lineage and raw answers', () => {
   const object=createPortalBusinessInput({tenantId:'tenant-1',userId:'user-1',inputType:'AIActAssessment',modelId:'eu-ai-act',instanceId:'primary',schemaVersion:3,answers:{usesAI:true,humanOversight:false},sourcePortal:'portal-next',submittedAt:'2026-09-17T15:40:00.000Z'});
@@ -61,4 +64,59 @@ test('canonical read-repair reconstructs a missing BusinessInput projection from
 test('legacy portal browser states become migratable BusinessInputs without lead/auth keys', () => {
   const values=new Map([['bg_portaal_acme',JSON.stringify({beleid:{aibeleid:2},niveaus:{strategie:4}})],['bg_portaal_open','1'],['bg_portaal_lead',JSON.stringify({mail:'x@example.test'})]]);const storage={length:values.size,key:index=>[...values.keys()][index],getItem:key=>values.get(key)??null};const inputs=readLegacyPortalBusinessInputs(storage);
   assert.equal(inputs.length,1);assert.equal(inputs[0].modelId,'bg_portaal_acme');assert.equal(inputs[0].inputType,'LegacyPortalState');assert.deepEqual(inputs[0].answers.beleid,{aibeleid:2});
+});
+
+test('portal domain state sends authenticated BusinessInput through one canonical writer seam', async () => {
+  const writes=[];
+  const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
+  const businessInputSaver=async(input,options)=>{writes.push({input,options});return{stored:true,objectId:'PORTAL_INPUT-StrategyModel-business-model-primary'};};
+  const domain=createPortalDomainState(stateClient,{businessInputSaver,legacyStorage:null});
+  const result=await domain.saveBusinessInput({inputType:'StrategyModel',modelId:'business-model',answers:{customer:'MKB'},sourcePortal:'portal-v2'});
+  assert.equal(result.stored,true);assert.equal(writes.length,1);assert.equal(writes[0].options.authorization,'Bearer live');assert.deepEqual(writes[0].input.answers,{customer:'MKB'});
+});
+
+test('portal flush automatically persists each changed canvas as separate SourceTruth', async () => {
+  const writes=[];
+  const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
+  const domain=createPortalDomainState(stateClient,{legacyStorage:null,businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});
+  domain.set('portal.canvases.bmc.answer','Wij bedienen maakbedrijven');domain.set('portal.canvases.lean.answer','Eerst validatie');await domain.flush();
+  assert.deepEqual(writes.map(item=>item.modelId).sort(),['canvas-bmc','canvas-lean']);assert.equal(writes.every(item=>item.inputType==='StrategyCanvas'),true);assert.deepEqual(writes.find(item=>item.modelId==='canvas-bmc').answers,{answer:'Wij bedienen maakbedrijven'});
+});
+
+test('portal flush classifies Strategy DNA and EU AI Act context semantically', async () => {
+  const writes=[];
+  const stateClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
+  const domain=createPortalDomainState(stateClient,{legacyStorage:null,businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});
+  domain.set('portal.strategy.dna.ambition','Verdubbelen zonder extra complexiteit');domain.set('portal.aiAct.riskClass','limited');await domain.flush();
+  const strategy=writes.find(item=>item.modelId==='strategy-dna');const aiAct=writes.find(item=>item.modelId==='eu-ai-act');
+  assert.equal(strategy.inputType,'StrategyModel');assert.deepEqual(strategy.answers,{ambition:'Verdubbelen zonder extra complexiteit'});assert.equal(aiAct.inputType,'AIActAssessment');assert.deepEqual(aiAct.answers,{riskClass:'limited'});
+});
+
+test('demo flush remains non-durable while authenticated missing-token flush fails closed', async () => {
+  const writes=[];
+  const demoClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({}),isDemo:()=>true};
+  const demo=createPortalDomainState(demoClient,{legacyStorage:null,businessInputSaver:async input=>{writes.push(input);return{stored:true};}});demo.set('portal.profile.employees',12);await demo.flush();assert.equal(writes.length,0);
+  const realClient={load:async()=>({state:{}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({}),isDemo:()=>false};
+  const real=createPortalDomainState(realClient,{legacyStorage:null,businessInputSaver:async input=>{writes.push(input);return{stored:true};}});real.set('portal.profile.employees',12);await assert.rejects(()=>real.flush(),/PORTAL_BUSINESS_INPUT_AUTH_REQUIRED/);
+});
+
+test('authenticated portal init migrates legacy bg_portaal state into the same BusinessInput authority', async () => {
+  const values=new Map([['bg_portaal_acme',JSON.stringify({beleid:{aibeleid:2},niveaus:{strategie:4}})],['bg_portaal_open','1'],['bg_portaal_lead',JSON.stringify({mail:'x@example.test'})]]);const storage={length:values.size,key:index=>[...values.keys()][index],getItem:key=>values.get(key)??null};const writes=[];
+  const stateClient={load:async()=>({state:{portal:{profile:{employees:8}}}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({authorization:'Bearer live'}),isDemo:()=>false};
+  const domain=createPortalDomainState(stateClient,{legacyStorage:storage,businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});await domain.init();
+  assert.equal(writes.length,1);assert.equal(writes[0].inputType,'LegacyPortalState');assert.equal(writes[0].modelId,'bg_portaal_acme');assert.deepEqual(writes[0].answers.beleid,{aibeleid:2});
+});
+
+test('demo portal init never migrates legacy browser state into durable authority', async () => {
+  const values=new Map([['bg_portaal_demo',JSON.stringify({niveaus:{strategie:3}})]]);const storage={length:values.size,key:index=>[...values.keys()][index],getItem:key=>values.get(key)??null};const writes=[];
+  const stateClient={load:async()=>({state:{portal:{klant:'demo'}}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({}),isDemo:()=>true};
+  const domain=createPortalDomainState(stateClient,{legacyStorage:storage,businessInputSaver:async(input)=>{writes.push(input);return{stored:true};}});await domain.init();assert.equal(writes.length,0);
+});
+
+test('demo and preview boot do not eagerly load the durable BusinessInput store', async () => {
+  let loads=0;const loader=async()=>{loads+=1;throw new Error('DURABLE_STORE_MUST_NOT_LOAD_DURING_BOOT');};
+  const demoClient={load:async()=>({mode:'authenticated',state:{portal:{klant:'demo'}}}),write:async state=>({mode:'authenticated',state}),authHeaders:async()=>({}),isDemo:()=>true};
+  const demo=createPortalDomainState(demoClient,{legacyStorage:null,businessInputStoreLoader:loader});await demo.init();demo.set('portal.profile.employees',12);await demo.flush();assert.equal(demo.initialized(),true);assert.equal(loads,0);
+  const previewClient={load:async()=>({mode:'preview',state:null}),write:async state=>({mode:'preview',state}),authHeaders:async()=>({}),isDemo:()=>false};
+  const preview=createPortalDomainState(previewClient,{legacyStorage:null,businessInputStoreLoader:loader});await preview.init();assert.equal(preview.initialized(),true);assert.equal(loads,0);
 });
