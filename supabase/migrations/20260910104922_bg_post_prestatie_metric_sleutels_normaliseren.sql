@@ -1,3 +1,28 @@
+-- Replay compatibility baseline: social_metric_snapshots existed in production
+-- before it was captured in migration history. A fresh Supabase branch must
+-- recreate the proven production shape before bg_post_prestatie depends on it.
+create table if not exists public.social_metric_snapshots (
+  tenant_id text not null,
+  snapshot_id text not null,
+  post_id text not null,
+  observed_at timestamptz not null,
+  source text not null,
+  source_event_id text not null,
+  data_quality text not null default 'OBSERVED'::text,
+  metrics jsonb not null,
+  created_at timestamptz not null default now(),
+  age_hours double precision,
+  primary key (tenant_id, snapshot_id),
+  unique (tenant_id, source_event_id)
+);
+
+create index if not exists social_snapshots_post_observed_idx
+  on public.social_metric_snapshots (tenant_id, post_id, observed_at desc);
+
+alter table public.social_metric_snapshots enable row level security;
+revoke all on table public.social_metric_snapshots from anon, authenticated;
+grant all on table public.social_metric_snapshots to service_role;
+
 create or replace view public.bg_post_prestatie as
 WITH laatste AS (
   SELECT DISTINCT ON (s.post_id) s.post_id, s.metrics, s.observed_at
