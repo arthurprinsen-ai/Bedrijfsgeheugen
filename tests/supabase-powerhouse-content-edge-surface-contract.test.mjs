@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 
 const orchestrator = readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts', 'utf8');
 const publisher = readFileSync('supabase/functions/powerhouse-social-publisher/index.ts', 'utf8');
+const prePublishReview = readFileSync('supabase/functions/bg-pre-publish-review/index.ts', 'utf8');
 const registry = JSON.parse(readFileSync('config/powerhouse-quality-surface-contracts.json', 'utf8'));
 const cockpitMigration = 'supabase/migrations/20260916163500_content_operations_cockpit_projection_repair_v1.sql';
 
@@ -61,6 +62,26 @@ test('social publisher retains identity gate, provider reconciliation, exact rea
   assert.match(publisher, /deletePost\(bufferToken, created\.post\.id\)/);
   assert.match(publisher, /provider_truth_verified:\s*true/);
   assert.match(publisher, /x-powerhouse-token/);
+});
+
+test('Instagram proof is bound to exact final media and canonical profile', () => {
+  assert.match(prePublishReview, /FINAL_MEDIA_DIGEST_REQUIRED/);
+  assert.match(prePublishReview, /EXACT_FINAL_MEDIA_UNPROVEN/);
+  assert.match(prePublishReview, /INSTAGRAM_CHANNEL_ID_MISMATCH/);
+  assert.match(prePublishReview, /6a70384d99afb44349f0fba9/);
+});
+
+test('Instagram proof requires verified visual evidence for the same asset', () => {
+  assert.match(prePublishReview, /INSTAGRAM_VISUAL_EVIDENCE_REQUIRED/);
+  assert.match(prePublishReview, /INSTAGRAM_FINAL_ASSET_MISMATCH/);
+  assert.match(prePublishReview, /INSTAGRAM_MIRA_VISUAL_REQUIRED/);
+  assert.match(prePublishReview, /evidence_refs/);
+});
+
+test('Instagram video requires verified start middle end Mira frames', () => {
+  assert.match(prePublishReview, /INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED/);
+  assert.match(prePublishReview, /INSTAGRAM_MIRA_FRAME_IDENTITY_REQUIRED/);
+  for (const position of ['start', 'middle', 'end']) assert.match(prePublishReview, new RegExp(position));
 });
 
 test('content operations cockpit keeps one-row projection and canonical decision delivery lineage', () => {
