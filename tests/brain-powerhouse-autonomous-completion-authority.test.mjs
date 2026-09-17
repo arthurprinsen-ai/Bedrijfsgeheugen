@@ -43,6 +43,17 @@ test('autonomous completion authority has reusable human-readable canonical docu
   assert.match(docs, /volgende chats\/agents/i);
 });
 
+test('autonomous completion incident and prevention are reusable machine-readable learning', async () => {
+  const learning = await loadJson('brain/learning/autonomous-completion-authority-v1-2026-09-17.json');
+  assert.equal(learning.fingerprint, 'powerhouse-autonomous-completion-authority-v1');
+  assert.equal(learning.outcome_class, 'IMPROVEMENT');
+  assert.match(learning.root_cause, /interaction-authority/i);
+  assert.match(learning.delivery_incident.repair, /tests\/brain-\*/i);
+  assert.match(learning.delivery_incident.prevention, /Never weaken a fail-closed classifier/i);
+  assert.ok(learning.prevention.some(rule => /No repeated approval prompt/i.test(rule)));
+  assert.ok(learning.evidence_sources.includes('config/powerhouse-engineering-os.json#interaction_authority'));
+});
+
 test('Required CI executes the autonomous completion authority regression contract', async () => {
   const workflow = await readFile(new URL('../.github/workflows/required-test.yml', import.meta.url), 'utf8');
   assert.match(workflow, /tests\/brain-powerhouse-autonomous-completion-authority\.test\.mjs/);
