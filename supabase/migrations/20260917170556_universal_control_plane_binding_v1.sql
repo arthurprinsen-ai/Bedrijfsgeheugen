@@ -18,12 +18,15 @@ revoke all on table public.brain_control_plane_bindings from public, anon, authe
 grant select on table public.brain_control_plane_bindings to service_role;
 
 create or replace function public.brain_control_plane_binding_immutable()
-returns trigger language plpgsql set search_path=public,pg_catalog as $function$
+returns trigger
+language plpgsql
+set search_path = public, pg_catalog
+as $function$
 begin
   raise exception 'CONTROL_PLANE_BINDING_IMMUTABLE';
 end;
 $function$;
-revoke all on function public.brain_control_plane_binding_immutable() from public, anon, authenticated, service_role;
+revoke execute on function public.brain_control_plane_binding_immutable() from public, anon, authenticated, service_role;
 
 drop trigger if exists brain_control_plane_binding_no_mutation on public.brain_control_plane_bindings;
 create trigger brain_control_plane_binding_no_mutation
@@ -43,7 +46,10 @@ from public.brain_operations o
 on conflict (operation_id) do nothing;
 
 create or replace function public.brain_require_control_plane_admission()
-returns trigger language plpgsql set search_path=public,pg_catalog as $function$
+returns trigger
+language plpgsql
+set search_path = public, pg_catalog
+as $function$
 begin
   if coalesce(current_setting('powerhouse.control_plane_admission',true),'') <> 'brain_create_operation_v2' then
     raise exception 'CONTROL_PLANE_ADMISSION_REQUIRED';
@@ -51,7 +57,7 @@ begin
   return new;
 end;
 $function$;
-revoke all on function public.brain_require_control_plane_admission() from public, anon, authenticated, service_role;
+revoke execute on function public.brain_require_control_plane_admission() from public, anon, authenticated, service_role;
 
 drop trigger if exists brain_operations_require_control_plane_admission on public.brain_operations;
 create trigger brain_operations_require_control_plane_admission
@@ -67,7 +73,9 @@ create or replace function public.brain_create_operation(
   p_correlation_id text default null
 )
 returns public.brain_operations
-language plpgsql security definer set search_path=public,pg_catalog
+language plpgsql
+security definer
+set search_path = public, pg_catalog
 as $function$
 declare
   v_operation public.brain_operations;
@@ -112,7 +120,7 @@ begin
   return v_operation;
 end;
 $function$;
-revoke all on function public.brain_create_operation(text,text,text,text,text,text) from public, anon, authenticated;
+revoke execute on function public.brain_create_operation(text,text,text,text,text,text) from public, anon, authenticated;
 grant execute on function public.brain_create_operation(text,text,text,text,text,text) to service_role;
 revoke insert on table public.brain_operations from service_role;
 
@@ -125,7 +133,9 @@ create or replace function public.brain_transition_operation(
   p_evidence jsonb default null
 )
 returns public.brain_operations
-language plpgsql security definer set search_path=public,pg_catalog
+language plpgsql
+security definer
+set search_path = public, pg_catalog
 as $function$
 declare
   v_current public.brain_operations;
@@ -149,12 +159,14 @@ begin
   return v_row;
 end;
 $function$;
-revoke all on function public.brain_transition_operation(uuid,bigint,text,bigint,text,jsonb) from public, anon, authenticated;
+revoke execute on function public.brain_transition_operation(uuid,bigint,text,bigint,text,jsonb) from public, anon, authenticated;
 grant execute on function public.brain_transition_operation(uuid,bigint,text,bigint,text,jsonb) to service_role;
 
 create or replace function public.powerhouse_control_plane_binding_selftest_v1()
 returns jsonb
-language plpgsql security definer set search_path=public,pg_catalog
+language plpgsql
+security definer
+set search_path = public, pg_catalog
 as $function$
 declare
   v_direct_blocked boolean := false;
@@ -181,4 +193,4 @@ begin
     'session_key',v_binding.session_key,'admitted_via',v_binding.admitted_via,'tested_at',clock_timestamp());
 end;
 $function$;
-revoke all on function public.powerhouse_control_plane_binding_selftest_v1() from public, anon, authenticated, service_role;
+revoke execute on function public.powerhouse_control_plane_binding_selftest_v1() from public, anon, authenticated, service_role;
