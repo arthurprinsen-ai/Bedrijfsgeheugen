@@ -8,6 +8,7 @@ import { classifyCandidate, evaluateAdmission } from '../tools/delivery/delivery
 const evidence = { exactHeadVerified: true, protectedMergeVerified: true, runtimeReadbackVerified: true, learningWritebackVerified: true };
 const baseSha = 'a'.repeat(40);
 const policy = JSON.parse(readFileSync(new URL('../config/powerhouse-delivery-hygiene-v1.json', import.meta.url), 'utf8'));
+const workflow = (name) => readFileSync(new URL(`../.github/workflows/${name}`, import.meta.url), 'utf8');
 
 function candidate(number, obligationId, candidateType, lane = 'automation') {
   return classifyCandidate({
@@ -60,6 +61,37 @@ test('GitHub Actions queue is never a terminal external blocker and never causes
   });
   assert.equal(failed.action, 'RECOVER');
   assert.equal(failed.retry, true);
+});
+
+test('PR governance fan-out is admitted once through Required before duplicate contract suites consume runners', () => {
+  for (const name of [
+    'brain-foundation-verify.yml',
+    'shared-agent-memory-tests.yml',
+    'bg168-materiality-promotion-tests.yml',
+    'learning-contract-delivery-classifier-tests.yml',
+    'engineering-intelligence-trust.yml',
+  ]) {
+    assert.doesNotMatch(workflow(name), /^\s*pull_request\s*:/m, name);
+  }
+
+  const required = workflow('required-test.yml');
+  const automation = workflow('lane-automation.yml');
+  assert.match(required, /powerhouse-delivery-hygiene\.yml/);
+  assert.match(required, /brain-learning-contract-delivery-classification\.test\.mjs/);
+  assert.match(required, /engineering-trust-contract\.test\.mjs/);
+  assert.match(required, /make-agent-learning-promotion-contract\.test\.mjs/);
+  assert.match(automation, /scripts\/brain\/test-all\.mjs/);
+  assert.match(automation, /development-doc-contract\.test\.mjs/);
+});
+
+test('CodeQL keeps Python and Powerhouse JavaScript coverage without analyzing JavaScript twice on each PR', () => {
+  const generic = workflow('codeql.yml');
+  const powerhouse = workflow('powerhouse-codeql.yml');
+  assert.match(generic, /language:\s*\[python\]/);
+  assert.match(generic, /'\*\*\/\*\.py'/);
+  assert.doesNotMatch(generic, /javascript-typescript/);
+  assert.match(powerhouse, /languages:\s*javascript-typescript/);
+  assert.match(powerhouse, /queries:\s*security-extended/);
 });
 
 test('delivery lane preserves finish-before-start and single-candidate recovery', () => {
