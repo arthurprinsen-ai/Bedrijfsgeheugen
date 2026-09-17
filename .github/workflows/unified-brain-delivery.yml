@@ -55,12 +55,22 @@ jobs:
           actual_base="$(jq -r '.base.sha' <<<"$pr")"
           actual_head="$(jq -r '.head.sha' <<<"$pr")"
           actual_ref="$(jq -r '.head.ref' <<<"$pr")"
+          actual_state="$(jq -r '.state' <<<"$pr")"
           [ "$actual_base" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$actual_base"; exit 1; }
           [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
           [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
+          [ "$actual_state" = open ] || { echo "::error::PR_NOT_OPEN:$actual_state"; exit 1; }
+
+  admission:
+    needs: candidate-identity
+    uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
+    with:
+      pr_number: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
+      head_sha: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
 
   plan:
-    needs: candidate-identity
+    needs: [candidate-identity, admission]
+    if: needs.admission.outputs.admitted == 'true'
     runs-on: ubuntu-latest
     outputs:
       matrix: ${{ steps.plan.outputs.matrix }}
@@ -179,9 +189,17 @@ jobs:
             .artifacts/delivery-learning-route-${{ matrix.id }}.json
             .artifacts/lane-${{ matrix.id }}-failure.txt
 
-  handoff:
+  pre-handoff-admission:
     needs: [plan, lanes]
     if: always() && needs.plan.result == 'success' && (needs.lanes.result == 'success' || needs.lanes.result == 'skipped')
+    uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
+    with:
+      pr_number: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
+      head_sha: ${{ needs.plan.outputs.head_sha }}
+
+  handoff:
+    needs: [plan, lanes, pre-handoff-admission]
+    if: always() && needs.plan.result == 'success' && (needs.lanes.result == 'success' || needs.lanes.result == 'skipped') && needs.pre-handoff-admission.result == 'success' && needs.pre-handoff-admission.outputs.admitted == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write

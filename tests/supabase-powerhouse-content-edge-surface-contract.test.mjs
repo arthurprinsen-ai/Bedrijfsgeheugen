@@ -8,13 +8,14 @@ const prePublishReview = readFileSync('supabase/functions/bg-pre-publish-review/
 const registry = JSON.parse(readFileSync('config/powerhouse-quality-surface-contracts.json', 'utf8'));
 const cockpitMigration = 'supabase/migrations/20260916163500_content_operations_cockpit_projection_repair_v1.sql';
 
-const evidenceContract = 'tests/supabase-powerhouse-content-edge-surface-contract.test.mjs';
+const edgeEvidenceContract = 'tests/supabase-powerhouse-content-edge-surface-contract.test.mjs';
+const closedLoopEvidenceContract = 'tests/brain-content-closed-loop-contract.test.mjs';
 const byId = new Map(registry.surfaces.map(surface => [surface.id, surface]));
 
-test('quality registry owns both restored content Edge Function surfaces', () => {
-  for (const [id, authority] of [
-    ['function:powerhouse-content-orchestrator', 'supabase/functions/powerhouse-content-orchestrator/index.ts'],
-    ['function:powerhouse-social-publisher', 'supabase/functions/powerhouse-social-publisher/index.ts'],
+test('quality registry owns both restored content Edge Function surfaces with their active evidence contracts', () => {
+  for (const [id, authority, evidenceContract] of [
+    ['function:powerhouse-content-orchestrator', 'supabase/functions/powerhouse-content-orchestrator/index.ts', closedLoopEvidenceContract],
+    ['function:powerhouse-social-publisher', 'supabase/functions/powerhouse-social-publisher/index.ts', edgeEvidenceContract],
   ]) {
     const surface = byId.get(id);
     assert.ok(surface, `${id} must be registered`);
@@ -24,11 +25,11 @@ test('quality registry owns both restored content Edge Function surfaces', () =>
   }
 });
 
-test('quality registry owns the bg_geheim RPC dependency discovered from the restored functions', () => {
+test('quality registry owns the bg_geheim RPC dependency with the active closed-loop evidence contract', () => {
   const surface = byId.get('rpc:bg_geheim');
   assert.ok(surface, 'rpc:bg_geheim must be registered');
   assert.equal(surface.authority, 'supabase/functions/powerhouse-social-publisher/index.ts');
-  assert.equal(surface.evidence_contract, evidenceContract);
+  assert.equal(surface.evidence_contract, closedLoopEvidenceContract);
   assert.equal(surface.required, true);
 });
 
