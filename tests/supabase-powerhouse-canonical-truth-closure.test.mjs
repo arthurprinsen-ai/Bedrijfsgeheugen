@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migration = new URL('../supabase/migrations/20260916215000_powerhouse_canonical_truth_closure_v1.sql', import.meta.url);
+const migration = new URL('../supabase/migrations/20260917123456_powerhouse_canonical_truth_closure_v1.sql', import.meta.url);
 
 async function sql() {
   return readFile(migration, 'utf8');
