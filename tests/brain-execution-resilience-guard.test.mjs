@@ -15,6 +15,7 @@ const contract = JSON.parse(fs.readFileSync('config/powerhouse-execution-resilie
 const continuity = JSON.parse(fs.readFileSync('brain/policies/powerhouse-agent-continuity-v1.json', 'utf8'));
 const preflightSource = fs.readFileSync('scripts/brain/chat-learning-preflight.mjs', 'utf8');
 const migrationSource = fs.readFileSync('supabase/migrations/20260917083000_powerhouse_execution_resilience_v1.sql', 'utf8');
+const scheduleMigrationSource = fs.readFileSync('supabase/migrations/20260917090000_powerhouse_execution_resilience_watchdog_schedule_v1.sql', 'utf8');
 
 test('canonical resilience contract is active and mandatory for every material agent preflight', () => {
   assert.equal(contract.status, 'ACTIVE');
@@ -41,6 +42,24 @@ test('durable runtime reuses canonical Brain operations and reconciliation inste
   assert.ok(migrationSource.includes("'readback_before_replay', true"));
   assert.ok(migrationSource.includes("'execution-resilience:' || p_operation_id::text || ':v' || v_operation.version::text"));
   assert.doesNotMatch(migrationSource, /create\s+table\s+.*execution/i);
+});
+
+test('production watchdog wiring is source-controlled, recurring, and recovery-only', () => {
+  assert.ok(scheduleMigrationSource.includes("'powerhouse-execution-resilience-watchdog-v1'"));
+  assert.ok(scheduleMigrationSource.includes("'* * * * *'"));
+  assert.ok(scheduleMigrationSource.includes("'select public.powerhouse_execution_resilience_watchdog_v1();'"));
+  assert.ok(scheduleMigrationSource.includes('cron.schedule'));
+  assert.doesNotMatch(scheduleMigrationSource, /insert\s+into\s+.*side_effect/i);
+  assert.doesNotMatch(scheduleMigrationSource, /http|fetch|publish|send_mail|deploy/i);
+});
+
+test('database surface is fail-closed to public clients', () => {
+  assert.ok(migrationSource.includes('revoke execute on function public.powerhouse_execution_heartbeat_v1'));
+  assert.ok(migrationSource.includes('revoke execute on function public.powerhouse_mark_execution_interrupted_v1'));
+  assert.ok(migrationSource.includes('revoke execute on function public.powerhouse_execution_resilience_watchdog_v1'));
+  assert.ok(migrationSource.includes('from public, anon, authenticated'));
+  assert.ok(migrationSource.includes('grant execute on function public.powerhouse_execution_resilience_watchdog_v1'));
+  assert.ok(migrationSource.includes('to service_role'));
 });
 
 test('classifies visible ChatGPT interruption modes as recoverable classes', () => {
