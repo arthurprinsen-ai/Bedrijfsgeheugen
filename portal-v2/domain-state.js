@@ -1,4 +1,5 @@
 import { upgradeLegacyPortalState, hasLegacyPortalData } from './legacy-state-migration.js';
+import { savePortalBusinessInput } from '../portal-next/portal-business-input-store.js';
 
 const clone=value=>value==null?value:structuredClone(value);
 const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
@@ -53,9 +54,20 @@ export function createDomainState({load,save}={}){
  return Object.freeze({init,initialized:()=>initialized,get,set,patch,flush,status:()=>currentStatus,error:()=>currentError,snapshot:()=>publicSnapshot(state,currentStatus,currentError),subscribe(listener){if(typeof listener!=='function')throw new TypeError('DOMAIN_STATE_SUBSCRIBER_REQUIRED');listeners.add(listener);return()=>listeners.delete(listener);}});
 }
 
-export function createPortalDomainState(stateClient){
+export function createPortalDomainState(stateClient,{businessInputSaver=savePortalBusinessInput}={}){
  if(!stateClient?.load||!stateClient?.write)throw new TypeError('PORTAL_STATE_CLIENT_REQUIRED');
+ if(typeof businessInputSaver!=='function')throw new TypeError('PORTAL_BUSINESS_INPUT_SAVER_REQUIRED');
  const domain=createDomainState({load:async()=>{const snap=await stateClient.load();return snap?.state||{};},save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}});
- if(typeof globalThis!=='undefined')globalThis.__BG_PORTAL_DOMAIN_STATE__=domain;
- return domain;
+ async function saveBusinessInput(input){
+  const headers=typeof stateClient.authHeaders==='function'?await stateClient.authHeaders():{};
+  const authorization=String(headers?.authorization||'').trim();
+  if(!authorization){
+   if(stateClient.isDemo?.())return Object.freeze({stored:false,skipped:true,reason:'DEMO_NON_DURABLE'});
+   throw new Error('PORTAL_BUSINESS_INPUT_AUTH_REQUIRED');
+  }
+  return businessInputSaver(input,{authorization});
+ }
+ const portalDomain=Object.freeze({...domain,saveBusinessInput});
+ if(typeof globalThis!=='undefined')globalThis.__BG_PORTAL_DOMAIN_STATE__=portalDomain;
+ return portalDomain;
 }
