@@ -1,7 +1,7 @@
 {
   "fingerprint": "mira-human-problem-fresh-openart-reel-v1",
   "learning_id": "mira-personal-openart-reel-production-v1",
-  "status": "RECORDED_PENDING_PROTECTED_MERGE",
+  "status": "LIVE_AND_PROVEN_ON_MAIN",
   "observed_at": "2026-09-18",
   "scope": [
     "instagram_company",
@@ -54,5 +54,17 @@
     ".agents/skills/instagram-composio-publisher/SKILL.md",
     "docs/superpowers/skills/instagram-mira-visible-identity-gate-v1.md"
   ],
-  "new_parallel_authority": false
+  "new_parallel_authority": false,
+  "delivery_evidence": {
+    "pr": 2152,
+    "candidate_head_sha": "527d00613023f945a57359fc70da1298ce396cca",
+    "protected_merge_commit_sha": "7a0b95bddb88620a946747f30514c977abc4d3eb",
+    "merged_at": "2026-09-18T12:42:18Z",
+    "current_main_readback_sha": "1d0c5c06fe8b82f818bf8fd7576e00d939725558",
+    "main_readback_verified": true,
+    "skill_projection_verified": true,
+    "documentation_verified": true,
+    "brain_record_verified": true
+  },
+  "terminal_writeback": "The fingerprint and both projected skills were re-read successfully from protected current main after merge."
 }
