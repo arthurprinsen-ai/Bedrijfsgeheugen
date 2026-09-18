@@ -31,5 +31,21 @@
   "documentation_targets": [
     "docs/development-ledger.md",
     "docs/self-healing-agents.md"
-  ]
+  ],
+  "borging_closure": {
+    "status": "LIVE_BEWEZEN",
+    "pull_request": 2104,
+    "merge_main_sha": "971a3f762dd0c63e8abd87f089e5574ec7860527",
+    "verified_on_main": true,
+    "verified_surfaces": [
+      "brain/policies/powerhouse-agent-continuity-v1.json",
+      "brain/learning/2026-09-18-no-pending-terminal-output-v1.json",
+      ".agents/skills/powerhouse-continuity/SKILL.md",
+      ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+      "docs/development-ledger.md",
+      "docs/self-healing-agents.md",
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "rule": "BORGING_IS_MATERIAL_WRITEBACK: a canonical borging/closure is itself a material outcome and must be logged, documented, projected to relevant skills, regression-guarded, merged and read back from main before it is terminal."
+  }
 }
