@@ -15,8 +15,16 @@ test('sales actions deterministically materialize decision cycles',()=>{
   assert.match(sql,/powerhouse_materialize_sales_action_cycle_row_v1/);
   assert.match(sql,/cycle_id,subject_key,source_signal_ref/);
   assert.match(sql,/a\.action_id/);
-  assert.match(sql,/sales-action:' \|\| a\.action_id::text \|\| ':decision'/);
+  assert.match(sql,/a\.action_id,1,'signal'/);
+  assert.match(sql,/a\.action_id,2,'analysis'/);
+  assert.match(sql,/a\.action_id,3,'prediction'/);
+  assert.match(sql,/a\.action_id,4,'decision'/);
+  assert.match(sql,/a\.action_id,5,'execution'/);
   assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/i);
+  assert.match(sql,/status='blocked'/);
+  assert.doesNotMatch(sql,/a\.action_id,\s*\d+,\s*'outcome'/);
+  assert.doesNotMatch(sql,/a\.action_id,\s*\d+,\s*'realized_value'/);
+  assert.doesNotMatch(sql,/a\.action_id,\s*\d+,\s*'calibration'/);
 });
 
 test('learning gap closure does not synthesize feedback, economics or realized value',()=>{
