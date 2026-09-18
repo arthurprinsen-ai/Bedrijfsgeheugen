@@ -11,11 +11,16 @@ test('tenant identity review is derived live, not copied to a parallel queue',()
   assert.doesNotMatch(sql,/create table\s+public\.powerhouse_tenant_identity_review/i);
 });
 
-test('sales actions deterministically materialize decision cycles',()=>{
+test('legacy sales actions anchor strict cycles without fabricating missing stages',()=>{
   assert.match(sql,/powerhouse_materialize_sales_action_cycle_row_v1/);
   assert.match(sql,/cycle_id,subject_key,source_signal_ref/);
   assert.match(sql,/a\.action_id/);
-  assert.match(sql,/sales-action:' \|\| a\.action_id::text \|\| ':decision'/);
+  assert.match(sql,/sales-action:' \|\| a\.action_id::text \|\| ':signal'/);
+  assert.match(sql,/legacy_action_observed_as_cycle_anchor/);
+  assert.match(sql,/stage_semantics','signal_anchor_only'/);
+  assert.match(sql,/missing_stages',jsonb_build_array\('analysis','prediction','decision'\)/);
+  assert.doesNotMatch(sql,/sales-action:' \|\| a\.action_id::text \|\| ':execution'/);
+  assert.doesNotMatch(sql,/sales-action:' \|\| a\.action_id::text \|\| ':expired'/);
   assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/i);
 });
 
