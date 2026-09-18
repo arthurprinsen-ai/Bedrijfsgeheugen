@@ -1,6 +1,6 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 const cfg=JSON.parse(fs.readFileSync('config/social-channel-identity-contract.json','utf8'));
-const sql=fs.readFileSync('supabase/migrations/20260918110000_instagram_media_provider_router_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migrations/20260918111500_instagram_media_provider_router_v1.sql','utf8');
 const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
 test('reels and videos require OpenArt',()=>{assert.match(sql,/required_provider','openart/);assert.match(router,/OPENART_REQUIRED_FOR_VIDEO/);});
 test('images allow OpenArt or Placid',()=>{assert.match(sql,/jsonb_build_array\('openart','placid'\)/);});
