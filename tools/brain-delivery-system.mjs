@@ -44,6 +44,13 @@ const QUALITY_BACKEND_PATHS = Object.freeze([
   'tests/brain-quality',
   'tests/powerhouse-resource-intelligence'
 ]);
+const DELIVERY_CONTROL_PLANE_BACKEND_PATHS = Object.freeze([
+  '.github/workflows/obligation-terminal-closure.yml',
+  '.github/workflows/production-release-readback.yml',
+  'brain/contracts/production-readback-v1.json',
+  'tools/brain-delivery-system.mjs',
+  'tools/delivery-required-test-suites.mjs'
+]);
 const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
   'docs/powerhouse/',
   'docs/portal-v2-parity-architecture.md'
@@ -54,6 +61,7 @@ function scopedLaneForPath(path) {
   if (matches(path, ASSURANCE_BACKEND_PATHS)) return 'backend';
   if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';
   if (matches(path, QUALITY_BACKEND_PATHS)) return 'backend';
+  if (matches(path, DELIVERY_CONTROL_PLANE_BACKEND_PATHS)) return 'backend';
   return null;
 }
 function isScopedNonExecutable(path) {
