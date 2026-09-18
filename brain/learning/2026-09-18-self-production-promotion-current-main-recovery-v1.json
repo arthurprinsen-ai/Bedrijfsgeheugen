@@ -1,0 +1,13 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "SELF-PRODUCTION-PROMOTION-CURRENT-MAIN-RECOVERY-v1",
+  "status": "ACTIVE_RECOVERY",
+  "fingerprint": "self-production-promotion-current-main-recovery-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "supersedes_pr": 2053,
+  "base_main_sha": "cec94beec0c97acbfa7965677b460abe33e211a5",
+  "root_cause": "PR #2053 was closed without merge after its branch diverged from current main. Reusing it would violate current-main and exact-head authority.",
+  "recovery": "Reconstruct only the unique delivery-control-plane delta on current main; exclude stale Supabase migration copies and preserve all newer main learnings.",
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}

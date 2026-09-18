@@ -11,6 +11,7 @@ const FAST_DEVELOPMENT_V2_ENTRYPOINT = 'scripts/brain/powerhouse-fast-execution.
 const UNIVERSAL_COMPLETION_POLICY_SOURCE = 'config/powerhouse-universal-completion-v1.json';
 const UNIVERSAL_INGRESS_POLICY_SOURCE = 'config/powerhouse-universal-ingress-v1.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
+  'config/branch-delivery-ownership-guard.json',
   'config/powerhouse-engineering-os.json',
   'config/powerhouse-truth-status-contract.json',
   'config/powerhouse-execution-resilience-v1.json',
