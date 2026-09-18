@@ -62,7 +62,7 @@ jobs:
 
       - name: Melding maken als er iets mis is
         if: steps.wacht.outputs.code != '0' && github.event_name != 'pull_request'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const fs = require('fs');
@@ -88,7 +88,7 @@ jobs:
 
       - name: Melding sluiten als alles goed is
         if: steps.wacht.outputs.code == '0' && github.event_name != 'pull_request'
-        uses: actions/github-script@v8
+        uses: actions/github-script@v9
         with:
           script: |
             const open = await github.rest.issues.listForRepo({
