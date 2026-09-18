@@ -30,10 +30,19 @@
       "identity": "mira",
       "requiresMiraGate": true,
       "mediaPolicy": {
-        "allowedKinds": ["image", "video", "reel"],
+        "allowedKinds": [
+          "image",
+          "video",
+          "reel",
+          "carousel"
+        ],
         "requiresExactFinalAsset": true,
         "requiresMiraIdentity": true,
-        "requiresVerifiedPublishFormatFor": ["image", "video", "reel"],
+        "requiresVerifiedPublishFormatFor": [
+          "image",
+          "video",
+          "reel"
+        ],
         "requiredImageWidth": 1080,
         "requiredImageHeight": 1350,
         "requiredImageMimeType": "image/jpeg",
@@ -42,20 +51,76 @@
         "requiresCompleteImageDecode": true,
         "requiresVisualCompleteness": true,
         "blocksGrayOrEmptyImage": true,
-        "requiredVideoFramePositions": ["start", "middle", "end"],
+        "requiredVideoFramePositions": [
+          "start",
+          "middle",
+          "end"
+        ],
         "requiredVideoMimeType": "video/mp4",
-        "generatorsMayNotBypassGate": ["openart", "veo", "placid"]
+        "generatorsMayNotBypassGate": [
+          "openart",
+          "veo",
+          "placid"
+        ],
+        "providerLineageRequired": true,
+        "providerRouting": {
+          "image": {
+            "allowedProviders": [
+              "openart",
+              "placid"
+            ]
+          },
+          "reel": {
+            "allowedProviders": [
+              "openart"
+            ],
+            "requiredProvider": "openart"
+          },
+          "video": {
+            "allowedProviders": [
+              "openart"
+            ],
+            "requiredProvider": "openart"
+          },
+          "carousel": {
+            "imageSlideAllowedProviders": [
+              "openart",
+              "placid"
+            ],
+            "videoSlideAllowedProviders": [
+              "openart"
+            ],
+            "requiresPerSlideExactAssetProof": true
+          }
+        }
       }
     }
   },
   "personalInstagramAutopublish": "blocked_unconnected",
-  "requiredLineage": ["contentId", "calendarDate", "predictionId", "sourceDecisionId"],
-  "personalTruthClasses": ["author_observation", "author_opinion", "author_experience"],
+  "requiredLineage": [
+    "contentId",
+    "calendarDate",
+    "predictionId",
+    "sourceDecisionId"
+  ],
+  "personalTruthClasses": [
+    "author_observation",
+    "author_opinion",
+    "author_experience"
+  ],
   "personalTruthRequiresEvidenceRefs": true,
   "personalTruthRequiresVerifiedFlag": true,
   "externalSourcesMaySuggestThemesButCannotCreateFirstPersonClaims": true,
   "sensitivePrivateDetailsDefault": "blocked",
   "frustrationEngine": "active",
   "sourceFusion": "all_relevant_lawful_sources",
-  "personalOptimizationPrimary": ["comments", "replies", "shares", "profile_views", "repeat_interaction", "conversation_starts", "relationship_warmth"]
+  "personalOptimizationPrimary": [
+    "comments",
+    "replies",
+    "shares",
+    "profile_views",
+    "repeat_interaction",
+    "conversation_starts",
+    "relationship_warmth"
+  ]
 }
