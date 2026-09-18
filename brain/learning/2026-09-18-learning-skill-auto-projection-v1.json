@@ -1,0 +1,31 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-LEARNING-SKILL-AUTO-PROJECTION-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse-learning-skill-auto-projection-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-learning-skill-auto-projection-v1",
+  "problem": "Canonical Powerhouse learning could be logged and documented without deterministic propagation into the skill layer, allowing future agents to consume stale reusable behavior.",
+  "root_cause": "Learning writeback and skill maintenance were separate manual co-changes instead of one atomic canonical projection contract.",
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "data",
+    "foresight"
+  ],
+  "prevention": [
+    "NO_MATERIAL_LEARNING_WITHOUT_SKILL_PROJECTION: every material canonical learning must become immediately consumable through the deterministic skill projection before terminal completion.",
+    "CANONICAL_LEARNING_IS_AUTHORITY: skills are derived execution projections and never become a second truth source.",
+    "SKILL_PROJECTION_DEDUP_BY_FINGERPRINT: repeated learning coalesces by fingerprint and source digest instead of creating duplicate instructions.",
+    "SKILL_PROJECTION_FAILS_CLOSED_ON_DRIFT: missing, stale or orphaned projections block terminal completion until reconciled.",
+    "PREFLIGHT_CONSUMES_CURRENT_SKILL_PROJECTION: every material chat/agent/skill sees the current projected learning before execution.",
+    "BACKFILL_AND_RECONCILE_EXISTING_LEARNING: existing brain/learning history is projected automatically, not only new records."
+  ],
+  "implementation": [
+    "Add deterministic scripts/brain/powerhouse-skill-projection.mjs.",
+    "Load the generated projection in chat-learning preflight.",
+    "Add a dedicated Powerhouse Skill Projection gate.",
+    "Extend universal learning/writeback terminal requirements with skill projection readback.",
+    "Keep the human-readable continuity skill small and point it at the dynamic projection."
+  ]
+}
