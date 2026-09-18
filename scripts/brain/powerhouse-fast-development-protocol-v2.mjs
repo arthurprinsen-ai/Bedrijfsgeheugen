@@ -38,6 +38,14 @@ export async function validateFastDevelopmentProtocolV2() {
   if (!policy.evidence_cache?.non_cacheable?.includes('EXACT_SHA_PROD_READBACK')) errors.push('production readback must be non-cacheable');
   if (policy.writeback?.mode !== 'DELTA_ONLY') errors.push('writeback must be delta only');
   if (policy.telemetry?.is_release_authority !== false) errors.push('telemetry may not become release authority');
+  if (policy.predictive_control?.enabled !== true) errors.push('predictive control must be enabled');
+  if (policy.predictive_control?.controller !== 'tools/delivery/predictive-controller.mjs') errors.push('predictive controller drift');
+  if (policy.adaptive_gates?.enabled !== true) errors.push('adaptive gates must be enabled');
+  if (policy.adaptive_gates?.promote_on_blocking_green !== true) errors.push('blocking-green promotion must be enabled');
+  if (policy.supervisor?.zero_run_auto_dispatch !== true) errors.push('zero-run recovery must be autonomous');
+  if (policy.supervisor?.stale_run_auto_cancel_and_redispatch !== true) errors.push('stale-run recovery must be autonomous');
+  if (policy.supervisor?.duplicate_recovery_pr_forbidden !== true) errors.push('duplicate recovery PRs must remain forbidden');
+  if (policy.optimization_loop?.cadence !== 'DAILY') errors.push('optimization loop must learn daily');
 
   if (engineeringOS.fingerprint !== 'powerhouse-engineering-os-v1') errors.push('engineering OS authority drift');
   if (engineeringOS.delivery_contract !== 'BRAIN-DELIVERY-v2') errors.push('engineering OS delivery contract drift');
