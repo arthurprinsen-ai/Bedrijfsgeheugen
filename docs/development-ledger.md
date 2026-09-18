@@ -4,6 +4,19 @@ This ledger is append-only operational memory for material engineering outcomes.
 
 Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` and `CONTRACT_CHANGE`.
 
+
+## 2026-09-18 — CONTRACT_CHANGE — GitHub executable delivery state machine proven
+- **Fingerprint:** `github|delivery-state-machine|parallel-build-serialized-landing|v1`.
+- **Signal:** delivery could be merged while post-merge runtime/readback, outcome and learning/skill closure still depended on branch-specific or later follow-up behavior.
+- **Impact:** a PR/merge could be mistaken for completion; multiple chats/agents could create recovery lineages and GitHub could accumulate stale PR state instead of acting as one executable delivery machine.
+- **Root cause:** terminal identity and landing had already moved to obligation + exact head + main epoch, but generic post-merge obligation terminalization was not yet enforced for every merged PR.
+- **Final fix:** keep cheap machine-readable admission before expensive CI; serialize only the short landing boundary; require exact-head/current-epoch merge conditions; then run generic `Obligation Terminal Closure` after merge using the existing canonical Production Release Readback and applicable Powerhouse Skill Projection before releasing the writer lease and writing a terminal state.
+- **Evidence:** PR #2166; candidate `5e7dcd5d118982cc8641d14c88995d4838e2ab4b`; merge/main SHA `c3ecd9a00a37904249ebd3c4f06d3334f96400c4`; Production Release Readback run `35350501725`; terminal closure run `35350499979`; artifact `obligation-terminal-evidence-2166`; PR readback contained `Writer-Lease-State: RELEASED` and `Terminal-State: LIVE_BEWEZEN`.
+- **Owner:** Architecture/Integrator + Reliability + Knowledge/Governance.
+- **Regression gate:** `tests/brain-github-delivery-state-machine-borging.test.mjs` plus existing `tests/github-delivery-state-machine.test.mjs` and `tests/github-delivery-state-machine-terminal-closure.test.mjs`.
+- **Rollback/last-known-good:** retain the pre-existing canonical Production Release Readback and remove only the generic terminal-closure wrapper if it regresses; never weaken merge/readback truth gates.
+- **Reusable lesson:** parallelize construction, serialize landing, and keep the obligation alive after merge until production/runtime/outcome/learning/skill evidence is closed.
+
 ## 2026-09-16 14:00 CEST — CONTRACT_CHANGE — Completion Supervisor v1 candidate
 - **Fingerprint:** `powerhouse-completion-supervisor-v1`
 - **Signal:** local green and proven hard-boundary state could end AgentWork as `Resolved` while exact production/readback/writeback obligations remained open.
