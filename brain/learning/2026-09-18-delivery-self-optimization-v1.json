@@ -1,0 +1,66 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-DELIVERY-SELF-OPTIMIZATION-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|first-time-right|terminal-preflight|v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-delivery-self-optimization-v1",
+  "problem": "Delivery friction remained higher than necessary because invalid metadata, orphaned tests, scheduler cancellations, stale state and moving-main overlap were sometimes discovered only after expensive CI or after the plan had already become stale.",
+  "root_causes": [
+    "PR metadata generation was not always validated against the canonical admission parser before CI.",
+    "A test added by another main change was not wired into any workflow before it reached main, making current main preflight-red.",
+    "GitHub scheduler/concurrency cancellations can look like delivery failures unless distinguished from concrete failing assertions.",
+    "Shared hot surfaces such as continuity skills and delivery workflows increase collision probability between otherwise independent agents.",
+    "Agents could reason from a previously valid head/base/mergeability snapshot after main or the PR changed.",
+    "The delivery plan was not always required to include the post-merge deploy, readback, outcome and learning-skill projection path before mutation started."
+  ],
+  "evidence": {
+    "reference_delivery_pr": 2101,
+    "metadata_failures": [
+      "WRITER_LEASE_SCOPE_MISSING",
+      "CANDIDATE_TYPE_INVALID"
+    ],
+    "orphan_test": "tests/powerhouse-revenue-calibration-persistence-contract.test.mjs",
+    "scheduler_recovery": "cancelled BRAIN and CodeQL jobs were successfully retried on the same exact head without production-code changes",
+    "moving_main": "same obligation required repeated same-lineage reconciliations while main advanced",
+    "self_check_defect": "the self-optimization regression expected optimization_fingerprint while the projected skill initially exposed only fingerprint"
+  },
+  "prevention": [
+    "PR_METADATA_PREFLIGHT_BEFORE_CI: validate the generated PR body with the canonical delivery parser and allowed-value policy before expensive workflows start.",
+    "TEST_WORKFLOW_COVERAGE_COCHANGE: every executable test must be referenced by at least one workflow/classifier in the same candidate before merge.",
+    "CONTRACT_ASSERTION_PREFLIGHT: verify implementation, machine schema and regression assertions agree before remote CI.",
+    "CANCELLED_IS_NOT_CODE_FAILURE: without a concrete failing assertion, a cancelled job is scheduler/concurrency recovery input and should be retried on the same exact head.",
+    "HOT_SURFACE_COLLISION_MINIMIZATION: avoid touching shared delivery/continuity surfaces when a narrower skill or learning projection can carry the knowledge.",
+    "ANTICIPATE_BEFORE_ACT: refresh current authoritative state and predict the next likely invalidation before every material write, reconcile, retry, merge or promote.",
+    "NO_CACHED_IRREVERSIBLE_ACTION: re-read main/head/mergeability/gates immediately before irreversible delivery actions.",
+    "REPLAN_ON_EPOCH_CHANGE: when main/head/gate state changes, re-plan from the new epoch instead of replaying a stale plan.",
+    "SINGLE_LINEAGE_FORECASTING: do not create duplicate PRs for ordinary drift; keep one obligation lineage and use bounded current-main reconstruction only when divergence makes that safer.",
+    "TERMINAL_PATH_PREFLIGHT: before mutation, prove there is a complete executable path through protected merge, deploy/readback, outcome and learning/skill writeback.",
+    "CALIBRATE_FAILURE_FORECAST: persist predicted failure modes versus observed outcomes, including misses and false positives, and use them to improve future planning.",
+    "MEASURE_DELIVERY_FRICTION: record rejection, orphan-test, cancellation, reconciliation, overlap, stale-state-prevention and terminal lead-time signals."
+  ],
+  "optimization_metrics": [
+    "metadata_admission_reject_count",
+    "orphan_test_preflight_count",
+    "scheduler_cancel_retry_count",
+    "main_epoch_reconcile_count",
+    "shared_surface_overlap_count",
+    "green_gate_reuse_ratio",
+    "time_to_terminal_proof",
+    "hot_surface_avoidance_count",
+    "stale_state_prevented_count",
+    "predicted_collision_avoided_count",
+    "pre_ci_contract_defect_count",
+    "duplicate_lineage_prevented_count",
+    "forecast_false_positive_count",
+    "forecast_miss_count"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "brain/skills/powerhouse-delivery-self-optimization-v1.json"
+  ],
+  "expected_effect": {
+    "direction": "reduce avoidable CI retries, stale-state actions, duplicate lineages and stale-head reconciliations while preserving branch protection",
+    "success_condition": "future material delivery detects preventable failure modes before remote CI or irreversible actions and reaches terminal proof in fewer delivery epochs"
+  }
+}
