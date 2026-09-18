@@ -111,6 +111,38 @@ function cijfers(state){
   section('Wat dit betekent',[['Volledigheid',pct(genericCompleteness(m))],['Interpretatie','Meer eigen cijfers maakt benchmarks en advies scherper']])
  ];
 }
+function businessCaseSurface(state){
+ const p=profile(state),bc=state?.portal?.businessCase||{},dims=p.maturity||{},factor=[0,1,.78,.5,.22,.06],employees=n(p.employees||p.headcount),hourly=n(p.hourlyCost),target=Math.max(2,Math.min(5,Math.round(n(bc.target)||4))),delay=Math.max(0,n(bc.delay)),investment=n(bc.investment);
+ const weights={sturing:1.6,commercie:2.8,operatie:3.4,finance:3.6,mensen:1.5,analytics:2.2,quality:1.9,governance:1.2,tech:4.1,culture:1.1,service:2.4,security:1.3,duurzaam:1.0};
+ let current=0,goal=0;
+ if(employees&&hourly)for(const [id,hours] of Object.entries(weights)){const level=Math.max(1,Math.min(5,Math.round(n(dims[id])||2))),to=Math.max(level,target),base=hours*(employees/24)*46*hourly;current+=base*factor[level];goal+=base*factor[to];}
+ const annual=Math.max(0,current-goal),monthly=annual/12;
+ return [
+  section('Wat levert het op — en wat kost wachten?',[['Jaarpotentieel',annual?euro(annual):'Nog niet berekend'],['Kosten van uitstel',annual?euro(monthly*delay):'Nog niet berekend'],['Investering',has(bc.investment)?euro(investment):'Nog niet ingevuld']]),
+  section('Cumulatief nettoresultaat',[['Na 12 maanden',annual||investment?euro(annual-investment):'Nog niet berekend'],['Na 36 maanden',annual||investment?euro(annual*3-investment):'Nog niet berekend']]),
+  section('Waar je staat op de adoptiecurve',[['Doelniveau',String(target)],['Huidig gemiddeld',Object.keys(dims).length?one(Object.values(dims).reduce((a,b)=>a+n(b),0)/Object.keys(dims).length)+'/5':'Nog niet bepaald']])
+ ];
+}
+function peopleSurface(state){
+ const p=state?.portal?.people||{},market=state?.portal?.market||{};
+ return [
+  section('Wat je van je mensen weet',[['Verzuim',has(p.absence)?pct(p.absence):'Nog niet ingevuld'],['Verloop',has(p.turnover)?pct(p.turnover):'Nog niet ingevuld'],['eNPS',has(p.enps)?String(p.enps):'Nog niet ingevuld'],['Vacatures',has(p.vacancies)?String(p.vacancies):'Nog niet ingevuld']]),
+  section('Tegenover je branche',[['Branche',text(market.industry)],['Benchmarks',String(arr(market.benchmarks).length)]],'Geen benchmarkwaarde zonder bron.')
+ ];
+}
+function marketSurface(state){
+ const m=state?.portal?.market||{},bench=arr(m.benchmarks);
+ return [section('Je branche en je concurrenten',[['Branche',text(m.industry)],['Omzet',has(m.revenue)?euro(n(m.revenue)*1000):'Nog niet ingevuld'],['Benchmarks',String(bench.length)],...bench.slice(0,6).map(x=>[text(x.metric,'Maatstaf'),`${text(x.company,'—')} vs ${text(x.benchmark,'—')} · ${text(x.source,'bron ontbreekt')}`])])];
+}
+function strategySurface(state){
+ const s=state?.portal?.strategy||{},findings=arr(s.findings);
+ const byModel=new Map();for(const x of findings){const key=text(x.model,'Onbekend model');byModel.set(key,(byModel.get(key)||0)+1)}
+ return [
+  section('Alle modellen in één beeld',[['Bevindingen',String(findings.length)],['Horizon',text(s.horizon)],['Minimumwaarde',has(s.minimumValue)?euro(s.minimumValue):'Niet ingesteld'],...findings.slice(0,8).map(x=>[text(x.finding,'Bevinding'),`${text(x.model,'Geen model')} · ${has(x.value)?euro(x.value):'waarde onbekend'}`])],findings.length?'':'Nog geen modelbevindingen.'),
+  section('Per functie',[...byModel.entries()].map(([model,count])=>[model,String(count)]),byModel.size?'':'Nog geen bevindingen per model/functie.')
+ ];
+}
+
 function conclusion(state){
  const f=state?.portal?.finalConclusion||{},ad=arr(state?.portal?.advice?.items),road=arr(state?.portal?.roadmap?.items);
  return [
@@ -147,6 +179,10 @@ function dueDiligence(state){
 export function buildLegacyPageSurfaces(pageId,state={}){
  if(pageId==='data-ai')return dataAi(state);
  if(pageId==='ai-scan')return aiScan(state);
+ if(pageId==='businesscase')return businessCaseSurface(state);
+ if(pageId==='mensen')return peopleSurface(state);
+ if(pageId==='branche-markt')return marketSurface(state);
+ if(pageId==='strategie-naar-maandagochtend')return strategySurface(state);
  if(pageId==='waarde-financiering')return valueSurface(state);
  if(pageId==='onderzoek')return research(state);
  if(pageId==='compliance-governance')return compliance(state);
