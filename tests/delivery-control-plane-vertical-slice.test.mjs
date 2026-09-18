@@ -101,3 +101,10 @@ test('terminal evidence uses existing Supabase Edge trust boundary, not app toke
   assert.match(edge,/brain_delivery_evidence/);
   assert.match(edge,/p_state:'FULFILLED'/);
 });
+
+test('fulfilled obligations refresh terminal identity on replay', async()=>{
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(edge,/const terminalIdentityChanged=obligation\?\.evidence\?\.main_sha!==mainSha/);
+  assert.match(edge,/obligation\.state!=='FULFILLED'\|\|terminalIdentityChanged/);
+  assert.match(edge,/p_state:'FULFILLED'/);
+});
