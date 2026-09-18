@@ -20,12 +20,14 @@
     "tests/development-doc-contract.test.mjs",
     "tests/website-release-risk.test.mjs",
     ".github/workflows/",
-    "docs/growth-revenue-os-architecture.md"
+    "docs/growth-revenue-os-architecture.md",
+    "docs/superpowers/skills/"
   ],
   "nonExecutableSharedPaths": [
     "docs/changes/",
     "docs/learning/",
-    "docs/growth-revenue-os-architecture.md"
+    "docs/growth-revenue-os-architecture.md",
+    "docs/superpowers/skills/"
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",

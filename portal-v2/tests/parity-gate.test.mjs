@@ -21,13 +21,13 @@ test('overall parity fails closed when production evidence is missing',()=>{
   const report=evaluatePortalParity({productionEvidence:{}});
   assert.equal(report.ok,false);
   assert.equal(report.verifiedCount,0);
-  assert.equal(report.capabilities.length,24);
+  assert.equal(report.capabilities.length,25);
   assert.ok(report.capabilities.every(item=>item.missing.includes('production-evidence')));
 });
 
-test('overall parity requires all 24 capabilities verified',()=>{
+test('overall parity requires all 25 capabilities verified',()=>{
   const report=evaluatePortalParity({productionEvidence:completeEvidence});
   assert.equal(report.ok,true);
-  assert.equal(report.verifiedCount,24);
-  assert.equal(report.total,24);
+  assert.equal(report.verifiedCount,25);
+  assert.equal(report.total,25);
 });

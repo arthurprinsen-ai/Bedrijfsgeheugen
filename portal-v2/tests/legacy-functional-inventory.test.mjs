@@ -11,7 +11,7 @@ const required = [
   'overzicht','profiel','dataai','aiscan','invoeren','antwoorden',
   'business','cijfers','waarde','mensen','branche','onderzoek',
   'beleid','aicap','strategie','canvassen','eindconclusie','dd',
-  'dna','bijhouden','wijzigingen','advies','offerte','roadmap',
+  'dna','bijhouden','wijzigingen','advies','offerte','roadmap','uitvoering',
 ];
 
 test('legacy functional inventory covers every protected capability', () => {
@@ -38,7 +38,7 @@ test('legacy global capabilities and overview semantic invariants are inventorie
 });
 
 test('page-presence and functional parity use independent proof contracts without status drift', () => {
-  assert.equal(LEGACY_PARITY_ITEMS.length, 24);
+  assert.equal(LEGACY_PARITY_ITEMS.length, 25);
   assert.equal(openObligations().length, 0);
   assert.equal(listOpenFunctionalParityItems().length, 0);
   const proven = new Map(FUNCTIONAL_PARITY_MANIFEST.map(item => [item.legacyCapability, item]));

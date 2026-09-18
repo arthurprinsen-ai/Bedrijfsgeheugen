@@ -9,7 +9,7 @@ const arr=v=>Array.isArray(v)?v:[];
 const p=(s,k)=>String(k).split('.').reduce((v,key)=>v==null?undefined:v[key],s);
 const pct=v=>clamp(v,0,100);
 const readiness5=v=>clamp(n(v,1),1,5);
-const horizonWeight=v=>({'Nu':1,'3 maanden':.9,'6 maanden':.75,'12 maanden':.55,'Later':.35}[v]??.5);
+const horizonWeight=v=>{const numeric=Number(v);if(Number.isFinite(numeric)&&numeric>=1)return Math.max(.35,1-Math.min(12,numeric-1)*(.65/11));return({'Nu':1,'3 maanden':.9,'6 maanden':.75,'12 maanden':.55,'Later':.35}[v]??.5)};
 const statusWeight=v=>({'ontbreekt':0,'concept':.35,'vastgesteld':.75,'geoefend':1,'Open':.25,'Bezig':.6,'Geborgd':1}[v]??0);
 const taskFrequency=v=>({'Dagelijks':1,'Wekelijks':.8,'Maandelijks':.45,'Incidenteel':.2}[v]??.5);
 
@@ -120,7 +120,7 @@ const C={
  'downstream-recalculation':s=>Object.keys(s?.portal?.inputs||{}).length,
  'answer-completeness':s=>completion(Object.values(s?.portal?.inputs||{})),
 
- 'benefit-at-target-maturity':s=>{const target=clamp(s?.portal?.businessCase?.target,1,5);const factor=[0,1,.78,.5,.22,.06][target];return manualCost(s)*(1-factor)},
+ 'benefit-at-target-maturity':s=>{const target=clamp(s?.portal?.businessCase?.target,1,5);const costs=dimensieKosten(s);if(costs.length){return costs.reduce((sum,d)=>{const next=Math.max(d.niveau,Math.min(target,5));const base=d.uren*(headcount(s)/TEAMDELER)*WERKWEKEN*n(profile(s).hourlyCost);return sum+Math.max(0,base*(NIVEAUFACTOR[d.niveau]-NIVEAUFACTOR[next]))},0)}const factor=NIVEAUFACTOR[target];return manualCost(s)*(1-factor)},
  'delay-cost':s=>C['benefit-at-target-maturity'](s)/12*n(s?.portal?.businessCase?.delay),
  'investment-net-result':s=>C['benefit-at-target-maturity'](s)-n(s?.portal?.businessCase?.investment),
  'payback':s=>{const monthly=C['benefit-at-target-maturity'](s)/12;return monthly>0?n(s?.portal?.businessCase?.investment)/monthly:0},
@@ -162,7 +162,7 @@ const C={
  'absence-gap':s=>n(s?.portal?.people?.absence)-4,
  'turnover-gap':s=>n(s?.portal?.people?.turnover)-10,
  'enps-gap':s=>n(s?.portal?.people?.enps)-20,
- 'mto-maturity':s=>({'Geen meting':1,'Verouderd':2.5,'Actueel':5}[s?.portal?.people?.mto]??1),
+ 'mto-maturity':s=>{const v=s?.portal?.people?.mto;const numeric=Number(v);if(Number.isFinite(numeric)&&String(v).trim()!=='')return({0:1,1:2,2:3.5,3:5}[numeric]??1);return({'Geen meting':1,'Verouderd':2.5,'Actueel':5,'nooit gedaan':1,'langer dan 2 jaar geleden':2,'binnen 2 jaar':3.5,'jaarlijks, met opvolging':5}[v]??1)},
  'vacancy-pressure':s=>ratio(s?.portal?.people?.vacancies,Math.max(1,n(profile(s).headcount||profile(s).employees)),100),
 
  'industry-benchmark-deltas':s=>arr(s?.portal?.market?.benchmarks).map(x=>({...x,delta:n(x.company)-n(x.benchmark)})),
@@ -172,7 +172,7 @@ const C={
 
  'technology-readiness':s=>avg([s?.portal?.dataAi?.maturity,s?.portal?.dataAi?.governance,s?.portal?.dataAi?.changeReadiness].map(readiness5)),
  'governance-maturity':s=>{const xs=Object.values(s?.portal?.compliance?.policies||{});return xs.length?avg(xs.map(x=>statusWeight(x)*5)):0},
- 'esg-readiness':s=>avg(Object.values(s?.portal?.compliance?.esg||{}).map(readiness5)),
+ 'esg-readiness':s=>{const xs=Object.values(s?.portal?.compliance?.esg||{});return xs.length?xs.reduce((sum,value)=>sum+clamp(n(value),0,3),0)*5/(xs.length*3):0},
  'policy-completeness':s=>{const xs=Object.values(s?.portal?.compliance?.policies||{});return xs.length?avg(xs.map(x=>statusWeight(x)))*100:0},
  'compliance-risk':s=>100-(C['policy-completeness'](s)*.6+C['esg-readiness'](s)/5*40),
  'ai-capability-readiness':s=>avg(Object.values(s?.portal?.aiCapabilities||{}).map(readiness5)),
@@ -218,7 +218,7 @@ const C={
 const EXPECTED=[...new Set(Object.values(LEGACY_FUNCTIONAL_INVENTORY).flatMap(item=>item.calculations||[]))];
 
 const FIELD_MAP={
- mw:'portal.profile.manualHoursPerWeek',uur:'portal.profile.hourlyCost',bDoel:'portal.businessCase.target',bUitstel:'portal.businessCase.delay',bInvest:'portal.businessCase.investment',
+ mw:'portal.profile.employees',uur:'portal.profile.hourlyCost',bDoel:'portal.businessCase.target',bUitstel:'portal.businessCase.delay',bInvest:'portal.businessCase.investment',
  cOmzet:'portal.metrics.revenue',cBrutomarge:'portal.metrics.grossMargin',cEbitda:'portal.metrics.ebitda',cLoon:'portal.metrics.wages',cKlanten:'portal.metrics.customers',cGrootste:'portal.metrics.largestCustomer',cMarketing:'portal.metrics.marketing',cNieuw:'portal.metrics.newCustomers',cDso:'portal.metrics.dso',cIt:'portal.metrics.it',kNps:'portal.metrics.nps',kTevreden:'portal.metrics.satisfaction',kHerhaal:'portal.metrics.repeat',kKlacht:'portal.metrics.complaints',
  wSchuld:'portal.valueFinance.debt',wCash:'portal.valueFinance.cash',wEV:'portal.valueFinance.equity',wBalans:'portal.valueFinance.balance',wVast:'portal.valueFinance.fixed',wRente:'portal.valueFinance.interest',wMultiple:'portal.valueFinance.multiple',wWacc:'portal.valueFinance.wacc',
  asTarief:'portal.aiScan.hourlyRate',mVerzuim:'portal.people.absence',mVerloop:'portal.people.turnover',mEnps:'portal.people.enps',mMto:'portal.people.mto',mVac:'portal.people.vacancies',bKeuze:'portal.market.industry',bOmzet:'portal.market.revenue',
@@ -226,7 +226,7 @@ const FIELD_MAP={
  nTitel:'portal.roadmap.draft.title',nDim:'portal.roadmap.draft.dimension',nStart:'portal.roadmap.draft.start',nDuur:'portal.roadmap.draft.duration'
 };
 function setPath(root,path,value){const keys=path.split('.');let x=root;for(let i=0;i<keys.length-1;i++)x=x[keys[i]]??={};x[keys.at(-1)]=value}
-export function migrateLegacyState(legacy={}){const out={portal:{}};for(const [key,path] of Object.entries(FIELD_MAP))if(Object.hasOwn(legacy,key))setPath(out,path,legacy[key]);return out}
+export function migrateLegacyState(legacy={}){const out={portal:{}};for(const [key,path] of Object.entries(FIELD_MAP))if(Object.hasOwn(legacy,key))setPath(out,path,legacy[key]);if(Object.hasOwn(legacy,'bInvest'))setPath(out,'portal.businessCase.investment',n(legacy.bInvest)*1000);return out}
 export function listCalculatorIds(){return Object.keys(C)}
 export function calculateLegacyEquivalent(id,state={}){if(!C[id])throw new Error(`LEGACY_PARITY_CALCULATOR_MISSING:${id}`);return C[id](state)}
 export function calculateCapability(capability,state={}){const item=LEGACY_FUNCTIONAL_INVENTORY[capability];if(!item)throw new Error(`LEGACY_CAPABILITY_UNKNOWN:${capability}`);return Object.fromEntries(item.calculations.map(id=>[id,calculateLegacyEquivalent(id,state)]))}

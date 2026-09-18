@@ -1,0 +1,55 @@
+{
+  "fingerprint": "metadata-only-mira-identity-false-positive-v1",
+  "learning_id": "instagram-mira-visible-identity-gate-v1",
+  "status": "LIVE_BEWEZEN",
+  "observed_at": "2026-09-18",
+  "scope": [
+    "instagram_company",
+    "pre_publish_review",
+    "social_publisher",
+    "content_orchestrator",
+    "skills"
+  ],
+  "incident": {
+    "provider_post_id": "6aacd3818448254db20613c8",
+    "symptom": "generic Placid text card promoted as Mira PASS",
+    "wrong_static_dimensions": "1080x1920"
+  },
+  "root_cause": "Metadata-only fallback evidence treated template/layer labels as visible identity proof.",
+  "prevention": [
+    "exact_final_media_binding_required",
+    "semantic_vision_identity_required",
+    "metadata_only_identity_forbidden",
+    "static_1080x1350",
+    "reel_video_1080x1920",
+    "video_start_middle_end_visible_identity",
+    "publisher_independent_revalidation",
+    "negative_production_probe_required",
+    "no_republish_to_force_green"
+  ],
+  "evidence": {
+    "recovery_pr": 2020,
+    "merge_sha": "7b3ca7bcc4a633e5c40fc37d940ddfce3890e69c",
+    "source_head": "3c022a3b8a24807ca2b6ab8ca0dc02bed521883e",
+    "edge_functions": {
+      "bg-pre-publish-review": 10,
+      "powerhouse-social-publisher": 12,
+      "powerhouse-content-orchestrator": 13
+    },
+    "probes": [
+      {
+        "request_id": 396,
+        "http": 422,
+        "violation": "INSTAGRAM_MIRA_VISIBLE_IDENTITY_REQUIRED"
+      },
+      {
+        "request_id": 397,
+        "http": 422,
+        "violation": "INSTAGRAM_STATIC_DIMENSIONS_INVALID"
+      }
+    ]
+  },
+  "promoted_skill": "docs/superpowers/skills/instagram-mira-visible-identity-gate-v1.md",
+  "persistent_authority": "Powerhouse Brain/Supabase + protected GitHub",
+  "new_parallel_authority": false
+}

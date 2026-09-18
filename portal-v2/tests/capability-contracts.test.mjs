@@ -9,7 +9,7 @@ const allowedModes=new Set(['workspace','canvas','form','cockpit','report','buil
 
 test('every protected legacy capability has a non-generic V2 functional contract',()=>{
   const contracts=listFunctionalContracts();
-  assert.equal(contracts.length,24);
+  assert.equal(contracts.length,25);
   for(const [legacyCapability,item] of Object.entries(LEGACY_FUNCTIONAL_INVENTORY)){
     const contract=getCapabilityContract(item.v2Page);
     assert.ok(contract,`${legacyCapability} missing contract for ${item.v2Page}`);

@@ -27,7 +27,8 @@ const DEFINITIONS=Object.freeze({
   wijzigingen:{mode:'workspace',renderer:'execution',dataSlice:'portal.changes'},
   advies:{mode:'workspace',renderer:'execution',dataSlice:'portal.advice'},
   offerte:{mode:'form',renderer:'execution',dataSlice:'portal.offer'},
-  roadmap:{mode:'workspace',renderer:'execution',dataSlice:'portal.roadmap'}
+  roadmap:{mode:'workspace',renderer:'execution',dataSlice:'portal.roadmap'},
+  uitvoeringsladder:{mode:'workspace',renderer:'execution-ladder',dataSlice:'portal.execution'}
 });
 
 function contractFor(legacyCapability,item){

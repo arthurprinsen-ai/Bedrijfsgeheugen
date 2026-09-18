@@ -13,12 +13,19 @@ from __future__ import annotations
 
 import re
 import sys
+import html as html_lib
 from fnmatch import fnmatchcase
 from html.parser import HTMLParser
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
 PORTAL = ROOT / "klantportaal.html"
+MODULAR_LEGACY_PORTAL = ROOT / "portal"
+V2_STRATEGIC_MODELS = ROOT / "portal-v2" / "strategic-models-core.js"
+V2_LEGACY_ENGINE = ROOT / "portal-v2" / "legacy-parity-engine.js"
+V2_LEGACY_FINANCE = ROOT / "portal-v2" / "legacy-finance-models.js"
+V2_OVERVIEW_COMPLETE = ROOT / "portal-v2" / "modules" / "legacy-overview-complete.js"
+V2_AI_CAPABILITY_CATALOG = ROOT / "portal-v2" / "ai-capability-catalog.js"
 V2_FUNCTIONAL_INVENTORY = ROOT / "portal-v2" / "legacy-functional-inventory.js"
 V2_PARITY_GATE = ROOT / "portal-v2" / "parity-gate.js"
 V2_PARITY_TEST = ROOT / "portal-v2" / "tests" / "parity-gate.test.mjs"
@@ -27,8 +34,10 @@ PANEL_TABS = {
     "overzicht", "profiel", "dataai", "aiscan", "invoeren", "antwoorden",
     "business", "cijfers", "waarde", "mensen", "branche", "onderzoek",
     "beleid", "aicap", "strategie", "canvassen", "eindconclusie", "dd",
-    "dna", "bijhouden", "wijzigingen", "advies", "offerte", "roadmap",
+    "dna", "bijhouden", "wijzigingen", "advies", "offerte", "roadmap", "uitvoering",
 }
+
+NAVIGATION_KEYS = PANEL_TABS - {"uitvoering"}
 
 GLOBAL_MARKERS = {
     "Netlify Identity": "netlify-identity-widget.js",
@@ -60,6 +69,55 @@ SEMANTIC_MARKERS = {
 }
 
 FUNCTIONAL_ARRAY_KEYS = ("fields", "models", "calculations", "actions", "dependencies")
+
+V2_OVERVIEW_MARKERS = {
+    "company state": "De staat van je bedrijf",
+    "cmmi ladder": "Procesvolwassenheid (CMMI)",
+    "adoption curve": "Waar je staat op de adoptiecurve",
+    "time leakage": "Waar de tijd weglekt",
+    "cost-ranked blockers": "Wat je nu remt",
+    "first action": "Eerst dit:",
+    "sharpness": "Hoe scherp is je beeld",
+    "business completeness": "Je bedrijfsgegevens",
+    "thirteen dimensions": "De dertien onderdelen",
+    "86 capabilities": "De 86 AI-capabilities",
+    "roadmap actions": "Acties in je roadmap",
+    "next step": "Zet hierna deze stap:",
+    "progress": "Je voortgang",
+    "next advice": "En dan?",
+}
+
+LEGACY_MODEL_MAP = {
+    "Model Theory of Constraints": ("strategy", "toc", V2_STRATEGIC_MODELS),
+    "Model 7S": ("strategy", "seven-s", V2_STRATEGIC_MODELS),
+    "Model waardeketen": ("strategy", "value-chain", V2_STRATEGIC_MODELS),
+    "Model vijf krachten": ("strategy", "five-forces", V2_STRATEGIC_MODELS),
+    "Model BCG": ("strategy", "bcg", V2_STRATEGIC_MODELS),
+    "Model Ansoff": ("strategy", "ansoff", V2_STRATEGIC_MODELS),
+    "Model DESTEP": ("strategy", "destep", V2_STRATEGIC_MODELS),
+    "Model ADKAR": ("strategy", "adkar", V2_STRATEGIC_MODELS),
+    "Model SWOT": ("strategy", "swot", V2_STRATEGIC_MODELS),
+    "Model Balanced Scorecard": ("strategy", "balanced-scorecard", V2_STRATEGIC_MODELS),
+    "Model Blue Ocean": ("strategy", "blue-ocean", V2_STRATEGIC_MODELS),
+    "Model drie horizonten": ("strategy", "three-horizons", V2_STRATEGIC_MODELS),
+    "Model Ulrich": ("strategy", "ulrich", V2_STRATEGIC_MODELS),
+    "Model SIPOC": ("strategy", "sipoc", V2_STRATEGIC_MODELS),
+    "Model RACI": ("strategy", "raci", V2_STRATEGIC_MODELS),
+    "Model OCAI": ("strategy", "ocai", V2_STRATEGIC_MODELS),
+    "Model salestrechter": ("strategy", "sales-funnel", V2_STRATEGIC_MODELS),
+    "Model AARRR": ("strategy", "aarrr", V2_STRATEGIC_MODELS),
+    "Model Kraljic": ("strategy", "kraljic", V2_STRATEGIC_MODELS),
+    "Model Pareto": ("strategy", "pareto-receivables", V2_STRATEGIC_MODELS),
+    "Model EBITDA-multiple": ("finance", "ebitda-multiple", V2_LEGACY_ENGINE),
+    "Model EBITDA-marge": ("finance", "ebitda-margin", V2_LEGACY_ENGINE),
+    "Model solvabiliteit": ("finance", "solvency", V2_LEGACY_FINANCE),
+    "Model DSCR": ("finance", "dscr", V2_LEGACY_ENGINE),
+    "Model DuPont": ("finance", "dupont", V2_LEGACY_ENGINE),
+    "Model Altman Z": ("finance", "altman-z", V2_LEGACY_ENGINE),
+    "Model break-even": ("finance", "break-even", V2_LEGACY_ENGINE),
+    "Model werkkapitaal": ("finance", "working-capital-days", V2_LEGACY_FINANCE),
+}
+MODEL_ENTRY = re.compile(r"\{k:'(?P<key>Model [^']+)',n:'(?P<name>[^']+)',soort:'(?P<kind>model|finance|functie)'\}")
 EDITABLE_TAGS = {"input", "select", "textarea"}
 VOID_TAGS = {
     "area", "base", "br", "col", "embed", "hr", "img", "input", "link",
@@ -251,6 +309,113 @@ def check_source_derived_action_parity(html: str, inventory_source: str) -> int:
     return protected_count
 
 
+def extract_legacy_model_catalog(html: str) -> list[dict[str, str]]:
+    found = []
+    seen = set()
+    for match in MODEL_ENTRY.finditer(html):
+        key = match.group("key")
+        if key in seen:
+            continue
+        seen.add(key)
+        found.append({"key": key, "name": match.group("name"), "kind": match.group("kind")})
+    return found
+
+
+def check_source_derived_model_parity(html: str) -> tuple[int, int]:
+    catalog = extract_legacy_model_catalog(html)
+    source_keys = {item["key"] for item in catalog}
+    missing = []
+    for item in catalog:
+        mapping = LEGACY_MODEL_MAP.get(item["key"])
+        if mapping is None:
+            missing.append(f"unmapped:{item['key']}")
+            continue
+        expected_kind = "finance" if item["kind"] == "finance" else "strategy"
+        kind, target, path = mapping
+        if kind != expected_kind:
+            missing.append(f"wrong-kind:{item['key']}")
+            continue
+        if not path.exists() or not re.search(rf"(?<![A-Za-z0-9_-]){re.escape(target)}(?![A-Za-z0-9_-])", path.read_text(encoding="utf-8")):
+            missing.append(f"missing-target:{item['key']}->{target}")
+    for key in sorted(set(LEGACY_MODEL_MAP) - source_keys):
+        missing.append(f"stale-mapping:{key}")
+    strategy_count = sum(item["kind"] in {"model", "functie"} for item in catalog)
+    finance_count = sum(item["kind"] == "finance" for item in catalog)
+    if missing or strategy_count != 20 or finance_count != 8 or len(catalog) != 28:
+        fail(f"source-derived legacy model parity failed: strategy={strategy_count}, finance={finance_count}, missing={missing}")
+    return strategy_count, finance_count
+
+
+def check_source_derived_heading_parity(html: str) -> int:
+    """Every visible legacy panel heading must remain discoverable in native V2 source."""
+    v2_sources = []
+    for path in (ROOT / "portal-v2").rglob("*"):
+        if path.is_file() and path.suffix in {".js", ".mjs", ".html", ".md"} and "tests" not in path.parts:
+            try:
+                v2_sources.append(path.read_text(encoding="utf-8"))
+            except UnicodeDecodeError:
+                continue
+    haystack = html_lib.unescape("\n".join(v2_sources))
+    protected = 0
+    missing = []
+    for panel in sorted(PANEL_TABS):
+        match = re.search(
+            rf'<section class="paneel(?: aan)?" id="p-{re.escape(panel)}">(.*?)(?=<section class="paneel|</div></div>\s*</div>\s*<nav|$)',
+            html,
+            re.DOTALL,
+        )
+        if not match:
+            continue
+        body = match.group(1)
+        headings = []
+        for raw in re.findall(r"<h[23][^>]*>(.*?)</h[23]>", body, re.DOTALL):
+            plain = html_lib.unescape(re.sub(r"<[^>]+>", " ", raw))
+            plain = re.sub(r"\s+", " ", plain).strip()
+            if plain:
+                headings.append(plain)
+        for heading in headings:
+            protected += 1
+            if heading not in haystack:
+                missing.append(f"{panel}:{heading}")
+    if missing:
+        fail(
+            "legacy visible headings disappeared from native V2: "
+            + " | ".join(missing)
+            + ". Restore the user-facing surface; route-only or model-only parity is insufficient."
+        )
+    return protected
+
+
+def check_ai_capability_catalog_parity(html: str) -> int:
+    if not V2_AI_CAPABILITY_CATALOG.exists():
+        fail("missing native Portal V2 AI capability catalogue")
+    source_ids = set(re.findall(r'"id":"([a-z0-9-]+)"', html))
+    source_ids = {
+        item for item in source_ids
+        if re.match(r'^(strategie|kanalen|agenten|controlplane|modellen|kennis|infra|governance|identiteit)-[0-9]{2}$', item)
+    }
+    v2_source = V2_AI_CAPABILITY_CATALOG.read_text(encoding="utf-8")
+    v2_ids = set(re.findall(r'"id":[ ]*"([a-z0-9-]+)"', v2_source))
+    if len(source_ids) != 86 or source_ids != v2_ids:
+        missing = sorted(source_ids - v2_ids)
+        extra = sorted(v2_ids - source_ids)
+        fail(
+            f"AI capability catalogue drift: legacy={len(source_ids)}, "
+            f"v2={len(v2_ids)}, missing={missing}, extra={extra}"
+        )
+    return len(v2_ids)
+def check_v2_overview_surface() -> None:
+    if not V2_OVERVIEW_COMPLETE.exists():
+        fail("missing complete Portal V2 legacy overview renderer")
+    source = V2_OVERVIEW_COMPLETE.read_text(encoding="utf-8")
+    for label, marker in V2_OVERVIEW_MARKERS.items():
+        if marker not in source:
+            fail(f"Portal V2 overview lost legacy surface: {label} ({marker!r})")
+    for marker in ("*.15", "*.25", "*.30", "dimension-costs", "businesscase", "ai-capabilities"):
+        if marker not in source:
+            fail(f"Portal V2 overview lost protected semantic implementation marker: {marker}")
+
+
 def check_v2_functional_inventory(source: str) -> None:
     if "LEGACY_FUNCTIONAL_INVENTORY" not in source or "assertFunctionalInventoryComplete" not in source:
         fail("V2 functional inventory export/guard disappeared")
@@ -298,7 +463,7 @@ def check_v2_implementation_gate() -> None:
     ):
         if marker not in source:
             fail(f"V2 implementation parity gate lost protected marker: {marker}")
-    for marker in ("all protected legacy capabilities", "fails closed", "all 24 capabilities verified"):
+    for marker in ("all protected legacy capabilities", "fails closed", "all 25 capabilities verified"):
         if marker not in test_source:
             fail(f"V2 implementation parity test lost protected assertion: {marker}")
 
@@ -308,12 +473,14 @@ def main() -> int:
         fail(f"missing protected portal file: {PORTAL.relative_to(ROOT)}")
     if not V2_FUNCTIONAL_INVENTORY.exists():
         fail(f"missing V2 functional inventory: {V2_FUNCTIONAL_INVENTORY.relative_to(ROOT)}")
+    if not MODULAR_LEGACY_PORTAL.is_dir():
+        fail("missing modular legacy portal source: portal/")
 
     html = PORTAL.read_text(encoding="utf-8")
     inventory_source = V2_FUNCTIONAL_INVENTORY.read_text(encoding="utf-8")
 
     tabs = set(re.findall(r'data-p="([^"]+)"', html))
-    missing_tabs = sorted(PANEL_TABS - tabs)
+    missing_tabs = sorted(NAVIGATION_KEYS - tabs)
     if missing_tabs:
         fail(f"protected navigation keys disappeared: {', '.join(missing_tabs)}")
 
@@ -326,6 +493,10 @@ def main() -> int:
         if marker not in html:
             fail(f"protected capability/meaning disappeared: {label} ({marker!r})")
 
+    strategy_models, finance_models = check_source_derived_model_parity(html)
+    protected_headings = check_source_derived_heading_parity(html)
+    ai_capabilities = check_ai_capability_catalog_parity(html)
+    check_v2_overview_surface()
     check_v2_functional_inventory(inventory_source)
     protected_fields = check_source_derived_field_parity(html, inventory_source)
     protected_actions = check_source_derived_action_parity(html, inventory_source)
@@ -339,6 +510,10 @@ def main() -> int:
         f"{len(GLOBAL_MARKERS)} global capabilities, "
         f"{len(OVERVIEW_MARKERS)} overview capabilities, "
         f"{len(SEMANTIC_MARKERS)} semantic invariants, "
+        f"{strategy_models} strategy/function models, "
+        f"{finance_models} finance models, "
+        f"{ai_capabilities} AI capabilities, "
+        f"{protected_headings} visible legacy headings, "
         f"{len(PANEL_TABS)} V2 functional inventory records and executable implementation/evidence gate present."
     )
     return 0

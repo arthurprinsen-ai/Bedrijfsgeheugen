@@ -11,7 +11,8 @@ const SPECIALIST_OWNERS=Object.freeze({
   invoeren:Object.freeze({renderer:'modules/company-input.js + modules/functional-suite.js',persistence:'domain-state.flush',browser:'portal production DOM readback'}),
   antwoorden:Object.freeze({renderer:'modules/company-input.js + modules/functional-suite.js',persistence:'domain-state confirmed state',browser:'portal production DOM readback'}),
   canvassen:Object.freeze({renderer:'modules/canvas-workspace.js',persistence:'domain-state.flush',browser:'portal production DOM readback'}),
-  dna:Object.freeze({renderer:'strategy-dna.js + modules/dna-library.js',persistence:'domain-state.flush',browser:'portal production DOM readback'})
+  dna:Object.freeze({renderer:'strategy-dna.js + modules/dna-library.js',persistence:'domain-state.flush',browser:'portal production DOM readback'}),
+  uitvoering:Object.freeze({renderer:'native-pages.js + page-metrics.js',persistence:'domain-state + portal-state',browser:'portal production DOM readback'})
 });
 
 function ownerFor(legacyKey,item,contract){

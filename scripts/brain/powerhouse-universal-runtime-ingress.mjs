@@ -24,6 +24,11 @@ function sha256(value) {
   return crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
 }
 
+function stablePreflightIdentity(preflight) {
+  const { telemetry: _telemetry, totalBytes: _totalBytes, ...stable } = preflight;
+  return stable;
+}
+
 function stableReceiptFields(receipt) {
   return {
     version: receipt.version,
@@ -79,7 +84,7 @@ export function beginMaterialRun({
     candidateId: normalizedCandidateId,
     preflightVersion: preflight.version,
     preflightStatus: preflight.status,
-    preflightDigest: sha256(preflight),
+    preflightDigest: sha256(stablePreflightIdentity(preflight)),
   };
 
   return Object.freeze({

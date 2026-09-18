@@ -2,7 +2,7 @@ import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
 import { getCapabilityContract } from './capability-contracts.js';
 
 const COMPANY_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
-const SPECIALISTS=new Map([['overzicht','modules/overview.js'],['strategy-dna','strategy-dna.js']]);
+const SPECIALISTS=new Map([['overzicht','modules/overview.js'],['strategy-dna','strategy-dna.js'],['uitvoeringsladder','native-pages.js + page-metrics.js']]);
 function implementationFor(pageId){if(COMPANY_PAGES.has(pageId))return 'modules/company-input.js';return SPECIALISTS.get(pageId)||'modules/functional-suite.js';}
 
 export const FUNCTIONAL_PARITY_MANIFEST=Object.freeze(Object.entries(LEGACY_FUNCTIONAL_INVENTORY).map(([legacyCapability,item])=>{

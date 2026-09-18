@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
 import { functionalDefinition, functionalSchema, listFunctionalSuitePages, computeFunctionalAnalysis } from '../modules/functional-suite.js';
 
 const PAGES=['data-ai','ai-scan','businesscase','cijfers-maatstaven','waarde-financiering','mensen','branche-markt','onderzoek','compliance-governance','ai-capabilities','strategie-naar-maandagochtend','canvassen','eindconclusie','due-diligence','actueel-houden','wijzigingen','advies','offerte','roadmap'];
@@ -52,4 +53,28 @@ test('business, finance, offer and roadmap analyses react deterministically to s
  const roadmap=Object.fromEntries(computeFunctionalAnalysis('roadmap',state));
  assert.equal(roadmap['Afgerond'],'1');
  assert.match(roadmap['Gem. voortgang'],/75/);
+});
+
+
+test('legacy control semantics remain exact for MTO strategy filters and valuation assumptions',()=>{
+ const people=functionalSchema('mensen').find(field=>field.legacyFieldId==='mMto');
+ assert.deepEqual(people.options.map(x=>[x.value,x.label]),[['0','nooit gedaan'],['1','langer dan 2 jaar geleden'],['2','binnen 2 jaar'],['3','jaarlijks, met opvolging']]);
+ const strategy=functionalSchema('strategie-naar-maandagochtend');
+ const horizon=strategy.find(field=>field.legacyFieldId==='kHorizon');
+ assert.equal(horizon.type,'range');assert.equal(horizon.min,1);assert.equal(horizon.max,12);assert.equal(horizon.step,1);assert.equal(horizon.defaultValue,12);
+ const minimum=strategy.find(field=>field.legacyFieldId==='kMin');
+ assert.equal(minimum.type,'range');assert.equal(minimum.min,0);assert.equal(minimum.max,30000);assert.equal(minimum.step,1000);
+ const value=functionalSchema('waarde-financiering');
+ const multiple=value.find(field=>field.legacyFieldId==='wMultiple');
+ assert.equal(multiple.min,1);assert.equal(multiple.max,15);assert.equal(multiple.step,.5);assert.equal(multiple.defaultValue,5);
+ const wacc=value.find(field=>field.legacyFieldId==='wWacc');
+ assert.equal(wacc.min,3);assert.equal(wacc.max,30);assert.equal(wacc.step,.5);assert.equal(wacc.defaultValue,10);
+});
+
+
+test('functional analysis tab renders supplied native visual contract in the same workspace',()=>{
+  const source=readFileSync(new URL('../modules/functional-suite.js',import.meta.url),'utf8');
+  assert.match(source,/data-functional-visual/);
+  assert.match(source,/view\?\.visual/);
+  assert.match(source,/v2visualgrid/);
 });
