@@ -215,3 +215,9 @@ A closed predecessor and a merged successor do not by themselves prove that the 
 - keep the obligation recoverable until every required predecessor-only delta is either present on current `main` or explicitly retired with evidence.
 
 Reference production recovery: PR #2158 / merge `7d0442b517c80c51f69ebcaba6328d731a309459`.
+
+## GitHub obligation terminalization
+
+Fingerprint: `github|delivery-state-machine|parallel-build-serialized-landing|v1`.
+
+When repository delivery reaches merge, continuity ownership remains active. Resume the same obligation until the canonical `Obligation Terminal Closure` workflow proves main containment, canonical production/runtime readback, applicable learning-to-skill projection, immutable terminal evidence and writer-lease release. Only the resulting machine-readable terminal state (`LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`) may end the lineage. Never create a new recovery PR merely because post-merge readback is still running.

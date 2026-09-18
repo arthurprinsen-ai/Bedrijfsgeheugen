@@ -1,7 +1,7 @@
 {
   "version": 1,
   "fingerprint": "github|delivery-state-machine|parallel-build-serialized-landing|v1",
-  "status": "ACTIVE_PREVENTION_PENDING_PRODUCTION_PROOF",
+  "status": "ACTIVE_PREVENTION_PROVEN",
   "type": "delivery",
   "problem": "GitHub delivery accumulated duplicate/stale PR lineages and allowed expensive CI before machine-readable admission; main movement could invalidate a previously green candidate.",
   "rootCause": "Branch identity and PR lifecycle were treated as primary state instead of obligation + exact head SHA + main epoch, while terminal landing was not fully serialized on a lineage-bound writer lease.",
@@ -13,6 +13,21 @@
     "After merge continue automatically through main/deploy/runtime readback, outcome evidence, learning and skill projection before terminal status.",
     "Parallelize building; serialize only the short landing boundary."
   ],
-  "skill_targets": ["delivery", "continuity"],
-  "source_revision": 1
+  "skill_targets": [
+    "delivery",
+    "continuity"
+  ],
+  "source_revision": 2,
+  "production_proof": {
+    "pr": 2166,
+    "candidate_head_sha": "5e7dcd5d118982cc8641d14c88995d4838e2ab4b",
+    "merge_sha": "c3ecd9a00a37904249ebd3c4f06d3334f96400c4",
+    "main_readback": "verified",
+    "production_readback_run_id": 35350501725,
+    "terminal_closure_run_id": 35350499979,
+    "terminal_state": "LIVE_BEWEZEN",
+    "writer_lease_state": "RELEASED",
+    "terminal_evidence_artifact": "obligation-terminal-evidence-2166"
+  },
+  "outcome": "GitHub delivery is enforced as an executable state machine: cheap admission precedes heavy CI, landing is serialized on obligation + exact head + main epoch, and merged work is non-terminal until canonical production/readback closure succeeds."
 }

@@ -192,6 +192,7 @@ bindPortalNavigation({
  showOverview:()=>{closePortalPage();closeHub()}
 });
 document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
+el('portalFullMenuToggle')?.addEventListener('click',()=>navigatePortal('hub:portal'));
 el('showPages')?.addEventListener('click',()=>navigatePortal('hub:portal'));
 el('closePages')?.addEventListener('click',()=>{closeHub();navigatePortal('overzicht',{replace:true})});
 el('allPages')?.addEventListener('click',e=>{if(e.target===el('allPages')){closeHub();navigatePortal('overzicht',{replace:true})}});

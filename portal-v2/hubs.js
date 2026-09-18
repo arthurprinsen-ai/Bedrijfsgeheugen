@@ -36,7 +36,7 @@ export const PROJECT_GROUPS = Object.freeze([
 const projectTargets=Object.freeze(PROJECT_GROUPS.flatMap(group=>group.pages.map(page=>page.target)));
 
 export const HUB_DEFINITIONS = Object.freeze({
-  portal:Object.freeze({ label:'Portaal', description:'Alle functionele Portal V2-onderdelen in één native navigatie.', pages:PORTAL_CORE }),
+  portal:Object.freeze({ label:'Alle pagina’s', description:'Volledig portaalmenu met alle geregistreerde Portal V2-pagina’s, gegroepeerd per onderdeel.', pages:Object.freeze(allPageIds()) }),
   project:Object.freeze({ label:'Jouw project', description:'Van offerte en bouwen tot koppelen, uitvoeren, documenteren, samenwerken en factureren.', pages:projectTargets }),
   'data-ai':Object.freeze({ label:'Data & AI', description:'Data, koppelingen, AI-kansen, capabilities en de aantoonbare Brain/Datahub-status.', pages:DATA_AI }),
   tasks:Object.freeze({ label:'Taken', description:'Uitvoering, roadmap, actieve acties, recovery obligations, scenarios, monitoring en outcomes/evidence.', pages:TASKS }),
@@ -57,8 +57,8 @@ export function groupedHubPages(hubId){
       })
     }));
   }
+  if(hubId==='portal') return listPortalGroups().map(group=>({...group,pages:[...group.pages]})).filter(group=>group.pages.length);
   const allowed=new Set(hubPages(hubId));
-  if(hubId==='portal') allowed.clear(), PORTAL_CORE.forEach(id=>allowed.add(id));
   return listPortalGroups().map(group=>({
     ...group,
     pages:group.pages.filter(page=>allowed.has(page.id))
