@@ -2,10 +2,30 @@
   "fingerprint": "powerhouse-fast-development-protocol-v2",
   "version": 2,
   "status": "active",
-  "extends": ["powerhouse-engineering-os-v1", "BRAIN-DELIVERY-v2", "powerhouse-parallel-engineering-fabric-v1"],
+  "extends": [
+    "powerhouse-engineering-os-v1",
+    "BRAIN-DELIVERY-v2",
+    "powerhouse-parallel-engineering-fabric-v1"
+  ],
   "creates_parallel_authority": false,
-  "canonical_flow": ["INTENT", "EXECUTION_PACKET_V2", "NO_OP_DEDUP", "IMPACT_GRAPH", "EXECUTION_DAG", "TARGETED_TESTS", "CANDIDATE", "FULL_RELEASE_GATES", "EXACT_SHA_PROD_READBACK", "DELTA_WRITEBACK"],
-  "execution_classes": ["FAST", "STANDARD", "CRITICAL", "WAITING_EXTERNAL"],
+  "canonical_flow": [
+    "INTENT",
+    "EXECUTION_PACKET_V2",
+    "NO_OP_DEDUP",
+    "IMPACT_GRAPH",
+    "EXECUTION_DAG",
+    "TARGETED_TESTS",
+    "CANDIDATE",
+    "FULL_RELEASE_GATES",
+    "EXACT_SHA_PROD_READBACK",
+    "DELTA_WRITEBACK"
+  ],
+  "execution_classes": [
+    "FAST",
+    "STANDARD",
+    "CRITICAL",
+    "WAITING_EXTERNAL"
+  ],
   "preflight": {
     "execution_packet": "v2",
     "delta_context": true,
@@ -17,28 +37,84 @@
     "impact_based_during_development": true,
     "unknown_material_scope": "FULL_REQUIRED_PROFILE",
     "full_release_gates_at_promotion_boundary": true,
-    "fast_path_never_replaces_release_gates": true
+    "fast_path_never_replaces_release_gates": true,
+    "risk_scoped_promotion_profile": true,
+    "global_full_suite_default": false,
+    "global_full_suite_runs_asynchronous_assurance_for_noncritical_safe_changes": true,
+    "blocking_rule": "Only tests implied by changed paths, declared dependencies/contracts, security/data/schema boundaries and production-readback are blocking. Unrelated assurance is post-merge/shadow."
   },
   "execution": {
     "parallel_by_default": true,
     "coordinator_owns_truth_and_definition_of_done": true,
-    "serialize_on": ["dependency", "changed-path-overlap", "contract-overlap", "mutable-resource-overlap", "critical-gate-sequencing"]
+    "serialize_on": [
+      "dependency",
+      "changed-path-overlap",
+      "contract-overlap",
+      "mutable-resource-overlap",
+      "critical-gate-sequencing"
+    ],
+    "rolling_lane_per_conflict_contract": true,
+    "one_active_candidate_per_conflict_contract": true,
+    "microbatch_safe_parallel_agent_outputs": true,
+    "auto_cancel_superseded_runs": true,
+    "auto_recover_zero_run_heads": true,
+    "auto_refresh_conflicting_merge_base": true,
+    "no_new_pr_for_same_obligation_recovery": true
   },
   "evidence_cache": {
     "persistent_semantics": true,
     "persistence_authority": "brain_outcome_obligation_evidence",
     "persistence_adapter": "PersistentEvidenceCache",
-    "identity_fields": ["candidate_sha", "environment", "config_digest", "schema_digest", "dependency_digest", "gate_or_test_version", "relevant_contract_digest"],
+    "identity_fields": [
+      "candidate_sha",
+      "environment",
+      "config_digest",
+      "schema_digest",
+      "dependency_digest",
+      "gate_or_test_version",
+      "relevant_contract_digest"
+    ],
     "ttl_or_invalidation_required": true,
     "append_only_invalidation": true,
-    "non_cacheable": ["EXACT_SHA_PROD_READBACK", "SECURITY_FRESHNESS", "CURRENT_PROVIDER_OUTCOME", "EXACT_FINAL_MEDIA_PROOF"]
+    "non_cacheable": [
+      "EXACT_SHA_PROD_READBACK",
+      "SECURITY_FRESHNESS",
+      "CURRENT_PROVIDER_OUTCOME",
+      "EXACT_FINAL_MEDIA_PROOF"
+    ]
   },
   "writeback": {
     "mode": "DELTA_ONLY",
-    "fields": ["changed", "evidence", "outcome", "learning", "obligation_delta", "timing", "cache_usage", "open_obligations"]
+    "fields": [
+      "changed",
+      "evidence",
+      "outcome",
+      "learning",
+      "obligation_delta",
+      "timing",
+      "cache_usage",
+      "open_obligations"
+    ]
   },
   "telemetry": {
-    "fields": ["context_load_ms", "classification_ms", "reasoning_ms", "tool_ms", "targeted_test_ms", "full_gate_ms", "deploy_ms", "proof_ms", "writeback_ms", "total_lead_time_ms", "context_bytes_or_tokens", "cache_hits", "cache_misses", "avoided_gate_time_ms", "duplicate_work_avoided", "parallelism_utilization"],
+    "fields": [
+      "context_load_ms",
+      "classification_ms",
+      "reasoning_ms",
+      "tool_ms",
+      "targeted_test_ms",
+      "full_gate_ms",
+      "deploy_ms",
+      "proof_ms",
+      "writeback_ms",
+      "total_lead_time_ms",
+      "context_bytes_or_tokens",
+      "cache_hits",
+      "cache_misses",
+      "avoided_gate_time_ms",
+      "duplicate_work_avoided",
+      "parallelism_utilization"
+    ],
     "is_release_authority": false
   },
   "authority": {
@@ -48,5 +124,22 @@
     "shared_context": "BG167",
     "writeback": "BG168/BG166",
     "success": "LIVE & BEWEZEN"
+  },
+  "revision": 3,
+  "delivery_mode": "ROLLING_LANE_FAST_PATH",
+  "latency_slo": {
+    "first_ci_signal_seconds": 60,
+    "turbo_blocking_budget_seconds": 240,
+    "standard_blocking_budget_seconds": 480,
+    "queue_recovery_after_seconds": 60,
+    "stale_run_supersession_seconds": 90,
+    "principle": "latency breach is a recoverable delivery incident, never passive waiting"
+  },
+  "promotion": {
+    "exact_head_required": true,
+    "protected_promotion": true,
+    "auto_promote_when_blocking_profile_green": true,
+    "post_merge_assurance_nonblocking_for_unrelated_surfaces": true,
+    "auto_rollback_on_production_readback_regression": true
   }
 }
