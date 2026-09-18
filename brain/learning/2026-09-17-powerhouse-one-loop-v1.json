@@ -27,7 +27,8 @@
     "SQUASH_MERGE_IDENTITY_FALLBACK: when a production commit has no second parent, resolve candidate identity only from exactly one associated merged PR whose merge_commit_sha equals the production SHA, otherwise fail closed",
     "POST_MERGE_FAILURES_MUST_BE_OPERATOR_VISIBLE: cleanup failures persist durable evidence and emit a concrete GitHub error annotation",
     "normalize GitHub delivery telemetry into deterministic learning evidence",
-    "promote repeated learnings into regression tests, gates or guardrails"
+    "promote repeated learnings into regression tests, gates or guardrails",
+    "TERMINAL_LEARNING_WRITEBACK_MUST_PROVE_ITSELF: a terminal learning/closure writeback is not complete merely because it says FULFILLED; its own protected merge/main landing and post-writeback readback must be evidenced on the exact closure SHA. Later main movement does not invalidate immutable historical evidence."
   ],
   "canonical_loop": "intent -> preflight -> admission -> execute -> verify -> protected merge -> deploy -> production readback -> outcome -> learning -> prevention -> fulfilled",
   "status": "FULFILLED",
@@ -46,7 +47,8 @@
     "delivery-classifier-repository-writer-contract-gap-v1",
     "versioned-scope-authority-cochange-v1",
     "squash-merge-second-parent-assumption-v1",
-    "merged-branch-cleanup-nonzero-without-annotation-v1"
+    "merged-branch-cleanup-nonzero-without-annotation-v1",
+    "terminal-learning-writeback-self-proof-v1"
   ],
   "evidence": [
     {
@@ -185,6 +187,17 @@
       "lifecycle": "LEARNED -> FULFILLED",
       "production_main_sha": "4fda9309eefa259b2a7f492ca929b8d472055d5e",
       "finding": "The powerhouse-one-loop-v1 obligation met its completion contract end-to-end: exact-head verification, protected merge, live production readback, squash-safe completion evidence persistence, obligation reconciliation, configuration verification, merged-branch cleanup, and canonical learning closure."
+    },
+    {
+      "type": "terminal_learning_writeback_self_proof",
+      "closure_pr": 1988,
+      "closure_main_sha": "0807d236e198875fabf953d6a285f9e94ca70d47",
+      "production_release_readback_run_id": 35276153030,
+      "codeql_run_id": 35276153103,
+      "powerhouse_codeql_run_id": 35276153104,
+      "conclusion": "success",
+      "current_main_at_followup": "cbaf6c123c697cacc769fa76ba2303af5e58fd51",
+      "finding": "The canonical FULFILLED/LIVE_PROVEN learning closure itself landed on protected main and received successful post-writeback non-deployment production truth plus CodeQL evidence. Subsequent main advancement is treated as later lineage, not as invalidation of this immutable terminal checkpoint."
     }
   ]
 }
