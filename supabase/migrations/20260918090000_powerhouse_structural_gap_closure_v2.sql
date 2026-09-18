@@ -508,3 +508,101 @@ comment on view public.powerhouse_one_brain_runtime_health_v1 is
 'One Brain structural/scheduler/learning health. GREEN means wiring and required schedulers are present; evidence maturity remains separately fail-closed.';
 comment on function public.powerhouse_one_brain_reconcile_v1(timestamptz) is
 'Idempotent canonical reconciliation across cycle materialization, calibration obligations, experiment maturity and proven policy promotion. Reuses existing authorities and never fabricates missing evidence.';
+
+
+create or replace view public.powerhouse_one_brain_capability_inventory_v1
+with (security_invoker=true) as
+with capabilities(capability_key,domain,implementation_ref,runtime_authority,mode) as (
+  values
+    ('company_decision_engine','decision','brain/decision/company-engine.mjs','brain_decisions','DETERMINISTIC'),
+    ('decision_scenario_engine','decision','brain/operating-loop/decision-engine.mjs','brain_decisions','DETERMINISTIC'),
+    ('portfolio_ranking','decision','brain/decision/portfolio.mjs','brain_decisions','DETERMINISTIC'),
+    ('decision_policy','decision','brain/decision/policy.mjs','brain_decisions','DETERMINISTIC'),
+    ('decision_scoring','decision','brain/decision/score.mjs','brain_decisions','DETERMINISTIC'),
+    ('next_best_action','revenue','powerhouse_autonomous_growth_revenue_cycle','powerhouse_sales_actions','HYBRID'),
+    ('buying_window','revenue','powerhouse_autonomous_growth_revenue_cycle','powerhouse_opportunities','HYBRID'),
+    ('latent_problem','revenue','powerhouse_autonomous_growth_revenue_cycle','powerhouse_forecasts','HYBRID'),
+    ('offer_problem_match','revenue','powerhouse_autonomous_growth_revenue_cycle','powerhouse_opportunities','HYBRID'),
+    ('counterfactual_reasoning','decision','powerhouse_autonomous_growth_revenue_cycle','powerhouse_opportunities','HYBRID'),
+    ('commercial_world_model','revenue','powerhouse_autonomous_growth_revenue_cycle','powerhouse_opportunities','HYBRID'),
+    ('revenue_attribution','revenue','powerhouse_autonomous_growth_revenue_cycle','powerhouse_sales_outcomes','DETERMINISTIC'),
+    ('content_outcome_model','content','powerhouse_autonomous_growth_revenue_cycle','powerhouse_content_recommendations','HYBRID'),
+    ('memeability_model','content','powerhouse_autonomous_growth_revenue_cycle','powerhouse_content_recommendations','HYBRID'),
+    ('creative_evolution','content','brain/creative/revenue-content-intelligence.mjs','social_learnings','HYBRID'),
+    ('research_strategy','intelligence','powerhouse_autonomous_growth_revenue_cycle','powerhouse_forecasts','HYBRID'),
+    ('predictive_first_mover','prediction','supabase/functions/powerhouse-predictive-engine/index.ts','powerhouse_forecasts','AI_GOVERNED'),
+    ('forecast_calibration','calibration','supabase/functions/powerhouse-forecast-calibrator/index.ts','powerhouse_forecast_calibration','AI_GOVERNED'),
+    ('revenue_calibration','calibration','brain/learning/revenue-calibration-loop.mjs','revenue_learnings','HYBRID'),
+    ('meeting_probability','sales','brain/learning/meeting-probability-model.mjs','powerhouse_sales_learnings','DETERMINISTIC'),
+    ('social_learning','learning','supabase/functions/social-learning-store/index.ts','social_learnings','HYBRID'),
+    ('revenue_learning','learning','supabase/functions/revenue-learning-store/index.ts','revenue_learnings','HYBRID'),
+    ('causal_experiment_assignment','experimentation','powerhouse_assign_experiment_v1','powerhouse_experiment_assignments','DETERMINISTIC'),
+    ('experiment_maturity','experimentation','powerhouse_mature_experiment_assignments_v1','powerhouse_experiment_assignments','DETERMINISTIC'),
+    ('policy_promotion','policy_learning','powerhouse_promote_policy_if_proven_v1','powerhouse_policy_versions','DETERMINISTIC'),
+    ('policy_demotion','policy_learning','powerhouse_demote_policy_v1','powerhouse_policy_versions','DETERMINISTIC'),
+    ('action_economics','economics','powerhouse_record_action_economics_v1','powerhouse_action_economics','DETERMINISTIC'),
+    ('company_value','economics','brain/economics/company-value.mjs','brain_value_evaluations','DETERMINISTIC'),
+    ('compute_router','economics','brain/economics/router.mjs','brain_budget_usage','DETERMINISTIC'),
+    ('budget_governor','economics','brain/economics/budget.mjs','brain_budget_usage','DETERMINISTIC'),
+    ('runtime_autonomy_guard','governance','brain/runtime/autonomy.mjs','brain_records','DETERMINISTIC'),
+    ('shadow_decision','governance','brain/runtime/shadow-decision.mjs','brain_records','SHADOW'),
+    ('verified_value','value','brain/operating-loop/verified-value.mjs','brain_value_evaluations','DETERMINISTIC'),
+    ('value_evaluation','value','brain/operating-loop/value-evaluation.mjs','brain_value_evaluations','DETERMINISTIC'),
+    ('outcome_horizons','value','brain/operating-loop/outcome-horizons.mjs','brain_value_evaluations','DETERMINISTIC'),
+    ('knowledge_enrichment','knowledge','brain/knowledge/universal-enrichment-signal-engine.mjs','brain_records','HYBRID'),
+    ('architecture_impact','knowledge','brain/knowledge/architecture-impact-resolver.mjs','brain_records','DETERMINISTIC'),
+    ('website_account_intent','knowledge','brain/knowledge/website-account-intent.mjs','powerhouse_opportunities','HYBRID'),
+    ('business_graph','knowledge','brain/operating-loop/business-graph-service.mjs','brain_records','DETERMINISTIC'),
+    ('living_memory','knowledge','brain/operating-loop/living-memory.mjs','brain_records','DETERMINISTIC'),
+    ('external_intelligence_loop','intelligence','brain/operating-loop/external-intelligence-loop.mjs','bg_externe_signalen','HYBRID'),
+    ('intelligence_prioritization','intelligence','brain/operating-loop/intelligence.mjs','brain_records','DETERMINISTIC'),
+    ('quality_intelligence','quality','brain/health/quality.mjs','powerhouse_quality_events','DETERMINISTIC'),
+    ('resource_intelligence','economics','powerhouse_generate_resource_optimization_candidates_v1','powerhouse_resource_factors','DETERMINISTIC'),
+    ('failure_learning','learning','tools/universal-failure-learning.mjs','brain_failure_registry','DETERMINISTIC'),
+    ('outcome_obligation_engine','execution','tools/outcome-obligation-runtime.mjs','brain_outcome_obligation_evidence','DETERMINISTIC'),
+    ('execution_resilience','execution','brain/guards/execution-resilience.mjs','brain_operations','DETERMINISTIC'),
+    ('production_evidence_certifier','production','brain/operating-loop/runtime-evidence-certifier.mjs','brain_production_truth','DETERMINISTIC'),
+    ('delivery_control_plane','delivery','brain/production/continuous-delivery-v2.mjs','brain_delivery_evidence','DETERMINISTIC'),
+    ('chat_agent_shared_memory','control_plane','brain/policies/powerhouse-agent-continuity-v1.json','brain_control_plane_bindings','POLICY_ENFORCED'),
+    ('chat_learning_preflight','control_plane','config/brain-chat-learning-contract.json','brain_records','POLICY_ENFORCED'),
+    ('one_loop_delivery','control_plane','config/powerhouse-one-loop-v1.json','brain_operations','POLICY_ENFORCED'),
+    ('autonomous_self_improvement','self_improvement','powerhouse_autonomous_improvement_cycle_v1','brain_records','CHAMPION_CHALLENGER'),
+    ('one_brain_reconciliation','control_plane','powerhouse_one_brain_reconcile_v1','brain_records','DETERMINISTIC')
+), counts as (
+  select 'brain_decisions' authority,count(*)::bigint evidence_rows from public.brain_decisions
+  union all select 'powerhouse_sales_actions',count(*) from public.powerhouse_sales_actions
+  union all select 'powerhouse_opportunities',count(*) from public.powerhouse_opportunities
+  union all select 'powerhouse_forecasts',count(*) from public.powerhouse_forecasts
+  union all select 'powerhouse_sales_outcomes',count(*) from public.powerhouse_sales_outcomes
+  union all select 'powerhouse_content_recommendations',count(*) from public.powerhouse_content_recommendations
+  union all select 'powerhouse_forecast_calibration',count(*) from public.powerhouse_forecast_calibration
+  union all select 'powerhouse_sales_learnings',count(*) from public.powerhouse_sales_learnings
+  union all select 'social_learnings',count(*) from public.social_learnings
+  union all select 'revenue_learnings',count(*) from public.revenue_learnings
+  union all select 'powerhouse_experiment_assignments',count(*) from public.powerhouse_experiment_assignments
+  union all select 'powerhouse_policy_versions',count(*) from public.powerhouse_policy_versions
+  union all select 'powerhouse_action_economics',count(*) from public.powerhouse_action_economics
+  union all select 'brain_value_evaluations',count(*) from public.brain_value_evaluations
+  union all select 'brain_budget_usage',count(*) from public.brain_budget_usage
+  union all select 'brain_records',count(*) from public.brain_records
+  union all select 'bg_externe_signalen',count(*) from public.bg_externe_signalen
+  union all select 'powerhouse_quality_events',count(*) from public.powerhouse_quality_events
+  union all select 'powerhouse_resource_factors',count(*) from public.powerhouse_resource_factors
+  union all select 'brain_failure_registry',count(*) from public.brain_failure_registry
+  union all select 'brain_outcome_obligation_evidence',count(*) from public.brain_outcome_obligation_evidence
+  union all select 'brain_operations',count(*) from public.brain_operations
+  union all select 'brain_production_truth',count(*) from public.brain_production_truth
+  union all select 'brain_delivery_evidence',count(*) from public.brain_delivery_evidence
+  union all select 'brain_control_plane_bindings',count(*) from public.brain_control_plane_bindings
+)
+select c.capability_key,c.domain,c.implementation_ref,c.runtime_authority,c.mode,
+       coalesce(n.evidence_rows,0) evidence_rows,
+       'CONNECTED_TO_ONE_BRAIN'::text connection_state
+from capabilities c
+left join counts n on n.authority=c.runtime_authority;
+
+revoke all on public.powerhouse_one_brain_capability_inventory_v1 from anon,authenticated;
+grant select on public.powerhouse_one_brain_capability_inventory_v1 to service_role;
+
+comment on view public.powerhouse_one_brain_capability_inventory_v1 is
+'Derived capability catalogue: explicit models, decision engines, learning loops and agents mapped to their canonical runtime authority. No independent state.';
