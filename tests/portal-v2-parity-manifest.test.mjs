@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { LEGACY_PARITY_ITEMS, GLOBAL_PARITY_CAPABILITIES } from '../portal-v2/parity-manifest.js';
 import { findPage } from '../portal-v2/page-registry.js';
 
-const expected = ['overzicht','profiel','dataai','aiscan','invoeren','antwoorden','business','cijfers','waarde','mensen','branche','onderzoek','beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap'];
+const expected = ['overzicht','profiel','dataai','aiscan','invoeren','antwoorden','business','cijfers','waarde','mensen','branche','onderzoek','beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap','uitvoering'];
 
 test('all protected legacy panels have canonical V2 destinations', () => {
   assert.deepEqual(LEGACY_PARITY_ITEMS.map(x => x.legacyId), expected);

@@ -4,6 +4,8 @@ on:
   pull_request:
     paths:
       - 'klantportaal.html'
+      - 'portal/**'
+      - 'portal-v2/**'
       - '.github/scripts/portal_parity.py'
       - 'portal-v2/legacy-functional-inventory.js'
       - 'portal-v2/parity-manifest.js'
@@ -20,6 +22,8 @@ on:
     branches: [main]
     paths:
       - 'klantportaal.html'
+      - 'portal/**'
+      - 'portal-v2/**'
       - '.github/scripts/portal_parity.py'
       - 'portal-v2/legacy-functional-inventory.js'
       - 'portal-v2/parity-manifest.js'

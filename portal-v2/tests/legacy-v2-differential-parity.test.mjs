@@ -18,7 +18,7 @@ test('every inventoried legacy calculation has executable V2 parity logic',()=>{
 test('legacy field state migrates to canonical portal slices without dropping representative data',()=>{
   const legacy={mw:18,uur:75,bDoel:4,bUitstel:3,bInvest:120000,cOmzet:2400,cEbitda:360,wSchuld:500,wCash:120,wEV:900,wBalans:1800,wRente:45,wMultiple:6,wWacc:9,asTarief:85,mVerzuim:4.2,mVerloop:11,mEnps:18,nTitel:'Kennis borgen',nDim:'Mensen',nStart:2,nDuur:4};
   const migrated=migrateLegacyState(legacy);
-  assert.equal(migrated.portal.profile.manualHoursPerWeek,18);
+  assert.equal(migrated.portal.profile.employees,18);
   assert.equal(migrated.portal.profile.hourlyCost,75);
   assert.equal(migrated.portal.businessCase.target,4);
   assert.equal(migrated.portal.metrics.revenue,2400);
@@ -41,9 +41,9 @@ test('repeatable legacy collections and Strategy DNA migrate while canonical V2 
 test('domain state automatically upgrades legacy state on load and keeps canonical state stable',async()=>{
   const legacyDomain=createDomainState({load:async()=>({mw:12,uur:80,cOmzet:1000}),save:async state=>state});
   await legacyDomain.init();
-  assert.equal(legacyDomain.get('portal.profile.manualHoursPerWeek'),12);
+  assert.equal(legacyDomain.get('portal.profile.employees'),12);
   assert.equal(legacyDomain.get('portal.metrics.revenue'),1000);
-  const canonical={portal:{profile:{manualHoursPerWeek:7}}};
+  const canonical={portal:{profile:{employees:7}}};
   const canonicalDomain=createDomainState({load:async()=>canonical,save:async state=>state});
   await canonicalDomain.init();
   assert.deepEqual(canonicalDomain.get(),canonical);

@@ -30,7 +30,7 @@ export function fieldMarkup(field={},value=''){
  else if(type==='owner')control=`<input ${common} type="text" value="${esc(value)}" autocomplete="name">`;
  else {
   const inputType=type==='date'?'date':['number','currency','percentage'].includes(type)?'number':type==='range'?'range':'text';
-  const step=type==='currency'||type==='percentage'?' step="0.1"':'';
+  const step=field.step!=null?` step="${esc(field.step)}"`:(type==='currency'||type==='percentage'?' step="0.1"':'');
   const min=field.min!=null?` min="${esc(field.min)}"`:'';const max=field.max!=null?` max="${esc(field.max)}"`:'';
   control=`<input ${common} type="${inputType}" value="${esc(value)}"${step}${min}${max}>`;
  }

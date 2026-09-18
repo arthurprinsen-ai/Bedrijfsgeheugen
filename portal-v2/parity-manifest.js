@@ -48,7 +48,8 @@ export const LEGACY_PARITY_ITEMS = Object.freeze([
   item('wijzigingen', ['wijzigingen'], ['activity history', 'change history', 'usable detail']),
   item('advies', ['advies'], ['recommendations', 'rationale', 'priority', 'action path']),
   item('offerte', ['offerte'], ['package selection', 'totals', 'delivery story', 'next action']),
-  item('roadmap', ['roadmap'], ['timeline', 'tasks', 'progress', 'interactions'])
+  item('roadmap', ['roadmap'], ['timeline', 'tasks', 'progress', 'interactions']),
+  item('uitvoering', ['uitvoeringsladder'], ['five-step execution ladder', '12-month planning', 'step completion', 'realized value', 'theme detail'])
 ]);
 
 export const GLOBAL_PARITY_CAPABILITIES = Object.freeze([

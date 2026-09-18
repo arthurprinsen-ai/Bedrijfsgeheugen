@@ -37,3 +37,9 @@ test('page shell and app wire company input to the canonical domain state',()=>{
   assert.match(shell,/portalContext\.domainState/);
   assert.match(app,/configurePortalShell\(\{domainState:portalDomainState\}\)/);
 });
+
+
+test('profile analysis preserves the legacy benchmark radar and next-level value surfaces',()=>{
+  const source=fs.readFileSync(new URL('../modules/company-input.js',import.meta.url),'utf8');
+  for(const marker of ['Profiel tegenover de bovenste 25%','Alles in één beeld','Wat een niveau erbij oplevert','profileRadarSvg','nextLevelBenefits']) assert.ok(source.includes(marker),marker);
+});

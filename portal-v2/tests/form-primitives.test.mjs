@@ -20,3 +20,11 @@ test('number, percentage, currency and range values normalize deterministically'
   assert.equal(normalizeFieldValue({type:'range',min:1,max:5},'9'),5);
   assert.equal(normalizeFieldValue({type:'range',min:1,max:5},'0'),1);
 });
+
+
+test('shared form primitive preserves explicit native step constraints',()=>{
+  const html=fieldMarkup({id:'legacy-step',label:'Legacy',type:'range',min:0,max:30000,step:1000},0);
+  assert.match(html,/step="1000"/);
+  assert.match(html,/min="0"/);
+  assert.match(html,/max="30000"/);
+});

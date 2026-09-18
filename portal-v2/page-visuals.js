@@ -111,7 +111,14 @@ const BUILDERS=Object.freeze({
   },
 
   roadmap:state=>gantt(arr(at(state,'portal.roadmap.items')),{title:'Roadmap over twaalf maanden'}),
-  uitvoeringsladder:state=>gantt(arr(at(state,'portal.roadmap.items')),{title:'Uitvoering over twaalf maanden'}),
+  uitvoeringsladder:state=>{
+    const steps=at(state,'portal.execution.completed')||{};
+    const roadmap=arr(at(state,'portal.roadmap.items'));
+    const flattened=Object.entries(steps).flatMap(([theme,values])=>arr(values).map((done,index)=>({theme,index,done:Boolean(done)})));
+    const cumulative=[];let done=0;flattened.forEach((item,index)=>{if(item.done)done++;cumulative.push({label:String(index+1),value:done});});
+    return [gantt(roadmap,{title:'Planning van de uitvoeringsladder'}),
+      cumulative.length>1?curve(cumulative,{title:'Opgeleverde waarde',valueLabel:'afgeronde treden'}):''].filter(Boolean).join('');
+  },
 
   advies:state=>{
     const items=bevindingen(state);
@@ -125,7 +132,32 @@ const BUILDERS=Object.freeze({
         {title:'In welke volgorde aanpakken'}),
       leakage(Object.entries(perSoort).map(([label,value])=>({label,value})),{title:'Waar de bevindingen vandaan komen'})
     ].filter(Boolean).join('');
-  },  'compliance-command-center':state=>ring(100-n(calc('compliance-risk',state)),{title:'Compliance readiness',caption:'restrisico afgetrokken'}),
+  },  'compliance-governance':state=>{
+    const p=at(state,'portal.profile')||{},m=p.maturity||{},comp=at(state,'portal.compliance')||{};
+    const tech=[['Systemen en AI','tech'],['Stuurinformatie','analytics'],['Datakwaliteit','quality'],['Beveiliging','security']]
+      .map(([label,id])=>({label,value:n(m[id]),benchmark:4})).filter(x=>x.value>0);
+    const gov=[['Governance','governance'],['Datakwaliteit','quality'],['Stuurinformatie','analytics']]
+      .map(([label,id])=>({label,value:n(m[id]),benchmark:4})).filter(x=>x.value>0);
+    const raw=arr(comp.esg),groups=[['Milieu',[0,1,2,3,4]],['Sociaal',[5,6,7,8]],['Bestuur',[9,10]]];
+    const esgPoints=groups.map(([label,indexes])=>{
+      const values=indexes.map(i=>n(raw[i])),covered=values.filter(v=>v>0).length,automatic=values.filter(v=>v>=2).length;
+      return {label,x:indexes.length?automatic/indexes.length*100:0,y:indexes.length?covered/indexes.length*100:0};
+    }).filter(x=>x.x>0||x.y>0);
+    return [benchmarkBars(tech,{title:'Staat van de techniek'}),
+      benchmarkBars(gov,{title:'Governance-volwassenheid'}),
+      esgPoints.length?quadrant(esgPoints,{title:'CSRD-gereedheid',xLabel:'hoe automatisch de cijfers komen →',yLabel:'hoeveel onderwerpen je dekt →'}):''].filter(Boolean).join('');
+  },
+
+  'strategie-naar-maandagochtend':state=>{
+    const findings=arr(at(state,'portal.strategy.findings'));
+    const points=findings.map(item=>({label:item.finding||item.title||item.model||'Bevinding',x:n(item.duration||item.horizonMonths||item.months),y:n(item.value)}))
+      .filter(item=>item.x>0&&item.y!==0);
+    const perModel={};for(const item of findings){const key=item.model||'Onbekend model';perModel[key]=(perModel[key]||0)+1;}
+    return [points.length?quadrant(points,{title:'Alle modellen in één beeld',xLabel:'Doorlooptijd / horizon',yLabel:'Opbrengst'}):'',
+      Object.keys(perModel).length?leakage(Object.entries(perModel).map(([label,value])=>({label,value})),{title:'Per functie'}):''].filter(Boolean).join('');
+  },
+
+  'compliance-command-center':state=>ring(100-n(calc('compliance-risk',state)),{title:'Compliance readiness',caption:'restrisico afgetrokken'}),
   'data-ai-passport':state=>{
     const p=bouwPassport(state);const v=p.samenvatting;
     const perCategorie={};
@@ -174,7 +206,7 @@ const BUILDERS=Object.freeze({
        bevindingen over handwerk naartoe verwijzen. Elk ingevuld
        volwassenheidsniveau krijgt zo een bedrag per jaar. */
     const kosten=arr(calc('dimension-costs',state));
-    return [radar(Object.entries(at(state,'portal.aiCapabilities')||{}).map(([key,value])=>({label:`Capability ${Number(key)+1}`,value:n(value)})),{title:'AI-capabilities'}),
+    return [radar(Object.entries(at(state,'portal.aiCapabilities')||{}).map(([key,value])=>({label:String(key),value:n(value)})),{title:'AI-capabilities'}),
       kosten.length?leakage(kosten.map(d=>({label:d.label,value:n(d.kosten)})),
         {title:'Wat elk onderdeel per jaar kost op zijn huidige niveau'}):'',
       kosten.length?benchmarkBars(kosten.map(d=>({label:d.label,value:n(d.kosten)-n(d.potentieel),benchmark:n(d.kosten)})),
@@ -183,15 +215,24 @@ const BUILDERS=Object.freeze({
   },
 
   'data-ai':state=>{
-    const phases=['Oriëntatie','Fundament','Pilot','Opschalen','Borgen'];
-    const current=Math.max(1,phases.indexOf(at(state,'portal.dataAi.phase'))+1);
-    return [radar([
-      {label:'Volwassenheid',value:n(at(state,'portal.dataAi.maturity'))},
-      {label:'Verandering',value:n(at(state,'portal.dataAi.changeReadiness'))},
-      {label:'Governance',value:n(at(state,'portal.dataAi.governance'))},
-      {label:'Fase',value:current}
-    ].filter(point=>point.value>0),{title:'Data en AI readiness'}),
-      ring(current/phases.length*100,{title:'Implementatiefase',caption:phases[current-1]||''}),
+    const phases=['In hoofden','In lijstjes','In systemen','Verbonden','Zelfsturend'];
+    const profile=at(state,'portal.profile')||{},m=profile.maturity||{};
+    const five=[['Systemen en koppelingen','tech'],['Stuurinformatie','analytics'],['Datakwaliteit','quality'],['Governance','governance'],['Beveiliging','security']]
+      .map(([label,id])=>({label,value:n(m[id])})).filter(x=>x.value>0);
+    const gem=five.length?five.reduce((s,x)=>s+x.value,0)/five.length:0;
+    const current=gem?Math.max(1,Math.min(5,Math.round(gem))):Math.max(1,phases.indexOf(at(state,'portal.dataAi.phase'))+1);
+    const maturityValues=PROFILE_DIMENSIONS.map(d=>n(m[d.id])).filter(Boolean);
+    const avgAll=maturityValues.length?maturityValues.reduce((a,b)=>a+b,0)/maturityValues.length:0;
+    const costs=arr(calc('dimension-costs',state));
+    const currentCost=costs.reduce((s,x)=>s+n(x.kosten),0),targetCost=costs.reduce((s,x)=>s+n(x.potentieel),0);
+    const benefit=Math.max(0,currentCost-targetCost);
+    const benefitCurve=benefit>0?[0,12,24,36].map(month=>({label:month?month+' mnd':'nu',value:benefit/12*month})):[];
+    const change=[{label:'Ontkenning',value:3},{label:'Weerstand',value:1},{label:'Verkenning',value:2},{label:'Aanvaarding',value:4}];
+    return [radar(five,{title:'Data en AI per onderdeel'}),
+      ladder(phases.map((name,index)=>({naam:name,bereikt:index+1<=current,huidig:index+1===current})),{title:'Fasen van invoering'}),
+      curve(change,{title:'Verandercurve',valueLabel:'modelpositie'}),
+      benefitCurve.length?curve(benefitCurve,{title:'Kosten en opbrengsten',valueLabel:'capaciteitswaarde'}):'',
+      ladder([1,2,3,4,5].map(level=>({naam:`Niveau ${level}`,bereikt:avgAll>=level,huidig:Math.round(avgAll)===level})),{title:'CMMI-trap'}),
       ladder(arr(calc('greiner-ladder',state)),{title:'Greiner — groeifasen en hun crisis'})].filter(Boolean).join('');
   },
 
@@ -206,15 +247,19 @@ const BUILDERS=Object.freeze({
 
   onderzoek:state=>{
     const items=arr(at(state,'portal.research.hypotheses'));
+    const profile=at(state,'portal.profile')||{},m=profile.maturity||{};
+    const costs=arr(calc('dimension-costs',state));
+    const q=costs.map(x=>({label:x.label||x.id,x:n(m[x.id]),y:n(x.kosten)})).filter(x=>x.x>0&&x.y>0);
+    const costRows=costs.map(x=>({label:x.label||x.id,value:n(x.kosten),benchmark:n(x.potentieel)})).filter(x=>x.value>0);
     const extern=onderzoekVoor().filter(x=>/^\d/.test(String(x.cijfer||'')));
     const externBeeld=benchmarkBars(extern.slice(0,6).map(x=>({label:x.t,value:parseFloat(String(x.cijfer))||0,benchmark:100})),
       {title:'Wat extern onderzoek meet (McKinsey, MIT, CBS en anderen)'});
-    if(!items.length)return externBeeld;
     const metBewijs=items.filter(item=>item.evidence).length;
     const metBron=items.filter(item=>item.source).length;
-    return [ring(items.length?metBewijs/items.length*100:0,{title:'Hypotheses met bewijs',caption:`${metBewijs} van ${items.length}`}),
-      benchmarkBars([{label:'Met bewijs',value:metBewijs,benchmark:items.length},
-        {label:'Met bron',value:metBron,benchmark:items.length}],{title:'Onderbouwing van je hypotheses'}),
+    return [q.length?quadrant(q,{title:'Onderdelen in vier vakken',xLabel:'Volwassenheid',yLabel:'Kosten van huidige werkwijze'}):'',
+      costRows.length?benchmarkBars(costRows,{title:'Kosten van niets doen'}):'',
+      items.length?ring(metBewijs/items.length*100,{title:'Hypotheses met bewijs',caption:`${metBewijs} van ${items.length}`}):'',
+      items.length?benchmarkBars([{label:'Met bewijs',value:metBewijs,benchmark:items.length},{label:'Met bron',value:metBron,benchmark:items.length}],{title:'Onderbouwing van je hypotheses'}):'',
       externBeeld].filter(Boolean).join('');
   },
 

@@ -81,6 +81,15 @@ class SourceDerivedPortalParityTests(unittest.TestCase):
             portal_parity.check_source_derived_action_parity(html, inventory)
         self.assertIn("roadmap.forgottenAction", stderr.getvalue())
 
+    def test_real_ai_capability_catalogues_parse_exactly_86_and_match(self):
+        legacy_html = portal_parity.PORTAL.read_text(encoding="utf-8")
+        self.assertEqual(portal_parity.check_ai_capability_catalog_parity(legacy_html), 86)
+
+    def test_parity_script_has_single_entrypoint_after_recovery(self):
+        source = SCRIPT.read_text(encoding="utf-8")
+        self.assertEqual(source.count("def main() -> int:"), 1)
+        self.assertEqual(source.count('if __name__ == "__main__":'), 1)
+
 
 if __name__ == "__main__":
     unittest.main()
