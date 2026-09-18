@@ -21,8 +21,27 @@
     "Do not use empty-state fallbacks that collapse required models, charts, navigation or management surfaces.",
     "A parity test must assert structural presence independently from whether business data exists.",
     "Production DOM readback is authoritative for whether a surface is actually delivered.",
-    "Canonical delivery metadata fields such as Supersedes must use the controller-approved value format; recovery context belongs in prose, not inside the metadata value."
+    "Canonical delivery metadata fields such as Supersedes must use the controller-approved value format; recovery context belongs in prose, not inside the metadata value.",
+    "Any chat, agent or workflow touching Portal V2 parity must load brain/skills/portal-v2-parity-empty-state-v1.json before execution and must reuse this fingerprint instead of rediscovering the incident."
   ],
+  "skillWriteback": {
+    "status": "ACTIVE",
+    "skill": "brain/skills/portal-v2-parity-empty-state-v1.json",
+    "playbook": "portal-v2-empty-state-surface-preservation",
+    "learningContract": "portal-v2-parity.v1",
+    "requiredConsumers": [
+      "agent-website-ux",
+      "agent-reliability",
+      "agent-data-quality"
+    ],
+    "discoverySources": [
+      "AGENTS.md",
+      "config/brain-chat-learning-contract.json",
+      "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+      "platform/agents/agent-team.mjs"
+    ],
+    "rule": "The incident learning is not terminal until it is discoverable and executable through the canonical Powerhouse skill and agent-learning surfaces."
+  },
   "evidence": {
     "implementationFiles": [
       "portal-v2/modules/overview.js",
@@ -63,9 +82,14 @@
       "companyState": true,
       "cmmiUnknownState": true,
       "organisationState": true
+    },
+    "skillPromotion": {
+      "pr": 2036,
+      "branch": "feat/portal-v2-parity-skill-contract",
+      "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
     }
   },
   "status": "LIVE_AND_PROVEN",
   "closedAt": "2026-09-18",
-  "definitionOfDone": "exact-head tests/gates -> protected merge -> main readback -> exact production deploy -> learning/documentation writeback"
+  "definitionOfDone": "exact-head tests/gates -> protected merge -> main readback -> exact production deploy -> learning/documentation writeback -> canonical skill promotion and agent discovery"
 }
