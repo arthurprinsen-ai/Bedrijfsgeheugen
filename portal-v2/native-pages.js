@@ -120,7 +120,7 @@ function specialistContent(pageId,model,navigation){
         ['Treden',source.length?String(source.length):'—'],
         ['Afgerond',source.length?String(completed.length):'—'],
         ['Voortgang',source.length?`${Math.round(completed.length/source.length*100)}%`:'—'],
-        ['Opgeleverde waarde',realized?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(realized):'Nog niet aangetoond']
+        ['Opgeleverde waarde',source.length?(realized?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(realized):'Nog niet aangetoond'):'—']
       ],derived:source.length>0},
       {type:'worklist',title:'Vaste volgorde — geen trede overslaan',items:five,derived:false}
     ];
