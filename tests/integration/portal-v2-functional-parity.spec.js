@@ -35,8 +35,14 @@ test('all remaining protected legacy capabilities open as native editable V2 wor
   await openFunctional(page,pageId);
   await expect(page.locator('#portalView')).toHaveAttribute('data-page-id',pageId);
   const workspace=page.locator(`[data-functional-workspace="${pageId}"]`);
-  await expect(workspace.locator('[data-workspace-tab]')).toHaveCount(4);
-  expect(await workspace.locator('input,select,textarea,[data-repeat-add]').count(),`${pageId} must be editable`).toBeGreaterThan(0);
+  if(pageId==='ai-capabilities'){
+   await expect(workspace.locator('[data-aic-filter]')).toHaveCount(4);
+   await expect(workspace.locator('[data-aic-search]')).toBeVisible();
+   expect(await workspace.locator('[data-aic-cap],[data-aic-layer-score]').count(),'ai-capabilities must expose native editable capability controls').toBeGreaterThan(0);
+  }else{
+   await expect(workspace.locator('[data-workspace-tab]')).toHaveCount(4);
+   expect(await workspace.locator('input,select,textarea,[data-repeat-add]').count(),`${pageId} must be editable`).toBeGreaterThan(0);
+  }
   expect(await workspace.locator('a[href*="klantportaal"],iframe[src*="klantportaal"]').count(),`${pageId} must not use legacy runtime`).toBe(0);
  }
 });
