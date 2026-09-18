@@ -11,7 +11,7 @@ create table if not exists public.powerhouse_instagram_media_jobs_v1 (
 alter table public.powerhouse_instagram_media_jobs_v1 enable row level security;
 revoke all on public.powerhouse_instagram_media_jobs_v1 from public,anon,authenticated;
 grant select,insert,update on public.powerhouse_instagram_media_jobs_v1 to service_role;
-create or replace function public.powerhouse_instagram_provider_policy_v1(p_post_type text) returns jsonb language sql immutable set search_path=public,pg_catalog as $$
+create or replace function public.powerhouse_instagram_provider_policy_v1(p_post_type text) returns jsonb language sql immutable set search_path = public, pg_catalog as $$
 select case lower(coalesce(p_post_type,''))
  when 'reel' then jsonb_build_object('post_type','reel','required_provider','openart','allowed_providers',jsonb_build_array('openart'),'media_kind','video','mime','video/mp4','width',1080,'height',1920,'frame_positions',jsonb_build_array('start','middle','end'))
  when 'video' then jsonb_build_object('post_type','video','required_provider','openart','allowed_providers',jsonb_build_array('openart'),'media_kind','video','mime','video/mp4','width',1080,'height',1920,'frame_positions',jsonb_build_array('start','middle','end'))
@@ -19,7 +19,7 @@ select case lower(coalesce(p_post_type,''))
  else jsonb_build_object('post_type','image','required_provider',null,'allowed_providers',jsonb_build_array('openart','placid'),'media_kind','image','mime','image/jpeg','width',1080,'height',1350) end;$$;
 revoke all on function public.powerhouse_instagram_provider_policy_v1(text) from public,anon,authenticated;
 grant execute on function public.powerhouse_instagram_provider_policy_v1(text) to service_role;
-create or replace function public.powerhouse_validate_instagram_media_job_v1() returns trigger language plpgsql security definer set search_path=public,pg_catalog as $$
+create or replace function public.powerhouse_validate_instagram_media_job_v1() returns trigger language plpgsql security definer set search_path = public, pg_catalog as $$
 declare p jsonb:=public.powerhouse_instagram_provider_policy_v1(new.post_type);s jsonb;sp text;sk text;
 begin
  new.allowed_providers:=array(select jsonb_array_elements_text(p->'allowed_providers'));new.required_provider:=nullif(p->>'required_provider','');
