@@ -37,7 +37,7 @@ export function mountGlobalActions({stateClient,identityProvider=()=>window.netl
  const syncMobileStatus=()=>document.querySelectorAll('[data-mobile-global-status]').forEach(node=>{node.textContent=status.textContent;node.classList.toggle('error',status.classList.contains('error'))});
  const ensureMobileUtilities=()=>{
   const sheet=document.querySelector('#allPages');const groups=document.querySelector('#groups');
-  if(!sheet||!groups||sheet.dataset.hub!=='more'||groups.querySelector('[data-mobile-global-actions]'))return;
+  if(!sheet||!groups||!['more','portal'].includes(sheet.dataset.hub)||groups.querySelector('[data-mobile-global-actions]'))return;
   const section=document.createElement('section');section.className='group v2mobileutilities';section.dataset.mobileGlobalActions='true';
   const heading=document.createElement('h4');heading.textContent='Portaalacties';section.appendChild(heading);
   for(const [label,capability] of MOBILE_ACTIONS){const proxy=document.createElement('button');proxy.type='button';proxy.className='smallbtn';proxy.dataset.mobileCapability=capability;proxy.textContent=label;proxy.addEventListener('click',()=>wrap.querySelector(`[data-capability="${capability}"]`)?.click());section.appendChild(proxy)}
