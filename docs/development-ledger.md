@@ -221,3 +221,15 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **PR #2104 complete borging closure:** protected merge/main SHA `971a3f762dd0c63e8abd87f089e5574ec7860527`; main-readback bevestigde learning, ledger, self-healing docs, continuity skill, delivery-concurrency skill en regressie. Borging zelf geldt voortaan als materiële writeback en valt onder dezelfde terminale bewijsregels.
 
 - **Closure-recovery evidence:** tijdens de terminale borging zijn twee extra preventies bewezen: synthetische delivery-SHA's moeten aan hetzelfde hex-contract voldoen als runtime-heads; en de /prijzen-teller mag op mobiel niet tegelijk als fixed inner cell en sticky row functioneren. De mobiele cel wordt daarom binnen <=900px `position:static`, terwijl desktop fixed blijft. Fingerprints: `delivery-test-fixture|valid-head-sha|required-v1` en `website|prijzen|mobile-fixed-sticky-cls|v1`.
+
+
+## 2026-09-18 — RECOVERY_LEARNING — toolchain-authority productieclosure
+- **Fingerprint:** `powerhouse|toolchain-authority|release-learning|v1`
+- **Parent authority:** `powerhouse|toolchain-authority|composio-no-make|v1`.
+- **Incident:** PR #2134 was protected merged, while Netlify production readback still referenced the immediately preceding main commit. The first recovery candidate then failed admission because canonical delivery metadata was absent; the next revision failed Brain planning because its proof file used the unclassified path `docs/ops/...`.
+- **Root causes:** merge→provider promotion is asynchronous; recovery metadata was not preflighted before PR creation; proof-path selection was not checked against Brain membership before write.
+- **Fix:** ownership stayed open; recovery PR #2141 received canonical metadata; the proof was moved to the classified `docs/learning/` route; Required + BRAIN both passed and protected merge completed at `fd594b6e3118f089755e27785df8e01123c2e6a6`.
+- **Preventieregels:** `PRODUCTION_DESCENDANT_READBACK_REQUIRED`; `RECOVERY_PR_METADATA_PREFLIGHT_BEFORE_CI`; `CLASSIFY_EVIDENCE_PATH_BEFORE_WRITE`.
+- **Skill projection:** `.agents/skills/powerhouse-toolchain-authority/SKILL.md` now requires those checks before future recovery/delivery work.
+- **Machine learning:** `brain/learning/2026-09-18-toolchain-authority-release-learning-v1.json`.
+- **Herbruikbare les:** een fail-closed gate is bruikbare systeemintelligentie. Repareer de oorzaak in dezelfde lineage; omzeil admission, classification of production-readback nooit om sneller live te kunnen claimen.
