@@ -5,7 +5,7 @@ create or replace function public.powerhouse_data_spine_watchdog_v1(p_now timest
 returns jsonb
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = public, pg_catalog
 as $$
 declare
   r record;
