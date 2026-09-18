@@ -79,7 +79,14 @@
     "main_movements",
     "supersession",
     "obligation_to_live_ms",
-    "obligation_to_fulfilled_ms"
+    "obligation_to_fulfilled_ms",
+    "time_to_first_signal_ms",
+    "zero_run_recoveries",
+    "stale_run_recoveries",
+    "false_positive_oracles",
+    "prediction_accuracy",
+    "recovery_success_rate",
+    "shadow_failure_rate"
   ],
   "oneBrainConstitution": {
     "version": "POWERHOUSE-ONE-BRAIN-CONSTITUTION-v1",
@@ -159,5 +166,19 @@
         "MATERIAL_NEW_BUSINESS_CHOICE_WITH_NO_CANONICAL_RULE_OR_SAFE_DEFAULT"
       ]
     }
+  },
+  "fastDeliveryControl": {
+    "fingerprint": "powerhouse-predictive-fast-delivery-v2",
+    "protocol": "config/powerhouse-fast-development-protocol-v2.json",
+    "fabric": "config/powerhouse-parallel-engineering-fabric.json",
+    "predictive_controller": "tools/delivery/predictive-controller.mjs",
+    "supervisor": ".github/workflows/powerhouse-fast-delivery-supervisor.yml",
+    "skill": "brain/skills/powerhouse-fast-rolling-delivery-v1.json",
+    "one_brain": true,
+    "telemetry_to_learning": true,
+    "prediction_to_outcome_calibration": true,
+    "autonomous_recovery": true,
+    "exact_head_production_readback_required": true,
+    "rule": "Every material development run participates in the same observe-predict-decide-execute-readback-learn-optimize loop; CI friction is measured and converted into prevention or adaptive recovery."
   }
 }
