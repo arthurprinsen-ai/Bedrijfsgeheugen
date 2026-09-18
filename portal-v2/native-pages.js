@@ -24,7 +24,7 @@ export const PAGE_NAVIGATION = Object.freeze({
   "compliance-governance":["Pak hoogste risico",[["Open command center","compliance-command-center"],["Open audit","audit"],["Maak actie","actieve-acties"]]],
   "compliance-command-center":["Open auditpakket",[["Open compliance","compliance-governance"],["Open audit","audit"],["Open acties","actieve-acties"]]],
   "ai-capabilities":["Beoordeel capability",[["Open Brain","brain-verwerking"],["Open agentstatus","agentstatus"],["Open AI-scan","ai-scan"]]],
-  strategiemodellen:["Open strategiemodel",[["Open canvassen","canvassen"],["Open eindconclusie","eindconclusie"],["Vertaal naar uitvoering","strategie-naar-maandagochtend"]]],
+  strategiemodellen:["Kies strategiemodel",[["Open alle modellen","modellen"],["Open eindconclusie","eindconclusie"],["Vertaal naar uitvoering","strategie-naar-maandagochtend"]]],
   modellen:["Kies model",[["Open BCG-matrix","model-bcg"],["Open strategiemodellen","strategiemodellen"],["Open onderzoek","onderzoek"]]],
   "model-bcg":["Beoordeel portfolio",[["Open alle modellen","modellen"],["Maak scenario","businesscase"],["Vertaal naar roadmap","roadmap"]]],
   canvassen:["Werk canvas bij",[["Open strategiemodellen","strategiemodellen"],["Open roadmap","roadmap"],["Vertaal naar uitvoering","strategie-naar-maandagochtend"]]],
