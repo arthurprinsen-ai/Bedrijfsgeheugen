@@ -80,7 +80,7 @@ jobs:
       head_sha: ${{ steps.plan.outputs.head_sha }}
       has_lanes: ${{ steps.plan.outputs.has_lanes }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
@@ -115,7 +115,7 @@ jobs:
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
@@ -206,7 +206,7 @@ jobs:
       contents: write
       pull-requests: write
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
           ref: ${{ needs.plan.outputs.head_sha }}

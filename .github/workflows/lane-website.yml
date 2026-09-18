@@ -28,7 +28,7 @@ jobs:
       routes: ${{ steps.risk.outputs.routes }}
       requires_preview: ${{ steps.risk.outputs.requires_preview }}
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.candidate_sha }}
           fetch-depth: 0
@@ -61,7 +61,7 @@ jobs:
     needs: classify
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5
@@ -74,7 +74,7 @@ jobs:
     needs: [classify, syntax-preflight]
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5
@@ -88,7 +88,7 @@ jobs:
     if: needs.classify.outputs.requires_preview == 'true' && needs.classify.outputs.risk_lane != 'fast-fix'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5
@@ -183,7 +183,7 @@ jobs:
     if: needs.classify.outputs.requires_preview == 'true' && needs.classify.outputs.risk_lane != 'fast-fix'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5
@@ -213,7 +213,7 @@ jobs:
     if: needs.classify.outputs.requires_preview == 'true'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: ${{ inputs.candidate_sha }}
       - uses: actions/setup-node@v5

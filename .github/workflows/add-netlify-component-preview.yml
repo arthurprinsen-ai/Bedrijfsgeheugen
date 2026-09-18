@@ -14,7 +14,7 @@ jobs:
   install:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           ref: automation/component-integration
       - name: Add deploy-preview-only component build

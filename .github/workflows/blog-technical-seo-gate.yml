@@ -22,7 +22,7 @@ jobs:
     name: technical-seo-contract-100
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
 
@@ -172,7 +172,7 @@ jobs:
     runs-on: ubuntu-latest
     needs: contract
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0
       - name: Detect changed blog slug

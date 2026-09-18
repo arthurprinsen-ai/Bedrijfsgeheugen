@@ -52,7 +52,7 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 2
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Verify approved blog verifier contract
         run: node --test tests/approved-blog-verifier-contract.test.mjs
 

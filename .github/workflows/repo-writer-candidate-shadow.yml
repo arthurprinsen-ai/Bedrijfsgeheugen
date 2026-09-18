@@ -56,7 +56,7 @@ jobs:
           [ "$actual_head" = "$EXPECTED_HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$EXPECTED_HEAD_SHA:$actual_head"; exit 1; }
           [ "$actual_ref" = "$EXPECTED_HEAD_REF" ] || { echo "::error::PR_HEAD_REF_DRIFT:$EXPECTED_HEAD_REF:$actual_ref"; exit 1; }
 
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
         with:
           ref: ${{ github.event_name == 'workflow_dispatch' && inputs.head_sha || github.event.pull_request.head.sha }}
           fetch-depth: 0

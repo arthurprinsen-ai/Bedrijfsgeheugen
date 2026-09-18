@@ -23,7 +23,7 @@ jobs:
       WRITERS: approved-central-blog,blog-bijwerken,menu-balk-fix,paginacontrole,regelgeving-bijwerken,seo-controle,weekblog
     steps:
       - name: Checkout exact trigger PR base
-        uses: actions/checkout@v5
+        uses: actions/checkout@v7
         with:
           ref: ${{ github.event.pull_request.base.sha }}
           fetch-depth: 0
