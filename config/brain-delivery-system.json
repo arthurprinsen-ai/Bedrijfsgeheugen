@@ -297,7 +297,9 @@
         "tests/powerhouse-foresight-autonomy",
         "tests/terminal-writer-lease-",
         "tests/powerhouse-runtime-action-learning-api.test.mjs",
-        "tests/powerhouse-revenue-calibration-persistence-contract.test.mjs"
+        "tests/powerhouse-revenue-calibration-persistence-contract.test.mjs",
+        "scripts/security-operations-proof.mjs",
+        "tests/security-operations-proof.test.mjs"
       ],
       "requiredContracts": [
         "BG166",
