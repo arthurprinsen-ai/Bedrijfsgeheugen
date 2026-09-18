@@ -130,6 +130,7 @@ jobs:
           tests/eu-ai-act-controls.test.mjs
           tests/eu-ai-act-passport-ui.test.mjs
           tests/final-site-navigation-contract.test.mjs
+          tests/powerhouse-runtime-action-learning-api.test.mjs
           tests/internal-auth-scan-boundary.test.mjs
           tests/klantportaal-cockpit-contract.test.mjs
           tests/klantportaal-release-gates.test.mjs
