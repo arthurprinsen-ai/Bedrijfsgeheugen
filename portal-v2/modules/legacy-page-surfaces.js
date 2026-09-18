@@ -88,10 +88,12 @@ function research(state){
 function compliance(state){
  const c=state?.portal?.compliance||{},pol=Array.isArray(c.policies)?c.policies:[],esg=Array.isArray(c.esg)?c.esg:[];
  const established=pol.filter(x=>['vastgesteld','geoefend'].includes(String(x).toLowerCase())).length;
+ const filled=esg.filter(x=>has(x)&&n(x)>0).length,handwork=esg.filter(x=>n(x)===1).length,system=esg.filter(x=>n(x)>=2).length;
+ const readiness=esg.length?Math.round(esg.reduce((sum,value)=>sum+n(value),0)/(esg.length*3)*100):0;
  return [
   section('Staat van de techniek',[['Beleidsstukken',String(pol.length)],['Vastgesteld/geoefend',String(established)]]),
   section('Governance-volwassenheid',[['Volledigheid',pol.length?pct(established/pol.length*100):'Nog niet bepaald']]),
-  section('CSRD en duurzaamheid — waar sta je?',[['Onderwerpen',String(esg.length)],['Gemiddeld',esg.length?`${one(esg.reduce((a,b)=>a+n(b),0)/esg.length)}/5`:'Nog niet bepaald']]),
+  section('CSRD en duurzaamheid — waar sta je?',[['Onderwerpen',String(esg.length)],['Gereedheid',esg.length?pct(readiness):'Nog niet bepaald'],['Beschikbaar',esg.length?`${filled} van ${esg.length}`:'Nog niet bepaald'],['Nog handwerk',String(handwork)],['Komt (deels) uit systeem',String(system)]]),
   section('Wat er op papier staat',pol.map((x,i)=>[`Beleidsstuk ${i+1}`,text(x)]),pol.length?'':'Nog geen beleidsstatus vastgelegd.'),
   section('Deadlines en boetes',arr(c.deadlines).map(x=>[text(x.title||x.rule,'Verplichting'),text(x.deadline||x.status)]),'Alleen zichtbaar wanneer een bron of deadline is vastgelegd.'),
   section('Incident: wat is het plan?',[['Incident-responseplan',text(c.incidentPlan)],['Eigenaar',text(c.incidentOwner)]])
