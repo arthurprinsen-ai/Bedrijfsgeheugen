@@ -113,7 +113,19 @@
       "cache_misses",
       "avoided_gate_time_ms",
       "duplicate_work_avoided",
-      "parallelism_utilization"
+      "parallelism_utilization",
+      "queue_p50_ms",
+      "queue_p95_ms",
+      "zero_run_count",
+      "stale_run_count",
+      "merge_conflict_rate",
+      "false_positive_oracle_count",
+      "shadow_failure_rate",
+      "time_to_first_signal_ms",
+      "time_to_candidate_ms",
+      "time_to_live_proven_ms",
+      "prediction_accuracy",
+      "recovery_success_rate"
     ],
     "is_release_authority": false
   },
@@ -125,8 +137,8 @@
     "writeback": "BG168/BG166",
     "success": "LIVE & BEWEZEN"
   },
-  "revision": 3,
-  "delivery_mode": "ROLLING_LANE_FAST_PATH",
+  "revision": 4,
+  "delivery_mode": "PREDICTIVE_ROLLING_LANE_FAST_PATH",
   "latency_slo": {
     "first_ci_signal_seconds": 60,
     "turbo_blocking_budget_seconds": 240,
@@ -143,5 +155,67 @@
     "auto_rollback_on_production_readback_regression": true
   },
   "skill": "brain/skills/powerhouse-fast-rolling-delivery-v1.json",
-  "learning_fingerprint": "powerhouse-fast-rolling-lane-delivery-v1"
+  "learning_fingerprint": "powerhouse-fast-rolling-lane-delivery-v1",
+  "predictive_control": {
+    "enabled": true,
+    "controller": "tools/delivery/predictive-controller.mjs",
+    "supervisor_workflow": ".github/workflows/powerhouse-fast-delivery-supervisor.yml",
+    "inputs": [
+      "changed_paths",
+      "affected_contracts",
+      "historical_failure_rate",
+      "historical_merge_conflict_rate",
+      "queue_p95_seconds",
+      "main_movement_rate"
+    ],
+    "outputs": [
+      "risk_class",
+      "predicted_conflict_surface",
+      "blocking_gate_plan",
+      "shadow_gate_plan",
+      "recovery_action"
+    ],
+    "rule": "Predict risk before fan-out, serialize only real conflicts, and convert latency/queue/drift anomalies into same-lineage recovery actions."
+  },
+  "adaptive_gates": {
+    "enabled": true,
+    "blocking": "changed risk + declared dependency/contract + security/data/schema + exact production readback",
+    "shadow": "unrelated broad regression and cross-surface assurance",
+    "promote_on_blocking_green": true,
+    "shadow_failure_opens_deduplicated_recovery": true,
+    "shadow_failure_does_not_retroactively_falsify_prior_exact_head_proof_without_relevant_scope": true
+  },
+  "supervisor": {
+    "cadence_minutes": 5,
+    "zero_run_auto_dispatch": true,
+    "stale_run_auto_cancel_and_redispatch": true,
+    "merge_conflict_same_lineage_refresh_required": true,
+    "duplicate_recovery_pr_forbidden": true,
+    "first_failure_root_cause_only": true
+  },
+  "optimization_loop": {
+    "cadence": "DAILY",
+    "objective": "minimize safe lead time and friction subject to correctness/security/data-integrity/readback non-degradation",
+    "learn_from": [
+      "queue",
+      "timeouts",
+      "merge_conflicts",
+      "failed_gates",
+      "false_positive_oracles",
+      "reruns",
+      "rollback",
+      "production_readback",
+      "developer_lead_time"
+    ],
+    "actions": [
+      "retune_risk_thresholds",
+      "retune_gate_profiles",
+      "improve_conflict_contracts",
+      "expand_or_contract_turbo_allowlist",
+      "improve_test_selection",
+      "improve_cache_invalidation",
+      "improve_supervisor_recovery"
+    ],
+    "promotion_rule": "Only retain an optimization when measured lead time improves without quality/security/reliability regression."
+  }
 }
