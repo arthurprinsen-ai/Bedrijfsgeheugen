@@ -1,0 +1,36 @@
+{
+  "fingerprint": "control-plane|operator-cockpit-ui|v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_CAPABILITY",
+  "failure_class": "RUNTIME_INVARIANT",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": true,
+  "root_cause": "Canonical obligation cockpit and metrics projections existed only as service-role database views, so the operator still had to reconstruct control-plane state from GitHub/Supabase instead of consuming one safe surface.",
+  "prevention_rule": "Expose one internal read-only cockpit over the existing canonical Brain views. Keep Basic Auth at the Netlify boundary, reuse the service-token Edge trust boundary, return no raw evidence payloads, and require regression plus security evaluation before canonicalization.",
+  "enforcement": [
+    "netlify/functions/powerhouse-control-plane-cockpit.mjs Basic Auth",
+    "growth-datahub-ingest control_plane_cockpit service-role readback",
+    "powerhouse_obligation_cockpit_v1 projection only",
+    "powerhouse_control_plane_metrics_v1 aggregate only",
+    "quality surface registration",
+    "dedicated contract workflow"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-control-plane-cockpit-ui-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-control-plane-cockpit-ui-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-control-plane-cockpit-ui-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-toolchain-authority",
+    "portal"
+  ]
+}
