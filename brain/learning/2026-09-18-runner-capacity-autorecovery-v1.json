@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-RUNNER-CAPACITY-AUTORECOVERY-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|runner-capacity|autorecovery|v1",
+  "date": "2026-09-18",
+  "incident": {
+    "obligation_id": "powerhouse-delivery-self-optimization-proof-v1",
+    "pull_request": 2127,
+    "exact_head": "5ef62cb1d96591dc4a5fab2b5a66c158fa68ff26",
+    "observed": "Required/BRAIN/CodeQL remained queued while the candidate stayed mergeable and current with main; a recovery-supervisor attempt had been cancelled.",
+    "classification": "EXTERNAL_GITHUB_ACTIONS_RUNNER_CAPACITY_OR_QUEUE_SATURATION",
+    "safe_action_taken": "Preserved exact-head lineage and auto-merge, re-ran only the cancelled recovery-supervisor attempt, and did not bypass protected gates."
+  },
+  "root_cause": "External execution capacity can stall healthy exact-head checks; treating queue delay as code failure causes duplicate PRs, unnecessary rebases and unsafe pressure to bypass gates.",
+  "prevention": [
+    "QUEUE_IS_NOT_CODE_FAILURE",
+    "PRESERVE_EXACT_HEAD_AND_WRITER_LEASE",
+    "NO_DUPLICATE_PR_FOR_QUEUE_ESCAPE",
+    "NO_BRANCH_PROTECTION_BYPASS",
+    "BOUNDED_RETRY_ONLY_FOR_CANCELLED_OR_FAILED_RECOVERY_WORK",
+    "AUTO_RESUME_SAME_LINEAGE_WHEN_CAPACITY_RETURNS",
+    "PERSIST_BOUNDARY_AND_NEXT_SAFE_ACTION"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "documentation_targets": [
+    "docs/self-healing-agents.md"
+  ],
+  "regression": "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+}

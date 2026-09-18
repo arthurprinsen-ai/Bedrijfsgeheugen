@@ -407,3 +407,15 @@ test('borging closure remains a material writeback across continuity and deliver
   assert.equal(learning.borging_closure?.status, 'LIVE_BEWEZEN');
   assert.equal(learning.borging_closure?.pull_request, 2104);
 });
+
+test('runner capacity saturation is recoverable without duplicate lineage or gate bypass', () => {
+  for (const marker of [
+    'delivery|runner-capacity|autorecovery|v1',
+    'external execution-capacity blockage',
+    'do not create a duplicate recovery PR',
+    'do not weaken branch protection',
+    'same lineage resume automatically',
+    'Queue pressure is transport/runtime capacity state'
+  ]) assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing runner-capacity marker: ${marker}`);
+});
+
