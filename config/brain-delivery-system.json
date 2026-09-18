@@ -294,7 +294,8 @@
         "tests/notion-synced-posts-",
         "tests/powerhouse-daily-self-evolution",
         "tests/powerhouse-foresight-autonomy",
-        "tests/terminal-writer-lease-"
+        "tests/terminal-writer-lease-",
+        "tests/powerhouse-runtime-action-learning-api.test.mjs"
       ],
       "requiredContracts": [
         "BG166",
