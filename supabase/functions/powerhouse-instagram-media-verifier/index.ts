@@ -132,7 +132,8 @@ Deno.serve(async(req)=>{
     if(!size)throw new Error('MEDIA_DIMENSIONS_UNREADABLE');
     const hash=await sha256(bytes);
     const verdict=await visionVerdict(apiKey,gov.data.model_id,bytes,ct);
-    const expectedHeight=verificationRole==='video_frame'?1920:1350;\n    const dimsOk=size.width===1080&&size.height===expectedHeight;
+    const expectedHeight=verificationRole==='video_frame'?1920:1350;
+    const dimsOk=size.width===1080&&size.height===expectedHeight;
     const pass=dimsOk
       && verdict.semantic_verified===true
       && verdict.mira_present===true
@@ -166,7 +167,8 @@ Deno.serve(async(req)=>{
     const write=await db.from('powerhouse_media_proof_evidence_v1').upsert(proof,{onConflict:'fingerprint'});
     if(write.error)throw new Error('PROOF_WRITE_FAILED');
 
-    if(writeObligation){\n    const current=await db.from('content_publication_obligations')
+    if(writeObligation){
+    const current=await db.from('content_publication_obligations')
       .select('status,external_id,evidence').eq('tenant_id','canonical').eq('publication_date',publicationDate).eq('channel','instagram').maybeSingle();
     const row=current.data;
     if(row){
@@ -193,7 +195,8 @@ Deno.serve(async(req)=>{
         .eq('tenant_id','canonical').eq('publication_date',publicationDate).eq('channel','instagram');
       if(update.error)throw new Error('OBLIGATION_WRITE_FAILED');
     }
-    }\n    return json({ok:true,publicationDate,pass,fingerprint,sha256:hash,width:size.width,height:size.height,confidence:visual.confidence,evidence_ref:evidenceRef,visual});
+    }
+    return json({ok:true,publicationDate,pass,fingerprint,sha256:hash,width:size.width,height:size.height,confidence:visual.confidence,evidence_ref:evidenceRef,visual});
   }catch(error){
     const message=String((error as Error)?.message||error).slice(0,300);
     return json({ok:false,error:message},500);
