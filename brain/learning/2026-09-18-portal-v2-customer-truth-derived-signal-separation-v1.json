@@ -1,0 +1,41 @@
+{
+  "version": "portal-v2-trusted-advisor-truth-learning-v1",
+  "date": "2026-09-18",
+  "obligationId": "portal-v2-trusted-advisor-parity-v1",
+  "lineage": {
+    "pr": 1999,
+    "branch": "feat/portal-v2-trusted-advisor-parity-v1",
+    "baseSha": "76c244d4509100846afa210b9d16bf7a7ca328d3",
+    "observedHead": "93ff0b1363141cf11b892b522227b32bec0dec75"
+  },
+  "problem": "Portal V2 canvas/model projections could visually resemble customer answers; CI also exposed stale semantic/DOM oracles and invalid delivery metadata.",
+  "rootCauses": [
+    "Canvas presentation mixed derived Powerhouse projections with customer-entered values.",
+    "Semantic and production DOM tests encoded the former mixed-provenance wording/expectations.",
+    "PR delivery metadata used candidate types outside the canonical hygiene allow-list and omitted Base-SHA."
+  ],
+  "rules": [
+    "Customer truth and derived Powerhouse evidence are separate provenance classes.",
+    "Missing customer input remains visibly and persistently missing; derived signals never backfill customer answers.",
+    "Use truth states answered, not_answered, not_asked, not_applicable, derived, insufficient_evidence.",
+    "All portal business input remains tenant-scoped in the existing canonical Powerhouse persistence path; no parallel store.",
+    "Tests/readbacks must assert provenance semantics, not merely non-empty rendering.",
+    "Validate Delivery-Lane, Candidate-Type and Base-SHA against canonical delivery-hygiene policy before expensive CI.",
+    "Never assign LIVE & BEWEZEN until exact-head gates, protected merge, main SHA and production readback are proven."
+  ],
+  "evidence": {
+    "portalV2Tests": "success on exact head 93ff0b1363141cf11b892b522227b32bec0dec75",
+    "qualityIntelligence": "success",
+    "qualitySurfaceGate": "success",
+    "assurance": "success",
+    "codeQL": "success",
+    "supabasePreview": "success",
+    "livePreview": "success",
+    "remainingAtCapture": [
+      "Required/BRAIN rerun needed after corrected metadata",
+      "Production DOM snapshot/readback still requires exact-head closure"
+    ]
+  },
+  "preventionFingerprint": "portal-v2-customer-truth-derived-signal-separation-v1",
+  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}
