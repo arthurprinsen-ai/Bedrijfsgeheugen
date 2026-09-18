@@ -47,5 +47,21 @@
       "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
     ],
     "rule": "BORGING_IS_MATERIAL_WRITEBACK: a canonical borging/closure is itself a material outcome and must be logged, documented, projected to relevant skills, regression-guarded, merged and read back from main before it is terminal."
-  }
+  },
+  "closure_delivery_recovery_evidence": [
+    {
+      "fingerprint": "delivery-test-fixture|valid-head-sha|required-v1",
+      "symptom": "Required automation failed because a synthetic test headSha contained non-hex characters.",
+      "root_cause": "Regression fixture drifted behind the stricter exact-head identity contract.",
+      "prevention": "Synthetic delivery identities used by tests must satisfy the same 12-40 hex SHA contract as runtime candidates.",
+      "resolved": true
+    },
+    {
+      "fingerprint": "website|prijzen|mobile-fixed-sticky-cls|v1",
+      "symptom": "Protected browser gate measured /prijzen phone CLS 0.165 above the 0.100 limit.",
+      "root_cause": "The pricing counter cell became position:fixed globally while its mobile row remained sticky, producing unstable mobile layout.",
+      "prevention": "Keep the desktop fixed counter, but reset the inner counter cell to position:static inside the <=900px sticky mobile row and regression-test the override.",
+      "resolved": true
+    }
+  ]
 }
