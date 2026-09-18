@@ -54,20 +54,65 @@ jobs:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
         run: |
           set -euo pipefail
+          source_run_id=""
+          source_conclusion=""
           for attempt in $(seq 1 42); do
             runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/production-release-readback.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=20")"
-            run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            source_run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
             status="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
-            conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
-            if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
-              [ "$conclusion" = "success" ] || { echo "::error::PRODUCTION_READBACK_FAILED:run=$run_id conclusion=$conclusion"; exit 78; }
-              echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-              echo "PRODUCTION_READBACK_PROVEN:$run_id"
-              exit 0
+            source_conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
+            if [ -n "$source_run_id" ] && [ "$status" = "completed" ]; then
+              if [ "$source_conclusion" = "success" ]; then
+                echo "mode=canonical_run" >> "$GITHUB_OUTPUT"
+                echo "run_id=$source_run_id" >> "$GITHUB_OUTPUT"
+                echo "observed_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
+                echo "PRODUCTION_READBACK_PROVEN:$source_run_id"
+                exit 0
+              fi
+              if [ "$source_conclusion" != "cancelled" ]; then
+                echo "::error::PRODUCTION_READBACK_FAILED:run=$source_run_id conclusion=$source_conclusion"
+                exit 78
+              fi
+              break
             fi
             sleep 10
           done
-          echo "::error::PRODUCTION_READBACK_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
+
+          echo "Canonical production readback unavailable/cancelled; proving current live production contains merge ${MERGE_SHA}."
+          for attempt in $(seq 1 36); do
+            nonce="${MERGE_SHA}-descendant-${attempt}-$(date +%s)"
+            if curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/release.json?bg_terminal_recovery=${nonce}" -o /tmp/release.json               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/?bg_terminal_recovery=${nonce}" -o /tmp/runtime.html               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/api/connectors/readiness?bg_terminal_recovery=${nonce}" -o /tmp/readiness.json; then
+              read -r observed deploy_id context contract authority < <(node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          const release=JSON.parse(readFileSync('/tmp/release.json','utf8'));
+          const readiness=JSON.parse(readFileSync('/tmp/readiness.json','utf8'));
+          const sha=String(release.commit_ref||'').trim();
+          const deploy=String(release.deploy_id||'').trim();
+          if(!/^[0-9a-f]{40}$/i.test(sha)) process.exit(2);
+          if(!deploy) process.exit(3);
+          if(release.context!=='production') process.exit(4);
+          if(release.contract!=='BRAIN-DELIVERY-v2'||release.production_authority!=='BG169') process.exit(5);
+          if(!readiness?.sources||!readiness?.targets||readiness?.extractor?.configured!==true) process.exit(6);
+          process.stdout.write([sha,deploy,release.context,release.contract,release.production_authority].join(' '));
+          NODE
+              ) || true
+              if [ -n "${observed:-}" ] && [ -s /tmp/runtime.html ]; then
+                git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
+                if git merge-base --is-ancestor "$MERGE_SHA" "$observed"; then
+                  echo "mode=descendant_live" >> "$GITHUB_OUTPUT"
+                  echo "run_id=" >> "$GITHUB_OUTPUT"
+                  echo "source_run_id=${source_run_id}" >> "$GITHUB_OUTPUT"
+                  echo "observed_sha=$observed" >> "$GITHUB_OUTPUT"
+                  echo "deploy_id=$deploy_id" >> "$GITHUB_OUTPUT"
+                  echo "verified=true" >> "$GITHUB_OUTPUT"
+                  echo "PRODUCTION_DESCENDANT_READBACK_PROVEN:merge=$MERGE_SHA observed=$observed deploy=$deploy_id source_run=${source_run_id:-none}"
+                  exit 0
+                fi
+              fi
+            fi
+            sleep 10
+          done
+          echo "::error::PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN:$MERGE_SHA"
           exit 78
 
       - name: Determine whether skill projection is due
@@ -147,6 +192,10 @@ jobs:
           HEAD_SHA: ${{ github.event.pull_request.head.sha }}
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
           PRODUCTION_RUN_ID: ${{ steps.production.outputs.run_id }}
+          PRODUCTION_READBACK_MODE: ${{ steps.production.outputs.mode }}
+          PRODUCTION_OBSERVED_SHA: ${{ steps.production.outputs.observed_sha }}
+          PRODUCTION_DEPLOY_ID: ${{ steps.production.outputs.deploy_id }}
+          PRODUCTION_READBACK_VERIFIED: ${{ steps.production.outputs.verified }}
           PROJECTION_REQUIRED: ${{ steps.projection-scope.outputs.required }}
           PROJECTION_RUN_ID: ${{ steps.projection.outputs.run_id }}
           TERMINAL_WORKFLOW_RUN_ID: ${{ github.run_id }}
@@ -171,11 +220,15 @@ jobs:
             projection_json="null"
           fi
 
-          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "${PRODUCTION_RUN_ID}"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             --argjson migration_readback_required "$([ "${MIGRATION_READBACK_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson expected_migrations "${EXPECTED_MIGRATIONS:-[]}"             '{
+          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "$([ -n "${PRODUCTION_RUN_ID:-}" ] && echo "${PRODUCTION_RUN_ID}" || echo null)"             --arg production_readback_mode "${PRODUCTION_READBACK_MODE:-canonical_run}"             --arg production_observed_sha "${PRODUCTION_OBSERVED_SHA:-${MERGE_SHA}}"             --arg production_deploy_id "${PRODUCTION_DEPLOY_ID:-}"             --argjson production_readback_verified "$([ "${PRODUCTION_READBACK_VERIFIED:-false}" = "true" ] && echo true || echo false)"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             --argjson migration_readback_required "$([ "${MIGRATION_READBACK_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson expected_migrations "${EXPECTED_MIGRATIONS:-[]}"             '{
               obligation_id:$obligation_id,
               candidate_head_sha:$candidate_head_sha,
               main_sha:$main_sha,
+              production_readback_mode:$production_readback_mode,
               production_readback_run_id:$production_readback_run_id,
+              production_observed_sha:$production_observed_sha,
+              production_deploy_id:($production_deploy_id|select(length>0)),
+              production_readback_verified:$production_readback_verified,
               skill_projection_required:$skill_projection_required,
               skill_projection_run_id:$skill_projection_run_id,
               outcome_verified:true,
@@ -196,6 +249,8 @@ jobs:
             .obligation_id == env.OBLIGATION_ID and
             .candidate_head_sha == env.HEAD_SHA and
             .main_sha == env.MERGE_SHA and
+            .production_readback_verified == true and
+            .production_observed_sha == env.PRODUCTION_OBSERVED_SHA and
             (
               env.MIGRATION_READBACK_REQUIRED != "true" or
               (.migration_readback_required == true and .migration_readback_verified == true)
