@@ -1,0 +1,38 @@
+{
+  "schemaVersion": 1,
+  "contract": "powerhouse-regulatory-source-watch-v1",
+  "sources": [
+    {
+      "id": "eu-ai-act",
+      "framework": "EU_AI_ACT",
+      "authority": "EUR-Lex",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "jurisdiction": "EU",
+      "cadenceHours": 24
+    },
+    {
+      "id": "eu-nis2-directive",
+      "framework": "NIS2_CBW",
+      "authority": "EUR-Lex",
+      "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+      "jurisdiction": "EU",
+      "cadenceHours": 24
+    },
+    {
+      "id": "nl-cyberbeveiligingswet",
+      "framework": "NIS2_CBW",
+      "authority": "NCSC",
+      "url": "https://www.ncsc.nl/cyberbeveiligingswet-nis2",
+      "jurisdiction": "NL",
+      "cadenceHours": 24
+    },
+    {
+      "id": "eu-gdpr",
+      "framework": "GDPR_DATA",
+      "authority": "EUR-Lex",
+      "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "jurisdiction": "EU",
+      "cadenceHours": 72
+    }
+  ]
+}
