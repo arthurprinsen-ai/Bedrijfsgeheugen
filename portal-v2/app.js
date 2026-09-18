@@ -179,12 +179,24 @@ function ensureNavigationStyles(){
  const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css';document.head.appendChild(style);
 }
 
+function mountHeaderActions(){
+ const map={notifications:'hub:notifications',help:'hub:help',account:'gebruikers'};
+ document.querySelectorAll('[data-header-action]').forEach(button=>{
+   if(button.dataset.headerActionBound==='true')return;
+   button.dataset.headerActionBound='true';
+   button.addEventListener('click',()=>{
+     const target=map[button.dataset.headerAction];
+     if(target)navigatePortal(target);
+   });
+ });
+}
+
 const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
 configurePortalShell({domainState:portalDomainState});
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
 portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();mountDesktopProjectNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();mountHeaderActions();mountDesktopProjectNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
  openPage:openPortalPage,
  openHub,
