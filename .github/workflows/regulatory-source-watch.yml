@@ -62,8 +62,9 @@ jobs:
           git push origin "HEAD:$BRANCH"
           PR_URL=$(gh pr create --base main --head "$BRANCH" --title "Regulatory source candidate ${GITHUB_RUN_ID}" --body "$(cat <<EOF
 Obligation-ID: regulatory-source-watch-${GITHUB_RUN_ID}
-Delivery-Lane: data
-Candidate-Type: regulatory-source-observation
+Delivery-Lane: automation
+Candidate-Type: implementation
+Regulatory-Candidate-Type: source-observation
 Base-SHA: $BASE_SHA
 
 Writer-Lease-State: TERMINAL_DELIVERY
