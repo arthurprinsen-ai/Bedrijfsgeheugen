@@ -52,46 +52,43 @@ where oin.organisatie_id is null;
 revoke all on public.powerhouse_tenant_identity_review_v1 from anon, authenticated;
 grant select on public.powerhouse_tenant_identity_review_v1 to service_role;
 
-create or replace function public.powerhouse_materialize_sales_action_cycle_row_v1(p_action_id uuid)
+create or replace function public.powerhouse_open_cycle_from_runtime_signal_v1(p_event_id uuid)
 returns void
 language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
 declare
-  a public.powerhouse_sales_actions%rowtype;
+  e public.powerhouse_runtime_events%rowtype;
   v_tenant constant text := 'canonical';
   v_subject text;
   v_evidence_ref text;
 begin
-  select * into a
-  from public.powerhouse_sales_actions
-  where action_id=p_action_id;
+  select * into e
+  from public.powerhouse_runtime_events
+  where event_id=p_event_id;
 
-  if not found then
+  if not found then return; end if;
+
+  if e.event_type <> 'scan_submitted'
+     or e.source <> 'website.frisse_blik'
+     or lower(coalesce(e.source,'')) like '%test%' then
     return;
   end if;
 
   v_subject := coalesce(
-    nullif(a.subject_key,''),
-    nullif(a.company_key,''),
-    nullif(a.person_key,''),
-    a.action_id::text
+    nullif(e.subject_key,''),
+    nullif(e.company_key,''),
+    nullif(e.person_key,''),
+    e.event_id::text
   );
-  v_evidence_ref := 'powerhouse_sales_actions:' || a.action_id::text;
+  v_evidence_ref := 'powerhouse_runtime_events:' || e.event_id::text;
 
   insert into public.powerhouse_decision_cycles(
     tenant_id,cycle_id,subject_key,source_signal_ref,current_stage,status,opened_at,updated_at
   )
   values(
-    v_tenant,
-    a.action_id,
-    v_subject,
-    v_evidence_ref,
-    'decision',
-    'open',
-    coalesce(a.created_at,now()),
-    now()
+    v_tenant,e.event_id,v_subject,v_evidence_ref,'signal','open',e.occurred_at,now()
   )
   on conflict (tenant_id,cycle_id) do update set
     subject_key=coalesce(public.powerhouse_decision_cycles.subject_key,excluded.subject_key),
@@ -103,100 +100,51 @@ begin
     evidence_ref,idempotency_key,payload,occurred_at
   )
   values(
-    v_tenant,
-    a.action_id,
-    1,
-    'decision',
-    'powerhouse_sales_actions',
-    a.action_id::text,
-    v_evidence_ref,
-    'sales-action:' || a.action_id::text || ':decision',
+    v_tenant,e.event_id,1,'signal','powerhouse_runtime_events',e.event_id::text,
+    v_evidence_ref,'runtime-signal:' || e.event_id::text,
     jsonb_build_object(
-      'status',a.status,
-      'action_type',a.action_type,
-      'channel',a.channel,
-      'priority',a.priority,
-      'opportunity_key',a.opportunity_key,
-      'truth','materialized_from_existing_action'
+      'event_type',e.event_type,
+      'source',e.source,
+      'data_quality',e.data_quality,
+      'confidence',e.confidence,
+      'truth','observed_runtime_signal'
     ),
-    coalesce(a.created_at,now())
+    e.occurred_at
   )
   on conflict (tenant_id,idempotency_key) do nothing;
-
-  if a.executed_at is not null and a.status in ('waiting','done') then
-    insert into public.powerhouse_cycle_events(
-      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
-      evidence_ref,idempotency_key,payload,occurred_at
-    )
-    values(
-      v_tenant,
-      a.action_id,
-      2,
-      'execution',
-      'powerhouse_sales_actions',
-      a.action_id::text,
-      v_evidence_ref,
-      'sales-action:' || a.action_id::text || ':execution',
-      jsonb_build_object(
-        'status',a.status,
-        'executed_at',a.executed_at,
-        'truth','observed_execution'
-      ),
-      a.executed_at
-    )
-    on conflict (tenant_id,idempotency_key) do nothing;
-  elsif a.status='expired' then
-    insert into public.powerhouse_cycle_events(
-      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
-      evidence_ref,idempotency_key,payload,occurred_at
-    )
-    values(
-      v_tenant,
-      a.action_id,
-      2,
-      'next_decision',
-      'powerhouse_sales_actions',
-      a.action_id::text,
-      v_evidence_ref,
-      'sales-action:' || a.action_id::text || ':expired',
-      jsonb_build_object(
-        'status','expired',
-        'truth','observed_terminal_nonexecution'
-      ),
-      coalesce(a.updated_at,now())
-    )
-    on conflict (tenant_id,idempotency_key) do nothing;
-  end if;
 end
 $$;
 
-revoke execute on function public.powerhouse_materialize_sales_action_cycle_row_v1(uuid) from public, anon, authenticated;
-grant execute on function public.powerhouse_materialize_sales_action_cycle_row_v1(uuid) to service_role;
+revoke execute on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) from public, anon, authenticated;
+grant execute on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) to service_role;
 
-create or replace function public.powerhouse_materialize_sales_action_cycle_v1()
+create or replace function public.powerhouse_runtime_signal_cycle_trigger_v1()
 returns trigger
 language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
 begin
-  perform public.powerhouse_materialize_sales_action_cycle_row_v1(new.action_id);
+  perform public.powerhouse_open_cycle_from_runtime_signal_v1(new.event_id);
   return new;
 end
 $$;
 
-revoke execute on function public.powerhouse_materialize_sales_action_cycle_v1() from public, anon, authenticated;
-grant execute on function public.powerhouse_materialize_sales_action_cycle_v1() to service_role;
+revoke execute on function public.powerhouse_runtime_signal_cycle_trigger_v1() from public, anon, authenticated;
+grant execute on function public.powerhouse_runtime_signal_cycle_trigger_v1() to service_role;
 
-drop trigger if exists powerhouse_sales_actions_cycle_materializer_v1 on public.powerhouse_sales_actions;
-create trigger powerhouse_sales_actions_cycle_materializer_v1
-after insert or update of status,executed_at,subject_key,company_key,person_key
-on public.powerhouse_sales_actions
-for each row execute function public.powerhouse_materialize_sales_action_cycle_v1();
+drop trigger if exists powerhouse_runtime_signal_cycle_materializer_v1 on public.powerhouse_runtime_events;
+create trigger powerhouse_runtime_signal_cycle_materializer_v1
+after insert on public.powerhouse_runtime_events
+for each row
+when (new.event_type = 'scan_submitted' and new.source = 'website.frisse_blik')
+execute function public.powerhouse_runtime_signal_cycle_trigger_v1();
 
-select public.powerhouse_materialize_sales_action_cycle_row_v1(action_id)
-from public.powerhouse_sales_actions
-order by created_at,action_id;
+select public.powerhouse_open_cycle_from_runtime_signal_v1(event_id)
+from public.powerhouse_runtime_events
+where event_type='scan_submitted'
+  and source='website.frisse_blik'
+order by occurred_at,event_id;
 
 create or replace view public.powerhouse_completion_readiness_v1
 with (security_invoker=true) as
@@ -283,5 +231,5 @@ grant select on public.powerhouse_completion_readiness_v1 to service_role;
 
 comment on view public.powerhouse_tenant_identity_review_v1 is
 'Live unresolved-identity review surface. Does not create a parallel queue; derives only from scan/offerte authority.';
-comment on function public.powerhouse_materialize_sales_action_cycle_row_v1(uuid) is
-'Idempotently materializes canonical decision-cycle truth from an existing powerhouse_sales_actions row. Does not infer human feedback, economics, outcomes or realized value.';
+comment on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) is
+'Idempotently opens a canonical decision cycle only from an observed website.frisse_blik scan_submitted runtime signal. Does not infer downstream analysis, prediction, decision, feedback, economics, outcomes or realized value.';
