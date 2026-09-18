@@ -64,3 +64,13 @@ test('portal evidence keeps tenant payload and source timestamps',()=>{
   assert.match(sql,/insert into public\.portal_state_layers/);
   assert.match(sql,/'legacy-migration'/);
 });
+
+test('portal runtime freshness may use an explicit no-change heartbeat without changing source timestamps',()=>{
+  const heartbeat=fs.readFileSync('supabase/migrations/20260918102000_powerhouse_data_spine_heartbeat_truth_v1.sql','utf8');
+  assert.match(heartbeat,/portal-state-runtime-heartbeat/);
+  assert.match(heartbeat,/'heartbeat_only',true/);
+  assert.match(heartbeat,/'customer_state_changed',false/);
+  assert.match(heartbeat,/latest_source_updated_at/);
+  assert.match(heartbeat,/powerhouse_data_spine_watchdog_v1/);
+  assert.doesNotMatch(heartbeat,/update public\.portal_state_layers[\s\S]*source_updated_at\s*=\s*now\(\)/i);
+});
