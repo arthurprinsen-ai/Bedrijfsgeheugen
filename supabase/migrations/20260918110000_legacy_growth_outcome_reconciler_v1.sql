@@ -49,17 +49,31 @@ begin
       continue;
     end if;
 
-    select ev.*, refs.ref
-    into e, v_ref
+    select ev.*
+    into e
     from public.revenue_learning_evidence ev
-    cross join lateral jsonb_array_elements_text(ev.source_refs) refs(ref)
     where ev.tenant_id=o.tenant_id
       and ev.content_id=o.content_id
-      and refs.ref like 'buffer:post:%'
+      and exists(
+        select 1
+        from jsonb_array_elements_text(ev.source_refs) refs(ref)
+        where refs.ref like 'buffer:post:%'
+      )
     order by ev.updated_at desc,ev.evaluated_at desc nulls last
     limit 1;
 
     if not found then
+      v_deferred := v_deferred + 1;
+      continue;
+    end if;
+
+    select refs.ref
+    into v_ref
+    from jsonb_array_elements_text(e.source_refs) refs(ref)
+    where refs.ref like 'buffer:post:%'
+    limit 1;
+
+    if v_ref is null then
       v_deferred := v_deferred + 1;
       continue;
     end if;
