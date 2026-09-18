@@ -1,0 +1,40 @@
+name: Powerhouse Skill Projection
+
+on:
+  pull_request:
+    paths:
+      - "brain/learning/**"
+      - "brain/skills/**"
+      - "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json"
+      - ".agents/skills/**"
+      - "scripts/brain/powerhouse-skill-projection.mjs"
+      - "scripts/brain/chat-learning-preflight.mjs"
+      - "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+      - ".github/workflows/powerhouse-skill-projection.yml"
+  push:
+    branches: [main]
+    paths:
+      - "brain/learning/**"
+      - "brain/skills/**"
+      - "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json"
+      - ".agents/skills/**"
+      - "scripts/brain/powerhouse-skill-projection.mjs"
+      - "scripts/brain/chat-learning-preflight.mjs"
+      - "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+      - ".github/workflows/powerhouse-skill-projection.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  skill-projection-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Reconcile all canonical learning into skill projection
+        run: node scripts/brain/powerhouse-skill-projection.mjs
+      - name: Verify learning to skill projection contract
+        run: node --test tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs
