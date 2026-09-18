@@ -3,6 +3,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(b:unknown,s=200)=>new Response(JSON.stringify(b),{status:s,headers:{'content-type':'application/json','cache-control':'no-store'}});
 const today=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+const FRAME_EXTRACTOR='https://www.bedrijfsgeheugen.nl/.netlify/functions/instagram-video-frames';
 async function digest(bytes:Uint8Array){const h=await crypto.subtle.digest('SHA-256',bytes);return [...new Uint8Array(h)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function hashRemote(url:string,max=120*1024*1024){const r=await fetch(url,{redirect:'follow'});if(!r.ok)throw new Error('MEDIA_FETCH_FAILED');const bytes=new Uint8Array(await r.arrayBuffer());if(!bytes.length||bytes.length>max)throw new Error('MEDIA_SIZE_INVALID');return{sha256:await digest(bytes),contentType:clean(r.headers.get('content-type')).split(';')[0].toLowerCase()};}
 function inferType(...v:any[]){const s=v.map(clean).join(' ').toLowerCase();if(s.includes('carousel'))return'carousel';if(s.includes('reel'))return'reel';if(s.includes('video'))return'video';return'image';}
@@ -52,10 +53,26 @@ Deno.serve(async req=>{
    proof={exact_final_media_proven:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:'image',media_provider:provider,media_url:u,final_media_sha256:v.body.sha256,instagram_visual:v.body.visual};
   } else if(postType==='reel'||postType==='video'){
    if(provider!=='openart')return json({ok:false,error:'OPENART_REQUIRED_FOR_VIDEO'},422);
-   const u=clean(manifest.asset_url||manifest.assetUrl),frames=Array.isArray(manifest.frames)?manifest.frames:[];
-   if(!u||!['start','middle','end'].every(p=>frames.some((f:any)=>f.position===p&&clean(f.asset_url||f.assetUrl))))return json({ok:false,error:'VIDEO_AND_START_MIDDLE_END_FRAMES_REQUIRED'},422);
+   const u=clean(manifest.asset_url||manifest.assetUrl);if(!u)return json({ok:false,error:'VIDEO_ASSET_URL_REQUIRED'},422);
    const final=await hashRemote(u);if(final.contentType!=='video/mp4')return json({ok:false,error:'VIDEO_MP4_REQUIRED'},422);
-   const fps:any[]=[];for(const f of frames){const fv=await invoke(base,token,'powerhouse-instagram-media-verifier',{publicationDate:runDate,mediaUrl:clean(f.asset_url||f.assetUrl),provider:'openart',mediaType:'image',verificationRole:'video_frame',writeObligation:false});if(!fv.body?.pass)return json({ok:false,error:'VIDEO_FRAME_VISION_PROOF_FAILED',position:f.position,detail:fv.body},422);fps.push({position:f.position,...fv.body.visual,sha256:fv.body.sha256});}
+   let frames=Array.isArray(manifest.frames)?manifest.frames:[];
+   if(!['start','middle','end'].every(p=>frames.some((f:any)=>f.position===p&&(clean(f.asset_url||f.assetUrl)||clean(f.imageBase64))))){
+     const duration=Number(manifest.duration||job?.asset_manifest?.duration||0);
+     const fx=await fetch(FRAME_EXTRACTOR,{method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},body:JSON.stringify({mediaUrl:u,duration})});
+     const fb=await fx.json().catch(()=>({}));
+     if(!fx.ok||fb?.ok!==true||!Array.isArray(fb.frames))return json({ok:false,error:'VIDEO_FRAME_EXTRACTION_FAILED',detail:fb},422);
+     frames=fb.frames;
+   }
+   const fps:any[]=[];
+   for(const f of frames){
+     const payload:any={publicationDate:runDate,provider:'openart',mediaType:'image',verificationRole:'video_frame',writeObligation:false};
+     const frameUrl=clean(f.asset_url||f.assetUrl),frameBase64=clean(f.imageBase64);
+     if(frameUrl)payload.mediaUrl=frameUrl;
+     else {payload.imageBase64=frameBase64;payload.mediaMime=clean(f.mediaType||'image/jpeg');}
+     const fv=await invoke(base,token,'powerhouse-instagram-media-verifier',payload);
+     if(!fv.body?.pass)return json({ok:false,error:'VIDEO_FRAME_VISION_PROOF_FAILED',position:f.position,detail:fv.body},422);
+     fps.push({position:f.position,seconds:Number(f.seconds||0),...fv.body.visual,sha256:fv.body.sha256});
+   }
    const visual={verified:true,semantic_verified:true,mira_present:true,identity_class:'mira_daily_life',evidence_method:'vision',placeholder_detected:false,format_verified:true,width:1080,height:1920,evidence_refs:fps.flatMap(x=>x.evidence_refs||[]),frame_evidence:fps};
    proof={exact_final_media_proven:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:postType,media_provider:'openart',media_url:u,final_media_sha256:final.sha256,instagram_visual:visual};
   } else if(postType==='carousel'){

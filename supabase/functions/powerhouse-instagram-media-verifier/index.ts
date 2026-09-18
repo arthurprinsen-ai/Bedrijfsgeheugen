@@ -112,7 +112,11 @@ Deno.serve(async(req)=>{
   if(mediaType!=='image')return json({ok:false,error:'IMAGE_OR_VIDEO_FRAME_REQUIRED'},422);
 
   try{
-    safeRemoteUrl(mediaUrl);
+    const inlineBase64=clean(body.imageBase64);
+    const inlineMime=clean(body.mediaMime||'image/jpeg').toLowerCase();
+    if(!mediaUrl&&!inlineBase64)return json({ok:false,error:'MEDIA_INPUT_REQUIRED'},400);
+    if(mediaUrl)safeRemoteUrl(mediaUrl);
+    if(inlineBase64 && !['image/jpeg','image/png'].includes(inlineMime))return json({ok:false,error:'MEDIA_TYPE_UNSUPPORTED'},422);
     const gov=await db.from('brain_ai_governance_registry')
       .select('model_id,provider,approved,lifecycle_status')
       .eq('tenant_id','canonical').eq('use_case_id',USE_CASE).maybeSingle();
@@ -120,13 +124,19 @@ Deno.serve(async(req)=>{
     const apiKey=clean((await db.rpc('bg_geheim',{p_naam:'ANTHROPIC_API_KEY'})).data);
     if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
 
-    const response=await fetch(mediaUrl,{redirect:'follow'});
-    if(!response.ok)throw new Error('MEDIA_FETCH_FAILED');
-    const ct=clean(response.headers.get('content-type')).split(';')[0].toLowerCase();
-    if(!['image/jpeg','image/png'].includes(ct))throw new Error('MEDIA_TYPE_UNSUPPORTED');
-    const len=Number(response.headers.get('content-length')||0);
-    if(len>MAX_BYTES)throw new Error('MEDIA_TOO_LARGE');
-    const bytes=new Uint8Array(await response.arrayBuffer());
+    let ct='',bytes:Uint8Array;
+    if(inlineBase64){
+      ct=inlineMime;
+      try{bytes=Uint8Array.from(atob(inlineBase64),c=>c.charCodeAt(0));}catch{throw new Error('MEDIA_BASE64_INVALID');}
+    }else{
+      const response=await fetch(mediaUrl,{redirect:'follow'});
+      if(!response.ok)throw new Error('MEDIA_FETCH_FAILED');
+      ct=clean(response.headers.get('content-type')).split(';')[0].toLowerCase();
+      if(!['image/jpeg','image/png'].includes(ct))throw new Error('MEDIA_TYPE_UNSUPPORTED');
+      const len=Number(response.headers.get('content-length')||0);
+      if(len>MAX_BYTES)throw new Error('MEDIA_TOO_LARGE');
+      bytes=new Uint8Array(await response.arrayBuffer());
+    }
     if(!bytes.length||bytes.length>MAX_BYTES)throw new Error('MEDIA_SIZE_INVALID');
     const size=dimensions(bytes,ct);
     if(!size)throw new Error('MEDIA_DIMENSIONS_UNREADABLE');
@@ -149,7 +159,7 @@ Deno.serve(async(req)=>{
       identity_class:clean(verdict.identity_class),evidence_method:'vision',
       placeholder_detected:verdict.placeholder_detected===true,visual_complete:verdict.visual_complete===true,
       daily_life_scene:verdict.daily_life_scene===true,confidence:Number(verdict.confidence)||0,
-      reason:clean(verdict.reason).slice(0,500),asset_url:mediaUrl,width:size.width,height:size.height,
+      reason:clean(verdict.reason).slice(0,500),asset_url:mediaUrl||null,width:size.width,height:size.height,
       format_verified:dimsOk,evidence_refs:[evidenceRef]
     };
     const providerPostId=clean(body.providerPostId)||`preflight:${hash.slice(0,24)}`;
