@@ -28,3 +28,11 @@ test('DataForSEO runtime is scheduled daily through existing scheduler authority
   assert.match(sql,/powerhouse-dataforseo-intelligence/);
   assert.match(sql,/powerhouse_daily_scheduler_token/);
 });
+
+test('successful empty DataForSEO runs still write canonical heartbeat evidence',()=>{
+  assert.match(fn,/dataforseo:run:/);
+  assert.match(fn,/p_external_event_id:'run-heartbeat'/);
+  assert.match(fn,/run_state:'success'/);
+  assert.match(fn,/empty_result:items\.length===0/);
+  assert.match(fn,/HEARTBEAT_STORE/);
+});
