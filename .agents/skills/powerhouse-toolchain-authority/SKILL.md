@@ -46,3 +46,13 @@ Every chat/agent must resolve tool choice from this skill before suggesting arch
 ## Prevention rule
 
 Any newly introduced active Make execution reference is a regression. Treat it as a policy defect and replace it with the canonical active connector/tool before terminal delivery.
+
+## Release/recovery lessons
+
+The 2026-09-18 production closure proved three additional invariants:
+
+1. **Production descendant readback is required.** A protected merge is not terminal evidence. Keep ownership open until the production provider reports the exact candidate or a verified descendant that contains it. Fingerprint: `delivery|production-parity|main-vs-deploy-sha-mismatch|toolchain-authority-v1`.
+2. **Recovery PR metadata is preflight input.** Before opening or running CI for a recovery candidate, include and validate `Obligation-ID`, `Delivery-Lane`, `Candidate-Type` and `Base-SHA`. Fingerprint: `delivery|recovery-pr|metadata-preflight-required-v1`.
+3. **Evidence paths must already be classified.** Before writing a new log/proof/document path, resolve it against Brain delivery membership. Prefer an existing classified canonical learning/ledger path; otherwise add classification deliberately in the same governed change. Fingerprint: `delivery|brain-classification|resync-proof-unclassified-path-v1`.
+
+Canonical machine-readable learning: `brain/learning/2026-09-18-toolchain-authority-release-learning-v1.json`.
