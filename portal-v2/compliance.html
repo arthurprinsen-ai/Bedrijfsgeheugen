@@ -37,6 +37,7 @@
 </main>
 <script type="module">
 import { assessCompliance, buildAuditSnapshot, loadComplianceControls } from './compliance-state.js';
+import { applyRegulatoryBaselineToPortalControls, loadRegulatorySourceState, regulatoryFrameworkDigest } from './regulatory-baseline.js';
 
 const FRAMEWORK_VERSIONS = Object.freeze({'AI Act':'EU 2024/1689 · consolidatie 2026-07-27','NIS2':'EU 2022/2555','NIS':'EU 2016/1148 · legacy'});
 const CATALOG = [
@@ -60,9 +61,11 @@ function overlay(catalog, filled) {
  const byId = new Map(filled.map(item => [item.id,item]));
  return catalog.map(base => ({ applicable:true,answered:false,measure:false,evidence:false,reviewed:false,approved:false,...base,...(byId.get(base.id)||{}) }));
 }
-const controls = overlay(CATALOG, loadComplianceControls());
+const regulatoryState = await loadRegulatorySourceState();
+const controls = applyRegulatoryBaselineToPortalControls(overlay(CATALOG, loadComplianceControls()), regulatoryState);
 const assessment = assessCompliance(controls);
-const snapshot = buildAuditSnapshot({organisation:localStorage.getItem('bg.organisation.name')||'Organisatie',frameworkVersions:FRAMEWORK_VERSIONS,assessment});
+const dynamicFrameworkVersions={...FRAMEWORK_VERSIONS,'AI Act':regulatoryFrameworkDigest(regulatoryState,'AI Act')||FRAMEWORK_VERSIONS['AI Act'],NIS2:regulatoryFrameworkDigest(regulatoryState,'NIS2')||FRAMEWORK_VERSIONS.NIS2};
+const snapshot = buildAuditSnapshot({organisation:localStorage.getItem('bg.organisation.name')||'Organisatie',frameworkVersions:dynamicFrameworkVersions,assessment});
 
 const $=id=>document.getElementById(id); const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 $('readiness').textContent=`${assessment.readiness}%`; $('score').style.setProperty('--score',assessment.readiness);
@@ -70,10 +73,10 @@ $('mCompletion').textContent=`${assessment.completion}%`; $('mMeasures').textCon
 const critical=assessment.findings.filter(x=>x.severity==='critical').length, high=assessment.findings.filter(x=>x.severity==='high').length;
 $('headline').textContent=assessment.readiness>=90?'Bijna audit-ready':assessment.readiness>=70?'Gerichte verbeteringen nodig':assessment.readiness>=40?'Materiële gaten aanwezig':'Dossier onvoldoende onderbouwd';
 $('riskSummary').textContent=`${assessment.findings.length} open bevindingen · ${critical} kritisch · ${high} hoog.`;
-$('frameworks').innerHTML=Object.entries(FRAMEWORK_VERSIONS).map(([name,version])=>{const s=assessment.byFramework[name]||{readiness:0,controls:0,openRisks:0};return `<article class="card framework"><div class="eyebrow">${esc(version)}</div><h3>${esc(name)}</h3><div class="bar"><i style="width:${s.readiness}%"></i></div><div class="meta"><span>${s.readiness}% readiness</span><span>${s.openRisks} open risico's</span></div></article>`}).join('');
+$('frameworks').innerHTML=Object.entries(FRAMEWORK_VERSIONS).map(([name,version])=>{const s=assessment.byFramework[name]||{readiness:0,controls:0,openRisks:0};return `<article class="card framework"><div class="eyebrow">${esc(dynamicFrameworkVersions[name]||version)}</div><h3>${esc(name)}</h3><div class="bar"><i style="width:${s.readiness}%"></i></div><div class="meta"><span>${s.readiness}% readiness</span><span>${s.openRisks} open risico's</span></div></article>`}).join('');
 $('risks').innerHTML=assessment.findings.length?assessment.findings.slice(0,12).map(r=>`<section class="risk ${r.severity}"><span class="badge">${esc(r.severity)} · ${esc(r.framework)}</span><h4>${esc(r.title)}</h4><p><strong>Waarom:</strong> ${esc(r.why)}</p><p><strong>Volgende stap:</strong> ${esc(r.nextStep)}</p><div class="detail"><div><strong>Bewijs nodig</strong><br>${esc(r.evidenceNeeded)}</div><div><strong>Eigenaar / deadline</strong><br>${esc(r.owner)}${r.dueDate?' · '+esc(r.dueDate):''}</div></div></section>`).join(''):'<div class="empty">Geen open risico’s op basis van het huidige dossier.</div>';
 $('nextSteps').innerHTML=snapshot.nextActions.length?snapshot.nextActions.slice(0,8).map((a,i)=>`<article><div><b>${esc(a)}</b><small>${i===0?'Hoogste actuele prioriteit op basis van risicoseverity en ontbrekend bewijs.':'Sluit een open control en verhoogt de audit traceability.'}</small></div></article>`).join(''):'<div class="empty">Geen vervolgstappen open.</div>';
-$('auditMeta').innerHTML=[['Snapshot',snapshot.snapshotId],['Gegenereerd',new Date(snapshot.generatedAt).toLocaleString('nl-NL')],['Organisatie',snapshot.organisation],['Scope',snapshot.scope],['AI Act',FRAMEWORK_VERSIONS['AI Act']],['NIS2',FRAMEWORK_VERSIONS.NIS2]].map(([k,v])=>`<div><strong>${esc(k)}</strong><br>${esc(v)}</div>`).join('');
+$('auditMeta').innerHTML=[['Snapshot',snapshot.snapshotId],['Gegenereerd',new Date(snapshot.generatedAt).toLocaleString('nl-NL')],['Organisatie',snapshot.organisation],['Scope',snapshot.scope],['AI Act',dynamicFrameworkVersions['AI Act']],['NIS2',dynamicFrameworkVersions.NIS2]].map(([k,v])=>`<div><strong>${esc(k)}</strong><br>${esc(v)}</div>`).join('');
 const yn=v=>v?'<span class="yes">Ja</span>':'<span class="no">Nee</span>';
 $('matrix').innerHTML=controls.map(c=>{const na=c.applicable===false;const validNa=na&&c.naReason&&c.naDecidedBy&&c.naDecidedAt;return `<tr><td>${esc(c.framework)}</td><td>${esc(c.id)} · ${esc(c.title)}</td><td>${yn(c.answered||validNa)}</td><td>${yn(c.measure||validNa)}</td><td>${yn(c.evidence||validNa)}</td><td>${yn(c.reviewed||validNa)}</td><td>${yn(c.approved||validNa)}</td><td>${validNa?'N.v.t. met besluit':(c.answered&&c.measure&&c.evidence&&c.reviewed&&c.approved?'Audit-ready':'Open')}</td></tr>`}).join('');
 

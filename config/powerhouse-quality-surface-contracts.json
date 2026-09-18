@@ -163,6 +163,13 @@
       "required": true
     },
     {
+      "id": "route:/compliance",
+      "type": "route",
+      "authority": "portal-v2/compliance.html",
+      "evidence_contract": "portal-v2/tests/regulatory-baseline.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:bg_bewijs",
       "type": "rpc",
       "authority": "supabase/functions/bg-notion-sync/index.ts",

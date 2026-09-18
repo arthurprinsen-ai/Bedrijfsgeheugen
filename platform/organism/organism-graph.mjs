@@ -58,8 +58,8 @@ export function sourceNodesForInput({inputType='',modelId='',statePath=''}={}){
  if(nodes.length===0)nodes.push('portal.state');
  return Object.freeze(uniq(nodes));
 }
-export function deriveOrganismEffects(input={}, {maxDepth=8,hopDecay=.94}={}){
- const starts=sourceNodesForInput(input),outgoing=new Map(),best=new Map(),queue=[];
+export function deriveOrganismEffects(input={}, {startNodes=null,maxDepth=8,hopDecay=.94}={}){
+ const starts=Object.freeze(uniq(Array.isArray(startNodes)&&startNodes.length?startNodes:sourceNodesForInput(input))),outgoing=new Map(),best=new Map(),queue=[];
  for(const relation of ORGANISM_RELATIONS){if(!outgoing.has(relation.from))outgoing.set(relation.from,[]);outgoing.get(relation.from).push(relation);}
  for(const node of starts){const item={domain:node,depth:0,impactScore:1,path:[node],reasons:[]};best.set(node,item);queue.push({node,depth:0,score:1,path:[node],reasons:[]});}
  while(queue.length){const current=queue.shift();if(current.depth>=maxDepth)continue;for(const edge of outgoing.get(current.node)||[]){if(current.path.includes(edge.to))continue;const depth=current.depth+1,score=current.score*Number(edge.weight||1)*(depth>1?hopDecay:1);const candidate={domain:edge.to,depth,impactScore:Number(score.toFixed(6)),path:[...current.path,edge.to],reasons:[...current.reasons,edge.reason]},existing=best.get(edge.to);if(!existing||candidate.impactScore>existing.impactScore){best.set(edge.to,candidate);queue.push({node:edge.to,depth,score:candidate.impactScore,path:candidate.path,reasons:candidate.reasons});}}}

@@ -1,0 +1,81 @@
+name: Regulatory Source Watch
+
+on:
+  schedule:
+    - cron: '17 3 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: regulatory-source-watch
+  cancel-in-progress: false
+
+jobs:
+  observe:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+      - name: Capture base
+        id: base
+        run: echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+      - name: Fetch authoritative regulatory sources
+        run: python3 tools/regulatory-source-monitor.py
+      - name: Persist immutable raw observations in Powerhouse Brain
+        env:
+          BG_PORTAL_EU_SUPABASE_URL: ${{ secrets.BG_PORTAL_EU_SUPABASE_URL }}
+          BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.BG_PORTAL_EU_SUPABASE_SERVICE_ROLE_KEY }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
+        run: python3 tools/regulatory-brain-ingest.py
+      - name: Preserve raw run evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: regulatory-source-raw-${{ github.run_id }}
+          path: artifacts/regulatory/raw
+          if-no-files-found: ignore
+          retention-days: 90
+      - name: Open governed source-state candidate
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_SHA: ${{ steps.base.outputs.sha }}
+        run: |
+          set -euo pipefail
+          if git diff --quiet -- data/regulatory-source-state.json; then
+            echo "No authoritative content change."
+            exit 0
+          fi
+          BRANCH="writer/regulatory-source-watch/${GITHUB_RUN_ID}"
+          git config user.name "bedrijfsgeheugen-bot"
+          git config user.email "arthur@bedrijfsgeheugen.nl"
+          git add data/regulatory-source-state.json
+          git commit -m "Regulatory source baseline observed"
+          HEAD_SHA=$(git rev-parse HEAD)
+          git push origin "HEAD:$BRANCH"
+          PR_URL=$(gh pr create --base main --head "$BRANCH" --title "Regulatory source candidate ${GITHUB_RUN_ID}" --body "$(cat <<EOF
+Obligation-ID: regulatory-source-watch-${GITHUB_RUN_ID}
+Delivery-Lane: data
+Candidate-Type: regulatory-source-observation
+Base-SHA: $BASE_SHA
+
+Writer-Lease-State: TERMINAL_DELIVERY
+Writer-Lease-Owner: regulatory-source-watch-${GITHUB_RUN_ID}
+Writer-Lease-Scope: data/regulatory-source-state.json
+Writer-Lease-Head: $HEAD_SHA
+Writer-Lease-Main-Epoch: $BASE_SHA
+Writer-Lease-Obligation: regulatory-source-watch-${GITHUB_RUN_ID}
+Writer-Lease-NonOwner-Action: DEFER
+Writer-Lease-Release: MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK
+
+Raw official-source evidence was persisted before this projection candidate.
+EOF
+)")
+          gh pr merge --auto --squash "$PR_URL"
