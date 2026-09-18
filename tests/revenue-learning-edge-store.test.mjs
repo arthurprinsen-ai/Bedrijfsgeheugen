@@ -11,3 +11,10 @@ test('edge store is service-token protected and bridges existing social/growth s
   for(const source of ['social_posts','social_metric_snapshots','growth_page_daily','growth_events','growth_outcomes']) assert.match(src,new RegExp(source));
   for(const action of ['list_projection_candidates','upsert_evidence','list_due_evidence','list_cohort','mark_evidence_evaluated','upsert_learning','list_current_learnings','record_application','reconcile_applications','record_decision','record_obligation','get_projection','put_projection']) assert.match(src,new RegExp(`action==='${action}'`));
 });
+
+test('revenue learning store gateway reconciles executed-action evidence obligations',()=>{
+  const src=fs.readFileSync('supabase/functions/revenue-learning-store/index.ts','utf8');
+  assert.match(src,/action==='reconcile_action_learning_obligations'/);
+  assert.match(src,/powerhouse_reconcile_action_learning_obligations_v1/);
+  assert.match(src,/not\('executed_at','is',null\)/);
+});
