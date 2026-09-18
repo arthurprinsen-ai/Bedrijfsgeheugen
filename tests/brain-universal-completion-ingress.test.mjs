@@ -60,6 +60,11 @@ test('beginMaterialRun creates a READY identity-bound immutable receipt', () => 
   assert.equal(receipt.preflightStatus, 'READY');
   assert.equal(receipt.runId, 'run-1');
   assert.equal(receipt.candidateId, 'sha-abc');
+  assert.equal(receipt.policyVersion, 'POWERHOUSE-UNIVERSAL-INGRESS-v1');
+  assert.equal(receipt.completionPolicyVersion, 'POWERHOUSE-UNIVERSAL-COMPLETION-v1');
+  assert.equal(receipt.skillVersion, 'POWERHOUSE-LEARNING-SKILL-INDEX-v1');
+  assert.equal(receipt.deliveryVersion, 'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1');
+  assert.match(receipt.skillProjectionDigest, /^[a-f0-9]{64}$/);
   assert.match(receipt.preflightDigest, /^[a-f0-9]{64}$/);
   assert.match(receipt.receiptDigest, /^[a-f0-9]{64}$/);
   assert.equal(Object.isFrozen(receipt), true);
@@ -119,4 +124,20 @@ test('Agent Fabric command runs canonical preflight before mutation and injects 
   assert.equal(result.runtimeIngressReceipt.runId, 'run-gw');
   assert.equal(result.runtimeIngressReceipt.candidateId, 'sha-gw');
   assert.match(result.runtimeIngressReceipt.preflightDigest, /^[a-f0-9]{64}$/);
+});
+
+
+test('completion rejects stale canonical version bindings', () => {
+  const ingressReceipt = beginMaterialRun({ rootDir, runId:'run-stale', actorKind:'agent', actorId:'agent:test', candidateId:'sha-stale', observedAt });
+  const original = fs.readFileSync(path.join(rootDir,'config/powerhouse-github-delivery-state-machine-v1.json'),'utf8');
+  const parsed = JSON.parse(original);
+  parsed.version = parsed.version + '-TEST-DRIFT';
+  const tempRoot = fs.mkdtempSync(path.join(process.cwd(), '.tmp-ingress-'));
+  fs.cpSync(rootDir,tempRoot,{recursive:true});
+  fs.writeFileSync(path.join(tempRoot,'config/powerhouse-github-delivery-state-machine-v1.json'),JSON.stringify(parsed,null,2));
+  assert.throws(
+    () => completeMaterialRun({ ingressReceipt, manifest:completeManifest({ runId:'run-stale', candidateId:'sha-stale' }), rootDir:tempRoot }),
+    /INGRESS_VERSION_STALE deliveryVersion/
+  );
+  fs.rmSync(tempRoot,{recursive:true,force:true});
 });
