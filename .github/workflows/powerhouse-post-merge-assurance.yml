@@ -1,0 +1,50 @@
+name: Powerhouse Post-Merge Assurance
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: powerhouse-post-merge-assurance-main
+  cancel-in-progress: true
+
+jobs:
+  assurance:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install dependencies once
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Run broad asynchronous assurance
+        run: |
+          set -euo pipefail
+          node scripts/brain/test-all.mjs
+          node --test tests/canonical-*.test.mjs tests/agent-fabric*.test.mjs tests/brain-*.test.mjs tests/supabase-*.test.mjs tests/cost-*.test.mjs
+          node --test portal-v2/tests/*.test.mjs
+          node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs
+          node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
+      - name: Record assurance result
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
+        run: |
+          mkdir -p .artifacts
+          printf '{"status":"%s","sha":"%s","mode":"POST_MERGE_ASYNC_ASSURANCE","run_id":"%s"}\n' "$JOB_STATUS" "$GITHUB_SHA" "$GITHUB_RUN_ID" > .artifacts/post-merge-assurance.json
+      - name: Upload assurance evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-post-merge-assurance-${{ github.sha }}
+          path: .artifacts/post-merge-assurance.json
+          if-no-files-found: warn
+          retention-days: 14
