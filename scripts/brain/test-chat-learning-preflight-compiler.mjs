@@ -48,3 +48,13 @@ assert.match(agentsContract, /node scripts\/brain\/chat-learning-preflight\.mjs/
 assert.match(agentsContract, /status: READY/);
 assert.match(agentsContract, /CHAT_LEARNING_PREFLIGHT_FAILED/);
 console.log(`PASS chat-learning preflight compiler v2: ${packet.sources.length} sources, ${packet.totalBytes} packet bytes, ${packet.sourceBytes} source bytes`);
+
+
+import fs from 'node:fs';
+
+test('preflight source budget leaves capacity for durable learning growth', () => {
+  const source = fs.readFileSync(new URL('./chat-learning-preflight.mjs', import.meta.url), 'utf8');
+  const match = source.match(/const DEFAULT_MAX_SOURCES = (\d+);/);
+  assert.ok(match, 'DEFAULT_MAX_SOURCES missing');
+  assert.ok(Number(match[1]) >= 96, 'source budget must leave headroom for durable learning growth');
+});
