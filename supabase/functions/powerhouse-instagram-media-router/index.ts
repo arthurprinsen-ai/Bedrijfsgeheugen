@@ -73,6 +73,19 @@ Deno.serve(async req=>{
    proof={exact_final_media_proven:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:'carousel',media_provider:'mixed',final_media_sha256:mh,carousel_manifest:{slides:proven},instagram_visual:proven[0].proof.visual};
   } else return json({ok:false,error:'POST_TYPE_UNSUPPORTED'},422);
 
+  const proofFingerprint='instagram-router-proof:'+runDate+':'+clean(proof.final_media_sha256);
+  const proofRow={
+    fingerprint:proofFingerprint,publication_date:runDate,channel:'instagram',provider:clean(proof.media_provider||provider),
+    provider_post_id:'preflight:'+clean(proof.final_media_sha256).slice(0,24),provider_external_url:null,
+    media_url:clean(proof.media_url)||clean(proof.carousel_manifest?.slides?.[0]?.asset_url)||null,provider_status:'prepublish_verified',
+    canonical_copy:null,exact_copy_verified:false,exact_media_retrievable:true,exact_media_sha256:clean(proof.final_media_sha256),
+    exact_media_verified_at:new Date().toISOString(),identity_contract:'mira-visible-identity-vision-v1',identity_gate_result:'PASS',
+    proof_lineage:{contract:'instagram-media-provider-routing-preproof-v1',media_type:proof.media_type,media_source:proof.media_provider,instagram_visual:proof.instagram_visual,carousel_manifest:proof.carousel_manifest||null,exact_final_media_proven:true},
+    failure_reason:null,updated_at:new Date().toISOString()
+  };
+  const pw=await db.from('powerhouse_media_proof_evidence_v1').upsert(proofRow,{onConflict:'fingerprint'});
+  if(pw.error)throw new Error('AGGREGATE_PROOF_WRITE_FAILED');
+  proof.proof_fingerprint=proofFingerprint;
   const row={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:'PROOF_VERIFIED',required_provider:policy?.required_provider||null,selected_provider:provider,asset_manifest:manifest,proof_manifest:proof,provider_connection_state:'READY',attempts:(job?.attempts||0)+1,last_error:null,next_action:'Proof verified; canonical orchestrator/publisher may use this exact manifest only.',updated_at:new Date().toISOString()};
   const jw=await db.from('powerhouse_instagram_media_jobs_v1').upsert(row,{onConflict:'tenant_id,publication_date,channel'});if(jw.error)throw new Error('MEDIA_JOB_WRITE_FAILED');
   const evidence={...(ob?.evidence||{}),...proof,instagram_media_proof:proof,provider_routing_policy:policy,media_job_status:'PROOF_VERIFIED'};
