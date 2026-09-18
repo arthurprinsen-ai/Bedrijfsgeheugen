@@ -70,6 +70,29 @@ jobs:
           echo "::error::PRODUCTION_READBACK_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
           exit 78
 
+      - name: Derive exact Supabase migration identities
+        id: supabase-migrations
+        env:
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { appendFile } from 'node:fs/promises';
+          const merge=process.env.MERGE_SHA;
+          const files=execFileSync('git',['diff','--name-only',`${merge}^1`,merge],{encoding:'utf8'})
+            .split(/\r?\n/).filter(Boolean);
+          const migrations=[];
+          for(const path of files){
+            const m=path.match(/^supabase\/migrations\/([0-9]{14})_([a-z0-9_]+)\.sql$/);
+            if(m) migrations.push({version:m[1],name:m[2]});
+          }
+          const required=migrations.length>0;
+          await appendFile(process.env.GITHUB_OUTPUT,`required=${required}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`expected_json=${JSON.stringify(migrations)}\n`);
+          console.log(JSON.stringify({required,migrations},null,2));
+          NODE
+
       - name: Determine whether skill projection is due
         id: projection-scope
         env:
@@ -116,6 +139,8 @@ jobs:
           PROJECTION_REQUIRED: ${{ steps.projection-scope.outputs.required }}
           PROJECTION_RUN_ID: ${{ steps.projection.outputs.run_id }}
           TERMINAL_WORKFLOW_RUN_ID: ${{ github.run_id }}
+          SUPABASE_MIGRATION_REQUIRED: ${{ steps.supabase-migrations.outputs.required }}
+          SUPABASE_EXPECTED_MIGRATIONS: ${{ steps.supabase-migrations.outputs.expected_json }}
         run: |
           set -euo pipefail
           audience="powerhouse-control-plane-v1"
@@ -135,7 +160,7 @@ jobs:
             projection_json="null"
           fi
 
-          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "${PRODUCTION_RUN_ID}"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             '{
+          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "${PRODUCTION_RUN_ID}"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             --argjson supabase_migration_required "$([ "${SUPABASE_MIGRATION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson supabase_expected_migrations "${SUPABASE_EXPECTED_MIGRATIONS:-[]}"             '{
               obligation_id:$obligation_id,
               candidate_head_sha:$candidate_head_sha,
               main_sha:$main_sha,
@@ -146,7 +171,9 @@ jobs:
               learning_status:$learning_status,
               policy_version:$policy_version,
               skill_version:$skill_version,
-              github_workflow_run_id:$github_workflow_run_id
+              github_workflow_run_id:$github_workflow_run_id,
+              supabase_migration_required:$supabase_migration_required,
+              supabase_expected_migrations:$supabase_expected_migrations
             }' > /tmp/control-plane-terminal-evidence.json
 
           curl -fsSL             --retry 3             --retry-all-errors             --connect-timeout 10             --max-time 30             -H "Authorization: Bearer ${oidc_token}"             -H "Content-Type: application/json"             --data-binary @/tmp/control-plane-terminal-evidence.json             "https://www.bedrijfsgeheugen.nl/api/powerhouse/control-plane/evidence"             -o /tmp/control-plane-terminal-readback.json
@@ -157,7 +184,14 @@ jobs:
             .durable_readback_verified == true and
             .obligation_id == env.OBLIGATION_ID and
             .candidate_head_sha == env.HEAD_SHA and
-            .main_sha == env.MERGE_SHA
+            .main_sha == env.MERGE_SHA and
+            (
+              env.SUPABASE_MIGRATION_REQUIRED != "true" or
+              (
+                .supabase_migration_readback.required == true and
+                .supabase_migration_readback.all_matched == true
+              )
+            )
           ' /tmp/control-plane-terminal-readback.json >/dev/null || {
             cat /tmp/control-plane-terminal-readback.json
             echo "::error::CONTROL_PLANE_DURABLE_READBACK_REJECTED"
