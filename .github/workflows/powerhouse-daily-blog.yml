@@ -1,0 +1,88 @@
+name: Powerhouse daily blog from Supabase
+
+on:
+  schedule:
+    - cron: '35 5 * * *'
+    - cron: '35 6 * * *'
+  workflow_dispatch:
+    inputs:
+      business_date:
+        description: 'Europe/Amsterdam business date (YYYY-MM-DD); empty=today'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: powerhouse-daily-blog
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - name: Resolve Europe/Amsterdam delivery window
+        id: day
+        env:
+          REQUESTED_DATE: ${{ github.event.inputs.business_date || '' }}
+        run: |
+          set -euo pipefail
+          local_now="$(TZ=Europe/Amsterdam date +'%H:%M')"
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$local_now" != "07:35" ]; then
+            echo "run=false" >> "$GITHUB_OUTPUT"
+            echo "Outside canonical 07:35 Europe/Amsterdam window: $local_now"
+            exit 0
+          fi
+          date="${REQUESTED_DATE:-$(TZ=Europe/Amsterdam date +%F)}"
+          echo "run=true" >> "$GITHUB_OUTPUT"
+          echo "date=$date" >> "$GITHUB_OUTPUT"
+
+      - name: Render canonical Powerhouse artifact
+        if: steps.day.outputs.run == 'true'
+        id: render
+        run: |
+          set -euo pipefail
+          python3 scripts/publish_powerhouse_blog_artifact.py "${{ steps.day.outputs.date }}" | tee /tmp/powerhouse-blog.json
+          if grep -q '^NO_ACTION:' /tmp/powerhouse-blog.json; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          slug="$(python3 - <<'PY'
+          import json
+          print(json.load(open('/tmp/powerhouse-blog.json'))['slug'])
+          PY
+          )"
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "slug=$slug" >> "$GITHUB_OUTPUT"
+
+      - name: Create exactly one protected candidate
+        if: steps.render.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DATE: ${{ steps.day.outputs.date }}
+          SLUG: ${{ steps.render.outputs.slug }}
+        run: |
+          set -euo pipefail
+          branch="automation/powerhouse-blog-$DATE"
+          git config user.name "Powerhouse Daily Publisher"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -B "$branch"
+          git add "blog/$SLUG/index.html" blog/index.html blog/rss.xml sitemap.xml
+          git commit -m "blog: publish Powerhouse daily artifact $DATE"
+          git push --force-with-lease origin "HEAD:$branch"
+
+          pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$pr" ]; then
+            gh pr create --base main --head "$branch" \
+              --title "Powerhouse daily blog $DATE" \
+              --body "Canonical Supabase-first daily blog. Source: powerhouse_content_artifacts. One candidate per business date. Required checks, protected merge, Netlify and public readback remain authoritative."
+            pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number')"
+          fi
+          gh pr merge "$pr" --auto --squash
+          echo "PR=$pr slug=$SLUG auto-merge enabled"
