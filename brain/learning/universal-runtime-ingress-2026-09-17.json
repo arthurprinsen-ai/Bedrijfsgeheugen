@@ -82,5 +82,16 @@
     "open_obligations": []
   },
   "boundary": "Repository code cannot alter the native ChatGPT product runtime. The enforceable invariant is that any material Powerhouse mutation invoked from such a chat must cross the managed ingress/control-plane before mutation.",
-  "reuse_rule": "Future agent/chat runtime work must distinguish policy presence, preflight execution proof, mutation admission proof and terminal completion proof; never infer one from another. Preserve one canonical candidate lineage; when main advances, rebase or reconstruct the exact scoped candidate on current main, satisfy current delivery-hygiene metadata, rerun exact-head protected gates, merge with expected-head identity, read back main, and only then assign LIVE & BEWEZEN."
+  "reuse_rule": "Future agent/chat runtime work must distinguish policy presence, preflight execution proof, mutation admission proof and terminal completion proof; never infer one from another. Preserve one canonical candidate lineage; when main advances, rebase or reconstruct the exact scoped candidate on current main, satisfy current delivery-hygiene metadata, rerun exact-head protected gates, merge with expected-head identity, read back main, and only then assign LIVE & BEWEZEN. Canonical learning writeback must itself be protected, merged and read back on a later main state; once that persistence proof exists, treat repeated 'borg de borging' requests as idempotent unless material evidence or policy changed.",
+  "writeback_verification": {
+    "status": "CANONICAL_WRITEBACK_VERIFIED",
+    "canonical_writeback_pr": 1977,
+    "canonical_writeback_candidate_sha": "b725f505c79354cf62a4d3240c8a2ffb7071fb3a",
+    "canonical_writeback_merge_sha": "5a9da2e12220bd38966ecb9426f13d6d411ac407",
+    "canonical_writeback_main_readback": true,
+    "reverified_on_later_main_sha": "cbaf6c123c697cacc769fa76ba2303af5e58fd51",
+    "later_main_context": "PR #1989 subsequently made chats and agents intrinsic Powerhouse loop nodes; this learning record remained present on main after that reinforcement.",
+    "learned_rule": "Definition of Done for material learning includes protected writeback plus later-main readback. A learning record is not merely 'written' when it exists on a feature branch or open PR.",
+    "recursive_writeback_rule": "Once a canonical learning record has protected-merge evidence and later-main persistence proof, do not create further meta-writebacks solely to prove that proof. Reopen only when material evidence, behavior, contract, root cause or prevention changes."
+  }
 }
