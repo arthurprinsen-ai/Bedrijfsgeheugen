@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const sql = fs.readFileSync('supabase/migrations/20260918094000_runtime_health_truth_v1.sql','utf8');
+// CI recovery: re-evaluate against current merge base.
 
 test('edge-function health migrates the legacy freshness predicate to current evidence only',()=>{
   const oldSignature=/a\.aangeroepen_op>now\(\)-interval ''26 hours''/g;
