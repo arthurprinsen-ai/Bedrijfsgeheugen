@@ -1,0 +1,62 @@
+{
+  "version": "1.0",
+  "date": "2026-09-18",
+  "fingerprint": "powerhouse|toolchain-authority|release-learning|v1",
+  "parent_fingerprint": "powerhouse|toolchain-authority|composio-no-make|v1",
+  "type": "RECOVERY_LEARNING",
+  "status": "PROVEN",
+  "incident": {
+    "summary": "Toolchain authority merged successfully, but production readback initially lagged main. The first recovery candidate then failed admission because required delivery metadata was missing, and its next revision failed Brain planning because the resync proof used an unclassified docs/ops path.",
+    "production_source_merge": "461fab635474548194090a7d5045fef42f4a590a",
+    "recovery_pr": 2141,
+    "recovery_merge": "fd594b6e3118f089755e27785df8e01123c2e6a6"
+  },
+  "root_causes": [
+    {
+      "fingerprint": "delivery|production-parity|main-vs-deploy-sha-mismatch|toolchain-authority-v1",
+      "cause": "Protected merge and Netlify production promotion are asynchronous; a merge on main is not sufficient evidence that production has consumed that descendant."
+    },
+    {
+      "fingerprint": "delivery|recovery-pr|metadata-preflight-required-v1",
+      "cause": "A recovery PR was created without canonical Obligation-ID, Delivery-Lane, Candidate-Type and Base-SHA metadata required by the admission gate."
+    },
+    {
+      "fingerprint": "delivery|brain-classification|resync-proof-unclassified-path-v1",
+      "cause": "A recovery proof was initially written under docs/ops, which was not registered in Brain delivery classification and therefore correctly failed closed."
+    }
+  ],
+  "fixes": [
+    "Keep delivery ownership open until provider production readback proves a production commit that is the exact candidate or a verified descendant containing the change.",
+    "Before opening any recovery PR, populate canonical delivery metadata in the PR body and validate it before spending CI.",
+    "Before creating a new proof/log/document path, resolve it against Brain delivery membership; use an existing classified canonical path unless a governed classification change is intentionally part of the same candidate."
+  ],
+  "prevention_rules": [
+    "PRODUCTION_DESCENDANT_READBACK_REQUIRED",
+    "RECOVERY_PR_METADATA_PREFLIGHT_BEFORE_CI",
+    "CLASSIFY_EVIDENCE_PATH_BEFORE_WRITE"
+  ],
+  "evidence": {
+    "original_pr": 2134,
+    "recovery_pr": 2141,
+    "required_gate": "success",
+    "brain_gate": "success",
+    "notes": "Initial recovery failures were fail-closed governance signals and were corrected without bypassing protection."
+  },
+  "canonical_toolchain": [
+    "Composio",
+    "GitHub",
+    "Netlify",
+    "Notion",
+    "Supabase",
+    "Tavily",
+    "Buffer",
+    "DataForSEO",
+    "OpenArt",
+    "Placid",
+    "Google Search",
+    "Google Analytics"
+  ],
+  "retired": [
+    "Make"
+  ]
+}
