@@ -33,7 +33,17 @@
     "Continue after merge/deploy through production/provider readback, outcome/value verification, learning/prevention writeback and next-agent discoverability before terminal completion.",
     "Before any repository write, read config/branch-delivery-ownership-guard.json through mandatory chat-learning preflight and inspect the canonical PR writer lease.",
     "If Writer-Lease-State is TERMINAL_DELIVERY and this execution node is not the Writer-Lease-Owner, do not mutate the branch; defer and reuse the existing lineage.",
-    "The terminal lease remains active through exact-head gates, protected promotion, production/provider readback and learning writeback."
+    "The terminal lease remains active through exact-head gates, protected promotion, production/provider readback and learning writeback.",
+    "Treat obligation + canonical branch + exact head SHA as delivery authority; PR numbers are transport metadata, not canonical lineage identity.",
+    "During TERMINAL_DELIVERY require one immutable Writer-Lease-Head and defer every non-owner mutation until lease release or explicit RECOVERY rebinding.",
+    "Use progress-aware CI recovery: never cancel healthy current-head in-progress work from head age alone; recover only missing starts or genuinely stale queued critical work.",
+    "For retries on one exact head, use only the newest Required attempt and newest BRAIN attempt as current authority; older cancelled or failed attempts remain audit evidence only.",
+    "Do not let optional or unrelated queued workflows trigger Required/BRAIN redispatch.",
+    "Every new executable regression path must receive delivery-lane classifier co-change in the same candidate before expensive CI.",
+    "When current main moves without path/contract overlap and the candidate remains mergeable, preserve the tested candidate instead of rebuilding merely to chase main.",
+    "When reconciliation with main is required, preserve the full current-main union from the merge-base; latest-commit-only overlay is forbidden.",
+    "Final mutable identities are integration-owned: allocate Supabase migration versions at rolling integration and verify uniqueness before expensive CI.",
+    "If a protected merge occurred before intended candidate gates were terminal, treat it as a governance incident: immediately prove post-merge main/provider readback and persist a prevention rule requiring terminal gates before future promotion."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
@@ -48,7 +58,16 @@
     "telling the user to merge or deploy an already-authorized green candidate",
     "stopping at preview or merge-ready when production promotion is within existing authority",
     "mutating a canonical branch owned by another TERMINAL_DELIVERY writer lease",
-    "adding opportunistic improvements while exact-head terminal gates are running"
+    "adding opportunistic improvements while exact-head terminal gates are running",
+    "using PR number alone as canonical delivery identity",
+    "cancelling healthy current-head in-progress work solely because the branch or PR is old",
+    "letting an older cancelled Required/BRAIN attempt override a newer healthy attempt on the same exact head",
+    "restarting Required/BRAIN because an unrelated optional workflow is queued",
+    "adding an executable regression test without classifier co-change",
+    "rebuilding a mergeable candidate solely because unrelated main changed",
+    "overlaying only the latest main commit during reconciliation instead of preserving the full current-main union",
+    "allocating final Supabase migration timestamps independently in parallel workers",
+    "promoting before the intended exact-head Required and BRAIN gates are terminal green"
   ],
   "canonical_evidence": {
     "obligation_id": "powerhouse-structural-gap-closure-v2",
@@ -63,7 +82,9 @@
     "data_spine_watchdog_state": "GREEN",
     "dataforseo_edge_function_version": 5,
     "self_production_promotion_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json",
-    "terminal_writer_lease_learning": "brain/learning/2026-09-18-terminal-writer-lease-v1.json"
+    "terminal_writer_lease_learning": "brain/learning/2026-09-18-terminal-writer-lease-v1.json",
+    "fast_delivery_incident_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json",
+    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md"
   },
   "consumers": [
     "chat-learning-preflight",
