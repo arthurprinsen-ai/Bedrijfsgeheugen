@@ -453,7 +453,7 @@ end
 $function$;
 
 create or replace view public.powerhouse_control_plane_status_v1
-with (security_invoker = on)
+with (security_invoker = true)
 as
 select
   bo.id as obligation_id,
@@ -562,11 +562,11 @@ $function$;
 comment on view public.powerhouse_control_plane_status_v1 is
   'Projection over canonical Brain obligations + delivery evidence. No parallel truth store.';
 
-revoke all on function public.powerhouse_control_plane_admit_v1(text,text,text,text,text,text,jsonb) from public, anon, authenticated;
-revoke all on function public.powerhouse_control_plane_record_stage_v1(uuid,uuid,text,text,text,text,text,text,text,text,text,text,jsonb) from public, anon, authenticated;
-revoke all on function public.powerhouse_control_plane_close_v1(uuid,uuid,text,text,jsonb) from public, anon, authenticated;
-revoke all on function public.powerhouse_control_plane_selftest_v1() from public, anon, authenticated;
-revoke all on function public.powerhouse_learning_compiler_route_v1(text,text,boolean) from public, anon, authenticated;
+revoke execute on function public.powerhouse_control_plane_admit_v1(text,text,text,text,text,text,jsonb) from public, anon, authenticated;
+revoke execute on function public.powerhouse_control_plane_record_stage_v1(uuid,uuid,text,text,text,text,text,text,text,text,text,text,jsonb) from public, anon, authenticated;
+revoke execute on function public.powerhouse_control_plane_close_v1(uuid,uuid,text,text,jsonb) from public, anon, authenticated;
+revoke execute on function public.powerhouse_control_plane_selftest_v1() from public, anon, authenticated;
+revoke execute on function public.powerhouse_learning_compiler_route_v1(text,text,boolean) from public, anon, authenticated;
 
 grant execute on function public.powerhouse_control_plane_admit_v1(text,text,text,text,text,text,jsonb) to service_role;
 grant execute on function public.powerhouse_control_plane_record_stage_v1(uuid,uuid,text,text,text,text,text,text,text,text,text,text,jsonb) to service_role;
