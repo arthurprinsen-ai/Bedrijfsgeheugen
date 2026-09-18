@@ -1,9 +1,17 @@
 name: Obligation Terminal Closure
 
+run-name: Obligation Terminal Closure PR #${{ github.event.pull_request.number || inputs.pr_number }}
+
 on:
   pull_request:
     branches: [main]
     types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Merged PR number to resume on the same canonical obligation lineage
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -12,17 +20,41 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: obligation-terminal-closure-${{ github.event.pull_request.number }}
+  group: obligation-terminal-closure-${{ github.event.pull_request.number || inputs.pr_number }}
   cancel-in-progress: false
 
 jobs:
   close-obligation:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve canonical merged PR context
+        id: context
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          pr_number="${EVENT_PR_NUMBER:-${INPUT_PR_NUMBER:-}}"
+          [[ "$pr_number" =~ ^[0-9]+$ ]] || { echo "::error::TERMINAL_PR_NUMBER_INVALID"; exit 78; }
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}")"
+          [ "$(jq -r '.merged' <<<"$pr")" = "true" ] || { echo "::error::TERMINAL_PR_NOT_MERGED:$pr_number"; exit 78; }
+          candidate_sha="$(jq -r '.head.sha // empty' <<<"$pr")"
+          merge_sha="$(jq -r '.merge_commit_sha // empty' <<<"$pr")"
+          [[ "$candidate_sha" =~ ^[0-9a-f]{40}$ && "$merge_sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::TERMINAL_PR_IDENTITY_INVALID"; exit 78; }
+          body_b64="$(jq -r '.body // ""' <<<"$pr" | base64 -w0)"
+          {
+            echo "pr_number=$pr_number"
+            echo "candidate_sha=$candidate_sha"
+            echo "merge_sha=$merge_sha"
+            echo "body_b64=$body_b64"
+          } >> "$GITHUB_OUTPUT"
+          echo "TERMINAL_CONTEXT_RESOLVED:pr=$pr_number candidate=$candidate_sha merge=$merge_sha"
+
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: ${{ steps.context.outputs.merge_sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v5
@@ -32,13 +64,14 @@ jobs:
       - name: Verify machine-readable obligation and main containment
         id: identity
         env:
-          PR_BODY: ${{ github.event.pull_request.body }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_BODY_B64: ${{ steps.context.outputs.body_b64 }}
+          HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           git fetch origin main --no-tags
           git merge-base --is-ancestor "$MERGE_SHA" origin/main
+          export PR_BODY="$(printf '%s' "$PR_BODY_B64" | base64 -d)"
           node --input-type=module - <<'NODE'
           import { appendFile } from 'node:fs/promises';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
@@ -51,29 +84,74 @@ jobs:
         id: production
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
+          source_run_id=""
+          source_conclusion=""
           for attempt in $(seq 1 42); do
             runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/production-release-readback.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=20")"
-            run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            source_run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
             status="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
-            conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
-            if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
-              [ "$conclusion" = "success" ] || { echo "::error::PRODUCTION_READBACK_FAILED:run=$run_id conclusion=$conclusion"; exit 78; }
-              echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
-              echo "PRODUCTION_READBACK_PROVEN:$run_id"
-              exit 0
+            source_conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
+            if [ -n "$source_run_id" ] && [ "$status" = "completed" ]; then
+              if [ "$source_conclusion" = "success" ]; then
+                echo "mode=canonical_run" >> "$GITHUB_OUTPUT"
+                echo "run_id=$source_run_id" >> "$GITHUB_OUTPUT"
+                echo "observed_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
+                echo "PRODUCTION_READBACK_PROVEN:$source_run_id"
+                exit 0
+              fi
+              if [ "$source_conclusion" != "cancelled" ]; then
+                echo "::error::PRODUCTION_READBACK_FAILED:run=$source_run_id conclusion=$source_conclusion"
+                exit 78
+              fi
+              break
             fi
             sleep 10
           done
-          echo "::error::PRODUCTION_READBACK_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
+
+          echo "Canonical production readback unavailable/cancelled; proving current live production contains merge ${MERGE_SHA}."
+          for attempt in $(seq 1 36); do
+            nonce="${MERGE_SHA}-descendant-${attempt}-$(date +%s)"
+            if curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/release.json?bg_terminal_recovery=${nonce}" -o /tmp/release.json               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/?bg_terminal_recovery=${nonce}" -o /tmp/runtime.html               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/api/connectors/readiness?bg_terminal_recovery=${nonce}" -o /tmp/readiness.json; then
+              read -r observed deploy_id context contract authority < <(node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          const release=JSON.parse(readFileSync('/tmp/release.json','utf8'));
+          const readiness=JSON.parse(readFileSync('/tmp/readiness.json','utf8'));
+          const sha=String(release.commit_ref||'').trim();
+          const deploy=String(release.deploy_id||'').trim();
+          if(!/^[0-9a-f]{40}$/i.test(sha)) process.exit(2);
+          if(!deploy) process.exit(3);
+          if(release.context!=='production') process.exit(4);
+          if(release.contract!=='BRAIN-DELIVERY-v2'||release.production_authority!=='BG169') process.exit(5);
+          if(!readiness?.sources||!readiness?.targets||readiness?.extractor?.configured!==true) process.exit(6);
+          process.stdout.write([sha,deploy,release.context,release.contract,release.production_authority].join(' '));
+          NODE
+              ) || true
+              if [ -n "${observed:-}" ] && [ -s /tmp/runtime.html ]; then
+                git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
+                if git merge-base --is-ancestor "$MERGE_SHA" "$observed"; then
+                  echo "mode=descendant_live" >> "$GITHUB_OUTPUT"
+                  echo "run_id=" >> "$GITHUB_OUTPUT"
+                  echo "source_run_id=${source_run_id}" >> "$GITHUB_OUTPUT"
+                  echo "observed_sha=$observed" >> "$GITHUB_OUTPUT"
+                  echo "deploy_id=$deploy_id" >> "$GITHUB_OUTPUT"
+                  echo "verified=true" >> "$GITHUB_OUTPUT"
+                  echo "PRODUCTION_DESCENDANT_READBACK_PROVEN:merge=$MERGE_SHA observed=$observed deploy=$deploy_id source_run=${source_run_id:-none}"
+                  exit 0
+                fi
+              fi
+            fi
+            sleep 10
+          done
+          echo "::error::PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN:$MERGE_SHA"
           exit 78
 
       - name: Determine whether skill projection is due
         id: projection-scope
         env:
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           files="$(git diff --name-only "${MERGE_SHA}^1" "$MERGE_SHA" || true)"
@@ -88,7 +166,7 @@ jobs:
         id: projection
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           for attempt in $(seq 1 30); do
@@ -110,7 +188,7 @@ jobs:
       - name: Derive exact Supabase production migration identities
         id: migration-scope
         env:
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           node --input-type=module - <<'NODE'
@@ -144,9 +222,13 @@ jobs:
       - name: Persist canonical Brain terminal evidence before terminal claim
         env:
           OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
           PRODUCTION_RUN_ID: ${{ steps.production.outputs.run_id }}
+          PRODUCTION_READBACK_MODE: ${{ steps.production.outputs.mode }}
+          PRODUCTION_OBSERVED_SHA: ${{ steps.production.outputs.observed_sha }}
+          PRODUCTION_DEPLOY_ID: ${{ steps.production.outputs.deploy_id }}
+          PRODUCTION_READBACK_VERIFIED: ${{ steps.production.outputs.verified }}
           PROJECTION_REQUIRED: ${{ steps.projection-scope.outputs.required }}
           PROJECTION_RUN_ID: ${{ steps.projection.outputs.run_id }}
           TERMINAL_WORKFLOW_RUN_ID: ${{ github.run_id }}
@@ -171,11 +253,15 @@ jobs:
             projection_json="null"
           fi
 
-          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "${PRODUCTION_RUN_ID}"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             --argjson migration_readback_required "$([ "${MIGRATION_READBACK_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson expected_migrations "${EXPECTED_MIGRATIONS:-[]}"             '{
+          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "$([ -n "${PRODUCTION_RUN_ID:-}" ] && echo "${PRODUCTION_RUN_ID}" || echo null)"             --arg production_readback_mode "${PRODUCTION_READBACK_MODE:-canonical_run}"             --arg production_observed_sha "${PRODUCTION_OBSERVED_SHA:-${MERGE_SHA}}"             --arg production_deploy_id "${PRODUCTION_DEPLOY_ID:-}"             --argjson production_readback_verified "$([ "${PRODUCTION_READBACK_VERIFIED:-false}" = "true" ] && echo true || echo false)"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             --argjson migration_readback_required "$([ "${MIGRATION_READBACK_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson expected_migrations "${EXPECTED_MIGRATIONS:-[]}"             '{
               obligation_id:$obligation_id,
               candidate_head_sha:$candidate_head_sha,
               main_sha:$main_sha,
+              production_readback_mode:$production_readback_mode,
               production_readback_run_id:$production_readback_run_id,
+              production_observed_sha:$production_observed_sha,
+              production_deploy_id:(if ($production_deploy_id|length)>0 then $production_deploy_id else null end),
+              production_readback_verified:$production_readback_verified,
               skill_projection_required:$skill_projection_required,
               skill_projection_run_id:$skill_projection_run_id,
               outcome_verified:true,
@@ -196,6 +282,8 @@ jobs:
             .obligation_id == env.OBLIGATION_ID and
             .candidate_head_sha == env.HEAD_SHA and
             .main_sha == env.MERGE_SHA and
+            .production_readback_verified == true and
+            .production_observed_sha == env.PRODUCTION_OBSERVED_SHA and
             (
               env.MIGRATION_READBACK_REQUIRED != "true" or
               (.migration_readback_required == true and .migration_readback_verified == true)
@@ -212,12 +300,15 @@ jobs:
       - name: Persist terminal evidence and release writer lease
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          PR_BODY_B64: ${{ steps.context.outputs.body_b64 }}
+          HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
           OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
           PRODUCTION_RUN_ID: ${{ steps.production.outputs.run_id }}
+          PRODUCTION_READBACK_MODE: ${{ steps.production.outputs.mode }}
+          PRODUCTION_OBSERVED_SHA: ${{ steps.production.outputs.observed_sha }}
+          PRODUCTION_DEPLOY_ID: ${{ steps.production.outputs.deploy_id }}
           PROJECTION_REQUIRED: ${{ steps.projection-scope.outputs.required }}
           PROJECTION_RUN_ID: ${{ steps.projection.outputs.run_id }}
         run: |
@@ -226,14 +317,18 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { writeFileSync } from 'node:fs';
-          const body=String(process.env.PR_BODY||'');
-          const stripped=body.split(/\r?\n/).filter(line=>!/^(Writer-Lease-State|Terminal-State|Terminal-Main-SHA|Terminal-Production-Readback-Run|Terminal-Skill-Projection-Run):/i.test(line)).join('\n').trimEnd();
+          const body=Buffer.from(String(process.env.PR_BODY_B64||''),'base64').toString('utf8');
+          const stripped=body.split(/\r?\n/).filter(line=>!/^(Writer-Lease-State|Terminal-State|Terminal-Main-SHA|Terminal-Production-Readback(?:-Run)?|Terminal-Skill-Projection-Run):/i.test(line)).join('\n').trimEnd();
           const projection=process.env.PROJECTION_REQUIRED==='true' ? process.env.PROJECTION_RUN_ID : 'NOT_APPLICABLE';
+          const mode=process.env.PRODUCTION_READBACK_MODE||'canonical_run';
+          const productionEvidence=mode==='canonical_run'
+            ? `run:${process.env.PRODUCTION_RUN_ID}`
+            : `descendant:${process.env.PRODUCTION_OBSERVED_SHA}:deploy:${process.env.PRODUCTION_DEPLOY_ID}`;
           const terminal=[
             'Writer-Lease-State: RELEASED',
             'Terminal-State: LIVE_BEWEZEN',
             `Terminal-Main-SHA: ${process.env.MERGE_SHA}`,
-            `Terminal-Production-Readback-Run: ${process.env.PRODUCTION_RUN_ID}`,
+            `Terminal-Production-Readback: ${productionEvidence}`,
             `Terminal-Skill-Projection-Run: ${projection}`
           ].join('\n');
           const next=`${stripped}\n\n${terminal}\n`;
@@ -244,7 +339,10 @@ jobs:
             obligation_id:process.env.OBLIGATION_ID,
             candidate_head_sha:process.env.HEAD_SHA,
             main_merge_sha:process.env.MERGE_SHA,
-            production_readback_run_id:Number(process.env.PRODUCTION_RUN_ID),
+            production_readback_mode:mode,
+            production_readback_run_id:process.env.PRODUCTION_RUN_ID?Number(process.env.PRODUCTION_RUN_ID):null,
+            production_observed_sha:process.env.PRODUCTION_OBSERVED_SHA||process.env.MERGE_SHA,
+            production_deploy_id:process.env.PRODUCTION_DEPLOY_ID||null,
             skill_projection_required:process.env.PROJECTION_REQUIRED==='true',
             skill_projection_run_id:projection==='NOT_APPLICABLE'?null:Number(projection),
             writer_lease_state:'RELEASED',
@@ -257,7 +355,7 @@ jobs:
       - name: Publish immutable terminal evidence
         uses: actions/upload-artifact@v4
         with:
-          name: obligation-terminal-evidence-${{ github.event.pull_request.number }}
+          name: obligation-terminal-evidence-${{ steps.context.outputs.pr_number }}
           path: .artifacts/obligation-terminal-evidence.json
           if-no-files-found: error
           retention-days: 90

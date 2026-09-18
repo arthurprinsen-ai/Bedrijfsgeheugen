@@ -63,11 +63,12 @@ test('supervisor reuses Required and BRAIN, cancels only stale queued work and n
 });
 
 
-test('supervisor reacts immediately to non-main branch pushes and retains watchdog schedule',()=>{
+test('supervisor reacts to every push including main and retains watchdog schedule',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
-  assert.match(yaml,/on:\s*\n\s*push:\s*\n\s*branches-ignore:\s*\[main\]/);
+  assert.match(yaml,/on:\s*\n\s*push:\s*\n\s*workflow_dispatch:/);
+  assert.doesNotMatch(yaml,/branches-ignore:\s*\[main\]/);
   assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
-  assert.match(yaml,/PUSH|pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);
+  assert.match(yaml,/pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);
 });
 
 
@@ -107,4 +108,17 @@ test('non-critical stale queue does not trigger critical delivery redispatch',()
   ];
   const r=classifyRecovery({workflowRuns:runs,headUpdatedAt:'2026-09-18T07:00:00Z',now:Date.parse('2026-09-18T08:05:00Z')});
   assert.equal(r.state,'HEALTHY_PROGRESS');
+});
+
+
+test('supervisor resumes recent merged obligations without terminal truth and deduplicates active closure runs',()=>{
+  const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  assert.match(yaml,/Recover merged obligations missing terminal closure/);
+  assert.match(yaml,/pulls\?state=closed&base=main/);
+  assert.match(yaml,/24 hours ago/);
+  assert.match(yaml,/Candidate-Type: \(implementation\|recovery\|security\|dependency\|docs\|promotion\)/);
+  assert.match(yaml,/Terminal-State: LIVE_BEWEZEN/);
+  assert.match(yaml,/display_title==\$title/);
+  assert.match(yaml,/terminal closure already active; duplicate recovery dispatch suppressed/);
+  assert.match(yaml,/workflow run obligation-terminal-closure\.yml --ref main -f pr_number=/);
 });

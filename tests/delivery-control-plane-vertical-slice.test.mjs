@@ -108,3 +108,28 @@ test('fulfilled obligations refresh terminal identity on replay', async()=>{
   assert.match(edge,/obligation\.state!=='FULFILLED'\|\|terminalIdentityChanged/);
   assert.match(edge,/p_state:'FULFILLED'/);
 });
+
+
+test('terminal closure recovers only cancelled or missing canonical readback through descendant live proof', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/source_conclusion.*cancelled/);
+  assert.match(workflow,/PRODUCTION_READBACK_FAILED/);
+  assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN/);
+  assert.match(workflow,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
+  assert.match(workflow,/api\/connectors\/readiness/);
+  assert.match(workflow,/release\.contract!=='BRAIN-DELIVERY-v2'/);
+  assert.match(workflow,/release\.production_authority!=='BG169'/);
+});
+
+test('terminal evidence distinguishes canonical run from descendant live production proof', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(workflow,/mode=canonical_run/);
+  assert.match(workflow,/mode=descendant_live/);
+  assert.match(workflow,/production_readback_mode/);
+  assert.match(workflow,/production_observed_sha/);
+  assert.match(workflow,/production_deploy_id/);
+  assert.match(edge,/productionReadbackMode/);
+  assert.match(edge,/PRODUCTION_DESCENDANT_READBACK_NOT_VERIFIED/);
+  assert.match(edge,/production-descendant:/);
+});

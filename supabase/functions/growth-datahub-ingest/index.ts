@@ -46,8 +46,17 @@ Deno.serve(async(req:Request)=>{
       const candidateSha=required(terminal.candidate_head_sha,'CANDIDATE_HEAD_SHA').toLowerCase();
       const mainSha=required(terminal.main_sha,'MAIN_SHA').toLowerCase();
       if(!/^[0-9a-f]{40}$/.test(candidateSha)||!/^[0-9a-f]{40}$/.test(mainSha))throw new Error('SHA_INVALID');
-      const productionRunId=Number(terminal.production_readback_run_id);
-      if(!Number.isInteger(productionRunId)||productionRunId<1)throw new Error('PRODUCTION_READBACK_RUN_INVALID');
+      const productionReadbackMode=String(terminal.production_readback_mode||'canonical_run');
+      if(!['canonical_run','descendant_live'].includes(productionReadbackMode))throw new Error('PRODUCTION_READBACK_MODE_INVALID');
+      const productionRunId=terminal.production_readback_run_id==null?null:Number(terminal.production_readback_run_id);
+      const productionObservedSha=String(terminal.production_observed_sha||mainSha).toLowerCase();
+      const productionDeployId=String(terminal.production_deploy_id||'').trim()||null;
+      if(productionReadbackMode==='canonical_run'&&(!Number.isInteger(productionRunId)||productionRunId<1))throw new Error('PRODUCTION_READBACK_RUN_INVALID');
+      if(productionReadbackMode==='descendant_live'){
+        if(!/^[0-9a-f]{40}$/.test(productionObservedSha))throw new Error('PRODUCTION_OBSERVED_SHA_INVALID');
+        if(!productionDeployId)throw new Error('PRODUCTION_DEPLOY_ID_MISSING');
+        if(terminal.production_readback_verified!==true)throw new Error('PRODUCTION_DESCENDANT_READBACK_NOT_VERIFIED');
+      }
       const projectionRequired=terminal.skill_projection_required===true;
       const projectionRunId=terminal.skill_projection_run_id==null?null:Number(terminal.skill_projection_run_id);
       if(projectionRequired&&(!Number.isInteger(projectionRunId)||projectionRunId<1))throw new Error('SKILL_PROJECTION_RUN_INVALID');
@@ -67,7 +76,7 @@ Deno.serve(async(req:Request)=>{
         }
       }
       const obligationPayloadHash=await sha256(obligationKey);
-      const terminalPayloadHash=await sha256(`${obligationKey}|${candidateSha}|${mainSha}|${productionRunId}|${projectionRunId??''}|${JSON.stringify(expectedMigrations)}`);
+      const terminalPayloadHash=await sha256(`${obligationKey}|${candidateSha}|${mainSha}|${productionReadbackMode}|${productionRunId??''}|${productionObservedSha}|${productionDeployId??''}|${projectionRunId??''}|${JSON.stringify(expectedMigrations)}`);
       const one=(value:any)=>Array.isArray(value)?value[0]:value;
 
       let migrationReadback:any={
@@ -109,7 +118,11 @@ Deno.serve(async(req:Request)=>{
         obligation_id:obligationKey,
         candidate_head_sha:candidateSha,
         main_sha:mainSha,
+        production_readback_mode:productionReadbackMode,
         production_readback_run_id:productionRunId,
+        production_observed_sha:productionObservedSha,
+        production_deploy_id:productionDeployId,
+        production_readback_verified:productionReadbackMode==='canonical_run'||terminal.production_readback_verified===true,
         skill_projection_required:projectionRequired,
         skill_projection_run_id:projectionRunId,
         learning_status:learningStatus,
@@ -172,7 +185,7 @@ Deno.serve(async(req:Request)=>{
         status:'GREEN',
         error_class:null,
         remote_status:200,
-        remote_ref:`github-run:${productionRunId}`,
+        remote_ref:productionReadbackMode==='canonical_run'?`github-run:${productionRunId}`:`production-descendant:${productionObservedSha}:${productionDeployId}`,
         candidate_identity:candidateSha,
         tested_identity:mainSha,
         payload_sha256:terminalPayloadHash,
@@ -214,7 +227,11 @@ Deno.serve(async(req:Request)=>{
         delivery_evidence_id:evidence.id,
         candidate_head_sha:candidateSha,
         main_sha:mainSha,
+        production_readback_mode:productionReadbackMode,
         production_readback_run_id:productionRunId,
+        production_observed_sha:productionObservedSha,
+        production_deploy_id:productionDeployId,
+        production_readback_verified:productionReadbackMode==='canonical_run'||terminal.production_readback_verified===true,
         skill_projection_run_id:projectionRunId,
         learning_status:learningStatus,
         migration_readback_required:migrationReadbackRequired,
