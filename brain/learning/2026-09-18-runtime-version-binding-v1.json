@@ -1,0 +1,20 @@
+{
+  "fingerprint": "control-plane|runtime-ingress|explicit-version-binding-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "Universal ingress bound the run to one opaque preflight digest but did not expose or independently validate the current policy, skill and delivery versions consumed by the run.",
+  "root_cause": "Version truth was implicit inside preflight content instead of being first-class machine-readable receipt fields.",
+  "prevention_rule": "Every material run must resolve canonical policy, completion-policy, skill-index, skill-projection digest and delivery-state-machine versions from current repository sources at ingress; these versions become part of the signed receipt digest and postflight rejects stale bindings.",
+  "enforcement": [
+    "powerhouse-universal-runtime-ingress version resolver",
+    "receipt digest includes explicit versions",
+    "Agent Fabric gateway requires version fields",
+    "completion postflight compares receipt to current canonical versions",
+    "regression tests"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}
