@@ -1,0 +1,76 @@
+name: Powerhouse Conflict Healer
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Pull request number
+        required: true
+        type: string
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: write
+
+concurrency:
+  group: conflict-healer-${{ github.event.pull_request.number || inputs.pr_number }}
+  cancel-in-progress: true
+
+jobs:
+  heal:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Resolve same-repository PR identity
+        id: pr
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_PR: ${{ github.event.pull_request.number }}
+          INPUT_PR: ${{ inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          PR="${EVENT_PR:-${INPUT_PR:-}}"
+          test -n "$PR"
+          DATA="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$PR")"
+          HEAD_REPO="$(jq -r '.head.repo.full_name' <<<"$DATA")"
+          BASE_REPO="$(jq -r '.base.repo.full_name' <<<"$DATA")"
+          STATE="$(jq -r '.state' <<<"$DATA")"
+          test "$STATE" = open
+          test "$HEAD_REPO" = "$BASE_REPO"
+          echo "number=$PR" >> "$GITHUB_OUTPUT"
+          echo "branch=$(jq -r '.head.ref' <<<"$DATA")" >> "$GITHUB_OUTPUT"
+          echo "head=$(jq -r '.head.sha' <<<"$DATA")" >> "$GITHUB_OUTPUT"
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+      - name: Rebase same lineage onto current main
+        env:
+          BRANCH: ${{ steps.pr.outputs.branch }}
+          EXPECTED_HEAD: ${{ steps.pr.outputs.head }}
+        run: |
+          set -euo pipefail
+          git config user.name "powerhouse-conflict-healer[bot]"
+          git config user.email "powerhouse-conflict-healer[bot]@users.noreply.github.com"
+          git fetch origin main "$BRANCH" --no-tags
+          ACTUAL="$(git rev-parse "origin/$BRANCH")"
+          test "$ACTUAL" = "$EXPECTED_HEAD"
+          git checkout -B "$BRANCH" "origin/$BRANCH"
+          if git merge-base --is-ancestor origin/main HEAD; then
+            echo "Branch already contains current main."
+            exit 0
+          fi
+          if ! git rebase origin/main; then
+            CONFLICTS="$(git diff --name-only --diff-filter=U | tr '\n' ' ')"
+            git rebase --abort || true
+            echo "::error::AUTOMATIC_REBASE_CONFLICT:$CONFLICTS"
+            exit 1
+          fi
+          NEW_HEAD="$(git rev-parse HEAD)"
+          if [ "$NEW_HEAD" != "$EXPECTED_HEAD" ]; then
+            git push --force-with-lease="refs/heads/$BRANCH:$EXPECTED_HEAD" origin "HEAD:$BRANCH"
+            echo "Same-lineage branch refreshed: $EXPECTED_HEAD -> $NEW_HEAD"
+          fi
