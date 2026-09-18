@@ -1,0 +1,49 @@
+{
+  "fingerprint": "connector-readiness-runtime-isolation-v1",
+  "event_kind": "production_runtime_recovery",
+  "stage": "runtime_readback",
+  "component_type": "netlify_function",
+  "component_id": "connector-readiness",
+  "owner": "Powerhouse Production Promotion Guardian",
+  "status": "LIVE_VERIFIED",
+  "first_seen": "2026-09-15",
+  "last_changed": "2026-09-15",
+  "rootCause": "The public /api/connectors/readiness endpoint unnecessarily bootstrapped the full connector execution runtime just to expose capability state. That widened the module-load/runtime failure surface. The earlier process.env hardening was real but insufficient and therefore was not the final root cause.",
+  "failedApproach": [
+    "Treating process.env access as the complete root cause after the endpoint remained broken in an exact-SHA production deploy.",
+    "Considering deployment/routing drift as the remaining cause after the connector-readiness function was proven present in the exact production deploy."
+  ],
+  "fix": [
+    "Extract readiness-state computation into a shared pure helper.",
+    "Keep the full connector runtime reusing the helper instead of duplicating readiness logic.",
+    "Make the public readiness function depend only on the readiness helper, not the full connector execution engine.",
+    "Read runtime environment through globalThis.Netlify?.env?.get?.(key) and degrade safely to the existing sample-only/not-configured readiness states when that platform global is absent."
+  ],
+  "preventionRule": {
+    "id": "connector-readiness-runtime-isolation-v1",
+    "rules": [
+      "Health/readiness endpoints must import only the minimum modules required to report capability state and must not bootstrap execution engines, provider adapters, stores or side-effectful runtime paths unless the endpoint actually needs them.",
+      "Platform runtime globals must be accessed through the platform authority with a test/runtime-safe guard; absence of the platform global must degrade to an explicit non-configured state instead of crashing.",
+      "A partial fix that changes the symptom without green live readback must remain an open recovery obligation; do not promote the first plausible hypothesis to canonical root cause.",
+      "Exact production deployment is necessary but not sufficient: route-level live JSON readback is required before LIVE_VERIFIED.",
+      "Reuse one shared readiness computation to prevent drift between the public readiness endpoint and the full connector runtime."
+    ]
+  },
+  "regressionTest": [
+    "connector readiness uses guarded Netlify runtime env authority",
+    "connector readiness does not import connector-runtime.mjs",
+    "connector readiness preserves /api/connectors/readiness and application/json contract",
+    "full connector runtime reuses the same readiness-state helper"
+  ],
+  "evidence": {
+    "recovery_pr": 1644,
+    "recovery_pr_head_sha": "fdfb54f5694f543629cbf3c62d048c9bdf2dbd2c",
+    "merge_sha": "65234fcb9873922343ce82e2a678b811240f8d78",
+    "production_release_readback_run": 35016335677,
+    "live_contract": "/api/connectors/readiness returned valid readiness JSON after exact-SHA production deployment",
+    "lineage_issue": 1493
+  },
+  "outcome": "The connector readiness route recovered in production and the incident changed the canonical learning: minimize readiness dependency surfaces, distinguish plausible hypotheses from proven root causes, and require exact live route evidence before closure.",
+  "open_obligations": [],
+  "reuse_instruction": "Future connector/readiness incidents must retrieve this fingerprint before proposing runtime or deployment changes. Reuse the shared readiness helper and regression contracts; do not create a second readiness implementation or parallel state authority."
+}

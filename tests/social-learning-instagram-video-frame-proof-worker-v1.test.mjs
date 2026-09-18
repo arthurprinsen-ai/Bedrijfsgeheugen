@@ -35,4 +35,7 @@ test('transient frames still require canonical Mira vision proof',()=>{
   assert.match(router,/daily_life_scene:true/);
   assert.match(router,/confidence:Math\.min/);
   assert.match(router,/exact_final_media_proven:true/);
+  assert.match(router,/mira_gate_passed:true/);
+  assert.match(router,/asset_url:u/);
+  assert.match(router,/daily_life_scene:true/);
 });
