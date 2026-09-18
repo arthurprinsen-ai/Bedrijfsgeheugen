@@ -57,3 +57,14 @@ The recovery is terminally proven on 2026-09-17:
 ## Closure
 
 All closure criteria are now proven. Canonical terminal state for this learning is `LIVE & BEWEZEN`; the corresponding obligation is fulfilled by the protected merge plus exact-main runtime/readback and same-lineage completion evidence above. Any future regression must reopen a new recoverable execution state from this proven checkpoint rather than downgrade or fork this historical terminal evidence.
+## Post-closure self-proof learning (2026-09-18)
+
+The closure writeback itself was subsequently proven rather than being trusted because the document said it was complete:
+
+- PR #1988 landed the canonical learning closure on protected main as `0807d236e198875fabf953d6a285f9e94ca70d47`.
+- Production Release Readback run `35276153030` completed successfully for that closure SHA. Because this was a learning/documentation-only closure, the workflow correctly used the non-deployment production-truth path instead of manufacturing a website deployment requirement.
+- CodeQL run `35276153103` and Powerhouse CodeQL run `35276153104` completed successfully on the same closure SHA.
+- Main later advanced to `cbaf6c123c697cacc769fa76ba2303af5e58fd51` through subsequent work. That later movement does not invalidate the immutable terminal evidence tied to the exact closure SHA.
+
+Permanent additional prevention rule: **TERMINAL_LEARNING_WRITEBACK_MUST_PROVE_ITSELF**. A learning record may only claim terminal closure when its own canonical writeback has landed through the protected path and has exact-SHA post-writeback readback. Later main movement is new lineage, not evidence drift. This prevents a subtle false-positive state where implementation is proven but its final documentation/learning update exists only on a branch, PR, or unverified commit.
+
