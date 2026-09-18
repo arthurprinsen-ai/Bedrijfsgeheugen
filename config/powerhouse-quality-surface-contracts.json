@@ -273,6 +273,34 @@
       "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
       "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
       "required": true
+    },
+    {
+      "id": "function:bg-opdrachtenradar",
+      "type": "function",
+      "authority": "supabase/functions/bg-opdrachtenradar/index.ts",
+      "evidence_contract": "tests/supabase-bg-opdrachtenradar-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.bg_opdrachten",
+      "type": "table",
+      "authority": "supabase/migrations/20260918130000_bg_opdrachtenradar_nightly_v1.sql",
+      "evidence_contract": "tests/supabase-bg-opdrachtenradar-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.bg_opdrachten_genegeerd",
+      "type": "table",
+      "authority": "supabase/migrations/20260918130000_bg_opdrachtenradar_nightly_v1.sql",
+      "evidence_contract": "tests/supabase-bg-opdrachtenradar-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.bg_opdrachten_profiel",
+      "type": "table",
+      "authority": "supabase/migrations/20260918130000_bg_opdrachtenradar_nightly_v1.sql",
+      "evidence_contract": "tests/supabase-bg-opdrachtenradar-v1.test.mjs",
+      "required": true
     }
   ]
 }
