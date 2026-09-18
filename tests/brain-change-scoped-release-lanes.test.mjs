@@ -190,3 +190,10 @@ test('V18 promotion separates website and portal gates', async () => {
   assert.match(workflow, /Verify website V18 production contracts/);
   assert.match(workflow, /Verify portal production contracts/);
 });
+
+
+test('terminal writer lease regression is automation-classified', () => {
+  const suites = suitesFor(['tests/terminal-writer-lease-closure-guard.test.mjs']);
+  assert.equal(suites.automation, true);
+  assert.equal(suites.shared, true);
+});

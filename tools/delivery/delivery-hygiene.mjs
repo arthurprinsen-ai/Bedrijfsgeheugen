@@ -52,6 +52,42 @@ export function parseDeliveryMetadata(body = '') {
   });
 }
 
+export function parseWriterLease(body = '') {
+  return Object.freeze({
+    state: readField(body, 'Writer-Lease-State').toUpperCase(),
+    owner: readField(body, 'Writer-Lease-Owner'),
+    scope: readField(body, 'Writer-Lease-Scope'),
+    headSha: readField(body, 'Writer-Lease-Head').toLowerCase(),
+    nonOwnerAction: readField(body, 'Writer-Lease-NonOwner-Action').toUpperCase(),
+    release: readField(body, 'Writer-Lease-Release'),
+  });
+}
+
+export function evaluateWriterLease({ body = '', candidateHeadSha = '' } = {}) {
+  const lease = parseWriterLease(body);
+  const actualHead = normalize(candidateHeadSha).toLowerCase();
+  if (lease.state !== 'TERMINAL_DELIVERY') {
+    return Object.freeze({ ok: true, state: 'LEASE_INACTIVE', lease, actualHead });
+  }
+  const reasons = [];
+  if (!lease.owner) reasons.push('WRITER_LEASE_OWNER_MISSING');
+  if (!lease.scope) reasons.push('WRITER_LEASE_SCOPE_MISSING');
+  if (!SHA40.test(lease.headSha)) reasons.push('WRITER_LEASE_HEAD_INVALID');
+  if (!SHA40.test(actualHead)) reasons.push('CANDIDATE_HEAD_INVALID');
+  if (!reasons.length && lease.headSha !== actualHead) reasons.push('TERMINAL_LEASE_HEAD_DRIFT');
+  if (reasons.length) {
+    return Object.freeze({
+      ok: false,
+      state: reasons.includes('TERMINAL_LEASE_HEAD_DRIFT') ? 'BLOCKED_TERMINAL_LEASE_HEAD_DRIFT' : 'BLOCKED_WRITER_LEASE_INVALID',
+      reasons,
+      expectedHead: lease.headSha || null,
+      actualHead: actualHead || null,
+      lease,
+    });
+  }
+  return Object.freeze({ ok: true, state: 'TERMINAL_LEASE_BOUND', expectedHead: lease.headSha, actualHead, lease });
+}
+
 export function validateDeliveryMetadata(metadata = {}, policy = {}) {
   const errors = [];
   if (!normalize(metadata.obligationId)) errors.push('OBLIGATION_ID_MISSING');

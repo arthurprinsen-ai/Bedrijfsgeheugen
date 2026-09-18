@@ -73,7 +73,7 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
           import { setTimeout as sleep } from 'node:timers/promises';
-          import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts } from './tools/delivery/delivery-hygiene.mjs';
+          import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
 
           const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8'}).trim();
           const transientApiFailure = error => /HTTP\s+(?:502|503|504)\b|upstream connect error|connection (?:refused|reset)|ECONNRESET|ETIMEDOUT|socket hang up/i.test(`${error?.message || ''}\n${error?.stderr || ''}\n${error?.stdout || ''}`);
@@ -133,6 +133,29 @@ jobs:
               throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
             }
 
+            const lease = evaluateWriterLease({ body: pr.body || '', candidateHeadSha: headSha });
+            if (!lease.ok) {
+              const evidence = {
+                version: policy.version,
+                observed_at: new Date().toISOString(),
+                repository: process.env.GITHUB_REPOSITORY,
+                pr_number: prNumber,
+                immutable_base_sha: immutableBaseSha,
+                current_main_sha: currentMainSha,
+                candidate_head_sha: headSha,
+                changed_paths: changedPaths,
+                conflict_contracts: currentContracts,
+                writer_lease: lease,
+                state: lease.state,
+                ok: false,
+                admitted: false,
+              };
+              await writeFile('.artifacts/powerhouse-delivery-hygiene.json', `${JSON.stringify(evidence,null,2)}\n`);
+              await appendFile(process.env.GITHUB_OUTPUT, `state=${lease.state}\nadmitted=false\nobligation_id=\ncandidate_head_sha=${headSha}\n`);
+              console.error(JSON.stringify(evidence,null,2));
+              process.exit(78);
+            }
+
             const candidateMetadata = parseDeliveryMetadata(pr.body || '');
             const candidatePool = [...open];
             if (candidateMetadata.supersedes !== null && !candidatePool.some(item => Number(item.number) === Number(candidateMetadata.supersedes))) {
@@ -178,6 +201,7 @@ jobs:
               changed_paths: changedPaths,
               conflict_contracts: currentContracts,
               legacy_unclassified_open_prs: normalized.filter(item => !item.metadata?.obligationId).map(item => item.number),
+              writer_lease: lease,
               ...result,
             };
             await writeFile('.artifacts/powerhouse-delivery-hygiene.json', `${JSON.stringify(evidence,null,2)}\n`);

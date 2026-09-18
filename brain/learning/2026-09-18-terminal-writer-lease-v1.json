@@ -1,0 +1,14 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-TERMINAL-WRITER-LEASE-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "root_cause": "Multiple workers could mutate the same terminal-delivery branch and continuously supersede exact-head evidence.",
+  "prevention_rules": [
+    "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+    "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}

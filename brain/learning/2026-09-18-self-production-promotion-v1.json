@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-SELF-PRODUCTION-PROMOTION-v3",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse-self-production-promotion-v3",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "root_cause": "Authorized workers could stop at green PR/CI instead of owning protected promotion through production readback and learning writeback.",
+  "prevention_rules": [
+    "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+    "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP",
+    "SAME_LINEAGE_MOVING_MAIN_AUTO_REFRESH",
+    "AUTOMATIC_BRANCH_REFRESH_REQUIRES_TERMINAL_WRITER_LEASE",
+    "AUTO_REFRESH_MERGES_MAIN_INTO_CANDIDATE_NEVER_CANDIDATE_INTO_MAIN",
+    "ACTIVE_TERMINAL_LEASE_CANNOT_REMAIN_CLOSED_UNMERGED",
+    "PREMATURE_TERMINAL_PR_CLOSE_AUTO_REOPENS",
+    "INTENTIONAL_CANCELLATION_REQUIRES_EXPLICIT_LEASE_RELEASE"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "moving_main_recovery": {
+    "mode": "SAME_LINEAGE_AUTO_REFRESH",
+    "preconditions": [
+      "same_repository_branch",
+      "Writer-Lease-State=TERMINAL_DELIVERY",
+      "Writer-Lease-Owner=powerhouse-terminal-delivery"
+    ],
+    "operation": "merge default branch into candidate branch via GitHub merge endpoint",
+    "actual_conflict": "FAIL_CLOSED_KEEP_SAME_LINEAGE",
+    "production_merge": "FORBIDDEN_BY_SUPERVISOR"
+  },
+  "premature_close_recovery": {
+    "evidence": "PR #2063 closed twice without merge while exact-head gates were active; GitHub issue events recorded the close under the repository user identity.",
+    "automatic_recovery": "pull_request.closed guard reopens only unmerged PRs carrying the canonical TERMINAL_DELIVERY lease",
+    "intentional_cancel": "set Writer-Lease-State to RELEASED or CANCELLED before closing"
+  },
+  "incident_findings": [
+    "A new terminal-writer-lease regression test was added without classifier co-change, causing BRAIN plan and Required preflight to fail on an otherwise valid candidate."
+  ],
+  "prevention": [
+    "CLASSIFIER_COCHANGE_REQUIRED: every new executable regression path must be assigned to an existing delivery lane in the same candidate before expensive CI."
+  ]
+}
