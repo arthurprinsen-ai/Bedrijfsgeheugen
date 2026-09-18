@@ -1,0 +1,51 @@
+name: Powerhouse Daily Self Evolution
+
+on:
+  schedule:
+    - cron: '47 4 * * *'
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'config/powerhouse-daily-self-evolution.json'
+      - 'scripts/brain/daily-self-evolution.mjs'
+      - 'tests/powerhouse-daily-self-evolution.test.mjs'
+      - '.github/workflows/powerhouse-daily-self-evolution.yml'
+      - 'docs/learning/2026-09-18-powerhouse-daily-self-evolution-v1.md'
+      - 'brain/learning/2026-09-18-powerhouse-daily-self-evolution-v1.json'
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: powerhouse-daily-self-evolution-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  improve:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Mandatory chat-learning preflight
+        run: node scripts/brain/chat-learning-preflight.mjs
+      - name: Verify self-evolution contract
+        run: node --test tests/powerhouse-daily-self-evolution.test.mjs
+      - name: Build universal chat-agent-skill snapshot
+        run: node scripts/brain/daily-self-evolution.mjs
+      - name: Run canonical autonomous improvement probe
+        run: node scripts/brain/continuous-improvement/run-autonomous-improvement.mjs
+      - name: Run capability inventory
+        run: node scripts/brain/continuous-improvement/capability-inventory.mjs
+      - name: Run Engineering OS self-test
+        run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
+      - uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-daily-self-evolution-${{ github.run_id }}
+          path: artifacts/quality/
+          if-no-files-found: error
+          retention-days: 30

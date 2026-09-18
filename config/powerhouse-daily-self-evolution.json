@@ -1,0 +1,106 @@
+{
+  "version": "powerhouse-daily-self-evolution-v1",
+  "extends": [
+    "powerhouse-continuous-improvement-engine-v1",
+    "powerhouse-autonomous-improvement-runtime-v1",
+    "BRAIN-CHAT-LEARNING-v1"
+  ],
+  "applies_to": [
+    "all_existing_chats",
+    "all_future_chats",
+    "all_existing_agents",
+    "all_future_agents",
+    "all_skills",
+    "all_material_workflows"
+  ],
+  "objective": "Every day make Powerhouse faster, smarter, more reliable and simpler using measured evidence; never change merely to create activity.",
+  "cadence": {
+    "daily_learning_required": true,
+    "continuous_runtime_evidence": true
+  },
+  "surfaces": {
+    "chats": [
+      "AGENTS.md",
+      "config/brain-chat-learning-contract.json",
+      "scripts/brain/chat-learning-preflight.mjs"
+    ],
+    "agents": [
+      "platform/agents",
+      "scripts/brain",
+      "brain"
+    ],
+    "skills": [
+      "config",
+      "scripts",
+      "docs/superpowers",
+      "tests"
+    ],
+    "delivery": [
+      ".github/workflows",
+      "netlify",
+      "supabase",
+      "portal-v2",
+      "site"
+    ]
+  },
+  "lifecycle": [
+    "EXISTING_STATE_FIRST",
+    "OBSERVE",
+    "MEASURE",
+    "CLUSTER",
+    "HYPOTHESIZE",
+    "BASELINE",
+    "CANDIDATE",
+    "EVAL",
+    "SHADOW_OR_CANARY",
+    "PROMOTE_OR_ROLLBACK",
+    "PRODUCTION_READBACK",
+    "OUTCOME_VALUE",
+    "LEARNING_WRITEBACK",
+    "PREVENTION_UPDATE"
+  ],
+  "optimization_dimensions": [
+    "correctness",
+    "reliability",
+    "quality",
+    "latency",
+    "lead_time",
+    "tool_calls",
+    "cost",
+    "token_efficiency",
+    "duplicate_work",
+    "cognitive_load",
+    "maintainability",
+    "reuse",
+    "security",
+    "grounding",
+    "business_value"
+  ],
+  "rules": {
+    "evidence_before_promotion": true,
+    "representative_eval_required": true,
+    "regression_non_degradation": true,
+    "security_non_degradation": true,
+    "exact_candidate_identity": true,
+    "production_readback_required": true,
+    "rollback_required": true,
+    "dedupe_before_candidate": true,
+    "one_active_candidate_per_obligation": true,
+    "blind_self_modification_forbidden": true,
+    "blind_latest_chasing_forbidden": true,
+    "no_change_is_valid_when_champion_remains_best": true,
+    "stale_or_failed_learning_must_be_revalidated": true,
+    "learning_writeback_required": true,
+    "prevention_rule_update_required": true
+  },
+  "autonomy": {
+    "safe_reversible_changes": "auto",
+    "destructive_irreversible_changes": "blocked_hard_boundary",
+    "secrets_credentials_permissions": "blocked_hard_boundary",
+    "paid_capacity_increase": "blocked_hard_boundary",
+    "security_control_weakening": "blocked_hard_boundary",
+    "legal_financial_commitment": "blocked_hard_boundary"
+  },
+  "terminal_success": "LIVE_BEWEZEN",
+  "incomplete_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}
