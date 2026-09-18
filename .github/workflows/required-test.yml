@@ -6,6 +6,23 @@ on:
   merge_group:
     types: [checks_requested]
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Exact open PR number for recovery dispatch'
+        required: false
+        type: string
+      base_sha:
+        description: 'Immutable PR base SHA for recovery dispatch'
+        required: false
+        type: string
+      head_sha:
+        description: 'Immutable candidate head SHA for recovery dispatch'
+        required: false
+        type: string
+      candidate_branch:
+        description: 'Exact candidate branch for recovery dispatch'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -13,13 +30,16 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: required-test-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.run_id }}
+  group: required-test-${{ github.event_name }}-${{ inputs.pr_number || github.event.pull_request.number || github.event.merge_group.head_sha || github.run_id }}
   # Single-flight is PR-scoped; exact candidate identity remains enforced inside the gates below.
   cancel-in-progress: true
 
 jobs:
   hygiene:
     uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
+    with:
+      pr_number: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
+      head_sha: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
 
   preflight:
     needs: hygiene
@@ -34,11 +54,12 @@ jobs:
       change_head_sha: ${{ steps.scope.outputs.change_head_sha }}
       candidate_sha: ${{ steps.scope.outputs.candidate_sha }}
       pr_number: ${{ steps.scope.outputs.pr_number }}
+      turbo: ${{ steps.scope.outputs.turbo }}
     steps:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -46,11 +67,13 @@ jobs:
         name: Classify independent delivery lanes
         env:
           EVENT_NAME: ${{ github.event_name }}
-          GITHUB_SHA_VALUE: ${{ github.sha }}
+          GITHUB_SHA_VALUE: ${{ inputs.head_sha || github.sha }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch || github.event.pull_request.head.ref || '' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.run_id }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
@@ -63,15 +86,29 @@ jobs:
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
           import { evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
+          import { classifyTurboDelivery } from './tools/delivery/turbo-classifier.mjs';
           import { resolveDeliveryMetadataAuthority } from './tools/delivery/delivery-metadata-authority.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const dispatched = process.env.EVENT_NAME === 'workflow_dispatch' && Boolean(process.env.PR_NUMBER);
+          let prBody = process.env.PR_BODY || '';
+          let labels = JSON.parse(process.env.PR_LABELS_JSON || '[]');
+          if (dispatched) {
+            const pr=JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${process.env.PR_NUMBER}`],{encoding:'utf8'}));
+            if(pr.state!=='open') throw new Error(`PR_NOT_OPEN:${pr.state}`);
+            if(pr.base?.sha!==process.env.PR_BASE_SHA) throw new Error(`PR_BASE_SHA_DRIFT:${process.env.PR_BASE_SHA}:${pr.base?.sha}`);
+            if(pr.head?.sha!==process.env.PR_HEAD_SHA) throw new Error(`PR_HEAD_SHA_DRIFT:${process.env.PR_HEAD_SHA}:${pr.head?.sha}`);
+            if(process.env.CANDIDATE_BRANCH && pr.head?.ref!==process.env.CANDIDATE_BRANCH) throw new Error(`PR_HEAD_REF_DRIFT:${process.env.CANDIDATE_BRANCH}:${pr.head?.ref}`);
+            prBody=pr.body||'';
+            labels=(pr.labels||[]).map(label=>label.name);
+          }
+          const normalizedEventName=dispatched ? 'pull_request' : process.env.EVENT_NAME;
           const context=normalizeGitHubDeliveryEvent({
-            eventName: process.env.EVENT_NAME,
+            eventName: normalizedEventName,
             githubSha: process.env.GITHUB_SHA_VALUE,
             runId: process.env.RUN_ID,
             fallbackBaseSha,
             event: {
-              pull_request: process.env.EVENT_NAME === 'pull_request' ? {
+              pull_request: normalizedEventName === 'pull_request' ? {
                 number: process.env.PR_NUMBER,
                 base: { sha: process.env.PR_BASE_SHA },
                 head: { sha: process.env.PR_HEAD_SHA },
@@ -84,7 +121,7 @@ jobs:
           });
           const oneLoopPolicy=JSON.parse(await readFile('config/powerhouse-one-loop-v1.json','utf8'));
           const metadataAuthority=resolveDeliveryMetadataAuthority({
-            prBody: process.env.PR_BODY || '',
+            prBody,
             manifest: oneLoopPolicy.deliveryCandidate,
           });
           const comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
@@ -94,26 +131,32 @@ jobs:
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
           const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles};
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
+          const turboDecision=classifyTurboDelivery({changedPaths,labels});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`turbo=${turboDecision.turbo}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
-          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
+          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,turboDecision,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
       - name: Prove Supabase security gate blocks known unsafe patterns
+        if: steps.scope.outputs.turbo != 'true'
         run: python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
       - name: Enforce Supabase migration security contract
+        if: steps.scope.outputs.turbo != 'true'
         run: python3 scripts/brain/check_powerhouse_supabase_security.py "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify Portal V2 suite
+        if: steps.scope.outputs.turbo != 'true'
         run: node --test portal-v2/tests/*.test.mjs
       - name: Install runtime dependencies for the unwired contracts
+        if: steps.scope.outputs.turbo != 'true'
         run: npm install --no-audit --no-fund --silent
       - name: Verify previously unwired test contracts
+        if: steps.scope.outputs.turbo != 'true'
         run: >-
           node --test
           tests/agents-delivery-contract.test.mjs
@@ -164,6 +207,7 @@ jobs:
           tests/v18-standalone-compositor-safety.test.mjs
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
+        if: steps.scope.outputs.turbo != 'true'
         run: >-
           node --test --test-concurrency=1
           tests/brain-fast-development-protocol-v2.test.mjs
@@ -187,32 +231,42 @@ jobs:
           tests/portal-v2-release-identity-invariant.test.mjs
           tests/website-static-syntax-preflight.test.mjs
       - name: Verify Fast Development Protocol v2 authority contract
+        if: steps.scope.outputs.turbo != 'true'
         run: node scripts/brain/powerhouse-fast-development-protocol-v2.mjs --check
+
+  turbo:
+    needs: preflight
+    if: needs.preflight.outputs.turbo == 'true'
+    uses: ./.github/workflows/lane-turbo.yml
+    with:
+      base_sha: ${{ needs.preflight.outputs.base_sha }}
+      change_head_sha: ${{ needs.preflight.outputs.change_head_sha }}
+      candidate_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   backend:
     needs: preflight
-    if: needs.preflight.outputs.backend == 'true'
+    if: needs.preflight.outputs.turbo != 'true' && needs.preflight.outputs.backend == 'true'
     uses: ./.github/workflows/lane-backend.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   portal:
     needs: preflight
-    if: needs.preflight.outputs.portal == 'true'
+    if: needs.preflight.outputs.turbo != 'true' && needs.preflight.outputs.portal == 'true'
     uses: ./.github/workflows/lane-portal.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   automation:
     needs: preflight
-    if: needs.preflight.outputs.automation == 'true'
+    if: needs.preflight.outputs.turbo != 'true' && needs.preflight.outputs.automation == 'true'
     uses: ./.github/workflows/lane-automation.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   website:
     needs: preflight
-    if: needs.preflight.outputs.website == 'true'
+    if: needs.preflight.outputs.turbo != 'true' && needs.preflight.outputs.website == 'true'
     uses: ./.github/workflows/lane-website.yml
     with:
       base_sha: ${{ needs.preflight.outputs.base_sha }}
@@ -223,12 +277,14 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, backend, portal, automation, website]
+    needs: [hygiene, preflight, turbo, backend, portal, automation, website]
     runs-on: ubuntu-latest
     env:
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
+      TURBO_SELECTED: ${{ needs.preflight.outputs.turbo }}
+      TURBO: ${{ needs.turbo.result }}
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
       SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
@@ -244,6 +300,7 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
+          [ "$TURBO_SELECTED" != true ] || [ "$TURBO" = success ]
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
           [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
           [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
