@@ -105,7 +105,6 @@ These rules are mandatory for every chat/agent that creates, repairs or promotes
 - `delivery-attempt-authority|latest-critical-attempt|v1`
 - `moving-main|full-main-union|v1`
 
-
 ## Automatic learning → skill projection
 
 Fingerprint: `powerhouse-learning-skill-auto-projection-v1`.
