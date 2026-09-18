@@ -85,6 +85,21 @@ Deno.serve(async(req:Request)=>{
       evidence++;
     }
 
+    const runDedupe=`dataforseo-run:${observedAt.slice(0,10)}`;
+    const {error:runEvidenceError}=await db.rpc('powerhouse_record_source_observation_v1',{
+      p_source_key:'dataforseo-intelligence',
+      p_dedupe_key:runDedupe,
+      p_external_event_id:`provider-run:${observedAt.slice(0,10)}`,
+      p_observed_at:observedAt,
+      p_evidence:{
+        contract:CONTRACT,authority:'dataforseo-provider-run',provider:'dataforseo',
+        target:'bedrijfsgeheugen.nl',items:items.length,stored,keyword_evidence:evidence,
+        result_state:items.length===0?'SUCCESS_ZERO_ITEMS':'SUCCESS_WITH_ITEMS'
+      }
+    });
+    if(runEvidenceError) throw new Error(`RUN_EVIDENCE_STORE:${runEvidenceError.message}`);
+    evidence++;
+
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'dataforseo-intelligence',soort:'external-search-intelligence',
       status:'ok',detail:`items=${items.length}; stored=${stored}; evidence=${evidence}`,
