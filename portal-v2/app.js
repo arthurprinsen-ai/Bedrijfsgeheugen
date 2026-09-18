@@ -191,6 +191,12 @@ bindPortalNavigation({
  closeHub,
  showOverview:()=>{closePortalPage();closeHub()}
 });
+document.querySelectorAll('[data-open-page]').forEach(control=>{
+ control.addEventListener('click',event=>{
+  if(control.tagName==='A') event.preventDefault();
+  navigatePortal(control.dataset.openPage);
+ });
+});
 document.querySelector('.brainimg')?.setAttribute('src','./brain.svg');
 el('portalFullMenuToggle')?.addEventListener('click',()=>navigatePortal('hub:portal'));
 el('showPages')?.addEventListener('click',()=>navigatePortal('hub:portal'));
