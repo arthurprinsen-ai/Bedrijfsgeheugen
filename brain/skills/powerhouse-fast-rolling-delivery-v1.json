@@ -1,25 +1,59 @@
 {
   "type": "POWERHOUSE_AGENT_SKILL",
-  "version": "POWERHOUSE-FAST-ROLLING-DELIVERY-v2",
+  "version": "POWERHOUSE-FAST-ROLLING-DELIVERY-v3",
   "status": "ACTIVE",
-  "fingerprint": "powerhouse-predictive-fast-delivery-v2",
-  "name": "powerhouse-predictive-fast-delivery",
-  "purpose": "Ship safe Powerhouse changes in minutes using predictive admission, isolated parallel agents, rolling conflict-contract lanes, adaptive blocking gates, autonomous CI recovery, protected exact-head promotion, production readback and measured daily self-optimization.",
+  "fingerprint": "powerhouse-predictive-proof-mesh-delivery-v3",
+  "name": "powerhouse-predictive-proof-mesh-delivery",
+  "purpose": "Ship safe Powerhouse changes in minutes by combining event-driven admission, predictive risk scoring, isolated parallel agent cells, proof capsules, one rolling candidate per conflict contract, adaptive blocking gates, autonomous recovery, protected exact-head promotion, production readback and measured self-optimization.",
   "trigger_when": [
     "building or fixing code, portal, website, automation, Brain or documentation",
     "multiple agents or chats are working in parallel",
-    "CI queue, drift, timeout, zero-run head or stale PR threatens lead time",
-    "a safe bounded change can use TURBO delivery"
+    "CI queue, drift, timeout, zero-run head, partial-start or stale PR threatens lead time",
+    "a bounded safe change can use FAST or TURBO delivery"
   ],
+  "delivery_mesh": {
+    "coordinator": "owns canonical intent, conflict contracts, candidate identity, promotion and definition of done",
+    "frontend_cell": "isolated UI implementation with targeted visual/browser proof",
+    "backend_cell": "isolated API/data/runtime implementation with contract/security proof",
+    "qa_cell": "risk-derived tests, oracle-quality checks and proof-capsule validation",
+    "release_cell": "event-driven critical workflow admission, stale-run cancellation, exact-head promotion and rollback/readback",
+    "learning_cell": "root-cause attribution, telemetry calibration, prevention and skill writeback",
+    "integration_unit": "one rolling candidate per conflict contract",
+    "shared_truth": "all cells consume one canonical execution packet and write evidence to the same lineage"
+  },
+  "proof_capsule": {
+    "required": true,
+    "minimum_fields": [
+      "intent_digest",
+      "base_identity",
+      "candidate_identity",
+      "changed_paths",
+      "affected_contracts",
+      "dependency_digest",
+      "risk_class",
+      "blocking_gate_plan",
+      "targeted_test_evidence",
+      "security_data_schema_evidence_when_applicable",
+      "rollback_readiness_when_applicable",
+      "production_readback_plan"
+    ],
+    "reuse_rule": "Immutable evidence may be reused only when exact identity, contract, config, schema, dependency and gate versions still match.",
+    "non_reusable_truth": [
+      "exact production readback",
+      "current provider outcome",
+      "security freshness",
+      "exact final media proof"
+    ]
+  },
   "operating_model": {
     "agent_workspace": "isolated_ephemeral_worktree",
-    "integration_unit": "one rolling candidate per conflict contract",
     "safe_parallelism": "parallel until changed-path, contract, dependency or mutable-resource overlap",
-    "blocking_tests": "changed risk/dependency/contract profile only",
-    "broad_unrelated_tests": "post-merge asynchronous assurance",
+    "blocking_tests": "changed risk/dependency/contract/security/data/schema profile only",
+    "broad_unrelated_tests": "shadow or post-merge asynchronous assurance",
     "promotion": "automatic protected exact-head BG169 promotion when blocking profile is green",
     "production_truth": "fresh exact-SHA production/provider readback",
-    "rollback": "last-known-good on production regression"
+    "rollback": "automatic last-known-good recovery on relevant production regression",
+    "watchdog": "event-driven first; scheduled supervisor only as fallback"
   },
   "latency_slo_seconds": {
     "first_signal": 60,
@@ -27,32 +61,35 @@
     "standard": 480
   },
   "mandatory_behavior": [
+    "Create one execution packet and proof capsule before fan-out so every agent works from the same identities and contracts.",
+    "Run frontend, backend, QA, documentation and release preparation in isolated parallel cells unless a real path, contract, dependency or mutable-resource collision exists.",
     "Reuse the existing rolling lane for the obligation/conflict contract; do not open a parallel recovery PR.",
+    "On pull-request head creation or synchronization, immediately ensure Required and BRAIN critical workflows are admitted; do not wait for the periodic watchdog.",
     "Cancel superseded CI immediately; a stale run is not useful work.",
-    "If an open exact head has no workflow run within the first-signal SLO, dispatch the same lineage and record a silent-start recovery.",
+    "If an exact head has no critical workflow run, or only one of Required/BRAIN started, autonomously dispatch the missing critical workflow on the same lineage.",
     "If main moves without overlap, keep the tested candidate; do not rebuild merely for generic drift.",
     "If there is real path/contract/dependency overlap, refresh only that rolling lane from current main and preserve non-conflicting tested work.",
-    "Use TURBO for bounded non-protected changes and run only changed tests plus immutable safety guards.",
+    "Use FAST/TURBO only for bounded non-protected changes and run only changed tests plus immutable safety guards.",
     "Never admit migrations, auth, security, RLS, permissions, secrets, delivery-control-plane or unknown material scope to TURBO.",
-    "Do not run unrelated broad regression suites in the pre-merge critical path for safe changes.",
-    "After protected merge, run broad assurance asynchronously with single-flight cancellation and persist its outcome.",
-    "Promote immediately when the exact head blocking profile is green; do not wait for unrelated shadow assurance.",
-    "Write timing, queue recovery, failures, root cause and prevention back to Powerhouse learning.",
-    "Predict conflict, queue and gate risk before CI fan-out; use that prediction to choose parallelism and the smallest safe blocking profile.",
-    "Keep frontend, backend, QA and documentation work parallel in isolated workspaces until a real contract/path/dependency/resource collision exists.",
-    "Treat zero-run, stale-run, timeout and queue-SLO breach as autonomous recovery events, never passive waiting.",
-    "Continuously compare predicted failure/risk with actual outcomes and calibrate thresholds from production delivery telemetry.",
-    "Promote only the exact tested head; immediately continue through production readback, outcome evidence and learning writeback.",
-    "Use shadow assurance for unrelated broad checks and feed shadow failures back into risk models without blocking unrelated safe delivery.",
-    "Measure lead time end-to-end and optimize for the slowest stage rather than adding more parallel work blindly."
+    "Do not run unrelated broad regression suites in the safe pre-merge critical path; run them in shadow/post-merge assurance.",
+    "Promote immediately when the exact-head blocking profile is green; do not wait for unrelated shadow assurance.",
+    "Treat queue, zero-run, partial-start, stale-run, timeout and merge-drift incidents as recoverable delivery events rather than waiting states.",
+    "Regression tests must target forbidden behavior or violated contracts, never incidental implementation words that create false positives.",
+    "Predict conflict, queue and gate risk before fan-out and use the prediction to choose parallelism and the smallest safe blocking profile.",
+    "Measure prediction error, queue time, reruns, conflicts, false-positive oracles, rollback, shadow failures and lead time after every material delivery.",
+    "Write timing, failure, root cause, outcome, prevention and calibrated threshold changes back to Powerhouse learning.",
+    "Retain an optimization only when safe lead time improves without correctness, security, data-integrity or production-readback regression.",
+    "Promote only the exact tested head; immediately continue through production readback, outcome evidence, learning writeback and next-agent discoverability."
   ],
   "forbidden_patterns": [
     "one PR per agent for overlapping work",
     "passive CI queue waiting",
+    "waiting for scheduled recovery when a PR event can admit critical workflows immediately",
     "re-running superseded exact heads",
     "global full-suite blocking for a bounded safe delta",
     "rebase or rebuild on non-overlapping main drift",
     "opening a new recovery PR for the same obligation",
+    "broad lexical test guards that match harmless primitives",
     "weakening security, schema, data-integrity or production-readback gates for speed"
   ],
   "canonical_sources": [
@@ -60,10 +97,10 @@
     "config/powerhouse-parallel-engineering-fabric.json",
     "config/brain-delivery-system.json",
     "tools/delivery/turbo-classifier.mjs",
+    "tools/delivery/predictive-controller.mjs",
     ".github/workflows/required-test.yml",
     ".github/workflows/unified-brain-delivery.yml",
     ".github/workflows/powerhouse-post-merge-assurance.yml",
-    "tools/delivery/predictive-controller.mjs",
     ".github/workflows/powerhouse-fast-delivery-supervisor.yml",
     "tests/brain-powerhouse-delivery-supervisor.test.mjs"
   ],
@@ -83,16 +120,11 @@
       "historical_failure_rate",
       "merge_conflict_rate",
       "queue_p95",
-      "main_movement_rate"
+      "main_movement_rate",
+      "false_positive_oracle_rate",
+      "rollback_rate",
+      "repeat_incident_rate"
     ]
-  },
-  "agent_roles": {
-    "coordinator": "owns canonical truth, conflict contracts, promotion and definition of done",
-    "frontend": "works isolated on affected UI surface with targeted visual/browser checks",
-    "backend": "works isolated on affected APIs/data/runtime with contract/security checks",
-    "test_qa": "generates risk-derived regression/eval profile and validates false-positive oracles",
-    "release_supervisor": "owns zero-run/stale-run/timeout/conflict recovery and exact-head delivery continuation",
-    "learning_agent": "attributes failures and lead-time loss, updates prevention, gate selection and skill guidance"
   },
   "success_metrics": {
     "primary": [
@@ -115,6 +147,7 @@
     ],
     "learning": [
       "prediction_accuracy",
+      "prediction_error",
       "false_positive_oracle_rate",
       "repeat_incident_rate"
     ]
