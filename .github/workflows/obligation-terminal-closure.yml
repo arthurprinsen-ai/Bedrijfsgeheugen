@@ -1,0 +1,160 @@
+name: Obligation Terminal Closure
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  actions: read
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: obligation-terminal-closure-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  close-obligation:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Verify machine-readable obligation and main containment
+        id: identity
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          git fetch origin main --no-tags
+          git merge-base --is-ancestor "$MERGE_SHA" origin/main
+          node --input-type=module - <<'NODE'
+          import { appendFile } from 'node:fs/promises';
+          import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
+          const metadata=parseDeliveryMetadata(process.env.PR_BODY||'');
+          if(!metadata.obligationId) throw new Error('OBLIGATION_ID_MISSING');
+          await appendFile(process.env.GITHUB_OUTPUT,`obligation_id=${metadata.obligationId}\n`);
+          NODE
+
+      - name: Wait for canonical production release readback
+        id: production
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 42); do
+            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/production-release-readback.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=20")"
+            run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            status="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
+            conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
+            if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+              [ "$conclusion" = "success" ] || { echo "::error::PRODUCTION_READBACK_FAILED:run=$run_id conclusion=$conclusion"; exit 78; }
+              echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+              echo "PRODUCTION_READBACK_PROVEN:$run_id"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::PRODUCTION_READBACK_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
+          exit 78
+
+      - name: Determine whether skill projection is due
+        id: projection-scope
+        env:
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          files="$(git diff --name-only "${MERGE_SHA}^1" "$MERGE_SHA" || true)"
+          if grep -Eq '^(brain/learning/|brain/skills/|\.agents/skills/|scripts/brain/powerhouse-skill-projection\.mjs|scripts/brain/chat-learning-preflight\.mjs)' <<<"$files"; then
+            echo "required=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "required=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Wait for canonical learning to skill projection
+        if: steps.projection-scope.outputs.required == 'true'
+        id: projection
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/powerhouse-skill-projection.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=20")"
+            run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            status="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
+            conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
+            if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+              [ "$conclusion" = "success" ] || { echo "::error::SKILL_PROJECTION_FAILED:run=$run_id conclusion=$conclusion"; exit 78; }
+              echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+              echo "SKILL_PROJECTION_PROVEN:$run_id"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::SKILL_PROJECTION_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
+          exit 78
+
+      - name: Persist terminal evidence and release writer lease
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BODY: ${{ github.event.pull_request.body }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
+          PRODUCTION_RUN_ID: ${{ steps.production.outputs.run_id }}
+          PROJECTION_REQUIRED: ${{ steps.projection-scope.outputs.required }}
+          PROJECTION_RUN_ID: ${{ steps.projection.outputs.run_id }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { writeFileSync } from 'node:fs';
+          const body=String(process.env.PR_BODY||'');
+          const stripped=body.split(/\r?\n/).filter(line=>!/^(Writer-Lease-State|Terminal-State|Terminal-Main-SHA|Terminal-Production-Readback-Run|Terminal-Skill-Projection-Run):/i.test(line)).join('\n').trimEnd();
+          const projection=process.env.PROJECTION_REQUIRED==='true' ? process.env.PROJECTION_RUN_ID : 'NOT_APPLICABLE';
+          const terminal=[
+            'Writer-Lease-State: RELEASED',
+            'Terminal-State: LIVE_BEWEZEN',
+            `Terminal-Main-SHA: ${process.env.MERGE_SHA}`,
+            `Terminal-Production-Readback-Run: ${process.env.PRODUCTION_RUN_ID}`,
+            `Terminal-Skill-Projection-Run: ${projection}`
+          ].join('\n');
+          const next=`${stripped}\n\n${terminal}\n`;
+          execFileSync('gh',['api','--method','PATCH',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${process.env.PR_NUMBER}`,'-f',`body=${next}`],{stdio:'inherit'});
+          const evidence={
+            contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
+            terminal_state:'LIVE_BEWEZEN',
+            obligation_id:process.env.OBLIGATION_ID,
+            candidate_head_sha:process.env.HEAD_SHA,
+            main_merge_sha:process.env.MERGE_SHA,
+            production_readback_run_id:Number(process.env.PRODUCTION_RUN_ID),
+            skill_projection_required:process.env.PROJECTION_REQUIRED==='true',
+            skill_projection_run_id:projection==='NOT_APPLICABLE'?null:Number(projection),
+            writer_lease_state:'RELEASED',
+            outcome_evidence:true,
+            verified:true
+          };
+          writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2)+'\n');
+          NODE
+
+      - name: Publish immutable terminal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: obligation-terminal-evidence-${{ github.event.pull_request.number }}
+          path: .artifacts/obligation-terminal-evidence.json
+          if-no-files-found: error
+          retention-days: 90
