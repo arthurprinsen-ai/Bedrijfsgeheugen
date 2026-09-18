@@ -65,7 +65,17 @@
     "PORTAL_READBACK_TESTS_FOLLOW_CANONICAL_MODEL_LABELS",
     "MEDIA_PROOF_CLIENT_ROLES_HAVE_NO_DIRECT_TABLE_PRIVILEGES",
     "INVALID_ALREADY_SENT_INSTAGRAM_ASSET_MUST_NOT_BE_REPUBLISHED",
-    "CURRENT_MAIN_AND_PRODUCTION_DEPLOY_IDENTITY_MUST_MATCH_BEFORE_TERMINAL_CLAIM"
+    "CURRENT_MAIN_AND_PRODUCTION_DEPLOY_IDENTITY_MUST_MATCH_BEFORE_TERMINAL_CLAIM",
+    "CLASSIFIER_COCHANGE_REQUIRED",
+    "QUEUED_PENDING_IN_PROGRESS_ARE_NONTERMINAL",
+    "CLASSIFY_GITHUB_QUEUE_BEFORE_EXTERNAL_CAPACITY_BLOCK",
+    "SQUASH_MERGE_IDENTITY_FALLBACK",
+    "POST_MERGE_FAILURES_MUST_BE_OPERATOR_VISIBLE"
   ],
-  "reuse_contract": "Read current canonical state first; reuse the one active obligation lineage; repair only the first deterministic current-head failure; require protected merge and production/provider readback; preserve truthful blocked/unknown states instead of fabricating green evidence."
+  "reuse_contract": "Read current canonical state first; reuse the one active obligation lineage; repair only the first deterministic current-head failure; require protected merge and production/provider readback; preserve truthful blocked/unknown states instead of fabricating green evidence.",
+  "reused_fingerprints": [
+    "delivery-classifier-repository-writer-contract-gap-v1",
+    "github-required-gate-in-progress-nonterminal-v1",
+    "delivery-failure|capacity|shared|github-actions-queued-not-platform-outage"
+  ]
 }
