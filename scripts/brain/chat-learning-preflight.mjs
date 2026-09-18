@@ -3,6 +3,7 @@ import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
 import { buildExecutionPacketV2, classifyTask } from './powerhouse-fast-execution.mjs';
+import { buildSkillProjectionIndex, verifySkillProjectionIndex, selectSkillProjection } from './powerhouse-skill-projection.mjs';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
 const LEGACY_FAST_EXECUTION_POLICY_SOURCE = 'config/powerhouse-fast-execution-v1.json';
@@ -10,6 +11,7 @@ const FAST_DEVELOPMENT_V2_SOURCE = 'config/powerhouse-fast-development-protocol-
 const FAST_DEVELOPMENT_V2_ENTRYPOINT = 'scripts/brain/powerhouse-fast-execution.mjs';
 const UNIVERSAL_COMPLETION_POLICY_SOURCE = 'config/powerhouse-universal-completion-v1.json';
 const UNIVERSAL_INGRESS_POLICY_SOURCE = 'config/powerhouse-universal-ingress-v1.json';
+const SKILL_PROJECTION_INDEX_SOURCE = 'brain/skills/powerhouse-learning-skill-index-v1.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'config/branch-delivery-ownership-guard.json',
   'config/powerhouse-engineering-os.json',
@@ -195,6 +197,19 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   if (!fs.existsSync(ingressEntrypoint.absolute)) throw new Error(`missing universal-ingress entrypoint: ${universalIngress.runtimeEntrypoint}`);
   const ingressCompletionEntrypoint = normalizeSourcePath(rootDir, universalIngress.completionEntrypoint);
   if (!fs.existsSync(ingressCompletionEntrypoint.absolute)) throw new Error(`missing universal-ingress completion entrypoint: ${universalIngress.completionEntrypoint}`);
+  const skillIndexLocation = normalizeSourcePath(rootDir, SKILL_PROJECTION_INDEX_SOURCE);
+  if (!fs.existsSync(skillIndexLocation.absolute)) throw new Error(`missing skill projection index: ${SKILL_PROJECTION_INDEX_SOURCE}`);
+  const skillIndexManifest = JSON.parse(fs.readFileSync(skillIndexLocation.absolute, 'utf8'));
+  if (skillIndexManifest.fingerprint !== 'powerhouse-learning-skill-auto-projection-v1') throw new Error('skill projection index fingerprint drift');
+  if (skillIndexManifest.authority !== 'CANONICAL_LEARNING_PROJECTED_NOT_PARALLEL_TRUTH') throw new Error('skill projection index authority drift');
+  const skillProjectionIndex = buildSkillProjectionIndex({ rootDir });
+  const skillProjectionVerification = verifySkillProjectionIndex({ rootDir, index: skillProjectionIndex });
+  if (!skillProjectionVerification.ok) throw new Error(`SKILL_PROJECTION_DRIFT:${JSON.stringify(skillProjectionVerification.drift)}`);
+  const skillProjection = selectSkillProjection(skillProjectionIndex, {
+    fingerprints: executionContext.relevantLearningFingerprints ?? [],
+    targets: executionContext.deliveryLanes ?? []
+  });
+
   const contextLoadMs = Math.max(0, nowMs() - preflightStarted);
 
   const classificationStarted = nowMs();
@@ -254,6 +269,16 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     telemetry,
     universalCompletion,
     universalIngress,
+    skill_projection: {
+      status: 'READY',
+      fingerprint: skillProjectionIndex.fingerprint,
+      projection_digest: skillProjectionIndex.projection_digest,
+      entry_count: skillProjectionIndex.entry_count,
+      verification: skillProjectionVerification,
+      registry_source: SKILL_PROJECTION_INDEX_SOURCE,
+      registry_mode: skillIndexManifest.mode ?? null,
+      selection: skillProjection
+    },
     sources,
     fingerprints: stableUnique(signals.fingerprints).sort(),
     preventions: stableUnique(signals.preventions).sort(),
