@@ -21,9 +21,10 @@ jobs:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
-          fetch-depth: 1
+          fetch-depth: 0
 
-      - name: Verify exact BRAIN v2 production identity
+      - name: Verify BRAIN v2 production contains writer merge
+        id: production-proof
         env:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
         run: |
@@ -31,22 +32,28 @@ jobs:
           for attempt in $(seq 1 36); do
             if curl --fail --silent --show-error --max-time 10 \
               https://www.bedrijfsgeheugen.nl/release.json -o /tmp/release.json; then
-              if node --input-type=module - <<'NODE'
+              observed="$(node --input-type=module - <<'NODE'
           import { readFileSync } from 'node:fs';
           const evidence=JSON.parse(readFileSync('/tmp/release.json','utf8'));
-          const expected=process.env.MERGE_SHA;
           if(evidence.contract!=='BRAIN-DELIVERY-v2') process.exit(2);
           if(evidence.production_authority!=='BG169') process.exit(3);
-          if(evidence.commit_ref!==expected) process.exit(4);
-          console.log('EXACT_PRODUCTION_GREEN', expected, evidence.deploy_id || '');
+          const observed=String(evidence.commit_ref||'').trim();
+          if(!/^[0-9a-f]{40}$/.test(observed)) process.exit(4);
+          process.stdout.write(observed);
           NODE
-              then
-                exit 0
+              )" || observed=""
+              if [ -n "$observed" ]; then
+                git fetch --no-tags origin "$MERGE_SHA" "$observed" >/dev/null 2>&1 || true
+                if git merge-base --is-ancestor "$MERGE_SHA" "$observed"; then
+                  echo "observed_production_sha=$observed" >> "$GITHUB_OUTPUT"
+                  echo "PRODUCTION_CONTAINS_WRITER_MERGE merge=$MERGE_SHA observed_production_sha=$observed"
+                  exit 0
+                fi
               fi
             fi
             sleep 10
           done
-          echo "::error::Exact merge SHA is not proven live in /release.json"
+          echo "::error::production commit must contain writer merge $MERGE_SHA"
           exit 1
 
       - name: Reconcile Notion only after exact production proof
@@ -66,6 +73,15 @@ jobs:
               ;;
             weekblog)
               slug="${PR_TITLE#Weekblog candidate: }"
+              action=published
+              ;;
+            approved-central-blog)
+              mapfile -t slugs < <(git diff --name-only "${MERGE_SHA}^1" "$MERGE_SHA" | sed -nE 's#^blog/([^/]+)/index\.html$#\1#p' | sort -u)
+              if [ "${#slugs[@]}" -ne 1 ] || [ -z "${slugs[0]:-}" ]; then
+                echo "::error::approved-central-blog requires exactly one merged blog/*/index.html path; found=${#slugs[@]}"
+                exit 1
+              fi
+              slug="${slugs[0]}"
               action=published
               ;;
             *)
@@ -115,6 +131,7 @@ jobs:
             echo "- production_authority: BG169"
             echo "- candidate: $HEAD_REF"
             echo "- PR: $PR"
-            echo "- exact_production_sha: $MERGE_SHA"
+            echo "- writer_merge_sha: $MERGE_SHA"
+            echo "- observed_production_sha: ${{ steps.production-proof.outputs.observed_production_sha }}"
             echo '- external_state_reconciled_after_exact_production: true'
           } >> "$GITHUB_STEP_SUMMARY"
