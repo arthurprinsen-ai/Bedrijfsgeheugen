@@ -47,3 +47,24 @@ Use current Composio v3 tool execution: `https://backend.composio.dev/api/v3/too
 ## Definition of done
 
 Terminal success is: exact media proof green -> pre-publish gate PASS -> Composio publish -> Instagram readback -> canonical external_id/permalink -> outcome/learning writeback. Anything before provider readback remains recoverable/incomplete.
+
+
+## Mira human-problem + fresh-OpenArt reel contract (2026-09-18)
+
+For Mira Instagram Reels, the canonical content-production chain is:
+
+`Powerhouse human problem -> concrete personal moment -> fixed Mira reference -> NEW OpenArt image2video asset -> exact-media/visible-Mira proof -> Composio Instagram publish -> Instagram permalink/readback -> canonical outcome + learning writeback`.
+
+Hard rules:
+- Start from a concrete personal problem that real people recognize: work/private overlap, school/children, planning, group chats, meetings, part-time handovers, forgotten agreements, social awkwardness, time pressure, mental load or small daily chaos.
+- Recognition and human experience come first. Bedrijfsgeheugen meaning comes second.
+- A Mira Reel requires a newly generated OpenArt video for that run. Existing OpenArt history items, earlier Mira MP4 URLs, old posts and prior-generation media may be used only as reference/evidence, never as the final asset.
+- The fixed Mira reference may be reused to preserve identity; the generated output must have a new provider generation identity and URL.
+- Do not replace a requested Mira Reel with a static quote/text card. Static cards are a different content format and cannot satisfy a Reel obligation.
+- Do not fall back from OpenArt-required Reel/video to Placid or another media provider. Missing OpenArt execution readiness is a recoverable `WAITING_PROVIDER_CONNECTION` / equivalent state.
+- Do not use Make.
+- Before publish, check recent Instagram media and provider history for duplicate asset/script reuse.
+- After publish, provider readback must return the exact published media id, Reel type, timestamp and permalink before the obligation is terminal.
+- Write final post id/permalink, asset identity, prompt/script, publish timestamp, outcome and subsequent performance learning back to the canonical Powerhouse/Notion lineage.
+
+Learning fingerprint: `mira-human-problem-fresh-openart-reel-v1`.
