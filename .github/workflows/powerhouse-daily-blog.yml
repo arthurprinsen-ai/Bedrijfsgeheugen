@@ -49,7 +49,7 @@ jobs:
         id: render
         run: |
           set -euo pipefail
-          python3 scripts/publish_powerhouse_blog_artifact.py "${{ steps.day.outputs.date }}" | tee /tmp/powerhouse-blog.json
+          python3 tools/site-shell/publish_powerhouse_blog_artifact.py "${{ steps.day.outputs.date }}" | tee /tmp/powerhouse-blog.json
           if grep -q '^NO_ACTION:' /tmp/powerhouse-blog.json; then
             echo "changed=false" >> "$GITHUB_OUTPUT"
             exit 0
