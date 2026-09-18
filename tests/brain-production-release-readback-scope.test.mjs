@@ -33,8 +33,21 @@ test('Netlify-hosted backend function changes require exact production deploymen
   assert.match(workflow, /netlify\/functions\//);
   assert.match(workflow, /deployment_required/);
   assert.match(workflow, /steps\.scope\.outputs\.deployment_required == 'true'/);
-  assert.match(workflow, /website_required/);
-  assert.match(workflow, /Install production browser verifier[\s\S]*website_required == 'true'/);
+  assert.match(workflow, /browser_required/);
+  assert.match(workflow, /Install production browser verifier[\s\S]*browser_required == 'true'/);
+});
+
+test('Portal V2 changes require exact Netlify deployment and browser readback of the portal shell', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(workflow, /portalRequired=.*suites\.portal === true/);
+  assert.match(workflow, /browserRequired=websiteRequired \|\| portalRequired/);
+  assert.match(workflow, /deploymentRequired=browserRequired \|\| netlifyRuntimeRequired/);
+  assert.match(workflow, /portalRequired && !routes\.includes\('\/portal-v2\/'\)/);
+  assert.match(workflow, /routes\.push\('\/portal-v2\/'\)/);
+  assert.match(workflow, /portal_required=/);
+  assert.match(workflow, /browser_required=/);
+  assert.match(workflow, /Verify affected production routes[\s\S]*browser_required == 'true'/);
+  assert.match(workflow, /Evaluate immutable website production truth[\s\S]*browser_required == 'true'/);
 });
 
 test('production readback treats its own control-plane-only maintenance as website deployment not applicable', async () => {
