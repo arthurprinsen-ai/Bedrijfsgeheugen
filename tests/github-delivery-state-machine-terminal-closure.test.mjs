@@ -27,3 +27,17 @@ test('terminal closure reuses canonical readback instead of creating a second de
   assert.match(workflow,/release\.json\?bg_terminal_recovery=/);
   assert.match(workflow,/actions\/workflows\/production-release-readback\.yml\/runs/);
 });
+
+
+test('closed unmerged superseded PR without Supabase migrations may be traversed safely', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/SUPERSEDES_PR_NOT_TERMINAL/);
+  assert.match(workflow,/UNMERGED_SUPERSEDES_SAFE_TO_SKIP/);
+  assert.match(workflow,/pulls\/\$\{prNumber\}\/files\?per_page=100/);
+});
+
+test('closed unmerged superseded PR with Supabase migrations remains fail closed', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS/);
+  assert.match(workflow,/\^supabase\\\/migrations\\\/\[\^\/\]\+\\\.sql\$/);
+});
