@@ -272,3 +272,12 @@ Nieuwe fouten, verbeteringen, kansen en belangrijke beslissingen worden toegevoe
 - herbruikbare les.
 
 De repo en Powerhouse Team Memory vormen samen het gedeelde geheugen. Agents moeten deze kennis uitbreiden en gebruiken.
+
+## Universele LIVE & BEWEZEN delivery-skill
+Voor iedere huidige en toekomstige chat, agent, workflow en autonome uitvoeringsnode is `brain/contracts/powerhouse-live-proven-delivery-skill-v1.json` bindend.
+
+Een materiële wijziging mag nooit als klaar, live, werkend, geleverd of onderdeel van Powerhouse worden gemarkeerd op basis van alleen code, commit, branch, PR, merge, deploy-start of gedeeltelijk groene checks. De enige positieve terminale releasewaarheid is `LIVE_PROVEN` / `LIVE & BEWEZEN` nadat dezelfde canonieke lineage aantoonbaar heeft doorlopen: exact-head verification → verplichte gates → protected merge/promote → deploy → productie/provider readback → functionele verificatie → canonieke Powerhouse-koppeling → outcome/evidence → learning/prevention writeback.
+
+Tot die keten compleet is blijft de toestand recoverable, standaard `RECORDED_PENDING_FINAL_DELIVERY_READBACK`. Queued/pending/rode CI, timeout, verloren worker, chat/model-stop, merge zonder readback, deploy zonder functionele verificatie, stale state of ontbrekende koppeling zijn nooit terminal succes en moeten vanaf de laatste bewezen checkpoint op dezelfde lineage worden hervat.
+
+Iedere agent/chat moet deze skill in de mandatory preflight meenemen, dezelfde exact-head identiteit blijven gebruiken en bij iedere materiële delivery de terminale productie-evidence en learning-writeback controleren. Een nieuwere wijziging vereist opnieuw eigen exact-head bewijs; historische `LIVE_PROVEN` evidence mag nooit als bewijs voor een nieuwe head worden hergebruikt.
