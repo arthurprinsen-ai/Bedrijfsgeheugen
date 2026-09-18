@@ -38,3 +38,26 @@ Success is only valid when exact final media passes the semantic identity + dime
 - Carousel: image slides may use OpenArt or Placid; video slides must use OpenArt; every slide needs exact asset proof and one failed slide blocks the carousel.
 - Register new Instagram runtime surfaces and regression tests in canonical quality/delivery registries in the same candidate.
 - Fresh-preview absence of an optional production-only function is handled by conditional privilege hardening, never by weaker permissions or placeholder functions.
+
+
+## Provider runtime readiness gate
+
+Before any Instagram media production or publication attempt, resolve provider readiness per execution plane. A provider being connected in one plane does not imply readiness in another.
+
+Required planes:
+- `chat_mcp`: provider is callable from the current agent/chat tool surface.
+- `external_worker`: an external media worker can claim and execute the canonical job.
+- `supabase_runtime`: autonomous Supabase runtime has an authenticated producer path or bounded worker bridge.
+- `publisher`: the canonical publisher can consume only a `PROOF_VERIFIED` exact asset.
+
+Rules:
+1. Record readiness separately per plane; never write a global `connected=true`.
+2. For autonomous scheduled runs, `supabase_runtime` or a verified bounded external-worker bridge is mandatory.
+3. Missing provider readiness must become `WAITING_PROVIDER_CONNECTION` or equivalent recoverable state before any dispatch.
+4. Never register a provider as active solely because a chat/MCP connection exists.
+5. Never fall back from OpenArt-required reel/video to Placid or another provider.
+6. Only exact provider output may advance through SHA, dimensions and semantic Mira vision verification.
+7. Historical provider `sent` with failed semantic identity remains non-terminal quality failure; duplicate republish is forbidden.
+8. Persist provider plane, job identity, provider history/generation identity, proof manifest and recovery state so another agent can resume without regeneration.
+
+Success means provider readiness is proven for the execution plane that will actually perform the work, then exact media reaches `PROOF_VERIFIED` before publisher dispatch.
