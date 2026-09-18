@@ -134,3 +134,12 @@ test('capability inventory makes named models visible and maps every one to cano
   assert.match(sql,/CONNECTED_TO_ONE_BRAIN/);
   assert.doesNotMatch(sql,/create table\s+public\.powerhouse_one_brain_capability/i);
 });
+
+
+test('legacy economics remains visible but future economics is fail-closed',()=>{
+  assert.match(sql,/2026-09-18 07:00:00\+00/);
+  assert.match(sql,/legacy_unmeasurable_economics_actions/);
+  assert.match(sql,/executed_at >= timestamptz '2026-09-18 07:00:00\+00'/);
+  assert.match(sql,/executed_at < timestamptz '2026-09-18 07:00:00\+00'/);
+  assert.doesNotMatch(sql,/provider_cost_eur\s*,?\s*0/);
+});
