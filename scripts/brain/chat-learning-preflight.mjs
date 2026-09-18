@@ -2,16 +2,20 @@ import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
 import { fileURLToPath } from 'node:url';
+import { buildExecutionPacketV2, classifyTask } from './powerhouse-fast-execution.mjs';
 
 const DEFAULT_CONTRACT = 'config/brain-chat-learning-contract.json';
-const FAST_EXECUTION_POLICY_SOURCE = 'config/powerhouse-fast-execution-v1.json';
+const LEGACY_FAST_EXECUTION_POLICY_SOURCE = 'config/powerhouse-fast-execution-v1.json';
+const FAST_DEVELOPMENT_V2_SOURCE = 'config/powerhouse-fast-development-protocol-v2.json';
+const FAST_DEVELOPMENT_V2_ENTRYPOINT = 'scripts/brain/powerhouse-fast-execution.mjs';
 const UNIVERSAL_COMPLETION_POLICY_SOURCE = 'config/powerhouse-universal-completion-v1.json';
 const UNIVERSAL_INGRESS_POLICY_SOURCE = 'config/powerhouse-universal-ingress-v1.json';
 const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'config/powerhouse-engineering-os.json',
   'config/powerhouse-truth-status-contract.json',
   'config/powerhouse-execution-resilience-v1.json',
-  FAST_EXECUTION_POLICY_SOURCE,
+  FAST_DEVELOPMENT_V2_SOURCE,
+  LEGACY_FAST_EXECUTION_POLICY_SOURCE,
   UNIVERSAL_COMPLETION_POLICY_SOURCE,
   UNIVERSAL_INGRESS_POLICY_SOURCE,
   'brain/policies/powerhouse-system-contract-v1.json',
@@ -28,6 +32,10 @@ const MANDATORY_SUPPLEMENTAL_SOURCES = [
   'brain/learning/homepage-video-release-preflight-2026-09-08.json'
 ];
 const DEFAULT_MAX_SOURCES = 64;
+const EXPECTED_FLOW = ['INTENT','EXECUTION_PACKET_V2','NO_OP_DEDUP','IMPACT_GRAPH','EXECUTION_DAG','TARGETED_TESTS','CANDIDATE','FULL_RELEASE_GATES','EXACT_SHA_PROD_READBACK','DELTA_WRITEBACK'];
+const EXPECTED_CLASSES = ['FAST','STANDARD','CRITICAL','WAITING_EXTERNAL'];
+
+function nowMs() { return Number(process.hrtime.bigint()) / 1_000_000; }
 
 function normalizeSourcePath(rootDir, sourcePath) {
   if (typeof sourcePath !== 'string' || !sourcePath.trim()) throw new Error('invalid learning source path');
@@ -62,20 +70,34 @@ function serializedPacketBytes(packet) {
   return bytes;
 }
 
-function validateFastExecutionPolicy(policy) {
-  if (!policy || policy.type !== 'POWERHOUSE_FAST_EXECUTION_POLICY') throw new Error('fast-execution policy missing or wrong type');
-  if (policy.version !== 'POWERHOUSE-FAST-EXECUTION-v1') throw new Error(`unsupported fast-execution policy version: ${policy.version ?? 'missing'}`);
-  if (policy.status !== 'ACTIVE') throw new Error('fast-execution policy is not ACTIVE');
-  if (policy.default_enabled !== true) throw new Error('fast-execution policy is not default enabled');
-  if (typeof policy.scope !== 'string' || !/chats/i.test(policy.scope) || !/agents/i.test(policy.scope)) throw new Error('fast-execution policy scope does not cover chats and agents');
-  if (typeof policy.entrypoint !== 'string' || !policy.entrypoint) throw new Error('fast-execution policy entrypoint is missing');
+function validateLegacyFastExecutionPolicy(policy) {
+  if (!policy || policy.type !== 'POWERHOUSE_FAST_EXECUTION_POLICY') throw new Error('legacy fast-execution policy missing or wrong type');
+  if (policy.version !== 'POWERHOUSE-FAST-EXECUTION-v1') throw new Error(`unsupported legacy fast-execution policy version: ${policy.version ?? 'missing'}`);
+  if (policy.status !== 'ACTIVE' || policy.default_enabled !== true) throw new Error('legacy fast-execution compatibility policy is not active/default enabled');
+  if (typeof policy.entrypoint !== 'string' || !policy.entrypoint) throw new Error('legacy fast-execution entrypoint is missing');
+  return Object.freeze({ version: policy.version, status: policy.status, defaultEnabled: policy.default_enabled, policySource: LEGACY_FAST_EXECUTION_POLICY_SOURCE, entrypoint: policy.entrypoint, compatibilityOnly: true });
+}
+
+function validateFastDevelopmentV2(policy) {
+  if (!policy || policy.fingerprint !== 'powerhouse-fast-development-protocol-v2') throw new Error('Fast Development Protocol v2 fingerprint drift');
+  if (policy.status !== 'active') throw new Error('Fast Development Protocol v2 is not active');
+  if (policy.creates_parallel_authority !== false) throw new Error('Fast Development Protocol v2 may not create parallel authority');
+  if (JSON.stringify(policy.canonical_flow) !== JSON.stringify(EXPECTED_FLOW)) throw new Error('Fast Development Protocol v2 canonical flow drift');
+  if (JSON.stringify(policy.execution_classes) !== JSON.stringify(EXPECTED_CLASSES)) throw new Error('Fast Development Protocol v2 execution classes drift');
+  if (policy.preflight?.no_op_before_reasoning !== true) throw new Error('Fast Development Protocol v2 no-op-before-reasoning drift');
+  if (policy.testing?.full_release_gates_at_promotion_boundary !== true) throw new Error('Fast Development Protocol v2 release-boundary drift');
+  if (policy.evidence_cache?.persistence_authority !== 'brain_outcome_obligation_evidence') throw new Error('Fast Development Protocol v2 evidence persistence authority drift');
+  if (!policy.evidence_cache?.non_cacheable?.includes('EXACT_SHA_PROD_READBACK')) throw new Error('Fast Development Protocol v2 production readback must remain non-cacheable');
   return Object.freeze({
+    fingerprint: policy.fingerprint,
     version: policy.version,
     status: policy.status,
-    defaultEnabled: policy.default_enabled,
-    executionClassDefault: 'STANDARD',
-    policySource: FAST_EXECUTION_POLICY_SOURCE,
-    entrypoint: policy.entrypoint,
+    executionClasses: [...policy.execution_classes],
+    canonicalFlow: [...policy.canonical_flow],
+    noOpBeforeReasoning: true,
+    fullReleaseGatesAtPromotionBoundary: true,
+    persistenceAuthority: policy.evidence_cache.persistence_authority,
+    entrypoint: FAST_DEVELOPMENT_V2_ENTRYPOINT,
     failClosed: true
   });
 }
@@ -87,16 +109,7 @@ function validateUniversalCompletionPolicy(policy) {
   if (typeof policy.scope !== 'string' || !/chats/i.test(policy.scope) || !/agents/i.test(policy.scope)) throw new Error('universal-completion scope does not cover chats and agents');
   if (!Array.isArray(policy.required_categories) || policy.required_categories.length < 20) throw new Error('universal-completion required categories are incomplete');
   if (typeof policy.entrypoint !== 'string' || !policy.entrypoint) throw new Error('universal-completion entrypoint is missing');
-  return Object.freeze({
-    version: policy.version,
-    status: policy.status,
-    defaultEnabled: policy.default_enabled,
-    failClosed: policy.fail_closed,
-    manifestVersion: policy.manifest_version,
-    requiredCategories: [...policy.required_categories],
-    policySource: UNIVERSAL_COMPLETION_POLICY_SOURCE,
-    entrypoint: policy.entrypoint
-  });
+  return Object.freeze({ version: policy.version, status: policy.status, defaultEnabled: policy.default_enabled, failClosed: policy.fail_closed, manifestVersion: policy.manifest_version, requiredCategories: [...policy.required_categories], policySource: UNIVERSAL_COMPLETION_POLICY_SOURCE, entrypoint: policy.entrypoint });
 }
 
 function validateUniversalIngressPolicy(policy) {
@@ -120,7 +133,8 @@ function validateUniversalIngressPolicy(policy) {
   });
 }
 
-export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000 } = {}) {
+export function compileChatLearningPreflight({ rootDir = process.cwd(), contractPath = DEFAULT_CONTRACT, maxSources = DEFAULT_MAX_SOURCES, maxBytes = 256_000, executionContext = {} } = {}) {
+  const preflightStarted = nowMs();
   if (!Number.isInteger(maxSources) || maxSources < 1) throw new Error('maxSources must be a positive integer');
   if (!Number.isInteger(maxBytes) || maxBytes < 1) throw new Error('maxBytes must be a positive integer');
   const contractLocation = normalizeSourcePath(rootDir, contractPath);
@@ -135,7 +149,8 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
   const visited = new Set();
   const sources = [];
   const signals = { fingerprints: [], preventions: [], blockers: [], resumeContracts: [] };
-  let fastExecutionPolicy = null;
+  let legacyFastExecutionPolicy = null;
+  let fastDevelopmentV2Policy = null;
   let universalCompletionPolicy = null;
   let universalIngressPolicy = null;
   let sourceBytes = Buffer.byteLength(contractRaw, 'utf8');
@@ -151,41 +166,91 @@ export function compileChatLearningPreflight({ rootDir = process.cwd(), contract
     let parsed = null;
     if (normalized.endsWith('.json')) {
       try { parsed = JSON.parse(raw); } catch (error) { throw new Error(`invalid JSON learning source ${normalized}: ${error.message}`); }
-      if (normalized === FAST_EXECUTION_POLICY_SOURCE) fastExecutionPolicy = parsed;
+      if (normalized === LEGACY_FAST_EXECUTION_POLICY_SOURCE) legacyFastExecutionPolicy = parsed;
+      if (normalized === FAST_DEVELOPMENT_V2_SOURCE) fastDevelopmentV2Policy = parsed;
       if (normalized === UNIVERSAL_COMPLETION_POLICY_SOURCE) universalCompletionPolicy = parsed;
       if (normalized === UNIVERSAL_INGRESS_POLICY_SOURCE) universalIngressPolicy = parsed;
       collectSignals(parsed, signals);
-      if (Array.isArray(parsed.linked_learning_sources)) {
-        for (const linked of parsed.linked_learning_sources) {
-          if (typeof linked !== 'string' || !linked.trim()) throw new Error(`invalid linked_learning_sources entry in ${normalized}`);
-          if (!queued.has(linked) && !visited.has(linked)) { queue.push(linked); queued.add(linked); }
-        }
+      if (Array.isArray(parsed.linked_learning_sources)) for (const linked of parsed.linked_learning_sources) {
+        if (typeof linked !== 'string' || !linked.trim()) throw new Error(`invalid linked_learning_sources entry in ${normalized}`);
+        if (!queued.has(linked) && !visited.has(linked)) { queue.push(linked); queued.add(linked); }
       }
     }
     sources.push({ path: normalized, format: normalized.endsWith('.json') ? 'json' : 'text', bytes, sha256: crypto.createHash('sha256').update(raw).digest('hex'), type: parsed?.type ?? null, version: parsed?.version ?? null, fingerprint: parsed?.fingerprint ?? null });
     visited.add(normalized);
   }
 
-  const fastExecution = validateFastExecutionPolicy(fastExecutionPolicy);
-  const fastEntrypoint = normalizeSourcePath(rootDir, fastExecution.entrypoint);
-  if (!fs.existsSync(fastEntrypoint.absolute)) throw new Error(`missing fast-execution entrypoint: ${fastExecution.entrypoint}`);
-
+  const legacyFastExecution = validateLegacyFastExecutionPolicy(legacyFastExecutionPolicy);
+  const legacyEntrypoint = normalizeSourcePath(rootDir, legacyFastExecution.entrypoint);
+  if (!fs.existsSync(legacyEntrypoint.absolute)) throw new Error(`missing legacy fast-execution entrypoint: ${legacyFastExecution.entrypoint}`);
+  const fastExecution = validateFastDevelopmentV2(fastDevelopmentV2Policy);
+  const v2Entrypoint = normalizeSourcePath(rootDir, fastExecution.entrypoint);
+  if (!fs.existsSync(v2Entrypoint.absolute)) throw new Error(`missing Fast Development Protocol v2 entrypoint: ${fastExecution.entrypoint}`);
   const universalCompletion = validateUniversalCompletionPolicy(universalCompletionPolicy);
   const completionEntrypoint = normalizeSourcePath(rootDir, universalCompletion.entrypoint);
   if (!fs.existsSync(completionEntrypoint.absolute)) throw new Error(`missing universal-completion entrypoint: ${universalCompletion.entrypoint}`);
-
   const universalIngress = validateUniversalIngressPolicy(universalIngressPolicy);
   const ingressEntrypoint = normalizeSourcePath(rootDir, universalIngress.runtimeEntrypoint);
   if (!fs.existsSync(ingressEntrypoint.absolute)) throw new Error(`missing universal-ingress entrypoint: ${universalIngress.runtimeEntrypoint}`);
   const ingressCompletionEntrypoint = normalizeSourcePath(rootDir, universalIngress.completionEntrypoint);
   if (!fs.existsSync(ingressCompletionEntrypoint.absolute)) throw new Error(`missing universal-ingress completion entrypoint: ${universalIngress.completionEntrypoint}`);
+  const contextLoadMs = Math.max(0, nowMs() - preflightStarted);
 
+  const classificationStarted = nowMs();
+  const executionClass = classifyTask({
+    task: executionContext.intent ?? '',
+    risk: executionContext.risk ?? (executionContext.intent ? 'normal' : 'unknown'),
+    explicitClass: executionContext.executionClass ?? null,
+    waitingExternal: executionContext.waitingExternal === true,
+    impactedContracts: executionContext.impactedContracts ?? []
+  });
+  const classificationMs = Math.max(0, nowMs() - classificationStarted);
+  const executionPacketV2 = buildExecutionPacketV2({
+    taskId: executionContext.taskId,
+    intent: executionContext.intent,
+    executionClass,
+    mainSha: executionContext.mainSha,
+    lastVerifiedSha: executionContext.lastVerifiedSha,
+    lastVerifiedStateId: executionContext.lastVerifiedStateId,
+    currentStateId: executionContext.currentStateId,
+    componentIds: executionContext.componentIds,
+    deliveryLanes: executionContext.deliveryLanes,
+    changedPaths: executionContext.changedPaths,
+    resourceRefs: executionContext.resourceRefs,
+    openObligations: executionContext.openObligations,
+    relevantLearningFingerprints: executionContext.relevantLearningFingerprints,
+    knownBlockers: executionContext.knownBlockers,
+    requiredGates: executionContext.requiredGates,
+    configDigest: executionContext.configDigest,
+    schemaDigest: executionContext.schemaDigest,
+    dependencyDigest: executionContext.dependencyDigest,
+    testPolicyDigest: executionContext.testPolicyDigest,
+    freshness: executionContext.freshness,
+    lazyLoadRefs: executionContext.lazyLoadRefs
+  });
+
+  const telemetry = {
+    context_load_ms: contextLoadMs,
+    classification_ms: classificationMs,
+    reasoning_ms: null,
+    tool_ms: null,
+    targeted_test_ms: null,
+    full_gate_ms: null,
+    deploy_ms: null,
+    proof_ms: null,
+    writeback_ms: null,
+    total_preflight_ms: Math.max(0, nowMs() - preflightStarted),
+    unobserved: true
+  };
   const packet = {
-    version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v1',
+    version: 'BRAIN-CHAT-LEARNING-PREFLIGHT-v2',
     status: 'READY',
     contract: contractPath,
     sourceBytes,
     fastExecution,
+    legacyFastExecution,
+    execution_packet_v2: executionPacketV2,
+    telemetry,
     universalCompletion,
     universalIngress,
     sources,
