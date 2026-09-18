@@ -1,4 +1,5 @@
 import { upgradeLegacyPortalState, hasLegacyPortalData, readLegacyPortalStateForUser, mergeLegacyPortalStateIntoCanonical } from './legacy-state-migration.js';
+import { impactForMutation } from './portal-impact-engine.js';
 
 const clone=value=>value==null?value:structuredClone(value);
 const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
@@ -152,14 +153,29 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   businessRevision+=1;
   pendingBusinessInputs.set(binding.key,{...binding,generation:businessRevision});
  }
- function set(path,value){const result=domain.set(path,value);track(path);return result;}
- function patch(path,value){const result=domain.patch(path,value);track(path);return result;}
+ function publishImpact(path,before,after){
+  const impact=impactForMutation({path,before,after});
+  if(typeof globalThis!=='undefined'){
+   globalThis.__BG_LAST_PORTAL_IMPACT__=impact;
+   if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
+    globalThis.dispatchEvent(new CustomEvent('bg:portal-impact',{detail:impact}));
+   }
+  }
+  return impact;
+ }
+ function set(path,value){const before=domain.get();const result=domain.set(path,value);track(path);publishImpact(path,before,domain.get());return result;}
+ function patch(path,value){const before=domain.get();const result=domain.patch(path,value);track(path);publishImpact(path,before,domain.get());return result;}
  async function performPortalFlush(){
   const pending=[...pendingBusinessInputs.values()].map(binding=>({...binding,answers:asAnswers(domain.get(binding.statePath))}));
   const stateResult=await domain.flush();
+  const stored=[];
   for(const item of pending){
-   await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true}});
+   const saved=await saveBusinessInput({inputType:item.inputType,modelId:item.modelId,instanceId:'primary',schemaVersion:1,answers:item.answers,sourcePortal:'portal-v2',metadata:{statePath:item.statePath,binding:'portal-domain-business-input-v1',truthContract:'powerhouse-model-truth-v1',preserveMissing:true,intelligenceEligible:true,causalPropagation:'portal-impact-engine-v1'}});
+   stored.push(saved);
    if(pendingBusinessInputs.get(item.key)?.generation===item.generation)pendingBusinessInputs.delete(item.key);
+  }
+  if(typeof globalThis!=='undefined'&&typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
+   globalThis.dispatchEvent(new CustomEvent('bg:portal-brain-synced',{detail:{stored,impact:globalThis.__BG_LAST_PORTAL_IMPACT__||null}}));
   }
   return stateResult;
  }
