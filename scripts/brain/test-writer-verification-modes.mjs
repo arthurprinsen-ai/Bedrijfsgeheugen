@@ -37,7 +37,7 @@ assert.match(gate,/unified-brain-delivery\.yml[\s\S]*-f verification_only="\$VER
 assert.match(gate,/VERIFICATION_ONLY: \$\{\{ inputs\.verification_only \}\}/,'central gate dispatch must bind exact verification-only input');
 
 assert.match(unified,/verification_only:/,'Unified Brain workflow must declare verification-only dispatch input');
-assert.match(unified,/inputs\.verification_only != true/,'BG169 production handoff must be impossible for verification-only dispatches');
+assert.match(unified,/needs\.candidate-identity\.outputs\.verification_only != 'true'/,'BG169 production handoff must be impossible for verification-only candidates across push, PR and explicit dispatch');
 assert.match(unified,/Verification-only delivery: production authority handoff intentionally skipped\./,'verification-only runs must emit explicit non-promotion evidence');
 assert.match(canary,/git push origin "HEAD:refs\/heads\/\$CANDIDATE_BRANCH"/,'detached-head canary must publish an explicitly qualified branch ref');
 assert.match(canary,/data\/regelgeving\.json/);
