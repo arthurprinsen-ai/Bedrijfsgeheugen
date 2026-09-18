@@ -45,7 +45,10 @@
     "Final mutable identities are integration-owned: allocate Supabase migration versions at rolling integration and verify uniqueness before expensive CI.",
     "If a protected merge occurred before intended candidate gates were terminal, treat it as a governance incident: immediately prove post-merge main/provider readback and persist a prevention rule requiring terminal gates before future promotion.",
     "If the active terminal-delivery PR changes state, refresh GitHub authority immediately and continue on the single valid lineage instead of stopping at the state transition.",
-    "A closed unmerged TERMINAL_DELIVERY PR with no valid successor must be auto-reopened by repository hygiene; one valid successor is reused, multiple successors fail closed."
+    "A closed unmerged TERMINAL_DELIVERY PR with no valid successor must be auto-reopened by repository hygiene; one valid successor is reused, multiple successors fail closed.",
+    "After every legitimate same-lineage owner commit during TERMINAL_DELIVERY, refresh the exact head and rebind Writer-Lease-Head before trusting admission results.",
+    "When a regression test fails after a contract change, compare the assertion to the current canonical contract before changing production code; stale test-oracles are repaired at the oracle.",
+    "Do not retry, bypass or weaken protected promotion when a required status is pending; keep the lineage recoverable and continue until the required check is terminal."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
@@ -69,7 +72,10 @@
     "rebuilding a mergeable candidate solely because unrelated main changed",
     "overlaying only the latest main commit during reconciliation instead of preserving the full current-main union",
     "allocating final Supabase migration timestamps independently in parallel workers",
-    "promoting before the intended exact-head Required and BRAIN gates are terminal green"
+    "promoting before the intended exact-head Required and BRAIN gates are terminal green",
+    "changing production behavior merely to satisfy a stale historical test limit",
+    "leaving Writer-Lease-Head on the previous same-owner commit after advancing the canonical branch",
+    "bypassing branch protection because Required, BRAIN, CodeQL or provider checks are still pending"
   ],
   "canonical_evidence": {
     "obligation_id": "powerhouse-structural-gap-closure-v2",
@@ -87,7 +93,9 @@
     "terminal_writer_lease_learning": "brain/learning/2026-09-18-terminal-writer-lease-v1.json",
     "fast_delivery_incident_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json",
     "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
-    "terminal_lineage_continuity_learning": "brain/learning/2026-09-18-terminal-lineage-continuity-v1.json"
+    "terminal_lineage_continuity_learning": "brain/learning/2026-09-18-terminal-lineage-continuity-v1.json",
+    "pr_2070_learning": "brain/learning/2026-09-18-terminal-lineage-continuity-v1.json",
+    "pr_2070_status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
   },
   "consumers": [
     "chat-learning-preflight",
