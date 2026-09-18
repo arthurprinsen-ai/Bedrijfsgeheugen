@@ -147,28 +147,23 @@ select
   count(*) filter(
     where status='OPEN'
       and coalesce(payload->>'production_scope','production')='production'
-  ) as production_open_obligations,
+  ) as open_obligations,
   count(*) filter(
     where status='OPEN'
       and due_at<=now()
       and coalesce(payload->>'production_scope','production')='production'
       and coalesce(payload->>'obligation_class','system_evidence')='system_evidence'
-  ) as overdue_system_obligations,
+  ) as overdue_obligations,
   count(*) filter(
     where status='OPEN'
       and due_at>now()
       and coalesce(payload->>'production_scope','production')='production'
       and coalesce(payload->>'obligation_class','system_evidence')='system_evidence'
-  ) as future_system_obligations,
-  count(*) filter(
-    where status='OPEN'
-      and coalesce(payload->>'production_scope','production')='production'
-      and payload->>'obligation_class'='human_optional_evidence'
-  ) as awaiting_human_feedback,
+  ) as future_obligations,
   count(*) filter(
     where status='CLOSED'
-      and payload->>'production_scope'='non_production_test'
-  ) as excluded_test_obligations,
+      and coalesce(payload->>'production_scope','production')='production'
+  ) as closed_obligations,
   count(*) filter(
     where type='ACTION_OUTCOME_EVIDENCE'
       and status='OPEN'
@@ -184,10 +179,24 @@ select
       and status='OPEN'
       and coalesce(payload->>'production_scope','production')='production'
   ) as missing_feedback_evidence,
-  now() observed_at
+  now() observed_at,
+  count(*) filter(
+    where status='OPEN'
+      and coalesce(payload->>'production_scope','production')='production'
+      and payload->>'obligation_class'='human_optional_evidence'
+  ) as awaiting_human_feedback,
+  count(*) filter(
+    where status='CLOSED'
+      and payload->>'production_scope'='non_production_test'
+  ) as excluded_test_obligations,
+  count(*) filter(
+    where status='OPEN'
+      and due_at<=now()
+      and coalesce(payload->>'production_scope','production')='production'
+      and coalesce(payload->>'obligation_class','system_evidence')='system_evidence'
+  ) as overdue_system_obligations
 from public.revenue_learning_obligations
 where type in ('ACTION_OUTCOME_EVIDENCE','ACTION_ECONOMICS_EVIDENCE','ACTION_HUMAN_FEEDBACK_EVIDENCE');
-
 revoke all on public.powerhouse_action_learning_readiness_v1 from anon,authenticated;
 grant select on public.powerhouse_action_learning_readiness_v1 to service_role;
 
