@@ -186,17 +186,18 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 
 ## Verplichte leesvolgorde
 1. `AGENTS.md`
-2. `config/brain-chat-learning-contract.json`
-3. `config/powerhouse-runtime-authority.json`
-4. `docs/development-operating-system.md`
-5. `docs/development-ledger.md`
-6. `docs/self-healing-agents.md`
-7. `docs/outcome-obligations.md`
-8. `config/outcome-obligations.json`
-9. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
-10. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
-11. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
-12. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
+2. `.agents/skills/powerhouse-continuity/SKILL.md`
+3. `config/brain-chat-learning-contract.json`
+4. `config/powerhouse-runtime-authority.json`
+5. `docs/development-operating-system.md`
+6. `docs/development-ledger.md`
+7. `docs/self-healing-agents.md`
+8. `docs/outcome-obligations.md`
+9. `config/outcome-obligations.json`
+10. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
+11. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
+12. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
+13. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-experiment al in de repo of gedeelde teamcontext is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.
