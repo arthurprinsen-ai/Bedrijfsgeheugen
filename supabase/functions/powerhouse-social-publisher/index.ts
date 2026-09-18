@@ -25,6 +25,63 @@ class BufferHttpError extends Error {
     this.retryAfter = retryAfter;
   }
 }
+
+const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
+async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
+async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:string,text:string){
+  const response=await fetch(`${COMPOSIO_BASE}/tools/execute/${toolSlug}`,{
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':apiKey},
+    body:JSON.stringify({connected_account_id:connectedAccountId,version:'latest',text})
+  });
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok||body?.successful!==true){
+    throw new Error(`COMPOSIO_${toolSlug}_${response.status}:${clean(body?.error||body?.message||JSON.stringify(body)).slice(0,240)}`);
+  }
+  return body;
+}
+function deepPickId(value:any,preferred:string[]=[]):string{
+  if(!value||typeof value!=='object')return'';
+  for(const key of preferred){const v=value?.[key];if(typeof v==='string'&&v.trim())return v.trim();}
+  for(const [k,v] of Object.entries(value)){
+    if(/(^|_)(id|media_id|creation_id|container_id|ig_media_id)$/i.test(k)&&typeof v==='string'&&v.trim())return v.trim();
+  }
+  for(const v of Object.values(value)){const found=deepPickId(v,preferred);if(found)return found;}
+  return'';
+}
+function deepPickString(value:any,keys:string[]):string{
+  if(!value||typeof value!=='object')return'';
+  for(const key of keys){const v=value?.[key];if(typeof v==='string'&&v.trim())return v.trim();}
+  for(const v of Object.values(value)){const found=deepPickString(v,keys);if(found)return found;}
+  return'';
+}
+async function publishInstagramViaComposio(db:any,art:any,runDate:string){
+  const proof=art?.generation_evidence?.instagram_media_proof||{};
+  if(!instagramIdentityProven(proof))throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
+  const mediaType=clean(proof.media_type).toLowerCase();
+  if(!['reel','video'].includes(mediaType))throw new Error('COMPOSIO_ROUTE_REEL_ONLY_V1');
+  const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
+  const apiKey=await secret(db,'COMPOSIO_API_KEY');
+  const accountId=await secret(db,'COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
+  if(!apiKey||!accountId)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
+  const caption=clean(art.body);
+  const created=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA',
+    `Create an Instagram Reel media container using this exact public video URL: ${mediaUrl}. Use this exact caption, preserving wording and line breaks: ${caption}`);
+  const containerId=deepPickId(created?.data||created,['creation_id','container_id','id']);
+  if(!containerId)throw new Error('COMPOSIO_MEDIA_CONTAINER_ID_MISSING');
+  const published=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH',
+    `Publish the Instagram media container with creation/container id ${containerId} now.`);
+  const mediaId=deepPickId(published?.data||published,['ig_media_id','media_id','id']);
+  if(!mediaId)throw new Error('COMPOSIO_PUBLISHED_MEDIA_ID_MISSING');
+  const readback=await composioExecute(apiKey,accountId,'INSTAGRAM_GET_IG_MEDIA',
+    `Get Instagram media with id ${mediaId} and return its id, permalink, media type, caption, timestamp and media URL.`);
+  const rb=readback?.data||readback;
+  const readbackId=deepPickId(rb,['ig_media_id','media_id','id']);
+  if(readbackId!==mediaId)throw new Error('COMPOSIO_INSTAGRAM_READBACK_ID_MISMATCH');
+  const permalink=deepPickString(rb,['permalink','permalink_url','url']);
+  return {provider:'composio',provider_post_id:mediaId,container_id:containerId,permalink:permalink||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256)};
+}
+
 async function bufferRequest(token: string, query: string, variables?: Record<string,unknown>) {
   const response = await fetch('https://api.buffer.com', { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(variables ? { query, variables } : { query }) });
   const body = await response.json().catch(() => ({}));
@@ -195,9 +252,26 @@ Deno.serve(async (req) => {
       await recordObligation(db, runDate, row.channel, 'BLOCKED', null, evidence, 'Repair canonical gate evidence before any dispatch.', 'PRE_PUBLISH_GATE_BLOCKED');
       results.push({ channel: row.channel, status: 'blocked', violations: gate.violations || [] }); continue;
     }
-    let input: Record<string,unknown>;
-    if (row.channel === 'instagram_company') input = instagramInput(art, due, future);
-    else input = { text: clean(art.body), channelId: channelIds[row.channel], schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}) };
+    if (row.channel === 'instagram_company') {
+      try {
+        const direct = await publishInstagramViaComposio(db, art, runDate);
+        const evidence = { ...(row.delivery_evidence || {}), ...direct, pre_publish_gate:'passed', final_text_hash:textHash, transport_contract:'instagram-composio-primary-v1', make_dependency:false };
+        await db.from('powerhouse_channel_decisions').update({ state:'published', delivery_ref:direct.provider_post_id, delivery_evidence:evidence, updated_at:new Date().toISOString() }).eq('run_date',runDate).eq('channel',row.channel);
+        await db.from('powerhouse_content_artifacts').update({ status:'published', updated_at:new Date().toISOString() }).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,'Collect Instagram outcome metrics and feed learning loop.',null);
+        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,permalink:direct.permalink,provider:'composio',provider_truth_verified:true});
+        continue;
+      } catch(error){
+        const message=error instanceof Error?error.message:String(error);
+        const evidence={...(row.delivery_evidence||{}),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'instagram-composio-primary-v1',make_dependency:false};
+        const authMissing=message==='COMPOSIO_INSTAGRAM_AUTH_REQUIRED';
+        await db.from('powerhouse_channel_decisions').update({state:authMissing?'blocked':'failed',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,authMissing?'BLOCKED':'FAILED',null,evidence,authMissing?'Connect Composio Instagram credentials; reuse the same proven media without regeneration.':'Retry only after Composio transport diagnosis; never fall back to Make.',message);
+        results.push({channel:row.channel,status:authMissing?'blocked':'failed',provider:'composio',error:message});
+        continue;
+      }
+    }
+    const input: Record<string,unknown> = { text: clean(art.body), channelId: channelIds[row.channel], schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}) };
     const created = await createPost(bufferToken, input);
     if (!created.post?.id) {
       const evidence = { ...(row.delivery_evidence || {}), provider: 'buffer', error: created.error || 'BUFFER_CREATE_FAILED', provider_truth_verified: false };
