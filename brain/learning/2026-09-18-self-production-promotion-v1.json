@@ -30,7 +30,10 @@
     "TEST_ORACLES_MATCH_FORBIDDEN_BEHAVIOR_NOT_INNOCENT_PRIMITIVES",
     "LATENCY_BREACH_IS_RECOVERABLE_DELIVERY_INCIDENT",
     "PREDICTION_ERROR_AND_PRODUCTION_OUTCOME_CALIBRATE_NEXT_DELIVERY",
-    "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED"
+    "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED",
+    "EVERY_NON_MAIN_WRITE_TRIGGERS_DELIVERY_RECOVERY_SUPERVISOR",
+    "ZERO_RUN_EXACT_HEAD_MUST_SELF_START_REQUIRED_AND_BRAIN",
+    "SCHEDULE_IS_FALLBACK_NOT_PRIMARY_DELIVERY_TRIGGER"
   ],
   "metrics_to_learn": [
     "time_to_first_signal_ms",
@@ -54,5 +57,13 @@
   "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
   "base_main_sha": "1155eb9ff263e5c4a2cf7d1b4e3cbc0d36b5875f",
   "successor_pr": 2053,
-  "scope_note": "Current-main recovery keeps exact-head Required/BRAIN self-healing; turbo/gate-bypass proposals are explicitly excluded."
+  "scope_note": "Current-main recovery keeps exact-head Required/BRAIN self-healing; turbo/gate-bypass proposals are explicitly excluded.",
+  "updated_at": "2026-09-18",
+  "direct_delivery_trigger": {
+    "fingerprint": "powerhouse-direct-delivery-recovery-trigger-v1",
+    "trigger": "non-main push plus five-minute watchdog",
+    "behavior": "Every branch write immediately runs the recovery supervisor. It resolves open PR heads and dispatches missing Required/BRAIN workflows for the same exact head; schedule remains fallback.",
+    "gates_weakened": false,
+    "direct_merge": false
+  }
 }

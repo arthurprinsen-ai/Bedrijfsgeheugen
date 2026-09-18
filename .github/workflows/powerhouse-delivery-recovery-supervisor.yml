@@ -1,6 +1,8 @@
 name: Powerhouse Delivery Recovery Supervisor
 
 on:
+  push:
+    branches-ignore: [main]
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'

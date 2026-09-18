@@ -61,3 +61,11 @@ test('supervisor reuses Required and BRAIN, cancels only stale queued work and n
   assert.doesNotMatch(yaml,/gh pr merge|merge_pull_request|--admin/);
   assert.doesNotMatch(yaml,/lane-turbo|skip.*gate/i);
 });
+
+
+test('supervisor reacts immediately to non-main branch pushes and retains watchdog schedule',()=>{
+  const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  assert.match(yaml,/on:\s*\n\s*push:\s*\n\s*branches-ignore:\s*\[main\]/);
+  assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
+  assert.match(yaml,/PUSH|pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);
+});
