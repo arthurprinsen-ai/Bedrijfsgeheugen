@@ -1,0 +1,60 @@
+# ONE BRAIN live promotion learning — 2026-09-18
+
+## Scope
+
+Canonical obligation: `powerhouse-structural-gap-closure-v2`  
+Canonical delivery lineage: PR #2023  
+Related recovery lineages: PR #2020 (Mira/content truth), PR #2025 (CI single-flight), PR #2030 (closed duplicate).
+
+## Verified production evidence
+
+- PR #2020 is protected-merged.
+- `bg-pre-publish-review` is ACTIVE as version 11.
+- `powerhouse-social-publisher` is ACTIVE as version 13.
+- `powerhouse-content-orchestrator` is ACTIVE as version 14.
+- Instagram publishing now requires exact final-media evidence plus semantic/vision proof that Mira is visibly present.
+- The historical 2026-09-18 Instagram incident remains contained/fail-closed; transport alone is not treated as successful content truth.
+
+## ONE BRAIN state
+
+The #2023 candidate exposes the existing Powerhouse intelligence estate through one canonical runtime reconciliation path rather than introducing a second brain or state store.
+
+Candidate contract:
+- 32 canonical runtime intelligence authorities;
+- 54 named intelligence/model capabilities mapped to implementation and authority;
+- 18 core intelligence schedulers;
+- strict evidence-first cycle ordering;
+- chat/agent shared memory and chat-learning preflight;
+- no fabricated economics, feedback, causal evidence, realized value or publication proof;
+- one obligation = one active executable candidate;
+- exact-head gates -> protected merge -> production migration -> production readback -> outcome/learning writeback.
+
+## Incident learning
+
+### Root causes
+
+1. Metadata-only Instagram identity evidence could not prove visible Mira in the exact final asset.
+2. A second active candidate for the same obligation caused BRAIN admission to fail with `BLOCKED_DUPLICATE_OBLIGATION`.
+3. Heavy stale workflow fan-out consumed runner capacity and delayed authoritative exact-head checks.
+
+### Prevention
+
+- Exact final bytes/frames + semantic vision evidence are mandatory for Mira publication.
+- Template names, layer names, caller metadata and provider transport are never identity proof.
+- One obligation may have at most one active executable candidate.
+- Duplicate candidates are closed/superseded, never allowed to create a second truth.
+- Heavy workflows use PR/ref single-flight cancellation of stale heads without removing tests or branch protection.
+- Merge/deploy/transport are intermediate states; only production readback + outcome + learning writeback may close the lineage.
+
+## Machine learning writeback
+
+Canonical Powerhouse record:
+`brain_records.one-brain-live-promotion-learning-2026-09-18`
+
+Fingerprint:
+`one-brain-live-promotion-learning-v1`
+
+Current terminal status for #2023 remains:
+`RECORDED_PENDING_FINAL_DELIVERY_READBACK`
+
+It must not be promoted to `LIVE & BEWEZEN` until the exact current #2023 head passes required gates, protected merge completes, the production migration is applied, and the One Brain runtime/readback is verified.
