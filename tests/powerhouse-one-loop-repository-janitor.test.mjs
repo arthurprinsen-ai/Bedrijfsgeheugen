@@ -35,3 +35,24 @@ test('janitor emits and reads back cleanup evidence', () => {
   assert.match(workflow, /janitor-runtime-actions\.json/);
   assert.match(workflow, /JANITOR_BRANCH_DELETE_READBACK_FAILED/);
 });
+
+
+test('janitor continuously recovers silent exact-head CI starts without dummy commits', () => {
+  assert.match(workflow, /cron: '\*\/5 \* \* \* \*'/);
+  assert.match(workflow, /ZERO_EXACT_HEAD_RUNS/);
+  assert.match(workflow, /workflow run required-test\.yml --ref "\$branch"/);
+  assert.match(workflow, /workflow run unified-brain-delivery\.yml --ref "\$branch"/);
+  assert.match(workflow, /-f pr_number="\$pr"/);
+  assert.match(workflow, /-f base_sha="\$base"/);
+  assert.match(workflow, /-f head_sha="\$head"/);
+  assert.match(workflow, /-f candidate_branch="\$branch"/);
+});
+
+test('silent-start recovery is exact-head fail-closed and non-amplifying', () => {
+  assert.match(workflow, /age_seconds.*120/s);
+  assert.match(workflow, /required_count.*= 0/s);
+  assert.match(workflow, /brain_count.*= 0/s);
+  assert.match(workflow, /SKIP_HEAD_DRIFT/);
+  assert.match(workflow, /DISPATCH_REJECTED_FAIL_CLOSED/);
+  assert.doesNotMatch(workflow, /git commit.*silent|empty commit.*recover/i);
+});
