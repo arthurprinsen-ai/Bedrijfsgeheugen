@@ -30,7 +30,7 @@ Never solve this class by adding another queue, scheduler, brain, database or le
 
 ## Release lineage
 
-Canonical implementation candidate: PR #1968. Final exact-head, protected-merge and main/readback evidence must be appended after protected delivery completes; until then this learning remains implementation evidence, not a LIVE_PROVEN claim.
+Canonical implementation candidate: PR #1968. This paragraph described the pre-merge state and is retained as historical lineage context only. The terminal authority is the closure section below and the machine-readable Brain learning at `brain/learning/2026-09-17-powerhouse-one-loop-v1.json`.
 
 ## Recovery checkpoint — 2026-09-17
 
@@ -61,3 +61,39 @@ At readback for `ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded`, `Required test`, Cod
 ### Additional prevention rule
 
 `STALE_ASSERTION_MUST_FOLLOW_VERIFIED_ARCHITECTURE`: when workflow consolidation or a verified architecture change intentionally moves a contract boundary, a failing assertion that still encodes the superseded boundary must be repaired at the test/oracle layer after verifying the new architecture. Never reintroduce redundant fan-out, weaken a gate, or classify the stale assertion as a product regression merely to make CI green.
+
+
+## Terminal closure — 2026-09-18 readback
+
+Status: **LIVE_PROVEN / LEARNED / FULFILLED**.
+
+Canonical evidence already persisted in the Powerhouse Brain and verified on main:
+
+- PR #1968 exact implementation head: `4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86`.
+- Required run `35271798560` and BRAIN delivery run `35271798909` were terminal green on that same exact head.
+- PR #1968 was protected-merged to `6ae18de754cb33044108d85ba704c965a5287b88`.
+- Production Release Readback run `35272421517` succeeded and exposed a post-merge squash-identity completion gap rather than a product/runtime regression.
+- Recovery PR #1984 closed that downstream completion-identity/cleanup gap on exact head `97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04`.
+- PR #1984 was protected-merged to `4fda9309eefa259b2a7f492ca929b8d472055d5e`.
+- Production Release Readback run `35274800041`, Outcome Obligation Sweep run `35274960927`, Configuratiewacht run `35274800039`, and Merged Branch Cleanup run `35274800189` all completed successfully.
+- Machine-readable Powerhouse learning records lifecycle `LEARNED -> FULFILLED` and terminal state `LIVE_PROVEN`.
+- Current main has subsequently advanced beyond the closure SHA; that normal forward movement does not invalidate the immutable historical evidence above.
+
+### Permanent operating rules learned from this incident
+
+1. **QUEUE_IS_NON_TERMINAL** — queued/pending/in-progress provider work is execution state, never completion and never by itself a reason for retry commits.
+2. **ONE_OBLIGATION_ONE_EXECUTABLE_CANDIDATE** — one material obligation has one active executable candidate and one recovery owner.
+3. **PR_SINGLE_FLIGHT** — concurrency is keyed by PR identity so newer heads supersede stale work; exact SHA remains verification and merge evidence.
+4. **NO_BLIND_RERUNS** — reconcile current head/run state before any retry; stale or superseded failures are historical evidence only.
+5. **FANOUT_REDUCTION_PRESERVES_COVERAGE** — workflow consolidation must re-home every regression contract in a canonical lane; never hide orphan tests as known-red.
+6. **CLASSIFIER_COCHANGE_REQUIRED** — new governance/control-plane tests receive bounded delivery-lane classification in the same change.
+7. **METADATA_IS_RELEASE_AUTHORITY** — delivery metadata must track legitimate candidate growth and lineage movement; do not weaken fail-closed validation.
+8. **STALE_ASSERTIONS_FOLLOW_VERIFIED_ARCHITECTURE** — repair obsolete test/oracle assumptions after architecture consolidation instead of restoring redundant legacy paths.
+9. **SQUASH_MERGE_IDENTITY_MUST_BE_EXPLICIT** — completion evidence cannot assume a two-parent merge; resolve identity from deterministic merged-PR evidence and fail closed on ambiguity.
+10. **POST_MERGE_FAILURES_ARE_OPERATOR_VISIBLE** — cleanup/reconciliation failures must leave durable evidence plus a concrete surfaced error.
+11. **NO_PARALLEL_BRAIN** — recovery, telemetry, learning and closure remain in the existing Powerhouse Brain/control-plane; never add a shadow queue, scheduler, database or learning store for this class.
+12. **FULFILLED_REQUIRES_END_TO_END_PROOF** — exact-head verification, protected merge, production/main readback, outcome/reconciliation evidence and canonical learning writeback are all required.
+
+### Reuse rule for all future chats and agents
+
+Before diagnosing GitHub queue, interrupted execution or stuck delivery, retrieve this learning and the machine-readable Brain record first. Reuse these fingerprints and prevention rules before designing anything new. A future agent may extend this contract only when new evidence demonstrates an uncovered failure class.
