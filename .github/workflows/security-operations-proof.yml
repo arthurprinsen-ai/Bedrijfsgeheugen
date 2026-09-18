@@ -1,0 +1,47 @@
+name: Security Operations Proof
+
+on:
+  pull_request:
+    paths:
+      - 'scripts/security-operations-proof.mjs'
+      - 'tests/security-operations-proof.test.mjs'
+      - 'powerhouse/assurance/security-operations-closure.json'
+      - 'docs/powerhouse/POWERHOUSE_SECURITY_OPERATIONS_CLOSURE.md'
+      - '.github/workflows/security-operations-proof.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'scripts/security-operations-proof.mjs'
+      - 'tests/security-operations-proof.test.mjs'
+      - 'powerhouse/assurance/security-operations-closure.json'
+      - 'docs/powerhouse/POWERHOUSE_SECURITY_OPERATIONS_CLOSURE.md'
+      - '.github/workflows/security-operations-proof.yml'
+  schedule:
+    - cron: '17 5 * * 1'
+  workflow_dispatch:
+    inputs:
+      require_live:
+        description: 'Fail unless the full security/operations closure is LIVE & BEWEZEN'
+        required: false
+        default: false
+        type: boolean
+
+permissions:
+  contents: read
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contract tests
+        run: node --test tests/security-operations-proof.test.mjs
+      - name: Structural fail-closed validation
+        run: node scripts/security-operations-proof.mjs --check
+      - name: Full closure gate when explicitly required
+        if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && inputs.require_live) }}
+        run: node scripts/security-operations-proof.mjs --require-live
