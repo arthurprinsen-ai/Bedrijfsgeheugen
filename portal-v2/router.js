@@ -75,5 +75,6 @@ export function bindPortalNavigation(nextHandlers={}){
     addEventListener('popstate',()=>applyTarget(readTargetFromLocation()));
     popstateBound=true;
   }
-  applyTarget(readTargetFromLocation());
+  history.replaceState({portalTarget:'overzicht'},'',navigationUrl('overzicht'));
+  applyTarget('overzicht');
 }
