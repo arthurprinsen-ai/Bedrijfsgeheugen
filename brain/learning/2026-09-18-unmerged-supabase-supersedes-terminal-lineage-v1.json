@@ -1,0 +1,31 @@
+{
+  "fingerprint": "control-plane|unmerged-supabase-supersedes|terminal-lineage-block-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "obligation_id": "powerhouse-organism-regulatory-propagation-v1",
+  "incident": "Terminal closure for merged PR #2306 failed after production and exact migration readback were already true because its direct Supersedes metadata pointed at closed, unmerged PR #2298, which also contained a Supabase migration path.",
+  "root_cause": "The recovery lineage mixed delivery-history ancestry with production migration authority. Closed unmerged recovery attempts were kept inside the direct Supersedes chain even though only merged predecessors can be authoritative for terminal production migration identity.",
+  "evidence": {
+    "merged_recovery_pr": 2306,
+    "merged_recovery_sha": "bc0443016271b46853795a5fe707c7395d65400e",
+    "blocked_terminal_run": 35381988772,
+    "unmerged_predecessor_pr": 2298,
+    "migration": "20260918194500_powerhouse_source_observation_immutable_v1",
+    "production_migration_verified": true
+  },
+  "prevention_rule": "For migration-bearing obligations, direct Supersedes used by terminal delivery must follow merged production-authority ancestry. Closed unmerged recovery attempts remain explicit audit history, but must not be migration-authority nodes in the terminal Supersedes chain.",
+  "canonical_metadata_pattern": {
+    "direct_supersedes": "last merged predecessor in the same obligation lineage",
+    "unmerged_recovery_history": "separate audit metadata such as Unmerged-Recovery-History",
+    "terminal_behavior": "fail closed when an unmerged direct Supersedes still carries Supabase migrations"
+  },
+  "enforcement": [
+    "obligation-terminal-closure fail-closed UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS",
+    "brain-control-plane-supabase-terminal-readback regression",
+    "canonical lineage correction on PR #2306"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}
