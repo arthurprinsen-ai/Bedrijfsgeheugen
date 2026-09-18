@@ -5,6 +5,11 @@ export const DEFAULT_SLO = Object.freeze({
   conflictRefreshSeconds: 45
 });
 
+const CRITICAL_WORKFLOWS = Object.freeze({
+  required: /required test/i,
+  brain: /unified brain delivery|brain delivery/i
+});
+
 export function scoreDeliveryRisk({changedPaths=[], historical={}}={}) {
   const paths=[...new Set(changedPaths.filter(Boolean))];
   let score=0;
@@ -20,17 +25,29 @@ export function scoreDeliveryRisk({changedPaths=[], historical={}}={}) {
   return {score:Math.min(score,100), class:score>=60?'CRITICAL':score>=25?'STANDARD':'FAST', reasons};
 }
 
-export function classifyRecovery({mergeable=true, workflowRuns=[], headUpdatedAt, now=Date.now(), slo=DEFAULT_SLO}={}) {
+export function criticalWorkflowCoverage(workflowRuns=[]){
+  const names=workflowRuns.map(r=>String(r.name??''));
+  const requiredPresent=names.some(name=>CRITICAL_WORKFLOWS.required.test(name));
+  const brainPresent=names.some(name=>CRITICAL_WORKFLOWS.brain.test(name));
+  const missing=[];
+  if(!requiredPresent) missing.push('required-test.yml');
+  if(!brainPresent) missing.push('unified-brain-delivery.yml');
+  return {requiredPresent,brainPresent,missing,complete:missing.length===0};
+}
+
+export function classifyRecovery({mergeable=true, workflowRuns=[], headUpdatedAt, now=Date.now(), slo=DEFAULT_SLO, eagerStart=false}={}) {
   const ageSeconds=headUpdatedAt ? Math.max(0,(now-new Date(headUpdatedAt).getTime())/1000) : 0;
   const active=workflowRuns.filter(r=>['queued','in_progress','waiting','requested','pending'].includes(r.status));
   const failed=workflowRuns.filter(r=>r.status==='completed' && ['failure','cancelled','timed_out','action_required','startup_failure'].includes(r.conclusion));
   const successful=workflowRuns.filter(r=>r.status==='completed' && r.conclusion==='success');
-  if(mergeable===false) return {state:'MERGE_CONFLICT_RECOVERY', action:'REFRESH_SAME_ROLLING_LANE_FROM_MAIN', terminal:false};
-  if(workflowRuns.length===0 && ageSeconds>=slo.firstSignalSeconds) return {state:'ZERO_RUN_RECOVERY', action:'DISPATCH_REQUIRED_AND_BRAIN', terminal:false};
-  if(active.length && ageSeconds>=slo.staleRunSeconds) return {state:'STALE_RUN_RECOVERY', action:'CANCEL_SUPERSEDED_AND_REDISPATCH_EXACT_HEAD', terminal:false};
-  if(failed.length) return {state:'FAILED_GATE_RECOVERY', action:'READ_FIRST_CURRENT_FAILURE_AND_REPAIR_SAME_LINEAGE', terminal:false};
-  if(successful.length && active.length===0) return {state:'GATES_OBSERVED', action:'EVALUATE_PROTECTED_PROMOTION', terminal:false};
-  return {state:'HEALTHY_PROGRESS', action:'CONTINUE', terminal:false};
+  const coverage=criticalWorkflowCoverage(workflowRuns);
+  if(mergeable===false) return {state:'MERGE_CONFLICT_RECOVERY', action:'REFRESH_SAME_ROLLING_LANE_FROM_MAIN', terminal:false, coverage};
+  if(workflowRuns.length===0 && (eagerStart || ageSeconds>=slo.firstSignalSeconds)) return {state:'ZERO_RUN_RECOVERY', action:'DISPATCH_REQUIRED_AND_BRAIN', terminal:false, coverage};
+  if(!coverage.complete && (eagerStart || ageSeconds>=slo.firstSignalSeconds)) return {state:'PARTIAL_START_RECOVERY', action:'DISPATCH_MISSING_CRITICAL_WORKFLOWS', terminal:false, coverage};
+  if(active.length && ageSeconds>=slo.staleRunSeconds) return {state:'STALE_RUN_RECOVERY', action:'CANCEL_SUPERSEDED_AND_REDISPATCH_EXACT_HEAD', terminal:false, coverage};
+  if(failed.length) return {state:'FAILED_GATE_RECOVERY', action:'READ_FIRST_CURRENT_FAILURE_AND_REPAIR_SAME_LINEAGE', terminal:false, coverage};
+  if(successful.length && active.length===0 && coverage.complete) return {state:'GATES_OBSERVED', action:'EVALUATE_PROTECTED_PROMOTION', terminal:false, coverage};
+  return {state:'HEALTHY_PROGRESS', action:'CONTINUE', terminal:false, coverage};
 }
 
 export function adaptiveGatePlan({riskClass='STANDARD', affectedLanes=[], protectedSurfaces=[]}={}) {
