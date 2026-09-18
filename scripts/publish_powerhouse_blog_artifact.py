@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# Delivery metadata is carried by the protected PR.
 import datetime as dt
 import html
 import json
