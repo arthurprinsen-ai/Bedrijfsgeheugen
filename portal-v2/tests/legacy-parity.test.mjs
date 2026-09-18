@@ -58,3 +58,13 @@ test('legacy MTO and numeric horizon semantics remain calculable after migration
   const state={portal:{strategy:{findings:[{value:100,horizon:'3 maanden'},{value:100,horizon:3}],minimumValue:0,horizon:3}}};
   assert.equal(calculateLegacyEquivalent('priority-filter',state).length,2);
 });
+
+
+test('business-case benefit uses all 13 legacy dimension costs at the selected target level',()=>{
+  const maturity=Object.fromEntries(['sturing','commercie','operatie','finance','mensen','analytics','quality','governance','tech','culture','service','security','duurzaam'].map(id=>[id,1]));
+  const state={portal:{profile:{employees:24,hourlyCost:52,maturity},businessCase:{target:4}}};
+  const benefit=calculateLegacyEquivalent('benefit-at-target-maturity',state);
+  const current=calculateLegacyEquivalent('dimension-cost-total',state);
+  assert.ok(benefit>0);
+  assert.ok(benefit<current);
+});
