@@ -1,10 +1,10 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 3,
+  "revision": 4,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
-  "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
+  "scope": "all current and future material Powerhouse chats, agents, skills, workflows, scenarios, development runs, incidents, recoveries and production verifications",
   "purpose": "Make shared learning operational rather than conversational: every material worker reads current canonical state before work, executes already-authorized work without redundant confirmation loops, records what it does, persists every material error/decision/outcome/learning after work, refreshes shared context and proves that the next worker can discover the result quickly and securely.",
   "invariants": [
     "NO_AGENT_STARTS_BLIND",
@@ -22,7 +22,8 @@
     "EVERY_MATERIAL_SOURCE_HAS_PROVENANCE_FRESHNESS_CONFIDENCE_AND_SECURITY_CLASS",
     "SECRETS_AND_SENSITIVE_DATA_NEVER_ENTER_GENERAL_LEARNING_PAYLOADS",
     "ONE_COMPACT_CURRENT_STATE_PER_MATERIAL_SCOPE",
-    "NO_RECONFIRMATION_FOR_ALREADY_AUTHORIZED_POWERHOUSE_EXECUTION"
+    "NO_RECONFIRMATION_FOR_ALREADY_AUTHORIZED_POWERHOUSE_EXECUTION",
+    "NO_MATERIAL_SKILL_EXECUTION_OUTSIDE_CANONICAL_LOOP"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -308,5 +309,27 @@
     "brain/policies/chat-to-brain-completeness-v1.json",
     "brain/policies/powerhouse-agent-continuity-v1.json",
     "config/chat-learning-completeness-guard.json"
-  ]
+  ],
+  "skill_execution_contract": {
+    "required": true,
+    "actor_kind": "skill",
+    "role": "CANONICAL_EXECUTION_CAPABILITY",
+    "existing_state_preflight_required": true,
+    "activity_ledger_required": true,
+    "evidence_and_lineage_required": true,
+    "exact_head_or_provider_identity_required": true,
+    "documentation_writeback_required": true,
+    "learning_writeback_required": true,
+    "shared_context_refresh_required": true,
+    "next_agent_discoverability_required": true,
+    "terminal_success_requires": "same canonical Powerhouse completion gates as chats and agents",
+    "forbidden_terminal_states": [
+      "SKILL_COMPLETED_WITH_LOCAL_OUTPUT_ONLY",
+      "SKILL_COMPLETED_WITHOUT_ACTIVITY_LOG",
+      "SKILL_COMPLETED_WITHOUT_DOCUMENTATION",
+      "SKILL_COMPLETED_WITHOUT_LEARNING_WRITEBACK",
+      "SKILL_COMPLETED_WITHOUT_READBACK"
+    ],
+    "rule": "A material skill is not a side utility outside Powerhouse. It is an execution capability inside the same canonical loop and must leave durable evidence, documentation, learning and discoverable state before terminal success."
+  }
 }
