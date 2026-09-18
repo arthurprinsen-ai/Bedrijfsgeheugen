@@ -69,3 +69,38 @@ test('Supabase runtime exposes explainable revenue-first opportunity ranking', (
 test('private CRM snapshot is never committed into the cockpit', () => {
   assert.ok(!fs.existsSync(new URL('../intern/linkedin-revenue/data.json', import.meta.url)), 'private CRM snapshot must not be committed');
 });
+
+test('Revenue Command Center writes explicit human feedback through the canonical learning API', () => {
+  const client=fs.readFileSync(scriptPath,'utf8');
+  const adapter=fs.readFileSync(functionPath,'utf8');
+  for(const type of ['approve','edit','skip','alternative_action']) assert.ok(client.includes(type), `missing human feedback control ${type}`);
+  assert.match(client,/command:'feedback'/);
+  assert.match(client,/recommendedVariant/);
+  assert.match(client,/actualVariant/);
+  assert.match(client,/alternativeAction/);
+  assert.match(adapter,/body\.command==='feedback'/);
+  assert.match(adapter,/coreFetch\('\/feedback'/);
+  assert.match(adapter,/FEEDBACK_RECORDED/);
+  assert.match(adapter,/ACTION_DEDUPE_AND_VALID_FEEDBACK_REQUIRED/);
+});
+
+test('cockpit economics accepts only explicit observed values and never fabricates zero cost', () => {
+  const client=fs.readFileSync(scriptPath,'utf8');
+  const adapter=fs.readFileSync(functionPath,'utf8');
+  assert.match(client,/command:'economics'/);
+  assert.match(client,/humanMinutes/);
+  assert.match(client,/Geobserveerde menselijke minuten/);
+  assert.match(adapter,/body\.command==='economics'/);
+  assert.match(adapter,/coreFetch\('\/economics'/);
+  assert.match(adapter,/ECONOMICS_RECORDED/);
+  assert.match(adapter,/Number\(humanMinutes\)<0/);
+  assert.doesNotMatch(client,/humanMinutes:\s*0/);
+  assert.doesNotMatch(adapter,/humanMinutes:\s*0/);
+});
+
+test('feedback and economics use explicit idempotency keys from the user interaction', () => {
+  const client=fs.readFileSync(scriptPath,'utf8');
+  assert.match(client,/cockpit-feedback/);
+  assert.match(client,/cockpit-economics/);
+  assert.match(client,/dedupeKey:correlation/);
+});
