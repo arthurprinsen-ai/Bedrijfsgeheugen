@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-LEARNING-v1",
+  "fingerprint": "powerhouse|blog-production|2026-09-14|merge-deploy-readback-reconcile",
+  "status": "PROVEN",
+  "system": "Bedrijfsgeheugen Powerhouse",
+  "observed_at": "2026-09-15",
+  "incident": {
+    "channel": "blog",
+    "slug": "zoekverkeer-stijgt-omzet-niet",
+    "candidate_pr": 1464,
+    "candidate_head": "84b1fac59b573939c5e4f14b0bbfff43407d8d98",
+    "merge_sha": "656c5476ca704f0bfca5cfc6e6bc4d82de8f34ab",
+    "failed_release_readback_run": 34839002350,
+    "failed_writer_reconcile_run": 34839002896,
+    "later_production_sha": "6f17c21828be46441a95580f7679e22314e30ed6",
+    "netlify_deploy_id": "6aa9174cf899ab00075b0f84",
+    "successful_release_readback_run": 34955618757
+  },
+  "root_causes": [
+    "A green PR verification/promotion label was verification-only and did not itself prove a production deploy.",
+    "The original writer reconciliation required release.json commit_ref to equal the writer merge SHA exactly, so a later production commit that legitimately contained the writer merge could not close the older writer outcome.",
+    "The approved-central writer branch family was not handled by the Notion reconciliation case statement.",
+    "Earlier candidate delivery exposed additional structural defects: JSON-array output was treated as JSONL, the first source hash used Markdown rather than Notion plain_text, generated pages missed FAQPage/figure SEO contracts, external Google Fonts hurt Lighthouse performance, bot-created PRs produced action_required runs with zero jobs, and generator-only changes were misclassified as requiring a site preview."
+  ],
+  "prevention_rules": [
+    "MERGE_IS_NOT_DEPLOY_IS_NOT_LIVE",
+    "REQUIRE_PRODUCTION_COMMIT_TO_CONTAIN_WRITER_MERGE",
+    "RECONCILE_APPROVED_CENTRAL_AFTER_PROVEN_PRODUCTION",
+    "PERSIST_PROVIDER_OR_HOSTING_READBACK_BEFORE_DELIVERED",
+    "KEEP_CANDIDATE_WRITER_FAIL_CLOSED_ON_HASH_SEO_PERFORMANCE_AND_IDENTITY"
+  ],
+  "evidence": {
+    "current_main_equals_production": true,
+    "current_main_sha": "6f17c21828be46441a95580f7679e22314e30ed6",
+    "writer_merge_is_ancestor_of_current_main": true,
+    "current_main_contains_blog_artifact": true,
+    "netlify_state": "ready",
+    "lighthouse": {
+      "performance": 92,
+      "accessibility": 98,
+      "best_practices": 100,
+      "seo": 100
+    }
+  },
+  "required_future_behavior": "A Powerhouse content outcome may become delivered only after the canonical host proves a production commit that contains the governed content merge and content readback succeeds. A newer descendant production commit is valid evidence for an older writer merge. Reconciliation must then update the existing canonical outcome/queue/learning lineage; never create a parallel delivery ledger."
+}
