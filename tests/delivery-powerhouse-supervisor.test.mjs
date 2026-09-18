@@ -69,3 +69,17 @@ test('supervisor reacts immediately to non-main branch pushes and retains watchd
   assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
   assert.match(yaml,/PUSH|pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);
 });
+
+
+test('same-lineage moving-main recovery requires terminal lease and never merges the PR itself',()=>{
+  const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  assert.match(yaml,/contents:\s*write/);
+  assert.match(yaml,/MERGE_CONFLICT_RECOVERY/);
+  assert.match(yaml,/Writer-Lease-State: TERMINAL_DELIVERY/);
+  assert.match(yaml,/Writer-Lease-Owner: powerhouse-terminal-delivery/);
+  assert.match(yaml,/head_repo/);
+  assert.match(yaml,/repos\/\$repo\/merges/);
+  assert.match(yaml,/-f base="\$branch"/);
+  assert.match(yaml,/-f head="\$default_branch"/);
+  assert.doesNotMatch(yaml,/gh pr merge|merge_pull_request|--admin/);
+});

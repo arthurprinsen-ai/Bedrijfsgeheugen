@@ -8,7 +8,7 @@ on:
     - cron: '*/5 * * * *'
 
 permissions:
-  contents: read
+  contents: write
   pull-requests: read
   actions: write
 
@@ -41,6 +41,8 @@ jobs:
             branch="$(jq -r '.head.ref' <<<"$pr")"
             base="$(jq -r '.base.sha' <<<"$pr")"
             updated="$(jq -r '.updated_at' <<<"$pr")"
+            body="$(jq -r '.body // ""' <<<"$pr")"
+            head_repo="$(jq -r '.head.repo.full_name // ""' <<<"$pr")"
             mergeable="$(gh api "repos/$repo/pulls/$number" --jq '.mergeable')"
             runs="$(gh api "repos/$repo/actions/runs?head_sha=$head&per_page=100" --jq '.workflow_runs | map({id,name,status,conclusion,created_at,updated_at,run_started_at})')"
             decision="$(node --input-type=module - "$mergeable" "$updated" "$runs" <<'NODE'
@@ -80,6 +82,22 @@ jobs:
                 ;;
               MERGE_CONFLICT_RECOVERY)
                 echo "::warning::PR#$number requires same-lineage main refresh; duplicate recovery PR forbidden."
+                if [ "$head_repo" != "$repo" ]; then
+                  echo "::warning::PR#$number is not a same-repository branch; automatic refresh forbidden."
+                  continue
+                fi
+                if ! grep -qx 'Writer-Lease-State: TERMINAL_DELIVERY' <<<"$body" || ! grep -qx 'Writer-Lease-Owner: powerhouse-terminal-delivery' <<<"$body"; then
+                  echo "::warning::PR#$number has no active canonical terminal writer lease; automatic refresh forbidden."
+                  continue
+                fi
+                default_branch="$(gh api "repos/$repo" --jq '.default_branch')"
+                if gh api --method POST "repos/$repo/merges" -f base="$branch" -f head="$default_branch" -f commit_message="delivery: refresh PR #$number from $default_branch" >/tmp/merge-refresh.json 2>/tmp/merge-refresh.err; then
+                  new_head="$(gh api "repos/$repo/branches/$branch" --jq '.commit.sha')"
+                  echo "::notice::PR#$number refreshed on same leased lineage $head -> $new_head; exact-head gates will restart."
+                else
+                  echo "::warning::PR#$number could not be refreshed automatically; preserving same lineage fail-closed."
+                  cat /tmp/merge-refresh.err || true
+                fi
                 ;;
             esac
           done
