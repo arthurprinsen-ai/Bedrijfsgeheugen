@@ -30,3 +30,7 @@ The canonical RPC `powerhouse_claim_instagram_media_job_v1` atomically claimed e
 ## Current delivery state
 
 Skill/documentation change is on branch `fix/instagram-worker-boundary-recovery-v1`. Protected-main checks and production readback remain required before this learning may be labelled LIVE_BEWEZEN.
+
+## Omni model-lineage extension
+
+User-selected OpenArt Gemini Omni 1.1 Flash is now the persisted current provider candidate for the already-claimed job. Provider history `9ZUvSm6ZjwcAof8NRGJ2` supersedes the earlier Seedance candidate without creating or claiming a second Powerhouse job. The canonical job stores model, mode, requested 1080p/9:16 format, generation state and superseded history identity. This prevents chat interruption or model switching from producing an untraceable second publication lineage.
