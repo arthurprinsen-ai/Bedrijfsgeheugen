@@ -79,7 +79,7 @@ export function evaluateTestWorkflowCoverage({changedPaths=[],classifiedLanes=[]
 function conclusionOk(v){return ['success','neutral','skipped'].includes(normalize(v).toLowerCase());}
 
 export function evaluateTerminalMergeGuard({
-  body='',policy={},candidateNumber=0,candidateHeadSha='',validatedHeadSha='',currentMainSha='',behindBy=null,mergeable=true,
+  body='',policy={},candidateNumber=0,candidateHeadSha='',validatedHeadSha='',currentMainSha='',behindBy=null,mergeable=null,
   requiredChecks=[],openCandidates=[]
 }={}){
   const contract=validateMachineReadablePrBody({body,candidateHeadSha,currentMainSha,policy});
