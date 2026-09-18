@@ -27,12 +27,10 @@ test('authenticated portal input feeds Powerhouse as one idempotent CurrentState
   const payload=await response.json();
   assert.equal(response.status,200);
   assert.equal(writes.length,4);
-  const source=writes.find(write=>write.record.type==='BusinessInput');
-  const current=writes.find(write=>write.record.type==='CurrentState');
-  const organism=writes.find(write=>write.record.type==='ImpactAssessment'&&write.record.kind==='organism_impact');
-  assert.ok(source);
-  assert.ok(current);
-  assert.ok(organism);
+  const [raw,source,current,impact]=writes;
+  assert.equal(raw.record.type,'SourceObservation');
+  assert.equal(raw.record.kind,'raw_source');
+  assert.equal(source.record.type,'BusinessInput');
   assert.equal(source.record.kind,'SourceTruth');
   assert.equal(current.record.type,'CurrentState');
   assert.equal(current.record.kind,'current_state');
@@ -45,10 +43,13 @@ test('authenticated portal input feeds Powerhouse as one idempotent CurrentState
   assert.equal(current.record.payload.inputType,'AIActAssessment');
   assert.deepEqual(current.record.payload.answers,{usesAI:true,humanOversight:false});
   assert.equal(current.idempotencyKey,`portal-business-current-state:${payload.sourceRevision}`);
+  assert.equal(impact.record.type,'ImpactAssessment');
+  assert.equal(impact.record.kind,'organism_impact');
+  assert.deepEqual(impact.record.predecessorIds,[current.record.id]);
+  assert.deepEqual(impact.record.evidenceIds,[source.record.id,current.record.id]);
   assert.equal(payload.powerhouseFeedStored,true);
-  assert.equal(payload.currentStateRecordId,current.record.id);
-  assert.equal(payload.organismImpactRecordId,organism.record.id);
   assert.equal(payload.organismImpactStored,true);
+  assert.equal(payload.currentStateRecordId,current.record.id);
 });
 
 test('portal projection stays fail-closed when Powerhouse CurrentState feed cannot be stored',async()=>{
@@ -65,5 +66,6 @@ test('portal projection stays fail-closed when Powerhouse CurrentState feed cann
   assert.equal(payload.powerhouseFeedStored,false);
   assert.equal(projectionWrites,0);
   assert.equal(writes.length,3);
-  assert.equal(writes.some(write=>write.record.type==='OrganismImpact'),false);
+  assert.deepEqual(writes.map(({record})=>record.type),['SourceObservation','BusinessInput','CurrentState']);
+  assert.equal(writes.some(({record})=>record.type==='ImpactAssessment'),false);
 });

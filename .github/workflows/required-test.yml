@@ -147,6 +147,8 @@ jobs:
           tests/klantportaal-demostand.test.mjs
           tests/klantportaal-tekenen-via-supabase.test.mjs
           tests/platform-promotion-activation-gate.test.mjs
+          tests/powerhouse-organism-propagation.test.mjs
+          tests/regulatory-organism-feed.test.mjs
           tests/seo-v18-canonical-header.test.mjs
           tests/seo-homepage-scroll-story-interaction.test.mjs
           tests/seo-homepage-process-progress.test.mjs
