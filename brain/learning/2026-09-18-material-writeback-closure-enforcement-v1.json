@@ -8,17 +8,19 @@
   "failedApproach": [
     "Relying on AGENTS.md and SKILL.md wording alone.",
     "Testing only that mandatory writeback policy fields and phrases exist.",
-    "Waiting until post-merge terminal closure to discover missing writeback artifacts."
+    "Waiting until post-merge terminal closure to discover missing writeback artifacts.",
+    "Adding an executable regression under an unclassified tests/ path; delivery hygiene correctly rejected it."
   ],
   "fix": "Add a deterministic pre-merge material-writeback closure guard to Required CI. A material candidate must include canonical Brain learning, an append-only activity/development-ledger event, and human-readable change/learning documentation in the same diff. Closure-only reconciliation is exempt from recursive self-requirement.",
   "prevention": [
     "Every material repository candidate fails closed before lane fan-out when Brain learning is absent.",
     "Every material repository candidate fails closed before lane fan-out when activity/development ledger evidence is absent.",
     "Every material repository candidate fails closed before lane fan-out when human-readable documentation is absent.",
-    "Automatic learning-to-skill projection remains mandatory after merge for every Brain learning change."
+    "Automatic learning-to-skill projection remains mandatory after merge for every Brain learning change.",
+    "Every new executable regression path must be classified into a delivery lane in the same candidate."
   ],
   "regression": [
-    "tests/material-writeback-closure-guard.test.mjs",
+    "tests/brain-material-writeback-closure-guard.test.mjs",
     ".github/workflows/required-test.yml preflight gate"
   ],
   "skill_targets": [
