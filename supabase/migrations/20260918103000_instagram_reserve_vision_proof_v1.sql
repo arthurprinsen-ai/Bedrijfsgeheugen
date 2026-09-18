@@ -63,7 +63,7 @@ begin
 end
 $$;
 
-revoke all on function public.enforce_instagram_media_proof_vision_v1() from public,anon,authenticated;
+revoke execute on function public.enforce_instagram_media_proof_vision_v1() from public,anon,authenticated;
 grant execute on function public.enforce_instagram_media_proof_vision_v1() to service_role;
 
 drop trigger if exists enforce_instagram_media_proof_vision_v1 on public.powerhouse_media_proof_evidence_v1;
@@ -119,7 +119,7 @@ begin
 end
 $$;
 
-revoke all on function public.enforce_instagram_obligation_vision_v1() from public,anon,authenticated;
+revoke execute on function public.enforce_instagram_obligation_vision_v1() from public,anon,authenticated;
 grant execute on function public.enforce_instagram_obligation_vision_v1() to service_role;
 
 drop trigger if exists enforce_instagram_obligation_vision_v1 on public.content_publication_obligations;
@@ -230,7 +230,7 @@ begin
 end
 $$;
 
-revoke all on function public.powerhouse_instagram_daily_guard_v1(timestamptz) from public,anon,authenticated;
+revoke execute on function public.powerhouse_instagram_daily_guard_v1(timestamptz) from public,anon,authenticated;
 grant execute on function public.powerhouse_instagram_daily_guard_v1(timestamptz) to service_role;
 
 create or replace function public.powerhouse_content_closed_loop_tick_v1(p_now timestamptz default now())
@@ -260,7 +260,7 @@ begin
 end
 $$;
 
-revoke all on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from public,anon,authenticated;
+revoke execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from public,anon,authenticated;
 grant execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) to service_role;
 
 comment on function public.powerhouse_instagram_visual_proof_valid_v1(jsonb,text) is
