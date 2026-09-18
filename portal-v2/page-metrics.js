@@ -199,8 +199,10 @@ const PAGES=Object.freeze({
       ['Zonder bron',String(items.filter(item=>!filled(item.source)).length)],
       ['Externe bevindingen',String(onderzoekVoor().length)]
     ];},
-    extraWorklist:s=>[['Positie volwassenheid tegen kosten',String(calc('maturity-vs-cost-position',s)||EMPTY)]],
-    extraWorklist:()=>onderzoekVoor().slice(0,3).map(item=>[`${item.t} — ${item.cijfer}`,String(item.bron)]),
+    extraWorklist:s=>[
+      ['Positie volwassenheid tegen kosten',JSON.stringify(calc('maturity-vs-cost-position',s)||{})],
+      ...onderzoekVoor().slice(0,3).map(item=>[`${item.t} — ${item.cijfer}`,String(item.bron)])
+    ],
     worklist:s=>arr(at(s,'portal.research.hypotheses')).filter(item=>!filled(item.evidence)).slice(0,2).map(item=>[String(item.hypothesis||'Hypothese'),'bewijs ontbreekt'])},
 
   'compliance-governance':{slice:'portal.compliance',
@@ -578,11 +580,21 @@ function runtimeWorklist(pageId,state){
 
 export function hasPageData(pageId,state={}){
   if(pageId==='bronnenstatus')return true;
-  // advies leidt af uit doorgerekende gegevens; dan is de eigen slice leeg maar
-  // is er wel degelijk iets te tonen.
+  // Afgeleide legacy-pagina's mochten in het oude portaal nooit leeg worden
+  // alleen omdat hun eigen opslag-slice leeg was: upstream gegevens rekenden
+  // direct door. Houd die semantics in V2 expliciet in stand.
   if(pageId==='advies'&&bevindingen(state).length)return true;
-  // ai-capabilities toont de kosten per bedrijfsonderdeel zodra er
-  // volwassenheidsniveaus zijn ingevuld, ook zonder capability-scores.
+  if(pageId==='eindconclusie'&&(
+    bevindingen(state).length ||
+    filled(at(state,'portal.profile')) ||
+    filled(at(state,'portal.strategy')) ||
+    filled(at(state,'portal.canvases')) ||
+    filled(at(state,'portal.compliance')) ||
+    filled(at(state,'portal.roadmap'))
+  ))return true;
+  if(pageId==='onderzoek'&&(filled(at(state,'portal.research'))||filled(at(state,'portal.profile'))||filled(at(state,'portal.businessCase'))))return true;
+  if(pageId==='branche-markt'&&(filled(at(state,'portal.market'))||filled(at(state,'portal.metrics'))||filled(at(state,'portal.people'))||filled(at(state,'portal.profile'))))return true;
+  if(pageId==='businesscase'&&filled(at(state,'portal.profile')))return true;
   if(pageId==='ai-capabilities'&&arr(calc('dimension-costs',state)).length)return true;
   if(RUNTIME_PAGES[pageId]){const s=at(state,RUNTIME_PAGES[pageId])||{};return arr(s.items).length>0||Number(s.loops)>0||Number(s.totaal)>0;}
   const slice=PAGES[pageId]?.slice;
