@@ -124,3 +124,11 @@ We sturen op:
 - aantal handmatige interventies.
 
 Doel: veilig oplosbare rode toestanden verdwijnen automatisch, gemiste outcomes kunnen niet stil blijven liggen, productie blijft groen en dezelfde foutklasse wordt na één incident voortaan eerder onderschept of automatisch hersteld.
+
+
+## Terminale output is outcome, nooit wachtrijstatus
+Voor chats en agents zijn `queued`, `running`, `auto-merge armed`, `merge pending`, `deploy pending`, `production readback pending` en `learning writeback pending` recoverable interne states. Ze mogen als tussentijdse voortgang worden gemeld, maar nooit als eindantwoord of handoff.
+
+De uitvoerende of herstellende node behoudt ownership totdat één terminale toestand bewezen is: `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` of `BLOCKED_HARD_BOUNDARY`. Bij onderbreking hervat de volgende capabele node dezelfde lineage vanaf canonical state; een gebruiker hoeft niet opnieuw “ga door” te geven.
+
+Fingerprint: `delivery|no-pending-final-output|v1`.
