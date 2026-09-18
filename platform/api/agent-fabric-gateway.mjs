@@ -44,8 +44,13 @@ function requireIngressReceipt(receipt, runtime) {
   for (const field of ['runId', 'actorKind', 'actorId', 'candidateId']) {
     if (receipt[field] !== runtime[field]) throw new Error(`UNIVERSAL_INGRESS_ADMISSION_FAILED ${field} mismatch`);
   }
-  if (!/^[a-f0-9]{64}$/.test(receipt.preflightDigest ?? '') || !/^[a-f0-9]{64}$/.test(receipt.receiptDigest ?? '')) {
+  if (!/^[a-f0-9]{64}$/.test(receipt.preflightDigest ?? '') || !/^[a-f0-9]{64}$/.test(receipt.receiptDigest ?? '') || !/^[a-f0-9]{64}$/.test(receipt.skillProjectionDigest ?? '')) {
     throw new Error('UNIVERSAL_INGRESS_ADMISSION_FAILED invalid receipt digest');
+  }
+  for (const field of ['policyVersion','completionPolicyVersion','skillVersion','deliveryVersion']) {
+    if (typeof receipt[field] !== 'string' || !receipt[field].trim()) {
+      throw new Error(`UNIVERSAL_INGRESS_ADMISSION_FAILED ${field} missing`);
+    }
   }
   return receipt;
 }
