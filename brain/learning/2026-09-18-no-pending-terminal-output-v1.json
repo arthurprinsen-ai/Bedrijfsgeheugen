@@ -1,0 +1,19 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-NO-PENDING-TERMINAL-OUTPUT-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|no-pending-final-output|v1",
+  "date": "2026-09-18",
+  "problem": "Chats and agents returned auto-merge/gate-pending status to the user as if delivery ownership had ended.",
+  "root_cause": "The continuity contract rejected false LIVE claims but did not explicitly forbid non-terminal delivery states as final user-facing handoffs.",
+  "prevention": [
+    "PENDING_IS_INTERNAL_STATE: queued/running/auto-merge/merge/deploy/readback pending states are never terminal user-facing outcomes.",
+    "OWNER_PERSISTS_TO_TERMINAL: the originating or recovering node owns the lineage through production readback and canonical writeback.",
+    "RESUME_WITHOUT_USER_NUDGE: interruption resumes from canonical state without requiring the user to say ga door.",
+    "ONLY_HARD_BOUNDARY_CAN_STOP_EARLY: before LIVE_BEWEZEN only a proven BLOCKED_HARD_BOUNDARY may end execution."
+  ],
+  "regression": "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs",
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ]
+}
