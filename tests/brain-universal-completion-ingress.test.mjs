@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import crypto from 'node:crypto';
 import { beginMaterialRun, completeMaterialRun, UNIVERSAL_INGRESS_VERSION } from '../scripts/brain/powerhouse-universal-runtime-ingress.mjs';
 import { REQUIRED_COMPLETION_CATEGORIES } from '../scripts/brain/powerhouse-universal-completion-gate.mjs';
 import { AGENT_FABRIC_COMMANDS, createAgentFabricGateway } from '../platform/api/agent-fabric-gateway.mjs';
@@ -60,6 +61,11 @@ test('beginMaterialRun creates a READY identity-bound immutable receipt', () => 
   assert.equal(receipt.preflightStatus, 'READY');
   assert.equal(receipt.runId, 'run-1');
   assert.equal(receipt.candidateId, 'sha-abc');
+  assert.equal(receipt.policyVersion, 'POWERHOUSE-UNIVERSAL-INGRESS-v1');
+  assert.equal(receipt.completionPolicyVersion, 'POWERHOUSE-UNIVERSAL-COMPLETION-v1');
+  assert.equal(receipt.skillVersion, 'POWERHOUSE-LEARNING-SKILL-INDEX-v1');
+  assert.equal(receipt.deliveryVersion, 'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1');
+  assert.match(receipt.skillProjectionDigest, /^[a-f0-9]{64}$/);
   assert.match(receipt.preflightDigest, /^[a-f0-9]{64}$/);
   assert.match(receipt.receiptDigest, /^[a-f0-9]{64}$/);
   assert.equal(Object.isFrozen(receipt), true);
@@ -119,4 +125,38 @@ test('Agent Fabric command runs canonical preflight before mutation and injects 
   assert.equal(result.runtimeIngressReceipt.runId, 'run-gw');
   assert.equal(result.runtimeIngressReceipt.candidateId, 'sha-gw');
   assert.match(result.runtimeIngressReceipt.preflightDigest, /^[a-f0-9]{64}$/);
+});
+
+
+test('completion rejects stale canonical version bindings even with a valid receipt digest', () => {
+  const current = beginMaterialRun({ rootDir, runId:'run-stale', actorKind:'agent', actorId:'agent:test', candidateId:'sha-stale', observedAt });
+  const stable = {
+    version:current.version,
+    status:current.status,
+    runId:current.runId,
+    actorKind:current.actorKind,
+    actorId:current.actorId,
+    candidateId:current.candidateId,
+    preflightVersion:current.preflightVersion,
+    preflightStatus:current.preflightStatus,
+    preflightDigest:current.preflightDigest,
+    policyVersion:current.policyVersion,
+    policySource:current.policySource,
+    completionPolicyVersion:current.completionPolicyVersion,
+    completionPolicySource:current.completionPolicySource,
+    skillVersion:current.skillVersion,
+    skillSource:current.skillSource,
+    skillProjectionDigest:current.skillProjectionDigest,
+    deliveryVersion:current.deliveryVersion + '-STALE',
+    deliverySource:current.deliverySource,
+  };
+  const stale = {
+    ...stable,
+    receiptDigest:crypto.createHash('sha256').update(JSON.stringify(stable)).digest('hex'),
+    observedAt:current.observedAt,
+  };
+  assert.throws(
+    () => completeMaterialRun({ ingressReceipt:stale, manifest:completeManifest({ runId:'run-stale', candidateId:'sha-stale' }), rootDir }),
+    /INGRESS_VERSION_STALE deliveryVersion/
+  );
 });

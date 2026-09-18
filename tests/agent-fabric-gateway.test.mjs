@@ -25,6 +25,11 @@ test('gateway allowlists collaboration commands and queries', async () => {
   assert.equal(intake.payload.runtimeIngressReceipt.status, 'ADMITTED');
   assert.equal(intake.payload.runtimeIngressReceipt.runId, runtime.runId);
   assert.equal(intake.payload.runtimeIngressReceipt.candidateId, runtime.candidateId);
+  assert.equal(intake.payload.runtimeIngressReceipt.policyVersion, 'POWERHOUSE-UNIVERSAL-INGRESS-v1');
+  assert.equal(intake.payload.runtimeIngressReceipt.completionPolicyVersion, 'POWERHOUSE-UNIVERSAL-COMPLETION-v1');
+  assert.equal(intake.payload.runtimeIngressReceipt.skillVersion, 'POWERHOUSE-LEARNING-SKILL-INDEX-v1');
+  assert.equal(intake.payload.runtimeIngressReceipt.deliveryVersion, 'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1');
+  assert.match(intake.payload.runtimeIngressReceipt.skillProjectionDigest, /^[a-f0-9]{64}$/);
   assert.equal((await gateway.command({ type:AGENT_FABRIC_COMMANDS.INTAKE_OPPORTUNITY, runtime, payload:{ tenantId:'A' } })).op, 'opportunity');
   assert.equal((await gateway.command({ type:AGENT_FABRIC_COMMANDS.TRANSITION_WORK, runtime, payload:{ workId:'W1' } })).op, 'transition');
   assert.equal((await gateway.command({ type:AGENT_FABRIC_COMMANDS.RECORD_LEARNING, runtime, payload:{ workId:'W1' } })).op, 'record-learning');
