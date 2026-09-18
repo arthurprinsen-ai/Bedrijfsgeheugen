@@ -32,7 +32,10 @@
       "rule": "Independent specialists may execute in parallel, but conflicting mutable-resource packages integrate through one current exact-head rolling candidate instead of separate competing PR lineages.",
       "one_candidate_per_conflict_contract": true,
       "supersede_stale_heads": true,
-      "promotion_from_integrator_only": true
+      "promotion_from_integrator_only": true,
+      "merge_tree_rule": "full-current-main-union-from-merge-base",
+      "latest_commit_overlay_only_forbidden": true,
+      "main_files_may_not_disappear_without_explicit_candidate_change": true
     }
   },
   "affected_testing": {

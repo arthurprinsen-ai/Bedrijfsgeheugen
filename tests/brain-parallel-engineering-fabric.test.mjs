@@ -133,6 +133,9 @@ test('canonical fabric policy remains subordinate to Engineering OS and BG169', 
   assert.equal(actual.cache.never_skips_production_readback,true);
   assert.equal(actual.version,3);
   assert.equal(actual.scheduling.rolling_candidate.one_candidate_per_conflict_contract,true);
+  assert.equal(actual.scheduling.rolling_candidate.merge_tree_rule,'full-current-main-union-from-merge-base');
+  assert.equal(actual.scheduling.rolling_candidate.latest_commit_overlay_only_forbidden,true);
+  assert.equal(actual.scheduling.rolling_candidate.main_files_may_not_disappear_without_explicit_candidate_change,true);
   assert.equal(actual.migration_versioning.authority,'rolling-candidate-integrator');
   assert.equal(actual.migration_versioning.wall_clock_only_allocation_forbidden,true);
   assert.equal(actual.recovery.head_age_alone_never_cancels_in_progress,true);
