@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|material-run|closure-artifacts|required|v1",
+  "problem": "Agents and chats could satisfy policy-presence tests while still ending material work without durable logging, documentation and learning artifacts.",
+  "rootCause": "The universal writeback contract was largely validated declaratively. Required CI checked that policy text and skill markers existed, but did not fail a material candidate whose diff omitted the actual Brain learning, activity-ledger and human-documentation closure artifacts.",
+  "failedApproach": [
+    "Relying on AGENTS.md and SKILL.md wording alone.",
+    "Testing only that mandatory writeback policy fields and phrases exist.",
+    "Waiting until post-merge terminal closure to discover missing writeback artifacts."
+  ],
+  "fix": "Add a deterministic pre-merge material-writeback closure guard to Required CI. A material candidate must include canonical Brain learning, an append-only activity/development-ledger event, and human-readable change/learning documentation in the same diff. Closure-only reconciliation is exempt from recursive self-requirement.",
+  "prevention": [
+    "Every material repository candidate fails closed before lane fan-out when Brain learning is absent.",
+    "Every material repository candidate fails closed before lane fan-out when activity/development ledger evidence is absent.",
+    "Every material repository candidate fails closed before lane fan-out when human-readable documentation is absent.",
+    "Automatic learning-to-skill projection remains mandatory after merge for every Brain learning change."
+  ],
+  "regression": [
+    "tests/material-writeback-closure-guard.test.mjs",
+    ".github/workflows/required-test.yml preflight gate"
+  ],
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "outcome": "MATERIAL_CLOSURE_ENFORCED_PRE_MERGE",
+  "evidence": [
+    "scripts/brain/material-writeback-closure-guard.mjs",
+    "tests/material-writeback-closure-guard.test.mjs"
+  ]
+}
