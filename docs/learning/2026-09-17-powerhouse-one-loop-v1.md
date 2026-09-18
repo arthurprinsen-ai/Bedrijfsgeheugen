@@ -61,3 +61,52 @@ At readback for `ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded`, `Required test`, Cod
 ### Additional prevention rule
 
 `STALE_ASSERTION_MUST_FOLLOW_VERIFIED_ARCHITECTURE`: when workflow consolidation or a verified architecture change intentionally moves a contract boundary, a failing assertion that still encodes the superseded boundary must be repaired at the test/oracle layer after verifying the new architecture. Never reintroduce redundant fan-out, weaken a gate, or classify the stale assertion as a product regression merely to make CI green.
+
+
+## Delivery-classifier contract gap and terminal closure — 2026-09-18
+
+### Incident fingerprint
+
+`delivery-classifier-repository-writer-contract-gap-v1`
+
+### Concrete failure
+
+On the then-current exact head `ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded`, the Required preflight failed before Shared Agent Memory verification. The first deterministic failure was the fail-closed delivery classifier rejecting these three existing regression tests as unclassified paths:
+
+- `tests/menu-balk-writer-noop-proof.test.mjs`
+- `tests/repository-writer-permission-boundary.test.mjs`
+- `tests/repository-writer-slow-canary-sla.test.mjs`
+
+This was a delivery-classification contract gap, not a product defect and not a reason to weaken the classifier. The tests belonged to the existing writer/backend control-plane family; their filenames simply did not match the already admitted prefixes closely enough.
+
+### Root-cause rule
+
+`CLASSIFIER_COCHANGE_REQUIRED`: whenever a material governance or regression test is added, renamed, moved or introduced on a delivery lineage, its canonical delivery-lane classification must be changed in the same bounded candidate. A test that is semantically part of an existing control-plane family may not rely on a near-match naming convention that the classifier does not actually recognize.
+
+### Recovery behavior
+
+- Always re-read the current PR head before acting.
+- A failure from a superseded head remains historical evidence only.
+- Repair authority comes from the first deterministic failure on the current exact head.
+- If classification is the first failure, repair only the classifier contract needed for the legitimate existing path; do not edit test semantics and do not broaden unrelated lane patterns.
+- Re-run the same lineage after the bounded repair; only then may deeper failures such as Shared Agent Memory become actionable.
+- Queued, pending and in-progress checks remain non-terminal WAIT/EXECUTING states and never justify no-op commits or blind retries.
+
+### Terminal evidence
+
+The original implementation PR #1968 ultimately reached terminal green on exact head `4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86` and was protected squash-merged as `6ae18de754cb33044108d85ba704c965a5287b88`.
+
+A downstream squash-merge completion-identity issue was then recovered on the same canonical obligation through recovery PR #1984. Recovery exact head `97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04` passed Required, BRAIN delivery and Powerhouse CodeQL, and protected merge produced main SHA `4fda9309eefa259b2a7f492ca929b8d472055d5e`.
+
+Production Release Readback, Outcome Obligation Sweep, Configuratiewacht and merged-branch cleanup all completed successfully on that recovery main lineage. The machine-readable Powerhouse source of truth therefore records:
+
+- state: `LIVE_PROVEN`;
+- lifecycle: `LEARNED -> FULFILLED`;
+- obligation: `powerhouse-one-loop-v1`;
+- prevention: classifier co-change, exact-head-only repair authority, stale-run supersession, squash-safe completion identity and operator-visible post-merge failures.
+
+### Permanent non-regression contract
+
+Future agents/chats must reuse this learning before diagnosing equivalent delivery failures. They must not start from zero, create a parallel recovery branch, restore obsolete fan-out, bypass fail-closed classification, or mutate code from a superseded CI result. The canonical sequence remains:
+
+`current state -> exact-head evidence -> first concrete failure -> bounded root-cause repair -> exact-head gates -> protected merge -> production/main readback -> outcome -> learning/writeback -> prevention -> fulfilled`.
