@@ -198,6 +198,22 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 11. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
 12. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
+## Portal V2 parity skill — protected surface preservation
+Voor wijzigingen aan Portal V2-overzichten, navigatie, legacy-parity, klantstatus, volwassenheid, adoptiecurve, blockers of organisatiestatus geldt aanvullend de canonieke skill:
+
+`brain/skills/portal-v2-parity-empty-state-v1.json`
+
+Iedere huidige en toekomstige agent/chat die deze scope raakt moet vóór ontwerp of wijziging deze skill en de gekoppelde learning lezen en toepassen.
+
+Niet-onderhandelbare regels:
+- ontbrekende of nog niet geladen klantdata mag waarden en confidence veranderen, maar mag een beschermd model, managementoppervlak, grafiek of navigatieonderdeel nooit laten verdwijnen;
+- empty/unknown state bewaart de volledige structuur en toont expliciet `Nog niet ingevuld`, `Nog niet bepaald` of `Onbekend`;
+- default-, demo- of afgeleide waarden mogen nooit als klantwaarheid een CMMI-score, adoptiefase, blocker of klantantwoord invullen;
+- algemene V2-navigatie blijft bereikbaar binnen geopende werkruimtes;
+- parity-regressies moeten populated, partial én empty state afdekken;
+- code presence is geen delivery-bewijs: exact-head tests plus production DOM/readback zijn verplicht voordat `LIVE_AND_PROVEN` mag worden toegekend;
+- een herhaling van fingerprint `portal-v2-empty-state-surface-preservation-v1` zonder reuse van de bestaande skill/learning is zelf een learning-regressie.
+
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-experiment al in de repo of gedeelde teamcontext is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.
 
