@@ -16,3 +16,12 @@ test('canonical channel contract carries the provider matrix',()=>{
  assert.deepEqual(p.providerRouting.carousel.imageSlideAllowedProviders,['openart','placid']);
  assert.deepEqual(p.providerRouting.carousel.videoSlideAllowedProviders,['openart']);
 });
+
+test('trigger function execute is service-role only',()=>{
+ assert.match(sql,/revoke execute on function public\.powerhouse_validate_instagram_media_job_v1\(\) from public,anon,authenticated/i);
+ assert.match(sql,/grant execute on function public\.powerhouse_validate_instagram_media_job_v1\(\) to service_role/i);
+});
+test('Instagram media job table is registered as a quality surface',()=>{
+ const surfaces=JSON.parse(fs.readFileSync('config/powerhouse-quality-surface-contracts.json','utf8')).surfaces;
+ assert.ok(surfaces.some(s=>s.id==='table:public.powerhouse_instagram_media_jobs_v1'));
+});

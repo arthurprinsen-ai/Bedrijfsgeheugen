@@ -37,6 +37,8 @@ begin
   if coalesce(new.proof_manifest->>'identity_gate_result','')<>'PASS' then raise exception 'INSTAGRAM_VISIBLE_IDENTITY_PROOF_REQUIRED';end if;
  end if;
  if new.replacement_of_external_id is not null then new.republish_forbidden:=true;end if;
- new.updated_at:=now();return new;end;$$;
+ new.updated_at:=now();return new;end;$;
+revoke execute on function public.powerhouse_validate_instagram_media_job_v1() from public,anon,authenticated;
+grant execute on function public.powerhouse_validate_instagram_media_job_v1() to service_role;
 drop trigger if exists powerhouse_validate_instagram_media_job_v1 on public.powerhouse_instagram_media_jobs_v1;
 create trigger powerhouse_validate_instagram_media_job_v1 before insert or update on public.powerhouse_instagram_media_jobs_v1 for each row execute function public.powerhouse_validate_instagram_media_job_v1();
