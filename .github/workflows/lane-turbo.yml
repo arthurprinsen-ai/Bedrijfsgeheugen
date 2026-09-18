@@ -1,0 +1,60 @@
+name: Turbo release lane
+
+on:
+  workflow_call:
+    inputs:
+      base_sha:
+        required: true
+        type: string
+      change_head_sha:
+        required: true
+        type: string
+      candidate_sha:
+        required: true
+        type: string
+
+jobs:
+  turbo:
+    runs-on: ubuntu-latest
+    timeout-minutes: 4
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.candidate_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify turbo classifier and immutable safety boundary
+        run: node --test tests/delivery-turbo-classifier.test.mjs tests/brain-fast-development-protocol-v2.test.mjs
+      - name: Run changed tests and syntax checks only
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          CHANGE_HEAD_SHA: ${{ inputs.change_head_sha }}
+        run: |
+          set -euo pipefail
+          git diff --name-only "$BASE_SHA...$CHANGE_HEAD_SHA" > /tmp/turbo-paths.txt
+          mapfile -t TESTS < <(grep -E '^tests/.*\.test\.mjs$' /tmp/turbo-paths.txt || true)
+          if [ "${#TESTS[@]}" -gt 0 ]; then
+            node --test "${TESTS[@]}"
+          fi
+          while IFS= read -r file; do
+            case "$file" in
+              *.mjs|*.js)
+                [ -f "$file" ] && node --check "$file"
+                ;;
+            esac
+          done < /tmp/turbo-paths.txt
+      - name: Prove no protected surface entered turbo lane
+        env:
+          BASE_SHA: ${{ inputs.base_sha }}
+          CHANGE_HEAD_SHA: ${{ inputs.change_head_sha }}
+        run: |
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { classifyTurboDelivery } from './tools/delivery/turbo-classifier.mjs';
+          const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.CHANGE_HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          const result=classifyTurboDelivery({changedPaths});
+          console.log(JSON.stringify(result,null,2));
+          if(!result.turbo) process.exit(1);
+          NODE
