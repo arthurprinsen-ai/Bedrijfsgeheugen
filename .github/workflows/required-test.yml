@@ -122,6 +122,7 @@ jobs:
           tests/api-gateways.test.mjs
           tests/brain-production-release-readback-scope.test.mjs
           tests/brain-production-promotion-observability.test.mjs
+          tests/control-plane-supabase-terminal-readback-v1.test.mjs
           tests/delivery-test-coverage-guard.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/daily-cost-optimizer.test.mjs
