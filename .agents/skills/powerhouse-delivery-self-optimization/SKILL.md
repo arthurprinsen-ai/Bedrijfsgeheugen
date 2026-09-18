@@ -99,3 +99,21 @@ Terminal proof includes canonical learning-to-skill writeback and readback; deli
 Before choosing an external execution route, apply `powerhouse|toolchain-authority|composio-no-make|v1` from `.agents/skills/powerhouse-toolchain-authority/SKILL.md`.
 
 Make is retired and forbidden as execution, orchestration, fallback or recovery. Use the canonical active stack instead: Composio where orchestration is needed; GitHub, Netlify, Notion, Supabase, Tavily, Buffer, DataForSEO, OpenArt, Placid, Google Search and Google Analytics for their specialist capabilities. Historical Make references are provenance only and must never reactivate authority.
+
+## Capacity, candidate-type and owner-head authority
+
+Fingerprint: `delivery|capacity-owner-authority|v1`.
+
+- `WAITING_CAPACITY` / `FINISH_EXISTING_WORK_FIRST` is deliberate backpressure, not a code failure. Do not mutate product code to clear it.
+- Candidate type is behavioral metadata: use `promotion` only for actual promotion/transport work; use `implementation` for implementation/learning changes and `recovery` only for genuine recovery lineage.
+- Promotion serialization must never be bypassed by relabeling a real promotion; fix misclassification only when the candidate semantics are genuinely different.
+- When another active owner keeps advancing the same obligation head, treat the newest owner head as authoritative. Older heads and their green runs become audit evidence, not merge authority.
+- Never create writer-head thrash by force-updating a branch that an active canonical owner is already reconciling. Observe first; intervene only on concrete failure or owner stagnation.
+- Capacity backpressure, head supersession and owner activity are scheduling signals. Persist them so future planning can avoid starting expensive work that cannot enter terminal delivery yet.
+
+Additional metrics:
+- `capacity_backpressure_count`
+- `promotion_serialization_block_count`
+- `candidate_type_reclassification_count`
+- `owner_head_supersession_count`
+- `writer_head_thrash_avoided_count`
