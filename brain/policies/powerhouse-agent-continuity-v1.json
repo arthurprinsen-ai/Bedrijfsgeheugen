@@ -37,7 +37,10 @@
   ],
   "loop_node_contract": {
     "required": true,
-    "actor_kinds": ["chat", "agent"],
+    "actor_kinds": [
+      "chat",
+      "agent"
+    ],
     "role": "INTRINSIC_EXECUTION_NODE",
     "single_canonical_loop": true,
     "canonical_state_required_before_execution": true,
@@ -157,6 +160,8 @@
   "prevention": "Do not let autonomous work end as undocumented implementation knowledge inside one chat or one agent. Treat every chat and agent as an intrinsic execution node in the single canonical Powerhouse loop. Persist how it works, its last verified checkpoint, already-proven side effects and verified operating state in the existing Powerhouse truth, evidence, architecture and learning paths so the next agent continues immediately from canonical state, executes only the necessary delta and reaches verified production through the shortest safe route.",
   "linked_learning_sources": [
     "config/powerhouse-execution-resilience-v1.json",
-    "brain/learning/execution-resilience-2026-09-17.json"
+    "brain/learning/execution-resilience-2026-09-17.json",
+    "brain/learning/chat-agent-intrinsic-loop-node-2026-09-18.json",
+    "docs/brain/chat-agent-intrinsic-loop-node.md"
   ]
 }
