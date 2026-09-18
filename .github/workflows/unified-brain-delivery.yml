@@ -1,7 +1,9 @@
 name: Unified Brain Delivery
-run-name: "BRAIN delivery PR #${{ inputs.pr_number || github.event.pull_request.number }} ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
+run-name: "BRAIN delivery ${{ inputs.pr_number || github.event.pull_request.number || github.ref_name }} ${{ github.sha }}"
 
 on:
+  push:
+    branches-ignore: [main]
   pull_request:
     branches: [main]
   workflow_dispatch:
@@ -33,41 +35,93 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: unified-brain-delivery-${{ github.event_name }}-${{ inputs.pr_number || github.event.pull_request.number || github.run_id }}
+  group: unified-brain-delivery-${{ github.event_name }}-${{ inputs.pr_number || github.event.pull_request.number || github.ref_name || github.run_id }}
   # Single-flight is PR-scoped; exact candidate identity remains enforced in admission and BG169.
   cancel-in-progress: true
 
 jobs:
   candidate-identity:
     runs-on: ubuntu-latest
+    outputs:
+      pr_number: ${{ steps.context.outputs.pr_number }}
+      base_sha: ${{ steps.context.outputs.base_sha }}
+      head_sha: ${{ steps.context.outputs.head_sha }}
+      candidate_branch: ${{ steps.context.outputs.candidate_branch }}
+      verification_only: ${{ steps.context.outputs.verification_only }}
     steps:
-      - name: Validate explicitly dispatched PR identity
-        if: github.event_name == 'workflow_dispatch' && inputs.pr_number != ''
+      - id: context
+        name: Resolve exact canonical PR context
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ inputs.pr_number }}
-          BASE_SHA: ${{ inputs.base_sha }}
-          HEAD_SHA: ${{ inputs.head_sha }}
-          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+          EVENT_NAME: ${{ github.event_name }}
+          EVENT_PR: ${{ github.event.pull_request.number }}
+          EVENT_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          EVENT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          EVENT_HEAD_REF: ${{ github.event.pull_request.head.ref }}
+          INPUT_PR: ${{ inputs.pr_number }}
+          INPUT_BASE_SHA: ${{ inputs.base_sha }}
+          INPUT_HEAD_SHA: ${{ inputs.head_sha }}
+          INPUT_BRANCH: ${{ inputs.candidate_branch }}
+          INPUT_VERIFICATION_ONLY: ${{ inputs.verification_only }}
+        shell: bash
         run: |
           set -euo pipefail
-          test -n "$BASE_SHA" && test -n "$HEAD_SHA" && test -n "$CANDIDATE_BRANCH"
-          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+          if [ "$EVENT_NAME" = "push" ]; then
+            BRANCH="$GITHUB_REF_NAME"
+            HEAD_SHA="$GITHUB_SHA"
+            matches="$(gh api -X GET "repos/$GITHUB_REPOSITORY/pulls" -f state=open -f head="$GITHUB_REPOSITORY_OWNER:$BRANCH")"
+            count="$(jq 'length' <<<"$matches")"
+            [ "$count" = "1" ] || { echo "::error::PUSH_REQUIRES_EXACTLY_ONE_OPEN_CANONICAL_PR:$BRANCH:$count"; exit 78; }
+            PR_NUMBER="$(jq -r '.[0].number' <<<"$matches")"
+            BASE_SHA="$(jq -r '.[0].base.sha' <<<"$matches")"
+            live_head="$(jq -r '.[0].head.sha' <<<"$matches")"
+            live_repo="$(jq -r '.[0].head.repo.full_name // ""' <<<"$matches")"
+            [ "$live_repo" = "$GITHUB_REPOSITORY" ] || { echo "::error::SAME_REPOSITORY_PR_REQUIRED:$live_repo"; exit 78; }
+            [ "$live_head" = "$HEAD_SHA" ] || { echo "::error::PUSH_HEAD_NOT_CURRENT_PR_HEAD:$HEAD_SHA:$live_head"; exit 78; }
+            VERIFICATION_ONLY=false
+          elif [ "$EVENT_NAME" = "pull_request" ]; then
+            PR_NUMBER="$EVENT_PR"
+            BASE_SHA="$EVENT_BASE_SHA"
+            HEAD_SHA="$EVENT_HEAD_SHA"
+            BRANCH="$EVENT_HEAD_REF"
+            VERIFICATION_ONLY=false
+          else
+            PR_NUMBER="$INPUT_PR"
+            BASE_SHA="$INPUT_BASE_SHA"
+            HEAD_SHA="$INPUT_HEAD_SHA"
+            BRANCH="$INPUT_BRANCH"
+            VERIFICATION_ONLY="${INPUT_VERIFICATION_ONLY:-false}"
+          fi
+
+          test -n "$PR_NUMBER" && test -n "$BASE_SHA" && test -n "$HEAD_SHA" && test -n "$BRANCH"
+          pr="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$PR_NUMBER")"
           actual_base="$(jq -r '.base.sha' <<<"$pr")"
           actual_head="$(jq -r '.head.sha' <<<"$pr")"
           actual_ref="$(jq -r '.head.ref' <<<"$pr")"
+          actual_repo="$(jq -r '.head.repo.full_name // ""' <<<"$pr")"
           actual_state="$(jq -r '.state' <<<"$pr")"
+          actual_draft="$(jq -r '.draft // false' <<<"$pr")"
+          [ "$actual_repo" = "$GITHUB_REPOSITORY" ] || { echo "::error::PR_REPOSITORY_MISMATCH:$actual_repo"; exit 1; }
           [ "$actual_base" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$actual_base"; exit 1; }
           [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
-          [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
+          [ "$actual_ref" = "$BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$BRANCH:$actual_ref"; exit 1; }
           [ "$actual_state" = open ] || { echo "::error::PR_NOT_OPEN:$actual_state"; exit 1; }
+          [ "$actual_draft" = false ] || { echo "::error::PR_DRAFT_BLOCKED"; exit 1; }
+
+          {
+            echo "pr_number=$PR_NUMBER"
+            echo "base_sha=$BASE_SHA"
+            echo "head_sha=$HEAD_SHA"
+            echo "candidate_branch=$BRANCH"
+            echo "verification_only=$VERIFICATION_ONLY"
+          } >> "$GITHUB_OUTPUT"
 
   admission:
     needs: candidate-identity
     uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
     with:
-      pr_number: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
-      head_sha: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+      pr_number: ${{ needs.candidate-identity.outputs.pr_number }}
+      head_sha: ${{ needs.candidate-identity.outputs.head_sha }}
 
   plan:
     needs: [candidate-identity, admission]
@@ -83,7 +137,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ needs.candidate-identity.outputs.head_sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -96,7 +150,7 @@ jobs:
         shell: bash
         run: |
           node tools/brain-delivery-system.mjs membership
-          node tools/brain-delivery-system.mjs plan --base "${{ inputs.base_sha || github.event.pull_request.base.sha || github.event.before }}" --head "${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
+          node tools/brain-delivery-system.mjs plan --base "${{ needs.candidate-identity.outputs.base_sha }}" --head "${{ needs.candidate-identity.outputs.head_sha }}"
           node --input-type=module - <<'NODE'
           import { readFile, appendFile } from 'node:fs/promises';
           const plan = JSON.parse(await readFile('.artifacts/brain-delivery-plan.json', 'utf8'));
@@ -212,15 +266,15 @@ jobs:
             .artifacts/lane-${{ matrix.id }}-failure.txt
 
   pre-handoff-admission:
-    needs: [plan, lanes]
+    needs: [candidate-identity, plan, lanes]
     if: always() && needs.plan.result == 'success' && (needs.lanes.result == 'success' || needs.lanes.result == 'skipped')
     uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
     with:
-      pr_number: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
+      pr_number: ${{ needs.candidate-identity.outputs.pr_number }}
       head_sha: ${{ needs.plan.outputs.head_sha }}
 
   handoff:
-    needs: [plan, lanes, pre-handoff-admission]
+    needs: [candidate-identity, plan, lanes, pre-handoff-admission]
     if: always() && needs.plan.result == 'success' && (needs.lanes.result == 'success' || needs.lanes.result == 'skipped') && needs.pre-handoff-admission.result == 'success' && needs.pre-handoff-admission.outputs.admitted == 'true'
     runs-on: ubuntu-latest
     permissions:
@@ -255,11 +309,11 @@ jobs:
         if: needs.plan.outputs.has_lanes != 'true'
         run: echo "No executable delivery lanes; ignored-only change is a successful no-op."
       - name: Record verification-only non-promotion evidence
-        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only == true
+        if: needs.plan.outputs.has_lanes == 'true' && needs.candidate-identity.outputs.pr_number != '' && startsWith(needs.candidate-identity.outputs.candidate_branch, 'writer/') && needs.candidate-identity.outputs.verification_only == 'true'
         run: |
           echo "Verification-only delivery: production authority handoff intentionally skipped."
       - name: Certify live main protection before production handoff
-        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        if: needs.plan.outputs.has_lanes == 'true' && needs.candidate-identity.outputs.pr_number != '' && needs.candidate-identity.outputs.verification_only != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -301,7 +355,7 @@ jobs:
           console.log(`MAIN_PROTECTION_VERIFIED:${result.observedSha}`);
           NODE
       - name: Publish main protection promotion evidence
-        if: always() && needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        if: always() && needs.plan.outputs.has_lanes == 'true' && needs.candidate-identity.outputs.pr_number != '' && needs.candidate-identity.outputs.verification_only != 'true'
         uses: actions/upload-artifact@v4
         with:
           name: main-protection-promotion-block-${{ github.run_id }}
@@ -309,13 +363,13 @@ jobs:
           if-no-files-found: error
           retention-days: 30
       - name: BG169 GitHub-native production transport
-        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        if: needs.plan.outputs.has_lanes == 'true' && needs.candidate-identity.outputs.pr_number != '' && needs.candidate-identity.outputs.verification_only != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ inputs.pr_number }}
+          PR_NUMBER: ${{ needs.candidate-identity.outputs.pr_number }}
           BASE_SHA: ${{ needs.plan.outputs.base_sha }}
           HEAD_SHA: ${{ needs.plan.outputs.head_sha }}
-          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+          CANDIDATE_BRANCH: ${{ needs.candidate-identity.outputs.candidate_branch }}
           TRACE_ID: ${{ needs.plan.outputs.trace_id }}
           UNIFIED_RUN_ID: ${{ github.run_id }}
         shell: bash
