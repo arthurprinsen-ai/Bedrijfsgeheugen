@@ -1,0 +1,19 @@
+{
+  "fingerprint": "production-readback|shared-workflow-fanout|false-netlify-requirement-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "A Supabase/control-plane-only merge activated the website delivery lane because an unscoped .github/workflows path was treated as shared executable work. Production readback then waited for an exact Netlify deployment that was unrelated to the change.",
+  "root_cause": "createDeliveryPlan intentionally fans generic shared executable paths out to all lanes. Delivery-control-plane workflows and classifier code were not given a narrower backend scope, so website applicability was over-classified.",
+  "prevention_rule": "Canonical delivery-control-plane workflows, contracts and classifier code are backend-only scoped paths. Generic future workflows remain shared and fail-safe; only explicitly listed control-plane authorities receive the narrow scope.",
+  "enforcement": [
+    "DELIVERY_CONTROL_PLANE_BACKEND_PATHS in tools/brain-delivery-system.mjs",
+    "brain-delivery-system regression proving backend-only scope",
+    "Supabase terminal hardening combined-path regression"
+  ],
+  "outcome_goal": "Supabase-only terminal delivery closes on Supabase production-ledger proof without requiring an unrelated Netlify exact-SHA deployment.",
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}
