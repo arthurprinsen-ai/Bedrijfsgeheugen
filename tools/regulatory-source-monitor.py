@@ -34,7 +34,7 @@ def main():
         state=json.load(open(args.state,encoding='utf-8'))
     old=state.get('sources',{})
     now=datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
-    out={'schemaVersion':1,'contract':'powerhouse-regulatory-source-state-v1','checkedAt':now,'sources':{}}
+    out={'schemaVersion':1,'contract':'powerhouse-regulatory-source-state-v1','checkedAt':state.get('checkedAt'),'sources':{}}
     changes=[]
     pathlib.Path(args.raw_dir).mkdir(parents=True,exist_ok=True)
     for source in config['sources']:
@@ -50,12 +50,16 @@ def main():
           'etag':result['etag'],'lastModified':result['lastModified'],'previousSha256':previous.get('contentSha256'),
           'changed':changed,'firstObservation':not bool(previous.get('contentSha256'))
         }
-        out['sources'][source['id']]=record
-        if changed:
-            changes.append(record)
+        first=record['firstObservation']
+        if changed or first:
+            out['sources'][source['id']]=record
+            out['checkedAt']=now
+            if changed: changes.append(record)
             raw_path=pathlib.Path(args.raw_dir)/source['id']/(raw_sha+'.bin')
             raw_path.parent.mkdir(parents=True,exist_ok=True)
             raw_path.write_bytes(result['raw'])
+        else:
+            out['sources'][source['id']]=previous
     pathlib.Path(args.state).parent.mkdir(parents=True,exist_ok=True)
     pathlib.Path(args.state).write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     print(json.dumps({'checkedAt':now,'sources':len(out['sources']),'changes':changes},ensure_ascii=False))
