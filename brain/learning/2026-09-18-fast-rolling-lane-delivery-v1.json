@@ -1,14 +1,17 @@
 {
   "type": "POWERHOUSE_LEARNING",
-  "version": "POWERHOUSE-FAST-ROLLING-LANE-DELIVERY-v1",
+  "version": "POWERHOUSE-PREDICTIVE-FAST-DELIVERY-v2",
   "status": "ACTIVE_PREVENTION",
-  "fingerprint": "powerhouse-fast-rolling-lane-delivery-v1",
+  "fingerprint": "powerhouse-predictive-fast-delivery-v2",
   "date": "2026-09-18",
-  "problem": "Parallel development was fast at code creation but slow at delivery because each branch/PR created its own CI fan-out, stale merge-bases accumulated, zero-run heads waited silently, and Required plus BRAIN duplicated broad suites.",
+  "problem": "Development speed was being lost after coding: parallel PR fan-out, stale merge-bases, silent workflow starts, broad blocking suites, false-positive regression oracles and passive queue waiting created delivery latency and conflict amplification.",
   "root_cause": [
     "PRs were being used as the primary parallelism unit instead of isolated agent workspaces feeding a bounded integration lane.",
     "Broad regression suites were in the blocking path even when the changed delta did not touch those risk surfaces.",
-    "Superseded runs, stale merge-bases and silent workflow starts were treated as waiting states instead of recoverable delivery incidents."
+    "Superseded runs, stale merge-bases and silent workflow starts were treated as waiting states instead of recoverable delivery incidents.",
+    "The system reacted after CI trouble instead of predicting conflict, queue pressure and likely failure surfaces before fan-out.",
+    "Gate selection was mostly static; unrelated broad assurance could still enter the blocking path.",
+    "Recovery logic existed as policy but lacked one explicit scheduled supervisor that continuously reconciled open PR heads."
   ],
   "fix": [
     "Use isolated parallel agent workspaces but one rolling integration candidate per conflict contract.",
@@ -16,7 +19,12 @@
     "Make BRAIN reuse the same TURBO risk classification instead of duplicating full suites for safe deltas.",
     "Move unrelated broad assurance to an asynchronous post-merge main workflow.",
     "Set explicit first-signal, turbo and standard latency SLOs and make breaches trigger same-lineage recovery.",
-    "Auto-cancel superseded runs and preserve tested candidates across non-overlapping main drift."
+    "Auto-cancel superseded runs and preserve tested candidates across non-overlapping main drift.",
+    "Add predictive admission using changed-path, contract, dependency and historical delivery signals.",
+    "Add adaptive gate planning: only relevant risk/dependency/contract/security/data/schema gates block; unrelated assurance runs in shadow.",
+    "Add a five-minute single-flight delivery supervisor that heals zero-run and stale-run heads on the same PR lineage.",
+    "Calibrate predictions daily against actual queue, conflict, gate, rollback and production-readback outcomes.",
+    "Make frontend/backend/QA/release/learning agents explicit roles under one coordinator and one production authority."
   ],
   "prevention": [
     "ROLLING_LANE_PER_CONFLICT_CONTRACT",
@@ -27,12 +35,23 @@
     "SUPERSEDED_RUN_AUTO_CANCEL",
     "NON_OVERLAPPING_MAIN_DRIFT_DOES_NOT_REBUILD",
     "EXACT_HEAD_AUTO_PROMOTION_WHEN_BLOCKING_PROFILE_GREEN",
-    "SECURITY_SCHEMA_DATA_AND_PRODUCTION_READBACK_NEVER_WEAKENED"
+    "SECURITY_SCHEMA_DATA_AND_PRODUCTION_READBACK_NEVER_WEAKENED",
+    "PREDICT_BEFORE_FANOUT",
+    "ADAPTIVE_BLOCKING_GATES",
+    "DELIVERY_SUPERVISOR_ALWAYS_ON",
+    "QUEUE_BREACH_IS_RECOVERY_EVENT",
+    "CONFLICT_PROBABILITY_CONTROLS_PARALLELISM",
+    "SHADOW_ASSURANCE_FOR_UNRELATED_RISK",
+    "PREDICTIONS_CALIBRATE_FROM_ACTUAL_OUTCOMES",
+    "FRONTEND_BACKEND_QA_RELEASE_LEARNING_ONE_COORDINATED_FABRIC"
   ],
   "targets": {
     "first_signal_seconds": 60,
     "turbo_live_path_seconds": 240,
-    "standard_blocking_seconds": 480
+    "standard_blocking_seconds": 480,
+    "zero_run_recovery_seconds": 60,
+    "stale_run_supersession_seconds": 90,
+    "repeat_incident_target": 0
   },
   "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
 }
