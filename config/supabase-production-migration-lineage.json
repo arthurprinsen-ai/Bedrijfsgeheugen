@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "contract": "powerhouse-repo-production-migration-lineage-v1",
   "productionProject": "adhjwmvyoixzjtmiroln",
   "policy": {
@@ -9,8 +9,8 @@
     "semanticTimestampAliasesForbidden": true,
     "closureRequiresPostMergeProductionAndGithubReadback": true
   },
-  "observedAt": "2026-09-17T07:16:00Z",
-  "latestObservedProductionMigration": "20260917070302_linkedin_company_daily_delivery_guard_v1",
+  "observedAt": "2026-09-18T14:38:00Z",
+  "latestObservedProductionMigration": "20260918143758_powerhouse_supabase_migration_readback_v1",
   "reconciliationStatus": "LIVE_VERIFIED",
   "reconciled": [
     {
@@ -36,6 +36,10 @@
     {
       "production": "20260916123957_powerhouse_internal_view_replay_hardening.sql",
       "replacesAlias": "20260916111500_powerhouse_internal_view_replay_hardening.sql"
+    },
+    {
+      "production": "20260918143600_powerhouse_control_plane_recovery_supervisor_v1.sql",
+      "replacesAlias": "20260918143000_powerhouse_control_plane_recovery_supervisor_v1.sql"
     }
   ],
   "candidateEvidence": {
@@ -45,10 +49,11 @@
     ],
     "rootCauses": [
       "Drifted timestamp aliases remained in the candidate tree while exact production-ledger filenames were added, creating duplicate semantic migrations; closure was also marked LIVE_VERIFIED before protected-main readback.",
-      "A stale predictive-lineage regression test still asserted LIVE_VERIFIED before protected-main readback, contradicting the canonical fail-closed closure contract."
+      "A stale predictive-lineage regression test still asserted LIVE_VERIFIED before protected-main readback, contradicting the canonical fail-closed closure contract.",
+      "Generic GitHub Production Release Readback treated a Supabase-only migration as non-Netlify deployment and allowed terminal closure before the production Supabase migration ledger contained the change."
     ],
-    "repair": "Remove aliases, retain only exact observed production filenames, require protected-main plus production readback before terminal closure, and keep repository closure truth synchronized with the canonical Brain obligation.",
-    "prevention": "Production-ledger reconciliation must prove semantic migration uniqueness and consistent fail-closed closure semantics across all exact-head Required and BRAIN suites before merge; terminal LIVE_VERIFIED is allowed only after protected-main and production readback evidence exists."
+    "repair": "Require exact changed Supabase migration version+name identities to be independently read back from the production Supabase migration ledger inside the Edge terminal authority before Brain FULFILLED.",
+    "prevention": "Every terminal delivery containing supabase/migrations/** must provide exact migration identities; production Edge verifies all identities through service-role-only powerhouse_supabase_migration_readback_v1 before terminal evidence is accepted."
   },
   "closureEvidence": {
     "brainObligationState": "FULFILLED",
