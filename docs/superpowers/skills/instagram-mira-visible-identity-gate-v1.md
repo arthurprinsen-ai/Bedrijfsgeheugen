@@ -73,3 +73,18 @@ Learning fingerprint: `instagram-video-frame-proof-worker-v1`.
 ## Canonical publishing transport (2026-09-18)
 
 After exact-final-media + visible-Mira proof passes, Instagram delivery must use Composio as the primary write transport. The flow is create media container → publish → Instagram media readback → external_id/permalink writeback. Make is forbidden as execution, orchestration, recovery or fallback. Runtime requires `COMPOSIO_API_KEY`; an explicit connected-account id is optional when exactly one active Instagram account can be discovered. Missing/ambiguous authorization is recoverable and preserves the proven media for replay without regeneration. Use Composio v3 `/api/v3/tools/execute/{tool_slug}`. Fingerprint: `instagram-composio-primary-v1`.
+
+
+## Human-problem narrative + fresh generation gate (2026-09-18)
+
+Visible identity alone is not sufficient for Mira. For a Mira Reel, also require:
+
+1. **Human problem first**: the episode is anchored in one concrete, personally recognizable moment rather than generic process/AI/management copy.
+2. **Fresh generation**: the final video is newly generated for the current episode by OpenArt image2video. Prior Mira assets and OpenArt history outputs are forbidden as final-media fallbacks.
+3. **Reference/output separation**: an existing Mira reference image may be reused solely for identity continuity; output generation id/URL must be new.
+4. **Format integrity**: a Reel obligation cannot be satisfied by a static text card, quote card, generic Placid visual or old video.
+5. **No-provider substitution**: if OpenArt is unavailable in the actual execution plane, preserve the obligation as recoverable and do not silently switch media provider.
+6. **Narrative QA**: prefer small real-life friction, dry self-observation and a believable setting; avoid corporate explanation as the opening.
+7. **Terminal evidence**: exact asset proof + Instagram published media id/permalink + canonical writeback are required.
+
+Fingerprint: `mira-human-problem-fresh-openart-reel-v1`.

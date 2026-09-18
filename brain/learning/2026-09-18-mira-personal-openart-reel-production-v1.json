@@ -1,0 +1,58 @@
+{
+  "fingerprint": "mira-human-problem-fresh-openart-reel-v1",
+  "learning_id": "mira-personal-openart-reel-production-v1",
+  "status": "RECORDED_PENDING_PROTECTED_MERGE",
+  "observed_at": "2026-09-18",
+  "scope": [
+    "instagram_company",
+    "mira",
+    "openart",
+    "composio",
+    "content_learning",
+    "skills"
+  ],
+  "incident": {
+    "symptom": "Mira Reel intent degraded into static text-card execution and old-media fallback risk",
+    "prior_verified_reel_id": "18116075632751732",
+    "prior_verified_permalink": "https://www.instagram.com/reel/DdYLdmbimKy/"
+  },
+  "root_cause": "Format integrity, human-problem narrative, provider requirement and fresh-generation identity were not enforced as one canonical production contract.",
+  "prevention": [
+    "human_problem_first",
+    "new_script_per_episode",
+    "fresh_openart_generation_required_for_reel",
+    "existing_mira_image_reference_only",
+    "old_media_final_fallback_forbidden",
+    "static_text_card_cannot_satisfy_reel",
+    "placid_video_fallback_forbidden",
+    "make_retired_forbidden",
+    "provider_readiness_per_execution_plane",
+    "recent_instagram_and_generation_dedupe",
+    "instagram_media_id_permalink_readback_required",
+    "canonical_notion_brain_outcome_writeback_required"
+  ],
+  "canonical_chain": [
+    "powerhouse_personal_problem",
+    "concrete_human_moment",
+    "mira_script",
+    "fixed_mira_reference",
+    "new_openart_image2video",
+    "exact_media_visible_identity_proof",
+    "composio_instagram_publish",
+    "instagram_provider_readback",
+    "canonical_outcome_learning_writeback"
+  ],
+  "evidence": {
+    "verified_prior_reel": {
+      "media_id": "18116075632751732",
+      "permalink": "https://www.instagram.com/reel/DdYLdmbimKy/",
+      "published_at": "2026-09-17T06:07:52Z",
+      "provider": "OpenArt image2video -> Instagram"
+    }
+  },
+  "projected_skills": [
+    ".agents/skills/instagram-composio-publisher/SKILL.md",
+    "docs/superpowers/skills/instagram-mira-visible-identity-gate-v1.md"
+  ],
+  "new_parallel_authority": false
+}
