@@ -471,7 +471,8 @@
         "tests/menu-balk-writer-noop-proof.test.mjs",
         "tests/repository-writer-permission-boundary.test.mjs",
         "tests/repository-writer-slow-canary-sla.test.mjs",
-        "tests/github-pr-workflow-single-flight.test.mjs"
+        "tests/github-pr-workflow-single-flight.test.mjs",
+        "tests/terminal-writer-lease-"
       ],
       "requiredContracts": [
         "BG166",
