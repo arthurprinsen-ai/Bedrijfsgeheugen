@@ -21,6 +21,14 @@ test('DataForSEO observations enter canonical evidence and keyword intelligence'
   assert.match(fn,/opportunity_score/);
 });
 
+test('successful zero-result DataForSEO runs still write truthful source evidence',()=>{
+  assert.match(fn,/dataforseo-run:/);
+  assert.match(fn,/dataforseo-provider-run/);
+  assert.match(fn,/SUCCESS_ZERO_ITEMS/);
+  assert.match(fn,/items:items\.length/);
+  assert.match(fn,/RUN_EVIDENCE_STORE/);
+});
+
 test('DataForSEO runtime is scheduled daily through existing scheduler authority',()=>{
   assert.match(sql,/powerhouse-dataforseo-intelligence-daily/);
   assert.match(sql,/20 4 \* \* \*/);
