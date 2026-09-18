@@ -289,3 +289,19 @@ test('regulatory workers and their regressions are automation delivery work', as
     assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation'], `${path} must be automation delivery work`);
   }
 });
+
+
+test('regulatory workflows remain narrowly automation-scoped', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  for (const path of [
+    'tools/regulatory-source-monitor.py',
+    'tools/regulatory-brain-ingest.py',
+    'tests/regulatory-organism-feed.test.mjs',
+    '.github/workflows/regulatory-source-watch.yml',
+    '.github/workflows/regelgeving-bijwerken.yml',
+    '.github/workflows/lane-automation.yml'
+  ]) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation'], `${path} must remain automation-only`);
+  }
+});
