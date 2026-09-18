@@ -233,3 +233,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Skill projection:** `.agents/skills/powerhouse-toolchain-authority/SKILL.md` now requires those checks before future recovery/delivery work.
 - **Machine learning:** `brain/learning/2026-09-18-toolchain-authority-release-learning-v1.json`.
 - **Herbruikbare les:** een fail-closed gate is bruikbare systeemintelligentie. Repareer de oorzaak in dezelfde lineage; omzeil admission, classification of production-readback nooit om sneller live te kunnen claimen.
+
+## 2026-09-18 — LIVE_BEWEZEN — runner-capacity recovery closure
+- **Fingerprint:** `delivery|runner-capacity|live-closure|v1`
+- **PR:** #2132
+- **Candidate:** `6290eebf1a50a39f11f14d095ab7d503fe468cc3`
+- **Protected merge/main:** `95ea2a673c8a3f801aea77cf8b3a81ae1232aea9`
+- **Gates:** Required success; BRAIN success; CodeQL success; skill projection success.
+- **Production:** Netlify deploy `6aad2cc7bfe37a0008c5d325`, state `ready`, context `production`, exact `commit_ref=95ea2a673c8a3f801aea77cf8b3a81ae1232aea9`.
+- **Learning:** metadata preflight before CI; full-main-union on reconciliation; preserve previous learning/tests; exact production readback before LIVE_BEWEZEN.
+- **Machine-readable:** `brain/learning/2026-09-18-runner-capacity-live-closure-v1.json`.
