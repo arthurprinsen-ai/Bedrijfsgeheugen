@@ -1,10 +1,10 @@
 {
   "type": "POWERHOUSE_AGENT_SKILL",
-  "version": "POWERHOUSE-FAST-ROLLING-DELIVERY-v1",
+  "version": "POWERHOUSE-FAST-ROLLING-DELIVERY-v2",
   "status": "ACTIVE",
-  "fingerprint": "powerhouse-fast-rolling-lane-delivery-v1",
-  "name": "powerhouse-fast-rolling-delivery",
-  "purpose": "Ship safe Powerhouse changes in minutes by combining parallel isolated agent work with one rolling integration candidate per conflict contract, risk-scoped blocking gates, automatic supersession/recovery, protected exact-head promotion and post-merge broad assurance.",
+  "fingerprint": "powerhouse-predictive-fast-delivery-v2",
+  "name": "powerhouse-predictive-fast-delivery",
+  "purpose": "Ship safe Powerhouse changes in minutes using predictive admission, isolated parallel agents, rolling conflict-contract lanes, adaptive blocking gates, autonomous CI recovery, protected exact-head promotion, production readback and measured daily self-optimization.",
   "trigger_when": [
     "building or fixing code, portal, website, automation, Brain or documentation",
     "multiple agents or chats are working in parallel",
@@ -37,7 +37,14 @@
     "Do not run unrelated broad regression suites in the pre-merge critical path for safe changes.",
     "After protected merge, run broad assurance asynchronously with single-flight cancellation and persist its outcome.",
     "Promote immediately when the exact head blocking profile is green; do not wait for unrelated shadow assurance.",
-    "Write timing, queue recovery, failures, root cause and prevention back to Powerhouse learning."
+    "Write timing, queue recovery, failures, root cause and prevention back to Powerhouse learning.",
+    "Predict conflict, queue and gate risk before CI fan-out; use that prediction to choose parallelism and the smallest safe blocking profile.",
+    "Keep frontend, backend, QA and documentation work parallel in isolated workspaces until a real contract/path/dependency/resource collision exists.",
+    "Treat zero-run, stale-run, timeout and queue-SLO breach as autonomous recovery events, never passive waiting.",
+    "Continuously compare predicted failure/risk with actual outcomes and calibrate thresholds from production delivery telemetry.",
+    "Promote only the exact tested head; immediately continue through production readback, outcome evidence and learning writeback.",
+    "Use shadow assurance for unrelated broad checks and feed shadow failures back into risk models without blocking unrelated safe delivery.",
+    "Measure lead time end-to-end and optimize for the slowest stage rather than adding more parallel work blindly."
   ],
   "forbidden_patterns": [
     "one PR per agent for overlapping work",
@@ -55,6 +62,61 @@
     "tools/delivery/turbo-classifier.mjs",
     ".github/workflows/required-test.yml",
     ".github/workflows/unified-brain-delivery.yml",
-    ".github/workflows/powerhouse-post-merge-assurance.yml"
-  ]
+    ".github/workflows/powerhouse-post-merge-assurance.yml",
+    "tools/delivery/predictive-controller.mjs",
+    ".github/workflows/powerhouse-fast-delivery-supervisor.yml",
+    "tests/brain-powerhouse-delivery-supervisor.test.mjs"
+  ],
+  "predictive_model": {
+    "controller": "tools/delivery/predictive-controller.mjs",
+    "predicts": [
+      "risk_class",
+      "conflict_probability",
+      "queue_pressure",
+      "likely_failure_surface",
+      "blocking_gate_profile"
+    ],
+    "evidence": [
+      "changed_paths",
+      "contract_overlap",
+      "dependency_overlap",
+      "historical_failure_rate",
+      "merge_conflict_rate",
+      "queue_p95",
+      "main_movement_rate"
+    ]
+  },
+  "agent_roles": {
+    "coordinator": "owns canonical truth, conflict contracts, promotion and definition of done",
+    "frontend": "works isolated on affected UI surface with targeted visual/browser checks",
+    "backend": "works isolated on affected APIs/data/runtime with contract/security checks",
+    "test_qa": "generates risk-derived regression/eval profile and validates false-positive oracles",
+    "release_supervisor": "owns zero-run/stale-run/timeout/conflict recovery and exact-head delivery continuation",
+    "learning_agent": "attributes failures and lead-time loss, updates prevention, gate selection and skill guidance"
+  },
+  "success_metrics": {
+    "primary": [
+      "time_to_first_signal_ms",
+      "time_to_live_proven_ms",
+      "recovery_success_rate"
+    ],
+    "quality_guardrails": [
+      "production_readback_success",
+      "rollback_rate",
+      "security_regression_rate",
+      "false_green_rate"
+    ],
+    "efficiency": [
+      "queue_p95_ms",
+      "reruns_per_candidate",
+      "duplicate_work_avoided",
+      "parallelism_utilization",
+      "cache_hit_rate"
+    ],
+    "learning": [
+      "prediction_accuracy",
+      "false_positive_oracle_rate",
+      "repeat_incident_rate"
+    ]
+  }
 }
