@@ -233,7 +233,7 @@
   "lanes": [
     {
       "id": "backend",
-      "owner": "agent-integration-make",
+      "owner": "agent-integration-control-plane",
       "paths": [
         ".agents/skills/",
         "brain/",
@@ -470,7 +470,7 @@
     },
     {
       "id": "automation",
-      "owner": "agent-integration-make",
+      "owner": "agent-integration-control-plane",
       "paths": [
         "automation/",
         "make/",
@@ -502,7 +502,7 @@
     "productionAuthority": "BG169",
     "productionAuthorityContract": {
       "id": "BG169",
-      "fallbackPolicy": "primary_then_verified_failover",
+      "fallbackPolicy": "verified_transport_only",
       "failoverRequiresSameContract": true,
       "ackIsExecutionProof": false,
       "exactShaRequired": true,
@@ -511,14 +511,9 @@
       "executionProofRequired": true,
       "transports": [
         {
-          "id": "make",
+          "id": "github-native",
           "priority": 1,
           "mode": "primary"
-        },
-        {
-          "id": "github-native",
-          "priority": 2,
-          "mode": "verified-failover"
         }
       ]
     },
