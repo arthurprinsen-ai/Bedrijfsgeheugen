@@ -117,3 +117,18 @@ Additional metrics:
 - `candidate_type_reclassification_count`
 - `owner_head_supersession_count`
 - `writer_head_thrash_avoided_count`
+
+
+## Successor PR coverage integrity
+
+Fingerprint: `delivery|successor-pr|coverage-integrity|v1`.
+
+When a PR or branch supersedes an earlier lineage:
+- compare predecessor and successor changed-file sets; do not rely on squash ancestry;
+- inspect predecessor-only deltas across implementation, executable tests, workflow registration, classifier coverage, security/governance, docs and skills;
+- require every predecessor-introduced executable regression test to remain wired into an applicable canonical workflow/classifier unless explicitly retired with evidence;
+- treat `Supersedes` as lineage metadata, not completeness proof;
+- do not close cleanup as safe until successor/main containment **and** coverage integrity are proven;
+- if a required predecessor-only delta is found, classify the obligation as `RECOVERABLE_INCOMPLETE` and repair the current canonical lineage before terminal completion.
+
+Reference incident: #2129 → #2148 silently lost the backend registration of `tests/supabase-instagram-media-job-materializer-v1.test.mjs`; #2158 restored it and production-readback proved the exact merged SHA.

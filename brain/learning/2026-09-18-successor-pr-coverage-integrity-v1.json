@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-SUCCESSOR-PR-COVERAGE-INTEGRITY-v1",
+  "status": "ACTIVE_PREVENTION_PROVEN",
+  "fingerprint": "delivery|successor-pr|coverage-integrity|v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-successor-pr-coverage-integrity-v1",
+  "problem": "A stale or superseded PR can be replaced by a functionally equivalent successor while silently losing a small but important workflow, classifier, test-registration, documentation or governance delta.",
+  "root_cause": "Successor validation compared implementation intent and broad file content, but did not require a machine-checkable old-versus-successor coverage audit across executable tests, workflow registrations and governance metadata before declaring the predecessor fully superseded.",
+  "reference_incident": {
+    "predecessor_pr": 2129,
+    "successor_pr": 2148,
+    "recovery_pr": 2158,
+    "missing_delta": ".github/workflows/lane-backend.yml registration for tests/supabase-instagram-media-job-materializer-v1.test.mjs"
+  },
+  "skill_targets": ["delivery", "continuity"],
+  "prevention": [
+    "SUCCESSOR_COMPLETENESS_IS_DELTA_BASED: before closing or deleting a predecessor lineage, compare predecessor and successor changed-file sets plus executable-test/workflow/classifier/governance deltas.",
+    "NO_ORPHAN_EXECUTABLE_TESTS: every executable regression test introduced by a predecessor must remain registered in an applicable canonical workflow or be explicitly retired with evidence.",
+    "SUPERSEDES_REQUIRES_COVERAGE_PROOF: an explicit Supersedes relation is not sufficient by itself; successor acceptance must prove retained functional, regression, workflow and governance coverage.",
+    "SQUASH_ANCESTRY_IS_NOT_COMPLETENESS: branch divergence or non-ancestry after squash merge is not evidence of missing or present content; compare semantic/file coverage instead.",
+    "BRANCH_CLEANUP_REQUIRES_SUCCESSOR_PROOF: delete historical branches only after merged-successor/main containment and coverage-integrity proof are both established.",
+    "COVERAGE_GAP_IS_RECOVERABLE_INCOMPLETE: if any predecessor-only required delta is found, keep the obligation open and repair it through the current canonical lineage before terminal completion."
+  ],
+  "production_proof": {
+    "recovery_pr": 2158,
+    "candidate_head": "9b3f9a5954f633a438da9d5b762fbbc96594dcee",
+    "merge_sha": "7d0442b517c80c51f69ebcaba6328d731a309459",
+    "netlify_deploy_id": "6aad37dc16d92f0009b35922",
+    "netlify_commit_ref": "7d0442b517c80c51f69ebcaba6328d731a309459",
+    "production_readback_run": 35348507561,
+    "production_readback": "success",
+    "verified_on": "2026-09-18"
+  },
+  "documentation": [
+    "brain/learning-ledger/2026-09-18-successor-pr-coverage-integrity-v1.md",
+    "docs/brain/successor-pr-coverage-integrity-v1.md"
+  ],
+  "skill_projection": {
+    "agent_skill": ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "brain_skill": "brain/skills/powerhouse-delivery-self-optimization-v1.json"
+  }
+}
