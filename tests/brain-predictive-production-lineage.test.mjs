@@ -71,11 +71,14 @@ test('production migrations have unique versions and no drifted replay aliases',
   for (const name of DRIFTED_ALIASES) assert.equal(files.includes(name), false, name);
 });
 
-test('production lineage remains fail closed until protected-main readback', () => {
+test('production lineage records verified closure only after protected-main and production readback', () => {
   const lineage = JSON.parse(fs.readFileSync(LINEAGE, 'utf8'));
-  assert.equal(lineage.reconciliationStatus, 'PENDING_MAIN_READBACK');
+  assert.equal(lineage.reconciliationStatus, 'LIVE_VERIFIED');
   assert.equal(lineage.obligation.productionStateBeforeClosure, 'OPEN');
-  assert.equal(lineage.latestObservedProductionMigration, '20260916123957_powerhouse_internal_view_replay_hardening');
+  assert.equal(lineage.obligation.closureState, 'FULFILLED');
+  assert.equal(lineage.closureEvidence.brainObligationState, 'FULFILLED');
+  assert.equal(lineage.closureEvidence.closedLoopStatus, 'LIVE & BEWEZEN');
+  assert.equal(lineage.latestObservedProductionMigration, '20260917070302_linkedin_company_daily_delivery_guard_v1');
   assert.deepEqual(lineage.reconciled.slice(-2), [
     {
       production: '20260916123944_powerhouse_autonomy_rpc_replay_hardening.sql',
