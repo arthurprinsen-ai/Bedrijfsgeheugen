@@ -148,8 +148,8 @@ function kaart(antwoord) {
 export function directievragenMarkup(state = {}, peil) {
   const antwoorden = directieAntwoorden(state, peil);
   return '<section class="dv" aria-label="De zes vragen">'
-    + '<h2>Waar wil je naar kijken?</h2>'
-    + '<p class="dv-sub">Zes vragen, zes antwoorden uit je eigen gegevens. Elke knop opent het onderdeel waar het antwoord vandaan komt.</p>'
+    + '<h2>Wat wil je verder weten?</h2>'
+    + '<p class="dv-sub">Verdiep je vanuit je eigen gegevens. Elke knop opent het onderdeel waar het antwoord vandaan komt.</p>'
     + `<ol class="dv-lijst">${antwoorden.map(kaart).join('')}</ol>`
     + '</section>';
 }

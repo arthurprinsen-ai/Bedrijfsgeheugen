@@ -38,14 +38,15 @@ test('overview blocks can be reordered without losing block identity',async()=>{
   assert.deepEqual(reorderOverviewBlocks(blocks,'impact','summary'),['brain','impact','summary','roadmap','opportunities','activities']);
 });
 
-test('overview reorder is native desktop drag drop with mobile controls and canonical persistence',()=>{
+test('overview reorder is native desktop drag drop with mobile controls and per-device canonical persistence',()=>{
   const source=overviewSource();
   assert.match(source,/draggable/);
   assert.match(source,/dragstart/);
   assert.match(source,/drop/);
-  assert.match(source,/data-overview-move-up/);
-  assert.match(source,/data-overview-move-down/);
-  assert.match(source,/portal\.overview\.blockOrder/);
+  assert.match(source,/data-overview-move-prev/);
+  assert.match(source,/data-overview-move-next/);
+  assert.match(source,/portal\.overview\.layouts\.\$\{mode\}\.order/);
+  assert.match(source,/portal\.overview\.blockOrder/); // legacy migration fallback
   assert.match(source,/domainState\.set/);
   assert.match(source,/domainState\.flush/);
 });
@@ -64,8 +65,9 @@ test('mobile parity controls have at least a 44px touch target',()=>{
   assert.match(css,/\.v2overviewcontrols[\s\S]*min-(?:width|height):44px/);
 });
 
-test('overview reorder controls reserve their own vertical space instead of covering links and content',()=>{
+test('overview reorder controls are hidden in normal mode and reserve space only while editing',()=>{
   const css=fs.readFileSync(new URL('../modules/interaction-parity-style.js', import.meta.url),'utf8');
-  assert.match(css,/\[data-overview-block\]\{[^}]*padding-top:(?:6[0-9]|[7-9][0-9]|[1-9][0-9]{2,})px/);
+  assert.match(css,/\.v2overviewcontrols\{[^}]*display:none/);
+  assert.match(css,/\.v2overviewcanvas\.is-editing>\[data-overview-block\]\{[^}]*padding-top:(?:6[0-9]|[7-9][0-9]|[1-9][0-9]{2,})px/);
   assert.match(css,/\.v2overviewcontrols\{[^}]*position:absolute/);
 });
