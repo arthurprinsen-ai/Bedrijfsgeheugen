@@ -237,7 +237,7 @@ test('Notion synced-post migration replay regressions are backend delivery work'
 test('security operations proof paths are backend delivery work', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   for (const path of ['scripts/security-operations-proof.mjs','tests/security-operations-proof.test.mjs']) {
-    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'sec0ps1234567890', policy });
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'5ec0a51234567890', policy });
     assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend'], `${path} must be backend delivery work`);
   }
 });
