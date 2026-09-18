@@ -11,12 +11,16 @@ test('tenant identity review is derived live, not copied to a parallel queue',()
   assert.doesNotMatch(sql,/create table\s+public\.powerhouse_tenant_identity_review/i);
 });
 
-test('sales actions deterministically materialize decision cycles',()=>{
-  assert.match(sql,/powerhouse_materialize_sales_action_cycle_row_v1/);
-  assert.match(sql,/cycle_id,subject_key,source_signal_ref/);
-  assert.match(sql,/a\.action_id/);
-  assert.match(sql,/sales-action:' \|\| a\.action_id::text \|\| ':decision'/);
+test('decision cycles open only from canonical runtime signals',()=>{
+  assert.match(sql,/powerhouse_open_cycle_from_runtime_signal_v1/);
+  assert.match(sql,/event_type <> 'scan_submitted'/);
+  assert.match(sql,/source <> 'website\.frisse_blik'/);
+  assert.match(sql,/1,'signal','powerhouse_runtime_events'/);
+  assert.match(sql,/runtime-signal:' \|\| e\.event_id::text/);
   assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/i);
+  assert.doesNotMatch(sql,/1,\s*'decision'/);
+  assert.doesNotMatch(sql,/insert into public\.powerhouse_cycle_events[\s\S]*?'analysis'/);
+  assert.doesNotMatch(sql,/insert into public\.powerhouse_cycle_events[\s\S]*?'prediction'/);
 });
 
 test('learning gap closure does not synthesize feedback, economics or realized value',()=>{
