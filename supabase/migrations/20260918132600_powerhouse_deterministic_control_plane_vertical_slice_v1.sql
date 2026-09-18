@@ -467,10 +467,10 @@ select
   array_remove(array_agg(distinct bde.evidence_kind),null) as evidence_stages,
   case
     when bo.state='FULFILLED' then 'NONE'
-    when not bool_or(bde.evidence_kind='EXECUTION' and bde.status='GREEN') then 'EXECUTE'
-    when not bool_or(bde.evidence_kind='PROD_READBACK' and bde.status='GREEN') then 'VERIFY_PRODUCTION'
-    when not bool_or(bde.evidence_kind='OUTCOME' and bde.status='GREEN') then 'CAPTURE_OUTCOME'
-    when not bool_or(bde.evidence_kind='LEARNING' and bde.status='GREEN') then 'COMPILE_LEARNING'
+    when not coalesce(bool_or(bde.evidence_kind='EXECUTION' and bde.status='GREEN'),false) then 'EXECUTE'
+    when not coalesce(bool_or(bde.evidence_kind='PROD_READBACK' and bde.status='GREEN'),false) then 'VERIFY_PRODUCTION'
+    when not coalesce(bool_or(bde.evidence_kind='OUTCOME' and bde.status='GREEN'),false) then 'CAPTURE_OUTCOME'
+    when not coalesce(bool_or(bde.evidence_kind='LEARNING' and bde.status='GREEN'),false) then 'COMPILE_LEARNING'
     else 'CLOSE'
   end as next_action
 from public.brain_obligations bo
