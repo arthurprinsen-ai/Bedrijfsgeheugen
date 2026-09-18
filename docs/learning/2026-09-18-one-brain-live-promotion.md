@@ -75,3 +75,21 @@ Mandatory inheritance:
 - every new capability must map to canonical memory, intelligence, decisioning, execution, evidence, value/outcome and learning before it can be production-ready.
 
 Machine-readable canonical record: `brain_records.powerhouse-one-brain-constitution-v1`.
+
+
+## Unified data intelligence spine
+
+Fingerprint: `powerhouse-unified-data-intelligence-spine-v1`
+
+The same #2023 lineage now makes social, search, analytics, external intelligence and customer portal state first-class One Brain evidence rather than connector-local data.
+
+Permanent rules:
+- GA4, Search Console, LinkedIn, Instagram, Buffer transport, DataForSEO, external signals and portal state converge through `powerhouse_evidence_source_observations` + `powerhouse_runtime_events`; no parallel brain/data authority is introduced.
+- Existing canonical source tables remain authoritative; database triggers capture new writes and `powerhouse_data_spine_reconcile_v1` repairs missed trigger/evidence writes idempotently.
+- `powerhouse_data_spine_watchdog_v1` runs every 10 minutes and reports stale/missing producers fail-closed; configured connectors are never treated as persisted evidence.
+- Native DataForSEO collection uses vault-backed credentials and writes both canonical keyword opportunities and source evidence. It is scheduled daily and remains non-green until actual production readback proves observations.
+- Portal payloads retain tenant identity, source timestamps and provenance; legacy portal state is evidence, not a replacement identity authority.
+- Buffer is explicitly transport/source metadata. LinkedIn and Instagram remain separate platform truths.
+- A production-schema transaction/rollback dry run on 2026-09-18 reconciled 1,304 existing source rows successfully without mutating production.
+
+Terminal truth remains `RECORDED_PENDING_FINAL_DELIVERY_READBACK` until exact-head gates, protected merge, migrations/function deployment and production evidence/readback are complete.
