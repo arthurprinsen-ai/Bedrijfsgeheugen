@@ -8,6 +8,7 @@ on:
       - 'supabase/functions/revenue-learning-store/**'
       - 'supabase/migrations/*revenue_learning*.sql'
       - 'tests/revenue-learning-*.test.mjs'
+      - 'tests/powerhouse-revenue-calibration-persistence-contract.test.mjs'
       - 'tests/growth-intelligence-*.test.mjs'
       - 'tests/supabase-migration-history-integrity.test.mjs'
       - 'tests/notion-synced-posts-migration-reproducibility.test.mjs'
@@ -28,6 +29,7 @@ on:
       - 'supabase/functions/revenue-learning-store/**'
       - 'supabase/migrations/*revenue_learning*.sql'
       - 'tests/revenue-learning-*.test.mjs'
+      - 'tests/powerhouse-revenue-calibration-persistence-contract.test.mjs'
       - 'tests/growth-intelligence-*.test.mjs'
       - 'tests/supabase-migration-history-integrity.test.mjs'
       - 'tests/notion-synced-posts-migration-reproducibility.test.mjs'
@@ -57,6 +59,7 @@ jobs:
         run: >-
           node --test
           tests/revenue-learning-*.test.mjs
+          tests/powerhouse-revenue-calibration-persistence-contract.test.mjs
           tests/growth-intelligence-engine.test.mjs
           tests/growth-intelligence-daily.test.mjs
           tests/supabase-migration-history-integrity.test.mjs
