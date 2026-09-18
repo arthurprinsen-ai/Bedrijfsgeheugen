@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { regulatoryFrameworkDigest, applyRegulatoryBaselineToPortalControls } from '../portal-v2/regulatory-baseline.js';
+import { regulatoryFrameworkDigest, applyRegulatoryBaselineToPortalControls } from '../regulatory-baseline.js';
 
 const state={sources:{
   ai:{id:'eu-ai-act',framework:'EU_AI_ACT',contentSha256:'abc'},
