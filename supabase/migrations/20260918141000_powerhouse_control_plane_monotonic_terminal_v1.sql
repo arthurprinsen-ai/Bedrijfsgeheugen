@@ -64,6 +64,9 @@ begin
 end;
 $function$;
 
+revoke execute on function public.brain_transition_operation(uuid,bigint,text,bigint,text,jsonb) from public, anon, authenticated;
+grant execute on function public.brain_transition_operation(uuid,bigint,text,bigint,text,jsonb) to service_role;
+
 create or replace function public.brain_transition_obligation(
   p_obligation_id uuid,
   p_expected_version bigint,
@@ -123,6 +126,9 @@ begin
   return v_row;
 end;
 $function$;
+
+revoke execute on function public.brain_transition_obligation(uuid,bigint,text,text,jsonb) from public, anon, authenticated;
+grant execute on function public.brain_transition_obligation(uuid,bigint,text,text,jsonb) to service_role;
 
 comment on function public.brain_transition_operation(uuid,bigint,text,bigint,text,jsonb) is
   'Canonical operation transition authority. Terminal VERIFIED/COMPENSATED truth is monotonic; same-state replay may refresh evidence.';
