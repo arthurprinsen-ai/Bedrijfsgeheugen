@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918104500_structural_gap_production_reconcile_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migrations/20260918082934_structural_gap_production_reconcile_v1.sql','utf8');
 
 test('reconcile refuses to delete any sales-action cycle with downstream evidence',()=>{
   assert.match(sql,/STRUCTURAL_RECONCILE_REFUSES_NON_SYNTHETIC_CYCLE_DELETE/);
