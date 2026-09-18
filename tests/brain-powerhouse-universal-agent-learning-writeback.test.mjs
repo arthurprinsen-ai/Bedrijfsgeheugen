@@ -144,3 +144,20 @@ test('chat-learning preflight cannot silently omit universal learning/writeback 
   assert.ok(packet.fingerprints.includes(policy.fingerprint), 'policy fingerprint missing from preflight signals');
   assert.ok(packet.fingerprints.includes(continuityPolicy.fingerprint), 'continuity fingerprint missing from preflight signals');
 });
+
+test('unified data intelligence spine is inherited by every material agent and skill', () => {
+  const spine = policy.data_and_evidence_contract.unified_data_spine;
+  assert.equal(spine.fingerprint, 'powerhouse-unified-data-intelligence-spine-v1');
+  assert.equal(spine.canonical_source_registry, 'public.powerhouse_evidence_sources');
+  assert.equal(spine.canonical_observations, 'public.powerhouse_evidence_source_observations');
+  assert.equal(spine.canonical_runtime_events, 'public.powerhouse_runtime_events');
+  assert.equal(spine.health_readback, 'public.powerhouse_data_spine_health_v1');
+  assert.equal(spine.reconciliation, 'public.powerhouse_data_spine_reconcile_v1');
+  assert.equal(spine.watchdog, 'public.powerhouse_data_spine_watchdog_v1');
+  for (const invariant of [
+    'ALL_MATERIAL_DATA_SOURCES_USE_UNIFIED_ONE_BRAIN_EVIDENCE_SPINE',
+    'CONNECTED_SOURCE_IS_NOT_PERSISTED_EVIDENCE',
+    'SOURCE_GREEN_REQUIRES_FRESH_OBSERVED_READBACK',
+    'TRANSPORT_METADATA_NEVER_REPLACES_PLATFORM_TRUTH'
+  ]) assert.ok(policy.invariants.includes(invariant), `missing data-spine invariant: ${invariant}`);
+});
