@@ -61,3 +61,32 @@ At readback for `ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded`, `Required test`, Cod
 ### Additional prevention rule
 
 `STALE_ASSERTION_MUST_FOLLOW_VERIFIED_ARCHITECTURE`: when workflow consolidation or a verified architecture change intentionally moves a contract boundary, a failing assertion that still encodes the superseded boundary must be repaired at the test/oracle layer after verifying the new architecture. Never reintroduce redundant fan-out, weaken a gate, or classify the stale assertion as a product regression merely to make CI green.
+
+
+## Final closure — 2026-09-17 / verified 2026-09-18
+
+The canonical One Loop obligation is now closed end-to-end. PR #1968 reached exact-head terminal green on candidate head `4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86` with Required run `35271798560` and BRAIN delivery run `35271798909`, then protected squash-merged as production/main commit `6ae18de754cb33044108d85ba704c965a5287b88`.
+
+Post-merge readback exposed one real downstream completion-identity defect rather than a product/runtime regression: Outcome Obligation Sweep assumed every production commit had a second parent. Because #1968 was squash-merged, production SHA `6ae18de754cb33044108d85ba704c965a5287b88` had one parent. In parallel, merged-branch cleanup could return non-zero while only persisting an artifact, without a concrete operator-visible GitHub error annotation.
+
+The canonical single recovery successor was PR #1984. Its exact head `97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04` reached terminal green for Required run `35274102801`, BRAIN delivery run `35274102768` and Powerhouse CodeQL run `35274102310`. It protected-merged as `4fda9309eefa259b2a7f492ca929b8d472055d5e`.
+
+Fresh production/main evidence on `4fda9309eefa259b2a7f492ca929b8d472055d5e` then proved the recovery contract:
+- Production Release Readback run `35274800041`: success;
+- Outcome Obligation Sweep run `35274960927`: success, including squash-safe immutable candidate identity resolution and obligation reconciliation;
+- Config-Wacht run `35274800039`: success;
+- Powerhouse Merged Branch Cleanup run `35274800189`: success, with the merged recovery branch absent on readback.
+
+### Final prevention rules
+
+`SQUASH_MERGE_IDENTITY_FALLBACK`: when a production commit has no second parent, resolve candidate identity only from exactly one associated merged PR whose `merge_commit_sha` equals the production SHA; otherwise fail closed.
+
+`POST_MERGE_FAILURES_MUST_BE_OPERATOR_VISIBLE`: every non-zero post-merge cleanup or reconciliation path must persist durable evidence and emit a concrete operator-visible GitHub error annotation.
+
+### Terminal truth
+
+Status: `LIVE_PROVEN / FULFILLED`.
+
+Lifecycle: `LEARNED -> FULFILLED`.
+
+The obligation met the complete Powerhouse contract: exact-head verification, protected merge, production/main readback, squash-safe completion evidence, obligation reconciliation, configuration verification, merged-branch cleanup, and canonical learning closure.
