@@ -1,4 +1,4 @@
-import { createPublicKey, verify as verifySignature } from 'node:crypto';
+import { createHash, createPublicKey, verify as verifySignature } from 'node:crypto';
 
 const AUDIENCE='powerhouse-control-plane-v1';
 const ISSUER='https://token.actions.githubusercontent.com';
@@ -64,7 +64,6 @@ async function supabaseRequest(path,{method='GET',body,prefer=''}={}){
   return payload;
 }
 async function rpc(name,args){return supabaseRequest(`rpc/${name}`,{method:'POST',body:args});}
-function sha256Like(value){return /^[0-9a-f]{64}$/i.test(String(value||''));}
 function sha40(value){return /^[0-9a-f]{40}$/i.test(String(value||''));}
 function requiredString(value,name){
   const v=String(value||'').trim();
@@ -90,9 +89,8 @@ export async function persistTerminalEvidence(input,claims={}){
   const policyVersion=requiredString(input.policy_version,'POLICY_VERSION');
   const skillVersion=requiredString(input.skill_version,'SKILL_VERSION');
   const actor=String(claims.actor||claims.actor_id||'github-actions');
-  const obligationPayloadHash=Buffer.from(obligationKey).toString('hex').padEnd(64,'0').slice(0,64);
-  const terminalPayloadHash=Buffer.from(`${obligationKey}|${candidateSha}|${mainSha}|${productionRunId}|${projectionRunId||''}`).toString('hex').padEnd(64,'0').slice(0,64);
-  if(!sha256Like(obligationPayloadHash)||!sha256Like(terminalPayloadHash)) throw new Error('PAYLOAD_HASH_DERIVATION_FAILED');
+  const obligationPayloadHash=createHash('sha256').update(obligationKey).digest('hex');
+  const terminalPayloadHash=createHash('sha256').update(`${obligationKey}|${candidateSha}|${mainSha}|${productionRunId}|${projectionRunId||''}`).digest('hex');
 
   let obligation=row(await rpc('brain_create_obligation',{
     p_obligation_type:'CONTROL_PLANE_DELIVERY',
