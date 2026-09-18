@@ -348,6 +348,7 @@ with inventory as (
       case when exists(
         select 1 from public.powerhouse_sales_actions a
         where a.status='done' and a.executed_at is not null
+          and a.executed_at >= timestamptz '2026-09-18 07:00:00+00'
           and not exists(select 1 from public.powerhouse_action_economics e where e.action_id=a.action_id)
       ) then 1 else 0 end
       +
@@ -416,6 +417,11 @@ select
   current_runtime.current_runtime_errors,
   content.recent_content_auth_errors,
   content_truth.content_loop_state,
+  (select count(*)::bigint from public.powerhouse_sales_actions a
+    where a.status='done' and a.executed_at is not null
+      and a.executed_at < timestamptz '2026-09-18 07:00:00+00'
+      and not exists(select 1 from public.powerhouse_action_economics e where e.action_id=a.action_id)
+  ) legacy_unmeasurable_economics_actions,
   case
     when runtime.wired_layers<>runtime.total_layers then 'RED'
     when scheduler.inactive_or_missing_jobs>0 then 'RED'
