@@ -76,3 +76,31 @@ Unexpected interruption means recovery, not restart. Resume from the last verifi
 - Historical sent items with republish_forbidden remain immutable; recovery creates no duplicate publication.
 
 - When the user explicitly selects a model inside an already-required provider (for example OpenArt Gemini Omni), persist the model/history ID on the already-claimed canonical job and supersede the prior in-flight candidate logically; never create or claim a second Powerhouse job. Only the persisted current provider history may advance completion.
+
+
+## Fast delivery and recovery invariants
+
+These rules are mandatory for every chat/agent that creates, repairs or promotes repository changes:
+
+- Parallelize independent specialist work, but serialize only the integration boundary for overlapping paths, contracts or mutable resources.
+- Treat `obligation + canonical branch + exact head SHA` as delivery authority. A PR number is transport metadata and may be reopened/replaced without changing the canonical obligation.
+- During `TERMINAL_DELIVERY`, bind one immutable `Writer-Lease-Head`. Non-owners must defer. Any unexpected head mutation is fail-closed until the lease moves to recovery and is explicitly rebound.
+- Never cancel a healthy current-head job because the PR/head is old. Recovery is progress-aware and may retry only missing starts or genuinely stale queued critical work.
+- For Required/BRAIN retries on one exact head, only the newest attempt is authoritative. Older cancelled/failed attempts remain audit evidence and must never override a newer healthy attempt.
+- Optional or unrelated queued workflows must never trigger Required/BRAIN redispatch.
+- Every new executable regression path requires classifier co-change in the same candidate before expensive CI. An unclassified regression is a delivery defect, not a reason to bypass the classifier.
+- When main moves without overlap and the candidate remains mergeable, keep the tested candidate. Do not rebuild merely to chase main.
+- When main reconciliation is required, preserve the full current-main union from the merge-base. Latest-commit-only overlays are forbidden because they can silently drop earlier main changes.
+- Allocate final mutable identities at integration, not independently in parallel workers. For Supabase migrations, the rolling integrator owns final timestamp/version allocation and verifies uniqueness before expensive CI.
+- Never open a duplicate same-obligation recovery PR merely because CI is queued, a run was cancelled, or PR metadata is stale. Reuse and repair the canonical lineage first.
+- A protected merge is not enough. Terminal completion still requires production/provider readback, outcome/value evidence, learning/prevention writeback and next-agent discoverability.
+- If a candidate was merged before all intended pre-merge gates became terminal, treat that as a governance incident: prove post-merge main/readback immediately and tighten merge protection so the pattern cannot recur.
+
+### Canonical incident fingerprints
+
+- `delivery|same-lineage|parallel-writer-head-thrash-v1`
+- `delivery-recovery|progress-aware|v1`
+- `migration-version-allocation|rolling-integrator|v1`
+- `delivery-classifier|cochange-required|v1`
+- `delivery-attempt-authority|latest-critical-attempt|v1`
+- `moving-main|full-main-union|v1`

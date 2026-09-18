@@ -221,3 +221,17 @@ test('material skills are canonical execution capabilities with mandatory writeb
   assert.ok(policy.invariants.includes('NO_MATERIAL_SKILL_EXECUTION_OUTSIDE_CANONICAL_LOOP'));
   assert.match(policy.scope,/skills/);
 });
+
+
+test('continuity skill locks fast delivery incident prevention', () => {
+  for (const marker of [
+    'Parallelize independent specialist work',
+    'Writer-Lease-Head',
+    'only the newest attempt is authoritative',
+    'classifier co-change',
+    'full current-main union from the merge-base',
+    'Supabase migrations',
+    'PR number is transport metadata',
+    'protected merge is not enough'
+  ]) assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing continuity marker: ${marker}`);
+});

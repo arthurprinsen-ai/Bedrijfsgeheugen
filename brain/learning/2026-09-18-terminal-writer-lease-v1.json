@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_LEARNING",
   "version": "POWERHOUSE-TERMINAL-WRITER-LEASE-v1",
-  "status": "ACTIVE_PREVENTION",
+  "status": "FULFILLED",
   "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
   "date": "2026-09-18",
   "obligation_id": "powerhouse-self-production-promotion-v1",
@@ -94,7 +94,7 @@
     "task_fingerprint": "powerhouse-self-production-promotion-v3"
   },
   "lease_state": "RELEASED",
-  "release_reason": "PROTECTED_MERGE_AND_PRODUCTION_READBACK_AND_TERMINAL_LEARNING_PROVEN",
+  "release_reason": "PROTECTED_MERGE_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK",
   "next_agent_discoverability": {
     "status": "PROVEN",
     "readback_main_sha": "1bf772d495abe14a46c355c24470367fc38ffed7",
@@ -102,5 +102,17 @@
     "preflight_follows_linked_learning_sources": true,
     "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
     "terminal_state": "LIVE_PROVEN"
-  }
+  },
+  "source_pr": 2063,
+  "candidate_head_sha": "ec4a23eec09c231fdc5e0db7691b51ac0d04053a",
+  "production_main_sha": "ee526cea16dac904173466a529211ad0f7513215",
+  "production_readback_run_id": 35327618750,
+  "netlify_deploy_id": "6aacfe9a172eed0008e2e2d9",
+  "netlify_commit_ref": "ee526cea16dac904173466a529211ad0f7513215",
+  "release_evidence": [
+    "github:pr:2063:merged",
+    "github:main:ee526cea16dac904173466a529211ad0f7513215",
+    "github-actions:35327618750:success",
+    "netlify:deploy:6aacfe9a172eed0008e2e2d9:ready"
+  ]
 }
