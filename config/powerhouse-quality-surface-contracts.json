@@ -135,6 +135,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:portal-ondernemersdata",
+      "type": "netlify_function",
+      "authority": "netlify/functions/portal-ondernemersdata.mjs",
+      "evidence_contract": "portal-v2/tests/entrepreneur-intelligence-front-end.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:powerhouse-control-plane-evidence",
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-control-plane-evidence.mjs",
