@@ -16,7 +16,7 @@ const clone=x=>structuredClone(x);
 test('maturity change propagates to all causally dependent portal surfaces',()=>{
   const after=clone(base);after.portal.profile.maturity.sturing=4;
   const impact=impactForMutation({path:'portal.profile.maturity.sturing',before:base,after});
-  assert.equal(PORTAL_IMACT_ENGINE_VERSION_SAFE(), '2026-09-18-v2-organism-causal');
+  assert.equal(PORTAL_IMACT_ENGINE_VERSION_SAFE(), '2026-09-18-v3-whole-portal-causal');
   for(const page of ['profiel','overzicht','businesscase','data-ai','onderzoek','advies','roadmap']) assert.ok(impact.affectedPages.includes(page),page);
   for(const calc of ['manual-work-annual','dimension-cost-total','dimension-potential-total','fte-lost','benefit-at-target-maturity']) assert.ok(impact.changes.some(x=>x.id===calc),calc);
   assert.ok(impact.effectRules.some(x=>x.kind==='maturity'));
@@ -32,3 +32,25 @@ test('financial change reaches valuation, due diligence, businesscase and execut
 });
 
 function PORTAL_IMACT_ENGINE_VERSION_SAFE(){return PORTAL_IMPACT_ENGINE_VERSION;}
+
+
+test('project and connector changes reach execution, businesscase and cockpit',()=>{
+  const after=clone(base);after.portal.integrations={items:[{id:'crm',status:'connected'}]};
+  const impact=impactForMutation({path:'portal.integrations.items',before:base,after});
+  for(const page of ['koppelingen','taken-werkstromen','roadmap','businesscase','overzicht','actueel-houden']) assert.ok(impact.affectedPages.includes(page),page);
+  assert.ok(impact.effectRules.some(x=>x.kind==='delivery'));
+});
+
+test('external intelligence and regulation changes reach benchmark, compliance, advice and roadmap',()=>{
+  const after=clone(base);after.portal.regulatory={items:[{id:'eu-ai-act',status:'updated'}]};
+  const impact=impactForMutation({path:'portal.regulatory.items',before:base,after});
+  for(const page of ['wet-regelgeving','branche-markt','compliance-governance','onderzoek','advies','roadmap','overzicht']) assert.ok(impact.affectedPages.includes(page),page);
+  assert.ok(impact.effectRules.some(x=>x.kind==='external-intelligence'));
+});
+
+test('documents and access changes propagate as evidence and governance effects',()=>{
+  const after=clone(base);after.portal.documents={count:3};
+  const impact=impactForMutation({path:'portal.documents.count',before:base,after});
+  for(const page of ['documenten','due-diligence','compliance-governance','actueel-houden','onderzoek','overzicht']) assert.ok(impact.affectedPages.includes(page),page);
+  assert.ok(impact.effectRules.some(x=>x.kind==='evidence'));
+});
