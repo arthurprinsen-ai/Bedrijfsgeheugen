@@ -4,7 +4,7 @@ import { LEGACY_CAPABILITY_MAP, OVERVIEW_CAPABILITIES, GLOBAL_CAPABILITIES } fro
 import { allPageIds } from '../page-registry.js';
 import { readFile } from 'node:fs/promises';
 
-const oldTabs=['overzicht','profiel','dataai','aiscan','invoeren','antwoorden','business','cijfers','waarde','mensen','branche','onderzoek','beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap'];
+const oldTabs=['overzicht','profiel','dataai','aiscan','invoeren','antwoorden','business','cijfers','waarde','mensen','branche','onderzoek','beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap','uitvoering'];
 const requiredGlobals=['identity-login-logout','export','import','print-permission','feedback','customer-branding','mobile-navigation'];
 const requiredOverview=['maturity','manual-work-annual','fte','company-state','cmmi','adoption-curve','leakage','blockers','progress','advice'];
 
