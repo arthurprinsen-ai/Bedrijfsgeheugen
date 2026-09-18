@@ -1,0 +1,61 @@
+{
+  "type": "POWERHOUSE_AGENT_SKILL",
+  "version": "POWERHOUSE-DELIVERY-SELF-OPTIMIZATION-v1",
+  "status": "ACTIVE",
+  "fingerprint": "delivery|first-time-right|terminal-preflight|v1",
+  "optimization_fingerprint": "delivery|first-time-right|terminal-preflight|v1",
+  "name": "powerhouse-delivery-self-optimization",
+  "purpose": "Predict and eliminate preventable delivery failures before they consume CI/deploy cycles, while preserving exact-head safety, protected merge and production proof.",
+  "trigger_when": [
+    "creating or repairing a material repository delivery candidate",
+    "admission rejects PR metadata",
+    "a new test is not covered by any workflow",
+    "GitHub cancels a job without a concrete failing assertion",
+    "main moves during delivery",
+    "multiple terminal candidates touch shared delivery or skill surfaces",
+    "a merge/retry/promote decision depends on previously read state",
+    "a candidate has not yet proven its post-merge deploy/readback/writeback path"
+  ],
+  "required_behavior": [
+    "Refresh authoritative main/head/merge-base/mergeability/workflow state before every material delivery transition.",
+    "Forecast the next likely invalidation: drift, overlap, hot-surface collision, missing classifier coverage, admission mismatch, scheduler risk, deploy/readback dependency or skill-writeback gap.",
+    "Validate PR metadata with the canonical admission parser/policy before expensive CI.",
+    "Add workflow/classifier coverage in the same candidate as every executable test.",
+    "Preflight machine schema and regression assertions together so contract drift is found before remote CI.",
+    "Treat cancelled GitHub jobs without concrete assertions as scheduler recovery and retry only the missing job on the same exact head.",
+    "Reconcile moving main on the same lineage while preserving the complete current-main union.",
+    "Avoid hot shared skill/policy surfaces when a dedicated projection can carry the same reusable knowledge without changing authority.",
+    "Re-read state immediately before irreversible merge/promote actions and re-plan whenever the epoch changes.",
+    "Do not create duplicate lineages for ordinary drift; rebuild a bounded current-main successor only when divergence makes reconciliation unsafe or inefficient.",
+    "Preflight the terminal path through protected merge, deploy/readback, outcome and learning/skill writeback before starting the mutation.",
+    "Measure forecast quality and delivery friction and feed both into future candidate planning."
+  ],
+  "metrics": [
+    "metadata_admission_reject_count",
+    "orphan_test_preflight_count",
+    "scheduler_cancel_retry_count",
+    "main_epoch_reconcile_count",
+    "shared_surface_overlap_count",
+    "hot_surface_avoidance_count",
+    "green_gate_reuse_ratio",
+    "time_to_terminal_proof",
+    "stale_state_prevented_count",
+    "predicted_collision_avoided_count",
+    "pre_ci_contract_defect_count",
+    "duplicate_lineage_prevented_count",
+    "forecast_false_positive_count",
+    "forecast_miss_count"
+  ],
+  "canonical_evidence": {
+    "learning": "brain/learning/2026-09-18-delivery-self-optimization-v1.json",
+    "ledger": "brain/learning-ledger/2026-09-18-delivery-self-optimization-v1.md",
+    "documentation": "docs/brain/delivery-self-optimization-v1.md"
+  },
+  "consumers": [
+    "chat-learning-preflight",
+    "delivery-control",
+    "repository-writer",
+    "reliability",
+    "architecture-integrator"
+  ]
+}
