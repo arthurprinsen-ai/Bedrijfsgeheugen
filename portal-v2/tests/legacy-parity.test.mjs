@@ -3,8 +3,9 @@ import assert from 'node:assert/strict';
 import { LEGACY_CAPABILITY_MAP, OVERVIEW_CAPABILITIES, GLOBAL_CAPABILITIES } from '../legacy-parity.js';
 import { allPageIds } from '../page-registry.js';
 import { readFile } from 'node:fs/promises';
+import { migrateLegacyState, calculateLegacyEquivalent } from '../legacy-parity-engine.js';
 
-const oldTabs=['overzicht','profiel','dataai','aiscan','invoeren','antwoorden','business','cijfers','waarde','mensen','branche','onderzoek','beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap'];
+const oldTabs=['overzicht','profiel','dataai','aiscan','invoeren','antwoorden','business','cijfers','waarde','mensen','branche','onderzoek','beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap','uitvoering'];
 const requiredGlobals=['identity-login-logout','export','import','print-permission','feedback','customer-branding','mobile-navigation'];
 const requiredOverview=['maturity','manual-work-annual','fte','company-state','cmmi','adoption-curve','leakage','blockers','progress','advice'];
 
@@ -41,4 +42,29 @@ test('legacy parity implementation never routes back to the old portal',async()=
   const source=await readFile(new URL('../legacy-parity.js',import.meta.url),'utf8');
   assert.doesNotMatch(source,/klantportaal\.html|\/klantportaal|iframe|legacy-bridge/i);
   for(const capability of requiredGlobals.filter(x=>x!=='mobile-navigation')) assert.match(source,new RegExp(capability.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')));
+});
+
+
+test('legacy migration preserves business-case investment units and exact numeric maturity inputs',()=>{
+  const migrated=migrateLegacyState({mw:24,uur:52,bInvest:12});
+  assert.equal(migrated.portal.profile.employees,24);
+  assert.equal(migrated.portal.profile.hourlyCost,52);
+  assert.equal(migrated.portal.businessCase.investment,12000);
+});
+
+test('legacy MTO and numeric horizon semantics remain calculable after migration',()=>{
+  assert.equal(calculateLegacyEquivalent('mto-maturity',{portal:{people:{mto:'0'}}}),1);
+  assert.equal(calculateLegacyEquivalent('mto-maturity',{portal:{people:{mto:'3'}}}),5);
+  const state={portal:{strategy:{findings:[{value:100,horizon:'3 maanden'},{value:100,horizon:3}],minimumValue:0,horizon:3}}};
+  assert.equal(calculateLegacyEquivalent('priority-filter',state).length,2);
+});
+
+
+test('business-case benefit uses all 13 legacy dimension costs at the selected target level',()=>{
+  const maturity=Object.fromEntries(['sturing','commercie','operatie','finance','mensen','analytics','quality','governance','tech','culture','service','security','duurzaam'].map(id=>[id,1]));
+  const state={portal:{profile:{employees:24,hourlyCost:52,maturity},businessCase:{target:4}}};
+  const benefit=calculateLegacyEquivalent('benefit-at-target-maturity',state);
+  const current=calculateLegacyEquivalent('dimension-cost-total',state);
+  assert.ok(benefit>0);
+  assert.ok(benefit<current);
 });

@@ -10,16 +10,17 @@ const agents = fs.readFileSync('AGENTS.md', 'utf8');
 test('mandatory shared preflight exposes active default fast execution for every material agent/chat entrypoint', () => {
   const packet = compileChatLearningPreflight();
   assert.equal(packet.status, 'READY');
-  assert.deepEqual(packet.fastExecution, {
-    version: 'POWERHOUSE-FAST-EXECUTION-v1',
-    status: 'ACTIVE',
-    defaultEnabled: true,
-    executionClassDefault: 'STANDARD',
-    policySource: 'config/powerhouse-fast-execution-v1.json',
-    entrypoint: 'scripts/brain/powerhouse-fast-execution.mjs',
-    failClosed: true
-  });
+  assert.equal(packet.version, 'BRAIN-CHAT-LEARNING-PREFLIGHT-v2');
+  assert.equal(packet.fastExecution.fingerprint, 'powerhouse-fast-development-protocol-v2');
+  assert.equal(packet.fastExecution.status, 'active');
+  assert.equal(packet.fastExecution.failClosed, true);
+  assert.deepEqual(packet.fastExecution.executionClasses, ['FAST','STANDARD','CRITICAL','WAITING_EXTERNAL']);
+  assert.equal(packet.fastExecution.fullReleaseGatesAtPromotionBoundary, true);
+  assert.equal(packet.legacyFastExecution.version, 'POWERHOUSE-FAST-EXECUTION-v1');
+  assert.equal(packet.legacyFastExecution.compatibilityOnly, true);
+  assert.ok(packet.sources.some(source => source.path === 'config/powerhouse-fast-development-protocol-v2.json'));
   assert.ok(packet.sources.some(source => source.path === 'config/powerhouse-fast-execution-v1.json'));
+  assert.ok(packet.fingerprints.includes('powerhouse-fast-development-protocol-v2'));
   assert.ok(packet.fingerprints.includes(policy.fingerprint));
 });
 

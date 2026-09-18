@@ -6,7 +6,7 @@ import { FUNCTIONAL_PARITY_MANIFEST, openObligations, functionalDefinition } fro
 const protectedPages=Object.values(LEGACY_FUNCTIONAL_INVENTORY).map(item=>item.v2Page);
 
 test('every protected legacy capability has an explicit functional implementation contract',()=>{
-  assert.equal(FUNCTIONAL_PARITY_MANIFEST.length,24);
+  assert.equal(FUNCTIONAL_PARITY_MANIFEST.length,25);
   for(const pageId of protectedPages){
     const definition=functionalDefinition(pageId);
     assert.ok(definition,`missing ${pageId}`);

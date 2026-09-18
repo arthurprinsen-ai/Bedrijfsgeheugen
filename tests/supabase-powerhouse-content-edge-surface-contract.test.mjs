@@ -117,3 +117,22 @@ test('content operations cockpit keeps one-row projection and canonical decision
   assert.match(sql, /revoke\s+all\s+on\s+table\s+public\.content_operations_cockpit\s+from\s+public,\s*anon,\s*authenticated/i);
   assert.match(sql, /grant\s+select\s+on\s+table\s+public\.content_operations_cockpit\s+to\s+service_role/i);
 });
+
+test('Mira visible identity incident is promoted into canonical learning and skill surfaces', () => {
+  const learningPath = 'brain/learning/2026-09-18-instagram-mira-visible-identity-gate-v1.json';
+  const skillPath = 'docs/superpowers/skills/instagram-mira-visible-identity-gate-v1.md';
+  const docPath = 'docs/learning/2026-09-18-instagram-mira-visible-identity-gate-v1.md';
+  for (const path of [learningPath, skillPath, docPath]) assert.equal(existsSync(path), true, `${path} must exist`);
+  const learning = JSON.parse(readFileSync(learningPath, 'utf8'));
+  assert.equal(learning.fingerprint, 'metadata-only-mira-identity-false-positive-v1');
+  assert.equal(learning.status, 'LIVE_BEWEZEN');
+  assert.equal(learning.new_parallel_authority, false);
+  assert.ok(learning.prevention.includes('semantic_vision_identity_required'));
+  assert.ok(learning.prevention.includes('metadata_only_identity_forbidden'));
+  const skill = readFileSync(skillPath, 'utf8');
+  assert.match(skill, /semantic_verified=true/);
+  assert.match(skill, /mira_present=true/);
+  assert.match(skill, /static feed 1080x1350/);
+  assert.match(skill, /reel\/video 1080x1920/);
+  assert.match(skill, /Never treat any of these as identity proof/);
+});

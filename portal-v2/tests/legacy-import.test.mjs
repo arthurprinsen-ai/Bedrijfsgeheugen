@@ -44,7 +44,7 @@ test('een onbruikbare back-up wordt geweigerd in plaats van half ingelezen', () 
 
 test('alleen eenduidige velden worden vertaald', () => {
   const state = vertaalOudePortaalBackup(OUDE_BACKUP);
-  assert.equal(state.portal.profile.headcount, 38);
+  assert.equal(state.portal.profile.employees, 38);
   assert.equal(state.portal.profile.hourlyCost, 52);
   assert.equal(state.portal.market.industry, 'ICT & software');
   assert.equal(state.portal.metrics.revenue, 2400000);
@@ -63,10 +63,14 @@ test('wat niet vertaald is, wordt bewaard én gemeld', () => {
   const state = vertaalOudePortaalBackup(OUDE_BACKUP);
   const verslag = state.portal.legacyImport;
   assert.equal(verslag.bron, 'klantportaal.html');
-  assert.deepEqual(verslag.onvertaald, ['docs', 'esg', 'log', 'scanScore']);
+  assert.deepEqual(verslag.onvertaald, []);
   assert.ok(verslag.vertaald.includes('niveaus') && verslag.vertaald.includes('taken'));
   assert.deepEqual(verslag.ruw.docs, OUDE_BACKUP.docs, 'de onvertaalde gegevens zijn niet bewaard');
   assert.equal(verslag.ruw.scanScore, 72);
+  assert.equal(state.portal.profile.scan.score, 72);
+  assert.equal(state.portal.compliance.esgByKey.a, 1);
+  assert.equal(state.portal.freshness.documents.length, 1);
+  assert.equal(state.portal.changes.history.length, 1);
 });
 
 test('het voorbeeld zegt wat er verandert zonder iets te schrijven', () => {
@@ -74,7 +78,7 @@ test('het voorbeeld zegt wat er verandert zonder iets te schrijven', () => {
   const voorbeeld = voorbeeldVanImport({}, nieuw);
   assert.equal(voorbeeld.takenDelta, 1);
   assert.equal(voorbeeld.wijzigingenDelta, 1);
-  assert.equal(voorbeeld.onvertaald, 4);
+  assert.equal(voorbeeld.onvertaald, 0);
   assert.ok(voorbeeld.vertaald >= 6);
 });
 
@@ -82,7 +86,7 @@ test('de importketen accepteert de oude back-up en breekt de bestaande niet', as
   const oud = await stagePortalImport(bestand(OUDE_BACKUP), { currentState: {} });
   assert.equal(oud.kind, 'klantportaal-v1');
   assert.ok(oud.candidate.portal.legacyImport.ruw, 'de ruwe back-up is niet bewaard');
-  assert.equal(oud.preview.onvertaald, 4, 'het voorbeeld verzwijgt wat er niet is vertaald');
+  assert.equal(oud.preview.onvertaald, 0, 'alle bekende legacy statefamilies horen vertaald te zijn');
 
   const canoniek = await stagePortalImport(bestand({ version: 4, state: { company: { name: 'X' } } }), { currentState: {} });
   assert.equal(canoniek.kind, 'canonical-v4');

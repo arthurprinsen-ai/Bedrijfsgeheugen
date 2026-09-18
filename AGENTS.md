@@ -70,6 +70,26 @@ Regels:
 - productie blijft beschikbaar via last-known-good waar technisch mogelijk;
 - agents hervatten bij de volgende run automatisch openstaande niet-groene herstelitems en open outcome obligations.
 
+## ONE BRAIN Constitution — hoogste systeeminvariant
+Powerhouse is **één brein**. Alle chats, agents, skills, workflows, schedulers, portals, cockpits, contentflows, salesflows, CRM-flows, klantinteracties, intelligence-lagen, voorspellingen, experimenten, delivery-processen en toekomstige capabilities zijn uitvoeringsnodes van datzelfde brein en mogen geen eigen waarheid, geheugen, queue, learning-loop, beslisautoriteit of parallel control-plane vormen.
+
+Niet-onderhandelbare regels:
+- één canonieke waarheid: bestaande canonical authorities blijven leidend; nieuwe functionaliteit projecteert daarop en creëert geen parallel truth store;
+- één geheugen: iedere node leest vóór materieel werk de gedeelde actuele state, relevante historie, open obligations, evidence, fouten, fixes, outcomes en preventieregels;
+- één beslisloop: observe → understand → predict → decide → execute → readback → outcome/value → learn → prevent/optimize;
+- één delivery-loop: intent/obligation → existing-state preflight → ownership/admission → bounded execution → tests/gates → protected merge/promote → production readback → outcome/value → learning writeback;
+- één menselijke dagqueue: connecties, leads, e-mail, telefoon, afspraken, offertes, artikelen, nieuwsbrieven, blogs, klantportaal en contentreview worden als één geprioriteerde next-best-action ruimte behandeld; kanaal is uitkomst van de beslissing, geen silo;
+- één actieve executable candidate per obligation; duplicaten worden gesuperseded/gesloten en mogen nooit een tweede waarheid creëren;
+- chats en agents zijn intrinsieke execution nodes, geen externe adviseurs: zij moeten dezelfde preflight, evidence-, outcome-, delivery- en learningcontracten volgen als iedere andere runtime-node;
+- volledig autonome taken verdwijnen uit menselijke daglijsten; menselijk werk verschijnt alleen als context, toestemming, creativiteit of besluitvorming echt nodig is;
+- geen terminale status op code, commit, PR, merge, deploy, dispatch, transport of “sent”; terminale waarheid vereist productie/readback + outcome + learning/prevention writeback;
+- iedere materiële nieuwe capability moet aantoonbaar koppelen aan canonical memory, intelligence, decisioning, execution, evidence, value/outcome en learning;
+- iedere agent/chat moet relevante bestaande kennis hergebruiken vóór nieuw ontwerp of debugging; opnieuw vanaf nul beginnen is een contractbreuk;
+- iedere uitvoering schrijft terug wat is geleerd, inclusief root cause, bewijs, outcome, mislukte aanpakken en preventie;
+- security, privacy, truth, evidence, tenant isolation en release gates mogen nooit worden verzwakt om “één brein” of “groen” te claimen.
+
+Een agent, chat, skill of workflow die dit contract niet kan aantonen is **niet production-ready** en moet fail-closed blijven totdat shared-state read, canonical authority mapping, outcome/writeback en delivery-inheritance zijn hersteld.
+
 ## Eén team, één geheugen
 Alle agents opereren als één team met specialistische rollen. Geen agent mag een eigen geïsoleerde waarheid aanhouden.
 
@@ -273,3 +293,18 @@ Nieuwe fouten, verbeteringen, kansen en belangrijke beslissingen worden toegevoe
 - herbruikbare les.
 
 De repo en Powerhouse Team Memory vormen samen het gedeelde geheugen. Agents moeten deze kennis uitbreiden en gebruiken.
+
+## Unified Data Intelligence Spine — mandatory skill/agent inheritance
+Fingerprint: `powerhouse-unified-data-intelligence-spine-v1`.
+
+Iedere huidige en toekomstige chat, agent, skill, workflow of intelligence-producer die social-, search-, analytics-, externe of portaldata leest of schrijft, erft verplicht dezelfde One Brain data-spine:
+- een gekoppelde connector, succesvolle provider-call of transport-acknowledgement is nooit bewijs dat data canoniek is opgeslagen;
+- gebruik bestaande canonical source tables en routeer materiële observaties naar `powerhouse_evidence_source_observations` + `powerhouse_runtime_events`; bouw geen parallelle analytics-, evidence- of learning-store;
+- controleer vóór nieuw ingest-/analyticswerk `powerhouse_evidence_sources` en `powerhouse_data_spine_health_v1` en hergebruik eerst de bestaande writer/reconcile-route;
+- LinkedIn/Instagram native/platform truth blijft gescheiden van Buffer als transportbron;
+- ontbrekende of stale producers blijven fail-closed en worden via de 10-minuten watchdog/reconcile-lus hersteld of als open obligation zichtbaar gehouden;
+- portaldata behoudt tenant-id, projection layer, source timestamp en provenance; legacy state mag nieuwere canonical-brain state nooit overschrijven;
+- externe data behoudt source, observed/freshness, confidence en lineage; provider-level errors/statuscodes mogen nooit als succes worden vertaald;
+- iedere nieuwe bron/capability is pas production-ready wanneer registratie → persistence → freshness/quality → evidence → readback → signal/advice/outcome → learning aantoonbaar aan dezelfde One Brain is gekoppeld.
+
+Canonieke machine-learningbron: `brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json`.

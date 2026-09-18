@@ -1,6 +1,9 @@
 {
   "version": "POWERHOUSE-ONE-LOOP-v1",
-  "extends": ["POWERHOUSE-DELIVERY-HYGIENE-v1", "BRAIN-DELIVERY-v2"],
+  "extends": [
+    "POWERHOUSE-DELIVERY-HYGIENE-v1",
+    "BRAIN-DELIVERY-v2"
+  ],
   "deliveryCandidate": {
     "version": "POWERHOUSE-DELIVERY-CANDIDATE-v1",
     "obligationId": "powerhouse-one-loop-v1",
@@ -15,7 +18,11 @@
     ],
     "maxFiles": 3
   },
-  "terminalStates": ["LIVE_PROVEN", "FULFILLED", "BLOCKED_EXTERNAL"],
+  "terminalStates": [
+    "LIVE_PROVEN",
+    "FULFILLED",
+    "BLOCKED_EXTERNAL"
+  ],
   "recoverableStates": [
     "COMMITTED",
     "PR_OPEN",
@@ -45,7 +52,10 @@
     "exactHeadVerified",
     "protectedMergeVerified",
     "runtimeReadbackVerified",
-    "learningWritebackVerified"
+    "learningWritebackVerified",
+    "terminalClaimProofBundleVerified",
+    "productionAuthorityReadbackVerified",
+    "nextAgentDiscoverabilityVerified"
   ],
   "recovery": {
     "requiresHeartbeat": true,
@@ -68,5 +78,73 @@
     "supersession",
     "obligation_to_live_ms",
     "obligation_to_fulfilled_ms"
-  ]
+  ],
+  "oneBrainConstitution": {
+    "version": "POWERHOUSE-ONE-BRAIN-CONSTITUTION-v1",
+    "invariant": "Powerhouse is one brain; every chat, agent, skill, workflow, scheduler, portal, cockpit and future capability is an intrinsic execution node of the same canonical organism.",
+    "canonicalTruthOnly": true,
+    "sharedMemoryRequired": true,
+    "sharedDecisionLoop": true,
+    "sharedDeliveryLoop": true,
+    "sharedOutcomeLearningLoop": true,
+    "oneActiveExecutableCandidatePerObligation": true,
+    "noParallelTruthStores": true,
+    "noParallelQueues": true,
+    "noParallelLearningStores": true,
+    "noParallelBrains": true,
+    "chatAgentInheritanceRequired": true,
+    "futureCapabilityInheritanceRequired": true,
+    "humanDailyActionQueue": {
+      "unified": true,
+      "channels": [
+        "linkedin",
+        "email",
+        "phone",
+        "meeting",
+        "proposal",
+        "article",
+        "newsletter",
+        "blog",
+        "customer_portal",
+        "content_review"
+      ],
+      "channelIsDecisionOutput": true,
+      "fullyAutonomousWorkHiddenFromHumanQueue": true
+    },
+    "terminalTruth": {
+      "requires": [
+        "production_readback",
+        "outcome_or_value",
+        "learning_writeback",
+        "prevention_writeback",
+        "exact_candidate_identity",
+        "required_gates",
+        "protected_promotion",
+        "production_authority_readback",
+        "next_agent_discoverability"
+      ],
+      "intermediateStatesNeverTerminal": [
+        "code",
+        "commit",
+        "pull_request",
+        "merge",
+        "deploy",
+        "dispatch",
+        "transport_sent"
+      ],
+      "noProductionWriteClaimRequiresDirectAuthorityEvidence": true,
+      "staleExactHeadEvidenceIsTerminal": false
+    },
+    "lifecycle": [
+      "OBSERVE",
+      "UNDERSTAND",
+      "PREDICT",
+      "DECIDE",
+      "EXECUTE",
+      "READBACK",
+      "OUTCOME_VALUE",
+      "LEARN",
+      "PREVENT_OPTIMIZE"
+    ]
+  }
 }

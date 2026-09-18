@@ -9,3 +9,11 @@ Production readback run `35316931462`, job `105510556067`, completed successfull
 
 ## Closure rule
 `LIVE_BEWEZEN` is valid only after protected delivery and terminal successful production, security and code-analysis evidence on the canonical lineage.
+
+
+## Skill / shared-agent learning writeback
+De terminale foresight-closure is herbruikbaar gemaakt voor chats, agents, skills en workflows via `config/brain-chat-learning-contract.json`.
+
+Nieuwe preventieregel: een foresight-, architectuur-, infrastructuur- of autonome optimalisatiewijziging is nooit klaar op commit/PR/merge/deploy alleen. Eén obligation-lineage blijft leidend tot exact-head protected delivery, terminale production-readback, toepasselijke security/code-analysis, ancestry/current-state verificatie en canonieke learning-writeback aantoonbaar zijn. Pas dan is `LIVE_BEWEZEN` geldig.
+
+De learning blijft één gedeelde autoriteit: geen parallel skill-geheugen of tweede truth-store. Nieuwe chats/agents/skills hergebruiken deze regel vóór materiële uitvoering.

@@ -1,0 +1,86 @@
+{
+  "type": "LEARNING_RECORD",
+  "version": "1.0.0",
+  "fingerprint": "powerhouse-unified-data-intelligence-spine-v1",
+  "date": "2026-09-18",
+  "status": "ACTIVE_PREVENTION",
+  "scope": "all current and future Powerhouse chats, agents, skills, workflows, schedulers, portal/cockpit runtimes and intelligence producers",
+  "problem": "Social, search, analytics, external intelligence and portal data could be connected or queryable without all material observations being durably persisted, freshness-checked and reusable by the canonical One Brain learning loop.",
+  "root_cause_class": "CONNECTED_SOURCE_NOT_EQUAL_CANONICAL_PERSISTED_EVIDENCE",
+  "root_cause": "Provider connectivity, transport success and source-local storage were historically separable from canonical evidence persistence. Missing trigger/reconcile paths could therefore leave configured sources outside shared Powerhouse evidence and learning.",
+  "canonical_contract": "powerhouse-unified-data-intelligence-spine-v1",
+  "canonical_authorities": {
+    "evidence": "public.powerhouse_evidence_source_observations",
+    "runtime": "public.powerhouse_runtime_events",
+    "source_registry": "public.powerhouse_evidence_sources",
+    "health": "public.powerhouse_data_spine_health_v1",
+    "reconcile": "public.powerhouse_data_spine_reconcile_v1",
+    "watchdog": "public.powerhouse_data_spine_watchdog_v1"
+  },
+  "covered_sources": [
+    "ga4-analytics",
+    "gsc-search",
+    "linkedin",
+    "instagram-social",
+    "social-buffer",
+    "tavily-intelligence",
+    "external-intelligence",
+    "dataforseo-intelligence",
+    "portal-state"
+  ],
+  "invariants": [
+    "CONNECTED_IS_NOT_STORED",
+    "STORED_IS_NOT_FRESH",
+    "TRANSPORT_IS_NOT_PLATFORM_TRUTH",
+    "NO_MATERIAL_SOURCE_WITHOUT_CANONICAL_EVIDENCE_PATH",
+    "NO_SOURCE_GREEN_WITHOUT_OBSERVED_READBACK",
+    "NO_PARALLEL_DATA_BRAIN",
+    "MISSED_TRIGGER_WRITES_MUST_BE_RECONCILABLE",
+    "STALE_OR_MISSING_PRODUCERS_FAIL_CLOSED",
+    "PORTAL_STATE_RETAINS_TENANT_PROVENANCE",
+    "EXTERNAL_DATA_RETAINS_SOURCE_FRESHNESS_CONFIDENCE_AND_LINEAGE"
+  ],
+  "execution_rule": "Before using material social/search/analytics/external/portal data, read the source registry and current data-spine health. Reuse the canonical intake. After source writes, require evidence/readback. Never create a source-local learning silo.",
+  "fix": {
+    "migration": "supabase/migrations/20260918095000_powerhouse_unified_data_intelligence_spine_v1.sql",
+    "dataforseo_producer": "supabase/functions/powerhouse-dataforseo-intelligence/index.ts",
+    "dataforseo_schedule": "supabase/migrations/20260918095500_powerhouse_dataforseo_intelligence_schedule_v1.sql",
+    "reconciliation_frequency": "10 minutes",
+    "dataforseo_frequency": "daily"
+  },
+  "verified_preproduction_evidence": {
+    "production_schema_dry_run": "BEGIN/ROLLBACK successful",
+    "source_rows_seen": 1304,
+    "portal_projection_backfill_rows": 1,
+    "health_observations": {
+      "gsc-search": 710,
+      "linkedin": 247,
+      "instagram-social": 26,
+      "external-intelligence": 230
+    },
+    "current_truth": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  },
+  "prevention": [
+    "Every new material producer must register in powerhouse_evidence_sources and write through powerhouse_record_source_observation_v1 or an explicitly approved canonical equivalent.",
+    "A configured connector, API credential, provider 2xx or transport success never proves persisted evidence.",
+    "Native/platform truth remains distinguishable from transport metadata such as Buffer.",
+    "Every source must have freshness semantics and watchdog ownership.",
+    "Missed writes must be repairable from canonical source tables through idempotent reconciliation.",
+    "Portal state must preserve tenant identity, layer, source timestamp and provenance; legacy projection may not overwrite newer canonical-brain truth.",
+    "External/provider data must fail closed on provider-level error/status codes.",
+    "Skills and agents must inspect current data-spine health before designing a new ingestion or analytics path."
+  ],
+  "delivery": {
+    "pull_request": 2023,
+    "branch": "recovery/powerhouse-structural-gap-v2-strict-cycle",
+    "exact_head_at_record_creation": "15501253974158d0a81e249f17399ca09669edd4",
+    "terminal_status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  },
+  "linked_sources": [
+    "docs/learning/2026-09-18-one-brain-live-promotion.md",
+    "AGENTS.md",
+    "config/brain-chat-learning-contract.json",
+    "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+    "tests/powerhouse-unified-data-intelligence-spine-governance.test.mjs"
+  ]
+}

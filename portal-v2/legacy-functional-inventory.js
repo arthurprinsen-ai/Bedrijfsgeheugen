@@ -118,17 +118,21 @@ export const LEGACY_FUNCTIONAL_INVENTORY = frozen({
 
   roadmap: capability('roadmap', ids('nTitel','nDim','nStart','nDuur'), ['12-month gantt','roadmap progress'],
     ['timeline-position','duration','completion-progress','roadmap-value'], ['nToe','nVoorstel','add-item','drag-item','toggle-complete','remove-item'], ['advies','strategie','bijhouden','eindconclusie']),
+
+  uitvoering: capability('uitvoeringsladder', [],
+    ['execution ladder','fixed five-step sequence','12-month fifteen-step plan','realized-value accumulation'],
+    ['completion-progress','roadmap-value'], ['toggle-execution-step','inspect-execution-theme','open-roadmap','open-outcomes'], ['strategie','roadmap','bijhouden']),
 });
 
 const REQUIRED_KEYS = frozen([
   'overzicht','profiel','dataai','aiscan','invoeren','antwoorden','business','cijfers','waarde','mensen','branche','onderzoek',
-  'beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap'
+  'beleid','aicap','strategie','canvassen','eindconclusie','dd','dna','bijhouden','wijzigingen','advies','offerte','roadmap','uitvoering'
 ]);
 
 export function assertFunctionalInventoryComplete() {
   const keys = Object.keys(LEGACY_FUNCTIONAL_INVENTORY).sort();
   const expected = [...REQUIRED_KEYS].sort();
-  if (keys.join('|') !== expected.join('|')) throw new Error('Functional inventory does not cover the 24 protected legacy capabilities');
+  if (keys.join('|') !== expected.join('|')) throw new Error('Functional inventory does not cover the 25 protected legacy capabilities');
   for (const [id, item] of Object.entries(LEGACY_FUNCTIONAL_INVENTORY)) {
     if (!item.v2Page) throw new Error(`Incomplete functional inventory: ${id}.v2Page`);
     for (const key of ['fields','models','calculations','actions','dependencies']) {
@@ -139,4 +143,4 @@ export function assertFunctionalInventoryComplete() {
   return true;
 }
 
-export const LEGACY_FUNCTIONAL_INVENTORY_VERSION = '2026-09-16-v2';
+export const LEGACY_FUNCTIONAL_INVENTORY_VERSION = '2026-09-18-v3';

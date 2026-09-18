@@ -11,7 +11,10 @@
     "brain/learning/chat-continuity-2026-08-30.json",
     "brain/learning/chat-completeness-checkpoint-2026-08-31.json",
     "docs/development-ledger.md",
-    "docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md"
+    "docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md",
+    "brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json",
+    "brain/skills/powerhouse-missing-connections-recovery-v1.json",
+    "brain/learning/2026-09-18-missing-connections-recovery-v1.json"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -21,7 +24,10 @@
     "writeNewMaterialLearningBack": true,
     "refreshSharedContextAfterNewLearning": true,
     "keepAuditHistoryAppendOnly": true,
-    "keepCurrentProjectionFreeOfTestArtifacts": true
+    "keepCurrentProjectionFreeOfTestArtifacts": true,
+    "requireUnifiedDataSpineForMaterialDataSources": true,
+    "connectedSourceIsNotPersistedEvidence": true,
+    "failClosedOnMissingOrStaleSourceEvidence": true
   },
   "lessons": [
     {
@@ -293,6 +299,16 @@
       "requiredAction": "Verifieer repository en actor via de geautoriseerde GitHub-connector en voer remote mutations alleen via die bewezen route uit.",
       "prevention": "Remote-write preflight vereist allowlisted repository, actuele actorrechten en exacte kandidaatidentiteit.",
       "evidenceRule": "Lokale gitconfig alleen bewijst geen toestemming voor een externe write."
+    },
+    {
+      "id": "FORESIGHT_LIVE_PROVEN_REQUIRES_EXACT_LINEAGE_TERMINAL_READBACK",
+      "fingerprint": "foresight|delivery|merge-or-deploy-before-terminal-readback",
+      "symptom": "Een foresight/autonomy wijziging wordt als klaar of live beschouwd zodra PR/merge/deploy bestaat, terwijl production-readback of security/code-analysis nog loopt.",
+      "rootCause": "Delivery-evidence, runtime-evidence en learning-writeback werden als losse eindstappen behandeld in plaats van één obligation-lineage.",
+      "failedApproach": "LIVE_BEWEZEN claimen op basis van commit, merge, deploy-preview, gedeeltelijk groene checks of één production-readback.",
+      "requiredAction": "Behoud één obligation-lineage; verifieer exact-head protected delivery, terminal production readback, toepasselijke security/code-analysis, huidige main-ancestry en daarna pas LIVE_BEWEZEN. Schrijf terminal evidence, root cause en preventie terug naar Brain en gedeelde skill/agent-learning.",
+      "prevention": "Every chat/agent/skill/workflow that changes foresight, architecture, infrastructure or autonomous optimization must reuse this closure contract and must not create a parallel authority.",
+      "evidenceRule": "LIVE_BEWEZEN is alleen geldig met terminal groene production/readback en security-evidence op de canonieke lineage; latere main-commits mogen de bewezen lineage erven als ancestry en relevante bestanden/state intact blijven."
     }
   ]
 }

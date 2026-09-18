@@ -133,8 +133,15 @@ jobs:
               throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
             }
 
+            const candidateMetadata = parseDeliveryMetadata(pr.body || '');
+            const candidatePool = [...open];
+            if (candidateMetadata.supersedes !== null && !candidatePool.some(item => Number(item.number) === Number(candidateMetadata.supersedes))) {
+              const predecessor = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${candidateMetadata.supersedes}`);
+              candidatePool.push(predecessor);
+            }
+
             const normalized = [];
-            for (const item of open) {
+            for (const item of candidatePool) {
               const metadata = parseDeliveryMetadata(item.body || '');
               let conflictContracts = [];
               const needsConflictFiles = Number(item.number) !== prNumber && metadata.candidateType === 'promotion';

@@ -34,6 +34,7 @@ export function fullCompanyInputSchema(){
 }
 
 const valueAt=(state,path)=>String(path||'').split('.').filter(Boolean).reduce((value,key)=>value==null?undefined:value[key],state);
+const displayGroupLabel=group=>({productivity:'Productiviteit en operatie',measurements:'Metingen toevoegen',sustainability:'Duurzaamheid en CSRD',policy:'Beleid en documenten'}[group.id]||group.label);
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 
 function completionMarkup(schema,state){
@@ -42,11 +43,12 @@ function completionMarkup(schema,state){
 }
 
 function groupedForm(groups,state){
- return `${completionMarkup(fullCompanyInputSchema(),state)}<div class="v2fullinput">${groups.map(group=>`<section class="v2inputgroup" data-input-group="${esc(group.id)}"><header><h3>${esc(group.label)}</h3><span>${group.fields.length} velden</span></header><div class="v2formgrid">${group.fields.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?2:''))).join('')}</div></section>`).join('')}</div><div class="v2formactions"><button type="button" class="pvprimary" data-save-full-input>Alles opslaan</button><span data-full-input-status>Wijzigingen worden tenant-scoped in dezelfde Powerhouse-state opgeslagen.</span></div>`;
+ const completion=calculateCompletion(fullCompanyInputSchema(),state);
+ return `<section class="v2inputgroup"><header><h2>Je gegevens invullen</h2></header><p>Alles wat je hier invult rekent door in analyse, conclusie en advies. Ontbrekende gegevens blijven zichtbaar ontbrekend.</p></section>${completionMarkup(fullCompanyInputSchema(),state)}<div class="v2fullinput">${groups.map(group=>`<section class="v2inputgroup" data-input-group="${esc(group.id)}"><header><h3>${esc(displayGroupLabel(group))}</h3><span>${group.fields.length} velden</span></header><div class="v2formgrid">${group.fields.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?2:''))).join('')}</div></section>`).join('')}</div><section class="v2inputgroup"><header><h3>Wat hieruit blijkt</h3></header><p>${completion.percentage}% van de verplichte bedrijfsgegevens is ingevuld. Wat ontbreekt wordt niet als feit gebruikt.</p></section><div class="v2formactions"><button type="button" class="pvprimary" data-save-full-input>Alles opslaan</button><span data-full-input-status>Wijzigingen worden tenant-scoped in dezelfde Powerhouse-state opgeslagen.</span></div>`;
 }
 
 function groupedReview(groups,state){
- return `<div class="v2fullinputreview">${groups.map(group=>`<section class="v2inputgroup" data-input-review-group="${esc(group.id)}"><header><h3>${esc(group.label)}</h3></header><div class="v2reviewlist">${group.fields.map(field=>{const value=valueAt(state,field.path);return `<article><div><small>${esc(field.legacyFieldId)}</small><b>${esc(field.label)}</b></div><strong>${value==null||value===''?'Nog niet ingevuld':esc(value)}</strong></article>`}).join('')}</div></section>`).join('')}</div>`;
+ return `<section class="v2inputgroup"><header><h2>Wat je hebt ingevuld</h2></header><p>Alle vastgelegde bedrijfsgegevens uit dezelfde tenant-state. Ontbrekende velden blijven expliciet leeg.</p></section><div class="v2fullinputreview">${groups.map(group=>`<section class="v2inputgroup" data-input-review-group="${esc(group.id)}"><header><h3>${esc(displayGroupLabel(group))}</h3></header><div class="v2reviewlist">${group.fields.map(field=>{const value=valueAt(state,field.path);return `<article><div><small>${esc(field.legacyFieldId)}</small><b>${esc(field.label)}</b></div><strong>${value==null||value===''?'Nog niet ingevuld':esc(value)}</strong></article>`}).join('')}</div></section>`).join('')}</div>`;
 }
 
 export function mountFullCompanyInput(root,{domainState,reviewOnly=false,onSaveStatus}={}){

@@ -30,7 +30,8 @@ const CAPABILITY_PROBES=Object.freeze({
  wijzigingen:{pageId:'wijzigingen',path:'portal.changes.toTasks.theme',value:'productie-parity-probe'},
  advies:{pageId:'advies',path:'portal.advice.modelFilter',value:'productie-parity-probe'},
  offerte:{pageId:'offerte',path:'portal.offer.scope',value:'productie-parity-probe'},
- roadmap:{pageId:'roadmap',path:'portal.roadmap.draft.title',value:'productie-parity-probe'}
+ roadmap:{pageId:'roadmap',path:'portal.roadmap.draft.title',value:'productie-parity-probe'},
+ uitvoering:{pageId:'uitvoeringsladder',path:'portal.execution.completed.mensen.0',value:true}
 });
 
 async function hideNetlifyChrome(page){

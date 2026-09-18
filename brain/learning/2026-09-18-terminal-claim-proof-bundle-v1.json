@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-TERMINAL-CLAIM-PROOF-BUNDLE-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse-terminal-claim-proof-bundle-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-structural-gap-closure-v2",
+  "source_pr": 2023,
+  "root_cause_class": "STATUS_TEXT_WAS_NOT_A_VERIFIABLE_TERMINAL_PROOF_OBJECT",
+  "symptom": "A chat could correctly avoid claiming green while gates were queued, yet later chats had no guaranteed mechanism to prove that the status was refreshed, that no out-of-band production write occurred, or that terminal evidence belonged to the current exact candidate.",
+  "root_cause": "Delivery truth existed across GitHub, hosting, Supabase/provider readback and learning stores, but terminal language itself was not required to carry a current, canonical, auditable proof bundle spanning those authorities.",
+  "fix": [
+    "Require a terminal proof bundle for every LIVE_PROVEN/LIVE & BEWEZEN/PRODUCTION_GREEN/FULFILLED evaluation.",
+    "Refresh exact candidate identity and gate state immediately before terminal claims.",
+    "Require direct production/provider mutation or audit authority evidence before asserting absence of production writes.",
+    "Treat prior exact-head evidence as superseded when the active candidate head advances.",
+    "Log every terminal evaluation and persist learning/prevention plus next-agent discoverability evidence."
+  ],
+  "prevention_rules": [
+    "NO_LIVE_PROVEN_CLAIM_WITHOUT_VERIFIABLE_PROOF_BUNDLE",
+    "NO_PRODUCTION_WRITE_ABSENCE_CLAIM_FROM_CI_ONLY",
+    "PROOF_STATUS_MUST_BE_REFRESHED_FROM_CURRENT_AUTHORITIES",
+    "CURRENT_AUTHORITY_READBACK_OVERRIDES_STALE_CHAT_STATUS",
+    "SUPERSEDED_EXACT_HEAD_IS_NOT_ACTIVE_TERMINAL_PROOF",
+    "TERMINAL_EVALUATION_MUST_BE_LOGGED_AND_DISCOVERABLE"
+  ],
+  "proof_bundle_minimum": [
+    "obligation_id",
+    "run_id",
+    "actor_or_agent",
+    "candidate_identity",
+    "exact_head_or_artifact_digest",
+    "required_gates",
+    "protected_promotion",
+    "production_mutation_refs",
+    "production_readback_refs",
+    "provider_readback_refs",
+    "outcome_or_value_refs",
+    "learning_writeback_refs",
+    "prevention_writeback_refs",
+    "authorities_queried",
+    "verified_at"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}

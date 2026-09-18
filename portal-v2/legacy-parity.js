@@ -6,7 +6,7 @@ export const LEGACY_CAPABILITY_MAP = Object.freeze({
   aicap:'ai-capabilities', strategie:'strategiemodellen', canvassen:'canvassen',
   eindconclusie:'eindconclusie', dd:'due-diligence', dna:'strategy-dna',
   bijhouden:'actueel-houden', wijzigingen:'wijzigingen', advies:'advies',
-  offerte:'offerte', roadmap:'roadmap'
+  offerte:'offerte', roadmap:'roadmap', uitvoering:'uitvoeringsladder'
 });
 
 /*

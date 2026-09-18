@@ -51,6 +51,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-dataforseo-intelligence",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-dataforseo-intelligence/index.ts",
+      "evidence_contract": "tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-social-publisher",
       "type": "function",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
@@ -111,6 +118,13 @@
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-content-loop/index.ts",
       "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_record_source_observation_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260918095000_powerhouse_unified_data_intelligence_spine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs",
       "required": true
     },
     {

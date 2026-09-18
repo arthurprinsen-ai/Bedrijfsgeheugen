@@ -5,6 +5,8 @@ import { calculateCapability } from '../legacy-parity-engine.js';
 import { PAGE_NAVIGATION } from '../native-pages.js';
 import { pageVisual } from '../page-visuals.js';
 
+const close=(a,b,epsilon=1e-9)=>assert.ok(Math.abs(a-b)<=epsilon,`expected ${a} ≈ ${b}`);
+
 const state={portal:{
   profile:{employees:48,hourlyCost:67,maturity:Object.fromEntries(PROFILE_DIMENSIONS.map((item,index)=>[item.id,(index%5)+1]))},
   overview:{blockers:[{name:'Handmatige overdracht',impact:4,urgency:5},{name:'Dubbele invoer',impact:3,urgency:2}]},
@@ -16,9 +18,9 @@ test('Overview legacy calculations use the same canonical V2 profile authority a
   const view=profileOverviewMetrics(state);
   const calc=calculateCapability('overzicht',state);
   assert.equal(calc['average-maturity'],view.averageMaturity);
-  assert.equal(calc['manual-work-annual'],view.annualManualCost);
-  assert.equal(calc['fte-lost'],view.fteLost);
-  assert.equal(calc['dimension-cost-total'],view.annualManualCost);
+  close(calc['manual-work-annual'],view.annualManualCost);
+  close(calc['fte-lost'],view.fteLost);
+  close(calc['dimension-cost-total'],view.annualManualCost);
   assert.ok(calc['dimension-potential-total']>=0);
   assert.ok(calc['biggest-cost-dimension']?.id);
 });

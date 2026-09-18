@@ -14,7 +14,7 @@ const globalBackings = Object.freeze({
 });
 
 test('every protected legacy workspace is parity-proven by production DOM readback', () => {
-  assert.equal(LEGACY_PARITY_ITEMS.length, 24);
+  assert.equal(LEGACY_PARITY_ITEMS.length, 25);
   for (const item of LEGACY_PARITY_ITEMS) {
     assert.equal(item.status, 'proven', item.legacyId);
     assert.equal(item.verification, 'production-dom-readback', item.legacyId);
