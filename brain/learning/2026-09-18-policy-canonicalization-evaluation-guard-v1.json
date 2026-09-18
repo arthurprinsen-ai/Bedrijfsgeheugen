@@ -58,6 +58,12 @@
       "observation": "After reconciling the repository migration filename to the exact production ledger identity 20260918181638, brain-policy-canonicalization-guard-v1.test.mjs still opened the retired 20260918180200 path and failed BRAIN.",
       "root_cause": "The regression fixture encoded the old migration filename as a literal and was not updated atomically with the migration identity reconciliation.",
       "prevention": "Migration identity reconciliation must update every exact-path consumer in the same candidate; coverage must prove no retired timestamp alias remains referenced."
+    },
+    {
+      "fingerprint": "control-plane|supersession-migration-alias-retained-in-terminal-proof|v1",
+      "observation": "After canonicalizing the policy migration from 20260918180200 to 20260918181638, terminal closure still required both identities because supersession traversal accumulated historical added migration paths even when the old alias no longer existed in the terminal merge tree.",
+      "root_cause": "Migration evidence derivation deduplicated historical additions by version+name but did not intersect them with canonical files present at the terminal merge SHA.",
+      "prevention": "After traversing supersession history, terminal migration expectations must be filtered to exact migration identities present in the terminal merge tree; removed or renamed aliases remain historical evidence, not current production requirements."
     }
   ]
 }

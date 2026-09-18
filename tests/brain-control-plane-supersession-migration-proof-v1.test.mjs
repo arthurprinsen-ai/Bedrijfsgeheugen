@@ -27,3 +27,10 @@ test('superseded migration proof is deduplicated and source PR is retained in ev
   assert.match(workflow,/new Map\(expected\.map/);
   assert.match(workflow,/source_pr:prNumber/);
 });
+
+
+test('terminal migration proof excludes superseded aliases absent from the canonical merge tree', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/existsSync/);
+  assert.match(workflow,/supabase\/migrations\/\$\{item\.version\}_\$\{item\.name\}\.sql/);
+});
