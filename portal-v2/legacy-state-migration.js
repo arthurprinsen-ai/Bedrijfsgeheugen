@@ -22,6 +22,7 @@ const LEGACY_POLICY_KEYS=['infosec','toegang','incident','backup','avg','verwerk
 const LEGACY_POLICY_STATUS=['ontbreekt','concept','vastgesteld','geoefend'];
 const LEGACY_ESG_KEYS=['energie','co2','afval','water','vervoer','arbo','divers','opleiding','keten','ethiek','bestuur'];
 const LEGACY_CANVAS_IDS=['bmc','vpc2','lean','merk','content','sales2'];
+const LEGACY_DIMENSION_KEYS=['sturing','commercie','operatie','finance','mensen','analytics','quality','governance','tech','culture','service','security','duurzaam'];
 const LEGACY_ROOT_KEYS=Object.freeze(['legacy','niveaus','mw','uur','taken','start','branche','omzet','mensen','cijfers','bc','eigen','beleid','fin','modellen','uitvoering','kto','metingen','esg','eigenCaps','prod','beheer','besluiten','docs','log','dd','wijz','aicap','aicapDatum','aicapStempel','aicapUitScan','scanStempel','scanDatum','scanScore','medewerkers','uurkosten']);
 
 function numericOrRaw(value){
@@ -39,11 +40,11 @@ function normalizeLegacyMeasurement(item,index){
 function normalizeLegacyRoadmapItem(item,index){
  if(!isObject(item))return item;
  const done=Boolean(item.done??item.klaar);
- return {id:String(item.id??`legacy-roadmap-${index+1}`),title:item.title??item.t??item.naam??`Actie ${index+1}`,dimension:item.dimension??item.dim??'',start:numericOrRaw(item.start??item.s??1),duration:numericOrRaw(item.duration??item.d??1),owner:item.owner??item.eigenaar??'',progress:item.progress!==undefined?numericOrRaw(item.progress):(done?100:0),done};
+ return {id:String(item.id??`legacy-roadmap-${index+1}`),title:item.title??item.t??item.wat??item.naam??`Actie ${index+1}`,dimension:item.dimension??item.dim??item.onderdeel??'',start:numericOrRaw(item.start??item.s??1),duration:numericOrRaw(item.duration??item.d??1),owner:item.owner??item.eigenaar??item.wie??'',due:item.due??item.deadline??item.wanneer??'',status:item.status??(done?'Done':'Open'),progress:item.progress!==undefined?numericOrRaw(item.progress):(done?100:0),done};
 }
 function migrateRawLegacyCollections(upgraded,legacy){
- if(isObject(legacy.niveaus))setPath(upgraded,'portal.profile.maturity',legacy.niveaus);
- const employees=legacy.mw??legacy.medewerkers;if(employees!==undefined)setPath(upgraded,'portal.profile.employees',numericOrRaw(employees));
+ if(isObject(legacy.niveaus)){const filtered=Object.fromEntries(Object.entries(legacy.niveaus).filter(([key])=>LEGACY_DIMENSION_KEYS.includes(key)));setPath(upgraded,'portal.profile.maturity',filtered);}
+ const employees=legacy.mw??legacy.medewerkers;if(employees!==undefined){setPath(upgraded,'portal.profile.employees',numericOrRaw(employees));setPath(upgraded,'portal.profile.headcount',numericOrRaw(employees));}
  const hourly=legacy.uur??legacy.uurkosten;if(hourly!==undefined)setPath(upgraded,'portal.profile.hourlyCost',numericOrRaw(hourly));
  if(legacy.branche!==undefined){setPath(upgraded,'portal.market.industry',legacy.branche);setPath(upgraded,'portal.profile.industry',legacy.branche);}
  if(legacy.omzet!==undefined)setPath(upgraded,'portal.profile.revenue',numericOrRaw(legacy.omzet));
@@ -61,7 +62,11 @@ function migrateRawLegacyCollections(upgraded,legacy){
   setPath(upgraded,'portal.metrics.measurements',measurements);
   setPath(upgraded,'portal.inputs.measurements',measurements);
  }
- if(Array.isArray(legacy.taken))setPath(upgraded,'portal.roadmap.items',legacy.taken.map(normalizeLegacyRoadmapItem));
+ if(Array.isArray(legacy.taken)){
+  const tasks=legacy.taken.map(normalizeLegacyRoadmapItem).filter(item=>String(item.title||'').trim()&&!/^Actie \d+$/.test(item.title));
+  setPath(upgraded,'portal.roadmap.items',tasks);
+  setPath(upgraded,'portal.tasks.items',tasks);
+ }
 
  if(isObject(legacy.eigen)){
   for(const id of LEGACY_CANVAS_IDS)if(legacy.eigen[id]!==undefined)setPath(upgraded,`portal.canvases.${id}.answer`,legacy.eigen[id]);
@@ -84,7 +89,10 @@ function migrateRawLegacyCollections(upgraded,legacy){
  if(isObject(legacy.uitvoering))setPath(upgraded,'portal.execution.completed',legacy.uitvoering);
  if(isObject(legacy.eigenCaps))setPath(upgraded,'portal.strategy.customCapabilities',legacy.eigenCaps);
  if(isObject(legacy.beheer))setPath(upgraded,'portal.freshness.byDimension',legacy.beheer);
- if(Array.isArray(legacy.besluiten))setPath(upgraded,'portal.freshness.decisions',legacy.besluiten);
+ if(Array.isArray(legacy.besluiten)){
+  setPath(upgraded,'portal.freshness.decisions',legacy.besluiten);
+  if(!Array.isArray(legacy.wijz))setPath(upgraded,'portal.changes.items',legacy.besluiten.filter(item=>String(item?.wat||item?.title||'').trim()).map((item,index)=>({id:String(item.id??`legacy-decision-change-${index+1}`),change:item.wat??item.title,area:item.onderdeel??item.area??'',reason:item.waarom??item.reason??'',owner:item.wie??item.owner??'',status:item.status??'Vastgelegd'})));
+ }
  if(Array.isArray(legacy.docs))setPath(upgraded,'portal.freshness.documents',legacy.docs);
  if(Array.isArray(legacy.log))setPath(upgraded,'portal.changes.history',legacy.log);
  if(Array.isArray(legacy.wijz))setPath(upgraded,'portal.changes.items',legacy.wijz);
