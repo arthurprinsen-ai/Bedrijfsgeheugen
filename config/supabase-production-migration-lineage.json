@@ -1,5 +1,5 @@
 {
-  "version": 1,
+  "version": 2,
   "contract": "powerhouse-repo-production-migration-lineage-v1",
   "productionProject": "adhjwmvyoixzjtmiroln",
   "policy": {
@@ -9,9 +9,9 @@
     "semanticTimestampAliasesForbidden": true,
     "closureRequiresPostMergeProductionAndGithubReadback": true
   },
-  "observedAt": "2026-09-16T12:40:00Z",
-  "latestObservedProductionMigration": "20260916123957_powerhouse_internal_view_replay_hardening",
-  "reconciliationStatus": "PENDING_MAIN_READBACK",
+  "observedAt": "2026-09-17T07:16:00Z",
+  "latestObservedProductionMigration": "20260917070302_linkedin_company_daily_delivery_guard_v1",
+  "reconciliationStatus": "LIVE_VERIFIED",
   "reconciled": [
     {
       "production": "20260915152705_powerhouse_revenue_intelligence_health_truth_v3.sql",
@@ -47,14 +47,26 @@
       "Drifted timestamp aliases remained in the candidate tree while exact production-ledger filenames were added, creating duplicate semantic migrations; closure was also marked LIVE_VERIFIED before protected-main readback.",
       "A stale predictive-lineage regression test still asserted LIVE_VERIFIED before protected-main readback, contradicting the canonical fail-closed closure contract."
     ],
-    "repair": "Remove both aliases from the candidate tree, retain only exact observed production filenames, keep reconciliationStatus PENDING_MAIN_READBACK with productionStateBeforeClosure OPEN until protected merge plus GitHub and production readback, and align all regression contracts with that fail-closed state.",
-    "prevention": "Production-ledger reconciliation must prove semantic migration uniqueness and consistent fail-closed closure semantics across all exact-head Required and BRAIN suites before merge; no test may encode successful terminal state before protected-main and production readback evidence exists."
+    "repair": "Remove aliases, retain only exact observed production filenames, require protected-main plus production readback before terminal closure, and keep repository closure truth synchronized with the canonical Brain obligation.",
+    "prevention": "Production-ledger reconciliation must prove semantic migration uniqueness and consistent fail-closed closure semantics across all exact-head Required and BRAIN suites before merge; terminal LIVE_VERIFIED is allowed only after protected-main and production readback evidence exists."
+  },
+  "closureEvidence": {
+    "brainObligationState": "FULFILLED",
+    "brainObligationVersion": 4,
+    "originalReconciliationPr": 1607,
+    "originalMergeSha": "ea4fa8ec9e256b86654922817fa1040aa3195798",
+    "closedLoopStatus": "LIVE & BEWEZEN",
+    "productionDdlReplayed": false,
+    "productionBehaviorChanged": false,
+    "supabaseReadbackVerifiedAt": "2026-09-15T16:42:22.548426Z",
+    "repositoryTruthReadbackAt": "2026-09-17T07:16:00Z",
+    "latestProductionLedgerReadback": "20260917070302_linkedin_company_daily_delivery_guard_v1"
   },
   "obligation": {
     "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
     "changeId": "repo-production-migration-lineage-reconciliation-v1",
     "productionStateBeforeClosure": "OPEN",
     "closureState": "FULFILLED",
-    "closureCondition": "All production entries above exist on GitHub main at their exact production filenames, all aliases are absent, required CI is green, and Supabase plus GitHub are read back after merge."
+    "closureCondition": "All reconciled production entries exist on GitHub main at their exact production filenames, aliases are absent, required CI is green, Supabase plus GitHub were read back after merge, and the canonical Brain obligation independently reads FULFILLED."
   }
 }
