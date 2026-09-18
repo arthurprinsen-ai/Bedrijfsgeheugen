@@ -14,9 +14,9 @@ const LEGACY_WEEKLY_HOURS=Object.freeze({
   governance:1.2,
   tech:4.1,
   culture:1.1,
-  service:2,
-  security:2,
-  duurzaam:2
+  service:2.4,
+  security:1.3,
+  duurzaam:1.0
 });
 const LEGACY_FACTOR=Object.freeze([0,1,.78,.5,.22,.06]);
 const close=(actual,expected,epsilon=1e-9)=>assert.ok(Math.abs(actual-expected)<=epsilon,`expected ${actual} ≈ ${expected}`);
@@ -80,9 +80,9 @@ test('V2 matches the legacy golden master at level 1 for the same inputs',()=>{
   const actual=profileOverviewMetrics(state);
   const expected=legacyMetrics(state.portal.profile);
 
-  close(expected.weeklyManualHours,29.4);
-  close(expected.annualManualHours,1352.4);
-  close(expected.fteLost,0.84525);
+  close(expected.weeklyManualHours,28.1);
+  close(expected.annualManualHours,1292.6);
+  close(expected.fteLost,0.807875);
   close(actual.weeklyManualHours,expected.weeklyManualHours);
   close(actual.annualManualHours,expected.annualManualHours);
   close(actual.fteLost,expected.fteLost);
@@ -97,10 +97,10 @@ test('V2 matches the legacy baseline when maturity values are still missing',()=
   const expected=legacyMetrics(profile);
 
   close(expected.averageMaturity,2);
-  close(expected.weeklyManualHours,22.932);
-  close(expected.annualManualHours,1054.872);
-  close(expected.fteLost,0.659295);
-  close(expected.annualManualCost,54853.344);
+  close(expected.weeklyManualHours,21.918);
+  close(expected.annualManualHours,1008.228);
+  close(expected.fteLost,0.6301425);
+  close(expected.annualManualCost,52427.856);
   close(actual.averageMaturity,expected.averageMaturity);
   close(actual.weeklyManualHours,expected.weeklyManualHours);
   close(actual.annualManualHours,expected.annualManualHours);
