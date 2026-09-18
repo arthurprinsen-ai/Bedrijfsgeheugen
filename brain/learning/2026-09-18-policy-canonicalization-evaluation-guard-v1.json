@@ -28,6 +28,12 @@
       "observation": "The terminal BRAIN admission for PR #2299 rejected tests/regulation-writer-candidate-mode.test.mjs as an unclassified delivery path after that stale regression was repaired.",
       "root_cause": "The test was historically wired into lane-automation by exact path but its filename did not conform to the canonical Brain/backend classifier namespace.",
       "prevention": "Place the regression at tests/brain-regulation-writer-candidate-mode.test.mjs and update the exact lane-automation reference; classifier and coverage guard then agree on one canonical path."
+    },
+    {
+      "fingerprint": "portal|topbar-regression|obsolete-menu-contract-v1",
+      "observation": "Portal lane still expected the removed portalMainMenu and desktop-hidden hamburger while current Portal V2 uses portalFullMenuToggle as the canonical visible desktop/mobile menu.",
+      "root_cause": "Regression and topbar helper retained legacy menu assumptions after the canonical full-menu UX moved into app.js/navigation.css.",
+      "prevention": "Remove obsolete portalMainMenu runtime binding and assert portalFullMenuToggle plus desktop/mobile inline-flex visibility as the single canonical hamburger contract."
     }
   ]
 }
