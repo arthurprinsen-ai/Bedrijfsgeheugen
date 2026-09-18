@@ -94,6 +94,25 @@ function migrateRawLegacyCollections(upgraded,legacy){
  if(legacy.scanScore!==undefined)setPath(upgraded,'portal.profile.scan.score',legacy.scanScore);
 }
 
+export function readLegacyPortalStateForUser(storage=globalThis.localStorage,user=null){
+ if(!storage||typeof storage.getItem!=='function')return null;
+ const email=String(user?.email||'').trim().toLowerCase();
+ if(!email)return null;
+ const key=`bg_portaal_${email}`;
+ try{
+  const raw=storage.getItem(key);
+  if(!raw)return null;
+  const parsed=JSON.parse(raw);
+  return isObject(parsed)?parsed:null;
+ }catch{return null}
+}
+
+export function mergeLegacyPortalStateIntoCanonical(canonical={},legacy={}){
+ const current=isObject(canonical)?clone(canonical):{};
+ if(!isObject(legacy)||!hasLegacyPortalData(legacy))return current;
+ return upgradeLegacyPortalState({...clone(legacy),...current,portal:mergeMissing(current.portal,legacy.portal)});
+}
+
 export function hasLegacyPortalData(input={}){
  const source=isObject(input?.legacy)?input.legacy:input;
  const keys=['mw','medewerkers','uur','uurkosten','niveaus','taken','branche','omzet','mensen','cijfers','bc','eigen','beleid','fin','modellen','uitvoering','kto','metingen','esg','eigenCaps','prod','beheer','besluiten','docs','log','dd','wijz','aicap','aicapUitScan','bDoel','bUitstel','bInvest','cOmzet','cEbitda','wWacc','asTarief','mVerzuim','nTitel','asRijen','ddInhoud','dnaVrij','beleidLijst','canvasKaarten','wijzigingen'];
