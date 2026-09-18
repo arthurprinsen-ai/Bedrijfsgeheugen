@@ -418,7 +418,7 @@ nav .nb{transition:height .2s}
 (function(){
   var h = location.hash || '';
   if (/^#(invite_token|recovery_token|confirmation_token|email_change_token)=/.test(h)) {
-    location.replace('/klantportaal' + h);
+    location.replace('/portal-v2/' + h);
   }
 })();
 </script>
