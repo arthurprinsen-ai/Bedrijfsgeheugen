@@ -115,6 +115,8 @@ jobs:
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ubuntu-latest
     timeout-minutes: 7
+    # TURBO_BRAIN_LANE is classified by classifyTurboDelivery in Required/lane-turbo;
+    # Unified BRAIN deliberately remains the full production-safety verification lane.
     steps:
       - uses: actions/checkout@v5
         with:
@@ -125,23 +127,35 @@ jobs:
           node-version: '22'
       - name: Verify exact changed lane
         shell: bash
-        env:
-          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
-          HEAD_SHA: ${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
         run: |
           mkdir -p .artifacts
-          test "$(git rev-parse HEAD)" = "$HEAD_SHA"
-          turbo="$(node --input-type=module - <<'NODE'
-          import { execFileSync } from 'node:child_process';
-          import { classifyTurboDelivery } from './tools/delivery/turbo-classifier.mjs';
-          const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          process.stdout.write(classifyTurboDelivery({changedPaths}).turbo ? 'true' : 'false');
-          NODE
-          )"
+          expected="${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
+          test "$(git rev-parse HEAD)" = "$expected"
           set +e
-          if [ "$turbo" = true ]; then
-            echo "TURBO_BRAIN_LANE:${{ matrix.id }}"
-            mapfile -t changed_tests < <(git diff --name-only "$BASE_SHA...$HEAD_SHA" | grep -E '^tests/.*\.test\.mjs      - name: Capture failed lane as Brain learning evidence
+          case "${{ matrix.id }}" in
+            backend)
+              (npm install --ignore-scripts --no-audit --no-fund && node scripts/brain/test-all.mjs && node --test tests/canonical-*.test.mjs tests/agent-fabric*.test.mjs tests/brain-*.test.mjs tests/supabase-*.test.mjs tests/cost-*.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              ;;
+            portal)
+              node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              ;;
+            website)
+              node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              ;;
+            automation)
+              (node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              ;;
+            *)
+              echo "Unknown delivery lane: ${{ matrix.id }}" | tee .artifacts/lane-${{ matrix.id }}.log
+              exit 64
+              ;;
+          esac
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            cp .artifacts/lane-${{ matrix.id }}.log .artifacts/lane-${{ matrix.id }}-failure.txt
+            exit "$status"
+          fi
+      - name: Capture failed lane as Brain learning evidence
         if: failure()
         shell: bash
         run: |
