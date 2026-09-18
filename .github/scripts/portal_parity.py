@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import re
 import sys
+import html as html_lib
 from fnmatch import fnmatchcase
 from html.parser import HTMLParser
 from pathlib import Path
@@ -345,6 +346,46 @@ def check_source_derived_model_parity(html: str) -> tuple[int, int]:
     return strategy_count, finance_count
 
 
+def check_source_derived_heading_parity(html: str) -> int:
+    """Every visible legacy panel heading must remain discoverable in native V2 source."""
+    v2_sources = []
+    for path in (ROOT / "portal-v2").rglob("*"):
+        if path.is_file() and path.suffix in {".js", ".mjs", ".html", ".md"} and "tests" not in path.parts:
+            try:
+                v2_sources.append(path.read_text(encoding="utf-8"))
+            except UnicodeDecodeError:
+                continue
+    haystack = html_lib.unescape("\n".join(v2_sources))
+    protected = 0
+    missing = []
+    for panel in sorted(PANEL_TABS):
+        match = re.search(
+            rf'<section class="paneel(?: aan)?" id="p-{re.escape(panel)}">(.*?)(?=<section class="paneel|</div></div>\s*</div>\s*<nav|$)',
+            html,
+            re.DOTALL,
+        )
+        if not match:
+            continue
+        body = match.group(1)
+        headings = []
+        for raw in re.findall(r"<h[23][^>]*>(.*?)</h[23]>", body, re.DOTALL):
+            plain = html_lib.unescape(re.sub(r"<[^>]+>", " ", raw))
+            plain = re.sub(r"\s+", " ", plain).strip()
+            if plain:
+                headings.append(plain)
+        for heading in headings:
+            protected += 1
+            if heading not in haystack:
+                missing.append(f"{panel}:{heading}")
+    if missing:
+        fail(
+            "legacy visible headings disappeared from native V2: "
+            + " | ".join(missing)
+            + ". Restore the user-facing surface; route-only or model-only parity is insufficient."
+        )
+    return protected
+
+
 def check_ai_capability_catalog_parity(html: str) -> int:
     if not V2_AI_CAPABILITY_CATALOG.exists():
         fail("missing native Portal V2 AI capability catalogue")
@@ -455,6 +496,7 @@ def main() -> int:
             fail(f"protected capability/meaning disappeared: {label} ({marker!r})")
 
     strategy_models, finance_models = check_source_derived_model_parity(html)
+    protected_headings = check_source_derived_heading_parity(html)
     ai_capabilities = check_ai_capability_catalog_parity(html)
     check_v2_overview_surface()
     check_v2_functional_inventory(inventory_source)
@@ -473,6 +515,7 @@ def main() -> int:
         f"{strategy_models} strategy/function models, "
         f"{finance_models} finance models, "
         f"{ai_capabilities} AI capabilities, "
+        f"{protected_headings} visible legacy headings, "
         f"{len(PANEL_TABS)} V2 functional inventory records and executable implementation/evidence gate present."
     )
     return 0
