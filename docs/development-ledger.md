@@ -219,3 +219,5 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Herbruikbare les:** auto-merge, CI, branch protection en deploy orchestration zijn uitvoeringsmechanismen. Zij mogen nooit als handoff naar de gebruiker fungeren zolang een autonome herstel- of vervolgstap bestaat.
 
 - **PR #2104 complete borging closure:** protected merge/main SHA `971a3f762dd0c63e8abd87f089e5574ec7860527`; main-readback bevestigde learning, ledger, self-healing docs, continuity skill, delivery-concurrency skill en regressie. Borging zelf geldt voortaan als materiële writeback en valt onder dezelfde terminale bewijsregels.
+
+- **Closure-recovery evidence:** tijdens de terminale borging zijn twee extra preventies bewezen: synthetische delivery-SHA's moeten aan hetzelfde hex-contract voldoen als runtime-heads; en de /prijzen-teller mag op mobiel niet tegelijk als fixed inner cell en sticky row functioneren. De mobiele cel wordt daarom binnen <=900px `position:static`, terwijl desktop fixed blijft. Fingerprints: `delivery-test-fixture|valid-head-sha|required-v1` en `website|prijzen|mobile-fixed-sticky-cls|v1`.
