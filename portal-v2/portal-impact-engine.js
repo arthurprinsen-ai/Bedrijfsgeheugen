@@ -20,7 +20,9 @@ const SECTION_PAGE=Object.freeze({
   valueFinance:'waarde-financiering',people:'mensen',market:'branche-markt',research:'onderzoek',
   compliance:'compliance-governance',aiCapabilities:'ai-capabilities',strategy:'strategie-naar-maandagochtend',
   strategyDna:'strategy-dna',canvases:'canvassen',finalConclusion:'eindconclusie',dueDiligence:'due-diligence',
-  freshness:'actueel-houden',changes:'wijzigingen',advice:'advies',offer:'offerte',roadmap:'roadmap',tasks:'taken-werkstromen'
+  freshness:'actueel-houden',changes:'wijzigingen',advice:'advies',offer:'offerte',roadmap:'roadmap',tasks:'taken-werkstromen',
+  project:'overzicht',integrations:'koppelingen',connections:'koppelingen',documents:'documenten',notes:'documenten',access:'gebruikers',
+  external:'ondernemersdata',regulatory:'wet-regelgeving',sources:'bronnenbibliotheek'
 });
 
 
@@ -46,7 +48,10 @@ const PATH_EFFECT_RULES=Object.freeze([
   Object.freeze({pattern:/^portal\.(dataAi|aiScan|aiCapabilities)(\.|$)/,kind:'ai',reason:'AI- en datawijzigingen beïnvloeden haalbaarheid, risico, governance, businesscase, compliance en roadmap.',targets:['data-ai','ai-scan','ai-capabilities','compliance-governance','businesscase','advies','roadmap','overzicht']}),
   Object.freeze({pattern:/^portal\.compliance(\.|$)/,kind:'risk',reason:'Compliancewijzigingen beïnvloeden risico, evidence, due diligence, acties, advies en executive sturing.',targets:['compliance-governance','due-diligence','advies','roadmap','overzicht','actueel-houden']}),
   Object.freeze({pattern:/^portal\.(strategy|strategyDna|canvases|finalConclusion)(\.|$)/,kind:'strategy',reason:'Strategische keuzes werken door naar conclusies, acties, prioriteiten, roadmap en uitvoering.',targets:['strategie-naar-maandagochtend','strategy-dna','canvassen','eindconclusie','advies','roadmap','uitvoeringsladder','overzicht']}),
-  Object.freeze({pattern:/^portal\.(advice|roadmap|tasks|changes|freshness)(\.|$)/,kind:'execution',reason:'Uitvoering wijzigt planning, capaciteit, voortgang, gerealiseerde waarde, actualiteit en managementinformatie.',targets:['advies','roadmap','taken-werkstromen','wijzigingen','actueel-houden','uitvoeringsladder','overzicht','businesscase']})
+  Object.freeze({pattern:/^portal\.(advice|roadmap|tasks|changes|freshness)(\.|$)/,kind:'execution',reason:'Uitvoering wijzigt planning, capaciteit, voortgang, gerealiseerde waarde, actualiteit en managementinformatie.',targets:['advies','roadmap','taken-werkstromen','wijzigingen','actueel-houden','uitvoeringsladder','overzicht','businesscase']}),
+  Object.freeze({pattern:/^portal\.(project|integrations|connections)(\.|$)/,kind:'delivery',reason:'Project- en koppelingswijzigingen beïnvloeden planning, afhankelijkheden, uitvoerbaarheid, capaciteit, kosten en projectstatus.',targets:['koppelingen','taken-werkstromen','roadmap','businesscase','overzicht','actueel-houden']}),
+  Object.freeze({pattern:/^portal\.(documents|notes|access)(\.|$)/,kind:'evidence',reason:'Documenten, notities en toegangscontext veranderen bewijs, overdraagbaarheid, governance, actualiteit en due-diligence-readiness.',targets:['documenten','gebruikers','due-diligence','compliance-governance','actueel-houden','onderzoek','overzicht']}),
+  Object.freeze({pattern:/^portal\.(external|regulatory|sources)(\.|$)/,kind:'external-intelligence',reason:'Nieuwe externe data of regelgeving kan benchmark, wettelijke scope, risico, personeelscontext, deadlines, advies en prioriteiten wijzigen.',targets:['ondernemersdata','wet-regelgeving','bronnenbibliotheek','branche-markt','mensen','compliance-governance','onderzoek','advies','roadmap','overzicht']})
 ]);
 function ruleEffects(path=''){
   return PATH_EFFECT_RULES.filter(rule=>rule.pattern.test(String(path))).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]}));
@@ -128,4 +133,4 @@ export function impactForMutation({path,before={},after={}}={}){
     changed:Boolean(changes.length||advice.added.length||advice.removed.length||advice.totalBefore!==advice.totalAfter||advice.valueBefore!==advice.valueAfter)
   });
 }
-export const PORTAL_IMPACT_ENGINE_VERSION='2026-09-18-v2-organism-causal';
+export const PORTAL_IMPACT_ENGINE_VERSION='2026-09-18-v3-whole-portal-causal';
