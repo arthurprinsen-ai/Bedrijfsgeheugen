@@ -47,7 +47,7 @@ function migrateRawLegacyCollections(upgraded,legacy){
  const employees=legacy.mw??legacy.medewerkers;if(employees!==undefined){setPath(upgraded,'portal.profile.employees',numericOrRaw(employees));setPath(upgraded,'portal.profile.headcount',numericOrRaw(employees));}
  const hourly=legacy.uur??legacy.uurkosten;if(hourly!==undefined)setPath(upgraded,'portal.profile.hourlyCost',numericOrRaw(hourly));
  if(legacy.branche!==undefined){setPath(upgraded,'portal.market.industry',legacy.branche);setPath(upgraded,'portal.profile.industry',legacy.branche);}
- if(legacy.omzet!==undefined)setPath(upgraded,'portal.profile.revenue',numericOrRaw(legacy.omzet));
+ if(legacy.omzet!==undefined){setPath(upgraded,'portal.profile.revenue',numericOrRaw(legacy.omzet));setPath(upgraded,'portal.metrics.revenue',numericOrRaw(legacy.omzet));}
 
  mapObjectFields(upgraded,legacy.mensen,{mVerzuim:'portal.people.absence',mVerloop:'portal.people.turnover',mEnps:'portal.people.enps',mMto:'portal.people.mto',mVac:'portal.people.vacancies'});
  mapObjectFields(upgraded,legacy.cijfers,{cOmzet:'portal.metrics.revenue',cBrutomarge:'portal.metrics.grossMargin',cEbitda:'portal.metrics.ebitda',cLoon:'portal.metrics.wages',cKlanten:'portal.metrics.customers',cGrootste:'portal.metrics.largestCustomer',cMarketing:'portal.metrics.marketing',cNieuw:'portal.metrics.newCustomers',cDso:'portal.metrics.dso',cIt:'portal.metrics.it'});
