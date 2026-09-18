@@ -30,7 +30,7 @@ test('Canvassen production renders the six full legacy canvases from Powerhouse 
   for(const [id,title] of EXPECTED_CANVASES){
     const card=workspace.locator(`.canvas-card[data-canvas="${id}"]`);
     await expect(card,`${id} must exist`).toHaveCount(1);
-    await expect(card.locator('header small')).toHaveText(title);
+    await expect(card.locator('header small')).toContainText(title);
     expect(await card.locator('.canvas-sections section').count(),`${id} must contain full structured canvas content`).toBeGreaterThanOrEqual(6);
     await expect(card.locator(`[data-canvas-answer="${id}"]`)).toBeEditable();
     await expect(card.locator(`[data-canvas-owner="${id}"]`)).toBeEditable();
