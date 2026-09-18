@@ -93,3 +93,22 @@ Permanent rules:
 - A production-schema transaction/rollback dry run on 2026-09-18 reconciled 1,304 existing source rows successfully without mutating production.
 
 Terminal truth remains `RECORDED_PENDING_FINAL_DELIVERY_READBACK` until exact-head gates, protected merge, migrations/function deployment and production evidence/readback are complete.
+
+
+## Missing-connections recovery learning
+
+Fingerprint: `powerhouse-missing-connections-runtime-schema-readback-v1`
+
+A structural coupling audit must always compare repository intent with current production schema/runtime evidence. On the verified 2026-09-18 snapshot, production still showed 565 sales actions but 0 decision cycles, 0 cycle events, 0 action economics, 0 realized values, 0 human feedback events and 0 connector definitions/executions. Forecasting had 365 forecasts and 1 calibration; 364 calibration obligations were open but none were due, so sparse calibration was not itself a current failure.
+
+Permanent rules:
+- read current production schema and counts before claiming a coupling is missing;
+- distinguish configured capability, persisted evidence, successful execution, verified outcome and terminal production proof;
+- a stale or incorrect table-name assumption is discovery input, never justification for a second schema authority;
+- historical actions may only bootstrap to the earliest truthful decision-cycle stage; never reconstruct later stages, economics, feedback or realized value without evidence;
+- queued/pending CI is not a defect. Only a concrete failing assertion authorizes a root-cause code change;
+- stay on the existing canonical obligation/PR while it remains valid;
+- close only after exact-head gates, protected merge, production migration/function deployment, runtime readback and learning/prevention writeback.
+
+Reusable skill: `brain/skills/powerhouse-missing-connections-recovery-v1.json`.
+Machine learning: `brain/learning/2026-09-18-missing-connections-recovery-v1.json`.
