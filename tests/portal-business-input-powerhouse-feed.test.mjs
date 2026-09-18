@@ -26,9 +26,13 @@ test('authenticated portal input feeds Powerhouse as one idempotent CurrentState
   const response=await handler(requestFor({inputType:'AIActAssessment',modelId:'eu-ai-act',answers:{usesAI:true,humanOversight:false},sourcePortal:'portal-v2'}));
   const payload=await response.json();
   assert.equal(response.status,200);
-  assert.equal(writes.length,2);
-  const [source,current]=writes;
-  assert.equal(source.record.type,'BusinessInput');
+  assert.equal(writes.length,4);
+  const source=writes.find(write=>write.record.type==='BusinessInput');
+  const current=writes.find(write=>write.record.type==='CurrentState');
+  const organism=writes.find(write=>write.record.type==='ImpactAssessment'&&write.record.kind==='organism_impact');
+  assert.ok(source);
+  assert.ok(current);
+  assert.ok(organism);
   assert.equal(source.record.kind,'SourceTruth');
   assert.equal(current.record.type,'CurrentState');
   assert.equal(current.record.kind,'current_state');
@@ -43,6 +47,8 @@ test('authenticated portal input feeds Powerhouse as one idempotent CurrentState
   assert.equal(current.idempotencyKey,`portal-business-current-state:${payload.sourceRevision}`);
   assert.equal(payload.powerhouseFeedStored,true);
   assert.equal(payload.currentStateRecordId,current.record.id);
+  assert.equal(payload.organismImpactRecordId,organism.record.id);
+  assert.equal(payload.organismImpactStored,true);
 });
 
 test('portal projection stays fail-closed when Powerhouse CurrentState feed cannot be stored',async()=>{
@@ -58,5 +64,6 @@ test('portal projection stays fail-closed when Powerhouse CurrentState feed cann
   assert.equal(payload.authorityStored,true);
   assert.equal(payload.powerhouseFeedStored,false);
   assert.equal(projectionWrites,0);
-  assert.equal(writes.length,2);
+  assert.equal(writes.length,3);
+  assert.equal(writes.some(write=>write.record.type==='OrganismImpact'),false);
 });

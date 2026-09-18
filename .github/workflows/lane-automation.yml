@@ -23,6 +23,7 @@ jobs:
           tests/delivery-*.test.mjs
           tests/brain-delivery-system.test.mjs
           tests/powerhouse-one-loop-*.test.mjs
+          tests/powerhouse-organism-propagation.test.mjs
           tests/powerhouse-github-learning.test.mjs
       - name: Verify consolidated Brain foundation contracts
         run: node scripts/brain/test-all.mjs

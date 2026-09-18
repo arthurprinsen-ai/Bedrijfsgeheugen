@@ -97,3 +97,19 @@ GitHub is an executable delivery state machine, not a chat archive, parking lot 
 ## Proven terminal closure authority
 
 For fingerprint `github|delivery-state-machine|parallel-build-serialized-landing|v1`, terminal closure is now production-proven. Every merged obligation must continue through the canonical `Obligation Terminal Closure` workflow and may become `LIVE_BEWEZEN` only after main containment plus the existing Production Release Readback have succeeded. If canonical learning changed, the same lineage must also prove Powerhouse Skill Projection before lease release. The merge itself is never terminal evidence.
+
+
+## Nonstarving admission under parallel main movement
+
+Fingerprint: `github|delivery-admission|head-bound-ci-terminal-main-cas|v1`.
+
+Admission and landing are different safety phases.
+
+- Admission is bound to the canonical obligation and exact candidate head. A syntactically valid `Writer-Lease-Main-Epoch` remains provenance, but unrelated main movement alone must not fail admission or restart expensive CI.
+- Writer-lease admission still fails closed on owner/scope/obligation/head drift.
+- Current-main equality is enforced at the terminal landing boundary, not continuously during CI.
+- Terminal merge remains strict: exact validated head, current lease epoch = current main, `behind_by=0`, mergeable=true, required checks green, no newer canonical successor, then expected-head/CAS merge.
+- If main moves during CI, keep the existing exact-head evidence unless an actual conflict contract/path dependency invalidates it. Reconcile at landing or when impact analysis says the candidate is affected.
+- Repeated sync → full rerun → sync loops caused only by unrelated main movement are delivery starvation and must be prevented, not normalized.
+
+This refines `github|delivery-state-machine|parallel-build-serialized-landing|v1`: parallel build and CI remain useful while only the short landing boundary is serialized on current main.

@@ -65,7 +65,7 @@ export function parseWriterLease(body = '') {
   });
 }
 
-export function evaluateWriterLease({ body = '', candidateHeadSha = '', currentMainSha = '', obligationId = '' } = {}) {
+export function evaluateWriterLease({ body = '', candidateHeadSha = '', currentMainSha = '', obligationId = '', enforceCurrentMainEpoch = false } = {}) {
   const lease = parseWriterLease(body);
   const actualHead = normalize(candidateHeadSha).toLowerCase();
   const actualMain = normalize(currentMainSha).toLowerCase();
@@ -82,7 +82,7 @@ export function evaluateWriterLease({ body = '', candidateHeadSha = '', currentM
   if (!SHA40.test(actualHead)) reasons.push('CANDIDATE_HEAD_INVALID');
   if (actualMain && !SHA40.test(actualMain)) reasons.push('CURRENT_MAIN_SHA_INVALID');
   if (!reasons.length && lease.headSha !== actualHead) reasons.push('TERMINAL_LEASE_HEAD_DRIFT');
-  if (!reasons.length && actualMain && lease.mainEpochSha !== actualMain) reasons.push('TERMINAL_LEASE_MAIN_EPOCH_DRIFT');
+  if (!reasons.length && enforceCurrentMainEpoch && actualMain && lease.mainEpochSha !== actualMain) reasons.push('TERMINAL_LEASE_MAIN_EPOCH_DRIFT');
   if (!reasons.length && actualObligation && lease.obligationId !== actualObligation) reasons.push('TERMINAL_LEASE_OBLIGATION_DRIFT');
   if (reasons.length) {
     return Object.freeze({

@@ -163,6 +163,7 @@ jobs:
               candidateHeadSha: headSha,
               currentMainSha,
               obligationId: candidateMetadata.obligationId,
+              enforceCurrentMainEpoch: false,
             });
             if (!lease.ok) {
               const evidence = {

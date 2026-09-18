@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "fingerprint": "github|delivery-admission|head-bound-ci-terminal-main-cas|v1",
+  "status": "ACTIVE_PREVENTION_PENDING_PRODUCTION_PROOF",
+  "type": "delivery",
+  "problem": "Repeated unrelated main movement invalidated already-running admission and exact-head CI because Writer-Lease-Main-Epoch was required to equal current main before expensive CI, causing repeated sync/retest cycles and delivery starvation.",
+  "rootCause": "The terminal landing invariant was enforced too early. Admission coupled a candidate's writer lease to a moving global main epoch even though safety only requires exact current-main binding at the serialized terminal landing boundary.",
+  "prevention": [
+    "Admission binds canonical identity to obligation + exact candidate head and validates Writer-Lease-Main-Epoch syntax, but does not fail only because current main advanced after the candidate started.",
+    "Writer lease admission validates owner, scope, obligation and exact candidate head while treating observed main movement as non-terminal context.",
+    "Terminal merge remains fail-closed: current Writer-Lease-Main-Epoch must equal current main, validated head must equal candidate head, behind_by must be 0, mergeability must be true and required checks must be green.",
+    "Unrelated parallel main movement must not restart expensive CI by itself; reconcile only at the landing boundary or earlier when changed-path/conflict-contract impact requires it.",
+    "Repeated rebase/retest loops for an unchanged obligation are a starvation signal and should trigger this prevention rule."
+  ],
+  "skill_targets": [
+    "delivery",
+    "continuity"
+  ],
+  "source_revision": 1,
+  "outcome": "Pending protected merge and production/readback proof."
+}
