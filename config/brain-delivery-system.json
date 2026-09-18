@@ -456,7 +456,10 @@
         "tests/homepage-automation-layout.test.mjs",
         "tests/live-preview-trigger-scope.test.mjs",
         "tests/targeted-website-route-regression.test.mjs",
-        "tests/commercial-intent-pages-v1.test.mjs"
+        "tests/commercial-intent-pages-v1.test.mjs",
+        "tools/apply-tabbladen.mjs",
+        "tools/bouw-inhoudspaginas.mjs",
+        "tools/bouw-losse-paginas.mjs"
       ],
       "requiredContracts": [
         "BG166",
