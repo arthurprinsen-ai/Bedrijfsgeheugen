@@ -1,0 +1,38 @@
+{
+  "version": "CHAT-LEARNING-COVERAGE-v1",
+  "date": "2026-09-17",
+  "role": "INCIDENT_COVERAGE_INDEX",
+  "executableTruth": "GitHub main",
+  "learningTruth": "brain/learning/2026-09-17-moving-main-ci-queue-recovery.json",
+  "preventionTruth": "config/delivery-prevention-rules.json",
+  "brainContract": "BRAIN-DELIVERY-v2 + brain.v1",
+  "fingerprint": "moving-main-plus-pre-run-ci-queue-v1",
+  "architectureInvariants": {
+    "exactShaPromotionRequired": true,
+    "queuedBeforeRunIsNeitherPassNorFail": true,
+    "movingMainInvalidatesStaleLineage": true,
+    "requiredGatesFailClosed": true,
+    "productionDeployIdentityRequired": true,
+    "noParallelRecoveryQueue": true,
+    "issueClosureRequiresProductionEvidence": true
+  },
+  "mappedPreventionRules": [
+    "REFRESH_BASE_BEFORE_FINAL_GATE",
+    "BLOCK_PROMOTION_WHEN_PLATFORM_CAPACITY_UNAVAILABLE",
+    "REQUIRE_EXACT_DEPLOY_IDENTITY_BEFORE_PRODUCTION_GREEN",
+    "REFRESH_MAIN_IMMEDIATELY_BEFORE_PRODUCTION_PERSISTENCE",
+    "REQUIRE_OUTCOME_EVIDENCE_BEFORE_GREEN"
+  ],
+  "evidenceRefs": [
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/1907",
+    "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/1510",
+    "github-actions-run:35211285731",
+    "github-actions-run:35211285493"
+  ],
+  "coveragePolicy": {
+    "purpose": "Ensure future chats and agents recognize the combined moving-main plus pre-run CI queue state without re-diagnosing it from scratch.",
+    "reuseRule": "Load the canonical learning record and existing prevention rules before attempting recovery.",
+    "truthRule": "A queued workflow with no runner execution has no test conclusion; current-main ancestry and exact-head evidence must both be current before protected merge.",
+    "sensitiveDataRule": "Only bounded repository metadata, fingerprints and evidence references are stored."
+  }
+}
