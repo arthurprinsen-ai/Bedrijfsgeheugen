@@ -45,7 +45,18 @@
     ],
     "nonOverlappingDriftAction": "keep-tested-candidate",
     "preferredWriteMode": "atomic-tree-commit",
-    "maxRebuildsForNonOverlappingDrift": 0
+    "maxRebuildsForNonOverlappingDrift": 0,
+    "rollingLanePerConflictContract": true,
+    "oneActiveCandidatePerConflictContract": true,
+    "autoCancelSupersededRuns": true,
+    "zeroRunHeadRecovery": "event_driven_same_lineage_dispatch",
+    "conflictRecovery": "refresh_same_rolling_lane_from_current_main",
+    "queuePolicy": "never_wait_passively",
+    "latencyBudgetSeconds": {
+      "firstSignal": 60,
+      "turbo": 240,
+      "standard": 480
+    }
   },
   "conflictContracts": [
     {
@@ -509,7 +520,12 @@
     },
     "outcomeRouter": "BG168",
     "currentStateProjection": "BG167",
-    "errorLedger": "BG166"
+    "errorLedger": "BG166",
+    "rollingLaneMode": true,
+    "blockingTests": "risk-and-dependency-scoped",
+    "unrelatedFullAssurance": "post-merge-shadow",
+    "autoPromoteOnGreen": true,
+    "autoRollbackOnReadbackFailure": true
   },
   "platformAdapterContract": {
     "version": "BRAIN-PLATFORM-ADAPTER-v1",
