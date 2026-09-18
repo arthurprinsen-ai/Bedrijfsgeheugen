@@ -151,3 +151,8 @@ test('customer connector readiness is configuration-aware, not falsely red when 
   assert.match(sql,/EXECUTION_OBSERVED_NO_SUCCESS/);
   assert.match(sql,/readiness_state/);
 });
+
+test('content auth health uses original invocation time instead of repeated measurement time',()=>{
+  assert.match(sql,/gegevens->>'aangeroepen_op'/);
+  assert.match(sql,/coalesce\([\s\S]*?aangeroepen_op[\s\S]*?gemeten_op[\s\S]*?now\(\)-interval '30 minutes'/);
+});
