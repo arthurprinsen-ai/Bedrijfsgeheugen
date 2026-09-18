@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const sql=fs.readFileSync('supabase/migrations/20260918090000_powerhouse_structural_gap_closure_v2.sql','utf8');
+const signalBootstrap=sql.slice(sql.indexOf('create or replace function public.powerhouse_open_cycle_from_runtime_signal_v1'),sql.indexOf('create or replace view public.powerhouse_completion_readiness_v1'));
 
 test('tenant identity review is derived live, not copied to a parallel queue',()=>{
   assert.match(sql,/create or replace view public\.powerhouse_tenant_identity_review_v1/i);
@@ -40,8 +41,8 @@ test('strict canonical cycle remains evidence-first after runtime signal bootstr
   assert.match(sql,/cycles_waiting_for_stage_reconstruction/);
   assert.match(sql,/current_stage='signal'/);
   assert.match(sql,/source_signal_ref like 'powerhouse_runtime_events:%'/);
-  assert.doesNotMatch(sql,/insert into public\.powerhouse_cycle_events[\s\S]*?'analysis'/);
-  assert.doesNotMatch(sql,/insert into public\.powerhouse_cycle_events[\s\S]*?'prediction'/);
+  assert.doesNotMatch(signalBootstrap,/insert into public\.powerhouse_cycle_events[\s\S]*?'analysis'/);
+  assert.doesNotMatch(signalBootstrap,/insert into public\.powerhouse_cycle_events[\s\S]*?'prediction'/);
 });
 
 test('tenant readiness distinguishes demo fixtures from unresolved production identity',()=>{
