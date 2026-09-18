@@ -37,4 +37,4 @@ jobs:
       - name: Reconcile all canonical learning into skill projection
         run: node scripts/brain/powerhouse-skill-projection.mjs
       - name: Verify learning to skill projection contract
-        run: node --test tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs
+        run: node --test tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs tests/brain-learning-skill-projection-v1.test.mjs
