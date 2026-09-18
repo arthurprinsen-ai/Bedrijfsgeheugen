@@ -49,3 +49,10 @@ test('tenant readiness distinguishes demo fixtures from unresolved production id
   assert.match(sql,/production_or_unknown_unresolved_records/);
   assert.match(sql,/lower\(btrim\(coalesce\(s\.klant_slug,''\)\)\) in \('demo','test'\)/);
 });
+
+test('forecast readiness distinguishes future obligations from overdue calibration debt',()=>{
+  assert.match(sql,/overdue_calibration_obligations/);
+  assert.match(sql,/future_calibration_obligations/);
+  assert.match(sql,/due_at <= now\(\)/);
+  assert.match(sql,/due_at > now\(\)/);
+});
