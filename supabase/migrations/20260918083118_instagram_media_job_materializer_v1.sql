@@ -1,3 +1,27 @@
+-- Fresh-replay prerequisites for instagram media job materializer v1.
+-- Keep idempotent: later provider-router migration reasserts the same table/policy contract.
+-- instagram-media-provider-routing-preproof-v1
+create table if not exists public.powerhouse_instagram_media_jobs_v1 (
+ id uuid primary key default gen_random_uuid(), tenant_id text not null default 'canonical', publication_date date not null,
+ channel text not null default 'instagram', post_type text not null, status text not null default 'PLANNED',
+ required_provider text, allowed_providers text[] not null default '{}'::text[], selected_provider text,
+ asset_manifest jsonb not null default '{}'::jsonb, proof_manifest jsonb not null default '{}'::jsonb,
+ replacement_of_external_id text, republish_forbidden boolean not null default false,
+ provider_connection_state text not null default 'UNKNOWN', attempts integer not null default 0,
+ last_error text, next_action text, created_at timestamptz not null default now(), updated_at timestamptz not null default now(),
+ unique(tenant_id,publication_date,channel));
+alter table public.powerhouse_instagram_media_jobs_v1 enable row level security;
+revoke all on public.powerhouse_instagram_media_jobs_v1 from public,anon,authenticated;
+grant select,insert,update on public.powerhouse_instagram_media_jobs_v1 to service_role;
+create or replace function public.powerhouse_instagram_provider_policy_v1(p_post_type text) returns jsonb language sql immutable set search_path = public, pg_catalog as $$
+select case lower(coalesce(p_post_type,''))
+ when 'reel' then jsonb_build_object('post_type','reel','required_provider','openart','allowed_providers',jsonb_build_array('openart'),'media_kind','video','mime','video/mp4','width',1080,'height',1920,'frame_positions',jsonb_build_array('start','middle','end'))
+ when 'video' then jsonb_build_object('post_type','video','required_provider','openart','allowed_providers',jsonb_build_array('openart'),'media_kind','video','mime','video/mp4','width',1080,'height',1920,'frame_positions',jsonb_build_array('start','middle','end'))
+ when 'carousel' then jsonb_build_object('post_type','carousel','required_provider',null,'allowed_providers',jsonb_build_array('openart','placid'),'image_allowed_providers',jsonb_build_array('openart','placid'),'video_allowed_providers',jsonb_build_array('openart'),'image_width',1080,'image_height',1350,'image_mime','image/jpeg','video_mime','video/mp4')
+ else jsonb_build_object('post_type','image','required_provider',null,'allowed_providers',jsonb_build_array('openart','placid'),'media_kind','image','mime','image/jpeg','width',1080,'height',1350) end;$$;
+revoke all on function public.powerhouse_instagram_provider_policy_v1(text) from public,anon,authenticated;
+grant execute on function public.powerhouse_instagram_provider_policy_v1(text) to service_role;
+
 -- Instagram media job materializer v1
 -- Canonical flow: content obligation/recommendation -> one media job -> provider agent -> proof -> publisher.
 
