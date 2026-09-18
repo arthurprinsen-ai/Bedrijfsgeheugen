@@ -235,3 +235,72 @@ test('continuity skill locks fast delivery incident prevention', () => {
     'protected merge is not enough'
   ]) assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing continuity marker: ${marker}`);
 });
+
+
+test('material learning requires deterministic skill projection before terminal completion', () => {
+  const projection = policy.skill_projection_contract;
+  assert.equal(projection.required, true);
+  assert.equal(projection.fingerprint, 'powerhouse-learning-skill-auto-projection-v1');
+  assert.equal(projection.canonical_learning_is_authority, true);
+  assert.equal(projection.skill_layer_is_projection_only, true);
+  assert.equal(projection.fail_closed_on_drift, true);
+  assert.equal(projection.reconcile_existing_learning, true);
+  assert.equal(projection.preflight_consumes_projection, true);
+  assert.ok(policy.invariants.includes('NO_MATERIAL_LEARNING_WITHOUT_SKILL_PROJECTION'));
+  assert.ok(policy.terminal_status_gate.live_and_proven_requires.includes('skill_projection_current_and_read_back'));
+});
+
+test('skill projection engine and canonical index are present and preflight-discoverable', async () => {
+  const enginePath = path.join(rootDir, 'scripts/brain/powerhouse-skill-projection.mjs');
+  const indexPath = path.join(rootDir, 'brain/skills/powerhouse-learning-skill-index-v1.json');
+  assert.ok(fs.existsSync(enginePath), 'missing deterministic skill projection engine');
+  assert.ok(fs.existsSync(indexPath), 'missing canonical learning-to-skill index');
+  const index = JSON.parse(fs.readFileSync(indexPath, 'utf8'));
+  assert.equal(index.type, 'POWERHOUSE_LEARNING_SKILL_INDEX');
+  assert.equal(index.version, 'POWERHOUSE-LEARNING-SKILL-INDEX-v1');
+  assert.equal(index.fingerprint, 'powerhouse-learning-skill-auto-projection-v1');
+  assert.equal(index.authority, 'CANONICAL_LEARNING_PROJECTED_NOT_PARALLEL_TRUTH');
+  assert.ok(Array.isArray(index.entries) && index.entries.length > 0, 'skill index must contain reconciled learning');
+  assert.match(preflightSource, /powerhouse-learning-skill-index-v1\.json/);
+});
+
+test('skill projection engine deduplicates, versions and fails closed on stale projection', async () => {
+  const { buildSkillProjectionIndex, verifySkillProjectionIndex } = await import('../scripts/brain/powerhouse-skill-projection.mjs');
+  const fixtureRoot = fs.mkdtempSync(path.join(process.cwd(), '.skill-projection-test-'));
+  try {
+    fs.mkdirSync(path.join(fixtureRoot, 'brain/learning'), { recursive: true });
+    fs.writeFileSync(path.join(fixtureRoot, 'brain/learning/a.json'), JSON.stringify({
+      fingerprint: 'alpha-v1',
+      status: 'ACTIVE',
+      prevention: ['Reuse canonical state first'],
+      skill_targets: ['continuity']
+    }));
+    fs.writeFileSync(path.join(fixtureRoot, 'brain/learning/b.json'), JSON.stringify({
+      fingerprint: 'alpha-v1',
+      status: 'ACTIVE',
+      prevention: ['Reuse canonical state first'],
+      skill_targets: ['continuity']
+    }));
+    const index = buildSkillProjectionIndex({ rootDir: fixtureRoot });
+    assert.equal(index.entries.length, 1, 'duplicate fingerprints must coalesce');
+    assert.equal(index.entries[0].fingerprint, 'alpha-v1');
+    assert.deepEqual(index.entries[0].skill_targets, ['continuity']);
+    assert.match(index.entries[0].source_digest, /^[a-f0-9]{64}$/);
+    assert.equal(verifySkillProjectionIndex({ rootDir: fixtureRoot, index }).ok, true);
+    index.entries[0].source_digest = '0'.repeat(64);
+    const stale = verifySkillProjectionIndex({ rootDir: fixtureRoot, index });
+    assert.equal(stale.ok, false);
+    assert.ok(stale.drift.some(item => item.fingerprint === 'alpha-v1'));
+  } finally {
+    fs.rmSync(fixtureRoot, { recursive: true, force: true });
+  }
+});
+
+
+test('continuity skill consumes automatic learning projection instead of manual-only updates', () => {
+  assert.match(continuitySkillSource, /powerhouse-learning-skill-auto-projection-v1/);
+  assert.match(continuitySkillSource, /powerhouse-skill-projection\.mjs/);
+  assert.match(continuitySkillSource, /canonical learning.*authority/i);
+  assert.match(continuitySkillSource, /skill.*projection/i);
+  assert.match(continuitySkillSource, /drift.*fail/i);
+});
