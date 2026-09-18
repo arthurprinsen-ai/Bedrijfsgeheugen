@@ -9,25 +9,14 @@
 /blog/afas-koppeling/  /afas-koppeling  301!
 /data-ai-cockpit   /frisse-blik   301!
 /data-ai-cockpit.html   /frisse-blik   301!
-# Customer portal variants. Order matters: specific routes first.
-# The old demo alias canonicalizes to demo1; demoAI is the only route to the new AI portal.
-/klantportaal  klant=demo  /klantportaal?klant=demo1  301!
-# demo1 toont sinds 11 september 2026 het volledige portaal in demostand: alles
-# open, niets afgeschermd, geen sporen in de browser. De klikbare demo over
-# wijzigingen blijft bereikbaar op /klantportaal-demo.html zelf.
-/klantportaal  klant=demo1  /klantportaal.html  200!
-/klantportaal  klant=ijsselmonde  /klantportaal.html  200!
-# Portal V2 is het enige klantportaal. Sinds 11 september 2026 zit alles uit
-# portal/ en portal-next/ in portal-v2/: het Data & AI Passport, het EU AI
-# Act-auditrapport, de compliance-engine, de Powerhouse-route en het inlezen van
-# oude back-ups. Deze routes wijzen daarom door naar V2 in plaats van naar de
-# oude sporen. De mappen zelf staan er nog; die worden apart opgeruimd, want er
-# hangen nog tientallen tests en verwijzingen aan.
-/klantportaal  klant=demoAI  /portal-v2/  200!
-# All normal customer slugs produced by scans use the legacy full customer portal.
-/klantportaal  klant=:klant  /klantportaal.html  200!
-# Frisse Blik bare handoff stays on the legacy demo experience.
-/klantportaal  /klantportaal-demo.html  200!
+# Customer portal variants. Portal V2 is the single canonical entry surface.
+# Every portal entry lands on the V2 overview / Executive Cockpit; legacy
+# klantportaal.html remains only as a retained source artifact, never as an entry route.
+/klantportaal  klant=demo  /portaal/demo  301!
+/klantportaal  klant=demo1  /portaal/demo  301!
+/klantportaal  klant=demoAI  /portaal/demo  301!
+/klantportaal  klant=:klant  /portaal/:klant  301!
+/klantportaal  /portaal  301!
 /werkwijze  /hoe-het-werkt  301!
 /voor-investeerders  /investeerders-ma  301!
 /voor-ma  /investeerders-ma  301!
