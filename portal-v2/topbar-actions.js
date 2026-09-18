@@ -55,11 +55,6 @@ byId('portalHelpAllSections')?.addEventListener('click',()=>{
  if(showPages)showPages.click();
 });
 
-byId('mobileMore')?.addEventListener('click',()=>{
- closePanels();
- const showPages=byId('showPages');
- if(showPages)showPages.click();
-});
 
 document.querySelectorAll('[data-popover-close]').forEach(button=>button.addEventListener('click',()=>closePanels()));
 
