@@ -61,4 +61,6 @@ test('portal evidence keeps tenant payload and source timestamps',()=>{
   assert.match(sql,/source_updated_at/);
   assert.match(sql,/portaal-stand:/);
   assert.match(sql,/'state',new\.stand/);
+  assert.match(sql,/insert into public\.portal_state_layers/);
+  assert.match(sql,/'legacy-migration'/);
 });
