@@ -41,3 +41,11 @@ test('all legacy customer portal entry routes canonicalize to Portal V2 overview
   assert.doesNotMatch(product, /href="\/klantportaal\?klant=demo"/);
   assert.match(homepage, /location\.replace\('\/portal-v2\/' \+ h\)/);
 });
+
+
+test('portal boot always normalizes to executive overview instead of auto-opening a detail page', () => {
+  const router = fs.readFileSync('portal-v2/router.js','utf8');
+  assert.match(router, /history\.replaceState\(\{portalTarget:'overzicht'\},'',navigationUrl\('overzicht'\)\)/);
+  assert.match(router, /applyTarget\('overzicht'\)/);
+  assert.doesNotMatch(router, /applyTarget\(readTargetFromLocation\(\)\);\s*\n\}/);
+});
