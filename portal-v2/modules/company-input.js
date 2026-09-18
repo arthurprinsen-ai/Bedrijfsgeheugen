@@ -61,9 +61,28 @@ export function profileOverviewMetrics(state={}){
 function euro(value){return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value||0)}
 function number(value,digits=0){return new Intl.NumberFormat('nl-NL',{maximumFractionDigits:digits,minimumFractionDigits:digits}).format(value||0)}
 
+function profileRadarSvg(state){
+ const maturity=state?.portal?.profile?.maturity||{},cx=170,cy=170,r=125;
+ const point=(index,level)=>{const angle=-Math.PI/2+(Math.PI*2*index/PROFILE_DIMENSIONS.length),rr=r*(Math.max(1,Math.min(5,Number(level)||2))/5);return [cx+Math.cos(angle)*rr,cy+Math.sin(angle)*rr]};
+ const target=PROFILE_DIMENSIONS.map((_,i)=>point(i,4).join(',')).join(' ');
+ const own=PROFILE_DIMENSIONS.map((d,i)=>point(i,maturity[d.id]).join(',')).join(' ');
+ const axes=PROFILE_DIMENSIONS.map((_,i)=>{const p=point(i,5);return `<line x1="${cx}" y1="${cy}" x2="${p[0].toFixed(1)}" y2="${p[1].toFixed(1)}"/>`}).join('');
+ return `<svg viewBox="0 0 340 340" role="img" aria-label="Alles in één beeld"><g stroke="#dfe4ee" fill="none">${axes}<polygon points="${target}" stroke-dasharray="5 5"/></g><polygon points="${own}" fill="rgba(39,66,214,.12)" stroke="#2742d6" stroke-width="3"/></svg>`;
+}
+function nextLevelBenefits(state){
+ const profile=state?.portal?.profile||{},employees=Number(profile.employees||profile.headcount)||0,cost=Number(profile.hourlyCost)||0;
+ if(!employees||!cost)return [];
+ return PROFILE_DIMENSIONS.map(item=>{const current=safeLevel(profile.maturity?.[item.id]),next=Math.min(5,current+1),base=item.weeklyHours*(employees/24)*46*cost;return{...item,current,next,value:Math.max(0,base*(FACTOR[current]-FACTOR[next]))}}).sort((a,b)=>b.value-a.value);
+}
 function renderAnalysis(root,state){
- const metrics=profileOverviewMetrics(state);
- root.innerHTML=`<div class="v2profilemetrics"><article><small>Gemiddeld niveau</small><strong>${number(metrics.averageMaturity,1)}</strong><span>over 13 onderdelen</span></article><article><small>Handmatig werk per jaar</small><strong>${number(metrics.annualManualHours)} uur</strong><span>46 weken als conservatieve jaarbasis</span></article><article><small>Capaciteit</small><strong>${number(metrics.fteLost,1)} fte</strong><span>ruimte die je terugkrijgt, geen cashbesparing</span></article><article><small>Indicatieve uurwaarde</small><strong>${euro(metrics.annualManualCost)}</strong><span>capaciteitswaarde op basis van ingevoerde uurkosten</span></article></div>`;
+ const metrics=profileOverviewMetrics(state),profile=state?.portal?.profile||{},benefits=nextLevelBenefits(state);
+ const maturity=profile.maturity||{};
+ root.innerHTML=`<div class="v2profilemetrics"><article><small>Gemiddeld niveau</small><strong>${number(metrics.averageMaturity,1)}</strong><span>over 13 onderdelen</span></article><article><small>Handmatig werk per jaar</small><strong>${number(metrics.annualManualHours)} uur</strong><span>46 weken als conservatieve jaarbasis</span></article><article><small>Capaciteit</small><strong>${number(metrics.fteLost,1)} fte</strong><span>ruimte die je terugkrijgt, geen cashbesparing</span></article><article><small>Indicatieve uurwaarde</small><strong>${euro(metrics.annualManualCost)}</strong><span>capaciteitswaarde op basis van ingevoerde uurkosten</span></article></div>
+ <div class="v2legacyprofilegrid">
+  <section class="v2legacyprofilecard"><h3>Profiel tegenover de bovenste 25%</h3><p>Jouw niveau per onderdeel tegenover het legacy referentiedoel.</p><div class="v2legacybars">${PROFILE_DIMENSIONS.map(d=>{const v=safeLevel(maturity[d.id]);return`<div><span>${d.label}</span><div><i style="width:${v/5*100}%"></i><em style="left:${d.top/5*100}%"></em></div><b>${v}/5</b></div>`}).join('')}</div></section>
+  <section class="v2legacyprofilecard"><h3>Alles in één beeld</h3><p>De binnenste vorm ben jij; de stippellijn is niveau 4 — het doel voor het mkb.</p>${profileRadarSvg(state)}</section>
+  <section class="v2legacyprofilecard" style="grid-column:1/-1"><h3>Wat een niveau erbij oplevert</h3>${benefits.length?`<div class="v2legacybenefits">${benefits.slice(0,13).map(x=>`<div><span><b>${x.label}</b><small> ${x.current} → ${x.next}</small></span><strong>${euro(x.value)}</strong></div>`).join('')}</div><p>Indicatieve capaciteitswaarde op basis van je medewerkers, uurkosten en 46 werkweken. Geen cashbesparing.</p>`:'<p>Vul medewerkers en uurkosten in om de opbrengst van één niveau verbetering per onderdeel te berekenen.</p>'}</section>
+ </div>`;
 }
 
 function renderReview(root,state,schema){
