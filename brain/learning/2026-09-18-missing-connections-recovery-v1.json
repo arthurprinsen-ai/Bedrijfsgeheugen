@@ -6,7 +6,7 @@
   "date": "2026-09-18",
   "obligation_id": "powerhouse-structural-gap-closure-v2",
   "source_pr": 2023,
-  "observed_candidate_head": "15501253974158d0a81e249f17399ca09669edd4",
+  "observed_candidate_head": "6f9c5cb350b3d3b85dd6387d01073dd2e8f1dbf3",
   "symptom": "Powerhouse appeared structurally connected in repository intent while live production still contained unmaterialized decision-cycle, economics, outcome and connector evidence gaps.",
   "verified_runtime_snapshot": {
     "sales_actions": 565,
@@ -50,6 +50,26 @@
     "LIVE_PROVEN_REQUIRES_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK",
     "NEW_QUALITY_SURFACE_REQUIRES_REGISTRY_AND_EVIDENCE_CONTRACT"
   ],
-  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
-  "reusable_skill": "brain/skills/powerhouse-missing-connections-recovery-v1.json"
+  "terminal_state": "LIVE_AND_PROVEN",
+  "reusable_skill": "brain/skills/powerhouse-missing-connections-recovery-v1.json",
+  "production_proof": {
+    "source_pr": 2047,
+    "merge_sha": "12771d87faf04d2b5d4fa790eb1ff82387ecd604",
+    "dataforseo_edge_function_version": 5,
+    "dataforseo_http_status": 200,
+    "dataforseo_items": 0,
+    "dataforseo_source_state": "FRESH",
+    "portal_state_source_state": "FRESH",
+    "data_spine_watchdog_state": "GREEN",
+    "data_spine_watchdog_gaps": 0,
+    "sales_actions": 574,
+    "decision_cycles": 574,
+    "cycle_events": 574,
+    "total_layers": 32,
+    "wired_layers": 32,
+    "required_jobs": 18,
+    "active_jobs": 18,
+    "production_readback_at": "2026-09-18T08:16:00.441993+00:00",
+    "truth_boundary": "Structural/data-spine closure is live and proven; unrelated content-loop blocker remains fail-closed."
+  }
 }
