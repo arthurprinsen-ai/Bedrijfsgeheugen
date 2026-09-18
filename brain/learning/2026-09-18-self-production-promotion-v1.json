@@ -32,5 +32,11 @@
     "evidence": "PR #2063 closed twice without merge while exact-head gates were active; GitHub issue events recorded the close under the repository user identity.",
     "automatic_recovery": "pull_request.closed guard reopens only unmerged PRs carrying the canonical TERMINAL_DELIVERY lease",
     "intentional_cancel": "set Writer-Lease-State to RELEASED or CANCELLED before closing"
-  }
+  },
+  "incident_findings": [
+    "A new terminal-writer-lease regression test was added without classifier co-change, causing BRAIN plan and Required preflight to fail on an otherwise valid candidate."
+  ],
+  "prevention": [
+    "CLASSIFIER_COCHANGE_REQUIRED: every new executable regression path must be assigned to an existing delivery lane in the same candidate before expensive CI."
+  ]
 }
