@@ -39,9 +39,23 @@ async function review(url: string, payload: any) { const response = await fetch(
 async function recordObligation(db: any, runDate: string, channel: string, status: string, externalId: string | null, evidence: any, nextAction: string | null, error: string | null = null) { const mapped = obligationChannels[channel]; if (!mapped) return; const { error: rpcError } = await db.rpc('record_content_publication_state', { p_tenant_id: 'canonical', p_publication_date: runDate, p_channel: mapped, p_status: status, p_content_id: null, p_slug: null, p_external_id: externalId, p_canonical_url: null, p_evidence: evidence || {}, p_metrics: {}, p_next_action: nextAction, p_error: error }); if (rpcError) throw new Error(`OBLIGATION_WRITE:${rpcError.message}`); }
 
 function instagramIdentityProven(evidence: any) {
+  const visual = evidence?.instagram_visual || evidence?.instagram_media_proof?.instagram_visual || {};
+  const mediaType = clean(evidence?.media_type || evidence?.instagram_media_proof?.media_type).toLowerCase();
+  const width = Number(visual?.width);
+  const height = Number(visual?.height);
+  const refs = Array.isArray(visual?.evidence_refs) ? visual.evidence_refs.map(clean) : [];
+  const visibleMira = visual?.verified === true
+    && visual?.semantic_verified === true
+    && visual?.mira_present === true
+    && clean(visual?.identity_class) === 'mira_daily_life'
+    && clean(visual?.evidence_method).toLowerCase() === 'vision'
+    && refs.some((ref: string) => /^vision:/i.test(ref));
+  const dimensionsOk = ['reel','video'].includes(mediaType) ? width === 1080 && height === 1920 : width === 1080 && height === 1350;
   return evidence?.exact_final_media_proven === true
     && !!clean(evidence?.final_media_sha256)
-    && clean(evidence?.mira_gate_result) === 'PASS';
+    && clean(evidence?.mira_gate_result) === 'PASS'
+    && visibleMira
+    && dimensionsOk;
 }
 
 async function reconcileExistingProviderTruth(db: any, token: string, runDate: string) {
@@ -85,7 +99,7 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
   }
   return results;
 }
-function instagramInput(art: any, due: Date, future: boolean) { const proof = art?.generation_evidence?.instagram_media_proof || {}; const mediaType = clean(proof.media_type || proof.buffer_media_type).toLowerCase(); const mediaUrl = clean(proof.media_url); if (!(proof.exact_final_media_proven === true && clean(proof.final_media_sha256) && mediaUrl)) throw new Error('EXACT_FINAL_MEDIA_PROOF_REQUIRED'); const assetKind = ['reel','video'].includes(mediaType) ? 'video' : 'image'; return { text: clean(art.body), channelId: INSTAGRAM, schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}), metadata: { instagram: { type: mediaType || 'post', shouldShareToFeed: true } }, assets: [{ [assetKind]: { url: mediaUrl } }] }; }
+function instagramInput(art: any, due: Date, future: boolean) { const proof = art?.generation_evidence?.instagram_media_proof || {}; const mediaType = clean(proof.media_type || proof.buffer_media_type).toLowerCase(); const mediaUrl = clean(proof.media_url); if (!instagramIdentityProven(proof) || !mediaUrl) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED'); const assetKind = ['reel','video'].includes(mediaType) ? 'video' : 'image'; return { text: clean(art.body), channelId: INSTAGRAM, schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}), metadata: { instagram: { type: mediaType || 'post', shouldShareToFeed: true } }, assets: [{ [assetKind]: { url: mediaUrl } }] }; }
 
 Deno.serve(async (req) => {
   try {
@@ -147,7 +161,7 @@ Deno.serve(async (req) => {
       reviewPayload = { ...evidence, personal_truth_verified: true, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash) };
     } else if (row.channel === 'instagram_company') {
       const proof = row.delivery_evidence?.instagram_media_proof || art.generation_evidence?.instagram_media_proof || {};
-      reviewPayload = { ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body, mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true, final_media_sha256: clean(proof.final_media_sha256), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source };
+      reviewPayload = { ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body, mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true, final_media_sha256: clean(proof.final_media_sha256), final_asset_url: clean(proof.media_url), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source };
     }
     const gate = await review(url, reviewPayload);
     if (gate.http !== 200 || gate.can_publish !== true || gate.identity_gate_decision !== 'PASS' || gate.final_text_hash !== textHash) {

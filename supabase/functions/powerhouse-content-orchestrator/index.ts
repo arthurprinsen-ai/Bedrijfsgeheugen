@@ -65,6 +65,25 @@ function hardBoundary(channel:string, reason?:string) {
     scheduled_hour_local:9, content_brief:'', capability_state:'BLOCKED_HARD_BOUNDARY', capability_reason:capabilityReason,
     decision_source:'capability-truth', fallback_recommendation_id:null };
 }
+function instagramVisibleIdentityProven(proof:any) {
+  const visual = proof?.instagram_visual || {};
+  const refs = Array.isArray(visual?.evidence_refs) ? visual.evidence_refs.map(clean) : [];
+  const mediaType = clean(proof?.media_type).toLowerCase();
+  const dimensionsOk = ['reel','video'].includes(mediaType)
+    ? Number(visual?.width) === 1080 && Number(visual?.height) === 1920
+    : Number(visual?.width) === 1080 && Number(visual?.height) === 1350;
+  return proof?.exact_final_media_proven === true
+    && !!clean(proof?.final_media_sha256)
+    && !!clean(proof?.media_url)
+    && clean(proof?.mira_gate_result) === 'PASS'
+    && visual?.verified === true
+    && visual?.semantic_verified === true
+    && visual?.mira_present === true
+    && clean(visual?.identity_class) === 'mira_daily_life'
+    && clean(visual?.evidence_method).toLowerCase() === 'vision'
+    && refs.some((ref:string) => /^vision:/i.test(ref))
+    && dimensionsOk;
+}
 function plannedDecision(channel:string, recs:any[], personalSource:any, instagramProof:any) {
   if (!executor_capabilities[channel]?.executable) return hardBoundary(channel);
   if (channel === 'linkedin_personal') {
@@ -73,7 +92,7 @@ function plannedDecision(channel:string, recs:any[], personalSource:any, instagr
       rationale:'Verified personal truth source available.',scheduled_hour_local:11,content_brief:clean(personalSource.reason),capability_state:'READY',capability_reason:null,
       decision_source:'verified-personal-source',fallback_recommendation_id:personalSource.recommendation_id };
   }
-  if (channel === 'instagram_company' && !(instagramProof?.exact_final_media_proven === true && clean(instagramProof?.final_media_sha256) && clean(instagramProof?.media_url) && instagramProof?.mira_gate_result === 'PASS')) {
+  if (channel === 'instagram_company' && !instagramVisibleIdentityProven(instagramProof)) {
     return hardBoundary(channel,'EXACT_FINAL_MEDIA_PROOF_REQUIRED');
   }
   const rec = pickRecommendation(recs,channel);
@@ -122,7 +141,10 @@ Deno.serve(async (req) => {
       final_media_sha256: clean(mediaProof?.exact_media_sha256) || clean(instagramObligation?.evidence?.final_media_sha256),
       media_url: clean(mediaProof?.media_url) || clean(instagramObligation?.evidence?.media_url),
       mira_gate_result: clean(mediaProof?.identity_gate_result) || clean(instagramObligation?.evidence?.mira_gate_result),
-      media_provider: 'openart', media_type: clean(mediaProof?.proof_lineage?.media_type) || 'video', proof_fingerprint: mediaProof?.fingerprint || null,
+      media_provider: clean(mediaProof?.proof_lineage?.media_source) || clean(instagramObligation?.evidence?.media_provider),
+      media_type: clean(mediaProof?.proof_lineage?.media_type) || clean(instagramObligation?.evidence?.media_type),
+      instagram_visual: mediaProof?.proof_lineage?.instagram_visual || instagramObligation?.evidence?.instagram_visual || instagramObligation?.evidence?.instagram_media_proof?.instagram_visual || null,
+      proof_fingerprint: mediaProof?.fingerprint || null,
     };
     const existingByChannel = new Map(existing.map((r:any) => [r.channel,r]));
 
@@ -149,7 +171,7 @@ Deno.serve(async (req) => {
     if (pendingError) throw new Error('PENDING_READ_FAILED');
     if (!pending) return json({ok:true,runDate,generated:false,reason:'NO_PENDING_ARTIFACT',executor_capabilities,personal_source_ready:!!personalSource});
     if (pending.channel === 'linkedin_personal' && !personalSource) throw new Error('PERSONAL_TRUTH_SOURCE_UNVERIFIED');
-    if (pending.channel === 'instagram_company' && instagramProof.exact_final_media_proven !== true) throw new Error('EXACT_FINAL_MEDIA_PROOF_REQUIRED');
+    if (pending.channel === 'instagram_company' && !instagramVisibleIdentityProven(instagramProof)) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
 
     const recommendation = pending.delivery_evidence?.fallback_recommendation_id ? recs.find((r:any)=>r.recommendation_id===pending.delivery_evidence.fallback_recommendation_id) : pickRecommendation(recs,pending.channel);
     const artifactTool = { name:'content_artifact',description:'Definitieve kanaaleigen content',input_schema:{type:'object',additionalProperties:false,properties:{title:{type:'string'},body:{type:'string'},cta:{type:'string'},hook_type:{type:'string'},focus_keyword:{type:'string'},meta_description:{type:'string'}},required:['title','body','cta','hook_type','focus_keyword','meta_description']}};
