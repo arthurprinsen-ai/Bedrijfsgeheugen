@@ -256,3 +256,12 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Production:** Netlify deploy `6aad2cc7bfe37a0008c5d325`, state `ready`, context `production`, exact `commit_ref=95ea2a673c8a3f801aea77cf8b3a81ae1232aea9`.
 - **Learning:** metadata preflight before CI; full-main-union on reconciliation; preserve previous learning/tests; exact production readback before LIVE_BEWEZEN.
 - **Machine-readable:** `brain/learning/2026-09-18-runner-capacity-live-closure-v1.json`.
+## 2026-09-18 — CONTRACT_CHANGE — nonstarving delivery admission under moving main
+- **Fingerprint:** `github|delivery-admission|head-bound-ci-terminal-main-cas|v1`
+- **Probleem:** dezelfde Portal V2-obligation moest herhaaldelijk naar nieuwe main-epochs worden gesynchroniseerd terwijl ongerelateerde PR's landden. Required/BRAIN konden hierdoor rood worden met `WRITER_LEASE_MAIN_EPOCH_DRIFT` voordat inhoudelijke CI klaar was.
+- **Root cause:** de terminale main-CAS invariant werd al tijdens admission afgedwongen. Daardoor werd globale main-beweging ten onrechte behandeld als kandidaat-invalidatie.
+- **Fix:** admission valideert obligation + exact head + lease owner/scope/obligation/head en alleen de syntax van de lease-main-epoch. Huidige-main-gelijkheid wordt uitsluitend hard afgedwongen door de terminal merge guard. `behind_by=0`, mergeability, groene required checks en expected-head/CAS blijven verplicht vóór protected merge.
+- **Regressie:** `tests/github-delivery-state-machine.test.mjs` bewijst dat admission een stale main epoch tolereert, terwijl terminal validation en terminal merge guard dezelfde stale epoch blijven weigeren.
+- **Workflow:** `.github/workflows/powerhouse-delivery-hygiene.yml` roept writer-lease admission expliciet aan met `enforceCurrentMainEpoch:false`.
+- **Rollback:** revert deze contractwijziging; dat herstelt de oude fail-closed admission maar ook de starvation door ongerelateerde main-beweging.
+- **Herbruikbare les:** valideer beweeglijke globale state zo laat mogelijk maar vóór de onomkeerbare actie. Houd CI head-bound; serialiseer alleen landing.
