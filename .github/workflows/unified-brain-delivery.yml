@@ -330,7 +330,7 @@ jobs:
           const stripped=(pr.body||'').split(/\r?\n/).filter(line=>!/^(Writer-Lease-State|Writer-Lease-Owner|Writer-Lease-Scope|Writer-Lease-Head|Writer-Lease-Main-Epoch|Writer-Lease-Obligation|Writer-Lease-NonOwner-Action|Writer-Lease-Release):/i.test(line)).join('\n').trim();
           const lease=[
             'Writer-Lease-State: TERMINAL_DELIVERY',
-            `Writer-Lease-Owner: github-actions:${process.env.RUN_ID}`,
+            `Writer-Lease-Owner: powerhouse-terminal-delivery`,
             `Writer-Lease-Scope: ${metadata.obligationId}`,
             `Writer-Lease-Head: ${process.env.HEAD_SHA}`,
             `Writer-Lease-Main-Epoch: ${process.env.LANDING_MAIN_SHA}`,
