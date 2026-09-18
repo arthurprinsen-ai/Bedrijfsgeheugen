@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING_SKILL_INDEX",
+  "version": "POWERHOUSE-LEARNING-SKILL-INDEX-v1",
+  "fingerprint": "powerhouse-learning-skill-auto-projection-v1",
+  "authority": "CANONICAL_LEARNING_PROJECTED_NOT_PARALLEL_TRUTH",
+  "mode": "DYNAMIC_RUNTIME_PROJECTION_WITH_CANONICAL_ROUTING_SEED",
+  "generated_from": "brain/learning/**/*.json",
+  "engine": "scripts/brain/powerhouse-skill-projection.mjs",
+  "entries": [
+    {
+      "fingerprint": "powerhouse-learning-skill-auto-projection-v1",
+      "status": "ACTIVE_PREVENTION",
+      "skill_targets": [
+        "continuity",
+        "data",
+        "delivery",
+        "foresight"
+      ],
+      "prevention": [
+        "NO_MATERIAL_LEARNING_WITHOUT_SKILL_PROJECTION: every material canonical learning must become immediately consumable through the deterministic skill projection before terminal completion.",
+        "CANONICAL_LEARNING_IS_AUTHORITY: skills are derived execution projections and never become a second truth source.",
+        "SKILL_PROJECTION_DEDUP_BY_FINGERPRINT: repeated learning coalesces by fingerprint and source digest instead of creating duplicate instructions.",
+        "SKILL_PROJECTION_FAILS_CLOSED_ON_DRIFT: missing, stale or orphaned projections block terminal completion until reconciled.",
+        "PREFLIGHT_CONSUMES_CURRENT_SKILL_PROJECTION: every material chat/agent/skill sees the current projected learning before execution.",
+        "BACKFILL_AND_RECONCILE_EXISTING_LEARNING: existing brain/learning history is projected automatically, not only new records."
+      ],
+      "sources": [
+        "brain/learning/2026-09-18-learning-skill-auto-projection-v1.json"
+      ],
+      "source_revision": 1,
+      "source_digest": "9c6b0fca5de2f21312f601f4e15449a3cda1b771cdb8f858acb00f99e4f64dd1"
+    }
+  ]
+}
