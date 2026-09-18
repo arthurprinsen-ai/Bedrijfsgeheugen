@@ -1,11 +1,9 @@
 name: Regelgeving bijwerken
 
 # De compliance-datums op /frisse-blik moeten altijd kloppen. Deze workflow zoekt
-# elke maandag de actuele stand op en levert onder BRAIN v2 uitsluitend een candidate PR.
+# wordt alleen gestart na een gewijzigde officiële bronstate of handmatig en levert uitsluitend een candidate PR.
 
 on:
-  schedule:
-    - cron: '30 4 * * 1'
   push:
     branches:
       - main
