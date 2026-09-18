@@ -44,3 +44,9 @@ test('evaluator refreshes bounded proven projection for the next content decisio
   assert.equal(projection.learnings[0].learningId,'l10');
   assert.ok(projection.learnings.every(l=>l.status==='PROVEN'));
 });
+
+test('hourly evaluator reconciles action evidence obligations before learning evaluation',()=>{
+  const src=fs.readFileSync('netlify/functions/revenue-learning-evaluate.mjs','utf8');
+  assert.match(src,/reconcileActionLearningObligations/);
+  assert.match(src,/actionEvidence/);
+});
