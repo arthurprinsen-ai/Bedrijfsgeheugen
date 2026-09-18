@@ -104,3 +104,20 @@ These rules are mandatory for every chat/agent that creates, repairs or promotes
 - `delivery-classifier|cochange-required|v1`
 - `delivery-attempt-authority|latest-critical-attempt|v1`
 - `moving-main|full-main-union|v1`
+
+## Automatic learning → skill projection
+
+Fingerprint: `powerhouse-learning-skill-auto-projection-v1`.
+
+Canonical learning is always the authority. The skill layer is a derived execution projection and may never become a second truth source.
+
+For every material learning, incident, root cause, prevention rule, outcome or delivery lesson:
+- project it automatically through `scripts/brain/powerhouse-skill-projection.mjs`;
+- deduplicate by learning fingerprint and deterministic source digest;
+- prefer explicit `skill_targets`; otherwise use deterministic domain routing;
+- reconcile all existing `brain/learning/**/*.json` so older durable learning is included;
+- make the current projection available through chat-learning preflight;
+- projection drift must fail closed when a projection is missing, stale or orphaned;
+- require projection readback before `LIVE & BEWEZEN`, `LIVE_PROVEN` or `FULFILLED`.
+
+A repository learning write without current skill projection is `LEARNING_WRITTEN_SKILL_SYNC_PENDING`, not terminal completion. Manual SKILL.md edits are only for durable operating principles; incident knowledge remains canonical in Brain learning and is consumed through the dynamic projection.
