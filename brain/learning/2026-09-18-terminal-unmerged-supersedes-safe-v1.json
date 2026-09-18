@@ -1,0 +1,18 @@
+{
+  "fingerprint": "control-plane|terminal-lineage|closed-unmerged-supersedes-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "A clean recovery PR could not reach terminal closure because its Supersedes predecessor was intentionally closed unmerged.",
+  "root_cause": "The migration lineage walker treated every unmerged predecessor as unsafe, even when same-obligation and migration-free.",
+  "prevention_rule": "Closed-unmerged same-obligation predecessors may be traversed only when GitHub file readback proves they contain no active supabase/migrations/*.sql. Open, cross-obligation, or migration-bearing unmerged predecessors remain fail-closed.",
+  "enforcement": [
+    "obligation-terminal-closure lineage walker",
+    "GitHub PR files readback",
+    "regression tests",
+    "same-obligation validation"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}

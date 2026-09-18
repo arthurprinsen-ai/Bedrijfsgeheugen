@@ -1,5 +1,6 @@
 import { upgradeLegacyPortalState, hasLegacyPortalData, readLegacyPortalStateForUser, mergeLegacyPortalStateIntoCanonical } from './legacy-state-migration.js';
 import { impactForMutation } from './portal-impact-engine.js';
+import { deriveOrganismEffects, affectedPortalPages } from '../platform/organism/organism-graph.mjs';
 
 const clone=value=>value==null?value:structuredClone(value);
 const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
@@ -155,21 +156,21 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  }
  function publishImpact(path,before,after){
   const impact=impactForMutation({path,before,after});
+  const organism=deriveOrganismEffects({statePath:path});
+  const organismPages=affectedPortalPages(organism);
+  const enriched=Object.freeze({...impact,organism,organismDomains:[...organism.recomputeDomains],affectedPages:[...new Set([...(impact.affectedPages||[]),...organismPages])]});
   if(impact.changed){
-   pendingImpacts.push({
-    path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...impact.affectedPages],
-    changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),
-    advice:{...impact.advice}
-   });
+   pendingImpacts.push({path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]}});
    if(pendingImpacts.length>50)pendingImpacts.splice(0,pendingImpacts.length-50);
   }
   if(typeof globalThis!=='undefined'){
-   globalThis.__BG_LAST_PORTAL_IMPACT__=impact;
+   globalThis.__BG_LAST_PORTAL_IMPACT__=enriched;
    if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
-    globalThis.dispatchEvent(new CustomEvent('bg:portal-impact',{detail:impact}));
+    globalThis.dispatchEvent(new CustomEvent('bg:portal-impact',{detail:enriched}));
+    if(impact.changed)globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
    }
   }
-  return impact;
+  return enriched;
  }
  function set(path,value){const before=domain.get();const result=domain.set(path,value);track(path);publishImpact(path,before,domain.get());return result;}
  function patch(path,value){const before=domain.get();const result=domain.patch(path,value);track(path);publishImpact(path,before,domain.get());return result;}
