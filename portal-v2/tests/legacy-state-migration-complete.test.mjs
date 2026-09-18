@@ -55,3 +55,13 @@ test('legacy migration never overwrites newer canonical V2 truth',()=>{
  const out=upgradeLegacyPortalState(input);
  assert.equal(out.portal.metrics.revenue,2222);
 });
+
+
+test('legacy root aliases are removed after migration so migration is one-way',()=>{
+ const out=upgradeLegacyPortalState(legacy);
+ for(const key of ['niveaus','mw','uur','taken','branche','omzet','mensen','cijfers','bc','eigen','beleid','fin','modellen','uitvoering','kto','metingen','esg','eigenCaps','prod','beheer','besluiten','docs','log','dd','wijz']){
+   assert.equal(Object.hasOwn(out,key),false,key);
+ }
+ assert.equal(hasLegacyPortalData(out),false);
+ assert.equal(out.portal.migration.legacyV1Applied,true);
+});
