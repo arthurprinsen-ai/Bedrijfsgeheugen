@@ -27,3 +27,12 @@ test('mobile navigation keeps 44px touch target baseline', () => {
   ].join('\n');
   assert.match(css, /\.mobilebar[\s\S]*?button[\s\S]*?min-height:\s*44px/);
 });
+
+
+test('header bell, help and account controls are wired to routed actions', () => {
+  const html=fs.readFileSync('portal-v2/index.html','utf8');
+  for(const action of ['notifications','help','account']) assert.match(html,new RegExp('data-header-action="'+action+'"'));
+  assert.match(app, /mountHeaderActions/);
+  assert.match(app, /notifications:'hub:notifications'/);
+  assert.match(app, /help:'hub:help'/);
+});
