@@ -309,7 +309,6 @@ Iedere huidige en toekomstige chat, agent, skill, workflow of intelligence-produ
 
 Canonieke machine-learningbron: `brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json`.
 
-
 ## Automatische learning → skill-projectie
 Fingerprint: `powerhouse-learning-skill-auto-projection-v1`.
 
