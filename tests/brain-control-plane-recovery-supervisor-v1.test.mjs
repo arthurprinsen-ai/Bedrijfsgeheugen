@@ -31,3 +31,13 @@ test('recovery worker remains service-role only', async()=>{
   assert.match(sql,/revoke execute on function public\.powerhouse_reconciliation_worker_v2\(text,integer\) from public, anon, authenticated/i);
   assert.match(sql,/grant execute on function public\.powerhouse_reconciliation_worker_v2\(text,integer\) to service_role/i);
 });
+
+
+test('scheduler promotes reconciliation worker v2 as sole canonical worker', async()=>{
+  const sql=await readFile('supabase/migrations/20260918143000_powerhouse_control_plane_recovery_supervisor_v1.sql','utf8');
+  assert.match(sql,/powerhouse-reconciliation-worker-v1/);
+  assert.match(sql,/powerhouse-reconciliation-worker-v2/);
+  assert.match(sql,/cron\.unschedule/);
+  assert.match(sql,/cron\.schedule/);
+  assert.match(sql,/select public\.powerhouse_reconciliation_worker_v2\(\);/);
+});
