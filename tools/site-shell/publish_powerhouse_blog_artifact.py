@@ -9,7 +9,7 @@ import sys
 import urllib.request
 from email.utils import format_datetime
 
-ROOT = pathlib.Path(__file__).resolve().parents[1]
+ROOT = pathlib.Path(__file__).resolve().parents[2]
 TEMPLATE = ROOT / "blog" / "kennis-borgen-in-je-bedrijf" / "index.html"
 BLOG_INDEX = ROOT / "blog" / "index.html"
 RSS = ROOT / "blog" / "rss.xml"
