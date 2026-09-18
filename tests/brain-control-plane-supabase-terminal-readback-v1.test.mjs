@@ -6,7 +6,7 @@ import fs from 'node:fs';
 test('terminal closure derives exact Supabase migration identities across the same-obligation supersession lineage', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(workflow,/Derive exact Supabase production migration identities across supersession lineage/);
-  assert.match(workflow,/supabase\\/migrations\\/\[\^\/\]\+\\.sql/);
+  assert.ok(workflow.includes("/^supabase\\/migrations\\/[^/]+\\.sql$/"));
   assert.match(workflow,/migration_readback_required/);
   assert.match(workflow,/expected_migrations/);
   assert.match(workflow,/SUPERSEDES_OBLIGATION_MISMATCH/);
