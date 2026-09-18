@@ -42,3 +42,10 @@ test('strict canonical cycle remains evidence-first after historical action boot
   assert.doesNotMatch(sql,/a\.action_id,\s*2,\s*'execution'/);
   assert.doesNotMatch(sql,/a\.action_id,\s*4,\s*'decision'/);
 });
+
+test('tenant readiness distinguishes demo fixtures from unresolved production identity',()=>{
+  assert.match(sql,/record_class/);
+  assert.match(sql,/demo_or_test_records/);
+  assert.match(sql,/production_or_unknown_unresolved_records/);
+  assert.match(sql,/lower\(btrim\(coalesce\(s\.klant_slug,''\)\)\) in \('demo','test'\)/);
+});
