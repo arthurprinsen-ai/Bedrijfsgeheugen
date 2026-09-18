@@ -174,7 +174,7 @@ const BUILDERS=Object.freeze({
        bevindingen over handwerk naartoe verwijzen. Elk ingevuld
        volwassenheidsniveau krijgt zo een bedrag per jaar. */
     const kosten=arr(calc('dimension-costs',state));
-    return [radar(Object.entries(at(state,'portal.aiCapabilities')||{}).map(([key,value])=>({label:`Capability ${Number(key)+1}`,value:n(value)})),{title:'AI-capabilities'}),
+    return [radar(Object.entries(at(state,'portal.aiCapabilities')||{}).map(([key,value])=>({label:String(key),value:n(value)})),{title:'AI-capabilities'}),
       kosten.length?leakage(kosten.map(d=>({label:d.label,value:n(d.kosten)})),
         {title:'Wat elk onderdeel per jaar kost op zijn huidige niveau'}):'',
       kosten.length?benchmarkBars(kosten.map(d=>({label:d.label,value:n(d.kosten)-n(d.potentieel),benchmark:n(d.kosten)})),
