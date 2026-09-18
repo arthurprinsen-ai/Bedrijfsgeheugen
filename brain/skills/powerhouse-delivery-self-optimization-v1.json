@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_SKILL",
   "version": "POWERHOUSE-DELIVERY-SELF-OPTIMIZATION-v1",
-  "status": "ACTIVE",
+  "status": "ACTIVE_PROVEN",
   "fingerprint": "delivery|first-time-right|terminal-preflight|v1",
   "optimization_fingerprint": "delivery|first-time-right|terminal-preflight|v1",
   "name": "powerhouse-delivery-self-optimization",
@@ -28,7 +28,8 @@
     "Re-read state immediately before irreversible merge/promote actions and re-plan whenever the epoch changes.",
     "Do not create duplicate lineages for ordinary drift; rebuild a bounded current-main successor only when divergence makes reconciliation unsafe or inefficient.",
     "Preflight the terminal path through protected merge, deploy/readback, outcome and learning/skill writeback before starting the mutation.",
-    "Measure forecast quality and delivery friction and feed both into future candidate planning."
+    "Measure forecast quality and delivery friction and feed both into future candidate planning.",
+    "Require canonical learning-to-skill writeback and readback before terminal delivery may be considered proven."
   ],
   "metrics": [
     "metadata_admission_reject_count",
@@ -57,5 +58,15 @@
     "repository-writer",
     "reliability",
     "architecture-integrator"
-  ]
+  ],
+  "production_proof": {
+    "source_pr": 2114,
+    "candidate_head": "87ac4eb16ae5e78ac54f45603f06b5086858c80c",
+    "merge_sha": "f76bfbbccbc6dd256590dad1e95bc75985d9a351",
+    "required": "success",
+    "unified_brain": "success",
+    "codeql": "success",
+    "main_readback": "verified",
+    "verified_on": "2026-09-18"
+  }
 }
