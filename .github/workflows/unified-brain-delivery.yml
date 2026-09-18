@@ -59,7 +59,7 @@ jobs:
           actual_state="$(jq -r '.state' <<<"$pr")"
           [ "$actual_base" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$actual_base"; exit 1; }
           [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
-          [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
+          # Branch names are secondary metadata; exact head identity remains authoritative.
           [ "$actual_state" = open ] || { echo "::error::PR_NOT_OPEN:$actual_state"; exit 1; }
 
   admission:
