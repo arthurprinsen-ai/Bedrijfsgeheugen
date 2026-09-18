@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-RUNNER-CAPACITY-LIVE-CLOSURE-v1",
+  "status": "LIVE_BEWEZEN",
+  "fingerprint": "delivery|runner-capacity|live-closure|v1",
+  "date": "2026-09-18",
+  "parent_fingerprint": "delivery|runner-capacity|autorecovery|v1",
+  "source_pr": 2132,
+  "candidate_head": "6290eebf1a50a39f11f14d095ab7d503fe468cc3",
+  "merge_sha": "95ea2a673c8a3f801aea77cf8b3a81ae1232aea9",
+  "production": {
+    "provider": "netlify",
+    "deploy_id": "6aad2cc7bfe37a0008c5d325",
+    "state": "ready",
+    "context": "production",
+    "commit_ref": "95ea2a673c8a3f801aea77cf8b3a81ae1232aea9",
+    "published_at": "2026-09-18T12:23:00.328Z"
+  },
+  "proof": {
+    "required": "success",
+    "brain": "success",
+    "codeql": "success",
+    "skill_projection": "success",
+    "main_readback": true,
+    "production_exact_commit_readback": true
+  },
+  "prevention": [
+    "VALIDATE_RECOVERY_METADATA_BEFORE_EXPENSIVE_CI",
+    "RECONCILE_MOVED_MAIN_USING_FULL_MAIN_UNION",
+    "PRESERVE_EXISTING_LEARNING_AND_REGRESSIONS_DURING_RECOVERY",
+    "REQUIRE_EXACT_PRODUCTION_COMMIT_READBACK_BEFORE_LIVE_BEWEZEN"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ]
+}
