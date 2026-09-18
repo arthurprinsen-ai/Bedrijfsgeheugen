@@ -34,10 +34,31 @@
     "intentional_cancel": "set Writer-Lease-State to RELEASED or CANCELLED before closing"
   },
   "incident_findings": [
-    "A new terminal-writer-lease regression test was added without classifier co-change, causing BRAIN plan and Required preflight to fail on an otherwise valid candidate."
+    "A new terminal-writer-lease regression test was added without classifier co-change, causing BRAIN plan and Required preflight to fail on an otherwise valid candidate.",
+    "Parallel workers independently allocated the same Supabase migration timestamp, producing a global uniqueness failure despite locally valid work.",
+    "Head-age based stale detection could cancel healthy in-progress exact-head work and amplify queue thrash.",
+    "Historical cancelled Required/BRAIN attempts on one SHA could incorrectly dominate newer healthy retries.",
+    "Multiple writers mutated one terminal branch while exact-head gates were running, repeatedly superseding valid evidence.",
+    "PR open/closed metadata changed independently from the canonical obligation and branch/head state.",
+    "Main moved repeatedly during terminal delivery; rebuilding on every non-overlapping move created avoidable churn.",
+    "A merge-tree built from only the latest main commit can omit earlier current-main changes; full merge-base union is required.",
+    "A new executable regression test was added without classifier co-change, causing deterministic BRAIN/Required failure.",
+    "PR #2063 was merged while candidate Required was still finishing, so post-merge readback and main gates were required to prove safety and exposed a merge-protection gap."
   ],
   "prevention": [
-    "CLASSIFIER_COCHANGE_REQUIRED: every new executable regression path must be assigned to an existing delivery lane in the same candidate before expensive CI."
+    "CLASSIFIER_COCHANGE_REQUIRED: every new executable regression path must be assigned to an existing delivery lane in the same candidate before expensive CI.",
+    "PARALLEL_SPECIALISTS_SINGLE_ROLLING_INTEGRATOR: parallelize independent work and serialize only overlapping integration boundaries.",
+    "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION: bind an immutable exact head during terminal delivery and defer non-owner writes.",
+    "PROGRESS_AWARE_RECOVERY: never cancel healthy current-head in-progress work solely because the branch or PR is old.",
+    "LATEST_CRITICAL_ATTEMPT_WINS: for one exact head, newest Required and newest BRAIN attempts are authoritative; older cancellations remain audit only.",
+    "OPTIONAL_QUEUE_NOISE_CANNOT_REDISPATCH_CRITICAL_GATES: unrelated queued workflows do not retrigger Required/BRAIN.",
+    "CLASSIFIER_COCHANGE_REQUIRED: every executable regression path must be classified in the same candidate before expensive CI.",
+    "FULL_CURRENT_MAIN_UNION_FROM_MERGE_BASE: rolling integration preserves all current-main changes, never latest-commit-only overlays.",
+    "MIGRATION_VERSION_ALLOCATION_AT_INTEGRATION: final Supabase migration versions are allocated by the rolling integrator and checked for uniqueness before CI.",
+    "NON_OVERLAPPING_MAIN_DRIFT_DOES_NOT_FORCE_REBUILD: if mergeable and contract/path overlap is absent, keep the tested candidate.",
+    "OBLIGATION_BRANCH_HEAD_IS_AUTHORITY: PR number is transport metadata; recovery follows obligation plus canonical branch and exact head.",
+    "NO_DUPLICATE_SAME_OBLIGATION_RECOVERY_LINEAGE: queued, cancelled or stale metadata is repaired on the canonical lineage first.",
+    "MERGE_REQUIRES_TERMINAL_REQUIRED_AND_BRAIN: future protected promotion must not occur until the intended exact-head release gates are terminal green."
   ],
   "source_pr": 2063,
   "candidate_head_sha": "ec4a23eec09c231fdc5e0db7691b51ac0d04053a",
@@ -124,5 +145,10 @@
     "source": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
     "discovery_path": "scripts/brain/chat-learning-preflight.mjs",
     "linked_learning_source": "brain/learning/2026-09-18-self-production-promotion-v1.json"
-  }
+  },
+  "skill_writeback_refs": [
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "brain/skills/powerhouse-missing-connections-recovery-v1.json"
+  ],
+  "operating_model": "PARALLEL_SPECIALISTS_SINGLE_ROLLING_INTEGRATOR_PROGRESS_AWARE_RECOVERY"
 }
