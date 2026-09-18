@@ -132,3 +132,21 @@ Voor chats en agents zijn `queued`, `running`, `auto-merge armed`, `merge pendin
 De uitvoerende of herstellende node behoudt ownership totdat één terminale toestand bewezen is: `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` of `BLOCKED_HARD_BOUNDARY`. Bij onderbreking hervat de volgende capabele node dezelfde lineage vanaf canonical state; een gebruiker hoeft niet opnieuw “ga door” te geven.
 
 Fingerprint: `delivery|no-pending-final-output|v1`.
+
+## GitHub Actions runner-capaciteit en queue-saturatie
+
+Fingerprint: `delivery|runner-capacity|autorecovery|v1`.
+
+Een exact-head kandidaat die inhoudelijk mergeable is maar waarvan Required/BRAIN/CodeQL in `queued` blijven door externe runner-capaciteit, wordt niet als codefout behandeld. De self-healing route bewaart dezelfde obligation, branch/head, writer lease en auto-merge en maakt geen duplicaat-PR om de wachtrij te omzeilen.
+
+Verplicht gedrag:
+- controleer of de queue repositorybreed/externe capaciteit betreft en niet een concrete failing assertion;
+- retry alleen aantoonbaar cancelled/failed recoverywerk binnen het bounded retrybeleid;
+- laat gezonde queued exact-head checks staan;
+- omzeil nooit branch protection of verplichte gates;
+- schrijf boundary, run-id's, exact head en next safe action terug;
+- hervat automatisch zodra capaciteit beschikbaar is;
+- alleen zolang geen verdere veilige autonome actie bestaat mag de toestand `BLOCKED_HARD_BOUNDARY` zijn.
+
+Deze regel voorkomt zowel valse fixes als queue-thrash, dubbele PR's en onveilige merges.
+

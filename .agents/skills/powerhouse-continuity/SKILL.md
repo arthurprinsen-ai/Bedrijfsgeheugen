@@ -172,3 +172,20 @@ Canonical fingerprint: `delivery|borging-closure|material-writeback|v1`.
 Before choosing an external execution route, apply `powerhouse|toolchain-authority|composio-no-make|v1` from `.agents/skills/powerhouse-toolchain-authority/SKILL.md`.
 
 Make is retired and forbidden as execution, orchestration, fallback or recovery. Use the canonical active stack instead: Composio where orchestration is needed; GitHub, Netlify, Notion, Supabase, Tavily, Buffer, DataForSEO, OpenArt, Placid, Google Search and Google Analytics for their specialist capabilities. Historical Make references are provenance only and must never reactivate authority.
+
+## Runner-capacity / queue saturation recovery
+
+Fingerprint: `delivery|runner-capacity|autorecovery|v1`.
+
+When exact-head Required/BRAIN/CodeQL checks are queued because GitHub Actions runner capacity is unavailable or saturated:
+- classify the state as external execution-capacity blockage, not code failure;
+- preserve the exact candidate, writer lease, auto-merge intent and obligation lineage;
+- do not create a duplicate recovery PR merely to escape the queue;
+- do not weaken branch protection, skip Required/BRAIN/CodeQL, or admin-merge around the gate;
+- retry only cancelled/failed recovery-supervisor work when a bounded retry is safe;
+- keep queued healthy current-head checks authoritative and let the same lineage resume automatically when runner capacity becomes available;
+- log the boundary and latest verified checkpoint so the next capable agent can continue without user prompting;
+- `BLOCKED_HARD_BOUNDARY` is valid only while external runner capacity prevents execution and no safe autonomous action remains; it never converts the obligation into done.
+
+Queue pressure is transport/runtime capacity state, not evidence that the candidate is wrong.
+
