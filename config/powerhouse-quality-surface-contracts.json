@@ -271,7 +271,7 @@
       "id": "rpc:powerhouse_supabase_migration_readback_v1",
       "type": "rpc",
       "authority": "supabase/functions/growth-datahub-ingest/index.ts",
-      "evidence_contract": "tests/control-plane-supabase-terminal-readback-v1.test.mjs",
+      "evidence_contract": "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs",
       "required": true
     },
     {
