@@ -26,3 +26,12 @@ test('header controls stay reachable on mobile and demoAI',()=>{
  assert.match(css,/\.topactions\{display:flex!important/);
  assert.match(css,/\.portal-demo-ai \.portal-popover/);
 });
+
+
+test('portal route is registered in the quality surface registry',()=>{
+ const registry=JSON.parse(fs.readFileSync(new URL('../config/powerhouse-quality-surface-contracts.json',import.meta.url),'utf8'));
+ const surface=registry.surfaces.find(x=>x.id==='route:/');
+ assert.equal(surface?.authority,'portal-v2/index.html');
+ assert.equal(surface?.evidence_contract,'tests/portal-v2-topbar-actions.test.mjs');
+ assert.equal(surface?.required,true);
+});
