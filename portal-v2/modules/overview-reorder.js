@@ -2,6 +2,7 @@ import { ensureInteractionParityStyles } from './interaction-parity-style.js';
 
 export const OVERVIEW_BLOCKS=Object.freeze([
   Object.freeze({id:'kpis',selector:'.kpis',label:'Kerncijfers',defaultSize:'full'}),
+  Object.freeze({id:'legacy-complete',selector:'[data-legacy-complete]',label:'Prioriteit, waarde & capaciteit',defaultSize:'full'}),
   Object.freeze({id:'insights',selector:'[data-legacy-overview-insights]',label:'Stand van je bedrijf',defaultSize:'full'}),
   Object.freeze({id:'intelligence',selector:'.dashboard',label:'Brein & management',defaultSize:'full'}),
   Object.freeze({id:'execution',selector:'.lower',label:'Roadmap, kansen & impact',defaultSize:'full'}),
