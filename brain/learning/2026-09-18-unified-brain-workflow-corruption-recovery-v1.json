@@ -1,0 +1,23 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "UNIFIED-BRAIN-WORKFLOW-CORRUPTION-RECOVERY-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "unified-brain-workflow-structural-dedup-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "source_pr": 2044,
+  "symptom": "Unified Brain Delivery push runs failed immediately without jobs while the workflow accumulated duplicate handoff/BG169 blocks and a malformed turbo lane.",
+  "root_cause": "Repeated append-style autonomous workflow edits were composed non-idempotently on one active lineage, duplicating YAML job structure and corrupting the turbo shell block.",
+  "fix": [
+    "Restore the workflow deterministically from the last exact-head that completed BRAIN delivery successfully.",
+    "Apply the turbo lane as one bounded replacement rather than append fragments.",
+    "Keep a single lanes job, a single handoff job and a single BG169 production transport."
+  ],
+  "prevention_rules": [
+    "WORKFLOW_EDIT_MUST_BE_STRUCTURAL_REPLACE_NOT_APPEND",
+    "SINGLE_HANDOFF_JOB_PER_UNIFIED_DELIVERY_WORKFLOW",
+    "SINGLE_BG169_TRANSPORT_PER_UNIFIED_DELIVERY_WORKFLOW",
+    "EXACT_HEAD_WORKFLOW_MUST_MATERIALIZE_JOBS_BEFORE_GREEN_CLAIM"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}
