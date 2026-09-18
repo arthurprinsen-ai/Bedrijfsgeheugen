@@ -1,4 +1,4 @@
-import { upgradeLegacyPortalState, hasLegacyPortalData } from './legacy-state-migration.js';
+import { upgradeLegacyPortalState, hasLegacyPortalData, readLegacyPortalStateForUser, mergeLegacyPortalStateIntoCanonical } from './legacy-state-migration.js';
 
 const clone=value=>value==null?value:structuredClone(value);
 const isObject=value=>Boolean(value&&typeof value==='object'&&!Array.isArray(value));
@@ -106,7 +106,16 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  if(!stateClient?.load||!stateClient?.write)throw new TypeError('PORTAL_STATE_CLIENT_REQUIRED');
  if(businessInputSaver!==null&&typeof businessInputSaver!=='function')throw new TypeError('PORTAL_BUSINESS_INPUT_SAVER_REQUIRED');
  if(typeof businessInputStoreLoader!=='function')throw new TypeError('PORTAL_BUSINESS_INPUT_STORE_LOADER_REQUIRED');
- const domain=createDomainState({load:async()=>{const snap=await stateClient.load();return snap?.state||{};},save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}});
+ const domain=createDomainState({
+  load:async()=>{
+   const snap=await stateClient.load();
+   const canonical=snap?.state||{};
+   if(stateClient.isDemo?.())return canonical;
+   const legacy=readLegacyPortalStateForUser(legacyStorage,stateClient.currentUser?.());
+   return legacy?mergeLegacyPortalStateIntoCanonical(canonical,legacy):canonical;
+  },
+  save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}
+ });
  const pendingBusinessInputs=new Map();let businessRevision=0;let activePortalFlush=null;let activeInit=null;let businessInputStorePromise=null;
  const loadBusinessInputStore=()=>businessInputStorePromise||(businessInputStorePromise=Promise.resolve().then(()=>businessInputStoreLoader()));
  async function saveBusinessInput(input){
