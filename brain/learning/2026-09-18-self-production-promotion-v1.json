@@ -16,7 +16,7 @@
     "PREMATURE_TERMINAL_PR_CLOSE_AUTO_REOPENS",
     "INTENTIONAL_CANCELLATION_REQUIRES_EXPLICIT_LEASE_RELEASE"
   ],
-  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "terminal_state": "LIVE_PROVEN",
   "moving_main_recovery": {
     "mode": "SAME_LINEAGE_AUTO_REFRESH",
     "preconditions": [
@@ -38,5 +38,84 @@
   ],
   "prevention": [
     "CLASSIFIER_COCHANGE_REQUIRED: every new executable regression path must be assigned to an existing delivery lane in the same candidate before expensive CI."
-  ]
+  ],
+  "terminal_proof_bundle": {
+    "proof_bundle_id": "powerhouse-self-production-promotion-live-proof-2026-09-18",
+    "obligation_id": "powerhouse-self-production-promotion-v1",
+    "candidate_identity": "PR#2063",
+    "exact_head_or_artifact_digest": "ec4a23eec09c231fdc5e0db7691b51ac0d04053a",
+    "protected_promotion": {
+      "pr": 2063,
+      "merged": true,
+      "merge_main_sha": "ee526cea16dac904173466a529211ad0f7513215",
+      "merged_at": "2026-09-18T09:04:24Z"
+    },
+    "required_gates": {
+      "exact_candidate_supervisor_run": {
+        "run_id": 35327583371,
+        "conclusion": "success"
+      },
+      "main_brain_foundation": {
+        "run_id": 35327618736,
+        "conclusion": "success"
+      },
+      "main_shared_agent_memory": {
+        "run_id": 35327618764,
+        "conclusion": "success"
+      },
+      "main_codeql": {
+        "run_id": 35327618679,
+        "conclusion": "success"
+      },
+      "main_powerhouse_codeql": {
+        "run_id": 35327618685,
+        "conclusion": "success"
+      },
+      "main_supply_chain": {
+        "run_id": 35327618812,
+        "conclusion": "success"
+      },
+      "main_write_integrity": {
+        "run_id": 35327618756,
+        "conclusion": "success"
+      }
+    },
+    "production_mutation_refs": [
+      "github:pr/2063:merged",
+      "github:main:ee526cea16dac904173466a529211ad0f7513215"
+    ],
+    "production_readback_refs": [
+      "github-actions:35327618750:Production Release Readback:success",
+      "github-actions:35327618736:Brain foundation verify:success",
+      "github-actions:35327618764:Shared Agent Memory Tests:success"
+    ],
+    "provider_readback_refs": [
+      "netlify:production-release-readback:35327618750:success",
+      "supabase:pr2063:no-supabase-directory-change"
+    ],
+    "outcome_or_value_refs": [
+      "github-actions:35327792914:Outcome Obligation Sweep:success"
+    ],
+    "learning_writeback_refs": [
+      "brain/learning/2026-09-18-self-production-promotion-v1.json",
+      "brain/learning/2026-09-18-terminal-writer-lease-v1.json",
+      "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+      "config/branch-delivery-ownership-guard.json"
+    ],
+    "prevention_writeback_refs": [
+      "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+      "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+      "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES",
+      "PREMATURE_TERMINAL_PR_CLOSE_AUTO_REOPENS"
+    ],
+    "authorities_queried": [
+      "GitHub PR",
+      "GitHub main",
+      "GitHub Actions",
+      "Netlify readback",
+      "canonical Powerhouse learning"
+    ],
+    "verified_at": "2026-09-18",
+    "terminal_claim_status": "LIVE_PROVEN"
+  }
 }
