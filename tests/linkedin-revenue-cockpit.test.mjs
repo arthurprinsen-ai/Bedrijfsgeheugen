@@ -11,6 +11,7 @@ const migrationPath = new URL('../supabase/migrations/20260909131127_powerhouse_
 test('Revenue Command Center is execution-first and bounded to 15 actions', () => {
   const html = fs.readFileSync(pagePath, 'utf8');
   assert.match(html, /data-cockpit="powerhouse-revenue-command-center"/);
+  assert.match(html, /data-sales-os="predictive-v2"/);
   assert.match(html, /data-max-actions="15"/);
   assert.match(html, /Order Queue/);
   for (const label of ['Radar', 'Gesprekken', 'Relaties', 'Content', 'Deals', 'Learning', 'Systeem']) {
