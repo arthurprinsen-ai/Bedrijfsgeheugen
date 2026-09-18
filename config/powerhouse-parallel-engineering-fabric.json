@@ -1,9 +1,12 @@
 {
   "fingerprint": "powerhouse-parallel-engineering-fabric-v1",
-  "version": 2,
+  "version": 3,
   "status": "active",
   "protocol_extension": "powerhouse-fast-development-protocol-v2",
-  "extends": ["powerhouse-engineering-os-v1", "BRAIN-DELIVERY-v2"],
+  "extends": [
+    "powerhouse-engineering-os-v1",
+    "BRAIN-DELIVERY-v2"
+  ],
   "authority": {
     "delivery": "config/brain-delivery-system.json",
     "engineering_os": "config/powerhouse-engineering-os.json",
@@ -15,31 +18,80 @@
     "sort": "lexical-work-package-id",
     "require_exact_base_identity": true,
     "require_exact_candidate_identity": true,
-    "parallel_only_without": ["changed-path-overlap", "conflict-contract-overlap", "declared-dependency-edge", "mutable-resource-overlap"],
+    "parallel_only_without": [
+      "changed-path-overlap",
+      "conflict-contract-overlap",
+      "declared-dependency-edge",
+      "mutable-resource-overlap"
+    ],
     "missing_dependency": "fail-closed",
     "dependency_cycle": "fail-closed",
-    "mutable_resource_collision": "serialize"
+    "mutable_resource_collision": "serialize",
+    "agent_workspaces": "isolated_ephemeral_worktrees",
+    "integration_unit": "rolling_conflict_contract_lane",
+    "one_active_integration_candidate_per_conflict_contract": true,
+    "supersede_old_head_immediately": true,
+    "queue_wait_is_not_work": true
   },
   "affected_testing": {
     "fail_closed_unknown_material_scope": true,
     "fast_path_never_replaces_release_gates": true,
     "test_profiles": {
-      "docs": ["docs-contract"],
-      "backend": ["backend-contract", "backend-unit"],
-      "portal": ["portal-contract", "portal-browser"],
-      "website": ["website-unit", "website-visual"],
-      "automation": ["automation-contract", "automation-integration"],
-      "control_plane": ["delivery-contract", "engineering-os", "security"],
-      "full": ["required"]
-    }
+      "docs": [
+        "docs-contract"
+      ],
+      "backend": [
+        "backend-contract",
+        "backend-unit"
+      ],
+      "portal": [
+        "portal-contract",
+        "portal-browser"
+      ],
+      "website": [
+        "website-unit",
+        "website-visual"
+      ],
+      "automation": [
+        "automation-contract",
+        "automation-integration"
+      ],
+      "control_plane": [
+        "delivery-contract",
+        "engineering-os",
+        "security"
+      ],
+      "full": [
+        "required"
+      ]
+    },
+    "promotion_profile": "risk_scoped_blocking_plus_async_assurance"
   },
   "cache": {
     "algorithm": "sha256",
-    "inputs": ["baseSha", "candidateSha", "changedPaths", "affectedContracts", "selectedTests", "policyVersion", "environment", "configDigest", "schemaDigest", "dependencyDigest", "gateVersion", "contractDigest"],
+    "inputs": [
+      "baseSha",
+      "candidateSha",
+      "changedPaths",
+      "affectedContracts",
+      "selectedTests",
+      "policyVersion",
+      "environment",
+      "configDigest",
+      "schemaDigest",
+      "dependencyDigest",
+      "gateVersion",
+      "contractDigest"
+    ],
     "advisory_only": true,
     "invalidation_driven": true,
     "never_skips_production_readback": true,
-    "non_cacheable": ["production-readback", "security-freshness", "provider-outcome", "final-media-proof"]
+    "non_cacheable": [
+      "production-readback",
+      "security-freshness",
+      "provider-outcome",
+      "final-media-proof"
+    ]
   },
   "speculative_integration": {
     "enabled": true,
@@ -50,6 +102,19 @@
   },
   "completion": {
     "success": "LIVE & BEWEZEN",
-    "requires": ["protected-exact-candidate-gates", "protected-merge", "production-readback", "learning-writeback"]
+    "requires": [
+      "protected-exact-candidate-gates",
+      "protected-merge",
+      "production-readback",
+      "learning-writeback"
+    ]
+  },
+  "rolling_lanes": {
+    "enabled": true,
+    "agent_outputs_parallel": true,
+    "merge_only_conflict_free_microbatches": true,
+    "candidate_refresh_from_current_main_on_real_conflict": true,
+    "preserve_tested_nonoverlapping_commits": true,
+    "duplicate_prs_for_same_obligation": "forbidden"
   }
 }
