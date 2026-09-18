@@ -10,7 +10,8 @@
     "bindCandidateToExactBaseAndHeadSha": true,
     "recheckCurrentMainBeforeHandoff": true,
     "requireWriterLeaseReadback": true,
-    "rejectNonOwnerMutationDuringTerminalDelivery": true
+    "rejectNonOwnerMutationDuringTerminalDelivery": true,
+    "requireImmutableTerminalLeaseHead": true
   },
   "onOverlap": "REUSE_MERGE_OR_SUPERSEDE",
   "ambiguousSuccessorState": "FAIL_CLOSED",
@@ -33,8 +34,11 @@
     "ownerField": "Writer-Lease-Owner",
     "activeState": "TERMINAL_DELIVERY",
     "nonOwnerBehavior": "DEFER",
-    "headMutationPolicy": "FAIL_CLOSED_AND_REBIND_CURRENT_HEAD",
-    "releaseCondition": "MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK"
+    "headMutationPolicy": "BLOCK_WHILE_TERMINAL_RELEASE_TO_RECOVERY_THEN_REACQUIRE",
+    "releaseCondition": "MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK",
+    "immutableHeadRequired": true,
+    "acquireRule": "Set Writer-Lease-State=TERMINAL_DELIVERY and Writer-Lease-Head to the exact candidate SHA before release gates start.",
+    "mutationRule": "Any head different from Writer-Lease-Head while TERMINAL_DELIVERY is BLOCKED_TERMINAL_LEASE_HEAD_DRIFT; release to RECOVERY before an authorized repair commit, then reacquire on the new exact head."
   },
   "writerLeaseFailure": {
     "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
