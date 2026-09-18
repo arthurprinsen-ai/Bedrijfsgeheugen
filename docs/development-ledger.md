@@ -217,3 +217,5 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Regressie:** `tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs` borgt de policy-, skill- en terminal-state-invarianten.
 - **Delivery evidence:** PR #2099 is protected gemerged; merge/main SHA `a7d9311e6420258f2d3e476ad9f6bb1cd4927ba4`; main-readback bevestigde policy v1.4, invariant, skillsectie en regressietest.
 - **Herbruikbare les:** auto-merge, CI, branch protection en deploy orchestration zijn uitvoeringsmechanismen. Zij mogen nooit als handoff naar de gebruiker fungeren zolang een autonome herstel- of vervolgstap bestaat.
+
+- **PR #2104 complete borging closure:** protected merge/main SHA `971a3f762dd0c63e8abd87f089e5574ec7860527`; main-readback bevestigde learning, ledger, self-healing docs, continuity skill, delivery-concurrency skill en regressie. Borging zelf geldt voortaan als materiële writeback en valt onder dezelfde terminale bewijsregels.
