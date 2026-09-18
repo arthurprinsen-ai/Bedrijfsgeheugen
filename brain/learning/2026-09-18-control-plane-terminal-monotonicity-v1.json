@@ -14,5 +14,12 @@
   "skill_targets": [
     "powerhouse-continuity",
     "powerhouse-delivery-concurrency"
+  ],
+  "related_incidents": [
+    {
+      "fingerprint": "delivery|rerun-event-payload|metadata-staleness-v1",
+      "observation": "GitHub failed-job rerun retained the original pull_request event payload after Base-SHA metadata was corrected.",
+      "prevention": "After machine-readable PR metadata changes, require a fresh synchronize/head event before treating Required preflight as authoritative; do not rely on rerunning the old event."
+    }
   ]
 }
