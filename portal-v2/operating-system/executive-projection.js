@@ -46,11 +46,11 @@ function attentionItems({risks,actions,forecasts,changes}){
 }
 
 export function buildExecutiveProjection(state={}, {role='directie',tenantId,now=Date.now()}={}){
- if(!tenantId)throw new Error('TENANT_SCOPE_REQUIRED');
  const normalizedRole=ROLE_SECTIONS[role]?role:'directie';
  const source=state?.powerhouse?.executive;
  const sections=ROLE_SECTIONS[normalizedRole];
- if(!source||typeof source!=='object')return Object.freeze({available:false,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:null,strategy_progress:null,risks:[],opportunities:[],next_best_actions:[],decision_queue:[],attention:[],outcomes:[],changes:[],forecasts:[],evidence_health:Object.freeze({healthy:0,stale:0,low_confidence:0,unavailable:0,total:0})});
+ const unavailable=Object.freeze({available:false,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:null,strategy_progress:null,risks:[],opportunities:[],next_best_actions:[],decision_queue:[],attention:[],outcomes:[],changes:[],forecasts:[],evidence_health:Object.freeze({healthy:0,stale:0,low_confidence:0,unavailable:0,total:0})});
+ if(!tenantId||!source||typeof source!=='object')return unavailable;
  const risks=safeEvidence(source.risks,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
  const opportunities=safeEvidence(source.opportunities,tenantId,now).sort((a,b)=>priority(b)-priority(a));
  const actions=safeEvidence(source.next_best_actions,tenantId,now).sort((a,b)=>priority(b)-priority(a)).slice(0,5);
