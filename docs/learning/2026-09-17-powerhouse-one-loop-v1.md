@@ -61,3 +61,29 @@ At readback for `ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded`, `Required test`, Cod
 ### Additional prevention rule
 
 `STALE_ASSERTION_MUST_FOLLOW_VERIFIED_ARCHITECTURE`: when workflow consolidation or a verified architecture change intentionally moves a contract boundary, a failing assertion that still encodes the superseded boundary must be repaired at the test/oracle layer after verifying the new architecture. Never reintroduce redundant fan-out, weaken a gate, or classify the stale assertion as a product regression merely to make CI green.
+
+
+## Consolidated terminal closure — 2026-09-18
+
+Status: **LIVE_PROVEN / LEARNED / FULFILLED** for the original One Loop obligation.
+
+Consolidated evidence recovered from superseded documentation candidates #1994, #1995 and #1997:
+
+- implementation PR #1968 reached exact head `4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86` with Required run `35271798560` and BRAIN delivery run `35271798909` terminal green, then protected squash-merged as `6ae18de754cb33044108d85ba704c965a5287b88`;
+- post-merge readback exposed a squash-merge identity gap rather than a product regression: a squash commit has one parent and therefore completion logic may not assume a second parent;
+- canonical recovery PR #1984 exact head `97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04` passed Required `35274102801`, BRAIN `35274102768` and Powerhouse CodeQL `35274102310`, then protected-merged as `4fda9309eefa259b2a7f492ca929b8d472055d5e`;
+- production readback `35274800041`, Outcome Obligation Sweep `35274960927`, configuration watch `35274800039` and merged-branch cleanup `35274800189` all succeeded on the recovered lineage;
+- the earlier exact head `ff9f61dd625260f61fa6df4f1dde3cfa1f3e8ded` exposed a delivery-classifier gap for `tests/menu-balk-writer-noop-proof.test.mjs`, `tests/repository-writer-permission-boundary.test.mjs` and `tests/repository-writer-slow-canary-sla.test.mjs`; these were stale classifier/oracle assumptions, not a product defect.
+
+Permanent non-regression rules consolidated here:
+
+1. **ONE_OBLIGATION_ONE_EXECUTABLE_CANDIDATE** — one material obligation has one active executable candidate and one recovery owner.
+2. **PR_SINGLE_FLIGHT** — newer heads supersede stale work; exact SHA remains verification and merge evidence.
+3. **NO_BLIND_RERUNS** — only the first deterministic failure on the current exact head authorizes repair.
+4. **CLASSIFIER_COCHANGE_REQUIRED** — new governance/control-plane tests receive bounded delivery-lane classification in the same change.
+5. **STALE_ASSERTIONS_FOLLOW_VERIFIED_ARCHITECTURE** — repair obsolete assertions after verified architecture change; do not restore redundant fan-out merely to make CI green.
+6. **SQUASH_MERGE_IDENTITY_MUST_BE_EXPLICIT** — when the production commit has no second parent, resolve identity only from an unambiguous merged PR whose merge commit equals production; otherwise fail closed.
+7. **POST_MERGE_FAILURES_ARE_OPERATOR_VISIBLE** — cleanup or reconciliation failures persist durable evidence and surface a concrete operator-visible error.
+8. **FULFILLED_REQUIRES_END_TO_END_PROOF** — exact-head gates, protected merge, production/main readback, outcome reconciliation and canonical learning writeback are all mandatory.
+
+Future chats and agents must retrieve and reuse this consolidated learning before creating a new recovery lineage for equivalent delivery failures.
