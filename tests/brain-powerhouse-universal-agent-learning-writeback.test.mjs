@@ -235,3 +235,18 @@ test('continuity skill locks fast delivery incident prevention', () => {
     'protected merge is not enough'
   ]) assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing continuity marker: ${marker}`);
 });
+
+
+test('continuity skill retains predictive LinkedIn sales cockpit learning', () => {
+  for (const marker of [
+    'linkedin-sales-cockpit-predictive-sales-os-v1',
+    'sales decision surface, not passive reporting dashboard',
+    'generic LinkedIn feed',
+    'no-auto-send',
+    'exact production deploy/readback identity'
+  ]) assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing LinkedIn sales cockpit skill marker: ${marker}`);
+  const salesSkill = fs.readFileSync(new URL('../docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md', import.meta.url), 'utf8');
+  assert.match(salesSkill, /LIVE_PROVEN/);
+  assert.match(salesSkill, /54ab849124e4d9d9bde498e998c50d8865c9712c/);
+  assert.match(salesSkill, /6aad09ac00d5f50008121b25/);
+});
