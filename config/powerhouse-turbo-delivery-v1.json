@@ -1,6 +1,6 @@
 {
   "fingerprint": "powerhouse-turbo-delivery-v1",
-  "version": 1,
+  "version": 2,
   "status": "active",
   "purpose": "Minutes-to-production for bounded changes without weakening protected infrastructure/security gates.",
   "principles": [
@@ -20,7 +20,7 @@
     "stale_run_cancel_seconds": 15
   },
   "turbo": {
-    "max_files": 12,
+    "max_files": 24,
     "heavy_universal_preflight": false,
     "targeted_tests": true,
     "full_repo_suite": "post_merge_assurance",
@@ -47,5 +47,23 @@
     "production": "BG169",
     "learning": "BG166/BG168"
   },
-  "success": "LIVE & BEWEZEN"
+  "success": "LIVE & BEWEZEN",
+  "predictive_admission": {
+    "enabled": true,
+    "controller": "tools/delivery/predictive-controller.mjs",
+    "risk_class_required": true,
+    "adaptive_gate_plan": true
+  },
+  "supervisor": ".github/workflows/powerhouse-fast-delivery-supervisor.yml",
+  "learning": {
+    "daily_calibration": true,
+    "metrics": [
+      "time_to_first_signal_ms",
+      "time_to_live_proven_ms",
+      "queue_p95_ms",
+      "merge_conflict_rate",
+      "prediction_accuracy",
+      "recovery_success_rate"
+    ]
+  }
 }
