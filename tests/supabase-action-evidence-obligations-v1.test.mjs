@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918103000_action_evidence_obligations_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migrations/20260918103100_action_evidence_obligations_v1.sql','utf8');
 
 test('executed actions materialize three canonical evidence obligations',()=>{
   for(const type of ['ACTION_OUTCOME_EVIDENCE','ACTION_ECONOMICS_EVIDENCE','ACTION_HUMAN_FEEDBACK_EVIDENCE']) {
