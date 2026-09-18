@@ -1,4 +1,4 @@
-import { PROFILE_DIMENSIONS } from './modules/company-input.js';
+import { upgradeLegacyPortalState } from './legacy-state-migration.js';
 
 /**
  * Back-ups van het oude klantportaal inlezen in Portal V2.
@@ -42,77 +42,43 @@ export function herkenBackup(raw) {
   throw new Error('UNSUPPORTED_PORTAL_BACKUP');
 }
 
-/** De velden die eenduidig te vertalen zijn, met hun bestemming in v2. */
-const VERTALING = Object.freeze([
-  ['mw', 'portal.profile.headcount', getal],
-  ['uur', 'portal.profile.hourlyCost', getal],
-  ['branche', 'portal.market.industry', value => String(value || '') || null],
-  ['omzet', 'portal.metrics.revenue', getal],
-  ['taken', 'portal.tasks.items', value => arr(value).map(item => ({
-    title: String(item?.wat || item?.titel || item?.title || ''),
-    owner: String(item?.wie || item?.owner || ''),
-    due: item?.wanneer || item?.due || '',
-    status: String(item?.status || 'Open')
-  })).filter(item => item.title)],
-  ['besluiten', 'portal.changes.items', value => arr(value).map(item => ({
-    change: String(item?.wat || item?.besluit || ''),
-    area: String(item?.onderdeel || item?.area || ''),
-    reason: String(item?.waarom || ''),
-    owner: String(item?.wie || ''),
-    status: String(item?.status || 'Geborgd')
-  })).filter(item => item.change)]
+/**
+ * De V1-export van klantportaal.html bevat de echte opgeslagen statefamilies.
+ * Dezelfde migrator wordt gebruikt voor browserstate én back-ups; zo kan er
+ * geen tweede, afwijkende vertaalwaarheid ontstaan.
+ */
+export const LEGACY_V1_EXPORT_KEYS=Object.freeze([
+  'niveaus','medewerkers','uurkosten','taken','branche','omzet','mensen','cijfers','bc','eigen',
+  'beleid','fin','modellen','uitvoering','kto','metingen','esg','eigenCaps','prod','beheer',
+  'besluiten','docs','log','scanStempel','scanDatum','scanScore'
 ]);
 
-function zet(doel, pad, waarde) {
-  if (waarde == null || (Array.isArray(waarde) && !waarde.length)) return false;
-  const delen = pad.split('.');
-  let node = doel;
-  for (const sleutel of delen.slice(0, -1)) {
-    if (!isObject(node[sleutel])) node[sleutel] = {};
-    node = node[sleutel];
-  }
-  node[delen.at(-1)] = waarde;
-  return true;
-}
-
 /**
- * Zet een back-up van het oude portaal om in een v2-state.
- * Geeft naast de state een verslag terug van wat is vertaald en wat niet,
- * zodat het scherm dat eerlijk kan tonen in plaats van te doen alsof alles mee is.
+ * Zet een back-up van het oude portaal om met de canonieke, volledige
+ * legacy-state-migrator. Onbekende velden blijven daarnaast ongewijzigd onder
+ * portal.legacyImport.ruw staan, zodat nooit informatie stil verdwijnt.
  */
 export function vertaalOudePortaalBackup(oudeState = {}) {
-  const state = { portal: {} };
-  const vertaald = [];
+  const upgraded=upgradeLegacyPortalState(kopie(oudeState));
+  const portal=isObject(upgraded?.portal)?kopie(upgraded.portal):{};
+  const bekende=new Set(LEGACY_V1_EXPORT_KEYS);
+  const aanwezig=LEGACY_V1_EXPORT_KEYS.filter(key=>oudeState[key]!==undefined);
+  const onvertaald=Object.keys(oudeState)
+    .filter(key=>!['versie','opgeslagen'].includes(key)&&!bekende.has(key));
 
-  for (const [sleutel, pad, omzetten] of VERTALING) {
-    if (oudeState[sleutel] === undefined) continue;
-    if (zet(state, pad, omzetten(oudeState[sleutel]))) vertaald.push(sleutel);
-  }
-
-  // De volwassenheidsniveaus zijn per bedrijfsonderdeel opgeslagen onder dezelfde
-  // sleutels die v2 nog steeds gebruikt; alleen bekende onderdelen gaan mee.
-  const bekend = new Set(PROFILE_DIMENSIONS.map(dimensie => dimensie.id));
-  const niveaus = isObject(oudeState.niveaus) ? oudeState.niveaus : {};
-  const maturity = {};
-  for (const [sleutel, waarde] of Object.entries(niveaus)) {
-    const niveau = getal(waarde);
-    if (bekend.has(sleutel) && niveau !== null) maturity[sleutel] = niveau;
-  }
-  if (Object.keys(maturity).length) { zet(state, 'portal.profile.maturity', maturity); vertaald.push('niveaus'); }
-
-  const onvertaald = Object.keys(oudeState)
-    .filter(sleutel => !['versie', 'opgeslagen'].includes(sleutel) && !vertaald.includes(sleutel));
-
-  state.portal.legacyImport = {
-    bron: 'klantportaal.html',
-    versie: 1,
-    geexporteerd: oudeState.opgeslagen || '',
-    vertaald: [...vertaald].sort(),
-    onvertaald: [...onvertaald].sort(),
-    ruw: kopie(oudeState)
+  portal.legacyImport={
+    bron:'klantportaal.html',
+    versie:1,
+    geexporteerd:oudeState.opgeslagen||'',
+    vertaald:[...aanwezig].sort(),
+    onvertaald:[...onvertaald].sort(),
+    ruw:kopie(oudeState)
   };
-  state.sourceMeta = { label: 'Geïmporteerde back-up van het oude klantportaal' };
-  return state;
+
+  return {
+    portal,
+    sourceMeta:{label:'Geïmporteerde back-up van het oude klantportaal'}
+  };
 }
 
 /** Wat verandert er als je deze back-up toepast? Zonder iets te schrijven. */
@@ -131,4 +97,4 @@ export function voorbeeldVanImport(huidig = {}, nieuw = {}) {
   });
 }
 
-export const LEGACY_IMPORT_VERSION = '2026-09-10-v1';
+export const LEGACY_IMPORT_VERSION = '2026-09-18-v2';
