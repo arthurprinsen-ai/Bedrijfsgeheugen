@@ -389,19 +389,14 @@ def check_source_derived_heading_parity(html: str) -> int:
 def check_ai_capability_catalog_parity(html: str) -> int:
     if not V2_AI_CAPABILITY_CATALOG.exists():
         fail("missing native Portal V2 AI capability catalogue")
-
-    capability_id = re.compile(
-        r'"id"\s*:\s*"((?:strategie|kanalen|agenten|controlplane|modellen|kennis|infra|governance|identiteit)-\d{2})"'
-    )
-    source_ids = set(capability_id.findall(html))
+    source_ids = set(re.findall(r'"id":"([a-z0-9-]+)"', html))
+    source_ids = {
+        item for item in source_ids
+        if re.match(r'^(strategie|kanalen|agenten|controlplane|modellen|kennis|infra|governance|identiteit)-\\d{2}$', item)
+    }
     v2_source = V2_AI_CAPABILITY_CATALOG.read_text(encoding="utf-8")
-    v2_ids = set(capability_id.findall(v2_source))
-
-    if not source_ids:
-        fail("legacy AI capability catalogue could not be parsed from klantportaal.html")
-    if not v2_ids:
-        fail("Portal V2 AI capability catalogue could not be parsed")
-    if len(source_ids) != 86 or len(v2_ids) != 86 or source_ids != v2_ids:
+    v2_ids = set(re.findall(r'"id":\\s*"([a-z0-9-]+)"', v2_source))
+    if len(source_ids) != 86 or source_ids != v2_ids:
         missing = sorted(source_ids - v2_ids)
         extra = sorted(v2_ids - source_ids)
         fail(
