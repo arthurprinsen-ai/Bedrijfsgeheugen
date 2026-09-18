@@ -56,113 +56,99 @@ where oin.organisatie_id is null;
 revoke all on public.powerhouse_tenant_identity_review_v1 from anon, authenticated;
 grant select on public.powerhouse_tenant_identity_review_v1 to service_role;
 
-create or replace function public.powerhouse_materialize_sales_action_cycle_row_v1(p_action_id uuid)
+create or replace function public.powerhouse_open_cycle_from_runtime_signal_v1(p_event_id uuid)
 returns void
 language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
 declare
-  a public.powerhouse_sales_actions%rowtype;
+  e public.powerhouse_runtime_events%rowtype;
   v_tenant constant text := 'canonical';
   v_subject text;
   v_evidence_ref text;
 begin
-  select * into a
-  from public.powerhouse_sales_actions
-  where action_id=p_action_id;
+  select * into e
+  from public.powerhouse_runtime_events
+  where event_id=p_event_id;
 
-  if not found then
+  if not found then return; end if;
+
+  if e.event_type <> 'scan_submitted'
+     or e.source <> 'website.frisse_blik'
+     or lower(coalesce(e.source,'')) like '%test%' then
     return;
   end if;
 
   v_subject := coalesce(
-    nullif(a.subject_key,''),
-    nullif(a.company_key,''),
-    nullif(a.person_key,''),
-    a.action_id::text
+    nullif(e.subject_key,''),
+    nullif(e.company_key,''),
+    nullif(e.person_key,''),
+    e.event_id::text
   );
-  v_evidence_ref := 'powerhouse_sales_actions:' || a.action_id::text;
+  v_evidence_ref := 'powerhouse_runtime_events:' || e.event_id::text;
 
   insert into public.powerhouse_decision_cycles(
     tenant_id,cycle_id,subject_key,source_signal_ref,current_stage,status,opened_at,updated_at
   )
   values(
-    v_tenant,
-    a.action_id,
-    v_subject,
-    v_evidence_ref,
-    'signal',
-    'open',
-    coalesce(a.created_at,now()),
-    now()
+    v_tenant,e.event_id,v_subject,v_evidence_ref,'signal','open',e.occurred_at,now()
   )
   on conflict (tenant_id,cycle_id) do update set
     subject_key=coalesce(public.powerhouse_decision_cycles.subject_key,excluded.subject_key),
     source_signal_ref=excluded.source_signal_ref,
     updated_at=now();
 
-  if not exists (
-    select 1
-    from public.powerhouse_cycle_events
-    where tenant_id=v_tenant
-      and idempotency_key='sales-action:' || a.action_id::text || ':signal'
-  ) then
-    insert into public.powerhouse_cycle_events(
-      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
-      evidence_ref,idempotency_key,payload,occurred_at
-    )
-    values(
-      v_tenant,
-      a.action_id,
-      1,
-      'signal',
-      'powerhouse_sales_actions',
-      a.action_id::text,
-      v_evidence_ref,
-      'sales-action:' || a.action_id::text || ':signal',
-      jsonb_build_object(
-        'status',a.status,
-        'action_type',a.action_type,
-        'channel',a.channel,
-        'priority',a.priority,
-        'opportunity_key',a.opportunity_key,
-        'truth','observed_sales_action_bootstrap_signal',
-        'canonical_gap','analysis_prediction_decision_not_reconstructed_without_evidence'
-      ),
-      coalesce(a.created_at,now())
-    );
-  end if;
+  insert into public.powerhouse_cycle_events(
+    tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
+    evidence_ref,idempotency_key,payload,occurred_at
+  )
+  values(
+    v_tenant,e.event_id,1,'signal','powerhouse_runtime_events',e.event_id::text,
+    v_evidence_ref,'runtime-signal:' || e.event_id::text,
+    jsonb_build_object(
+      'event_type',e.event_type,
+      'source',e.source,
+      'data_quality',e.data_quality,
+      'confidence',e.confidence,
+      'truth','observed_runtime_signal'
+    ),
+    e.occurred_at
+  )
+  on conflict (tenant_id,idempotency_key) do nothing;
 end
 $$;
 
-revoke execute on function public.powerhouse_materialize_sales_action_cycle_row_v1(uuid) from public, anon, authenticated;
-grant execute on function public.powerhouse_materialize_sales_action_cycle_row_v1(uuid) to service_role;
+revoke execute on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) from public, anon, authenticated;
+grant execute on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) to service_role;
 
-create or replace function public.powerhouse_materialize_sales_action_cycle_v1()
+create or replace function public.powerhouse_runtime_signal_cycle_trigger_v1()
 returns trigger
 language plpgsql
 security definer
 set search_path = public, pg_catalog
 as $$
 begin
-  perform public.powerhouse_materialize_sales_action_cycle_row_v1(new.action_id);
+  perform public.powerhouse_open_cycle_from_runtime_signal_v1(new.event_id);
   return new;
 end
 $$;
 
-revoke execute on function public.powerhouse_materialize_sales_action_cycle_v1() from public, anon, authenticated;
-grant execute on function public.powerhouse_materialize_sales_action_cycle_v1() to service_role;
+revoke execute on function public.powerhouse_runtime_signal_cycle_trigger_v1() from public, anon, authenticated;
+grant execute on function public.powerhouse_runtime_signal_cycle_trigger_v1() to service_role;
 
-drop trigger if exists powerhouse_sales_actions_cycle_materializer_v1 on public.powerhouse_sales_actions;
-create trigger powerhouse_sales_actions_cycle_materializer_v1
-after insert or update of status,executed_at,subject_key,company_key,person_key
-on public.powerhouse_sales_actions
-for each row execute function public.powerhouse_materialize_sales_action_cycle_v1();
+drop trigger if exists powerhouse_runtime_signal_cycle_materializer_v1 on public.powerhouse_runtime_events;
+create trigger powerhouse_runtime_signal_cycle_materializer_v1
+after insert on public.powerhouse_runtime_events
+for each row
+when (new.event_type = 'scan_submitted' and new.source = 'website.frisse_blik')
+execute function public.powerhouse_runtime_signal_cycle_trigger_v1();
 
-select public.powerhouse_materialize_sales_action_cycle_row_v1(action_id)
-from public.powerhouse_sales_actions
-order by created_at,action_id;
+select public.powerhouse_open_cycle_from_runtime_signal_v1(event_id)
+from public.powerhouse_runtime_events
+where event_type='scan_submitted'
+  and source='website.frisse_blik'
+order by occurred_at,event_id;
 
 create or replace view public.powerhouse_completion_readiness_v1
 with (security_invoker=true) as
@@ -196,7 +182,7 @@ learning as (
     (select count(*) from public.powerhouse_decision_cycles) decision_cycles,
     (select count(*) from public.powerhouse_cycle_events) cycle_events,
     (select count(*) from public.powerhouse_decision_cycles
-      where current_stage='signal' and source_signal_ref like 'powerhouse_sales_actions:%') cycles_waiting_for_stage_reconstruction,
+      where current_stage='signal' and source_signal_ref like 'powerhouse_runtime_events:%') cycles_waiting_for_stage_reconstruction,
     (select count(*) from public.powerhouse_predictive_signals) predictive_signals,
     (select count(*) from public.powerhouse_sales_actions where status='done' and executed_at is not null) executed_done_actions,
     (
@@ -262,8 +248,8 @@ grant select on public.powerhouse_completion_readiness_v1 to service_role;
 
 comment on view public.powerhouse_tenant_identity_review_v1 is
 'Live unresolved-identity review surface. Does not create a parallel queue; derives only from scan/offerte authority.';
-comment on function public.powerhouse_materialize_sales_action_cycle_row_v1(uuid) is
-'Idempotently creates the truthful signal-stage bootstrap for an existing powerhouse_sales_actions row. Later canonical stages are never fabricated: analysis, prediction, decision, execution and outcome require their own evidence.';
+comment on function public.powerhouse_open_cycle_from_runtime_signal_v1(uuid) is
+'Idempotently opens a canonical decision cycle only from an observed website.frisse_blik scan_submitted runtime signal. Later canonical stages remain evidence-first and are never fabricated.';
 
 
 -- ONE BRAIN runtime inventory and reconciliation v1
@@ -459,16 +445,21 @@ as $$
 declare
   a record;
   p record;
-  v_actions bigint:=0;
+  v_signals bigint:=0;
   v_policies bigint:=0;
   v_promoted bigint:=0;
   v_promotion jsonb;
   v_health jsonb;
 begin
-  -- Every existing and future sales action is attached to the canonical cycle authority.
-  for a in select action_id from public.powerhouse_sales_actions order by created_at,action_id loop
-    perform public.powerhouse_materialize_sales_action_cycle_row_v1(a.action_id);
-    v_actions:=v_actions+1;
+  -- Only observed canonical runtime signals open decision cycles. Downstream stages remain evidence-first.
+  for a in
+    select event_id
+    from public.powerhouse_runtime_events
+    where event_type='scan_submitted' and source='website.frisse_blik'
+    order by occurred_at,event_id
+  loop
+    perform public.powerhouse_open_cycle_from_runtime_signal_v1(a.event_id);
+    v_signals:=v_signals+1;
   end loop;
 
   -- Reuse existing truth-producing engines; never duplicate their stores.
@@ -493,7 +484,7 @@ begin
   return jsonb_build_object(
     'contract','powerhouse-one-brain-runtime-v1',
     'reconciled_at',p_now,
-    'sales_actions_seen',v_actions,
+    'runtime_signals_seen',v_signals,
     'experiment_policies_seen',v_policies,
     'policies_promoted',v_promoted,
     'health',v_health,
