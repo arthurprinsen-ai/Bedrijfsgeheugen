@@ -3,6 +3,7 @@ import { calculateCompletion } from '../completion.js';
 import { mountWorkspace } from '../workspace-shell.js';
 import { profileOverviewMetrics, PROFILE_DIMENSIONS } from './company-input.js';
 import { AI_CAPABILITY_CATALOG } from '../ai-capability-catalog.js';
+import { buildLegacyPageSurfaces } from './legacy-page-surfaces.js';
 
 const f=(id,legacyFieldId,label,type,path,extra={})=>Object.freeze({id,legacyFieldId,label,type,path,required:true,...extra});
 const repeat=(id,legacyFieldId,label,path,columns)=>Object.freeze({id,legacyFieldId,label,type:'repeatable',path,required:false,columns:Object.freeze(columns)});
@@ -158,7 +159,7 @@ function renderForm(content,definition,domainState,onSaveStatus){
  content.querySelector('[data-functional-save]')?.addEventListener('click',async()=>{const msg=content.querySelector('[data-functional-save-message]');try{onSaveStatus?.('saving');if(msg)msg.textContent='Opslaan…';await domainState?.flush?.();onSaveStatus?.('saved');if(msg)msg.textContent='Opgeslagen';}catch{onSaveStatus?.('error');if(msg)msg.textContent='Opslaan mislukt — invoer blijft lokaal in deze sessie staan.';}});
 }
 
-function renderAnalysis(content,pageId,domainState){const cards=computeFunctionalAnalysis(pageId,domainState?.get?.()||{});content.innerHTML=`<div class="v2profilemetrics">${cards.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div>`;}
+function renderAnalysis(content,pageId,domainState){const state=domainState?.get?.()||{};const cards=computeFunctionalAnalysis(pageId,state);const surfaces=buildLegacyPageSurfaces(pageId,state);content.innerHTML=`<div class="v2profilemetrics">${cards.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div>${surfaces.map(surface=>`<section class="pvmodule v2legacyanalysis" data-legacy-surface="${esc(surface.title)}"><div class="pvmodulehead"><span>◆</span><h3>${esc(surface.title)}</h3></div>${surface.items?.length?`<div class="v2reviewlist">${surface.items.map(([label,value])=>`<article><div><b>${esc(label)}</b></div><strong>${esc(value)}</strong></article>`).join('')}</div>`:''}${surface.note?`<p class="pvemptycopy">${esc(surface.note)}</p>`:''}</section>`).join('')}`;}
 function renderActions(content,definition,openPage){content.innerHTML=`<div class="pvactions">${(definition.actions||[]).map(([label,pageId],index)=>`<button type="button" data-functional-page="${esc(pageId)}" class="${index===0?'primary':''}"><span>${esc(label)}</span><i>→</i></button>`).join('')}</div>`;content.querySelectorAll('[data-functional-page]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.functionalPage)));}
 function renderEvidence(content,definition){content.innerHTML=`<div class="v2reviewlist"><article><div><small>State</small><b>${esc(definition.slice)}</b></div><strong>server-confirmed</strong></article>${(definition.models||[]).map(model=>`<article><div><small>Model</small><b>${esc(model)}</b></div><strong>native V2</strong></article>`).join('')}${definition.fields.map(field=>`<article><div><small>${esc(field.legacyFieldId)}</small><b>${esc(field.label)}</b></div><strong>${field.type==='repeatable'?'herhaalbaar':'bewerkbaar'}</strong></article>`).join('')}</div>`;}
 
