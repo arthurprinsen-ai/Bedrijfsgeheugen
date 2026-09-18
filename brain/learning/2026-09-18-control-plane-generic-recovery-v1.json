@@ -1,0 +1,19 @@
+{
+  "fingerprint": "control-plane|generic-recovery|readback-before-replan-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "observation": "The execution-resilience watchdog existed, but new operations were not automatically enrolled and the worker only had a safe recovery handler for a narrow selftest case.",
+  "root_cause": "Recovery metadata was optional and generic RESULT_UNKNOWN operations had no deterministic safe next action.",
+  "prevention_rule": "Every newly created canonical operation is recovery-aware. A RESULT_UNKNOWN operation may be re-planned only when readback_before_replay is true and side_effect_state is NOT_STARTED; otherwise recovery remains fail-closed.",
+  "enforcement": [
+    "brain_create_operation recovery metadata",
+    "generic reconciliation worker REPLANNED_SAFE branch",
+    "dispatch_generation increment on safe replan",
+    "service-role-only next-action projection",
+    "regression tests"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}
