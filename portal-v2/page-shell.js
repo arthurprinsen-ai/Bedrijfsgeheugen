@@ -15,6 +15,7 @@ import { mountFunctionalWorkspace, listFunctionalSuitePages } from './modules/fu
 import { mountAiCapabilityWorkspace } from './modules/ai-capability-workspace.js';
 import { mountExecutionLadderWorkspace } from './modules/execution-ladder-workspace.js';
 import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
+import { mountLegacyExternalDataPlacement, LEGACY_EXTERNAL_DATA_PAGES } from './modules/legacy-external-data-placement.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -232,6 +233,7 @@ export function openPortalPage(pageId){
   else if(contract?.legacyCapability){
     mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:'idle',render:content=>renderNative(content,view)});
   } else renderNative(native,view);
+  if(LEGACY_EXTERNAL_DATA_PAGES.has(pageId)) void mountLegacyExternalDataPlacement(native,{pageId,state:portalStateSnapshot()});
   if(pageId==='wijzigingen'&&portalContext.domainState?.get){
     const wizard=document.createElement('div');
     native.prepend(wizard);
@@ -258,6 +260,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./company-input.css');
   ensureStylesheet('./csrd-impact.css');
   ensureStylesheet('./entrepreneur-intelligence.css');
+  ensureStylesheet('./legacy-data-parity.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
