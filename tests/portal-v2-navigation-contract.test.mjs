@@ -43,9 +43,11 @@ test('all legacy customer portal entry routes canonicalize to Portal V2 overview
 });
 
 
-test('portal boot always normalizes to executive overview instead of auto-opening a detail page', () => {
+test('portal boot preserves explicit page and hub deep links while overview remains the default', () => {
   const router = fs.readFileSync('portal-v2/router.js','utf8');
-  assert.match(router, /history\.replaceState\(\{portalTarget:'overzicht'\},'',navigationUrl\('overzicht'\)\)/);
-  assert.match(router, /applyTarget\('overzicht'\)/);
-  assert.doesNotMatch(router, /applyTarget\(readTargetFromLocation\(\)\);\s*\n\}/);
+  assert.match(router, /return params\.get\('page'\) \|\| 'overzicht'/);
+  assert.match(router, /const initialTarget=readTargetFromLocation\(\)/);
+  assert.match(router, /history\.replaceState\(\{portalTarget:initialTarget\},'',navigationUrl\(initialTarget\)\)/);
+  assert.match(router, /applyTarget\(initialTarget\)/);
+  assert.doesNotMatch(router, /history\.replaceState\(\{portalTarget:'overzicht'\}/);
 });

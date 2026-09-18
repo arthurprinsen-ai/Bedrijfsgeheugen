@@ -215,6 +215,40 @@ function renderCompanyWorkspace(native,contract,view,pageId){
   });
 }
 
+function renderAiCapabilitiesWorkspace(native,contract,view){
+  const domainState=portalContext.domainState;
+  let workspace;
+  const renderTab=(tab,content)=>{
+    if(tab==='invullen'){
+      mountAiCapabilityWorkspace(content,{domainState,onSaveStatus:status=>workspace?.setSaveStatus(status)});
+      return;
+    }
+    const state=domainState?.get?.()||{};
+    const values=Object.values(state?.portal?.aiCapabilities||{}).map(Number).filter(value=>Number.isFinite(value)&&value>0);
+    const scanned=Object.values(state?.portal?.aiCapabilitySources||{}).filter(Boolean).length;
+    if(tab==='analyse'){
+      const average=values.length?(values.reduce((sum,value)=>sum+value,0)/values.length).toFixed(1):'—';
+      content.innerHTML=`<section class="pvmodule"><div class="pvmodulehead"><span>AI</span><h3>Capability-analyse</h3></div><div class="pvmetricgrid"><article><small>Ingevulde capabilities</small><strong>${values.length}/86</strong></article><article><small>Gemiddelde score</small><strong>${average}</strong></article><article><small>Uit scan onderbouwd</small><strong>${scanned}</strong></article></div></section>`;
+      return;
+    }
+    if(tab==='acties'){
+      content.innerHTML='<div class="pvactions"><button type="button" data-pv-page="ai-scan" class="primary"><span>Open AI-scan</span><i>→</i></button><button type="button" data-pv-page="roadmap"><span>Vertaal naar roadmap</span><i>→</i></button></div>';
+      content.querySelectorAll('[data-pv-page]').forEach(btn=>btn.addEventListener('click',()=>openPortalPage(btn.dataset.pvPage)));
+      return;
+    }
+    content.innerHTML=`<section class="pvmodule"><div class="pvmodulehead"><span>✓</span><h3>Bewijs & herkomst</h3></div><p>Scores worden tenant-scoped opgeslagen in <code>${esc(contract.dataSlice)}</code>. ${values.length} capabilities hebben een vastgelegde score; ${scanned} daarvan hebben scanherkomst. Onbekende waarden blijven bewust leeg.</p></section>`;
+  };
+  workspace=mountWorkspace(native,contract,{
+    title:view.title,
+    description:view.description,
+    saveStatus:domainState?.status?.()||'idle',
+    delegate:false,
+    attachLegacyParity:true,
+    render:content=>renderTab('invullen',content),
+    onTabChange:(tab,content)=>renderTab(tab,content)
+  });
+}
+
 export function openPortalPage(pageId){
   const view=pagePresentation(pageId);if(!view)return false;
   const root=ensureShell();
@@ -240,7 +274,8 @@ export function openPortalPage(pageId){
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
   else if(['strategiemodellen','modellen'].includes(pageId)&&contract)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
   else if(pageId==='canvassen'&&contract?.legacyCapability)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
-  else if(pageId==='ai-capabilities'&&contract?.legacyCapability){native.innerHTML='';mountAiCapabilityWorkspace(native,{domainState:portalContext.domainState,onSaveStatus:()=>{}});}
+  else if(pageId==='roadmap'&&contract?.legacyCapability)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
+  else if(pageId==='ai-capabilities'&&contract?.legacyCapability)renderAiCapabilitiesWorkspace(native,contract,view);
   else if(pageId==='uitvoeringsladder'&&contract?.legacyCapability){native.innerHTML='';mountExecutionLadderWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onSaveStatus:()=>{}});}
   else if(FUNCTIONAL_SUITE_PAGES.has(pageId)&&contract?.legacyCapability)mountFunctionalWorkspace(native,{pageId,contract,view,domainState:portalContext.domainState,openPage:openPortalPage});
   else if(contract?.legacyCapability){
