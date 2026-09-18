@@ -46,6 +46,8 @@ function collectPrevention(record) {
     ...strings(record.prevention),
     ...strings(record.prevent),
     ...strings(record.prevention_rule),
+    ...strings(record.prevention_rules),
+    ...strings(record.preventions),
     ...strings(record.requiredAction),
     ...strings(record.required_action),
     ...strings(record.required_behavior),
