@@ -27,3 +27,17 @@ test('mobile navigation keeps 44px touch target baseline', () => {
   ].join('\n');
   assert.match(css, /\.mobilebar[\s\S]*?button[\s\S]*?min-height:\s*44px/);
 });
+
+
+test('all legacy customer portal entry routes canonicalize to Portal V2 overview', () => {
+  const redirects = fs.readFileSync('_redirects','utf8');
+  const product = fs.readFileSync('product.html','utf8');
+  const homepage = fs.readFileSync('index.html','utf8');
+  assert.match(redirects, /\/klantportaal\s+klant=demo\s+\/portaal\/demo\s+301!/);
+  assert.match(redirects, /\/klantportaal\s+klant=:klant\s+\/portaal\/:klant\s+301!/);
+  assert.match(redirects, /\/klantportaal\s+\/portaal\s+301!/);
+  assert.doesNotMatch(redirects, /\/klantportaal\.html\s+200!/);
+  assert.match(product, /href="\/portaal\/demo"/);
+  assert.doesNotMatch(product, /href="\/klantportaal\?klant=demo"/);
+  assert.match(homepage, /location\.replace\('\/portal-v2\/' \+ h\)/);
+});
