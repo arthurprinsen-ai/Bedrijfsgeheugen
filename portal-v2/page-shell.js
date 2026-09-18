@@ -156,6 +156,18 @@ export function closePortalPage(){
   document.documentElement.classList.remove('portalview-open');
 }
 
+function impactSummary(impact){
+  const changes=Array.isArray(impact?.changes)?impact.changes:[];
+  const preferred=changes.find(x=>x.unit==='money')||changes.find(x=>x.unit==='fte')||changes.find(x=>x.unit==='months')||changes.find(x=>x.unit==='percent')||changes[0];
+  if(!preferred)return impact?.advice?.added?.length||impact?.advice?.removed?.length
+    ? `Advies opnieuw bepaald · +${impact.advice.added.length}/-${impact.advice.removed.length}`
+    : 'Afhankelijke onderdelen opnieuw doorgerekend';
+  const delta=Number(preferred.delta);
+  const signed=Number.isFinite(delta)?`${delta>0?'+':''}${delta.toLocaleString('nl-NL',{maximumFractionDigits:1})}`:'gewijzigd';
+  const unit=preferred.unit==='money'?'€':preferred.unit==='fte'?'fte':preferred.unit==='months'?'mnd':preferred.unit==='percent'?'%-punt':preferred.unit;
+  return `${preferred.id}: ${signed} ${unit} · ${impact.affectedPages?.length||0} onderdelen geraakt`;
+}
+
 function esc(value=''){
   return String(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
@@ -285,6 +297,34 @@ export function enhancePortalShell(){
   bindTextButton('.quick button','instellingen','instellingen');
 
   document.querySelectorAll('[data-open-page]').forEach(node=>node.addEventListener('click',event=>{event.preventDefault();openPortalPage(node.dataset.openPage);}));
+
+  if(!document.documentElement.dataset.portalImpactBound){
+    document.documentElement.dataset.portalImpactBound='true';
+    globalThis.addEventListener?.('bg:portal-impact',event=>{
+      const impact=event.detail||{};
+      globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact}));
+      const root=document.getElementById('portalView');
+      if(!root?.classList.contains('open'))return;
+      const current=root.dataset.pageId;
+      if(!impact.affectedPages?.includes(current))return;
+      const status=root.querySelector('#pvStatus');
+      if(status)status.textContent=impactSummary(impact);
+      // Tijdens typen blijft het bronformulier stabiel. Andere open afgeleide
+      // pagina's mogen direct opnieuw renderen, net als teken() in het oude portaal.
+      if(current!==impact.sourcePage)requestAnimationFrame(()=>openPortalPage(current));
+    });
+    globalThis.addEventListener?.('bg:portal-brain-synced',event=>{
+      const impact=event.detail?.impact;
+      globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview-refresh',{detail:impact||{}}));
+      const root=document.getElementById('portalView');
+      if(!root?.classList.contains('open'))return;
+      const current=root.dataset.pageId;
+      if(!impact?.affectedPages?.includes(current))return;
+      // Na Opslaan is het veilig ook de bronpagina opnieuw op te bouwen:
+      // canonieke state + Brain-record zijn dan bevestigd.
+      requestAnimationFrame(()=>openPortalPage(current));
+    });
+  }
 
   const search=document.querySelector('.search');
   if(search){
