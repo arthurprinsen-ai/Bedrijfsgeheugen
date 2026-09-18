@@ -32,7 +32,7 @@ jobs:
         id: context
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          EVENT_PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          EVENT_PR_NUMBER: ${{ github.event.pull_request.number }}
           INPUT_PR_NUMBER: ${{ inputs.pr_number }}
         run: |
           set -euo pipefail
