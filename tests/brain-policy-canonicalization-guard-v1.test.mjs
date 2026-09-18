@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const path='supabase/migrations/20260918180200_powerhouse_policy_canonicalization_guard_v1.sql';
+const path='supabase/migrations/20260918181638_powerhouse_policy_canonicalization_guard_v1.sql';
 
 test('promotion guard reuses existing policy and learning authorities', async()=>{
   const sql=await readFile(path,'utf8');
