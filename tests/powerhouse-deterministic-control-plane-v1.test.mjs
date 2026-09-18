@@ -46,3 +46,11 @@ test('production selftest covers complete vertical slice',()=>{
   }
   assert.match(sql,/powerhouse_control_plane_close_v1/);
 });
+
+test('active production authority has no Make transport',()=>{
+  const cfg=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
+  const transports=cfg.integration?.productionAuthorityContract?.transports||[];
+  assert.deepEqual(transports.map(x=>x.id),['github-native']);
+  assert.equal(transports[0]?.mode,'primary');
+  assert.equal(cfg.integration?.productionAuthorityContract?.retiredTransports?.find(x=>x.id==='make')?.active,false);
+});
