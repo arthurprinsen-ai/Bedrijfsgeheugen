@@ -1,0 +1,5 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {canvasFieldTruth,normalizeModelTruth,customerAnswersOnly,CANVAS_TRUTH_STATUSES} from '../portal-v2/canvas-truth.js';
+test('missing customer input stays missing and is never fabricated',()=>{assert.equal(canvasFieldTruth({value:''}).status,'not_answered');assert.equal(canvasFieldTruth({value:'advies',derived:true,evidence:true}).status,'derived')});
+test('conditional questions preserve not asked and not applicable',()=>{assert.equal(canvasFieldTruth({asked:false}).status,'not_asked');assert.equal(canvasFieldTruth({applicable:false}).status,'not_applicable')});
+test('only explicit customer answers become customer evidence',()=>{const truth=normalizeModelTruth({modelId:'bcg',fields:{marketShare:'12',growth:'',hint:'invest'},fieldRules:{hint:{derived:true,evidence:true}}});assert.deepEqual(customerAnswersOnly(truth),{marketShare:'12'});assert.equal(truth.completion.complete,false);assert.ok(CANVAS_TRUTH_STATUSES.includes(truth.fields.growth.status))});

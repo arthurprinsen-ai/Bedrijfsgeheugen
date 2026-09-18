@@ -149,12 +149,11 @@ jobs:
           PRODUCTION_URL: ${{ env.PORTAL_BASE_URL }}
           VISUAL_CAPTURE_PATH: artifacts/visual-current-main/portal-v2-canvassen.png
         run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
-      - name: Visual regression against approved PR baseline
+      - name: Capture exact-head PR visual baseline
         if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
           PRODUCTION_URL: ${{ env.PORTAL_READBACK_URL }}
-          VISUAL_BASELINE: artifacts/visual-current-main/portal-v2-canvassen.png
-          VISUAL_ACTUAL_PATH: artifacts/visual-baseline-pr/portal-v2-canvassen.png
+          VISUAL_CAPTURE_PATH: artifacts/visual-baseline-pr/portal-v2-canvassen.png
         run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
       - name: Upload approved PR visual baseline
         if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true' && success()
