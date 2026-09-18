@@ -24,7 +24,7 @@ const CSS=`
 function ensureStyle(doc){if(!doc?.head||doc.getElementById('aic-native-style'))return;const el=doc.createElement('style');el.id='aic-native-style';el.textContent=CSS;doc.head.appendChild(el)}
 
 export function mountAiCapabilityWorkspace(root,{domainState,onSaveStatus}={}){
- if(!root)throw new TypeError('AI_CAPABILITY_ROOT_REQUIRED');ensureStyle(root.ownerDocument||document);
+ if(!root)throw new TypeError('AI_CAPABILITY_ROOT_REQUIRED');root.dataset.functionalWorkspace='ai-capabilities';ensureStyle(root.ownerDocument||document);
  let filter='alles',query='';
  const render=()=>{
   const state=domainState?.get?.()||{};const s=stats(state);
