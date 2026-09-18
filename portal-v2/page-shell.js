@@ -277,7 +277,7 @@ export function openPortalPage(pageId){
   else if(pageId==='canvassen'&&contract?.legacyCapability)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
   else if(pageId==='roadmap'&&contract?.legacyCapability){
     native.innerHTML='';
-    const shell=mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle',delegate:false});
+    const shell=mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle',delegate:false,attachLegacyParity:true});
     mountRoadmapWorkspace(shell.content||native,{domainState:portalContext.domainState,openPage:openPortalPage,shell:shell.shell,onSaveStatus:status=>shell.setSaveStatus?.(status)});
   }
   else if(pageId==='ai-capabilities'&&contract?.legacyCapability)renderAiCapabilitiesWorkspace(native,contract,view);
