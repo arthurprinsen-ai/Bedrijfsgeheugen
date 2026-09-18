@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const hygiene=fs.readFileSync('.github/workflows/powerhouse-delivery-hygiene.yml','utf8');
 const unified=fs.readFileSync('.github/workflows/unified-brain-delivery.yml','utf8');
-const reconcile=fs.readFileSync('.github/workflows/writer-production-reconcile.yml','utf8');
+const terminalizer=fs.readFileSync('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
 const policy=JSON.parse(fs.readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
 const stateMachine=JSON.parse(fs.readFileSync('config/powerhouse-github-delivery-state-machine-v1.json','utf8'));
 
@@ -26,13 +26,13 @@ test('terminal landing is exact-head main-epoch CAS and branch name is secondary
   assert.doesNotMatch(unified,/BG169_HEAD_REF_DRIFT/);
 });
 
-test('post-merge terminalization is lineage-driven rather than writer branch driven',()=>{
-  assert.match(reconcile,/Writer-Lease-State: TERMINAL_DELIVERY/);
-  assert.doesNotMatch(reconcile,/startsWith\(github\.event\.pull_request\.head\.ref, 'writer\/'\)/);
-  assert.match(reconcile,/powerhouse-skill-projection\.mjs/);
-  assert.match(reconcile,/chat-learning-preflight\.mjs/);
-  assert.match(reconcile,/terminal_state:"LIVE_BEWEZEN"/);
-  assert.match(reconcile,/observed_production_sha/);
+test('post-merge terminalization is lineage-driven and independent of branch naming',()=>{
+  assert.match(terminalizer,/Writer-Lease-State: TERMINAL_DELIVERY/);
+  assert.match(terminalizer,/powerhouse-skill-projection\.mjs/);
+  assert.match(terminalizer,/chat-learning-preflight\.mjs/);
+  assert.match(terminalizer,/terminal_status:'LIVE_BEWEZEN'/);
+  assert.match(terminalizer,/production_sha/);
+  assert.doesNotMatch(terminalizer,/startsWith\(github\.event\.pull_request\.head\.ref/);
 });
 
 test('product WIP and canonical policy match the desired steady state',()=>{
