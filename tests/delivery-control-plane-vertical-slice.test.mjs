@@ -133,3 +133,12 @@ test('terminal evidence distinguishes canonical run from descendant live product
   assert.match(edge,/PRODUCTION_DESCENDANT_READBACK_NOT_VERIFIED/);
   assert.match(edge,/production-descendant:/);
 });
+
+
+test('control-plane cockpit reuses canonical Brain cockpit and metrics projections', async()=>{
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(edge,/action==='control_plane_cockpit'/);
+  assert.match(edge,/powerhouse_obligation_cockpit_v1/);
+  assert.match(edge,/powerhouse_control_plane_metrics_v1/);
+  assert.match(edge,/CONTROL_PLANE_COCKPIT_READ_FAILED/);
+});
