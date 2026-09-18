@@ -54,6 +54,7 @@ jobs:
       change_head_sha: ${{ steps.scope.outputs.change_head_sha }}
       candidate_sha: ${{ steps.scope.outputs.candidate_sha }}
       pr_number: ${{ steps.scope.outputs.pr_number }}
+      turbo: ${{ steps.scope.outputs.turbo }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -85,6 +86,7 @@ jobs:
           import { deriveRequiredTestSuites } from './tools/delivery-required-test-suites.mjs';
           import { normalizeGitHubDeliveryEvent } from './tools/delivery-github-event-context.mjs';
           import { evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
+          import { classifyTurboDelivery } from './tools/delivery/turbo-classifier.mjs';
           import { resolveDeliveryMetadataAuthority } from './tools/delivery/delivery-metadata-authority.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
           const dispatched = process.env.EVENT_NAME === 'workflow_dispatch' && Boolean(process.env.PR_NUMBER);
@@ -135,19 +137,26 @@ jobs:
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
+          const turboDecision=classifyTurboDelivery({changedPaths,labels});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`turbo=${turboDecision.turbo}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
-          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
+          console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,turboDecision,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
       - name: Prove Supabase security gate blocks known unsafe patterns
+        if: steps.scope.outputs.turbo != 'true'
         run: python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
       - name: Enforce Supabase migration security contract
+        if: steps.scope.outputs.turbo != 'true'
         run: python3 scripts/brain/check_powerhouse_supabase_security.py "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify Portal V2 suite
+        if: steps.scope.outputs.turbo != 'true'
         run: node --test portal-v2/tests/*.test.mjs
       - name: Install runtime dependencies for the unwired contracts
+        if: steps.scope.outputs.turbo != 'true'
         run: npm install --no-audit --no-fund --silent
       - name: Verify previously unwired test contracts
+        if: steps.scope.outputs.turbo != 'true'
         run: >-
           node --test
           tests/agents-delivery-contract.test.mjs
@@ -198,6 +207,7 @@ jobs:
           tests/v18-standalone-compositor-safety.test.mjs
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
+        if: steps.scope.outputs.turbo != 'true'
         run: >-
           node --test --test-concurrency=1
           tests/brain-fast-development-protocol-v2.test.mjs
@@ -221,32 +231,42 @@ jobs:
           tests/portal-v2-release-identity-invariant.test.mjs
           tests/website-static-syntax-preflight.test.mjs
       - name: Verify Fast Development Protocol v2 authority contract
+        if: steps.scope.outputs.turbo != 'true'
         run: node scripts/brain/powerhouse-fast-development-protocol-v2.mjs --check
+
+  turbo:
+    needs: preflight
+    if: needs.preflight.outputs.turbo == 'true'
+    uses: ./.github/workflows/lane-turbo.yml
+    with:
+      base_sha: ${{ needs.preflight.outputs.base_sha }}
+      change_head_sha: ${{ needs.preflight.outputs.change_head_sha }}
+      candidate_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   backend:
     needs: preflight
-    if: needs.preflight.outputs.backend == 'true'
+    if: needs.preflight.outputs.turbo != 'true' && needs.preflight.outputs.backend == 'true'
     uses: ./.github/workflows/lane-backend.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   portal:
     needs: preflight
-    if: needs.preflight.outputs.portal == 'true'
+    if: needs.preflight.outputs.turbo != 'true' && needs.preflight.outputs.portal == 'true'
     uses: ./.github/workflows/lane-portal.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   automation:
     needs: preflight
-    if: needs.preflight.outputs.automation == 'true'
+    if: needs.preflight.outputs.turbo != 'true' && needs.preflight.outputs.automation == 'true'
     uses: ./.github/workflows/lane-automation.yml
     with:
       head_sha: ${{ needs.preflight.outputs.candidate_sha }}
 
   website:
     needs: preflight
-    if: needs.preflight.outputs.website == 'true'
+    if: needs.preflight.outputs.turbo != 'true' && needs.preflight.outputs.website == 'true'
     uses: ./.github/workflows/lane-website.yml
     with:
       base_sha: ${{ needs.preflight.outputs.base_sha }}
@@ -257,12 +277,14 @@ jobs:
   test:
     name: test
     if: always()
-    needs: [hygiene, preflight, backend, portal, automation, website]
+    needs: [hygiene, preflight, turbo, backend, portal, automation, website]
     runs-on: ubuntu-latest
     env:
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
       PREFLIGHT: ${{ needs.preflight.result }}
+      TURBO_SELECTED: ${{ needs.preflight.outputs.turbo }}
+      TURBO: ${{ needs.turbo.result }}
       SELECT_BACKEND: ${{ needs.preflight.outputs.backend }}
       SELECT_PORTAL: ${{ needs.preflight.outputs.portal }}
       SELECT_AUTOMATION: ${{ needs.preflight.outputs.automation }}
@@ -278,6 +300,7 @@ jobs:
           test "$HYGIENE" = success
           test "$ADMITTED" = true
           test "$PREFLIGHT" = success
+          [ "$TURBO_SELECTED" != true ] || [ "$TURBO" = success ]
           [ "$SELECT_BACKEND" != true ] || [ "$BACKEND" = success ]
           [ "$SELECT_PORTAL" != true ] || [ "$PORTAL" = success ]
           [ "$SELECT_AUTOMATION" != true ] || [ "$AUTOMATION" = success ]
