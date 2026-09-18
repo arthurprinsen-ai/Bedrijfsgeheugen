@@ -1,5 +1,6 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
+import { test } from 'node:test';
 
 const compilerPath = 'scripts/brain/chat-learning-preflight.mjs';
 assert.ok(fs.existsSync(compilerPath), `${compilerPath} must exist`);
@@ -49,8 +50,6 @@ assert.match(agentsContract, /status: READY/);
 assert.match(agentsContract, /CHAT_LEARNING_PREFLIGHT_FAILED/);
 console.log(`PASS chat-learning preflight compiler v2: ${packet.sources.length} sources, ${packet.totalBytes} packet bytes, ${packet.sourceBytes} source bytes`);
 
-
-import fs from 'node:fs';
 
 test('preflight source budget leaves capacity for durable learning growth', () => {
   const source = fs.readFileSync(new URL('./chat-learning-preflight.mjs', import.meta.url), 'utf8');
