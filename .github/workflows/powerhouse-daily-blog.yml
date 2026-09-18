@@ -81,16 +81,13 @@ jobs:
           pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
           if [ -z "$pr" ]; then
             base_sha="$(git rev-parse origin/main)"
-            body="$(cat <<EOF
-Canonical Supabase-first daily blog. Source: powerhouse_content_artifacts. One candidate per business date. Required checks, protected merge, Netlify and public readback remain authoritative.
-
-Obligation-ID: content-publication:$DATE:blog
-Delivery-Lane: website
-Candidate-Type: implementation
-Base-SHA: $base_sha
-Supersedes: none
-EOF
-)"
+            body="$(printf '%s\n\n%s\n%s\n%s\n%s\n%s\n' \
+              'Canonical Supabase-first daily blog. Source: powerhouse_content_artifacts. One candidate per business date. Required checks, protected merge, Netlify and public readback remain authoritative.' \
+              "Obligation-ID: content-publication:$DATE:blog" \
+              'Delivery-Lane: website' \
+              'Candidate-Type: implementation' \
+              "Base-SHA: $base_sha" \
+              'Supersedes: none')"
             gh pr create --base main --head "$branch" \
               --title "Powerhouse daily blog $DATE" \
               --body "$body"
