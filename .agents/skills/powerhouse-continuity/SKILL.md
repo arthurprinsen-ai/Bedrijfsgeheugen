@@ -122,3 +122,20 @@ Mandatory:
 
 Canonical fingerprint: `linkedin-sales-cockpit-predictive-sales-os-v1`.
 Canonical skill reference: `docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md`.
+
+
+## No pending-status final handoff
+
+Fingerprint: `delivery|no-pending-final-output|v1`.
+
+For every material Powerhouse task, queued/running CI, an enabled auto-merge, an open PR, a protected-merge wait, deploy-in-progress or production-readback-pending state is **internal execution state**, never a final answer to the user.
+
+Mandatory behavior:
+- do not end with “auto-merge staat aan”, “de laatste gate loopt”, “branch protection wacht nog”, “ik claim nog geen LIVE & BEWEZEN”, or equivalent pending-status handoff;
+- continue or resume the same canonical lineage automatically through gates → protected merge → deploy/promote → production/provider readback → outcome → learning/prevention writeback;
+- intermediate status may be shown only while execution continues and must not transfer ownership back to the user;
+- if a run/chat/tool stops, the next capable node resumes from the canonical checkpoint without asking the user to say “ga door”;
+- only `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN`, or an evidenced `BLOCKED_HARD_BOUNDARY` is a valid final user-facing state;
+- `BLOCKED_HARD_BOUNDARY` is reserved for a genuinely non-autonomous next step such as missing external permission/credential, a destructive/irreversible decision, security control, paid-resource escalation, or legally/financially binding action.
+
+The node that starts or recovers delivery retains ownership until terminal proof exists. Auto-merge is a mechanism, not a handoff.

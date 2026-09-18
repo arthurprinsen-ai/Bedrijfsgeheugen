@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.3",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|v1.3",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.4",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|v1.4",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -23,7 +23,8 @@
     "INTERRUPTION_IS_NOT_COMPLETION",
     "NON_TERMINAL_INTERRUPTION_REQUIRES_RECOVERY",
     "READBACK_BEFORE_MUTATING_REPLAY",
-    "RESUME_FROM_LAST_VERIFIED_CHECKPOINT"
+    "RESUME_FROM_LAST_VERIFIED_CHECKPOINT",
+    "NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -73,7 +74,30 @@
       "terminal_success_without_outcome_learning_and_writeback"
     ],
     "authority_rule": "A chat or agent may reason and execute, but it never becomes a separate source of truth. Canonical Powerhouse state, evidence, obligations and learning remain authoritative before, during and after the run.",
-    "handoff_rule": "A material chat or agent run is functionally complete only after its verified state, evidence, outcome, learning, prevention and remaining obligations are written back so the next capable run can continue from that updated canonical state without reconstructing prior work."
+    "handoff_rule": "A material chat or agent run is functionally complete only after its verified state, evidence, outcome, learning, prevention and remaining obligations are written back so the next capable run can continue from that updated canonical state without reconstructing prior work.",
+    "non_terminal_output_rule": {
+      "required": true,
+      "principle": "Queued, pending, auto-merge armed, running gates, merge pending, deploy pending and readback pending are internal recoverable execution states, never user-facing terminal handoff states.",
+      "forbidden_final_states": [
+        "AUTO_MERGE_ARMED",
+        "GATES_PENDING",
+        "CI_QUEUED",
+        "CI_RUNNING",
+        "MERGE_PENDING",
+        "DEPLOY_PENDING",
+        "PRODUCTION_READBACK_PENDING",
+        "LEARNING_WRITEBACK_PENDING"
+      ],
+      "required_behavior": "CONTINUE_OR_RESUME_SAME_CANONICAL_LINEAGE_UNTIL_TERMINAL",
+      "terminal_user_facing_states": [
+        "LIVE_BEWEZEN",
+        "ROLLED_BACK_GREEN",
+        "BLOCKED_HARD_BOUNDARY"
+      ],
+      "hard_boundary_rule": "Only BLOCKED_HARD_BOUNDARY may be returned before LIVE_BEWEZEN when the next required step cannot be performed autonomously under the existing authority. The response must state the exact external boundary and the smallest required human action.",
+      "status_update_rule": "Intermediate progress may be emitted only as an update while execution continues; it must never be phrased as handoff, waiting instruction, or final completion.",
+      "owner_rule": "The originating or recovering node retains delivery ownership across queued/running gates, auto-merge, merge, deploy and production readback until terminal proof and canonical writeback exist."
+    }
   },
   "fast_continuation_rule": {
     "required": true,
@@ -163,7 +187,8 @@
     "brain/learning/execution-resilience-2026-09-17.json",
     "brain/learning/chat-agent-intrinsic-loop-node-2026-09-18.json",
     "docs/brain/chat-agent-intrinsic-loop-node.md",
-    ".agents/skills/powerhouse-continuity/SKILL.md"
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "brain/learning/2026-09-18-no-pending-terminal-output-v1.json"
   ],
   "skill_discovery": {
     "required": true,
