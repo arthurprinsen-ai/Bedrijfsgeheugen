@@ -38,4 +38,7 @@ test('strict canonical cycle remains evidence-first after historical action boot
   assert.match(sql,/cycles_waiting_for_stage_reconstruction/);
   assert.match(sql,/current_stage='signal'/);
   assert.match(sql,/Later canonical stages are never fabricated/);
+  assert.match(sql,/if not exists \([\s\S]*?idempotency_key='sales-action:' \|\| a\.action_id::text \|\| ':signal'/);
+  assert.doesNotMatch(sql,/a\.action_id,\s*2,\s*'execution'/);
+  assert.doesNotMatch(sql,/a\.action_id,\s*4,\s*'decision'/);
 });
