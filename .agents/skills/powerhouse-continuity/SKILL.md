@@ -121,3 +121,21 @@ For every material learning, incident, root cause, prevention rule, outcome or d
 - require projection readback before `LIVE & BEWEZEN`, `LIVE_PROVEN` or `FULFILLED`.
 
 A repository learning write without current skill projection is `LEARNING_WRITTEN_SKILL_SYNC_PENDING`, not terminal completion. Manual SKILL.md edits are only for durable operating principles; incident knowledge remains canonical in Brain learning and is consumed through the dynamic projection.
+
+
+## LinkedIn predictive sales cockpit
+
+When working on the Revenue Command Center / LinkedIn sales cockpit, reuse the live predictive-v2 cockpit and its existing Revenue & Growth Core. The canonical reusable product rule is: **sales decision surface, not passive reporting dashboard**.
+
+Mandatory:
+- reuse the existing cockpit instead of creating a parallel CRM, queue, sales brain or dashboard;
+- prioritize who-now / why-now / next-best-action / expected value;
+- show buying-window, relationship, company-intent or forecast signals only when canonical evidence exists;
+- never accept the generic LinkedIn feed as an actionable source;
+- preserve no-auto-send unless a separate canonical automation contract explicitly authorizes sending;
+- feed observed outcomes back into the canonical revenue-learning loop;
+- preserve fast search/focus/keyboard/mobile interaction patterns;
+- require protected merge plus exact production deploy/readback identity before claiming LIVE & BEWEZEN.
+
+Canonical fingerprint: `linkedin-sales-cockpit-predictive-sales-os-v1`.
+Canonical skill reference: `docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md`.
