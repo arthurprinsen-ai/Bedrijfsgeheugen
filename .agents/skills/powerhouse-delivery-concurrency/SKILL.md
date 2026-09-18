@@ -54,3 +54,13 @@ When these signals appear, Powerhouse should prioritize the candidate closest to
 ## Incident rule
 
 PR #2074 on 2026-09-18 is the reference incident: exact-head gates became green, main moved, and the candidate became 10 commits behind with a real merge conflict. The prevention rule is not “retry merge”; it is “green must be bound to a current main epoch plus a landing lease before protected merge.”
+
+
+## User-facing terminal-state rule
+
+Delivery ownership does not end when CI is queued/running, auto-merge is armed, branch protection is waiting, the merge is pending, deployment is pending, or production readback is pending. Those states are recoverable execution states inside the same canonical lineage.
+
+The executing/recovering node must continue or resume until one of these is evidenced: `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN`, or `BLOCKED_HARD_BOUNDARY`. Intermediate progress may be reported, but it may not transfer responsibility back to the user or require a “continue” prompt.
+
+Canonical fingerprint: `delivery|no-pending-final-output|v1`.
+Canonical authority: `brain/policies/powerhouse-agent-continuity-v1.json`.
