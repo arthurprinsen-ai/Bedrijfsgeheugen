@@ -34,7 +34,8 @@
     "Classify Candidate-Type by actual semantics before admission: promotion only for promotion/transport, implementation for implementation/learning, recovery only for genuine recovery lineage.",
     "Never bypass promotion serialization by relabeling a true promotion; only correct demonstrable metadata misclassification.",
     "When the canonical owner advances the same obligation head, treat only the newest owner head as merge-authoritative and keep older gate results as audit evidence.",
-    "Avoid writer-head thrash: do not force-update an actively progressing canonical owner branch unless there is a concrete failure or owner stagnation."
+    "Avoid writer-head thrash: do not force-update an actively progressing canonical owner branch unless there is a concrete failure or owner stagnation.",
+    "Before accepting a successor PR or deleting a predecessor branch, prove predecessor-to-successor coverage integrity across changed files, executable tests, workflow/classifier registration, security/governance, documentation and skills; any required predecessor-only delta keeps the obligation RECOVERABLE_INCOMPLETE."
   ],
   "metrics": [
     "metadata_admission_reject_count",
@@ -55,7 +56,9 @@
     "promotion_serialization_block_count",
     "candidate_type_reclassification_count",
     "owner_head_supersession_count",
-    "writer_head_thrash_avoided_count"
+    "writer_head_thrash_avoided_count",
+    "successor_coverage_gap_detected_count",
+    "unsafe_branch_cleanup_prevented_count"
   ],
   "canonical_evidence": {
     "learning": "brain/learning/2026-09-18-delivery-self-optimization-v1.json",
@@ -63,7 +66,10 @@
     "documentation": "docs/brain/delivery-self-optimization-v1.md",
     "capacity_owner_learning": "brain/learning/2026-09-18-delivery-capacity-owner-authority-v1.json",
     "capacity_owner_ledger": "brain/learning-ledger/2026-09-18-delivery-capacity-owner-authority-v1.md",
-    "capacity_owner_documentation": "docs/brain/delivery-capacity-owner-authority-v1.md"
+    "capacity_owner_documentation": "docs/brain/delivery-capacity-owner-authority-v1.md",
+    "successor_coverage_learning": "brain/learning/2026-09-18-successor-pr-coverage-integrity-v1.json",
+    "successor_coverage_ledger": "brain/learning-ledger/2026-09-18-successor-pr-coverage-integrity-v1.md",
+    "successor_coverage_documentation": "docs/brain/successor-pr-coverage-integrity-v1.md"
   },
   "consumers": [
     "chat-learning-preflight",
@@ -83,6 +89,7 @@
     "verified_on": "2026-09-18"
   },
   "secondary_fingerprints": [
-    "delivery|capacity-owner-authority|v1"
+    "delivery|capacity-owner-authority|v1",
+    "delivery|successor-pr|coverage-integrity|v1"
   ]
 }
