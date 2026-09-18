@@ -13,7 +13,7 @@
 <link rel="stylesheet" href="./legacy-parity.css" data-v2-parity-style>
 <link rel="stylesheet" href="./company-cockpit.css" data-company-cockpit>
 <link rel="stylesheet" href="./csrd-mobile-saas.css">
-<link rel="stylesheet" href="./mobile-responsive.css">
+<link rel="stylesheet" href="./mobile-responsive.css">\n<link rel="stylesheet" href="./topbar-actions.css">
 </head>
 <body>
 <div class="app">
@@ -38,7 +38,7 @@
  <section class="topbar">
   <div class="welcome"><h1>Welkom terug, Arthur</h1><p>Grip op je bedrijf. Ruimte om te groeien.</p></div>
   <div class="topactions">
-   <div class="searchrow"><input class="search" placeholder="⌕  Zoek in kennis, processen, data, systemen..."><button class="smallbtn">🔔</button><button class="smallbtn">?</button><button class="smallbtn">AP</button></div>
+   <div class="searchrow"><input class="search" placeholder="⌕  Zoek in kennis, processen, data, systemen..."><button class="smallbtn topaction-icon" id="portalNotifications" type="button" aria-label="Meldingen" aria-haspopup="dialog" aria-controls="portalNotificationsPanel" aria-expanded="false">🔔</button><button class="smallbtn topaction-icon" id="portalHelp" type="button" aria-label="Help en ondersteuning" aria-haspopup="dialog" aria-controls="portalHelpPanel" aria-expanded="false">?</button><button class="smallbtn topaction-menu" id="portalMainMenu" type="button" aria-label="Open uitgebreid portaalmenu">☰ Menu</button><button class="smallbtn topaction-icon" id="portalAccount" type="button" aria-label="Accountmenu" aria-haspopup="dialog" aria-controls="portalAccountPanel" aria-expanded="false">AP</button></div>
    <div class="actionrow"><button class="smallbtn ai">✦ Vraag het Bedrijfsgeheugen AI</button><button class="smallbtn">Periode: Mei 2025⌄</button></div>
   </div>
  </section>
@@ -95,9 +95,12 @@
 </main>
 </div>
 
-<button class="previewflag" id="showPages" aria-haspopup="dialog" aria-controls="allPages" aria-expanded="false">Alle portalpagina’s</button>
+<section class="portal-popover" id="portalNotificationsPanel" role="dialog" aria-label="Meldingen" hidden><div class="portal-popover-head"><h2>Meldingen</h2><button class="portal-popover-close" type="button" data-popover-close aria-label="Sluiten">×</button></div><p class="portal-popover-copy">Recente activiteit uit het portaal. Er wordt geen ongelezen-status verzonnen.</p><div id="portalNotificationsList"></div><div class="portal-popover-links"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=wijzigingen">Alle activiteiten bekijken <span>→</span></a></div></section>
+<section class="portal-popover" id="portalHelpPanel" role="dialog" aria-label="Help en ondersteuning" hidden><div class="portal-popover-head"><h2>Help & ondersteuning</h2><button class="portal-popover-close" type="button" data-popover-close aria-label="Sluiten">×</button></div><p class="portal-popover-copy">Snel naar uitleg, kennis en ondersteuning.</p><div class="portal-popover-links"><a href="https://www.bedrijfsgeheugen.nl/kennis/">Kennisbank <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/contact/">Contact & ondersteuning <span>→</span></a><button type="button" onclick="document.getElementById('showPages')?.click()">Alle portalonderdelen <span>→</span></button></div></section>
+<section class="portal-popover" id="portalAccountPanel" role="dialog" aria-label="Account en beheer" hidden><div class="portal-popover-head"><h2>Account & beheer</h2><button class="portal-popover-close" type="button" data-popover-close aria-label="Sluiten">×</button></div><div class="portal-popover-meta"><span class="avatar">AP</span><div><strong>Arthur Prinsen</strong><small>Beheerder</small></div></div><div class="portal-popover-links"><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=instellingen">Instellingen <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=gebruikers">Gebruikers <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=koppelingen">Data & koppelingen <span>→</span></a><a href="https://www.bedrijfsgeheugen.nl/portal-v2/?page=rapportages">Rapportages & beheer <span>→</span></a></div></section>
+\n<button class="previewflag" id="showPages" aria-haspopup="dialog" aria-controls="allPages" aria-expanded="false">Alle portalpagina’s</button>
 <div class="allpages" id="allPages" role="dialog" aria-modal="true" aria-label="Alle portalpagina’s"><div class="sheet"><div class="sheethead"><div><h3>Portal V2 bevat alle portalonderdelen standaard</h3><small style="color:#7280a1">Eén zelfstandige V2-shell met native functionaliteit, Brain, Datahub en Powerhouse — zonder koppeling met een tweede portaal.</small></div><button id="closePages" aria-label="Sluiten">×</button></div><div class="groups" id="groups"></div></div></div>
 <nav class="mobilebar"><button class="active">⌂<br>Overzicht</button><button>▣<br>Portaal</button><button>✦<br>Data & AI</button><button>✓<br>Taken</button><button id="mobileMore">☰<br>Meer</button></nav>
-<script type="module" src="./app.js"></script>
+<script type="module" src="./app.js"></script>\n<script type="module" src="./topbar-actions.js"></script>
 </body>
 </html>
