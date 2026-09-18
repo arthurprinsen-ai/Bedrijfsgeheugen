@@ -78,3 +78,18 @@ Use the narrowest safe repair:
 ## Agent behavior
 
 The agent is expected to think one or more state transitions ahead. It must ask: “what is most likely to invalidate this candidate next?” and remove that preventable cause before spending another CI/deploy cycle. Reactive recovery remains the fallback; proactive prevention is the default.
+
+
+## Proven production lineage
+
+Status: `ACTIVE_PROVEN`.
+
+- Source PR: #2114
+- Candidate head: `87ac4eb16ae5e78ac54f45603f06b5086858c80c`
+- Protected merge: `f76bfbbccbc6dd256590dad1e95bc75985d9a351`
+- Required: success
+- Unified BRAIN: success
+- CodeQL: success
+- Main readback: verified on 2026-09-18
+
+Terminal proof includes canonical learning-to-skill writeback and readback; delivery is not complete before that projection is proven current.

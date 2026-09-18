@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_LEARNING",
   "version": "POWERHOUSE-DELIVERY-SELF-OPTIMIZATION-v1",
-  "status": "ACTIVE_PREVENTION",
+  "status": "ACTIVE_PREVENTION_PROVEN",
   "fingerprint": "delivery|first-time-right|terminal-preflight|v1",
   "date": "2026-09-18",
   "obligation_id": "powerhouse-delivery-self-optimization-v1",
@@ -62,5 +62,15 @@
   "expected_effect": {
     "direction": "reduce avoidable CI retries, stale-state actions, duplicate lineages and stale-head reconciliations while preserving branch protection",
     "success_condition": "future material delivery detects preventable failure modes before remote CI or irreversible actions and reaches terminal proof in fewer delivery epochs"
+  },
+  "production_proof": {
+    "source_pr": 2114,
+    "candidate_head": "87ac4eb16ae5e78ac54f45603f06b5086858c80c",
+    "merge_sha": "f76bfbbccbc6dd256590dad1e95bc75985d9a351",
+    "required": "success",
+    "unified_brain": "success",
+    "codeql": "success",
+    "main_readback": "verified",
+    "verified_on": "2026-09-18"
   }
 }

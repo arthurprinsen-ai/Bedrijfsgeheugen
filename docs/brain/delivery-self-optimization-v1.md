@@ -86,3 +86,15 @@ Deze learning vervangt `delivery|merge-epoch|optimistic-cas|v1`, terminal-claim 
 - no-pending houdt ownership vast;
 - terminal proof bepaalt wanneer LIVE bewezen is;
 - self-optimization voorspelt en voorkomt de frictie vóór die controls hoeven in te grijpen.
+
+
+## Production proof
+
+PR #2114 is protected gemerged op `main`.
+
+- candidate head: `87ac4eb16ae5e78ac54f45603f06b5086858c80c`
+- merge SHA: `f76bfbbccbc6dd256590dad1e95bc75985d9a351`
+- Required, Unified BRAIN en CodeQL: success
+- main readback: verified
+
+De optimization learning is daarmee bewezen actief op production/main.
