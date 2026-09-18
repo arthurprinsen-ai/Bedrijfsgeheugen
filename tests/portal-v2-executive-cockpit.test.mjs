@@ -55,3 +55,11 @@ test('overview no longer mounts the empty executive day-start shell',()=> {
  assert.match(source,/renderLegacyOverviewInsights\(root,state\)/);
  assert.match(source,/renderDirectievragen\(root,state\)/);
 });
+
+
+test('overview no longer mounts the empty executive day-start shell',()=> {
+ const source=fs.readFileSync('portal-v2/modules/overview.js','utf8');
+ assert.doesNotMatch(source,/mountExecutiveCockpit/);
+ assert.match(source,/renderLegacyOverviewInsights\(root,state\)/);
+ assert.match(source,/renderDirectievragen\(root,state\)/);
+});
