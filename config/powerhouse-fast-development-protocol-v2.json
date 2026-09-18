@@ -2,12 +2,14 @@
   "fingerprint": "powerhouse-fast-development-protocol-v2",
   "version": 2,
   "status": "active",
+  "revision": 5,
   "extends": [
     "powerhouse-engineering-os-v1",
     "BRAIN-DELIVERY-v2",
     "powerhouse-parallel-engineering-fabric-v1"
   ],
   "creates_parallel_authority": false,
+  "delivery_mode": "PREDICTIVE_PROOF_MESH_ROLLING_FAST_PATH",
   "canonical_flow": [
     "INTENT",
     "EXECUTION_PACKET_V2",
@@ -20,12 +22,39 @@
     "EXACT_SHA_PROD_READBACK",
     "DELTA_WRITEBACK"
   ],
-  "execution_classes": [
-    "FAST",
-    "STANDARD",
-    "CRITICAL",
-    "WAITING_EXTERNAL"
-  ],
+  "execution_classes": ["FAST","STANDARD","CRITICAL","WAITING_EXTERNAL"],
+  "architecture": {
+    "agent_cells": {
+      "coordinator": "owns canonical intent, conflict contracts, candidate identity and promotion",
+      "frontend": "isolated UI implementation plus targeted visual/browser proof",
+      "backend": "isolated API/data/runtime implementation plus contract/security proof",
+      "qa": "risk-derived tests, oracle-quality checks and proof-capsule validation",
+      "release": "event-driven CI admission, stale-run cancellation, exact-head promotion, rollback/readback",
+      "learning": "root-cause attribution, telemetry calibration, prevention and skill writeback"
+    },
+    "delivery_broker": "one rolling candidate per conflict contract; never one PR per agent",
+    "proof_capsule": {
+      "required": true,
+      "contains": [
+        "intent_digest",
+        "base_identity",
+        "candidate_identity",
+        "changed_paths",
+        "affected_contracts",
+        "dependency_digest",
+        "risk_class",
+        "blocking_gate_plan",
+        "targeted_test_evidence",
+        "security_data_schema_evidence_when_applicable",
+        "rollback_readiness_when_applicable",
+        "production_readback_plan"
+      ],
+      "reuse_rule": "reuse immutable evidence only when every identity and invalidation field still matches"
+    },
+    "shadow_fleet": "unrelated broad regression, cross-surface browser and quality assurance run outside the safe critical path",
+    "recovery_sentinel": "PR/head events trigger immediate admission; scheduled supervisor is watchdog only",
+    "learning_compiler": "every delivery incident updates failure fingerprints, gate selection, prediction calibration and prevention guidance"
+  },
   "preflight": {
     "execution_packet": "v2",
     "delta_context": true,
@@ -41,6 +70,7 @@
     "risk_scoped_promotion_profile": true,
     "global_full_suite_default": false,
     "global_full_suite_runs_asynchronous_assurance_for_noncritical_safe_changes": true,
+    "oracle_rule": "assert forbidden behavior or contract violation, never broad incidental implementation words",
     "blocking_rule": "Only tests implied by changed paths, declared dependencies/contracts, security/data/schema boundaries and production-readback are blocking. Unrelated assurance is post-merge/shadow."
   },
   "execution": {
@@ -57,9 +87,13 @@
     "one_active_candidate_per_conflict_contract": true,
     "microbatch_safe_parallel_agent_outputs": true,
     "auto_cancel_superseded_runs": true,
+    "event_driven_critical_workflow_admission": true,
     "auto_recover_zero_run_heads": true,
+    "auto_recover_partial_critical_workflow_start": true,
     "auto_refresh_conflicting_merge_base": true,
-    "no_new_pr_for_same_obligation_recovery": true
+    "no_new_pr_for_same_obligation_recovery": true,
+    "main_drift_without_overlap": "DO_NOT_REBUILD",
+    "real_overlap": "REFRESH_ONLY_AFFECTED_ROLLING_LANE"
   },
   "evidence_cache": {
     "persistent_semantics": true,
@@ -117,6 +151,7 @@
       "queue_p50_ms",
       "queue_p95_ms",
       "zero_run_count",
+      "partial_start_recovery_count",
       "stale_run_count",
       "merge_conflict_rate",
       "false_positive_oracle_count",
@@ -125,20 +160,12 @@
       "time_to_candidate_ms",
       "time_to_live_proven_ms",
       "prediction_accuracy",
-      "recovery_success_rate"
+      "recovery_success_rate",
+      "rollback_rate",
+      "repeat_incident_rate"
     ],
     "is_release_authority": false
   },
-  "authority": {
-    "engineering_os": "config/powerhouse-engineering-os.json",
-    "delivery": "config/brain-delivery-system.json",
-    "production_promotion": "BG169",
-    "shared_context": "BG167",
-    "writeback": "BG168/BG166",
-    "success": "LIVE & BEWEZEN"
-  },
-  "revision": 4,
-  "delivery_mode": "PREDICTIVE_ROLLING_LANE_FAST_PATH",
   "latency_slo": {
     "first_ci_signal_seconds": 60,
     "turbo_blocking_budget_seconds": 240,
@@ -154,8 +181,6 @@
     "post_merge_assurance_nonblocking_for_unrelated_surfaces": true,
     "auto_rollback_on_production_readback_regression": true
   },
-  "skill": "brain/skills/powerhouse-fast-rolling-delivery-v1.json",
-  "learning_fingerprint": "powerhouse-fast-rolling-lane-delivery-v1",
   "predictive_control": {
     "enabled": true,
     "controller": "tools/delivery/predictive-controller.mjs",
@@ -166,7 +191,10 @@
       "historical_failure_rate",
       "historical_merge_conflict_rate",
       "queue_p95_seconds",
-      "main_movement_rate"
+      "main_movement_rate",
+      "false_positive_oracle_rate",
+      "rollback_rate",
+      "repeat_incident_rate"
     ],
     "outputs": [
       "risk_class",
@@ -186,8 +214,10 @@
     "shadow_failure_does_not_retroactively_falsify_prior_exact_head_proof_without_relevant_scope": true
   },
   "supervisor": {
-    "cadence_minutes": 5,
+    "event_driven_on_pr_head_change": true,
+    "watchdog_cadence_minutes": 5,
     "zero_run_auto_dispatch": true,
+    "partial_start_auto_dispatch_missing_critical_workflow": true,
     "stale_run_auto_cancel_and_redispatch": true,
     "merge_conflict_same_lineage_refresh_required": true,
     "duplicate_recovery_pr_forbidden": true,
@@ -205,7 +235,8 @@
       "reruns",
       "rollback",
       "production_readback",
-      "developer_lead_time"
+      "developer_lead_time",
+      "prediction_error"
     ],
     "actions": [
       "retune_risk_thresholds",
@@ -214,8 +245,19 @@
       "expand_or_contract_turbo_allowlist",
       "improve_test_selection",
       "improve_cache_invalidation",
-      "improve_supervisor_recovery"
+      "improve_supervisor_recovery",
+      "remove_repeated_non_value_work"
     ],
     "promotion_rule": "Only retain an optimization when measured lead time improves without quality/security/reliability regression."
-  }
+  },
+  "authority": {
+    "engineering_os": "config/powerhouse-engineering-os.json",
+    "delivery": "config/brain-delivery-system.json",
+    "production_promotion": "BG169",
+    "shared_context": "BG167",
+    "writeback": "BG168/BG166",
+    "success": "LIVE & BEWEZEN"
+  },
+  "skill": "brain/skills/powerhouse-fast-rolling-delivery-v1.json",
+  "learning_fingerprint": "powerhouse-fast-rolling-lane-delivery-v1"
 }
