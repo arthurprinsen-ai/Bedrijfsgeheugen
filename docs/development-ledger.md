@@ -191,3 +191,16 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Bewust niet:** het money-blok op /afas-koppeling e.a. weghalen — dat is de enige prijs+knop bovenaan die pagina's; het staat nu stil in plaats van dat het inschuift.
 - **Regressietests:** `tests/site-shell-lettertype-terugval.test.mjs`, `tests/site-shell-money-prerender.test.mjs`, ingeschreven in `lane-website.yml`.
 - **Rollback:** verwijder `await applyMoneyPrerender()` en/of `await applyLettertypeTerugval()` uit `tools/bouw-release-evidence.mjs`.
+
+## 2026-09-18 — CONTRACT_CHANGE — Powerhouse continuity als cross-runtime skill
+- **Fingerprint:** `powerhouse|skills|continuity|intrinsic-loop-node|canonical-writeback|v1`
+- **Probleem:** continuity was al canoniek vastgelegd in policy, tests en Brain-learning, maar nog niet als discoverable cross-runtime skill. Daardoor kon een nieuwe agent de regel pas vinden via AGENTS/preflight in plaats van via skill discovery.
+- **Root cause:** er bestond geen `.agents/skills/powerhouse-continuity/SKILL.md` entrypoint; de capability was bestuurlijk geborgd maar niet in de skill-laag geëxposeerd.
+- **RED evidence:** commit `1036956cd74f5fa54801be353b3d761bcf558738` bevat de nieuwe required regression terwijl het skill-pad op diezelfde commit niet bestaat (GitHub readback: NOT_FOUND). De eerste CI-run werd door latere same-lineage commits superseded voordat uitvoering startte; de ontbrekende productiefile is daarom de deterministische baseline-failure.
+- **Fix:** cross-runtime skill toegevoegd; `AGENTS.md` laadt hem direct na het agentcontract; continuity-policy registreert skill discovery; bestaande machine-readable learning en menselijke documentatie linken terug naar dezelfde authority.
+- **Authority:** de skill is uitsluitend `DISCOVERY_AND_EXECUTION_GUIDANCE`; `brain/policies/powerhouse-agent-continuity-v1.json` blijft canoniek. Geen parallel brain of alternatieve truth.
+- **Regressie:** `tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs` vereist skill-frontmatter, kerninvarianten, LIVE & BEWEZEN, canonieke references en opname in `AGENTS.md`.
+- **Owner agent:** Powerhouse continuity / shared-agent-memory owner.
+- **Obligation:** `powerhouse-skill-continuity-learning-v1`; delivery-lineage PR #2034.
+- **Rollback:** verwijder skill-discovery registratie, AGENTS-readorder en skillfile samen; behoud canonieke policy/learning. Geen gedeeltelijke rollback die een dangling skill-reference laat bestaan.
+- **Herbruikbare les:** projectbrede gedragsregels die agents actief moeten herkennen horen als discoverable skill bovenop canonieke policy te bestaan én door required CI te worden bewaakt; skills mogen nooit de policy dupliceren als eigen authority.
