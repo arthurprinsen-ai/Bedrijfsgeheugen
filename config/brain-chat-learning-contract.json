@@ -11,7 +11,10 @@
     "brain/learning/chat-continuity-2026-08-30.json",
     "brain/learning/chat-completeness-checkpoint-2026-08-31.json",
     "docs/development-ledger.md",
-    "docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md"
+    "docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md",
+    "brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json",
+    "brain/skills/powerhouse-missing-connections-recovery-v1.json",
+    "brain/learning/2026-09-18-missing-connections-recovery-v1.json"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -21,7 +24,10 @@
     "writeNewMaterialLearningBack": true,
     "refreshSharedContextAfterNewLearning": true,
     "keepAuditHistoryAppendOnly": true,
-    "keepCurrentProjectionFreeOfTestArtifacts": true
+    "keepCurrentProjectionFreeOfTestArtifacts": true,
+    "requireUnifiedDataSpineForMaterialDataSources": true,
+    "connectedSourceIsNotPersistedEvidence": true,
+    "failClosedOnMissingOrStaleSourceEvidence": true
   },
   "lessons": [
     {
