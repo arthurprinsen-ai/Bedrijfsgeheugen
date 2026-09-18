@@ -4,6 +4,7 @@ import { mountWorkspace } from '../workspace-shell.js';
 import { profileOverviewMetrics, PROFILE_DIMENSIONS } from './company-input.js';
 import { AI_CAPABILITY_CATALOG } from '../ai-capability-catalog.js';
 import { buildLegacyPageSurfaces } from './legacy-page-surfaces.js';
+import { strategyFindingToRoadmap, adviceItemToRoadmap, changeToTasks, appendUnique, moveRoadmapItem, toggleRoadmapDone, removeRoadmapItem } from './legacy-action-parity.js';
 
 const f=(id,legacyFieldId,label,type,path,extra={})=>Object.freeze({id,legacyFieldId,label,type,path,required:true,...extra});
 const repeat=(id,legacyFieldId,label,path,columns)=>Object.freeze({id,legacyFieldId,label,type:'repeatable',path,required:false,columns:Object.freeze(columns)});
@@ -161,12 +162,42 @@ function renderForm(content,definition,domainState,onSaveStatus){
 }
 
 function renderAnalysis(content,pageId,domainState,view){const state=domainState?.get?.()||{};const cards=computeFunctionalAnalysis(pageId,state);const surfaces=buildLegacyPageSurfaces(pageId,state);const visual=view?.visual?`<section class="pvmodule pvvisual" data-functional-visual="${esc(pageId)}"><div class="pvmodulehead"><span>◷</span><h3>Beeld bij deze cijfers</h3></div><div class="v2visualgrid">${view.visual}</div></section>`:'';content.innerHTML=`<div class="v2profilemetrics">${cards.map(([label,value])=>`<article><small>${esc(label)}</small><strong>${esc(value)}</strong></article>`).join('')}</div>${surfaces.map(surface=>`<section class="pvmodule v2legacyanalysis" data-legacy-surface="${esc(surface.title)}"><div class="pvmodulehead"><span>◆</span><h3>${esc(surface.title)}</h3></div>${surface.items?.length?`<div class="v2reviewlist">${surface.items.map(([label,value])=>`<article><div><b>${esc(label)}</b></div><strong>${esc(value)}</strong></article>`).join('')}</div>`:''}${surface.note?`<p class="pvemptycopy">${esc(surface.note)}</p>`:''}</section>`).join('')}${visual}`;}
-function renderActions(content,definition,openPage){content.innerHTML=`<div class="pvactions">${(definition.actions||[]).map(([label,pageId],index)=>`<button type="button" data-functional-page="${esc(pageId)}" class="${index===0?'primary':''}"><span>${esc(label)}</span><i>→</i></button>`).join('')}</div>`;content.querySelectorAll('[data-functional-page]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.functionalPage)));}
+function renderActions(content,definition,openPage,pageId,domainState){
+ const state=domainState?.get?.()||{};
+ const extras=[];
+ if(pageId==='strategie-naar-maandagochtend')extras.push(['Zet alle zichtbare bevindingen op roadmap','strategy-to-roadmap']);
+ if(pageId==='advies')extras.push(['Zet adviezen op roadmap','advice-to-roadmap']);
+ if(pageId==='wijzigingen')extras.push(['Maak taken van wijzigingen','changes-to-tasks']);
+ content.innerHTML=`<div class="pvactions">${extras.map(([label,action],i)=>`<button type="button" data-functional-action="${action}" class="${i===0?'primary':''}"><span>${esc(label)}</span><i>→</i></button>`).join('')}${(definition.actions||[]).map(([label,target],index)=>`<button type="button" data-functional-page="${esc(target)}"><span>${esc(label)}</span><i>→</i></button>`).join('')}</div><span data-functional-action-message></span>`;
+ content.querySelectorAll('[data-functional-page]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.functionalPage)));
+ content.querySelectorAll('[data-functional-action]').forEach(button=>button.addEventListener('click',async()=>{
+   const action=button.dataset.functionalAction;const msg=content.querySelector('[data-functional-action-message]');
+   try{
+    if(action==='strategy-to-roadmap'){
+      const incoming=(state?.portal?.strategy?.findings||[]).map(strategyFindingToRoadmap);
+      const current=domainState.get('portal.roadmap.items')||[];
+      domainState.set('portal.roadmap.items',appendUnique(current,incoming));
+    }else if(action==='advice-to-roadmap'){
+      const incoming=(state?.portal?.advice?.items||[]).map(adviceItemToRoadmap);
+      const current=domainState.get('portal.roadmap.items')||[];
+      domainState.set('portal.roadmap.items',appendUnique(current,incoming));
+    }else if(action==='changes-to-tasks'){
+      const changes=state?.portal?.changes?.items||[];
+      const defaults=state?.portal?.changes?.toTasks||{};
+      const incoming=changes.flatMap(change=>changeToTasks(change,defaults));
+      const current=domainState.get('portal.tasks.items')||[];
+      domainState.set('portal.tasks.items',appendUnique(current,incoming,'sourceChangeId'));
+    }
+    await domainState.flush?.();if(msg)msg.textContent='Opgeslagen en doorgerekend.';
+    if(action==='changes-to-tasks')openPage?.('taken-werkstromen');else openPage?.('roadmap');
+   }catch{if(msg)msg.textContent='Opslaan mislukt.';}
+ }));
+}
 function renderEvidence(content,definition){content.innerHTML=`<div class="v2reviewlist"><article><div><small>State</small><b>${esc(definition.slice)}</b></div><strong>server-confirmed</strong></article>${(definition.models||[]).map(model=>`<article><div><small>Model</small><b>${esc(model)}</b></div><strong>native V2</strong></article>`).join('')}${definition.fields.map(field=>`<article><div><small>${esc(field.legacyFieldId)}</small><b>${esc(field.label)}</b></div><strong>${field.type==='repeatable'?'herhaalbaar':'bewerkbaar'}</strong></article>`).join('')}</div>`;}
 
 export function mountFunctionalWorkspace(root,{pageId,contract,view,domainState,openPage}={}){
  const definition=DEFINITIONS[pageId];if(!definition)return null;let workspace;
- const renderTab=(tab,content)=>{if(tab==='analyse'){renderAnalysis(content,pageId,domainState,view);return;}if(tab==='acties'){renderActions(content,definition,openPage);return;}if(tab==='bewijs'){renderEvidence(content,definition);return;}if(!domainState){content.innerHTML='<section class="v2tabempty"><h4>Beveiligde context laden</h4><p>Deze werkruimte wordt bewerkbaar zodra de klantcontext is geladen.</p></section>';return;}renderForm(content,definition,domainState,status=>workspace?.setSaveStatus(status));};
+ const renderTab=(tab,content)=>{if(tab==='analyse'){renderAnalysis(content,pageId,domainState,view);return;}if(tab==='acties'){renderActions(content,definition,openPage,pageId,domainState);return;}if(tab==='bewijs'){renderEvidence(content,definition);return;}if(!domainState){content.innerHTML='<section class="v2tabempty"><h4>Beveiligde context laden</h4><p>Deze werkruimte wordt bewerkbaar zodra de klantcontext is geladen.</p></section>';return;}renderForm(content,definition,domainState,status=>workspace?.setSaveStatus(status));};
  workspace=mountWorkspace(root,contract,{title:view?.title||pageId,description:view?.description||'',saveStatus:domainState?.status?.()||'idle',delegate:false,attachLegacyParity:true,render:content=>renderTab('invullen',content),onTabChange:(tab,content)=>renderTab(tab,content)});
  workspace.shell.dataset.functionalWorkspace=pageId;
  return workspace;
