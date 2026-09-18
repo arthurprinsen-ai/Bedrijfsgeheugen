@@ -1,13 +1,15 @@
 // Opdrachtenradar — nachtelijke producer, v1, 18 september 2026
 // Zoekt freelance-/interimopdrachten in data, AI en BI in Nederland via Tavily,
 // laat nieuwe treffers beoordelen door Claude en schrijft relevante opdrachten naar public.bg_opdrachten.
-// Sleutels uitsluitend via Vault (public.bg_geheim): TAVILY_API_KEY, ANTHROPIC_API_KEY, powerhouse_daily_scheduler_token.
+// Sleutels uitsluitend via Vault (public.bg_geheim): TAVILY_API_KEY, ANTHROPIC_API_KEY, powerhouse_daily_scheduler_token;
+// optioneel ADZUNA_APP_ID, ADZUNA_APP_KEY en JOOBLE_API_KEY voor vacature-API's.
 // Bewijs: powerhouse_record_source_observation_v1 (bron 'opdrachtenradar') en public.bg_gezondheid.
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CONTRACT = 'bg-opdrachtenradar-v1';
 const MODEL = 'claude-haiku-4-5-20251001';
-const MAX_KANDIDATEN = 150;
+const MAX_KANDIDATEN = 200;
+const DOMEINEN_PER_GROEP = 7;
 const BATCH = 10;
 
 const ROLGROEPEN = [
@@ -23,6 +25,20 @@ const BRONNEN: { naam: string; domains: string[] }[] = [
   { naam: 'Vacaturesites', domains: ['linkedin.com', 'nl.indeed.com', 'nationalevacaturebank.nl', 'jobbird.com', 'werk.nl'] },
   { naam: 'Open web', domains: [] },
 ];
+
+// Profiel-, categorie- en overzichtspagina's zijn nooit een losse opdracht; die gaan niet naar de beoordeling.
+const RUIS = [
+  /linkedin\.com\/(in|company|school)\//i,
+  /\/(search_tag|vakgebieden|functies|kennisbank|blog|category|categories|beroepengids|salaris|uurtarieven)(\/|$)/i,
+  /indeed\.com\/q-/i,
+  /glassdoor\.[a-z]+\/Vacature\/.*SRCH_/i,
+];
+const isRuis = (u: string) => {
+  try { const x = new URL(u); if (x.pathname === '/' || /^\/(vacatures|opdrachten|jobs)\/?$/i.test(x.pathname)) return true; } catch { return true; }
+  return RUIS.some(r => r.test(u));
+};
+// Vacature-API's voor bronnen die zoekmachines afschermen (Indeed-achtig). Alleen actief als de sleutels in Vault staan.
+const API_TERMEN = ['freelance data engineer', 'freelance BI consultant', 'zzp Power BI', 'interim data analist', 'freelance data architect', 'freelance AI consultant'];
 
 const json = (b: unknown, s = 200) => new Response(JSON.stringify(b), { status: s, headers: { 'content-type': 'application/json', 'cache-control': 'no-store' } });
 const clean = (v: unknown) => String(v ?? '').trim();
@@ -59,7 +75,8 @@ Resultaten:
 ${deel.map((d, i) => `[${i}] ${d.titel}\nURL: ${d.url}\n${d.tekst}`).join('\n\n')}
 
 Antwoord met alleen een JSON-array, één object per resultaat:
-[{"i":0,"relevant":true,"titel":"korte functietitel","organisatie":"","bemiddelaar":"","locatie":"","werkvorm":"op locatie|hybride|remote|onbekend","uren":"","tarief":"","start":"","duur":"","sluitdatum":"YYYY-MM-DD of leeg","samenvatting":"twee zinnen","match":0,"waarom":"één zin"}]
+[{"i":0,"relevant":true,"titel":"korte functietitel","organisatie":"","bemiddelaar":"","locatie":"","werkvorm":"op locatie|hybride|remote|onbekend","uren":"","tarief":"","start":"","duur":"","sluitdatum":"YYYY-MM-DD of leeg","samenvatting":"twee zinnen","match":75,"waarom":"één zin"}]
+match is een geheel getal van 0 tot 100: 100 = past volledig bij het cv, 50 = deels, 0 = past niet. Gebruik null als er geen cv is.
 Voor niet-relevante resultaten volstaat {"i":n,"relevant":false}. Verzin geen gegevens: laat onbekende velden leeg.`;
 }
 
@@ -86,7 +103,9 @@ Deno.serve(async (req: Request) => {
     const extra = (profiel?.extra_domeinen || []) as string[];
 
     // 1. Zoekvragen
-    const groepen = extra.length ? [...BRONNEN, { naam: 'Eigen domeinen', domains: extra }] : BRONNEN;
+    const extraGroepen: { naam: string; domains: string[] }[] = [];
+    for (let i = 0; i < extra.length; i += DOMEINEN_PER_GROEP) extraGroepen.push({ naam: `Eigen domeinen ${i / DOMEINEN_PER_GROEP + 1}`, domains: extra.slice(i, i + DOMEINEN_PER_GROEP) });
+    const groepen = [...BRONNEN, ...extraGroepen];
     const vragen = groepen.flatMap(b => ROLGROEPEN.map(rollen => {
       const term = rollen.map(r => `"${r}"`).join(' OR ');
       const prefix = b.domains.length ? 'freelance interim opdracht' : 'freelance OR interim OR zzp OR inhuur opdracht Nederland';
@@ -95,6 +114,9 @@ Deno.serve(async (req: Request) => {
       return { bron: b.naam, body };
     }));
 
+    // Recruiters plaatsen opdrachten vaak als gewone LinkedIn-post; die zijn wel vindbaar.
+    vragen.push({ bron: 'LinkedIn-posts', body: { query: '#opdrachtbeschikbaar OR "opdracht beschikbaar" OR "freelance opdracht" (data OR BI OR "Power BI" OR AI)', max_results: 20, time_range: 'week', search_depth: 'basic', include_domains: ['linkedin.com'], include_answer: false } });
+
     const zoekFouten: string[] = [];
     const resultaten = await inGroepen(vragen, 5, async v => {
       const r = await fetch('https://api.tavily.com/search', { method: 'POST', headers: { authorization: `Bearer ${tavily}`, 'content-type': 'application/json' }, body: JSON.stringify(v.body) });
@@ -102,13 +124,33 @@ Deno.serve(async (req: Request) => {
       if (!r.ok) { zoekFouten.push(`${v.bron}: ${r.status} ${clean(b?.detail?.error || b?.error).slice(0, 80)}`); return []; }
       return ((b.results || []) as any[]).map(x => ({ ...x, _bron: v.bron }));
     });
-    const alle = resultaten.flat();
+    const [adzunaId, adzunaKey, joobleKey] = await Promise.all([geheim('ADZUNA_APP_ID'), geheim('ADZUNA_APP_KEY'), geheim('JOOBLE_API_KEY')]);
+    const apiResultaten = await inGroepen(API_TERMEN, 3, async term => {
+      const uit: any[] = [];
+      if (adzunaId && adzunaKey) {
+        const q = new URLSearchParams({ app_id: adzunaId, app_key: adzunaKey, what: term, max_days_old: '7', results_per_page: '50', 'content-type': 'application/json' });
+        const r = await fetch(`https://api.adzuna.com/v1/api/jobs/nl/search/1?${q}`).catch(() => null);
+        const b: any = r ? await r.json().catch(() => ({})) : {};
+        if (!r?.ok) zoekFouten.push(`Adzuna: ${r?.status ?? 'netwerk'}`);
+        else uit.push(...((b.results || []) as any[]).map(x => ({ url: x.redirect_url, title: x.title, content: clean(x.description), _bron: 'Adzuna API' })));
+      }
+      if (joobleKey) {
+        const r = await fetch(`https://nl.jooble.org/api/${joobleKey}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ keywords: term, page: '1' }) }).catch(() => null);
+        const b: any = r ? await r.json().catch(() => ({})) : {};
+        if (!r?.ok) zoekFouten.push(`Jooble: ${r?.status ?? 'netwerk'}`);
+        else uit.push(...((b.jobs || []) as any[]).map(x => ({ url: x.link, title: x.title, content: clean(x.snippet), _bron: 'Jooble API' })));
+      }
+      return uit;
+    });
+    const alle = [...resultaten.flat(), ...apiResultaten.flat()];
     if (!alle.length && zoekFouten.length) throw new Error('TAVILY: ' + zoekFouten.slice(0, 3).join(' | '));
 
     // 2. Nieuwe kandidaten
     const perId = new Map<string, Kandidaat>();
+    let ruis = 0;
     for (const r of alle) {
       if (!r.url) continue;
+      if (isRuis(r.url)) { ruis++; continue; }
       const u = normUrl(r.url), id = hashUrl(u);
       if (!perId.has(id)) perId.set(id, { id, url: u, titel: clean(r.title), tekst: clean(r.content).slice(0, 1400), bron: r._bron });
     }
@@ -165,7 +207,7 @@ Deno.serve(async (req: Request) => {
     });
 
     const samenvatting = {
-      contract: CONTRACT, zoekvragen: vragen.length, treffers: alle.length, uniek: ids.length, nieuw: nieuw.length,
+      contract: CONTRACT, zoekvragen: vragen.length, api_bronnen: [adzunaId && adzunaKey ? 'adzuna' : null, joobleKey ? 'jooble' : null].filter(Boolean), treffers: alle.length, ruis, uniek: ids.length, nieuw: nieuw.length,
       beoordeeld: teBeoordelen.length, uitgesteld: nieuw.length - teBeoordelen.length, relevant, genegeerd,
       zoek_fouten: zoekFouten, beoordeel_fouten: beoordeelFouten, cv_aanwezig: !!cv,
     };
