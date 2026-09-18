@@ -250,3 +250,15 @@ test('continuity skill retains predictive LinkedIn sales cockpit learning', () =
   assert.match(salesSkill, /54ab849124e4d9d9bde498e998c50d8865c9712c/);
   assert.match(salesSkill, /6aad09ac00d5f50008121b25/);
 });
+
+
+test('predictive LinkedIn sales cockpit learning is discoverable through continuity skill', () => {
+  for (const marker of [
+    'linkedin-sales-cockpit-predictive-sales-os-v1',
+    'Revenue Command Center',
+    'action-first sales decision surface',
+    'no-auto-send',
+    'Netlify \`commit_ref\`',
+    'one superseding recovery candidate'
+  ]) assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing LinkedIn cockpit learning marker: ${marker}`);
+});
