@@ -1,4 +1,4 @@
-import { radar, gantt, curve, quadrant, benchmarkBars, ring, leakage, ladder, dupont, gauge } from './visuals.js';
+import { radar, gantt, curve, quadrant, benchmarkBars, ring, leakage, ladder, dupont, gauge, adoptionBell, companyStateRail } from './visuals.js';
 import { calculateLegacyEquivalent } from './legacy-parity-engine.js';
 import { PROFILE_DIMENSIONS, profileOverviewMetrics } from './modules/company-input.js';
 import { hasPageData } from './page-metrics.js';
@@ -31,10 +31,14 @@ const BUILDERS=Object.freeze({
     const capacity=arr(calc('dimension-costs',state)).map(item=>({label:item.label||item.id||'Onderdeel',value:n(item.kosten)}));
     const blockers=arr(calc('blocker-ranking',state)).map(item=>({label:item.name||item.title||'Blokkade',value:n(item.score)||n(item.impact)}));
     const progress=n(calc('progress',state));
-    return [radar(points,{title:'Volwassenheid per bedrijfsonderdeel'}),
+    const avg=maturityValues.length?maturityValues.reduce((a,b)=>a+b,0)/maturityValues.length:1;
+    const current=Math.max(1,Math.min(5,avg||1));
+    const benchmark=Math.max(1,Math.min(5,n(at(state,'portal.market.maturityBenchmark'))||3));
+    return [companyStateRail({current,benchmark,upperQuartile:4},{title:'De staat van je bedrijf'}),
       ladder(arr(calc('cmmi-ladder',state)),{title:'Procesvolwassenheid (CMMI)'}),
-      curve(adoption,{title:'Adoptiecurve',valueLabel:'%'}),
-      leakage(capacity,{title:'Waar de meeste capaciteit weglekt'}),
+      adoptionBell({current,benchmark,upperQuartile:4},{title:'Waar je staat op de adoptiecurve'}),
+      radar(points,{title:'Volwassenheid per bedrijfsonderdeel'}),
+      leakage(capacity,{title:'Waar de tijd weglekt'}),
       leakage(blockers,{title:'Blokkades'}),
       ring(Math.min(100,Math.max(0,progress)),{title:'Voortgang',caption:'voortgang op de roadmap'}),
       ring(Math.min(100,metrics.averageMaturity/5*100),{title:'Volwassenheid',caption:'gemiddeld over de onderdelen'})].filter(Boolean).join('');
@@ -43,7 +47,8 @@ const BUILDERS=Object.freeze({
   profiel:state=>{
     const profile=at(state,'portal.profile')||{};
     const points=PROFILE_DIMENSIONS.map(dimension=>({label:dimension.label||dimension.id,value:n(profile.maturity?.[dimension.id])})).filter(point=>point.value>0);
-    return radar(points,{title:'Profiel per onderdeel'});
+    const comparison=PROFILE_DIMENSIONS.map(dimension=>({label:dimension.label||dimension.id,value:n(profile.maturity?.[dimension.id]),benchmark:n(dimension.top)})).filter(point=>point.value>0);
+    return [benchmarkBars(comparison,{title:'Profiel tegenover de bovenste 25%'}),radar(points,{title:'Alles in één beeld'})].filter(Boolean).join('');
   },
 
   businesscase:state=>{
