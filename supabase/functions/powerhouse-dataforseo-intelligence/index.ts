@@ -85,10 +85,23 @@ Deno.serve(async(req:Request)=>{
       evidence++;
     }
 
+    const {error:heartbeatError}=await db.rpc('powerhouse_record_source_observation_v1',{
+      p_source_key:'dataforseo-intelligence',
+      p_dedupe_key:`dataforseo-producer-run:${observedAt.slice(0,13)}`,
+      p_external_event_id:`producer-run:${observedAt}`,
+      p_observed_at:observedAt,
+      p_evidence:{
+        contract:CONTRACT,authority:'powerhouse-dataforseo-intelligence',provider:'dataforseo',
+        target:'bedrijfsgeheugen.nl',producer_run:true,items:items.length,stored,
+        item_evidence:evidence,no_data_returned:items.length===0
+      }
+    });
+    if(heartbeatError) throw new Error(`PRODUCER_HEARTBEAT:${heartbeatError.message}`);
+
     await db.from('bg_gezondheid').insert({
       gemeten_op:observedAt,onderdeel:'dataforseo-intelligence',soort:'external-search-intelligence',
-      status:'ok',detail:`items=${items.length}; stored=${stored}; evidence=${evidence}`,
-      gegevens:{contract:CONTRACT,target:'bedrijfsgeheugen.nl',items:items.length,stored,evidence}
+      status:'ok',detail:`items=${items.length}; stored=${stored}; evidence=${evidence}; heartbeat=1`,
+      gegevens:{contract:CONTRACT,target:'bedrijfsgeheugen.nl',items:items.length,stored,evidence,producer_heartbeat:true}
     });
     return json({ok:true,contract:CONTRACT,items:items.length,stored,evidence,observed_at:observedAt});
   }catch(error:any){
