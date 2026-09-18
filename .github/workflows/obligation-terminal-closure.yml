@@ -1,9 +1,17 @@
 name: Obligation Terminal Closure
 
+run-name: Obligation Terminal Closure PR #${{ github.event.pull_request.number || inputs.pr_number }}
+
 on:
   pull_request:
     branches: [main]
     types: [closed]
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: Merged PR number to resume on the same canonical obligation lineage
+        required: true
+        type: string
 
 permissions:
   actions: read
@@ -12,17 +20,41 @@ permissions:
   pull-requests: write
 
 concurrency:
-  group: obligation-terminal-closure-${{ github.event.pull_request.number }}
+  group: obligation-terminal-closure-${{ github.event.pull_request.number || inputs.pr_number }}
   cancel-in-progress: false
 
 jobs:
   close-obligation:
-    if: github.event.pull_request.merged == true
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
     steps:
+      - name: Resolve canonical merged PR context
+        id: context
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          INPUT_PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          set -euo pipefail
+          pr_number="${EVENT_PR_NUMBER:-${INPUT_PR_NUMBER:-}}"
+          [[ "$pr_number" =~ ^[0-9]+$ ]] || { echo "::error::TERMINAL_PR_NUMBER_INVALID"; exit 78; }
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr_number}")"
+          [ "$(jq -r '.merged' <<<"$pr")" = "true" ] || { echo "::error::TERMINAL_PR_NOT_MERGED:$pr_number"; exit 78; }
+          candidate_sha="$(jq -r '.head.sha // empty' <<<"$pr")"
+          merge_sha="$(jq -r '.merge_commit_sha // empty' <<<"$pr")"
+          [[ "$candidate_sha" =~ ^[0-9a-f]{40}$ && "$merge_sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::TERMINAL_PR_IDENTITY_INVALID"; exit 78; }
+          body_b64="$(jq -r '.body // ""' <<<"$pr" | base64 -w0)"
+          {
+            echo "pr_number=$pr_number"
+            echo "candidate_sha=$candidate_sha"
+            echo "merge_sha=$merge_sha"
+            echo "body_b64=$body_b64"
+          } >> "$GITHUB_OUTPUT"
+          echo "TERMINAL_CONTEXT_RESOLVED:pr=$pr_number candidate=$candidate_sha merge=$merge_sha"
+
       - uses: actions/checkout@v5
         with:
-          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          ref: ${{ steps.context.outputs.merge_sha }}
           fetch-depth: 0
 
       - uses: actions/setup-node@v5
@@ -32,13 +64,14 @@ jobs:
       - name: Verify machine-readable obligation and main containment
         id: identity
         env:
-          PR_BODY: ${{ github.event.pull_request.body }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_BODY_B64: ${{ steps.context.outputs.body_b64 }}
+          HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           git fetch origin main --no-tags
           git merge-base --is-ancestor "$MERGE_SHA" origin/main
+          export PR_BODY="$(printf '%s' "$PR_BODY_B64" | base64 -d)"
           node --input-type=module - <<'NODE'
           import { appendFile } from 'node:fs/promises';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
@@ -51,7 +84,7 @@ jobs:
         id: production
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           source_run_id=""
@@ -118,7 +151,7 @@ jobs:
       - name: Determine whether skill projection is due
         id: projection-scope
         env:
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           files="$(git diff --name-only "${MERGE_SHA}^1" "$MERGE_SHA" || true)"
@@ -133,7 +166,7 @@ jobs:
         id: projection
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           for attempt in $(seq 1 30); do
@@ -155,7 +188,7 @@ jobs:
       - name: Derive exact Supabase production migration identities
         id: migration-scope
         env:
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
         run: |
           set -euo pipefail
           node --input-type=module - <<'NODE'
@@ -189,8 +222,8 @@ jobs:
       - name: Persist canonical Brain terminal evidence before terminal claim
         env:
           OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
           PRODUCTION_RUN_ID: ${{ steps.production.outputs.run_id }}
           PRODUCTION_READBACK_MODE: ${{ steps.production.outputs.mode }}
           PRODUCTION_OBSERVED_SHA: ${{ steps.production.outputs.observed_sha }}
@@ -267,10 +300,10 @@ jobs:
       - name: Persist terminal evidence and release writer lease
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-          PR_BODY: ${{ github.event.pull_request.body }}
-          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          PR_BODY_B64: ${{ steps.context.outputs.body_b64 }}
+          HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
           OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
           PRODUCTION_RUN_ID: ${{ steps.production.outputs.run_id }}
           PRODUCTION_READBACK_MODE: ${{ steps.production.outputs.mode }}
@@ -284,7 +317,7 @@ jobs:
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { writeFileSync } from 'node:fs';
-          const body=String(process.env.PR_BODY||'');
+          const body=Buffer.from(String(process.env.PR_BODY_B64||''),'base64').toString('utf8');
           const stripped=body.split(/\r?\n/).filter(line=>!/^(Writer-Lease-State|Terminal-State|Terminal-Main-SHA|Terminal-Production-Readback(?:-Run)?|Terminal-Skill-Projection-Run):/i.test(line)).join('\n').trimEnd();
           const projection=process.env.PROJECTION_REQUIRED==='true' ? process.env.PROJECTION_RUN_ID : 'NOT_APPLICABLE';
           const mode=process.env.PRODUCTION_READBACK_MODE||'canonical_run';
@@ -322,7 +355,7 @@ jobs:
       - name: Publish immutable terminal evidence
         uses: actions/upload-artifact@v4
         with:
-          name: obligation-terminal-evidence-${{ github.event.pull_request.number }}
+          name: obligation-terminal-evidence-${{ steps.context.outputs.pr_number }}
           path: .artifacts/obligation-terminal-evidence.json
           if-no-files-found: error
           retention-days: 90
