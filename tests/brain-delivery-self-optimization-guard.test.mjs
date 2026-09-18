@@ -18,20 +18,35 @@ test('delivery self-optimization learning is projected into both delivery skills
   const brainSkill = JSON.parse(brainSkillRaw);
 
   assert.equal(learning.fingerprint, fp);
+  assert.equal(learning.status, 'ACTIVE_PREVENTION_PROVEN');
+  assert.equal(learning.production_proof?.source_pr, 2114);
+  assert.equal(learning.production_proof?.merge_sha, 'f76bfbbccbc6dd256590dad1e95bc75985d9a351');
+  assert.equal(learning.production_proof?.main_readback, 'verified');
+
   assert.equal(brainSkill.fingerprint, fp);
   assert.equal(brainSkill.optimization_fingerprint, fp);
+  assert.equal(brainSkill.status, 'ACTIVE_PROVEN');
+  assert.equal(brainSkill.production_proof?.source_pr, 2114);
+  assert.equal(brainSkill.production_proof?.merge_sha, 'f76bfbbccbc6dd256590dad1e95bc75985d9a351');
+  assert.equal(brainSkill.production_proof?.main_readback, 'verified');
+
   for (const surface of [agentSkill, ledger, docs]) assert.ok(surface.includes(fp));
 
   assert.ok(agentSkill.includes('Anticipate-before-act'));
   assert.ok(agentSkill.includes('scheduler/concurrency recovery'));
   assert.ok(agentSkill.includes('workflow/classifier coverage'));
   assert.ok(agentSkill.includes('re-plan'));
+  assert.ok(agentSkill.includes('Proven production lineage'));
+  assert.ok(agentSkill.includes('f76bfbbccbc6dd256590dad1e95bc75985d9a351'));
+
   assert.ok(brainSkill.required_behavior.some(x => x.includes('Refresh authoritative')));
   assert.ok(brainSkill.required_behavior.some(x => x.includes('Forecast the next likely invalidation')));
   assert.ok(brainSkill.required_behavior.some(x => x.includes('PR metadata')));
   assert.ok(brainSkill.required_behavior.some(x => x.includes('workflow/classifier coverage')));
   assert.ok(brainSkill.required_behavior.some(x => x.includes('cancelled GitHub jobs')));
   assert.ok(brainSkill.required_behavior.some(x => x.includes('terminal path')));
+  assert.ok(brainSkill.required_behavior.some(x => x.includes('canonical learning-to-skill writeback')));
+
   assert.ok(learning.prevention.some(x => x.startsWith('ANTICIPATE_BEFORE_ACT:')));
   assert.ok(learning.prevention.some(x => x.startsWith('NO_CACHED_IRREVERSIBLE_ACTION:')));
   assert.ok(learning.prevention.some(x => x.startsWith('CALIBRATE_FAILURE_FORECAST:')));

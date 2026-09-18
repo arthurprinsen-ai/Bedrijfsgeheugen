@@ -36,3 +36,17 @@ Geen van deze gevallen rechtvaardigt blind nieuwe productcode of een nieuwe PR. 
 `metadata_admission_reject_count`, `orphan_test_preflight_count`, `scheduler_cancel_retry_count`, `main_epoch_reconcile_count`, `shared_surface_overlap_count`, `green_gate_reuse_ratio`, `time_to_terminal_proof`, `stale_state_prevented_count`, `predicted_collision_avoided_count`, `pre_ci_contract_defect_count`, `duplicate_lineage_prevented_count`, `forecast_false_positive_count`, `forecast_miss_count`.
 
 Een stijgende trend of een forecast miss is aanleiding om generator, template, classifier, schedulingregel of skill te verbeteren — niet om de veiligheidscontrole te verzwakken.
+
+
+## Productiebewijs
+
+Deze optimalisatielaag is via PR #2114 protected gemerged en teruggelezen op `main`.
+
+- candidate head: `87ac4eb16ae5e78ac54f45603f06b5086858c80c`
+- merge SHA: `f76bfbbccbc6dd256590dad1e95bc75985d9a351`
+- Required: success
+- Unified BRAIN: success
+- CodeQL: success
+- main readback: verified
+
+Daarmee is de status `ACTIVE_PREVENTION_PROVEN`.
