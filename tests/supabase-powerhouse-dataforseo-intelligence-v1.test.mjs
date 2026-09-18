@@ -28,3 +28,11 @@ test('DataForSEO runtime is scheduled daily through existing scheduler authority
   assert.match(sql,/powerhouse-dataforseo-intelligence/);
   assert.match(sql,/powerhouse_daily_scheduler_token/);
 });
+
+test('successful zero-item DataForSEO runs still prove producer health without fabricating keywords',()=>{
+  assert.match(fn,/dataforseo-producer-run:/);
+  assert.match(fn,/producer_run:true/);
+  assert.match(fn,/no_data_returned:items\.length===0/);
+  assert.match(fn,/PRODUCER_HEARTBEAT/);
+  assert.doesNotMatch(fn,/zoekwoord:['"]producer-run/);
+});
