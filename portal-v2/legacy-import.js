@@ -85,13 +85,16 @@ export function vertaalOudePortaalBackup(oudeState = {}) {
 export function voorbeeldVanImport(huidig = {}, nieuw = {}) {
   const tel = (state, pad) => arr(pad.split('.').reduce((n, k) => (n == null ? undefined : n[k]), state)).length;
   const naam = state => String(state?.portal?.company?.name || state?.company?.name || '');
+  const roadmapDelta=tel(nieuw,'portal.roadmap.items')-tel(huidig,'portal.roadmap.items');
   return Object.freeze({
     bedrijfWijzigt: naam(huidig) !== naam(nieuw),
     huidigBedrijf: naam(huidig),
     nieuwBedrijf: naam(nieuw),
-    takenDelta: tel(nieuw, 'portal.tasks.items') - tel(huidig, 'portal.tasks.items'),
+    takenDelta: roadmapDelta,
     wijzigingenDelta: tel(nieuw, 'portal.changes.items') - tel(huidig, 'portal.changes.items'),
-    roadmapDelta: tel(nieuw, 'portal.roadmap.items') - tel(huidig, 'portal.roadmap.items'),
+    roadmapDelta,
+    besluitenDelta: tel(nieuw,'portal.freshness.decisions')-tel(huidig,'portal.freshness.decisions'),
+    documentenDelta: tel(nieuw,'portal.freshness.documents')-tel(huidig,'portal.freshness.documents'),
     vertaald: arr(nieuw?.portal?.legacyImport?.vertaald).length,
     onvertaald: arr(nieuw?.portal?.legacyImport?.onvertaald).length
   });
