@@ -1,0 +1,18 @@
+{
+  "fingerprint": "control-plane|terminal-state|monotonic-truth-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "Canonical transition functions accepted valid status names but did not prevent a terminal VERIFIED/FULFILLED state from being reopened by a later caller.",
+  "root_cause": "State validation checked membership, not transition monotonicity.",
+  "prevention_rule": "Terminal operation and obligation truth is monotonic. VERIFIED/COMPENSATED and FULFILLED/CANCELLED/BREACHED may only replay to the same terminal state for evidence refresh; reopening requires a new obligation/operation lineage.",
+  "enforcement": [
+    "database transition guard",
+    "optimistic version CAS",
+    "control-plane binding",
+    "regression test"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}
