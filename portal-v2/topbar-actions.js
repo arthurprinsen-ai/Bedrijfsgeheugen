@@ -43,11 +43,6 @@ for(const [triggerId,panelId] of triggers){
  trigger?.addEventListener('click',event=>{event.stopPropagation();togglePanel(triggerId,panelId)});
 }
 
-byId('portalMainMenu')?.addEventListener('click',()=>{
- closePanels();
- const showPages=byId('showPages');
- if(showPages)showPages.click();
-});
 
 byId('portalHelpAllSections')?.addEventListener('click',()=>{
  closePanels();

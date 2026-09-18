@@ -49,7 +49,7 @@ jobs:
           tests/menu-balk-writer-noop-proof.test.mjs
           tests/menu-writer-self-pr-proof-state.test.mjs
           tests/menu-writer-shadow-pr-identity.test.mjs
-          tests/regulation-writer-candidate-mode.test.mjs
+          tests/brain-regulation-writer-candidate-mode.test.mjs
           tests/seo-writer-candidate-mode.test.mjs
           tests/approved-central-blog-candidate-mode.test.mjs
           tests/blog-update-writer-candidate-mode.test.mjs
