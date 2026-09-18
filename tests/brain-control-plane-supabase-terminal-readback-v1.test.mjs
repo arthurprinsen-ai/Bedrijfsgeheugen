@@ -3,12 +3,14 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import fs from 'node:fs';
 
-test('terminal closure derives exact Supabase migration identities from merged delta', async()=>{
+test('terminal closure derives exact Supabase migration identities across the same-obligation supersession lineage', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/Derive exact Supabase production migration identities/);
-  assert.match(workflow,/supabase\/migrations\/\[\^\/\]\+\\.sql/);
+  assert.match(workflow,/Derive exact Supabase production migration identities across supersession lineage/);
+  assert.ok(workflow.includes("/^supabase\\/migrations\\/[^/]+\\.sql$/"));
   assert.match(workflow,/migration_readback_required/);
   assert.match(workflow,/expected_migrations/);
+  assert.match(workflow,/SUPERSEDES_OBLIGATION_MISMATCH/);
+  assert.match(workflow,/source_pr:prNumber/);
 });
 
 test('terminal claim is fail-closed when required migration ledger readback is not verified', async()=>{

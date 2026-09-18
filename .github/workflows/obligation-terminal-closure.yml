@@ -185,38 +185,76 @@ jobs:
           echo "::error::SKILL_PROJECTION_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
           exit 78
 
-      - name: Derive exact Supabase production migration identities
+      - name: Derive exact Supabase production migration identities across supersession lineage
         id: migration-scope
         env:
-          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
         run: |
           set -euo pipefail
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { appendFile } from 'node:fs/promises';
           import path from 'node:path';
+          import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
 
-          const merge=process.env.MERGE_SHA;
-          const diff=execFileSync('git',['diff','--name-status',`${merge}^1`,merge],{encoding:'utf8'})
-            .split(/\r?\n/)
-            .filter(Boolean);
+          const repo=process.env.GITHUB_REPOSITORY;
+          const obligation=process.env.OBLIGATION_ID;
+          let prNumber=Number(process.env.PR_NUMBER);
+          if(!Number.isInteger(prNumber)||prNumber<1) throw new Error('TERMINAL_PR_NUMBER_INVALID');
+
           const expected=[];
-          for(const line of diff){
-            const parts=line.split(/\t/);
-            const status=parts[0]||'';
-            const candidate=status.startsWith('R') ? parts[2] : parts[1];
-            if(!candidate || !/^supabase\/migrations\/[^/]+\.sql$/.test(candidate)) continue;
-            if(status.startsWith('D')) continue;
-            const base=path.basename(candidate,'.sql');
-            const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
-            if(!match) throw new Error(`SUPABASE_MIGRATION_IDENTITY_INVALID:${candidate}`);
-            expected.push({version:match[1],name:match[2]});
+          const visited=new Set();
+          let depth=0;
+
+          while(prNumber && depth<20){
+            if(visited.has(prNumber)) throw new Error(`SUPERSEDES_LINEAGE_CYCLE:${prNumber}`);
+            visited.add(prNumber);
+            depth+=1;
+
+            const pr=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}`],{encoding:'utf8'}));
+            const metadata=parseDeliveryMetadata(pr.body||'');
+            if(metadata.obligationId!==obligation) {
+              throw new Error(`SUPERSEDES_OBLIGATION_MISMATCH:${prNumber}:${metadata.obligationId}:${obligation}`);
+            }
+            const merge=String(pr.merge_commit_sha||'');
+            if(pr.merged!==true || !/^[0-9a-f]{40}$/i.test(merge)) {
+              throw new Error(`SUPERSEDES_PR_NOT_MERGED:${prNumber}`);
+            }
+
+            const diff=execFileSync('git',['diff','--name-status',`${merge}^1`,merge],{encoding:'utf8'})
+              .split(/\r?\n/)
+              .filter(Boolean);
+            for(const line of diff){
+              const parts=line.split(/\t/);
+              const status=parts[0]||'';
+              const candidate=status.startsWith('R') ? parts[2] : parts[1];
+              if(!candidate || !/^supabase\/migrations\/[^/]+\.sql$/.test(candidate)) continue;
+              if(status.startsWith('D')) continue;
+              const base=path.basename(candidate,'.sql');
+              const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
+              if(!match) throw new Error(`SUPABASE_MIGRATION_IDENTITY_INVALID:${candidate}`);
+              expected.push({version:match[1],name:match[2],source_pr:prNumber});
+            }
+
+            prNumber=metadata.supersedes===null ? 0 : Number(metadata.supersedes);
+            if(prNumber && !Number.isInteger(prNumber)) throw new Error('SUPERSEDES_INVALID');
           }
+
+          if(depth>=20 && prNumber) throw new Error('SUPERSEDES_LINEAGE_DEPTH_EXCEEDED');
+
           const unique=[...new Map(expected.map(x=>[`${x.version}:${x.name}`,x])).values()]
             .sort((a,b)=>a.version.localeCompare(b.version)||a.name.localeCompare(b.name));
-          await appendFile(process.env.GITHUB_OUTPUT,`required=${unique.length>0}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`expected=${JSON.stringify(unique)}\n`);
-          console.log(JSON.stringify({migration_readback_required:unique.length>0,expected_migrations:unique},null,2));
+          const compact=unique.map(({version,name})=>({version,name}));
+          await appendFile(process.env.GITHUB_OUTPUT,`required=${compact.length>0}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`expected=${JSON.stringify(compact)}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`lineage_depth=${depth}\n`);
+          console.log(JSON.stringify({
+            migration_readback_required:compact.length>0,
+            supersession_lineage_depth:depth,
+            expected_migrations:unique
+          },null,2));
           NODE
 
       - name: Persist canonical Brain terminal evidence before terminal claim

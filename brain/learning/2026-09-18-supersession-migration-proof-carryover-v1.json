@@ -1,0 +1,20 @@
+{
+  "fingerprint": "control-plane|supersedes|migration-proof-carryover-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "A recovery successor could close the same obligation without re-proving Supabase migrations introduced by its superseded predecessor.",
+  "root_cause": "Terminal migration scope was derived only from the current merge diff, not from the same-obligation supersession lineage.",
+  "prevention_rule": "Terminal closure must recursively traverse same-obligation Supersedes ancestry and require exact production-ledger readback for every Supabase migration introduced anywhere in that lineage.",
+  "enforcement": [
+    "recursive same-obligation Supersedes traversal",
+    "cycle/depth guards",
+    "merged-predecessor requirement",
+    "exact version+name migration ledger verification",
+    "regression tests"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}
