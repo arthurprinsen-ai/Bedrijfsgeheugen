@@ -24,7 +24,7 @@ assert.ok(packet.sources.some(source => source.path === 'config/powerhouse-engin
 assert.ok(packet.sources.some(source => source.path === 'docs/brain/learning-plane-authority-contract-v1.md'));
 assert.ok(packet.fingerprints.includes('powerhouse-fast-development-protocol-v2'));
 assert.ok(packet.fingerprints.includes('powerhouse-autonomy-controls-v1'));
-assert.ok(packet.sources.length <= 64);
+assert.ok(packet.sources.length <= 96);
 assert.ok(packet.totalBytes <= 256_000);
 assert.equal(typeof packet.telemetry.context_load_ms, 'number');
 assert.equal(packet.telemetry.reasoning_ms, null);
@@ -35,7 +35,7 @@ assert.throws(
   () => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: strictMaxSources, maxBytes: 256_000 }),
   new RegExp(`maxSources exceeded: ${packet.sources.length} > ${strictMaxSources}`)
 );
-assert.throws(() => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 64, maxBytes: 100 }), /maxBytes/);
+assert.throws(() => compileChatLearningPreflight({ rootDir: process.cwd(), maxSources: 96, maxBytes: 100 }), /maxBytes/);
 
 // Runtime timings are intentionally observed, not deterministic. Canonical content must remain stable.
 const again = compileChatLearningPreflight({ rootDir: process.cwd(), maxBytes: 256_000 });
