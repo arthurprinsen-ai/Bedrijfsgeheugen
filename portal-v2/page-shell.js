@@ -15,6 +15,7 @@ import { mountFunctionalWorkspace, listFunctionalSuitePages } from './modules/fu
 import { mountAiCapabilityWorkspace } from './modules/ai-capability-workspace.js';
 import { mountExecutionLadderWorkspace } from './modules/execution-ladder-workspace.js';
 import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
+import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -78,6 +79,7 @@ const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','a
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
 const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
+const LEGACY_EXTERNAL_CONTEXT_PAGES=new Set(['mensen','branche-markt','onderzoek','compliance-governance']);
 const portalContext={domainState:null};
 
 export function configurePortalShell(context={}){
@@ -232,6 +234,9 @@ export function openPortalPage(pageId){
   else if(contract?.legacyCapability){
     mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:'idle',render:content=>renderNative(content,view)});
   } else renderNative(native,view);
+  if(LEGACY_EXTERNAL_CONTEXT_PAGES.has(pageId)){
+    mountLegacyExternalPlacements(native,{pageId,state:portalStateSnapshot()});
+  }
   if(pageId==='wijzigingen'&&portalContext.domainState?.get){
     const wizard=document.createElement('div');
     native.prepend(wizard);
@@ -258,6 +263,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./company-input.css');
   ensureStylesheet('./csrd-impact.css');
   ensureStylesheet('./entrepreneur-intelligence.css');
+  ensureStylesheet('./legacy-external-placements.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
