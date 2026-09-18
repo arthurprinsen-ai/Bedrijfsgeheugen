@@ -58,6 +58,25 @@ Deno.serve(async(req:Request)=>{
       const policyVersion=required(terminal.policy_version,'POLICY_VERSION');
       const skillVersion=required(terminal.skill_version,'SKILL_VERSION');
       const actor=required(terminal.actor||'github-actions','ACTOR');
+      const migrationRequired=terminal.supabase_migration_required===true;
+      const expectedMigrations=Array.isArray(terminal.supabase_expected_migrations)?terminal.supabase_expected_migrations:[];
+      let migrationReadback:any={required:false,all_matched:true,expected_count:0,matched_count:0,migrations:[]};
+      if(migrationRequired){
+        if(expectedMigrations.length<1)throw new Error('SUPABASE_MIGRATION_EXPECTATION_MISSING');
+        const normalized=expectedMigrations.map((item:any)=>{
+          const version=required(item?.version,'SUPABASE_MIGRATION_VERSION');
+          const name=required(item?.name,'SUPABASE_MIGRATION_NAME');
+          if(!/^[0-9]{14}$/.test(version)||!/^[a-z0-9_]+$/.test(name))throw new Error('SUPABASE_MIGRATION_IDENTITY_INVALID');
+          return {version,name};
+        });
+        const migrationCheck=await client.rpc('powerhouse_supabase_migration_readback_v1',{p_expected:normalized});
+        if(migrationCheck.error)throw new Error(`SUPABASE_MIGRATION_READBACK_FAILED:${migrationCheck.error.message}`);
+        migrationReadback=migrationCheck.data;
+        if(!migrationReadback?.all_matched||Number(migrationReadback?.matched_count)!==normalized.length){
+          throw new Error(`SUPABASE_MIGRATION_READBACK_MISMATCH:${JSON.stringify(migrationReadback).slice(0,500)}`);
+        }
+        migrationReadback={required:true,...migrationReadback};
+      }
       const obligationPayloadHash=await sha256(obligationKey);
       const terminalPayloadHash=await sha256(`${obligationKey}|${candidateSha}|${mainSha}|${productionRunId}|${projectionRunId??''}`);
       const one=(value:any)=>Array.isArray(value)?value[0]:value;
@@ -88,6 +107,7 @@ Deno.serve(async(req:Request)=>{
         policy_version:policyVersion,
         skill_version:skillVersion,
         outcome_verified:true,
+        supabase_migration_readback:migrationReadback,
         github_workflow_run_id:Number(terminal.github_workflow_run_id||0)||null,
         oidc_repository:terminal.oidc_repository||null,
         oidc_workflow_ref:terminal.oidc_workflow_ref||null,
@@ -185,6 +205,7 @@ Deno.serve(async(req:Request)=>{
         production_readback_run_id:productionRunId,
         skill_projection_run_id:projectionRunId,
         learning_status:learningStatus,
+        supabase_migration_readback:migrationReadback,
         durable_readback_verified:true
       }},200);
     }catch(error){
