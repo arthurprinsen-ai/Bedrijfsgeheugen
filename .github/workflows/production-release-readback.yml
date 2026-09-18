@@ -47,8 +47,10 @@ jobs:
           ]);
           const readbackControlPlaneOnly=changedPaths.length>0 && changedPaths.every(path => readbackControlPlanePaths.has(path));
           const websiteRequired=readbackControlPlaneOnly ? false : suites.website === true;
+          const portalRequired=readbackControlPlaneOnly ? false : suites.portal === true;
+          const browserRequired=websiteRequired || portalRequired;
           const netlifyRuntimeRequired=!readbackControlPlaneOnly && changedPaths.some(path => path.startsWith('netlify/functions/'));
-          const deploymentRequired=websiteRequired || netlifyRuntimeRequired;
+          const deploymentRequired=browserRequired || netlifyRuntimeRequired;
 
           let routes=[];
           let riskLane='not-applicable';
@@ -60,11 +62,14 @@ jobs:
             if(routes.length===0) routes=risk.lane==='high-risk'?['/','/ai-act','/benchmark']:['/'];
             riskLane=risk.lane;
           }
+          if(portalRequired && !routes.includes('/portal-v2/')) routes.push('/portal-v2/');
 
           await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`website_required=${websiteRequired}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`portal_required=${portalRequired}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`browser_required=${browserRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
-          console.log(JSON.stringify({changedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,website_required:websiteRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
+          console.log(JSON.stringify({changedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,website_required:websiteRequired,portal_required:portalRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
       - name: Persist promotion-required state before waiting
         if: steps.scope.outputs.deployment_required == 'true'
@@ -181,18 +186,18 @@ jobs:
           echo "Connector readiness stayed unhealthy after 8 attempts" >&2
           exit 1
       - name: Install production browser verifier
-        if: steps.scope.outputs.website_required == 'true'
+        if: steps.scope.outputs.browser_required == 'true'
         run: PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
       - id: routes
         name: Verify affected production routes
-        if: steps.scope.outputs.website_required == 'true'
+        if: steps.scope.outputs.browser_required == 'true'
         env:
           BASE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ steps.scope.outputs.routes }}
           ALLOW_EXISTING_PAGE_ERRORS: 'true'
         run: node tools/site-shell/verify-targeted-website-routes.mjs --output .artifacts/production-route-verification.json
       - name: Evaluate immutable website production truth
-        if: steps.scope.outputs.website_required == 'true' && steps.deploy.outcome == 'success'
+        if: steps.scope.outputs.browser_required == 'true' && steps.deploy.outcome == 'success'
         run: >-
           node tools/site-shell/verify-production-release.mjs
           --merge-sha '${{ github.sha }}'
@@ -204,7 +209,7 @@ jobs:
           --routes-ok '${{ steps.routes.outcome == 'success' }}'
           --output .artifacts/production-release-readback.json
       - name: Evaluate immutable Netlify backend production truth
-        if: steps.scope.outputs.deployment_required == 'true' && steps.scope.outputs.website_required != 'true' && steps.deploy.outcome == 'success'
+        if: steps.scope.outputs.deployment_required == 'true' && steps.scope.outputs.browser_required != 'true' && steps.deploy.outcome == 'success'
         run: >-
           node tools/site-shell/verify-production-release.mjs
           --merge-sha '${{ github.sha }}'
