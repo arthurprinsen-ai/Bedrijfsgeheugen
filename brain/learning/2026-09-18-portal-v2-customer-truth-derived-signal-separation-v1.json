@@ -6,7 +6,8 @@
     "pr": 1999,
     "branch": "feat/portal-v2-trusted-advisor-parity-v1",
     "baseSha": "76c244d4509100846afa210b9d16bf7a7ca328d3",
-    "observedHead": "93ff0b1363141cf11b892b522227b32bec0dec75"
+    "observedHead": "93ff0b1363141cf11b892b522227b32bec0dec75",
+    "finalClosureBaseSha": "12f4190d4bc3aa86ae69fcf66283a47123d3345e"
   },
   "problem": "Portal V2 canvas/model projections could visually resemble customer answers; CI also exposed stale semantic/DOM oracles and invalid delivery metadata.",
   "rootCauses": [
@@ -31,21 +32,40 @@
     "portalV2Tests": "success on exact head 93ff0b1363141cf11b892b522227b32bec0dec75",
     "qualityIntelligence": "success",
     "qualitySurfaceGate": "success",
-    "assurance": "success",
-    "codeQL": "success",
+    "assurance": "success on main",
+    "codeQL": "success on main",
     "supabasePreview": "success",
     "livePreview": "success",
-    "remainingAtCapture": [
-      "Required/BRAIN rerun needed after corrected metadata",
-      "Production DOM snapshot/readback still requires exact-head closure"
-    ]
+    "remainingAtCapture": [],
+    "finalMainSha": "12f4190d4bc3aa86ae69fcf66283a47123d3345e",
+    "productionReadback": {
+      "status": "success",
+      "publicRoutes": "91 routes x 3 viewports = 273 browser checks green",
+      "visualRegression": "21 states green",
+      "exactCommit": "12f4190d4bc3aa86ae69fcf66283a47123d3345e",
+      "artifactId": 10534736840
+    },
+    "portalV2ProductionDomReadback": "success on main",
+    "provenance": "success on main",
+    "qualityContract": "success on main"
   },
   "preventionFingerprint": "portal-v2-customer-truth-derived-signal-separation-v1",
-  "status": "RECORDED_POST_MERGE_RACE_RECOVERY",
+  "status": "LIVE_AND_PROVEN",
   "postMergeRecovery": {
     "parentPr": 1999,
     "parentHead": "66cb8e09c25285d177309aa2a4d8dc3d504b9741",
     "mergedMain": "1598fecd3fa515174595a0a97bf820cd38ef5768",
     "prevention": "portal-v2-visual-readback-race-safe-v1"
+  },
+  "finalClosure": {
+    "closedAt": "2026-09-18",
+    "definitionOfDone": "exact-head gates -> protected merge -> main SHA -> production DOM/readback -> visual regression -> evidence -> learning/prevention writeback",
+    "prevention": [
+      "Treat workflow-not-started, queued, stale, race and missing-readback states as recoverable incomplete execution.",
+      "Capture exact-head immutable evidence before consuming it after auto-merge.",
+      "Do not claim LIVE_AND_PROVEN until production readback is terminal green."
+    ],
+    "pr": 2004,
+    "obligationId": "portal-v2-trusted-advisor-parity-v1"
   }
 }
