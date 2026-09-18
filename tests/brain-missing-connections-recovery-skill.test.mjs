@@ -12,7 +12,10 @@ test('missing-connections recovery is canonical, evidence-first and discoverable
   assert.equal(skill.status,'ACTIVE');
   assert.equal(skill.fingerprint,'powerhouse-missing-connections-runtime-schema-readback-v1');
   assert.equal(learning.source_pr,2023);
-  assert.equal(learning.terminal_state,'RECORDED_PENDING_FINAL_DELIVERY_READBACK');
+  assert.equal(learning.terminal_state,'LIVE_AND_PROVEN');
+  assert.equal(learning.production_proof?.data_spine_watchdog_state,'GREEN');
+  assert.equal(learning.production_proof?.dataforseo_source_state,'FRESH');
+  assert.equal(learning.production_proof?.portal_state_source_state,'FRESH');
 
   assert.ok(skill.required_behavior.some(rule=>rule.includes('live schema and runtime evidence')));
   assert.ok(skill.required_behavior.some(rule=>rule.includes('earliest truthful stage')));

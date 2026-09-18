@@ -47,7 +47,12 @@
     "learning": "brain/learning/2026-09-18-missing-connections-recovery-v1.json",
     "human_documentation": "docs/learning/2026-09-18-one-brain-live-promotion.md",
     "terminal_claim_learning": "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json",
-    "terminal_claim_policy": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json"
+    "terminal_claim_policy": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+    "production_merge_sha": "12771d87faf04d2b5d4fa790eb1ff82387ecd604",
+    "production_source_pr": 2047,
+    "production_state": "LIVE_AND_PROVEN",
+    "data_spine_watchdog_state": "GREEN",
+    "dataforseo_edge_function_version": 5
   },
   "consumers": [
     "chat-learning-preflight",
