@@ -24,4 +24,6 @@ test('terminal closure reuses canonical readback instead of creating a second de
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.doesNotMatch(workflow,/netlify deploy|deploy --prod|curl .*release\.json/);
   assert.match(workflow,/actions\/workflows\/production-release-readback\.yml\/runs/);
+  assert.match(workflow,/CANONICAL_PRODUCTION_READBACK_NOT_PROVEN/);
+  assert.doesNotMatch(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN|descendant_live/);
 });

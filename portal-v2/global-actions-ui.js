@@ -2,6 +2,7 @@ import {exportPortalState,stagePortalImport,applyStagedPortalImport,printPortalR
 import {applyCustomerBranding,deriveCustomerBrand} from './customer-branding.js';
 
 const esc=value=>String(value||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+// The full portal drawer is the canonical host for global actions on mobile and compact layouts. Base 927d175.
 const MOBILE_ACTIONS=Object.freeze([
  ['Export','export'],['Import','import'],['Print','print-permission'],['Feedback','feedback'],['Klantmerk','customer-branding'],['Account','identity-login-logout']
 ]);

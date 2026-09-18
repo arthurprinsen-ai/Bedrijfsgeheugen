@@ -2,18 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('central terminal closure owns descendant-safe recovery', async()=>{
+test('central terminal closure uses only canonical production readback and fails closed otherwise', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN/);
-  assert.match(workflow,/descendant_live/);
-  assert.match(workflow,/git merge-base --is-ancestor/);
+  assert.match(workflow,/production-release-readback\.yml\/runs/);
+  assert.match(workflow,/PRODUCTION_READBACK_PROVEN/);
+  assert.match(workflow,/CANONICAL_PRODUCTION_READBACK_NOT_PROVEN/);
+  assert.doesNotMatch(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN|descendant_live/);
   assert.match(workflow,/Terminal-Production-Readback:/);
 });
 
-test('real canonical readback failures do not downgrade into descendant recovery', async()=>{
+test('real canonical readback failures remain terminal failures without a second readback authority', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/if \[ "\$source_conclusion" != "cancelled" \]/);
   assert.match(workflow,/PRODUCTION_READBACK_FAILED/);
+  assert.doesNotMatch(workflow,/curl .*release\.json/);
 });
 
 test('Edge terminal authority requires explicit verified descendant proof', async()=>{
