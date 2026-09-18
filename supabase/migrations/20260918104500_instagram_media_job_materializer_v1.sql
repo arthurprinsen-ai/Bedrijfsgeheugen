@@ -232,3 +232,102 @@ comment on function public.powerhouse_ensure_instagram_media_job_v1(date) is
 'Idempotently materializes the one canonical Instagram media execution job from the daily publication obligation and recommendation.';
 comment on function public.powerhouse_claim_instagram_media_job_v1(text,timestamptz) is
 'Atomically claims the next canonical Instagram media job. SKIP LOCKED prevents duplicate agent execution.';
+
+
+create or replace function public.powerhouse_complete_instagram_media_job_v1(
+  p_job_id uuid,
+  p_worker text,
+  p_asset_manifest jsonb
+)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_catalog
+as $$
+declare
+  v_job public.powerhouse_instagram_media_jobs_v1%rowtype;
+  v_url text;
+  v_provider text;
+  v_media_type text;
+  v_request bigint;
+begin
+  if nullif(btrim(p_worker),'') is null then raise exception 'WORKER_REQUIRED'; end if;
+  if jsonb_typeof(p_asset_manifest)<>'object' then raise exception 'ASSET_MANIFEST_OBJECT_REQUIRED'; end if;
+
+  select * into v_job
+  from public.powerhouse_instagram_media_jobs_v1
+  where id=p_job_id
+  for update;
+
+  if not found then raise exception 'MEDIA_JOB_NOT_FOUND'; end if;
+  if v_job.status<>'CLAIMED' then raise exception 'MEDIA_JOB_NOT_CLAIMED:%',v_job.status; end if;
+  if coalesce(v_job.asset_manifest->>'claimed_by','')<>p_worker then raise exception 'MEDIA_JOB_CLAIM_OWNER_MISMATCH'; end if;
+  if v_job.republish_forbidden then raise exception 'MEDIA_JOB_REPUBLISH_FORBIDDEN'; end if;
+
+  v_url := nullif(btrim(p_asset_manifest->>'asset_url'),'');
+  v_provider := lower(coalesce(nullif(btrim(p_asset_manifest->>'provider'),''),v_job.selected_provider,''));
+  v_media_type := lower(coalesce(nullif(btrim(p_asset_manifest->>'media_type'),''),case when v_job.post_type in ('reel','video') then 'video' else 'image' end));
+
+  if v_url is null or v_url !~ '^https://' then raise exception 'EXACT_ASSET_URL_REQUIRED'; end if;
+  if v_provider<>coalesce(v_job.selected_provider,'') then raise exception 'MEDIA_PROVIDER_MISMATCH'; end if;
+  if not (v_provider=any(v_job.allowed_providers)) then raise exception 'MEDIA_PROVIDER_NOT_ALLOWED'; end if;
+  if v_job.required_provider is not null and v_provider<>v_job.required_provider then raise exception 'MEDIA_PROVIDER_REQUIRED:%',v_job.required_provider; end if;
+
+  update public.powerhouse_instagram_media_jobs_v1
+  set status='VERIFYING',
+      provider_connection_state='CONNECTED',
+      asset_manifest=coalesce(asset_manifest,'{}'::jsonb) || p_asset_manifest || jsonb_build_object(
+        'completed_by',p_worker,
+        'completed_at',now()
+      ),
+      next_action=case when v_media_type='image' then 'VISION_VERIFY_EXACT_ASSET' else 'VIDEO_FRAME_PROOF_REQUIRED' end,
+      last_error=null,
+      updated_at=now()
+  where id=p_job_id;
+
+  update public.content_publication_obligations
+  set evidence=coalesce(evidence,'{}'::jsonb) || jsonb_build_object(
+        'media_url',v_url,
+        'media_provider',v_provider,
+        'media_type',v_media_type,
+        'media_job_id',p_job_id,
+        'exact_final_media_proven',false,
+        'mira_gate_result','UNPROVEN',
+        'mira_gate_passed',false
+      ),
+      next_action=case when v_media_type='image'
+        then 'Exact generated asset ready; canonical vision verifier must PASS before dispatch.'
+        else 'Exact generated video ready; start/middle/end frame proof must PASS before dispatch.'
+      end,
+      updated_at=now()
+  where tenant_id=v_job.tenant_id and publication_date=v_job.publication_date and channel=v_job.channel
+    and external_id is null;
+
+  if v_media_type='image' then
+    v_request := public.bg_roep_functie(
+      'powerhouse-instagram-media-verifier',
+      jsonb_build_object(
+        'publicationDate',v_job.publication_date::text,
+        'mediaUrl',v_url,
+        'mediaType','image',
+        'provider',v_provider,
+        'providerPostId','preflight:'||p_job_id::text
+      )
+    );
+    update public.powerhouse_instagram_media_jobs_v1
+    set asset_manifest=asset_manifest || jsonb_build_object('verification_request_id',v_request)
+    where id=p_job_id;
+  end if;
+
+  return jsonb_build_object(
+    'ok',true,'state','VERIFYING','job_id',p_job_id,'media_url',v_url,
+    'provider',v_provider,'media_type',v_media_type,'verification_request_id',v_request
+  );
+end
+$$;
+
+revoke all on function public.powerhouse_complete_instagram_media_job_v1(uuid,text,jsonb) from public,anon,authenticated;
+grant execute on function public.powerhouse_complete_instagram_media_job_v1(uuid,text,jsonb) to service_role;
+
+comment on function public.powerhouse_complete_instagram_media_job_v1(uuid,text,jsonb) is
+'Bounded agent writeback for an atomically claimed Instagram media job. It can attach exact generated media and request proof, but cannot publish or mark identity PASS.';
