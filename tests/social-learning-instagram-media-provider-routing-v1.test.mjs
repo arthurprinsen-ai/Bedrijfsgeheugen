@@ -2,6 +2,7 @@ import test from 'node:test';import assert from 'node:assert/strict';import fs f
 const cfg=JSON.parse(fs.readFileSync('config/social-channel-identity-contract.json','utf8'));
 const sql=fs.readFileSync('supabase/migrations/20260918111500_instagram_media_provider_router_v1.sql','utf8');
 const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
+const contentLoop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
 test('reels and videos require OpenArt',()=>{assert.match(sql,/required_provider','openart/);assert.match(router,/OPENART_REQUIRED_FOR_VIDEO/);});
 test('images allow OpenArt or Placid',()=>{assert.match(sql,/jsonb_build_array\('openart','placid'\)/);});
 test('carousel videos require OpenArt and image slides allow both',()=>{assert.match(sql,/INSTAGRAM_CAROUSEL_VIDEO_OPENART_REQUIRED/);assert.match(router,/CAROUSEL_VIDEO_OPENART_REQUIRED/);assert.match(router,/CAROUSEL_IMAGE_PROVIDER_INVALID/);});
@@ -24,4 +25,9 @@ test('trigger function execute is service-role only',()=>{
 test('Instagram media job table is registered as a quality surface',()=>{
  const surfaces=JSON.parse(fs.readFileSync('config/powerhouse-quality-surface-contracts.json','utf8')).surfaces;
  assert.ok(surfaces.some(s=>s.id==='table:public.powerhouse_instagram_media_jobs_v1'));
+});
+
+test('content loop invokes Instagram router as real TypeScript before publish',()=>{
+ assert.match(contentLoop,/stepResults\.push\(await invoke\(url, expected, 'powerhouse-instagram-media-router', \{ runDate \}\)\);/);
+ assert.doesNotMatch(contentLoop,/dispatch\.\\n\s*stepResults/);
 });
