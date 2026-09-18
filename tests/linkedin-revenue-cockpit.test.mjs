@@ -104,3 +104,13 @@ test('feedback and economics use explicit idempotency keys from the user interac
   assert.match(client,/cockpit-economics/);
   assert.match(client,/dedupeKey:correlation/);
 });
+
+test('feedback and economics reuse the same interaction identity across a retry', () => {
+  const client=fs.readFileSync(scriptPath,'utf8');
+  assert.match(client,/function stableInteraction\(button,prefix,action\)/);
+  assert.match(client,/if\(!button\.dataset\.dedupeKey\)button\.dataset\.dedupeKey=correlation/);
+  assert.match(client,/if\(!button\.dataset\.observedAt\)button\.dataset\.observedAt=new Date\(\)\.toISOString\(\)/);
+  assert.match(client,/stableInteraction\(b,'cockpit-feedback',action\)/);
+  assert.match(client,/stableInteraction\(b,'cockpit-economics',action\)/);
+  assert.match(client,/crypto\?\.randomUUID/);
+});
