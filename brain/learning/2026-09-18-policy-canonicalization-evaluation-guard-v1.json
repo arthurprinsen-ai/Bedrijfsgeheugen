@@ -40,6 +40,12 @@
       "observation": "Recovery #2310 inferred the regulatory writer still had a weekly schedule from predecessor history, while current canonical main had already removed that schedule.",
       "root_cause": "The recovery decision used predecessor evidence instead of re-reading the current canonical workflow before encoding a regression assertion.",
       "prevention": "Before every recovery patch, read the exact current-main implementation and derive tests from current canonical state plus invariant behavior; never promote predecessor assumptions into a new regression contract."
+    },
+    {
+      "fingerprint": "control-plane|terminal-closure-canonical-readback-output-binding|v1",
+      "observation": "PR #2312 proved canonical production readback and skill projection, but terminal evidence posted production_readback_verified=false because the canonical-run success path did not emit steps.production.outputs.verified.",
+      "root_cause": "The descendant-live fallback emitted verified=true, while the canonical production-readback success branch omitted the same output, creating asymmetric terminal evidence semantics.",
+      "prevention": "Every terminal production-readback success mode must emit a shared verified=true output before durable evidence submission; terminal evidence must fail closed if that output is absent."
     }
   ]
 }
