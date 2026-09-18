@@ -29,7 +29,12 @@
     "Do not create duplicate lineages for ordinary drift; rebuild a bounded current-main successor only when divergence makes reconciliation unsafe or inefficient.",
     "Preflight the terminal path through protected merge, deploy/readback, outcome and learning/skill writeback before starting the mutation.",
     "Measure forecast quality and delivery friction and feed both into future candidate planning.",
-    "Require canonical learning-to-skill writeback and readback before terminal delivery may be considered proven."
+    "Require canonical learning-to-skill writeback and readback before terminal delivery may be considered proven.",
+    "Treat WAITING_CAPACITY and FINISH_EXISTING_WORK_FIRST as deliberate backpressure, not product-code failure.",
+    "Classify Candidate-Type by actual semantics before admission: promotion only for promotion/transport, implementation for implementation/learning, recovery only for genuine recovery lineage.",
+    "Never bypass promotion serialization by relabeling a true promotion; only correct demonstrable metadata misclassification.",
+    "When the canonical owner advances the same obligation head, treat only the newest owner head as merge-authoritative and keep older gate results as audit evidence.",
+    "Avoid writer-head thrash: do not force-update an actively progressing canonical owner branch unless there is a concrete failure or owner stagnation."
   ],
   "metrics": [
     "metadata_admission_reject_count",
@@ -77,13 +82,6 @@
     "main_readback": "verified",
     "verified_on": "2026-09-18"
   },
-  "principles": [
-    "Treat WAITING_CAPACITY and FINISH_EXISTING_WORK_FIRST as deliberate backpressure, not product-code failure.",
-    "Classify Candidate-Type by actual semantics before admission: promotion only for promotion/transport, implementation for implementation/learning, recovery only for genuine recovery lineage.",
-    "Never bypass promotion serialization by relabeling a true promotion; only correct demonstrable metadata misclassification.",
-    "When the canonical owner advances the same obligation head, treat only the newest owner head as merge-authoritative and keep older gate results as audit evidence.",
-    "Avoid writer-head thrash: do not force-update an actively progressing canonical owner branch unless there is a concrete failure or owner stagnation."
-  ],
   "secondary_fingerprints": [
     "delivery|capacity-owner-authority|v1"
   ]
