@@ -5,12 +5,14 @@ import { isDemoCustomer, renderDemoOverview } from './overview-demo.js';
 import { directievragenMarkup, DIRECTIEVRAGEN_STIJL } from './directievragen.js';
 import { openPortalPage } from '../page-shell.js';
 import { renderLegacyOverviewComplete } from './legacy-overview-complete.js';
+import { mountControlPlaneCockpit } from '../control-plane-cockpit.js';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);
 const euro=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(value||0);
 let overviewReorderController=null;
 let cockpitMounted=false;
+let controlPlaneMountStarted=false;
 
 const ADOPTION_STAGES=Object.freeze([
  Object.freeze({id:'bewustwording',label:'Bewustwording',min:1}),
@@ -64,6 +66,12 @@ function ensureCompanyCockpit(root){
  mountAuthenticatedCompanyCockpit(root).catch(()=>{cockpitMounted=false;});
 }
 
+function ensureControlPlaneCockpit(root){
+ if(controlPlaneMountStarted||!root?.querySelector?.('.main'))return;
+ controlPlaneMountStarted=true;
+ mountControlPlaneCockpit(root).catch(()=>{controlPlaneMountStarted=false;});
+}
+
 export function bindPageButtons(scope){
  scope?.querySelectorAll?.('[data-pv-page]').forEach(btn=>{
   if(btn.dataset.pvBound==='true')return;
@@ -106,6 +114,7 @@ function renderDirectievragen(root,state){
 
 export function applyOverviewDashboard(root=document,state={}){
  ensureCompanyCockpit(root);
+ ensureControlPlaneCockpit(root);
  renderLegacyOverviewComplete(root,state,openPortalPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
  renderLegacyOverviewInsights(root,state);
  renderDirectievragen(root,state);
