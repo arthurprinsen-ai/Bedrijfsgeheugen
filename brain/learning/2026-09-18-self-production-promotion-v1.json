@@ -1,0 +1,22 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-SELF-PRODUCTION-PROMOTION-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse-self-production-promotion-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "root_cause": "Chats and agents could produce a green candidate yet still leave routine protected merge/deploy as human follow-up; concurrent workers could also mutate the terminal candidate head.",
+  "fix": [
+    "Current authorized execution node owns protected promotion through production/provider readback.",
+    "Routine user follow-up for merge/deploy is forbidden.",
+    "One terminal writer lease freezes non-owner branch mutations.",
+    "Progress-aware supervisor recovers zero-run, partial-start and stale-queue exact-head delivery without weakening gates."
+  ],
+  "prevention_rules": [
+    "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED",
+    "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+    "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+    "CURRENT_AUTHORITY_READBACK_OVERRIDES_STALE_CHAT_STATUS"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}
