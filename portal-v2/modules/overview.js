@@ -106,6 +106,7 @@ function renderDirectievragen(root,state){
 
 export function applyOverviewDashboard(root=document,state={}){
  ensureCompanyCockpit(root);
+ renderLegacyOverviewComplete(root,state,openPortalPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
  renderLegacyOverviewInsights(root,state);
  renderDirectievragen(root,state);
  ensureOverviewReorder(root);
