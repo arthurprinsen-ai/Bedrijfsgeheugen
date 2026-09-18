@@ -11,12 +11,13 @@ test('tenant identity review is derived live, not copied to a parallel queue',()
   assert.doesNotMatch(sql,/create table\s+public\.powerhouse_tenant_identity_review/i);
 });
 
-test('sales actions deterministically materialize decision cycles',()=>{
+test('sales actions deterministically bootstrap canonical cycles at truthful signal stage',()=>{
   assert.match(sql,/powerhouse_materialize_sales_action_cycle_row_v1/);
   assert.match(sql,/cycle_id,subject_key,source_signal_ref/);
   assert.match(sql,/a\.action_id/);
-  assert.match(sql,/sales-action:' \|\| a\.action_id::text \|\| ':decision'/);
-  assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/i);
+  assert.match(sql,/sales-action:' \|\| a\.action_id::text \|\| ':signal'/);
+  assert.match(sql,/observed_sales_action_bootstrap_signal/);
+  assert.doesNotMatch(sql,/sales-action:' \|\| a\.action_id::text \|\| ':decision'/);
 });
 
 test('learning gap closure does not synthesize feedback, economics or realized value',()=>{
@@ -55,4 +56,45 @@ test('forecast readiness distinguishes future obligations from overdue calibrati
   assert.match(sql,/future_calibration_obligations/);
   assert.match(sql,/due_at <= now\(\)/);
   assert.match(sql,/due_at > now\(\)/);
+});
+
+
+test('one brain inventory exposes all connected intelligence domains without a parallel store',()=>{
+  assert.match(sql,/create or replace view public\.powerhouse_one_brain_intelligence_inventory_v1/i);
+  for (const layer of [
+    'agent_chat_control_plane','canonical_memory','failure_learning','outcome_obligations',
+    'predictive_signals','forecasts','forecast_calibration','external_intelligence','search_intelligence',
+    'behavior_intelligence','opportunity_intelligence','sales_action_intelligence','decision_cycles',
+    'cycle_events','brain_decisions','value_evaluation','action_economics','human_feedback',
+    'experiment_assignments','policy_versions','social_learning','revenue_learning','content_recommendations',
+    'channel_decisions','content_artifacts','publication_obligations','resource_intelligence',
+    'quality_intelligence','security_intelligence','production_truth','delivery_evidence','ai_governance'
+  ]) assert.match(sql,new RegExp("'" + layer + "'"));
+  assert.doesNotMatch(sql,/create table\s+public\.powerhouse_one_brain/i);
+});
+
+test('one brain reconciliation reuses canonical engines and remains evidence honest',()=>{
+  assert.match(sql,/create or replace function public\.powerhouse_one_brain_reconcile_v1/i);
+  assert.match(sql,/powerhouse_refresh_forecast_calibration_obligations/);
+  assert.match(sql,/powerhouse_mature_experiment_assignments_v1/);
+  assert.match(sql,/powerhouse_promote_policy_if_proven_v1/);
+  assert.match(sql,/powerhouse_materialize_sales_action_cycle_row_v1/);
+  assert.doesNotMatch(sql,/insert into public\.powerhouse_action_economics/i);
+  assert.doesNotMatch(sql,/insert into public\.powerhouse_human_feedback_events/i);
+  assert.doesNotMatch(sql,/insert into public\.powerhouse_realized_values/i);
+});
+
+test('one brain health separates green wiring from sparse evidence',()=>{
+  assert.match(sql,/create or replace view public\.powerhouse_one_brain_runtime_health_v1/i);
+  assert.match(sql,/architecture_state/);
+  assert.match(sql,/learning_state/);
+  assert.match(sql,/EVIDENCE_SPARSE/);
+  assert.match(sql,/green wiring never fabricates economics, feedback, outcomes or causal evidence/);
+});
+
+test('one brain reconciliation is continuously scheduled and idempotent',()=>{
+  assert.match(sql,/powerhouse-one-brain-reconcile-v1/);
+  assert.match(sql,/\*\/10 \* \* \* \*/);
+  assert.match(sql,/cron\.unschedule/);
+  assert.match(sql,/cron\.schedule/);
 });
