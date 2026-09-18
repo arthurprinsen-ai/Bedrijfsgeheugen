@@ -68,5 +68,14 @@ test('interpretation updater is driven by canonical source-state changes',()=>{
   assert.match(workflow,/Delivery-Lane: automation/);
   assert.match(workflow,/Candidate-Type: implementation/);
   assert.match(workflow,/Regulatory-Candidate-Type: interpretation-review/);
-  assert.match(workflow,/cron: '30 4 \* \* 1'/);
+  assert.doesNotMatch(workflow,/schedule:[\s\S]*?cron:/);
+});
+
+
+test('regulatory source watcher remains periodic while interpretation stays source-driven',()=>{
+  const watcher=fs.readFileSync('.github/workflows/regulatory-source-watch.yml','utf8');
+  const interpretation=fs.readFileSync('.github/workflows/regelgeving-bijwerken.yml','utf8');
+  assert.match(watcher,/schedule:[\s\S]*?cron:/);
+  assert.match(interpretation,/push:[\s\S]*?data\/regulatory-source-state\.json/);
+  assert.doesNotMatch(interpretation,/schedule:[\s\S]*?cron:/);
 });

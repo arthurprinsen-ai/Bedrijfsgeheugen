@@ -61,22 +61,22 @@ jobs:
           HEAD_SHA=$(git rev-parse HEAD)
           git push origin "HEAD:$BRANCH"
           PR_URL=$(gh pr create --base main --head "$BRANCH" --title "Regulatory source candidate ${GITHUB_RUN_ID}" --body "$(cat <<EOF
-Obligation-ID: regulatory-source-watch-${GITHUB_RUN_ID}
-Delivery-Lane: automation
-Candidate-Type: implementation
-Regulatory-Candidate-Type: source-observation
-Base-SHA: $BASE_SHA
+          Obligation-ID: regulatory-source-watch-${GITHUB_RUN_ID}
+          Delivery-Lane: automation
+          Candidate-Type: implementation
+          Regulatory-Candidate-Type: source-observation
+          Base-SHA: $BASE_SHA
 
-Writer-Lease-State: TERMINAL_DELIVERY
-Writer-Lease-Owner: regulatory-source-watch-${GITHUB_RUN_ID}
-Writer-Lease-Scope: data/regulatory-source-state.json
-Writer-Lease-Head: $HEAD_SHA
-Writer-Lease-Main-Epoch: $BASE_SHA
-Writer-Lease-Obligation: regulatory-source-watch-${GITHUB_RUN_ID}
-Writer-Lease-NonOwner-Action: DEFER
-Writer-Lease-Release: MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK
+          Writer-Lease-State: TERMINAL_DELIVERY
+          Writer-Lease-Owner: regulatory-source-watch-${GITHUB_RUN_ID}
+          Writer-Lease-Scope: data/regulatory-source-state.json
+          Writer-Lease-Head: $HEAD_SHA
+          Writer-Lease-Main-Epoch: $BASE_SHA
+          Writer-Lease-Obligation: regulatory-source-watch-${GITHUB_RUN_ID}
+          Writer-Lease-NonOwner-Action: DEFER
+          Writer-Lease-Release: MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK
 
-Raw official-source evidence was persisted before this projection candidate.
-EOF
-)")
+          Raw official-source evidence was persisted before this projection candidate.
+          EOF
+          )")
           gh pr merge --auto --squash "$PR_URL"

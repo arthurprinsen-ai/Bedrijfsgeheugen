@@ -12,7 +12,10 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/approved-central-blog.yml': 'automation',
   '.github/workflows/powerhouse-assurance.yml': 'backend',
   '.github/workflows/powerhouse-quality-intelligence.yml': 'backend',
-  '.github/workflows/powerhouse-quality-surface-gate.yml': 'backend'
+  '.github/workflows/powerhouse-quality-surface-gate.yml': 'backend',
+  '.github/workflows/lane-automation.yml': 'automation',
+  '.github/workflows/regelgeving-bijwerken.yml': 'automation',
+  '.github/workflows/regulatory-source-watch.yml': 'automation'
 });
 const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
   'docs/superpowers/changes/',
@@ -44,6 +47,10 @@ const QUALITY_BACKEND_PATHS = Object.freeze([
   'tests/brain-quality',
   'tests/powerhouse-resource-intelligence'
 ]);
+const REGULATORY_AUTOMATION_PATHS = Object.freeze([
+  'tools/regulatory-',
+  'tests/regulatory-'
+]);
 const DELIVERY_CONTROL_PLANE_BACKEND_PATHS = Object.freeze([
   '.github/workflows/obligation-terminal-closure.yml',
   '.github/workflows/production-release-readback.yml',
@@ -61,6 +68,7 @@ function scopedLaneForPath(path) {
   if (matches(path, ASSURANCE_BACKEND_PATHS)) return 'backend';
   if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';
   if (matches(path, QUALITY_BACKEND_PATHS)) return 'backend';
+  if (matches(path, REGULATORY_AUTOMATION_PATHS)) return 'automation';
   if (matches(path, DELIVERY_CONTROL_PLANE_BACKEND_PATHS)) return 'backend';
   return null;
 }
