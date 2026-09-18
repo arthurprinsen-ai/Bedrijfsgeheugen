@@ -52,6 +52,12 @@
       "observation": "Terminal closure for #2318 verified production and skills, but failed migration readback because repository lineage expected 20260918180200_powerhouse_policy_canonicalization_guard_v1 while the production Supabase migration ledger records the same migration as version 20260918181638.",
       "root_cause": "Repository migration filename identity drifted from the exact production ledger identity after deployment, so supersession-derived terminal evidence used a stale version even though the migration name and deployed logic matched.",
       "prevention": "Repository migration identities must be reconciled to the exact production ledger version+name after deployment. Terminal migration readback remains exact and fail-closed; never weaken it to name-only matching."
+    },
+    {
+      "fingerprint": "ci|policy-canonicalization-test-stale-migration-path|v1",
+      "observation": "After reconciling the repository migration filename to the exact production ledger identity 20260918181638, brain-policy-canonicalization-guard-v1.test.mjs still opened the retired 20260918180200 path and failed BRAIN.",
+      "root_cause": "The regression fixture encoded the old migration filename as a literal and was not updated atomically with the migration identity reconciliation.",
+      "prevention": "Migration identity reconciliation must update every exact-path consumer in the same candidate; coverage must prove no retired timestamp alias remains referenced."
     }
   ]
 }
