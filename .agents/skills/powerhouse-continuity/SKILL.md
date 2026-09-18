@@ -189,3 +189,15 @@ When exact-head Required/BRAIN/CodeQL checks are queued because GitHub Actions r
 
 Queue pressure is transport/runtime capacity state, not evidence that the candidate is wrong.
 
+## Runner-capacity terminal closure
+
+Fingerprint: `delivery|runner-capacity|live-closure|v1`.
+
+When recovering a delivery lineage after queue saturation, metadata rejection, or main drift:
+- validate `Obligation-ID`, `Delivery-Lane`, `Candidate-Type` and `Base-SHA` before expensive CI;
+- when reconciliation is required, rebuild from current main using full-main-union semantics instead of overlaying only the latest main commit;
+- preserve all previously proven learning, borging and regression coverage; recovery is additive;
+- require exact production/provider commit readback before claiming `LIVE_BEWEZEN`;
+- treat fail-closed admission or classification errors as learning signals to repair in the same lineage, never as justification to bypass gates.
+
+Canonical proof: `brain/learning/2026-09-18-runner-capacity-live-closure-v1.json`.
