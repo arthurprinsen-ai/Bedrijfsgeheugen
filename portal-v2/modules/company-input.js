@@ -90,7 +90,7 @@ function renderReview(root,state,schema){
 }
 
 function renderForm(root,state,schema){
- root.innerHTML=`<div class="v2completion"></div><div class="v2formgrid">${schema.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?LEGACY_DEFAULT_MATURITY:''))).join('')}</div><div class="v2formactions"><button type="button" class="pvprimary" data-save-company>Opslaan</button><span data-save-message>Wijzigingen worden in je beveiligde portaalstatus opgeslagen.</span></div>`;
+ root.innerHTML=`<section class="v2legacyprofilecard"><h3>Je onderdelen — schuif om bij te werken</h3><p>Zet elk van de dertien onderdelen op de stand die bij de organisatie past. De waarden worden direct in dezelfde tenant-state gebruikt.</p></section><div class="v2completion"></div><div class="v2formgrid">${schema.map(field=>fieldMarkup(field,valueAt(state,field.path)??(field.type==='range'?LEGACY_DEFAULT_MATURITY:''))).join('')}</div><div class="v2formactions"><button type="button" class="pvprimary" data-save-company>Opslaan</button><span data-save-message>Wijzigingen worden in je beveiligde portaalstatus opgeslagen.</span></div>`;
  const completion=calculateCompletion(schema,state);const box=root.querySelector('.v2completion');if(box)box.innerHTML=`<strong>${completion.percentage}% compleet</strong><span>${completion.complete} van ${completion.total} verplichte velden ingevuld</span>`;
 }
 
