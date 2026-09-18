@@ -201,3 +201,17 @@ When recovering a delivery lineage after queue saturation, metadata rejection, o
 - treat fail-closed admission or classification errors as learning signals to repair in the same lineage, never as justification to bypass gates.
 
 Canonical proof: `brain/learning/2026-09-18-runner-capacity-live-closure-v1.json`.
+
+
+## Successor completeness / branch-cleanup guard
+
+Fingerprint: `delivery|successor-pr|coverage-integrity|v1`.
+
+A closed predecessor and a merged successor do not by themselves prove that the predecessor is disposable. Before declaring a lineage fully superseded or deleting its branch:
+- compare predecessor-only changed-file deltas against successor and current `main`;
+- verify executable-test → workflow/classifier coverage explicitly;
+- preserve required security, governance, documentation and skill deltas;
+- treat squash-diverged ancestry as non-authoritative for content completeness;
+- keep the obligation recoverable until every required predecessor-only delta is either present on current `main` or explicitly retired with evidence.
+
+Reference production recovery: PR #2158 / merge `7d0442b517c80c51f69ebcaba6328d731a309459`.
