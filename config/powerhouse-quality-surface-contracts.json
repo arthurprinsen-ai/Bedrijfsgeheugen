@@ -124,7 +124,7 @@
       "id": "rpc:powerhouse_record_source_observation_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260918095000_powerhouse_unified_data_intelligence_spine_v1.sql",
-      "evidence_contract": "tests/supabase-powerhouse-unified-data-intelligence-spine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs",
       "required": true
     },
     {
