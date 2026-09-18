@@ -26,8 +26,9 @@ const css=`
 .legacy-card h3{margin:0 0 6px;font-size:18px}.legacy-card p{margin:0;color:#5c6682;line-height:1.5}
 .legacy-kicker{display:flex;justify-content:space-between;gap:12px;align-items:center;margin-bottom:10px}.legacy-kicker small{font-weight:800;color:#6f7892}.legacy-kicker strong{font-size:18px}
 .legacy-state-track{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-top:14px}.legacy-state-step{padding:10px 6px;border-radius:12px;background:#f4f6fb;text-align:center;font-size:10px}.legacy-state-step.active{background:#eaf2ff;color:#125fd9}.legacy-state-step.current{box-shadow:inset 0 0 0 2px #1769ff}.legacy-state-step b{display:block;font-size:11px;margin-top:4px}
+.legacy-state-svg{width:100%;height:auto;margin-top:10px;overflow:visible}.legacy-state-block{cursor:pointer;transition:transform .15s,filter .15s}.legacy-state-block:hover,.legacy-state-block:focus{filter:brightness(.98);transform:translateY(-2px);outline:none}.legacy-state-label{font-size:10px;fill:#26324b}.legacy-state-level{font-size:8px;fill:#7b8498}.legacy-state-marker text{font-size:9px;font-weight:800}.legacy-state-detail{margin-top:10px;padding:11px 12px;border-radius:12px;background:#f7f9fc;border:1px solid #e4e9f2;font-size:12px;line-height:1.45}
 .legacy-cmmi{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;align-items:end;margin-top:14px}.legacy-cmmi div{background:#f0f2f7;border-radius:10px 10px 4px 4px;padding:8px 6px;text-align:center;font-size:10px}.legacy-cmmi div:nth-child(1){height:68px}.legacy-cmmi div:nth-child(2){height:84px}.legacy-cmmi div:nth-child(3){height:100px}.legacy-cmmi div:nth-child(4){height:116px}.legacy-cmmi div:nth-child(5){height:132px}.legacy-cmmi .active{background:#e9f1ff;color:#0e5bd7}.legacy-cmmi .current{outline:2px solid #1769ff}.legacy-cmmi b{display:block;font-size:18px}
-.legacy-donut-row{display:grid;grid-template-columns:minmax(160px,220px) 1fr;gap:16px;align-items:center}.legacy-donut-wrap{position:relative;aspect-ratio:1}.legacy-donut-svg{width:100%;height:100%;transform:rotate(-90deg)}.legacy-donut-segment{cursor:pointer;transition:opacity .15s,stroke-width .15s}.legacy-donut-segment:hover{opacity:.78;stroke-width:22}.legacy-donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}.legacy-donut-center strong{font-size:28px}.legacy-donut-center span{font-size:11px;color:#6d7486}.legacy-adoption-svg{width:100%;height:auto;margin-top:10px}.legacy-adoption-axis{stroke:#d9dee8;stroke-width:1}.legacy-adoption-curve{fill:#eef3ff;stroke:#315be8;stroke-width:2}.legacy-adoption-marker{stroke-width:2}.legacy-adoption-label{font-size:9px;fill:#59637a}.legacy-adoption-dot{stroke:#fff;stroke-width:2}
+.legacy-donut-row{display:grid;grid-template-columns:minmax(160px,220px) 1fr;gap:16px;align-items:center}.legacy-donut-wrap{position:relative;aspect-ratio:1}.legacy-donut-svg{width:100%;height:100%;transform:rotate(-90deg)}.legacy-donut-segment{cursor:pointer;transition:opacity .15s,stroke-width .15s}.legacy-donut-segment:hover{opacity:.78;stroke-width:22}.legacy-donut-center{position:absolute;inset:0;display:grid;place-content:center;text-align:center;pointer-events:none}.legacy-donut-center strong{font-size:28px}.legacy-donut-center span{font-size:11px;color:#6d7486}.legacy-adoption-svg{width:100%;height:auto;margin-top:10px;overflow:visible;touch-action:none}.legacy-adoption-axis{stroke:#d9dee8;stroke-width:1}.legacy-adoption-curve{fill:url(#legacyAdoptionFill);stroke:url(#legacyAdoptionStroke);stroke-width:2.6}.legacy-adoption-marker{stroke-width:2}.legacy-adoption-label{font-size:8.2px;fill:#59637a}.legacy-adoption-dot{stroke:#fff;stroke-width:2}.legacy-adoption-point{opacity:.56;pointer-events:none}.legacy-adoption-stage{cursor:pointer;outline:none}.legacy-adoption-stage:hover .legacy-adoption-label,.legacy-adoption-stage:focus .legacy-adoption-label{font-weight:800;fill:#111827}.legacy-adoption-handle{cursor:grab}.legacy-adoption-handle:active{cursor:grabbing}.legacy-adoption-detail{margin-top:8px;padding:10px 12px;background:#f7f9fc;border:1px solid #e3e8f1;border-radius:12px;font-size:12px;line-height:1.45}.legacy-adoption-detail b{color:#17213b}.legacy-adoption-reset{border:0;background:none;color:#1d5de8;font-weight:800;padding:0;margin-left:6px;cursor:pointer}
 .legacy-cost-list,.legacy-blockers{display:grid}.legacy-cost-row,.legacy-blocker-row{display:grid;grid-template-columns:1fr auto;gap:10px;padding:9px 0;border-bottom:1px solid #e7e9ef;align-items:center}.legacy-cost-row button,.legacy-blocker-row button{all:unset;cursor:pointer;display:contents}.legacy-cost-row span,.legacy-blocker-row span{min-width:0}.legacy-cost-row small,.legacy-blocker-row small{color:#747c8f}.legacy-first{margin-top:12px;padding:12px 14px;border-left:4px solid #f1c232;background:#fffaf0;border-radius:8px;line-height:1.55}
 .legacy-sharpness{display:grid;grid-template-columns:170px 1fr;gap:18px;align-items:start}.legacy-ring{--pct:0;position:relative;width:150px;aspect-ratio:1;border-radius:50%;background:conic-gradient(#e7a516 calc(var(--pct)*1%),#edf0f5 0)}.legacy-ring:after{content:'';position:absolute;inset:16px;background:#fff;border-radius:50%}.legacy-ring-center{position:absolute;inset:0;z-index:1;display:grid;place-content:center;text-align:center}.legacy-ring-center strong{font-size:40px}.legacy-ring-center span{color:#6a7182}
 .legacy-band{display:inline-block;padding:5px 10px;border-radius:999px;background:#fff3d6;color:#8a6100;font-weight:800;font-size:12px;margin-bottom:8px}.legacy-progress-list{display:grid;gap:11px;margin-top:15px}.legacy-progress-row{display:grid;grid-template-columns:1fr 48px;gap:10px;align-items:end}.legacy-progress-row .bar{height:8px;background:#edf0f5;border-radius:99px;overflow:hidden;margin-top:5px}.legacy-progress-row .bar i{display:block;height:100%;background:#1e9e5a;border-radius:99px}.legacy-progress-row strong{text-align:right}.legacy-progress-row.warn .bar i{background:#e7a516}.legacy-progress-row.zero .bar i{background:#ef612f}
@@ -41,7 +42,8 @@ const css=`
 .legacy-priority-actions{display:flex;gap:8px;flex-wrap:wrap}.legacy-priority-actions button{border:1px solid #dce2ec;background:#fff;border-radius:9px;padding:8px 10px;font-weight:800;cursor:pointer}.legacy-priority-actions button[data-add-roadmap]{background:#15191f;color:#fff;border-color:#15191f}
 .legacy-priority-card[data-priority="hoog"]{border-left:4px solid #d94b38}.legacy-priority-card[data-priority="middel"]{border-left:4px solid #e7a516}.legacy-priority-card[data-priority="laag"]{border-left:4px solid #315be8}
 .legacy-priority-empty{padding:14px;background:#f8fafc;border:1px dashed #d7ddea;border-radius:12px;color:#6d7486}
-@media(max-width:780px){.legacy-priority-grid{grid-template-columns:1fr}.legacy-priority-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.legacy-impact-map{display:grid;gap:12px}.legacy-impact-head{display:flex;justify-content:space-between;gap:12px;align-items:flex-start}.legacy-impact-head code{font-size:11px;background:#f2f5fa;padding:5px 7px;border-radius:7px;word-break:break-all}.legacy-impact-pages{display:flex;gap:7px;flex-wrap:wrap}.legacy-impact-pages button{border:1px solid #dce4f0;background:#f8fbff;border-radius:999px;padding:7px 10px;font-weight:750;color:#23406f;cursor:pointer}.legacy-impact-pages button[data-relation="source"]{background:#eaf2ff;border-color:#a9c8ff;color:#0e5bd7}.legacy-impact-deltas{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.legacy-impact-deltas span{background:#f7f9fc;border-radius:10px;padding:9px;min-width:0}.legacy-impact-deltas small{display:block;color:#75809a;font-size:9px;text-transform:uppercase}.legacy-impact-deltas b{font-size:12px;word-break:break-word}.legacy-impact-reason{padding:10px 12px;border-left:3px solid #315be8;background:#f5f8ff;border-radius:8px;font-size:12px;line-height:1.5}
+@media(max-width:780px){.legacy-priority-grid{grid-template-columns:1fr}.legacy-priority-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.legacy-impact-deltas{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:780px){.legacy-grid2{grid-template-columns:1fr}.legacy-donut-row,.legacy-sharpness{grid-template-columns:1fr}.legacy-donut-wrap{width:min(220px,70vw);margin:auto}.legacy-ring{margin:auto}.legacy-state-track{grid-template-columns:1fr}.legacy-cmmi{overflow-x:auto;grid-template-columns:repeat(5,minmax(90px,1fr))}}
 `;
 
@@ -141,13 +143,71 @@ function donutMarkup(model){
  const circles=model.costs.map((x,i)=>{const pct=model.total?x.kosten/model.total*100:0;const start=offset;offset+=pct;return `<circle class="legacy-donut-segment" data-legacy-page="businesscase" cx="50" cy="50" r="34" pathLength="100" fill="none" stroke="${colors[i%colors.length]}" stroke-width="18" stroke-dasharray="${pct} ${100-pct}" stroke-dashoffset="${-start}"><title>${esc(x.label)} · ${euro(x.kosten)} · ${esc(LEVEL_LABELS[x.niveau]||'onbekend')}</title></circle>`}).join('');
  return `<div class="legacy-donut-wrap"><svg class="legacy-donut-svg" viewBox="0 0 100 100" role="img" aria-label="Waar de tijd weglekt, verdeeld over bedrijfsonderdelen"><circle cx="50" cy="50" r="34" pathLength="100" fill="none" stroke="#edf0f5" stroke-width="18"/>${circles}</svg><div class="legacy-donut-center"><strong>${euro(model.total)}</strong><span>per jaar</span></div></div>`;
 }
-function adoptionCurveMarkup(model){
- const x=level=>18+(clamp(level,1,5)-1)*66/4;
- const current=x(model.avg||1),target=x(model.targetLevel||4),branch=model.branchLevel?x(model.branchLevel):null;
- const branchMarkup=branch==null?'':`<line x1="${branch}" x2="${branch}" y1="45" y2="82" class="legacy-adoption-marker" stroke="#e0a000"/><circle cx="${branch}" cy="61" r="3.5" class="legacy-adoption-dot" fill="#e0a000"/><text x="${branch}" y="91" text-anchor="middle" class="legacy-adoption-label">branche</text>`;
- return `<svg class="legacy-adoption-svg" viewBox="0 0 100 96" role="img" aria-label="Adoptiecurve met eigen positie, branche indien bekend en doel"><line x1="8" x2="94" y1="82" y2="82" class="legacy-adoption-axis"/><path d="M8 82 C20 82 24 31 48 20 C68 10 76 56 94 82 L94 82 Z" class="legacy-adoption-curve"/><line x1="${target}" x2="${target}" y1="28" y2="82" class="legacy-adoption-marker" stroke="#7c879f" stroke-dasharray="2 2"/><text x="${target}" y="18" text-anchor="middle" class="legacy-adoption-label">bovenste 25% / doel</text>${branchMarkup}<line x1="${current}" x2="${current}" y1="39" y2="82" class="legacy-adoption-marker" stroke="#1b5eea"/><circle cx="${current}" cy="54" r="4.2" class="legacy-adoption-dot" fill="#1b5eea"/><text x="${current}" y="72" text-anchor="middle" class="legacy-adoption-label">jij</text></svg>`;
+function stageDetail(level){
+ const index=Math.max(0,Math.min(4,Math.round(level)-1)),s=STAGES[index];
+ const actions=[
+  'Leg vast wat nu alleen in hoofden of losse bestanden zit.',
+  'Wijs één plek aan waar de waarheid woont en ruim kopieën op.',
+  'Koppel de systemen waartussen het meeste wordt overgetypt.',
+  'Meet per proces tijd, kwaliteit en kosten en stuur op afwijkingen.',
+  'Laat systemen zelf signaleren en optimaliseren binnen duidelijke kaders.'
+ ];
+ return {level:index+1,stage:s,action:actions[index]};
 }
-function cmmiMarkup(model){return STAGES.map((s,i)=>`<div class="${i+1<=model.cmmi?'active':''} ${i+1===model.cmmi?'current':''}"><b>${i+1}</b><span>${esc(s.name)}</span></div>`).join('')}
+function adoptionCurveMarkup(model){
+ const x=level=>12+(clamp(level,1,5)-1)*76/4;
+ const bell=xv=>82-57*Math.exp(-Math.pow(((xv-50)/31),2));
+ const current=x(model.avg||1),target=x(model.targetLevel||4),branch=model.branchLevel?x(model.branchLevel):null;
+ const dist=[5,21,34,31,9];
+ const points=dist.flatMap((count,i)=>Array.from({length:Math.min(count,16)},(_,j)=>{
+  const center=x(i+1),px=center-7+((j*13+i*7)%15),py=Math.min(79,bell(px)+4+((j*11+i*3)%16));
+  return `<circle class="legacy-adoption-point" cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r=".8" fill="${Math.round(model.avg||1)===i+1?'#315be8':'#aeb7c8'}"/>`;
+ })).join('');
+ const stages=STAGES.map((s,i)=>`<g class="legacy-adoption-stage" tabindex="0" role="button" data-adoption-level="${i+1}" aria-label="${esc(s.segment)}, niveau ${i+1}: ${esc(s.name)}"><rect x="${x(i+1)-8}" y="82" width="16" height="14" fill="transparent"/><text x="${x(i+1)}" y="88" text-anchor="middle" class="legacy-adoption-label">N${i+1} · ${dist[i]}%</text><text x="${x(i+1)}" y="94" text-anchor="middle" class="legacy-adoption-label">${esc(s.segment)}</text></g>`).join('');
+ const branchMarkup=branch==null?'':`<line x1="${branch}" x2="${branch}" y1="30" y2="82" class="legacy-adoption-marker" stroke="#111827" stroke-dasharray="3 2"/><circle cx="${branch}" cy="${bell(branch)}" r="2.3" class="legacy-adoption-dot" fill="#111827"/><text x="${branch}" y="27" text-anchor="middle" class="legacy-adoption-label">branche ${model.branchLevel.toFixed(1)}</text>`;
+ const detail=stageDetail(model.avg||1);
+ return `<svg class="legacy-adoption-svg" viewBox="0 0 100 98" role="img" aria-label="Interactieve adoptiecurve met eigen positie, branche en bovenste 25%">
+ <defs><linearGradient id="legacyAdoptionStroke" x1="0" x2="1"><stop offset="0%" stop-color="#d94b38"/><stop offset="48%" stop-color="#e7a516"/><stop offset="100%" stop-color="#229c5a"/></linearGradient><linearGradient id="legacyAdoptionFill" x1="0" x2="1"><stop offset="0%" stop-color="#fff1ef"/><stop offset="52%" stop-color="#fff8df"/><stop offset="100%" stop-color="#e9f7ee"/></linearGradient></defs>
+ <line x1="8" x2="94" y1="82" y2="82" class="legacy-adoption-axis"/><path d="M8 82 C20 82 24 31 48 20 C68 10 76 56 94 82 L94 82 Z" class="legacy-adoption-curve"/>${points}
+ <line x1="${target}" x2="${target}" y1="25" y2="82" class="legacy-adoption-marker" stroke="#229c5a" stroke-dasharray="2 2"/><text x="${target}" y="20" text-anchor="middle" class="legacy-adoption-label">bovenste 25% / doel</text>${branchMarkup}
+ <g data-adoption-current><line data-adoption-current-line x1="${current}" x2="${current}" y1="${bell(current)}" y2="82" class="legacy-adoption-marker" stroke="#ff4f17"/><circle data-adoption-current-halo cx="${current}" cy="${bell(current)}" r="5.5" fill="#ff4f17" opacity=".13"/><circle data-adoption-current-dot class="legacy-adoption-dot legacy-adoption-handle" cx="${current}" cy="${bell(current)}" r="3.5" fill="#ff4f17"/><text data-adoption-current-label x="${current}" y="${Math.max(11,bell(current)-7)}" text-anchor="middle" class="legacy-adoption-label" font-weight="800">jij</text></g>
+ ${stages}</svg><div class="legacy-adoption-detail" data-adoption-detail><b>Niveau ${detail.level} · ${esc(detail.stage.name)}</b> <span>· ${esc(detail.stage.segment)}</span><br>${esc(detail.action)} <span style="color:#68748c">Klik een fase of sleep de oranje bol om te verkennen.</span></div>`;
+}
+function stateMarkup(model){
+ const stateNames=['Handwerk','Geordend','Ingericht','Verbonden','Sturend'];
+ const desc=['Mensen en losse bestanden dragen het proces.','Afspraken bestaan, maar er is nog geen één waarheid.','Systemen doen hun werk; ertussen zit nog handwerk.','Gegevens worden één keer ingevoerd en stromen door.','Afwijkingen worden automatisch gesignaleerd.'];
+ const fills=['#fde2de','#ffebd6','#fff6d6','#e3f4e8','#d9f0e4'];
+ const x=i=>4+i*19.2;
+ const blocks=stateNames.map((name,i)=>`<g class="legacy-state-block" tabindex="0" role="button" data-state-level="${i+1}" aria-label="${name}, niveau ${i+1}"><rect x="${x(i)}" y="30" width="18" height="28" rx="3" fill="${fills[i]}" ${Math.round(model.avg||1)===i+1?'stroke="#111827" stroke-width=".7"':''}/><text x="${x(i)+9}" y="43" text-anchor="middle" class="legacy-state-label">${name}</text><text x="${x(i)+9}" y="51" text-anchor="middle" class="legacy-state-level">niveau ${i+1}</text><title>${esc(desc[i])}</title></g>`).join('');
+ const pin=(level,label,color,y,above=true)=>{if(level==null)return'';const xx=4+(clamp(level,1,5)-1)*76.8/4+9.6;return `<g class="legacy-state-marker"><path d="M${xx},${above?29:60} l-2.2,${above?-4:4} l4.4,0 Z" fill="${color}"/><text x="${xx}" y="${y}" text-anchor="middle" fill="${color}">${esc(label)}</text></g>`;};
+ const cur=Math.round(model.avg||1)-1;
+ return `<svg class="legacy-state-svg" viewBox="0 0 100 75" role="img" aria-label="De staat van je bedrijf met eigen positie, branche en bovenste 25%">${blocks}${pin(model.avg||1,'jij','#ff4f17',20,true)}${pin(model.branchLevel,'branche','#111827',71,false)}${pin(model.targetLevel||4,'bovenste 25%','#229c5a',71,false)}</svg><div class="legacy-state-detail" data-state-detail><b>Niveau ${cur+1} · ${stateNames[cur]}</b> — ${desc[cur]} Beweeg of klik op een stadium voor uitleg.</div>`;
+}
+function cmmiMarkup(model){return STAGES.map((s,i)=>`<div class="${i+1<=model.cmmi?'active':''} ${i+1===model.cmmi?'current':''}" tabindex="0" role="button" data-cmmi-level="${i+1}" title="Niveau ${i+1}: ${esc(s.name)}"><b>${i+1}</b><span>${esc(s.name)}</span></div>`).join('')}
+
+function impactDeltaText(change){
+ if(change?.delta==null)return `${esc(change?.from??'—')} → ${esc(change?.to??'—')}`;
+ const d=Number(change.delta),sign=d>0?'+':'';
+ if(change.unit==='money')return `${sign}${euro(d)}`;
+ if(change.unit==='fte')return `${sign}${d.toFixed(1)} fte`;
+ if(change.unit==='percent')return `${sign}${d.toFixed(1)}%`;
+ if(change.unit==='months')return `${sign}${d.toFixed(1)} mnd`;
+ return `${sign}${d.toFixed(2)} ${esc(change.unit||'')}`;
+}
+function latestImpactMarkup(){
+ const impact=globalThis.__BG_LAST_PORTAL_IMPACT__;
+ if(!impact?.path)return `<div class="legacy-impact-map"><div class="legacy-impact-head"><div><h3>Wat heeft effect op wat?</h3><p>Elke wijziging wordt door de causale grafiek opnieuw doorgerekend. Verander een profiel-, geld-, mensen-, AI-, compliance-, strategie- of roadmapwaarde en hier zie je direct welke onderdelen mee veranderen.</p></div></div></div>`;
+ const pages=(impact.effectDetails||[]).slice(0,18);
+ const changes=(impact.changes||[]).slice(0,8);
+ const reasons=[...(impact.effectRules||[]).map(rule=>rule.reason),...(impact.organism?.impacts||[]).slice(1,4).flatMap(item=>item.reasons?.slice(-1)||[])];
+ return `<div class="legacy-impact-map" data-latest-impact>
+   <div class="legacy-impact-head"><div><h3>Wat verandert mee?</h3><p>Laatste wijziging verspreidt zich automatisch door berekeningen, afhankelijkheden en het Powerhouse-organisme.</p></div><code>${esc(impact.path)}</code></div>
+   ${changes.length?`<div class="legacy-impact-deltas">${changes.map(change=>`<span><small>${esc(change.id)}</small><b>${impactDeltaText(change)}</b></span>`).join('')}</div>`:''}
+   <div class="legacy-impact-pages">${pages.map(detail=>`<button type="button" data-legacy-page="${esc(detail.page)}" data-relation="${esc(detail.relation||'dependency')}" title="${esc([...(detail.viaCalculation||[]),...(detail.viaRule||[])].join(' · '))}">${esc(detail.label||detail.page)}</button>`).join('')}</div>
+   ${reasons.length?`<div class="legacy-impact-reason"><b>Waarom dit doorwerkt:</b> ${esc([...new Set(reasons)].slice(0,3).join(' · '))}</div>`:''}
+ </div>`;
+}
+
 
 export function renderLegacyOverviewComplete(root,state={},openPage=()=>{},domainState=null){
  const main=root?.querySelector?.('.main');if(!main)return false;ensureStyle(root.ownerDocument||document);
@@ -155,6 +215,7 @@ export function renderLegacyOverviewComplete(root,state={},openPage=()=>{},domai
  const m=legacyOverviewCompleteModel(state);
  const first=m.top[0];
  section.innerHTML=`
+ <article class="legacy-card" data-legacy-impact-overview>${latestImpactMarkup()}</article>
  <article class="legacy-card" data-legacy-priority-overview>
   <div class="legacy-kicker"><small>Wat moet eerst</small><strong>${m.priorities.length?m.priorities.length+' prioriteiten':'Nog geen prioriteiten'}</strong></div>
   <p>Dezelfde beslislogica als in het oude portaal: prioriteit uit bewijs en urgentie, waarde waar die berekenbaar is, frictie als uitvoeringsmoeite en uren als capaciteitsimpact.</p>
@@ -174,7 +235,7 @@ export function renderLegacyOverviewComplete(root,state={},openPage=()=>{},domai
    </article>`).join(''):'<div class="legacy-priority-empty">Vul profiel, cijfers of andere bedrijfsdata aan. Zodra er voldoende bewijs is verschijnen hier de echte prioriteiten.</div>'}
   </div>
  </article>
- <div class="legacy-card"><div class="legacy-kicker"><small>De staat van je bedrijf</small><strong>${m.avg?m.avg.toFixed(1):'—'}/5</strong></div><h3>${esc(m.stage?.name||'Nog niet bepaald')}</h3><p>Vijf stadia. Waar jij staat, waar je branche staat en waar de bovenste kwart zit.</p><div class="legacy-state-track">${adoptionMarkup(m)}</div></div>
+ <div class="legacy-card"><div class="legacy-kicker"><small>De staat van je bedrijf</small><strong>${m.avg?m.avg.toFixed(1):'—'}/5</strong></div><h3>${esc(m.stage?.name||'Nog niet bepaald')}</h3><p>Vijf stadia. Waar jij staat, waar je branche staat en waar de bovenste kwart zit.</p>${stateMarkup(m)}</div>
  <div class="legacy-grid2">
   <article class="legacy-card"><h3>Handwerk per jaar</h3><div class="legacy-kicker"><small>Berekende capaciteitswaarde</small><strong>${m.manualAnnual?euro(m.manualAnnual):'—'}</strong></div></article>
   <article class="legacy-card"><h3>Bezetting</h3><div class="legacy-kicker"><small>Capaciteitsverlies in fte</small><strong>${m.fteLost?m.fteLost.toFixed(1)+' fte':'—'}</strong></div></article>
@@ -193,6 +254,18 @@ export function renderLegacyOverviewComplete(root,state={},openPage=()=>{},domai
   <article class="legacy-card"><h3>En dan?</h3><p>Dit is de stand van zaken. De eerstvolgende keuzes staan onder Advies, op volgorde van aantoonbare prioriteit.</p><div class="legacy-advice-list">${m.advice.length?m.advice.map(a=>`<button type="button" data-legacy-page="advies">${esc(a.title||a.label||a.name||'Bekijk advies')}</button>`).join(''):'<button type="button" data-legacy-page="advies">Open Advies →</button>'}</div></article>
  </div>`;
  section.querySelectorAll('[data-legacy-page]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.legacyPage)));
+ section.querySelectorAll('[data-state-level]').forEach(node=>node.addEventListener('click',()=>{const d=section.querySelector('[data-state-detail]'),level=Number(node.dataset.stateLevel)||1,names=['Handwerk','Geordend','Ingericht','Verbonden','Sturend'],descs=['Mensen en losse bestanden dragen het proces.','Afspraken bestaan, maar er is nog geen één waarheid.','Systemen doen hun werk; ertussen zit nog handwerk.','Gegevens worden één keer ingevoerd en stromen door.','Afwijkingen worden automatisch gesignaleerd.'];if(d)d.innerHTML='<b>Niveau '+level+' · '+names[level-1]+'</b> — '+descs[level-1];}));
+ const adoptionSvg=section.querySelector('.legacy-adoption-svg'),adoptionDetail=section.querySelector('[data-adoption-detail]');
+ const showAdoptionLevel=level=>{level=Math.max(1,Math.min(5,Number(level)||1));const d=stageDetail(level);if(adoptionDetail)adoptionDetail.innerHTML='<b>Niveau '+d.level+' · '+esc(d.stage.name)+'</b> <span>· '+esc(d.stage.segment)+'</span><br>'+esc(d.action)+(Math.abs(level-(m.avg||1))>.05?' <button class="legacy-adoption-reset" type="button" data-adoption-reset>Terug naar mijn positie</button>':'');};
+ section.querySelectorAll('[data-adoption-level]').forEach(node=>node.addEventListener('click',()=>showAdoptionLevel(node.dataset.adoptionLevel)));
+ if(adoptionSvg){
+  const dot=adoptionSvg.querySelector('[data-adoption-current-dot]');
+  const moveMarker=level=>{const xx=12+(Math.max(1,Math.min(5,level))-1)*76/4;const bell=xv=>82-57*Math.exp(-Math.pow(((xv-50)/31),2)),yy=bell(xx);adoptionSvg.querySelector('[data-adoption-current-line]')?.setAttribute('x1',xx);adoptionSvg.querySelector('[data-adoption-current-line]')?.setAttribute('x2',xx);adoptionSvg.querySelector('[data-adoption-current-line]')?.setAttribute('y1',yy);adoptionSvg.querySelector('[data-adoption-current-dot]')?.setAttribute('cx',xx);adoptionSvg.querySelector('[data-adoption-current-dot]')?.setAttribute('cy',yy);adoptionSvg.querySelector('[data-adoption-current-halo]')?.setAttribute('cx',xx);adoptionSvg.querySelector('[data-adoption-current-halo]')?.setAttribute('cy',yy);const label=adoptionSvg.querySelector('[data-adoption-current-label]');if(label){label.setAttribute('x',xx);label.setAttribute('y',Math.max(11,yy-7));label.textContent=Math.abs(level-(m.avg||1))>.05?'wat als':'jij';}showAdoptionLevel(level);};
+  const pointerLevel=event=>{const box=adoptionSvg.getBoundingClientRect(),clientX=event.touches?.[0]?.clientX??event.clientX,vbX=(clientX-box.left)/box.width*100;return Math.round(Math.max(1,Math.min(5,1+((vbX-12)/76)*4))*10)/10;};
+  if(dot){const start=event=>{event.preventDefault();const move=e=>{e.preventDefault();moveMarker(pointerLevel(e));};const stop=()=>{document.removeEventListener('pointermove',move);document.removeEventListener('pointerup',stop);document.removeEventListener('touchmove',move);document.removeEventListener('touchend',stop);};document.addEventListener('pointermove',move);document.addEventListener('pointerup',stop);document.addEventListener('touchmove',move,{passive:false});document.addEventListener('touchend',stop);};dot.addEventListener('pointerdown',start);dot.addEventListener('touchstart',start,{passive:false});}
+  section.addEventListener('click',event=>{if(event.target.closest?.('[data-adoption-reset]'))moveMarker(m.avg||1);});
+ }
+ section.querySelectorAll('[data-cmmi-level]').forEach(node=>node.addEventListener('click',()=>{section.querySelectorAll('[data-cmmi-level]').forEach(n=>n.classList.toggle('selected',n===node));node.setAttribute('aria-pressed','true');}));
  section.querySelectorAll('[data-add-roadmap]').forEach(btn=>btn.addEventListener('click',async()=>{
   const item=m.priorities.find(x=>x.id===btn.dataset.addRoadmap);if(!item)return;
   if(!domainState?.get||!domainState?.set){openPage('roadmap');return;}
@@ -210,4 +283,4 @@ export function renderLegacyOverviewComplete(root,state={},openPage=()=>{},domai
  return true;
 }
 
-export const LEGACY_OVERVIEW_COMPLETE_VERSION='2026-09-18-v1';
+export const LEGACY_OVERVIEW_COMPLETE_VERSION='2026-09-18-v2-rich-interactive';

@@ -22,6 +22,40 @@ function frame(viewBox,title,body){
   return `<figure class="v2visual"><figcaption>${esc(title)}</figcaption><svg viewBox="${viewBox}" role="img" aria-label="${esc(title)}" preserveAspectRatio="xMidYMid meet">${body}</svg></figure>`;
 }
 
+
+/** Oude-portaal adoptiecurve: vijf segmenten, eigen positie, benchmark en bovenste kwartiel. */
+export function adoptionBell({current=1,benchmark=3,upperQuartile=4,labels=[]}={}, {title='Waar je staat op de adoptiecurve'}={}){
+  const stages=(labels.length?labels:['Achterblijvers','Late majority','Early majority','Early adopters','Innovators']).slice(0,5);
+  const width=780,height=300,left=54,right=34,base=220;
+  const cx=(left+width-right)/2, span=width-left-right;
+  const y=x=>base-155*Math.exp(-Math.pow((x-cx)/(span*.27),2));
+  const path=[]; for(let i=0;i<=80;i++){const x=left+span*i/80;path.push(`${i?'L':'M'}${x.toFixed(1)} ${y(x).toFixed(1)}`);}
+  const stageX=level=>left+span*(clamp(level,1,5)-1)/4;
+  const marker=(level,label,kind)=>{const x=stageX(level), yy=y(x); return `<g class="v2-hit v2-marker ${kind}" tabindex="0" role="button" aria-label="${esc(label)}: niveau ${num(level,1)}">
+    <line x1="${x}" y1="${base}" x2="${x}" y2="${yy}" class="v2-marker-line"/>
+    <circle cx="${x}" cy="${yy}" r="${kind==='current'?10:7}" class="v2-marker-dot"><title>${esc(label)} · niveau ${num(level,1)}</title></circle>
+    <text x="${x}" y="${Math.max(22,yy-16)}" text-anchor="middle" class="v2-marker-label">${esc(label)}</text>
+  </g>`;};
+  const stageLabels=stages.map((label,index)=>`<g class="v2-hit v2-stage" tabindex="0" role="button" aria-label="${esc(label)}, niveau ${index+1}"><text x="${stageX(index+1)}" y="${base+26}" text-anchor="middle">${esc(label)}</text><text x="${stageX(index+1)}" y="${base+42}" text-anchor="middle" opacity=".58">Niveau ${index+1}</text><title>${esc(label)} · niveau ${index+1}</title></g>`).join('');
+  return frame(`0 0 ${width} ${height}`,title,
+    `<path d="${path.join(' ')} L${width-right} ${base} L${left} ${base} Z" class="v2-adoption-area"/>
+     <path d="${path.join(' ')}" class="v2-adoption-line"/>
+     <line x1="${left}" y1="${base}" x2="${width-right}" y2="${base}" class="v2-axis"/>
+     ${marker(upperQuartile,'Bovenste 25%','upper')}${marker(benchmark,'Branche','benchmark')}${marker(current,'Jij','current')}
+     ${stageLabels}`);
+}
+
+/** Oude-portaal vijf-stadia overzicht: bedrijf, branche en bovenste kwartiel op één rail. */
+export function companyStateRail({current=1,benchmark=3,upperQuartile=4,labels=[]}={}, {title='De staat van je bedrijf'}={}){
+  const stages=(labels.length?labels:['Ad-hoc','Reactief','Gestuurd','Voorspellend','Zelfsturend']).slice(0,5);
+  const width=900,height=220,pad=36,gap=10,cell=(width-pad*2-gap*4)/5;
+  const x=i=>pad+i*(cell+gap);
+  const blocks=stages.map((label,i)=>`<g class="v2-hit v2-state-stage" tabindex="0" role="button" aria-label="${esc(label)}, niveau ${i+1}">
+    <rect x="${x(i)}" y="70" width="${cell}" height="74" rx="16"/><text x="${x(i)+cell/2}" y="101" text-anchor="middle">${esc(label)}</text><text x="${x(i)+cell/2}" y="122" text-anchor="middle" opacity=".58">Niveau ${i+1}</text><title>${esc(label)} · niveau ${i+1}</title></g>`).join('');
+  const pin=(level,label,cls,y)=>{const xx=x(clamp(Math.round(level),1,5)-1)+cell/2;return `<g class="v2-hit ${cls}" tabindex="0"><line x1="${xx}" y1="${y+8}" x2="${xx}" y2="68"/><circle cx="${xx}" cy="${y}" r="7"/><text x="${xx}" y="${y-12}" text-anchor="middle">${esc(label)}</text><title>${esc(label)} · niveau ${num(level,1)}</title></g>`;};
+  return frame(`0 0 ${width} ${height}`,title,`${blocks}${pin(current,'Jij','v2-state-current',50)}${pin(benchmark,'Branche','v2-state-benchmark',174)}${pin(upperQuartile,'Bovenste 25%','v2-state-upper',198)}`);
+}
+
 /** Radarprofiel over de bedrijfsonderdelen, schaal 1–5. */
 export function radar(items=[],{title='Profiel per onderdeel',max=5}={}){
   const points=items.filter(item=>item&&item.label!=null);
@@ -32,7 +66,7 @@ export function radar(items=[],{title='Profiel per onderdeel',max=5}={}){
   const rings=[1,2,3,4,5].slice(0,max).map(step=>`<circle cx="${cx}" cy="${cy}" r="${r*step/max}" fill="none" stroke="${LINE}" stroke-width="1"/>`).join('');
   const spokes=points.map((_,index)=>{const [x,y]=coord(index,max);return `<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${LINE}" stroke-width="1"/>`;}).join('');
   const path=points.map((item,index)=>{const [x,y]=coord(index,item.value);return `${index?'L':'M'}${x.toFixed(1)} ${y.toFixed(1)}`;}).join(' ')+' Z';
-  const dots=points.map((item,index)=>{const [x,y]=coord(index,item.value);return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${ACCENT}"><title>${esc(item.label)}: ${num(item.value,1)}/${max}</title></circle>`;}).join('');
+  const dots=points.map((item,index)=>{const [x,y]=coord(index,item.value);return `<circle class="v2-data-point" tabindex="0" cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="3.5" fill="${ACCENT}"><title>${esc(item.label)}: ${num(item.value,1)}/${max}</title></circle>`;}).join('');
   const labels=points.map((item,index)=>{const [x,y]=coord(index,max*1.16);return `<text x="${x.toFixed(1)}" y="${y.toFixed(1)}" font-size="8" text-anchor="middle" dominant-baseline="middle" fill="currentColor" opacity=".72">${esc(String(item.label).slice(0,14))}</text>`;}).join('');
   return frame('0 0 300 300',title,`${rings}${spokes}<path d="${path}" fill="${ACCENT}" fill-opacity=".16" stroke="${ACCENT}" stroke-width="2" stroke-linejoin="round"/>${dots}${labels}`);
 }
@@ -77,7 +111,7 @@ export function curve(points=[],{title='Verloop',valueLabel=''}={}){
   const line=series.map((point,index)=>`${index?'L':'M'}${x(index).toFixed(1)} ${y(point.value).toFixed(1)}`).join(' ');
   const area=`${line} L${x(series.length-1).toFixed(1)} ${(height-bottom).toFixed(1)} L${x(0).toFixed(1)} ${(height-bottom).toFixed(1)} Z`;
   const zero=min<0?`<line x1="${left}" y1="${y(0).toFixed(1)}" x2="${width-right}" y2="${y(0).toFixed(1)}" stroke="${LINE}" stroke-width="1" stroke-dasharray="3 3"/>`:'';
-  const dots=series.map((point,index)=>`<circle cx="${x(index).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="3" fill="${ACCENT}"><title>${esc(point.label??index+1)}: ${num(point.value)} ${esc(valueLabel)}</title></circle>`).join('');
+  const dots=series.map((point,index)=>`<circle class="v2-data-point" tabindex="0" cx="${x(index).toFixed(1)}" cy="${y(point.value).toFixed(1)}" r="3" fill="${ACCENT}"><title>${esc(point.label??index+1)}: ${num(point.value)} ${esc(valueLabel)}</title></circle>`).join('');
   const ticks=series.map((point,index)=>index%Math.ceil(series.length/6)?'':`<text x="${x(index).toFixed(1)}" y="${height-10}" font-size="8" text-anchor="middle" fill="currentColor" opacity=".6">${esc(point.label??index+1)}</text>`).join('');
   return frame(`0 0 ${width} ${height}`,title,
     `<line x1="${left}" y1="${top}" x2="${left}" y2="${height-bottom}" stroke="${LINE}"/><line x1="${left}" y1="${height-bottom}" x2="${width-right}" y2="${height-bottom}" stroke="${LINE}"/>${zero}`
@@ -95,7 +129,7 @@ export function quadrant(points=[],{title='Waarde tegen inspanning',xLabel='Insp
   const px=value=>pad+(width-pad*2)*clamp(value,0,xMax)/xMax;
   const py=value=>height-pad-(height-pad*2)*clamp(value,0,yMax)/yMax;
   const midX=pad+(width-pad*2)/2,midY=height-pad-(height-pad*2)/2;
-  const dots=items.slice(0,24).map(item=>`<g><circle cx="${px(item.x).toFixed(1)}" cy="${py(item.y).toFixed(1)}" r="6" fill="${n(item.y)>=yMax/2&&n(item.x)<=xMax/2?MINT:ACCENT}" fill-opacity=".78"><title>${esc(item.label||'')}: ${num(item.y)} / ${num(item.x)}</title></circle></g>`).join('');
+  const dots=items.slice(0,24).map(item=>`<g class="v2-data-point" tabindex="0"><circle cx="${px(item.x).toFixed(1)}" cy="${py(item.y).toFixed(1)}" r="6" fill="${n(item.y)>=yMax/2&&n(item.x)<=xMax/2?MINT:ACCENT}" fill-opacity=".78"><title>${esc(item.label||'')}: ${num(item.y)} / ${num(item.x)}</title></circle></g>`).join('');
   return frame(`0 0 ${width} ${height}`,title,
     `<rect x="${pad}" y="${pad}" width="${width-pad*2}" height="${height-pad*2}" fill="none" stroke="${LINE}"/>`
     +`<line x1="${midX}" y1="${pad}" x2="${midX}" y2="${height-pad}" stroke="${LINE}" stroke-dasharray="4 4"/>`
@@ -118,7 +152,7 @@ export function benchmarkBars(rows=[],{title='Vergelijking met de benchmark'}={}
     const y=top+index*rowHeight;
     const better=n(item.value)>=n(item.benchmark);
     return `<text x="0" y="${y+12}" font-size="9" fill="currentColor" opacity=".82">${esc(String(item.label).slice(0,22))}</text>`
-      +`<rect x="${left}" y="${y+2}" width="${scale(item.value).toFixed(1)}" height="10" rx="5" fill="${better?MINT:AMBER}"><title>Eigen waarde: ${num(item.value,1)}</title></rect>`
+      +`<rect class="v2-data-bar" tabindex="0" x="${left}" y="${y+2}" width="${scale(item.value).toFixed(1)}" height="10" rx="5" fill="${better?MINT:AMBER}"><title>Eigen waarde: ${num(item.value,1)}</title></rect>`
       +`<rect x="${left}" y="${y+15}" width="${scale(item.benchmark).toFixed(1)}" height="6" rx="3" fill="${LINE}"><title>Benchmark: ${num(item.benchmark,1)}</title></rect>`
       +`<text x="${(left+Math.max(scale(item.value),scale(item.benchmark))+6).toFixed(1)}" y="${y+13}" font-size="8" fill="currentColor" opacity=".65">${num(item.value,1)} · benchmark ${num(item.benchmark,1)}</text>`;
   }).join('');
@@ -147,7 +181,7 @@ export function leakage(segments=[],{title='Waar tijd en geld weglekken'}={}){
   const bars=items.map((item,index)=>{
     const segmentWidth=(width-8)*n(item.value)/total;
     const x=offset;offset+=segmentWidth;
-    return `<rect x="${x.toFixed(1)}" y="${barY}" width="${Math.max(0,segmentWidth-2).toFixed(1)}" height="${barHeight}" rx="6" fill="${palette[index%palette.length]}" fill-opacity=".85"><title>${esc(item.label)}: ${num(item.value)}</title></rect>`;
+    return `<rect class="v2-data-segment" tabindex="0" x="${x.toFixed(1)}" y="${barY}" width="${Math.max(0,segmentWidth-2).toFixed(1)}" height="${barHeight}" rx="6" fill="${palette[index%palette.length]}" fill-opacity=".85"><title>${esc(item.label)}: ${num(item.value)}</title></rect>`;
   }).join('');
   const legend=items.map((item,index)=>`<g transform="translate(${(index%3)*186} ${74+Math.floor(index/3)*18})"><rect width="9" height="9" rx="2" fill="${palette[index%palette.length]}"/><text x="14" y="8" font-size="9" fill="currentColor" opacity=".76">${esc(String(item.label).slice(0,24))}</text></g>`).join('');
   const height=74+Math.ceil(items.length/3)*18+8;
@@ -167,7 +201,7 @@ export function ladder(steps=[],{title='Waar je staat'}={}){
     const naam=item.naam||item.fase;
     const kleur=item.huidig?ACCENT:(item.bereikt?'var(--saas-line,#e7e9f6)':SOFT);
     const dek=item.huidig?'.95':(item.bereikt?'.9':'.22');
-    return `<g><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="8" fill="${kleur}" fill-opacity="${dek}"><title>${esc(naam)}: ${esc(item.uitleg||'')}</title></rect>`
+    return `<g class="v2-data-step" tabindex="0"><rect x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${bw.toFixed(1)}" height="${h.toFixed(1)}" rx="8" fill="${kleur}" fill-opacity="${dek}"><title>${esc(naam)}: ${esc(item.uitleg||'')}</title></rect>`
       +`<text x="${(x+bw/2).toFixed(1)}" y="${(baseline+14).toFixed(1)}" font-size="8" text-anchor="middle" fill="currentColor" opacity="${item.huidig?'.95':'.6'}">${esc(String(naam).slice(0,16))}</text>`
       +(item.huidig?`<text x="${(x+bw/2).toFixed(1)}" y="${(y-6).toFixed(1)}" font-size="9" text-anchor="middle" fill="${ACCENT}" font-weight="700">hier</text>`:'')+`</g>`;
   }).join('');
@@ -209,4 +243,4 @@ export function gauge(value,{title='Score',min=0,max=6,bands=[],caption=''}={}){
     +(caption?`<text x="${cx}" y="${cy+26}" font-size="8" text-anchor="middle" fill="currentColor" opacity=".64">${esc(caption)}</text>`:''));
 }
 
-export const VISUALS_VERSION='2026-09-10-v2';
+export const VISUALS_VERSION='2026-09-18-rich-interactive';
