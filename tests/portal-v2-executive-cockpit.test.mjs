@@ -49,11 +49,9 @@ test('executive cockpit fails closed before tenant hydration instead of throwing
  assert.equal(out.health_score,null);
 });
 
-test('mobile executive cockpit shell stays visible before business data is available',()=> {
- const source=fs.readFileSync('portal-v2/operating-system/executive-cockpit.js','utf8');
- assert.match(source,/Wat moet ik vandaag weten, beslissen en doen\?/);
- assert.match(source,/1 · Weten/);
- assert.match(source,/2 · Beslissen/);
- assert.match(source,/3 · Doen/);
- assert.doesNotMatch(source,/if\(!main\|\|!tenantId\)return false/);
+test('overview no longer mounts the empty executive day-start shell',()=> {
+ const source=fs.readFileSync('portal-v2/modules/overview.js','utf8');
+ assert.doesNotMatch(source,/mountExecutiveCockpit/);
+ assert.match(source,/renderLegacyOverviewInsights\(root,state\)/);
+ assert.match(source,/renderDirectievragen\(root,state\)/);
 });
