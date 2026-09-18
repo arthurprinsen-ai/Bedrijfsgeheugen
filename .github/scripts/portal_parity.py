@@ -24,6 +24,7 @@ V2_STRATEGIC_MODELS = ROOT / "portal-v2" / "strategic-models-core.js"
 V2_LEGACY_ENGINE = ROOT / "portal-v2" / "legacy-parity-engine.js"
 V2_LEGACY_FINANCE = ROOT / "portal-v2" / "legacy-finance-models.js"
 V2_OVERVIEW_COMPLETE = ROOT / "portal-v2" / "modules" / "legacy-overview-complete.js"
+V2_AI_CAPABILITY_CATALOG = ROOT / "portal-v2" / "ai-capability-catalog.js"
 V2_FUNCTIONAL_INVENTORY = ROOT / "portal-v2" / "legacy-functional-inventory.js"
 V2_PARITY_GATE = ROOT / "portal-v2" / "parity-gate.js"
 V2_PARITY_TEST = ROOT / "portal-v2" / "tests" / "parity-gate.test.mjs"
@@ -342,6 +343,135 @@ def check_source_derived_model_parity(html: str) -> tuple[int, int]:
     if missing or strategy_count != 20 or finance_count != 8 or len(catalog) != 28:
         fail(f"source-derived legacy model parity failed: strategy={strategy_count}, finance={finance_count}, missing={missing}")
     return strategy_count, finance_count
+
+
+def check_ai_capability_catalog_parity(html: str) -> int:
+    if not V2_AI_CAPABILITY_CATALOG.exists():
+        fail("missing native Portal V2 AI capability catalogue")
+    source_ids = set(re.findall(r'"id":"([a-z0-9-]+)"', html))
+    source_ids = {item for item in source_ids if re.match(r'^(strategie|kanalen|agenten|controlplane|modellen|kennis|infra|governance|identiteit)-\\d{2}
+    if not V2_OVERVIEW_COMPLETE.exists():
+        fail("missing complete Portal V2 legacy overview renderer")
+    source = V2_OVERVIEW_COMPLETE.read_text(encoding="utf-8")
+    for label, marker in V2_OVERVIEW_MARKERS.items():
+        if marker not in source:
+            fail(f"Portal V2 overview lost legacy surface: {label} ({marker!r})")
+    for marker in ("*.15", "*.25", "*.30", "dimension-costs", "businesscase", "ai-capabilities"):
+        if marker not in source:
+            fail(f"Portal V2 overview lost protected semantic implementation marker: {marker}")
+
+
+def check_v2_functional_inventory(source: str) -> None:
+    if "LEGACY_FUNCTIONAL_INVENTORY" not in source or "assertFunctionalInventoryComplete" not in source:
+        fail("V2 functional inventory export/guard disappeared")
+
+    missing = []
+    for capability in sorted(PANEL_TABS):
+        if not re.search(rf"^\s*{re.escape(capability)}\s*:\s*capability\(", source, re.MULTILINE):
+            missing.append(capability)
+    if missing:
+        fail(f"V2 functional inventory misses protected capabilities: {', '.join(missing)}")
+
+    for key in FUNCTIONAL_ARRAY_KEYS:
+        if key not in source:
+            fail(f"V2 functional inventory no longer records {key}")
+
+    for marker in (
+        "capacity-not-cash",
+        "46-week-annualization",
+        "authenticated-customer-context",
+        "permission-gated-print",
+        "customer-branding",
+        "mobile-navigation",
+    ):
+        if marker not in source:
+            fail(f"V2 functional inventory lost protected meaning/capability: {marker}")
+
+
+def check_v2_implementation_gate() -> None:
+    if not V2_PARITY_GATE.exists():
+        fail("missing executable V2 implementation parity gate")
+    if not V2_PARITY_TEST.exists():
+        fail("missing fail-closed V2 parity-gate tests")
+    source = V2_PARITY_GATE.read_text(encoding="utf-8")
+    test_source = V2_PARITY_TEST.read_text(encoding="utf-8")
+    for marker in (
+        "LEGACY_FUNCTIONAL_INVENTORY",
+        "listFunctionalContracts",
+        "capabilityImplementationCoverage",
+        "evaluatePortalParity",
+        "production-evidence",
+        "persistence",
+        "calculationsOwner",
+        "actionsOwner",
+        "dependenciesOwner",
+    ):
+        if marker not in source:
+            fail(f"V2 implementation parity gate lost protected marker: {marker}")
+    for marker in ("all protected legacy capabilities", "fails closed", "all 25 capabilities verified"):
+        if marker not in test_source:
+            fail(f"V2 implementation parity test lost protected assertion: {marker}")
+
+
+def main() -> int:
+    if not PORTAL.exists():
+        fail(f"missing protected portal file: {PORTAL.relative_to(ROOT)}")
+    if not V2_FUNCTIONAL_INVENTORY.exists():
+        fail(f"missing V2 functional inventory: {V2_FUNCTIONAL_INVENTORY.relative_to(ROOT)}")
+    if not MODULAR_LEGACY_PORTAL.is_dir():
+        fail("missing modular legacy portal source: portal/")
+
+    html = PORTAL.read_text(encoding="utf-8")
+    inventory_source = V2_FUNCTIONAL_INVENTORY.read_text(encoding="utf-8")
+
+    tabs = set(re.findall(r'data-p="([^"]+)"', html))
+    missing_tabs = sorted(NAVIGATION_KEYS - tabs)
+    if missing_tabs:
+        fail(f"protected navigation keys disappeared: {', '.join(missing_tabs)}")
+
+    panel_ids = set(re.findall(r'id="p-([^"]+)"', html))
+    missing_panels = sorted(PANEL_TABS - panel_ids)
+    if missing_panels:
+        fail(f"protected panels disappeared: {', '.join(missing_panels)}")
+
+    for label, marker in {**GLOBAL_MARKERS, **OVERVIEW_MARKERS, **SEMANTIC_MARKERS}.items():
+        if marker not in html:
+            fail(f"protected capability/meaning disappeared: {label} ({marker!r})")
+
+    strategy_models, finance_models = check_source_derived_model_parity(html)
+    ai_capabilities = check_ai_capability_catalog_parity(html)
+    check_v2_overview_surface()
+    check_v2_functional_inventory(inventory_source)
+    protected_fields = check_source_derived_field_parity(html, inventory_source)
+    protected_actions = check_source_derived_action_parity(html, inventory_source)
+    check_v2_implementation_gate()
+
+    print(
+        "PARITY GREEN: "
+        f"{len(PANEL_TABS)} protected legacy panels, "
+        f"{protected_fields} source-derived editable legacy fields, "
+        f"{protected_actions} source-derived legacy button actions, "
+        f"{len(GLOBAL_MARKERS)} global capabilities, "
+        f"{len(OVERVIEW_MARKERS)} overview capabilities, "
+        f"{len(SEMANTIC_MARKERS)} semantic invariants, "
+        f"{strategy_models} strategy/function models, "
+        f"{finance_models} finance models, "
+        f"{ai_capabilities} AI capabilities, "
+        f"{len(PANEL_TABS)} V2 functional inventory records and executable implementation/evidence gate present."
+    )
+    return 0
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())
+, item)}
+    v2_source = V2_AI_CAPABILITY_CATALOG.read_text(encoding="utf-8")
+    v2_ids = set(re.findall(r'"id":\\s*"([a-z0-9-]+)"', v2_source))
+    if len(source_ids) != 86 or source_ids != v2_ids:
+        missing = sorted(source_ids - v2_ids)
+        extra = sorted(v2_ids - source_ids)
+        fail(f"AI capability catalogue drift: legacy={len(source_ids)}, v2={len(v2_ids)}, missing={missing}, extra={extra}")
+    return len(v2_ids)
 
 
 def check_v2_overview_surface() -> None:
