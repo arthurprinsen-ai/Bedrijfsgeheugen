@@ -227,7 +227,7 @@ jobs:
               production_readback_mode:$production_readback_mode,
               production_readback_run_id:$production_readback_run_id,
               production_observed_sha:$production_observed_sha,
-              production_deploy_id:($production_deploy_id|select(length>0)),
+              production_deploy_id:(if ($production_deploy_id|length)>0 then $production_deploy_id else null end),
               production_readback_verified:$production_readback_verified,
               skill_projection_required:$skill_projection_required,
               skill_projection_run_id:$skill_projection_run_id,
@@ -273,6 +273,9 @@ jobs:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
           OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
           PRODUCTION_RUN_ID: ${{ steps.production.outputs.run_id }}
+          PRODUCTION_READBACK_MODE: ${{ steps.production.outputs.mode }}
+          PRODUCTION_OBSERVED_SHA: ${{ steps.production.outputs.observed_sha }}
+          PRODUCTION_DEPLOY_ID: ${{ steps.production.outputs.deploy_id }}
           PROJECTION_REQUIRED: ${{ steps.projection-scope.outputs.required }}
           PROJECTION_RUN_ID: ${{ steps.projection.outputs.run_id }}
         run: |
@@ -282,13 +285,17 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { writeFileSync } from 'node:fs';
           const body=String(process.env.PR_BODY||'');
-          const stripped=body.split(/\r?\n/).filter(line=>!/^(Writer-Lease-State|Terminal-State|Terminal-Main-SHA|Terminal-Production-Readback-Run|Terminal-Skill-Projection-Run):/i.test(line)).join('\n').trimEnd();
+          const stripped=body.split(/\r?\n/).filter(line=>!/^(Writer-Lease-State|Terminal-State|Terminal-Main-SHA|Terminal-Production-Readback(?:-Run)?|Terminal-Skill-Projection-Run):/i.test(line)).join('\n').trimEnd();
           const projection=process.env.PROJECTION_REQUIRED==='true' ? process.env.PROJECTION_RUN_ID : 'NOT_APPLICABLE';
+          const mode=process.env.PRODUCTION_READBACK_MODE||'canonical_run';
+          const productionEvidence=mode==='canonical_run'
+            ? `run:${process.env.PRODUCTION_RUN_ID}`
+            : `descendant:${process.env.PRODUCTION_OBSERVED_SHA}:deploy:${process.env.PRODUCTION_DEPLOY_ID}`;
           const terminal=[
             'Writer-Lease-State: RELEASED',
             'Terminal-State: LIVE_BEWEZEN',
             `Terminal-Main-SHA: ${process.env.MERGE_SHA}`,
-            `Terminal-Production-Readback-Run: ${process.env.PRODUCTION_RUN_ID}`,
+            `Terminal-Production-Readback: ${productionEvidence}`,
             `Terminal-Skill-Projection-Run: ${projection}`
           ].join('\n');
           const next=`${stripped}\n\n${terminal}\n`;
@@ -299,7 +306,10 @@ jobs:
             obligation_id:process.env.OBLIGATION_ID,
             candidate_head_sha:process.env.HEAD_SHA,
             main_merge_sha:process.env.MERGE_SHA,
-            production_readback_run_id:Number(process.env.PRODUCTION_RUN_ID),
+            production_readback_mode:mode,
+            production_readback_run_id:process.env.PRODUCTION_RUN_ID?Number(process.env.PRODUCTION_RUN_ID):null,
+            production_observed_sha:process.env.PRODUCTION_OBSERVED_SHA||process.env.MERGE_SHA,
+            production_deploy_id:process.env.PRODUCTION_DEPLOY_ID||null,
             skill_projection_required:process.env.PROJECTION_REQUIRED==='true',
             skill_projection_run_id:projection==='NOT_APPLICABLE'?null:Number(projection),
             writer_lease_state:'RELEASED',
