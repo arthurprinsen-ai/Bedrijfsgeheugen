@@ -27,3 +27,11 @@ test('generic protected-capability fallback cannot preempt functional-suite or c
   assert.ok(genericIndex>functionalIndex,'generic fallback must occur after functional dispatch');
   assert.ok(genericIndex>canvasIndex,'generic fallback must occur after canvas dispatch');
 });
+
+test('strategiemodellen and modellen dispatch to their specialist workspace instead of the generic CTA fallback',()=>{
+  assert.match(source,/\['strategiemodellen','modellen'\]\.includes\(pageId\)[\s\S]{0,350}mountWorkspace\(native,contract,/);
+  const specialistIndex=source.indexOf("['strategiemodellen','modellen'].includes(pageId)");
+  const genericIndex=source.indexOf('else if(contract?.legacyCapability){');
+  assert.ok(specialistIndex>0,'model specialist dispatch missing');
+  assert.ok(genericIndex>specialistIndex,'generic fallback must not preempt model specialist routing');
+});
