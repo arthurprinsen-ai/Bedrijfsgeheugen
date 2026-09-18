@@ -116,6 +116,17 @@
       "canonical Powerhouse learning"
     ],
     "verified_at": "2026-09-18",
-    "terminal_claim_status": "LIVE_PROVEN"
+    "terminal_claim_status": "LIVE_PROVEN",
+    "run_id": "github-actions:35327618750",
+    "actor_or_agent": "powerhouse-terminal-delivery",
+    "task_fingerprint": "powerhouse-self-production-promotion-v3"
+  },
+  "next_agent_discoverability": {
+    "status": "PROVEN",
+    "readback_main_sha": "1bf772d495abe14a46c355c24470367fc38ffed7",
+    "policy_direct_link": true,
+    "preflight_follows_linked_learning_sources": true,
+    "fingerprint": "powerhouse-self-production-promotion-v3",
+    "terminal_state": "LIVE_PROVEN"
   }
 }

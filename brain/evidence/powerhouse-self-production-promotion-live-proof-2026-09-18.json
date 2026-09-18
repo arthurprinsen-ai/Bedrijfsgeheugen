@@ -83,5 +83,19 @@
     "canonical Powerhouse learning"
   ],
   "verified_at": "2026-09-18",
-  "terminal_claim_status": "LIVE_PROVEN"
+  "terminal_claim_status": "LIVE_PROVEN",
+  "run_id": "github-actions:35327618750",
+  "actor_or_agent": "powerhouse-terminal-delivery",
+  "task_fingerprint": "powerhouse-self-production-promotion-v3",
+  "next_agent_discoverability": {
+    "status": "PROVEN",
+    "authority": "current main canonical repository state",
+    "readback_main_sha": "1bf772d495abe14a46c355c24470367fc38ffed7",
+    "policy_source": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+    "preflight_entrypoint": "scripts/brain/chat-learning-preflight.mjs",
+    "discovered_learning": [
+      "brain/learning/2026-09-18-self-production-promotion-v1.json",
+      "brain/learning/2026-09-18-terminal-writer-lease-v1.json"
+    ]
+  }
 }
