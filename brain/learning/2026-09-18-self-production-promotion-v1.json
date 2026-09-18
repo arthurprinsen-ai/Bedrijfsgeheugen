@@ -7,18 +7,27 @@
   "obligation_id": "powerhouse-self-production-promotion-v1",
   "base_main_sha": "0f396f91a50a2018de3cbf2684b7e1fbcb65e0ee",
   "problem": "Chats and agents could build and verify a candidate yet still leave routine protected merge/deploy as human follow-up.",
-  "root_cause": "Production promotion was permitted in the autonomy contract but was not an explicit ownership obligation of the current authorized execution node.",
+  "root_cause": "Production promotion was permitted in the autonomy contract but was not an explicit ownership obligation of the current authorized execution node. A second failure mode was observed: diverged PR merge-bases, silent missing workflow starts and over-broad regression oracles could keep valid candidates red or unstarted even after current main already contained the correct behavior.",
   "fix": [
     "Make self-promotion mandatory after terminal-green required gates within existing authority.",
     "Keep protected merge/deploy and production readback in the same execution tail.",
     "Treat interruption as recoverable same-lineage work rather than a handoff to the user.",
-    "Allow only explicit hard authorization boundaries to stop autonomous production execution."
+    "Allow only explicit hard authorization boundaries to stop autonomous production execution.",
+    "Detect zero-run PR heads as silent-start failures and retrigger the same lineage automatically.",
+    "Check current main and merge-base freshness before treating repeated CI output as current truth.",
+    "Narrow false-positive regression oracles to concrete forbidden behavior without weakening the protected invariant.",
+    "Use single-flight and same-lineage recovery to collapse duplicate queue pressure."
   ],
   "prevention_rules": [
     "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED",
     "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
     "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP",
-    "INTERRUPTION_RESUMES_ON_SAME_CANONICAL_LINEAGE"
+    "INTERRUPTION_RESUMES_ON_SAME_CANONICAL_LINEAGE",
+    "ZERO_WORKFLOW_RUNS_ON_OPEN_PR_IS_RECOVERABLE_FAILURE",
+    "STALE_MERGE_BASE_MUST_REFRESH_BEFORE_NEW_DIAGNOSIS",
+    "TEST_ORACLES_MATCH_FORBIDDEN_BEHAVIOR_NOT_INNOCENT_PRIMITIVES",
+    "DUPLICATE_RECOVERY_LINEAGES_FOR_SAME_FAILURE_ARE_FORBIDDEN",
+    "CI_QUEUE_PRESSURE_MUST_SELF_HEAL_BY_SINGLE_FLIGHT_AND_SUPERSESSION"
   ],
   "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
 }
