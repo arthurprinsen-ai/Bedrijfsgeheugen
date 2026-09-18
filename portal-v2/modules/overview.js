@@ -93,7 +93,11 @@ function renderDirectievragen(root,state){
  let houder=doel.querySelector('.dv-houder');
  if(!houder){
   houder=doc.createElement('div');houder.className='dv-houder';
-  doel.insertBefore(houder,doel.querySelector('.kpis')||doel.firstChild);
+  const insights=doel.querySelector('[data-legacy-overview-insights]');
+  const lower=doel.querySelector('.lower');
+  if(insights?.parentNode===doel)insights.after(houder);
+  else if(lower?.parentNode===doel)lower.after(houder);
+  else doel.appendChild(houder);
  }
  houder.innerHTML=directievragenMarkup(state);
  bindPageButtons(houder);
@@ -101,10 +105,10 @@ function renderDirectievragen(root,state){
 }
 
 export function applyOverviewDashboard(root=document,state={}){
- ensureOverviewReorder(root);
  ensureCompanyCockpit(root);
- renderDirectievragen(root,state);
  renderLegacyOverviewInsights(root,state);
+ renderDirectievragen(root,state);
+ ensureOverviewReorder(root);
  if(isDemoCustomer(state)&&renderDemoOverview(root)){bindPageButtons(root.querySelector?.('.ovz'));return true;}
  const model=overviewViewModel(state);
  if(!model||!root?.querySelectorAll)return false;
