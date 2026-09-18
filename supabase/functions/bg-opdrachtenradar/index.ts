@@ -27,15 +27,16 @@ const BRONNEN: { naam: string; domains: string[] }[] = [
 ];
 
 // Profiel-, categorie- en overzichtspagina's zijn nooit een losse opdracht; die gaan niet naar de beoordeling.
-const RUIS = [
-  /linkedin\.com\/(in|company|school)\//i,
-  /\/(search_tag|vakgebieden|functies|kennisbank|blog|category|categories|beroepengids|salaris|uurtarieven)(\/|$)/i,
-  /indeed\.com\/q-/i,
-  /glassdoor\.[a-z]+\/Vacature\/.*SRCH_/i,
-];
+const RUIS_PAD = /\/(search_tag|vakgebieden|functies|kennisbank|blog|category|categories|beroepengids|salaris|uurtarieven)(\/|$)/i;
 const isRuis = (u: string) => {
-  try { const x = new URL(u); if (x.pathname === '/' || /^\/(vacatures|opdrachten|jobs)\/?$/i.test(x.pathname)) return true; } catch { return true; }
-  return RUIS.some(r => r.test(u));
+  let x: URL;
+  try { x = new URL(u); } catch { return true; }
+  const h = x.hostname.replace(/^www\./, '').toLowerCase(), p = x.pathname;
+  if (p === '/' || /^\/(vacatures|opdrachten|jobs)\/?$/i.test(p)) return true;
+  if ((h === 'linkedin.com' || h.endsWith('.linkedin.com')) && /^\/(in|company|school)\//i.test(p)) return true;
+  if ((h === 'indeed.com' || h.endsWith('.indeed.com')) && /^\/q-/i.test(p)) return true;
+  if ((h.startsWith('glassdoor.') || h.includes('.glassdoor.')) && /^\/Vacature\/.*SRCH_/i.test(p)) return true;
+  return RUIS_PAD.test(p);
 };
 // Vacature-API's voor bronnen die zoekmachines afschermen (Indeed-achtig). Alleen actief als de sleutels in Vault staan.
 const API_TERMEN = ['freelance data engineer', 'freelance BI consultant', 'zzp Power BI', 'interim data analist', 'freelance data architect', 'freelance AI consultant'];
