@@ -1,0 +1,66 @@
+{
+  "type": "POWERHOUSE_AGENT_SKILL",
+  "version": "POWERHOUSE-DELIVERY-CONCURRENCY-v1",
+  "status": "ACTIVE",
+  "fingerprint": "delivery|merge-epoch|optimistic-cas|v1",
+  "name": "powerhouse-delivery-concurrency",
+  "purpose": "Keep multi-agent development parallel while making the terminal protected landing deterministic, current-main-bound and recoverable.",
+  "trigger_when": [
+    "multiple chats, agents or workflows can move main concurrently",
+    "a protected merge is being prepared or retried",
+    "main moves during or after exact-head gates",
+    "a candidate becomes behind, non-mergeable or conflicted",
+    "duplicate same-obligation candidates appear",
+    "repeated rebase or retest cycles indicate rising landing-conflict risk"
+  ],
+  "required_behavior": [
+    "Use one active executable candidate per obligation and reuse the same canonical lineage during recovery.",
+    "Parallelize independent development; serialize only the short terminal integration boundary.",
+    "Bind terminal landing authority to obligation + exact tested candidate head + exact current main SHA.",
+    "Require candidate head to equal tested head, behind_by to equal zero, and GitHub conflict state to be clean before landing.",
+    "Re-read current main immediately before protected merge.",
+    "If main changes after the relevant gate proof, invalidate the landing proof, reconcile the same candidate onto current main, preserve the full current-main union, rerun exact-head gates and reacquire landing authority.",
+    "Use expected-head/CAS semantics for protected merge and treat CAS refusal or merge conflict as recovery input rather than terminal failure.",
+    "Use changed-path, contract, dependency and mutable-resource overlap to predict collision risk before terminal landing.",
+    "Treat rising behind_by, multiple TERMINAL_DELIVERY candidates, duplicate Obligation-ID, stale merge-base, main movement during gates and repeated reconciliations as leading indicators.",
+    "Continue after merge through production/main readback, outcome evidence, learning writeback and skill projection before claiming LIVE & BEWEZEN."
+  ],
+  "forbidden_patterns": [
+    "treating a green candidate on an older main epoch as currently merge-authorized",
+    "opening a fresh same-obligation PR solely because main moved",
+    "serializing all development when only the final landing boundary conflicts",
+    "merging a candidate with behind_by greater than zero",
+    "bypassing branch protection or required gates after a race",
+    "dropping current-main changes during reconciliation",
+    "claiming completion at merge without readback and canonical writeback"
+  ],
+  "prediction_signals": [
+    "behind_by velocity",
+    "main commits during gate duration",
+    "changed-path overlap",
+    "contract overlap",
+    "terminal candidate count",
+    "duplicate obligation count",
+    "reconciliation count",
+    "gate elapsed time"
+  ],
+  "canonical_evidence": {
+    "reference_incident_pr": 2074,
+    "production_source_pr": 2092,
+    "production_candidate_head": "b2d9bc5a7fede7235762e6706fedea9a621673f3",
+    "production_merge_sha": "fa0de9e319bc0fb440d0dd342d9688d49ed5414c",
+    "learning": "brain/learning/2026-09-18-merge-epoch-concurrency-guard-v1.json",
+    "agent_skill": ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "documentation": "docs/brain/merge-epoch-concurrency-guard-v1.md",
+    "ledger": "brain/learning-ledger/2026-09-18-merge-epoch-concurrency-guard-v1.md",
+    "production_state": "LIVE_AND_PROVEN"
+  },
+  "consumers": [
+    "chat-learning-preflight",
+    "delivery-control",
+    "architecture-integrator",
+    "reliability",
+    "repository-writer"
+  ]
+}

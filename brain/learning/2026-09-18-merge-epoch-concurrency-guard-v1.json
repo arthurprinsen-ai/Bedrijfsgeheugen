@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_LEARNING",
   "version": "POWERHOUSE-MERGE-EPOCH-CONCURRENCY-GUARD-v1",
-  "status": "ACTIVE_PREVENTION",
+  "status": "ACTIVE_PREVENTION_PROVEN",
   "fingerprint": "delivery|merge-epoch|optimistic-cas|v1",
   "date": "2026-09-18",
   "obligation_id": "powerhouse-merge-epoch-concurrency-guard-v1",
@@ -22,5 +22,24 @@
     "MAIN_MOVE_INVALIDATES_LANDING_PROOF: if main changes after gates, reconcile, re-prove exact head and reacquire the landing lease.",
     "DUPLICATE_OBLIGATION_SINGLE_FLIGHT: only one executable terminal candidate may exist per obligation.",
     "MERGE_FAILURE_IS_RECOVERY_INPUT: conflict/CAS refusal automatically returns the lineage to reconciliation instead of ending the task."
+  ],
+  "production_proof": {
+    "source_pr": 2092,
+    "candidate_head": "b2d9bc5a7fede7235762e6706fedea9a621673f3",
+    "merge_sha": "fa0de9e319bc0fb440d0dd342d9688d49ed5414c",
+    "required": "success",
+    "unified_brain": "success",
+    "codeql": "success",
+    "main_readback": "verified",
+    "verified_on": "2026-09-18"
+  },
+  "skill_projection": {
+    "agent_skill": ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "brain_skill": "brain/skills/powerhouse-delivery-concurrency-v1.json"
+  },
+  "documentation": [
+    "brain/learning-ledger/2026-09-18-merge-epoch-concurrency-guard-v1.md",
+    "docs/brain/merge-epoch-concurrency-guard-v1.md"
   ]
 }

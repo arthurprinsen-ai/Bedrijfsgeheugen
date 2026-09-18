@@ -22,11 +22,17 @@ test('Instagram reel proof extracts exact OpenArt video frames automatically',()
 });
 
 test('transient frames still require canonical Mira vision proof',()=>{
+  assert.match(verifier,/inlineInput/);
+  assert.match(verifier,/\(!mediaUrl&&!inlineInput\)/);
+  assert.doesNotMatch(verifier,/\|\|!mediaUrl\)return json\(\{ok:false,error:'INVALID_INPUT'/);
   assert.match(verifier,/inlineBase64/);
   assert.match(verifier,/MEDIA_BASE64_INVALID/);
   assert.match(verifier,/mira_present/);
   assert.match(verifier,/identity_class/);
   assert.match(verifier,/confidence/);
   assert.match(router,/VIDEO_FRAME_VISION_PROOF_FAILED/);
+  assert.match(router,/visual_complete:true/);
+  assert.match(router,/daily_life_scene:true/);
+  assert.match(router,/confidence:Math\.min/);
   assert.match(router,/exact_final_media_proven:true/);
 });
