@@ -383,7 +383,10 @@ with inventory as (
   where onderdeel='powerhouse-content-orchestrator'
     and status='fout'
     and detail like 'HTTP 401:%'
-    and gemeten_op >= now()-interval '30 minutes'
+    and coalesce(
+      nullif(gegevens->>'aangeroepen_op','')::timestamptz,
+      gemeten_op
+    ) >= now()-interval '30 minutes'
 ), structural as (
   select identity_gaps,forecast_lineage_gaps
   from public.powerhouse_revenue_intelligence_health_v1
