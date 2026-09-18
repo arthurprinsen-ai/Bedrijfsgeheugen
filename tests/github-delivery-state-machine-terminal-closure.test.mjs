@@ -22,6 +22,8 @@ test('learning changes require skill projection before LIVE_BEWEZEN', async()=>{
 
 test('terminal closure reuses canonical readback instead of creating a second deploy mechanism', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.doesNotMatch(workflow,/netlify deploy|deploy --prod|curl .*release\.json/);
+  assert.doesNotMatch(workflow,/netlify deploy|deploy --prod/);
+  assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN/);
+  assert.match(workflow,/release\.json\?bg_terminal_recovery=/);
   assert.match(workflow,/actions\/workflows\/production-release-readback\.yml\/runs/);
 });
