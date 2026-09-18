@@ -122,6 +122,19 @@ export async function handler(event){
       const result=await coreFetch('/daily',{method:'POST',body:{runDate:body.runDate}});
       return response(200,{status:'REFRESHED',result,snapshot:await buildSnapshot()});
     }
+    if(body.command==='feedback'){
+      const actionId=s(body.actionId||body.action_id);const feedbackType=s(body.feedbackType||body.feedback_type);const dedupeKey=s(body.dedupeKey||body.dedupe_key);
+      const allowedFeedback=new Set(['approve','edit','skip','cancel','override','alternative_action']);
+      if(!actionId||!dedupeKey||!allowedFeedback.has(feedbackType))return response(400,{status:'VALIDATION_ERROR',reason:'ACTION_DEDUPE_AND_VALID_FEEDBACK_REQUIRED'});
+      const result=await coreFetch('/feedback',{method:'POST',body:{actionId,opportunityKey:s(body.opportunityKey)||null,subjectKey:s(body.subjectKey)||null,feedbackType,recommendedVariant:s(body.recommendedVariant)||null,actualVariant:s(body.actualVariant)||null,alternativeAction:s(body.alternativeAction)||null,reason:s(body.reason)||null,dedupeKey,observedAt:s(body.observedAt)||new Date().toISOString(),evidence:body.evidence||{source:'revenue-command-center'}}});
+      return response(200,{status:'FEEDBACK_RECORDED',result,snapshot:await buildSnapshot()});
+    }
+    if(body.command==='economics'){
+      const actionId=s(body.actionId||body.action_id);const dedupeKey=s(body.dedupeKey||body.dedupe_key);const humanMinutes=body.humanMinutes??body.human_minutes;
+      if(!actionId||!dedupeKey||humanMinutes===null||humanMinutes===undefined||humanMinutes===''||!Number.isFinite(Number(humanMinutes))||Number(humanMinutes)<0)return response(400,{status:'VALIDATION_ERROR',reason:'ACTION_DEDUPE_AND_OBSERVED_ECONOMICS_REQUIRED'});
+      const result=await coreFetch('/economics',{method:'POST',body:{actionId,humanMinutes:Number(humanMinutes),dedupeKey,observedAt:s(body.observedAt)||new Date().toISOString(),evidence:body.evidence||{source:'revenue-command-center'}}});
+      return response(200,{status:'ECONOMICS_RECORDED',result,snapshot:await buildSnapshot()});
+    }
     const actionId=s(body.actionId||body.action_id);const outcomeType=s(body.outcomeType||body.outcome_type);
     const allowed=new Set(['executed','reply_received','no_response','meeting_booked','offer_created','offer_accepted','offer_rejected','order_won','order_lost','revenue_observed','not_relevant','defer']);
     if(!actionId||!allowed.has(outcomeType))return response(400,{status:'VALIDATION_ERROR',reason:'ACTION_AND_VALID_OUTCOME_REQUIRED'});
