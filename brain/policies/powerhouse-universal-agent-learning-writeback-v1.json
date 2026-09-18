@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 3,
+  "revision": 4,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
@@ -307,6 +307,13 @@
   "linked_learning_sources": [
     "brain/policies/chat-to-brain-completeness-v1.json",
     "brain/policies/powerhouse-agent-continuity-v1.json",
-    "config/chat-learning-completeness-guard.json"
-  ]
+    "config/chat-learning-completeness-guard.json",
+    "brain/skills/portal-v2-parity-empty-state-v1.json"
+  ],
+  "portal_v2_parity_skill": {
+    "required_when_scope_matches": true,
+    "skill": "brain/skills/portal-v2-parity-empty-state-v1.json",
+    "fingerprint": "portal-v2-empty-state-surface-preservation-v1",
+    "rule": "When Portal V2 protected surfaces, legacy parity, overview/navigation, maturity/adoption or organisation-state rendering is touched, load and apply the canonical skill before execution and preserve structural parity across populated, partial and empty states."
+  }
 }
