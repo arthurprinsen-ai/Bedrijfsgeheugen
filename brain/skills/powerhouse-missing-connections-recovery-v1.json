@@ -31,7 +31,12 @@
     "After learning/prevention writeback, prove next-agent discoverability by reading the same fingerprint or record through the canonical preflight/discovery route.",
     "When required gates are terminal green and the change is within existing authority, invoke the canonical protected merge/promotion and production deploy or migration yourself; do not return routine production promotion to the user.",
     "Continue after merge/deploy through production/provider readback, outcome/value verification, learning/prevention writeback and next-agent discoverability before terminal completion.",
-    "If execution is interrupted by queued CI, timeout, worker loss or chat stop, persist the recoverable obligation on the same lineage so the next eligible execution node resumes rather than asking the user to restart delivery."
+    "If execution is interrupted by queued CI, timeout, worker loss or chat stop, persist the recoverable obligation on the same lineage so the next eligible execution node resumes rather than asking the user to restart delivery.",
+    "Treat an open PR whose exact head has no pull-request workflow runs as a silent-start failure: autonomously create a same-lineage retrigger, then verify that Required and BRAIN actually start.",
+    "Before diagnosing a repeated CI failure, compare the PR branch and merge-base with current main; stale merge-base or stale merge-ref evidence must trigger same-lineage refresh/re-evaluation before speculative code changes.",
+    "When a regression oracle matches an implementation detail accidentally (for example byte arrayBuffer mistaken for the Buffer publishing service), narrow the oracle to the forbidden behavior or integration signature while preserving the security invariant.",
+    "When several open PRs share the same stale-oracle failure, repair the oracle once at the canonical current truth and re-evaluate affected same-lineage candidates rather than opening more recovery PRs.",
+    "Continuously reduce queue pressure by single-flight supersession of stale runs and by refusing duplicate parallel recovery lineages for the same obligation."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
@@ -44,7 +49,11 @@
     "claiming that no production write occurred solely because a PR is open, unmerged, failed or cancelled",
     "using evidence from a superseded exact head as terminal proof for the current candidate",
     "telling the user to merge or deploy an already-authorized green candidate",
-    "stopping at preview or merge-ready when production promotion is within existing authority"
+    "stopping at preview or merge-ready when production promotion is within existing authority",
+    "leaving an open PR with zero workflow runs as a passive waiting state",
+    "re-running stale merge-base evidence indefinitely without checking current main",
+    "using broad lexical test guards that reject harmless implementation primitives instead of the prohibited integration behavior",
+    "opening another recovery PR when the same existing lineage can be refreshed and repaired"
   ],
   "canonical_evidence": {
     "obligation_id": "powerhouse-structural-gap-closure-v2",
