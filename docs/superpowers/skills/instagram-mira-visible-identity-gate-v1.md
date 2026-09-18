@@ -68,3 +68,8 @@ Success means provider readiness is proven for the execution plane that will act
 For OpenArt reels/videos, a materialized exact MP4 must not depend on a human supplying proof frames. The canonical router automatically extracts bounded start/middle/end frames from the exact asset, passes them through the same visible-Mira vision gate, binds the aggregate proof to the exact MP4 digest, and only then allows PROOF_VERIFIED. Extraction or vision uncertainty is fail-closed; metadata-only identity remains forbidden.
 
 Learning fingerprint: `instagram-video-frame-proof-worker-v1`.
+
+
+## Canonical publishing transport (2026-09-18)
+
+After exact-final-media + visible-Mira proof passes, Instagram delivery must use Composio as the primary write transport. The flow is create media container → publish → Instagram media readback → external_id/permalink writeback. Make is forbidden as a fallback. Missing Composio credentials fail closed and preserve the proven media for replay. Fingerprint: `instagram-composio-primary-v1`.
