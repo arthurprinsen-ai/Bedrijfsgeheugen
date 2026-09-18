@@ -41,3 +41,14 @@ test('scheduler promotes reconciliation worker v2 as sole canonical worker', asy
   assert.match(sql,/cron\.schedule/);
   assert.match(sql,/select public\.powerhouse_reconciliation_worker_v2\(\);/);
 });
+
+
+test('new operations enroll in recovery conservatively', async()=>{
+  const sql=await readFile(path,'utf8');
+  assert.match(sql,/create or replace function public\.brain_create_operation/);
+  assert.match(sql,/'execution_resilience'/);
+  assert.match(sql,/'side_effect_state','NOT_STARTED'/);
+  assert.match(sql,/'safe_replay',false/);
+  assert.match(sql,/'last_heartbeat_at',clock_timestamp\(\)/);
+  assert.match(sql,/revoke execute on function public\.brain_create_operation\(text,text,text,text,text,text\) from public, anon, authenticated/i);
+});
