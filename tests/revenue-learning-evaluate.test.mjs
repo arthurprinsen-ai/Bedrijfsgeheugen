@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
 import {createRevenueEvaluator} from '../netlify/functions/revenue-learning-evaluate.mjs';
 
 const projectionDefaults={listCurrentLearnings:async()=>[],putProjection:async()=>{}};
@@ -43,4 +44,10 @@ test('evaluator refreshes bounded proven projection for the next content decisio
   assert.equal(projection.learnings.length,8);
   assert.equal(projection.learnings[0].learningId,'l10');
   assert.ok(projection.learnings.every(l=>l.status==='PROVEN'));
+});
+
+test('hourly evaluator reconciles action evidence obligations before learning evaluation',async()=>{
+  const src=await readFile(new URL('../netlify/functions/revenue-learning-evaluate.mjs',import.meta.url),'utf8');
+  assert.match(src,/reconcileActionLearningObligations/);
+  assert.match(src,/actionEvidence/);
 });
