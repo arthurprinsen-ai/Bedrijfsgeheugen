@@ -51,11 +51,8 @@
 @media(max-width:760px){.pvglobalnav{padding:8px 12px}.legacy-overview-insights{grid-template-columns:1fr}.adoption-card{grid-column:auto}.legacy-insight-card{padding:15px}}
 
 
-.portal-hamburger{display:none;align-items:center;gap:9px;min-height:44px;width:max-content;border:1px solid #dfe5f0;border-radius:12px;background:#fff;padding:0 14px;color:#172554;font-weight:900;box-shadow:0 8px 24px rgba(25,46,95,.08)}
+.portal-hamburger{display:inline-flex;align-items:center;gap:9px;min-height:44px;width:max-content;border:1px solid #dfe5f0;border-radius:12px;background:#fff;padding:0 14px;color:#172554;font-weight:900;box-shadow:0 8px 24px rgba(25,46,95,.08);flex:0 0 auto}
 .portal-hamburger span{font-size:14px}
-@media(max-width:1180px){
-  .portal-hamburger{display:inline-flex}
-}
 @media(max-width:760px){
   .portal-hamburger{display:inline-flex;margin:0 0 2px 0;position:relative;z-index:4}
   .allpages.open{display:grid;place-items:stretch;padding:0;background:rgba(7,18,49,.45)}
