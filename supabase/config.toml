@@ -14,3 +14,8 @@ entrypoint = "./functions/powerhouse-forecast-calibrator/index.ts"
 enabled = true
 verify_jwt = false
 entrypoint = "./functions/bg-notion-sync/index.ts"
+
+[functions.bg-opdrachtenradar]
+enabled = true
+verify_jwt = false
+entrypoint = "./functions/bg-opdrachtenradar/index.ts"
