@@ -5,9 +5,11 @@ import fs from 'node:fs';
 const sql = fs.readFileSync('supabase/migrations/20260918094000_runtime_health_truth_v1.sql','utf8');
 
 test('edge-function health only treats recent invocation evidence as current',()=>{
-  assert.match(sql,/v_new constant text := 'where a\.aangeroepen_op>now\(\)-interval ''30 minutes''/);
-  assert.match(sql,/v_old constant text := 'where a\.aangeroepen_op>now\(\)-interval ''26 hours''/);
-  assert.match(sql,/execute replace\(v_def,v_old,v_new\)/);
+  assert.match(sql,/v_30m constant text :=/);
+  assert.match(sql,/v_26h constant text :=/);
+  assert.match(sql,/regexp_replace\(/);
+  assert.match(sql,/BG_GEZONDHEID_EDGE_FRESHNESS_REWRITE_FAILED/);
+  assert.match(sql,/to_regprocedure\('public\.bg_gezondheid_meten\(\)'\)/);
 });
 
 test('historical daily proof errors do not count as current structural runtime errors',()=>{
