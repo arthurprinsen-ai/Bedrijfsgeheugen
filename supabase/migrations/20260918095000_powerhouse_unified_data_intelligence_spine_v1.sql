@@ -283,6 +283,15 @@ as $$
 declare
   v_tenant text := coalesce(new.organisatie_id::text,new.gebruiker_id::text);
 begin
+  insert into public.portal_state_layers(tenant_id,layer,payload,source_updated_at,updated_at)
+  values(v_tenant,'legacy-migration',new.stand,new.bijgewerkt,now())
+  on conflict (tenant_id,layer) do update set
+    payload=excluded.payload,
+    source_updated_at=excluded.source_updated_at,
+    updated_at=now()
+  where public.portal_state_layers.source_updated_at is null
+     or excluded.source_updated_at >= public.portal_state_layers.source_updated_at;
+
   perform public.powerhouse_record_source_observation_v1(
     'portal-state',
     'portaal-stand:'||v_tenant||':'||md5(new.stand::text),
@@ -358,6 +367,16 @@ begin
       jsonb_build_object('authority','bg_externe_signalen','url',r.url,'topic',r.onderwerp,'title',r.titel,'domain',r.domein,'published_at',r.gepubliceerd_op,'source_trust',r.brontrouw,'confirmation',r.bevestiging,'freshness',r.versheid,'relevance',r.relevantie,'confidence',r.vertrouwen,'allowed',r.toegestaan,'noise_reason',r.ruis_reden)
     ); v_written:=v_written+1;
   end loop;
+
+  insert into public.portal_state_layers(tenant_id,layer,payload,source_updated_at,updated_at)
+  select coalesce(p.organisatie_id::text,p.gebruiker_id::text),'legacy-migration',p.stand,p.bijgewerkt,now()
+  from public.portaal_stand p
+  on conflict (tenant_id,layer) do update set
+    payload=excluded.payload,
+    source_updated_at=excluded.source_updated_at,
+    updated_at=now()
+  where public.portal_state_layers.source_updated_at is null
+     or excluded.source_updated_at >= public.portal_state_layers.source_updated_at;
 
   for r in select * from public.portal_state_layers loop
     perform public.powerhouse_record_source_observation_v1(
