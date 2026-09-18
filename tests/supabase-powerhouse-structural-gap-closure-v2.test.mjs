@@ -88,7 +88,10 @@ test('one brain health separates green wiring from sparse evidence',()=>{
   assert.match(sql,/create or replace view public\.powerhouse_one_brain_runtime_health_v1/i);
   assert.match(sql,/architecture_state/);
   assert.match(sql,/learning_state/);
-  assert.match(sql,/EVIDENCE_SPARSE/);
+  assert.match(sql,/EVIDENCE_DUE_GAPS/);
+  assert.match(sql,/EVIDENCE_CURRENT/);
+  assert.match(sql,/current_runtime_errors/);
+  assert.match(sql,/content_loop_state/);
   assert.match(sql,/green wiring never fabricates economics, feedback, outcomes or causal evidence/);
 });
 
@@ -97,4 +100,17 @@ test('one brain reconciliation is continuously scheduled and idempotent',()=>{
   assert.match(sql,/\*\/10 \* \* \* \*/);
   assert.match(sql,/cron\.unschedule/);
   assert.match(sql,/cron\.schedule/);
+});
+
+
+test('optional forecast calibration freshness never creates a false current runtime error',()=>{
+  assert.match(sql,/event_type='source_health_evaluated' and subject_key='forecast-calibration'/);
+  assert.match(sql,/revenue_learning_obligations[\s\S]*?FORECAST_CALIBRATION[\s\S]*?due_at<=now\(\)/);
+});
+
+test('learning gaps are obligation driven rather than empty-table driven',()=>{
+  assert.match(sql,/executed_at is not null[\s\S]*?powerhouse_action_economics/);
+  assert.match(sql,/exists\(select 1 from public\.powerhouse_experiment_policies\)[\s\S]*?powerhouse_experiment_assignments/);
+  assert.match(sql,/exists\(select 1 from public\.powerhouse_experiment_policies\)[\s\S]*?powerhouse_policy_versions/);
+  assert.doesNotMatch(sql,/count\(\*\) filter\(where required_for_autonomous_learning and evidence_state='NO_EVIDENCE_YET'\)/);
 });
