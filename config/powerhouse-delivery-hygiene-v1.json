@@ -6,10 +6,32 @@
     "maintenanceQueueSeparate": true,
     "maxTerminalWritersPerObligation": 1
   },
-  "priorityLanes": ["security", "incident"],
-  "nonProductLanes": ["dependency", "docs"],
-  "allowedLanes": ["backend", "portal", "website", "automation", "security", "incident", "dependency", "docs"],
-  "allowedCandidateTypes": ["implementation", "recovery", "security", "dependency", "docs", "promotion"],
+  "priorityLanes": [
+    "security",
+    "incident"
+  ],
+  "nonProductLanes": [
+    "dependency",
+    "docs"
+  ],
+  "allowedLanes": [
+    "backend",
+    "portal",
+    "website",
+    "automation",
+    "security",
+    "incident",
+    "dependency",
+    "docs"
+  ],
+  "allowedCandidateTypes": [
+    "implementation",
+    "recovery",
+    "security",
+    "dependency",
+    "docs",
+    "promotion"
+  ],
   "deliveryControlPlanePaths": [
     "config/powerhouse-delivery-hygiene-v1.json",
     "config/powerhouse-one-loop-v1.json",
