@@ -330,3 +330,12 @@ test('continuity skill consumes automatic learning projection instead of manual-
   assert.match(continuitySkillSource, /skill.*projection/i);
   assert.match(continuitySkillSource, /drift.*fail/i);
 });
+
+test('terminal delivery consolidation is backfilled into skill projection', async () => {
+  const { buildSkillProjectionIndex, selectSkillProjection } = await import('../scripts/brain/powerhouse-skill-projection.mjs');
+  const index = buildSkillProjectionIndex({ rootDir });
+  const fingerprint = 'powerhouse-terminal-delivery-consolidation-2026-09-18-v1';
+  assert.ok(index.entries.some(entry => entry.fingerprint === fingerprint));
+  const selected = selectSkillProjection(index, { fingerprints: [fingerprint] });
+  assert.ok(selected.selected_entries.some(entry => entry.fingerprint === fingerprint));
+});
