@@ -43,7 +43,9 @@
     "When current main moves without path/contract overlap and the candidate remains mergeable, preserve the tested candidate instead of rebuilding merely to chase main.",
     "When reconciliation with main is required, preserve the full current-main union from the merge-base; latest-commit-only overlay is forbidden.",
     "Final mutable identities are integration-owned: allocate Supabase migration versions at rolling integration and verify uniqueness before expensive CI.",
-    "If a protected merge occurred before intended candidate gates were terminal, treat it as a governance incident: immediately prove post-merge main/provider readback and persist a prevention rule requiring terminal gates before future promotion."
+    "If a protected merge occurred before intended candidate gates were terminal, treat it as a governance incident: immediately prove post-merge main/provider readback and persist a prevention rule requiring terminal gates before future promotion.",
+    "If the active terminal-delivery PR changes state, refresh GitHub authority immediately and continue on the single valid lineage instead of stopping at the state transition.",
+    "A closed unmerged TERMINAL_DELIVERY PR with no valid successor must be auto-reopened by repository hygiene; one valid successor is reused, multiple successors fail closed."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
@@ -84,7 +86,8 @@
     "self_production_promotion_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json",
     "terminal_writer_lease_learning": "brain/learning/2026-09-18-terminal-writer-lease-v1.json",
     "fast_delivery_incident_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json",
-    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md"
+    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "terminal_lineage_continuity_learning": "brain/learning/2026-09-18-terminal-lineage-continuity-v1.json"
   },
   "consumers": [
     "chat-learning-preflight",

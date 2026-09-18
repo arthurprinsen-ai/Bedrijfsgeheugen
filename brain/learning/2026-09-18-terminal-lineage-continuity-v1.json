@@ -1,0 +1,26 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-TERMINAL-LINEAGE-CONTINUITY-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|terminal-lineage|closed-unmerged-chat-stop-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "incident_prs": [
+    2044,
+    2053
+  ],
+  "root_cause": "Terminal delivery state changes were detected by chats, but runtime hygiene did not enforce auto-reopen/reuse of the canonical lineage; closed unmerged leased PRs could therefore strand delivery and require another chat turn.",
+  "fix": [
+    "Repository janitor scans recent closed PRs for active TERMINAL_DELIVERY leases.",
+    "Closed unmerged leased PR with no successor is auto-reopened.",
+    "Exactly one same-obligation open successor is reused.",
+    "Multiple successors fail closed as lineage ambiguity.",
+    "Chats/agents refresh authority and continue instead of stopping on PR state transition."
+  ],
+  "prevention_rules": [
+    "TERMINAL_DELIVERY_CLOSED_UNMERGED_MUST_AUTO_RECOVER",
+    "NO_CHAT_STOP_ON_LINEAGE_STATE_CHANGE",
+    "CLOSED_PR_REQUIRES_MERGE_RELEASE_OR_CANONICAL_SUCCESSOR"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}

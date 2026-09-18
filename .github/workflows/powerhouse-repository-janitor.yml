@@ -118,7 +118,31 @@ jobs:
         run: |
           set -euo pipefail
           gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs-after.json
+          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=100" > .artifacts/closed-prs-recent.json
           : > .artifacts/janitor-runtime-actions.ndjson
+
+          # Active TERMINAL_DELIVERY lease may not remain closed without merge.
+          jq -c '.[] | select((.merged_at == null) and ((.body // "") | contains("Writer-Lease-State: TERMINAL_DELIVERY")))' .artifacts/closed-prs-recent.json | while read -r closed_pr; do
+            pr="$(jq -r '.number' <<<"$closed_pr")"
+            body="$(jq -r '.body // ""' <<<"$closed_pr")"
+            obligation="$(printf '%s\n' "$body" | sed -n 's/^Obligation-ID:[[:space:]]*//p' | head -n1)"
+            [ -n "$obligation" ] || { echo "::error::TERMINAL_LEASE_CLOSED_WITHOUT_OBLIGATION:#${pr}"; exit 78; }
+
+            successor_count="$(jq -r --arg obligation "$obligation" '[.[] | select(.state=="open") | select((.body // "") | contains("Obligation-ID: " + $obligation))] | length' .artifacts/open-prs-after.json)"
+            if [ "$successor_count" -eq 0 ]; then
+              current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+              [ "$(jq -r '.state' <<<"$current")" = closed ] || continue
+              [ "$(jq -r '.merged' <<<"$current")" = false ] || continue
+              gh api -X PATCH "repos/${GITHUB_REPOSITORY}/pulls/${pr}" -f state=open >/dev/null
+              jq -cn --arg type AUTO_REOPEN_TERMINAL_LEASE --argjson pr "$pr" --arg obligation "$obligation" '{type:$type,pr_number:$pr,obligation_id:$obligation,reason:"TERMINAL_DELIVERY_CLOSED_UNMERGED_NO_SUCCESSOR"}' >> .artifacts/janitor-runtime-actions.ndjson
+            elif [ "$successor_count" -eq 1 ]; then
+              successor="$(jq -r --arg obligation "$obligation" '[.[] | select(.state=="open") | select((.body // "") | contains("Obligation-ID: " + $obligation))][0].number' .artifacts/open-prs-after.json)"
+              jq -cn --arg type TERMINAL_LEASE_SUCCESSOR_EXISTS --argjson pr "$pr" --argjson successor "$successor" --arg obligation "$obligation" '{type:$type,pr_number:$pr,successor_number:$successor,obligation_id:$obligation}' >> .artifacts/janitor-runtime-actions.ndjson
+            else
+              echo "::error::TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS:#${pr}:obligation=${obligation}:count=${successor_count}"
+              exit 78
+            fi
+          done
 
           # Cancel only stale candidate executions. Never touch main and never cancel the current head of an open PR.
           for status in queued in_progress; do
@@ -188,6 +212,12 @@ jobs:
             [ "$state" = closed ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:${state}"; exit 1; }
           done
           if [ -f .artifacts/janitor-runtime-actions.json ]; then
+            jq -c '.[] | select(.type == "AUTO_REOPEN_TERMINAL_LEASE")' .artifacts/janitor-runtime-actions.json | while read -r action; do
+              pr="$(jq -r '.pr_number' <<<"$action")"
+              state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.state')"
+              merged="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.merged')"
+              [ "$state" = open ] && [ "$merged" = false ] || { echo "::error::JANITOR_TERMINAL_LEASE_REOPEN_READBACK_FAILED:#${pr}:${state}:${merged}"; exit 78; }
+            done
             jq -c '.[] | select(.type == "DELETE_BRANCH")' .artifacts/janitor-runtime-actions.json | while read -r action; do
               branch="$(jq -r '.branch' <<<"$action")"
               encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
