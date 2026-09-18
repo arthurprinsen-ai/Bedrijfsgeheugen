@@ -2,6 +2,8 @@ name: Powerhouse Fast Delivery Supervisor
 
 on:
   workflow_dispatch:
+  pull_request:
+    types: [opened, reopened, synchronize, ready_for_review]
   schedule:
     - cron: '*/5 * * * *'
 
@@ -11,7 +13,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: powerhouse-fast-delivery-supervisor
+  group: powerhouse-fast-delivery-supervisor-${{ github.event.pull_request.number || 'watchdog' }}
   cancel-in-progress: true
 
 jobs:
@@ -32,39 +34,65 @@ jobs:
         run: |
           set -euo pipefail
           repo="$GITHUB_REPOSITORY"
-          gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
-          jq -c '.[]' /tmp/open-prs.json | while read -r pr; do
+          if [ "$GITHUB_EVENT_NAME" = "pull_request" ]; then
+            jq -c '.pull_request' "$GITHUB_EVENT_PATH" > /tmp/open-prs.jsonl
+            eager=true
+          else
+            gh api --paginate "repos/$repo/pulls?state=open&per_page=100" | jq -c '.[]' > /tmp/open-prs.jsonl
+            eager=false
+          fi
+
+          while read -r pr; do
+            [ -z "$pr" ] && continue
             number="$(jq -r '.number' <<<"$pr")"
             head="$(jq -r '.head.sha' <<<"$pr")"
             branch="$(jq -r '.head.ref' <<<"$pr")"
             updated="$(jq -r '.updated_at' <<<"$pr")"
+            base_sha="$(jq -r '.base.sha' <<<"$pr")"
             mergeable="$(gh api "repos/$repo/pulls/$number" --jq '.mergeable')"
             runs="$(gh api "repos/$repo/actions/runs?head_sha=$head&per_page=100" --jq '.workflow_runs | map({id,name,status,conclusion})')"
-            decision="$(node --input-type=module - "$mergeable" "$updated" "$runs" <<'NODE'
+            decision="$(node --input-type=module - "$mergeable" "$updated" "$runs" "$eager" <<'NODE'
           import { classifyRecovery } from './tools/delivery/predictive-controller.mjs';
-          const [mergeableRaw,updated,runsRaw]=process.argv.slice(2);
+          const [mergeableRaw,updated,runsRaw,eagerRaw]=process.argv.slice(2);
           const mergeable=mergeableRaw==='true'?true:mergeableRaw==='false'?false:null;
           const workflowRuns=JSON.parse(runsRaw||'[]');
-          process.stdout.write(JSON.stringify(classifyRecovery({mergeable,workflowRuns,headUpdatedAt:updated})));
+          process.stdout.write(JSON.stringify(classifyRecovery({
+            mergeable,
+            workflowRuns,
+            headUpdatedAt:updated,
+            eagerStart:eagerRaw==='true'
+          })));
           NODE
             )"
             state="$(jq -r '.state' <<<"$decision")"
             action="$(jq -r '.action' <<<"$decision")"
             echo "PR#$number $head $state $action"
+
+            dispatch_required() {
+              gh workflow run required-test.yml -f pr_number="$number" -f base_sha="$base_sha" -f head_sha="$head" -f candidate_branch="$branch" || true
+            }
+            dispatch_brain() {
+              gh workflow run unified-brain-delivery.yml -f pr_number="$number" -f base_sha="$base_sha" -f head_sha="$head" -f candidate_branch="$branch" || true
+            }
+
             case "$state" in
               ZERO_RUN_RECOVERY)
-                gh workflow run required-test.yml -f pr_number="$number" -f base_sha="$(jq -r '.base.sha' <<<"$pr")" -f head_sha="$head" -f candidate_branch="$branch" || true
-                gh workflow run unified-brain-delivery.yml -f pr_number="$number" -f base_sha="$(jq -r '.base.sha' <<<"$pr")" -f head_sha="$head" -f candidate_branch="$branch" || true
+                dispatch_required
+                dispatch_brain
+                ;;
+              PARTIAL_START_RECOVERY)
+                jq -e '.coverage.requiredPresent == true' <<<"$decision" >/dev/null || dispatch_required
+                jq -e '.coverage.brainPresent == true' <<<"$decision" >/dev/null || dispatch_brain
                 ;;
               STALE_RUN_RECOVERY)
                 jq -r '.[] | select(.status=="queued" or .status=="in_progress" or .status=="waiting" or .status=="pending") | .id' <<<"$runs" | while read -r run_id; do
                   [ -n "$run_id" ] && gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" || true
                 done
-                gh workflow run required-test.yml -f pr_number="$number" -f base_sha="$(jq -r '.base.sha' <<<"$pr")" -f head_sha="$head" -f candidate_branch="$branch" || true
-                gh workflow run unified-brain-delivery.yml -f pr_number="$number" -f base_sha="$(jq -r '.base.sha' <<<"$pr")" -f head_sha="$head" -f candidate_branch="$branch" || true
+                dispatch_required
+                dispatch_brain
                 ;;
               MERGE_CONFLICT_RECOVERY)
-                echo "::warning::PR#$number requires same-lineage main refresh; duplicate recovery PR forbidden."
+                echo "::warning::PR#$number requires same-lineage semantic conflict repair; duplicate recovery PR forbidden."
                 ;;
             esac
-          done
+          done < /tmp/open-prs.jsonl
