@@ -93,3 +93,9 @@ Status: `ACTIVE_PROVEN`.
 - Main readback: verified on 2026-09-18
 
 Terminal proof includes canonical learning-to-skill writeback and readback; delivery is not complete before that projection is proven current.
+
+## Canonical connector/toolchain authority
+
+Before choosing an external execution route, apply `powerhouse|toolchain-authority|composio-no-make|v1` from `.agents/skills/powerhouse-toolchain-authority/SKILL.md`.
+
+Make is retired and forbidden as execution, orchestration, fallback or recovery. Use the canonical active stack instead: Composio where orchestration is needed; GitHub, Netlify, Notion, Supabase, Tavily, Buffer, DataForSEO, OpenArt, Placid, Google Search and Google Analytics for their specialist capabilities. Historical Make references are provenance only and must never reactivate authority.

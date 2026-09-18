@@ -1,6 +1,6 @@
 # Bedrijfsgeheugen — Agent Development Contract
 
-Dit bestand is de eerste bron die iedere agent moet lezen voordat code, content, automatisering, Make, Netlify, GitHub of portalgedrag wordt gewijzigd.
+Dit bestand is de eerste bron die iedere agent moet lezen voordat code, content, automatisering, connectors, Netlify, GitHub of portalgedrag wordt gewijzigd.
 
 ## Doel
 Ontwikkel sneller doordat bewezen kennis wordt hergebruikt, fouten niet opnieuw worden gemaakt en iedere wijziging aantoonbaar veilig is.
@@ -50,7 +50,7 @@ De niet-onderhandelbare regels zijn:
 - `GREEN MEANS OUTCOME VERIFIED`;
 - `RED MEANS AGENTS KEEP WORKING`.
 
-Een technisch succesvolle run is nooit voldoende wanneer het bedoelde resultaat ontbreekt. Een Make-run met status success, HTTP 2xx, een lege zoekopdracht, `zero candidates`, een groene build of een geslaagde dispatch kan dus nog steeds `MISSED_OBLIGATION` zijn. Zodra een verschuldigd outcome na de deadline geen geldig bewijs heeft, start de owner agent automatisch herstel en schrijft bij veilig herstel `AUTO_REPAIR` terug.
+Een technisch succesvolle run is nooit voldoende wanneer het bedoelde resultaat ontbreekt. Een connector/provider-run met status success, HTTP 2xx, een lege zoekopdracht, `zero candidates`, een groene build of een geslaagde dispatch kan dus nog steeds `MISSED_OBLIGATION` zijn. Zodra een verschuldigd outcome na de deadline geen geldig bewijs heeft, start de owner agent automatisch herstel en schrijft bij veilig herstel `AUTO_REPAIR` terug.
 
 Een obligation mag alleen eindigen als `COMPLETED` met geldig outcome-bewijs of als `BLOCKED_HARD_BOUNDARY` volgens de harde grenzen hieronder. Side-effects worden altijd idempotent uitgevoerd en eerst gecontroleerd op bestaand extern bewijs om dubbel publiceren, dubbel mailen, dubbele writes of andere dubbele handelingen te voorkomen.
 
@@ -121,7 +121,7 @@ De command moet `status: READY` opleveren. Bij `CHAT_LEARNING_PREFLIGHT_FAILED` 
 - Nieuwe materiële fout/fix/preventie wordt teruggeschreven en maakt pas daarna via de gedeelde context deel uit van de volgende agentpreflight.
 
 ## BRAIN Continuous CI/CD v2 — onafhankelijke delivery lanes
-Alle huidige en toekomstige apps, agents, Make-scenario's, GitHub-workflows, website-, portal-, backend- en servicecomponenten vallen onder `BRAIN-DELIVERY-v2` via `config/brain-delivery-system.json`, `brain/contracts/delivery-v2.schema.json`, `brain/production/continuous-delivery-v2.mjs` en `tools/brain-delivery-system.mjs`.
+Alle huidige en toekomstige apps, agents, connector-workflows, GitHub-workflows, website-, portal-, backend- en servicecomponenten vallen onder `BRAIN-DELIVERY-v2` via `config/brain-delivery-system.json`, `brain/contracts/delivery-v2.schema.json`, `brain/production/continuous-delivery-v2.mjs` en `tools/brain-delivery-system.mjs`.
 
 De canonieke regel is **independent delivery, shared intelligence**:
 - ontwikkelen mag simultaan;
@@ -146,6 +146,21 @@ GitHub en Netlify zijn zelf actieve onderdelen van het Brain (`PLATFORM_GITHUB` 
 `node tools/brain-delivery-system.mjs deploy-preflight --sha <exacte-BG169-productie-SHA>`
 
 De controle moet `DEPLOY_SOURCE_READY` teruggeven. `STAGE_STANDALONE_EXACT_SHA` betekent dat de bron een gekoppelde Git-worktree is; upload die nooit rechtstreeks, omdat het `.git`-bestand naar een lokaal absoluut common-dir kan verwijzen dat in Netlify niet bestaat. Maak dan een standalone clone zonder hardlinks, check exact de BG169-SHA uit, herhaal de preflight en deploy pas na groen bewijs. Leg zowel de fout als de recovery via BG168 vast en verifieer zichtbaarheid via BG167.
+
+## Canonieke connector- en toolchain-authority
+
+Fingerprint: `powerhouse|toolchain-authority|composio-no-make|v1`.
+
+Voor alle huidige en toekomstige chats, agents, skills, workflows en recovery-routes geldt:
+- **Make is retired** en heeft geen execution-, orchestration-, fallback- of recovery-authority. Geen agent mag Make voorstellen, activeren, herbouwen of als noodroute gebruiken.
+- **Composio** is de primaire connector/orchestratielaag waar een externe-app workflow via de beschikbare connector kan worden uitgevoerd.
+- Canonieke specialistische platformen: **GitHub** voor broncode/delivery, **Netlify** voor webdeploy/runtime, **Notion** voor kennis/projectie, **Supabase** voor data/backend, **Tavily** en **Google Search** voor externe research/search, **Buffer** voor social publishing/orchestration, **DataForSEO** voor SEO/search intelligence, **OpenArt** voor generatieve media/video, **Placid** voor template-based creatives en **Google Analytics** voor webanalytics/outcome evidence.
+- Gebruik waar mogelijk de directe specialistische connector in plaats van een generieke omweg. Composio mag meerdere app-acties verbinden maar creëert geen parallelle waarheid of eigen business-state.
+- Als een legacy prompt, skill, document, workflow of foutmelding naar Make verwijst, behandel dat als migratiesignaal: vervang de uitvoerroute door de canonieke toolchain en laat historische Make-verwijzingen uitsluitend als provenance/audit bestaan.
+- Toolkeuze volgt capability + authority + evidence: kies de connector die de vereiste side-effect én readback kan bewijzen; een transport-success zonder provider/readback is niet terminal.
+- Nieuwe connectors worden pas production-authority nadat zij in de runtime-authority/config, security/cost governance, dedupe/idempotency, readback en learning-writeback zijn opgenomen.
+
+Canonieke skill: `.agents/skills/powerhouse-toolchain-authority/SKILL.md`.
 
 ## Kansen actief zien en benutten
 Agents zoeken niet alleen fouten; zij zoeken ook dagelijks aantoonbare kansen op:
@@ -207,17 +222,18 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 ## Verplichte leesvolgorde
 1. `AGENTS.md`
 2. `.agents/skills/powerhouse-continuity/SKILL.md`
-3. `config/brain-chat-learning-contract.json`
-4. `config/powerhouse-runtime-authority.json`
-5. `docs/development-operating-system.md`
-6. `docs/development-ledger.md`
-7. `docs/self-healing-agents.md`
-8. `docs/outcome-obligations.md`
-9. `config/outcome-obligations.json`
-10. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
-11. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
-12. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
-13. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
+3. `.agents/skills/powerhouse-toolchain-authority/SKILL.md`
+4. `config/brain-chat-learning-contract.json`
+5. `config/powerhouse-runtime-authority.json`
+6. `docs/development-operating-system.md`
+7. `docs/development-ledger.md`
+8. `docs/self-healing-agents.md`
+9. `docs/outcome-obligations.md`
+10. `config/outcome-obligations.json`
+11. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
+12. `docs/superpowers/specs/2026-08-30-brain-continuous-cicd-v2-design.md`
+13. Domeinspecifieke regressiedocumentatie, o.a. `docs/prototype-preview-regressions.md`
+14. Bestaande tests/build-gates voor het onderdeel dat wordt gewijzigd
 
 ## Niet opnieuw ontdekken
 Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-experiment al in de repo of gedeelde teamcontext is vastgelegd, moet die kennis worden hergebruikt. Een agent mag niet opnieuw experimenteren met een eerder afgewezen aanpak zonder aantoonbare nieuwe reden.
@@ -226,19 +242,19 @@ Als een fout, oorzaak, fix, werkende architectuur of eerder getest opportunity-e
 Voor iedere wijziging:
 1. Lees huidige branch/deploy/runtime-state en gedeelde teamcontext.
 2. Schrijf het gewenste resultaat en de invarianten op en materialiseer verwachte resultaten als obligations.
-3. Reproduceer/bewijs de fout of kwalificeer de kans.
-4. Voeg waar mogelijk eerst een falende regressiecheck of meetbare baseline toe.
-5. Pas de kleinst mogelijke oorzaakgerichte wijziging/experiment toe.
-6. Test lokaal/build-time/runtime passend bij het risico.
-7. Deploy naar preview/test en verifieer exact commit/artifact.
-8. Als niet groen: analyseer nieuwe fout en herhaal met nieuwe informatie.
-9. Als groen: promoveer automatisch naar productie.
-10. Verifieer productie met smoke/regressie, protected metrics en outcome-bewijs.
-11. Reconcile alle verschuldigde obligations; technische success-status zonder resultaat telt niet als groen.
-12. Bij productieregressie: rollback naar last-known-good en hervat herstel.
-13. Vergelijk resultaat met baseline en protected metrics.
-14. Behoud of rollback op basis van bewijs.
-15. Leg oorzaak/kans, fix/experiment, obligation-uitkomst, bewijs, productiepromotie/rollback en preventieregel/les vast in development ledger en gedeeld teamgeheugen.
+4. Reproduceer/bewijs de fout of kwalificeer de kans.
+5. Voeg waar mogelijk eerst een falende regressiecheck of meetbare baseline toe.
+6. Pas de kleinst mogelijke oorzaakgerichte wijziging/experiment toe.
+7. Test lokaal/build-time/runtime passend bij het risico.
+8. Deploy naar preview/test en verifieer exact commit/artifact.
+9. Als niet groen: analyseer nieuwe fout en herhaal met nieuwe informatie.
+10. Als groen: promoveer automatisch naar productie.
+11. Verifieer productie met smoke/regressie, protected metrics en outcome-bewijs.
+12. Reconcile alle verschuldigde obligations; technische success-status zonder resultaat telt niet als groen.
+13. Bij productieregressie: rollback naar last-known-good en hervat herstel.
+14. Vergelijk resultaat met baseline en protected metrics.
+15. Behoud of rollback op basis van bewijs.
+16. Leg oorzaak/kans, fix/experiment, obligation-uitkomst, bewijs, productiepromotie/rollback en preventieregel/les vast in development ledger en gedeeld teamgeheugen.
 
 ## Definition of Done
 Een wijziging is pas klaar als:
