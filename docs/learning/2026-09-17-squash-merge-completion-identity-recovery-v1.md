@@ -57,3 +57,30 @@ The recovery is terminally proven on 2026-09-17:
 ## Closure
 
 All closure criteria are now proven. Canonical terminal state for this learning is `LIVE & BEWEZEN`; the corresponding obligation is fulfilled by the protected merge plus exact-main runtime/readback and same-lineage completion evidence above. Any future regression must reopen a new recoverable execution state from this proven checkpoint rather than downgrade or fork this historical terminal evidence.
+
+
+## Operational verification learning — 2026-09-18
+
+This incident also established a reusable verification rule for future Powerhouse recovery work.
+
+A terminal status must never be accepted from PR text, a chat summary, or a single green check alone. Before reporting `LIVE & BEWEZEN`, the recovery owner must independently read back all relevant authorities for the same obligation lineage:
+
+- the canonical PR state and immutable delivery identity;
+- current `main` and the proven merge/ancestry relationship;
+- the exact Required/BRAIN or equivalent delivery gates for the candidate;
+- post-merge operational workflows, including obligation reconciliation and cleanup where applicable;
+- production/runtime readback for the affected surface;
+- the canonical learning/writeback state on `main`.
+
+A later `main` SHA does not invalidate an already proven historical closure. Verification must distinguish "current repository head" from "the immutable production/main SHA that proved this obligation". If the historical closure evidence remains present and no new regression evidence exists, agents must reuse that proven checkpoint instead of reopening, duplicating, or forking the obligation.
+
+Permanent reusable rules:
+
+1. **Evidence fan-in before closure** — terminal completion requires independent corroboration from delivery, main, runtime/readback, and canonical learning state.
+2. **No prose-as-authority** — PR descriptions and prior chat claims are navigation hints, never sufficient completion evidence by themselves.
+3. **Historical closure immutability** — subsequent unrelated main commits do not downgrade a proven `LIVE & BEWEZEN` checkpoint.
+4. **Reopen only on new evidence** — a fulfilled obligation may only re-enter recovery when a new concrete regression, failed contract, failed runtime/readback, or conflicting canonical state is observed.
+5. **Same-lineage learning** — post-incident learnings belong in the existing canonical incident/obligation record unless a genuinely new failure fingerprint exists; avoid parallel learning records for the same root cause.
+6. **Verification itself is part of execution** — chat/agent work is not complete when a fix is merged; independent readback and durable learning/writeback are mandatory execution steps.
+
+These rules are intended to prevent false completion, duplicate recovery PRs, stale-state reopening, and chat-to-chat drift while preserving the existing One Loop principle: recover from the last proven checkpoint, not from memory or assumption.

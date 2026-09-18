@@ -37,7 +37,10 @@
   ],
   "loop_node_contract": {
     "required": true,
-    "actor_kinds": ["chat", "agent"],
+    "actor_kinds": [
+      "chat",
+      "agent"
+    ],
     "role": "INTRINSIC_EXECUTION_NODE",
     "single_canonical_loop": true,
     "canonical_state_required_before_execution": true,
