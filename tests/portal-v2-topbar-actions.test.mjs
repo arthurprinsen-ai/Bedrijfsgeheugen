@@ -11,7 +11,7 @@ const navigation=fs.readFileSync(new URL('../portal-v2/navigation-model.js',impo
 const navigationCss=fs.readFileSync(new URL('../portal-v2/navigation.css',import.meta.url),'utf8');
 
 test('portal header exposes functional notifications, help, account and full menu controls',()=>{
- for(const id of ['portalNotifications','portalHelp','portalMainMenu','portalAccount'])assert.match(html,new RegExp(`id=["']${id}["']`));
+ for(const id of ['portalNotifications','portalHelp','portalAccount','portalFullMenuToggle'])assert.match(html,new RegExp(`id=["']${id}["']`));
  for(const panel of ['portalNotificationsPanel','portalHelpPanel','portalAccountPanel'])assert.match(html,new RegExp(`id=["']${panel}["']`));
  assert.match(html,/topbar-actions\.js/);
  assert.match(html,/topbar-actions\.css/);
@@ -21,6 +21,7 @@ test('portal topbar actions bind panels, reuse the canonical all-pages menu and 
  assert.match(js,/togglePanel/);
  assert.match(js,/portalNotificationsList/);
  assert.match(js,/showPages\.click\(\)/);
+ assert.doesNotMatch(js,/portalMainMenu/);
  assert.doesNotMatch(js,/byId\('mobileMore'\)\?\.addEventListener/);
  assert.match(js,/event\.key==='Escape'/);
 });
@@ -49,6 +50,6 @@ test('full portal hamburger exposes all registered pages through one canonical m
  assert.match(hubs,/pages:Object\.freeze\(allPageIds\(\)\)/);
  assert.match(hubs,/if\(hubId==='portal'\) return listPortalGroups\(\)/);
  assert.match(navigation,/id:'more', label:'Meer', target:'hub:portal'/);
- assert.match(navigationCss,/\.portal-hamburger\{display:none/);
+ assert.match(navigationCss,/\.portal-hamburger\{display:inline-flex/);
  assert.match(navigationCss,/\.allpages \.groups\{grid-template-columns:1fr!important/);
 });
