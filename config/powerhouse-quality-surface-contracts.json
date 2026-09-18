@@ -58,6 +58,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-control-plane-evidence-eu",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-control-plane-evidence-eu/index.ts",
+      "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-dataforseo-intelligence",
       "type": "function",
       "authority": "supabase/functions/powerhouse-dataforseo-intelligence/index.ts",
