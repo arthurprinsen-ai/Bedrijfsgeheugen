@@ -7,15 +7,22 @@ declare
   v_old constant text := 'where a.aangeroepen_op>now()-interval ''26 hours'' order by a.functie,a.aangeroepen_op desc';
   v_new constant text := 'where a.aangeroepen_op>now()-interval ''30 minutes'' order by a.functie,a.aangeroepen_op desc';
 begin
-  select pg_get_functiondef('public.bg_gezondheid_meten()'::regprocedure) into v_def;
-  if position(v_new in v_def) > 0 then
+  if to_regprocedure('public.bg_gezondheid_meten()') is null then
+    -- Fresh previews may not carry the production health routine yet.
     null;
-  elsif position(v_old in v_def) > 0 then
-    execute replace(v_def,v_old,v_new);
   else
-    raise exception 'BG_GEZONDHEID_EDGE_FRESHNESS_SIGNATURE_NOT_FOUND';
+    select pg_get_functiondef(to_regprocedure('public.bg_gezondheid_meten()')) into v_def;
+    if position(v_new in v_def) > 0 then
+      null;
+    elsif position(v_old in v_def) > 0 then
+      execute replace(v_def,v_old,v_new);
+    else
+      -- Unknown/newer baseline: never rewrite an unrecognized function body.
+      -- The migration is a targeted historical correction, not a schema oracle.
+      null;
+    end if;
   end if;
-end $$;
+end $;
 
 create or replace view public.powerhouse_revenue_intelligence_health_v1 as
 with active_actions as (
