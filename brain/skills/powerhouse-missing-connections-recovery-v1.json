@@ -36,7 +36,8 @@
     "Before diagnosing a repeated CI failure, compare the PR branch and merge-base with current main; stale merge-base or stale merge-ref evidence must trigger same-lineage refresh/re-evaluation before speculative code changes.",
     "When a regression oracle matches an implementation detail accidentally (for example byte arrayBuffer mistaken for the Buffer publishing service), narrow the oracle to the forbidden behavior or integration signature while preserving the security invariant.",
     "When several open PRs share the same stale-oracle failure, repair the oracle once at the canonical current truth and re-evaluate affected same-lineage candidates rather than opening more recovery PRs.",
-    "Continuously reduce queue pressure by single-flight supersession of stale runs and by refusing duplicate parallel recovery lineages for the same obligation."
+    "Continuously reduce queue pressure by single-flight supersession of stale runs and by refusing duplicate parallel recovery lineages for the same obligation.",
+    "For development/release latency incidents, load brain/skills/powerhouse-fast-rolling-delivery-v1.json and use rolling-lane recovery before creating or retrying parallel PRs."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
@@ -62,7 +63,8 @@
     "human_documentation": "docs/learning/2026-09-18-one-brain-live-promotion.md",
     "terminal_claim_learning": "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json",
     "terminal_claim_policy": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
-    "self_production_promotion_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json"
+    "self_production_promotion_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json",
+    "fast_rolling_delivery_skill": "brain/skills/powerhouse-fast-rolling-delivery-v1.json"
   },
   "consumers": [
     "chat-learning-preflight",
