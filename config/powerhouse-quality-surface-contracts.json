@@ -329,6 +329,20 @@
       "authority": "supabase/migrations/20260918130000_bg_opdrachtenradar_nightly_v1.sql",
       "evidence_contract": "tests/supabase-bg-opdrachtenradar-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "function:resource-usage-eu",
+      "type": "function",
+      "authority": "supabase/functions/resource-usage-eu/index.ts",
+      "evidence_contract": "tests/powerhouse-resource-intelligence-portal-telemetry.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:brain_record_resource_usage",
+      "type": "rpc",
+      "authority": "supabase/functions/resource-usage-eu/index.ts",
+      "evidence_contract": "tests/powerhouse-resource-intelligence-portal-telemetry.test.mjs",
+      "required": true
     }
   ]
 }
