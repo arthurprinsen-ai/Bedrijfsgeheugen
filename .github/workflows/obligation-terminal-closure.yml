@@ -111,7 +111,78 @@ jobs:
             sleep 10
           done
 
-          echo "::error::CANONICAL_PRODUCTION_READBACK_NOT_PROVEN:$MERGE_SHA"
+          echo "Canonical production readback unavailable/cancelled; proving current live production contains merge ${MERGE_SHA}."
+          for attempt in $(seq 1 36); do
+            nonce="${MERGE_SHA}-descendant-${attempt}-$(date +%s)"
+            if curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/release.json?bg_terminal_recovery=${nonce}" -o /tmp/release.json               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/?bg_terminal_recovery=${nonce}" -o /tmp/runtime.html               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/api/connectors/readiness?bg_terminal_recovery=${nonce}" -o /tmp/readiness.json; then
+              read -r observed deploy_id context contract authority < <(node --input-type=module - <<'NODE'
+          import {readFileSync} from 'node:fs';
+          const release=JSON.parse(readFileSync('/tmp/release.json','utf8'));
+          const readiness=JSON.parse(readFileSync('/tmp/readiness.json','utf8'));
+          const sha=String(release.commit_ref||'').trim();
+          const deploy=String(release.deploy_id||'').trim();
+          if(!/^[0-9a-f]{40}$/i.test(sha)) process.exit(2);
+          if(!deploy) process.exit(3);
+          if(release.context!=='production') process.exit(4);
+          if(release.contract!=='BRAIN-DELIVERY-v2'||release.production_authority!=='BG169') process.exit(5);
+          if(!readiness?.sources||!readiness?.targets||readiness?.extractor?.configured!==true) process.exit(6);
+          process.stdout.write([sha,deploy,release.context,release.contract,release.production_authority].join(' '));
+          NODE
+              ) || true
+              if [ -n "${observed:-}" ] && [ -s /tmp/runtime.html ]; then
+                git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
+                if git merge-base --is-ancestor "$MERGE_SHA" "$observed"; then
+                  echo "mode=descendant_live" >> "$GITHUB_OUTPUT"
+                  echo "run_id=" >> "$GITHUB_OUTPUT"
+                  echo "source_run_id=${source_run_id}" >> "$GITHUB_OUTPUT"
+                  echo "observed_sha=$observed" >> "$GITHUB_OUTPUT"
+                  echo "deploy_id=$deploy_id" >> "$GITHUB_OUTPUT"
+                  echo "verified=true" >> "$GITHUB_OUTPUT"
+                  echo "PRODUCTION_DESCENDANT_READBACK_PROVEN:merge=$MERGE_SHA observed=$observed deploy=$deploy_id source_run=${source_run_id:-none}"
+                  exit 0
+                fi
+              fi
+            fi
+            sleep 10
+          done
+          echo "::error::PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN:$MERGE_SHA"
+          exit 78
+
+      - name: Determine whether skill projection is due
+        id: projection-scope
+        env:
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
+        run: |
+          set -euo pipefail
+          files="$(git diff --name-only "${MERGE_SHA}^1" "$MERGE_SHA" || true)"
+          if grep -Eq '^(brain/learning/|brain/skills/|\.agents/skills/|scripts/brain/powerhouse-skill-projection\.mjs|scripts/brain/chat-learning-preflight\.mjs)' <<<"$files"; then
+            echo "required=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "required=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Wait for canonical learning to skill projection
+        if: steps.projection-scope.outputs.required == 'true'
+        id: projection
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 30); do
+            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/powerhouse-skill-projection.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=20")"
+            run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            status="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
+            conclusion="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .conclusion // empty' <<<"$runs")"
+            if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+              [ "$conclusion" = "success" ] || { echo "::error::SKILL_PROJECTION_FAILED:run=$run_id conclusion=$conclusion"; exit 78; }
+              echo "run_id=$run_id" >> "$GITHUB_OUTPUT"
+              echo "SKILL_PROJECTION_PROVEN:$run_id"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::SKILL_PROJECTION_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
           exit 78
 
       - name: Derive exact Supabase production migration identities across supersession lineage
