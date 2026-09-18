@@ -7,7 +7,7 @@ const SHA_B = 'b'.repeat(40);
 const SHA_C = 'c'.repeat(40);
 const policy = {
   version: 'POWERHOUSE-DELIVERY-HYGIENE-v1',
-  wip: { maxExecutable: 5 },
+  wip: { maxExecutable: 3 },
   priorityLanes: ['security', 'incident'],
   nonProductLanes: ['dependency', 'docs'],
   allowedLanes: ['backend', 'portal', 'website', 'automation', 'security', 'incident', 'dependency', 'docs'],
@@ -105,6 +105,8 @@ test('terminal writer lease binds an immutable exact head', () => {
 Writer-Lease-Owner: powerhouse-terminal-delivery
 Writer-Lease-Scope: BG-LEASE
 Writer-Lease-Head: ${SHA_B}
+Writer-Lease-Main-Epoch: ${SHA_A}
+Writer-Lease-Obligation: BG-LEASE
 Writer-Lease-NonOwner-Action: DEFER
 Writer-Lease-Release: MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK`;
   assert.deepEqual(parseWriterLease(body), {
@@ -112,16 +114,21 @@ Writer-Lease-Release: MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK`;
     owner: 'powerhouse-terminal-delivery',
     scope: 'BG-LEASE',
     headSha: SHA_B,
+    mainEpochSha: SHA_A,
+    obligationId: 'BG-LEASE',
     nonOwnerAction: 'DEFER',
     release: 'MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK',
   });
-  const exact = evaluateWriterLease({ body, candidateHeadSha: SHA_B });
+  const exact = evaluateWriterLease({ body, candidateHeadSha: SHA_B, currentMainSha: SHA_A, obligationId: 'BG-LEASE' });
   assert.equal(exact.ok, true);
   assert.equal(exact.state, 'TERMINAL_LEASE_BOUND');
-  const drift = evaluateWriterLease({ body, candidateHeadSha: SHA_C });
+  const drift = evaluateWriterLease({ body, candidateHeadSha: SHA_C, currentMainSha: SHA_A, obligationId: 'BG-LEASE' });
   assert.equal(drift.ok, false);
-  assert.equal(drift.state, 'BLOCKED_TERMINAL_LEASE_HEAD_DRIFT');
+  assert.equal(drift.state, 'BLOCKED_TERMINAL_LEASE_DRIFT');
   assert.deepEqual(drift.reasons, ['TERMINAL_LEASE_HEAD_DRIFT']);
+  const epochDrift = evaluateWriterLease({ body, candidateHeadSha: SHA_B, currentMainSha: SHA_C, obligationId: 'BG-LEASE' });
+  assert.equal(epochDrift.ok, false);
+  assert.ok(epochDrift.reasons.includes('TERMINAL_LEASE_MAIN_EPOCH_DRIFT'));
 });
 
 test('non-terminal lease state permits controlled recovery head mutation', () => {
