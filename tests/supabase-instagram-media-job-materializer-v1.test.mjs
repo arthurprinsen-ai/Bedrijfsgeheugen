@@ -47,3 +47,15 @@ test('bounded completion handshake cannot publish or self-approve identity',()=>
   assert.doesNotMatch(sql,/status='PUBLISHED'/);
   assert.doesNotMatch(sql,/identity_gate_result','PASS'/);
 });
+
+
+test('fresh replay creates media job table and provider policy before dependent functions',()=>{
+  const tableAt=sql.indexOf('create table if not exists public.powerhouse_instagram_media_jobs_v1');
+  const policyAt=sql.indexOf('create or replace function public.powerhouse_instagram_provider_policy_v1');
+  const materializerAt=sql.indexOf('create or replace function public.powerhouse_ensure_instagram_media_job_v1');
+  const claimAt=sql.indexOf('create or replace function public.powerhouse_claim_instagram_media_job_v1');
+  assert.ok(tableAt>=0,'media jobs table prerequisite must exist in the early migration');
+  assert.ok(policyAt>tableAt,'provider policy must exist after the table prerequisite');
+  assert.ok(materializerAt>policyAt,'materializer must be defined only after its prerequisites');
+  assert.ok(claimAt>tableAt,'claim function rowtype must be defined only after the table exists');
+});
