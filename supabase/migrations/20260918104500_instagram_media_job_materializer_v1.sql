@@ -140,7 +140,7 @@ begin
 end
 $$;
 
-revoke all on function public.powerhouse_ensure_instagram_media_job_v1(date) from public,anon,authenticated;
+revoke execute on function public.powerhouse_ensure_instagram_media_job_v1(date) from public,anon,authenticated;
 grant execute on function public.powerhouse_ensure_instagram_media_job_v1(date) to service_role;
 
 create or replace function public.powerhouse_claim_instagram_media_job_v1(
@@ -194,7 +194,7 @@ begin
 end
 $$;
 
-revoke all on function public.powerhouse_claim_instagram_media_job_v1(text,timestamptz) from public,anon,authenticated;
+revoke execute on function public.powerhouse_claim_instagram_media_job_v1(text,timestamptz) from public,anon,authenticated;
 grant execute on function public.powerhouse_claim_instagram_media_job_v1(text,timestamptz) to service_role;
 
 create or replace function public.powerhouse_content_closed_loop_tick_v1(p_now timestamptz default now())
@@ -225,7 +225,7 @@ begin
 end
 $$;
 
-revoke all on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from public,anon,authenticated;
+revoke execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from public,anon,authenticated;
 grant execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) to service_role;
 
 comment on function public.powerhouse_ensure_instagram_media_job_v1(date) is
@@ -326,7 +326,7 @@ begin
 end
 $$;
 
-revoke all on function public.powerhouse_complete_instagram_media_job_v1(uuid,text,jsonb) from public,anon,authenticated;
+revoke execute on function public.powerhouse_complete_instagram_media_job_v1(uuid,text,jsonb) from public,anon,authenticated;
 grant execute on function public.powerhouse_complete_instagram_media_job_v1(uuid,text,jsonb) to service_role;
 
 comment on function public.powerhouse_complete_instagram_media_job_v1(uuid,text,jsonb) is
