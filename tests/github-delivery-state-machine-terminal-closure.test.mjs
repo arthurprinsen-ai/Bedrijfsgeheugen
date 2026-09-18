@@ -20,8 +20,10 @@ test('learning changes require skill projection before LIVE_BEWEZEN', async()=>{
   assert.match(workflow,/obligation-terminal-evidence\.json/);
 });
 
-test('terminal closure reuses canonical readback instead of creating a second deploy mechanism', async()=>{
+test('terminal closure reuses canonical readback and descendant GET proof without creating a second deploy mechanism', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.doesNotMatch(workflow,/netlify deploy|deploy --prod|curl .*release\.json/);
+  assert.doesNotMatch(workflow,/netlify deploy|deploy --prod|curl\s+(?:[^\n]*\s)?(?:-X|--request)\s*(?:POST|PUT|PATCH|DELETE)/i);
   assert.match(workflow,/actions\/workflows\/production-release-readback\.yml\/runs/);
+  assert.match(workflow,/git merge-base --is-ancestor/);
+  assert.match(workflow,/curl[^\n]*release\.json/);
 });
