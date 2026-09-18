@@ -1,0 +1,17 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-TERMINAL-WRITER-LEASE-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "source_lineage": "recovery/self-production-promotion-final-v1",
+  "problem": "Parallel workers repeatedly superseded exact-head CI evidence on the same canonical obligation.",
+  "root_cause": "Canonical PR/obligation ownership lacked a mandatory terminal writer lease inherited by every chat/agent preflight.",
+  "prevention_rules": [
+    "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+    "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES",
+    "HEAD_MUTATION_DURING_ACTIVE_TERMINAL_LEASE_IS_CONTRACT_VIOLATION"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}

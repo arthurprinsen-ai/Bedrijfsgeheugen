@@ -40,3 +40,15 @@ test('BRAIN delivery classifies the ownership regression in the backend governan
   });
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
 });
+
+
+test('terminal writer lease is mandatory preflight and blocks non-owner mutation', async () => {
+  const contract = JSON.parse(await readFile(CONTRACT, 'utf8'));
+  const preflight = await readFile('scripts/brain/chat-learning-preflight.mjs', 'utf8');
+  assert.equal(contract.preflight.requireWriterLeaseReadback, true);
+  assert.equal(contract.preflight.rejectNonOwnerMutationDuringTerminalDelivery, true);
+  assert.equal(contract.writerLease.singleOwner, true);
+  assert.equal(contract.writerLease.activeState, 'TERMINAL_DELIVERY');
+  assert.equal(contract.writerLease.nonOwnerBehavior, 'DEFER');
+  assert.match(preflight, /config\/branch-delivery-ownership-guard\.json/);
+});

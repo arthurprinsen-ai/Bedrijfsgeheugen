@@ -1,9 +1,12 @@
 {
   "fingerprint": "powerhouse-parallel-engineering-fabric-v1",
-  "version": 2,
+  "version": 3,
   "status": "active",
   "protocol_extension": "powerhouse-fast-development-protocol-v2",
-  "extends": ["powerhouse-engineering-os-v1", "BRAIN-DELIVERY-v2"],
+  "extends": [
+    "powerhouse-engineering-os-v1",
+    "BRAIN-DELIVERY-v2"
+  ],
   "authority": {
     "delivery": "config/brain-delivery-system.json",
     "engineering_os": "config/powerhouse-engineering-os.json",
@@ -15,31 +18,81 @@
     "sort": "lexical-work-package-id",
     "require_exact_base_identity": true,
     "require_exact_candidate_identity": true,
-    "parallel_only_without": ["changed-path-overlap", "conflict-contract-overlap", "declared-dependency-edge", "mutable-resource-overlap"],
+    "parallel_only_without": [
+      "changed-path-overlap",
+      "conflict-contract-overlap",
+      "declared-dependency-edge",
+      "mutable-resource-overlap"
+    ],
     "missing_dependency": "fail-closed",
     "dependency_cycle": "fail-closed",
-    "mutable_resource_collision": "serialize"
+    "mutable_resource_collision": "serialize",
+    "rolling_candidate": {
+      "required": true,
+      "rule": "Independent specialists may execute in parallel, but conflicting mutable-resource packages integrate through one current exact-head rolling candidate instead of separate competing PR lineages.",
+      "one_candidate_per_conflict_contract": true,
+      "supersede_stale_heads": true,
+      "promotion_from_integrator_only": true
+    }
   },
   "affected_testing": {
     "fail_closed_unknown_material_scope": true,
     "fast_path_never_replaces_release_gates": true,
     "test_profiles": {
-      "docs": ["docs-contract"],
-      "backend": ["backend-contract", "backend-unit"],
-      "portal": ["portal-contract", "portal-browser"],
-      "website": ["website-unit", "website-visual"],
-      "automation": ["automation-contract", "automation-integration"],
-      "control_plane": ["delivery-contract", "engineering-os", "security"],
-      "full": ["required"]
+      "docs": [
+        "docs-contract"
+      ],
+      "backend": [
+        "backend-contract",
+        "backend-unit"
+      ],
+      "portal": [
+        "portal-contract",
+        "portal-browser"
+      ],
+      "website": [
+        "website-unit",
+        "website-visual"
+      ],
+      "automation": [
+        "automation-contract",
+        "automation-integration"
+      ],
+      "control_plane": [
+        "delivery-contract",
+        "engineering-os",
+        "security"
+      ],
+      "full": [
+        "required"
+      ]
     }
   },
   "cache": {
     "algorithm": "sha256",
-    "inputs": ["baseSha", "candidateSha", "changedPaths", "affectedContracts", "selectedTests", "policyVersion", "environment", "configDigest", "schemaDigest", "dependencyDigest", "gateVersion", "contractDigest"],
+    "inputs": [
+      "baseSha",
+      "candidateSha",
+      "changedPaths",
+      "affectedContracts",
+      "selectedTests",
+      "policyVersion",
+      "environment",
+      "configDigest",
+      "schemaDigest",
+      "dependencyDigest",
+      "gateVersion",
+      "contractDigest"
+    ],
     "advisory_only": true,
     "invalidation_driven": true,
     "never_skips_production_readback": true,
-    "non_cacheable": ["production-readback", "security-freshness", "provider-outcome", "final-media-proof"]
+    "non_cacheable": [
+      "production-readback",
+      "security-freshness",
+      "provider-outcome",
+      "final-media-proof"
+    ]
   },
   "speculative_integration": {
     "enabled": true,
@@ -50,6 +103,36 @@
   },
   "completion": {
     "success": "LIVE & BEWEZEN",
-    "requires": ["protected-exact-candidate-gates", "protected-merge", "production-readback", "learning-writeback"]
+    "requires": [
+      "protected-exact-candidate-gates",
+      "protected-merge",
+      "production-readback",
+      "learning-writeback"
+    ]
+  },
+  "migration_versioning": {
+    "authority": "rolling-candidate-integrator",
+    "conflict_contract": "supabase-schema",
+    "final_version_allocation": "at-integration-not-at-specialist-start",
+    "wall_clock_only_allocation_forbidden": true,
+    "candidate_directory_must_be_unique_before_expensive_ci": true,
+    "collision_recovery": "allocate-next-free-second-on-current-candidate-and-record-origin",
+    "isolated_worker_final_version_authority": false,
+    "rationale": "Parallel workers can share the same wall-clock second; final numbering is serialized only at schema integration so parallel development stays fast without duplicate Supabase versions."
+  },
+  "recovery": {
+    "progress_aware": true,
+    "head_age_alone_never_cancels_in_progress": true,
+    "stale_queue_may_be_retried": true,
+    "long_running_current_head": "observe-unless-concrete-stalled-job-evidence",
+    "failed_gate": "isolate-first-current-failure-and-repair-same-lineage",
+    "zero_run": "dispatch-missing-critical-workflows",
+    "merge_conflict": "refresh-same-lineage-no-duplicate-pr"
+  },
+  "delivery_latency": {
+    "first_signal_seconds": 60,
+    "queue_recovery_seconds": 240,
+    "long_running_observe_seconds": 1200,
+    "optimization_rule": "Use impact-scoped parallel tests and cache identities for speed; never replace protected exact-head gates, security checks, production readback or learning writeback."
   }
 }

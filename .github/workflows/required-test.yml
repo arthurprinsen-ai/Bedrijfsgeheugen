@@ -6,6 +6,23 @@ on:
   merge_group:
     types: [checks_requested]
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Exact open PR number for recovery dispatch'
+        required: false
+        type: string
+      base_sha:
+        description: 'Immutable PR base SHA for recovery dispatch'
+        required: false
+        type: string
+      head_sha:
+        description: 'Immutable candidate head SHA for recovery dispatch'
+        required: false
+        type: string
+      candidate_branch:
+        description: 'Exact candidate branch for recovery dispatch'
+        required: false
+        type: string
 
 permissions:
   contents: read
@@ -13,13 +30,16 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: required-test-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.run_id }}
+  group: required-test-${{ github.event_name }}-${{ inputs.pr_number || github.event.pull_request.number || github.event.merge_group.head_sha || github.run_id }}
   # Single-flight is PR-scoped; exact candidate identity remains enforced inside the gates below.
   cancel-in-progress: true
 
 jobs:
   hygiene:
     uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
+    with:
+      pr_number: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
+      head_sha: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
 
   preflight:
     needs: hygiene
@@ -38,7 +58,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
-          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          ref: ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
@@ -46,11 +66,13 @@ jobs:
         name: Classify independent delivery lanes
         env:
           EVENT_NAME: ${{ github.event_name }}
-          GITHUB_SHA_VALUE: ${{ github.sha }}
+          GITHUB_SHA_VALUE: ${{ inputs.head_sha || github.sha }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch || github.event.pull_request.head.ref || '' }}
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RUN_ID: ${{ github.run_id }}
-          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
-          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
+          PR_BASE_SHA: ${{ inputs.base_sha || github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ inputs.head_sha || github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ inputs.pr_number || github.event.pull_request.number }}
           PR_BODY: ${{ github.event.pull_request.body }}
           PR_LABELS_JSON: ${{ toJson(github.event.pull_request.labels.*.name) }}
           MERGE_GROUP_BASE_SHA: ${{ github.event.merge_group.base_sha }}
@@ -65,13 +87,26 @@ jobs:
           import { evaluateBranchHygiene } from './tools/delivery-branch-hygiene-guard.mjs';
           import { resolveDeliveryMetadataAuthority } from './tools/delivery/delivery-metadata-authority.mjs';
           const fallbackBaseSha=execFileSync('git',['rev-parse','HEAD^'],{encoding:'utf8'}).trim();
+          const dispatched = process.env.EVENT_NAME === 'workflow_dispatch' && Boolean(process.env.PR_NUMBER);
+          let prBody = process.env.PR_BODY || '';
+          let labels = JSON.parse(process.env.PR_LABELS_JSON || '[]');
+          if (dispatched) {
+            const pr=JSON.parse(execFileSync('gh',['api',`repos/${process.env.GITHUB_REPOSITORY}/pulls/${process.env.PR_NUMBER}`],{encoding:'utf8'}));
+            if(pr.state!=='open') throw new Error(`PR_NOT_OPEN:${pr.state}`);
+            if(pr.base?.sha!==process.env.PR_BASE_SHA) throw new Error(`PR_BASE_SHA_DRIFT:${process.env.PR_BASE_SHA}:${pr.base?.sha}`);
+            if(pr.head?.sha!==process.env.PR_HEAD_SHA) throw new Error(`PR_HEAD_SHA_DRIFT:${process.env.PR_HEAD_SHA}:${pr.head?.sha}`);
+            if(process.env.CANDIDATE_BRANCH && pr.head?.ref!==process.env.CANDIDATE_BRANCH) throw new Error(`PR_HEAD_REF_DRIFT:${process.env.CANDIDATE_BRANCH}:${pr.head?.ref}`);
+            prBody=pr.body||'';
+            labels=(pr.labels||[]).map(label=>label.name);
+          }
+          const normalizedEventName=dispatched ? 'pull_request' : process.env.EVENT_NAME;
           const context=normalizeGitHubDeliveryEvent({
-            eventName: process.env.EVENT_NAME,
+            eventName: normalizedEventName,
             githubSha: process.env.GITHUB_SHA_VALUE,
             runId: process.env.RUN_ID,
             fallbackBaseSha,
             event: {
-              pull_request: process.env.EVENT_NAME === 'pull_request' ? {
+              pull_request: normalizedEventName === 'pull_request' ? {
                 number: process.env.PR_NUMBER,
                 base: { sha: process.env.PR_BASE_SHA },
                 head: { sha: process.env.PR_HEAD_SHA },
@@ -84,7 +119,7 @@ jobs:
           });
           const oneLoopPolicy=JSON.parse(await readFile('config/powerhouse-one-loop-v1.json','utf8'));
           const metadataAuthority=resolveDeliveryMetadataAuthority({
-            prBody: process.env.PR_BODY || '',
+            prBody,
             manifest: oneLoopPolicy.deliveryCandidate,
           });
           const comparisonBaseSha=metadataAuthority.source === 'versioned-manifest'
@@ -94,7 +129,6 @@ jobs:
             console.log(`VERSIONED_BASE_SHA_MISMATCH drift-only manifest=${metadataAuthority.delivery.baseSha} event=${context.baseSha}`);
           }
           const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
-          const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles};
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);

@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-SELF-PRODUCTION-PROMOTION-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse-self-production-promotion-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "source_lineage": "recovery/self-production-promotion-final-v1",
+  "problem": "Authorized chats/agents could leave routine protected promotion as follow-up instead of completing it themselves.",
+  "root_cause": "Autonomous execution allowed release/deploy, but production promotion ownership was not an explicit universal obligation.",
+  "prevention_rules": [
+    "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED",
+    "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+    "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "incident_findings": [
+    "Parallel workers independently allocated the same Supabase migration timestamp, creating a global uniqueness failure despite locally valid changes.",
+    "Head-age based staleness can cancel healthy in-progress exact-head work and amplify queue thrash.",
+    "Concurrent terminal branch writers can race; non-force ref updates prevented lost updates during this incident.",
+    "PR metadata can lag the authoritative Git ref during rapid recovery; obligation plus exact branch/head identity is authoritative.",
+    "Duplicate active PRs for one obligation create redundant CI fan-out and must be consolidated."
+  ],
+  "prevention": [
+    "Allocate final Supabase migration versions only at rolling-candidate integration and verify uniqueness before expensive CI.",
+    "Use per-run progress timestamps for stale detection; never cancel healthy current-head in-progress work solely because the PR head is old.",
+    "Enforce one obligation-scoped terminal writer lease; unexpected head mutation fails closed and rebinds to current exact head.",
+    "Treat PR number as transport identity; recovery follows obligation plus canonical branch/head and current main.",
+    "Parallelize independent specialist work but serialize overlapping paths, contracts and mutable resources only at the integration boundary.",
+    "Consolidate duplicate same-obligation PRs before terminal delivery."
+  ],
+  "target_operating_model": "PARALLEL_SPECIALISTS_SINGLE_ROLLING_INTEGRATOR_PROGRESS_AWARE_RECOVERY"
+}
