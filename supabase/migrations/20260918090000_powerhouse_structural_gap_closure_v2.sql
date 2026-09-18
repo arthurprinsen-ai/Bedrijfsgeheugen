@@ -98,31 +98,37 @@ begin
     source_signal_ref=excluded.source_signal_ref,
     updated_at=now();
 
-  insert into public.powerhouse_cycle_events(
-    tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
-    evidence_ref,idempotency_key,payload,occurred_at
-  )
-  values(
-    v_tenant,
-    a.action_id,
-    1,
-    'signal',
-    'powerhouse_sales_actions',
-    a.action_id::text,
-    v_evidence_ref,
-    'sales-action:' || a.action_id::text || ':signal',
-    jsonb_build_object(
-      'status',a.status,
-      'action_type',a.action_type,
-      'channel',a.channel,
-      'priority',a.priority,
-      'opportunity_key',a.opportunity_key,
-      'truth','observed_sales_action_bootstrap_signal',
-      'canonical_gap','analysis_prediction_decision_not_reconstructed_without_evidence'
-    ),
-    coalesce(a.created_at,now())
-  )
-  on conflict (tenant_id,idempotency_key) do nothing;
+  if not exists (
+    select 1
+    from public.powerhouse_cycle_events
+    where tenant_id=v_tenant
+      and idempotency_key='sales-action:' || a.action_id::text || ':signal'
+  ) then
+    insert into public.powerhouse_cycle_events(
+      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
+      evidence_ref,idempotency_key,payload,occurred_at
+    )
+    values(
+      v_tenant,
+      a.action_id,
+      1,
+      'signal',
+      'powerhouse_sales_actions',
+      a.action_id::text,
+      v_evidence_ref,
+      'sales-action:' || a.action_id::text || ':signal',
+      jsonb_build_object(
+        'status',a.status,
+        'action_type',a.action_type,
+        'channel',a.channel,
+        'priority',a.priority,
+        'opportunity_key',a.opportunity_key,
+        'truth','observed_sales_action_bootstrap_signal',
+        'canonical_gap','analysis_prediction_decision_not_reconstructed_without_evidence'
+      ),
+      coalesce(a.created_at,now())
+    );
+  end if;
 end
 $$;
 
