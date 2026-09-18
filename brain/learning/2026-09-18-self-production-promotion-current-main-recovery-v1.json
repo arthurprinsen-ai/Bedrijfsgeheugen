@@ -9,5 +9,21 @@
   "base_main_sha": "cec94beec0c97acbfa7965677b460abe33e211a5",
   "root_cause": "PR #2053 was closed without merge after its branch diverged from current main. Reusing it would violate current-main and exact-head authority.",
   "recovery": "Reconstruct only the unique delivery-control-plane delta on current main; exclude stale Supabase migration copies and preserve all newer main learnings.",
-  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "incident_findings": [
+    "Parallel workers independently allocated the same Supabase migration timestamp, creating a global uniqueness failure despite locally valid changes.",
+    "Head-age based staleness would have cancelled healthy in-progress exact-head work and amplified queue thrash.",
+    "Multiple writers mutated one terminal delivery branch concurrently; non-force ref updates correctly prevented lost updates.",
+    "PR metadata can lag the authoritative Git ref during rapid concurrent recovery; exact branch ref is the source of candidate identity.",
+    "Duplicate PRs for one obligation create redundant CI fan-out and must be consolidated before terminal delivery."
+  ],
+  "prevention": [
+    "Allocate final migration versions only at rolling-candidate integration and verify uniqueness before expensive CI.",
+    "Use per-run progress timestamps; never cancel healthy current-head in-progress work solely because the PR head is old.",
+    "Enforce one obligation-scoped terminal writer lease and fail closed on unexpected head mutation.",
+    "Use exact Git ref plus current main identity for recovery decisions; treat stale PR metadata as advisory.",
+    "Allow parallel specialists only for independent paths/contracts/resources; serialize the integration boundary, not all development.",
+    "Consolidate duplicate same-obligation PRs and supersede their CI instead of letting parallel release lineages accumulate."
+  ],
+  "target_operating_model": "PARALLEL_SPECIALISTS_SINGLE_ROLLING_INTEGRATOR_PROGRESS_AWARE_RECOVERY"
 }
