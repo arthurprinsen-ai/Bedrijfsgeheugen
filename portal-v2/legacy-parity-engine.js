@@ -172,7 +172,7 @@ const C={
 
  'technology-readiness':s=>avg([s?.portal?.dataAi?.maturity,s?.portal?.dataAi?.governance,s?.portal?.dataAi?.changeReadiness].map(readiness5)),
  'governance-maturity':s=>{const xs=Object.values(s?.portal?.compliance?.policies||{});return xs.length?avg(xs.map(x=>statusWeight(x)*5)):0},
- 'esg-readiness':s=>{const xs=Object.values(s?.portal?.compliance?.esg||{});return xs.length?avg(xs.map(value=>clamp(n(value),0,3)/3*5)):0},
+ 'esg-readiness':s=>{const xs=Object.values(s?.portal?.compliance?.esg||{});return xs.length?xs.reduce((sum,value)=>sum+clamp(n(value),0,3),0)*5/(xs.length*3):0},
  'policy-completeness':s=>{const xs=Object.values(s?.portal?.compliance?.policies||{});return xs.length?avg(xs.map(x=>statusWeight(x)))*100:0},
  'compliance-risk':s=>100-(C['policy-completeness'](s)*.6+C['esg-readiness'](s)/5*40),
  'ai-capability-readiness':s=>avg(Object.values(s?.portal?.aiCapabilities||{}).map(readiness5)),
