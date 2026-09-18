@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_AGENT_SKILL",
+  "version": "POWERHOUSE-MISSING-CONNECTIONS-RECOVERY-v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse-missing-connections-runtime-schema-readback-v1",
+  "name": "powerhouse-missing-connections-recovery",
+  "purpose": "Detect and close missing Powerhouse couplings from current repository, database and production evidence without inventing parallel architecture or treating stale assumptions as truth.",
+  "trigger_when": [
+    "auditing missing integrations, connectors, data flows or intelligence wiring",
+    "continuing an interrupted structural-gap recovery",
+    "production tables or counts disagree with prior chat assumptions",
+    "a canonical PR exists but production still lacks its schema/runtime effects",
+    "checking whether social, search, analytics, portal, connector, decision-cycle or learning data is actually connected"
+  ],
+  "required_behavior": [
+    "Start from the existing canonical obligation and exact current PR head; never open a replacement lineage while the current one is valid.",
+    "Read live schema and runtime evidence before deciding that a table, connector, workflow or coupling is missing.",
+    "Distinguish configured capability, persisted evidence, successful execution, outcome evidence and terminal production proof.",
+    "Treat schema-name mismatches as discovery input, not permission to invent a second table or truth store.",
+    "Quantify structural gaps with current counts and freshness, including actions, decision cycles, events, economics, outcomes, forecasts, calibrations, connector definitions and executions.",
+    "Preserve evidence-first semantics: historical actions may be materialized only at the earliest truthful stage; later analysis, decisions, economics, feedback and outcomes require their own evidence.",
+    "Reuse canonical evidence/runtime authorities for analytics, search, social, external intelligence and portal state; no duplicate raw store or second Brain.",
+    "When CI is queued or pending, do not mutate speculatively. Wait for the first concrete failing assertion and repair only that root cause on the same lineage.",
+    "Before LIVE_AND_PROVEN, require exact-head gates, protected merge, production migration/deployment, runtime readback, outcome evidence and learning/prevention writeback.",
+    "Write the verified gap, root cause, evidence, recovery and prevention rule back to canonical Powerhouse learning and make this skill discoverable by chat preflight."
+  ],
+  "forbidden_patterns": [
+    "claiming a missing connector from chat memory without current runtime/schema readback",
+    "creating parallel PRs or replacement architectures for an already-owned obligation",
+    "fabricating economics, feedback, causal proof, realized value or later decision-cycle stages",
+    "treating Netlify ready, a merge, migration file presence, configured connector or queued CI as terminal proof",
+    "retrying or changing code while required gates are merely queued and no concrete failure exists"
+  ],
+  "canonical_evidence": {
+    "obligation_id": "powerhouse-structural-gap-closure-v2",
+    "source_pr": 2023,
+    "learning": "brain/learning/2026-09-18-missing-connections-recovery-v1.json",
+    "human_documentation": "docs/learning/2026-09-18-one-brain-live-promotion.md"
+  },
+  "consumers": [
+    "chat-learning-preflight",
+    "architecture-integrator",
+    "reliability",
+    "data-quality",
+    "integration"
+  ]
+}
