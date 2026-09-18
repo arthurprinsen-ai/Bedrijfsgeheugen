@@ -15,14 +15,14 @@
   "onOverlap": "REUSE_MERGE_OR_SUPERSEDE",
   "ambiguousSuccessorState": "FAIL_CLOSED",
   "knownFailure": {
-    "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
-    "symptom": "Multiple chats/agents mutate one active PR branch while exact-head gates are running, repeatedly superseding valid evidence.",
-    "rootCause": "Canonical PR/obligation ownership did not include a terminal writer lease enforced by every chat/agent preflight.",
-    "failedApproach": "Allow unrelated or opportunistic commits on the canonical branch during TERMINAL_DELIVERY.",
-    "fix": "Require one obligation-scoped writer lease in mandatory preflight; non-owner workers DEFER until release.",
-    "preventionRule": "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+    "fingerprint": "delivery|branch-pr|stale-reuse-or-duplicate-owner-v1",
+    "symptom": "Een reeds gebruikte of stale branch wordt opnieuw ingezet, of meerdere PR's proberen dezelfde semantische wijziging te bezitten.",
+    "rootCause": "Branch lifecycle, actuele main-identiteit, semantische scope en canonical ownership werden niet als één preflightcontract gecontroleerd.",
+    "failedApproach": "Een oude, stale of reeds gebruikte branch hergebruiken of een tweede overlappende PR openen zonder expliciete successor/owner-resolutie.",
+    "fix": "Start vanaf actuele main, inventariseer open PR-overlap, kies één canonical owner en reuse/merge/supersede bestaande delivery voordat nieuw werk start.",
+    "preventionRule": "CHECK_CURRENT_MAIN_BRANCH_LIFECYCLE_PR_OVERLAP_AND_CANONICAL_OWNER_BEFORE_DELIVERY",
     "regressionContract": "tests/branch-delivery-ownership-guard.test.mjs",
-    "evidence": "PR #2044/#2053 head-drift incident on 2026-09-18.",
+    "evidence": "2026-08-30 chat: een reeds gebruikte branch werd opnieuw ingezet en moest worden vervangen door een schone branch vanaf actuele main.",
     "owner": "agent-reliability",
     "status": "GUARDED"
   },
@@ -35,5 +35,17 @@
     "nonOwnerBehavior": "DEFER",
     "headMutationPolicy": "FAIL_CLOSED_AND_REBIND_CURRENT_HEAD",
     "releaseCondition": "MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK"
+  },
+  "writerLeaseFailure": {
+    "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
+    "symptom": "Multiple chats/agents mutate one active PR branch while exact-head gates are running, repeatedly superseding valid evidence.",
+    "rootCause": "Canonical PR/obligation ownership did not include a terminal writer lease enforced by every chat/agent preflight.",
+    "failedApproach": "Allow unrelated or opportunistic commits on the canonical branch during TERMINAL_DELIVERY.",
+    "fix": "Require one obligation-scoped writer lease in mandatory preflight; non-owner workers DEFER until release.",
+    "preventionRule": "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+    "regressionContract": "tests/branch-delivery-ownership-guard.test.mjs",
+    "evidence": "PR #2044/#2053 head-drift incident on 2026-09-18.",
+    "owner": "agent-reliability",
+    "status": "GUARDED"
   }
 }
