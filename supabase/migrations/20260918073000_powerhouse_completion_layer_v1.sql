@@ -147,7 +147,8 @@ begin
 end
 $$;
 
-create or replace view public.powerhouse_tenant_identity_readiness_v1 as
+create or replace view public.powerhouse_tenant_identity_readiness_v1
+with (security_invoker=true) as
 select 'scan_inzendingen'::text as surface,
        count(*)::bigint as total_rows,
        count(organisatie_id)::bigint as linked_rows,
@@ -165,7 +166,8 @@ select 'portaal_stand',count(*),count(organisatie_id),
        count(organisatie_id)
 from public.portaal_stand;
 
-create or replace view public.powerhouse_completion_readiness_v1 as
+create or replace view public.powerhouse_completion_readiness_v1
+with (security_invoker=true) as
 with source_state as (
   select s.source_key,s.source_class,s.required,s.max_age,
          max(o.observed_at) last_observed_at,
@@ -222,6 +224,7 @@ as $$
   select snapshot from public.powerhouse_completion_readiness_v1 limit 1
 $$;
 
+revoke all on function public.powerhouse_enqueue_forecast_calibration_v1() from public, anon, authenticated;
 revoke all on public.powerhouse_tenant_identity_readiness_v1 from anon, authenticated;
 revoke all on public.powerhouse_completion_readiness_v1 from anon, authenticated;
 revoke all on function public.powerhouse_capture_completion_evidence_v1() from public, anon, authenticated;
