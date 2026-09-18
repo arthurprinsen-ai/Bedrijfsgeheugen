@@ -1,0 +1,19 @@
+{
+  "fingerprint": "control-plane|learning-compiler-cockpit|v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_CAPABILITY",
+  "root_cause": "Canonical learning and skill projection existed, but there was no generic deterministic mapping from a failure class to the lowest enforceable prevention mechanism, and no single obligation cockpit/metrics projection over canonical Brain truth.",
+  "prevention_rule": "Every material failure must be compiled to the lowest machine-enforceable mechanism available and remain non-canonical until required replay/shadow/canary evaluation evidence exists. Operators consume one cockpit projection instead of reconstructing state from multiple stores.",
+  "enforcement": [
+    "powerhouse_learning_compiler_v1",
+    "powerhouse_obligation_cockpit_v1",
+    "powerhouse_control_plane_metrics_v1",
+    "service-role-only access",
+    "regression tests"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}
