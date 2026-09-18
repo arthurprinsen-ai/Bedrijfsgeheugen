@@ -138,10 +138,14 @@ const BUILDERS=Object.freeze({
       .map(([label,id])=>({label,value:n(m[id]),benchmark:4})).filter(x=>x.value>0);
     const gov=[['Governance','governance'],['Datakwaliteit','quality'],['Stuurinformatie','analytics']]
       .map(([label,id])=>({label,value:n(m[id]),benchmark:4})).filter(x=>x.value>0);
-    const esg=arr(comp.esg).map((value,index)=>({label:`ESG ${index+1}`,value:n(value)})).filter(x=>x.value>0);
+    const raw=arr(comp.esg),groups=[['Milieu',[0,1,2,3,4]],['Sociaal',[5,6,7,8]],['Bestuur',[9,10]]];
+    const esgPoints=groups.map(([label,indexes])=>{
+      const values=indexes.map(i=>n(raw[i])),covered=values.filter(v=>v>0).length,automatic=values.filter(v=>v>=2).length;
+      return {label,x:indexes.length?automatic/indexes.length*100:0,y:indexes.length?covered/indexes.length*100:0};
+    }).filter(x=>x.x>0||x.y>0);
     return [benchmarkBars(tech,{title:'Staat van de techniek'}),
       benchmarkBars(gov,{title:'Governance-volwassenheid'}),
-      esg.length?radar(esg,{title:'CSRD-gereedheid'}):''].filter(Boolean).join('');
+      esgPoints.length?quadrant(esgPoints,{title:'CSRD-gereedheid',xLabel:'hoe automatisch de cijfers komen →',yLabel:'hoeveel onderwerpen je dekt →'}):''].filter(Boolean).join('');
   },
 
   'strategie-naar-maandagochtend':state=>{
