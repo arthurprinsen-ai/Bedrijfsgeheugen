@@ -93,3 +93,7 @@ GitHub is an executable delivery state machine, not a chat archive, parking lot 
 - Landing is allowed only when `behind_by=0`, the tested head is unchanged, required checks are green, the lease still matches, no newer canonical successor exists and the main epoch has not moved.
 - A merge is non-terminal. The lineage must still prove main containment, deploy/promotion readback, runtime behavior, outcome evidence, learning projection and skill projection.
 - Normal operation is parallel build + serialized landing. Do not create a fresh recovery PR merely because another chat or agent resumed the same obligation.
+
+## Proven terminal closure authority
+
+For fingerprint `github|delivery-state-machine|parallel-build-serialized-landing|v1`, terminal closure is now production-proven. Every merged obligation must continue through the canonical `Obligation Terminal Closure` workflow and may become `LIVE_BEWEZEN` only after main containment plus the existing Production Release Readback have succeeded. If canonical learning changed, the same lineage must also prove Powerhouse Skill Projection before lease release. The merge itself is never terminal evidence.
