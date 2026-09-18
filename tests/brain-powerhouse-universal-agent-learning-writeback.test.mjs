@@ -262,3 +262,19 @@ test('predictive LinkedIn sales cockpit learning is discoverable through continu
     'docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md'
   ]) assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing LinkedIn cockpit learning marker: ${marker}`);
 });
+
+
+test('pending delivery state can never be the final chat or agent handoff', () => {
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.4');
+  assert.ok(continuityPolicy.invariants.includes('NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT'));
+  const rule=continuityPolicy.loop_node_contract.non_terminal_output_rule;
+  assert.equal(rule.required, true);
+  assert.equal(rule.required_behavior, 'CONTINUE_OR_RESUME_SAME_CANONICAL_LINEAGE_UNTIL_TERMINAL');
+  for (const state of ['AUTO_MERGE_ARMED','GATES_PENDING','CI_QUEUED','CI_RUNNING','MERGE_PENDING','DEPLOY_PENDING','PRODUCTION_READBACK_PENDING','LEARNING_WRITEBACK_PENDING']) {
+    assert.ok(rule.forbidden_final_states.includes(state), `missing forbidden final state: ${state}`);
+  }
+  assert.deepEqual(rule.terminal_user_facing_states, ['LIVE_BEWEZEN','ROLLED_BACK_GREEN','BLOCKED_HARD_BOUNDARY']);
+  for (const marker of ['No pending-status final handoff','auto-merge','the last gate','continue or resume the same canonical lineage','Auto-merge is a mechanism, not a handoff']) {
+    assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing no-pending marker: ${marker}`);
+  }
+});
