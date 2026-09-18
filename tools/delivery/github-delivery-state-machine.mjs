@@ -87,7 +87,8 @@ export function evaluateTerminalMergeGuard({
   if(!contract.terminal) reasons.push('TERMINAL_WRITER_LEASE_REQUIRED');
   if(normalize(candidateHeadSha).toLowerCase()!==normalize(validatedHeadSha).toLowerCase()) reasons.push('VALIDATED_HEAD_DRIFT');
   if(Number(behindBy)!==0) reasons.push('BEHIND_MAIN');
-  if(mergeable===false) reasons.push('MERGE_CONFLICT');
+  if(mergeable!==true) reasons.push(mergeable===false?'MERGE_CONFLICT':'MERGEABILITY_UNRESOLVED');
+  if(!requiredChecks.length) reasons.push('REQUIRED_CHECK_SET_EMPTY');
   const failed=requiredChecks.filter(c=>!conclusionOk(c.conclusion)).map(c=>c.name||c.context||'unknown');
   if(failed.length) reasons.push(`REQUIRED_CHECKS_NOT_GREEN:${failed.join(',')}`);
   const newer=openCandidates.filter(c=>{
