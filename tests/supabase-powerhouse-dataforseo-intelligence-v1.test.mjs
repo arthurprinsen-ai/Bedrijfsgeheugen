@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const fn=fs.readFileSync('supabase/functions/powerhouse-dataforseo-intelligence/index.ts','utf8');
-const sql=fs.readFileSync('supabase/migrations/20260918095500_powerhouse_dataforseo_intelligence_schedule_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migrations/20260918100000_powerhouse_dataforseo_intelligence_schedule_v1.sql','utf8');
 
 test('DataForSEO producer is authenticated and uses vault-backed credentials',()=>{
   assert.match(fn,/powerhouse_daily_scheduler_token/);
