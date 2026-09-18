@@ -12,6 +12,30 @@ const euro=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR'
 let overviewReorderController=null;
 let cockpitMounted=false;
 
+const ADOPTION_STAGES=Object.freeze([
+ Object.freeze({id:'bewustwording',label:'Bewustwording',min:1}),
+ Object.freeze({id:'structureren',label:'Structureren',min:2}),
+ Object.freeze({id:'verbinden',label:'Verbinden',min:3}),
+ Object.freeze({id:'opschalen',label:'Opschalen',min:4}),
+ Object.freeze({id:'borgen',label:'Borgen',min:5})
+]);
+
+export function legacyOverviewInsights(state={}){
+ const profile=state?.portal?.profile||{};
+ if(!profile.maturity||typeof profile.maturity!=='object')return null;
+ const metrics=profileOverviewMetrics(state);
+ const dimensions=PROFILE_DIMENSION_LABELS.map(([id,label])=>({id,label,level:Number(profile.maturity?.[id])||2}));
+ const blockers=[...dimensions].sort((a,b)=>a.level-b.level).slice(0,3);
+ const level=Math.max(1,Math.min(5,Math.round(metrics.averageMaturity)));
+ const stage=ADOPTION_STAGES[level-1];
+ const progress=Math.max(0,Math.min(100,Math.round((metrics.averageMaturity/5)*100)));
+ return Object.freeze({level,stage,progress,blockers,averageMaturity:metrics.averageMaturity,annualManualHours:metrics.annualManualHours});
+}
+
+const PROFILE_DIMENSION_LABELS=Object.freeze([
+ ['sturing','Strategie en sturing'],['commercie','Commercie en klant'],['operatie','Operatie en levering'],['finance','Finance'],['mensen','Mensen en kennis'],['analytics','Stuurinformatie'],['quality','Datakwaliteit'],['governance','Governance'],['tech','Systemen en AI'],['culture','Organisatie en cultuur'],['service','Klantenservice'],['security','Beveiliging'],['duurzaam','Duurzaamheid en CSRD']
+]);
+
 export function overviewViewModel(state={}){
  const profile=state?.portal?.profile;
  if(!profile||typeof profile!=='object'||!profile.maturity)return null;
@@ -48,6 +72,17 @@ export function bindPageButtons(scope){
  });
 }
 
+function renderLegacyOverviewInsights(root,state){
+ const main=root?.querySelector?.('.main');if(!main)return false;
+ let section=main.querySelector('[data-legacy-overview-insights]');
+ if(!section){section=(root.ownerDocument||document).createElement('section');section.className='legacy-overview-insights';section.dataset.legacyOverviewInsights='true';const anchor=main.querySelector('.dashboard')||main.querySelector('.lower');main.insertBefore(section,anchor||null);}
+ const model=legacyOverviewInsights(state);
+ if(!model){section.innerHTML='<article class="legacy-insight-card"><h3>Stand van je bedrijf</h3><p>Vul eerst je organisatieprofiel in. Daarna verschijnen hier CMMI-niveau, adoptiecurve, blokkades en voortgang.</p></article>';return true;}
+ section.innerHTML=`<article class="legacy-insight-card company-state"><div class="legacy-insight-head"><span>Stand van je bedrijf</span><strong>CMMI ${model.level}/5</strong></div><h3>${model.stage.label}</h3><p>Gemiddelde volwassenheid ${nl1(model.averageMaturity)}/5 · ${model.progress}% op de volwassenheidsladder.</p><div class="legacy-progress"><i style="width:${model.progress}%"></i></div></article><article class="legacy-insight-card adoption-card"><div class="legacy-insight-head"><span>Adoptiecurve</span><strong>${model.stage.label}</strong></div><div class="adoption-curve">${ADOPTION_STAGES.map((item,index)=>`<div class="adoption-step ${index+1<=model.level?'active':''} ${index+1===model.level?'current':''}"><i></i><b>${item.label}</b><small>Niveau ${index+1}</small></div>`).join('')}</div></article><article class="legacy-insight-card blockers-card"><div class="legacy-insight-head"><span>Waar organisatie staat</span><strong>${model.blockers.length} aandachtspunten</strong></div><div class="legacy-blockers">${model.blockers.map(item=>`<button type="button" data-pv-page="profiel"><span>${item.label}</span><strong>${item.level}/5</strong></button>`).join('')}</div><p>${nl0(model.annualManualHours)} uur handmatig werk per jaar op basis van de huidige invoer.</p></article>`;
+ bindPageButtons(section);
+ return true;
+}
+
 function renderDirectievragen(root,state){
  const doel=root?.querySelector?.('.main');
  if(!doel)return false;
@@ -69,6 +104,7 @@ export function applyOverviewDashboard(root=document,state={}){
  ensureOverviewReorder(root);
  ensureCompanyCockpit(root);
  renderDirectievragen(root,state);
+ renderLegacyOverviewInsights(root,state);
  mountExecutiveCockpit(root,state);
  if(isDemoCustomer(state)&&renderDemoOverview(root)){bindPageButtons(root.querySelector?.('.ovz'));return true;}
  const model=overviewViewModel(state);
