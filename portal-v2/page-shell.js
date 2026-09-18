@@ -13,6 +13,7 @@ import { mountCompanyInput, renderProfileAnalysis } from './modules/company-inpu
 import { mountDeliveryWorkspace } from './modules/delivery-workspace.js';
 import { mountFunctionalWorkspace, listFunctionalSuitePages } from './modules/functional-suite.js';
 import { mountAiCapabilityWorkspace } from './modules/ai-capability-workspace.js';
+import { mountExecutionLadderWorkspace } from './modules/execution-ladder-workspace.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -214,6 +215,7 @@ export function openPortalPage(pageId){
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
   else if(pageId==='canvassen'&&contract?.legacyCapability)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
   else if(pageId==='ai-capabilities'&&contract?.legacyCapability){native.innerHTML='';mountAiCapabilityWorkspace(native,{domainState:portalContext.domainState,onSaveStatus:()=>{}});}
+  else if(pageId==='uitvoeringsladder'&&contract?.legacyCapability){native.innerHTML='';mountExecutionLadderWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onSaveStatus:()=>{}});}
   else if(FUNCTIONAL_SUITE_PAGES.has(pageId)&&contract?.legacyCapability)mountFunctionalWorkspace(native,{pageId,contract,view,domainState:portalContext.domainState,openPage:openPortalPage});
   else if(contract?.legacyCapability){
     mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:'idle',render:content=>renderNative(content,view)});
