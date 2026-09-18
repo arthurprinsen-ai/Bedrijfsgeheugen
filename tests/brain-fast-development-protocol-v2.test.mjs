@@ -62,3 +62,14 @@ test('approved human design documents the incremental fast path and heavy promot
   assert.match(doc, /BRAIN-DELIVERY-v2/);
   assert.match(doc, /BG169/);
 });
+
+test('predictive supervisor is wired into canonical delivery without becoming a second authority', async () => {
+  const workflow = await readFile(new URL('../.github/workflows/powerhouse-fast-delivery-supervisor.yml', import.meta.url), 'utf8');
+  const delivery = JSON.parse(await readFile(new URL('../config/brain-delivery-system.json', import.meta.url), 'utf8'));
+  assert.match(workflow, /Powerhouse Fast Delivery Supervisor/);
+  assert.match(workflow, /required-test\.yml/);
+  assert.match(workflow, /unified-brain-delivery\.yml/);
+  assert.equal(delivery.branchPolicy.predictiveAdmission, true);
+  assert.equal(delivery.branchPolicy.queuePolicy, 'never_wait_passively');
+  assert.equal(delivery.branchPolicy.maxConcurrentBlockingCandidatesPerConflictContract, 1);
+});
