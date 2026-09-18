@@ -3,7 +3,7 @@ export const LEGACY_CAPABILITY_MAP = Object.freeze({
   invoeren:'gegevens-invullen', antwoorden:'ingevulde-gegevens', business:'businesscase',
   cijfers:'cijfers-maatstaven', waarde:'waarde-financiering', mensen:'mensen',
   branche:'branche-markt', onderzoek:'onderzoek', beleid:'compliance-governance',
-  aicap:'ai-capabilities', strategie:'strategiemodellen', canvassen:'canvassen',
+  aicap:'ai-capabilities', strategie:'strategie-naar-maandagochtend', canvassen:'canvassen',
   eindconclusie:'eindconclusie', dd:'due-diligence', dna:'strategy-dna',
   bijhouden:'actueel-houden', wijzigingen:'wijzigingen', advies:'advies',
   offerte:'offerte', roadmap:'roadmap', uitvoering:'uitvoeringsladder'
