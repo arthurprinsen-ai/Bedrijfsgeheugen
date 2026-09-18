@@ -14,6 +14,7 @@ dat de datums op de pagina niet meer gecontroleerd zijn.
 import json, os, sys, urllib.request, datetime, re
 
 BESTAND = 'data/regelgeving.json'
+BRONSTATE = 'data/regulatory-source-state.json'
 MODEL = 'claude-sonnet-4-6'
 
 VRAAG = (
@@ -60,12 +61,21 @@ def main():
         return 1
 
     vandaag = datetime.date.today()
+    bronstate = {}
+    if os.path.exists(BRONSTATE):
+        bronstate = json.load(open(BRONSTATE, encoding='utf-8'))
+    baseline = {
+        k: {'framework': v.get('framework'), 'authority': v.get('authority'), 'url': v.get('url'),
+            'contentSha256': v.get('contentSha256'), 'checkedAt': v.get('checkedAt')}
+        for k, v in bronstate.get('sources', {}).items()
+    }
+    vraag = VRAAG.format(vandaag=vandaag.strftime('%-d %B %Y'))
+    vraag += "\nCANONIEKE OFFICIELE BRONBASELINE (gebruik deze als provenance; verzin geen bronstatus): " + json.dumps(baseline, ensure_ascii=False)
     body = json.dumps({
         'model': MODEL,
         'max_tokens': 2500,
         'tools': [{'type': 'web_search_20250305', 'name': 'web_search', 'max_uses': 8}],
-        'messages': [{'role': 'user', 'content': VRAAG.format(
-            vandaag=vandaag.strftime('%-d %B %Y'))}],
+        'messages': [{'role': 'user', 'content': vraag}],
     }).encode('utf-8')
 
     req = urllib.request.Request(
@@ -96,6 +106,8 @@ def main():
     if os.path.exists(BESTAND):
         oud = json.load(open(BESTAND, encoding='utf-8'))
 
+    nieuw['sourceBaseline'] = baseline
+    nieuw['interpretationStatus'] = 'candidate_evidence_review'
     samen = dict(oud)
     samen.update(nieuw)
     if json.dumps(samen, sort_keys=True, ensure_ascii=False) == json.dumps(oud, sort_keys=True, ensure_ascii=False):
