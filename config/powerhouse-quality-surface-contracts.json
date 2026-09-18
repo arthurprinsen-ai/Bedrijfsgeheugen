@@ -58,6 +58,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-instagram-media-verifier",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-instagram-media-verifier/index.ts",
+      "evidence_contract": "tests/supabase-instagram-reserve-vision-proof-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-social-publisher",
       "type": "function",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
