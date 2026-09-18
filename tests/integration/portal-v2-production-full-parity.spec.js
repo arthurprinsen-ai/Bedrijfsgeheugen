@@ -154,6 +154,7 @@ test('all global capabilities are native, mobile-safe and fail closed without au
  const expected=['export','import','print-permission','feedback','customer-branding','identity-login-logout'];
  await expect(page.locator('#portalFullMenuToggle')).toBeVisible();
  await expect(page.locator('#allPages .group')).not.toHaveCount(0);
+ await expect(page.locator('[data-mobile-global-actions]')).toBeVisible();
  for(const capability of expected){
   const control=page.locator(`[data-mobile-capability="${capability}"]`).first();
   await expect(control,`${capability} must be reachable from More`).toBeVisible();
