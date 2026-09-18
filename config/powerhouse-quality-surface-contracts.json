@@ -86,6 +86,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:instagram-video-frames",
+      "type": "netlify_function",
+      "authority": "netlify/functions/instagram-video-frames.mjs",
+      "evidence_contract": "tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:linkedin-revenue-cockpit",
       "type": "netlify_function",
       "authority": "netlify/functions/linkedin-revenue-cockpit.mjs",

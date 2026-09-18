@@ -61,3 +61,10 @@ Rules:
 8. Persist provider plane, job identity, provider history/generation identity, proof manifest and recovery state so another agent can resume without regeneration.
 
 Success means provider readiness is proven for the execution plane that will actually perform the work, then exact media reaches `PROOF_VERIFIED` before publisher dispatch.
+
+
+## Video frame proof automation (2026-09-18)
+
+For OpenArt reels/videos, a materialized exact MP4 must not depend on a human supplying proof frames. The canonical router automatically extracts bounded start/middle/end frames from the exact asset, passes them through the same visible-Mira vision gate, binds the aggregate proof to the exact MP4 digest, and only then allows PROOF_VERIFIED. Extraction or vision uncertainty is fail-closed; metadata-only identity remains forbidden.
+
+Learning fingerprint: `instagram-video-frame-proof-worker-v1`.
