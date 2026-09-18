@@ -1,0 +1,21 @@
+{
+  "fingerprint": "control-plane|terminal-closure|cancelled-readback-descendant-recovery-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "A protected merge reached exact Netlify production, but its push-triggered Production Release Readback was cancelled during rapid main movement. GitHub does not allow that cancelled run to be retried, so terminal closure remained open despite machine-verifiable production truth.",
+  "root_cause": "The newer canonical Obligation Terminal Closure required a successful exact-SHA workflow run and did not inherit the descendant-safe production proof already used by the older Powerhouse terminalizer/writer reconciliation.",
+  "prevention_rule": "Canonical terminal closure first consumes successful Production Release Readback. Only when that run is missing/cancelled may it prove current live production directly; the live release must expose BRAIN-DELIVERY-v2/BG169, a deploy id, healthy runtime/readiness, and an observed production SHA that contains the merge. A real failed readback never falls back.",
+  "enforcement": [
+    "Obligation Terminal Closure descendant-live fallback",
+    "Git ancestry proof",
+    "release.json production identity",
+    "connector readiness readback",
+    "Edge terminal evidence mode validation",
+    "regression tests"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}
