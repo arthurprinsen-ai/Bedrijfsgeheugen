@@ -280,3 +280,12 @@ test('Supabase terminal hardening does not require website lane when combined wi
   });
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
 });
+
+
+test('regulatory workers and their regressions are automation delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  for (const path of ['tools/regulatory-source-monitor.py','tools/regulatory-brain-ingest.py','tests/regulatory-organism-feed.test.mjs']) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation'], `${path} must be automation delivery work`);
+  }
+});

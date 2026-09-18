@@ -55,12 +55,18 @@ test('watcher persists exact raw bytes before interpretation projection',()=>{
   assert.match(monitor,/write_bytes\(result\['raw'\]\)/);
   assert.match(ingest,/raw_body_gzip_base64/);
   assert.match(ingest,/powerhouse_record_source_observation_v1/);
-  assert.ok(workflow.indexOf('Persist immutable raw observations in Powerhouse Brain') < workflow.indexOf('Open governed source-state candidate'));
+  assert.match(monitor,/powerhouse-regulatory-check-run-v1/);
+  assert.match(ingest,/powerhouse-regulatory-source-check-v1/);
+  assert.match(ingest,/freshness_heartbeat/);
+  assert.match(ingest,/regulatory-content:/);
+  assert.ok(workflow.indexOf('Persist source heartbeat and immutable raw observations in Powerhouse Brain') < workflow.indexOf('Open governed source-state candidate'));
 });
 
 test('interpretation updater is driven by canonical source-state changes',()=>{
   const workflow=fs.readFileSync('.github/workflows/regelgeving-bijwerken.yml','utf8');
   assert.match(workflow,/data\/regulatory-source-state\.json/);
-  assert.match(workflow,/Candidate-Type: regulatory-interpretation-review/);
-  assert.doesNotMatch(workflow,/cron: '30 4 \* \* 1'/);
+  assert.match(workflow,/Delivery-Lane: automation/);
+  assert.match(workflow,/Candidate-Type: implementation/);
+  assert.match(workflow,/Regulatory-Candidate-Type: interpretation-review/);
+  assert.match(workflow,/cron: '30 4 \* \* 1'/);
 });

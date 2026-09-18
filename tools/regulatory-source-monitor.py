@@ -27,6 +27,7 @@ def main():
     p.add_argument('--config',default='config/regulatory-sources.json')
     p.add_argument('--state',default='data/regulatory-source-state.json')
     p.add_argument('--raw-dir',default='artifacts/regulatory/raw')
+    p.add_argument('--checks',default='artifacts/regulatory/checks.json')
     args=p.parse_args()
     config=json.load(open(args.config,encoding='utf-8'))
     state={'schemaVersion':1,'contract':'powerhouse-regulatory-source-state-v1','sources':{}}
@@ -36,6 +37,7 @@ def main():
     now=datetime.now(timezone.utc).isoformat().replace('+00:00','Z')
     out={'schemaVersion':1,'contract':'powerhouse-regulatory-source-state-v1','checkedAt':state.get('checkedAt'),'sources':{}}
     changes=[]
+    checks={'schemaVersion':1,'contract':'powerhouse-regulatory-check-run-v1','checkedAt':now,'sources':{}}
     pathlib.Path(args.raw_dir).mkdir(parents=True,exist_ok=True)
     for source in config['sources']:
         result=fetch(source)
@@ -50,6 +52,7 @@ def main():
           'etag':result['etag'],'lastModified':result['lastModified'],'previousSha256':previous.get('contentSha256'),
           'changed':changed,'firstObservation':not bool(previous.get('contentSha256'))
         }
+        checks['sources'][source['id']]=record
         first=record['firstObservation']
         if changed or first:
             out['sources'][source['id']]=record
@@ -60,8 +63,10 @@ def main():
             raw_path.write_bytes(result['raw'])
         else:
             out['sources'][source['id']]=previous
+    pathlib.Path(args.checks).parent.mkdir(parents=True,exist_ok=True)
+    pathlib.Path(args.checks).write_text(json.dumps(checks,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     pathlib.Path(args.state).parent.mkdir(parents=True,exist_ok=True)
     pathlib.Path(args.state).write_text(json.dumps(out,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
-    print(json.dumps({'checkedAt':now,'sources':len(out['sources']),'changes':changes},ensure_ascii=False))
+    print(json.dumps({'checkedAt':now,'sources':len(checks['sources']),'changes':changes},ensure_ascii=False))
     return 0
 if __name__=='__main__': sys.exit(main())
