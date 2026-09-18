@@ -22,6 +22,7 @@ const LEGACY_POLICY_KEYS=['infosec','toegang','incident','backup','avg','verwerk
 const LEGACY_POLICY_STATUS=['ontbreekt','concept','vastgesteld','geoefend'];
 const LEGACY_ESG_KEYS=['energie','co2','afval','water','vervoer','arbo','divers','opleiding','keten','ethiek','bestuur'];
 const LEGACY_CANVAS_IDS=['bmc','vpc2','lean','merk','content','sales2'];
+const LEGACY_ROOT_KEYS=Object.freeze(['legacy','niveaus','mw','uur','taken','start','branche','omzet','mensen','cijfers','bc','eigen','beleid','fin','modellen','uitvoering','kto','metingen','esg','eigenCaps','prod','beheer','besluiten','docs','log','dd','wijz','aicap','aicapDatum','aicapStempel','aicapUitScan','scanStempel','scanDatum','scanScore','medewerkers','uurkosten']);
 
 function numericOrRaw(value){
  if(value===null||value===undefined||value==='')return value;
@@ -131,5 +132,6 @@ export function upgradeLegacyPortalState(input={}){
 
  upgraded.portal??={};
  upgraded.portal.migration={...(upgraded.portal.migration||{}),legacyV1Applied:true,version:'2026-09-18-v4'};
+ for(const key of LEGACY_ROOT_KEYS)delete upgraded[key];
  return upgraded;
 }
