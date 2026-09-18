@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const path='supabase/migrations/20260918152500_powerhouse_control_plane_learning_cockpit_v1.sql';
+const path='supabase/migrations/20260918152825_powerhouse_control_plane_learning_cockpit_v1.sql';
 
 test('learning compiler routes enforceable failures below prompt level', async()=>{
   const sql=await readFile(path,'utf8');
