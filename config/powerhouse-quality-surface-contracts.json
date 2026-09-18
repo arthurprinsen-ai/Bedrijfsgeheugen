@@ -65,6 +65,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-instagram-media-router",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-instagram-media-router/index.ts",
+      "evidence_contract": "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-social-publisher",
       "type": "function",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",

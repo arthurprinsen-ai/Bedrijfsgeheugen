@@ -105,7 +105,13 @@ test('reel authorizes exact verified Mira MP4 with complete frame evidence',()=>
 
 test('OpenArt Veo and Placid cannot bypass the canonical media gate',()=>{
  const policy=CHANNELS.instagram_company.mediaPolicy;
- assert.deepEqual(policy.allowedKinds,['image','video','reel']);
+ assert.deepEqual(policy.allowedKinds,['image','video','reel','carousel']);
  assert.deepEqual(policy.requiredVideoFramePositions,['start','middle','end']);
  assert.deepEqual(policy.generatorsMayNotBypassGate,['openart','veo','placid']);
+ assert.equal(policy.providerLineageRequired,true);
+ assert.deepEqual(policy.providerRouting.reel.allowedProviders,['openart']);
+ assert.deepEqual(policy.providerRouting.video.allowedProviders,['openart']);
+ assert.deepEqual(policy.providerRouting.image.allowedProviders,['openart','placid']);
+ assert.deepEqual(policy.providerRouting.carousel.imageSlideAllowedProviders,['openart','placid']);
+ assert.deepEqual(policy.providerRouting.carousel.videoSlideAllowedProviders,['openart']);
 });
