@@ -286,7 +286,8 @@
         "tests/revenue-content-",
         "data/revenue-content-",
         "tests/growth-intelligence-",
-        "tests/notion-synced-posts-"
+        "tests/notion-synced-posts-",
+        "tests/powerhouse-daily-self-evolution"
       ],
       "requiredContracts": [
         "BG166",
