@@ -68,7 +68,7 @@ test('interpretation updater is driven by canonical source-state changes',()=>{
   assert.match(workflow,/Delivery-Lane: automation/);
   assert.match(workflow,/Candidate-Type: implementation/);
   assert.match(workflow,/Regulatory-Candidate-Type: interpretation-review/);
-  assert.match(workflow,/cron: '30 4 \* \* 1'/);
+  assert.doesNotMatch(workflow,/schedule:[\s\S]*?cron:/);
 });
 
 
