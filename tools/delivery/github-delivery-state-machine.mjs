@@ -79,7 +79,7 @@ export function evaluateTestWorkflowCoverage({changedPaths=[],classifiedLanes=[]
 function conclusionOk(v){return ['success','neutral','skipped'].includes(normalize(v).toLowerCase());}
 
 export function evaluateTerminalMergeGuard({
-  body='',policy={},candidateHeadSha='',validatedHeadSha='',currentMainSha='',behindBy=null,mergeable=true,
+  body='',policy={},candidateNumber=0,candidateHeadSha='',validatedHeadSha='',currentMainSha='',behindBy=null,mergeable=true,
   requiredChecks=[],openCandidates=[]
 }={}){
   const contract=validateMachineReadablePrBody({body,candidateHeadSha,currentMainSha,policy});
@@ -92,7 +92,10 @@ export function evaluateTerminalMergeGuard({
   if(failed.length) reasons.push(`REQUIRED_CHECKS_NOT_GREEN:${failed.join(',')}`);
   const newer=openCandidates.filter(c=>{
     const m=parseDeliveryMetadata(c.body||'');
-    return Number(c.number)>Number(c.selfNumber??0) && m.obligationId && m.obligationId===contract.metadata.obligationId;
+    return Number(c.number)!==Number(candidateNumber)
+      && Number(c.number)>Number(candidateNumber)
+      && m.obligationId
+      && m.obligationId===contract.metadata.obligationId;
   });
   if(newer.length) reasons.push(`CANONICAL_SUCCESSOR_EXISTS:${newer.map(c=>c.number).join(',')}`);
   const identity=contract.metadata.obligationId && SHA40.test(normalize(candidateHeadSha)) && SHA40.test(normalize(currentMainSha))
