@@ -13,11 +13,11 @@ test('portal header exposes functional notifications, help, account and full men
  assert.match(html,/topbar-actions\.css/);
 });
 
-test('portal topbar actions bind panels and reuse the canonical all-pages menu',()=>{
+test('portal topbar actions bind panels, reuse the canonical all-pages menu and leave mobile More router-owned',()=>{
  assert.match(js,/togglePanel/);
  assert.match(js,/portalNotificationsList/);
  assert.match(js,/showPages\.click\(\)/);
- assert.match(js,/mobileMore/);
+ assert.doesNotMatch(js,/byId\('mobileMore'\)\?\.addEventListener/);
  assert.match(js,/event\.key==='Escape'/);
 });
 
