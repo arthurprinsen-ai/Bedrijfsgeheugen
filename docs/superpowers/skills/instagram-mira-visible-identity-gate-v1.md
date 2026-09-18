@@ -1,4 +1,4 @@
-# Skill — Instagram Mira Visible Identity Gate v1
+# Skill  Instagram Mira Visible Identity Gate v1
 
 Parent learning: `metadata-only-mira-identity-false-positive-v1`  
 Authority: Powerhouse Brain/Supabase + protected GitHub  
@@ -30,3 +30,11 @@ Never regenerate, duplicate or republish a blocked incident artifact solely to m
 ## Success condition
 
 Success is only valid when exact final media passes the semantic identity + dimension gate and production readback proves known-invalid inputs are blocked. Otherwise the state remains blocked/recoverable.
+
+## Provider routing
+
+- Reel/video: OpenArt producer lineage is mandatory; Placid is never a video fallback.
+- Single image: OpenArt or Placid is allowed, with exact final SHA and semantic Mira vision proof.
+- Carousel: image slides may use OpenArt or Placid; video slides must use OpenArt; every slide needs exact asset proof and one failed slide blocks the carousel.
+- Register new Instagram runtime surfaces and regression tests in canonical quality/delivery registries in the same candidate.
+- Fresh-preview absence of an optional production-only function is handled by conditional privilege hardening, never by weaker permissions or placeholder functions.
