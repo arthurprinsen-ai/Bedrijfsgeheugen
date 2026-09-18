@@ -39,3 +39,13 @@ test('Opdrachtenradar runs nightly through the existing scheduler authority',()=
   assert.match(sql,/functions\/v1\/bg-opdrachtenradar/);
   assert.match(sql,/powerhouse_daily_scheduler_token/);
 });
+test('Opdrachtenradar splits extra sources, filters noise, scores 0-100 and supports vault-gated job APIs',()=>{
+  assert.match(fn,/DOMEINEN_PER_GROEP = 7/);
+  assert.match(fn,/Eigen domeinen \$\{/);
+  assert.match(fn,/isRuis\(r\.url\)/);
+  assert.match(fn,/LinkedIn-posts/);
+  assert.match(fn,/geheel getal van 0 tot 100/);
+  assert.match(fn,/geheim\('ADZUNA_APP_ID'\)/);
+  assert.match(fn,/geheim\('ADZUNA_APP_KEY'\)/);
+  assert.match(fn,/geheim\('JOOBLE_API_KEY'\)/);
+});
