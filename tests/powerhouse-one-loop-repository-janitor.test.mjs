@@ -35,3 +35,12 @@ test('janitor emits and reads back cleanup evidence', () => {
   assert.match(workflow, /janitor-runtime-actions\.json/);
   assert.match(workflow, /JANITOR_BRANCH_DELETE_READBACK_FAILED/);
 });
+
+
+test('janitor reopens closed unmerged terminal-delivery PRs and fails closed on ambiguous successors', () => {
+  assert.match(workflow, /closed-prs-recent\.json/);
+  assert.match(workflow, /Writer-Lease-State: TERMINAL_DELIVERY/);
+  assert.match(workflow, /AUTO_REOPEN_TERMINAL_LEASE/);
+  assert.match(workflow, /TERMINAL_LEASE_SUCCESSOR_AMBIGUOUS/);
+  assert.match(workflow, /JANITOR_TERMINAL_LEASE_REOPEN_READBACK_FAILED/);
+});
