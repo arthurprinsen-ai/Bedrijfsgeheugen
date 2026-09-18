@@ -308,3 +308,18 @@ Iedere huidige en toekomstige chat, agent, skill, workflow of intelligence-produ
 - iedere nieuwe bron/capability is pas production-ready wanneer registratie → persistence → freshness/quality → evidence → readback → signal/advice/outcome → learning aantoonbaar aan dezelfde One Brain is gekoppeld.
 
 Canonieke machine-learningbron: `brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json`.
+
+## Automatische learning → skill-projectie
+Fingerprint: `powerhouse-learning-skill-auto-projection-v1`.
+
+Iedere materiële learning, fout, root cause, preventieregel, outcome, deliveryles of andere duurzame borging die naar het canonieke Powerhouse-geheugen wordt geschreven, wordt in dezelfde completion-loop automatisch geprojecteerd naar de relevante skilllaag via `scripts/brain/powerhouse-skill-projection.mjs`.
+
+Regels:
+- `brain/learning` en de overige canonieke authorities blijven bron van waarheid; skills zijn uitsluitend afgeleide uitvoeringsprojecties;
+- dedupe gebeurt op fingerprint en deterministische source digest;
+- expliciete `skill_targets` gaan voor, anders bepaalt deterministische domeinrouting de relevante skills;
+- bestaande historische learning wordt bij iedere preflight/reconciliation opnieuw meegenomen, zodat backfill automatisch blijft;
+- chat-learning preflight consumeert de actuele projectie en exposeert projection digest + entry count;
+- ontbrekende, stale of orphaned skill-projectie is `SKILL_PROJECTION_DRIFT` en faalt gesloten;
+- een learning-write zonder actuele projectie/readback is `LEARNING_WRITTEN_SKILL_SYNC_PENDING` en nooit `LIVE & BEWEZEN`;
+- handmatige `SKILL.md`-wijzigingen zijn alleen nodig voor blijvende operating principles; incidentkennis blijft in canonical Brain learning en wordt dynamisch geconsumeerd.
