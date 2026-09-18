@@ -9,7 +9,7 @@ const arr=v=>Array.isArray(v)?v:[];
 const p=(s,k)=>String(k).split('.').reduce((v,key)=>v==null?undefined:v[key],s);
 const pct=v=>clamp(v,0,100);
 const readiness5=v=>clamp(n(v,1),1,5);
-const horizonWeight=v=>({'Nu':1,'3 maanden':.9,'6 maanden':.75,'12 maanden':.55,'Later':.35}[v]??.5);
+const horizonWeight=v=>{const numeric=Number(v);if(Number.isFinite(numeric)&&numeric>=1)return Math.max(.35,1-Math.min(12,numeric-1)*(.65/11));return({'Nu':1,'3 maanden':.9,'6 maanden':.75,'12 maanden':.55,'Later':.35}[v]??.5)};
 const statusWeight=v=>({'ontbreekt':0,'concept':.35,'vastgesteld':.75,'geoefend':1,'Open':.25,'Bezig':.6,'Geborgd':1}[v]??0);
 const taskFrequency=v=>({'Dagelijks':1,'Wekelijks':.8,'Maandelijks':.45,'Incidenteel':.2}[v]??.5);
 
@@ -162,7 +162,7 @@ const C={
  'absence-gap':s=>n(s?.portal?.people?.absence)-4,
  'turnover-gap':s=>n(s?.portal?.people?.turnover)-10,
  'enps-gap':s=>n(s?.portal?.people?.enps)-20,
- 'mto-maturity':s=>({'Geen meting':1,'Verouderd':2.5,'Actueel':5}[s?.portal?.people?.mto]??1),
+ 'mto-maturity':s=>{const v=s?.portal?.people?.mto;const numeric=Number(v);if(Number.isFinite(numeric)&&String(v).trim()!=='')return({0:1,1:2,2:3.5,3:5}[numeric]??1);return({'Geen meting':1,'Verouderd':2.5,'Actueel':5,'nooit gedaan':1,'langer dan 2 jaar geleden':2,'binnen 2 jaar':3.5,'jaarlijks, met opvolging':5}[v]??1)},
  'vacancy-pressure':s=>ratio(s?.portal?.people?.vacancies,Math.max(1,n(profile(s).headcount||profile(s).employees)),100),
 
  'industry-benchmark-deltas':s=>arr(s?.portal?.market?.benchmarks).map(x=>({...x,delta:n(x.company)-n(x.benchmark)})),
