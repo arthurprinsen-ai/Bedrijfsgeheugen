@@ -22,13 +22,15 @@
     ".github/workflows/",
     "docs/growth-revenue-os-architecture.md",
     "docs/superpowers/skills/",
-    "package.json"
+    "package.json",
+    "docs/self-healing-agents.md"
   ],
   "nonExecutableSharedPaths": [
     "docs/changes/",
     "docs/learning/",
     "docs/growth-revenue-os-architecture.md",
-    "docs/superpowers/skills/"
+    "docs/superpowers/skills/",
+    "docs/self-healing-agents.md"
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",
