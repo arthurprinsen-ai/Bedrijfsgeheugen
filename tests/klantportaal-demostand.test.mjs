@@ -19,11 +19,13 @@ const PORTAAL = readFileSync('klantportaal.html', 'utf8');
 const REDIRECTS = readFileSync('_redirects', 'utf8');
 const SLOT = readFileSync('assets/js/portaalslot.js', 'utf8');
 
-test('demo1 serveert het volledige portaal, niet het losse demobestand', () => {
-  assert.match(REDIRECTS, /^\/klantportaal\s+klant=demo1\s+\/klantportaal\.html\s+200!$/m,
-    'demo1 wijst niet naar het volledige portaal');
-  assert.match(REDIRECTS, /^\/klantportaal\s+klant=demo\s+\/klantportaal\?klant=demo1\s+301!$/m,
-    'de korte demoroute wijst niet door naar demo1');
+test('demo1 en demo gebruiken de canonieke Portal V2 demo-ingang', () => {
+  assert.match(REDIRECTS, /^\/klantportaal\s+klant=demo1\s+\/portaal\/demo\s+301!$/m,
+    'demo1 wijst niet naar de canonieke V2 demo-ingang');
+  assert.match(REDIRECTS, /^\/klantportaal\s+klant=demo\s+\/portaal\/demo\s+301!$/m,
+    'demo wijst niet naar dezelfde canonieke V2 demo-ingang');
+  assert.match(REDIRECTS, /^\/portaal\/demo\s+\/portal-v2\/\s+200!$/m,
+    'de demo-ingang rendert Portal V2 niet');
 });
 
 test('de demoslugs staan op één plek vast', () => {
@@ -46,10 +48,9 @@ test('de demo laat geen sporen achter in de browser', () => {
     'in demostand wordt er wél naar localStorage geschreven');
 });
 
-test('een echte klantslug blijft afgeschermd', () => {
-  // ijsselmonde en elke andere slug horen de offerteroute te houden; de demo is
-  // een uitzondering en mag dat niet voor iedereen worden.
-  assert.match(REDIRECTS, /^\/klantportaal\s+klant=ijsselmonde\s+\/klantportaal\.html\s+200!$/m);
+test('een echte klantslug blijft afgeschermd via de canonieke V2-klantroute', () => {
+  assert.match(REDIRECTS, /^\/klantportaal\s+klant=:klant\s+\/portaal\/:klant\s+301!$/m);
+  assert.match(REDIRECTS, /^\/portaal\/\*\s+\/portal-v2\/:splat\s+200!$/m);
   assert.doesNotMatch(PORTAAL, /__BG_DEMO_SLUGS__ = \[[^\]]*ijsselmonde/,
     'een echte klant staat als demoslug geregistreerd');
   const slugs = PORTAAL.match(/__BG_DEMO_SLUGS__ = \[([^\]]*)\]/)[1];
