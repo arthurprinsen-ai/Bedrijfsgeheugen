@@ -142,3 +142,10 @@ Mandatory behavior:
 - `BLOCKED_HARD_BOUNDARY` is reserved for a genuinely non-autonomous next step such as missing external permission/credential, a destructive/irreversible decision, security control, paid-resource escalation, or legally/financially binding action.
 
 The node that starts or recovers delivery retains ownership until terminal proof exists. Auto-merge is a mechanism, not a handoff.
+
+
+## Borging closure is material writeback
+
+A request to borg, log, document or update Powerhouse/skills is itself material work. Do not treat documentation or a skill edit as a side note. The closure must remain in the same canonical lineage and reach: learning writeback → ledger/documentation → relevant skill projection → regression evidence → protected merge → main/provider readback.
+
+Canonical fingerprint: `delivery|borging-closure|material-writeback|v1`.
