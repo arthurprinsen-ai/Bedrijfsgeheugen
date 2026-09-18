@@ -28,7 +28,10 @@
     "Treat a changed PR head as superseding terminal evidence from an earlier exact head for the active candidate.",
     "To claim that no production write occurred, read the relevant production/provider mutation or audit authority directly; an unmerged PR or CI state alone is insufficient.",
     "Append every terminal-claim evaluation, including incomplete proof, to the canonical activity ledger and write the resulting status plus evidence references back to shared Powerhouse state.",
-    "After learning/prevention writeback, prove next-agent discoverability by reading the same fingerprint or record through the canonical preflight/discovery route."
+    "After learning/prevention writeback, prove next-agent discoverability by reading the same fingerprint or record through the canonical preflight/discovery route.",
+    "Before any repository write, read config/branch-delivery-ownership-guard.json through mandatory chat-learning preflight and inspect the canonical PR writer lease.",
+    "If Writer-Lease-State is TERMINAL_DELIVERY and this execution node is not the Writer-Lease-Owner, do not mutate the branch; defer and reuse the existing lineage.",
+    "The terminal lease remains active through exact-head gates, protected promotion, production/provider readback and learning writeback."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
@@ -39,7 +42,9 @@
     "adding a new quality-critical runtime surface without a canonical quality-surface registry entry and evidence contract",
     "claiming LIVE_PROVEN from an earlier chat status, cached exact head, successful deploy acknowledgement or partial green checks",
     "claiming that no production write occurred solely because a PR is open, unmerged, failed or cancelled",
-    "using evidence from a superseded exact head as terminal proof for the current candidate"
+    "using evidence from a superseded exact head as terminal proof for the current candidate",
+    "mutating a canonical branch owned by another TERMINAL_DELIVERY writer lease",
+    "adding opportunistic improvements while exact-head terminal gates are running"
   ],
   "canonical_evidence": {
     "obligation_id": "powerhouse-structural-gap-closure-v2",
@@ -52,7 +57,8 @@
     "production_source_pr": 2047,
     "production_state": "LIVE_AND_PROVEN",
     "data_spine_watchdog_state": "GREEN",
-    "dataforseo_edge_function_version": 5
+    "dataforseo_edge_function_version": 5,
+    "terminal_writer_lease_learning": "brain/learning/2026-09-18-terminal-writer-lease-v1.json"
   },
   "consumers": [
     "chat-learning-preflight",
