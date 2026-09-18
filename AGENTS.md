@@ -292,3 +292,18 @@ Nieuwe fouten, verbeteringen, kansen en belangrijke beslissingen worden toegevoe
 - herbruikbare les.
 
 De repo en Powerhouse Team Memory vormen samen het gedeelde geheugen. Agents moeten deze kennis uitbreiden en gebruiken.
+
+## Unified Data Intelligence Spine — mandatory skill/agent inheritance
+Fingerprint: `powerhouse-unified-data-intelligence-spine-v1`.
+
+Iedere huidige en toekomstige chat, agent, skill, workflow of intelligence-producer die social-, search-, analytics-, externe of portaldata leest of schrijft, erft verplicht dezelfde One Brain data-spine:
+- een gekoppelde connector, succesvolle provider-call of transport-acknowledgement is nooit bewijs dat data canoniek is opgeslagen;
+- gebruik bestaande canonical source tables en routeer materiële observaties naar `powerhouse_evidence_source_observations` + `powerhouse_runtime_events`; bouw geen parallelle analytics-, evidence- of learning-store;
+- controleer vóór nieuw ingest-/analyticswerk `powerhouse_evidence_sources` en `powerhouse_data_spine_health_v1` en hergebruik eerst de bestaande writer/reconcile-route;
+- LinkedIn/Instagram native/platform truth blijft gescheiden van Buffer als transportbron;
+- ontbrekende of stale producers blijven fail-closed en worden via de 10-minuten watchdog/reconcile-lus hersteld of als open obligation zichtbaar gehouden;
+- portaldata behoudt tenant-id, projection layer, source timestamp en provenance; legacy state mag nieuwere canonical-brain state nooit overschrijven;
+- externe data behoudt source, observed/freshness, confidence en lineage; provider-level errors/statuscodes mogen nooit als succes worden vertaald;
+- iedere nieuwe bron/capability is pas production-ready wanneer registratie → persistence → freshness/quality → evidence → readback → signal/advice/outcome → learning aantoonbaar aan dezelfde One Brain is gekoppeld.
+
+Canonieke machine-learningbron: `brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json`.
