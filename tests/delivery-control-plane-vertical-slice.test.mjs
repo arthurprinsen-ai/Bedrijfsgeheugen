@@ -85,3 +85,17 @@ test('control-plane OIDC rejects another workflow lineage', async()=>{
     /OIDC_WORKFLOW_REJECTED/,
   );
 });
+
+test('terminal evidence uses existing Supabase Edge trust boundary, not app token as PostgREST key', async()=>{
+  const endpoint=await readFile('netlify/functions/powerhouse-control-plane-evidence.mjs','utf8');
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(endpoint,/functions\/v1\/growth-datahub-ingest/);
+  assert.match(endpoint,/action:'control_plane_terminal'/);
+  assert.doesNotMatch(endpoint,/\/rest\/v1\//);
+  assert.match(edge,/if\(action==='control_plane_terminal'\)/);
+  assert.match(edge,/SUPABASE_SERVICE_ROLE_KEY/);
+  assert.match(edge,/brain_create_obligation/);
+  assert.match(edge,/brain_create_operation/);
+  assert.match(edge,/brain_delivery_evidence/);
+  assert.match(edge,/p_state:'FULFILLED'/);
+});
