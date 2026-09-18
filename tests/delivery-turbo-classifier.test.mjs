@@ -16,9 +16,16 @@ test('migration and security changes are never TURBO',()=>{
   assert.equal(classifyTurboDelivery({changedPaths:['netlify/functions/auth-login.mjs']}).turbo,false);
 });
 test('wide change is STANDARD',()=>{
-  const changedPaths=Array.from({length:13},(_,i)=>`portal-v2/f${i}.js`);
+  const changedPaths=Array.from({length:25},(_,i)=>`portal-v2/f${i}.js`);
   assert.equal(classifyTurboDelivery({changedPaths}).class,'STANDARD');
 });
 test('critical label overrides bounded scope',()=>{
   assert.equal(classifyTurboDelivery({changedPaths:['portal-v2/card.js'],labels:['delivery:critical']}).class,'CRITICAL');
+});
+
+test('safe changes up to 24 paths stay TURBO',()=>{
+  const changedPaths=Array.from({length:24},(_,i)=>`portal-v2/safe-${i}.js`);
+  const r=classifyTurboDelivery({changedPaths});
+  assert.equal(r.turbo,true);
+  assert.equal(r.maxTurboPaths,24);
 });
