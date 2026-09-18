@@ -75,5 +75,9 @@ export function bindPortalNavigation(nextHandlers={}){
     addEventListener('popstate',()=>applyTarget(readTargetFromLocation()));
     popstateBound=true;
   }
-  applyTarget(readTargetFromLocation());
+  // A portal session always enters through the executive overview. Detail routes
+  // are intentional in-session navigation only; stale/bookmarked ?page= links
+  // must never auto-open a modal over the cockpit on boot.
+  history.replaceState({portalTarget:'overzicht'},'',navigationUrl('overzicht'));
+  applyTarget('overzicht');
 }
