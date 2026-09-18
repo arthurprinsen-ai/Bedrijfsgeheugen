@@ -112,3 +112,7 @@ Permanent rules:
 
 Reusable skill: `brain/skills/powerhouse-missing-connections-recovery-v1.json`.
 Machine learning: `brain/learning/2026-09-18-missing-connections-recovery-v1.json`.
+
+
+### Quality-surface registration escape prevention
+The first exact-head quality discovery run after this learning writeback correctly failed because the new `powerhouse-dataforseo-intelligence` function and `powerhouse_record_source_observation_v1` RPC had no canonical quality-surface registry entries. This is a valid escaped integration defect, not a gate problem. The same #2023 lineage now registers both surfaces in `config/powerhouse-quality-surface-contracts.json` and binds them to their existing executable tests. Permanent guard: `NEW_QUALITY_SURFACE_REQUIRES_REGISTRY_AND_EVIDENCE_CONTRACT`.
