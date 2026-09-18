@@ -158,15 +158,21 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   const impact=impactForMutation({path,before,after});
   const organism=deriveOrganismEffects({statePath:path});
   const organismPages=affectedPortalPages(organism);
-  const enriched=Object.freeze({...impact,organism,organismDomains:[...organism.recomputeDomains],affectedPages:[...new Set([...(impact.affectedPages||[]),...organismPages])]});
+  const affectedPages=[...new Set([...(impact.affectedPages||[]),...organismPages])];
+  const effectDetails=[...(impact.effectDetails||[])];
+  for(const page of organismPages){
+   if(!effectDetails.some(detail=>detail.page===page))effectDetails.push(Object.freeze({page,label:page,viaCalculation:[],viaRule:['organism'],relation:'organism'}));
+  }
+  const enriched=Object.freeze({...impact,organism,organismDomains:[...organism.recomputeDomains],affectedPages,effectDetails:Object.freeze(effectDetails)});
   if(impact.changed){
-   pendingImpacts.push({path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]}});
+   pendingImpacts.push({path:impact.path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],changes:impact.changes.map(({id,unit,from,to,delta})=>({id,unit,from,to,delta})),advice:{...impact.advice},effectRules:(impact.effectRules||[]).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]})),effectDetails:enriched.effectDetails.map(detail=>({page:detail.page,label:detail.label,viaCalculation:[...(detail.viaCalculation||[])],viaRule:[...(detail.viaRule||[])],relation:detail.relation})),organism:{version:organism.version,startNodes:[...organism.startNodes],recomputeDomains:[...organism.recomputeDomains]}});
    if(pendingImpacts.length>50)pendingImpacts.splice(0,pendingImpacts.length-50);
   }
   if(typeof globalThis!=='undefined'){
    globalThis.__BG_LAST_PORTAL_IMPACT__=enriched;
    if(typeof globalThis.dispatchEvent==='function'&&typeof globalThis.CustomEvent==='function'){
     globalThis.dispatchEvent(new CustomEvent('bg:portal-impact',{detail:enriched}));
+    globalThis.dispatchEvent(new CustomEvent('bg:portal-pages-invalidated',{detail:{path,sourcePage:impact.sourcePage,affectedPages:[...enriched.affectedPages],effectDetails:[...enriched.effectDetails]}}));
     if(impact.changed)globalThis.dispatchEvent(new CustomEvent('bg:organism-impact',{detail:enriched.organism}));
    }
   }
