@@ -7,35 +7,26 @@ const redirects = readFileSync(new URL('../_redirects', import.meta.url), 'utf8'
 const frisseBlik = readFileSync(new URL('../frisse-blik.html', import.meta.url), 'utf8');
 const klantportaal = readFileSync(new URL('../klantportaal.html', import.meta.url), 'utf8');
 
-test('demo1 serves the legacy customer portal without changing the public URL', () => {
-  // Sinds 11 september 2026 wijst demo1 naar klantportaal.html in plaats van
-  // naar het losse demobestand: het volledige portaal in demostand, alles open.
-  // Nog steeds een rewrite, dus de publieke URL blijft gelijk.
-  assert.match(redirects, /^\/klantportaal\s+klant=demo1\s+\/klantportaal\.html\s+200!$/m);
+test('demo aliases converge on the canonical Portal V2 demo route', () => {
+  for (const slug of ['demo','demo1','demoAI']) {
+    assert.match(redirects, new RegExp('^/klantportaal\\s+klant='+slug+'\\s+/portaal/demo\\s+301!$','m'));
+  }
+  assert.match(redirects, /^\/portaal\/demo\s+\/portal-v2\/\s+200!$/m);
 });
 
-test('old demo alias redirects canonically to demo1', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=demo\s+\/klantportaal\?klant=demo1\s+301!$/m);
+test('Ijsselmonde uses the canonical Portal V2 customer route', () => {
+  assert.match(redirects, /^\/portaal\/ijsselmonde\s+\/portal-v2\/\s+200!$/m);
 });
 
-test('Ijsselmonde serves the legacy full customer portal', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=ijsselmonde\s+\/klantportaal\.html\s+200!$/m);
+test('all other customer slugs from scans use the canonical V2 customer route', () => {
+  assert.match(redirects, /^\/klantportaal\s+klant=:klant\s+\/portaal\/:klant\s+301!$/m);
+  assert.match(redirects, /^\/portaal\/\*\s+\/portal-v2\/:splat\s+200!$/m);
 });
 
-test('demoAI serves the current AI portal without changing the public URL', () => {
-  // Portal V2 is sinds 11 september 2026 het enige klantportaal (#1385, #1388,
-  // #1393). Deze route wijst nu naar V2, maar blijft een rewrite: de publieke URL
-  // verandert niet, zodat gedeelde demolinks blijven werken.
-  assert.match(redirects, /^\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+200!$/m);
-});
-
-test('all other customer slugs from scans serve the legacy full portal', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=:klant\s+\/klantportaal\.html\s+200!$/m);
-});
-
-test('Frisse Blik bare portal handoff resolves to the legacy demo', () => {
+test('Frisse Blik bare portal handoff resolves to the canonical portal entry', () => {
   assert.match(frisseBlik, /\/klantportaal#direct/);
-  assert.match(redirects, /^\/klantportaal\s+\/klantportaal-demo\.html\s+200!$/m);
+  assert.match(redirects, /^\/klantportaal\s+\/portaal\s+301!$/m);
+  assert.match(redirects, /^\/portaal\s+\/portal-v2\/\s+301!$/m);
 });
 
 test('production transform prevents customer offer routes from opening Netlify Identity', () => {
