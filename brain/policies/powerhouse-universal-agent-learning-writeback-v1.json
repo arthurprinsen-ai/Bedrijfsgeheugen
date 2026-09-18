@@ -1,10 +1,10 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 5,
+  "revision": 6,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
-  "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
+  "scope": "all current and future material Powerhouse chats, agents, skills, workflows, scenarios, development runs, incidents, recoveries and production verifications",
   "purpose": "Make shared learning operational rather than conversational: every material worker reads current canonical state before work, executes already-authorized work without redundant confirmation loops, records what it does, persists every material error/decision/outcome/learning after work, refreshes shared context and proves that the next worker can discover the result quickly and securely.",
   "invariants": [
     "NO_AGENT_STARTS_BLIND",
@@ -29,7 +29,14 @@
     "TRANSPORT_METADATA_NEVER_REPLACES_PLATFORM_TRUTH",
     "NO_LIVE_PROVEN_CLAIM_WITHOUT_VERIFIABLE_PROOF_BUNDLE",
     "NO_PRODUCTION_WRITE_ABSENCE_CLAIM_FROM_CI_ONLY",
-    "PROOF_STATUS_MUST_BE_REFRESHED_FROM_CURRENT_AUTHORITIES"
+    "PROOF_STATUS_MUST_BE_REFRESHED_FROM_CURRENT_AUTHORITIES",
+    "NO_MATERIAL_SKILL_EXECUTION_OUTSIDE_CANONICAL_LOOP",
+    "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED",
+    "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+    "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP",
+    "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+    "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES",
+    "HEAD_MUTATION_DURING_ACTIVE_TERMINAL_LEASE_IS_CONTRACT_VIOLATION"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -63,8 +70,33 @@
       "DO_YOU_WANT_ME_TO_BORGEN",
       "CAN_I_IMPLEMENT_THIS_ALREADY_AUTHORIZED_FIX",
       "STOP_AFTER_PLAN_WHEN_EXECUTION_IS_ALREADY_AUTHORIZED",
-      "ASK_USER_TO_REPEAT_EXISTING_POWERHOUSE_RULES"
-    ]
+      "ASK_USER_TO_REPEAT_EXISTING_POWERHOUSE_RULES",
+      "WAIT_FOR_USER_TO_MERGE_OR_DEPLOY",
+      "REPORT_GREEN_PR_AS_DONE",
+      "STOP_AT_PREVIEW_AFTER_REQUIRED_GATES_PASS"
+    ],
+    "self_promote_to_production_required": true,
+    "production_promotion_owner": "CURRENT_AUTHORIZED_EXECUTION_NODE",
+    "user_followup_for_routine_promotion": "FORBIDDEN",
+    "required_execution_tail": [
+      "required_gates_terminal_green",
+      "protected_merge_or_promotion",
+      "production_deploy_or_migration",
+      "production_and_provider_readback",
+      "outcome_or_value_verification",
+      "canonical_learning_and_prevention_writeback",
+      "shared_context_refresh",
+      "next_agent_discoverability_readback",
+      "terminal_proof_bundle"
+    ],
+    "promotion_rule": "When a material candidate is within existing Powerhouse authority and all required gates are green, the current chat/agent/workflow must invoke the canonical protected promotion/deploy path itself and continue through production readback.",
+    "writer_lease": {
+      "required": true,
+      "scope": "obligation_and_canonical_pr",
+      "terminal_delivery_rule": "Only the lease owner may mutate the canonical branch while terminal delivery is active.",
+      "non_owner_behavior": "DEFER_AND_REUSE_EXISTING_LINEAGE",
+      "head_drift_behavior": "FAIL_CLOSED_REBIND_CURRENT_HEAD_AND_PRESERVE_SINGLE_OWNER"
+    }
   },
   "canonical_authorities": {
     "notion": {
@@ -340,7 +372,9 @@
     "deployment_without_learning": "NOT_LIVE_BEWEZEN",
     "documentation_search_miss_without_id_fetch": "NOT_EVIDENCE_OF_ABSENCE",
     "ci_or_open_pr_without_production_authority_readback": "NOT_PROOF_OF_NO_PRODUCTION_WRITE",
-    "stale_exact_head_evidence": "SUPERSEDED_FOR_ACTIVE_CANDIDATE"
+    "stale_exact_head_evidence": "SUPERSEDED_FOR_ACTIVE_CANDIDATE",
+    "authorized_candidate_not_promoted": "NOT_TERMINAL_RECOVERABLE",
+    "user_followup_required_for_routine_production_promotion": "CONTRACT_VIOLATION"
   },
   "no_duplicate_truth": {
     "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler, documentation tree or learning plane."
@@ -350,7 +384,9 @@
     "brain/policies/chat-to-brain-completeness-v1.json",
     "brain/policies/powerhouse-agent-continuity-v1.json",
     "config/chat-learning-completeness-guard.json",
-    "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json"
+    "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json",
+    "brain/learning/2026-09-18-self-production-promotion-v1.json",
+    "brain/learning/2026-09-18-terminal-writer-lease-v1.json"
   ],
   "terminal_claim_proof_contract": {
     "required": true,
@@ -405,5 +441,27 @@
     ],
     "stale_claim_rule": "CURRENT_AUTHORITY_READBACK_OVERRIDES_ALL_EARLIER_CHAT_OR_AGENT_STATUS_TEXT",
     "failure_code": "POWERHOUSE_TERMINAL_CLAIM_PROOF_INCOMPLETE"
+  },
+  "skill_execution_contract": {
+    "required": true,
+    "actor_kind": "skill",
+    "role": "CANONICAL_EXECUTION_CAPABILITY",
+    "existing_state_preflight_required": true,
+    "activity_ledger_required": true,
+    "evidence_and_lineage_required": true,
+    "exact_head_or_provider_identity_required": true,
+    "documentation_writeback_required": true,
+    "learning_writeback_required": true,
+    "shared_context_refresh_required": true,
+    "next_agent_discoverability_required": true,
+    "terminal_success_requires": "same canonical Powerhouse completion gates as chats and agents",
+    "forbidden_terminal_states": [
+      "SKILL_COMPLETED_WITH_LOCAL_OUTPUT_ONLY",
+      "SKILL_COMPLETED_WITHOUT_ACTIVITY_LOG",
+      "SKILL_COMPLETED_WITHOUT_DOCUMENTATION",
+      "SKILL_COMPLETED_WITHOUT_LEARNING_WRITEBACK",
+      "SKILL_COMPLETED_WITHOUT_READBACK"
+    ],
+    "rule": "A material skill is not a side utility outside Powerhouse. It is an execution capability inside the same canonical loop and must leave durable evidence, documentation, learning and discoverable state before terminal success."
   }
 }

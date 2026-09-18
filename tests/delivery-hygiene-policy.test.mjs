@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseDeliveryMetadata, evaluateAdmission, evaluateSupersession, evaluatePromotionSerialization } from '../tools/delivery/delivery-hygiene.mjs';
+import { parseDeliveryMetadata, evaluateAdmission, evaluateSupersession, evaluatePromotionSerialization, parseWriterLease, evaluateWriterLease } from '../tools/delivery/delivery-hygiene.mjs';
 
 const SHA_A = 'a'.repeat(40);
 const SHA_B = 'b'.repeat(40);
@@ -97,4 +97,39 @@ test('serializes overlapping promotion contracts but keeps independent scopes pa
   const independent = candidate({ number: 3, obligationId: 'BG-3', type: 'promotion', conflictContracts: ['website-shell-contract'] });
   assert.equal(evaluatePromotionSerialization({ candidate: current, openCandidates: [overlapping] }).state, 'BLOCKED_PROMOTION_SERIALIZATION');
   assert.equal(evaluatePromotionSerialization({ candidate: current, openCandidates: [independent] }).state, 'ADMITTED');
+});
+
+
+test('terminal writer lease binds an immutable exact head', () => {
+  const body = `Writer-Lease-State: TERMINAL_DELIVERY
+Writer-Lease-Owner: powerhouse-terminal-delivery
+Writer-Lease-Scope: BG-LEASE
+Writer-Lease-Head: ${SHA_B}
+Writer-Lease-NonOwner-Action: DEFER
+Writer-Lease-Release: MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK`;
+  assert.deepEqual(parseWriterLease(body), {
+    state: 'TERMINAL_DELIVERY',
+    owner: 'powerhouse-terminal-delivery',
+    scope: 'BG-LEASE',
+    headSha: SHA_B,
+    nonOwnerAction: 'DEFER',
+    release: 'MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK',
+  });
+  const exact = evaluateWriterLease({ body, candidateHeadSha: SHA_B });
+  assert.equal(exact.ok, true);
+  assert.equal(exact.state, 'TERMINAL_LEASE_BOUND');
+  const drift = evaluateWriterLease({ body, candidateHeadSha: SHA_C });
+  assert.equal(drift.ok, false);
+  assert.equal(drift.state, 'BLOCKED_TERMINAL_LEASE_HEAD_DRIFT');
+  assert.deepEqual(drift.reasons, ['TERMINAL_LEASE_HEAD_DRIFT']);
+});
+
+test('non-terminal lease state permits controlled recovery head mutation', () => {
+  const body = `Writer-Lease-State: RECOVERY
+Writer-Lease-Owner: powerhouse-terminal-delivery
+Writer-Lease-Scope: BG-LEASE
+Writer-Lease-Head: ${SHA_B}`;
+  const result = evaluateWriterLease({ body, candidateHeadSha: SHA_C });
+  assert.equal(result.ok, true);
+  assert.equal(result.state, 'LEASE_INACTIVE');
 });

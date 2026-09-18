@@ -1,0 +1,132 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-SELF-PRODUCTION-PROMOTION-v3",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse-self-production-promotion-v3",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "root_cause": "Authorized workers could stop at green PR/CI instead of owning protected promotion through production readback and learning writeback.",
+  "prevention_rules": [
+    "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+    "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP",
+    "SAME_LINEAGE_MOVING_MAIN_AUTO_REFRESH",
+    "AUTOMATIC_BRANCH_REFRESH_REQUIRES_TERMINAL_WRITER_LEASE",
+    "AUTO_REFRESH_MERGES_MAIN_INTO_CANDIDATE_NEVER_CANDIDATE_INTO_MAIN",
+    "ACTIVE_TERMINAL_LEASE_CANNOT_REMAIN_CLOSED_UNMERGED",
+    "PREMATURE_TERMINAL_PR_CLOSE_AUTO_REOPENS",
+    "INTENTIONAL_CANCELLATION_REQUIRES_EXPLICIT_LEASE_RELEASE"
+  ],
+  "terminal_state": "LIVE_PROVEN",
+  "moving_main_recovery": {
+    "mode": "SAME_LINEAGE_AUTO_REFRESH",
+    "preconditions": [
+      "same_repository_branch",
+      "Writer-Lease-State=TERMINAL_DELIVERY",
+      "Writer-Lease-Owner=powerhouse-terminal-delivery"
+    ],
+    "operation": "merge default branch into candidate branch via GitHub merge endpoint",
+    "actual_conflict": "FAIL_CLOSED_KEEP_SAME_LINEAGE",
+    "production_merge": "FORBIDDEN_BY_SUPERVISOR"
+  },
+  "premature_close_recovery": {
+    "evidence": "PR #2063 closed twice without merge while exact-head gates were active; GitHub issue events recorded the close under the repository user identity.",
+    "automatic_recovery": "pull_request.closed guard reopens only unmerged PRs carrying the canonical TERMINAL_DELIVERY lease",
+    "intentional_cancel": "set Writer-Lease-State to RELEASED or CANCELLED before closing"
+  },
+  "incident_findings": [
+    "A new terminal-writer-lease regression test was added without classifier co-change, causing BRAIN plan and Required preflight to fail on an otherwise valid candidate."
+  ],
+  "prevention": [
+    "CLASSIFIER_COCHANGE_REQUIRED: every new executable regression path must be assigned to an existing delivery lane in the same candidate before expensive CI."
+  ],
+  "terminal_proof_bundle": {
+    "proof_bundle_id": "powerhouse-self-production-promotion-live-proof-2026-09-18",
+    "obligation_id": "powerhouse-self-production-promotion-v1",
+    "candidate_identity": "PR#2063",
+    "exact_head_or_artifact_digest": "ec4a23eec09c231fdc5e0db7691b51ac0d04053a",
+    "protected_promotion": {
+      "pr": 2063,
+      "merged": true,
+      "merge_main_sha": "ee526cea16dac904173466a529211ad0f7513215",
+      "merged_at": "2026-09-18T09:04:24Z"
+    },
+    "required_gates": {
+      "exact_candidate_supervisor_run": {
+        "run_id": 35327583371,
+        "conclusion": "success"
+      },
+      "main_brain_foundation": {
+        "run_id": 35327618736,
+        "conclusion": "success"
+      },
+      "main_shared_agent_memory": {
+        "run_id": 35327618764,
+        "conclusion": "success"
+      },
+      "main_codeql": {
+        "run_id": 35327618679,
+        "conclusion": "success"
+      },
+      "main_powerhouse_codeql": {
+        "run_id": 35327618685,
+        "conclusion": "success"
+      },
+      "main_supply_chain": {
+        "run_id": 35327618812,
+        "conclusion": "success"
+      },
+      "main_write_integrity": {
+        "run_id": 35327618756,
+        "conclusion": "success"
+      }
+    },
+    "production_mutation_refs": [
+      "github:pr/2063:merged",
+      "github:main:ee526cea16dac904173466a529211ad0f7513215"
+    ],
+    "production_readback_refs": [
+      "github-actions:35327618750:Production Release Readback:success",
+      "github-actions:35327618736:Brain foundation verify:success",
+      "github-actions:35327618764:Shared Agent Memory Tests:success"
+    ],
+    "provider_readback_refs": [
+      "netlify:production-release-readback:35327618750:success",
+      "supabase:pr2063:no-supabase-directory-change"
+    ],
+    "outcome_or_value_refs": [
+      "github-actions:35327792914:Outcome Obligation Sweep:success"
+    ],
+    "learning_writeback_refs": [
+      "brain/learning/2026-09-18-self-production-promotion-v1.json",
+      "brain/learning/2026-09-18-terminal-writer-lease-v1.json",
+      "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+      "config/branch-delivery-ownership-guard.json"
+    ],
+    "prevention_writeback_refs": [
+      "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+      "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+      "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES",
+      "PREMATURE_TERMINAL_PR_CLOSE_AUTO_REOPENS"
+    ],
+    "authorities_queried": [
+      "GitHub PR",
+      "GitHub main",
+      "GitHub Actions",
+      "Netlify readback",
+      "canonical Powerhouse learning"
+    ],
+    "verified_at": "2026-09-18",
+    "terminal_claim_status": "LIVE_PROVEN",
+    "run_id": "github-actions:35327618750",
+    "actor_or_agent": "powerhouse-terminal-delivery",
+    "task_fingerprint": "powerhouse-self-production-promotion-v3"
+  },
+  "next_agent_discoverability": {
+    "status": "PROVEN",
+    "readback_main_sha": "1bf772d495abe14a46c355c24470367fc38ffed7",
+    "policy_direct_link": true,
+    "preflight_follows_linked_learning_sources": true,
+    "fingerprint": "powerhouse-self-production-promotion-v3",
+    "terminal_state": "LIVE_PROVEN"
+  }
+}

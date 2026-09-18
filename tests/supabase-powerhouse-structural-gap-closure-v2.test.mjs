@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const sql=fs.readFileSync('supabase/migrations/20260918090000_powerhouse_structural_gap_closure_v2.sql','utf8');
+const signalBootstrap=sql.slice(sql.indexOf('create or replace function public.powerhouse_open_cycle_from_runtime_signal_v1'),sql.indexOf('create or replace view public.powerhouse_completion_readiness_v1'));
 
 test('tenant identity review is derived live, not copied to a parallel queue',()=>{
   assert.match(sql,/create or replace view public\.powerhouse_tenant_identity_review_v1/i);
@@ -11,13 +12,14 @@ test('tenant identity review is derived live, not copied to a parallel queue',()
   assert.doesNotMatch(sql,/create table\s+public\.powerhouse_tenant_identity_review/i);
 });
 
-test('sales actions deterministically bootstrap canonical cycles at truthful signal stage',()=>{
-  assert.match(sql,/powerhouse_materialize_sales_action_cycle_row_v1/);
-  assert.match(sql,/cycle_id,subject_key,source_signal_ref/);
-  assert.match(sql,/a\.action_id/);
-  assert.match(sql,/sales-action:' \|\| a\.action_id::text \|\| ':signal'/);
-  assert.match(sql,/observed_sales_action_bootstrap_signal/);
-  assert.doesNotMatch(sql,/sales-action:' \|\| a\.action_id::text \|\| ':decision'/);
+test('decision cycles open only from canonical runtime signals',()=>{
+  assert.match(sql,/powerhouse_open_cycle_from_runtime_signal_v1/);
+  assert.match(sql,/event_type <> 'scan_submitted'/);
+  assert.match(sql,/source <> 'website\.frisse_blik'/);
+  assert.match(sql,/1,'signal','powerhouse_runtime_events'/);
+  assert.match(sql,/runtime-signal:' \|\| e\.event_id::text/);
+  assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/i);
+  assert.doesNotMatch(sql,/1,\s*'decision'/);
 });
 
 test('learning gap closure does not synthesize feedback, economics or realized value',()=>{
@@ -35,13 +37,12 @@ test('platform providers and customer connectors remain separate concepts',()=>{
   assert.match(sql,/from public\.powerhouse_evidence_sources/);
 });
 
-test('strict canonical cycle remains evidence-first after historical action bootstrap',()=>{
+test('strict canonical cycle remains evidence-first after runtime signal bootstrap',()=>{
   assert.match(sql,/cycles_waiting_for_stage_reconstruction/);
   assert.match(sql,/current_stage='signal'/);
-  assert.match(sql,/Later canonical stages are never fabricated/);
-  assert.match(sql,/if not exists \([\s\S]*?idempotency_key='sales-action:' \|\| a\.action_id::text \|\| ':signal'/);
-  assert.doesNotMatch(sql,/a\.action_id,\s*2,\s*'execution'/);
-  assert.doesNotMatch(sql,/a\.action_id,\s*4,\s*'decision'/);
+  assert.match(sql,/source_signal_ref like 'powerhouse_runtime_events:%'/);
+  assert.doesNotMatch(signalBootstrap,/insert into public\.powerhouse_cycle_events[\s\S]*?'analysis'/);
+  assert.doesNotMatch(signalBootstrap,/insert into public\.powerhouse_cycle_events[\s\S]*?'prediction'/);
 });
 
 test('tenant readiness distinguishes demo fixtures from unresolved production identity',()=>{
@@ -78,7 +79,7 @@ test('one brain reconciliation reuses canonical engines and remains evidence hon
   assert.match(sql,/powerhouse_refresh_forecast_calibration_obligations/);
   assert.match(sql,/powerhouse_mature_experiment_assignments_v1/);
   assert.match(sql,/powerhouse_promote_policy_if_proven_v1/);
-  assert.match(sql,/powerhouse_materialize_sales_action_cycle_row_v1/);
+  assert.match(sql,/powerhouse_open_cycle_from_runtime_signal_v1/);
   assert.doesNotMatch(sql,/insert into public\.powerhouse_action_economics/i);
   assert.doesNotMatch(sql,/insert into public\.powerhouse_human_feedback_events/i);
   assert.doesNotMatch(sql,/insert into public\.powerhouse_realized_values/i);

@@ -1,3 +1,48 @@
+-- Structural gap production reconcile v1
+-- Remove only synthetic sales-action bootstrap cycles created by the superseded migration variant,
+-- then replay the current canonical runtime-signal contract from protected main.
+
+do $$
+declare
+  v_bad_downstream bigint;
+  v_bad_shape bigint;
+begin
+  select count(*) into v_bad_downstream
+  from public.powerhouse_decision_cycles c
+  where c.source_signal_ref like 'powerhouse_sales_actions:%'
+    and exists(
+      select 1 from public.powerhouse_cycle_events e
+      where e.tenant_id=c.tenant_id and e.cycle_id=c.cycle_id and e.stage<>'signal'
+    );
+
+  select count(*) into v_bad_shape
+  from public.powerhouse_decision_cycles c
+  where c.source_signal_ref like 'powerhouse_sales_actions:%'
+    and (
+      not exists(
+        select 1 from public.powerhouse_cycle_events e
+        where e.tenant_id=c.tenant_id and e.cycle_id=c.cycle_id
+          and e.stage='signal' and e.entity_type='powerhouse_sales_actions'
+      )
+      or exists(
+        select 1 from public.powerhouse_cycle_events e
+        where e.tenant_id=c.tenant_id and e.cycle_id=c.cycle_id
+          and (e.stage<>'signal' or e.entity_type<>'powerhouse_sales_actions')
+      )
+    );
+
+  if v_bad_downstream>0 or v_bad_shape>0 then
+    raise exception 'STRUCTURAL_RECONCILE_REFUSES_NON_SYNTHETIC_CYCLE_DELETE downstream=% shape=%',v_bad_downstream,v_bad_shape;
+  end if;
+
+  delete from public.powerhouse_decision_cycles
+  where source_signal_ref like 'powerhouse_sales_actions:%';
+end $$;
+
+drop trigger if exists powerhouse_sales_actions_cycle_materializer_v1 on public.powerhouse_sales_actions;
+drop function if exists public.powerhouse_materialize_sales_action_cycle_v1();
+drop function if exists public.powerhouse_materialize_sales_action_cycle_row_v1(uuid);
+
 -- Powerhouse structural gap closure v2
 -- Deterministic, idempotent wiring only. No synthetic human feedback, realized value or customer connectors.
 
@@ -613,3 +658,4 @@ grant select on public.powerhouse_one_brain_capability_inventory_v1 to service_r
 
 comment on view public.powerhouse_one_brain_capability_inventory_v1 is
 'Derived capability catalogue: explicit models, decision engines, learning loops and agents mapped to their canonical runtime authority. No independent state.';
+

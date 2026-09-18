@@ -116,3 +116,13 @@ Deze borging blijft alleen groen zolang:
 De machineleesbare learning voor incident, oorzaak, fix, evidence en prevention staat in:
 
 `brain/learning/chat-agent-intrinsic-loop-node-2026-09-18.json`
+
+## Skill-laag
+
+De continuity-regel is daarnaast vindbaar gemaakt als cross-runtime agentskill:
+
+`.agents/skills/powerhouse-continuity/SKILL.md`
+
+De skill is bewust geen nieuwe authority. Hij verwijst terug naar de canonieke continuity-policy, learning, documentatie en required regression. `AGENTS.md` laadt hem direct na het agentcontract in de verplichte leesvolgorde. De required regression blokkeert verwijdering of ontkoppeling van deze skill.
+
+Preventieregel: skills zijn discovery/execution guidance bovenop canonieke Powerhouse-state; zij mogen nooit een parallelle waarheid, eigen status of afwijkend completion-contract introduceren.
