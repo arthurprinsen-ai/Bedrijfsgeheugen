@@ -108,7 +108,7 @@ jobs:
       - name: Enforce material writeback closure
         run: node scripts/brain/material-writeback-closure-guard.mjs "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify material writeback closure regression
-        run: node --test tests/material-writeback-closure-guard.test.mjs
+        run: node --test tests/brain-material-writeback-closure-guard.test.mjs
       - name: Prove Supabase security gate blocks known unsafe patterns
         run: python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
       - name: Enforce Supabase migration security contract
