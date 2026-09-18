@@ -259,6 +259,6 @@ test('predictive LinkedIn sales cockpit learning is discoverable through continu
     'sales decision surface, not passive reporting dashboard',
     'no-auto-send',
     'Netlify \`commit_ref\`',
-    'one superseding recovery candidate'
+    'docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md'
   ]) assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing LinkedIn cockpit learning marker: ${marker}`);
 });
