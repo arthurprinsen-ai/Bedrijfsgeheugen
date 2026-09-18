@@ -36,7 +36,7 @@ test('PR machine metadata is exact-once and terminal lease is lineage-bound',()=
 test('cheap static gates fail closed on branch and secret leakage',()=>{
   assert.equal(evaluateBranchHygiene({headRef:'feature/x',baseRef:'main'}).ok,true);
   assert.equal(evaluateBranchHygiene({headRef:'main',baseRef:'main'}).ok,false);
-  assert.equal(scanStaticSecurity('+ const token = "ghp_abcdefghijklmnopqrstuvwxyz123456";').ok,false);
+  assert.equal(scanStaticSecurity('+ const token = "'+'ghp_'+'abcdefghijklmnopqrstuvwxyz123456";').ok,false);
   assert.equal(evaluateTestWorkflowCoverage({changedPaths:['tests/x.test.mjs'],classifiedLanes:[]}).ok,false);
   assert.equal(evaluateTestWorkflowCoverage({changedPaths:['tests/x.test.mjs'],classifiedLanes:['backend']}).ok,true);
 });
