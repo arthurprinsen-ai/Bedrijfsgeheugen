@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 7,
+  "revision": 8,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, skills, workflows, scenarios, development runs, incidents, recoveries and production verifications",
@@ -42,7 +42,10 @@
     "CLOSED_PR_REQUIRES_MERGE_RELEASE_OR_CANONICAL_SUCCESSOR",
     "TEST_ORACLES_FOLLOW_CURRENT_CANONICAL_CONTRACT",
     "WRITER_LEASE_HEAD_REBINDS_AFTER_OWNER_HEAD_MUTATION",
-    "PENDING_REQUIRED_STATUS_BLOCKS_PROTECTED_PROMOTION"
+    "PENDING_REQUIRED_STATUS_BLOCKS_PROTECTED_PROMOTION",
+    "NO_MATERIAL_LEARNING_WITHOUT_SKILL_PROJECTION",
+    "SKILL_PROJECTION_IS_DERIVED_NOT_PARALLEL_TRUTH",
+    "SKILL_PROJECTION_DRIFT_BLOCKS_TERMINAL_COMPLETION"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -91,6 +94,7 @@
       "production_and_provider_readback",
       "outcome_or_value_verification",
       "canonical_learning_and_prevention_writeback",
+      "skill_projection_sync_and_readback",
       "shared_context_refresh",
       "next_agent_discoverability_readback",
       "terminal_proof_bundle"
@@ -352,7 +356,8 @@
       "authority_ids_written",
       "source_and_security_metadata",
       "terminal_claim_proof_bundle",
-      "terminal_claim_status"
+      "terminal_claim_status",
+      "skill_projection_receipt"
     ],
     "failure_code": "POWERHOUSE_POSTFLIGHT_WRITEBACK_MISSING"
   },
@@ -381,7 +386,8 @@
       "shared_context_refreshed",
       "next_agent_discoverability_proven",
       "no_critical_unrecorded_gap",
-      "terminal_claim_proof_bundle_current_and_complete"
+      "terminal_claim_proof_bundle_current_and_complete",
+      "skill_projection_current_and_read_back"
     ],
     "production_green_without_writeback": "NOT_TERMINAL",
     "deployment_without_learning": "NOT_LIVE_BEWEZEN",
@@ -390,7 +396,8 @@
     "stale_exact_head_evidence": "SUPERSEDED_FOR_ACTIVE_CANDIDATE",
     "authorized_candidate_not_promoted": "NOT_TERMINAL_RECOVERABLE",
     "user_followup_required_for_routine_production_promotion": "CONTRACT_VIOLATION",
-    "pending_required_check": "NOT_TERMINAL_RECOVERABLE"
+    "pending_required_check": "NOT_TERMINAL_RECOVERABLE",
+    "learning_without_skill_projection": "NOT_TERMINAL_RECOVERABLE"
   },
   "no_duplicate_truth": {
     "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler, documentation tree or learning plane."
@@ -480,5 +487,35 @@
       "SKILL_COMPLETED_WITHOUT_READBACK"
     ],
     "rule": "A material skill is not a side utility outside Powerhouse. It is an execution capability inside the same canonical loop and must leave durable evidence, documentation, learning and discoverable state before terminal success."
+  },
+  "skill_projection_contract": {
+    "required": true,
+    "fingerprint": "powerhouse-learning-skill-auto-projection-v1",
+    "canonical_learning_is_authority": true,
+    "skill_layer_is_projection_only": true,
+    "engine": "scripts/brain/powerhouse-skill-projection.mjs",
+    "index": "brain/skills/powerhouse-learning-skill-index-v1.json",
+    "source_glob": "brain/learning/**/*.json",
+    "reconcile_existing_learning": true,
+    "dedupe_key": "fingerprint",
+    "semantic_identity": "fingerprint + deterministic source_digest",
+    "routing": "explicit skill_targets first; deterministic keyword routing fallback",
+    "versioning": "source_revision + source_digest",
+    "fail_closed_on_drift": true,
+    "preflight_consumes_projection": true,
+    "writeback_sequence": [
+      "canonical_learning_write",
+      "deterministic_skill_projection",
+      "skill_projection_readback",
+      "shared_context_refresh",
+      "next_agent_preflight_readback"
+    ],
+    "recoverable_states": [
+      "LEARNING_WRITTEN_SKILL_SYNC_PENDING",
+      "SKILL_PROJECTION_STALE",
+      "SKILL_PROJECTION_READBACK_PENDING"
+    ],
+    "rule": "A material learning is not terminal until the deterministic skill projection is current and read back. Skills are projections of canonical Brain learning and may never become an independent truth source.",
+    "bounded_preflight_rule": "Skill projection scans canonical brain/learning outside the bounded explicit-source queue; projected task-relevant entries enter preflight without duplicating raw learning sources."
   }
 }
