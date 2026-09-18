@@ -6,30 +6,34 @@ declare
   v_reg regprocedure;
   v_def text;
   v_updated text;
+  v_semantic text;
 begin
   v_reg := to_regprocedure('public.bg_gezondheid_meten()');
   if v_reg is null then
-    -- This historical correction is optional only when the production-only
-    -- health routine does not exist in a fresh preview branch yet.
+    -- Production-only routine may be absent on a fresh preview.
     null;
   else
     select pg_get_functiondef(v_reg) into v_def;
+    v_semantic := lower(regexp_replace(v_def, '\\s+', ' ', 'g'));
 
-    -- Compare semantics rather than pg_get_functiondef formatting.
-    if v_def ~* 'a\\.aangeroepen_op\\s*>\\s*now\\(\\)\\s*-\\s*interval\\s+''30 minutes''' then
+    -- Match the health predicate semantically, independent of formatter aliases/spacing.
+    if position('aangeroepen_op' in v_semantic) > 0
+       and position('30 minutes' in v_semantic) > 0 then
       null;
-    elsif v_def ~* 'a\\.aangeroepen_op\\s*>\\s*now\\(\\)\\s*-\\s*interval\\s+''26 hours''' then
+    elsif position('aangeroepen_op' in v_semantic) > 0
+       and position('26 hours' in v_semantic) > 0 then
       v_updated := regexp_replace(
         v_def,
-        'a\\.aangeroepen_op\\s*>\\s*now\\(\\)\\s*-\\s*interval\\s+''26 hours''',
-        'a.aangeroepen_op>now()-interval ''30 minutes''',
-        'i'
+        'interval\\s+''26 hours''',
+        'interval ''30 minutes''',
+        'gi'
       );
       if v_updated = v_def then
         raise exception 'BG_GEZONDHEID_EDGE_FRESHNESS_REWRITE_FAILED';
       end if;
       execute v_updated;
     else
+      -- Unknown semantic baseline remains fail-closed: never rewrite an unrecognized body.
       raise exception 'BG_GEZONDHEID_EDGE_FRESHNESS_SIGNATURE_NOT_FOUND';
     end if;
   end if;
