@@ -48,7 +48,7 @@ export function herkenBackup(raw) {
  * geen tweede, afwijkende vertaalwaarheid ontstaan.
  */
 export const LEGACY_V1_EXPORT_KEYS=Object.freeze([
-  'niveaus','medewerkers','uurkosten','taken','branche','omzet','mensen','cijfers','bc','eigen',
+  'niveaus','mw','medewerkers','uur','uurkosten','taken','branche','omzet','mensen','cijfers','bc','eigen',
   'beleid','fin','modellen','uitvoering','kto','metingen','esg','eigenCaps','prod','beheer',
   'besluiten','docs','log','scanStempel','scanDatum','scanScore'
 ]);
