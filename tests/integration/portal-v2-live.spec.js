@@ -137,7 +137,7 @@ test('mobile primary navigation routes all five controls on supported phone widt
       ['project', 'hub', 'project'],
       ['data-ai', 'hub', 'data-ai'],
       ['tasks', 'hub', 'tasks'],
-      ['more', 'hub', 'more']
+      ['more', 'hub', 'portal']
     ];
     for(const [id,param,value] of expected){
       await page.evaluate(({id})=>document.querySelector(`[data-mobile-nav="${id}"]`)?.click(),{id});
