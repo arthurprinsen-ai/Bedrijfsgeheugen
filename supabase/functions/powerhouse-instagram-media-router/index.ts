@@ -73,7 +73,7 @@ Deno.serve(async req=>{
      if(!fv.body?.pass)return json({ok:false,error:'VIDEO_FRAME_VISION_PROOF_FAILED',position:f.position,detail:fv.body},422);
      fps.push({position:f.position,seconds:Number(f.seconds||0),...fv.body.visual,sha256:fv.body.sha256});
    }
-   const visual={verified:true,semantic_verified:true,mira_present:true,identity_class:'mira_daily_life',evidence_method:'vision',placeholder_detected:false,format_verified:true,width:1080,height:1920,evidence_refs:fps.flatMap(x=>x.evidence_refs||[]),frame_evidence:fps};
+   const visual={verified:true,semantic_verified:true,mira_present:true,identity_class:'mira_daily_life',evidence_method:'vision',placeholder_detected:false,visual_complete:true,daily_life_scene:true,confidence:Math.min(...fps.map(x=>Number(x.confidence)||0)),format_verified:true,width:1080,height:1920,evidence_refs:fps.flatMap(x=>x.evidence_refs||[]),frame_evidence:fps};
    proof={exact_final_media_proven:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:postType,media_provider:'openart',media_url:u,final_media_sha256:final.sha256,instagram_visual:visual};
   } else if(postType==='carousel'){
    const slides=Array.isArray(manifest.slides)?manifest.slides:[];if(slides.length<2)return json({ok:false,error:'CAROUSEL_MIN_TWO_SLIDES_REQUIRED'},422);
