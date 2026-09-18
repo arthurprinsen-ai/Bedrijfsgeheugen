@@ -5,7 +5,6 @@
 create or replace function public.powerhouse_enqueue_forecast_calibration_v1()
 returns trigger
 language plpgsql
-security definer
 set search_path = public, pg_temp
 as $$
 declare
@@ -99,7 +98,6 @@ on conflict (source_key) do update set
 create or replace function public.powerhouse_capture_completion_evidence_v1()
 returns integer
 language plpgsql
-security definer
 set search_path = public, pg_temp
 as $$
 declare
@@ -218,7 +216,6 @@ create or replace function public.powerhouse_completion_snapshot_v1()
 returns jsonb
 language sql
 stable
-security definer
 set search_path = public, pg_temp
 as $$
   select snapshot from public.powerhouse_completion_readiness_v1 limit 1
