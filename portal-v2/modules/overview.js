@@ -5,6 +5,7 @@ import { isDemoCustomer, renderDemoOverview } from './overview-demo.js';
 import { directievragenMarkup, DIRECTIEVRAGEN_STIJL } from './directievragen.js';
 import { openPortalPage } from '../page-shell.js';
 import { mountExecutiveCockpit } from '../operating-system/executive-cockpit.js';
+import { renderLegacyOverviewComplete } from './legacy-overview-complete.js';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);
