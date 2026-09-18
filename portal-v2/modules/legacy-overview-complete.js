@@ -103,7 +103,9 @@ export function legacyOverviewCompleteModel(state={}){
  const avg=calculateLegacyEquivalent('average-maturity',state)||profileOverviewMetrics(state).averageMaturity;
  const cmmi=Math.max(1,Math.min(5,Math.round(avg||1)));
  const r=roadmapCompleteness(state);
- const branchLevel=num(state?.portal?.market?.digitalMaturity||state?.portal?.market?.benchmarkDigitalMaturity);return Object.freeze({costs,total,top,avg,cmmi,stage:STAGES[cmmi-1],branchLevel:branchLevel>=1&&branchLevel<=5?branchLevel:null,targetLevel:4,sharpness:legacySharpnessModel(state),roadmap:r,advice:advice(state).slice(0,5)});
+ const manualAnnual=calculateLegacyEquivalent('manual-work-annual',state)||0;
+ const fteLost=calculateLegacyEquivalent('fte-lost',state)||0;
+ const branchLevel=num(state?.portal?.market?.digitalMaturity||state?.portal?.market?.benchmarkDigitalMaturity);return Object.freeze({costs,total,top,avg,cmmi,manualAnnual,fteLost,stage:STAGES[cmmi-1],branchLevel:branchLevel>=1&&branchLevel<=5?branchLevel:null,targetLevel:4,sharpness:legacySharpnessModel(state),roadmap:r,advice:advice(state).slice(0,5)});
 }
 
 function ensureStyle(doc){if(!doc?.head||doc.getElementById('legacy-complete-style'))return;const style=doc.createElement('style');style.id='legacy-complete-style';style.textContent=css;doc.head.appendChild(style)}
@@ -130,6 +132,10 @@ export function renderLegacyOverviewComplete(root,state={},openPage=()=>{}){
  const first=m.top[0];
  section.innerHTML=`
  <div class="legacy-card"><div class="legacy-kicker"><small>De staat van je bedrijf</small><strong>${m.avg?m.avg.toFixed(1):'—'}/5</strong></div><h3>${esc(m.stage?.name||'Nog niet bepaald')}</h3><p>Vijf stadia. Waar jij staat, waar je branche staat en waar de bovenste kwart zit.</p><div class="legacy-state-track">${adoptionMarkup(m)}</div></div>
+ <div class="legacy-grid2">
+  <article class="legacy-card"><h3>Handwerk per jaar</h3><div class="legacy-kicker"><small>Berekende capaciteitswaarde</small><strong>${m.manualAnnual?euro(m.manualAnnual):'—'}</strong></div></article>
+  <article class="legacy-card"><h3>Bezetting</h3><div class="legacy-kicker"><small>Capaciteitsverlies in fte</small><strong>${m.fteLost?m.fteLost.toFixed(1)+' fte':'—'}</strong></div></article>
+ </div>
  <div class="legacy-grid2">
   <article class="legacy-card"><div class="legacy-kicker"><small>Procesvolwassenheid (CMMI)</small><strong>Niveau ${m.cmmi}/5</strong></div><div class="legacy-cmmi">${cmmiMarkup(m)}</div></article>
   <article class="legacy-card"><div class="legacy-kicker"><small>Waar je staat op de adoptiecurve</small><strong>${esc(m.stage?.segment||'Nog niet bepaald')}</strong></div><p>${esc(m.stage?.name||'Vul je profiel in')}${m.branchLevel?` · branche ${m.branchLevel.toFixed(1)}/5`:''}</p>${adoptionCurveMarkup(m)}<div class="legacy-state-track">${adoptionMarkup(m)}</div></article>
