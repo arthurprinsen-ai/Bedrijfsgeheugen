@@ -183,7 +183,9 @@ forecast as (
     count(*) filter(where status in ('active','claimed')) active_forecasts,
     count(*) filter(where status in ('materialized','expired')) terminal_forecasts,
     (select count(*) from public.powerhouse_forecast_calibration) calibrations,
-    (select count(*) from public.revenue_learning_obligations where type='FORECAST_CALIBRATION' and status='OPEN') open_calibration_obligations
+    (select count(*) from public.revenue_learning_obligations where type='FORECAST_CALIBRATION' and status='OPEN') open_calibration_obligations,
+    (select count(*) from public.revenue_learning_obligations where type='FORECAST_CALIBRATION' and status='OPEN' and due_at <= now()) overdue_calibration_obligations,
+    (select count(*) from public.revenue_learning_obligations where type='FORECAST_CALIBRATION' and status='OPEN' and due_at > now()) future_calibration_obligations
   from public.powerhouse_forecasts
 ),
 learning as (
