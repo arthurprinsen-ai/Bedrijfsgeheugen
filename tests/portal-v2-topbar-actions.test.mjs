@@ -21,14 +21,13 @@ test('portal topbar actions bind panels, reuse the canonical all-pages menu and 
  assert.match(js,/event\.key==='Escape'/);
 });
 
-test('header controls stay reachable on mobile and demoAI',()=>{
+test('header controls stay reachable on mobile and desktop-only menu cannot be re-enabled by stronger mobile shell selectors',()=>{
  assert.match(css,/@media\(max-width:760px\)/);
  assert.match(css,/\.topactions\{display:flex!important/);
- assert.match(css,/\.portal-demo-ai \.portal-popover/); 
- assert.match(css,/@media\(max-width:760px\)\{\.topaction-menu\{display:none!important\}/);
- assert.match(css,/\.portal-demo-ai \.topaction-menu\{display:none!important\}/);
+ assert.match(css,/\.portal-demo-ai \.portal-popover/);
+ assert.match(css,/\.topactions \.searchrow>\.topaction-menu/);
+ assert.match(css,/\.portal-demo-ai \.topactions \.searchrow>\.topaction-menu\{display:none!important\}/);
 });
-
 
 test('portal route is registered in the quality surface registry',()=>{
  const registry=JSON.parse(fs.readFileSync(new URL('../config/powerhouse-quality-surface-contracts.json',import.meta.url),'utf8'));
