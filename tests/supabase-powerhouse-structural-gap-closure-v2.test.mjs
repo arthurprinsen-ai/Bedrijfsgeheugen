@@ -143,3 +143,11 @@ test('legacy economics remains visible but future economics is fail-closed',()=>
   assert.match(sql,/executed_at < timestamptz '2026-09-18 07:00:00\+00'/);
   assert.doesNotMatch(sql,/provider_cost_eur\s*,?\s*0/);
 });
+
+test('customer connector readiness is configuration-aware, not falsely red when unused',()=>{
+  assert.match(sql,/NOT_CONFIGURED/);
+  assert.match(sql,/CONFIGURED_NO_EXECUTION/);
+  assert.match(sql,/REVIEW_PENDING/);
+  assert.match(sql,/EXECUTION_OBSERVED_NO_SUCCESS/);
+  assert.match(sql,/readiness_state/);
+});
