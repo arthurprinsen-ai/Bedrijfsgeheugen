@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { createPortalBusinessInput } from '../platform/contracts/portal-business-input.mjs';
 import { projectCanonicalObject } from '../platform/read-models/portal-projection-layers.mjs';
 import { createPortalBusinessInputHandler } from '../platform/api/portal-business-input-handler.mjs';
