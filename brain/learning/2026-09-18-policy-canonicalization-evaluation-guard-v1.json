@@ -15,5 +15,13 @@
     "powerhouse-continuity",
     "powerhouse-delivery-concurrency",
     "powerhouse-self-improvement"
+  ],
+  "related_incidents": [
+    {
+      "fingerprint": "ci|orphan-regulatory-organism-test|v1",
+      "observation": "Required and Shared Agent Memory detected tests/regulatory-organism-feed.test.mjs existed but was referenced by no workflow, so the regression contract never executed.",
+      "root_cause": "A new regulatory organism regression was added without updating the explicit CI lane inventory.",
+      "prevention": "Run the regulatory organism regression in the canonical backend lane; delivery-test-coverage-guard remains the fail-closed detector for future orphan tests."
+    }
   ]
 }
