@@ -1,0 +1,46 @@
+{
+  "version": "linkedin-sales-cockpit-predictive-v2-learning-v1",
+  "date": "2026-09-18",
+  "fingerprint": "linkedin-sales-cockpit-predictive-sales-os-v1",
+  "status": "LIVE_PROVEN",
+  "obligationId": "linkedin-sales-cockpit-next-v1",
+  "production": {
+    "pr": 2082,
+    "candidateHead": "ab88c26eecbc680130a00d538ebfe5894d97b243",
+    "protectedMerge": "54ab849124e4d9d9bde498e998c50d8865c9712c",
+    "netlifyDeploy": "6aad09ac00d5f50008121b25",
+    "productionCommitRef": "54ab849124e4d9d9bde498e998c50d8865c9712c",
+    "productionUrl": "https://www.bedrijfsgeheugen.nl"
+  },
+  "outcome": [
+    "Existing Revenue Command Center was upgraded instead of creating a parallel cockpit.",
+    "Sales workflow now supports fast search, focus mode, J/K queue navigation, C copy, Enter source open.",
+    "The cockpit surfaces buying-window heat, relationship warmth, company intent, forecast probability and revenue density when canonical evidence exists.",
+    "Evidence-first source guards and no-auto-send remain intact.",
+    "Canonical outcome capture continues to feed the existing Revenue & Growth Core."
+  ],
+  "incidentLearning": {
+    "symptom": "Initial PR #2078 had valid cockpit code but stale/invalid BRAIN admission metadata and then became behind moving main.",
+    "rootCause": "The first pull_request event snapshot was created before canonical delivery metadata was present; later connector pushes did not create a fresh pull_request synchronize run, and main moved while recovery was in progress.",
+    "recovery": "Close superseded PR #2078, reapply the exact four-file delta on current main, create recovery PR #2082 with complete delivery metadata, enable auto-merge, and verify exact production deploy identity.",
+    "prevention": [
+      "Create complete delivery metadata before opening a protected PR when BRAIN admission consumes pull_request body.",
+      "Do not treat later PR-body edits as mutation of an already-created GitHub event snapshot.",
+      "If a candidate loses fresh synchronize semantics and main has moved, prefer one explicit superseding recovery candidate from current main rather than accumulating stale attempts.",
+      "Production is not proven by merge; require Netlify commit_ref/readback to match the protected merge identity."
+    ]
+  },
+  "skillProjection": [
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md"
+  ],
+  "canonicalRules": [
+    "REUSE_EXISTING_REVENUE_COMMAND_CENTER",
+    "SALES_DECISION_UI_IS_ACTION_FIRST_NOT_DASHBOARD_FIRST",
+    "NO_PREDICTIVE_SCORE_WITHOUT_CANONICAL_EVIDENCE",
+    "NO_GENERIC_LINKEDIN_FEED_AS_ACTION_SOURCE",
+    "NO_AUTO_SEND",
+    "OUTCOME_FEEDBACK_MUST_RETURN_TO_CANONICAL_REVENUE_CORE",
+    "PRODUCTION_COMMIT_REF_MUST_MATCH_PROTECTED_MERGE"
+  ]
+}
