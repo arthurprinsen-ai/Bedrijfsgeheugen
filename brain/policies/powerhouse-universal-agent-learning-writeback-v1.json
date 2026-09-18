@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 4,
+  "revision": 5,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
@@ -26,7 +26,10 @@
     "ALL_MATERIAL_DATA_SOURCES_USE_UNIFIED_ONE_BRAIN_EVIDENCE_SPINE",
     "CONNECTED_SOURCE_IS_NOT_PERSISTED_EVIDENCE",
     "SOURCE_GREEN_REQUIRES_FRESH_OBSERVED_READBACK",
-    "TRANSPORT_METADATA_NEVER_REPLACES_PLATFORM_TRUTH"
+    "TRANSPORT_METADATA_NEVER_REPLACES_PLATFORM_TRUTH",
+    "NO_LIVE_PROVEN_CLAIM_WITHOUT_VERIFIABLE_PROOF_BUNDLE",
+    "NO_PRODUCTION_WRITE_ABSENCE_CLAIM_FROM_CI_ONLY",
+    "PROOF_STATUS_MUST_BE_REFRESHED_FROM_CURRENT_AUTHORITIES"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -121,7 +124,8 @@
       "PROMOTION_OR_PUBLICATION",
       "READBACK",
       "WRITEBACK",
-      "COMPLETED_OR_BLOCKED"
+      "COMPLETED_OR_BLOCKED",
+      "TERMINAL_CLAIM_PROOF"
     ],
     "event_fields": [
       "run_id",
@@ -133,7 +137,9 @@
       "result",
       "next_obligation",
       "actor_or_agent",
-      "authority_identity"
+      "authority_identity",
+      "proof_bundle_id",
+      "terminal_claim_status"
     ],
     "rule": "Record material actions as they happen; do not reconstruct the full audit trail only at the end."
   },
@@ -297,7 +303,9 @@
       "last_verified_identity",
       "next_safe_action",
       "authority_ids_written",
-      "source_and_security_metadata"
+      "source_and_security_metadata",
+      "terminal_claim_proof_bundle",
+      "terminal_claim_status"
     ],
     "failure_code": "POWERHOUSE_POSTFLIGHT_WRITEBACK_MISSING"
   },
@@ -325,11 +333,14 @@
       "canonical_postflight_writeback_present",
       "shared_context_refreshed",
       "next_agent_discoverability_proven",
-      "no_critical_unrecorded_gap"
+      "no_critical_unrecorded_gap",
+      "terminal_claim_proof_bundle_current_and_complete"
     ],
     "production_green_without_writeback": "NOT_TERMINAL",
     "deployment_without_learning": "NOT_LIVE_BEWEZEN",
-    "documentation_search_miss_without_id_fetch": "NOT_EVIDENCE_OF_ABSENCE"
+    "documentation_search_miss_without_id_fetch": "NOT_EVIDENCE_OF_ABSENCE",
+    "ci_or_open_pr_without_production_authority_readback": "NOT_PROOF_OF_NO_PRODUCTION_WRITE",
+    "stale_exact_head_evidence": "SUPERSEDED_FOR_ACTIVE_CANDIDATE"
   },
   "no_duplicate_truth": {
     "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler, documentation tree or learning plane."
@@ -338,6 +349,61 @@
   "linked_learning_sources": [
     "brain/policies/chat-to-brain-completeness-v1.json",
     "brain/policies/powerhouse-agent-continuity-v1.json",
-    "config/chat-learning-completeness-guard.json"
-  ]
+    "config/chat-learning-completeness-guard.json",
+    "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json"
+  ],
+  "terminal_claim_proof_contract": {
+    "required": true,
+    "applies_to_actor_kinds": [
+      "chat",
+      "agent",
+      "workflow",
+      "scheduler",
+      "release_worker"
+    ],
+    "terminal_claims": [
+      "LIVE_PROVEN",
+      "LIVE & BEWEZEN",
+      "PRODUCTION_GREEN",
+      "FULFILLED"
+    ],
+    "proof_bundle_required_fields": [
+      "proof_bundle_id",
+      "obligation_id",
+      "run_id",
+      "actor_or_agent",
+      "task_fingerprint",
+      "candidate_identity",
+      "exact_head_or_artifact_digest",
+      "required_gates",
+      "protected_promotion",
+      "production_mutation_refs",
+      "production_readback_refs",
+      "provider_readback_refs",
+      "outcome_or_value_refs",
+      "learning_writeback_refs",
+      "prevention_writeback_refs",
+      "authorities_queried",
+      "verified_at"
+    ],
+    "rules": [
+      "Refresh candidate identity and gate state from current canonical authorities immediately before making a terminal claim.",
+      "A prior chat statement, cached status, open PR, CI state, deploy acknowledgement or transport success is never sufficient terminal proof.",
+      "An assertion that no production write occurred requires direct production/provider mutation or audit authority evidence; CI or unmerged-PR state alone cannot prove absence of writes.",
+      "If the candidate head has advanced, all earlier exact-head terminal evidence is superseded for the active candidate unless explicitly preserved as historical evidence.",
+      "Every terminal-status evaluation is appended to the material activity ledger with evidence references, including failed or incomplete evaluations.",
+      "LIVE_PROVEN requires exact candidate identity, required gates, protected promotion, production/provider readback, outcome/value, canonical learning writeback, prevention writeback and next-agent discoverability.",
+      "Missing proof must produce an explicit non-terminal status rather than optimistic language."
+    ],
+    "non_terminal_statuses": [
+      "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+      "PRODUCTION_WRITE_NOT_VERIFIED",
+      "CI_OR_GATE_INCOMPLETE",
+      "READBACK_INCOMPLETE",
+      "WRITEBACK_INCOMPLETE",
+      "BLOCKED_HARD_BOUNDARY"
+    ],
+    "stale_claim_rule": "CURRENT_AUTHORITY_READBACK_OVERRIDES_ALL_EARLIER_CHAT_OR_AGENT_STATUS_TEXT",
+    "failure_code": "POWERHOUSE_TERMINAL_CLAIM_PROOF_INCOMPLETE"
+  }
 }

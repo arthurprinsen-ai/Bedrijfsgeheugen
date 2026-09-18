@@ -52,7 +52,10 @@
     "exactHeadVerified",
     "protectedMergeVerified",
     "runtimeReadbackVerified",
-    "learningWritebackVerified"
+    "learningWritebackVerified",
+    "terminalClaimProofBundleVerified",
+    "productionAuthorityReadbackVerified",
+    "nextAgentDiscoverabilityVerified"
   ],
   "recovery": {
     "requiresHeartbeat": true,
@@ -113,7 +116,12 @@
         "production_readback",
         "outcome_or_value",
         "learning_writeback",
-        "prevention_writeback"
+        "prevention_writeback",
+        "exact_candidate_identity",
+        "required_gates",
+        "protected_promotion",
+        "production_authority_readback",
+        "next_agent_discoverability"
       ],
       "intermediateStatesNeverTerminal": [
         "code",
@@ -123,7 +131,9 @@
         "deploy",
         "dispatch",
         "transport_sent"
-      ]
+      ],
+      "noProductionWriteClaimRequiresDirectAuthorityEvidence": true,
+      "staleExactHeadEvidenceIsTerminal": false
     },
     "lifecycle": [
       "OBSERVE",

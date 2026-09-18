@@ -161,3 +161,32 @@ test('unified data intelligence spine is inherited by every material agent and s
     'TRANSPORT_METADATA_NEVER_REPLACES_PLATFORM_TRUTH'
   ]) assert.ok(policy.invariants.includes(invariant), `missing data-spine invariant: ${invariant}`);
 });
+
+
+test('terminal claims require a fresh complete proof bundle', () => {
+  const proof = policy.terminal_claim_proof_contract;
+  assert.equal(proof.required, true);
+  assert.deepEqual(proof.applies_to_actor_kinds.slice(0,2), ['chat','agent']);
+  for (const claim of ['LIVE_PROVEN','LIVE & BEWEZEN','PRODUCTION_GREEN','FULFILLED']) {
+    assert.ok(proof.terminal_claims.includes(claim), `missing terminal claim: ${claim}`);
+  }
+  for (const field of [
+    'proof_bundle_id','obligation_id','run_id','candidate_identity','exact_head_or_artifact_digest',
+    'required_gates','protected_promotion','production_mutation_refs','production_readback_refs',
+    'outcome_or_value_refs','learning_writeback_refs','prevention_writeback_refs','authorities_queried','verified_at'
+  ]) assert.ok(proof.proof_bundle_required_fields.includes(field), `missing proof field: ${field}`);
+  assert.equal(proof.stale_claim_rule, 'CURRENT_AUTHORITY_READBACK_OVERRIDES_ALL_EARLIER_CHAT_OR_AGENT_STATUS_TEXT');
+  assert.ok(policy.invariants.includes('NO_LIVE_PROVEN_CLAIM_WITHOUT_VERIFIABLE_PROOF_BUNDLE'));
+  assert.ok(policy.invariants.includes('PROOF_STATUS_MUST_BE_REFRESHED_FROM_CURRENT_AUTHORITIES'));
+  assert.ok(policy.mandatory_activity_ledger.minimum_events.includes('TERMINAL_CLAIM_PROOF'));
+  assert.ok(policy.terminal_status_gate.live_and_proven_requires.includes('terminal_claim_proof_bundle_current_and_complete'));
+});
+
+test('absence of a production write cannot be inferred from CI or PR state', () => {
+  const proof = policy.terminal_claim_proof_contract;
+  assert.ok(policy.invariants.includes('NO_PRODUCTION_WRITE_ABSENCE_CLAIM_FROM_CI_ONLY'));
+  assert.ok(proof.rules.some(rule => rule.includes('no production write occurred') && rule.includes('direct production/provider')));
+  assert.equal(policy.terminal_status_gate.ci_or_open_pr_without_production_authority_readback, 'NOT_PROOF_OF_NO_PRODUCTION_WRITE');
+  assert.equal(policy.terminal_status_gate.stale_exact_head_evidence, 'SUPERSEDED_FOR_ACTIVE_CANDIDATE');
+  assert.ok(proof.non_terminal_statuses.includes('PRODUCTION_WRITE_NOT_VERIFIED'));
+});
