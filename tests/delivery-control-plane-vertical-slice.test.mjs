@@ -108,3 +108,29 @@ test('fulfilled obligations refresh terminal identity on replay', async()=>{
   assert.match(edge,/obligation\.state!=='FULFILLED'\|\|terminalIdentityChanged/);
   assert.match(edge,/p_state:'FULFILLED'/);
 });
+
+
+test('terminal closure derives exact Supabase migration identities from the merge diff', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/Derive exact Supabase migration identities/);
+  assert.match(workflow,/supabase\\/migrations\\/\(\[0-9\]\{14\}\)_\(\[a-z0-9_\]\+\)\\\\\.sql/);
+  assert.match(workflow,/supabase_migration_required/);
+  assert.match(workflow,/supabase_expected_migrations/);
+  assert.match(workflow,/supabase_migration_readback\.all_matched == true/);
+});
+
+test('Supabase terminal authority independently verifies the production migration ledger', async()=>{
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(edge,/powerhouse_supabase_migration_readback_v1/);
+  assert.match(edge,/SUPABASE_MIGRATION_READBACK_FAILED/);
+  assert.match(edge,/SUPABASE_MIGRATION_READBACK_MISMATCH/);
+  assert.match(edge,/supabase_migration_readback:migrationReadback/);
+});
+
+test('production migration readback RPC is service-role only and uses the authoritative ledger', async()=>{
+  const sql=await readFile('supabase/migrations/20260918143758_powerhouse_supabase_migration_readback_v1.sql','utf8');
+  assert.match(sql,/supabase_migrations\.schema_migrations/);
+  assert.match(sql,/all_matched/);
+  assert.match(sql,/revoke execute .* from public, anon, authenticated/i);
+  assert.match(sql,/grant execute .* to service_role/i);
+});
