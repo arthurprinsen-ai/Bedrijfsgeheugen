@@ -2,7 +2,7 @@
 
 Date: 2026-09-18
 Fingerprint: `instagram-chat-tool-boundary-not-db-outage-v1`
-Status: RECORDED_PENDING_FINAL_DELIVERY_READBACK
+Status: LIVE_BEWEZEN
 
 ## Incident
 
@@ -34,3 +34,24 @@ Skill/documentation change is on branch `fix/instagram-worker-boundary-recovery-
 ## Omni model-lineage extension
 
 User-selected OpenArt Gemini Omni 1.1 Flash is now the persisted current provider candidate for the already-claimed job. Provider history `9ZUvSm6ZjwcAof8NRGJ2` supersedes the earlier Seedance candidate without creating or claiming a second Powerhouse job. The canonical job stores model, mode, requested 1080p/9:16 format, generation state and superseded history identity. This prevents chat interruption or model switching from producing an untraceable second publication lineage.
+
+
+## 2026-09-18 final production clarification
+
+The earlier statement that OpenArt was "connected and generation-capable" is valid only for an external/provider execution context that had already claimed a canonical media job. It must not be interpreted as proof that the autonomous Supabase runtime itself owns an OpenArt credential or direct producer client.
+
+Final verified runtime truth after PR #2052:
+- protected merge SHA: `8a9aa1c3488c9289a9510fbad6b7cad3e078f932`;
+- Instagram router, verifier, publisher and content-loop are exact-main in production;
+- proof/routing migrations are executed and recorded in the production migration ledger;
+- the semantic Mira prevention learning is `PROVEN`;
+- a safe 2026-09-19 router preflight returned `WAITING_PROVIDER_CONNECTION` for a reel because OpenArt is required and no autonomous Supabase provider registration/credential was present;
+- no duplicate publication was created.
+
+### Permanent connection-plane rule
+
+Provider readiness is a vector, not a boolean. Powerhouse must keep separate truth for `chat_mcp`, `external_worker`, `supabase_runtime` and `publisher`. Agents/chats may claim a provider is connected only for the plane directly evidenced. Autonomous scheduled delivery requires `supabase_runtime` readiness or a verified bounded external-worker bridge. Missing readiness is recoverable and fail-closed; it is never converted into a fake active integration row.
+
+### Terminal learning
+
+The incident is LIVE_BEWEZEN as a prevention/control-plane fix: unproven Instagram media can no longer be treated as successful publication, provider routing is enforced before proof, historical sent-but-invalid content is not duplicated, and missing producer connectivity is surfaced before dispatch. Actual future reel production remains dependent on a real OpenArt-capable producer path becoming available to the autonomous execution plane.
