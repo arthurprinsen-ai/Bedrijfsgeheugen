@@ -4,6 +4,8 @@ name: Regelgeving bijwerken
 # elke maandag de actuele stand op en levert onder BRAIN v2 uitsluitend een candidate PR.
 
 on:
+  schedule:
+    - cron: '30 4 * * 1'
   push:
     branches:
       - main
