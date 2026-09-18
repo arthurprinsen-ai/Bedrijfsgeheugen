@@ -5,8 +5,8 @@ import { classifyTurboDelivery, MAX_TURBO_PATHS } from '../tools/delivery/turbo-
 
 test('Fast Development rolling-lane policy has hard low-latency recovery SLOs', async () => {
   const p=JSON.parse(await readFile(new URL('../config/powerhouse-fast-development-protocol-v2.json', import.meta.url),'utf8'));
-  assert.equal(p.revision,3);
-  assert.equal(p.delivery_mode,'ROLLING_LANE_FAST_PATH');
+  assert.equal(p.revision,4);
+  assert.equal(p.delivery_mode,'PREDICTIVE_ROLLING_LANE_FAST_PATH');
   assert.equal(p.execution.rolling_lane_per_conflict_contract,true);
   assert.equal(p.execution.one_active_candidate_per_conflict_contract,true);
   assert.equal(p.execution.auto_cancel_superseded_runs,true);
@@ -14,6 +14,9 @@ test('Fast Development rolling-lane policy has hard low-latency recovery SLOs', 
   assert.equal(p.latency_slo.first_ci_signal_seconds,60);
   assert.equal(p.latency_slo.turbo_blocking_budget_seconds,240);
   assert.equal(p.promotion.auto_promote_when_blocking_profile_green,true);
+  assert.equal(p.predictive_control.enabled,true);
+  assert.equal(p.adaptive_gates.enabled,true);
+  assert.equal(p.supervisor.zero_run_auto_dispatch,true);
 });
 
 test('safe turbo envelope supports useful multi-file changes without admitting protected surfaces', () => {
@@ -42,7 +45,7 @@ test('broad unrelated assurance runs after merge and cannot queue-block a PR', a
 
 test('parallel engineering fabric uses one rolling integration candidate per conflict contract', async () => {
   const f=JSON.parse(await readFile(new URL('../config/powerhouse-parallel-engineering-fabric.json', import.meta.url),'utf8'));
-  assert.equal(f.version,3);
+  assert.equal(f.version,4);
   assert.equal(f.scheduling.agent_workspaces,'isolated_ephemeral_worktrees');
   assert.equal(f.scheduling.integration_unit,'rolling_conflict_contract_lane');
   assert.equal(f.scheduling.one_active_integration_candidate_per_conflict_contract,true);
