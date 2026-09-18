@@ -39,3 +39,10 @@ test('policy activation is latent rather than fake-active before eligible eviden
   assert.match(sql,/LATENT_WAITING_FOR_ELIGIBLE_ACTION/);
   assert.match(sql,/ACTIVE_WAITING_FOR_FIRST_ASSIGNMENT/);
 });
+
+test('baseline policy locks the intended treatment split, horizon and sample floor',()=>{
+  assert.match(sql,/\b80,\s*\n\s*168,\s*\n\s*20,\s*\n\s*'realized_revenue_per_assignment'/);
+  assert.match(sql,/'active',\s*\n\s*80,/);
+  assert.match(sql,/measurement_horizon_hours/);
+  assert.match(sql,/min_matured_per_arm/);
+});
