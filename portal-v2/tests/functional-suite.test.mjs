@@ -69,3 +69,11 @@ test('legacy control semantics remain exact for MTO strategy filters and valuati
  const wacc=value.find(field=>field.legacyFieldId==='wWacc');
  assert.equal(wacc.min,3);assert.equal(wacc.max,30);assert.equal(wacc.step,.5);assert.equal(wacc.defaultValue,10);
 });
+
+
+test('functional analysis tab renders supplied native visual contract in the same workspace',()=>{
+  const source=readFileSync(new URL('../modules/functional-suite.js',import.meta.url),'utf8');
+  assert.match(source,/data-functional-visual/);
+  assert.match(source,/view\?\.visual/);
+  assert.match(source,/v2visualgrid/);
+});
