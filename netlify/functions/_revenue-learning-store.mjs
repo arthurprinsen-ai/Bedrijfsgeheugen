@@ -22,6 +22,7 @@ export function createRevenueLearningStore({fetchFn=globalThis.fetch,baseUrl=pro
     reconcileApplications:data=>gateway({action:'reconcile_applications',data,idempotencyKey:`reconcile:${data.contentId}:${data.windowHours||0}`}),
     recordDecision:decision=>gateway({action:'record_decision',decision,idempotencyKey:`decision:${decision.decisionId}`}),
     recordObligation:obligation=>gateway({action:'record_obligation',obligation,idempotencyKey:`obligation:${obligation.id}`}),
+    reconcileActionLearningObligations:()=>gateway({action:'reconcile_action_learning_obligations',idempotencyKey:`reconcile-action-learning:${new Date().toISOString().slice(0,13)}`}),
     getProjection:async()=>(await gateway({action:'get_projection'})).projection||null,
     putProjection:projection=>gateway({action:'put_projection',projection,idempotencyKey:`projection:${projection.version}`})
   });

@@ -1,0 +1,48 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-TERMINAL-LINEAGE-CONTINUITY-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|terminal-lineage|closed-unmerged-chat-stop-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "incident_prs": [
+    2044,
+    2053,
+    2070
+  ],
+  "root_cause": "Terminal delivery state changes were detected by chats, but runtime hygiene did not enforce auto-reopen/reuse of the canonical lineage; closed unmerged leased PRs could therefore strand delivery and require another chat turn.",
+  "fix": [
+    "Repository janitor scans recent closed PRs for active TERMINAL_DELIVERY leases.",
+    "Closed unmerged leased PR with no successor is auto-reopened.",
+    "Exactly one same-obligation open successor is reused.",
+    "Multiple successors fail closed as lineage ambiguity.",
+    "Chats/agents refresh authority and continue instead of stopping on PR state transition."
+  ],
+  "prevention_rules": [
+    "TERMINAL_DELIVERY_CLOSED_UNMERGED_MUST_AUTO_RECOVER",
+    "NO_CHAT_STOP_ON_LINEAGE_STATE_CHANGE",
+    "CLOSED_PR_REQUIRES_MERGE_RELEASE_OR_CANONICAL_SUCCESSOR",
+    "TEST_ORACLE_MUST_TRACK_CANONICAL_CONTRACT_NOT_HISTORICAL_LIMIT",
+    "SAME_LINEAGE_OWNER_COMMIT_MUST_REBIND_WRITER_LEASE_HEAD",
+    "PROTECTED_MERGE_MUST_NEVER_BYPASS_PENDING_REQUIRED_STATUS"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "observed_failures": [
+    "Chat learning preflight failed because the regression test declared fs twice after an incremental edit.",
+    "A stale test oracle still enforced sources.length <= 64 while the canonical compiler budget had intentionally moved to 96.",
+    "Required/BRAIN admission blocked when Writer-Lease-Head referenced the prior same-lineage commit instead of the current exact head.",
+    "Protected merge correctly refused promotion while required status check test was not terminal."
+  ],
+  "additional_root_causes": [
+    "Incremental test edits can duplicate imports or preserve stale assertions after canonical contract growth.",
+    "A mutable exact-head lease field becomes stale after a legitimate owner commit unless it is rebound atomically or reconciled before admission."
+  ],
+  "latest_candidate_head": "c82c22e6ff543450ab9548831a51b916dc583cb3",
+  "latest_verified_evidence": {
+    "chat_learning_preflight": "SUCCESS",
+    "netlify_preview": "READY_EXACT_HEAD",
+    "netlify_secret_scan": "NO_MATCHES",
+    "protected_merge": "BLOCKED_AS_DESIGNED_PENDING_REQUIRED_TEST",
+    "terminal_status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  }
+}

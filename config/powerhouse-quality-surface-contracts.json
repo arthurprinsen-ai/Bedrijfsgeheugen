@@ -275,6 +275,27 @@
       "required": true
     },
     {
+      "id": "function:revenue-learning-store",
+      "type": "function",
+      "authority": "supabase/functions/revenue-learning-store/index.ts",
+      "evidence_contract": "tests/revenue-learning-edge-store.test.mjs",
+      "required": true
+    },
+    {
+      "id": "netlify_function:revenue-learning-evaluate",
+      "type": "netlify_function",
+      "authority": "netlify/functions/revenue-learning-evaluate.mjs",
+      "evidence_contract": "tests/revenue-learning-evaluate.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_reconcile_action_learning_obligations_v1",
+      "type": "rpc",
+      "authority": "supabase/functions/revenue-learning-store/index.ts",
+      "evidence_contract": "tests/revenue-learning-edge-store.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:bg-opdrachtenradar",
       "type": "function",
       "authority": "supabase/functions/bg-opdrachtenradar/index.ts",

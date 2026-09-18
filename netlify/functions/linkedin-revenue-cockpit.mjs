@@ -50,6 +50,13 @@ function canonicalAction(x,notionByUrl=new Map()){
     expectedRevenueValue:n(o.expected_revenue_value||x.expected_revenue_value),
     scoreComponents:o.score_components||x.score_components||x.evidence?.score_components||{},
     score:n(x.priority),
+    buyingWindowScore:n(x.buying_window_score??x.evidence?.buying_window_score??x.evidence?.score_components?.buying_window_score),
+    relationshipWarmth:n(x.relationship_warmth??x.evidence?.relationship_warmth??x.evidence?.person_context?.relationship_warmth),
+    companyIntentScore:n(x.company_intent_score??x.evidence?.company_intent_score??x.evidence?.company_context?.company_intent_score),
+    forecastProbability:n(x.forecast_probability??x.evidence?.forecast_probability??x.evidence?.forecast?.probability),
+    forecastConfidence:n(x.forecast_confidence??x.evidence?.forecast_confidence??x.evidence?.forecast?.confidence),
+    firstMoverScore:n(x.first_mover_score??x.evidence?.first_mover_score??x.evidence?.forecast?.first_mover_score),
+    signalTopics:a(x.signal_topics??x.evidence?.signal_topics??x.evidence?.company_context?.signal_topics),
     whyNow:x.reason||enrich.whyNow||'',
     nextAction:x.reason||enrich.nextAction||'Controleer de bron en voer de volgende evidence-backed actie uit.',
     readyText:contextReady?message:'',
@@ -96,6 +103,9 @@ async function buildSnapshot(){
   const content=[...a(recommendationsPayload.native),...a(recommendationsPayload.revenueLearnings).map(x=>({...x,kind:'revenue-learning'})),...a(recommendationsPayload.socialLearnings).map(x=>({...x,kind:'social-learning'}))];
   const expectedRevenue=actions.reduce((sum,x)=>sum+n(x.expectedRevenueValue),0);
   const pipeline=opportunities.reduce((sum,x)=>sum+n(x.expectedValue),0);
+  const heat=x=>Math.max(n(x.buyingWindowScore),n(x.companyIntentScore),n(x.forecastProbability)*n(x.forecastConfidence),n(x.probability)*n(x.confidence));
+  const hotActions=actions.filter(x=>heat(x)>=0.70).length;
+  const revenueDensity=actions.length?expectedRevenue/actions.length:0;
   const relations=actions.filter(x=>x.actionType==='activate_connection'||x.channel==='LinkedIn DM');
   const conversations=actions.filter(x=>x.actionType==='reply_dm');
   const radar=opportunities.filter(x=>x.status==='open');
@@ -104,7 +114,7 @@ async function buildSnapshot(){
   return{
     schemaVersion:'powerhouse-revenue-command-center-v1',generatedAt:new Date().toISOString(),status:allReady?'READY':'PARTIAL',maxActions:15,
     core:{...health,sourceHealth:coreHealth},sourceHealth:{core:coreHealth,notion:notion.sourceHealth},
-    summary:{orderQueue:actions.length,expectedRevenueValue:expectedRevenue,pipelineValue:pipeline,sendReady:actions.filter(x=>x.contextState==='ready').length,contextRequired:actions.filter(x=>x.contextState!=='ready').length,openOpportunities:radar.length,deals:deals.length,learningCount:learnings.length},
+    summary:{orderQueue:actions.length,expectedRevenueValue:expectedRevenue,pipelineValue:pipeline,revenueDensity,hotActions,sendReady:actions.filter(x=>x.contextState==='ready').length,contextRequired:actions.filter(x=>x.contextState!=='ready').length,openOpportunities:radar.length,deals:deals.length,learningCount:learnings.length},
     views:{orderQueue:actions,radar,conversations,relations,content,deals,learning:learnings,system:{core:health,coreHealth,notion:notion.sourceHealth}}
   };
 }

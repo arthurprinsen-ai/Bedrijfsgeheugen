@@ -31,3 +31,10 @@ test('content loop invokes Instagram router as real TypeScript before publish',(
  assert.match(contentLoop,/stepResults\.push\(await invoke\(url, expected, 'powerhouse-instagram-media-router', \{ runDate \}\)\);/);
  assert.doesNotMatch(contentLoop,/dispatch\.\\n\s*stepResults/);
 });
+
+test('materialized provider asset cannot regress to waiting-provider-connection',()=>{
+ assert.match(router,/const assetMaterialized=/);
+ assert.match(router,/assetMaterialized\?'WAITING_PROOF'/);
+ assert.match(router,/assetMaterialized\?'ASSET_MATERIALIZED'/);
+ assert.match(router,/Exact asset already materialized; submit it with required frame\/image evidence for canonical vision proof/);
+});

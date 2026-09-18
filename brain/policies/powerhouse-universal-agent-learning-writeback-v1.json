@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 6,
+  "revision": 7,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, skills, workflows, scenarios, development runs, incidents, recoveries and production verifications",
@@ -36,7 +36,13 @@
     "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP",
     "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
     "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES",
-    "HEAD_MUTATION_DURING_ACTIVE_TERMINAL_LEASE_IS_CONTRACT_VIOLATION"
+    "HEAD_MUTATION_DURING_ACTIVE_TERMINAL_LEASE_IS_CONTRACT_VIOLATION",
+    "TERMINAL_DELIVERY_CLOSED_UNMERGED_MUST_AUTO_RECOVER",
+    "NO_CHAT_STOP_ON_LINEAGE_STATE_CHANGE",
+    "CLOSED_PR_REQUIRES_MERGE_RELEASE_OR_CANONICAL_SUCCESSOR",
+    "TEST_ORACLES_FOLLOW_CURRENT_CANONICAL_CONTRACT",
+    "WRITER_LEASE_HEAD_REBINDS_AFTER_OWNER_HEAD_MUTATION",
+    "PENDING_REQUIRED_STATUS_BLOCKS_PROTECTED_PROMOTION"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -95,7 +101,16 @@
       "scope": "obligation_and_canonical_pr",
       "terminal_delivery_rule": "Only the lease owner may mutate the canonical branch while terminal delivery is active.",
       "non_owner_behavior": "DEFER_AND_REUSE_EXISTING_LINEAGE",
-      "head_drift_behavior": "FAIL_CLOSED_REBIND_CURRENT_HEAD_AND_PRESERVE_SINGLE_OWNER"
+      "head_drift_behavior": "FAIL_CLOSED_REBIND_CURRENT_HEAD_AND_PRESERVE_SINGLE_OWNER",
+      "same_owner_head_mutation": "After a legitimate canonical owner commit, refresh authority and rebind Writer-Lease-Head to the new exact head before admission; do not create a parallel lineage.",
+      "stale_head_prevention": "Prefer atomic commit+lease metadata update where supported; otherwise immediately reconcile the lease before treating CI admission as authoritative."
+    },
+    "lineage_continuity": {
+      "required": true,
+      "on_closed_unmerged_terminal_pr": "AUTO_REOPEN_OR_REUSE_SINGLE_CANONICAL_SUCCESSOR",
+      "on_state_change": "REFRESH_CURRENT_AUTHORITY_AND_CONTINUE",
+      "user_prompt_required": false,
+      "ambiguity": "FAIL_CLOSED"
     }
   },
   "canonical_authorities": {
@@ -374,7 +389,8 @@
     "ci_or_open_pr_without_production_authority_readback": "NOT_PROOF_OF_NO_PRODUCTION_WRITE",
     "stale_exact_head_evidence": "SUPERSEDED_FOR_ACTIVE_CANDIDATE",
     "authorized_candidate_not_promoted": "NOT_TERMINAL_RECOVERABLE",
-    "user_followup_required_for_routine_production_promotion": "CONTRACT_VIOLATION"
+    "user_followup_required_for_routine_production_promotion": "CONTRACT_VIOLATION",
+    "pending_required_check": "NOT_TERMINAL_RECOVERABLE"
   },
   "no_duplicate_truth": {
     "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler, documentation tree or learning plane."
@@ -386,7 +402,8 @@
     "config/chat-learning-completeness-guard.json",
     "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json",
     "brain/learning/2026-09-18-self-production-promotion-v1.json",
-    "brain/learning/2026-09-18-terminal-writer-lease-v1.json"
+    "brain/learning/2026-09-18-terminal-writer-lease-v1.json",
+    "brain/learning/2026-09-18-terminal-lineage-continuity-v1.json"
   ],
   "terminal_claim_proof_contract": {
     "required": true,

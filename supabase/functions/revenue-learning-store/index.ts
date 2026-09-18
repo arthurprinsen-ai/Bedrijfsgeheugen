@@ -122,6 +122,17 @@ Deno.serve(async(req)=>{
     if(action==='record_obligation'){
       const o=body.obligation||{};const row={tenant_id:tenant,obligation_id:o.id,type:o.type,content_id:o.contentId??null,window_hours:o.windowHours??null,status:o.status||'OPEN',payload:o,due_at:o.dueAt??null,updated_at:new Date().toISOString()};const {error}=await db.from('revenue_learning_obligations').upsert(row,{onConflict:'tenant_id,obligation_id'});if(error)throw error;return json({stored:true});
     }
+    if(action==='reconcile_action_learning_obligations'){
+      const {data:actions,error:aErr}=await db.from('powerhouse_sales_actions').select('action_id').not('executed_at','is',null).order('executed_at',{ascending:true}).limit(1000);
+      if(aErr)throw aErr;
+      let reconciled=0;
+      for(const actionRow of actions||[]){
+        const {error:rErr}=await db.rpc('powerhouse_reconcile_action_learning_obligations_v1',{p_action_id:actionRow.action_id});
+        if(rErr)throw rErr;
+        reconciled++;
+      }
+      return json({reconciled,total:(actions||[]).length});
+    }
     if(action==='get_projection'){
       const {data,error}=await db.from('revenue_learning_projections').select('*').eq('tenant_id',tenant).maybeSingle();if(error)throw error;return json({projection:data?.projection||null});
     }

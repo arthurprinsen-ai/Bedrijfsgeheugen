@@ -11,6 +11,7 @@ const migrationPath = new URL('../supabase/migrations/20260909131127_powerhouse_
 test('Revenue Command Center is execution-first and bounded to 15 actions', () => {
   const html = fs.readFileSync(pagePath, 'utf8');
   assert.match(html, /data-cockpit="powerhouse-revenue-command-center"/);
+  assert.match(html, /data-sales-os="predictive-v2"/);
   assert.match(html, /data-max-actions="15"/);
   assert.match(html, /Order Queue/);
   for (const label of ['Radar', 'Gesprekken', 'Relaties', 'Content', 'Deals', 'Learning', 'Systeem']) {
@@ -68,4 +69,31 @@ test('Supabase runtime exposes explainable revenue-first opportunity ranking', (
 
 test('private CRM snapshot is never committed into the cockpit', () => {
   assert.ok(!fs.existsSync(new URL('../intern/linkedin-revenue/data.json', import.meta.url)), 'private CRM snapshot must not be committed');
+});
+
+
+test('cockpit exposes fast sales-operating-system controls', () => {
+  const html = fs.readFileSync(pagePath, 'utf8');
+  const client = fs.readFileSync(scriptPath, 'utf8');
+  for (const id of ['queueSearch','focusMode','nextAction','mExecutable','mHot','mDensity']) {
+    assert.ok(html.includes(`id="${id}"`), `missing fast cockpit control ${id}`);
+  }
+  assert.match(html, /Buying-window heat/i);
+  assert.match(html, /Revenue density/i);
+  assert.match(client, /function applyQueueView/);
+  assert.match(client, /moveSelection/);
+  assert.match(client, /copySelected/);
+  assert.match(client, /openSelected/);
+  assert.match(client, /event\.key==='j'/);
+  assert.match(client, /event\.key==='k'/);
+});
+
+test('cockpit adapter projects predictive sales intelligence without inventing it', () => {
+  const code = fs.readFileSync(functionPath, 'utf8');
+  for (const field of ['buyingWindowScore','relationshipWarmth','companyIntentScore','forecastProbability','forecastConfidence','firstMoverScore','signalTopics']) {
+    assert.ok(code.includes(field), `missing predictive field ${field}`);
+  }
+  assert.match(code, /hotActions/);
+  assert.match(code, /revenueDensity/);
+  assert.match(code, /Math\.max\(n\(x\.buyingWindowScore\)/);
 });
