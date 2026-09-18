@@ -114,6 +114,7 @@ jobs:
       fail-fast: false
       matrix: ${{ fromJSON(needs.plan.outputs.matrix) }}
     runs-on: ubuntu-latest
+    timeout-minutes: 7
     steps:
       - uses: actions/checkout@v5
         with:
@@ -124,10 +125,251 @@ jobs:
           node-version: '22'
       - name: Verify exact changed lane
         shell: bash
+        env:
+          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
+          HEAD_SHA: ${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
         run: |
           mkdir -p .artifacts
-          expected="${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
+          expected="$HEAD_SHA"
           test "$(git rev-parse HEAD)" = "$expected"
+          turbo="$(node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { classifyTurboDelivery } from './tools/delivery/turbo-classifier.mjs';
+          const changedPaths=execFileSync('git',['diff','--name-only',`${process.env.BASE_SHA}...${process.env.HEAD_SHA}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
+          process.stdout.write(classifyTurboDelivery({changedPaths}).turbo ? 'true' : 'false');
+          NODE
+          )"
+          if [ "$turbo" = true ]; then
+            echo "TURBO_BRAIN_LANE:${{ matrix.id }}"
+            mapfile -t tests < <(git diff --name-only "$BASE_SHA...$HEAD_SHA" | grep -E '^tests/.*\.test\.mjs            backend)
+              (npm install --ignore-scripts --no-audit --no-fund && node scripts/brain/test-all.mjs && node --test tests/canonical-*.test.mjs tests/agent-fabric*.test.mjs tests/brain-*.test.mjs tests/supabase-*.test.mjs tests/cost-*.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              ;;
+            portal)
+              node --test tests/portal-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              ;;
+            website)
+              node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              ;;
+            automation)
+              (node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              ;;
+            *)
+              echo "Unknown delivery lane: ${{ matrix.id }}" | tee .artifacts/lane-${{ matrix.id }}.log
+              exit 64
+              ;;
+          esac
+          status=${PIPESTATUS[0]}
+          if [ "$status" -ne 0 ]; then
+            cp .artifacts/lane-${{ matrix.id }}.log .artifacts/lane-${{ matrix.id }}-failure.txt
+            exit "$status"
+          fi
+      - name: Capture failed lane as Brain learning evidence
+        if: failure()
+        shell: bash
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { createObservedFailure, routeObservedFailureToLearning } from './tools/delivery-learning.mjs';
+          let reason = 'GitHub lane verification failed';
+          try {
+            const log = await readFile(`.artifacts/lane-${process.env.LANE}-failure.txt`, 'utf8');
+            const lines = log.split(/\r?\n/);
+            const failedAt = lines.findIndex(line => /^not ok\s+\d+\s+-\s+/.test(line.trim()));
+            reason = failedAt >= 0 ? lines.slice(Math.max(0, failedAt - 2), Math.min(lines.length, failedAt + 18)).join('\n').trim() : lines.slice(-120).join('\n').trim();
+          } catch {}
+          let knownLessons = [];
+          try {
+            const lessonsDoc = JSON.parse(await readFile('docs/brain/delivery-failure-lessons.json', 'utf8'));
+            knownLessons = Array.isArray(lessonsDoc) ? lessonsDoc : (Array.isArray(lessonsDoc.lessons) ? lessonsDoc.lessons : []);
+          } catch {}
+          const event = createObservedFailure({ stage: 'PIPELINE', reason, component: process.env.LANE, headSha: process.env.HEAD_SHA, evidenceRef: `github-run:${process.env.RUN_ID}` });
+          const route = routeObservedFailureToLearning({ observedFailure: event, knownLessons, existingCandidates: [] });
+          await writeFile(`.artifacts/delivery-failure-${process.env.LANE}.json`, JSON.stringify(event, null, 2));
+          await writeFile(`.artifacts/delivery-learning-route-${process.env.LANE}.json`, JSON.stringify(route, null, 2));
+          NODE
+        env:
+          LANE: ${{ matrix.id }}
+          HEAD_SHA: ${{ matrix.candidate_identity || inputs.head_sha || github.event.pull_request.head.sha || github.sha }}
+          RUN_ID: ${{ github.run_id }}
+      - name: Publish failed lane evidence for BG168/BG167 writeback
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-delivery-failure-${{ matrix.id }}
+          path: |
+            .artifacts/delivery-failure-${{ matrix.id }}.json
+            .artifacts/delivery-learning-route-${{ matrix.id }}.json
+            .artifacts/lane-${{ matrix.id }}-failure.txt
+
+  pre-handoff-admission:
+    needs: [plan, lanes]
+    if: always() && needs.plan.result == 'success' && (needs.lanes.result == 'success' || needs.lanes.result == 'skipped')
+    uses: ./.github/workflows/powerhouse-delivery-hygiene.yml
+    with:
+      pr_number: ${{ inputs.pr_number || github.event.pull_request.number || '' }}
+      head_sha: ${{ needs.plan.outputs.head_sha }}
+
+  handoff:
+    needs: [plan, lanes, pre-handoff-admission]
+    if: always() && needs.plan.result == 'success' && (needs.lanes.result == 'success' || needs.lanes.result == 'skipped') && needs.pre-handoff-admission.result == 'success' && needs.pre-handoff-admission.outputs.admitted == 'true'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+          ref: ${{ needs.plan.outputs.head_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Enforce current-main file and contract conflict index
+        if: needs.plan.outputs.has_lanes == 'true'
+        shell: bash
+        run: |
+          git fetch origin main --no-tags
+          current_main="$(git rev-parse origin/main)"
+          node tools/brain-delivery-system.mjs branch-drift \
+            --base "${{ needs.plan.outputs.base_sha }}" \
+            --head "${{ needs.plan.outputs.head_sha }}" \
+            --current-main "$current_main"
+      - name: Publish moving-main evidence
+        if: needs.plan.outputs.has_lanes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: brain-branch-drift
+          path: .artifacts/brain-branch-drift.json
+          if-no-files-found: ignore
+      - name: Record successful ignored-only no-op
+        if: needs.plan.outputs.has_lanes != 'true'
+        run: echo "No executable delivery lanes; ignored-only change is a successful no-op."
+      - name: Record verification-only non-promotion evidence
+        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && startsWith(inputs.candidate_branch, 'writer/') && inputs.verification_only == true
+        run: |
+          echo "Verification-only delivery: production authority handoff intentionally skipped."
+      - name: Certify live main protection before production handoff
+        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          gh api "repos/${GITHUB_REPOSITORY}/branches/main" > .artifacts/main-branch-promotion.json
+          if ! gh api "repos/${GITHUB_REPOSITORY}/rulesets" > .artifacts/main-rulesets-promotion.json; then
+            printf '[]\n' > .artifacts/main-rulesets-promotion.json
+          fi
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { certifyMainProtection } from './scripts/brain/main-protection-certification.mjs';
+          const branch = JSON.parse(await readFile('.artifacts/main-branch-promotion.json', 'utf8'));
+          const rulesets = JSON.parse(await readFile('.artifacts/main-rulesets-promotion.json', 'utf8'));
+          const required = branch?.protection?.required_status_checks ?? {};
+          const requiredChecks = [
+            ...(Array.isArray(required.contexts) ? required.contexts : []),
+            ...(Array.isArray(required.checks) ? required.checks.map(item => item?.context) : []),
+          ].filter(Boolean);
+          const expectedChecks = ['Brain foundation verify','Shared Agent Memory Tests','V18 Production Promotion','Unified Brain Delivery'];
+          const result = certifyMainProtection({
+            branch: branch?.name,
+            protected: branch?.protected === true,
+            protectionEnabled: branch?.protection?.enabled === true,
+            enforcementLevel: required?.enforcement_level ?? 'unknown',
+            requiredChecks,
+            expectedChecks,
+            rulesets: Array.isArray(rulesets) ? rulesets : [],
+            observedSha: branch?.commit?.sha ?? '',
+            evidenceRef: `github-actions:${process.env.GITHUB_RUN_ID}:main-protection-promotion-block`,
+          });
+          const evidence = {observed_at:new Date().toISOString(),repository:process.env.GITHUB_REPOSITORY,workflow_run_id:process.env.GITHUB_RUN_ID,purpose:'main-protection-promotion-block',...result};
+          await writeFile('.artifacts/main-protection-promotion-block.json', `${JSON.stringify(evidence, null, 2)}\n`);
+          if (!result.mainProtectionReady) {
+            console.error(`::error::MAIN_PROTECTION_BLOCKED:${result.blockers.join(',') || 'UNVERIFIED'}`);
+            process.exit(78);
+          }
+          console.log(`MAIN_PROTECTION_VERIFIED:${result.observedSha}`);
+          NODE
+      - name: Publish main protection promotion evidence
+        if: always() && needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        uses: actions/upload-artifact@v4
+        with:
+          name: main-protection-promotion-block-${{ github.run_id }}
+          path: .artifacts/main-protection-promotion-block.json
+          if-no-files-found: error
+          retention-days: 30
+      - name: BG169 GitHub-native production transport
+        if: needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+          BASE_SHA: ${{ needs.plan.outputs.base_sha }}
+          HEAD_SHA: ${{ needs.plan.outputs.head_sha }}
+          CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
+          TRACE_ID: ${{ needs.plan.outputs.trace_id }}
+          UNIFIED_RUN_ID: ${{ github.run_id }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          test -n "$PR_NUMBER" && test -n "$BASE_SHA" && test -n "$HEAD_SHA" && test -n "$CANDIDATE_BRANCH"
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+          actual_repo="$(jq -r '.head.repo.full_name // ""' <<<"$pr")"
+          actual_base_ref="$(jq -r '.base.ref // ""' <<<"$pr")"
+          actual_head="$(jq -r '.head.sha // ""' <<<"$pr")"
+          actual_ref="$(jq -r '.head.ref // ""' <<<"$pr")"
+          actual_state="$(jq -r '.state // ""' <<<"$pr")"
+          actual_draft="$(jq -r '.draft // false' <<<"$pr")"
+          [ "$actual_repo" = "$GITHUB_REPOSITORY" ] || { echo "::error::BG169_SAME_REPOSITORY_REQUIRED:$actual_repo"; exit 1; }
+          [ "$actual_base_ref" = "main" ] || { echo "::error::BG169_MAIN_BASE_REQUIRED:$actual_base_ref"; exit 1; }
+          [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::BG169_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
+          [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::BG169_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
+          [ "$actual_state" = "open" ] || { echo "::error::BG169_PR_NOT_OPEN:$actual_state"; exit 1; }
+          [ "$actual_draft" = "false" ] || { echo "::error::BG169_DRAFT_BLOCKED"; exit 1; }
+          git fetch origin main --no-tags
+          rollback_identity="$(git rev-parse origin/main)"
+          echo "BG169 GitHub-native production transport: promoting exact candidate $HEAD_SHA"
+          merge_response="$(gh api \
+            --method PUT \
+            -H 'Accept: application/vnd.github+json' \
+            "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/merge" \
+            -f commit_title="BG169: promote exact candidate ${HEAD_SHA:0:12}" \
+            -f commit_message="BRAIN-DELIVERY-v2 BG169 GitHub-native; trace=${TRACE_ID}; candidate_sha=${HEAD_SHA}; expected_head_sha=${HEAD_SHA}; rollback_identity=${rollback_identity}" \
+            -f sha="$HEAD_SHA" \
+            -f merge_method="merge")"
+          [ "$(jq -r '.merged // false' <<<"$merge_response")" = "true" ] || { echo "::error::BG169_GITHUB_NATIVE_MERGE_REJECTED:$(jq -r '.message // "unknown"' <<<"$merge_response")"; exit 1; }
+          transport="github-native"
+          git fetch origin main --no-tags
+          production_sha="$(git rev-parse origin/main)"
+          git merge-base --is-ancestor "$HEAD_SHA" origin/main || { echo "::error::BG169_PROMOTION_NOT_VERIFIED:$HEAD_SHA"; exit 1; }
+          current_pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+          [ "$(jq -r '.merged // false' <<<"$current_pr")" = "true" ] || { echo "::error::BG169_PROMOTION_NOT_VERIFIED:PR_NOT_MERGED"; exit 1; }
+          jq -n \
+            --arg authority "BG169" \
+            --arg transport "$transport" \
+            --argjson pr_number "$PR_NUMBER" \
+            --arg base_sha "$BASE_SHA" \
+            --arg candidate_sha "$HEAD_SHA" \
+            --arg expected_head_sha "$HEAD_SHA" \
+            --arg production_sha "$production_sha" \
+            --arg rollback_identity "$rollback_identity" \
+            --arg trace_id "$TRACE_ID" \
+            --argjson unified_run_id "$UNIFIED_RUN_ID" \
+            '{authority:$authority,transport:$transport,pr_number:$pr_number,base_sha:$base_sha,candidate_sha:$candidate_sha,expected_head_sha:$expected_head_sha,production_sha:$production_sha,rollback_identity:$rollback_identity,trace_id:$trace_id,unified_run_id:$unified_run_id,execution_proof:true,verified:true}' \
+            > .artifacts/bg169-production-evidence.json
+          echo "BRAIN-DELIVERY-v2 trace $TRACE_ID promoted and verified exact candidate $HEAD_SHA via BG169 transport $transport."
+      - name: Publish BG169 production evidence
+        if: always() && needs.plan.outputs.has_lanes == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: bg169-production-evidence
+          path: .artifacts/bg169-production-evidence.json
+          if-no-files-found: ignore
+ || true)
+            if [ "${#tests[@]}" -gt 0 ]; then node --test "${tests[@]}"; fi
+            node --test tests/delivery-turbo-classifier.test.mjs tests/delivery-turbo-wiring.test.mjs
+            exit 0
+          fi
           set +e
           case "${{ matrix.id }}" in
             backend)
