@@ -1,0 +1,20 @@
+{
+  "fingerprint": "control-plane|admin-cockpit|canonical-projection-ui-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "Canonical obligation cockpit and metrics existed only as service-role Supabase views, so the operator could not inspect requested goal, state, evidence, blockers, next automatic action and actual result from the Portal UI.",
+  "root_cause": "Backend projection was completed before a secure internal consumer surface was connected.",
+  "prevention_rule": "Operational control-plane UI must consume only canonical projection views through an authenticated internal boundary. System-wide obligation truth must never be exposed through tenant-only authorization.",
+  "enforcement": [
+    "Netlify Identity admin/powerhouse_admin fail-closed gate",
+    "existing portal-state-eu service-token boundary",
+    "read-only powerhouse_obligation_cockpit_v1",
+    "read-only powerhouse_control_plane_metrics_v1",
+    "401/403 produces no portal component"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}
