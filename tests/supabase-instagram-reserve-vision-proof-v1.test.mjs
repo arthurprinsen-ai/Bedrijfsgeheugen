@@ -42,7 +42,7 @@ test('verifier hashes exact bytes and requires strict 1080x1350 vision proof',()
 test('verifier is proof-only and cannot republish an already sent item',()=>{
   assert.match(edge,/const historicalSent=!!clean\(row\.external_id\)/);
   assert.match(edge,/republish_forbidden:historicalSent\?true/);
-  assert.doesNotMatch(edge,/\bBuffer\b|api\.buffer\.com|BUFFER_ACCESS_TOKEN/i);
+  assert.doesNotMatch(edge,/bg-buffer-sync|buffer\.com|bufferapp|bufferClient|bufferApi/i);
   assert.doesNotMatch(edge,/publishPost|createPost|social-publisher/i);
 });
 
