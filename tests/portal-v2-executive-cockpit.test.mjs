@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import {buildExecutiveProjection} from '../portal-v2/operating-system/executive-projection.js';
 
 const evidence=(id,confidence=.8,freshness_at='2026-09-16T18:00:00Z')=>({id,tenant_id:'t1',entity_type:'signal',source_refs:['src'],provenance:'powerhouse',freshness_at,confidence,model_or_formula_version:'v1',observed_at:freshness_at,updated_at:freshness_at});
@@ -38,4 +39,21 @@ test('stale and low-confidence evidence are surfaced in health summary',()=>{
  const state={powerhouse:{executive:{risks:[{...evidence('stale',.9,'2026-09-10T18:00:00Z')},{...evidence('low',.2),title:'laag'}]}}};
  const out=buildExecutiveProjection(state,{tenantId:'t1',now:Date.parse('2026-09-16T19:00:00Z')});
  assert.ok(out.evidence_health.stale>=1);assert.ok(out.evidence_health.low_confidence>=1);
+});
+
+
+test('executive cockpit fails closed before tenant hydration instead of throwing',()=> {
+ const out=buildExecutiveProjection({}, {role:'ceo'});
+ assert.equal(out.available,false);
+ assert.equal(out.role_label,'CEO');
+ assert.equal(out.health_score,null);
+});
+
+test('mobile executive cockpit shell stays visible before business data is available',()=> {
+ const source=fs.readFileSync('portal-v2/operating-system/executive-cockpit.js','utf8');
+ assert.match(source,/Wat moet ik vandaag weten, beslissen en doen\?/);
+ assert.match(source,/1 · Weten/);
+ assert.match(source,/2 · Beslissen/);
+ assert.match(source,/3 · Doen/);
+ assert.doesNotMatch(source,/if\(!main\|\|!tenantId\)return false/);
 });
