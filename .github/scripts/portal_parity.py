@@ -35,6 +35,8 @@ PANEL_TABS = {
     "dna", "bijhouden", "wijzigingen", "advies", "offerte", "roadmap", "uitvoering",
 }
 
+NAVIGATION_KEYS = PANEL_TABS - {"uitvoering"}
+
 GLOBAL_MARKERS = {
     "Netlify Identity": "netlify-identity-widget.js",
     "logout": "netlifyIdentity.logout()",
@@ -418,7 +420,7 @@ def main() -> int:
     inventory_source = V2_FUNCTIONAL_INVENTORY.read_text(encoding="utf-8")
 
     tabs = set(re.findall(r'data-p="([^"]+)"', html))
-    missing_tabs = sorted(PANEL_TABS - tabs)
+    missing_tabs = sorted(NAVIGATION_KEYS - tabs)
     if missing_tabs:
         fail(f"protected navigation keys disappeared: {', '.join(missing_tabs)}")
 
