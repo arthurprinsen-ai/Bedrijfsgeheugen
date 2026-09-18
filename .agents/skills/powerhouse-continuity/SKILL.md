@@ -64,3 +64,15 @@ Unexpected interruption means recovery, not restart. Resume from the last verifi
 - `brain/learning/chat-agent-intrinsic-loop-node-2026-09-18.json`
 - `docs/brain/chat-agent-intrinsic-loop-node.md`
 - `tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs`
+
+## External worker / connector boundary recovery
+
+- Never treat a chat/tool safety boundary as a Powerhouse database outage without proving both separately.
+- If direct ad-hoc SQL shape is rejected by the host but the canonical service-role RPC is callable, use the existing bounded RPC; never bypass atomic claim/CAS semantics with table writes.
+- Provider work must be durable before dispatch: atomically claim one canonical job first, persist worker identity/attempt, then call the provider, then write back only the exact provider asset URL/metadata through the bounded completion route.
+- A provider generation returning PENDING/RUNNING is a recoverable incomplete state, not failure and not completion. Persist/resume by canonical job + provider history identity; never generate a duplicate merely because a chat/run stopped.
+- Provider-specific format constraints are checked before generation. If a chosen model cannot satisfy the canonical contract, switch to a compatible allowed model/provider without weakening the contract.
+- Final media truth remains verifier-owned: producer/worker may never synthesize SHA, dimensions, Mira PASS, identity PASS, publication PASS, or LIVE_PROVEN.
+- Historical sent items with republish_forbidden remain immutable; recovery creates no duplicate publication.
+
+- When the user explicitly selects a model inside an already-required provider (for example OpenArt Gemini Omni), persist the model/history ID on the already-claimed canonical job and supersede the prior in-flight candidate logically; never create or claim a second Powerhouse job. Only the persisted current provider history may advance completion.
