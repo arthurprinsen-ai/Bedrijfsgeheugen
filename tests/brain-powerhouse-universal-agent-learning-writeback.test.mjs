@@ -278,3 +278,16 @@ test('pending delivery state can never be the final chat or agent handoff', () =
     assert.ok(continuitySkillSource.toLowerCase().includes(marker.toLowerCase()), `missing no-pending marker: ${marker}`);
   }
 });
+
+
+test('delivery concurrency skill inherits no-pending terminal output rule', () => {
+  const source = fs.readFileSync(new URL('../.agents/skills/powerhouse-delivery-concurrency/SKILL.md', import.meta.url), 'utf8');
+  for (const marker of [
+    'User-facing terminal-state rule',
+    'delivery|no-pending-final-output|v1',
+    'LIVE_BEWEZEN',
+    'ROLLED_BACK_GREEN',
+    'BLOCKED_HARD_BOUNDARY',
+    'may not transfer responsibility back to the user'
+  ]) assert.ok(source.toLowerCase().includes(marker.toLowerCase()), `missing delivery-skill terminal marker: ${marker}`);
+});
