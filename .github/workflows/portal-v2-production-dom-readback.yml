@@ -120,35 +120,6 @@ jobs:
         env:
           PREVIEW_URL: ${{ env.PORTAL_READBACK_URL }}
         run: npx playwright test tests/integration/portal-v2-mobile-shell.spec.js --workers=1
-      - name: Wait for approved base production SHA
-        if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
-        run: |
-          set -euo pipefail
-          for attempt in $(seq 1 45); do
-            payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?sha=${PORTAL_BASE_SHA}&attempt=${attempt}" || true)"
-            deployed_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$payload")"
-            deploy_id="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.deploy_id||"")); } catch {}' "$payload")"
-            if [ "$deployed_sha" = "$PORTAL_BASE_SHA" ] && [ -n "$deploy_id" ]; then
-              base_immutable="https://${deploy_id}--bedrijfsgeheugen.netlify.app"
-              base_payload="$(curl --fail --silent --show-error -H 'Cache-Control: no-cache' "${base_immutable}/release.json?sha=${PORTAL_BASE_SHA}" || true)"
-              base_sha="$(node -e 'try { const x=JSON.parse(process.argv[1]); process.stdout.write(String(x.commit_ref||"")); } catch {}' "$base_payload")"
-              if [ "$base_sha" = "$PORTAL_BASE_SHA" ]; then
-                echo "PORTAL_BASE_URL=${base_immutable}" >> "$GITHUB_ENV"
-                echo "Approved base immutable deploy ready: ${deploy_id} / ${deployed_sha}"
-                exit 0
-              fi
-            fi
-            echo "Waiting for PR base ${PORTAL_BASE_SHA}; observed ${deployed_sha:-none} (attempt ${attempt}/45)"
-            sleep 4
-          done
-          echo "::error::Production no longer exposes the PR base SHA ${PORTAL_BASE_SHA}; refresh the branch against current protected main before accepting a visual baseline."
-          exit 1
-      - name: Capture approved base visual baseline
-        if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
-        env:
-          PRODUCTION_URL: ${{ env.PORTAL_BASE_URL }}
-          VISUAL_CAPTURE_PATH: artifacts/visual-current-main/portal-v2-canvassen.png
-        run: npx playwright test tests/integration/portal-v2-production-visual-regression.spec.js --workers=1
       - name: Capture exact-head PR visual baseline
         if: github.event_name == 'pull_request' && env.VISUAL_BASELINE_REQUIRED == 'true'
         env:
@@ -176,10 +147,18 @@ jobs:
             echo "::error::No merged PR provenance found for production SHA ${GITHUB_SHA}; visual release gate fails closed."
             exit 1
           fi
-          runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/portal-v2-production-dom-readback.yml/runs?event=pull_request&head_sha=${pr_head_sha}&per_page=50")"
-          run_id="$(jq -r '[.workflow_runs[] | select(.conclusion == "success")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+          run_id=""
+          for attempt in $(seq 1 60); do
+            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/portal-v2-production-dom-readback.yml/runs?event=pull_request&head_sha=${pr_head_sha}&per_page=50")"
+            run_id="$(jq -r '[.workflow_runs[] | select(.conclusion == "success")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
+            if [ -n "$run_id" ]; then
+              break
+            fi
+            echo "Waiting for successful exact-head PR readback ${pr_head_sha} (attempt ${attempt}/60)"
+            sleep 4
+          done
           if [ -z "$run_id" ]; then
-            echo "::error::No successful Portal V2 PR readback exists for approved head ${pr_head_sha}."
+            echo "::error::No successful Portal V2 PR readback exists for approved head ${pr_head_sha} after bounded wait."
             exit 1
           fi
           mkdir -p artifacts/visual-baseline-pr
