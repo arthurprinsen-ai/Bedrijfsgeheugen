@@ -23,6 +23,22 @@ Production readback must verify:
 - the general V2 navigation remains usable across opened pages;
 - exact-head gates, protected merge and main/production readback are required before LIVE & BEWEZEN.
 
-## Current lifecycle
+## Terminal evidence
 
-This record is intentionally pending until the recovery candidate passes exact-head gates, protected merge and main production readback.
+The recovery candidate is now **LIVE_AND_PROVEN**.
+
+- Exact candidate head: `193ebfa4046d0049bed9f7f9f48d54cdd56fccf2`
+- Required: success
+- BRAIN delivery: success
+- CodeQL: success
+- Portal V2 Tests: success
+- Portal V2 Production DOM Readback: success
+- Portal V2 Live Preview: success
+- Protected squash merge: PR #2008 → `84231d46cc2bb23db6da202edef4c40a8c963b05`
+- Netlify production deploy: `6aacdac88a1b590008d3af85`
+- Netlify production commit_ref: `84231d46cc2bb23db6da202edef4c40a8c963b05`
+- Production state: `ready`
+
+## Learning closure
+
+The permanent Powerhouse rule is now closed: a protected management surface may never disappear merely because its customer data is missing. Empty state must preserve the complete decision surface and render unknown truth explicitly rather than inventing a value or collapsing the interface.
