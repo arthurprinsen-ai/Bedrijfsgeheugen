@@ -33,10 +33,13 @@ jobs:
           node --test portal-v2/tests/*.test.mjs
           node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs
           node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs
-      - name: Record assurance success
+      - name: Record assurance result
+        if: always()
+        env:
+          JOB_STATUS: ${{ job.status }}
         run: |
           mkdir -p .artifacts
-          printf '{"status":"GREEN","sha":"%s","mode":"POST_MERGE_ASYNC_ASSURANCE","run_id":"%s"}\n' "$GITHUB_SHA" "$GITHUB_RUN_ID" > .artifacts/post-merge-assurance.json
+          printf '{"status":"%s","sha":"%s","mode":"POST_MERGE_ASYNC_ASSURANCE","run_id":"%s"}\n' "$JOB_STATUS" "$GITHUB_SHA" "$GITHUB_RUN_ID" > .artifacts/post-merge-assurance.json
       - name: Upload assurance evidence
         if: always()
         uses: actions/upload-artifact@v4
