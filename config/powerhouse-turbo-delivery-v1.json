@@ -1,0 +1,51 @@
+{
+  "fingerprint": "powerhouse-turbo-delivery-v1",
+  "version": 1,
+  "status": "active",
+  "purpose": "Minutes-to-production for bounded changes without weakening protected infrastructure/security gates.",
+  "principles": [
+    "classify-before-heavy-ci",
+    "one-active-head-per-pr-and-lane",
+    "cancel-superseded-work-immediately",
+    "targeted-tests-before-full-suite",
+    "parallel-independent-lanes",
+    "no-waiting-on-stale-merge-base",
+    "production-readback-never-cacheable",
+    "automatic-rollback-on-red-readback"
+  ],
+  "target_slo": {
+    "turbo_p50_minutes": 3,
+    "turbo_p95_minutes": 7,
+    "queue_budget_seconds": 20,
+    "stale_run_cancel_seconds": 15
+  },
+  "turbo": {
+    "max_files": 12,
+    "heavy_universal_preflight": false,
+    "targeted_tests": true,
+    "full_repo_suite": "post_merge_assurance",
+    "production_readback": true
+  },
+  "standard": {
+    "parallel_lanes": true,
+    "full_release_gates": true
+  },
+  "critical": {
+    "security_and_schema_full_gates": true,
+    "serial_promotion": true
+  },
+  "recovery": {
+    "zero_workflow_runs": "retrigger_same_lineage",
+    "merge_base_drift": "refresh_candidate_before_diagnosis",
+    "queued_superseded_head": "cancel",
+    "timeout": "retry_once_then_route_root_cause",
+    "repeated_same_fingerprint": "reuse_proven_fix",
+    "conflict": "rebase_or_rebuild_same_lineage_from_current_main"
+  },
+  "authority": {
+    "delivery": "BRAIN-DELIVERY-v2",
+    "production": "BG169",
+    "learning": "BG166/BG168"
+  },
+  "success": "LIVE & BEWEZEN"
+}
