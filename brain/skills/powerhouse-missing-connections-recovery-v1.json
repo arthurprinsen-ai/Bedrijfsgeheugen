@@ -84,7 +84,19 @@
     "self_production_promotion_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json",
     "terminal_writer_lease_learning": "brain/learning/2026-09-18-terminal-writer-lease-v1.json",
     "fast_delivery_incident_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json",
-    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md"
+    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "terminal_delivery_consolidation_learning": "brain/learning/2026-09-18-terminal-delivery-consolidation-v1.json",
+    "terminal_delivery_consolidation_documentation": "docs/learning/2026-09-18-terminal-delivery-consolidation-v1.md",
+    "current_verified_main_sha": "8a9aa1c3488c9289a9510fbad6b7cad3e078f932",
+    "current_verified_netlify_commit_ref": "8a9aa1c3488c9289a9510fbad6b7cad3e078f932",
+    "current_one_brain_state": {
+      "total_layers": 32,
+      "wired_layers": 32,
+      "required_jobs": 18,
+      "active_jobs": 18,
+      "structural_lineage_gaps": 0,
+      "required_sources_unhealthy": 0
+    }
   },
   "consumers": [
     "chat-learning-preflight",
