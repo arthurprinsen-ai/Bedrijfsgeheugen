@@ -1,0 +1,20 @@
+{
+  "fingerprint": "control-plane|supabase-migration|terminal-ledger-readback-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "A GitHub production-readback run returned green for a Supabase-only change while the database migration had not yet been applied; terminal closure then marked the obligation FULFILLED.",
+  "root_cause": "The generic production readback only modeled Netlify deployment applicability and terminal closure did not independently verify the authoritative Supabase migration ledger.",
+  "prevention_rule": "For every merge containing supabase/migrations/**, derive exact version+name identities from the merge diff and require the Supabase Edge terminal authority to read all identities from supabase_migrations.schema_migrations before FULFILLED or LIVE_BEWEZEN.",
+  "production_authority": "supabase_migrations.schema_migrations",
+  "enforcement": [
+    "powerhouse_supabase_migration_readback_v1 service-role RPC",
+    "growth-datahub-ingest terminal migration readback",
+    "obligation-terminal-closure exact migration identity derivation",
+    "production-ledger/repository identity parity regression"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}
