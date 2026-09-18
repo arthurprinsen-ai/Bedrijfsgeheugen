@@ -1,0 +1,26 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-MERGE-EPOCH-CONCURRENCY-GUARD-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|merge-epoch|optimistic-cas|v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-merge-epoch-concurrency-guard-v1",
+  "problem": "A candidate can finish exact-head gates green while another agent moves main, leaving the candidate behind or conflicted at protected merge.",
+  "root_cause": "Gate authority was bound to candidate head but not also to a current-main integration epoch and short-lived terminal landing ownership.",
+  "evidence": {
+    "pr": 2074,
+    "observed": "green gate lineage later became 10 commits behind main with a real merge conflict and was closed unmerged"
+  },
+  "skill_targets": [
+    "delivery",
+    "continuity"
+  ],
+  "prevention": [
+    "TERMINAL_GREEN_REQUIRES_CURRENT_MAIN_EPOCH: protected merge authority must bind exact candidate head to exact current main.",
+    "LANDING_LEASE_SERIALIZES_ONLY_INTEGRATION: parallel development remains allowed; only the final merge boundary is serialized.",
+    "BEHIND_BY_ZERO_AT_LANDING: a terminal landing candidate must be reconciled onto current main before protected merge.",
+    "MAIN_MOVE_INVALIDATES_LANDING_PROOF: if main changes after gates, reconcile, re-prove exact head and reacquire the landing lease.",
+    "DUPLICATE_OBLIGATION_SINGLE_FLIGHT: only one executable terminal candidate may exist per obligation.",
+    "MERGE_FAILURE_IS_RECOVERY_INPUT: conflict/CAS refusal automatically returns the lineage to reconciliation instead of ending the task."
+  ]
+}
