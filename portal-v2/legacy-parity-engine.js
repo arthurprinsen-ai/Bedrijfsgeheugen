@@ -218,7 +218,7 @@ const C={
 const EXPECTED=[...new Set(Object.values(LEGACY_FUNCTIONAL_INVENTORY).flatMap(item=>item.calculations||[]))];
 
 const FIELD_MAP={
- mw:'portal.profile.manualHoursPerWeek',uur:'portal.profile.hourlyCost',bDoel:'portal.businessCase.target',bUitstel:'portal.businessCase.delay',bInvest:'portal.businessCase.investment',
+ mw:'portal.profile.employees',uur:'portal.profile.hourlyCost',bDoel:'portal.businessCase.target',bUitstel:'portal.businessCase.delay',bInvest:'portal.businessCase.investment',
  cOmzet:'portal.metrics.revenue',cBrutomarge:'portal.metrics.grossMargin',cEbitda:'portal.metrics.ebitda',cLoon:'portal.metrics.wages',cKlanten:'portal.metrics.customers',cGrootste:'portal.metrics.largestCustomer',cMarketing:'portal.metrics.marketing',cNieuw:'portal.metrics.newCustomers',cDso:'portal.metrics.dso',cIt:'portal.metrics.it',kNps:'portal.metrics.nps',kTevreden:'portal.metrics.satisfaction',kHerhaal:'portal.metrics.repeat',kKlacht:'portal.metrics.complaints',
  wSchuld:'portal.valueFinance.debt',wCash:'portal.valueFinance.cash',wEV:'portal.valueFinance.equity',wBalans:'portal.valueFinance.balance',wVast:'portal.valueFinance.fixed',wRente:'portal.valueFinance.interest',wMultiple:'portal.valueFinance.multiple',wWacc:'portal.valueFinance.wacc',
  asTarief:'portal.aiScan.hourlyRate',mVerzuim:'portal.people.absence',mVerloop:'portal.people.turnover',mEnps:'portal.people.enps',mMto:'portal.people.mto',mVac:'portal.people.vacancies',bKeuze:'portal.market.industry',bOmzet:'portal.market.revenue',
