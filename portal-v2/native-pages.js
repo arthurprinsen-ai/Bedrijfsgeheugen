@@ -117,8 +117,8 @@ function specialistContent(pageId,model,navigation){
     ]);
     const blocks=[
       {type:'metrics',title:'De Uitvoeringsladder',items:[
-        ['Treden',String(source.length||15)],
-        ['Afgerond',String(completed.length)],
+        ['Treden',source.length?String(source.length):'—'],
+        ['Afgerond',source.length?String(completed.length):'—'],
         ['Voortgang',source.length?`${Math.round(completed.length/source.length*100)}%`:'—'],
         ['Opgeleverde waarde',realized?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(realized):'Nog niet aangetoond']
       ],derived:source.length>0},
