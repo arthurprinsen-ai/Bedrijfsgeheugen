@@ -46,5 +46,16 @@
     "rootCause": "Canonical PR/obligation ownership lacked a terminal writer lease enforced by every chat/agent preflight.",
     "preventionRule": "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
     "status": "GUARDED"
+  },
+  "prematureClosureGuard": {
+    "active": true,
+    "appliesWhen": "Writer-Lease-State=TERMINAL_DELIVERY",
+    "unmergedCloseAction": "AUTO_REOPEN",
+    "mergedCloseAction": "ALLOW",
+    "explicitReleaseStates": [
+      "RELEASED",
+      "CANCELLED"
+    ],
+    "rule": "An active TERMINAL_DELIVERY canonical PR may not remain closed without merge. Intentional cancellation must release the writer lease before closing."
   }
 }
