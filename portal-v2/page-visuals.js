@@ -38,7 +38,7 @@ const BUILDERS=Object.freeze({
       ladder(arr(calc('cmmi-ladder',state)),{title:'Procesvolwassenheid (CMMI)'}),
       adoptionBell({current,benchmark,upperQuartile:4},{title:'Waar je staat op de adoptiecurve'}),
       radar(points,{title:'Volwassenheid per bedrijfsonderdeel'}),
-      leakage(capacity,{title:'Waar de tijd weglekt'}),
+      leakage(capacity,{title:'Waar tijd en capaciteit weglekt'}),
       leakage(blockers,{title:'Blokkades'}),
       ring(Math.min(100,Math.max(0,progress)),{title:'Voortgang',caption:'voortgang op de roadmap'}),
       ring(Math.min(100,metrics.averageMaturity/5*100),{title:'Volwassenheid',caption:'gemiddeld over de onderdelen'})].filter(Boolean).join('');
