@@ -52,3 +52,15 @@ test('portal boot preserves explicit page and hub deep links while overview rema
   assert.match(router, /applyTarget\(initialTarget\)/);
   assert.doesNotMatch(router, /history\.replaceState\(\{portalTarget:'overzicht'\}/);
 });
+
+
+test('left-top hamburger is the single canonical full-menu entry and floating menu is removed', () => {
+  const html = fs.readFileSync('portal-v2/index.html','utf8');
+  const css = fs.readFileSync('portal-v2/navigation.css','utf8');
+  assert.match(html, /id="portalFullMenuToggle"/);
+  assert.match(html, /aria-controls="allPages"/);
+  assert.doesNotMatch(html, /id="portalMainMenu"/);
+  assert.doesNotMatch(html, /id="showPages"/);
+  assert.match(css, /\.portal-hamburger\{display:inline-flex;/);
+  assert.doesNotMatch(css, /\.portal-hamburger\{display:none;/);
+});
