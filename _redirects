@@ -9,6 +9,8 @@
 /blog/afas-koppeling/  /afas-koppeling  301!
 /data-ai-cockpit   /frisse-blik   301!
 /data-ai-cockpit.html   /frisse-blik   301!
+# Legacy IJsselmonde exception: preserve the historical yellow portal exactly.
+/klantportaal  klant=ijsselmonde  /portal-v2/legacy/ijsselmonde/klantportaal.html  200!
 # Customer portal variants. Portal V2 is the single canonical entry surface.
 # Every portal entry lands on the V2 overview / Executive Cockpit; legacy
 # klantportaal.html remains only as a retained source artifact, never as an entry route.
