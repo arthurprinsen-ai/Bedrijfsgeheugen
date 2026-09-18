@@ -64,3 +64,20 @@ The rule is projected into:
 - Brain learning record `brain/learning/2026-09-18-mira-personal-openart-reel-production-v1.json`.
 
 This is one extension of existing Instagram/Mira authority, not a parallel publisher, calendar, queue or learning system.
+
+
+## Terminal delivery evidence
+
+Status: **LIVE & BEWEZEN op protected main**.
+
+- Source PR: #2152
+- exact candidate head: `527d00613023f945a57359fc70da1298ce396cca`
+- protected merge commit: `7a0b95bddb88620a946747f30514c977abc4d3eb`
+- merged at: `2026-09-18T12:42:18Z`
+- later current-main readback: `1d0c5c06fe8b82f818bf8fd7576e00d939725558`
+- canonical Brain record re-read from current main: PASS
+- publisher skill projection re-read from current main: PASS
+- Mira identity skill projection re-read from current main: PASS
+- learning document re-read from current main: PASS
+
+The lineage is therefore not merely recorded or merged; its learning, documentation and both skill projections remain present on the later protected main epoch.
