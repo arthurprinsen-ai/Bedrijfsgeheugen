@@ -307,3 +307,9 @@ Iedere huidige en toekomstige chat, agent, skill, workflow of intelligence-produ
 - iedere nieuwe bron/capability is pas production-ready wanneer registratie → persistence → freshness/quality → evidence → readback → signal/advice/outcome → learning aantoonbaar aan dezelfde One Brain is gekoppeld.
 
 Canonieke machine-learningbron: `brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json`.
+
+## Predictive Fast Delivery v2
+
+Voor iedere materiële ontwikkel-, fix-, release- of CI-recoverytaak moet de worker vóór uitvoering `brain/skills/powerhouse-fast-rolling-delivery-v1.json` lezen en toepassen. De skill is execution guidance onder bestaande Engineering OS / BRAIN-DELIVERY-v2 / BG169-authoriteit; hij creëert geen tweede delivery authority.
+
+Verplicht: predict-before-fanout, isolated parallel frontend/backend/QA work, één rolling candidate per conflict-contract, adaptive blocking gates, autonomous zero-run/stale-run/timeout recovery, exact-head protected promotion, production readback en learning/writeback. Queue-wachten, stale runs, merge-base drift en ontbrekende workflowstarts zijn recoverable execution states, geen geldige stopstatus.
