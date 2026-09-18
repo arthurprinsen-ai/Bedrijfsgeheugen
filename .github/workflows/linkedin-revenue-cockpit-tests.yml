@@ -14,6 +14,10 @@ on:
       - '.github/workflows/linkedin-revenue-cockpit-tests.yml'
       - '_redirects'
 
+concurrency:
+  group: linkedin-revenue-cockpit-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
