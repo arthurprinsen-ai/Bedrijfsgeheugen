@@ -120,7 +120,7 @@ const C={
  'downstream-recalculation':s=>Object.keys(s?.portal?.inputs||{}).length,
  'answer-completeness':s=>completion(Object.values(s?.portal?.inputs||{})),
 
- 'benefit-at-target-maturity':s=>{const target=clamp(s?.portal?.businessCase?.target,1,5);const factor=[0,1,.78,.5,.22,.06][target];return manualCost(s)*(1-factor)},
+ 'benefit-at-target-maturity':s=>{const target=clamp(s?.portal?.businessCase?.target,1,5);const costs=dimensieKosten(s);if(costs.length){return costs.reduce((sum,d)=>{const next=Math.max(d.niveau,Math.min(target,5));const base=d.uren*(headcount(s)/TEAMDELER)*WERKWEKEN*n(profile(s).hourlyCost);return sum+Math.max(0,base*(NIVEAUFACTOR[d.niveau]-NIVEAUFACTOR[next]))},0)}const factor=NIVEAUFACTOR[target];return manualCost(s)*(1-factor)},
  'delay-cost':s=>C['benefit-at-target-maturity'](s)/12*n(s?.portal?.businessCase?.delay),
  'investment-net-result':s=>C['benefit-at-target-maturity'](s)-n(s?.portal?.businessCase?.investment),
  'payback':s=>{const monthly=C['benefit-at-target-maturity'](s)/12;return monthly>0?n(s?.portal?.businessCase?.investment)/monthly:0},
