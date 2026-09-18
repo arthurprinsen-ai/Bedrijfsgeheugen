@@ -1,0 +1,52 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-MISSING-CONNECTIONS-RECOVERY-v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse-missing-connections-runtime-schema-readback-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-structural-gap-closure-v2",
+  "source_pr": 2023,
+  "observed_candidate_head": "15501253974158d0a81e249f17399ca09669edd4",
+  "symptom": "Powerhouse appeared structurally connected in repository intent while live production still contained unmaterialized decision-cycle, economics, outcome and connector evidence gaps.",
+  "verified_runtime_snapshot": {
+    "sales_actions": 565,
+    "decision_cycles": 0,
+    "cycle_events": 0,
+    "action_economics": 0,
+    "realized_values": 0,
+    "forecasts": 365,
+    "forecast_calibrations": 1,
+    "connector_definitions": 0,
+    "connector_executions": 0,
+    "human_feedback_events": 0,
+    "unresolved_scan_identity_records": 4,
+    "unresolved_offer_identity_records": 4,
+    "open_forecast_calibration_obligations": 364,
+    "due_forecast_calibration_obligations": 0
+  },
+  "root_causes": [
+    "Repository capability and production persistence were previously conflated.",
+    "Historic assumptions about exact schema names can become stale and must be checked against information_schema and canonical migrations.",
+    "Queued CI is a delivery-capacity state, not a code defect.",
+    "Configured or available providers are not equivalent to persisted source evidence or verified outcomes."
+  ],
+  "recovery": [
+    "Continue only PR #2023 for this obligation.",
+    "Use the existing structural-gap and unified-data-spine migrations rather than creating duplicate authorities.",
+    "Materialize legacy sales actions only to truthful signal-stage decision cycles.",
+    "Require later stages, economics, feedback and realized value to arrive from observed evidence.",
+    "Converge GA4, GSC, LinkedIn, Instagram, Buffer transport, external intelligence, DataForSEO and portal state through canonical evidence/runtime authorities.",
+    "Allow exact-head Required and BRAIN gates to produce the first concrete failure before changing code.",
+    "After protected merge, apply production migrations/functions and verify counts, source freshness, schedules and runtime health before closing."
+  ],
+  "prevention_rules": [
+    "CURRENT_RUNTIME_SCHEMA_BEFORE_MISSING_CONNECTION_CLAIM",
+    "CONFIGURED_IS_NOT_PERSISTED_EVIDENCE",
+    "QUEUED_CI_IS_NOT_A_ROOT_CAUSE",
+    "NO_PARALLEL_LINEAGE_FOR_OWNED_OBLIGATION",
+    "HISTORICAL_ACTIONS_BOOTSTRAP_ONLY_TO_TRUTHFUL_STAGE",
+    "LIVE_PROVEN_REQUIRES_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "reusable_skill": "brain/skills/powerhouse-missing-connections-recovery-v1.json"
+}
