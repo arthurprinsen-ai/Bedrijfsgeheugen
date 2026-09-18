@@ -65,5 +65,12 @@
     "behavior": "Every branch write immediately runs the recovery supervisor. It resolves open PR heads and dispatches missing Required/BRAIN workflows for the same exact head; schedule remains fallback.",
     "gates_weakened": false,
     "direct_merge": false
+  },
+  "duplicate_owner_resolution": {
+    "resolved_at": "2026-09-18",
+    "stale_blocker_pr": 2061,
+    "canonical_owner_pr": 2060,
+    "state": "RESOLVED",
+    "evidence": "PR #2061 closed as duplicate successor; #2060 remains sole canonical owner for powerhouse-self-production-promotion-v1."
   }
 }
