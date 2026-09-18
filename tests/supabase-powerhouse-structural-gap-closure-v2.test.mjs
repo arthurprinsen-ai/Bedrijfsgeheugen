@@ -114,3 +114,23 @@ test('learning gaps are obligation driven rather than empty-table driven',()=>{
   assert.match(sql,/exists\(select 1 from public\.powerhouse_experiment_policies\)[\s\S]*?powerhouse_policy_versions/);
   assert.doesNotMatch(sql,/count\(\*\) filter\(where required_for_autonomous_learning and evidence_state='NO_EVIDENCE_YET'\)/);
 });
+
+
+test('capability inventory makes named models visible and maps every one to canonical authority',()=>{
+  assert.match(sql,/create or replace view public\.powerhouse_one_brain_capability_inventory_v1/i);
+  for (const capability of [
+    'company_decision_engine','decision_scenario_engine','portfolio_ranking','next_best_action',
+    'buying_window','latent_problem','offer_problem_match','counterfactual_reasoning',
+    'commercial_world_model','revenue_attribution','content_outcome_model','memeability_model',
+    'creative_evolution','predictive_first_mover','forecast_calibration','revenue_calibration',
+    'meeting_probability','causal_experiment_assignment','policy_promotion','action_economics',
+    'company_value','compute_router','budget_governor','runtime_autonomy_guard','shadow_decision',
+    'verified_value','outcome_horizons','knowledge_enrichment','architecture_impact',
+    'business_graph','living_memory','external_intelligence_loop','quality_intelligence',
+    'resource_intelligence','failure_learning','outcome_obligation_engine','execution_resilience',
+    'production_evidence_certifier','delivery_control_plane','chat_agent_shared_memory',
+    'chat_learning_preflight','one_loop_delivery','autonomous_self_improvement','one_brain_reconciliation'
+  ]) assert.match(sql,new RegExp("'" + capability + "'"));
+  assert.match(sql,/CONNECTED_TO_ONE_BRAIN/);
+  assert.doesNotMatch(sql,/create table\s+public\.powerhouse_one_brain_capability/i);
+});
