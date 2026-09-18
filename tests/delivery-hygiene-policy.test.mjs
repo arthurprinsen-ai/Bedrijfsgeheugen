@@ -126,9 +126,12 @@ Writer-Lease-Release: MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK`;
   assert.equal(drift.ok, false);
   assert.equal(drift.state, 'BLOCKED_TERMINAL_LEASE_DRIFT');
   assert.deepEqual(drift.reasons, ['TERMINAL_LEASE_HEAD_DRIFT']);
-  const epochDrift = evaluateWriterLease({ body, candidateHeadSha: SHA_B, currentMainSha: SHA_C, obligationId: 'BG-LEASE' });
-  assert.equal(epochDrift.ok, false);
-  assert.ok(epochDrift.reasons.includes('TERMINAL_LEASE_MAIN_EPOCH_DRIFT'));
+  const admissionEpochMove = evaluateWriterLease({ body, candidateHeadSha: SHA_B, currentMainSha: SHA_C, obligationId: 'BG-LEASE' });
+  assert.equal(admissionEpochMove.ok, true);
+  assert.equal(admissionEpochMove.state, 'TERMINAL_LEASE_BOUND');
+  const terminalEpochDrift = evaluateWriterLease({ body, candidateHeadSha: SHA_B, currentMainSha: SHA_C, obligationId: 'BG-LEASE', enforceCurrentMainEpoch: true });
+  assert.equal(terminalEpochDrift.ok, false);
+  assert.ok(terminalEpochDrift.reasons.includes('TERMINAL_LEASE_MAIN_EPOCH_DRIFT'));
 });
 
 test('non-terminal lease state permits controlled recovery head mutation', () => {
