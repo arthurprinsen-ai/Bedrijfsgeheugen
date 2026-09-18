@@ -213,6 +213,7 @@ export function openPortalPage(pageId){
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
+  else if(['strategiemodellen','modellen'].includes(pageId)&&contract)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
   else if(pageId==='canvassen'&&contract?.legacyCapability)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
   else if(pageId==='ai-capabilities'&&contract?.legacyCapability){native.innerHTML='';mountAiCapabilityWorkspace(native,{domainState:portalContext.domainState,onSaveStatus:()=>{}});}
   else if(pageId==='uitvoeringsladder'&&contract?.legacyCapability){native.innerHTML='';mountExecutionLadderWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onSaveStatus:()=>{}});}
