@@ -17,7 +17,7 @@ const walk=(root,out=[])=>{
 export function buildDailySelfEvolutionSnapshot({now=new Date().toISOString()}={}){
   const surfaceRows=[];
   for(const [surface,roots] of Object.entries(contract.surfaces)){
-    const files=[...new Set(roots.flatMap(walk))].sort();
+    const files=[...new Set(roots.flatMap(root=>walk(root)))].sort();
     surfaceRows.push({surface,roots,files:fileCount(files),missing_roots:roots.filter(r=>!exists(r))});
   }
   const required=[
