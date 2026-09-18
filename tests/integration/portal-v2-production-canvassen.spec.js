@@ -24,7 +24,7 @@ test('Canvassen production renders the six full legacy canvases from Powerhouse 
   await bootDemo(page);
   const workspace=page.locator('[data-functional-workspace="canvassen"]');
   await expect(workspace.locator('.canvas-summary h3')).toHaveText('Canvasconclusie');
-  await expect(workspace.locator('.canvas-summary small')).toContainText('canonieke Powerhouse-state + klantinvoer');
+  await expect(workspace.locator('.canvas-summary small')).toContainText('canonieke klantinvoer + afzonderlijk gelabelde Powerhouse-signalen');
   await expect(workspace.locator('.canvas-card')).toHaveCount(6);
 
   for(const [id,title] of EXPECTED_CANVASES){
