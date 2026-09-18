@@ -1,0 +1,23 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-TERMINAL-WRITER-LEASE-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "source_pr": 2053,
+  "observed_parent_head": "71d2d975cea8bef1daf1972a01ffad7e317fb6bc",
+  "root_cause": "Terminal delivery had PR ownership but no mandatory pre-write writer lease inherited by every chat/agent.",
+  "fix": [
+    "Load branch-delivery ownership guard in every chat-learning preflight.",
+    "Use one Writer-Lease-Owner while Writer-Lease-State=TERMINAL_DELIVERY.",
+    "Non-owner workers defer instead of mutating the active branch.",
+    "Keep lease until protected merge, production readback and learning writeback."
+  ],
+  "prevention_rules": [
+    "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
+    "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES",
+    "HEAD_MUTATION_DURING_ACTIVE_TERMINAL_LEASE_IS_CONTRACT_VIOLATION"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}
