@@ -34,3 +34,33 @@ test('new verification after baseline change may become verified again',()=>{
   },{nu:new Date('2026-09-18T19:00:00Z')});
   assert.equal(assessed.status,STATUS.VERIFIED);
 });
+
+import fs from 'node:fs';
+
+test('regulatory source registry contains only configured official authorities',()=>{
+  const cfg=JSON.parse(fs.readFileSync('config/regulatory-sources.json','utf8'));
+  assert.ok(cfg.sources.length>=4);
+  for(const source of cfg.sources){
+    const host=new URL(source.url).hostname;
+    assert.ok(['eur-lex.europa.eu','www.ncsc.nl','www.rijksoverheid.nl'].includes(host),host);
+    assert.ok(source.framework);
+  }
+});
+
+test('watcher persists exact raw bytes before interpretation projection',()=>{
+  const monitor=fs.readFileSync('tools/regulatory-source-monitor.py','utf8');
+  const ingest=fs.readFileSync('tools/regulatory-brain-ingest.py','utf8');
+  const workflow=fs.readFileSync('.github/workflows/regulatory-source-watch.yml','utf8');
+  assert.match(monitor,/rawSha256/);
+  assert.match(monitor,/write_bytes\(result\['raw'\]\)/);
+  assert.match(ingest,/raw_body_gzip_base64/);
+  assert.match(ingest,/powerhouse_record_source_observation_v1/);
+  assert.ok(workflow.indexOf('Persist immutable raw observations in Powerhouse Brain') < workflow.indexOf('Open governed source-state candidate'));
+});
+
+test('interpretation updater is driven by canonical source-state changes',()=>{
+  const workflow=fs.readFileSync('.github/workflows/regelgeving-bijwerken.yml','utf8');
+  assert.match(workflow,/data\/regulatory-source-state\.json/);
+  assert.match(workflow,/Candidate-Type: regulatory-interpretation-review/);
+  assert.doesNotMatch(workflow,/cron: '30 4 \* \* 1'/);
+});
