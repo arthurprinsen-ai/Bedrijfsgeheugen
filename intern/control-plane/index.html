@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Powerhouse Control Plane</title>
+<style>
+:root{font-family:Inter,system-ui,sans-serif;color:#152238;background:#f4f7fb}
+*{box-sizing:border-box}body{margin:0}.shell{max-width:1500px;margin:auto;padding:24px}.head{display:flex;gap:16px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap}.head h1{margin:0;font-size:28px}.head p{margin:6px 0;color:#627089}.controls{display:flex;gap:8px;flex-wrap:wrap}button,select,input{font:inherit;border:1px solid #ccd5e3;border-radius:9px;padding:9px 11px;background:#fff}button{cursor:pointer}.metrics{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px;margin:20px 0}.metric,.card{background:#fff;border:1px solid #dfe6f0;border-radius:13px;box-shadow:0 1px 3px #10213b0d}.metric{padding:14px}.metric small{display:block;color:#718097}.metric strong{display:block;font-size:23px;margin-top:4px}.list{display:grid;gap:10px}.card{padding:15px}.row{display:flex;gap:8px;align-items:center;justify-content:space-between;flex-wrap:wrap}.goal{font-weight:700;font-size:16px}.key{font:12px ui-monospace,SFMono-Regular,monospace;color:#68768b;word-break:break-all}.pill{padding:4px 8px;border-radius:999px;background:#eef2f8;font-size:12px;font-weight:700}.FULFILLED{background:#e7f7ed;color:#176b37}.BLOCKED,.BREACHED{background:#fdecec;color:#a12626}.RUNNING,.READY{background:#e9f2ff;color:#175ea8}.proof{display:grid;grid-template-columns:repeat(auto-fit,minmax(145px,1fr));gap:8px;margin:12px 0}.proof span{background:#f6f8fb;border-radius:9px;padding:8px}.proof small{display:block;color:#7a8799}.blocker{color:#a12626}.next{font-weight:700}.muted{color:#748197}.error{background:#fff1f1;color:#9d2020;padding:12px;border-radius:10px}.login{margin:20px 0;padding:14px;background:#fff;border:1px solid #dfe6f0;border-radius:13px}.login[hidden]{display:none}@media(max-width:700px){.shell{padding:14px}.head h1{font-size:23px}.proof{grid-template-columns:1fr 1fr}}
+</style>
+</head>
+<body>
+<main class="shell">
+  <div class="head"><div><h1>Powerhouse Control Plane</h1><p>Één waarheid per obligation: gevraagd → toestand → bewijs → blocker → volgende automatische actie → resultaat.</p></div><div class="controls"><select id="state"><option value="">Alle toestanden</option><option>OPEN</option><option>READY</option><option>RUNNING</option><option>BLOCKED</option><option>FULFILLED</option><option>BREACHED</option><option>CANCELLED</option></select><button id="refresh">Vernieuwen</button></div></div>
+  <section id="login" class="login" hidden><strong>Interne toegang</strong><div class="controls" style="margin-top:8px"><input id="user" autocomplete="username" placeholder="Gebruiker"><input id="pass" type="password" autocomplete="current-password" placeholder="Wachtwoord"><button id="signin">Inloggen</button></div></section>
+  <section id="metrics" class="metrics"></section>
+  <div id="status" class="muted">Laden…</div>
+  <section id="list" class="list" aria-live="polite"></section>
+</main>
+<script type="module">
+const $=id=>document.getElementById(id);
+const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let auth='';
+const fmtSec=v=>v==null?'—':v<60?`${v}s`:v<3600?`${Math.round(v/60)}m`:`${(v/3600).toFixed(1)}u`;
+const metric=(label,value)=>`<article class="metric"><small>${esc(label)}</small><strong>${esc(value??'—')}</strong></article>`;
+function renderMetrics(m={}){
+ $('metrics').innerHTML=[
+  metric('Obligations',m.obligations_total),metric('Fulfilled',m.obligations_fulfilled),
+  metric('First-time-right',m.first_time_right_pct==null?'—':`${m.first_time_right_pct}%`),
+  metric('Retries',m.retries_total),metric('Escalaties',m.escalations_total),
+  metric('False-success risico',m.false_success_risk_count),metric('Menselijke interventies',m.human_intervention_count),
+  metric('Mediaan naar terminal',fmtSec(m.median_time_to_terminal_seconds))
+ ].join('');
+}
+function renderRow(o){
+ const p=o.proof||{};
+ return `<article class="card">
+  <div class="row"><div><div class="goal">${esc(o.requested_goal||o.obligation_key)}</div><div class="key">${esc(o.obligation_key)}</div></div><span class="pill ${esc(o.current_state)}">${esc(o.current_state)}</span></div>
+  <div class="proof">
+   <span><small>Bewijs</small><b>${esc(p.evidence_count)} records · ${esc(p.red_evidence_count)} rood</b></span>
+   <span><small>Outcome</small><b>${p.outcome_verified?'bewezen':'niet bewezen'}</b></span>
+   <span><small>Productie</small><b>${p.production_observed_sha?esc(p.production_observed_sha.slice(0,10)):'—'}</b></span>
+   <span><small>Retries</small><b>${esc(p.retry_count)} · escalaties ${esc(p.escalated_jobs)}</b></span>
+  </div>
+  ${o.blocker?`<p class="blocker"><b>Blokkade:</b> ${esc(o.blocker)}</p>`:''}
+  <div class="row"><span><b>Volgende automatische actie:</b> <span class="next">${esc(o.next_action)}</span></span><span><b>Resultaat:</b> ${esc(o.actual_result||'—')}</span></div>
+ </article>`;
+}
+async function load(){
+ $('status').textContent='Laden…';
+ const qs=new URLSearchParams({limit:'150'});if($('state').value)qs.set('state',$('state').value);
+ const headers=auth?{authorization:auth}:{};
+ const r=await fetch('/api/powerhouse/control-plane/cockpit?'+qs,{headers,cache:'no-store'});
+ if(r.status===401){$('login').hidden=false;$('status').textContent='Interne authenticatie vereist.';return}
+ const body=await r.json().catch(()=>({}));
+ if(!r.ok){$('status').innerHTML=`<span class="error">${esc(body.reason||body.status||'Cockpit niet beschikbaar')}</span>`;return}
+ $('login').hidden=true;renderMetrics(body.metrics||{});
+ $('list').innerHTML=(body.obligations||[]).map(renderRow).join('')||'<div class="card">Geen obligations voor deze filter.</div>';
+ $('status').textContent=`${body.obligations?.length||0} obligations · readback ${body.generated_at||''}`;
+}
+$('refresh').addEventListener('click',load);$('state').addEventListener('change',load);
+$('signin').addEventListener('click',()=>{auth='Basic '+btoa(unescape(encodeURIComponent($('user').value+':'+$('pass').value)));$('pass').value='';load()});
+load();
+</script>
+</body>
+</html>
