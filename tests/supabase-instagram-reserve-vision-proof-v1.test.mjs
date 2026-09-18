@@ -52,3 +52,5 @@ test('verifier is custom-token authenticated and AI-governed',()=>{
   assert.match(sql,/brain_ai_governance_registry/);
   assert.match(sql,/Verifier may only write proof\/block state\. It cannot publish/);
 });
+
+// CI silent-start recovery trigger: PR 2041
