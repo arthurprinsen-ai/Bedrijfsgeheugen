@@ -256,7 +256,7 @@ test('predictive LinkedIn sales cockpit learning is discoverable through continu
   for (const marker of [
     'linkedin-sales-cockpit-predictive-sales-os-v1',
     'Revenue Command Center',
-    'action-first sales decision surface',
+    'sales decision surface, not passive reporting dashboard',
     'no-auto-send',
     'Netlify \`commit_ref\`',
     'one superseding recovery candidate'
