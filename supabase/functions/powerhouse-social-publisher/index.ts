@@ -107,13 +107,31 @@ Deno.serve(async (req) => {
   const provider_reconciliation = await reconcileExistingProviderTruth(db, bufferToken, runDate);
   if (mode === 'audit_only') return json({ ok: true, runDate, provider_reconciliation });
 
-  const { data: rows, error: rowsError } = await db.from('powerhouse_channel_decisions').select('channel,scheduled_for,delivery_evidence,powerhouse_content_artifacts(body,generation_evidence,status)').eq('run_date', runDate).eq('decision', 'publish').eq('state', 'content_ready').in('channel', ['linkedin_personal','linkedin_company','instagram_company']).order('priority', { ascending: false });
-  if (rowsError) throw new Error(`CONTENT_READY_READ:${rowsError.message}`);
+  const channels = ['linkedin_personal','linkedin_company','instagram_company'];
+  const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
+    db.from('powerhouse_channel_decisions')
+      .select('channel,scheduled_for,delivery_evidence,priority')
+      .eq('run_date', runDate)
+      .eq('decision', 'publish')
+      .eq('state', 'content_ready')
+      .in('channel', channels)
+      .order('priority', { ascending: false }),
+    db.from('powerhouse_content_artifacts')
+      .select('channel,body,generation_evidence,status')
+      .eq('run_date', runDate)
+      .in('channel', channels),
+  ]);
+  if (rowsError) throw new Error(`CONTENT_READY_DECISION_READ:${rowsError.message}`);
+  if (artifactsError) throw new Error(`CONTENT_READY_ARTIFACT_READ:${artifactsError.message}`);
+  const artifactByChannel = new Map((artifacts || []).map((artifact: any) => [artifact.channel, artifact]));
   const results: any[] = [];
 
   for (const row of rows || []) {
-    const art = Array.isArray(row.powerhouse_content_artifacts) ? row.powerhouse_content_artifacts[0] : row.powerhouse_content_artifacts;
-    if (!art?.body) continue;
+    const art: any = artifactByChannel.get(row.channel) || null;
+    if (!art?.body) {
+      results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
+      continue;
+    }
     const textHash = await digest(clean(art.body));
     const due = new Date(row.scheduled_for);
     const future = Number.isFinite(due.getTime()) && due.getTime() > Date.now() + 120000;
