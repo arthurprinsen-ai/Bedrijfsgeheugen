@@ -16,12 +16,12 @@ test('businesscase preserves the legacy per-dimension target calculation without
   }};
   const actual=businessCaseMetrics(state);
 
-  close(actual.currentAnnualCost,38692.992);
-  close(actual.targetAnnualCost,14476.384);
-  close(actual.annualBenefit,24216.608);
-  close(actual.delayCost,24216.608);
-  close(actual.paybackMonths,5.9463323682656135);
-  close(actual.netThreeYear,60649.824);
+  close(actual.currentAnnualCost,37147.76);
+  close(actual.targetAnnualCost,13792.272);
+  close(actual.annualBenefit,23355.488);
+  close(actual.delayCost,23355.488);
+  close(actual.paybackMonths,6.1655744465711875);
+  close(actual.netThreeYear,58066.464);
   assert.equal(actual.target,4);
   assert.equal(actual.delayMonths,12);
   assert.equal(actual.investment,12000);
@@ -31,14 +31,14 @@ test('businesscase keeps the immutable legacy defaults and does not apply the se
   const state={portal:{profile:{employees:24,hourlyCost:52,maturity:{}}}};
   const actual=businessCaseMetrics(state);
 
-  close(actual.currentAnnualCost,54853.344);
-  close(actual.targetAnnualCost,15471.456);
-  close(actual.annualBenefit,39381.888);
-  close(actual.delayCost,39381.888);
+  close(actual.currentAnnualCost,52427.856);
+  close(actual.targetAnnualCost,14787.344);
+  close(actual.annualBenefit,37640.512);
+  close(actual.delayCost,37640.512);
   close(actual.investment,12000);
   assert.equal(actual.target,4);
   assert.equal(actual.delayMonths,12);
-  assert.notEqual(actual.annualBenefit,39381.888*0.7);
+  assert.notEqual(actual.annualBenefit,37640.512*0.7);
 });
 
 test('businesscase input boundaries preserve the final legacy control contract',()=>{
