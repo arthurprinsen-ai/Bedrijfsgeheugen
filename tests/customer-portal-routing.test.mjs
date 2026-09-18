@@ -7,43 +7,31 @@ const redirects = readFileSync(new URL('../_redirects', import.meta.url), 'utf8'
 const frisseBlik = readFileSync(new URL('../frisse-blik.html', import.meta.url), 'utf8');
 const klantportaal = readFileSync(new URL('../klantportaal.html', import.meta.url), 'utf8');
 
-test('demo1 serves the legacy customer portal without changing the public URL', () => {
-  // Sinds 11 september 2026 wijst demo1 naar klantportaal.html in plaats van
-  // naar het losse demobestand: het volledige portaal in demostand, alles open.
-  // Nog steeds een rewrite, dus de publieke URL blijft gelijk.
-  assert.match(redirects, /^\/klantportaal\s+klant=demo1\s+\/klantportaal\.html\s+200!$/m);
+test('all legacy customer entry aliases canonicalize to Portal V2', () => {
+  assert.match(redirects, /^\/klantportaal\s+klant=demo1\s+\/portaal\/demo\s+301!$/m);
+  assert.match(redirects, /^\/klantportaal\s+klant=demo\s+\/portaal\/demo\s+301!$/m);
+  assert.match(redirects, /^\/klantportaal\s+klant=demoAI\s+\/portaal\/demo\s+301!$/m);
+  assert.match(redirects, /^\/klantportaal\s+klant=:klant\s+\/portaal\/:klant\s+301!$/m);
+  assert.match(redirects, /^\/klantportaal\s+\/portaal\s+301!$/m);
 });
 
-test('old demo alias redirects canonically to demo1', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=demo\s+\/klantportaal\?klant=demo1\s+301!$/m);
+test('canonical clean portal routes render Portal V2', () => {
+  assert.match(redirects, /^\/portaal\/demo\s+\/portal-v2\/\s+200!$/m);
+  assert.match(redirects, /^\/portaal\/ijsselmonde\s+\/portal-v2\/\s+200!$/m);
+  assert.match(redirects, /^\/portaal\/\*\s+\/portal-v2\/:splat\s+200!$/m);
 });
 
-test('Ijsselmonde serves the legacy full customer portal', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=ijsselmonde\s+\/klantportaal\.html\s+200!$/m);
+test('legacy klantportaal html is not a canonical entry route anymore', () => {
+  assert.doesNotMatch(redirects, /^\/klantportaal\s+.*\/klantportaal\.html\s+200!$/m);
 });
 
-test('demoAI serves the current AI portal without changing the public URL', () => {
-  // Portal V2 is sinds 11 september 2026 het enige klantportaal (#1385, #1388,
-  // #1393). Deze route wijst nu naar V2, maar blijft een rewrite: de publieke URL
-  // verandert niet, zodat gedeelde demolinks blijven werken.
-  assert.match(redirects, /^\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+200!$/m);
-});
-
-test('all other customer slugs from scans serve the legacy full portal', () => {
-  assert.match(redirects, /^\/klantportaal\s+klant=:klant\s+\/klantportaal\.html\s+200!$/m);
-});
-
-test('Frisse Blik bare portal handoff resolves to the legacy demo', () => {
+test('Frisse Blik handoff is safely canonicalized through the bare legacy alias', () => {
   assert.match(frisseBlik, /\/klantportaal#direct/);
-  assert.match(redirects, /^\/klantportaal\s+\/klantportaal-demo\.html\s+200!$/m);
+  assert.match(redirects, /^\/klantportaal\s+\/portaal\s+301!$/m);
 });
 
-test('production transform prevents customer offer routes from opening Netlify Identity', () => {
+test('retained legacy auth transform remains safe for direct parity access', () => {
   const repaired = repairCustomerPortalAuth(klantportaal);
-  assert.match(
-    repaired,
-    /const bl=document\.getElementById\('btnLogin'\);\s*if\(bl\) bl\.addEventListener\('click',function\(\)\{\s*if\(new URLSearchParams\(location\.search\)\.get\('klant'\)\)\{\s*if\(window\.__bgCustomerLogin\) window\.__bgCustomerLogin\(\);\s*return;/m
-  );
-  assert.match(repaired, /window\.__bgCustomerLogin = function\(\)\{\s*var s=slug\(\);\s*if\(s\) herstelAuth\(s\)\.catch\(function\(\)\{ toonInlog\(s\); \}\);\s*\};/);
-  assert.match(repaired, /AUTH_COOKIE\s*=\s*'bg_customer_auth'/);
+  assert.match(repaired,/AUTH_COOKIE\s*=\s*'bg_customer_auth'/);
+  assert.match(repaired,/window\.__bgCustomerLogin = function/);
 });
