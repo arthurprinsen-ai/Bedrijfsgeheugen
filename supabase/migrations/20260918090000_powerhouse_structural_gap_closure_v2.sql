@@ -88,7 +88,7 @@ begin
     a.action_id,
     v_subject,
     v_evidence_ref,
-    'decision',
+    'signal',
     'open',
     coalesce(a.created_at,now()),
     now()
@@ -98,74 +98,123 @@ begin
     source_signal_ref=excluded.source_signal_ref,
     updated_at=now();
 
-  insert into public.powerhouse_cycle_events(
-    tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
-    evidence_ref,idempotency_key,payload,occurred_at
-  )
-  values(
-    v_tenant,
-    a.action_id,
-    1,
-    'decision',
-    'powerhouse_sales_actions',
-    a.action_id::text,
-    v_evidence_ref,
-    'sales-action:' || a.action_id::text || ':decision',
-    jsonb_build_object(
-      'status',a.status,
-      'action_type',a.action_type,
-      'channel',a.channel,
-      'priority',a.priority,
-      'opportunity_key',a.opportunity_key,
-      'truth','materialized_from_existing_action'
-    ),
-    coalesce(a.created_at,now())
-  )
-  on conflict (tenant_id,idempotency_key) do nothing;
-
-  if a.executed_at is not null and a.status in ('waiting','done') then
+  if not exists (
+    select 1 from public.powerhouse_cycle_events
+    where tenant_id=v_tenant
+      and idempotency_key='sales-action:' || a.action_id::text || ':signal'
+  ) then
     insert into public.powerhouse_cycle_events(
       tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
       evidence_ref,idempotency_key,payload,occurred_at
     )
     values(
-      v_tenant,
-      a.action_id,
-      2,
-      'execution',
-      'powerhouse_sales_actions',
-      a.action_id::text,
-      v_evidence_ref,
-      'sales-action:' || a.action_id::text || ':execution',
+      v_tenant,a.action_id,1,'signal','powerhouse_sales_actions',a.action_id::text,
+      v_evidence_ref,'sales-action:' || a.action_id::text || ':signal',
       jsonb_build_object(
         'status',a.status,
-        'executed_at',a.executed_at,
-        'truth','observed_execution'
+        'action_type',a.action_type,
+        'channel',a.channel,
+        'opportunity_key',a.opportunity_key,
+        'truth_class','derived',
+        'derivation','existing_sales_action_is_source_signal'
       ),
-      a.executed_at
-    )
-    on conflict (tenant_id,idempotency_key) do nothing;
-  elsif a.status='expired' then
+      coalesce(a.created_at,now())
+    );
+  end if;
+
+  if not exists (
+    select 1 from public.powerhouse_cycle_events
+    where tenant_id=v_tenant
+      and idempotency_key='sales-action:' || a.action_id::text || ':analysis'
+  ) then
     insert into public.powerhouse_cycle_events(
       tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
       evidence_ref,idempotency_key,payload,occurred_at
     )
     values(
-      v_tenant,
-      a.action_id,
-      2,
-      'next_decision',
-      'powerhouse_sales_actions',
-      a.action_id::text,
-      v_evidence_ref,
-      'sales-action:' || a.action_id::text || ':expired',
+      v_tenant,a.action_id,2,'analysis','powerhouse_sales_actions',a.action_id::text,
+      v_evidence_ref,'sales-action:' || a.action_id::text || ':analysis',
       jsonb_build_object(
-        'status','expired',
-        'truth','observed_terminal_nonexecution'
+        'priority',a.priority,
+        'reason',a.reason,
+        'truth_class','derived',
+        'derivation','existing_sales_action_contains_completed_analysis'
       ),
-      coalesce(a.updated_at,now())
+      coalesce(a.created_at,now())
+    );
+  end if;
+
+  if not exists (
+    select 1 from public.powerhouse_cycle_events
+    where tenant_id=v_tenant
+      and idempotency_key='sales-action:' || a.action_id::text || ':prediction'
+  ) then
+    insert into public.powerhouse_cycle_events(
+      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
+      evidence_ref,idempotency_key,payload,occurred_at
     )
-    on conflict (tenant_id,idempotency_key) do nothing;
+    values(
+      v_tenant,a.action_id,3,'prediction','powerhouse_sales_actions',a.action_id::text,
+      v_evidence_ref,'sales-action:' || a.action_id::text || ':prediction',
+      jsonb_build_object(
+        'expected_value_eur',a.expected_value_eur,
+        'truth_class','derived',
+        'derivation','existing_sales_action_contains_expected_value'
+      ),
+      coalesce(a.created_at,now())
+    );
+  end if;
+
+  if not exists (
+    select 1 from public.powerhouse_cycle_events
+    where tenant_id=v_tenant
+      and idempotency_key='sales-action:' || a.action_id::text || ':decision'
+  ) then
+    insert into public.powerhouse_cycle_events(
+      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
+      evidence_ref,idempotency_key,payload,occurred_at
+    )
+    values(
+      v_tenant,a.action_id,4,'decision','powerhouse_sales_actions',a.action_id::text,
+      v_evidence_ref,'sales-action:' || a.action_id::text || ':decision',
+      jsonb_build_object(
+        'status',a.status,
+        'action_type',a.action_type,
+        'channel',a.channel,
+        'priority',a.priority,
+        'truth_class','observed',
+        'observation','sales_action_exists'
+      ),
+      coalesce(a.created_at,now())
+    );
+  end if;
+
+  if a.executed_at is not null and a.status in ('waiting','done') then
+    if not exists (
+      select 1 from public.powerhouse_cycle_events
+      where tenant_id=v_tenant
+        and idempotency_key='sales-action:' || a.action_id::text || ':execution'
+    ) then
+      insert into public.powerhouse_cycle_events(
+        tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
+        evidence_ref,idempotency_key,payload,occurred_at
+      )
+      values(
+        v_tenant,a.action_id,5,'execution','powerhouse_sales_actions',a.action_id::text,
+        v_evidence_ref,'sales-action:' || a.action_id::text || ':execution',
+        jsonb_build_object(
+          'status',a.status,
+          'executed_at',a.executed_at,
+          'truth_class','observed',
+          'observation','executed_at_present'
+        ),
+        a.executed_at
+      );
+    end if;
+  elsif a.status='expired' then
+    update public.powerhouse_decision_cycles
+    set status='blocked',updated_at=now()
+    where tenant_id=v_tenant and cycle_id=a.action_id;
   end if;
 end
 $$;
