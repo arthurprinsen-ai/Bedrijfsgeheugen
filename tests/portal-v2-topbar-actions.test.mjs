@@ -13,18 +13,20 @@ test('portal header exposes functional notifications, help, account and full men
  assert.match(html,/topbar-actions\.css/);
 });
 
-test('portal topbar actions bind panels and reuse the canonical all-pages menu',()=>{
+test('portal topbar actions bind panels, reuse the canonical all-pages menu and leave mobile More router-owned',()=>{
  assert.match(js,/togglePanel/);
  assert.match(js,/portalNotificationsList/);
  assert.match(js,/showPages\.click\(\)/);
- assert.match(js,/mobileMore/);
+ assert.doesNotMatch(js,/byId\('mobileMore'\)\?\.addEventListener/);
  assert.match(js,/event\.key==='Escape'/);
 });
 
 test('header controls stay reachable on mobile and demoAI',()=>{
  assert.match(css,/@media\(max-width:760px\)/);
  assert.match(css,/\.topactions\{display:flex!important/);
- assert.match(css,/\.portal-demo-ai \.portal-popover/);
+ assert.match(css,/\.portal-demo-ai \.portal-popover/); 
+ assert.match(css,/@media\(max-width:760px\)\{\.topaction-menu\{display:none!important\}/);
+ assert.match(css,/\.portal-demo-ai \.topaction-menu\{display:none!important\}/);
 });
 
 
