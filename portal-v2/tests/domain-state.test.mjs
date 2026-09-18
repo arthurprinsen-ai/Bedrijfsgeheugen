@@ -118,6 +118,8 @@ test('authenticated legacy browser state is lifted into canonical V2 state and p
   assert.equal(store.get('portal.canvases.bmc.answer'),'MKB maakbedrijven');
   assert.equal(store.get('portal.roadmap.items.0.title'),'Finance automatiseren');
   assert.ok(writes.length>=1,'migrated state must be persisted back to canonical state');
+  assert.equal(store.get('portal.migration.browserLegacyLifted'),true);
+  assert.equal(store.get('portal.migration.browserLegacyLiftVersion'),'2026-09-18-v1');
 });
 
 test('legacy browser migration is strictly scoped to the authenticated email', async () => {
