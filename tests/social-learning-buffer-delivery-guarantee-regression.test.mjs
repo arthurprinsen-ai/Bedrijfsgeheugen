@@ -34,3 +34,14 @@ test('personal scheduled or published artifacts require explicit verified truth 
   assert.match(migration,/enforce_linkedin_personal_artifact_identity_gate_v3/);
   assert.match(migration,/enforce_linkedin_personal_obligation_identity_gate_v3/);
 });
+
+
+test('reconciler never promotes a provider-sent post whose content integrity was invalidated',()=>{
+  const path='supabase/migrations/20260917235907_social_content_integrity_invalidation_guard.sql';
+  assert.equal(existsSync(path),true,'content-integrity invalidation guard migration must exist');
+  const migration=readFileSync(path,'utf8');
+  assert.match(migration,/content_integrity_invalidated/);
+  assert.match(migration,/CONTENT_INTEGRITY_INVALIDATED/);
+  assert.match(migration,/status='BLOCKED'/);
+  assert.match(migration,/revoke execute on function public\.powerhouse_reconcile_content_outcomes_v1\(date\) from public, anon, authenticated/i);
+});
