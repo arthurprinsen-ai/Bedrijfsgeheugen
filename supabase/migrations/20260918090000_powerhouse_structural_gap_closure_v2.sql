@@ -88,7 +88,7 @@ begin
     a.action_id,
     v_subject,
     v_evidence_ref,
-    'decision',
+    'signal',
     'open',
     coalesce(a.created_at,now()),
     now()
@@ -102,21 +102,49 @@ begin
     tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
     evidence_ref,idempotency_key,payload,occurred_at
   )
-  values(
-    v_tenant,
-    a.action_id,
-    1,
-    'decision',
-    'powerhouse_sales_actions',
-    a.action_id::text,
-    v_evidence_ref,
-    'sales-action:' || a.action_id::text || ':decision',
+  values
+  (
+    v_tenant,a.action_id,1,'signal','powerhouse_sales_actions',a.action_id::text,
+    v_evidence_ref,'sales-action:'||a.action_id::text||':signal',
+    jsonb_build_object(
+      'event_id',a.event_id,
+      'subject_key',a.subject_key,
+      'company_key',a.company_key,
+      'person_key',a.person_key,
+      'source_url',a.source_url,
+      'truth','derived_from_existing_action_source_evidence'
+    ),
+    coalesce(a.created_at,now())
+  ),
+  (
+    v_tenant,a.action_id,2,'analysis','powerhouse_sales_actions',a.action_id::text,
+    v_evidence_ref,'sales-action:'||a.action_id::text||':analysis',
+    jsonb_build_object(
+      'priority',a.priority,
+      'reason',a.reason,
+      'evidence',a.evidence,
+      'truth','derived_from_existing_action_analysis'
+    ),
+    coalesce(a.created_at,now())
+  ),
+  (
+    v_tenant,a.action_id,3,'prediction','powerhouse_sales_actions',a.action_id::text,
+    v_evidence_ref,'sales-action:'||a.action_id::text||':prediction',
+    jsonb_build_object(
+      'expected_value_eur',a.expected_value_eur,
+      'opportunity_key',a.opportunity_key,
+      'truth','derived_from_existing_action_prediction'
+    ),
+    coalesce(a.created_at,now())
+  ),
+  (
+    v_tenant,a.action_id,4,'decision','powerhouse_sales_actions',a.action_id::text,
+    v_evidence_ref,'sales-action:'||a.action_id::text||':decision',
     jsonb_build_object(
       'status',a.status,
       'action_type',a.action_type,
       'channel',a.channel,
-      'priority',a.priority,
-      'opportunity_key',a.opportunity_key,
+      'message_draft',a.message_draft,
       'truth','materialized_from_existing_action'
     ),
     coalesce(a.created_at,now())
@@ -131,7 +159,7 @@ begin
     values(
       v_tenant,
       a.action_id,
-      2,
+      5,
       'execution',
       'powerhouse_sales_actions',
       a.action_id::text,
@@ -143,27 +171,6 @@ begin
         'truth','observed_execution'
       ),
       a.executed_at
-    )
-    on conflict (tenant_id,idempotency_key) do nothing;
-  elsif a.status='expired' then
-    insert into public.powerhouse_cycle_events(
-      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
-      evidence_ref,idempotency_key,payload,occurred_at
-    )
-    values(
-      v_tenant,
-      a.action_id,
-      2,
-      'next_decision',
-      'powerhouse_sales_actions',
-      a.action_id::text,
-      v_evidence_ref,
-      'sales-action:' || a.action_id::text || ':expired',
-      jsonb_build_object(
-        'status','expired',
-        'truth','observed_terminal_nonexecution'
-      ),
-      coalesce(a.updated_at,now())
     )
     on conflict (tenant_id,idempotency_key) do nothing;
   end if;
