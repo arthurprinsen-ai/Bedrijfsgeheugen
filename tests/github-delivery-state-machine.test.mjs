@@ -29,7 +29,7 @@ test('PR machine metadata is exact-once and terminal lease is lineage-bound',()=
   const dup=validateMachineReadablePrBody({body:body('Obligation-ID: duplicate'),candidateHeadSha:B,currentMainSha:A,policy});
   assert.equal(dup.ok,false);
   assert.ok(dup.errors.includes('OBLIGATION_ID_DUPLICATE'));
-  const drift=validateMachineReadablePrBody({body:body().replace(A,'c'.repeat(40)),candidateHeadSha:B,currentMainSha:A,policy});
+  const drift=validateMachineReadablePrBody({body:body().replace(`Writer-Lease-Main-Epoch: ${A}`,`Writer-Lease-Main-Epoch: ${'c'.repeat(40)}`),candidateHeadSha:B,currentMainSha:A,policy});
   assert.equal(drift.ok,false);
 });
 
@@ -47,4 +47,10 @@ test('terminal merge requires current epoch, exact validated head, green require
   const behind=evaluateTerminalMergeGuard({body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:1,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[]});
   assert.equal(behind.ok,false);
   assert.ok(behind.reasons.includes('BEHIND_MAIN'));
+  const unresolved=evaluateTerminalMergeGuard({body:body(),policy,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[]});
+  assert.equal(unresolved.ok,false);
+  assert.ok(unresolved.reasons.includes('MERGEABILITY_UNRESOLVED'));
+  const successor=evaluateTerminalMergeGuard({body:body(),policy,candidateNumber:12,candidateHeadSha:B,validatedHeadSha:B,currentMainSha:A,behindBy:0,mergeable:true,requiredChecks:[{name:'Required',conclusion:'success'}],openCandidates:[{number:13,body:body()}]});
+  assert.equal(successor.ok,false);
+  assert.match(successor.reasons.join(','),/CANONICAL_SUCCESSOR_EXISTS/);
 });
