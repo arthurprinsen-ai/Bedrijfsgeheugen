@@ -23,6 +23,10 @@ on:
       - 'supabase/migrations/**powerhouse_closure**'
       - '.github/workflows/powerhouse-closure-a-f.yml'
 
+concurrency:
+  group: powerhouse-closure-a-f-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
