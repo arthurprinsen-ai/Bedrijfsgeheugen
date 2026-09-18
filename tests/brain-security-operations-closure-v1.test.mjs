@@ -10,6 +10,7 @@ const socialMetricReplayPath = new URL('../supabase/migrations/20260910104922_bg
 const notionReplayPath = new URL('../supabase/migrations/20260909181648_notion_post_feature_staging.sql', import.meta.url);
 const postFeaturesReplayPath = new URL('../supabase/migrations/20260911101107_revenue_content_intelligence_20260911_v2.sql', import.meta.url);
 const offertesAkkoordReplayPath = new URL('../supabase/migrations/20260915111957_offertes_akkoord_op_replay_baseline.sql', import.meta.url);
+const offertesAkkoordDoorReplayPath = new URL('../supabase/migrations/20260916090823_offertes_akkoord_door_replay_baseline.sql', import.meta.url);
 
 const requiredOpen = new Set([
   'isolated_restore_dr_exercise',
@@ -102,6 +103,14 @@ test('offertes akkoord timestamp exists before commercial learning pricing view 
   assert.match(sql, /add column if not exists akkoord_op timestamptz/i);
   assert.doesNotMatch(sql, /default\s+/i);
   assert.doesNotMatch(sql, /not null/i);
+});
+
+test('offertes akkoord actor and FK exist before structure hygiene creates its index', () => {
+  const sql = fs.readFileSync(offertesAkkoordDoorReplayPath, 'utf8');
+  assert.match(sql, /add column if not exists akkoord_door uuid/i);
+  assert.match(sql, /constraint offertes_akkoord_door_fkey/i);
+  assert.match(sql, /foreign key \(akkoord_door\) references auth\.users\(id\) on delete set null/i);
+  assert.doesNotMatch(sql, /akkoord_door uuid[^;]*not null/i);
 });
 
 test('CI gate runs the closure test read-only', () => {
