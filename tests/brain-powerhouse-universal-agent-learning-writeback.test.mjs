@@ -216,3 +216,13 @@ test('authorized chats and agents must self-promote green candidates to producti
 });
 
 // CI silent-start recovery trigger: PR 2044
+
+
+test('predictive proof-mesh delivery skill is mandatory in chat preflight', () => {
+  const skillPath = 'brain/skills/powerhouse-fast-rolling-delivery-v1.json';
+  assert.ok(preflightSource.includes(skillPath));
+  const packet = compileChatLearningPreflight({ rootDir });
+  const skillSource = packet.sources.find(item => item.path === skillPath);
+  assert.ok(skillSource, 'predictive proof-mesh delivery skill missing from compiled preflight packet');
+  assert.equal(skillSource.fingerprint, 'powerhouse-predictive-proof-mesh-delivery-v3');
+});
