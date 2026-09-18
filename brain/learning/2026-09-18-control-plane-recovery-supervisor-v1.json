@@ -1,0 +1,17 @@
+{
+  "fingerprint": "control-plane|recovery-supervisor|safe-replay-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "root_cause": "Existing watchdog could detect stale work, but generic recovery either handled only a selftest special-case or failed closed without producing a machine-readable next action.",
+  "prevention_rule": "Recovery may automatically replan only after readback proves side_effect_state=NOT_STARTED and safe_replay=true. STARTED, SUCCEEDED or UNKNOWN side-effect states never replay automatically.",
+  "enforcement": [
+    "powerhouse_control_plane_next_action_v1",
+    "powerhouse_reconciliation_worker_v2",
+    "service-role-only execution",
+    "regression tests"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}
