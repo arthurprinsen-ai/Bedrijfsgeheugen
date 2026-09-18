@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const sql=fs.readFileSync('supabase/migrations/20260918104501_instagram_media_job_materializer_v1.sql','utf8');
+const sql=fs.readFileSync('supabase/migrations/20260918083118_instagram_media_job_materializer_v1.sql','utf8');
 
 test('daily content loop materializes exactly one canonical media job',()=>{
   assert.match(sql,/powerhouse_ensure_instagram_media_job_v1/);
