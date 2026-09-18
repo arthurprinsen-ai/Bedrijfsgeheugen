@@ -60,7 +60,7 @@ jobs:
           git commit -m "Regulatory source baseline observed"
           HEAD_SHA=$(git rev-parse HEAD)
           git push origin "HEAD:$BRANCH"
-          gh pr create --base main --head "$BRANCH" --title "Regulatory source candidate ${GITHUB_RUN_ID}" --body "$(cat <<EOF
+          PR_URL=$(gh pr create --base main --head "$BRANCH" --title "Regulatory source candidate ${GITHUB_RUN_ID}" --body "$(cat <<EOF
 Obligation-ID: regulatory-source-watch-${GITHUB_RUN_ID}
 Delivery-Lane: data
 Candidate-Type: regulatory-source-observation
@@ -77,4 +77,5 @@ Writer-Lease-Release: MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK
 
 Raw official-source evidence was persisted before this projection candidate.
 EOF
-)"
+)")
+          gh pr merge --auto --squash "$PR_URL"
