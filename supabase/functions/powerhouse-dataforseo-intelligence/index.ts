@@ -33,8 +33,9 @@ Deno.serve(async(req:Request)=>{
     });
     const body:any=await response.json().catch(()=>({}));
     if(!response.ok) throw new Error(`DATAFORSEO_HTTP_${response.status}`);
+    if(Number(body?.status_code||0)!==20000) throw new Error(`DATAFORSEO_RESPONSE_${body?.status_code}:${clean(body?.status_message).slice(0,180)}`);
     const task=body?.tasks?.[0];
-    if(Number(task?.status_code||0)>=40000) throw new Error(`DATAFORSEO_TASK_${task?.status_code}:${clean(task?.status_message).slice(0,180)}`);
+    if(Number(task?.status_code||0)!==20000) throw new Error(`DATAFORSEO_TASK_${task?.status_code}:${clean(task?.status_message).slice(0,180)}`);
 
     const items=Array.isArray(task?.result?.[0]?.items)?task.result[0].items:[];
     let stored=0, evidence=0;
