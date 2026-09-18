@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-DELIVERY-CAPACITY-OWNER-AUTHORITY-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|capacity-owner-authority|v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-delivery-capacity-owner-authority-v1",
+  "problem": "Terminal delivery could generate avoidable churn when deliberate capacity backpressure was mistaken for failure, candidate type metadata did not match actual semantics, or multiple chats reacted to older heads while the canonical owner was still advancing the same obligation.",
+  "evidence": {
+    "reference_prs": [2100, 2114],
+    "capacity_state": "WAITING_CAPACITY / FINISH_EXISTING_WORK_FIRST observed while an existing terminal obligation legitimately occupied the delivery control plane.",
+    "serialization_state": "BLOCKED_PROMOTION_SERIALIZATION cleared only after correcting a genuine Candidate-Type misclassification from promotion to implementation.",
+    "owner_head_state": "PR #2100 repeatedly advanced to newer exact heads while older green or in-progress runs remained visible; only the newest owner head remained authoritative."
+  },
+  "root_causes": [
+    "Capacity/backpressure status was not always distinguished from product or policy failure.",
+    "Candidate-Type was treated as descriptive metadata instead of behavior-changing delivery metadata.",
+    "Older exact-head evidence could be over-weighted after the canonical owner had already advanced the same obligation.",
+    "Multiple actors touching the same active writer branch can create writer-head thrash and invalidate each other's work."
+  ],
+  "prevention": [
+    "CAPACITY_IS_BACKPRESSURE_NOT_FAILURE: WAITING_CAPACITY and FINISH_EXISTING_WORK_FIRST do not justify product-code mutation.",
+    "CANDIDATE_TYPE_IS_SEMANTIC_CONTROL: candidate type must reflect actual delivery semantics before admission.",
+    "NO_SERIALIZATION_BYPASS_BY_RELABEL: never relabel a true promotion just to bypass promotion serialization.",
+    "LATEST_OWNER_HEAD_IS_AUTHORITY: when the canonical owner advances the same obligation, only the latest owner head may authorize merge; older runs remain audit evidence.",
+    "NO_WRITER_HEAD_THRASH: do not force-update an actively progressing canonical owner branch unless concrete failure or owner stagnation is proven.",
+    "CAPACITY_AWARE_SCHEDULING: use active terminal-owner count and backpressure signals to decide when to start expensive CI or terminal work."
+  ],
+  "optimization_metrics": [
+    "capacity_backpressure_count",
+    "promotion_serialization_block_count",
+    "candidate_type_reclassification_count",
+    "owner_head_supersession_count",
+    "writer_head_thrash_avoided_count"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "brain/skills/powerhouse-delivery-self-optimization-v1.json"
+  ],
+  "expected_effect": {
+    "direction": "reduce avoidable branch churn, repeated CI and false recovery actions while preserving serialization and owner authority",
+    "success_condition": "future agents classify capacity, candidate semantics and owner-head movement correctly before mutating code or branch state"
+  }
+}
