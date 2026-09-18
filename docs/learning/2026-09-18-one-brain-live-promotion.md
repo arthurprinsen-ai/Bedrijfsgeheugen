@@ -58,3 +58,20 @@ Current terminal status for #2023 remains:
 `RECORDED_PENDING_FINAL_DELIVERY_READBACK`
 
 It must not be promoted to `LIVE & BEWEZEN` until the exact current #2023 head passes required gates, protected merge completes, the production migration is applied, and the One Brain runtime/readback is verified.
+
+## ONE BRAIN Constitution
+
+Fingerprint: `powerhouse-one-brain-constitution-v1`
+
+Powerhouse is one brain. Every chat, agent, skill, workflow, scheduler, portal, cockpit and future capability is an intrinsic execution node of the same canonical organism.
+
+Mandatory inheritance:
+- canonical truth only; no parallel brain, truth store, queue, learning store or isolated agent memory;
+- shared-state/history/obligation/evidence preflight before material work;
+- one decision loop: OBSERVE → UNDERSTAND → PREDICT → DECIDE → EXECUTE → READBACK → OUTCOME/VALUE → LEARN → PREVENT/OPTIMIZE;
+- one delivery loop ending only after production readback + outcome/value + learning/prevention writeback;
+- one human daily-action queue spanning LinkedIn, e-mail, phone, meetings, proposals, articles, newsletters, blogs, customer portal and content review;
+- one active executable candidate per obligation;
+- every new capability must map to canonical memory, intelligence, decisioning, execution, evidence, value/outcome and learning before it can be production-ready.
+
+Machine-readable canonical record: `brain_records.powerhouse-one-brain-constitution-v1`.
