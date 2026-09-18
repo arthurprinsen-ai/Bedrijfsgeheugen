@@ -1,0 +1,70 @@
+{
+  "type": "POWERHOUSE_SKILL_CONTRACT",
+  "version": "POWERHOUSE-LIVE-PROVEN-DELIVERY-SKILL-v1",
+  "fingerprint": "powerhouse|universal-live-proven-delivery|exact-head|production-readback|learning-writeback|v1",
+  "status": "ACTIVE",
+  "scope": [
+    "chat",
+    "agent",
+    "workflow",
+    "autonomous_execution_node"
+  ],
+  "purpose": "Prevent any material Powerhouse change from being treated as live or done before exact-head gates, protected promotion, production/provider readback, functional verification and canonical learning writeback are proven on the same lineage.",
+  "entry_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "positive_terminal_states": [
+    "LIVE_PROVEN",
+    "FULFILLED"
+  ],
+  "required_sequence": [
+    "canonical_state_preflight",
+    "existing_lineage_and_obligation_read",
+    "bounded_execution",
+    "exact_head_verification",
+    "required_gates_terminal_green",
+    "protected_merge_or_promote",
+    "deploy_or_provider_execution",
+    "production_or_provider_readback",
+    "functional_and_integration_verification",
+    "outcome_and_evidence_writeback",
+    "learning_and_prevention_writeback",
+    "canonical_state_refresh",
+    "LIVE_PROVEN"
+  ],
+  "non_terminal_recoverable_states": [
+    "COMMITTED",
+    "PR_OPEN",
+    "CI_QUEUED",
+    "CI_PENDING",
+    "CI_FAILED",
+    "TIMEOUT",
+    "CHAT_STOPPED",
+    "MODEL_STOPPED",
+    "WORKER_LOST",
+    "LEASE_EXPIRED",
+    "MERGED_WITHOUT_READBACK",
+    "DEPLOYED_WITHOUT_FUNCTIONAL_READBACK",
+    "STALE_STATE",
+    "MISSING_CANONICAL_LINK",
+    "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  ],
+  "invariants": [
+    "NO_LIVE_WITHOUT_EXACT_HEAD_PROOF",
+    "NO_LIVE_WITHOUT_REQUIRED_GATES",
+    "NO_LIVE_WITHOUT_PROTECTED_PROMOTION",
+    "NO_LIVE_WITHOUT_PRODUCTION_READBACK",
+    "NO_LIVE_WITHOUT_FUNCTIONAL_VERIFICATION",
+    "NO_LIVE_WITHOUT_CANONICAL_POWERHOUSE_LINK",
+    "NO_DONE_WITHOUT_OUTCOME_EVIDENCE",
+    "NO_DONE_WITHOUT_LEARNING_WRITEBACK",
+    "SAME_LINEAGE_RECOVERY",
+    "HISTORICAL_EVIDENCE_CANNOT_PROVE_NEW_HEAD"
+  ],
+  "resume_rule": "Any incomplete material run resumes from the last verified checkpoint on the same canonical lineage; it does not create a parallel truth or claim success.",
+  "evidence_rule": "Every terminal success records candidate/head identity, gate evidence, merge/promote identity, deployed identity, production/provider readback, functional outcome, canonical registration and learning/prevention writeback.",
+  "linked_authority": [
+    "AGENTS.md",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    "config/powerhouse-one-loop-v1.json",
+    "brain/learning/2026-09-17-powerhouse-one-loop-v1.json"
+  ]
+}
