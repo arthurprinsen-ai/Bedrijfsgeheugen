@@ -30,7 +30,8 @@ const CAPABILITY_PROBES=Object.freeze({
  wijzigingen:{pageId:'wijzigingen',path:'portal.changes.toTasks.theme',value:'productie-parity-probe'},
  advies:{pageId:'advies',path:'portal.advice.modelFilter',value:'productie-parity-probe'},
  offerte:{pageId:'offerte',path:'portal.offer.scope',value:'productie-parity-probe'},
- roadmap:{pageId:'roadmap',path:'portal.roadmap.draft.title',value:'productie-parity-probe'}
+ roadmap:{pageId:'roadmap',path:'portal.roadmap.draft.title',value:'productie-parity-probe'},
+ uitvoering:{pageId:'uitvoeringsladder',path:'portal.execution.completed.finance.0',value:true}
 });
 
 async function hideNetlifyChrome(page){
@@ -84,7 +85,7 @@ test('all protected legacy workspaces render natively without legacy portal traf
  expect(pageErrors,'protected V2 routes must have no uncaught browser errors').toEqual([]);
 });
 
-test('all 24 protected capabilities honor the declared 320, 390 and 430 mobile browser contract',async({page})=>{
+test('all 25 protected capabilities honor the declared 320, 390 and 430 mobile browser contract',async({page})=>{
  test.setTimeout(240_000);
  await hideNetlifyChrome(page);
  for(const [width,height] of PHONE_VIEWPORTS){
@@ -102,7 +103,7 @@ test('all 24 protected capabilities honor the declared 320, 390 and 430 mobile b
  }
 });
 
-test('all 24 protected capability state paths survive demo save and native reopen in the same hydrated session',async({page})=>{
+test('all 25 protected capability state paths survive demo save and native reopen in the same hydrated session',async({page})=>{
  test.setTimeout(240_000);
  await hideNetlifyChrome(page);
  await bootDemo(page);
