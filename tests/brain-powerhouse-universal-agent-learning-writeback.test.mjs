@@ -214,3 +214,5 @@ test('authorized chats and agents must self-promote green candidates to producti
   assert.equal(policy.terminal_status_gate.authorized_candidate_not_promoted, 'NOT_TERMINAL_RECOVERABLE');
   assert.equal(policy.terminal_status_gate.user_followup_required_for_routine_production_promotion, 'CONTRACT_VIOLATION');
 });
+
+// CI silent-start recovery trigger: PR 2044
