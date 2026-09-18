@@ -36,7 +36,11 @@
     "SQUASH_MERGE_IDENTITY_IS_PR_BOUND: never infer a squash-merge candidate from a nonexistent Git parent. Bind production SHA to the exact merged PR and then to that PR's immutable head SHA.",
     "MERGE_PARENT_IS_NOT_UNIVERSAL: ^2 is valid only after proving the production commit actually has at least two parents.",
     "FAILURE_ALARMS_REQUIRE_REASON: every workflow containing a terminal failure path must emit a concrete GitHub issue update or ::error:: annotation in that same run.",
-    "EXACT_HEAD_ONLY: recovery evidence is valid only on the exact current candidate head; superseded runs remain historical diagnosis evidence."
+    "EXACT_HEAD_ONLY: recovery evidence is valid only on the exact current candidate head; superseded runs remain historical diagnosis evidence.",
+    "RECOVERABLE_IS_NONTERMINAL: queued, cancelled, superseded, timeout, worker interruption, or red CI without an external dependency must return to the last proven checkpoint and continue on the canonical lineage.",
+    "NO_BLIND_RETRY: rerun only when the same exact head remains authoritative and the failure is proven transient/execution-only; never rerun a stale or superseded job.",
+    "SUPERSESSION_IS_WRITE_BARRIER: once a successor is canonical, no agent or chat may write to the superseded branch/PR.",
+    "CURRENT_TRUTH_WITH_HISTORICAL_LESSON: regression tests assert current canonical state; historical blocked states remain preserved as reusable prevention evidence, not active expected state."
   ],
   "evidence": {
     "classifier_required_run_id": 35271247630,
@@ -59,5 +63,53 @@
     "recovery_branch": "recovery/powerhouse-one-loop-postmerge-proof-v1",
     "recovery_base_sha": "6ae18de754cb33044108d85ba704c965a5287b88"
   },
-  "terminal_acceptance": "Set terminal status only after the recovery candidate is exact-head green in Required and BRAIN, protected merge succeeds, current main contains the recovery, Production Release Readback and Outcome Obligation Sweep both succeed on the resulting production identity, Config-Wacht is green, and the canonical completion/learning lineage confirms LIVE_PROVEN/FULFILLED."
+  "terminal_acceptance": "Set terminal status only after the recovery candidate is exact-head green in Required and BRAIN, protected merge succeeds, current main contains the recovery, Production Release Readback and Outcome Obligation Sweep both succeed on the resulting production identity, Config-Wacht is green, and the canonical completion/learning lineage confirms LIVE_PROVEN/FULFILLED.",
+  "learning_log": [
+    {
+      "phase": "premerge_recovery",
+      "lesson": "A red or queued CI state is not terminal. Read the first deterministic failure on the current exact head and repair only that cause; do not create parallel candidates or blind retries."
+    },
+    {
+      "phase": "moving_head_reconciliation",
+      "lesson": "Every head move supersedes prior CI authority. Reconcile the new commit before writing; a 409 or cancelled stale-head job is a concurrency signal, not permission to overwrite or rerun obsolete work."
+    },
+    {
+      "phase": "classifier_and_scope_authorities",
+      "lesson": "Delivery-lane classification, PR Change-Scope, and versioned deliveryCandidate.expectedPaths are distinct authorities. A path can satisfy one and still correctly fail another; diagnose the authority actually selected by runtime."
+    },
+    {
+      "phase": "stale_oracle_prevention",
+      "lesson": "When canonical runtime state has moved from blocked to verified, tests must assert current truth while historical denial/failure evidence remains preserved as a prevention lesson rather than as an active oracle."
+    },
+    {
+      "phase": "postmerge_identity",
+      "lesson": "Protected squash merges produce a single-parent production commit. Completion lineage must bind that production SHA to exactly one merged PR whose merge_commit_sha matches, then use the immutable PR head SHA; ^2 is only valid after proving a multi-parent merge."
+    },
+    {
+      "phase": "observability",
+      "lesson": "Durable evidence alone is insufficient for an operational failure. Every terminal non-zero workflow path must also emit an operator-visible ::error:: or equivalent notification with concrete state and identity."
+    },
+    {
+      "phase": "single_candidate_supersession",
+      "lesson": "When a recovery successor becomes canonical, older recovery PRs must be superseded and receive no further writes. One obligation keeps one active executable candidate."
+    }
+  ],
+  "current_recovery_checkpoint": {
+    "pull_request": 1985,
+    "head_sha": "e1d5c364410396d0099e06c46fa19976df3e0fc1",
+    "state": "RECOVERING_POST_MERGE_PROOF",
+    "terminal": false,
+    "last_proven_failure": {
+      "workflow": "BRAIN delivery",
+      "job_id": 105378134075,
+      "state": "BLOCKED_METADATA_INVALID",
+      "reasons": [
+        "OBLIGATION_ID_MISSING",
+        "DELIVERY_LANE_INVALID",
+        "CANDIDATE_TYPE_INVALID",
+        "BASE_SHA_INVALID"
+      ]
+    },
+    "rule": "Do not mark LIVE_PROVEN/FULFILLED until exact-head Required+BRAIN, protected merge, current-main ancestry/readback, Production Release Readback, Outcome Obligation Sweep, Config-Wacht, and canonical completion/writeback are all terminal green."
+  }
 }
