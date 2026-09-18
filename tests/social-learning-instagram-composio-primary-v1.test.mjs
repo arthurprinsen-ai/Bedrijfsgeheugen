@@ -27,6 +27,9 @@ test('Composio Instagram path keeps exact proof and provider readback',()=>{
   assert.match(publisher,/hook_type: clean\(art\.generation_evidence\?\.hook_type\)/);
   assert.match(publisher,/state:'published'/);
   assert.match(publisher,/recordObligation\(db,runDate,row.channel,'PUBLISHED'/);
+  assert.match(publisher,/status:authMissing\?'waiting_auth':'failed'/);
+  assert.match(publisher,/state:authMissing\?'content_ready':'failed'/);
+  assert.match(publisher,/authMissing\?'APPROVED':'FAILED'/);
 });
 
 

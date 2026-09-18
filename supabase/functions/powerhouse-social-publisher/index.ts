@@ -274,10 +274,10 @@ Deno.serve(async (req) => {
       } catch(error){
         const message=error instanceof Error?error.message:String(error);
         const evidence={...(row.delivery_evidence||{}),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'instagram-composio-primary-v1',make_dependency:false};
-        const authMissing=message==='COMPOSIO_INSTAGRAM_AUTH_REQUIRED';
-        await db.from('powerhouse_channel_decisions').update({state:authMissing?'blocked':'failed',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,authMissing?'BLOCKED':'FAILED',null,evidence,authMissing?'Connect Composio Instagram credentials; reuse the same proven media without regeneration.':'Retry only after Composio transport diagnosis; never fall back to Make.',message);
-        results.push({channel:row.channel,status:authMissing?'blocked':'failed',provider:'composio',error:message});
+        const authMissing=message==='COMPOSIO_INSTAGRAM_AUTH_REQUIRED'||message==='COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED';
+        await db.from('powerhouse_channel_decisions').update({state:authMissing?'content_ready':'failed',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,authMissing?'APPROVED':'FAILED',null,evidence,authMissing?'Await Composio Instagram authorization and retry automatically with the same proven media; do not regenerate.':'Retry only after Composio transport diagnosis; never fall back to Make.',message);
+        results.push({channel:row.channel,status:authMissing?'waiting_auth':'failed',provider:'composio',error:message});
         continue;
       }
     }
