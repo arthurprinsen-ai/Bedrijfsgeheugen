@@ -20,7 +20,8 @@
     "Protected legacy surfaces must have populated, partial and empty-state production readback coverage.",
     "Do not use empty-state fallbacks that collapse required models, charts, navigation or management surfaces.",
     "A parity test must assert structural presence independently from whether business data exists.",
-    "Production DOM readback is authoritative for whether a surface is actually delivered."
+    "Production DOM readback is authoritative for whether a surface is actually delivered.",
+    "Canonical delivery metadata fields such as Supersedes must use the controller-approved value format; recovery context belongs in prose, not inside the metadata value."
   ],
   "evidence": {
     "implementationFiles": [
@@ -33,7 +34,12 @@
       "protected merge",
       "main production DOM readback",
       "main SHA readback"
-    ]
+    ],
+    "admissionRecovery": {
+      "failedState": "BLOCKED_METADATA_INVALID",
+      "failedReason": "SUPERSEDES_INVALID",
+      "correction": "Supersedes normalized to none; PR #2004 recovery context retained in prose"
+    }
   },
   "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
 }
