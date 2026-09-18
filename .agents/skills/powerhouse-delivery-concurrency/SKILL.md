@@ -64,3 +64,10 @@ The executing/recovering node must continue or resume until one of these is evid
 
 Canonical fingerprint: `delivery|no-pending-final-output|v1`.
 Canonical authority: `brain/policies/powerhouse-agent-continuity-v1.json`.
+
+
+## Borging closure invariant
+
+Borging is not post-processing. When a delivery creates a canonical learning/prevention rule, the same lineage owns its durable writeback into the relevant documentation and skills and must prove that writeback on current main before terminal completion. A merged implementation with stale learning/skill surfaces is non-terminal.
+
+Fingerprint: `delivery|borging-closure|material-writeback|v1`.

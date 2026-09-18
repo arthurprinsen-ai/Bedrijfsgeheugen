@@ -291,3 +291,15 @@ test('delivery concurrency skill inherits no-pending terminal output rule', () =
     'may not transfer responsibility back to the user'
   ]) assert.ok(source.toLowerCase().includes(marker.toLowerCase()), `missing delivery-skill terminal marker: ${marker}`);
 });
+
+
+test('borging closure remains a material writeback across continuity and delivery skills', () => {
+  const continuity = fs.readFileSync(new URL('../.agents/skills/powerhouse-continuity/SKILL.md', import.meta.url), 'utf8');
+  const delivery = fs.readFileSync(new URL('../.agents/skills/powerhouse-delivery-concurrency/SKILL.md', import.meta.url), 'utf8');
+  for (const source of [continuity, delivery]) {
+    assert.ok(source.includes('delivery|borging-closure|material-writeback|v1'));
+  }
+  const learning = JSON.parse(fs.readFileSync(new URL('../brain/learning/2026-09-18-no-pending-terminal-output-v1.json', import.meta.url), 'utf8'));
+  assert.equal(learning.borging_closure?.status, 'LIVE_BEWEZEN');
+  assert.equal(learning.borging_closure?.pull_request, 2104);
+});
