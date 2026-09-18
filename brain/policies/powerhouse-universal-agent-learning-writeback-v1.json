@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 3,
+  "revision": 4,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
@@ -22,7 +22,11 @@
     "EVERY_MATERIAL_SOURCE_HAS_PROVENANCE_FRESHNESS_CONFIDENCE_AND_SECURITY_CLASS",
     "SECRETS_AND_SENSITIVE_DATA_NEVER_ENTER_GENERAL_LEARNING_PAYLOADS",
     "ONE_COMPACT_CURRENT_STATE_PER_MATERIAL_SCOPE",
-    "NO_RECONFIRMATION_FOR_ALREADY_AUTHORIZED_POWERHOUSE_EXECUTION"
+    "NO_RECONFIRMATION_FOR_ALREADY_AUTHORIZED_POWERHOUSE_EXECUTION",
+    "ALL_MATERIAL_DATA_SOURCES_USE_UNIFIED_ONE_BRAIN_EVIDENCE_SPINE",
+    "CONNECTED_SOURCE_IS_NOT_PERSISTED_EVIDENCE",
+    "SOURCE_GREEN_REQUIRES_FRESH_OBSERVED_READBACK",
+    "TRANSPORT_METADATA_NEVER_REPLACES_PLATFORM_TRUTH"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -170,7 +174,34 @@
     "sensitive_payload_default": "REFERENCE_NOT_COPY",
     "personal_or_confidential_data_rule": "Store only the minimum necessary metadata and evidence reference allowed by purpose, access control and retention policy; do not duplicate raw sensitive payloads into general-purpose learning stores.",
     "external_data_rule": "External information must retain source/provenance, observed_at or freshness, confidence and evidence reference so later agents can distinguish source fact from derived inference.",
-    "derived_data_rule": "Derived metrics, scores, model outputs and recommendations must retain lineage to inputs, version/formula/model where relevant, timestamp and confidence."
+    "derived_data_rule": "Derived metrics, scores, model outputs and recommendations must retain lineage to inputs, version/formula/model where relevant, timestamp and confidence.",
+    "unified_data_spine": {
+      "fingerprint": "powerhouse-unified-data-intelligence-spine-v1",
+      "required_for": [
+        "social",
+        "search",
+        "analytics",
+        "external_intelligence",
+        "portal_state",
+        "future_material_data_producers"
+      ],
+      "canonical_source_registry": "public.powerhouse_evidence_sources",
+      "canonical_observations": "public.powerhouse_evidence_source_observations",
+      "canonical_runtime_events": "public.powerhouse_runtime_events",
+      "health_readback": "public.powerhouse_data_spine_health_v1",
+      "reconciliation": "public.powerhouse_data_spine_reconcile_v1",
+      "watchdog": "public.powerhouse_data_spine_watchdog_v1",
+      "rules": [
+        "reuse_existing_source_authority_before_creating_new_store",
+        "configured_or_connected_is_not_evidence",
+        "freshness_and_quality_are_required_for_green",
+        "missing_or_stale_producers_fail_closed",
+        "native_platform_truth_is_distinct_from_transport",
+        "provider_errors_are_not_success",
+        "tenant_and_provenance_lineage_must_survive_projection",
+        "learning_writeback_must_reference_source_evidence"
+      ]
+    }
   },
   "current_state_contract": {
     "required": true,
