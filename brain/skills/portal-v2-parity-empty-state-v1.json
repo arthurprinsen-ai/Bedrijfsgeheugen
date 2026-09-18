@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_AGENT_SKILL",
+  "version": "PORTAL-V2-PARITY-EMPTY-STATE-v1",
+  "status": "ACTIVE",
+  "fingerprint": "portal-v2-empty-state-surface-preservation-v1",
+  "name": "portal-v2-empty-state-surface-preservation",
+  "scope": [
+    "Portal V2 overview",
+    "Portal V2 management surfaces",
+    "navigation",
+    "legacy-to-v2 parity",
+    "customer-state rendering",
+    "production readback"
+  ],
+  "purpose": "Preserve protected Portal V2 decision surfaces even when customer data is missing, partial or not yet loaded, while keeping customer truth separate from derived Powerhouse signals.",
+  "trigger_when": [
+    "changing Portal V2 overview or navigation",
+    "migrating a protected legacy capability into V2",
+    "adding an empty/loading/unknown customer state",
+    "changing profile, maturity, adoption, blocker or organisation-status rendering",
+    "validating Portal V2 production parity"
+  ],
+  "required_behavior": [
+    "Read the current parity inventory and relevant learning fingerprint before changing the surface.",
+    "Keep the complete protected surface structurally present for populated, partial and empty customer states.",
+    "Represent missing truth explicitly as unknown, not-filled or not-determined; never synthesize a maturity stage, CMMI score, blocker or customer answer.",
+    "Keep global navigation reachable inside opened Portal V2 workspaces.",
+    "Use canonical customer state as truth; derived Powerhouse signals remain separately labelled and may not backfill missing customer answers.",
+    "Add regression coverage for populated, partial and empty states.",
+    "Require exact-head Portal V2 tests plus production DOM/readback before claiming LIVE_AND_PROVEN.",
+    "Write root cause, failed attempts, fix, regression and production evidence back to canonical Powerhouse learning."
+  ],
+  "forbidden_patterns": [
+    "collapse multiple protected management surfaces into one empty-state sentence",
+    "hide adoption curve or organisation-state UI because profile data is absent",
+    "invent default CMMI or adoption stage in customer-facing truth",
+    "treat code presence as equivalent to production rendering",
+    "create a parallel portal truth or duplicate persistence path"
+  ],
+  "evidence_lineage": {
+    "learning": "brain/learning/2026-09-18-portal-v2-overview-navigation-parity-v1.json",
+    "human_documentation": "docs/learning/2026-09-18-portal-v2-overview-navigation-parity.md",
+    "source_pr": 2008,
+    "exact_candidate_head": "193ebfa4046d0049bed9f7f9f48d54cdd56fccf2",
+    "production_merge_sha": "84231d46cc2bb23db6da202edef4c40a8c963b05",
+    "production_deploy_id": "6aacdac88a1b590008d3af85"
+  },
+  "consumers": [
+    "agent-website-ux",
+    "agent-reliability",
+    "agent-data-quality"
+  ]
+}
