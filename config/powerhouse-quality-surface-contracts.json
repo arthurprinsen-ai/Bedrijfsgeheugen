@@ -65,6 +65,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-runtime",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-runtime/index.ts",
+      "evidence_contract": "tests/powerhouse-runtime-action-learning-api.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-social-publisher",
       "type": "function",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
