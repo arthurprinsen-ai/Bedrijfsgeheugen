@@ -45,7 +45,7 @@ jobs:
         run: BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
       - name: Production build — canonical policy + SEO enrichment
         run: BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         with:
           python-version: '3.12'
       - name: Playwright installeren
