@@ -6,6 +6,8 @@ const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/
 const sources=JSON.parse(fs.readFileSync('config/powerhouse-data-sources.json','utf8'));
 
 test('Instagram publishing is Composio-primary and never Make fallback',()=>{
+  assert.match(publisher,/backend\.composio\.dev\/api\/v3/);
+  assert.doesNotMatch(publisher,/api\/v3\.1\/tools\/execute/);
   assert.match(publisher,/INSTAGRAM_POST_IG_USER_MEDIA/);
   assert.match(publisher,/INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
   assert.match(publisher,/INSTAGRAM_GET_IG_MEDIA/);

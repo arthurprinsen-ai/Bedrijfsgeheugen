@@ -26,13 +26,13 @@ class BufferHttpError extends Error {
   }
 }
 
-const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
+const COMPOSIO_BASE='https://backend.composio.dev/api/v3';
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:string,text:string){
   const response=await fetch(`${COMPOSIO_BASE}/tools/execute/${toolSlug}`,{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':apiKey},
-    body:JSON.stringify({connected_account_id:connectedAccountId,version:'latest',text})
+    body:JSON.stringify({connected_account_id:connectedAccountId,text})
   });
   const body:any=await response.json().catch(()=>({}));
   if(!response.ok||body?.successful!==true){
