@@ -2,7 +2,7 @@ name: Powerhouse Repository Janitor
 
 on:
   schedule:
-    - cron: '17 3 * * *'
+    - cron: '*/5 * * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -174,6 +174,51 @@ jobs:
             jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$head_sha" --arg reason ALREADY_CONTAINED_IN_MAIN '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
           done
 
+          # Recover current PR heads that have no Required/BRAIN execution. A missing run is a
+          # recoverable delivery failure, not a reason to create a dummy commit or parallel PR.
+          now_epoch="$(date +%s)"
+          jq -c '.[] | select(.state == "open")' .artifacts/open-prs-after.json | while read -r pr_json; do
+            pr="$(jq -r '.number' <<<"$pr_json")"
+            branch="$(jq -r '.head.ref' <<<"$pr_json")"
+            head="$(jq -r '.head.sha' <<<"$pr_json")"
+            base="$(jq -r '.base.sha' <<<"$pr_json")"
+            [ -n "$pr" ] && [ -n "$branch" ] && [ -n "$head" ] && [ -n "$base" ] || continue
+
+            committed_at="$(gh api "repos/${GITHUB_REPOSITORY}/commits/${head}" --jq '.commit.committer.date' 2>/dev/null || true)"
+            [ -n "$committed_at" ] || continue
+            head_epoch="$(date -d "$committed_at" +%s 2>/dev/null || echo "$now_epoch")"
+            age_seconds="$((now_epoch-head_epoch))"
+            [ "$age_seconds" -ge 120 ] || continue
+
+            runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs?head_sha=${head}&per_page=100")"
+            required_count="$(jq '[.workflow_runs[] | select(.path==".github/workflows/required-test.yml")] | length' <<<"$runs")"
+            brain_count="$(jq '[.workflow_runs[] | select(.path==".github/workflows/unified-brain-delivery.yml")] | length' <<<"$runs")"
+
+            # Re-read exact identity immediately before each dispatch. Any drift fails closed.
+            current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+            [ "$(jq -r '.state' <<<"$current")" = open ] || continue
+            [ "$(jq -r '.head.sha' <<<"$current")" = "$head" ] || {
+              jq -cn --arg type SKIP_HEAD_DRIFT --argjson pr "$pr" --arg expected "$head" --arg actual "$(jq -r '.head.sha' <<<"$current")" '{type:$type,pr_number:$pr,expected_head:$expected,actual_head:$actual}' >> .artifacts/janitor-runtime-actions.ndjson
+              continue
+            }
+
+            if [ "$required_count" = 0 ]; then
+              if gh workflow run required-test.yml --ref "$branch" -f pr_number="$pr" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"; then
+                jq -cn --arg type DISPATCH_MISSING_REQUIRED --argjson pr "$pr" --arg branch "$branch" --arg sha "$head" '{type:$type,pr_number:$pr,branch:$branch,head_sha:$sha,reason:"ZERO_EXACT_HEAD_RUNS"}' >> .artifacts/janitor-runtime-actions.ndjson
+              else
+                jq -cn --arg type REQUIRED_DISPATCH_FAILED --argjson pr "$pr" --arg branch "$branch" --arg sha "$head" '{type:$type,pr_number:$pr,branch:$branch,head_sha:$sha,reason:"DISPATCH_REJECTED_FAIL_CLOSED"}' >> .artifacts/janitor-runtime-actions.ndjson
+              fi
+            fi
+
+            if [ "$brain_count" = 0 ]; then
+              if gh workflow run unified-brain-delivery.yml --ref "$branch" -f pr_number="$pr" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch" -f verification_only=false; then
+                jq -cn --arg type DISPATCH_MISSING_BRAIN --argjson pr "$pr" --arg branch "$branch" --arg sha "$head" '{type:$type,pr_number:$pr,branch:$branch,head_sha:$sha,reason:"ZERO_EXACT_HEAD_RUNS"}' >> .artifacts/janitor-runtime-actions.ndjson
+              else
+                jq -cn --arg type BRAIN_DISPATCH_FAILED --argjson pr "$pr" --arg branch "$branch" --arg sha "$head" '{type:$type,pr_number:$pr,branch:$branch,head_sha:$sha,reason:"DISPATCH_REJECTED_FAIL_CLOSED"}' >> .artifacts/janitor-runtime-actions.ndjson
+              fi
+            fi
+          done
+
           jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
           cat .artifacts/janitor-runtime-actions.json
       - name: Read back applied cleanup
@@ -188,6 +233,12 @@ jobs:
             [ "$state" = closed ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:${state}"; exit 1; }
           done
           if [ -f .artifacts/janitor-runtime-actions.json ]; then
+            jq -c '.[] | select(.type == "DISPATCH_MISSING_REQUIRED" or .type == "DISPATCH_MISSING_BRAIN")' .artifacts/janitor-runtime-actions.json | while read -r action; do
+              pr="$(jq -r '.pr_number' <<<"$action")"
+              expected="$(jq -r '.head_sha' <<<"$action")"
+              current="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}")"
+              [ "$(jq -r '.head.sha' <<<"$current")" = "$expected" ] || { echo "::error::JANITOR_DISPATCH_HEAD_DRIFT:#${pr}:${expected}:$(jq -r '.head.sha' <<<"$current")"; exit 78; }
+            done
             jq -c '.[] | select(.type == "DELETE_BRANCH")' .artifacts/janitor-runtime-actions.json | while read -r action; do
               branch="$(jq -r '.branch' <<<"$action")"
               encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
