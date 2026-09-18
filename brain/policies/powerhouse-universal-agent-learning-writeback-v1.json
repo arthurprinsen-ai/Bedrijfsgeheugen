@@ -32,7 +32,11 @@
     "PROOF_STATUS_MUST_BE_REFRESHED_FROM_CURRENT_AUTHORITIES",
     "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED",
     "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
-    "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP"
+    "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP",
+    "OPEN_PR_WITH_ZERO_WORKFLOW_RUNS_IS_RECOVERABLE_INCOMPLETE",
+    "STALE_MERGE_BASE_CANNOT_DEFINE_CURRENT_FAILURE_TRUTH",
+    "REPEATED_CI_FAILURE_MUST_REUSE_CURRENT_ROOT_CAUSE_BEFORE_NEW_LINEAGE",
+    "CI_QUEUE_PRESSURE_SELF_HEALS_BY_SINGLE_FLIGHT_SUPERSESSION"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -86,7 +90,7 @@
       "terminal_proof_bundle"
     ],
     "promotion_rule": "When a material candidate is within existing Powerhouse authority and all required gates are green, the current chat/agent/workflow must invoke the canonical protected promotion/deploy path itself and continue through production readback; it must not hand routine promotion back to the user.",
-    "recoverable_stop_rule": "Queued CI, timeout, chat stop, lost worker, stale state or non-terminal deploy state create a recoverable obligation owned by the same canonical lineage; the next eligible execution node resumes from current evidence and continues toward production."
+    "recoverable_stop_rule": "Queued CI, timeout, chat stop, lost worker, stale state, diverged merge-base, an open PR head with zero workflow runs, or non-terminal deploy state create a recoverable obligation owned by the same canonical lineage. The current or next eligible execution node must refresh current main/merge-base truth, retrigger missing checks, collapse superseded single-flight work, isolate the first concrete current failure, repair only that root cause, and continue toward production."
   },
   "canonical_authorities": {
     "notion": {
@@ -281,7 +285,8 @@
       "status"
     ],
     "known_error_rule": "Match fingerprint before diagnosis and reuse a proven recovery before inventing a new one unless fresh evidence invalidates it.",
-    "repeat_error_rule": "A repeated known error without fingerprint reuse is itself a material learning failure and must create a prevention action."
+    "repeat_error_rule": "A repeated known error without fingerprint reuse is itself a material learning failure and must create a prevention action.",
+    "ci_recovery_rule": "For CI incidents, compare exact head plus current merge-base before diagnosis; zero-run heads are silent-start failures, repeated stale failures require re-evaluation, and regression oracles must target prohibited behavior rather than harmless lexical primitives."
   },
   "security_and_access_contract": {
     "least_privilege": true,
