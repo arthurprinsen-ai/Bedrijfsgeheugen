@@ -1,10 +1,10 @@
-const cloneItems=items=>(Array.isArray(items)?items:[]).map((item,index)=>({...item,id:String(item?.id||`roadmap-${index+1}`),sprint:Math.min(12,Math.max(1,Number(item?.sprint??item?.start??1)||1))}));
+const cloneItems=items=>(Array.isArray(items)?items:[]).map((item,index)=>{const sprint=Math.min(12,Math.max(1,Number(item?.sprint??item?.start??1)||1));return {...item,id:String(item?.id||`roadmap-${index+1}`),sprint,start:sprint,duration:Math.min(12,Math.max(1,Number(item?.duration)||1)),progress:Math.min(100,Math.max(0,Number(item?.progress)||0)),done:item?.done===true};});
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const clampSprint=value=>Math.min(12,Math.max(1,Number(value)||1));
 
 export function moveRoadmapItem(items,id,sprint){
  const target=clampSprint(sprint);
- return cloneItems(items).map(item=>item.id===String(id)?{...item,sprint:target}:item);
+ return cloneItems(items).map(item=>item.id===String(id)?{...item,sprint:target,start:target}:item);
 }
 
 export function reorderRoadmapItems(items,sourceId,targetId){
@@ -51,7 +51,7 @@ export function mountRoadmapBoard(root,{domainState,onSaveStatus}={}){
   clearTimeout(saveTimer);saveTimer=setTimeout(()=>domainState.flush?.().then(()=>onSaveStatus?.(domainState.status?.()||'saved')).catch(()=>onSaveStatus?.('error')),250);
   render();
  };
- const updateCard=(id,field,value)=>persist(items.map(item=>item.id===id?{...item,[field]:field==='progress'?Number(value)||0:value}:item));
+ const updateCard=(id,field,value)=>persist(items.map(item=>item.id===id?{...item,[field]:field==='progress'?Number(value)||0:value,...(field==='progress'&&Number(value)>=100?{done:true,status:'Afgerond'}:{})}:item));
  const render=()=>{
   root.innerHTML=boardMarkup(items);
   root.querySelector('[data-add-roadmap]')?.addEventListener('click',()=>persist([...items,{id:`roadmap-${Date.now()}`,title:'Nieuw roadmap-item',dimension:'',owner:'',progress:0,sprint:1,start:1,duration:1,done:false}]));
