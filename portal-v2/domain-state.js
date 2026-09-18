@@ -106,13 +106,16 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
  if(!stateClient?.load||!stateClient?.write)throw new TypeError('PORTAL_STATE_CLIENT_REQUIRED');
  if(businessInputSaver!==null&&typeof businessInputSaver!=='function')throw new TypeError('PORTAL_BUSINESS_INPUT_SAVER_REQUIRED');
  if(typeof businessInputStoreLoader!=='function')throw new TypeError('PORTAL_BUSINESS_INPUT_STORE_LOADER_REQUIRED');
+ let browserLegacyLiftPending=false;
  const domain=createDomainState({
   load:async()=>{
    const snap=await stateClient.load();
    const canonical=snap?.state||{};
    if(stateClient.isDemo?.())return canonical;
    const legacy=readLegacyPortalStateForUser(legacyStorage,stateClient.currentUser?.());
-   return legacy?mergeLegacyPortalStateIntoCanonical(canonical,legacy):canonical;
+   if(!legacy)return canonical;
+   browserLegacyLiftPending=true;
+   return mergeLegacyPortalStateIntoCanonical(canonical,legacy);
   },
   save:async nextState=>{const snap=await stateClient.write(nextState);if(snap?.mode!=='authenticated')throw new Error('PORTAL_STATE_CONFIRMATION_REQUIRED');return snap.state||{};}
  });
@@ -130,7 +133,12 @@ export function createPortalDomainState(stateClient,{businessInputSaver=null,bus
   return saver(input,{authorization});
  }
  async function performInit(){
-  const result=await domain.init();
+  let result=await domain.init();
+  if(browserLegacyLiftPending){
+   domain.patch('portal.migration',{browserLegacyLifted:true,browserLegacyLiftVersion:'2026-09-18-v1'});
+   result=await domain.flush();
+   browserLegacyLiftPending=false;
+  }
   if(stateClient.isDemo?.()||!hasLegacyBusinessInputStorage(legacyStorage))return result;
   const reader=(await loadBusinessInputStore())?.readLegacyPortalBusinessInputs;
   if(typeof reader!=='function')throw new TypeError('PORTAL_LEGACY_BUSINESS_INPUT_READER_REQUIRED');
