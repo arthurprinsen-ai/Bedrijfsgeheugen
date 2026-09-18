@@ -30,7 +30,8 @@ const REQUIRED_INVARIANTS = [
   'EVERY_MATERIAL_SOURCE_HAS_PROVENANCE_FRESHNESS_CONFIDENCE_AND_SECURITY_CLASS',
   'SECRETS_AND_SENSITIVE_DATA_NEVER_ENTER_GENERAL_LEARNING_PAYLOADS',
   'ONE_COMPACT_CURRENT_STATE_PER_MATERIAL_SCOPE',
-  'NO_RECONFIRMATION_FOR_ALREADY_AUTHORIZED_POWERHOUSE_EXECUTION'
+  'NO_RECONFIRMATION_FOR_ALREADY_AUTHORIZED_POWERHOUSE_EXECUTION',
+  'NO_MATERIAL_SKILL_EXECUTION_OUTSIDE_CANONICAL_LOOP'
 ];
 
 const EXPECTED_NOTION_AUTHORITIES = {
@@ -143,4 +144,25 @@ test('chat-learning preflight cannot silently omit universal learning/writeback 
   assert.equal(continuitySource.fingerprint, continuityPolicy.fingerprint);
   assert.ok(packet.fingerprints.includes(policy.fingerprint), 'policy fingerprint missing from preflight signals');
   assert.ok(packet.fingerprints.includes(continuityPolicy.fingerprint), 'continuity fingerprint missing from preflight signals');
+});
+
+test('material skills are canonical execution capabilities with mandatory log, docs and learning writeback', () => {
+  const skill = policy.skill_execution_contract;
+  assert.equal(skill.required, true);
+  assert.equal(skill.actor_kind, 'skill');
+  assert.equal(skill.role, 'CANONICAL_EXECUTION_CAPABILITY');
+  assert.equal(skill.existing_state_preflight_required, true);
+  assert.equal(skill.activity_ledger_required, true);
+  assert.equal(skill.evidence_and_lineage_required, true);
+  assert.equal(skill.documentation_writeback_required, true);
+  assert.equal(skill.learning_writeback_required, true);
+  assert.equal(skill.shared_context_refresh_required, true);
+  assert.equal(skill.next_agent_discoverability_required, true);
+  for (const terminal of [
+    'SKILL_COMPLETED_WITH_LOCAL_OUTPUT_ONLY',
+    'SKILL_COMPLETED_WITHOUT_ACTIVITY_LOG',
+    'SKILL_COMPLETED_WITHOUT_DOCUMENTATION',
+    'SKILL_COMPLETED_WITHOUT_LEARNING_WRITEBACK',
+    'SKILL_COMPLETED_WITHOUT_READBACK'
+  ]) assert.ok(skill.forbidden_terminal_states.includes(terminal), `missing skill forbidden terminal: ${terminal}`);
 });
