@@ -61,7 +61,9 @@
     "requiresHeartbeat": true,
     "requiresLease": true,
     "idempotentReadbackBeforeRetry": true,
-    "oneActiveCandidatePerObligation": true
+    "oneActiveCandidatePerObligation": true,
+    "sameLineageAutoResumeUntilLiveProven": true,
+    "routineProductionPromotionRequiresUserFollowup": false
   },
   "optimization": {
     "finishBeforeStart": true,
@@ -145,6 +147,17 @@
       "OUTCOME_VALUE",
       "LEARN",
       "PREVENT_OPTIMIZE"
-    ]
+    ],
+    "productionExecution": {
+      "selfPromotionRequiredForAuthorizedGreenCandidate": true,
+      "executionNodeOwnsPromotionThroughReadback": true,
+      "userFollowupForRoutineMergeDeploy": false,
+      "interruptionCreatesRecoverableSameLineageObligation": true,
+      "hardBoundariesOnly": [
+        "EXTERNAL_PLATFORM_REQUIRES_EXPLICIT_USER_AUTHORIZATION",
+        "IRREVERSIBLE_OR_HIGH_IMPACT_ACTION_OUTSIDE_EXISTING_AUTHORITY",
+        "MATERIAL_NEW_BUSINESS_CHOICE_WITH_NO_CANONICAL_RULE_OR_SAFE_DEFAULT"
+      ]
+    }
   }
 }

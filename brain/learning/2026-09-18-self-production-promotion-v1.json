@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-SELF-PRODUCTION-PROMOTION-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse-self-production-promotion-v1",
+  "date": "2026-09-18",
+  "obligation_id": "powerhouse-self-production-promotion-v1",
+  "base_main_sha": "0f396f91a50a2018de3cbf2684b7e1fbcb65e0ee",
+  "problem": "Chats and agents could build and verify a candidate yet still leave routine protected merge/deploy as human follow-up.",
+  "root_cause": "Production promotion was permitted in the autonomy contract but was not an explicit ownership obligation of the current authorized execution node.",
+  "fix": [
+    "Make self-promotion mandatory after terminal-green required gates within existing authority.",
+    "Keep protected merge/deploy and production readback in the same execution tail.",
+    "Treat interruption as recoverable same-lineage work rather than a handoff to the user.",
+    "Allow only explicit hard authorization boundaries to stop autonomous production execution."
+  ],
+  "prevention_rules": [
+    "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED",
+    "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+    "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP",
+    "INTERRUPTION_RESUMES_ON_SAME_CANONICAL_LINEAGE"
+  ],
+  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}

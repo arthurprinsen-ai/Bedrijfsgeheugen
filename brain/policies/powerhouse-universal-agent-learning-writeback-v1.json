@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 5,
+  "revision": 6,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, workflows, scenarios, development runs, incidents, recoveries and production verifications",
@@ -29,7 +29,10 @@
     "TRANSPORT_METADATA_NEVER_REPLACES_PLATFORM_TRUTH",
     "NO_LIVE_PROVEN_CLAIM_WITHOUT_VERIFIABLE_PROOF_BUNDLE",
     "NO_PRODUCTION_WRITE_ABSENCE_CLAIM_FROM_CI_ONLY",
-    "PROOF_STATUS_MUST_BE_REFRESHED_FROM_CURRENT_AUTHORITIES"
+    "PROOF_STATUS_MUST_BE_REFRESHED_FROM_CURRENT_AUTHORITIES",
+    "NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED",
+    "AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE",
+    "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -63,8 +66,27 @@
       "DO_YOU_WANT_ME_TO_BORGEN",
       "CAN_I_IMPLEMENT_THIS_ALREADY_AUTHORIZED_FIX",
       "STOP_AFTER_PLAN_WHEN_EXECUTION_IS_ALREADY_AUTHORIZED",
-      "ASK_USER_TO_REPEAT_EXISTING_POWERHOUSE_RULES"
-    ]
+      "ASK_USER_TO_REPEAT_EXISTING_POWERHOUSE_RULES",
+      "WAIT_FOR_USER_TO_MERGE_OR_DEPLOY",
+      "REPORT_GREEN_PR_AS_DONE",
+      "STOP_AT_PREVIEW_AFTER_REQUIRED_GATES_PASS"
+    ],
+    "self_promote_to_production_required": true,
+    "production_promotion_owner": "CURRENT_AUTHORIZED_EXECUTION_NODE",
+    "user_followup_for_routine_promotion": "FORBIDDEN",
+    "required_execution_tail": [
+      "required_gates_terminal_green",
+      "protected_merge_or_promotion",
+      "production_deploy_or_migration",
+      "production_and_provider_readback",
+      "outcome_or_value_verification",
+      "canonical_learning_and_prevention_writeback",
+      "shared_context_refresh",
+      "next_agent_discoverability_readback",
+      "terminal_proof_bundle"
+    ],
+    "promotion_rule": "When a material candidate is within existing Powerhouse authority and all required gates are green, the current chat/agent/workflow must invoke the canonical protected promotion/deploy path itself and continue through production readback; it must not hand routine promotion back to the user.",
+    "recoverable_stop_rule": "Queued CI, timeout, chat stop, lost worker, stale state or non-terminal deploy state create a recoverable obligation owned by the same canonical lineage; the next eligible execution node resumes from current evidence and continues toward production."
   },
   "canonical_authorities": {
     "notion": {
@@ -340,7 +362,9 @@
     "deployment_without_learning": "NOT_LIVE_BEWEZEN",
     "documentation_search_miss_without_id_fetch": "NOT_EVIDENCE_OF_ABSENCE",
     "ci_or_open_pr_without_production_authority_readback": "NOT_PROOF_OF_NO_PRODUCTION_WRITE",
-    "stale_exact_head_evidence": "SUPERSEDED_FOR_ACTIVE_CANDIDATE"
+    "stale_exact_head_evidence": "SUPERSEDED_FOR_ACTIVE_CANDIDATE",
+    "authorized_candidate_not_promoted": "NOT_TERMINAL_RECOVERABLE",
+    "user_followup_required_for_routine_production_promotion": "CONTRACT_VIOLATION"
   },
   "no_duplicate_truth": {
     "rule": "Use existing Powerhouse authorities and ledgers. This contract adds enforcement requirements, not another business truth, memory database, scheduler, documentation tree or learning plane."
@@ -350,7 +374,8 @@
     "brain/policies/chat-to-brain-completeness-v1.json",
     "brain/policies/powerhouse-agent-continuity-v1.json",
     "config/chat-learning-completeness-guard.json",
-    "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json"
+    "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json",
+    "brain/learning/2026-09-18-self-production-promotion-v1.json"
   ],
   "terminal_claim_proof_contract": {
     "required": true,

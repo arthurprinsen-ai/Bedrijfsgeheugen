@@ -28,7 +28,10 @@
     "Treat a changed PR head as superseding terminal evidence from an earlier exact head for the active candidate.",
     "To claim that no production write occurred, read the relevant production/provider mutation or audit authority directly; an unmerged PR or CI state alone is insufficient.",
     "Append every terminal-claim evaluation, including incomplete proof, to the canonical activity ledger and write the resulting status plus evidence references back to shared Powerhouse state.",
-    "After learning/prevention writeback, prove next-agent discoverability by reading the same fingerprint or record through the canonical preflight/discovery route."
+    "After learning/prevention writeback, prove next-agent discoverability by reading the same fingerprint or record through the canonical preflight/discovery route.",
+    "When required gates are terminal green and the change is within existing authority, invoke the canonical protected merge/promotion and production deploy or migration yourself; do not return routine production promotion to the user.",
+    "Continue after merge/deploy through production/provider readback, outcome/value verification, learning/prevention writeback and next-agent discoverability before terminal completion.",
+    "If execution is interrupted by queued CI, timeout, worker loss or chat stop, persist the recoverable obligation on the same lineage so the next eligible execution node resumes rather than asking the user to restart delivery."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
@@ -39,7 +42,9 @@
     "adding a new quality-critical runtime surface without a canonical quality-surface registry entry and evidence contract",
     "claiming LIVE_PROVEN from an earlier chat status, cached exact head, successful deploy acknowledgement or partial green checks",
     "claiming that no production write occurred solely because a PR is open, unmerged, failed or cancelled",
-    "using evidence from a superseded exact head as terminal proof for the current candidate"
+    "using evidence from a superseded exact head as terminal proof for the current candidate",
+    "telling the user to merge or deploy an already-authorized green candidate",
+    "stopping at preview or merge-ready when production promotion is within existing authority"
   ],
   "canonical_evidence": {
     "obligation_id": "powerhouse-structural-gap-closure-v2",
@@ -47,7 +52,8 @@
     "learning": "brain/learning/2026-09-18-missing-connections-recovery-v1.json",
     "human_documentation": "docs/learning/2026-09-18-one-brain-live-promotion.md",
     "terminal_claim_learning": "brain/learning/2026-09-18-terminal-claim-proof-bundle-v1.json",
-    "terminal_claim_policy": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json"
+    "terminal_claim_policy": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+    "self_production_promotion_learning": "brain/learning/2026-09-18-self-production-promotion-v1.json"
   },
   "consumers": [
     "chat-learning-preflight",
