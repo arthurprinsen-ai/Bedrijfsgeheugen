@@ -1,0 +1,60 @@
+{
+  "type": "POWERHOUSE_AGENT_SKILL",
+  "version": "POWERHOUSE-FAST-ROLLING-DELIVERY-v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse-fast-rolling-lane-delivery-v1",
+  "name": "powerhouse-fast-rolling-delivery",
+  "purpose": "Ship safe Powerhouse changes in minutes by combining parallel isolated agent work with one rolling integration candidate per conflict contract, risk-scoped blocking gates, automatic supersession/recovery, protected exact-head promotion and post-merge broad assurance.",
+  "trigger_when": [
+    "building or fixing code, portal, website, automation, Brain or documentation",
+    "multiple agents or chats are working in parallel",
+    "CI queue, drift, timeout, zero-run head or stale PR threatens lead time",
+    "a safe bounded change can use TURBO delivery"
+  ],
+  "operating_model": {
+    "agent_workspace": "isolated_ephemeral_worktree",
+    "integration_unit": "one rolling candidate per conflict contract",
+    "safe_parallelism": "parallel until changed-path, contract, dependency or mutable-resource overlap",
+    "blocking_tests": "changed risk/dependency/contract profile only",
+    "broad_unrelated_tests": "post-merge asynchronous assurance",
+    "promotion": "automatic protected exact-head BG169 promotion when blocking profile is green",
+    "production_truth": "fresh exact-SHA production/provider readback",
+    "rollback": "last-known-good on production regression"
+  },
+  "latency_slo_seconds": {
+    "first_signal": 60,
+    "turbo": 240,
+    "standard": 480
+  },
+  "mandatory_behavior": [
+    "Reuse the existing rolling lane for the obligation/conflict contract; do not open a parallel recovery PR.",
+    "Cancel superseded CI immediately; a stale run is not useful work.",
+    "If an open exact head has no workflow run within the first-signal SLO, dispatch the same lineage and record a silent-start recovery.",
+    "If main moves without overlap, keep the tested candidate; do not rebuild merely for generic drift.",
+    "If there is real path/contract/dependency overlap, refresh only that rolling lane from current main and preserve non-conflicting tested work.",
+    "Use TURBO for bounded non-protected changes and run only changed tests plus immutable safety guards.",
+    "Never admit migrations, auth, security, RLS, permissions, secrets, delivery-control-plane or unknown material scope to TURBO.",
+    "Do not run unrelated broad regression suites in the pre-merge critical path for safe changes.",
+    "After protected merge, run broad assurance asynchronously with single-flight cancellation and persist its outcome.",
+    "Promote immediately when the exact head blocking profile is green; do not wait for unrelated shadow assurance.",
+    "Write timing, queue recovery, failures, root cause and prevention back to Powerhouse learning."
+  ],
+  "forbidden_patterns": [
+    "one PR per agent for overlapping work",
+    "passive CI queue waiting",
+    "re-running superseded exact heads",
+    "global full-suite blocking for a bounded safe delta",
+    "rebase or rebuild on non-overlapping main drift",
+    "opening a new recovery PR for the same obligation",
+    "weakening security, schema, data-integrity or production-readback gates for speed"
+  ],
+  "canonical_sources": [
+    "config/powerhouse-fast-development-protocol-v2.json",
+    "config/powerhouse-parallel-engineering-fabric.json",
+    "config/brain-delivery-system.json",
+    "tools/delivery/turbo-classifier.mjs",
+    ".github/workflows/required-test.yml",
+    ".github/workflows/unified-brain-delivery.yml",
+    ".github/workflows/powerhouse-post-merge-assurance.yml"
+  ]
+}
