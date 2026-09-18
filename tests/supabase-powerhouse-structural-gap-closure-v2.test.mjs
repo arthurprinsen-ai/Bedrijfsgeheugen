@@ -33,3 +33,9 @@ test('platform providers and customer connectors remain separate concepts',()=>{
   assert.match(sql,/from public\.connector_definitions/);
   assert.match(sql,/from public\.powerhouse_evidence_sources/);
 });
+
+test('strict canonical cycle remains evidence-first after historical action bootstrap',()=>{
+  assert.match(sql,/cycles_waiting_for_stage_reconstruction/);
+  assert.match(sql,/current_stage='signal'/);
+  assert.match(sql,/Later canonical stages are never fabricated/);
+});
