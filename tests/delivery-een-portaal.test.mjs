@@ -45,19 +45,18 @@ test('de oude sporen worden doorgestuurd in plaats van doodlopend', () => {
   assert.match(tekst, /^\/portaal\s+\/portal-v2\/\s+301!$/m);
 });
 
-test('de demo-klant komt in hetzelfde portaal als iedereen', () => {
+test('de demo-klant komt via de canonical clean route in Portal V2', () => {
   const tekst = regels().join('\n');
-  // Bewust een rewrite (200!) en geen redirect: de publieke URL blijft gelijk,
-  // zodat gedeelde demolinks blijven werken. Alleen het portaal erachter is V2.
-  assert.match(tekst, /^\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+200!$/m,
-    'de demoAI-klant krijgt nog een ander portaal dan de rest, of de publieke URL verandert');
+  assert.match(tekst, /^\/klantportaal\s+klant=demoAI\s+\/portaal\/demo\s+301!$/m,
+    'demoAI gaat niet via de canonical demo-route');
+  assert.match(tekst, /^\/portaal\/demo\s+\/portal-v2\/\s+200!$/m,
+    'de canonical demo-route serveert Portal V2 niet');
 });
 
-test('het oude klantportaal blijft bereikbaar zolang klanten erop staan', () => {
+test('echte klantslugs blijven bereikbaar via dezelfde canonical Portal V2 entry', () => {
   const tekst = regels().join('\n');
-  // klantportaal.html is het portaal waar echte klantslugs op uitkomen. Dat is
-  // een ander spoor dan portal/ en portal-next/ en gaat hier niet weg: die
-  // migratie loopt via V2 zelf, niet via een redirect.
-  assert.match(tekst, /^\/klantportaal\s+klant=:klant\s+\/klantportaal\.html\s+200!$/m,
-    'de route voor echte klantslugs is weg; die klanten kunnen dan niet meer bij hun portaal');
+  assert.match(tekst, /^\/klantportaal\s+klant=:klant\s+\/portaal\/:klant\s+301!$/m,
+    'de klantparameter wordt niet naar de canonical clean klant-route vertaald');
+  assert.match(tekst, /^\/portaal\/\*\s+\/portal-v2\/:splat\s+200!$/m,
+    'clean klantroutes worden niet door Portal V2 geserveerd');
 });
