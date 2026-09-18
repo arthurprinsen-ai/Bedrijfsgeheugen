@@ -237,7 +237,7 @@ test('Notion synced-post migration replay regressions are backend delivery work'
 test('security operations proof paths are backend delivery work', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   for (const path of ['scripts/security-operations-proof.mjs','tests/security-operations-proof.test.mjs']) {
-    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'sec0ps1234567890', policy });
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'5ec0a1234567890a', policy });
     assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend'], `${path} must be backend delivery work`);
   }
 });
@@ -246,7 +246,7 @@ test('security operations proof paths are backend delivery work', async () => {
 test('page generator fixes are website delivery work', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   for (const path of ['tools/apply-tabbladen.mjs','tools/bouw-inhoudspaginas.mjs','tools/bouw-losse-paginas.mjs']) {
-    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'webgen1234567890', policy });
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abcdef1234567890', policy });
     assert.deepEqual(plan.lanes.map(lane => lane.id), ['website'], `${path} must be website delivery work`);
   }
 });
