@@ -22,7 +22,7 @@ Make is retired. It has **no** execution, orchestration, fallback, recovery or f
 | Data/backend/state | Supabase |
 | Web research/search enrichment | Tavily |
 | General web/search evidence | Google Search |
-| Social publishing/distribution | Buffer |
+| Social publishing/distribution | Composio primary for Instagram; Buffer bounded fallback where explicitly authorized |
 | SEO/SERP intelligence | DataForSEO |
 | Generative images/video/media | OpenArt |
 | Template-based creatives | Placid |
@@ -46,3 +46,9 @@ Every chat/agent must resolve tool choice from this skill before suggesting arch
 ## Prevention rule
 
 Any newly introduced active Make execution reference is a regression. Treat it as a policy defect and replace it with the canonical active connector/tool before terminal delivery.
+
+## Instagram-specific transport rule
+
+For Instagram, Composio is the canonical primary write transport. The publisher must preserve exact-final-media + Mira proof, create/publish through Composio, perform provider readback, and only then write external_id/permalink. Buffer is a bounded secondary fallback only when explicitly authorized by the active transport policy. Make is permanently forbidden as execution, orchestration, recovery or fallback. Missing Composio authorization is a recoverable auth state, never a reason to regenerate media or route through Make.
+
+Fingerprint: `instagram-composio-primary-v1`.
