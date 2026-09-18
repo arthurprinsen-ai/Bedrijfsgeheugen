@@ -38,31 +38,6 @@ export function buildImpactGraph({ paths = [], resources = [], dependencies = []
   return Object.freeze({ paths: stableUnique(paths), resources: stableUnique(resources), dependencies: stableUnique(dependencies), lanes: affected.lanes, contracts: affected.contracts, testProfiles: affected.profiles, failClosed: affected.failClosed, reason: affected.reason });
 }
 
-
-function parseMigrationVersion(value) {
-  const s=String(value??'');
-  if(!/^\d{14}$/.test(s)) throw new Error(`Migration version must be YYYYMMDDHHMMSS: ${s}`);
-  const y=Number(s.slice(0,4)),m=Number(s.slice(4,6)),d=Number(s.slice(6,8)),h=Number(s.slice(8,10)),mi=Number(s.slice(10,12)),sec=Number(s.slice(12,14));
-  const ts=Date.UTC(y,m-1,d,h,mi,sec);
-  const dt=new Date(ts);
-  const roundtrip=`${dt.getUTCFullYear().toString().padStart(4,'0')}${String(dt.getUTCMonth()+1).padStart(2,'0')}${String(dt.getUTCDate()).padStart(2,'0')}${String(dt.getUTCHours()).padStart(2,'0')}${String(dt.getUTCMinutes()).padStart(2,'0')}${String(dt.getUTCSeconds()).padStart(2,'0')}`;
-  if(roundtrip!==s) throw new Error(`Invalid migration version timestamp: ${s}`);
-  return ts;
-}
-function formatMigrationVersion(ts) {
-  const dt=new Date(ts);
-  return `${dt.getUTCFullYear().toString().padStart(4,'0')}${String(dt.getUTCMonth()+1).padStart(2,'0')}${String(dt.getUTCDate()).padStart(2,'0')}${String(dt.getUTCHours()).padStart(2,'0')}${String(dt.getUTCMinutes()).padStart(2,'0')}${String(dt.getUTCSeconds()).padStart(2,'0')}`;
-}
-export function allocateMigrationVersion({existingVersions=[],preferredVersion,maxLookaheadSeconds=3600}={}) {
-  const used=new Set(existingVersions.map(String));
-  const start=parseMigrationVersion(preferredVersion);
-  for(let offset=0;offset<=maxLookaheadSeconds;offset+=1){
-    const candidate=formatMigrationVersion(start+offset*1000);
-    if(!used.has(candidate)) return Object.freeze({version:candidate,preferredVersion:String(preferredVersion),collisionResolved:offset>0,offsetSeconds:offset});
-  }
-  throw new Error(`No free migration version within ${maxLookaheadSeconds}s of ${preferredVersion}`);
-}
-
 export function buildCacheIdentity({ baseSha, candidateSha, paths = [], contracts = [], tests = [], policyVersion, environment = null, configDigest = null, schemaDigest = null, dependencyDigest = null, gateVersion = null, contractDigest = null }) {
   const payload = JSON.stringify({ baseSha, candidateSha, paths: stableUnique(paths), contracts: stableUnique(contracts), tests: stableUnique(tests), policyVersion, environment, configDigest, schemaDigest, dependencyDigest, gateVersion, contractDigest });
   return createHash('sha256').update(payload).digest('hex');

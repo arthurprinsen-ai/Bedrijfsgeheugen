@@ -36,8 +36,7 @@
     "PRODUCTION_PROMOTION_IS_PART_OF_EXECUTION_NOT_USER_FOLLOWUP",
     "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
     "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES",
-    "HEAD_MUTATION_DURING_ACTIVE_TERMINAL_LEASE_IS_CONTRACT_VIOLATION",
-    "OPEN_PR_WITH_ZERO_WORKFLOW_RUNS_IS_RECOVERABLE_INCOMPLETE"
+    "HEAD_MUTATION_DURING_ACTIVE_TERMINAL_LEASE_IS_CONTRACT_VIOLATION"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -90,18 +89,13 @@
       "next_agent_discoverability_readback",
       "terminal_proof_bundle"
     ],
+    "promotion_rule": "When a material candidate is within existing Powerhouse authority and all required gates are green, the current chat/agent/workflow must invoke the canonical protected promotion/deploy path itself and continue through production readback.",
     "writer_lease": {
       "required": true,
-      "preflight_source": "config/branch-delivery-ownership-guard.json",
       "scope": "obligation_and_canonical_pr",
-      "active_state": "TERMINAL_DELIVERY",
+      "terminal_delivery_rule": "Only the lease owner may mutate the canonical branch while terminal delivery is active.",
       "non_owner_behavior": "DEFER_AND_REUSE_EXISTING_LINEAGE",
-      "head_drift_behavior": "FAIL_CLOSED_REBIND_CURRENT_HEAD_AND_LOG_INCIDENT",
-      "release_requires": [
-        "protected_merge_or_terminal_recovery",
-        "production_or_provider_readback",
-        "learning_and_prevention_writeback"
-      ]
+      "head_drift_behavior": "FAIL_CLOSED_REBIND_CURRENT_HEAD_AND_PRESERVE_SINGLE_OWNER"
     }
   },
   "canonical_authorities": {

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {classifyRecovery,criticalWorkflowCoverage,latestCriticalWorkflowRuns} from '../tools/delivery/predictive-controller.mjs';
+import {classifyRecovery,criticalWorkflowCoverage} from '../tools/delivery/predictive-controller.mjs';
 
 test('zero-run head becomes recoverable after first-signal SLO',()=>{
   const r=classifyRecovery({workflowRuns:[],headUpdatedAt:'2026-09-18T08:00:00Z',now:Date.parse('2026-09-18T08:02:00Z')});
@@ -68,29 +68,4 @@ test('supervisor reacts immediately to non-main branch pushes and retains watchd
   assert.match(yaml,/on:\s*\n\s*push:\s*\n\s*branches-ignore:\s*\[main\]/);
   assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
   assert.match(yaml,/PUSH|pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);
-});
-
-
-test('newest critical attempt supersedes older cancelled history on the same exact head',()=>{
-  const runs=[
-    {id:40,name:'Required test',status:'completed',conclusion:'cancelled',updated_at:'2026-09-18T08:00:00Z'},
-    {id:41,name:'Required test',status:'in_progress',updated_at:'2026-09-18T08:04:30Z'},
-    {id:42,name:'BRAIN delivery PR #2063 abc',status:'completed',conclusion:'cancelled',updated_at:'2026-09-18T08:00:10Z'},
-    {id:43,name:'BRAIN delivery PR #2063 abc',status:'in_progress',updated_at:'2026-09-18T08:04:31Z'}
-  ];
-  const latest=latestCriticalWorkflowRuns(runs);
-  assert.equal(latest.required.id,41);
-  assert.equal(latest.brain.id,43);
-  const r=classifyRecovery({workflowRuns:runs,headUpdatedAt:'2026-09-18T07:00:00Z',now:Date.parse('2026-09-18T08:05:00Z')});
-  assert.equal(r.state,'HEALTHY_PROGRESS');
-});
-
-test('non-critical stale queue does not trigger critical delivery redispatch',()=>{
-  const runs=[
-    {id:51,name:'Required test',status:'completed',conclusion:'success',updated_at:'2026-09-18T08:04:00Z'},
-    {id:52,name:'BRAIN delivery PR #2063 abc',status:'completed',conclusion:'success',updated_at:'2026-09-18T08:04:01Z'},
-    {id:53,name:'Some expensive optional workflow',status:'queued',updated_at:'2026-09-18T07:00:00Z'}
-  ];
-  const r=classifyRecovery({workflowRuns:runs,headUpdatedAt:'2026-09-18T07:00:00Z',now:Date.parse('2026-09-18T08:05:00Z')});
-  assert.equal(r.state,'HEALTHY_PROGRESS');
 });

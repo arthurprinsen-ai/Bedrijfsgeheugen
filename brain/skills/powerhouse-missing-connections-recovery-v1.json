@@ -33,7 +33,7 @@
     "Continue after merge/deploy through production/provider readback, outcome/value verification, learning/prevention writeback and next-agent discoverability before terminal completion.",
     "Before any repository write, read config/branch-delivery-ownership-guard.json through mandatory chat-learning preflight and inspect the canonical PR writer lease.",
     "If Writer-Lease-State is TERMINAL_DELIVERY and this execution node is not the Writer-Lease-Owner, do not mutate the branch; defer and reuse the existing lineage.",
-    "Treat an open PR whose exact head has no Required/BRAIN workflow runs as a recoverable silent-start failure and use the canonical recovery supervisor."
+    "The terminal lease remains active through exact-head gates, protected promotion, production/provider readback and learning writeback."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",

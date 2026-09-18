@@ -26,30 +26,10 @@ function ageSeconds(run,now){
   return ts===null?0:Math.max(0,(now-ts)/1000);
 }
 
-function runOrder(run){
-  const ts=timestampOf(run) ?? 0;
-  const id=Number(run?.id ?? 0);
-  return [ts,Number.isFinite(id)?id:0];
-}
-function newest(a,b){
-  if(!a) return b;
-  if(!b) return a;
-  const [at,ai]=runOrder(a),[bt,bi]=runOrder(b);
-  return bt>at || (bt===at && bi>ai) ? b : a;
-}
-export function latestCriticalWorkflowRuns(workflowRuns=[]){
-  let required=null,brain=null;
-  for(const run of workflowRuns){
-    const name=String(run.name??'');
-    if(CRITICAL.required.test(name)) required=newest(required,run);
-    if(CRITICAL.brain.test(name)) brain=newest(brain,run);
-  }
-  return {required,brain,runs:[required,brain].filter(Boolean)};
-}
 export function criticalWorkflowCoverage(workflowRuns=[]){
-  const latest=latestCriticalWorkflowRuns(workflowRuns);
-  const requiredPresent=Boolean(latest.required);
-  const brainPresent=Boolean(latest.brain);
+  const names=workflowRuns.map(r=>String(r.name??''));
+  const requiredPresent=names.some(name=>CRITICAL.required.test(name));
+  const brainPresent=names.some(name=>CRITICAL.brain.test(name));
   const missing=[];
   if(!requiredPresent) missing.push('required-test.yml');
   if(!brainPresent) missing.push('unified-brain-delivery.yml');
@@ -58,9 +38,8 @@ export function criticalWorkflowCoverage(workflowRuns=[]){
 
 export function classifyRecovery({mergeable=true,workflowRuns=[],headUpdatedAt,now=Date.now(),slo=DEFAULT_SLO}={}){
   const headAgeSeconds=headUpdatedAt?Math.max(0,(now-new Date(headUpdatedAt).getTime())/1000):0;
-  const latest=latestCriticalWorkflowRuns(workflowRuns);
-  const active=latest.runs.filter(r=>ACTIVE.has(r.status));
-  const failed=latest.runs.filter(r=>r.status==='completed'&&FAILED.has(r.conclusion));
+  const active=workflowRuns.filter(r=>ACTIVE.has(r.status));
+  const failed=workflowRuns.filter(r=>r.status==='completed'&&FAILED.has(r.conclusion));
   const coverage=criticalWorkflowCoverage(workflowRuns);
 
   if(mergeable===false)return {state:'MERGE_CONFLICT_RECOVERY',action:'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN',terminal:false,coverage};

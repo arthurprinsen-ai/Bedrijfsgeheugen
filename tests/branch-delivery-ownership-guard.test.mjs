@@ -51,4 +51,5 @@ test('terminal writer lease is mandatory preflight and blocks non-owner mutation
   assert.equal(contract.writerLease.activeState, 'TERMINAL_DELIVERY');
   assert.equal(contract.writerLease.nonOwnerBehavior, 'DEFER');
   assert.match(preflight, /config\/branch-delivery-ownership-guard\.json/);
+  assert.equal(contract.writerLeaseFailure.preventionRule, 'ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION');
 });
