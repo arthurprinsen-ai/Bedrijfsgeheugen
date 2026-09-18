@@ -15,7 +15,7 @@ function setPath(root,path,value){const keys=path.split('.');let x=root;for(let 
 
 const COLLECTIONS={
  asRijen:'portal.aiScan.tasks',inCijfers:'portal.inputs.financials',inFin:'portal.inputs.financing',inKlanten:'portal.inputs.customers',inMetingen:'portal.inputs.measurements',inBeleid:'portal.inputs.policies',inEsg:'portal.inputs.sustainability',antwLijst:'portal.inputs.answers',
- beleidLijst:'portal.compliance.policies',esgVelden:'portal.compliance.esg',aicap:'portal.aiCapabilities',canvasKaarten:'portal.canvases',ddInhoud:'portal.dueDiligence.findings',wijzigingen:'portal.changes.items',modelKeuze:'portal.advice.modelFilter',roadmapItems:'portal.roadmap.items'
+ beleidLijst:'portal.compliance.policies',esgVelden:'portal.compliance.esg',aicap:'portal.aiCapabilities',aicapUitScan:'portal.aiCapabilitySources',canvasKaarten:'portal.canvases',ddInhoud:'portal.dueDiligence.findings',wijzigingen:'portal.changes.items',modelKeuze:'portal.advice.modelFilter',roadmapItems:'portal.roadmap.items'
 };
 const DNA={dnaVrij:'freeText',dnaZoek:'search',ecNaam:'name',ecDim:'dimension',ecAfd:'department',ecProc:'process',ecData:'data',ecSys:'system',ecAi:'ai',ecGov:'governance',ecKpi:'kpi',ecProj:'project',ecThema:'theme'};
 
