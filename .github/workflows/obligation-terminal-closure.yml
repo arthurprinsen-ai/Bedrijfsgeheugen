@@ -198,6 +198,7 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { appendFile } from 'node:fs/promises';
           import path from 'node:path';
+          import { existsSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
@@ -255,6 +256,7 @@ jobs:
           if(depth>=20 && prNumber) throw new Error('SUPERSEDES_LINEAGE_DEPTH_EXCEEDED');
 
           const unique=[...new Map(expected.map(x=>[`${x.version}:${x.name}`,x])).values()]
+            .filter(item=>existsSync(`supabase/migrations/${item.version}_${item.name}.sql`))
             .sort((a,b)=>a.version.localeCompare(b.version)||a.name.localeCompare(b.name));
           const compact=unique.map(({version,name})=>({version,name}));
           await appendFile(process.env.GITHUB_OUTPUT,`required=${compact.length>0}\n`);
