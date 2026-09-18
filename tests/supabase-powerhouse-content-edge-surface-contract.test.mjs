@@ -97,9 +97,10 @@ test('Instagram publisher and orchestrator reject metadata-only fallback identit
   assert.match(orchestrator, /instagramVisibleIdentityProven/);
 });
 
-test('Instagram video requires verified start middle end Mira frames', () => {
+test('Instagram video requires verified start middle end visible Mira frames', () => {
   assert.match(prePublishReview, /INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED/);
-  assert.match(prePublishReview, /INSTAGRAM_MIRA_FRAME_IDENTITY_REQUIRED/);
+  assert.match(prePublishReview, /isVisibleMiraProof\(frame\)/);
+  assert.match(prePublishReview, /INSTAGRAM_REEL_DIMENSIONS_INVALID/);
   for (const position of ['start', 'middle', 'end']) assert.match(prePublishReview, new RegExp(position));
 });
 
