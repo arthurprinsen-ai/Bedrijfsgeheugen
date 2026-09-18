@@ -10,6 +10,7 @@ on:
       - 'supabase/migrations/*content_calendar_learning_chain.sql'
       - 'supabase/functions/powerhouse-social-publisher/index.ts'
       - 'tests/social-learning-buffer-*.test.mjs'
+      - 'tests/social-learning-instagram-media-provider-routing-v1.test.mjs'
       - '.github/workflows/buffer-social-learning.yml'
   push:
     branches: [main]
@@ -21,6 +22,7 @@ on:
       - 'supabase/migrations/*content_calendar_learning_chain.sql'
       - 'supabase/functions/powerhouse-social-publisher/index.ts'
       - 'tests/social-learning-buffer-*.test.mjs'
+      - 'tests/social-learning-instagram-media-provider-routing-v1.test.mjs'
       - '.github/workflows/buffer-social-learning.yml'
 
 permissions:
@@ -37,4 +39,4 @@ jobs:
       - name: Install runtime dependencies
         run: npm install --ignore-scripts --no-audit --no-fund
       - name: Verify Buffer-first collector and publish identity contracts
-        run: node --test tests/social-learning-buffer-collector.test.mjs tests/social-learning-buffer-schedule.test.mjs tests/social-learning-buffer-content-chain.test.mjs tests/social-learning-buffer-channel-identity-gate.test.mjs tests/social-learning-buffer-instagram-media-gate.test.mjs tests/social-learning-buffer-delivery-guarantee-regression.test.mjs tests/social-learning-buffer-rate-limit-regression.test.mjs
+        run: node --test tests/social-learning-buffer-collector.test.mjs tests/social-learning-buffer-schedule.test.mjs tests/social-learning-buffer-content-chain.test.mjs tests/social-learning-buffer-channel-identity-gate.test.mjs tests/social-learning-buffer-instagram-media-gate.test.mjs tests/social-learning-instagram-media-provider-routing-v1.test.mjs tests/social-learning-buffer-delivery-guarantee-regression.test.mjs tests/social-learning-buffer-rate-limit-regression.test.mjs
