@@ -18,7 +18,7 @@ export function createCandidateIdentity({obligationId,headSha,mainEpochSha}={}){
   return Object.freeze({obligation_id:obligation,candidate_head_sha:head,main_epoch_sha:epoch,key:`${obligation}:${head}:${epoch}`});
 }
 
-export function validateMachineReadablePrBody({body='',candidateHeadSha='',currentMainSha='',policy={}}={}){
+export function validateMachineReadablePrBody({body='',candidateHeadSha='',currentMainSha='',policy={},enforceCurrentMainEpoch=false}={}){
   const metadata=parseDeliveryMetadata(body);
   const errors=[...validateDeliveryMetadata(metadata,policy).errors];
   for(const label of ['Obligation-ID','Delivery-Lane','Candidate-Type','Base-SHA']){
@@ -40,7 +40,7 @@ export function validateMachineReadablePrBody({body='',candidateHeadSha='',curre
     if(!SHA40.test(leaseEpoch)) errors.push('WRITER_LEASE_MAIN_EPOCH_INVALID');
     if(leaseObligation!==metadata.obligationId) errors.push('WRITER_LEASE_OBLIGATION_DRIFT');
     if(candidateHeadSha && normalize(lease.headSha).toLowerCase()!==normalize(candidateHeadSha).toLowerCase()) errors.push('WRITER_LEASE_HEAD_DRIFT');
-    if(currentMainSha && leaseEpoch!==normalize(currentMainSha).toLowerCase()) errors.push('WRITER_LEASE_MAIN_EPOCH_DRIFT');
+    if(enforceCurrentMainEpoch && currentMainSha && leaseEpoch!==normalize(currentMainSha).toLowerCase()) errors.push('WRITER_LEASE_MAIN_EPOCH_DRIFT');
   }
   return Object.freeze({ok:errors.length===0,errors:uniq(errors),metadata,lease,terminal});
 }
@@ -82,7 +82,7 @@ export function evaluateTerminalMergeGuard({
   body='',policy={},candidateNumber=0,candidateHeadSha='',validatedHeadSha='',currentMainSha='',behindBy=null,mergeable=null,
   requiredChecks=[],openCandidates=[]
 }={}){
-  const contract=validateMachineReadablePrBody({body,candidateHeadSha,currentMainSha,policy});
+  const contract=validateMachineReadablePrBody({body,candidateHeadSha,currentMainSha,policy,enforceCurrentMainEpoch:true});
   const reasons=[...contract.errors];
   if(!contract.terminal) reasons.push('TERMINAL_WRITER_LEASE_REQUIRED');
   if(normalize(candidateHeadSha).toLowerCase()!==normalize(validatedHeadSha).toLowerCase()) reasons.push('VALIDATED_HEAD_DRIFT');
