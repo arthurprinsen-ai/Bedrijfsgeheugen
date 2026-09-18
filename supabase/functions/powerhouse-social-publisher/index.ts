@@ -62,8 +62,18 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   if(!['reel','video'].includes(mediaType))throw new Error('COMPOSIO_ROUTE_REEL_ONLY_V1');
   const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
-  const accountId=await secret(db,'COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
-  if(!apiKey||!accountId)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
+  if(!apiKey)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
+  let accountId=await secret(db,'COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
+  if(!accountId){
+    const accountsResponse=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=instagram&statuses=ACTIVE`,{headers:{'x-api-key':apiKey}});
+    const accountsBody:any=await accountsResponse.json().catch(()=>({}));
+    if(!accountsResponse.ok)throw new Error(`COMPOSIO_INSTAGRAM_ACCOUNT_DISCOVERY_${accountsResponse.status}`);
+    const items=Array.isArray(accountsBody?.items)?accountsBody.items:Array.isArray(accountsBody?.data?.items)?accountsBody.data.items:Array.isArray(accountsBody?.data)?accountsBody.data:[];
+    const active=items.filter((item:any)=>clean(item?.status).toUpperCase()==='ACTIVE'||!clean(item?.status));
+    if(active.length!==1)throw new Error(active.length===0?'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED':'COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
+    accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+  }
+  if(!accountId)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED');
   const caption=clean(art.body);
   const created=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA',
     `Create an Instagram Reel media container using this exact public video URL: ${mediaUrl}. Use this exact caption, preserving wording and line breaks: ${caption}`);
