@@ -150,8 +150,10 @@ test('all global capabilities are native, mobile-safe and fail closed without au
  const mobile=page.locator('[data-mobile-nav]');await expect(mobile).toHaveCount(5);
  for(let i=0;i<5;i++){const box=await mobile.nth(i).boundingBox();expect(box?.height||0,`mobile nav ${i}`).toBeGreaterThanOrEqual(44)}
  await page.locator('[data-mobile-nav="more"]').evaluate(element=>element.click());
- await expect(page.locator('#allPages')).toHaveAttribute('data-hub','more');
+ await expect(page.locator('#allPages')).toHaveAttribute('data-hub','portal');
  const expected=['export','import','print-permission','feedback','customer-branding','identity-login-logout'];
+ await expect(page.locator('#portalFullMenuToggle')).toBeVisible();
+ await expect(page.locator('#allPages .group')).not.toHaveCount(0);
  for(const capability of expected){
   const control=page.locator(`[data-mobile-capability="${capability}"]`).first();
   await expect(control,`${capability} must be reachable from More`).toBeVisible();
