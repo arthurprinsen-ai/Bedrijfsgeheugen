@@ -19,7 +19,8 @@
     "Head-age based staleness can cancel healthy in-progress exact-head work and amplify queue thrash.",
     "Concurrent terminal branch writers can race; non-force ref updates prevented lost updates during this incident.",
     "PR metadata can lag the authoritative Git ref during rapid recovery; obligation plus exact branch/head identity is authoritative.",
-    "Duplicate active PRs for one obligation create redundant CI fan-out and must be consolidated."
+    "Duplicate active PRs for one obligation create redundant CI fan-out and must be consolidated.",
+    "Historical cancelled Required/BRAIN attempts on the same exact head can outlive a newer healthy attempt; treating all attempts equally causes false FAILED_GATE recovery and retry loops."
   ],
   "prevention": [
     "Allocate final Supabase migration versions only at rolling-candidate integration and verify uniqueness before expensive CI.",
@@ -27,7 +28,9 @@
     "Enforce one obligation-scoped terminal writer lease; unexpected head mutation fails closed and rebinds to current exact head.",
     "Treat PR number as transport identity; recovery follows obligation plus canonical branch/head and current main.",
     "Parallelize independent specialist work but serialize overlapping paths, contracts and mutable resources only at the integration boundary.",
-    "Consolidate duplicate same-obligation PRs before terminal delivery."
+    "Consolidate duplicate same-obligation PRs before terminal delivery.",
+    "Recovery state is computed from the newest Required attempt and newest BRAIN attempt for the exact head; older cancelled/failed attempts remain audit evidence but never override a newer current attempt.",
+    "Optional/non-critical queued workflows never trigger Required/BRAIN redispatch."
   ],
   "target_operating_model": "PARALLEL_SPECIALISTS_SINGLE_ROLLING_INTEGRATOR_PROGRESS_AWARE_RECOVERY"
 }
