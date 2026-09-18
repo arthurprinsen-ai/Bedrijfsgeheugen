@@ -22,6 +22,12 @@
       "observation": "Required and Shared Agent Memory detected tests/regulatory-organism-feed.test.mjs existed but was referenced by no workflow, so the regression contract never executed.",
       "root_cause": "A new regulatory organism regression was added without updating the explicit CI lane inventory.",
       "prevention": "Run the regulatory organism regression in the canonical backend lane; delivery-test-coverage-guard remains the fail-closed detector for future orphan tests."
+    },
+    {
+      "fingerprint": "delivery|unclassified-regulation-writer-test-path|v1",
+      "observation": "The terminal BRAIN admission for PR #2299 rejected tests/regulation-writer-candidate-mode.test.mjs as an unclassified delivery path after that stale regression was repaired.",
+      "root_cause": "The test was historically wired into lane-automation by exact path but its filename did not conform to the canonical Brain/backend classifier namespace.",
+      "prevention": "Place the regression at tests/brain-regulation-writer-candidate-mode.test.mjs and update the exact lane-automation reference; classifier and coverage guard then agree on one canonical path."
     }
   ]
 }
