@@ -35,3 +35,15 @@ test('OpenArt connector project is carried as execution metadata, not truth auth
   assert.match(sql,/Bedrijfsgeheugen Powerhouse Media/);
   assert.match(sql,/AGENT_CONNECTOR_REQUIRED/);
 });
+
+test('bounded completion handshake cannot publish or self-approve identity',()=>{
+  assert.match(sql,/powerhouse_complete_instagram_media_job_v1/);
+  assert.match(sql,/MEDIA_JOB_CLAIM_OWNER_MISMATCH/);
+  assert.match(sql,/MEDIA_JOB_REPUBLISH_FORBIDDEN/);
+  assert.match(sql,/status='VERIFYING'/);
+  assert.match(sql,/'exact_final_media_proven',false/);
+  assert.match(sql,/'mira_gate_result','UNPROVEN'/);
+  assert.match(sql,/powerhouse-instagram-media-verifier/);
+  assert.doesNotMatch(sql,/status='PUBLISHED'/);
+  assert.doesNotMatch(sql,/identity_gate_result','PASS'/);
+});
