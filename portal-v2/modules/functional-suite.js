@@ -186,7 +186,7 @@ function renderActions(content,definition,openPage,pageId,domainState){
       const defaults=state?.portal?.changes?.toTasks||{};
       const incoming=changes.flatMap(change=>changeToTasks(change,defaults));
       const current=domainState.get('portal.tasks.items')||[];
-      domainState.set('portal.tasks.items',appendUnique(current,incoming,'sourceChangeId'));
+      domainState.set('portal.tasks.items',appendUnique(current,incoming,'sourceTaskId'));
     }
     await domainState.flush?.();if(msg)msg.textContent='Opgeslagen en doorgerekend.';
     if(action==='changes-to-tasks')openPage?.('taken-werkstromen');else openPage?.('roadmap');
