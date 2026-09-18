@@ -46,6 +46,12 @@
       "observation": "PR #2312 proved canonical production readback and skill projection, but terminal evidence posted production_readback_verified=false because the canonical-run success path did not emit steps.production.outputs.verified.",
       "root_cause": "The descendant-live fallback emitted verified=true, while the canonical production-readback success branch omitted the same output, creating asymmetric terminal evidence semantics.",
       "prevention": "Every terminal production-readback success mode must emit a shared verified=true output before durable evidence submission; terminal evidence must fail closed if that output is absent."
+    },
+    {
+      "fingerprint": "control-plane|supabase-migration-ledger-version-drift|v1",
+      "observation": "Terminal closure for #2318 verified production and skills, but failed migration readback because repository lineage expected 20260918180200_powerhouse_policy_canonicalization_guard_v1 while the production Supabase migration ledger records the same migration as version 20260918181638.",
+      "root_cause": "Repository migration filename identity drifted from the exact production ledger identity after deployment, so supersession-derived terminal evidence used a stale version even though the migration name and deployed logic matched.",
+      "prevention": "Repository migration identities must be reconciled to the exact production ledger version+name after deployment. Terminal migration readback remains exact and fail-closed; never weaken it to name-only matching."
     }
   ]
 }
