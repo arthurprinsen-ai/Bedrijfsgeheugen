@@ -3,17 +3,34 @@
 
 do $$
 declare
+  v_reg regprocedure;
   v_def text;
-  v_old constant text := 'where a.aangeroepen_op>now()-interval ''26 hours'' order by a.functie,a.aangeroepen_op desc';
-  v_new constant text := 'where a.aangeroepen_op>now()-interval ''30 minutes'' order by a.functie,a.aangeroepen_op desc';
+  v_updated text;
+  v_30m constant text := 'a[.]aangeroepen_op[[:space:]]*>[[:space:]]*now[(][)][[:space:]]*-[[:space:]]*interval[[:space:]]+''30 minutes''';
+  v_26h constant text := 'a[.]aangeroepen_op[[:space:]]*>[[:space:]]*now[(][)][[:space:]]*-[[:space:]]*interval[[:space:]]+''26 hours''';
 begin
-  select pg_get_functiondef('public.bg_gezondheid_meten()'::regprocedure) into v_def;
-  if position(v_new in v_def) > 0 then
+  v_reg := to_regprocedure('public.bg_gezondheid_meten()');
+  if v_reg is null then
+    -- Production-only routine may be absent on a fresh preview.
     null;
-  elsif position(v_old in v_def) > 0 then
-    execute replace(v_def,v_old,v_new);
   else
-    raise exception 'BG_GEZONDHEID_EDGE_FRESHNESS_SIGNATURE_NOT_FOUND';
+    select pg_get_functiondef(v_reg) into v_def;
+    if v_def ~* v_30m then
+      null;
+    elsif v_def ~* v_26h then
+      v_updated := regexp_replace(
+        v_def,
+        v_26h,
+        'a.aangeroepen_op>now()-interval ''30 minutes''',
+        'i'
+      );
+      if v_updated = v_def or not (v_updated ~* v_30m) then
+        raise exception 'BG_GEZONDHEID_EDGE_FRESHNESS_REWRITE_FAILED';
+      end if;
+      execute v_updated;
+    else
+      raise exception 'BG_GEZONDHEID_EDGE_FRESHNESS_SIGNATURE_NOT_FOUND';
+    end if;
   end if;
 end $$;
 

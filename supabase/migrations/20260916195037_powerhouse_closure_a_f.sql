@@ -276,9 +276,16 @@ revoke all on function public.voorstel_overnemen(uuid,text) from public, anon, a
 grant execute on function public.voorstel_afwijzen(uuid) to service_role;
 grant execute on function public.voorstel_overnemen(uuid,text) to service_role;
 
--- Explicitly keep current Powerhouse reconciliation server-only; this is an internal mutator.
-revoke all on function public.powerhouse_reconcile_daily_sales_action_set_v1(date) from public, anon, authenticated;
-grant execute on function public.powerhouse_reconcile_daily_sales_action_set_v1(date) to service_role;
+-- Explicitly keep current Powerhouse reconciliation server-only when the function exists.
+-- Fresh preview replay must not fail merely because this production reconciler is absent.
+do $powerhouse$
+begin
+  if to_regprocedure('public.powerhouse_reconcile_daily_sales_action_set_v1(date)') is not null then
+    execute 'revoke all on function public.powerhouse_reconcile_daily_sales_action_set_v1(date) from public, anon, authenticated';
+    execute 'grant execute on function public.powerhouse_reconcile_daily_sales_action_set_v1(date) to service_role';
+  end if;
+end
+$powerhouse$;
 
 -- New canonical control tables are server-authoritative. Portal reads should use governed projections/functions, not direct table access.
 alter table public.powerhouse_decision_cycles enable row level security;

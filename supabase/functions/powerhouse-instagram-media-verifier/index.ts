@@ -106,8 +106,10 @@ Deno.serve(async(req)=>{
   const mediaUrl=clean(body.mediaUrl);
   const provider=clean(body.provider)||'unknown';
   const mediaType=clean(body.mediaType||'image').toLowerCase();
+  const verificationRole=clean(body.verificationRole)||'static_image';
+  const writeObligation=body.writeObligation!==false;
   if(!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)||!mediaUrl)return json({ok:false,error:'INVALID_INPUT'},400);
-  if(!['image'].includes(mediaType))return json({ok:false,error:'STATIC_IMAGE_ONLY_V1'},422);
+  if(mediaType!=='image')return json({ok:false,error:'IMAGE_OR_VIDEO_FRAME_REQUIRED'},422);
 
   try{
     safeRemoteUrl(mediaUrl);
@@ -130,7 +132,8 @@ Deno.serve(async(req)=>{
     if(!size)throw new Error('MEDIA_DIMENSIONS_UNREADABLE');
     const hash=await sha256(bytes);
     const verdict=await visionVerdict(apiKey,gov.data.model_id,bytes,ct);
-    const dimsOk=size.width===1080&&size.height===1350;
+    const expectedHeight=verificationRole==='video_frame'?1920:1350;
+    const dimsOk=size.width===1080&&size.height===expectedHeight;
     const pass=dimsOk
       && verdict.semantic_verified===true
       && verdict.mira_present===true
@@ -157,13 +160,14 @@ Deno.serve(async(req)=>{
       canonical_copy:null,exact_copy_verified:false,exact_media_retrievable:true,exact_media_sha256:hash,
       exact_media_verified_at:new Date().toISOString(),identity_contract:CONTRACT,
       identity_gate_result:pass?'PASS':'FAIL',
-      proof_lineage:{contract:CONTRACT,media_type:'image',media_source:provider,instagram_visual:visual,exact_final_media_proven:pass},
+      proof_lineage:{contract:CONTRACT,media_type:verificationRole==='video_frame'?'video_frame':'image',verification_role:verificationRole,media_source:provider,instagram_visual:visual,exact_final_media_proven:pass},
       failure_reason:pass?null:`MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED: ${visual.reason}`,
       updated_at:new Date().toISOString()
     };
     const write=await db.from('powerhouse_media_proof_evidence_v1').upsert(proof,{onConflict:'fingerprint'});
     if(write.error)throw new Error('PROOF_WRITE_FAILED');
 
+    if(writeObligation){
     const current=await db.from('content_publication_obligations')
       .select('status,external_id,evidence').eq('tenant_id','canonical').eq('publication_date',publicationDate).eq('channel','instagram').maybeSingle();
     const row=current.data;
@@ -191,7 +195,8 @@ Deno.serve(async(req)=>{
         .eq('tenant_id','canonical').eq('publication_date',publicationDate).eq('channel','instagram');
       if(update.error)throw new Error('OBLIGATION_WRITE_FAILED');
     }
-    return json({ok:true,publicationDate,pass,fingerprint,sha256:hash,width:size.width,height:size.height,confidence:visual.confidence,evidence_ref:evidenceRef});
+    }
+    return json({ok:true,publicationDate,pass,fingerprint,sha256:hash,width:size.width,height:size.height,confidence:visual.confidence,evidence_ref:evidenceRef,visual});
   }catch(error){
     const message=String((error as Error)?.message||error).slice(0,300);
     return json({ok:false,error:message},500);

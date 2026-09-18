@@ -29,9 +29,10 @@ test('existing five-minute content loop owns media verification recovery',()=>{
   assert.doesNotMatch(sql,/cron\.schedule\([\s\S]*instagram-media-verifier/i);
 });
 
-test('verifier hashes exact bytes and requires strict 1080x1350 vision proof',()=>{
+test('verifier hashes exact bytes and enforces role-specific Instagram dimensions',()=>{
   assert.match(edge,/crypto\.subtle\.digest\('SHA-256'/);
-  assert.match(edge,/size\.width===1080&&size\.height===1350/);
+  assert.match(edge,/const expectedHeight=verificationRole==='video_frame'\?1920:1350/);
+  assert.match(edge,/const dimsOk=size\.width===1080&&size\.height===expectedHeight/);
   assert.match(edge,/semantic_verified===true/);
   assert.match(edge,/mira_present===true/);
   assert.match(edge,/identity_class==='mira_daily_life'/);

@@ -40,4 +40,10 @@ where type = 'FORECAST_CALIBRATION'
   and status = 'OPEN'
   and payload ? 'forecast_id';
 
-select public.powerhouse_capture_completion_evidence_v1();
+do $completion$
+begin
+  if to_regprocedure('public.powerhouse_capture_completion_evidence_v1()') is not null then
+    perform public.powerhouse_capture_completion_evidence_v1();
+  end if;
+end
+$completion$;
