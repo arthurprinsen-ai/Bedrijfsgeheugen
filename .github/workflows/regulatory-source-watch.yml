@@ -78,5 +78,5 @@ jobs:
 
           Raw official-source evidence was persisted before this projection candidate.
           EOF
-)")
+          )")
           gh pr merge --auto --squash "$PR_URL"
