@@ -36,10 +36,10 @@
       "prevention": "Remove obsolete portalMainMenu runtime binding and assert portalFullMenuToggle plus desktop/mobile inline-flex visibility as the single canonical hamburger contract."
     },
     {
-      "fingerprint": "delivery|regulation-writer-scheduled-candidate-stale-test|v1",
-      "observation": "The canonical regulatory writer intentionally regained its weekly schedule in PR #2302, but the candidate-only regression still prohibited any schedule and therefore failed Required and BRAIN on successor #2303.",
-      "root_cause": "The regression conflated execution cadence with production authority: scheduled execution was treated as equivalent to direct production mutation, although the workflow still only opens governed candidate PRs.",
-      "prevention": "Test cadence and authority separately. Scheduled regulatory refreshes are allowed when every path remains candidate-only, direct main push is absent, and merge stays under the canonical protected delivery control plane."
+      "fingerprint": "delivery|recovery-used-predecessor-state-not-current-main|v1",
+      "observation": "Recovery #2310 inferred the regulatory writer still had a weekly schedule from predecessor history, while current canonical main had already removed that schedule.",
+      "root_cause": "The recovery decision used predecessor evidence instead of re-reading the current canonical workflow before encoding a regression assertion.",
+      "prevention": "Before every recovery patch, read the exact current-main implementation and derive tests from current canonical state plus invariant behavior; never promote predecessor assumptions into a new regression contract."
     }
   ]
 }
