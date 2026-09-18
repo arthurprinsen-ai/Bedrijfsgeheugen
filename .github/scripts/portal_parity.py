@@ -349,7 +349,23 @@ def check_ai_capability_catalog_parity(html: str) -> int:
     if not V2_AI_CAPABILITY_CATALOG.exists():
         fail("missing native Portal V2 AI capability catalogue")
     source_ids = set(re.findall(r'"id":"([a-z0-9-]+)"', html))
-    source_ids = {item for item in source_ids if re.match(r'^(strategie|kanalen|agenten|controlplane|modellen|kennis|infra|governance|identiteit)-\\d{2}
+    source_ids = {
+        item for item in source_ids
+        if re.match(r'^(strategie|kanalen|agenten|controlplane|modellen|kennis|infra|governance|identiteit)-\\d{2}$', item)
+    }
+    v2_source = V2_AI_CAPABILITY_CATALOG.read_text(encoding="utf-8")
+    v2_ids = set(re.findall(r'"id":\\s*"([a-z0-9-]+)"', v2_source))
+    if len(source_ids) != 86 or source_ids != v2_ids:
+        missing = sorted(source_ids - v2_ids)
+        extra = sorted(v2_ids - source_ids)
+        fail(
+            f"AI capability catalogue drift: legacy={len(source_ids)}, "
+            f"v2={len(v2_ids)}, missing={missing}, extra={extra}"
+        )
+    return len(v2_ids)
+
+
+def check_v2_overview_surface() -> None:
     if not V2_OVERVIEW_COMPLETE.exists():
         fail("missing complete Portal V2 legacy overview renderer")
     source = V2_OVERVIEW_COMPLETE.read_text(encoding="utf-8")
