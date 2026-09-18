@@ -141,5 +141,7 @@
     "auto_promote_when_blocking_profile_green": true,
     "post_merge_assurance_nonblocking_for_unrelated_surfaces": true,
     "auto_rollback_on_production_readback_regression": true
-  }
+  },
+  "skill": "brain/skills/powerhouse-fast-rolling-delivery-v1.json",
+  "learning_fingerprint": "powerhouse-fast-rolling-lane-delivery-v1"
 }
