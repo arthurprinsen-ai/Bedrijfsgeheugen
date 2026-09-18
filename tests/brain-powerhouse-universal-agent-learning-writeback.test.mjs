@@ -10,9 +10,13 @@ const rootDir = path.resolve(here, '..');
 const policyPath = path.join(rootDir, 'brain/policies/powerhouse-universal-agent-learning-writeback-v1.json');
 const continuityPolicyPath = path.join(rootDir, 'brain/policies/powerhouse-agent-continuity-v1.json');
 const preflightPath = path.join(rootDir, 'scripts/brain/chat-learning-preflight.mjs');
+const skillPath = path.join(rootDir, '.agents/skills/powerhouse-continuity/SKILL.md');
+const agentsPath = path.join(rootDir, 'AGENTS.md');
 const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
 const continuityPolicy = JSON.parse(fs.readFileSync(continuityPolicyPath, 'utf8'));
 const preflightSource = fs.readFileSync(preflightPath, 'utf8');
+const continuitySkillSource = fs.readFileSync(skillPath, 'utf8');
+const agentsSource = fs.readFileSync(agentsPath, 'utf8');
 
 const REQUIRED_INVARIANTS = [
   'NO_AGENT_STARTS_BLIND',
@@ -189,4 +193,17 @@ test('absence of a production write cannot be inferred from CI or PR state', () 
   assert.equal(policy.terminal_status_gate.ci_or_open_pr_without_production_authority_readback, 'NOT_PROOF_OF_NO_PRODUCTION_WRITE');
   assert.equal(policy.terminal_status_gate.stale_exact_head_evidence, 'SUPERSEDED_FOR_ACTIVE_CANDIDATE');
   assert.ok(proof.non_terminal_statuses.includes('PRODUCTION_WRITE_NOT_VERIFIED'));
+});
+
+
+test('Powerhouse continuity skill is discoverable and mirrors canonical loop-node authority', () => {
+  assert.match(continuitySkillSource, /^---[\s\S]*name:\s*powerhouse-continuity[\s\S]*description:\s*Use when/m);
+  assert.match(continuitySkillSource, /CURRENT_STATE_BEFORE_WORK/);
+  assert.match(continuitySkillSource, /REUSE_BEFORE_BUILD/);
+  assert.match(continuitySkillSource, /NO_AGENT_STARTS_FROM_SCRATCH/);
+  assert.match(continuitySkillSource, /canonical writeback/i);
+  assert.match(continuitySkillSource, /LIVE & BEWEZEN/);
+  assert.match(continuitySkillSource, /brain\/policies\/powerhouse-agent-continuity-v1\.json/);
+  assert.match(continuitySkillSource, /brain\/learning\/chat-agent-intrinsic-loop-node-2026-09-18\.json/);
+  assert.match(agentsSource, /\.agents\/skills\/powerhouse-continuity\/SKILL\.md/);
 });

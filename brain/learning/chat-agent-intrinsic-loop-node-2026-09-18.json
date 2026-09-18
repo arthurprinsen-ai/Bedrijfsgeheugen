@@ -13,7 +13,10 @@
     "policy_version": "POWERHOUSE-AGENT-CONTINUITY-v1.3",
     "contract": "loop_node_contract",
     "role": "INTRINSIC_EXECUTION_NODE",
-    "required_actor_kinds": ["chat", "agent"],
+    "required_actor_kinds": [
+      "chat",
+      "agent"
+    ],
     "required_pre_execution": "canonical_state_required_before_execution",
     "required_pre_terminal": "canonical_writeback_required_before_terminal",
     "resume_rule": "next_run_must_resume_from_written_state"
@@ -65,6 +68,12 @@
       "cause": "The backend lane executes an explicit governed test set and the standalone file was outside that set.",
       "fix": "Moved the regression into tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs, which is already part of the mandatory backend suite, then removed the standalone test file.",
       "prevention": "A regression only counts as protection when a required governed CI path actually executes it. Prefer existing governed test families over creating parallel test workflows."
+    },
+    {
+      "symptom": "Canonical Powerhouse continuity existed in policy, tests and documentation but was not yet exposed as a cross-runtime discoverable agent skill.",
+      "cause": "The repository had no .agents/skills Powerhouse continuity entrypoint, so skill discovery could depend on reading AGENTS.md or canonical policy directly.",
+      "fix": "Added .agents/skills/powerhouse-continuity/SKILL.md, linked it from AGENTS.md and continuity authority, and extended the governed universal learning/writeback regression to require the skill and its canonical references.",
+      "prevention": "Material Powerhouse operating rules that require judgment across chats/agents must have one discoverable cross-runtime skill entrypoint backed by canonical policy and required CI; the skill never becomes a competing authority."
     }
   ],
   "prevention": [
@@ -74,13 +83,15 @@
     "Require canonical writeback of verified state, evidence, outcome, learning, prevention and remaining obligations before terminal completion.",
     "Require the next capable chat or agent to resume from the updated canonical state rather than reconstructing prior work.",
     "Do not claim a governance rule is protected unless a required CI lane executes its regression.",
-    "Do not bypass admission failures; repair the canonical candidate metadata or exact root cause on the same delivery lineage."
+    "Do not bypass admission failures; repair the canonical candidate metadata or exact root cause on the same delivery lineage.",
+    "Keep the Powerhouse continuity skill as a discoverability layer over canonical policy; never fork policy truth into the skill."
   ],
   "documentation": "docs/brain/chat-agent-intrinsic-loop-node.md",
   "linked_sources": [
     "brain/policies/powerhouse-agent-continuity-v1.json",
     "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs",
     "brain/learning/execution-resilience-2026-09-17.json",
-    "docs/brain/execution-resilience.md"
+    "docs/brain/execution-resilience.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
   ]
 }

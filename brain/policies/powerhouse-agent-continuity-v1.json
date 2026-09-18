@@ -162,6 +162,15 @@
     "config/powerhouse-execution-resilience-v1.json",
     "brain/learning/execution-resilience-2026-09-17.json",
     "brain/learning/chat-agent-intrinsic-loop-node-2026-09-18.json",
-    "docs/brain/chat-agent-intrinsic-loop-node.md"
-  ]
+    "docs/brain/chat-agent-intrinsic-loop-node.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "skill_discovery": {
+    "required": true,
+    "path": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "role": "DISCOVERY_AND_EXECUTION_GUIDANCE",
+    "authority": "CANONICAL_POLICY_REMAINS_AUTHORITATIVE",
+    "required_agent_entrypoint": "AGENTS.md",
+    "regression": "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+  }
 }

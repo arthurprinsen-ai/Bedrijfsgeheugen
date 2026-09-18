@@ -51,6 +51,7 @@
     {
       "id": "delivery-control-plane",
       "paths": [
+        ".agents/skills/",
         "AGENTS.md",
         "config/brain-delivery-system.json",
         "brain/contracts/delivery-v2.schema.json",
@@ -230,6 +231,7 @@
       "id": "backend",
       "owner": "agent-integration-make",
       "paths": [
+        ".agents/skills/",
         "brain/",
         "platform/",
         "netlify/functions/",
