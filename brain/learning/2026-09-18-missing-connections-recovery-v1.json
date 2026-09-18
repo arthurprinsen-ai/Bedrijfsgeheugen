@@ -28,7 +28,8 @@
     "Repository capability and production persistence were previously conflated.",
     "Historic assumptions about exact schema names can become stale and must be checked against information_schema and canonical migrations.",
     "Queued CI is a delivery-capacity state, not a code defect.",
-    "Configured or available providers are not equivalent to persisted source evidence or verified outcomes."
+    "Configured or available providers are not equivalent to persisted source evidence or verified outcomes.",
+    "New quality-critical functions/RPC surfaces must be registered in the canonical quality-surface registry before the discovery gate can accept them."
   ],
   "recovery": [
     "Continue only PR #2023 for this obligation.",
@@ -37,7 +38,8 @@
     "Require later stages, economics, feedback and realized value to arrive from observed evidence.",
     "Converge GA4, GSC, LinkedIn, Instagram, Buffer transport, external intelligence, DataForSEO and portal state through canonical evidence/runtime authorities.",
     "Allow exact-head Required and BRAIN gates to produce the first concrete failure before changing code.",
-    "After protected merge, apply production migrations/functions and verify counts, source freshness, schedules and runtime health before closing."
+    "After protected merge, apply production migrations/functions and verify counts, source freshness, schedules and runtime health before closing.",
+    "Register every newly discovered function/RPC surface in config/powerhouse-quality-surface-contracts.json with an existing executable evidence contract before rerunning the same exact-head gate."
   ],
   "prevention_rules": [
     "CURRENT_RUNTIME_SCHEMA_BEFORE_MISSING_CONNECTION_CLAIM",
@@ -45,7 +47,8 @@
     "QUEUED_CI_IS_NOT_A_ROOT_CAUSE",
     "NO_PARALLEL_LINEAGE_FOR_OWNED_OBLIGATION",
     "HISTORICAL_ACTIONS_BOOTSTRAP_ONLY_TO_TRUTHFUL_STAGE",
-    "LIVE_PROVEN_REQUIRES_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK"
+    "LIVE_PROVEN_REQUIRES_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK",
+    "NEW_QUALITY_SURFACE_REQUIRES_REGISTRY_AND_EVIDENCE_CONTRACT"
   ],
   "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
   "reusable_skill": "brain/skills/powerhouse-missing-connections-recovery-v1.json"
