@@ -142,6 +142,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:powerhouse-control-plane-cockpit",
+      "type": "netlify_function",
+      "authority": "netlify/functions/powerhouse-control-plane-cockpit.mjs",
+      "evidence_contract": "tests/brain-control-plane-cockpit-ui-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:powerhouse-control-plane-evidence",
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-control-plane-evidence.mjs",
