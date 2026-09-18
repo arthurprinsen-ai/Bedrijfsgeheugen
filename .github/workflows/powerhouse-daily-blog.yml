@@ -1,4 +1,5 @@
 name: Powerhouse daily blog from Supabase
+# Protected PR metadata is the delivery authority.
 
 on:
   schedule:
