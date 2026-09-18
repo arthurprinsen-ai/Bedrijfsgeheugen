@@ -1,0 +1,36 @@
+{
+  "type": "LEARNING_RECORD",
+  "version": "1.0.0",
+  "fingerprint": "universal-live-proven-delivery-status-contract-v1",
+  "date": "2026-09-18",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Material chat/agent work can be correctly recorded yet still be misread as live before the new exact head completes the full release and production-readback chain.",
+  "root_cause": "Release truth existed across continuity and one-loop contracts but the specific RECORDED_PENDING_FINAL_DELIVERY_READBACK -> LIVE_PROVEN transition was not yet expressed as one reusable skill contract for every execution node.",
+  "fix": {
+    "skill": "brain/contracts/powerhouse-live-proven-delivery-skill-v1.json",
+    "agent_entrypoint": "AGENTS.md",
+    "default_incomplete_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+    "only_positive_terminal_release_state": "LIVE_PROVEN"
+  },
+  "prevention": [
+    "Never translate recorded, committed, merged or deployed into LIVE_PROVEN without same-lineage production/provider readback.",
+    "Treat interruption, pending CI, red gates, stale state and missing coupling as recoverable incomplete states.",
+    "Resume the same lineage from the last verified checkpoint.",
+    "Require outcome evidence and learning/prevention writeback before FULFILLED.",
+    "Never reuse historical LIVE_PROVEN evidence to prove a newer exact head."
+  ],
+  "verification_required": [
+    "exact_head_required_gates",
+    "protected_merge_or_promote",
+    "production_or_provider_readback",
+    "functional_verification",
+    "canonical_powerhouse_registration",
+    "learning_writeback"
+  ],
+  "linked_sources": [
+    "AGENTS.md",
+    "brain/contracts/powerhouse-live-proven-delivery-skill-v1.json",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    "config/powerhouse-one-loop-v1.json"
+  ]
+}
