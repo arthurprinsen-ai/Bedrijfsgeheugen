@@ -62,6 +62,8 @@ Unexpected interruption means recovery, not restart. Resume from the last verifi
 
 - `brain/policies/powerhouse-agent-continuity-v1.json`
 - `brain/learning/chat-agent-intrinsic-loop-node-2026-09-18.json`
+- `brain/learning/2026-09-18-merge-epoch-concurrency-guard-v1.json`
+- `.agents/skills/powerhouse-delivery-concurrency/SKILL.md`
 - `docs/brain/chat-agent-intrinsic-loop-node.md`
 - `tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs`
 
@@ -104,6 +106,7 @@ These rules are mandatory for every chat/agent that creates, repairs or promotes
 - `delivery-classifier|cochange-required|v1`
 - `delivery-attempt-authority|latest-critical-attempt|v1`
 - `moving-main|full-main-union|v1`
+- `delivery|merge-epoch|optimistic-cas|v1` — terminal landing authority is valid only for the exact tested head on the exact current-main epoch; any main movement invalidates landing proof and requires same-lineage reconciliation/re-proof.
 
 
 ## LinkedIn predictive sales cockpit
