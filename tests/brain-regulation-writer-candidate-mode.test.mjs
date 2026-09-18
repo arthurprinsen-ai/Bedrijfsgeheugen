@@ -4,12 +4,12 @@ import fs from 'node:fs';
 
 const workflow = fs.readFileSync('.github/workflows/regelgeving-bijwerken.yml', 'utf8');
 
-test('source-driven and manual regulation refreshes are candidate-only', () => {
+test('source-driven, scheduled and manual regulation refreshes are candidate-only', () => {
   const observer = fs.readFileSync('.github/workflows/regulatory-source-watch.yml', 'utf8');
   assert.match(observer, /schedule:[\s\S]*?cron:/);
   assert.match(workflow, /push:[\s\S]*?data\/regulatory-source-state\.json/);
+  assert.match(workflow, /schedule:[\s\S]*?cron:\s*['"]30 4 \* \* 1['"]/);
   assert.match(workflow, /workflow_dispatch:[\s\S]*?delivery_mode:[\s\S]*?default:\s*candidate-pr/);
-  assert.doesNotMatch(workflow, /schedule:[\s\S]*?cron:/);
   assert.doesNotMatch(workflow, /default:\s*direct\b/);
   assert.doesNotMatch(workflow, /git\s+push\s+origin\s+HEAD:main/);
 });

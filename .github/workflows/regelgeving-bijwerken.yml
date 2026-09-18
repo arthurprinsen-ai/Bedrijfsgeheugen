@@ -1,9 +1,11 @@
 name: Regelgeving bijwerken
 
 # De compliance-datums op /frisse-blik moeten altijd kloppen. Deze workflow zoekt
-# wordt alleen gestart na een gewijzigde officiële bronstate of handmatig en levert uitsluitend een candidate PR.
+# start na een gewijzigde officiële bronstate, wekelijks als safety-net of handmatig en levert uitsluitend een candidate PR.
 
 on:
+  schedule:
+    - cron: '30 4 * * 1'
   push:
     branches:
       - main
