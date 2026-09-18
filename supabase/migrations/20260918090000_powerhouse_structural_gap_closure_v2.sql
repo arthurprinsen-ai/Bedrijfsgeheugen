@@ -216,7 +216,14 @@ customer_connectors as (
   select
     (select count(*) from public.connector_definitions) definitions,
     (select count(*) from public.connector_executions) executions,
-    (select count(*) from public.connector_reviews where status='pending') pending_reviews
+    (select count(*) from public.connector_reviews where status='pending') pending_reviews,
+    case
+      when (select count(*) from public.connector_definitions)=0 then 'NOT_CONFIGURED'
+      when (select count(*) from public.connector_reviews where status='pending')>0 then 'REVIEW_PENDING'
+      when (select count(*) from public.connector_executions)=0 then 'CONFIGURED_NO_EXECUTION'
+      when exists(select 1 from public.connector_executions where status in ('success','succeeded','completed','ok')) then 'ACTIVE'
+      else 'EXECUTION_OBSERVED_NO_SUCCESS'
+    end readiness_state
 ),
 platform_sources as (
   select
