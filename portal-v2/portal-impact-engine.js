@@ -1,4 +1,5 @@
 import { dependencyTargets } from './legacy-dependency-contract.js';
+import { LEGACY_FUNCTIONAL_INVENTORY } from './legacy-functional-inventory.js';
 import { calculateLegacyEquivalent as calc } from './legacy-parity-engine.js';
 import { bevindingen, bevindingenSamenvatting } from './bevindingen.js';
 
@@ -21,6 +22,48 @@ const SECTION_PAGE=Object.freeze({
   strategyDna:'strategy-dna',canvases:'canvassen',finalConclusion:'eindconclusie',dueDiligence:'due-diligence',
   freshness:'actueel-houden',changes:'wijzigingen',advice:'advies',offer:'offerte',roadmap:'roadmap',tasks:'taken-werkstromen'
 });
+
+
+const CALCULATION_CONSUMERS=Object.freeze(Object.fromEntries(
+  [...new Set(Object.values(LEGACY_FUNCTIONAL_INVENTORY).flatMap(item=>item.calculations||[]))]
+    .map(id=>[id,Object.freeze(Object.values(LEGACY_FUNCTIONAL_INVENTORY).filter(item=>(item.calculations||[]).includes(id)).map(item=>item.v2Page))])
+));
+const PAGE_EFFECT_LABELS=Object.freeze({
+  overzicht:'Executive cockpit',profiel:'Profiel & volwassenheid','data-ai':'Data & AI', 'ai-scan':'AI-kansenkaart',
+  businesscase:'Businesscase','cijfers-maatstaven':'Cijfers & maatstaven','waarde-financiering':'Waarde & financiering',
+  mensen:'Mensen','branche-markt':'Branche & markt',onderzoek:'Onderzoek','compliance-governance':'Compliance & governance',
+  'ai-capabilities':'AI-capabilities','strategie-naar-maandagochtend':'Strategie → uitvoering',canvassen:'Canvassen',
+  eindconclusie:'Eindconclusie','due-diligence':'Due diligence','strategy-dna':'Strategy DNA','actueel-houden':'Actueel houden',
+  wijzigingen:'Wijzigingen',advies:'Advies',offerte:'Offerte',roadmap:'Roadmap',uitvoeringsladder:'Uitvoeringsladder',
+  'taken-werkstromen':'Taken & werkstromen',koppelingen:'Koppelingen'
+});
+const PATH_EFFECT_RULES=Object.freeze([
+  Object.freeze({pattern:/^portal\.profile(\.|$)/,kind:'foundation',reason:'Profielwaarden voeden volwassenheid, capaciteit, kosten, benchmarkpositie, businesscase en advies.',targets:['overzicht','businesscase','data-ai','onderzoek','advies','roadmap','strategie-naar-maandagochtend']}),
+  Object.freeze({pattern:/^portal\.profile\.maturity(\.|$)/,kind:'maturity',reason:'Een volwassenheidsniveau verandert handwerk, FTE, capaciteitswaarde, adoptiepositie, CMMI en verbeterpotentieel.',targets:['overzicht','profiel','businesscase','data-ai','onderzoek','advies','roadmap']}),
+  Object.freeze({pattern:/^portal\.(metrics|valueFinance)(\.|$)/,kind:'finance',reason:'Financiële invoer werkt door in KPI’s, waardering, financieringsratio’s, businesscase, due diligence en executive prioritering.',targets:['cijfers-maatstaven','waarde-financiering','businesscase','due-diligence','overzicht','advies']}),
+  Object.freeze({pattern:/^portal\.people(\.|$)/,kind:'capacity',reason:'Mensen, verzuim, verloop en vacatures beïnvloeden capaciteit, benchmarks, risico’s, due diligence en prioriteit.',targets:['mensen','branche-markt','onderzoek','due-diligence','overzicht','advies','roadmap']}),
+  Object.freeze({pattern:/^portal\.market(\.|$)/,kind:'benchmark',reason:'Branche en marktcontext wijzigen benchmark, relatieve positie, toepasselijke context en advies.',targets:['branche-markt','overzicht','profiel','mensen','onderzoek','cijfers-maatstaven','advies']}),
+  Object.freeze({pattern:/^portal\.(dataAi|aiScan|aiCapabilities)(\.|$)/,kind:'ai',reason:'AI- en datawijzigingen beïnvloeden haalbaarheid, risico, governance, businesscase, compliance en roadmap.',targets:['data-ai','ai-scan','ai-capabilities','compliance-governance','businesscase','advies','roadmap','overzicht']}),
+  Object.freeze({pattern:/^portal\.compliance(\.|$)/,kind:'risk',reason:'Compliancewijzigingen beïnvloeden risico, evidence, due diligence, acties, advies en executive sturing.',targets:['compliance-governance','due-diligence','advies','roadmap','overzicht','actueel-houden']}),
+  Object.freeze({pattern:/^portal\.(strategy|strategyDna|canvases|finalConclusion)(\.|$)/,kind:'strategy',reason:'Strategische keuzes werken door naar conclusies, acties, prioriteiten, roadmap en uitvoering.',targets:['strategie-naar-maandagochtend','strategy-dna','canvassen','eindconclusie','advies','roadmap','uitvoeringsladder','overzicht']}),
+  Object.freeze({pattern:/^portal\.(advice|roadmap|tasks|changes|freshness)(\.|$)/,kind:'execution',reason:'Uitvoering wijzigt planning, capaciteit, voortgang, gerealiseerde waarde, actualiteit en managementinformatie.',targets:['advies','roadmap','taken-werkstromen','wijzigingen','actueel-houden','uitvoeringsladder','overzicht','businesscase']})
+]);
+function ruleEffects(path=''){
+  return PATH_EFFECT_RULES.filter(rule=>rule.pattern.test(String(path))).map(rule=>({kind:rule.kind,reason:rule.reason,targets:[...rule.targets]}));
+}
+function calculationConsumerPages(changes=[]){
+  return [...new Set(changes.flatMap(change=>CALCULATION_CONSUMERS[change.id]||[]))];
+}
+function downstreamDependencyClosure(seedPages=[]){
+  const seen=new Set(seedPages.filter(Boolean)),queue=[...seen];
+  while(queue.length){
+    const page=queue.shift();
+    for(const next of dependencyTargets(page)){
+      if(!seen.has(next)){seen.add(next);queue.push(next);}
+    }
+  }
+  return [...seen];
+}
 
 const n=v=>Number.isFinite(Number(v))?Number(v):null;
 const stable=v=>v&&typeof v==='object'?JSON.stringify(v):String(v??'');
@@ -65,11 +108,24 @@ export function impactForMutation({path,before={},after={}}={}){
     totalBefore:beforeSnap.summary.totaal,totalAfter:afterSnap.summary.totaal,
     valueBefore:beforeSnap.summary.waardePerJaar,valueAfter:afterSnap.summary.waardePerJaar
   });
+  const rules=ruleEffects(path);
+  const calculationPages=calculationConsumerPages(changes);
+  const seeds=[...(sourcePage?closure(sourcePage):[]),...calculationPages,...rules.flatMap(rule=>rule.targets)];
+  const dependencyPages=downstreamDependencyClosure(seeds);
+  const affectedPages=[...new Set([...dependencyPages,'overzicht','advies','eindconclusie'])];
+  const effectDetails=affectedPages.map(page=>Object.freeze({
+    page,label:PAGE_EFFECT_LABELS[page]||page,
+    viaCalculation:changes.filter(change=>(CALCULATION_CONSUMERS[change.id]||[]).includes(page)).map(change=>change.id),
+    viaRule:rules.filter(rule=>rule.targets.includes(page)).map(rule=>rule.kind),
+    relation:page===sourcePage?'source':calculationPages.includes(page)?'calculation':'dependency'
+  }));
   return Object.freeze({
     path,sourcePage,
-    affectedPages:Object.freeze(sourcePage?closure(sourcePage):['overzicht','advies','eindconclusie']),
+    affectedPages:Object.freeze(affectedPages),
     changes:Object.freeze(changes),advice,
+    effectRules:Object.freeze(rules.map(rule=>Object.freeze({...rule,targets:Object.freeze([...rule.targets])}))),
+    effectDetails:Object.freeze(effectDetails),
     changed:Boolean(changes.length||advice.added.length||advice.removed.length||advice.totalBefore!==advice.totalAfter||advice.valueBefore!==advice.valueAfter)
   });
 }
-export const PORTAL_IMPACT_ENGINE_VERSION='2026-09-18-v1';
+export const PORTAL_IMPACT_ENGINE_VERSION='2026-09-18-v2-organism-causal';
