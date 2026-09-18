@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { LEGACY_PAGE_HEADINGS, buildLegacyPageSurfaces } from '../modules/legacy-page-surfaces.js';
 
-const generated=['data-ai','ai-scan','waarde-financiering','onderzoek','compliance-governance','cijfers-maatstaven','eindconclusie','actueel-houden','advies','roadmap','due-diligence'];
+const generated=['data-ai','ai-scan','businesscase','mensen','branche-markt','strategie-naar-maandagochtend','waarde-financiering','onderzoek','compliance-governance','cijfers-maatstaven','eindconclusie','actueel-houden','advies','roadmap','due-diligence'];
 
 test('native V2 analysis restores every protected legacy heading for generated workspaces',()=>{
   for(const pageId of generated){
