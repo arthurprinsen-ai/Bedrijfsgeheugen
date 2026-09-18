@@ -6,7 +6,8 @@ declare
   v_reg regprocedure;
   v_def text;
   v_updated text;
-  v_semantic text;
+  v_30m constant text := 'a[.]aangeroepen_op[[:space:]]*>[[:space:]]*now[(][)][[:space:]]*-[[:space:]]*interval[[:space:]]+''30 minutes''';
+  v_26h constant text := 'a[.]aangeroepen_op[[:space:]]*>[[:space:]]*now[(][)][[:space:]]*-[[:space:]]*interval[[:space:]]+''26 hours''';
 begin
   v_reg := to_regprocedure('public.bg_gezondheid_meten()');
   if v_reg is null then
@@ -14,26 +15,20 @@ begin
     null;
   else
     select pg_get_functiondef(v_reg) into v_def;
-    v_semantic := lower(regexp_replace(v_def, '\\s+', ' ', 'g'));
-
-    -- Match the health predicate semantically, independent of formatter aliases/spacing.
-    if position('aangeroepen_op' in v_semantic) > 0
-       and position('30 minutes' in v_semantic) > 0 then
+    if v_def ~* v_30m then
       null;
-    elsif position('aangeroepen_op' in v_semantic) > 0
-       and position('26 hours' in v_semantic) > 0 then
+    elsif v_def ~* v_26h then
       v_updated := regexp_replace(
         v_def,
-        'interval\\s+''26 hours''',
-        'interval ''30 minutes''',
-        'gi'
+        v_26h,
+        'a.aangeroepen_op>now()-interval ''30 minutes''',
+        'i'
       );
-      if v_updated = v_def then
+      if v_updated = v_def or not (v_updated ~* v_30m) then
         raise exception 'BG_GEZONDHEID_EDGE_FRESHNESS_REWRITE_FAILED';
       end if;
       execute v_updated;
     else
-      -- Unknown semantic baseline remains fail-closed: never rewrite an unrecognized body.
       raise exception 'BG_GEZONDHEID_EDGE_FRESHNESS_SIGNATURE_NOT_FOUND';
     end if;
   end if;
