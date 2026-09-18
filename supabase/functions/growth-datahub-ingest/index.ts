@@ -243,6 +243,54 @@ Deno.serve(async(req:Request)=>{
       return json({error:'CONTROL_PLANE_TERMINAL_FAILED',detail:String(error?.message||error).slice(0,500)},422);
     }
   }
+  if(action==='control_plane_cockpit'){
+    const rawLimit=Number(body?.limit||100);
+    const limit=Math.min(250,Math.max(1,Number.isFinite(rawLimit)?Math.trunc(rawLimit):100));
+    const state=String(body?.state||'').trim().toUpperCase();
+    const allowedStates=new Set(['OPEN','READY','RUNNING','BLOCKED','FULFILLED','BREACHED','CANCELLED']);
+    if(state&&!allowedStates.has(state))return json({error:'CONTROL_PLANE_COCKPIT_STATE_INVALID'},400);
+    let query=client.from('powerhouse_obligation_cockpit_v1')
+      .select('obligation_id,obligation_key,requested_goal,current_state,next_action,blocker,evidence_count,red_evidence_count,latest_evidence_at,policy_version,skill_version,production_observed_sha,outcome_verified,migration_readback_verified,retry_count,escalated_jobs,actual_result,created_at,updated_at,time_to_terminal_seconds')
+      .order('updated_at',{ascending:false})
+      .limit(limit);
+    if(state)query=query.eq('current_state',state);
+    const [{data:rows,error:rowsError},{data:metrics,error:metricsError}]=await Promise.all([
+      query,
+      client.from('powerhouse_control_plane_metrics_v1').select('*').maybeSingle()
+    ]);
+    if(rowsError||metricsError)return json({error:'CONTROL_PLANE_COCKPIT_READ_FAILED',detail:String(rowsError?.message||metricsError?.message||'read failed').slice(0,300)},500);
+    const obligations=(rows||[]).map((row:any)=>({
+      obligation_id:row.obligation_id,
+      obligation_key:row.obligation_key,
+      requested_goal:row.requested_goal,
+      current_state:row.current_state,
+      proof:{
+        evidence_count:Number(row.evidence_count||0),
+        red_evidence_count:Number(row.red_evidence_count||0),
+        latest_evidence_at:row.latest_evidence_at||null,
+        policy_version:row.policy_version||null,
+        skill_version:row.skill_version||null,
+        production_observed_sha:row.production_observed_sha||null,
+        outcome_verified:Boolean(row.outcome_verified),
+        migration_readback_verified:Boolean(row.migration_readback_verified),
+        retry_count:Number(row.retry_count||0),
+        escalated_jobs:Number(row.escalated_jobs||0)
+      },
+      blocker:row.blocker||null,
+      next_action:row.next_action||'BLOCKED_REVIEW',
+      actual_result:row.actual_result||null,
+      created_at:row.created_at,
+      updated_at:row.updated_at,
+      time_to_terminal_seconds:row.time_to_terminal_seconds==null?null:Number(row.time_to_terminal_seconds)
+    }));
+    return json({
+      contract:'powerhouse-control-plane-cockpit-v1',
+      generated_at:new Date().toISOString(),
+      filter:{state:state||null,limit},
+      metrics:metrics||{},
+      obligations
+    },200);
+  }
   if(action==='learning_export'){
     const limit=Math.min(5000,Math.max(100,Number(body?.limit||5000)));
     const [{data:events,error:eventError},{data:outcomes,error:outcomeError}]=await Promise.all([
