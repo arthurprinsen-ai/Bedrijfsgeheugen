@@ -88,7 +88,7 @@ begin
     a.action_id,
     v_subject,
     v_evidence_ref,
-    'decision',
+    'signal',
     'open',
     coalesce(a.created_at,now()),
     now()
@@ -106,67 +106,23 @@ begin
     v_tenant,
     a.action_id,
     1,
-    'decision',
+    'signal',
     'powerhouse_sales_actions',
     a.action_id::text,
     v_evidence_ref,
-    'sales-action:' || a.action_id::text || ':decision',
+    'sales-action:' || a.action_id::text || ':signal',
     jsonb_build_object(
       'status',a.status,
       'action_type',a.action_type,
       'channel',a.channel,
       'priority',a.priority,
       'opportunity_key',a.opportunity_key,
-      'truth','materialized_from_existing_action'
+      'truth','observed_sales_action_bootstrap_signal',
+      'canonical_gap','analysis_prediction_decision_not_reconstructed_without_evidence'
     ),
     coalesce(a.created_at,now())
   )
   on conflict (tenant_id,idempotency_key) do nothing;
-
-  if a.executed_at is not null and a.status in ('waiting','done') then
-    insert into public.powerhouse_cycle_events(
-      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
-      evidence_ref,idempotency_key,payload,occurred_at
-    )
-    values(
-      v_tenant,
-      a.action_id,
-      2,
-      'execution',
-      'powerhouse_sales_actions',
-      a.action_id::text,
-      v_evidence_ref,
-      'sales-action:' || a.action_id::text || ':execution',
-      jsonb_build_object(
-        'status',a.status,
-        'executed_at',a.executed_at,
-        'truth','observed_execution'
-      ),
-      a.executed_at
-    )
-    on conflict (tenant_id,idempotency_key) do nothing;
-  elsif a.status='expired' then
-    insert into public.powerhouse_cycle_events(
-      tenant_id,cycle_id,sequence_no,stage,entity_type,entity_id,
-      evidence_ref,idempotency_key,payload,occurred_at
-    )
-    values(
-      v_tenant,
-      a.action_id,
-      2,
-      'next_decision',
-      'powerhouse_sales_actions',
-      a.action_id::text,
-      v_evidence_ref,
-      'sales-action:' || a.action_id::text || ':expired',
-      jsonb_build_object(
-        'status','expired',
-        'truth','observed_terminal_nonexecution'
-      ),
-      coalesce(a.updated_at,now())
-    )
-    on conflict (tenant_id,idempotency_key) do nothing;
-  end if;
 end
 $$;
 
@@ -227,6 +183,8 @@ learning as (
     (select count(*) from public.powerhouse_action_economics) action_economics,
     (select count(*) from public.powerhouse_decision_cycles) decision_cycles,
     (select count(*) from public.powerhouse_cycle_events) cycle_events,
+    (select count(*) from public.powerhouse_decision_cycles
+      where current_stage='signal' and source_signal_ref like 'powerhouse_sales_actions:%') cycles_waiting_for_stage_reconstruction,
     (select count(*) from public.powerhouse_predictive_signals) predictive_signals,
     (select count(*) from public.powerhouse_sales_actions where status='done' and executed_at is not null) executed_done_actions,
     (
@@ -284,4 +242,4 @@ grant select on public.powerhouse_completion_readiness_v1 to service_role;
 comment on view public.powerhouse_tenant_identity_review_v1 is
 'Live unresolved-identity review surface. Does not create a parallel queue; derives only from scan/offerte authority.';
 comment on function public.powerhouse_materialize_sales_action_cycle_row_v1(uuid) is
-'Idempotently materializes canonical decision-cycle truth from an existing powerhouse_sales_actions row. Does not infer human feedback, economics, outcomes or realized value.';
+'Idempotently creates the truthful signal-stage bootstrap for an existing powerhouse_sales_actions row. Later canonical stages are never fabricated: analysis, prediction, decision, execution and outcome require their own evidence.';
