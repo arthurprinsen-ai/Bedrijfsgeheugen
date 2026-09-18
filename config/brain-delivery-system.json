@@ -56,7 +56,14 @@
       "firstSignal": 60,
       "turbo": 240,
       "standard": 480
-    }
+    },
+    "predictiveAdmission": true,
+    "adaptiveGatePlanning": true,
+    "supervisorWorkflow": ".github/workflows/powerhouse-fast-delivery-supervisor.yml",
+    "predictiveController": "tools/delivery/predictive-controller.mjs",
+    "staleRunRecovery": "cancel_superseded_and_redispatch_exact_head",
+    "falsePositiveOracleRecovery": "narrow_to_forbidden_behavior_preserve_invariant",
+    "maxConcurrentBlockingCandidatesPerConflictContract": 1
   },
   "conflictContracts": [
     {
@@ -552,5 +559,18 @@
       "netlify_platform",
       "external_integration"
     ]
-  }
+  },
+  "learningSignals": [
+    "queue_p50_ms",
+    "queue_p95_ms",
+    "time_to_first_signal_ms",
+    "time_to_live_proven_ms",
+    "zero_run_recoveries",
+    "stale_run_recoveries",
+    "merge_conflicts",
+    "false_positive_oracles",
+    "prediction_accuracy",
+    "recovery_success_rate",
+    "shadow_failure_rate"
+  ]
 }
