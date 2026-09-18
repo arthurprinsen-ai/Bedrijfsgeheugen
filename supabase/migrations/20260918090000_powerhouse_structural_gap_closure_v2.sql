@@ -8,7 +8,9 @@ select
   s.id as source_id,
   s.klant_slug,
   s.tenant_identity_status,
+  case when lower(btrim(coalesce(s.klant_slug,''))) in ('demo','test') then 'demo_or_test' else 'production_or_unknown' end as record_class,
   case
+    when lower(btrim(coalesce(s.klant_slug,''))) in ('demo','test') then 'demo_or_test'
     when nullif(btrim(s.klant_slug),'') is null then 'missing_slug'
     when (
       select count(*) from public.organisaties o
@@ -32,7 +34,9 @@ select
   oin.id as source_id,
   oin.klant_slug,
   oin.tenant_identity_status,
+  case when lower(btrim(coalesce(oin.klant_slug,''))) in ('demo','test') then 'demo_or_test' else 'production_or_unknown' end as record_class,
   case
+    when lower(btrim(coalesce(oin.klant_slug,''))) in ('demo','test') then 'demo_or_test'
     when nullif(btrim(oin.klant_slug),'') is null then 'missing_slug'
     when (
       select count(*) from public.organisaties o
@@ -223,8 +227,10 @@ platform_sources as (
 tenant_review as (
   select
     count(*) unresolved_records,
-    count(*) filter(where candidate_count=0) no_match_records,
-    count(*) filter(where candidate_count>1) ambiguous_records
+    count(*) filter(where record_class='demo_or_test') demo_or_test_records,
+    count(*) filter(where record_class='production_or_unknown') production_or_unknown_unresolved_records,
+    count(*) filter(where record_class='production_or_unknown' and candidate_count=0) no_match_records,
+    count(*) filter(where record_class='production_or_unknown' and candidate_count>1) ambiguous_records
   from public.powerhouse_tenant_identity_review_v1
 )
 select jsonb_build_object(
