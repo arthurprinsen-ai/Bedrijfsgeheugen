@@ -99,6 +99,7 @@ jobs:
                 echo "mode=canonical_run" >> "$GITHUB_OUTPUT"
                 echo "run_id=$source_run_id" >> "$GITHUB_OUTPUT"
                 echo "observed_sha=$MERGE_SHA" >> "$GITHUB_OUTPUT"
+                echo "verified=true" >> "$GITHUB_OUTPUT"
                 echo "PRODUCTION_READBACK_PROVEN:$source_run_id"
                 exit 0
               fi
