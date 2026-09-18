@@ -29,20 +29,20 @@ export function adoptionBell({current=1,benchmark=3,upperQuartile=4,labels=[]}={
   const width=780,height=300,left=54,right=34,base=220;
   const cx=(left+width-right)/2, span=width-left-right;
   const y=x=>base-155*Math.exp(-Math.pow((x-cx)/(span*.27),2));
-  const path=[]; for(let i=0;i<=80;i++){const x=left+span*i/80;path.push(\`\${i?'L':'M'}\${x.toFixed(1)} \${y(x).toFixed(1)}\`);}
+  const path=[]; for(let i=0;i<=80;i++){const x=left+span*i/80;path.push(`${i?'L':'M'}${x.toFixed(1)} ${y(x).toFixed(1)}`);}
   const stageX=level=>left+span*(clamp(level,1,5)-1)/4;
-  const marker=(level,label,kind)=>{const x=stageX(level), yy=y(x); return \`<g class="v2-hit v2-marker \${kind}" tabindex="0" role="button" aria-label="\${esc(label)}: niveau \${num(level,1)}">
-    <line x1="\${x}" y1="\${base}" x2="\${x}" y2="\${yy}" class="v2-marker-line"/>
-    <circle cx="\${x}" cy="\${yy}" r="\${kind==='current'?10:7}" class="v2-marker-dot"><title>\${esc(label)} · niveau \${num(level,1)}</title></circle>
-    <text x="\${x}" y="\${Math.max(22,yy-16)}" text-anchor="middle" class="v2-marker-label">\${esc(label)}</text>
-  </g>\`;};
-  const stageLabels=stages.map((label,index)=>\`<g class="v2-hit v2-stage" tabindex="0" role="button" aria-label="\${esc(label)}, niveau \${index+1}"><text x="\${stageX(index+1)}" y="\${base+26}" text-anchor="middle">\${esc(label)}</text><text x="\${stageX(index+1)}" y="\${base+42}" text-anchor="middle" opacity=".58">Niveau \${index+1}</text><title>\${esc(label)} · niveau \${index+1}</title></g>\`).join('');
-  return frame(\`0 0 \${width} \${height}\`,title,
-    \`<path d="\${path.join(' ')} L\${width-right} \${base} L\${left} \${base} Z" class="v2-adoption-area"/>
-     <path d="\${path.join(' ')}" class="v2-adoption-line"/>
-     <line x1="\${left}" y1="\${base}" x2="\${width-right}" y2="\${base}" class="v2-axis"/>
-     \${marker(upperQuartile,'Bovenste 25%','upper')}\${marker(benchmark,'Branche','benchmark')}\${marker(current,'Jij','current')}
-     \${stageLabels}\`);
+  const marker=(level,label,kind)=>{const x=stageX(level), yy=y(x); return `<g class="v2-hit v2-marker ${kind}" tabindex="0" role="button" aria-label="${esc(label)}: niveau ${num(level,1)}">
+    <line x1="${x}" y1="${base}" x2="${x}" y2="${yy}" class="v2-marker-line"/>
+    <circle cx="${x}" cy="${yy}" r="${kind==='current'?10:7}" class="v2-marker-dot"><title>${esc(label)} · niveau ${num(level,1)}</title></circle>
+    <text x="${x}" y="${Math.max(22,yy-16)}" text-anchor="middle" class="v2-marker-label">${esc(label)}</text>
+  </g>`;};
+  const stageLabels=stages.map((label,index)=>`<g class="v2-hit v2-stage" tabindex="0" role="button" aria-label="${esc(label)}, niveau ${index+1}"><text x="${stageX(index+1)}" y="${base+26}" text-anchor="middle">${esc(label)}</text><text x="${stageX(index+1)}" y="${base+42}" text-anchor="middle" opacity=".58">Niveau ${index+1}</text><title>${esc(label)} · niveau ${index+1}</title></g>`).join('');
+  return frame(`0 0 ${width} ${height}`,title,
+    `<path d="${path.join(' ')} L${width-right} ${base} L${left} ${base} Z" class="v2-adoption-area"/>
+     <path d="${path.join(' ')}" class="v2-adoption-line"/>
+     <line x1="${left}" y1="${base}" x2="${width-right}" y2="${base}" class="v2-axis"/>
+     ${marker(upperQuartile,'Bovenste 25%','upper')}${marker(benchmark,'Branche','benchmark')}${marker(current,'Jij','current')}
+     ${stageLabels}`);
 }
 
 /** Oude-portaal vijf-stadia overzicht: bedrijf, branche en bovenste kwartiel op één rail. */
@@ -50,10 +50,10 @@ export function companyStateRail({current=1,benchmark=3,upperQuartile=4,labels=[
   const stages=(labels.length?labels:['Ad-hoc','Reactief','Gestuurd','Voorspellend','Zelfsturend']).slice(0,5);
   const width=900,height=220,pad=36,gap=10,cell=(width-pad*2-gap*4)/5;
   const x=i=>pad+i*(cell+gap);
-  const blocks=stages.map((label,i)=>\`<g class="v2-hit v2-state-stage" tabindex="0" role="button" aria-label="\${esc(label)}, niveau \${i+1}">
-    <rect x="\${x(i)}" y="70" width="\${cell}" height="74" rx="16"/><text x="\${x(i)+cell/2}" y="101" text-anchor="middle">\${esc(label)}</text><text x="\${x(i)+cell/2}" y="122" text-anchor="middle" opacity=".58">Niveau \${i+1}</text><title>\${esc(label)} · niveau \${i+1}</title></g>\`).join('');
-  const pin=(level,label,cls,y)=>{const xx=x(clamp(Math.round(level),1,5)-1)+cell/2;return \`<g class="v2-hit \${cls}" tabindex="0"><line x1="\${xx}" y1="\${y+8}" x2="\${xx}" y2="68"/><circle cx="\${xx}" cy="\${y}" r="7"/><text x="\${xx}" y="\${y-12}" text-anchor="middle">\${esc(label)}</text><title>\${esc(label)} · niveau \${num(level,1)}</title></g>\`;};
-  return frame(\`0 0 \${width} \${height}\`,title,\`\${blocks}\${pin(current,'Jij','v2-state-current',50)}\${pin(benchmark,'Branche','v2-state-benchmark',174)}\${pin(upperQuartile,'Bovenste 25%','v2-state-upper',198)}\`);
+  const blocks=stages.map((label,i)=>`<g class="v2-hit v2-state-stage" tabindex="0" role="button" aria-label="${esc(label)}, niveau ${i+1}">
+    <rect x="${x(i)}" y="70" width="${cell}" height="74" rx="16"/><text x="${x(i)+cell/2}" y="101" text-anchor="middle">${esc(label)}</text><text x="${x(i)+cell/2}" y="122" text-anchor="middle" opacity=".58">Niveau ${i+1}</text><title>${esc(label)} · niveau ${i+1}</title></g>`).join('');
+  const pin=(level,label,cls,y)=>{const xx=x(clamp(Math.round(level),1,5)-1)+cell/2;return `<g class="v2-hit ${cls}" tabindex="0"><line x1="${xx}" y1="${y+8}" x2="${xx}" y2="68"/><circle cx="${xx}" cy="${y}" r="7"/><text x="${xx}" y="${y-12}" text-anchor="middle">${esc(label)}</text><title>${esc(label)} · niveau ${num(level,1)}</title></g>`;};
+  return frame(`0 0 ${width} ${height}`,title,`${blocks}${pin(current,'Jij','v2-state-current',50)}${pin(benchmark,'Branche','v2-state-benchmark',174)}${pin(upperQuartile,'Bovenste 25%','v2-state-upper',198)}`);
 }
 
 /** Radarprofiel over de bedrijfsonderdelen, schaal 1–5. */
