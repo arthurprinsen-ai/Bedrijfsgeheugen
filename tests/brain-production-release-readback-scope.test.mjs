@@ -24,7 +24,7 @@ test('production readback derives website applicability from canonical delivery 
   assert.match(workflow, /createDeliveryPlan/);
   assert.match(workflow, /deriveRequiredTestSuites/);
   assert.match(workflow, /website_required/);
-  assert.match(workflow, /steps\.scope\.outputs\.website_required == 'true'/);
+  assert.match(workflow, /steps\.scope\.outputs\.browser_required == 'true'/);
   assert.match(workflow, /deployment-required/);
 });
 
