@@ -11,11 +11,18 @@ test('tenant identity review is derived live, not copied to a parallel queue',()
   assert.doesNotMatch(sql,/create table\s+public\.powerhouse_tenant_identity_review/i);
 });
 
-test('sales actions deterministically materialize decision cycles',()=>{
+test('sales actions deterministically materialize canonical cycle sequence',()=>{
   assert.match(sql,/powerhouse_materialize_sales_action_cycle_row_v1/);
   assert.match(sql,/cycle_id,subject_key,source_signal_ref/);
   assert.match(sql,/a\.action_id/);
-  assert.match(sql,/sales-action:' \|\| a\.action_id::text \|\| ':decision'/);
+  assert.match(sql,/a\.action_id,1,'signal'/);
+  assert.match(sql,/a\.action_id,2,'analysis'/);
+  assert.match(sql,/a\.action_id,3,'prediction'/);
+  assert.match(sql,/a\.action_id,4,'decision'/);
+  assert.match(sql,/a\.action_id,[\s\S]*5,[\s\S]*'execution'/);
+  assert.match(sql,/sales-action:'\|\|a\.action_id::text\|\|':signal'/);
+  assert.match(sql,/sales-action:'\|\|a\.action_id::text\|\|':decision'/);
+  assert.doesNotMatch(sql,/'next_decision'[\s\S]*observed_terminal_nonexecution/);
   assert.match(sql,/on conflict \(tenant_id,idempotency_key\) do nothing/i);
 });
 
