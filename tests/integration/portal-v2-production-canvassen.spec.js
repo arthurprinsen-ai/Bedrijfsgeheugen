@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 const BASE_URL=process.env.PRODUCTION_URL||process.env.PREVIEW_URL||'https://www.bedrijfsgeheugen.nl';
 const EXPECTED_CANVASES=[
   ['bmc','Business Model Canvas'],
-  ['vpc2','Waardepropositiecanvas'],
+  ['vpc2','Value Proposition Canvas'],
   ['lean','Lean Canvas'],
   ['merk','Merkcanvas'],
   ['content','Contentcanvas'],
@@ -31,6 +31,7 @@ test('Canvassen production renders the six full legacy canvases from Powerhouse 
     const card=workspace.locator(`.canvas-card[data-canvas="${id}"]`);
     await expect(card,`${id} must exist`).toHaveCount(1);
     await expect(card.locator('header small')).toHaveText(title);
+    await expect(card.locator('.canvas-source')).toHaveCount(1);
     expect(await card.locator('.canvas-sections section').count(),`${id} must contain full structured canvas content`).toBeGreaterThanOrEqual(6);
     await expect(card.locator(`[data-canvas-answer="${id}"]`)).toBeEditable();
     await expect(card.locator(`[data-canvas-owner="${id}"]`)).toBeEditable();
