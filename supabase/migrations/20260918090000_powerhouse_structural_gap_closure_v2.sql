@@ -340,9 +340,30 @@ with inventory as (
 ), runtime as (
   select
     count(*)::bigint total_layers,
-    count(*) filter(where wiring_state='WIRED')::bigint wired_layers,
-    count(*) filter(where required_for_autonomous_learning and evidence_state='NO_EVIDENCE_YET')::bigint evidence_sparse_required_layers
+    count(*) filter(where wiring_state='WIRED')::bigint wired_layers
   from inventory
+), learning_gaps as (
+  select
+    (
+      case when exists(
+        select 1 from public.powerhouse_sales_actions a
+        where a.status='done' and a.executed_at is not null
+          and not exists(select 1 from public.powerhouse_action_economics e where e.action_id=a.action_id)
+      ) then 1 else 0 end
+      +
+      case when exists(select 1 from public.powerhouse_experiment_policies)
+             and not exists(select 1 from public.powerhouse_experiment_assignments)
+        then 1 else 0 end
+      +
+      case when exists(select 1 from public.powerhouse_experiment_policies)
+             and not exists(select 1 from public.powerhouse_policy_versions)
+        then 1 else 0 end
+      +
+      case when exists(
+        select 1 from public.revenue_learning_obligations
+        where type='FORECAST_CALIBRATION' and status='OPEN' and due_at<=now()
+      ) then 1 else 0 end
+    )::bigint evidence_sparse_required_layers
 ), scheduler as (
   select count(*)::bigint required_jobs,
          count(*) filter(where active)::bigint active_jobs,
@@ -356,34 +377,59 @@ with inventory as (
     and detail like 'HTTP 401:%'
     and gemeten_op >= now()-interval '30 minutes'
 ), structural as (
-  select *
+  select identity_gaps,forecast_lineage_gaps
   from public.powerhouse_revenue_intelligence_health_v1
   limit 1
+), current_runtime as (
+  with ranked as (
+    select event_type,source,subject_key,state,evidence,updated_at,
+      row_number() over(partition by event_type,source,subject_key order by updated_at desc,occurred_at desc,event_id desc) rn
+    from public.powerhouse_runtime_events
+    where updated_at>=now()-interval '2 hours'
+  )
+  select count(*)::bigint current_runtime_errors
+  from ranked
+  where rn=1 and state='error'
+    and not (event_type='source_health_evaluated' and subject_key='forecast-calibration')
+    and not (
+      event_type='full_cycle_production_proof'
+      and subject_key<>((now() at time zone 'Europe/Amsterdam')::date)::text
+    )
+), content_truth as (
+  select coalesce((
+    select case when status='VERIFIED' and verified then 'VERIFIED' else status end
+    from public.brain_records
+    where tenant_id='canonical'
+      and record_id='content-closed-loop:'||((now() at time zone 'Europe/Amsterdam')::date)::text
+    order by updated_at desc limit 1
+  ),'MISSING')::text content_loop_state
 )
 select
   now() observed_at,
   runtime.total_layers,
   runtime.wired_layers,
-  runtime.evidence_sparse_required_layers,
+  learning_gaps.evidence_sparse_required_layers,
   scheduler.required_jobs,
   scheduler.active_jobs,
   scheduler.inactive_or_missing_jobs,
-  coalesce(structural.structural_lineage_gaps,0)::bigint structural_lineage_gaps,
-  coalesce(structural.runtime_errors,0)::bigint revenue_runtime_errors,
+  (coalesce(structural.identity_gaps,0)+coalesce(structural.forecast_lineage_gaps,0))::bigint structural_lineage_gaps,
+  current_runtime.current_runtime_errors,
   content.recent_content_auth_errors,
+  content_truth.content_loop_state,
   case
     when runtime.wired_layers<>runtime.total_layers then 'RED'
     when scheduler.inactive_or_missing_jobs>0 then 'RED'
-    when coalesce(structural.structural_lineage_gaps,0)>0 then 'AMBER'
-    when content.recent_content_auth_errors>0 then 'AMBER'
+    when coalesce(structural.identity_gaps,0)+coalesce(structural.forecast_lineage_gaps,0)>0 then 'RED'
+    when current_runtime.current_runtime_errors>0 then 'AMBER'
+    when content_truth.content_loop_state in ('BLOCKED','MISSING') then 'AMBER'
     else 'GREEN'
   end architecture_state,
   case
-    when runtime.evidence_sparse_required_layers>0 then 'EVIDENCE_SPARSE'
-    else 'EVIDENCE_ACTIVE'
+    when learning_gaps.evidence_sparse_required_layers>0 then 'EVIDENCE_DUE_GAPS'
+    else 'EVIDENCE_CURRENT'
   end learning_state,
   'green wiring never fabricates economics, feedback, outcomes or causal evidence'::text truth_boundary
-from runtime,scheduler,content,structural;
+from runtime,learning_gaps,scheduler,content,structural,current_runtime,content_truth;
 
 revoke all on public.powerhouse_one_brain_runtime_health_v1 from anon,authenticated;
 grant select on public.powerhouse_one_brain_runtime_health_v1 to service_role;
