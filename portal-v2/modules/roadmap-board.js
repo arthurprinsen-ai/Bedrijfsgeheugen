@@ -24,6 +24,12 @@ function cardMarkup(item){
   </div>
   <label>Voortgang <output>${Number(item.progress)||0}%</output><input type="range" min="0" max="100" step="5" data-card-field="progress" data-repeat-col="progress" value="${Number(item.progress)||0}"></label>
   <div class="v2roadmapmove"><button type="button" data-move-left aria-label="Verplaats kaart naar vorige sprint">←</button><span>Sprint ${sprint}</span><button type="button" data-move-right aria-label="Verplaats kaart naar volgende sprint">→</button></div>
+  <div class="v2roadmapcardactions">
+   <button type="button" data-duration-down aria-label="Verkort duur">− duur</button>
+   <button type="button" data-duration-up aria-label="Verleng duur">+ duur</button>
+   <button type="button" data-toggle-done>${item.done?'Heropen':'Afronden'}</button>
+   <button type="button" data-remove-roadmap>Verwijder</button>
+  </div>
  </article>`;
 }
 
@@ -58,6 +64,10 @@ export function mountRoadmapBoard(root,{domainState,onSaveStatus}={}){
    card.addEventListener('drop',event=>{event.preventDefault();event.stopPropagation();card.classList.remove('dragover');const source=draggedId||event.dataTransfer?.getData('text/plain');if(!source||source===id)return;const sprint=Number(card.dataset.sprint);persist(reorderRoadmapItems(moveRoadmapItem(items,source,sprint),source,id));});
    card.querySelector('[data-move-left]')?.addEventListener('click',()=>{const current=Number(card.dataset.sprint);if(current>1)persist(moveRoadmapItem(items,id,current-1));});
    card.querySelector('[data-move-right]')?.addEventListener('click',()=>{const current=Number(card.dataset.sprint);if(current<12)persist(moveRoadmapItem(items,id,current+1));});
+   card.querySelector('[data-duration-down]')?.addEventListener('click',()=>persist(items.map(item=>item.id===id?{...item,duration:Math.max(1,(Number(item.duration)||1)-1)}:item)));
+   card.querySelector('[data-duration-up]')?.addEventListener('click',()=>persist(items.map(item=>item.id===id?{...item,duration:Math.min(12,(Number(item.duration)||1)+1)}:item)));
+   card.querySelector('[data-toggle-done]')?.addEventListener('click',()=>persist(items.map(item=>item.id===id?{...item,done:!Boolean(item.done),progress:item.done?Math.min(99,Number(item.progress)||0):100,status:item.done?'Bezig':'Afgerond'}:item)));
+   card.querySelector('[data-remove-roadmap]')?.addEventListener('click',()=>persist(items.filter(item=>item.id!==id)));
    card.querySelectorAll('[data-card-field]').forEach(input=>{
     const commit=()=>updateCard(id,input.dataset.cardField,input.value);
     input.addEventListener('change',commit);
