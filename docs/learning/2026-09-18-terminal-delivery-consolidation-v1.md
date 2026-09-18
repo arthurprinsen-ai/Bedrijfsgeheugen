@@ -30,3 +30,12 @@ Instagram 18-09-2026 blijft `BLOCKED / EXACT_FINAL_MEDIA_PROOF_REQUIRED`. De pro
 8. Terminal succes vereist current-main identity, protected merge, exacte productie/provider identity, functionele readback en learning writeback.
 9. Een al verzonden maar ongeldig bewezen social asset wordt niet opnieuw gepubliceerd om een healthstatus groen te maken.
 10. Skills en learning-records worden bijgewerkt op basis van actuele productie-evidence, niet chatgeheugen.
+
+
+## Reused historical fingerprints
+
+- `delivery-classifier-repository-writer-contract-gap-v1` → `CLASSIFIER_COCHANGE_REQUIRED`.
+- `github-required-gate-in-progress-nonterminal-v1` → queued, pending and in-progress gates are nonterminal execution states; unavailable live logs during active jobs are observability timing, not a product failure.
+- `delivery-failure|capacity|shared|github-actions-queued-not-platform-outage` → classify runner scheduling and repository fan-out before claiming an external platform outage; do not retrigger while the exact-head queue is draining.
+- Squash completion uses deterministic merged-PR identity fallback and fails closed on ambiguity.
+- Post-merge reconciliation/cleanup failures must leave durable evidence and an operator-visible error.
