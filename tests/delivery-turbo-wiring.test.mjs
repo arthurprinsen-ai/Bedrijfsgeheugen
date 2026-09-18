@@ -23,3 +23,11 @@ test('Turbo policy keeps production readback and rollback hard',()=>{
   assert.equal(policy.recovery.conflict,'rebase_or_rebuild_same_lineage_from_current_main');
   assert.equal(policy.success,'LIVE & BEWEZEN');
 });
+
+test('Unified Brain Delivery is turbo-aware but keeps BG169 promotion',()=>{
+  const brain=fs.readFileSync('.github/workflows/unified-brain-delivery.yml','utf8');
+  assert.match(brain,/TURBO_BRAIN_LANE/);
+  assert.match(brain,/classifyTurboDelivery/);
+  assert.match(brain,/BG169 GitHub-native production transport/);
+  assert.match(brain,/timeout-minutes:\s*7/);
+});
