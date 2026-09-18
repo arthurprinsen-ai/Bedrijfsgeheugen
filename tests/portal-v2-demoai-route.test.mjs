@@ -32,9 +32,10 @@ test('demoAI theme is route scoped and responsive', () => {
   assert.match(overview, /@media/);
 });
 
-test('query-string rewrite keeps Portal V2 assets rooted under /portal-v2/', () => {
+test('demoAI canonical redirect chain keeps Portal V2 assets rooted under /portal-v2/', () => {
   const index = fs.readFileSync(path.join(repoRoot, 'portal-v2', 'index.html'), 'utf8');
   const redirects = fs.readFileSync(path.join(repoRoot, '_redirects'), 'utf8');
-  assert.match(redirects, /\/klantportaal\s+klant=demoAI\s+\/portal-v2\/\s+200!/);
+  assert.match(redirects, /\/klantportaal\s+klant=demoAI\s+\/portaal\/demo\s+301!/);
+  assert.match(redirects, /\/portaal\/demo\s+\/portal-v2\/\s+200!/);
   assert.match(index, /<base href="\/portal-v2\/">/);
 });
