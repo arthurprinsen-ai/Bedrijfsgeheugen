@@ -41,5 +41,22 @@
     "security_and_code_analysis_terminal_green": true
   },
   "completion_rule": "LIVE_BEWEZEN requires protected delivery plus terminal green production readback and applicable security/code-analysis evidence on the canonical main lineage.",
-  "logged_at": "2026-09-18T07:25:47Z"
+  "logged_at": "2026-09-18T07:25:47Z",
+  "skills_writeback": {
+    "status": "RECORDED",
+    "contract": "config/brain-chat-learning-contract.json",
+    "lesson_id": "FORESIGHT_LIVE_PROVEN_REQUIRES_EXACT_LINEAGE_TERMINAL_READBACK",
+    "reusable_by": [
+      "chats",
+      "agents",
+      "skills",
+      "workflows"
+    ],
+    "rule": "A foresight/autonomy change is not complete at merge or deploy. Preserve one obligation lineage, require exact-head protected delivery, terminal production readback, applicable security/code-analysis, ancestry/current-state verification, then write LIVE_BEWEZEN and reusable prevention back to shared learning."
+  },
+  "learning_propagation": {
+    "append_only_audit": true,
+    "shared_context_refresh_required": true,
+    "no_parallel_authority": true
+  }
 }
