@@ -40,3 +40,10 @@ test('stijl.js voegt niets dubbel toe en koppelt de klikmeting aan vooraf geplaa
   assert.match(stijl, /querySelectorAll\('\[data-bg-money-prerender\] \.bg-money-btn'\)/);
   assert.ok(PRERENDER_MARKER === 'data-bg-money-prerender');
 });
+
+
+test('prijzen mobile counter stays in sticky flow to prevent CLS', () => {
+  const prijzen = readFileSync('prijzen.html', 'utf8');
+  assert.match(prijzen, /@media\(max-width:900px\)[\s\S]*tbody tr\.tier>td\{display:block;position:static;/);
+  assert.match(prijzen, /tbody tr\.tier>td\{display:grid;[\s\S]*position:fixed;/);
+});
