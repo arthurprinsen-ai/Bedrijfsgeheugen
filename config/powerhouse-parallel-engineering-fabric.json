@@ -1,6 +1,6 @@
 {
   "fingerprint": "powerhouse-parallel-engineering-fabric-v1",
-  "version": 3,
+  "version": 4,
   "status": "active",
   "protocol_extension": "powerhouse-fast-development-protocol-v2",
   "extends": [
@@ -31,7 +31,12 @@
     "integration_unit": "rolling_conflict_contract_lane",
     "one_active_integration_candidate_per_conflict_contract": true,
     "supersede_old_head_immediately": true,
-    "queue_wait_is_not_work": true
+    "queue_wait_is_not_work": true,
+    "predictive_admission": true,
+    "prediction_controller": "tools/delivery/predictive-controller.mjs",
+    "prefer_microbatch_by_conflict_contract": true,
+    "auto_reduce_parallelism_when_conflict_probability_high": true,
+    "auto_expand_parallelism_when_independent": true
   },
   "affected_testing": {
     "fail_closed_unknown_material_scope": true,
@@ -65,7 +70,9 @@
         "required"
       ]
     },
-    "promotion_profile": "risk_scoped_blocking_plus_async_assurance"
+    "promotion_profile": "risk_scoped_blocking_plus_async_assurance",
+    "adaptive_gate_plan": true,
+    "unrelated_assurance": "shadow_post_merge"
   },
   "cache": {
     "algorithm": "sha256",
@@ -116,5 +123,13 @@
     "candidate_refresh_from_current_main_on_real_conflict": true,
     "preserve_tested_nonoverlapping_commits": true,
     "duplicate_prs_for_same_obligation": "forbidden"
+  },
+  "supervision": {
+    "workflow": ".github/workflows/powerhouse-fast-delivery-supervisor.yml",
+    "zero_run": "auto_dispatch",
+    "stale_run": "cancel_and_redispatch",
+    "conflict": "same_lineage_refresh",
+    "timeout": "resume_from_last_verified_checkpoint",
+    "duplicate_recovery": "forbidden"
   }
 }
