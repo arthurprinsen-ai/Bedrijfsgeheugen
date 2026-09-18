@@ -66,10 +66,14 @@ $$;
 revoke execute on function public.enforce_instagram_media_proof_vision_v1() from public,anon,authenticated;
 grant execute on function public.enforce_instagram_media_proof_vision_v1() to service_role;
 
-drop trigger if exists enforce_instagram_media_proof_vision_v1 on public.powerhouse_media_proof_evidence_v1;
-create trigger enforce_instagram_media_proof_vision_v1
-before insert or update on public.powerhouse_media_proof_evidence_v1
-for each row execute function public.enforce_instagram_media_proof_vision_v1();
+do $trigger$
+begin
+  if to_regclass('public.powerhouse_media_proof_evidence_v1') is not null then
+    execute 'drop trigger if exists enforce_instagram_media_proof_vision_v1 on public.powerhouse_media_proof_evidence_v1';
+    execute 'create trigger enforce_instagram_media_proof_vision_v1 before insert or update on public.powerhouse_media_proof_evidence_v1 for each row execute function public.enforce_instagram_media_proof_vision_v1()';
+  end if;
+end
+$trigger$;
 
 create or replace function public.enforce_instagram_obligation_vision_v1()
 returns trigger
