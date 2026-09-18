@@ -1,0 +1,39 @@
+{
+  "version": "portal-v2-overview-navigation-parity-v1",
+  "date": "2026-09-18",
+  "obligationId": "portal-v2-trusted-advisor-parity-v1",
+  "fingerprint": "portal-v2-empty-state-surface-preservation-v1",
+  "incident": {
+    "sourcePr": 2004,
+    "failedRun": 35313947629,
+    "failedJob": 105501554369,
+    "failedStep": "Read back Portal V2 DOM, standalone routing and CSRD assets",
+    "symptom": "The overview rendered only a fallback sentence when profile maturity was missing, so the adoption curve and organisation-state surfaces disappeared.",
+    "rootCause": "Semantic parity was conditional on populated customer profile data. Empty-state rendering collapsed multiple protected legacy surfaces into one text card."
+  },
+  "truthRule": {
+    "principle": "Missing customer data may change values and confidence, but must not remove protected decision surfaces.",
+    "unknownState": "Render the full surface with explicit unknown/not-filled labels; never synthesize a maturity stage, blocker or CMMI score.",
+    "customerTruth": "Only explicit customer input or eligible evidence may select a current adoption stage or organisation status."
+  },
+  "prevention": [
+    "Protected legacy surfaces must have populated, partial and empty-state production readback coverage.",
+    "Do not use empty-state fallbacks that collapse required models, charts, navigation or management surfaces.",
+    "A parity test must assert structural presence independently from whether business data exists.",
+    "Production DOM readback is authoritative for whether a surface is actually delivered."
+  ],
+  "evidence": {
+    "implementationFiles": [
+      "portal-v2/modules/overview.js",
+      "tests/integration/portal-v2-production-overview-navigation.spec.js"
+    ],
+    "pending": [
+      "exact-head Required",
+      "exact-head BRAIN delivery",
+      "protected merge",
+      "main production DOM readback",
+      "main SHA readback"
+    ]
+  },
+  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+}
