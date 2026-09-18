@@ -42,10 +42,10 @@ export function changeToTasks(change={},defaults={}){
   const impact=Math.max(1,Math.min(5,num(change.impact)||1));
   const baseId=String(change.id||`change:${slug(title)}`);
   const tasks=[
-    {title:`Bepaal impact van: ${title}`,department:area,owner,due,status:'Open',sourceChangeId:baseId,kind:'impact'},
-    {title:`Voer wijziging uit: ${title}`,department:area,owner,due,status:'Open',sourceChangeId:baseId,kind:'implementation'}
+    {title:`Bepaal impact van: ${title}`,department:area,owner,due,status:'Open',sourceChangeId:baseId,sourceTaskId:`${baseId}:impact`,kind:'impact'},
+    {title:`Voer wijziging uit: ${title}`,department:area,owner,due,status:'Open',sourceChangeId:baseId,sourceTaskId:`${baseId}:implementation`,kind:'implementation'}
   ];
-  if(impact>=4)tasks.push({title:`Borg en verifieer: ${title}`,department:area,owner,due,status:'Open',sourceChangeId:baseId,kind:'assurance'});
+  if(impact>=4)tasks.push({title:`Borg en verifieer: ${title}`,department:area,owner,due,status:'Open',sourceChangeId:baseId,sourceTaskId:`${baseId}:assurance`,kind:'assurance'});
   return Object.freeze(tasks.map(Object.freeze));
 }
 
