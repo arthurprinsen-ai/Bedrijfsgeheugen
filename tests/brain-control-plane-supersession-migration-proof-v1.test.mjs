@@ -7,7 +7,9 @@ test('terminal migration proof traverses supersession lineage', async()=>{
   assert.match(workflow,/across supersession lineage/);
   assert.match(workflow,/SUPERSEDES_LINEAGE_CYCLE/);
   assert.match(workflow,/SUPERSEDES_OBLIGATION_MISMATCH/);
-  assert.match(workflow,/SUPERSEDES_PR_NOT_MERGED/);
+  assert.match(workflow,/SUPERSEDES_PR_NOT_TERMINAL/);
+  assert.match(workflow,/UNMERGED_SUPERSEDES_SAFE_TO_SKIP/);
+  assert.match(workflow,/UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS/);
   assert.match(workflow,/SUPERSEDES_LINEAGE_DEPTH_EXCEEDED/);
   assert.match(workflow,/metadata\.supersedes===null \? 0 : Number\(metadata\.supersedes\)/);
 });
