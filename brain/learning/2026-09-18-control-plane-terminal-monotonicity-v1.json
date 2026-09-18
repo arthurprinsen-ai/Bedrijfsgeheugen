@@ -1,0 +1,30 @@
+{
+  "fingerprint": "control-plane|terminal-state|monotonic-truth-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "Canonical transition functions accepted valid status names but did not prevent a terminal VERIFIED/FULFILLED state from being reopened by a later caller.",
+  "root_cause": "State validation checked membership, not transition monotonicity.",
+  "prevention_rule": "Terminal operation and obligation truth is monotonic. VERIFIED/COMPENSATED and FULFILLED/CANCELLED/BREACHED may only replay to the same terminal state for evidence refresh; reopening requires a new obligation/operation lineage.",
+  "enforcement": [
+    "database transition guard",
+    "optimistic version CAS",
+    "control-plane binding",
+    "regression test"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ],
+  "related_incidents": [
+    {
+      "fingerprint": "delivery|rerun-event-payload|metadata-staleness-v1",
+      "observation": "GitHub failed-job rerun retained the original pull_request event payload after Base-SHA metadata was corrected.",
+      "prevention": "After machine-readable PR metadata changes, require a fresh synchronize/head event before treating Required preflight as authoritative; do not rely on rerunning the old event."
+    },
+    {
+      "fingerprint": "delivery|baseline-test-drift|portal-v2-entry-v1",
+      "observation": "Required preflight exposed legacy portal regression tests on current main that contradicted the canonical _redirects contract: Portal V2 is the only entry surface.",
+      "prevention": "When canonical routing changes, update route-contract regression tests in the same delivery lineage. A stale baseline test must not force live routing back to a retired architecture."
+    }
+  ]
+}
