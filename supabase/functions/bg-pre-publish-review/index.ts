@@ -100,7 +100,17 @@ function otherIdentityViolations(channel: string, text: string, body: any) {
     const mediaType = clean(body.media_type).toLowerCase();
     const source = clean(body.media_source).toLowerCase();
     if ((mediaType === 'reel' || mediaType === 'video') && source !== 'openart') out.push({ code: 'INSTAGRAM_VIDEO_SOURCE_INVALID', message: 'Mira video/reel moet OpenArt zijn.' });
-    if (['static','carousel','image'].includes(mediaType) && source !== 'placid') out.push({ code: 'INSTAGRAM_STATIC_SOURCE_INVALID', message: 'Mira static/carousel moet Placid zijn.' });
+    if (['static','image'].includes(mediaType) && !['placid','openart'].includes(source)) out.push({ code: 'INSTAGRAM_IMAGE_SOURCE_INVALID', message: 'Mira image moet OpenArt of Placid zijn.' });
+    if (mediaType === 'carousel') {
+      const slides = Array.isArray(body.carousel_manifest?.slides) ? body.carousel_manifest.slides : [];
+      if (slides.length < 2) out.push({ code: 'INSTAGRAM_CAROUSEL_MANIFEST_REQUIRED', message: 'Carousel vereist minimaal twee bewezen slides.' });
+      for (const slide of slides) {
+        const sp = clean(slide?.provider).toLowerCase(), sk = clean(slide?.kind || 'image').toLowerCase();
+        if (sk === 'video' && sp !== 'openart') out.push({ code: 'INSTAGRAM_CAROUSEL_VIDEO_OPENART_REQUIRED', message: 'Video-slide in carousel moet OpenArt zijn.' });
+        if (sk === 'image' && !['openart','placid'].includes(sp)) out.push({ code: 'INSTAGRAM_CAROUSEL_IMAGE_PROVIDER_INVALID', message: 'Image-slide in carousel moet OpenArt of Placid zijn.' });
+        if (!clean(slide?.asset_url) || !clean(slide?.sha256) || slide?.proof?.identity_gate_result !== 'PASS') out.push({ code: 'INSTAGRAM_CAROUSEL_SLIDE_PROOF_REQUIRED', message: 'Iedere carousel-slide vereist exact asset + PASS proof.' });
+      }
+    }
   }
   return out;
 }
