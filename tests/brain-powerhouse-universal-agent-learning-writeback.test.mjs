@@ -10,9 +10,11 @@ const rootDir = path.resolve(here, '..');
 const policyPath = path.join(rootDir, 'brain/policies/powerhouse-universal-agent-learning-writeback-v1.json');
 const continuityPolicyPath = path.join(rootDir, 'brain/policies/powerhouse-agent-continuity-v1.json');
 const preflightPath = path.join(rootDir, 'scripts/brain/chat-learning-preflight.mjs');
+const skillPath = path.join(rootDir, '.agents/skills/powerhouse-continuity/SKILL.md');
 const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
 const continuityPolicy = JSON.parse(fs.readFileSync(continuityPolicyPath, 'utf8'));
 const preflightSource = fs.readFileSync(preflightPath, 'utf8');
+const continuitySkillSource = fs.readFileSync(skillPath, 'utf8');
 
 const REQUIRED_INVARIANTS = [
   'NO_AGENT_STARTS_BLIND',
@@ -143,4 +145,15 @@ test('chat-learning preflight cannot silently omit universal learning/writeback 
   assert.equal(continuitySource.fingerprint, continuityPolicy.fingerprint);
   assert.ok(packet.fingerprints.includes(policy.fingerprint), 'policy fingerprint missing from preflight signals');
   assert.ok(packet.fingerprints.includes(continuityPolicy.fingerprint), 'continuity fingerprint missing from preflight signals');
+});
+
+test('Powerhouse continuity skill is discoverable and mirrors canonical loop-node authority', () => {
+  assert.match(continuitySkillSource, /^---[\s\S]*name:\s*powerhouse-continuity[\s\S]*description:\s*Use when/m);
+  assert.match(continuitySkillSource, /CURRENT_STATE_BEFORE_WORK/);
+  assert.match(continuitySkillSource, /REUSE_BEFORE_BUILD/);
+  assert.match(continuitySkillSource, /NO_AGENT_STARTS_FROM_SCRATCH/);
+  assert.match(continuitySkillSource, /canonical writeback/i);
+  assert.match(continuitySkillSource, /LIVE & BEWEZEN/);
+  assert.match(continuitySkillSource, /brain\/policies\/powerhouse-agent-continuity-v1\.json/);
+  assert.match(continuitySkillSource, /brain\/learning\/chat-agent-intrinsic-loop-node-2026-09-18\.json/);
 });
