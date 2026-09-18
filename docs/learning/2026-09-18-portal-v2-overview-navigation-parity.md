@@ -25,7 +25,7 @@ Production readback must verify:
 
 ## Terminal evidence
 
-The recovery candidate is now **LIVE_AND_PROVEN**.
+The recovery candidate is **LIVE_AND_PROVEN**.
 
 - Exact candidate head: `193ebfa4046d0049bed9f7f9f48d54cdd56fccf2`
 - Required: success
@@ -39,6 +39,27 @@ The recovery candidate is now **LIVE_AND_PROVEN**.
 - Netlify production commit_ref: `84231d46cc2bb23db6da202edef4c40a8c963b05`
 - Production state: `ready`
 
+## Powerhouse + skills writeback
+
+The incident is promoted into the canonical Powerhouse skill `brain/skills/portal-v2-parity-empty-state-v1.json`.
+
+Mandatory discovery and execution surfaces:
+- `AGENTS.md`
+- `config/brain-chat-learning-contract.json`
+- `brain/policies/powerhouse-universal-agent-learning-writeback-v1.json`
+- `platform/agents/agent-team.mjs`
+
+Mandatory consumers:
+- `agent-website-ux`
+- `agent-reliability`
+- `agent-data-quality`
+
+These consumers must expose playbook `portal-v2-empty-state-surface-preservation` and learning contract `portal-v2-parity.v1`. A future chat, agent or workflow touching Portal V2 parity must load this skill first, preserve populated/partial/empty structural parity, and reuse this fingerprint rather than rediscovering the incident.
+
+Skill-promotion lineage: PR #2036 / branch `feat/portal-v2-parity-skill-contract`. This promotion remains `RECORDED_PENDING_FINAL_DELIVERY_READBACK` until its own exact-head gates, protected merge and main readback are terminal green.
+
 ## Learning closure
 
-The permanent Powerhouse rule is now closed: a protected management surface may never disappear merely because its customer data is missing. Empty state must preserve the complete decision surface and render unknown truth explicitly rather than inventing a value or collapsing the interface.
+The permanent Powerhouse rule is closed for the original production incident: a protected management surface may never disappear merely because its customer data is missing. Empty state must preserve the complete decision surface and render unknown truth explicitly rather than inventing a value or collapsing the interface.
+
+The prevention rule is now also executable: incident learning must be propagated into canonical skills, discovery surfaces, agent playbooks and regressions so subsequent workers inherit the fix automatically.
