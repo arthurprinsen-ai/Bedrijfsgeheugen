@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_LEARNING",
   "version": "POWERHOUSE-TERMINAL-WRITER-LEASE-v1",
-  "status": "ACTIVE_PREVENTION",
+  "status": "FULFILLED",
   "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
   "date": "2026-09-18",
   "obligation_id": "powerhouse-self-production-promotion-v1",
@@ -10,5 +10,19 @@
     "ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION",
     "TERMINAL_DELIVERY_FREEZES_NON_OWNER_WRITES"
   ],
-  "terminal_state": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  "terminal_state": "LIVE_PROVEN",
+  "lease_state": "RELEASED",
+  "release_reason": "PROTECTED_MERGE_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK",
+  "source_pr": 2063,
+  "candidate_head_sha": "ec4a23eec09c231fdc5e0db7691b51ac0d04053a",
+  "production_main_sha": "ee526cea16dac904173466a529211ad0f7513215",
+  "production_readback_run_id": 35327618750,
+  "netlify_deploy_id": "6aacfe9a172eed0008e2e2d9",
+  "netlify_commit_ref": "ee526cea16dac904173466a529211ad0f7513215",
+  "release_evidence": [
+    "github:pr:2063:merged",
+    "github:main:ee526cea16dac904173466a529211ad0f7513215",
+    "github-actions:35327618750:success",
+    "netlify:deploy:6aacfe9a172eed0008e2e2d9:ready"
+  ]
 }
