@@ -1,0 +1,125 @@
+{
+  "version": "powerhouse-foresight-autonomy-v1",
+  "extends": [
+    "powerhouse-daily-self-evolution-v1",
+    "powerhouse-autonomous-improvement-runtime-v1"
+  ],
+  "objective": "Continuously learn, experiment, measure, predict and safely implement improvements across code, architecture, infrastructure, security, publishing and customer intelligence.",
+  "control_plane": {
+    "systems": [
+      "github",
+      "notion",
+      "supabase",
+      "netlify",
+      "powerhouse_brain",
+      "portal_v2"
+    ],
+    "one_canonical_truth": true,
+    "parallel_authorities_forbidden": true,
+    "exact_candidate_identity": true,
+    "production_readback_required": true
+  },
+  "autonomy": {
+    "discover_new_code_techniques": true,
+    "discover_new_infrastructure": true,
+    "discover_new_architecture_patterns": true,
+    "generate_experiments": true,
+    "run_benchmarks": true,
+    "implement_safe_reversible_winners": true,
+    "optimize_publishing": true,
+    "optimize_integrations": true,
+    "optimize_security": true,
+    "predict_future_scenarios": true,
+    "customer_portal_forecasts": true,
+    "hard_boundaries": [
+      "secrets_credentials_permissions",
+      "security_control_weakening",
+      "destructive_irreversible_data",
+      "paid_capacity_increase",
+      "legal_financial_commitment"
+    ]
+  },
+  "evidence": {
+    "internal": [
+      "runtime_metrics",
+      "workflow_metrics",
+      "production_outcomes",
+      "customer_inputs",
+      "historical_decisions",
+      "incident_learning",
+      "cost_latency_quality"
+    ],
+    "external": [
+      "official_docs",
+      "release_notes",
+      "standards",
+      "security_advisories",
+      "market_data",
+      "sector_benchmarks",
+      "macro_data",
+      "reputable_research"
+    ],
+    "provenance_required": true,
+    "observed_at_required": true,
+    "confidence_required": true,
+    "freshness_required": true,
+    "uncertainty_required": true
+  },
+  "experimentation": {
+    "lifecycle": [
+      "OBSERVE",
+      "HYPOTHESIZE",
+      "BASELINE",
+      "CHALLENGER",
+      "REPLAY",
+      "BENCHMARK",
+      "SHADOW",
+      "CANARY",
+      "PROMOTE_OR_ROLLBACK",
+      "PRODUCTION_OUTCOME"
+    ],
+    "champion_challenger": true,
+    "causal_claims_require_causal_evidence": true,
+    "no_magic_score": true,
+    "no_change_valid_when_incumbent_wins": true
+  },
+  "prediction": {
+    "horizons": [
+      "30d",
+      "90d",
+      "12m"
+    ],
+    "methods": [
+      "trend",
+      "scenario",
+      "benchmark_gap",
+      "driver_based",
+      "confidence_interval"
+    ],
+    "customer_outputs": [
+      "expected_path",
+      "upside_case",
+      "downside_case",
+      "benchmark_position",
+      "key_drivers",
+      "leading_indicators",
+      "recommended_actions",
+      "confidence",
+      "data_freshness"
+    ],
+    "prediction_is_not_fact": true,
+    "backtest_required": true,
+    "calibration_required": true
+  },
+  "security": {
+    "least_privilege": true,
+    "vulnerability_advisories": true,
+    "dependency_risk": true,
+    "secret_exposure_checks": true,
+    "rls_and_tenant_isolation": true,
+    "supply_chain_checks": true,
+    "rollback_and_recovery": true,
+    "security_non_degradation": true
+  },
+  "terminal_success": "LIVE_BEWEZEN"
+}
