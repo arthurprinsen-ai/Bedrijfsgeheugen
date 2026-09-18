@@ -51,7 +51,7 @@ jobs:
           CANDIDATE_BRANCH: ${{ inputs.candidate_branch }}
         run: |
           set -euo pipefail
-          test -n "$BASE_SHA" && test -n "$HEAD_SHA" && test -n "$CANDIDATE_BRANCH"
+          test -n "$BASE_SHA" && test -n "$HEAD_SHA"
           pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
           actual_base="$(jq -r '.base.sha' <<<"$pr")"
           actual_head="$(jq -r '.head.sha' <<<"$pr")"
@@ -59,7 +59,7 @@ jobs:
           actual_state="$(jq -r '.state' <<<"$pr")"
           [ "$actual_base" = "$BASE_SHA" ] || { echo "::error::PR_BASE_SHA_DRIFT:$BASE_SHA:$actual_base"; exit 1; }
           [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::PR_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
-          [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::PR_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
+          # Branch names are secondary metadata; exact head identity remains authoritative.
           [ "$actual_state" = open ] || { echo "::error::PR_NOT_OPEN:$actual_state"; exit 1; }
 
   admission:
@@ -140,7 +140,7 @@ jobs:
               node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
               ;;
             automation)
-              (node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/brain-delivery-system.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              (node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/github-delivery-state-machine*.test.mjs tests/brain-delivery-system.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
               ;;
             *)
               echo "Unknown delivery lane: ${{ matrix.id }}" | tee .artifacts/lane-${{ matrix.id }}.log
@@ -312,11 +312,99 @@ jobs:
           [ "$actual_repo" = "$GITHUB_REPOSITORY" ] || { echo "::error::BG169_SAME_REPOSITORY_REQUIRED:$actual_repo"; exit 1; }
           [ "$actual_base_ref" = "main" ] || { echo "::error::BG169_MAIN_BASE_REQUIRED:$actual_base_ref"; exit 1; }
           [ "$actual_head" = "$HEAD_SHA" ] || { echo "::error::BG169_HEAD_SHA_DRIFT:$HEAD_SHA:$actual_head"; exit 1; }
-          [ "$actual_ref" = "$CANDIDATE_BRANCH" ] || { echo "::error::BG169_HEAD_REF_DRIFT:$CANDIDATE_BRANCH:$actual_ref"; exit 1; }
+          # Branch ref is descriptive only. Canonical identity is obligation + exact head SHA + main epoch.
           [ "$actual_state" = "open" ] || { echo "::error::BG169_PR_NOT_OPEN:$actual_state"; exit 1; }
           [ "$actual_draft" = "false" ] || { echo "::error::BG169_DRAFT_BLOCKED"; exit 1; }
           git fetch origin main --no-tags
           rollback_identity="$(git rev-parse origin/main)"
+          landing_main_sha="$rollback_identity"
+
+          # Acquire/refresh the terminal writer lease on the PR itself. This is metadata only:
+          # it binds terminal authority to obligation + exact head + current main epoch.
+          PR_JSON="$pr" LANDING_MAIN_SHA="$landing_main_sha" HEAD_SHA="$HEAD_SHA" RUN_ID="$GITHUB_RUN_ID" node --input-type=module - <<'NODE'
+          import { writeFileSync } from 'node:fs';
+          import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
+          const pr=JSON.parse(process.env.PR_JSON);
+          const metadata=parseDeliveryMetadata(pr.body||'');
+          if(!metadata.obligationId) throw new Error('OBLIGATION_ID_MISSING');
+          const stripped=(pr.body||'').split(/\r?\n/).filter(line=>!/^(Writer-Lease-State|Writer-Lease-Owner|Writer-Lease-Scope|Writer-Lease-Head|Writer-Lease-Main-Epoch|Writer-Lease-Obligation|Writer-Lease-NonOwner-Action|Writer-Lease-Release):/i.test(line)).join('\n').trim();
+          const lease=[
+            'Writer-Lease-State: TERMINAL_DELIVERY',
+            `Writer-Lease-Owner: powerhouse-terminal-delivery`,
+            `Writer-Lease-Scope: ${metadata.obligationId}`,
+            `Writer-Lease-Head: ${process.env.HEAD_SHA}`,
+            `Writer-Lease-Main-Epoch: ${process.env.LANDING_MAIN_SHA}`,
+            `Writer-Lease-Obligation: ${metadata.obligationId}`,
+            'Writer-Lease-NonOwner-Action: DEFER',
+            'Writer-Lease-Release: AFTER_TERMINAL_CLOSURE'
+          ].join('\n');
+          writeFileSync('/tmp/bg169-terminal-pr-body.md', `${stripped}\n\n${lease}\n`);
+          NODE
+          terminal_body="$(cat /tmp/bg169-terminal-pr-body.md)"
+          gh api --method PATCH "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}" -f body="$terminal_body" >/tmp/bg169-lease-patch.json
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+
+          # Final optimistic-CAS landing guard. Development may run in parallel,
+          # but the short landing boundary is serialized on obligation + exact head + main epoch.
+          gh api "repos/${GITHUB_REPOSITORY}/compare/${landing_main_sha}...${HEAD_SHA}" > /tmp/bg169-compare.json
+          gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/check-runs?per_page=100" > /tmp/bg169-check-runs.json
+          gh api "repos/${GITHUB_REPOSITORY}/commits/${HEAD_SHA}/status?per_page=100" > /tmp/bg169-status.json
+          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > /tmp/bg169-open-prs.json
+          gh api "repos/${GITHUB_REPOSITORY}/branches/main" > /tmp/bg169-main-branch.json
+
+          PR_JSON="$pr" LANDING_MAIN_SHA="$landing_main_sha" HEAD_SHA="$HEAD_SHA" PR_NUMBER="$PR_NUMBER" node --input-type=module - <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const pr=JSON.parse(process.env.PR_JSON);
+          const compare=JSON.parse(readFileSync('/tmp/bg169-compare.json','utf8'));
+          const runs=JSON.parse(readFileSync('/tmp/bg169-check-runs.json','utf8')).check_runs||[];
+          const statuses=JSON.parse(readFileSync('/tmp/bg169-status.json','utf8')).statuses||[];
+          const open=JSON.parse(readFileSync('/tmp/bg169-open-prs.json','utf8'));
+          const branch=JSON.parse(readFileSync('/tmp/bg169-main-branch.json','utf8'));
+          const required=[
+            ...(branch?.protection?.required_status_checks?.contexts||[]),
+            ...((branch?.protection?.required_status_checks?.checks||[]).map(x=>x?.context).filter(Boolean)),
+          ];
+          const requiredChecks=[...new Set(required)].map(name=>{
+            const check=runs.find(x=>x.name===name);
+            if(check) return {name,conclusion:check.conclusion||check.status||'missing'};
+            const status=statuses.find(x=>x.context===name);
+            return {name,conclusion:status?.state==='success'?'success':(status?.state||'missing')};
+          });
+          const policy=JSON.parse(readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
+          const payload={
+            body:pr.body||'',
+            policy,
+            candidateNumber:Number(process.env.PR_NUMBER),
+            candidateHeadSha:process.env.HEAD_SHA,
+            validatedHeadSha:process.env.HEAD_SHA,
+            currentMainSha:process.env.LANDING_MAIN_SHA,
+            behindBy:Number(compare.behind_by),
+            mergeable:pr.mergeable===true,
+            requiredChecks,
+            openCandidates:open.map(x=>({number:x.number,body:x.body||''})),
+          };
+          writeFileSync('/tmp/bg169-terminal-guard.json',JSON.stringify(payload,null,2));
+          NODE
+          node tools/delivery/github-delivery-state-machine.mjs terminal-guard --input /tmp/bg169-terminal-guard.json
+
+          # Re-read the volatile landing facts immediately before merge.
+          git fetch origin main --no-tags
+          premerge_main_sha="$(git rev-parse origin/main)"
+          [ "$premerge_main_sha" = "$landing_main_sha" ] || { echo "::error::BG169_MAIN_EPOCH_DRIFT:$landing_main_sha:$premerge_main_sha"; exit 78; }
+          pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}")"
+          [ "$(jq -r '.head.sha // ""' <<<"$pr")" = "$HEAD_SHA" ] || { echo "::error::BG169_HEAD_SHA_DRIFT_BEFORE_MERGE"; exit 78; }
+          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > /tmp/bg169-open-prs-final.json
+          PR_JSON="$pr" PR_NUMBER="$PR_NUMBER" node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
+          const pr=JSON.parse(process.env.PR_JSON);
+          const me=Number(process.env.PR_NUMBER);
+          const obligation=parseDeliveryMetadata(pr.body||'').obligationId;
+          const open=JSON.parse(readFileSync('/tmp/bg169-open-prs-final.json','utf8'));
+          const newer=open.filter(x=>Number(x.number)>me && parseDeliveryMetadata(x.body||'').obligationId===obligation);
+          if(newer.length) throw new Error(`CANONICAL_SUCCESSOR_EXISTS:${newer.map(x=>x.number).join(',')}`);
+          NODE
+
           echo "BG169 GitHub-native production transport: promoting exact candidate $HEAD_SHA"
           merge_response="$(gh api \
             --method PUT \

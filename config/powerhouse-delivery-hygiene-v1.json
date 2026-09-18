@@ -1,24 +1,51 @@
 {
   "version": "POWERHOUSE-DELIVERY-HYGIENE-v1",
   "wip": {
-    "maxExecutable": 5,
-    "finishBeforeStart": true
+    "maxExecutable": 3,
+    "finishBeforeStart": true,
+    "maintenanceQueueSeparate": true,
+    "maxTerminalWritersPerObligation": 1
   },
-  "priorityLanes": ["security", "incident"],
-  "nonProductLanes": ["dependency", "docs"],
-  "allowedLanes": ["backend", "portal", "website", "automation", "security", "incident", "dependency", "docs"],
-  "allowedCandidateTypes": ["implementation", "recovery", "security", "dependency", "docs", "promotion"],
+  "priorityLanes": [
+    "security",
+    "incident"
+  ],
+  "nonProductLanes": [
+    "dependency",
+    "docs"
+  ],
+  "allowedLanes": [
+    "backend",
+    "portal",
+    "website",
+    "automation",
+    "security",
+    "incident",
+    "dependency",
+    "docs"
+  ],
+  "allowedCandidateTypes": [
+    "implementation",
+    "recovery",
+    "security",
+    "dependency",
+    "docs",
+    "promotion"
+  ],
   "deliveryControlPlanePaths": [
     "config/powerhouse-delivery-hygiene-v1.json",
     "config/powerhouse-one-loop-v1.json",
+    "config/powerhouse-github-delivery-state-machine-v1.json",
     "config/powerhouse-one-loop-v1.schema.json",
     "tools/delivery/",
+    "tools/delivery/github-delivery-state-machine.mjs",
     "tools/delivery-branch-hygiene-guard.mjs",
     ".github/workflows/powerhouse-delivery-hygiene.yml",
     ".github/workflows/powerhouse-repository-janitor.yml",
     ".github/workflows/required-test.yml",
     ".github/workflows/unified-brain-delivery.yml",
     "tests/delivery-hygiene-",
+    "tests/github-delivery-state-machine.test.mjs",
     "tests/delivery-one-loop-",
     "docs/superpowers/specs/2026-09-17-powerhouse-delivery-hygiene-v1-design.md",
     "docs/superpowers/specs/2026-09-17-powerhouse-one-loop-v1-design.md"

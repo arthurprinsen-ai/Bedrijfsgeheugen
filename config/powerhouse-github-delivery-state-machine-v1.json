@@ -1,0 +1,51 @@
+{
+  "version": "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1",
+  "fingerprint": "github|delivery-state-machine|parallel-build-serialized-landing|v1",
+  "identity": {
+    "primary": ["obligation_id", "candidate_head_sha", "main_epoch_sha"],
+    "branch_name_authoritative": false
+  },
+  "prMetadata": {
+    "requiredExactlyOnce": ["Obligation-ID", "Delivery-Lane", "Candidate-Type", "Base-SHA"],
+    "optionalAtMostOnce": ["Supersedes"],
+    "terminalLeaseRequiredExactlyOnce": [
+      "Writer-Lease-State",
+      "Writer-Lease-Owner",
+      "Writer-Lease-Scope",
+      "Writer-Lease-Head",
+      "Writer-Lease-Main-Epoch",
+      "Writer-Lease-Obligation"
+    ]
+  },
+  "cheapGates": [
+    "metadata-schema",
+    "branch-hygiene",
+    "classifier-completeness",
+    "test-workflow-coverage",
+    "security-static",
+    "writer-lease"
+  ],
+  "terminalMerge": {
+    "requireBehindByZero": true,
+    "requireExactValidatedHead": true,
+    "requireAllRequiredChecksGreen": true,
+    "requireWriterLeaseSameLineage": true,
+    "requireNoCanonicalSuccessor": true,
+    "requireUnchangedMainEpoch": true,
+    "requireMergeable": true
+  },
+  "wip": {
+    "maxActiveProductPrs": 3,
+    "maxTerminalWritersPerObligation": 1,
+    "maintenanceQueueSeparate": true
+  },
+  "postMergeTerminalization": [
+    "main-contains-candidate",
+    "deploy-promotion-readback",
+    "runtime-function-readback",
+    "outcome-evidence",
+    "learning-projection",
+    "skill-projection"
+  ],
+  "terminalStates": ["LIVE_BEWEZEN", "ROLLED_BACK_GREEN", "BLOCKED_HARD_BOUNDARY"]
+}

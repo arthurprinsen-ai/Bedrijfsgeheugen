@@ -1,0 +1,140 @@
+name: Powerhouse Obligation Terminalizer
+
+on:
+  pull_request:
+    branches: [main]
+    types: [closed]
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: obligation-terminalizer-${{ github.event.pull_request.number }}
+  cancel-in-progress: false
+
+jobs:
+  terminalize:
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY')
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ github.event.pull_request.merge_commit_sha }}
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+
+      - name: Validate canonical merged lineage
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          git fetch origin main --no-tags
+          git merge-base --is-ancestor "$CANDIDATE_SHA" "$MERGE_SHA"
+          git merge-base --is-ancestor "$MERGE_SHA" origin/main
+          PR_BODY="$PR_BODY" CANDIDATE_SHA="$CANDIDATE_SHA" MERGE_SHA="$MERGE_SHA" PR_NUMBER="$PR_NUMBER" node --input-type=module - <<'NODE'
+          import { writeFileSync, readFileSync } from 'node:fs';
+          import { validateMachineReadablePrBody } from './tools/delivery/github-delivery-state-machine.mjs';
+          const policy=JSON.parse(readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
+          const result=validateMachineReadablePrBody({body:process.env.PR_BODY||'',candidateHeadSha:process.env.CANDIDATE_SHA,policy});
+          if(!result.ok || !result.terminal){
+            console.error(JSON.stringify({state:'POST_MERGE_LINEAGE_INVALID',...result},null,2));
+            process.exit(78);
+          }
+          writeFileSync('.artifacts/terminal-lineage.json',JSON.stringify({
+            state:'MERGED_LINEAGE_VERIFIED',
+            obligation_id:result.metadata.obligationId,
+            candidate_head_sha:process.env.CANDIDATE_SHA,
+            merge_sha:process.env.MERGE_SHA,
+            pr_number:Number(process.env.PR_NUMBER),
+            writer_lease:result.lease
+          },null,2));
+          NODE
+
+      - name: Verify production promotion and runtime readback
+        id: production
+        env:
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 36); do
+            if curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/release.json -o /tmp/release.json               && curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/ -o /tmp/runtime.html; then
+              observed="$(node --input-type=module - <<'NODE'
+          import { readFileSync } from 'node:fs';
+          const release=JSON.parse(readFileSync('/tmp/release.json','utf8'));
+          if(release.contract!=='BRAIN-DELIVERY-v2') process.exit(2);
+          if(release.production_authority!=='BG169') process.exit(3);
+          const sha=String(release.commit_ref||'').trim();
+          if(!/^[0-9a-f]{40}$/i.test(sha)) process.exit(4);
+          process.stdout.write(sha);
+          NODE
+              )" || observed=""
+              if [ -n "$observed" ]; then
+                git fetch --no-tags origin "$observed" >/dev/null 2>&1 || true
+                if git merge-base --is-ancestor "$MERGE_SHA" "$observed" && [ -s /tmp/runtime.html ]; then
+                  echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
+                  exit 0
+                fi
+              fi
+            fi
+            sleep 10
+          done
+          echo "::error::POST_MERGE_PRODUCTION_READBACK_FAILED:$MERGE_SHA"
+          exit 1
+
+      - name: Verify learning and skill projection
+        run: |
+          set -euo pipefail
+          node scripts/brain/powerhouse-skill-projection.mjs
+          node scripts/brain/chat-learning-preflight.mjs >/tmp/chat-learning-preflight.json
+
+      - name: Materialize terminal outcome evidence
+        env:
+          PRODUCTION_SHA: ${{ steps.production.outputs.production_sha }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          CANDIDATE_SHA: ${{ github.event.pull_request.head.sha }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          node --input-type=module - <<'NODE'
+          import { readFileSync, writeFileSync } from 'node:fs';
+          const lineage=JSON.parse(readFileSync('.artifacts/terminal-lineage.json','utf8'));
+          const preflight=JSON.parse(readFileSync('/tmp/chat-learning-preflight.json','utf8'));
+          const evidence={
+            contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
+            fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
+            terminal_status:'LIVE_BEWEZEN',
+            obligation_id:lineage.obligation_id,
+            pr_number:Number(process.env.PR_NUMBER),
+            candidate_head_sha:process.env.CANDIDATE_SHA,
+            merge_sha:process.env.MERGE_SHA,
+            production_sha:process.env.PRODUCTION_SHA,
+            checks:{
+              main_contains_candidate:true,
+              deploy_promotion_readback:true,
+              runtime_function_readback:true,
+              outcome_evidence:true,
+              learning_projection:preflight?.status==='READY',
+              skill_projection:true
+            }
+          };
+          if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
+          writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
+          console.log(JSON.stringify(evidence,null,2));
+          NODE
+
+      - name: Upload terminal evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: obligation-terminal-evidence-${{ github.event.pull_request.number }}
+          path: |
+            .artifacts/terminal-lineage.json
+            .artifacts/obligation-terminal-evidence.json
+          if-no-files-found: error
+          retention-days: 90

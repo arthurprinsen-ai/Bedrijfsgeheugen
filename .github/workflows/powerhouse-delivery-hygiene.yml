@@ -74,6 +74,8 @@ jobs:
           import { readFile, writeFile, appendFile } from 'node:fs/promises';
           import { setTimeout as sleep } from 'node:timers/promises';
           import { parseDeliveryMetadata, classifyCandidate, evaluateAdmission, validateDeliveryMetadata, deriveHygieneConflictContracts, evaluateWriterLease } from './tools/delivery/delivery-hygiene.mjs';
+          import { validateMachineReadablePrBody, scanStaticSecurity, evaluateBranchHygiene, evaluateTestWorkflowCoverage } from './tools/delivery/github-delivery-state-machine.mjs';
+          import { createDeliveryPlan } from './tools/brain-delivery-system.mjs';
 
           const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8'}).trim();
           const transientApiFailure = error => /HTTP\s+(?:502|503|504)\b|upstream connect error|connection (?:refused|reset)|ECONNRESET|ETIMEDOUT|socket hang up/i.test(`${error?.message || ''}\n${error?.stderr || ''}\n${error?.stdout || ''}`);
@@ -133,7 +135,35 @@ jobs:
               throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
             }
 
-            const lease = evaluateWriterLease({ body: pr.body || '', candidateHeadSha: headSha });
+            const candidateMetadata = parseDeliveryMetadata(pr.body || '');
+            const machineContract = validateMachineReadablePrBody({
+              body: pr.body || '',
+              candidateHeadSha: headSha,
+              currentMainSha,
+              policy,
+            });
+            if (!machineContract.ok) {
+              throw new Error(`PR_MACHINE_METADATA_INVALID:${machineContract.errors.join(',')}`);
+            }
+
+            const branchGate = evaluateBranchHygiene({ headRef: pr.head?.ref || '', baseRef: pr.base?.ref || '' });
+            if (!branchGate.ok) throw new Error(`BRANCH_HYGIENE_FAILED:${branchGate.reasons.join(',')}`);
+
+            const plan = createDeliveryPlan({ changedPaths, headSha, policy: brainPolicy });
+            const classifiedLanes = plan.lanes.map(lane => lane.id);
+            const coverageGate = evaluateTestWorkflowCoverage({ changedPaths, classifiedLanes });
+            if (!coverageGate.ok) throw new Error(`TEST_WORKFLOW_COVERAGE_FAILED:${coverageGate.reasons.join(',')}`);
+
+            const patch = sh('git','diff','--no-ext-diff','--unified=0',`${immutableBaseSha}...${headSha}`);
+            const securityGate = scanStaticSecurity(patch);
+            if (!securityGate.ok) throw new Error(`SECURITY_STATIC_FAILED:${securityGate.findings.join(',')}`);
+
+            const lease = evaluateWriterLease({
+              body: pr.body || '',
+              candidateHeadSha: headSha,
+              currentMainSha,
+              obligationId: candidateMetadata.obligationId,
+            });
             if (!lease.ok) {
               const evidence = {
                 version: policy.version,
@@ -156,7 +186,6 @@ jobs:
               process.exit(78);
             }
 
-            const candidateMetadata = parseDeliveryMetadata(pr.body || '');
             const candidatePool = [...open];
             if (candidateMetadata.supersedes !== null && !candidatePool.some(item => Number(item.number) === Number(candidateMetadata.supersedes))) {
               const predecessor = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${candidateMetadata.supersedes}`);
@@ -201,6 +230,15 @@ jobs:
               changed_paths: changedPaths,
               conflict_contracts: currentContracts,
               legacy_unclassified_open_prs: normalized.filter(item => !item.metadata?.obligationId).map(item => item.number),
+              cheap_gates: {
+                metadata_schema: machineContract.ok,
+                branch_hygiene: branchGate.ok,
+                classifier_completeness: true,
+                test_workflow_coverage: coverageGate.ok,
+                security_static: securityGate.ok,
+                writer_lease: lease.ok,
+              },
+              classified_lanes: classifiedLanes,
               writer_lease: lease,
               ...result,
             };

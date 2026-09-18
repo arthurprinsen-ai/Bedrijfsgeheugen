@@ -77,3 +77,19 @@ Fingerprint: `delivery|borging-closure|material-writeback|v1`.
 Before choosing an external execution route, apply `powerhouse|toolchain-authority|composio-no-make|v1` from `.agents/skills/powerhouse-toolchain-authority/SKILL.md`.
 
 Make is retired and forbidden as execution, orchestration, fallback or recovery. Use the canonical active stack instead: Composio where orchestration is needed; GitHub, Netlify, Notion, Supabase, Tavily, Buffer, DataForSEO, OpenArt, Placid, Google Search and Google Analytics for their specialist capabilities. Historical Make references are provenance only and must never reactivate authority.
+
+
+## GitHub delivery state machine v1
+
+Fingerprint: `github|delivery-state-machine|parallel-build-serialized-landing|v1`.
+
+GitHub is an executable delivery state machine, not a chat archive, parking lot or second learning database.
+
+- Every product PR carries exactly one `Obligation-ID`, `Delivery-Lane`, `Candidate-Type` and `Base-SHA`; `Supersedes` is absent/none or exactly one direct predecessor.
+- Candidate identity is obligation + exact head SHA + main epoch. Branch names are secondary labels and may be rebuilt without creating a new obligation.
+- Cheap gates run before expensive CI: metadata/schema, branch hygiene, classifier completeness, test-to-workflow coverage, static security and writer lease.
+- Product WIP is capped at three active executable PRs; docs/dependency maintenance stays outside the product WIP queue.
+- Exactly one terminal writer may exist for an obligation. Its lease binds owner, obligation, exact head and exact main epoch.
+- Landing is allowed only when `behind_by=0`, the tested head is unchanged, required checks are green, the lease still matches, no newer canonical successor exists and the main epoch has not moved.
+- A merge is non-terminal. The lineage must still prove main containment, deploy/promotion readback, runtime behavior, outcome evidence, learning projection and skill projection.
+- Normal operation is parallel build + serialized landing. Do not create a fresh recovery PR merely because another chat or agent resumed the same obligation.
