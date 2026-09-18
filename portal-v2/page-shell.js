@@ -14,6 +14,7 @@ import { mountDeliveryWorkspace } from './modules/delivery-workspace.js';
 import { mountFunctionalWorkspace, listFunctionalSuitePages } from './modules/functional-suite.js';
 import { mountAiCapabilityWorkspace } from './modules/ai-capability-workspace.js';
 import { mountExecutionLadderWorkspace } from './modules/execution-ladder-workspace.js';
+import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -30,6 +31,14 @@ const COPY = {
   mensen:['Mensen','Breng rollen, capaciteit, expertise, afhankelijkheden en kennisrisico’s in kaart.'],
   'branche-markt':['Branche en markt','Vergelijk de organisatie met marktontwikkelingen, concurrentie en relevante benchmarks.'],
   onderzoek:['Onderzoek','Bundel analyses, hypotheses, bevindingen, bronnen en conclusies in één traceerbaar overzicht.'],
+  ondernemersdata:['Actueel & externe data','Zie wat er buiten je bedrijf verandert: wetgeving, arbeidsmarkt, subsidies, economie, branche, AI en technologie.'],
+  'wet-regelgeving':['Wet- & regelgeving','Volg wettelijke verplichtingen, toepasselijkheid, mijlpalen, deadlines, bron en laatste controle.'],
+  'arbeidsmarkt-personeel':['Arbeidsmarkt & personeel','Volg UWV-, CBS- en andere arbeidsmarktsignalen die personeelsplanning, schaarste, verzuim en lonen kunnen raken.'],
+  'subsidies-regelingen':['Subsidies & regelingen','Volg RVO-regelingen, subsidies en relevante ondernemersregelingen vanuit de bron.'],
+  'economie-branche-actueel':['Economie & branche','Volg CBS-, DNB-, Eurostat- en branchesignalen voor planning, benchmark en besluitvorming.'],
+  'ai-technologie-actueel':['AI & technologie','Volg veranderingen rond AI, data, cyber, digitalisering en technologie die kansen of verplichtingen kunnen creëren.'],
+  deadlines:['Deadlines','Zie komende wettelijke mijlpalen en externe signalen met een concrete datum in één tijdlijn.'],
+  bronnenbibliotheek:['Bronnenbibliotheek','Doorzoek en controleer de externe publicaties waarop analyses en signalen zijn gebaseerd.'],
   'compliance-governance':['Compliance, security en governance','Volg verplichtingen, controls, risico’s, bewijs en acties voor onder meer AI Act, NIS2, privacy en security.'],
   'compliance-command-center':['Compliance Command Center','Eén operationele cockpit voor compliance-readiness, bewijs, open risico’s en auditacties.'],
   'ai-capabilities':['AI-capabilities','Zie welke AI-capabilities beschikbaar, gewenst, verantwoord en aantoonbaar operationeel zijn.'],
@@ -67,6 +76,7 @@ const COPY = {
 
 const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
+const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
 const portalContext={domainState:null};
 
@@ -127,7 +137,7 @@ function ensureShell(){
   if(root) return root;
   root=document.createElement('div');
   root.id='portalView';root.className='portalview';root.setAttribute('aria-hidden','true');
-  root.innerHTML=`<div class="pvbackdrop" data-close></div><section class="pvpanel" role="dialog" aria-modal="true" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Sluiten">×</button></header><nav class="pvglobalnav" aria-label="Algemene portaalnavigatie"><button type="button" data-pv-global-page="overzicht">Overzicht</button><button type="button" data-pv-global-page="profiel">Organisatie</button><button type="button" data-pv-global-page="cijfers-maatstaven">Cijfers</button><button type="button" data-pv-global-page="data-ai">Data & AI</button><button type="button" data-pv-global-page="koppelingen">Koppelingen</button><button type="button" data-pv-global-page="strategiemodellen">Strategie</button><button type="button" data-pv-global-page="advies">Advies</button><button type="button" data-pv-global-page="roadmap">Roadmap</button><button type="button" data-pv-global-page="actueel-houden">Actueel houden</button></nav><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"></div></div></section>`;
+  root.innerHTML=`<div class="pvbackdrop" data-close></div><section class="pvpanel" role="dialog" aria-modal="true" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Sluiten">×</button></header><nav class="pvglobalnav" aria-label="Algemene portaalnavigatie"><button type="button" data-pv-global-page="overzicht">Overzicht</button><button type="button" data-pv-global-page="profiel">Organisatie</button><button type="button" data-pv-global-page="cijfers-maatstaven">Cijfers</button><button type="button" data-pv-global-page="data-ai">Data & AI</button><button type="button" data-pv-global-page="koppelingen">Koppelingen</button><button type="button" data-pv-global-page="strategiemodellen">Strategie</button><button type="button" data-pv-global-page="advies">Advies</button><button type="button" data-pv-global-page="roadmap">Roadmap</button><button type="button" data-pv-global-page="actueel-houden">Actueel houden</button><button type="button" data-pv-global-page="ondernemersdata">Actueel & extern</button></nav><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"></div></div></section>`;
   document.body.appendChild(root);
   root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',closePortalPage));
   root.querySelectorAll('[data-pv-global-page]').forEach(btn=>btn.addEventListener('click',()=>{
@@ -210,6 +220,7 @@ export function openPortalPage(pageId){
     renderCsrdImpact(native,{openPage:openPortalPage,closePage:closePortalPage,snapshot});
   }
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
+  else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
@@ -246,6 +257,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./workspace.css');
   ensureStylesheet('./company-input.css');
   ensureStylesheet('./csrd-impact.css');
+  ensureStylesheet('./entrepreneur-intelligence.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
