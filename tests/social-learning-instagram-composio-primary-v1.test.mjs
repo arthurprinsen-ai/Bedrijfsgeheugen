@@ -39,3 +39,19 @@ test('Instagram review preserves hook type and Composio discovers a unique activ
   assert.match(publisher,/COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED/);
   assert.match(publisher,/COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS/);
 });
+
+
+test('skills canonically forbid Make and route Instagram through Composio',()=>{
+  const authority=fs.readFileSync('.agents/skills/powerhouse-toolchain-authority/SKILL.md','utf8');
+  const instagramSkill=fs.readFileSync('.agents/skills/instagram-composio-publisher/SKILL.md','utf8');
+  const miraSkill=fs.readFileSync('docs/superpowers/skills/instagram-mira-visible-identity-gate-v1.md','utf8');
+  const learning=fs.readFileSync('docs/learning/2026-09-18-instagram-composio-primary-v1.md','utf8');
+  assert.match(authority,/Composio primary for Instagram/);
+  assert.match(authority,/Make is retired/);
+  assert.match(instagramSkill,/Make is retired and forbidden/);
+  assert.match(instagramSkill,/api\/v3\/tools\/execute/);
+  assert.doesNotMatch(instagramSkill,/api\/v3\.1\/tools\/execute/);
+  assert.match(miraSkill,/COMPOSIO_API_KEY/);
+  assert.match(learning,/COMPOSIO_INSTAGRAM_AUTH_REQUIRED/);
+  assert.match(learning,/no external_id is written until provider readback succeeds/i);
+});

@@ -72,4 +72,4 @@ Learning fingerprint: `instagram-video-frame-proof-worker-v1`.
 
 ## Canonical publishing transport (2026-09-18)
 
-After exact-final-media + visible-Mira proof passes, Instagram delivery must use Composio as the primary write transport. The flow is create media container → publish → Instagram media readback → external_id/permalink writeback. Make is forbidden as a fallback. Missing Composio credentials fail closed and preserve the proven media for replay. Fingerprint: `instagram-composio-primary-v1`.
+After exact-final-media + visible-Mira proof passes, Instagram delivery must use Composio as the primary write transport. The flow is create media container → publish → Instagram media readback → external_id/permalink writeback. Make is forbidden as execution, orchestration, recovery or fallback. Runtime requires `COMPOSIO_API_KEY`; an explicit connected-account id is optional when exactly one active Instagram account can be discovered. Missing/ambiguous authorization is recoverable and preserves the proven media for replay without regeneration. Use Composio v3 `/api/v3/tools/execute/{tool_slug}`. Fingerprint: `instagram-composio-primary-v1`.
