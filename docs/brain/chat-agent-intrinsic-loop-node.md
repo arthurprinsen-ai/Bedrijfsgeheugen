@@ -2,7 +2,7 @@
 
 ## Doel
 
-Deze borging maakt expliciet dat een chat of agent geen los hulpmiddel buiten Bedrijfsgeheugen/Powerhouse is. Iedere materiële chat en agent is een uitvoeringsnode binnen dezelfde canonieke control- en learning-loop.
+Deze borging maakt expliciet dat een chat, agent of materiële skill geen los hulpmiddel buiten Bedrijfsgeheugen/Powerhouse is. Iedere materiële chat en agent is een uitvoeringsnode en iedere materiële skill is een execution capability binnen dezelfde canonieke control- en learning-loop.
 
 De machineleesbare authority staat in `brain/policies/powerhouse-agent-continuity-v1.json`, versie `POWERHOUSE-AGENT-CONTINUITY-v1.3`. De structurele regression staat in `tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs`.
 
@@ -116,3 +116,10 @@ Deze borging blijft alleen groen zolang:
 De machineleesbare learning voor incident, oorzaak, fix, evidence en prevention staat in:
 
 `brain/learning/chat-agent-intrinsic-loop-node-2026-09-18.json`
+
+
+## Skills als execution capabilities
+
+Skills vallen onder dezelfde terminale waarheid als chats en agents. Zij lezen existing state vóór uitvoering, loggen materiële acties in dezelfde lineage, bewaren exacte evidence-identiteit, documenteren gewijzigde werking, schrijven learning/prevention terug en bewijzen via read-after-write dat een volgende worker de uitkomst kan hergebruiken.
+
+De machineleesbare authority hiervoor staat in `brain/policies/powerhouse-universal-agent-learning-writeback-v1.json` onder `skill_execution_contract`. Een skill die alleen lokaal resultaat oplevert of geen activity-log, documentatie, learning-writeback of readback heeft, blijft `RECOVERABLE_INCOMPLETE` en mag niet als terminal groen worden behandeld.
