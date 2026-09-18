@@ -75,8 +75,26 @@ test('Instagram proof is bound to exact final media and canonical profile', () =
 test('Instagram proof requires verified visual evidence for the same asset', () => {
   assert.match(prePublishReview, /INSTAGRAM_VISUAL_EVIDENCE_REQUIRED/);
   assert.match(prePublishReview, /INSTAGRAM_FINAL_ASSET_MISMATCH/);
-  assert.match(prePublishReview, /INSTAGRAM_MIRA_VISUAL_REQUIRED/);
-  assert.match(prePublishReview, /evidence_refs/);
+  assert.match(prePublishReview, /INSTAGRAM_MIRA_VISIBLE_IDENTITY_REQUIRED/);
+  assert.match(prePublishReview, /semantic_verified/);
+  assert.match(prePublishReview, /mira_present/);
+  assert.match(prePublishReview, /evidence_method/);
+  assert.match(prePublishReview, /\/\^vision:\/i/);
+  assert.match(prePublishReview, /INSTAGRAM_STATIC_DIMENSIONS_INVALID/);
+  assert.match(prePublishReview, /1080/);
+  assert.match(prePublishReview, /1350/);
+});
+
+test('Instagram publisher and orchestrator reject metadata-only fallback identity', () => {
+  for (const source of [publisher, orchestrator]) {
+    assert.match(source, /semantic_verified/);
+    assert.match(source, /mira_present/);
+    assert.match(source, /evidence_method/);
+    assert.match(source, /vision:/);
+  }
+  assert.match(publisher, /final_asset_url:\s*clean\(proof\.media_url\)/);
+  assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
+  assert.match(orchestrator, /instagramVisibleIdentityProven/);
 });
 
 test('Instagram video requires verified start middle end Mira frames', () => {
