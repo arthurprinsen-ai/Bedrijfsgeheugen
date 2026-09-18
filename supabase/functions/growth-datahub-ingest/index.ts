@@ -155,7 +155,10 @@ Deno.serve(async(req:Request)=>{
       }
       if(!evidence||evidence.candidate_identity!==candidateSha||evidence.tested_identity!==mainSha||evidence.status!=='GREEN')throw new Error('TERMINAL_EVIDENCE_READBACK_MISMATCH');
 
-      if(obligation.state!=='FULFILLED'){
+      const terminalIdentityChanged=obligation?.evidence?.main_sha!==mainSha
+        || obligation?.evidence?.delivery_evidence_id!==evidence.id
+        || obligation?.evidence?.operation_id!==operation.id;
+      if(obligation.state!=='FULFILLED'||terminalIdentityChanged){
         const transitioned=await client.rpc('brain_transition_obligation',{
           p_obligation_id:obligation.id,
           p_expected_version:Number(obligation.version),
