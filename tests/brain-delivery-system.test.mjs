@@ -250,3 +250,33 @@ test('page generator fixes are website delivery work', async () => {
     assert.deepEqual(plan.lanes.map(lane => lane.id), ['website'], `${path} must be website delivery work`);
   }
 });
+
+
+test('delivery control-plane maintenance remains backend-only and never fabricates website deployment scope', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  for (const path of [
+    '.github/workflows/obligation-terminal-closure.yml',
+    '.github/workflows/production-release-readback.yml',
+    'brain/contracts/production-readback-v1.json',
+    'tools/brain-delivery-system.mjs',
+    'tools/delivery-required-test-suites.mjs',
+  ]) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'decafbad12345678', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend'], `${path} must remain backend-only control-plane work`);
+  }
+});
+
+test('Supabase terminal hardening does not require website lane when combined with delivery control-plane workflow changes', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({
+    changedPaths:[
+      '.github/workflows/obligation-terminal-closure.yml',
+      'supabase/functions/growth-datahub-ingest/index.ts',
+      'supabase/migrations/20260918143758_powerhouse_supabase_migration_readback_v1.sql',
+      'tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs'
+    ],
+    headSha:'decafbad12345678',
+    policy
+  });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
+});
