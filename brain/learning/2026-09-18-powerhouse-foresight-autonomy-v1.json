@@ -1,15 +1,17 @@
 {
   "fingerprint": "powerhouse-foresight-autonomy-v1",
-  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "status": "LIVE_BEWEZEN",
   "observed_at": "2026-09-18T07:00:00Z",
   "root_cause": "Continuous improvement, technology discovery and portal intelligence existed, but lacked one explicit contract joining autonomous technical evolution, security, cross-platform optimization, external benchmarks and calibrated customer foresight.",
   "prevention": "All future technical discovery and customer forecasting must share provenance, benchmarks, confidence, freshness, uncertainty, security non-degradation, champion-challenger evaluation, rollback identity and production readback.",
   "new_persistent_authority": false,
-  "latest_verified_main_sha": "f36993e8a26766a9dda6d2608ab3c6c25ae7d68b",
+  "latest_verified_main_sha": "bbfafa9b7ae5227b5c424a6046ffbbfd4b2fde1f",
   "delivery_lineage": {
     "implementation_pr": 2015,
     "recovery_pr": 2016,
-    "recovery_merge_sha": "f36993e8a26766a9dda6d2608ab3c6c25ae7d68b",
+    "evidence_pr": 2018,
+    "evidence_merge_sha": "cae33c1edff0c4d652aecd59f86e0724efdc84be",
+    "current_main_sha_at_terminal_evidence": "bbfafa9b7ae5227b5c424a6046ffbbfd4b2fde1f",
     "main_contains_foresight_contract": true,
     "main_contains_forecast_runtime": true,
     "main_contains_portal_projection": true
@@ -23,11 +25,21 @@
     "quality_contract": "success",
     "assurance": "success",
     "backend_properties": "success",
-    "production_readback": "in_progress",
-    "codeql_javascript_typescript": "in_progress",
-    "python_analysis": "in_progress",
-    "supabase_preview": "non_blocking_failure_no_supabase_scope_change"
+    "production_readback": "success",
+    "production_visual_render": "success",
+    "production_ui_visual_regression": "success",
+    "codeql_javascript_typescript": "success",
+    "python_analysis": "success",
+    "supabase_preview": "non_applicable_or_skipped_no_supabase_scope_change"
   },
-  "completion_rule": "Do not mark LIVE_BEWEZEN until production-readback and applicable security/code-analysis checks are terminal green on the exact current main lineage, followed by final readback.",
-  "logged_at": "2026-09-18T06:41:00Z"
+  "terminal_evidence": {
+    "production_readback_run_id": 35316931462,
+    "production_readback_job_id": 105510556067,
+    "exact_netlify_production_commit_verified": true,
+    "all_public_pages_visibly_rendered": true,
+    "production_ui_visual_regression_passed": true,
+    "security_and_code_analysis_terminal_green": true
+  },
+  "completion_rule": "LIVE_BEWEZEN requires protected delivery plus terminal green production readback and applicable security/code-analysis evidence on the canonical main lineage.",
+  "logged_at": "2026-09-18T07:25:47Z"
 }
