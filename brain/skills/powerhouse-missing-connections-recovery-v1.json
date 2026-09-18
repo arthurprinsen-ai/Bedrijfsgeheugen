@@ -96,7 +96,12 @@
       "active_jobs": 18,
       "structural_lineage_gaps": 0,
       "required_sources_unhealthy": 0
-    }
+    },
+    "reused_delivery_fingerprints": [
+      "delivery-classifier-repository-writer-contract-gap-v1",
+      "github-required-gate-in-progress-nonterminal-v1",
+      "delivery-failure|capacity|shared|github-actions-queued-not-platform-outage"
+    ]
   },
   "consumers": [
     "chat-learning-preflight",
