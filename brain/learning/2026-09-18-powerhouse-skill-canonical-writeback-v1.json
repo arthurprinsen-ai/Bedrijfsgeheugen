@@ -1,0 +1,25 @@
+{
+  "version": "powerhouse-skill-writeback-contract-v1",
+  "date": "2026-09-18",
+  "fingerprint": "powerhouse-skill-canonical-writeback-v1",
+  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "obligationId": "powerhouse-skill-canonical-writeback-v1",
+  "problem": "Skills could be interpreted as helpers outside the canonical Powerhouse completion loop, allowing useful execution to end without durable logging, documentation, learning writeback or next-worker discoverability.",
+  "rootCause": "The universal learning/writeback contract explicitly governed chats, agents and workflows but did not name skills as a first-class execution capability with its own fail-closed terminal conditions.",
+  "implementation": [
+    "Extend universal scope and invariant set to material skills.",
+    "Add skill_execution_contract with mandatory preflight, activity ledger, exact evidence identity, documentation, learning writeback, shared-context refresh and discoverability.",
+    "Document the rule in AGENTS.md and the intrinsic-loop operating document.",
+    "Extend the already-required universal learning/writeback regression suite instead of creating a parallel CI family."
+  ],
+  "prevention": [
+    "A material skill is part of the same canonical Powerhouse loop, never a side-channel authority.",
+    "Local output without canonical log/docs/learning/readback is RECOVERABLE_INCOMPLETE.",
+    "Skill completion must be discoverable to the next chat, agent or skill through the existing preflight path."
+  ],
+  "evidence": {
+    "baseSha": "a8efb269ab563f16a8cb97dd76c8960595cb155d",
+    "branch": "recovery/skill-canonical-writeback-current-main-v1",
+    "requiredRegression": "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+  }
+}

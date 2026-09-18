@@ -207,3 +207,17 @@ test('Powerhouse continuity skill is discoverable and mirrors canonical loop-nod
   assert.match(continuitySkillSource, /brain\/learning\/chat-agent-intrinsic-loop-node-2026-09-18\.json/);
   assert.match(agentsSource, /\.agents\/skills\/powerhouse-continuity\/SKILL\.md/);
 });
+
+test('material skills are canonical execution capabilities with mandatory writeback', () => {
+  const skill = policy.skill_execution_contract;
+  assert.equal(skill.required, true);
+  assert.equal(skill.actor_kind, 'skill');
+  assert.equal(skill.role, 'CANONICAL_EXECUTION_CAPABILITY');
+  assert.equal(skill.existing_state_preflight_required, true);
+  assert.equal(skill.activity_ledger_required, true);
+  assert.equal(skill.documentation_writeback_required, true);
+  assert.equal(skill.learning_writeback_required, true);
+  assert.equal(skill.next_agent_discoverability_required, true);
+  assert.ok(policy.invariants.includes('NO_MATERIAL_SKILL_EXECUTION_OUTSIDE_CANONICAL_LOOP'));
+  assert.match(policy.scope,/skills/);
+});
