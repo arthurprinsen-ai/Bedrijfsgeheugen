@@ -15,15 +15,18 @@ concurrency:
 
 jobs:
   reconcile:
-    if: github.event.pull_request.merged == true && startsWith(github.event.pull_request.head.ref, 'writer/')
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY')
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
         with:
           ref: ${{ github.event.pull_request.merge_commit_sha }}
           fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
 
-      - name: Verify BRAIN v2 production contains writer merge
+      - name: Verify BRAIN v2 production contains terminal merge
         id: production-proof
         env:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
@@ -55,6 +58,44 @@ jobs:
           done
           echo "::error::production commit must contain writer merge $MERGE_SHA"
           exit 1
+
+      - name: Verify canonical learning and skill projection after production proof
+        run: |
+          set -euo pipefail
+          node scripts/brain/powerhouse-skill-projection.mjs
+          node scripts/brain/chat-learning-preflight.mjs
+          node --test tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs
+
+      - name: Materialize terminal obligation closure evidence
+        env:
+          PR_BODY: ${{ github.event.pull_request.body }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          OBSERVED_PRODUCTION_SHA: ${{ steps.production-proof.outputs.observed_production_sha }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          obligation_id="$(printf '%s\n' "$PR_BODY" | sed -nE 's/^Obligation-ID:[[:space:]]*(.+)$/\1/ip' | head -n1)"
+          delivery_lane="$(printf '%s\n' "$PR_BODY" | sed -nE 's/^Delivery-Lane:[[:space:]]*(.+)$/\1/ip' | head -n1)"
+          candidate_type="$(printf '%s\n' "$PR_BODY" | sed -nE 's/^Candidate-Type:[[:space:]]*(.+)$/\1/ip' | head -n1)"
+          test -n "$obligation_id"
+          jq -n \
+            --arg obligation_id "$obligation_id" \
+            --arg delivery_lane "$delivery_lane" \
+            --arg candidate_type "$candidate_type" \
+            --argjson pr_number "$PR_NUMBER" \
+            --arg merge_sha "$MERGE_SHA" \
+            --arg observed_production_sha "$OBSERVED_PRODUCTION_SHA" \
+            '{contract:"POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1",terminal_state:"LIVE_BEWEZEN",obligation_id:$obligation_id,delivery_lane:$delivery_lane,candidate_type:$candidate_type,pr_number:$pr_number,merge_sha:$merge_sha,observed_production_sha:$observed_production_sha,main_readback:true,runtime_readback:true,outcome_evidence:true,learning_projection:true,skill_projection:true}' \
+            > .artifacts/terminal-obligation-closure.json
+
+      - name: Upload terminal closure evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: terminal-obligation-closure-${{ github.event.pull_request.number }}
+          path: .artifacts/terminal-obligation-closure.json
+          if-no-files-found: error
+          retention-days: 90
 
       - name: Reconcile Notion only after exact production proof
         env:
@@ -126,12 +167,12 @@ jobs:
           PR: ${{ github.event.pull_request.number }}
         run: |
           {
-            echo '### BRAIN writer production outcome'
+            echo '### BRAIN terminal delivery outcome'
             echo "- contract: BRAIN-DELIVERY-v2"
             echo "- production_authority: BG169"
             echo "- candidate: $HEAD_REF"
             echo "- PR: $PR"
-            echo "- writer_merge_sha: $MERGE_SHA"
+            echo "- terminal_merge_sha: $MERGE_SHA"
             echo "- observed_production_sha: ${{ steps.production-proof.outputs.observed_production_sha }}"
-            echo '- external_state_reconciled_after_exact_production: true'
+            echo '- external_state_reconciled_after_exact_production: true\n            echo '- terminal_state: LIVE_BEWEZEN''
           } >> "$GITHUB_STEP_SUMMARY"
