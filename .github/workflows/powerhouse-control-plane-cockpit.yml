@@ -1,0 +1,38 @@
+name: Powerhouse Control Plane Cockpit
+
+on:
+  pull_request:
+    paths:
+      - "netlify/functions/powerhouse-control-plane-cockpit.mjs"
+      - "supabase/functions/growth-datahub-ingest/index.ts"
+      - "intern/control-plane/**"
+      - "tests/brain-control-plane-cockpit-ui-v1.test.mjs"
+      - "tests/delivery-control-plane-vertical-slice.test.mjs"
+      - "config/powerhouse-quality-surface-contracts.json"
+      - ".github/workflows/powerhouse-control-plane-cockpit.yml"
+  push:
+    branches: [main]
+    paths:
+      - "netlify/functions/powerhouse-control-plane-cockpit.mjs"
+      - "supabase/functions/growth-datahub-ingest/index.ts"
+      - "intern/control-plane/**"
+      - "tests/brain-control-plane-cockpit-ui-v1.test.mjs"
+      - "tests/delivery-control-plane-vertical-slice.test.mjs"
+      - "config/powerhouse-quality-surface-contracts.json"
+      - ".github/workflows/powerhouse-control-plane-cockpit.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  cockpit-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+      - name: Verify internal control-plane cockpit
+        run: node --test tests/brain-control-plane-cockpit-ui-v1.test.mjs
+      - name: Verify canonical Edge control-plane contract
+        run: node --test tests/delivery-control-plane-vertical-slice.test.mjs
