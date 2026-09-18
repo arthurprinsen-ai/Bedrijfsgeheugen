@@ -502,7 +502,7 @@
     "productionAuthority": "BG169",
     "productionAuthorityContract": {
       "id": "BG169",
-      "fallbackPolicy": "primary_then_verified_failover",
+      "fallbackPolicy": "single_verified_transport",
       "failoverRequiresSameContract": true,
       "ackIsExecutionProof": false,
       "exactShaRequired": true,
@@ -511,14 +511,16 @@
       "executionProofRequired": true,
       "transports": [
         {
-          "id": "make",
+          "id": "github-native",
           "priority": 1,
           "mode": "primary"
-        },
+        }
+      ],
+      "retiredTransports": [
         {
-          "id": "github-native",
-          "priority": 2,
-          "mode": "verified-failover"
+          "id": "make",
+          "status": "historical_only",
+          "active": false
         }
       ]
     },
