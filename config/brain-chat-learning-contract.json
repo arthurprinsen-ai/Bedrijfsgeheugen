@@ -27,7 +27,10 @@
     "keepCurrentProjectionFreeOfTestArtifacts": true,
     "requireUnifiedDataSpineForMaterialDataSources": true,
     "connectedSourceIsNotPersistedEvidence": true,
-    "failClosedOnMissingOrStaleSourceEvidence": true
+    "failClosedOnMissingOrStaleSourceEvidence": true,
+    "requireAutomaticSkillProjection": true,
+    "skillProjectionFingerprint": "powerhouse-learning-skill-auto-projection-v1",
+    "failClosedOnSkillProjectionDrift": true
   },
   "lessons": [
     {
