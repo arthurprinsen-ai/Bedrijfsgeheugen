@@ -92,7 +92,7 @@ Permanent rules:
 - Buffer is explicitly transport/source metadata. LinkedIn and Instagram remain separate platform truths.
 - A production-schema transaction/rollback dry run on 2026-09-18 reconciled 1,304 existing source rows successfully without mutating production.
 
-Terminal truth remains `RECORDED_PENDING_FINAL_DELIVERY_READBACK` until exact-head gates, protected merge, migrations/function deployment and production evidence/readback are complete.
+Terminal truth for the structural/data-spine closure is now `LIVE_AND_PROVEN`: PR #2047 merged as `12771d87faf04d2b5d4fa790eb1ff82387ecd604`; production migrations are applied; `powerhouse-dataforseo-intelligence` is ACTIVE v5; a real provider canary returned HTTP 200 with zero items and wrote truthful producer evidence; DataForSEO and portal-state are FRESH/HEALTHY; the data-spine watchdog is GREEN with 0 gaps. This does not reclassify the unrelated fail-closed content-loop blocker.
 
 
 ## Missing-connections recovery learning
@@ -116,3 +116,20 @@ Machine learning: `brain/learning/2026-09-18-missing-connections-recovery-v1.jso
 
 ### Quality-surface registration escape prevention
 The first exact-head quality discovery run after this learning writeback correctly failed because the new `powerhouse-dataforseo-intelligence` function and `powerhouse_record_source_observation_v1` RPC had no canonical quality-surface registry entries. This is a valid escaped integration defect, not a gate problem. The same #2023 lineage now registers both surfaces in `config/powerhouse-quality-surface-contracts.json` and binds them to their existing executable tests. Permanent guard: `NEW_QUALITY_SURFACE_REQUIRES_REGISTRY_AND_EVIDENCE_CONTRACT`.
+
+
+## Structural/data-spine production closure — LIVE & BEWEZEN
+
+Production authority: `main@12771d87faf04d2b5d4fa790eb1ff82387ecd604` (PR #2047).
+
+Verified readback:
+- 574 sales actions → 574 decision cycles → 574 cycle events;
+- 32/32 One Brain layers wired and 18/18 required core jobs active;
+- DataForSEO Edge Function ACTIVE v5;
+- authenticated DataForSEO production canary HTTP 200; zero-result run recorded truthfully without fabricated keywords;
+- DataForSEO source = FRESH / HEALTHY;
+- portal-state producer/read-path = FRESH / HEALTHY while original customer `latest_source_updated_at` remains unchanged in evidence and `customer_state_changed=false`;
+- unified data-spine watchdog = GREEN, gaps = 0;
+- canonical Brain record `one-brain-live-promotion-learning-2026-09-18` = VERIFIED with `structural_gap_delivery_state=LIVE_AND_PROVEN`.
+
+Truth boundary: the structural/missing-connections/data-spine obligation is closed. The separately observed content-loop blocker remains fail-closed and is not made green by this closure.
