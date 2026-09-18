@@ -3,15 +3,15 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import { OVERVIEW_BLOCKS, normalizeOverviewOrder, reorderOverviewBlocks } from '../portal-v2/modules/overview-reorder.js';
 
-test('overview default starts with KPI cards and keeps directievragen lower',()=>{
-  assert.deepEqual(OVERVIEW_BLOCKS.map(x=>x.id),['kpis','insights','intelligence','execution','questions','activities']);
+test('overview default starts with complete legacy executive block, then KPI cards, and keeps directievragen lower',()=>{
+  assert.deepEqual(OVERVIEW_BLOCKS.map(x=>x.id),['legacy-complete','kpis','insights','intelligence','execution','questions','activities']);
   assert.ok(OVERVIEW_BLOCKS.findIndex(x=>x.id==='questions')>OVERVIEW_BLOCKS.findIndex(x=>x.id==='kpis'));
 });
 
 test('overview order normalization preserves valid personal order and restores missing widgets',()=>{
   assert.deepEqual(
     normalizeOverviewOrder(['questions','kpis','bogus','questions']),
-    ['questions','kpis','insights','intelligence','execution','activities']
+    ['questions','kpis','legacy-complete','insights','intelligence','execution','activities']
   );
 });
 
