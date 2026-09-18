@@ -8,8 +8,11 @@ on:
       - 'config/brain-chat-learning-contract.json'
       - 'config/chat-learning-completeness-guard.json'
       - 'scripts/brain/chat-learning-preflight.mjs'
+      - 'scripts/brain/powerhouse-fast-execution.mjs'
+      - 'config/powerhouse-fast-development-protocol-v2.json'
       - 'tests/chat-learning-*.test.mjs'
       - 'tests/chat-to-brain-*.test.mjs'
+      - 'tests/brain-chat-learning-fast-development-v2.test.mjs'
       - '.github/workflows/chat-learning-preflight-pr.yml'
 
 permissions:
@@ -24,5 +27,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - name: Fast Development v2 preflight regression
+        run: node --test tests/brain-chat-learning-fast-development-v2.test.mjs
+      - name: Preflight compiler contract
+        run: node scripts/brain/test-chat-learning-preflight-compiler.mjs
       - name: Mandatory chat-learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
