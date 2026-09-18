@@ -70,6 +70,22 @@ Regels:
 - productie blijft beschikbaar via last-known-good waar technisch mogelijk;
 - agents hervatten bij de volgende run automatisch openstaande niet-groene herstelitems en open outcome obligations.
 
+## Skills zijn onderdeel van hetzelfde Powerhouse-brein
+Een skill is geen losse helper buiten de control-loop. Iedere materiële skill-uitvoering valt onder exact dezelfde Powerhouse-regels als chats en agents.
+
+Voor iedere materiële skill geldt verplicht:
+1. lees eerst de actuele canonieke state, relevante obligations, incidenten en learnings;
+2. hergebruik bestaande capability en lineage voordat nieuwe state of een parallel pad wordt gemaakt;
+3. log materiële STARTED/ACTION/ERROR/RECOVERY/TEST/READBACK/WRITEBACK-events in de bestaande activity/evidence-route;
+4. bind uitvoering aan de exacte candidate-, provider- of runtime-identiteit;
+5. documenteer gewijzigde werking, owner, dependencies, deploy/readback/rollback en open gaps wanneer die materieel veranderen;
+6. schrijf root cause, outcome, prevention en regression terug naar de bestaande Powerhouse-learning;
+7. refresh gedeelde context en bewijs via read-after-write dat de volgende chat/agent/skill de nieuwe state kan vinden.
+
+Een skill mag dus nooit terminal groen worden op basis van alleen een lokaal bestand, toolresultaat, code-output of tijdelijke chatsessie. Zonder logging, documentatie, canonieke learning-writeback en readback is de uitvoering `RECOVERABLE_INCOMPLETE`.
+
+Machine authority: `brain/policies/powerhouse-universal-agent-learning-writeback-v1.json` → `skill_execution_contract`. Required regression: `tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs`.
+
 ## Eén team, één geheugen
 Alle agents opereren als één team met specialistische rollen. Geen agent mag een eigen geïsoleerde waarheid aanhouden.
 
