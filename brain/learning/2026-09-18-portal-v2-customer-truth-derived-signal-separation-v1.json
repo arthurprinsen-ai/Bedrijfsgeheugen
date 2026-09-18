@@ -12,7 +12,8 @@
   "rootCauses": [
     "Canvas presentation mixed derived Powerhouse projections with customer-entered values.",
     "Semantic and production DOM tests encoded the former mixed-provenance wording/expectations.",
-    "PR delivery metadata used candidate types outside the canonical hygiene allow-list and omitted Base-SHA."
+    "PR delivery metadata used candidate types outside the canonical hygiene allow-list and omitted Base-SHA.",
+    "Auto-merge could promote a PR before its visual PR-readback finished; the push readback then raced the PR artifact and the PR base production SHA could disappear before capture completed."
   ],
   "rules": [
     "Customer truth and derived Powerhouse evidence are separate provenance classes.",
@@ -21,7 +22,10 @@
     "All portal business input remains tenant-scoped in the existing canonical Powerhouse persistence path; no parallel store.",
     "Tests/readbacks must assert provenance semantics, not merely non-empty rendering.",
     "Validate Delivery-Lane, Candidate-Type and Base-SHA against canonical delivery-hygiene policy before expensive CI.",
-    "Never assign LIVE & BEWEZEN until exact-head gates, protected merge, main SHA and production readback are proven."
+    "Never assign LIVE & BEWEZEN until exact-head gates, protected merge, main SHA and production readback are proven.",
+    "PR visual evidence must be captured from the exact immutable candidate deploy; it must not depend on the mutable production alias still exposing the PR base SHA.",
+    "Post-merge production readback must bounded-wait for the successful exact-head PR readback artifact instead of failing immediately on an artifact race.",
+    "Auto-merge must never create a terminal false-negative readback solely because evidence production and evidence consumption raced."
   ],
   "evidence": {
     "portalV2Tests": "success on exact head 93ff0b1363141cf11b892b522227b32bec0dec75",
@@ -37,5 +41,11 @@
     ]
   },
   "preventionFingerprint": "portal-v2-customer-truth-derived-signal-separation-v1",
-  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  "status": "RECORDED_POST_MERGE_RACE_RECOVERY",
+  "postMergeRecovery": {
+    "parentPr": 1999,
+    "parentHead": "66cb8e09c25285d177309aa2a4d8dc3d504b9741",
+    "mergedMain": "1598fecd3fa515174595a0a97bf820cd38ef5768",
+    "prevention": "portal-v2-visual-readback-race-safe-v1"
+  }
 }
