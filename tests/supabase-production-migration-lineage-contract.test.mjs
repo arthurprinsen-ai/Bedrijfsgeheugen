@@ -29,11 +29,18 @@ test('reconciled semantic migrations occur exactly once', () => {
   }
 });
 
-test('lineage closure stays fail closed until post-merge readback', () => {
+test('lineage closure records verified terminal truth only after post-merge readback', () => {
   assert.equal(manifest.policy.productionLedgerIsAuthority, true);
   assert.equal(manifest.policy.alreadyAppliedDdlMustNotBeReplayed, true);
   assert.equal(manifest.policy.closureRequiresPostMergeProductionAndGithubReadback, true);
-  assert.equal(manifest.reconciliationStatus, 'PENDING_MAIN_READBACK');
+  assert.equal(manifest.reconciliationStatus, 'LIVE_VERIFIED');
   assert.equal(manifest.obligation.productionStateBeforeClosure, 'OPEN');
   assert.equal(manifest.obligation.closureState, 'FULFILLED');
+  assert.equal(manifest.closureEvidence.brainObligationState, 'FULFILLED');
+  assert.equal(manifest.closureEvidence.closedLoopStatus, 'LIVE & BEWEZEN');
+  assert.equal(manifest.closureEvidence.productionDdlReplayed, false);
+  assert.equal(manifest.closureEvidence.productionBehaviorChanged, false);
+  assert.match(manifest.closureEvidence.originalMergeSha, /^[0-9a-f]{40}$/);
+  assert.ok(manifest.closureEvidence.supabaseReadbackVerifiedAt, 'production readback timestamp required');
+  assert.ok(manifest.closureEvidence.repositoryTruthReadbackAt, 'repository readback timestamp required');
 });
