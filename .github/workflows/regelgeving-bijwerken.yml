@@ -117,8 +117,9 @@ jobs:
             --title "Regelgeving interpretatie candidate $GITHUB_RUN_ID" \
             --body "$(cat <<EOF
 Obligation-ID: regulatory-interpretation-$GITHUB_RUN_ID
-Delivery-Lane: data
-Candidate-Type: regulatory-interpretation-review
+Delivery-Lane: automation
+Candidate-Type: implementation
+Regulatory-Candidate-Type: interpretation-review
 Base-SHA: $BASE_SHA
 Source-State-SHA: $SOURCE_STATE_SHA
 Candidate-Head: $HEAD_SHA
