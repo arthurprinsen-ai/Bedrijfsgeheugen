@@ -39,3 +39,13 @@ test('every approved default specialist declares executable tasks, playbooks and
     assert.ok(agent.learningContracts.includes('outcome.v1'), `${definition.id} must consume shared outcome learning`);
   }
 });
+
+
+test('portal parity skill is wired into the agents that build, validate and recover Portal V2 surfaces', () => {
+  const registry=createDefaultAgentRegistry();
+  for(const id of ['agent-website-ux','agent-reliability','agent-data-quality']){
+    const agent=registry.get(id);
+    assert.ok(agent.playbooks.includes('portal-v2-empty-state-surface-preservation'), `${id} must consume the Portal V2 parity skill`);
+    assert.ok(agent.learningContracts.includes('portal-v2-parity.v1'), `${id} must consume Portal V2 parity learning`);
+  }
+});
