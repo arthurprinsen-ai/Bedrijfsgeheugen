@@ -1,0 +1,27 @@
+{
+  "fingerprint": "control-plane|policy-canonicalization|evaluation-evidence-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "The learning compiler selected HISTORICAL_REPLAY, SHADOW and CANARY requirements, but policy promotion was not yet database-blocked when required evaluation evidence was absent.",
+  "root_cause": "Evaluation mode was advisory output of powerhouse_learning_compiler_v1 rather than a state-transition invariant on powerhouse_policy_versions.",
+  "prevention_rule": "A policy version may enter promoted only when the existing learning compiler's required evaluation mode has GREEN evidence bound to the exact candidate policy version and effect snapshot.",
+  "enforcement": [
+    "powerhouse_policy_promotion_guard_v1 trigger",
+    "powerhouse_learning_compiler_v1",
+    "powerhouse_policy_versions evidence",
+    "regression tests"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-self-improvement"
+  ],
+  "related_incidents": [
+    {
+      "fingerprint": "ci|orphan-regulatory-organism-test|v1",
+      "observation": "Required and Shared Agent Memory detected tests/regulatory-organism-feed.test.mjs existed but was referenced by no workflow, so the regression contract never executed.",
+      "root_cause": "A new regulatory organism regression was added without updating the explicit CI lane inventory.",
+      "prevention": "Run the regulatory organism regression in the canonical backend lane; delivery-test-coverage-guard remains the fail-closed detector for future orphan tests."
+    }
+  ]
+}

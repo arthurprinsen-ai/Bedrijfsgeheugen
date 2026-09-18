@@ -53,5 +53,6 @@ jobs:
           tests/powerhouse-revenue-calibration-persistence-contract.test.mjs
           tests/supabase-instagram-media-job-materializer-v1.test.mjs
           tests/supabase-bg-opdrachtenradar-v1.test.mjs
+          tests/regulatory-organism-feed.test.mjs
       - name: Verify deterministic Quality Intelligence contract
         run: node scripts/brain/powerhouse-quality-intelligence.mjs --check
