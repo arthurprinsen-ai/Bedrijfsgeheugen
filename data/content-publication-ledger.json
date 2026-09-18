@@ -42,6 +42,15 @@
         "slug": "ongeprijsd-probleem-bedrijfsvoering",
         "canonical": "https://www.bedrijfsgeheugen.nl/blog/ongeprijsd-probleem-bedrijfsvoering/"
       }
+    },
+    "2026-09-18": {
+      "date": "2026-09-18",
+      "content_id": "blog:instagram-groeikalender-v2-hoe-mira-dagelijks-scoort-tot-31-12-2026",
+      "slug": "instagram-groeikalender-v2-hoe-mira-dagelijks-scoort-tot-31-12-2026",
+      "state": "selected",
+      "selected_at": "2026-09-18T06:10:00.000Z",
+      "selection_mode": "powerhouse_content_artifact_recovery",
+      "source_of_truth": "powerhouse_content_artifacts"
     }
   }
 }
