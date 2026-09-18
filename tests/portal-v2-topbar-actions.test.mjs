@@ -26,6 +26,7 @@ test('header controls stay reachable on mobile and demoAI',()=>{
  assert.match(css,/\.topactions\{display:flex!important/);
  assert.match(css,/\.portal-demo-ai \.portal-popover/); 
  assert.match(css,/@media\(max-width:760px\)\{\.topaction-menu\{display:none!important\}/);
+ assert.match(css,/\.portal-demo-ai \.topaction-menu\{display:none!important\}/);
 });
 
 
