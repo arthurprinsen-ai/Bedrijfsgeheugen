@@ -1,5 +1,5 @@
 {
-  "version": 2,
+  "version": 3,
   "contract": "powerhouse-repo-production-migration-lineage-v1",
   "productionProject": "adhjwmvyoixzjtmiroln",
   "policy": {
@@ -9,8 +9,8 @@
     "semanticTimestampAliasesForbidden": true,
     "closureRequiresPostMergeProductionAndGithubReadback": true
   },
-  "observedAt": "2026-09-18T14:39:15Z",
-  "latestObservedProductionMigration": "20260918143915_powerhouse_terminal_migration_identity_readback_v1",
+  "observedAt": "2026-09-18T15:28:25Z",
+  "latestObservedProductionMigration": "20260918152825_powerhouse_control_plane_learning_cockpit_v1",
   "reconciliationStatus": "LIVE_VERIFIED",
   "reconciled": [
     {
@@ -40,6 +40,10 @@
     {
       "production": "20260918143600_powerhouse_control_plane_recovery_supervisor_v1.sql",
       "replacesAlias": "20260918143000_powerhouse_control_plane_recovery_supervisor_v1.sql"
+    },
+    {
+      "production": "20260918152825_powerhouse_control_plane_learning_cockpit_v1.sql",
+      "replacesAlias": "20260918152500_powerhouse_control_plane_learning_cockpit_v1.sql"
     }
   ],
   "candidateEvidence": {
@@ -64,7 +68,7 @@
     "productionBehaviorChanged": false,
     "supabaseReadbackVerifiedAt": "2026-09-15T16:42:22.548426Z",
     "repositoryTruthReadbackAt": "2026-09-17T07:16:00Z",
-    "latestProductionLedgerReadback": "20260918143915_powerhouse_terminal_migration_identity_readback_v1"
+    "latestProductionLedgerReadback": "20260918152825_powerhouse_control_plane_learning_cockpit_v1"
   },
   "obligation": {
     "capabilityId": "powerhouse-repo-production-migration-lineage-v1",
