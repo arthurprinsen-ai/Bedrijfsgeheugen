@@ -14,7 +14,7 @@ on:
       - 'netlify/functions/instagram-video-frames.mjs'
       - 'tests/social-learning-buffer-*.test.mjs'
       - 'tests/social-learning-instagram-media-provider-routing-v1.test.mjs'
-      - 'tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs'
+      - 'tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs tests/social-learning-instagram-composio-primary-v1.test.mjs'
       - '.github/workflows/buffer-social-learning.yml'
   push:
     branches: [main]
@@ -31,6 +31,7 @@ on:
       - 'tests/social-learning-buffer-*.test.mjs'
       - 'tests/social-learning-instagram-media-provider-routing-v1.test.mjs'
       - 'tests/social-learning-instagram-video-frame-proof-worker-v1.test.mjs'
+      - 'tests/social-learning-instagram-composio-primary-v1.test.mjs'
       - '.github/workflows/buffer-social-learning.yml'
 
 permissions:
