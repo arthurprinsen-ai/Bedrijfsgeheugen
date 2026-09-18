@@ -65,6 +65,8 @@ test('watcher persists exact raw bytes before interpretation projection',()=>{
 test('interpretation updater is driven by canonical source-state changes',()=>{
   const workflow=fs.readFileSync('.github/workflows/regelgeving-bijwerken.yml','utf8');
   assert.match(workflow,/data\/regulatory-source-state\.json/);
-  assert.match(workflow,/Candidate-Type: regulatory-interpretation-review/);
-  assert.doesNotMatch(workflow,/cron: '30 4 \* \* 1'/);
+  assert.match(workflow,/Delivery-Lane: automation/);
+  assert.match(workflow,/Candidate-Type: implementation/);
+  assert.match(workflow,/Regulatory-Candidate-Type: interpretation-review/);
+  assert.match(workflow,/cron: '30 4 \* \* 1'/);
 });
