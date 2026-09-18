@@ -108,7 +108,8 @@ Deno.serve(async(req)=>{
   const mediaType=clean(body.mediaType||'image').toLowerCase();
   const verificationRole=clean(body.verificationRole)||'static_image';
   const writeObligation=body.writeObligation!==false;
-  if(!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)||!mediaUrl)return json({ok:false,error:'INVALID_INPUT'},400);
+  const inlineInput=clean(body.imageBase64);
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(publicationDate)||(!mediaUrl&&!inlineInput))return json({ok:false,error:'INVALID_INPUT'},400);
   if(mediaType!=='image')return json({ok:false,error:'IMAGE_OR_VIDEO_FRAME_REQUIRED'},422);
 
   try{
