@@ -37,6 +37,13 @@
       "required": true
     },
     {
+      "id": "function:growth-datahub-ingest",
+      "type": "function",
+      "authority": "supabase/functions/growth-datahub-ingest/index.ts",
+      "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:portal-state-eu",
       "type": "function",
       "authority": "supabase/functions/portal-state-eu/index.ts",
@@ -170,6 +177,20 @@
       "required": true
     },
     {
+      "id": "rpc:bg_growth_ingest_event",
+      "type": "rpc",
+      "authority": "supabase/functions/growth-datahub-ingest/index.ts",
+      "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:bg_growth_ingest_outcome",
+      "type": "rpc",
+      "authority": "supabase/functions/growth-datahub-ingest/index.ts",
+      "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:bg_portal_state_get_internal",
       "type": "rpc",
       "authority": "supabase/functions/portal-state-eu/index.ts",
@@ -184,10 +205,38 @@
       "required": true
     },
     {
+      "id": "rpc:brain_create_obligation",
+      "type": "rpc",
+      "authority": "supabase/functions/growth-datahub-ingest/index.ts",
+      "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:brain_create_operation",
+      "type": "rpc",
+      "authority": "supabase/functions/growth-datahub-ingest/index.ts",
+      "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:brain_record_resource_usage",
       "type": "rpc",
       "authority": "supabase/functions/resource-usage-eu/index.ts",
       "evidence_contract": "tests/powerhouse-resource-intelligence-portal-telemetry.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:brain_transition_obligation",
+      "type": "rpc",
+      "authority": "supabase/functions/growth-datahub-ingest/index.ts",
+      "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:brain_transition_operation",
+      "type": "rpc",
+      "authority": "supabase/functions/growth-datahub-ingest/index.ts",
+      "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
       "required": true
     },
     {

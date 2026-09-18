@@ -23,17 +23,19 @@ test('canonical production authority no longer contains retired Make transport',
   assert.ok(policy.lanes.every(lane=>lane.owner!=='agent-integration-make'));
 });
 
-test('evidence endpoint writes only to existing canonical Brain stores', async()=>{
+test('evidence flow writes only to existing canonical Brain stores through the server trust boundary', async()=>{
   const endpoint=await readFile('netlify/functions/powerhouse-control-plane-evidence.mjs','utf8');
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(endpoint,/functions\/v1\/growth-datahub-ingest/);
   for(const required of [
-    "rpc('brain_create_obligation'",
-    "rpc('brain_create_operation'",
-    "rpc('brain_transition_operation'",
-    "rpc('brain_transition_obligation'",
-    'brain_delivery_evidence?on_conflict=idempotency_key',
+    "client.rpc('brain_create_obligation'",
+    "client.rpc('brain_create_operation'",
+    "client.rpc('brain_transition_operation'",
+    "client.rpc('brain_transition_obligation'",
+    "client.from('brain_delivery_evidence')",
     "terminal_state:'FULFILLED'",
-  ]) assert.ok(endpoint.includes(required),`missing canonical store wiring: ${required}`);
-  assert.doesNotMatch(endpoint,/create table|parallel.*ledger/i);
+  ]) assert.ok(edge.includes(required),`missing canonical store wiring: ${required}`);
+  assert.doesNotMatch(endpoint+edge,/create table|parallel.*ledger/i);
 });
 
 function enc(value){return Buffer.from(JSON.stringify(value)).toString('base64url');}
@@ -84,4 +86,18 @@ test('control-plane OIDC rejects another workflow lineage', async()=>{
     }),
     /OIDC_WORKFLOW_REJECTED/,
   );
+});
+
+test('terminal evidence uses existing Supabase Edge trust boundary, not app token as PostgREST key', async()=>{
+  const endpoint=await readFile('netlify/functions/powerhouse-control-plane-evidence.mjs','utf8');
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(endpoint,/functions\/v1\/growth-datahub-ingest/);
+  assert.match(endpoint,/action:'control_plane_terminal'/);
+  assert.doesNotMatch(endpoint,/\/rest\/v1\//);
+  assert.match(edge,/if\(action==='control_plane_terminal'\)/);
+  assert.match(edge,/SUPABASE_SERVICE_ROLE_KEY/);
+  assert.match(edge,/brain_create_obligation/);
+  assert.match(edge,/brain_create_operation/);
+  assert.match(edge,/brain_delivery_evidence/);
+  assert.match(edge,/p_state:'FULFILLED'/);
 });

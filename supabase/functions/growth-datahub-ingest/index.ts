@@ -38,6 +38,156 @@ Deno.serve(async(req:Request)=>{
     if(error)return json({error:'BRAIN_QUEUE_UPDATE_FAILED',detail:error.message.slice(0,300)},500);
     return json({datahub:'supabase:growth_brain_queue',result:data},200);
   }
+  if(action==='control_plane_terminal'){
+    const terminal=body?.terminal||{};
+    const required=(value:any,name:string)=>{const v=String(value??'').trim();if(!v)throw new Error(`${name}_MISSING`);return v};
+    try{
+      const obligationKey=required(terminal.obligation_id,'OBLIGATION_ID');
+      const candidateSha=required(terminal.candidate_head_sha,'CANDIDATE_HEAD_SHA').toLowerCase();
+      const mainSha=required(terminal.main_sha,'MAIN_SHA').toLowerCase();
+      if(!/^[0-9a-f]{40}$/.test(candidateSha)||!/^[0-9a-f]{40}$/.test(mainSha))throw new Error('SHA_INVALID');
+      const productionRunId=Number(terminal.production_readback_run_id);
+      if(!Number.isInteger(productionRunId)||productionRunId<1)throw new Error('PRODUCTION_READBACK_RUN_INVALID');
+      const projectionRequired=terminal.skill_projection_required===true;
+      const projectionRunId=terminal.skill_projection_run_id==null?null:Number(terminal.skill_projection_run_id);
+      if(projectionRequired&&(!Number.isInteger(projectionRunId)||projectionRunId<1))throw new Error('SKILL_PROJECTION_RUN_INVALID');
+      if(terminal.outcome_verified!==true)throw new Error('OUTCOME_NOT_VERIFIED');
+      const learningStatus=required(terminal.learning_status,'LEARNING_STATUS');
+      if(!['APPLIED','NOT_APPLICABLE'].includes(learningStatus))throw new Error('LEARNING_STATUS_INVALID');
+      if(projectionRequired&&learningStatus!=='APPLIED')throw new Error('LEARNING_PROJECTION_MISMATCH');
+      const policyVersion=required(terminal.policy_version,'POLICY_VERSION');
+      const skillVersion=required(terminal.skill_version,'SKILL_VERSION');
+      const actor=required(terminal.actor||'github-actions','ACTOR');
+      const obligationPayloadHash=await sha256(obligationKey);
+      const terminalPayloadHash=await sha256(`${obligationKey}|${candidateSha}|${mainSha}|${productionRunId}|${projectionRunId??''}`);
+      const one=(value:any)=>Array.isArray(value)?value[0]:value;
+
+      let {data:obligation,error:obligationError}=await client.rpc('brain_create_obligation',{
+        p_obligation_type:'CONTROL_PLANE_DELIVERY',
+        p_capability_id:'powerhouse.control-plane',
+        p_business_entity:obligationKey,
+        p_business_period:'canonical-v1',
+        p_business_timezone:'Europe/Amsterdam',
+        p_payload_sha256:obligationPayloadHash,
+        p_change_id:mainSha,
+        p_owner:actor
+      });
+      if(obligationError)throw new Error(`OBLIGATION_CREATE_FAILED:${obligationError.message}`);
+      obligation=one(obligation);
+      if(!obligation?.id)throw new Error('OBLIGATION_CREATE_READBACK_MISSING');
+
+      const baseEvidence={
+        contract:'powerhouse-control-plane-vertical-slice-v1',
+        obligation_id:obligationKey,
+        candidate_head_sha:candidateSha,
+        main_sha:mainSha,
+        production_readback_run_id:productionRunId,
+        skill_projection_required:projectionRequired,
+        skill_projection_run_id:projectionRunId,
+        learning_status:learningStatus,
+        policy_version:policyVersion,
+        skill_version:skillVersion,
+        outcome_verified:true,
+        github_workflow_run_id:Number(terminal.github_workflow_run_id||0)||null,
+        oidc_repository:terminal.oidc_repository||null,
+        oidc_workflow_ref:terminal.oidc_workflow_ref||null,
+        actor,
+        recorded_at:new Date().toISOString()
+      };
+
+      if(!['RUNNING','FULFILLED'].includes(String(obligation.state))){
+        const transitioned=await client.rpc('brain_transition_obligation',{
+          p_obligation_id:obligation.id,
+          p_expected_version:Number(obligation.version),
+          p_state:'RUNNING',
+          p_owner:actor,
+          p_evidence:{...(obligation.evidence||{}),...baseEvidence,state:'RUNNING'}
+        });
+        if(transitioned.error)throw new Error(`OBLIGATION_RUNNING_FAILED:${transitioned.error.message}`);
+        obligation=one(transitioned.data);
+      }
+
+      let {data:operation,error:operationError}=await client.rpc('brain_create_operation',{
+        p_capability_id:'agent:powerhouse-control-plane',
+        p_operation_type:'TERMINALIZE',
+        p_idempotency_key:`${obligationKey}:${mainSha}`,
+        p_payload_sha256:terminalPayloadHash,
+        p_change_id:mainSha,
+        p_correlation_id:obligationKey
+      });
+      if(operationError)throw new Error(`OPERATION_CREATE_FAILED:${operationError.message}`);
+      operation=one(operation);
+      if(!operation?.id)throw new Error('OPERATION_CREATE_READBACK_MISSING');
+      if(operation.status!=='VERIFIED'){
+        const transitioned=await client.rpc('brain_transition_operation',{
+          p_operation_id:operation.id,
+          p_expected_version:Number(operation.version),
+          p_status:'VERIFIED',
+          p_dispatch_generation:null,
+          p_remote_ref:`github-run:${productionRunId}`,
+          p_evidence:{...(operation.evidence||{}),...baseEvidence,terminal_verification:'VERIFIED'}
+        });
+        if(transitioned.error)throw new Error(`OPERATION_VERIFY_FAILED:${transitioned.error.message}`);
+        operation=one(transitioned.data);
+      }
+
+      const idempotencyKey=`control-plane-terminal:${obligationKey}:${mainSha}`;
+      const upsert=await client.from('brain_delivery_evidence').upsert({
+        idempotency_key:idempotencyKey,
+        change_id:mainSha,
+        component_id:'powerhouse-control-plane',
+        target:'supabase',
+        status:'GREEN',
+        error_class:null,
+        remote_status:200,
+        remote_ref:`github-run:${productionRunId}`,
+        candidate_identity:candidateSha,
+        tested_identity:mainSha,
+        payload_sha256:terminalPayloadHash,
+        evidence:baseEvidence
+      },{onConflict:'idempotency_key',ignoreDuplicates:true}).select('*').maybeSingle();
+      if(upsert.error)throw new Error(`DELIVERY_EVIDENCE_WRITE_FAILED:${upsert.error.message}`);
+      let evidence=upsert.data;
+      if(!evidence){
+        const read=await client.from('brain_delivery_evidence').select('*').eq('idempotency_key',idempotencyKey).maybeSingle();
+        if(read.error)throw new Error(`DELIVERY_EVIDENCE_READ_FAILED:${read.error.message}`);
+        evidence=read.data;
+      }
+      if(!evidence||evidence.candidate_identity!==candidateSha||evidence.tested_identity!==mainSha||evidence.status!=='GREEN')throw new Error('TERMINAL_EVIDENCE_READBACK_MISMATCH');
+
+      if(obligation.state!=='FULFILLED'){
+        const transitioned=await client.rpc('brain_transition_obligation',{
+          p_obligation_id:obligation.id,
+          p_expected_version:Number(obligation.version),
+          p_state:'FULFILLED',
+          p_owner:actor,
+          p_evidence:{...(obligation.evidence||{}),...baseEvidence,state:'FULFILLED',delivery_evidence_id:evidence.id,operation_id:operation.id}
+        });
+        if(transitioned.error)throw new Error(`OBLIGATION_FULFILL_FAILED:${transitioned.error.message}`);
+        obligation=one(transitioned.data);
+      }
+      const readback=await client.from('brain_obligations').select('id,state,version,evidence').eq('id',obligation.id).maybeSingle();
+      if(readback.error)throw new Error(`OBLIGATION_READBACK_FAILED:${readback.error.message}`);
+      if(readback.data?.state!=='FULFILLED'||readback.data?.evidence?.main_sha!==mainSha)throw new Error('OBLIGATION_TERMINAL_READBACK_MISMATCH');
+
+      return json({datahub:'supabase:brain-control-plane',result:{
+        ok:true,
+        terminal_state:'FULFILLED',
+        obligation_id:obligationKey,
+        obligation_record_id:obligation.id,
+        operation_id:operation.id,
+        delivery_evidence_id:evidence.id,
+        candidate_head_sha:candidateSha,
+        main_sha:mainSha,
+        production_readback_run_id:productionRunId,
+        skill_projection_run_id:projectionRunId,
+        learning_status:learningStatus,
+        durable_readback_verified:true
+      }},200);
+    }catch(error){
+      return json({error:'CONTROL_PLANE_TERMINAL_FAILED',detail:String(error?.message||error).slice(0,500)},422);
+    }
+  }
   if(action==='learning_export'){
     const limit=Math.min(5000,Math.max(100,Number(body?.limit||5000)));
     const [{data:events,error:eventError},{data:outcomes,error:outcomeError}]=await Promise.all([
