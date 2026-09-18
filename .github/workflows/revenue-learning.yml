@@ -37,6 +37,10 @@ on:
       - 'netlify/functions/growth-intelligence-daily.mjs'
       - '.github/workflows/revenue-learning.yml'
 
+concurrency:
+  group: revenue-learning-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

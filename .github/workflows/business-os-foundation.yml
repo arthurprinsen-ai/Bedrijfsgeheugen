@@ -16,6 +16,10 @@ on:
       - '.github/workflows/business-os-foundation.yml'
   workflow_dispatch:
 
+concurrency:
+  group: business-os-foundation-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

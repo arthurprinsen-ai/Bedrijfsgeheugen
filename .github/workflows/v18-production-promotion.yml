@@ -35,6 +35,10 @@ on:
       - 'tests/canonical-portal-*.test.mjs'
       - '.github/workflows/v18-production-promotion.yml'
 
+concurrency:
+  group: v18-production-promotion-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 

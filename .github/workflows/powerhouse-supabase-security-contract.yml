@@ -13,6 +13,10 @@ on:
       - 'scripts/brain/check_powerhouse_supabase_security.py'
       - '.github/workflows/powerhouse-supabase-security-contract.yml'
 
+concurrency:
+  group: powerhouse-supabase-security-contract-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
