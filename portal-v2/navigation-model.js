@@ -3,7 +3,7 @@ export const PORTAL_NAV_ITEMS = Object.freeze([
   Object.freeze({ id:'project', label:'Project', target:'hub:project' }),
   Object.freeze({ id:'data-ai', label:'Data & AI', target:'hub:data-ai' }),
   Object.freeze({ id:'tasks', label:'Taken', target:'hub:tasks' }),
-  Object.freeze({ id:'more', label:'Meer', target:'hub:more' })
+  Object.freeze({ id:'more', label:'Meer', target:'hub:portal' })
 ]);
 
 export const DESKTOP_NAV_ITEMS = Object.freeze([
