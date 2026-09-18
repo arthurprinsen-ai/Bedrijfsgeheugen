@@ -221,3 +221,16 @@ test('material skills are canonical execution capabilities with mandatory writeb
   assert.ok(policy.invariants.includes('NO_MATERIAL_SKILL_EXECUTION_OUTSIDE_CANONICAL_LOOP'));
   assert.match(policy.scope,/skills/);
 });
+
+
+test('authorized chats and agents must self-promote green candidates to production', () => {
+  const autonomy = policy.autonomous_execution_contract;
+  assert.equal(autonomy.self_promote_to_production_required, true);
+  assert.equal(autonomy.production_promotion_owner, 'CURRENT_AUTHORIZED_EXECUTION_NODE');
+  assert.equal(autonomy.user_followup_for_routine_promotion, 'FORBIDDEN');
+  assert.ok(policy.invariants.includes('NO_CHAT_OR_AGENT_STOPS_BEFORE_PRODUCTION_WHEN_AUTHORIZED'));
+  assert.ok(policy.invariants.includes('AUTHORIZED_GREEN_CANDIDATE_MUST_SELF_PROMOTE'));
+  assert.ok(policy.invariants.includes('ONE_ACTIVE_WRITER_LEASE_PER_OBLIGATION'));
+  assert.equal(policy.terminal_status_gate.authorized_candidate_not_promoted, 'NOT_TERMINAL_RECOVERABLE');
+  assert.equal(policy.terminal_status_gate.user_followup_required_for_routine_production_promotion, 'CONTRACT_VIOLATION');
+});
