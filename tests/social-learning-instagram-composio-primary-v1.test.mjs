@@ -25,3 +25,11 @@ test('Composio Instagram path keeps exact proof and provider readback',()=>{
   assert.match(publisher,/state:'published'/);
   assert.match(publisher,/recordObligation\(db,runDate,row.channel,'PUBLISHED'/);
 });
+
+
+test('Instagram review preserves hook type and Composio discovers a unique active account',()=>{
+  assert.match(publisher,/hook_type: clean\(art\.generation_evidence\?\.hook_type\) \|\| 'Probleem'/);
+  assert.match(publisher,/connected_accounts\?toolkit_slugs=instagram&statuses=ACTIVE/);
+  assert.match(publisher,/COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED/);
+  assert.match(publisher,/COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS/);
+});
