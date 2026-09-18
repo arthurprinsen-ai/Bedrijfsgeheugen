@@ -29,7 +29,7 @@ test('authenticated portal input feeds Powerhouse as one idempotent CurrentState
   assert.equal(writes.length,4);
   const source=writes.find(write=>write.record.type==='BusinessInput');
   const current=writes.find(write=>write.record.type==='CurrentState');
-  const organism=writes.find(write=>write.record.type==='OrganismImpact');
+  const organism=writes.find(write=>write.record.type==='ImpactAssessment'&&write.record.kind==='organism_impact');
   assert.ok(source);
   assert.ok(current);
   assert.ok(organism);
