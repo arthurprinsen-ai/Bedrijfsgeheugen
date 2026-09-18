@@ -11,10 +11,12 @@ const policyPath = path.join(rootDir, 'brain/policies/powerhouse-universal-agent
 const continuityPolicyPath = path.join(rootDir, 'brain/policies/powerhouse-agent-continuity-v1.json');
 const preflightPath = path.join(rootDir, 'scripts/brain/chat-learning-preflight.mjs');
 const skillPath = path.join(rootDir, '.agents/skills/powerhouse-continuity/SKILL.md');
+const agentsPath = path.join(rootDir, 'AGENTS.md');
 const policy = JSON.parse(fs.readFileSync(policyPath, 'utf8'));
 const continuityPolicy = JSON.parse(fs.readFileSync(continuityPolicyPath, 'utf8'));
 const preflightSource = fs.readFileSync(preflightPath, 'utf8');
 const continuitySkillSource = fs.readFileSync(skillPath, 'utf8');
+const agentsSource = fs.readFileSync(agentsPath, 'utf8');
 
 const REQUIRED_INVARIANTS = [
   'NO_AGENT_STARTS_BLIND',
@@ -156,4 +158,5 @@ test('Powerhouse continuity skill is discoverable and mirrors canonical loop-nod
   assert.match(continuitySkillSource, /LIVE & BEWEZEN/);
   assert.match(continuitySkillSource, /brain\/policies\/powerhouse-agent-continuity-v1\.json/);
   assert.match(continuitySkillSource, /brain\/learning\/chat-agent-intrinsic-loop-node-2026-09-18\.json/);
+  assert.match(agentsSource, /\.agents\/skills\/powerhouse-continuity\/SKILL\.md/);
 });
