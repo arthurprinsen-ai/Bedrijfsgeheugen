@@ -204,3 +204,16 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Obligation:** `powerhouse-skill-continuity-learning-v1`; delivery-lineage PR #2034.
 - **Rollback:** verwijder skill-discovery registratie, AGENTS-readorder en skillfile samen; behoud canonieke policy/learning. Geen gedeeltelijke rollback die een dangling skill-reference laat bestaan.
 - **Herbruikbare les:** projectbrede gedragsregels die agents actief moeten herkennen horen als discoverable skill bovenop canonieke policy te bestaan én door required CI te worden bewaakt; skills mogen nooit de policy dupliceren als eigen authority.
+
+
+## 2026-09-18 — CONTRACT_CHANGE — geen pending-status als terminale chat/agent-output
+- **Fingerprint:** `delivery|no-pending-final-output|v1`
+- **Probleem:** chats en agents konden een nog lopende delivery teruggeven als eindantwoord, bijvoorbeeld “auto-merge staat aan”, “de laatste gate loopt” of “ik claim nog geen LIVE & BEWEZEN”. Daardoor verschoof praktische opvolging terug naar de gebruiker terwijl de Powerhouse-node de delivery zelf kon vervolgen.
+- **Root cause:** de continuity-regels verboden wel een onterechte LIVE-claim, maar verboden nog niet expliciet dat recoverable delivery-states als gebruikershandoff werden gebruikt.
+- **Fix:** `brain/policies/powerhouse-agent-continuity-v1.json` v1.4 voegt `NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT` en een machine-readable `non_terminal_output_rule` toe. De continuity skill en delivery-concurrency skill vereisen nu dat de uitvoerende node ownership houdt door gates → protected merge → deploy/promote → productie/provider-readback → outcome → learning/prevention writeback.
+- **Verboden terminale tussenstaten:** `AUTO_MERGE_ARMED`, `GATES_PENDING`, `CI_QUEUED`, `CI_RUNNING`, `MERGE_PENDING`, `DEPLOY_PENDING`, `PRODUCTION_READBACK_PENDING`, `LEARNING_WRITEBACK_PENDING`.
+- **Toegestane terminale gebruikersstatus:** uitsluitend `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` of een aantoonbare `BLOCKED_HARD_BOUNDARY`.
+- **Recoveryregel:** een chat/tool/model-stop draagt ownership niet over aan de gebruiker; de volgende capabele node hervat dezelfde canonieke lineage vanaf het laatste geverifieerde checkpoint zonder een “ga door”-prompt nodig te hebben.
+- **Regressie:** `tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs` borgt de policy-, skill- en terminal-state-invarianten.
+- **Delivery evidence:** PR #2099 is protected gemerged; merge/main SHA `a7d9311e6420258f2d3e476ad9f6bb1cd4927ba4`; main-readback bevestigde policy v1.4, invariant, skillsectie en regressietest.
+- **Herbruikbare les:** auto-merge, CI, branch protection en deploy orchestration zijn uitvoeringsmechanismen. Zij mogen nooit als handoff naar de gebruiker fungeren zolang een autonome herstel- of vervolgstap bestaat.
