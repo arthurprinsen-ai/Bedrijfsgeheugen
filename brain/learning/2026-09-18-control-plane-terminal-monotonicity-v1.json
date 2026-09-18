@@ -20,6 +20,11 @@
       "fingerprint": "delivery|rerun-event-payload|metadata-staleness-v1",
       "observation": "GitHub failed-job rerun retained the original pull_request event payload after Base-SHA metadata was corrected.",
       "prevention": "After machine-readable PR metadata changes, require a fresh synchronize/head event before treating Required preflight as authoritative; do not rely on rerunning the old event."
+    },
+    {
+      "fingerprint": "delivery|baseline-test-drift|portal-v2-entry-v1",
+      "observation": "Required preflight exposed legacy portal regression tests on current main that contradicted the canonical _redirects contract: Portal V2 is the only entry surface.",
+      "prevention": "When canonical routing changes, update route-contract regression tests in the same delivery lineage. A stale baseline test must not force live routing back to a retired architecture."
     }
   ]
 }
