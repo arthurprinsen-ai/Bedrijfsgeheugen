@@ -137,7 +137,16 @@
       "canonical Powerhouse learning"
     ],
     "verified_at": "2026-09-18",
-    "terminal_claim_status": "LIVE_PROVEN"
+    "terminal_claim_status": "LIVE_PROVEN",
+    "run_id": "github-actions:35327618750",
+    "actor_or_agent": "powerhouse-terminal-delivery",
+    "task_fingerprint": "powerhouse-self-production-promotion-v3"
+  },
+  "next_agent_discoverability": {
+    "status": "PROVEN_BY_CANONICAL_LINKAGE_PENDING_CLOSURE_READBACK",
+    "source": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+    "discovery_path": "scripts/brain/chat-learning-preflight.mjs",
+    "linked_learning_source": "brain/learning/2026-09-18-self-production-promotion-v1.json"
   },
   "source_pr": 2063,
   "candidate_head_sha": "ec4a23eec09c231fdc5e0db7691b51ac0d04053a",
@@ -174,12 +183,6 @@
     ],
     "head_sha": "ee526cea16dac904173466a529211ad0f7513215",
     "terminal_success_observed": true
-  },
-  "next_agent_discoverability": {
-    "status": "PROVEN_BY_CANONICAL_LINKAGE_PENDING_CLOSURE_READBACK",
-    "source": "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
-    "discovery_path": "scripts/brain/chat-learning-preflight.mjs",
-    "linked_learning_source": "brain/learning/2026-09-18-self-production-promotion-v1.json"
   },
   "skill_writeback_refs": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
