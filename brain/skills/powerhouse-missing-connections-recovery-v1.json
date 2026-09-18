@@ -22,14 +22,16 @@
     "Reuse canonical evidence/runtime authorities for analytics, search, social, external intelligence and portal state; no duplicate raw store or second Brain.",
     "When CI is queued or pending, do not mutate speculatively. Wait for the first concrete failing assertion and repair only that root cause on the same lineage.",
     "Before LIVE_AND_PROVEN, require exact-head gates, protected merge, production migration/deployment, runtime readback, outcome evidence and learning/prevention writeback.",
-    "Write the verified gap, root cause, evidence, recovery and prevention rule back to canonical Powerhouse learning and make this skill discoverable by chat preflight."
+    "Write the verified gap, root cause, evidence, recovery and prevention rule back to canonical Powerhouse learning and make this skill discoverable by chat preflight.",
+    "Register each newly introduced quality-critical function, RPC, API, route or table in the canonical quality-surface registry with executable evidence before expecting the discovery gate to pass."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
     "creating parallel PRs or replacement architectures for an already-owned obligation",
     "fabricating economics, feedback, causal proof, realized value or later decision-cycle stages",
     "treating Netlify ready, a merge, migration file presence, configured connector or queued CI as terminal proof",
-    "retrying or changing code while required gates are merely queued and no concrete failure exists"
+    "retrying or changing code while required gates are merely queued and no concrete failure exists",
+    "adding a new quality-critical runtime surface without a canonical quality-surface registry entry and evidence contract"
   ],
   "canonical_evidence": {
     "obligation_id": "powerhouse-structural-gap-closure-v2",
