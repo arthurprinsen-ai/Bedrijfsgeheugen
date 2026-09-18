@@ -477,15 +477,17 @@
         "make/",
         "notion/",
         "tests/delivery-",
-        "tests/powerhouse-one-loop-",
-        "tests/powerhouse-github-learning.test.mjs",
+        "tests/github-delivery-state-machine",
+        "tests/github-delivery-state-machine-",
+        "tests/github-pr-workflow-single-flight.test.mjs",
         "tests/menu-balk-writer-noop-proof.test.mjs",
+        "tests/powerhouse-github-learning.test.mjs",
+        "tests/powerhouse-one-loop-",
+        "tests/regulatory-",
         "tests/repository-writer-permission-boundary.test.mjs",
         "tests/repository-writer-slow-canary-sla.test.mjs",
-        "tests/github-pr-workflow-single-flight.test.mjs",
-        "tests/github-delivery-state-machine-",
         "tests/terminal-writer-lease-",
-        "tests/github-delivery-state-machine"
+        "tools/regulatory-"
       ],
       "requiredContracts": [
         "BG166",
