@@ -92,7 +92,12 @@ export function beoordeelControl(control = {}, { nu = new Date() } = {}) {
   if (!geverifieerdOp || geverifieerdOp > nu || !geldigBewijs)
     return { ...basis, status: STATUS.EVIDENCE_MISSING };
 
-  return { ...basis, status: STATUS.VERIFIED };
+  const regulatoryChangedAt = geldigeDatum(control.regulatoryChangedAt ?? control.regelgevingGewijzigdOp);
+  if (regulatoryChangedAt && regulatoryChangedAt > geverifieerdOp)
+    return { ...basis, status: STATUS.EVIDENCE_MISSING, regulatoryReviewRequired:true,
+      reason: control.reason || 'De wettelijke bronbaseline is gewijzigd na de laatste verificatie; herbeoordeling en nieuw bewijs zijn vereist.' };
+
+  return { ...basis, status: STATUS.VERIFIED, regulatoryReviewRequired:false };
 }
 
 /** Dezelfde eis uit twee bronnen telt één keer; de zwaarste beoordeling wint. */
