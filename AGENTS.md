@@ -70,6 +70,26 @@ Regels:
 - productie blijft beschikbaar via last-known-good waar technisch mogelijk;
 - agents hervatten bij de volgende run automatisch openstaande niet-groene herstelitems en open outcome obligations.
 
+## ONE BRAIN Constitution — hoogste systeeminvariant
+Powerhouse is **één brein**. Alle chats, agents, skills, workflows, schedulers, portals, cockpits, contentflows, salesflows, CRM-flows, klantinteracties, intelligence-lagen, voorspellingen, experimenten, delivery-processen en toekomstige capabilities zijn uitvoeringsnodes van datzelfde brein en mogen geen eigen waarheid, geheugen, queue, learning-loop, beslisautoriteit of parallel control-plane vormen.
+
+Niet-onderhandelbare regels:
+- één canonieke waarheid: bestaande canonical authorities blijven leidend; nieuwe functionaliteit projecteert daarop en creëert geen parallel truth store;
+- één geheugen: iedere node leest vóór materieel werk de gedeelde actuele state, relevante historie, open obligations, evidence, fouten, fixes, outcomes en preventieregels;
+- één beslisloop: observe → understand → predict → decide → execute → readback → outcome/value → learn → prevent/optimize;
+- één delivery-loop: intent/obligation → existing-state preflight → ownership/admission → bounded execution → tests/gates → protected merge/promote → production readback → outcome/value → learning writeback;
+- één menselijke dagqueue: connecties, leads, e-mail, telefoon, afspraken, offertes, artikelen, nieuwsbrieven, blogs, klantportaal en contentreview worden als één geprioriteerde next-best-action ruimte behandeld; kanaal is uitkomst van de beslissing, geen silo;
+- één actieve executable candidate per obligation; duplicaten worden gesuperseded/gesloten en mogen nooit een tweede waarheid creëren;
+- chats en agents zijn intrinsieke execution nodes, geen externe adviseurs: zij moeten dezelfde preflight, evidence-, outcome-, delivery- en learningcontracten volgen als iedere andere runtime-node;
+- volledig autonome taken verdwijnen uit menselijke daglijsten; menselijk werk verschijnt alleen als context, toestemming, creativiteit of besluitvorming echt nodig is;
+- geen terminale status op code, commit, PR, merge, deploy, dispatch, transport of “sent”; terminale waarheid vereist productie/readback + outcome + learning/prevention writeback;
+- iedere materiële nieuwe capability moet aantoonbaar koppelen aan canonical memory, intelligence, decisioning, execution, evidence, value/outcome en learning;
+- iedere agent/chat moet relevante bestaande kennis hergebruiken vóór nieuw ontwerp of debugging; opnieuw vanaf nul beginnen is een contractbreuk;
+- iedere uitvoering schrijft terug wat is geleerd, inclusief root cause, bewijs, outcome, mislukte aanpakken en preventie;
+- security, privacy, truth, evidence, tenant isolation en release gates mogen nooit worden verzwakt om “één brein” of “groen” te claimen.
+
+Een agent, chat, skill of workflow die dit contract niet kan aantonen is **niet production-ready** en moet fail-closed blijven totdat shared-state read, canonical authority mapping, outcome/writeback en delivery-inheritance zijn hersteld.
+
 ## Eén team, één geheugen
 Alle agents opereren als één team met specialistische rollen. Geen agent mag een eigen geïsoleerde waarheid aanhouden.
 
