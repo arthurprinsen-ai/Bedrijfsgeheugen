@@ -29,3 +29,5 @@ test('health fix preserves source evidence instead of deleting history',()=>{
   assert.doesNotMatch(sql,/delete from public\.powerhouse_runtime_events/i);
   assert.doesNotMatch(sql,/delete from public\.bg_gezondheid/i);
 });
+
+// CI silent-start recovery trigger: PR 2036
