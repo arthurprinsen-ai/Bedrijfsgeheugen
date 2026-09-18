@@ -11,7 +11,8 @@ Source delivery:
 - protected merge/main revision: `6b15ba6c1aa865c4a40e99ce6ae0f54ded1f0701`
 - initial documentation base: `cbaf6c123c697cacc769fa76ba2303af5e58fd51`
 - reconciled documentation base before final CI: `82c0242b96855513f05142bf5b93e2a16b0b8bd4`
-- final moving-main reconcile base: `8034e98c109cd3e8b8f5bc3b9871fa78e27d7c5c`
+- moving-main reconcile base: `8034e98c109cd3e8b8f5bc3b9871fa78e27d7c5c`
+- final documentation reconcile base: `b1931378f66dbbaa3d365d7d34b0fe1e7db1b7fc`
 - canonical Supabase learning: `learning:pr-1974-portal-business-input-boundary-v1`
 
 ## What happened
