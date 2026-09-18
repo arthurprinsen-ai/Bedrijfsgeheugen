@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   terminalize:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true && contains(github.event.pull_request.body, 'Writer-Lease-State: TERMINAL_DELIVERY')
     runs-on: ubuntu-latest
     timeout-minutes: 12
     steps:
