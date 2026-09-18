@@ -167,7 +167,7 @@ function renderEvidence(content,definition){content.innerHTML=`<div class="v2rev
 export function mountFunctionalWorkspace(root,{pageId,contract,view,domainState,openPage}={}){
  const definition=DEFINITIONS[pageId];if(!definition)return null;let workspace;
  const renderTab=(tab,content)=>{if(tab==='analyse'){renderAnalysis(content,pageId,domainState,view);return;}if(tab==='acties'){renderActions(content,definition,openPage);return;}if(tab==='bewijs'){renderEvidence(content,definition);return;}if(!domainState){content.innerHTML='<section class="v2tabempty"><h4>Beveiligde context laden</h4><p>Deze werkruimte wordt bewerkbaar zodra de klantcontext is geladen.</p></section>';return;}renderForm(content,definition,domainState,status=>workspace?.setSaveStatus(status));};
- workspace=mountWorkspace(root,contract,{title:view?.title||pageId,description:view?.description||'',saveStatus:domainState?.status?.()||'idle',render:content=>renderTab('invullen',content),onTabChange:(tab,content)=>renderTab(tab,content)});
+ workspace=mountWorkspace(root,contract,{title:view?.title||pageId,description:view?.description||'',saveStatus:domainState?.status?.()||'idle',delegate:false,render:content=>renderTab('invullen',content),onTabChange:(tab,content)=>renderTab(tab,content)});
  workspace.shell.dataset.functionalWorkspace=pageId;
  return workspace;
 }
