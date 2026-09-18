@@ -8,6 +8,7 @@ on:
 permissions:
   actions: read
   contents: read
+  id-token: write
   pull-requests: write
 
 concurrency:
@@ -105,6 +106,66 @@ jobs:
           done
           echo "::error::SKILL_PROJECTION_NOT_TERMINAL_FOR_MERGE:$MERGE_SHA"
           exit 78
+
+      - name: Persist canonical Brain terminal evidence before terminal claim
+        env:
+          OBLIGATION_ID: ${{ steps.identity.outputs.obligation_id }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
+          PRODUCTION_RUN_ID: ${{ steps.production.outputs.run_id }}
+          PROJECTION_REQUIRED: ${{ steps.projection-scope.outputs.required }}
+          PROJECTION_RUN_ID: ${{ steps.projection.outputs.run_id }}
+          TERMINAL_WORKFLOW_RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          audience="powerhouse-control-plane-v1"
+          oidc_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${audience}"
+          oidc_json="$(curl -fsSL -H "Authorization: bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "${oidc_url}")"
+          oidc_token="$(jq -r '.value // empty' <<<"${oidc_json}")"
+          test -n "${oidc_token}" || { echo "::error::CONTROL_PLANE_OIDC_TOKEN_MISSING"; exit 78; }
+
+          if [ "${PROJECTION_REQUIRED}" = "true" ]; then
+            learning_status="APPLIED"
+            skill_version="POWERHOUSE-SKILL-PROJECTION-v1"
+            test -n "${PROJECTION_RUN_ID:-}" || { echo "::error::CONTROL_PLANE_SKILL_PROJECTION_EVIDENCE_MISSING"; exit 78; }
+            projection_json="${PROJECTION_RUN_ID}"
+          else
+            learning_status="NOT_APPLICABLE"
+            skill_version="NOT_APPLICABLE"
+            projection_json="null"
+          fi
+
+          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "${PRODUCTION_RUN_ID}"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             '{
+              obligation_id:$obligation_id,
+              candidate_head_sha:$candidate_head_sha,
+              main_sha:$main_sha,
+              production_readback_run_id:$production_readback_run_id,
+              skill_projection_required:$skill_projection_required,
+              skill_projection_run_id:$skill_projection_run_id,
+              outcome_verified:true,
+              learning_status:$learning_status,
+              policy_version:$policy_version,
+              skill_version:$skill_version,
+              github_workflow_run_id:$github_workflow_run_id
+            }' > /tmp/control-plane-terminal-evidence.json
+
+          curl -fsSL             --retry 3             --retry-all-errors             --connect-timeout 10             --max-time 30             -H "Authorization: Bearer ${oidc_token}"             -H "Content-Type: application/json"             --data-binary @/tmp/control-plane-terminal-evidence.json             "https://www.bedrijfsgeheugen.nl/api/powerhouse/control-plane/evidence"             -o /tmp/control-plane-terminal-readback.json
+
+          jq -e '
+            .ok == true and
+            .terminal_state == "FULFILLED" and
+            .durable_readback_verified == true and
+            .obligation_id == env.OBLIGATION_ID and
+            .candidate_head_sha == env.HEAD_SHA and
+            .main_sha == env.MERGE_SHA
+          ' /tmp/control-plane-terminal-readback.json >/dev/null || {
+            cat /tmp/control-plane-terminal-readback.json
+            echo "::error::CONTROL_PLANE_DURABLE_READBACK_REJECTED"
+            exit 78
+          }
+          mkdir -p .artifacts
+          cp /tmp/control-plane-terminal-readback.json .artifacts/control-plane-terminal-readback.json
+          echo "CONTROL_PLANE_TERMINAL_EVIDENCE_PROVEN:${OBLIGATION_ID}:${MERGE_SHA}"
 
       - name: Persist terminal evidence and release writer lease
         env:
