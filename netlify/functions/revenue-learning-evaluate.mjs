@@ -17,7 +17,11 @@ async function refreshProjection(active,now){
 
 export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date()}={}){
   return async()=>{
-    const active=store||createRevenueLearningStore(),due=await active.listDueEvidence(now().toISOString());let evaluated=0;
+    const active=store||createRevenueLearningStore();
+    const actionEvidence=typeof active.reconcileActionLearningObligations==='function'
+      ? await active.reconcileActionLearningObligations()
+      : {reconciled:0,total:0};
+    const due=await active.listDueEvidence(now().toISOString());let evaluated=0;
     for(const target of due){
       const cohort=await active.listCohort({target,limit:30});
       if(cohort.length<Number(config.promotion?.minSampleSize??5)){
@@ -37,7 +41,7 @@ export function createRevenueEvaluator({store,config=DEFAULT,now=()=>new Date()}
       evaluated++;
     }
     const projection=await refreshProjection(active,now);
-    return {evaluated,total:due.length,projectionVersion:projection.version,projectedLearnings:projection.learnings.length};
+    return {evaluated,total:due.length,projectionVersion:projection.version,projectedLearnings:projection.learnings.length,actionEvidence};
   };
 }
 
