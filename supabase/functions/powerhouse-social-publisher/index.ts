@@ -39,23 +39,33 @@ async function review(url: string, payload: any) { const response = await fetch(
 async function recordObligation(db: any, runDate: string, channel: string, status: string, externalId: string | null, evidence: any, nextAction: string | null, error: string | null = null) { const mapped = obligationChannels[channel]; if (!mapped) return; const { error: rpcError } = await db.rpc('record_content_publication_state', { p_tenant_id: 'canonical', p_publication_date: runDate, p_channel: mapped, p_status: status, p_content_id: null, p_slug: null, p_external_id: externalId, p_canonical_url: null, p_evidence: evidence || {}, p_metrics: {}, p_next_action: nextAction, p_error: error }); if (rpcError) throw new Error(`OBLIGATION_WRITE:${rpcError.message}`); }
 
 function instagramIdentityProven(evidence: any) {
-  const visual = evidence?.instagram_visual || evidence?.instagram_media_proof?.instagram_visual || {};
-  const mediaType = clean(evidence?.media_type || evidence?.instagram_media_proof?.media_type).toLowerCase();
-  const width = Number(visual?.width);
-  const height = Number(visual?.height);
-  const refs = Array.isArray(visual?.evidence_refs) ? visual.evidence_refs.map(clean) : [];
-  const visibleMira = visual?.verified === true
-    && visual?.semantic_verified === true
-    && visual?.mira_present === true
-    && clean(visual?.identity_class) === 'mira_daily_life'
-    && clean(visual?.evidence_method).toLowerCase() === 'vision'
-    && refs.some((ref: string) => /^vision:/i.test(ref));
-  const dimensionsOk = ['reel','video'].includes(mediaType) ? width === 1080 && height === 1920 : width === 1080 && height === 1350;
-  return evidence?.exact_final_media_proven === true
-    && !!clean(evidence?.final_media_sha256)
-    && clean(evidence?.mira_gate_result) === 'PASS'
-    && visibleMira
-    && dimensionsOk;
+  const proof = evidence?.instagram_media_proof || evidence || {};
+  const mediaType = clean(proof?.media_type || evidence?.media_type).toLowerCase();
+  if (mediaType === 'carousel') {
+    const slides = Array.isArray(proof?.carousel_manifest?.slides) ? proof.carousel_manifest.slides : [];
+    return proof?.exact_final_media_proven === true && !!clean(proof?.final_media_sha256)
+      && clean(proof?.mira_gate_result) === 'PASS' && slides.length >= 2
+      && slides.every((slide:any) => {
+        const p=slide?.proof||{},v=p?.visual||slide?.visual||{},refs=Array.isArray(v?.evidence_refs)?v.evidence_refs.map(clean):[];
+        const provider=clean(slide?.provider).toLowerCase(),kind=clean(slide?.kind||'image').toLowerCase();
+        const providerOk=kind==='video'?provider==='openart':['openart','placid'].includes(provider);
+        return providerOk && !!clean(slide?.asset_url) && !!clean(slide?.sha256) && p?.identity_gate_result==='PASS'
+          && v?.verified===true && v?.semantic_verified===true && v?.mira_present===true
+          && clean(v?.identity_class)==='mira_daily_life' && clean(v?.evidence_method).toLowerCase()==='vision'
+          && refs.some((ref:string)=>/^vision:/i.test(ref));
+      });
+  }
+  const visual = proof?.instagram_visual || {};
+  const width=Number(visual?.width),height=Number(visual?.height);
+  const refs=Array.isArray(visual?.evidence_refs)?visual.evidence_refs.map(clean):[];
+  const visible=visual?.verified===true&&visual?.semantic_verified===true&&visual?.mira_present===true
+    &&clean(visual?.identity_class)==='mira_daily_life'&&clean(visual?.evidence_method).toLowerCase()==='vision'
+    &&refs.some((ref:string)=>/^vision:/i.test(ref));
+  const dims=['reel','video'].includes(mediaType)?width===1080&&height===1920:width===1080&&height===1350;
+  const provider=clean(proof?.media_provider||proof?.media_source).toLowerCase();
+  const providerOk=['reel','video'].includes(mediaType)?provider==='openart':['openart','placid'].includes(provider);
+  return proof?.exact_final_media_proven===true&&!!clean(proof?.final_media_sha256)
+    &&clean(proof?.mira_gate_result)==='PASS'&&visible&&dims&&providerOk;
 }
 
 async function reconcileExistingProviderTruth(db: any, token: string, runDate: string) {
@@ -99,7 +109,22 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
   }
   return results;
 }
-function instagramInput(art: any, due: Date, future: boolean) { const proof = art?.generation_evidence?.instagram_media_proof || {}; const mediaType = clean(proof.media_type || proof.buffer_media_type).toLowerCase(); const mediaUrl = clean(proof.media_url); if (!instagramIdentityProven(proof) || !mediaUrl) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED'); const assetKind = ['reel','video'].includes(mediaType) ? 'video' : 'image'; return { text: clean(art.body), channelId: INSTAGRAM, schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}), metadata: { instagram: { type: mediaType || 'post', shouldShareToFeed: true } }, assets: [{ [assetKind]: { url: mediaUrl } }] }; }
+function instagramInput(art:any,due:Date,future:boolean){
+  const proof=art?.generation_evidence?.instagram_media_proof||{};
+  const mediaType=clean(proof.media_type||proof.buffer_media_type).toLowerCase();
+  if(!instagramIdentityProven(proof)) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
+  if(mediaType==='carousel'){
+    const slides=proof.carousel_manifest.slides;
+    const assets=slides.map((slide:any)=>slide.kind==='video'?{video:{url:slide.asset_url}}:{image:{url:slide.asset_url}});
+    return {text:clean(art.body),channelId:INSTAGRAM,schedulingType:'automatic',mode:future?'customScheduled':'shareNow',...(future?{dueAt:due.toISOString()}:{}),
+      metadata:{instagram:{type:'carousel',shouldShareToFeed:true}},assets};
+  }
+  const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
+  const assetKind=['reel','video'].includes(mediaType)?'video':'image';
+  const postType=['reel','video'].includes(mediaType)?'reel':'post';
+  return {text:clean(art.body),channelId:INSTAGRAM,schedulingType:'automatic',mode:future?'customScheduled':'shareNow',...(future?{dueAt:due.toISOString()}:{}),
+    metadata:{instagram:{type:postType,shouldShareToFeed:true}},assets:[{[assetKind]:{url:mediaUrl}}]};
+}
 
 Deno.serve(async (req) => {
   try {
