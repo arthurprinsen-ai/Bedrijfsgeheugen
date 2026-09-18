@@ -4,9 +4,12 @@ import fs from 'node:fs';
 
 const sql = fs.readFileSync('supabase/migrations/20260918094000_runtime_health_truth_v1.sql','utf8');
 
-test('edge-function health only treats recent invocation evidence as current',()=>{
-  assert.match(sql,/a\.aangeroepen_op>now\(\)-interval ''30 minutes''/);
-  assert.doesNotMatch(sql,/a\.aangeroepen_op>now\(\)-interval ''26 hours''/);
+test('edge-function health migrates the legacy freshness predicate to current evidence only',()=>{
+  const oldSignature=/a\.aangeroepen_op>now\(\)-interval ''26 hours''/g;
+  assert.match(sql,/v_old constant text := 'where a\.aangeroepen_op>now\(\)-interval ''26 hours''/);
+  assert.equal([...sql.matchAll(oldSignature)].length,1,'legacy 26-hour signature may exist only as the migration source signature');
+  assert.match(sql,/v_new constant text := 'where a\.aangeroepen_op>now\(\)-interval ''30 minutes''/);
+  assert.match(sql,/execute replace\(v_def,v_old,v_new\)/);
 });
 
 test('historical daily proof errors do not count as current structural runtime errors',()=>{
