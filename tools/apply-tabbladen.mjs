@@ -76,6 +76,7 @@ export function tabtitelScript(regel) {
   }
   function zet(){
     var open=document.querySelector(R.actief);
+    if(!open){return;}
     var sleutel=open&&open.id?open.id.slice(R.voorvoegsel.length):'';
     var titel=R.titels[sleutel]||tekstVan(sleutel)||R.basis;
     if(document.title!==titel){document.title=titel;}
