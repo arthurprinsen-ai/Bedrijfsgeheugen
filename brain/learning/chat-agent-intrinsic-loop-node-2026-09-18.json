@@ -1,0 +1,86 @@
+{
+  "type": "LEARNING_RECORD",
+  "version": "1.0.0",
+  "fingerprint": "chat-agent-intrinsic-powerhouse-loop-node-v1",
+  "date": "2026-09-18",
+  "status": "ACTIVE_PREVENTION",
+  "context": "Powerhouse continuity was already documented conceptually, but chats and agents were not yet explicitly enforced as intrinsic execution nodes inside one canonical Powerhouse loop with mandatory canonical-state preflight and canonical writeback before terminal completion.",
+  "problem": "A chat or agent could otherwise be treated as a temporary helper around the system instead of a governed execution node inside it, creating risk of local-only state, repeated rediscovery, parallel truth, incomplete handoff and terminal success without reusable learning.",
+  "root_cause_class": "CONTINUITY_POLICY_PRESENT_BUT_LOOP_NODE_ENFORCEMENT_INCOMPLETE",
+  "root_cause": "The existing continuity authority required current-state-first and reuse-first behavior, but lacked an explicit machine-readable loop_node_contract and governed regression coverage proving that both chat and agent actors are intrinsic nodes of one canonical loop.",
+  "fix": {
+    "policy": "brain/policies/powerhouse-agent-continuity-v1.json",
+    "policy_version": "POWERHOUSE-AGENT-CONTINUITY-v1.3",
+    "contract": "loop_node_contract",
+    "role": "INTRINSIC_EXECUTION_NODE",
+    "required_actor_kinds": ["chat", "agent"],
+    "required_pre_execution": "canonical_state_required_before_execution",
+    "required_pre_terminal": "canonical_writeback_required_before_terminal",
+    "resume_rule": "next_run_must_resume_from_written_state"
+  },
+  "execution_sequence": [
+    "intent_or_obligation",
+    "existing_state_preflight",
+    "retrieve_relevant_knowledge_and_lineage",
+    "bounded_execution",
+    "tests_and_gates",
+    "merge_deploy_or_promote_when_applicable",
+    "production_or_provider_readback_and_evidence",
+    "outcome_and_value",
+    "root_cause_learning_and_prevention",
+    "canonical_writeback",
+    "next_run_from_updated_canonical_state"
+  ],
+  "forbidden_patterns": [
+    "isolated_chat_memory_as_authority",
+    "parallel_agent_brain_as_authority",
+    "alternative_truth_outside_powerhouse",
+    "restart_from_zero_when_canonical_state_exists",
+    "terminal_success_without_outcome_learning_and_writeback"
+  ],
+  "regression": {
+    "test": "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs",
+    "governed_lane": "backend",
+    "required_status": "test",
+    "coverage_rule": "The regression is intentionally embedded in an already mandatory backend contract suite rather than a one-off test workflow."
+  },
+  "delivery_evidence": {
+    "pull_request": 1989,
+    "candidate_head_sha": "30aef234de47d0d6fef208745df2e9e9a60a8c58",
+    "merge_sha": "cbaf6c123c697cacc769fa76ba2303af5e58fd51",
+    "required_test": "SUCCESS",
+    "brain_delivery": "SUCCESS",
+    "powerhouse_codeql": "SUCCESS",
+    "main_readback": "VERIFIED"
+  },
+  "incident_learning": [
+    {
+      "symptom": "Initial Required admission failed before expensive CI.",
+      "cause": "The PR lacked the canonical delivery metadata required by the existing hygiene/admission gate.",
+      "fix": "Added Obligation-ID, Delivery-Lane, Candidate-Type, Base-SHA and Supersedes metadata to the same PR lineage.",
+      "prevention": "Every executable Powerhouse PR must carry canonical delivery metadata before expecting governed CI admission; do not weaken or bypass admission."
+    },
+    {
+      "symptom": "A newly added standalone regression test would not have run in the backend lane.",
+      "cause": "The backend lane executes an explicit governed test set and the standalone file was outside that set.",
+      "fix": "Moved the regression into tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs, which is already part of the mandatory backend suite, then removed the standalone test file.",
+      "prevention": "A regression only counts as protection when a required governed CI path actually executes it. Prefer existing governed test families over creating parallel test workflows."
+    }
+  ],
+  "prevention": [
+    "Treat every material chat and agent as an intrinsic execution node in the single canonical Powerhouse loop.",
+    "Never allow local chat state or local agent state to become an alternative source of truth.",
+    "Require canonical-state preflight before material execution.",
+    "Require canonical writeback of verified state, evidence, outcome, learning, prevention and remaining obligations before terminal completion.",
+    "Require the next capable chat or agent to resume from the updated canonical state rather than reconstructing prior work.",
+    "Do not claim a governance rule is protected unless a required CI lane executes its regression.",
+    "Do not bypass admission failures; repair the canonical candidate metadata or exact root cause on the same delivery lineage."
+  ],
+  "documentation": "docs/brain/chat-agent-intrinsic-loop-node.md",
+  "linked_sources": [
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs",
+    "brain/learning/execution-resilience-2026-09-17.json",
+    "docs/brain/execution-resilience.md"
+  ]
+}
