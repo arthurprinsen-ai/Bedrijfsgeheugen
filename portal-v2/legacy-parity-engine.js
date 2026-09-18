@@ -226,7 +226,7 @@ const FIELD_MAP={
  nTitel:'portal.roadmap.draft.title',nDim:'portal.roadmap.draft.dimension',nStart:'portal.roadmap.draft.start',nDuur:'portal.roadmap.draft.duration'
 };
 function setPath(root,path,value){const keys=path.split('.');let x=root;for(let i=0;i<keys.length-1;i++)x=x[keys[i]]??={};x[keys.at(-1)]=value}
-export function migrateLegacyState(legacy={}){const out={portal:{}};for(const [key,path] of Object.entries(FIELD_MAP))if(Object.hasOwn(legacy,key))setPath(out,path,legacy[key]);return out}
+export function migrateLegacyState(legacy={}){const out={portal:{}};for(const [key,path] of Object.entries(FIELD_MAP))if(Object.hasOwn(legacy,key))setPath(out,path,legacy[key]);if(Object.hasOwn(legacy,'bInvest'))setPath(out,'portal.businessCase.investment',n(legacy.bInvest)*1000);return out}
 export function listCalculatorIds(){return Object.keys(C)}
 export function calculateLegacyEquivalent(id,state={}){if(!C[id])throw new Error(`LEGACY_PARITY_CALCULATOR_MISSING:${id}`);return C[id](state)}
 export function calculateCapability(capability,state={}){const item=LEGACY_FUNCTIONAL_INVENTORY[capability];if(!item)throw new Error(`LEGACY_CAPABILITY_UNKNOWN:${capability}`);return Object.fromEntries(item.calculations.map(id=>[id,calculateLegacyEquivalent(id,state)]))}
