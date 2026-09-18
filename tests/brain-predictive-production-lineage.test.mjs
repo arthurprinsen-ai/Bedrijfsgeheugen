@@ -78,15 +78,11 @@ test('production lineage records verified closure only after protected-main and 
   assert.equal(lineage.obligation.closureState, 'FULFILLED');
   assert.equal(lineage.closureEvidence.brainObligationState, 'FULFILLED');
   assert.equal(lineage.closureEvidence.closedLoopStatus, 'LIVE & BEWEZEN');
-  assert.equal(lineage.latestObservedProductionMigration, '20260917070302_linkedin_company_daily_delivery_guard_v1');
-  assert.deepEqual(lineage.reconciled.slice(-2), [
+  assert.equal(lineage.latestObservedProductionMigration, '20260918143915_powerhouse_terminal_migration_identity_readback_v1');
+  assert.deepEqual(lineage.reconciled.slice(-1), [
     {
-      production: '20260916123944_powerhouse_autonomy_rpc_replay_hardening.sql',
-      replacesAlias: '20260916110500_powerhouse_autonomy_rpc_replay_hardening.sql',
-    },
-    {
-      production: '20260916123957_powerhouse_internal_view_replay_hardening.sql',
-      replacesAlias: '20260916111500_powerhouse_internal_view_replay_hardening.sql',
+      production: '20260918143600_powerhouse_control_plane_recovery_supervisor_v1.sql',
+      replacesAlias: '20260918143000_powerhouse_control_plane_recovery_supervisor_v1.sql',
     },
   ]);
 });

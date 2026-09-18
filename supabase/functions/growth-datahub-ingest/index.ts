@@ -58,9 +58,37 @@ Deno.serve(async(req:Request)=>{
       const policyVersion=required(terminal.policy_version,'POLICY_VERSION');
       const skillVersion=required(terminal.skill_version,'SKILL_VERSION');
       const actor=required(terminal.actor||'github-actions','ACTOR');
+      const migrationReadbackRequired=terminal.migration_readback_required===true;
+      const expectedMigrations=Array.isArray(terminal.expected_migrations)?terminal.expected_migrations:[];
+      if(migrationReadbackRequired&&expectedMigrations.length===0)throw new Error('MIGRATION_READBACK_EXPECTATIONS_MISSING');
+      for(const migration of expectedMigrations){
+        if(!/^\d{14}$/.test(String(migration?.version||''))||!/^[a-z0-9_]+$/.test(String(migration?.name||''))){
+          throw new Error('MIGRATION_IDENTITY_INVALID');
+        }
+      }
       const obligationPayloadHash=await sha256(obligationKey);
-      const terminalPayloadHash=await sha256(`${obligationKey}|${candidateSha}|${mainSha}|${productionRunId}|${projectionRunId??''}`);
+      const terminalPayloadHash=await sha256(`${obligationKey}|${candidateSha}|${mainSha}|${productionRunId}|${projectionRunId??''}|${JSON.stringify(expectedMigrations)}`);
       const one=(value:any)=>Array.isArray(value)?value[0]:value;
+
+      let migrationReadback:any={
+        contract:'powerhouse-supabase-migration-readback-v1',
+        required:false,
+        all_matched:true,
+        expected_count:0,
+        matched_count:0,
+        migrations:[]
+      };
+      if(migrationReadbackRequired){
+        const verified=await client.rpc('powerhouse_supabase_migration_readback_v1',{p_expected:expectedMigrations});
+        if(verified.error)throw new Error(`MIGRATION_READBACK_FAILED:${verified.error.message}`);
+        migrationReadback=one(verified.data);
+        if(!migrationReadback||migrationReadback.all_matched!==true
+          || Number(migrationReadback.expected_count)!==expectedMigrations.length
+          || Number(migrationReadback.matched_count)!==expectedMigrations.length){
+          throw new Error('MIGRATION_LEDGER_IDENTITY_MISMATCH');
+        }
+        migrationReadback={...migrationReadback,required:true};
+      }
 
       let {data:obligation,error:obligationError}=await client.rpc('brain_create_obligation',{
         p_obligation_type:'CONTROL_PLANE_DELIVERY',
@@ -92,6 +120,10 @@ Deno.serve(async(req:Request)=>{
         oidc_repository:terminal.oidc_repository||null,
         oidc_workflow_ref:terminal.oidc_workflow_ref||null,
         actor,
+        migration_readback_required:migrationReadbackRequired,
+        expected_migrations:expectedMigrations,
+        migration_readback:migrationReadback,
+        migration_readback_verified:!migrationReadbackRequired||migrationReadback.all_matched===true,
         recorded_at:new Date().toISOString()
       };
 
@@ -185,6 +217,9 @@ Deno.serve(async(req:Request)=>{
         production_readback_run_id:productionRunId,
         skill_projection_run_id:projectionRunId,
         learning_status:learningStatus,
+        migration_readback_required:migrationReadbackRequired,
+        migration_readback_verified:!migrationReadbackRequired||migrationReadback.all_matched===true,
+        migration_readback:migrationReadback,
         durable_readback_verified:true
       }},200);
     }catch(error){

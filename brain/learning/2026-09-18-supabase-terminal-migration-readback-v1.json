@@ -1,0 +1,33 @@
+{
+  "fingerprint": "control-plane|supabase-migration-terminal-readback|false-green-v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "incident": "PR #2208 reached terminal FULFILLED after GitHub Production Release Readback succeeded, while the merged Supabase migration had not yet been applied to production.",
+  "root_cause": "Production Release Readback only proved Netlify/non-deployment release truth. Obligation Terminal Closure did not derive or verify exact Supabase migration identities before durable Brain fulfillment.",
+  "evidence": {
+    "merge_sha": "7c4b846a3d4d2633dc79f75f16c68be17f8004ff",
+    "false_green_terminal_run": 35357060375,
+    "production_readback_run": 35357060803,
+    "observed_before_repair": {
+      "next_action_view": null,
+      "reconciliation_cron": "powerhouse-reconciliation-worker-v1",
+      "reconciliation_worker_v2": false
+    },
+    "repaired_production_migrations": [
+      "20260918143600_powerhouse_control_plane_recovery_supervisor_v1",
+      "20260918143758_powerhouse_supabase_migration_readback_v1",
+      "20260918143915_powerhouse_terminal_migration_identity_readback_v1"
+    ]
+  },
+  "prevention_rule": "Any merged delta containing supabase/migrations/*.sql must derive exact version+name identities and terminal closure must require all identities to exist in the live Supabase migration ledger before FULFILLED/LIVE_BEWEZEN.",
+  "enforcement": [
+    "obligation-terminal-closure migration scope",
+    "powerhouse_supabase_migration_readback_v1(jsonb)",
+    "growth-datahub terminal evidence gate",
+    "exact production migration filename parity tests"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}

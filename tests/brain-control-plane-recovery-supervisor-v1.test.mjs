@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const path='supabase/migrations/20260918143000_powerhouse_control_plane_recovery_supervisor_v1.sql';
+const path='supabase/migrations/20260918143600_powerhouse_control_plane_recovery_supervisor_v1.sql';
 
 test('next action projection covers the canonical lifecycle', async()=>{
   const sql=await readFile(path,'utf8');
@@ -34,7 +34,7 @@ test('recovery worker remains service-role only', async()=>{
 
 
 test('scheduler promotes reconciliation worker v2 as sole canonical worker', async()=>{
-  const sql=await readFile('supabase/migrations/20260918143000_powerhouse_control_plane_recovery_supervisor_v1.sql','utf8');
+  const sql=await readFile('supabase/migrations/20260918143600_powerhouse_control_plane_recovery_supervisor_v1.sql','utf8');
   assert.match(sql,/powerhouse-reconciliation-worker-v1/);
   assert.match(sql,/powerhouse-reconciliation-worker-v2/);
   assert.match(sql,/cron\.unschedule/);
