@@ -9,7 +9,8 @@ This learning closes the delivery and recovery lineage for PR #1974, **Consolida
 Source delivery:
 - final candidate head: `ec6b2a47f022cb632e56b0a1e9554889e41ecf79`
 - protected merge/main revision: `6b15ba6c1aa865c4a40e99ce6ae0f54ded1f0701`
-- documentation base at writeback time: `cbaf6c123c697cacc769fa76ba2303af5e58fd51`
+- initial documentation base: `cbaf6c123c697cacc769fa76ba2303af5e58fd51`
+- reconciled documentation base before final CI: `82c0242b96855513f05142bf5b93e2a16b0b8bd4`
 - canonical Supabase learning: `learning:pr-1974-portal-business-input-boundary-v1`
 
 ## What happened
