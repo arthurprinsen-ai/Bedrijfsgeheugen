@@ -219,23 +219,32 @@ jobs:
               throw new Error(`SUPERSEDES_OBLIGATION_MISMATCH:${prNumber}:${metadata.obligationId}:${obligation}`);
             }
             const merge=String(pr.merge_commit_sha||'');
-            if(pr.merged!==true || !/^[0-9a-f]{40}$/i.test(merge)) {
-              throw new Error(`SUPERSEDES_PR_NOT_MERGED:${prNumber}`);
-            }
-
-            const diff=execFileSync('git',['diff','--name-status',`${merge}^1`,merge],{encoding:'utf8'})
-              .split(/\r?\n/)
-              .filter(Boolean);
-            for(const line of diff){
-              const parts=line.split(/\t/);
-              const status=parts[0]||'';
-              const candidate=status.startsWith('R') ? parts[2] : parts[1];
-              if(!candidate || !/^supabase\/migrations\/[^/]+\.sql$/.test(candidate)) continue;
-              if(status.startsWith('D')) continue;
-              const base=path.basename(candidate,'.sql');
-              const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
-              if(!match) throw new Error(`SUPABASE_MIGRATION_IDENTITY_INVALID:${candidate}`);
-              expected.push({version:match[1],name:match[2],source_pr:prNumber});
+            if(pr.merged===true){
+              if(!/^[0-9a-f]{40}$/i.test(merge)) throw new Error(`SUPERSEDES_MERGE_IDENTITY_INVALID:${prNumber}`);
+              const diff=execFileSync('git',['diff','--name-status',`${merge}^1`,merge],{encoding:'utf8'})
+                .split(/\r?\n/)
+                .filter(Boolean);
+              for(const line of diff){
+                const parts=line.split(/\t/);
+                const status=parts[0]||'';
+                const candidate=status.startsWith('R') ? parts[2] : parts[1];
+                if(!candidate || !/^supabase\/migrations\/[^/]+\.sql$/.test(candidate)) continue;
+                if(status.startsWith('D')) continue;
+                const base=path.basename(candidate,'.sql');
+                const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
+                if(!match) throw new Error(`SUPABASE_MIGRATION_IDENTITY_INVALID:${candidate}`);
+                expected.push({version:match[1],name:match[2],source_pr:prNumber});
+              }
+            } else {
+              if(pr.state!=='closed') throw new Error(`SUPERSEDES_PR_NOT_TERMINAL:${prNumber}`);
+              const files=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}/files?per_page=100`],{encoding:'utf8'}));
+              const migrationFiles=files
+                .filter(file=>file.status!=='removed' && /^supabase\/migrations\/[^/]+\.sql$/.test(String(file.filename||'')))
+                .map(file=>String(file.filename||''));
+              if(migrationFiles.length>0){
+                throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${migrationFiles.join(',')}`);
+              }
+              console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
             }
 
             prNumber=metadata.supersedes===null ? 0 : Number(metadata.supersedes);
