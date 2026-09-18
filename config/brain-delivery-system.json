@@ -59,7 +59,8 @@
         "tools/brain-delivery-system.mjs",
         "tools/delivery/",
         ".github/workflows/unified-brain-delivery.yml",
-        "docs/superpowers/specs/"
+        "docs/superpowers/specs/",
+        "tests/terminal-writer-lease-"
       ]
     },
     {
@@ -292,7 +293,8 @@
         "tests/growth-intelligence-",
         "tests/notion-synced-posts-",
         "tests/powerhouse-daily-self-evolution",
-        "tests/powerhouse-foresight-autonomy"
+        "tests/powerhouse-foresight-autonomy",
+        "tests/terminal-writer-lease-"
       ],
       "requiredContracts": [
         "BG166",
