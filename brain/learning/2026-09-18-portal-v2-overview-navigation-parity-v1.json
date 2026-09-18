@@ -28,18 +28,44 @@
       "portal-v2/modules/overview.js",
       "tests/integration/portal-v2-production-overview-navigation.spec.js"
     ],
-    "pending": [
-      "exact-head Required",
-      "exact-head BRAIN delivery",
-      "protected merge",
-      "main production DOM readback",
-      "main SHA readback"
-    ],
+    "pending": [],
     "admissionRecovery": {
       "failedState": "BLOCKED_METADATA_INVALID",
       "failedReason": "SUPERSEDES_INVALID",
       "correction": "Supersedes normalized to none; PR #2004 recovery context retained in prose"
+    },
+    "exactHead": {
+      "sha": "193ebfa4046d0049bed9f7f9f48d54cdd56fccf2",
+      "required": "success",
+      "brain": "success",
+      "codeql": "success",
+      "portalV2Tests": "success",
+      "productionDomReadback": "success",
+      "livePreview": "success",
+      "assurance": "success",
+      "qualityIntelligence": "success"
+    },
+    "protectedMerge": {
+      "pr": 2008,
+      "mergeSha": "84231d46cc2bb23db6da202edef4c40a8c963b05",
+      "method": "squash"
+    },
+    "production": {
+      "provider": "Netlify",
+      "deployId": "6aacdac88a1b590008d3af85",
+      "commitRef": "84231d46cc2bb23db6da202edef4c40a8c963b05",
+      "state": "ready",
+      "context": "production"
+    },
+    "mainReadback": {
+      "overviewSurface": true,
+      "adoptionCurve": true,
+      "companyState": true,
+      "cmmiUnknownState": true,
+      "organisationState": true
     }
   },
-  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  "status": "LIVE_AND_PROVEN",
+  "closedAt": "2026-09-18",
+  "definitionOfDone": "exact-head tests/gates -> protected merge -> main readback -> exact production deploy -> learning/documentation writeback"
 }
