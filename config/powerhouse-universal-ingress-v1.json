@@ -25,11 +25,23 @@
     "EXACT_CANDIDATE_IDENTITY_CONTINUITY",
     "INGRESS_RECEIPT_IS_EVIDENCE_NOT_TRUTH",
     "NO_SECOND_MEMORY_OR_EXECUTION_PLANE",
-    "TERMINAL_STATUS_REQUIRES_POSTFLIGHT"
+    "TERMINAL_STATUS_REQUIRES_POSTFLIGHT",
+    "CURRENT_POLICY_VERSION_BOUND_TO_EVERY_MATERIAL_RUN",
+    "CURRENT_SKILL_VERSION_AND_PROJECTION_DIGEST_BOUND_TO_EVERY_MATERIAL_RUN",
+    "CURRENT_DELIVERY_VERSION_BOUND_TO_EVERY_MATERIAL_RUN",
+    "POSTFLIGHT_REJECTS_STALE_VERSION_BINDING"
   ],
   "native_chat_boundary": "Repository code cannot rewrite the native ChatGPT product runtime. Any material Powerhouse execution invoked from a native chat must enter the managed Powerhouse ingress/control-plane before mutation.",
   "linked_learning_sources": [
     "brain/learning/universal-runtime-ingress-2026-09-17.json",
     "brain/policies/powerhouse-agent-continuity-v1.json"
-  ]
+  ],
+  "version_binding": {
+    "policy_source": "config/powerhouse-universal-ingress-v1.json",
+    "completion_policy_source": "config/powerhouse-universal-completion-v1.json",
+    "skill_source": "brain/skills/powerhouse-learning-skill-index-v1.json",
+    "delivery_source": "config/powerhouse-github-delivery-state-machine-v1.json",
+    "skill_projection_digest_required": true,
+    "stale_binding_state": "FAIL_CLOSED"
+  }
 }
