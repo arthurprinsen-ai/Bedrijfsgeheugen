@@ -1,0 +1,71 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-TERMINAL-DELIVERY-CONSOLIDATION-v1",
+  "status": "PROVEN",
+  "fingerprint": "powerhouse-terminal-delivery-consolidation-2026-09-18-v1",
+  "observed_at": "2026-09-18T10:37:00+02:00",
+  "facts": {
+    "current_main_sha": "8a9aa1c3488c9289a9510fbad6b7cad3e078f932",
+    "netlify_production_commit_ref": "8a9aa1c3488c9289a9510fbad6b7cad3e078f932",
+    "netlify_state": "ready",
+    "one_brain": {
+      "total_layers": 32,
+      "wired_layers": 32,
+      "required_jobs": 18,
+      "active_jobs": 18,
+      "structural_lineage_gaps": 0,
+      "required_evidence_sources_unhealthy": 0
+    },
+    "ci_queue": {
+      "before_queued": 226,
+      "before_in_progress": 18,
+      "after_queued": 9,
+      "after_in_progress": 3
+    },
+    "portal_v2": {
+      "source_pr": 1851,
+      "recovery_pr": 2038,
+      "production_dom_readback": "success"
+    },
+    "structural_gap": {
+      "source_pr": 2019,
+      "recovery_pr": 2023,
+      "decision_cycles": 580,
+      "cycle_events": 580,
+      "connectors_state": "NOT_CONFIGURED",
+      "overdue_calibrations": 0
+    },
+    "fast_development_v2": {
+      "pr": 2026,
+      "state": "merged_and_green"
+    },
+    "delivery_hygiene_closed_predecessor": {
+      "pr": 2039,
+      "state": "merged_and_green"
+    },
+    "security": {
+      "media_proof_browser_direct_privileges": false,
+      "service_role_authority": true
+    },
+    "content_incident": {
+      "channel": "instagram",
+      "date": "2026-09-18",
+      "state": "BLOCKED",
+      "reason": "EXACT_FINAL_MEDIA_PROOF_REQUIRED",
+      "republish_forbidden": true,
+      "prevention_live": true
+    }
+  },
+  "prevention_rules": [
+    "PR_SINGLE_FLIGHT_HEAVY_FANOUT",
+    "CLOSED_PREDECESSOR_SUPERSESSION_MUST_BE_RESOLVABLE",
+    "STRICT_CYCLE_NEVER_SYNTHESIZE_LATER_STAGES",
+    "FUTURE_CALIBRATIONS_ARE_NOT_OVERDUE_DEBT",
+    "DEMO_IDENTITY_IS_NOT_PRODUCTION_IDENTITY_DEBT",
+    "PORTAL_READBACK_TESTS_FOLLOW_CANONICAL_MODEL_LABELS",
+    "MEDIA_PROOF_CLIENT_ROLES_HAVE_NO_DIRECT_TABLE_PRIVILEGES",
+    "INVALID_ALREADY_SENT_INSTAGRAM_ASSET_MUST_NOT_BE_REPUBLISHED",
+    "CURRENT_MAIN_AND_PRODUCTION_DEPLOY_IDENTITY_MUST_MATCH_BEFORE_TERMINAL_CLAIM"
+  ],
+  "reuse_contract": "Read current canonical state first; reuse the one active obligation lineage; repair only the first deterministic current-head failure; require protected merge and production/provider readback; preserve truthful blocked/unknown states instead of fabricating green evidence."
+}
