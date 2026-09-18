@@ -96,6 +96,48 @@ function specialistContent(pageId,model,navigation){
       {type:'actions',title:'Volgende acties',items:actions}
     ],derived:false};
   }
+  if(pageId==='uitvoeringsladder'){
+    const steps=Array.isArray(model?.portal?.execution?.steps)?model.portal.execution.steps:[];
+    const roadmap=Array.isArray(model?.portal?.roadmap?.items)?model.portal.roadmap.items:[];
+    const source=steps.length?steps:roadmap;
+    const done=item=>item?.done===true||item?.klaar===true||['Gereed','Afgerond','Done','Completed'].includes(item?.status);
+    const value=item=>Number(item?.realizedValue??item?.value??item?.waarde??0)||0;
+    const completed=source.filter(done);
+    const realized=completed.reduce((sum,item)=>sum+value(item),0);
+    const five=[
+      ['1. Tellen','Maak zichtbaar wat er gebeurt en hoeveel ervan is.'],
+      ['2. Vastleggen','Leg definities, werkwijze, eigenaar en uitgangssituatie vast.'],
+      ['3. Koppelen','Verbind processen, gegevens en systemen zodat overdracht niet handmatig blijft.'],
+      ['4. Meten','Meet resultaat, kwaliteit, doorlooptijd en afwijkingen tegen de vastgelegde basis.'],
+      ['5. Borgen','Maak eigenaarschap, monitoring en verbetering onderdeel van het gewone werk.']
+    ];
+    const planning=source.slice(0,15).map((item,index)=>[
+      `${index+1}. ${String(item?.title||item?.name||item?.label||'Trede')}`,
+      `${item?.period||item?.start?('start '+(item.period||item.start)):''}${item?.duration?' · '+item.duration+' mnd':''}${done(item)?' · gereed':' · open'}`
+    ]);
+    const blocks=[
+      {type:'metrics',title:'De Uitvoeringsladder',items:[
+        ['Treden',String(source.length||15)],
+        ['Afgerond',String(completed.length)],
+        ['Voortgang',source.length?`${Math.round(completed.length/source.length*100)}%`:'—'],
+        ['Opgeleverde waarde',realized?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(realized):'Nog niet aangetoond']
+      ],derived:source.length>0},
+      {type:'worklist',title:'Vaste volgorde — geen trede overslaan',items:five,derived:false}
+    ];
+    if(planning.length)blocks.push({type:'worklist',title:'De planning — vijftien treden over twaalf maanden',items:planning,derived:true});
+    else blocks.push({type:'empty',title:'De planning — vijftien treden over twaalf maanden',copy:'Er zijn nog geen uitvoeringsstappen opgeslagen. Open de roadmap om de eerste concrete stap te plannen.'});
+    blocks.push({type:'worklist',title:'Wat het tot nu toe heeft opgeleverd',items:[
+      ['Afgeronde treden',String(completed.length)],
+      ['Aantoonbare gerealiseerde waarde',realized?new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(realized):'Nog niet aangetoond']
+    ],derived:completed.length>0});
+    blocks.push({type:'worklist',title:'Wat Bedrijfsgeheugen hierin doet',items:[
+      ['Volgorde bewaken','Tellen → vastleggen → koppelen → meten → borgen.'],
+      ['Bewijs koppelen','Elke afgeronde stap blijft herleidbaar naar klantdata, eigenaar en outcome.'],
+      ['Waarde teruglezen','Alleen gerealiseerde, aantoonbare waarde telt als resultaat.']
+    ],derived:false});
+    blocks.push({type:'actions',title:'Volgende acties',items:actions});
+    return {primaryAction,blocks,derived:source.length>0};
+  }
   return null;
 }
 
