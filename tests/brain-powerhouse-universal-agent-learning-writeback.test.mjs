@@ -227,7 +227,7 @@ test('continuity skill locks fast delivery incident prevention', () => {
   for (const marker of [
     'Parallelize independent specialist work',
     'Writer-Lease-Head',
-    'newest Required',
+    'only the newest attempt is authoritative',
     'classifier co-change',
     'full current-main union from the merge-base',
     'Supabase migrations',
