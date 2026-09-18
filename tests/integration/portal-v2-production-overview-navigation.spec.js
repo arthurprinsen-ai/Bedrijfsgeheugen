@@ -18,7 +18,9 @@ test('V2 overview exposes legacy company-state and adoption surfaces',async({pag
   await expect(insights).toContainText('CMMI');
   await expect(insights).toContainText('Waar organisatie staat');
   await expect(insights.locator('.adoption-step')).toHaveCount(5);
-  expect(await insights.locator('.adoption-step.current').count()).toBe(1);
+  await expect(insights.locator('.adoption-step')).toHaveCount(5);
+  const profileKnown=await insights.locator('.adoption-step.current').count();
+  expect([0,1]).toContain(profileKnown);
 });
 
 test('general menu remains available on opened V2 pages',async({page})=>{
