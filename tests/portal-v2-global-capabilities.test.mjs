@@ -28,3 +28,10 @@ test('customer branding has a safe initials fallback', () => {
   assert.match(branding, /initial/i);
   assert.match(branding, /customer|klant/i);
 });
+
+test('mobile global actions stay reachable from the canonical portal hub', () => {
+  const ui = fs.readFileSync('portal-v2/global-actions-ui.js','utf8');
+  assert.match(ui,/\['more','portal'\]\.includes\(sheet\.dataset\.hub\)/);
+  assert.match(ui,/data-mobile-global-actions/);
+  assert.match(ui,/data-mobile-capability|mobileCapability/);
+});
