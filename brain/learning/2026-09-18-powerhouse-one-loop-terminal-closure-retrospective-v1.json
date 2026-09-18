@@ -1,0 +1,73 @@
+{
+  "fingerprint": "powerhouse-one-loop-terminal-closure-retrospective-v1",
+  "date": "2026-09-18",
+  "record_type": "post_incident_learning",
+  "status": "FULFILLED",
+  "predecessor_obligation": "powerhouse-one-loop-v1",
+  "purpose": "Canonical learning writeback after the Powerhouse One Loop implementation, recovery, protected merges, production readbacks, obligation sweeps and terminal learning closure completed successfully.",
+  "terminal_checkpoint": {
+    "current_main_sha": "0807d236e198875fabf953d6a285f9e94ca70d47",
+    "implementation_pr": 1968,
+    "implementation_exact_head": "4a8c58548ffd4b5f1b9c9996bd682d81f42d6c86",
+    "implementation_required_run": 35271798560,
+    "implementation_brain_run": 35271798909,
+    "implementation_merge_sha": "6ae18de754cb33044108d85ba704c965a5287b88",
+    "recovery_pr": 1984,
+    "recovery_exact_head": "97c01ebf4c4e0538fdf3d012e2c2838aad6d6d04",
+    "recovery_required_run": 35274102801,
+    "recovery_brain_run": 35274102768,
+    "recovery_codeql_run": 35274102310,
+    "recovery_merge_sha": "4fda9309eefa259b2a7f492ca929b8d472055d5e",
+    "terminal_learning_pr": 1987,
+    "terminal_learning_merge_sha": "631708abd9b0920bbbd5441304d09ebd913b2940",
+    "recovery_learning_pr": 1988,
+    "recovery_learning_exact_head": "f8b1e445c35bda4f0e10e0abc6fa96d566d79cc7",
+    "recovery_learning_required_run": 35275903315,
+    "recovery_learning_brain_run": 35275903138,
+    "recovery_learning_merge_sha": "0807d236e198875fabf953d6a285f9e94ca70d47",
+    "final_production_release_readback_run": 35276153030,
+    "final_outcome_obligation_sweep_run": 35276179605,
+    "final_merged_branch_cleanup_run": 35276152335
+  },
+  "verified_terminal_truth": {
+    "powerhouse_one_loop_learning": "FULFILLED",
+    "delivery_classifier_repository_writer_learning": "LIVE_PROVEN",
+    "squash_merge_recovery_learning": "LIVE & BEWEZEN",
+    "open_same_obligation_pull_requests": 0,
+    "post_merge_outcome_sweep": "SUCCESS",
+    "production_release_readback": "SUCCESS"
+  },
+  "learnings": [
+    "Terminal delivery is not complete at merge. Completion requires exact-head gates, protected merge, current-main readback, production/runtime evidence where applicable, obligation reconciliation, learning writeback and cleanup evidence.",
+    "A later same-obligation commit after an apparent terminal merge must first be classified by scope and lineage. A bounded learning-only successor can be legitimate closure continuation rather than parallel implementation drift.",
+    "Canonical learning state is part of production truth. Stale IMPLEMENTING or unresolved learning records keep the system non-terminal even when runtime behavior is already proven.",
+    "Post-merge Outcome Obligation Sweep on the actual current main is the final reconciliation proof that no new obligation or evidence gap was introduced by the closure writeback itself.",
+    "Open-PR search for the same obligation is a required anti-shadow-state check before declaring closure.",
+    "Exact-head identity remains the only promotion authority. Superseded failures are historical evidence, never mutation or merge authority.",
+    "A recovery must preserve the same causal lineage and repair only proven root cause. No parallel branch or PR may become a competing source of truth for the same obligation.",
+    "Learning writeback is not documentation after the fact; it is an executable control-plane input for future existing-state-first decisions."
+  ],
+  "permanent_prevention_rules": [
+    "EXISTING_STATE_FIRST: every agent or chat must read canonical Powerhouse state and relevant lineage before acting.",
+    "ONE_OBLIGATION_ONE_EXECUTABLE_CANDIDATE: never create competing implementation or recovery candidates for the same obligation.",
+    "NO_TERMINAL_STATUS_ON_MERGE_ALONE: merged, committed, queued, timed out or chat-stopped are not terminal states.",
+    "TERMINAL_CLOSURE_REQUIRES_CURRENT_MAIN_READBACK: after every closure merge, reread current main and the canonical learning artifacts before declaring LIVE & BEWEZEN.",
+    "POST_CLOSURE_SWEEP_REQUIRED: the post-merge Outcome Obligation Sweep for the final current-main SHA must be successful.",
+    "NO_SHADOW_PR_AFTER_CLOSURE: search for open same-obligation PRs and reconcile or close them before terminal closure.",
+    "SAME_OBLIGATION_SUCCESSOR_CLASSIFICATION: if main moves again for the same obligation, inspect changed scope and evidence before treating the movement as drift.",
+    "LEARNING_IS_DOD: root cause, evidence, outcome and prevention rules must be written back canonically before the obligation is considered fulfilled.",
+    "TERMINAL_HISTORY_IS_IMMUTABLE: a fulfilled historical checkpoint is reopened only by new concrete regression evidence; otherwise future work starts from that checkpoint.",
+    "RECOVERY_IS_AUTONOMOUS: recoverable incomplete states resume from the last proven checkpoint without waiting for a new human instruction."
+  ],
+  "future_agent_starting_point": {
+    "instruction": "Reuse this terminal checkpoint. Do not redesign or recreate the One Loop mechanisms unless new evidence proves a regression or missing capability.",
+    "required_preflight": [
+      "read current main",
+      "read this learning record",
+      "read brain/learning/2026-09-17-powerhouse-one-loop-v1.json",
+      "read brain/learning/2026-09-17-delivery-classifier-repository-writer-contract-v1.json",
+      "read docs/learning/2026-09-17-squash-merge-completion-identity-recovery-v1.md",
+      "check for an already-active obligation/candidate before creating work"
+    ]
+  }
+}
