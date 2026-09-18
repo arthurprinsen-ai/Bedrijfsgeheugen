@@ -21,7 +21,8 @@
     "tests/website-release-risk.test.mjs",
     ".github/workflows/",
     "docs/growth-revenue-os-architecture.md",
-    "docs/superpowers/skills/"
+    "docs/superpowers/skills/",
+    "package.json"
   ],
   "nonExecutableSharedPaths": [
     "docs/changes/",
