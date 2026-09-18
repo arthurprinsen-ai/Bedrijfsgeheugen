@@ -11,7 +11,9 @@
     "recheckCurrentMainBeforeHandoff": true,
     "requireWriterLeaseReadback": true,
     "rejectNonOwnerMutationDuringTerminalDelivery": true,
-    "requireImmutableTerminalLeaseHead": true
+    "requireImmutableTerminalLeaseHead": true,
+    "requireWriterLeaseMainEpoch": true,
+    "requireWriterLeaseObligation": true
   },
   "onOverlap": "REUSE_MERGE_OR_SUPERSEDE",
   "ambiguousSuccessorState": "FAIL_CLOSED",
@@ -37,8 +39,10 @@
     "headMutationPolicy": "BLOCK_WHILE_TERMINAL_RELEASE_TO_RECOVERY_THEN_REACQUIRE",
     "releaseCondition": "MERGED_AND_PRODUCTION_READBACK_AND_LEARNING_WRITEBACK",
     "immutableHeadRequired": true,
-    "acquireRule": "Set Writer-Lease-State=TERMINAL_DELIVERY and Writer-Lease-Head to the exact candidate SHA before release gates start.",
-    "mutationRule": "Any head different from Writer-Lease-Head while TERMINAL_DELIVERY is BLOCKED_TERMINAL_LEASE_HEAD_DRIFT; release to RECOVERY before an authorized repair commit, then reacquire on the new exact head."
+    "acquireRule": "Set Writer-Lease-State=TERMINAL_DELIVERY and bind Writer-Lease-Obligation, Writer-Lease-Head and Writer-Lease-Main-Epoch to the exact obligation, tested candidate SHA and current main epoch before release gates start.",
+    "mutationRule": "Any head or main epoch different from the active terminal lease is BLOCKED_TERMINAL_LEASE_DRIFT; reconcile onto current main, rerun exact-head required gates, then reacquire the lease. Non-owner mutation remains forbidden.",
+    "mainEpochField": "Writer-Lease-Main-Epoch",
+    "obligationField": "Writer-Lease-Obligation"
   },
   "writerLeaseFailure": {
     "fingerprint": "delivery|same-lineage|parallel-writer-head-thrash-v1",
