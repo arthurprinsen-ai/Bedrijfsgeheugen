@@ -113,3 +113,9 @@ Admission and landing are different safety phases.
 - Repeated sync → full rerun → sync loops caused only by unrelated main movement are delivery starvation and must be prevented, not normalized.
 
 This refines `github|delivery-state-machine|parallel-build-serialized-landing|v1`: parallel build and CI remain useful while only the short landing boundary is serialized on current main.
+
+## Mandatory material-run closure gate
+
+Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.
+
+Every material delivery candidate must carry canonical Brain learning, an append-only activity/development ledger event, and human-readable documentation in the same lineage before Required may pass. This is machine-enforced by `scripts/brain/material-writeback-closure-guard.mjs`; missing closure evidence is a delivery failure, not optional documentation debt. Automatic skill projection and terminal production/readback remain mandatory downstream.

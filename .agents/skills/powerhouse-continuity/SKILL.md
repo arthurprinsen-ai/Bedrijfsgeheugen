@@ -221,3 +221,11 @@ Reference production recovery: PR #2158 / merge `7d0442b517c80c51f69ebcaba6328d7
 Fingerprint: `github|delivery-state-machine|parallel-build-serialized-landing|v1`.
 
 When repository delivery reaches merge, continuity ownership remains active. Resume the same obligation until the canonical `Obligation Terminal Closure` workflow proves main containment, canonical production/runtime readback, applicable learning-to-skill projection, immutable terminal evidence and writer-lease release. Only the resulting machine-readable terminal state (`LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`) may end the lineage. Never create a new recovery PR merely because post-merge readback is still running.
+
+## Mandatory material-run closure gate
+
+Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.
+
+For every material repository-backed chat/agent execution, durable closure is part of the execution itself. Required CI must fail closed unless the same candidate contains: canonical Brain learning, an append-only activity/development ledger event, and human-readable change/learning documentation. Policy text, a chat statement, or a local skill result is not evidence that closure happened.
+
+The runtime sequence is mandatory: material action → Brain learning → activity ledger → human documentation → deterministic skill projection → protected delivery → production/provider readback → next-agent discoverability. A missing closure artifact is `WRITEBACK_INCOMPLETE`, never terminal success.
