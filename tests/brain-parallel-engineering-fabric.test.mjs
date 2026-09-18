@@ -8,6 +8,7 @@ import {
   selectAffectedTests,
   buildCacheIdentity,
   buildSpeculativeIntegrations,
+  allocateMigrationVersion,
   loadParallelEngineeringPolicy,
   validateParallelEngineeringFabric
 } from '../scripts/brain/parallel-engineering-fabric.mjs';
@@ -113,6 +114,15 @@ test('speculative integrations include only conflict-free packages from same wav
   assert.deepEqual(combos[0].packageIds,['A','B']); assert.equal(combos[0].promotionAuthority,false);
 });
 
+test('migration versions are allocated at integration and skip occupied wall-clock seconds deterministically', () => {
+  const allocated = allocateMigrationVersion({
+    existingVersions:['20260918104500','20260918104501','20260918104502'],
+    preferredVersion:'20260918104500'
+  });
+  assert.deepEqual(allocated,{version:'20260918104503',preferredVersion:'20260918104500',collisionResolved:true,offsetSeconds:3});
+  assert.throws(()=>allocateMigrationVersion({existingVersions:[],preferredVersion:'20260918109999'}),/Invalid migration version timestamp/);
+});
+
 test('canonical fabric policy remains subordinate to Engineering OS and BG169', async () => {
   const actual = await loadParallelEngineeringPolicy();
   assert.equal(actual.fingerprint,'powerhouse-parallel-engineering-fabric-v1');
@@ -121,6 +131,11 @@ test('canonical fabric policy remains subordinate to Engineering OS and BG169', 
   assert.equal(actual.authority.creates_parallel_authority,false);
   assert.equal(actual.affected_testing.fast_path_never_replaces_release_gates,true);
   assert.equal(actual.cache.never_skips_production_readback,true);
+  assert.equal(actual.version,3);
+  assert.equal(actual.scheduling.rolling_candidate.one_candidate_per_conflict_contract,true);
+  assert.equal(actual.migration_versioning.authority,'rolling-candidate-integrator');
+  assert.equal(actual.migration_versioning.wall_clock_only_allocation_forbidden,true);
+  assert.equal(actual.recovery.head_age_alone_never_cancels_in_progress,true);
   assert.ok(actual.cache.inputs.includes('schemaDigest'));
   const validation = await validateParallelEngineeringFabric(); assert.deepEqual(validation.errors,[]); assert.equal(validation.ok,true);
 });
