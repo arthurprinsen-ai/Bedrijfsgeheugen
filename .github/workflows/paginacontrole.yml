@@ -80,7 +80,7 @@ jobs:
             echo "Portal/app HTML valt buiten de publieke SEO-scope; publieke paginacontrole is niet van toepassing."
           fi
 
-      - uses: actions/setup-python@v6
+      - uses: actions/setup-python@v7
         if: steps.seo_scope.outputs.public == 'true'
         with:
           python-version: '3.12'
