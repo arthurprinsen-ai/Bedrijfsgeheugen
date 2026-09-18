@@ -128,7 +128,7 @@ jobs:
 
           Dit is een afgeleide interpretatiekandidaat. De officiële source observations en hashes zijn de autoriteit; deze kandidaat mag alleen worden gepromoveerd na evidence-validatie tegen die baseline.
           EOF
-)"
+          )"
 
       - name: Ouderdom bewaken
         run: |
