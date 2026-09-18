@@ -90,7 +90,14 @@
       "terminal_proof_bundle"
     ],
     "promotion_rule": "When a material candidate is within existing Powerhouse authority and all required gates are green, the current chat/agent/workflow must invoke the canonical protected promotion/deploy path itself and continue through production readback; it must not hand routine promotion back to the user.",
-    "recoverable_stop_rule": "Queued CI, timeout, chat stop, lost worker, stale state, diverged merge-base, an open PR head with zero workflow runs, or non-terminal deploy state create a recoverable obligation owned by the same canonical lineage. The current or next eligible execution node must refresh current main/merge-base truth, retrigger missing checks, collapse superseded single-flight work, isolate the first concrete current failure, repair only that root cause, and continue toward production."
+    "recoverable_stop_rule": "Queued CI, timeout, chat stop, lost worker, stale state, diverged merge-base, an open PR head with zero workflow runs, or non-terminal deploy state create a recoverable obligation owned by the same canonical lineage. The current or next eligible execution node must refresh current main/merge-base truth, retrigger missing checks, collapse superseded single-flight work, isolate the first concrete current failure, repair only that root cause, and continue toward production.",
+    "fast_delivery_skill": "brain/skills/powerhouse-fast-rolling-delivery-v1.json",
+    "latency_slo_seconds": {
+      "first_ci_signal": 60,
+      "turbo_blocking": 240,
+      "standard_blocking": 480
+    },
+    "parallel_delivery_rule": "Parallel agents use isolated workspaces and feed one rolling candidate per conflict contract; PR proliferation is forbidden as the normal parallelism mechanism."
   },
   "canonical_authorities": {
     "notion": {
