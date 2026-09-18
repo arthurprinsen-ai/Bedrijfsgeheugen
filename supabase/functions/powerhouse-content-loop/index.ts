@@ -34,7 +34,10 @@ Deno.serve(async (req) => {
     if (first.error) throw new Error('RECONCILE_PRE_FAILED');
     stepResults.push({ name: 'reconcile_pre', ok: true, body: first.data });
 
-    // Instagram media must be provider-routed and proven before orchestration or dispatch.\n    stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));\n\n    // Provider truth must be established before orchestration can preserve or replan delivery state.
+    // Instagram media must be provider-routed and proven before orchestration or dispatch.
+    stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));
+
+    // Provider truth must be established before orchestration can preserve or replan delivery state.
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 
     for (let i = 0; i < 5; i++) {
