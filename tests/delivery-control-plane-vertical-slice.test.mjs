@@ -23,17 +23,21 @@ test('canonical production authority no longer contains retired Make transport',
   assert.ok(policy.lanes.every(lane=>lane.owner!=='agent-integration-make'));
 });
 
-test('evidence endpoint writes only to existing canonical Brain stores', async()=>{
-  const endpoint=await readFile('netlify/functions/powerhouse-control-plane-evidence.mjs','utf8');
+test('Netlify OIDC gateway delegates mutations to canonical Supabase authority', async()=>{
+  const gateway=await readFile('netlify/functions/powerhouse-control-plane-evidence.mjs','utf8');
+  const authority=await readFile('supabase/functions/powerhouse-control-plane-evidence-eu/index.ts','utf8');
+  assert.match(gateway,/functions\/v1\/powerhouse-control-plane-evidence-eu/);
+  assert.match(gateway,/x-bg-service-token/);
+  assert.doesNotMatch(gateway,/\/rest\/v1\//);
   for(const required of [
-    "rpc('brain_create_obligation'",
-    "rpc('brain_create_operation'",
-    "rpc('brain_transition_operation'",
-    "rpc('brain_transition_obligation'",
-    'brain_delivery_evidence?on_conflict=idempotency_key',
+    "client.rpc('brain_create_obligation'",
+    "client.rpc('brain_create_operation'",
+    "client.rpc('brain_transition_operation'",
+    "client.rpc('brain_transition_obligation'",
+    "client.from('brain_delivery_evidence')",
     "terminal_state:'FULFILLED'",
-  ]) assert.ok(endpoint.includes(required),`missing canonical store wiring: ${required}`);
-  assert.doesNotMatch(endpoint,/create table|parallel.*ledger/i);
+  ]) assert.ok(authority.includes(required),`missing canonical store wiring: ${required}`);
+  assert.doesNotMatch(authority,/create table|parallel.*ledger/i);
 });
 
 function enc(value){return Buffer.from(JSON.stringify(value)).toString('base64url');}
