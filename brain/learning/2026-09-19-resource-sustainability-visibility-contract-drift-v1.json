@@ -21,5 +21,10 @@
     "Update tests/brain-fast-terminal-delivery-v2.test.mjs to require public-visibility for fast-fix.",
     "Assert the public-page visibility step has no conditional if-clause.",
     "Retain bounded affected-route verification for targeted checks while preserving the global visibility safety net."
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ]
+  }
 }
