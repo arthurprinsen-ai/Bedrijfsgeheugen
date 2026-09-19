@@ -1,10 +1,15 @@
 name: Powerhouse daily blog from Supabase
-# Protected PR metadata is the delivery authority.
+# Canonical scheduled daily publisher. Protected PR metadata is the delivery authority.
+# Morning delivery plus evening recovery; idempotent per Europe/Amsterdam business date.
 
 on:
   schedule:
+    # DST-safe morning delivery: exactly one of these resolves to 07:35 Europe/Amsterdam.
     - cron: '35 5 * * *'
     - cron: '35 6 * * *'
+    # DST-safe recovery delivery: exactly one of these resolves to 19:30 Europe/Amsterdam.
+    - cron: '30 17 * * *'
+    - cron: '30 18 * * *'
   workflow_dispatch:
     inputs:
       business_date:
@@ -35,9 +40,9 @@ jobs:
         run: |
           set -euo pipefail
           local_now="$(TZ=Europe/Amsterdam date +'%H:%M')"
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$local_now" != "07:35" ]; then
+          if [ "${{ github.event_name }}" = "schedule" ] && [ "$local_now" != "07:35" ] && [ "$local_now" != "19:30" ]; then
             echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Outside canonical 07:35 Europe/Amsterdam window: $local_now"
+            echo "Outside canonical 07:35/19:30 Europe/Amsterdam windows: $local_now"
             exit 0
           fi
           date="${REQUESTED_DATE:-$(TZ=Europe/Amsterdam date +%F)}"

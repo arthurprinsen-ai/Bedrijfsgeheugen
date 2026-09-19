@@ -1,8 +1,12 @@
 name: Native daily blog publisher
+# Recovery-only publisher. Powerhouse owns primary scheduled delivery; this lane runs only after
+# the Powerhouse evening recovery window and no-ops when today's Powerhouse canonical is already public.
 
 on:
   schedule:
-    - cron: '35 5 * * *'
+    # DST-safe 20:15 Europe/Amsterdam fallback. Local-time guard below allows exactly one run.
+    - cron: '15 18 * * *'
+    - cron: '15 19 * * *'
   workflow_dispatch:
     inputs:
       business_date:
@@ -55,6 +59,21 @@ jobs:
           fi
           node -e "if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(process.argv[1])) process.exit(1)" "$date"
           echo "date=$date" >> "$GITHUB_OUTPUT"
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            local_now="$(TZ=Europe/Amsterdam date +'%H:%M')"
+            if [ "$local_now" != "20:15" ]; then
+              echo "state=live" >> "$GITHUB_OUTPUT"
+              echo "business_date=$date recovery_noop=outside_20:15_window local_now=$local_now"
+              exit 0
+            fi
+            export_json="$(curl --fail --silent --show-error --max-time 15 "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-blog-export?date=$date" || true)"
+            canonical="$(node -e "try{const x=JSON.parse(process.argv[1]||'{}'); console.log(x.canonical_url||'')}catch{}" "$export_json")"
+            if [ -n "$canonical" ] && curl --fail --silent --show-error --max-time 15 "$canonical" >/dev/null; then
+              echo "state=live" >> "$GITHUB_OUTPUT"
+              echo "business_date=$date recovery_noop=powerhouse_already_public canonical=$canonical"
+              exit 0
+            fi
+          fi
           state="$(node -e "const x=require('./data/content-publication-ledger.json'); console.log(x.days?.[process.argv[1]]?.state||'')" "$date")"
           echo "state=$state" >> "$GITHUB_OUTPUT"
           echo "business_date=$date state=${state:-none} time_zone=Europe/Amsterdam"
