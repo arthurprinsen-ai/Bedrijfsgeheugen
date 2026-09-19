@@ -3,21 +3,21 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 /**
- * De validator moet pagina's vergelijken met de canonieke V18-navigatie
- * (<nav class="bgkop">) en niet meer met de oude V17-header.
- *
- * De vorige assertie toetste op een letterlijk stuk broncode met ontsnapte
- * aanhalingstekens (class=\"bgkop\"). Dat patroon hoorde bij een versie waarin
- * die regel binnen een string stond; in seocontrole.py staan er nu gewone
- * aanhalingstekens. De validator was dus in orde, de test niet. Hij toetst nu
- * de bedoeling.
+ * Canonical shell parity has exactly one authority: the dedicated shell
+ * contract/full-build/live-readback gates. seocontrole.py owns SEO semantics
+ * and must not duplicate the raw header/footer byte oracle.
  */
-test('SEO validator vergelijkt pagina\'s met de canonieke V18-navigatie', async () => {
+test('SEO validator does not duplicate canonical shell ownership', async () => {
   const source = await readFile('.github/scripts/seocontrole.py', 'utf8');
-  const zoekregel = source.split('\n').find(line => line.includes('re.search') && line.includes('bgkop'));
-  assert.ok(zoekregel, 'de validator zoekt nergens naar de canonieke bgkop-navigatie');
-  assert.match(zoekregel, /<nav[^>]*bgkop/, 'de validator zoekt niet naar het nav-element van de canonieke schil');
-  assert.match(zoekregel, /<\\?\/nav>/, 'de validator sluit de navigatie niet af op </nav>');
+  assert.doesNotMatch(source, /de menubalk wijkt af van \.github\/canoniek\/kop\.html/);
+  assert.doesNotMatch(source, /de voettekst wijkt af van \.github\/canoniek\/voet\.html/);
+  assert.doesNotMatch(source, /re\.search\([^\n]*bgkop/);
+});
+
+test('dedicated canonical shell workflow remains the shell authority', async () => {
+  const workflow = await readFile('.github/workflows/canonical-brand-shell.yml', 'utf8');
+  assert.match(workflow, /canonical/i);
+  assert.match(workflow, /shell/i);
 });
 
 test('de oude V17-header wordt niet meer gebruikt als referentie', async () => {
