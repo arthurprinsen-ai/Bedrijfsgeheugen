@@ -62,5 +62,17 @@
     "public_readback_note": "Netlify provider identity is exact and ready. The external web index reader still surfaced cached HTML for some pages immediately after deploy, and the direct container had no DNS; this cache limitation is recorded rather than treated as contradictory production identity.",
     "revenue_merge_sha": "1a8169c82dbbe2238e62a4f91de8600db193903e",
     "hard_boundary": "Connected Netlify deploy action requires a local repository source; current execution runner cannot resolve GitHub, and the GitHub connector exposes no workflow_dispatch action to materialize current-main source. No secret-export or ungated deploy workaround is permitted."
+  },
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-revenue-learning-v1.test.mjs"
+    ]
   }
 }
