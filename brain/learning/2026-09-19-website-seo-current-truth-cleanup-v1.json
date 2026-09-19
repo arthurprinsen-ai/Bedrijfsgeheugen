@@ -16,6 +16,6 @@
   "enforcement": [
     ".github/scripts/seocontrole.py",
     ".github/scripts/paginacontrole.py",
-    "tests/seo-brand-language-cleanup-v1.test.mjs"
+    "tests/brain-website-seo-current-truth-cleanup-v1.test.mjs"
   ]
 }
