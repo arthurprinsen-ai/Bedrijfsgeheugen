@@ -9,4 +9,6 @@
 - A known failed historical canonical production readback now falls through immediately to authoritative current-production descendant proof.
 - Exact-head, CodeQL/security, behind_by=0 at landing, protected merge, production/provider readback and canonical learning/skill writeback remain mandatory.
 - Redirect-only `netlify.toml` changes are now machine-classified as bounded fast-fix work; they no longer trigger full-site visibility/header/browser sweeps.
+- Terminal closure now independently requires latest exact-head Required + BRAIN + applicable Powerhouse CodeQL success before it may persist `LIVE_BEWEZEN`.
+- The release-control-plane regression now encodes the intended risk budget: redirect-only fast-fix uses targeted route proof; broader changes retain public visibility/full checks.
 
