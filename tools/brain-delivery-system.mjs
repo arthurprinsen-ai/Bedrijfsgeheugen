@@ -18,6 +18,7 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/regulatory-source-watch.yml': 'automation'
 });
 const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
+  'brain/learning/',
   'docs/superpowers/changes/',
   'docs/engineering-intelligence-trust-',
   'docs/plans/'
