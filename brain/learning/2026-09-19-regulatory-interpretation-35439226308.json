@@ -1,0 +1,40 @@
+{
+  "id": "regulatory-interpretation-35439226308",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "The verified regulatory interpretation candidate could not pass Required because material writeback closure evidence was absent from the same lineage.",
+  "root_cause": "The writer candidate originally carried only data/regelgeving.json while the current control plane requires canonical learning, a development-ledger event and human-readable documentation for every material delta.",
+  "prevention": [
+    "Promote regulatory interpretation only from official-source evidence already captured in the source baseline.",
+    "Keep unsupported values out of canonical regulation data.",
+    "Carry Brain learning, development ledger and human-readable change documentation in the same writer lineage.",
+    "Require exact-head gates, protected merge and production/main readback before terminal closure."
+  ],
+  "evidence": {
+    "source_state_sha": "7fc45076a109cd285cc3bcbcf3316192b47473d04a6fc3129cb25b8b82ed17fa",
+    "data": "data/regelgeving.json",
+    "supersedes_pr": 2347,
+    "candidate_pr": 2352
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-toolchain-authority"
+  ],
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulation-writer-candidate-mode.test.mjs"
+    ]
+  },
+  "failure_class": "REGULATORY_INTERPRETATION",
+  "scope": "COMPLIANCE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false
+}
