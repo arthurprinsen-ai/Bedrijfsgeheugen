@@ -13,11 +13,29 @@
   "evidence": {
     "workflow": ".github/workflows/obligation-terminal-closure.yml",
     "test": "tests/github-delivery-state-machine-terminal-closure.test.mjs",
-    "observed_failure_runs": [35441539670,35441522424,35441473669]
+    "observed_failure_runs": [
+      35441539670,
+      35441522424,
+      35441473669
+    ]
   },
   "skill_targets": [
     "powerhouse-continuity",
     "powerhouse-delivery-self-optimization",
     "powerhouse-toolchain-authority"
-  ]
+  ],
+  "fingerprint": "terminal-readback-descendant-fallback-v1",
+  "failure_class": "PRODUCTION_READBACK",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 3,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-readback-descendant-fallback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-readback-descendant-fallback-v1.test.mjs"
+    ]
+  }
 }
