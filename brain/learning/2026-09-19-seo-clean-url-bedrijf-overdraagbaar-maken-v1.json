@@ -1,0 +1,21 @@
+{
+  "fingerprint": "seo|clean-url|bedrijf-overdraagbaar-maken|redirect|v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "SEO_REDIRECT_MISSING",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "A clean URL existed without the canonical .html-to-clean 301 redirect, while material website changes require closure evidence in the same delivery lineage.",
+  "prevention_rule": "Every material SEO routing recovery carries Brain learning, development ledger and human documentation; bounded writer scope remains unchanged.",
+  "enforcement": [
+    "netlify.toml",
+    "Configuratiewacht",
+    "Required website and production-readback gates"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-self-optimization"
+  ]
+}
