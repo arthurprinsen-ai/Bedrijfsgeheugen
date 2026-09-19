@@ -39,7 +39,11 @@ export function authorizeSocialPublication(input={}){
  }
  if(input.channelKind==='instagram_company'){
   if(channel?.requiresMiraGate&&input.miraGatePassed!==true) reasons.push('MIRA_GATE_REQUIRED');
+  if(channel?.requiresContentPersona&&String(input.contentPersona||'').toLowerCase()!==String(channel.requiresContentPersona).toLowerCase()) reasons.push('INSTAGRAM_MIRA_PERSONA_REQUIRED');
+  if(Array.isArray(channel?.allowedContentClasses)&&!channel.allowedContentClasses.includes(input.contentClass)) reasons.push('INSTAGRAM_MIRA_CONTENT_CLASS_REQUIRED');
   const visual=input.instagramVisual,mediaKind=input.mediaKind||'image',policy=channel?.mediaPolicy||{};
+  if(channel?.requiresVisibleMira&&visual?.miraPresent!==true) reasons.push('INSTAGRAM_VISIBLE_MIRA_REQUIRED');
+  if(channel?.blocksGenericBrandCreative&&visual?.genericBrandCreative===true) reasons.push('INSTAGRAM_GENERIC_BRAND_CREATIVE_BLOCKED');
   if(visual?.verified!==true||refs(visual).length===0||!has(visual?.assetUrl)) reasons.push('INSTAGRAM_VISUAL_EVIDENCE_REQUIRED');
   if(visual?.placeholderDetected===true) reasons.push('INSTAGRAM_PLACEHOLDER_BLOCKED');
   if(visual?.identityClass!=='mira_daily_life') reasons.push('INSTAGRAM_MIRA_VISUAL_REQUIRED');
