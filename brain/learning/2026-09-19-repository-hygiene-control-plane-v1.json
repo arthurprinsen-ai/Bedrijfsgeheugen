@@ -1,0 +1,20 @@
+{
+  "id": "repository-hygiene-control-plane-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Repository accumulated thousands of historical branches and superseded generated PR candidates, obscuring canonical active lineage.",
+  "root_cause": "Generated writer candidates and branches had creation semantics but no deterministic supersession and terminal cleanup contract.",
+  "prevention": [
+    "Keep at most one newest generated candidate per writer family.",
+    "Auto-close only bot-created superseded candidates whose complete delta is explicitly discardable.",
+    "Delete orphan writer branches only when GitHub compare proves ahead_by=0.",
+    "Never delete branches with unique commits; retain and report them for reconciliation.",
+    "Emit machine-readable cleanup evidence on every audit/apply run."
+  ],
+  "enforcement": {
+    "policy": "config/repository-hygiene-policy.json",
+    "runtime": "scripts/brain/repository-hygiene.mjs",
+    "workflow": ".github/workflows/repository-hygiene.yml",
+    "tests": ["tests/brain-repository-hygiene.test.mjs"]
+  }
+}
