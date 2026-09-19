@@ -1,0 +1,17 @@
+{
+  "id": "terminal-readback-test-oracle-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "BRAIN backend verification failed after the valid github_main production-readback mode was introduced because an older regression test still asserted that only canonical_run and descendant_live were allowed.",
+  "root_cause": "A producer-consumer contract evolved, but one downstream test oracle encoded the old enum literally and was not updated in the same change.",
+  "prevention": [
+    "Treat readback-mode enums as shared contracts across workflow, durable evidence consumer, and all regression suites.",
+    "When adding a valid mode, update every exact-enum assertion in the same lineage.",
+    "Retain explicit fail-closed assertions for github_main SHA equality, null run/deploy identities, and verified=true."
+  ],
+  "evidence": {
+    "failed_brain_run": "35436523721",
+    "failed_job": "105880079841",
+    "test": "tests/brain-control-plane-terminal-descendant-recovery-v1.test.mjs"
+  }
+}
