@@ -20,3 +20,6 @@
 - ERROR: BRAIN backend found a stale regression oracle that still treated public visibility as high-risk-only while the canonical website lane already required it unconditionally.
 - RECOVERY: updated only the regression oracle to the stricter live contract; runtime safety gate unchanged.
 - PREVENTION: stricter safety-policy changes require same-lineage oracle alignment; stale permissive expectations fail closed.
+- ERROR: second BRAIN replay left one stale assertion because `normalRequiredTestSets` was incorrectly treated as the runtime authority.
+- ROOT CAUSE: classifier metadata and executable safety enforcement were conflated.
+- PREVENTION: runtime workflow is authority for safety invariants; config arrays are tested only for their classifier semantics.
