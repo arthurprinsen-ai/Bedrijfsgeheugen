@@ -46,7 +46,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      HYGIENE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'audit' }}
+      HYGIENE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'apply' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
