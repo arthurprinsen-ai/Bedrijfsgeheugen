@@ -1,0 +1,33 @@
+{
+  "version": "repository-hygiene-control-plane-v1",
+  "default_branch": "main",
+  "candidate_families": [
+    {
+      "id": "paginacontrole",
+      "title_prefix": "Paginacontrole candidate ",
+      "branch_prefix": "writer/paginacontrole/",
+      "auto_close_when_superseded": true,
+      "discardable_files": ["seo-status.json"]
+    },
+    {
+      "id": "seo-controle",
+      "title_prefix": "SEO candidate ",
+      "branch_prefix": "writer/seo-controle/",
+      "auto_close_when_superseded": true,
+      "discardable_files": ["seo-status.json"]
+    }
+  ],
+  "orphan_branch_cleanup_prefixes": [
+    "writer/paginacontrole/",
+    "writer/seo-controle/",
+    "writer/regelgeving-bijwerken/",
+    "writer/weekblog/"
+  ],
+  "protected_prefixes": [
+    "main",
+    "archive/",
+    "backup/"
+  ],
+  "branch_warning_threshold": 250,
+  "branch_hard_threshold": 500
+}
