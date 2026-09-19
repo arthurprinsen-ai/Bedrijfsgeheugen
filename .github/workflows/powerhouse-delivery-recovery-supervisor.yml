@@ -1,7 +1,9 @@
 name: Powerhouse Delivery Recovery Supervisor
 
 on:
+  # Feature-branch pushes must never spawn a repository-wide recovery scan.
   push:
+    branches: [main]
   workflow_dispatch:
   schedule:
     - cron: '*/5 * * * *'
