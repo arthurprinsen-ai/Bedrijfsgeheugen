@@ -105,7 +105,7 @@ export function createDeliveryPlan({ changedPaths = [], headSha, policy }) {
   const nonExecutablePatterns = effectiveNonExecutableSharedPaths(policy);
   const nonExecutableShared = paths.filter(path => matches(path, nonExecutablePatterns) || isScopedNonExecutable(path));
   const scopedLanePaths = paths.filter(path => scopedLaneForPath(path));
-  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, nonExecutablePatterns) && !scopedLaneForPath(path) && !isScopedNonExecutable(path));
+  const sharedExecutable = paths.some(path => matches(path, policy.sharedPaths) && !matches(path, nonExecutablePatterns) && !matches(path, policy.ignoredPaths) && !scopedLaneForPath(path) && !isScopedNonExecutable(path));
   const ignored = paths.filter(path => matches(path, policy.ignoredPaths) || isScopedNonExecutable(path));
   const lanes = policy.lanes
     .filter(lane => sharedExecutable || scopedLanePaths.some(path => scopedLaneForPath(path) === lane.id) || paths.some(path => !matches(path, nonExecutablePatterns) && !scopedLaneForPath(path) && !isScopedNonExecutable(path) && matches(path, lane.paths)))
