@@ -182,3 +182,5 @@ When adding a migration-triggered specialist workflow:
 - prefer stable semantic filename patterns such as `*linkedin*.sql`, `*revenue*.sql` or the owned function directory;
 - use a broad migration glob only when every migration is genuinely in-scope and document why;
 - add a regression that fails if the trigger widens unintentionally.
+- wire every directly-read runtime/function directory explicitly into the specialist workflow path filter; do not rely on unrelated schema globs as a proxy.
+- use one PR/ref single-flight concurrency key without event-type splitting when event type is not a distinct delivery lineage, and bound auxiliary job runtime with an explicit timeout.

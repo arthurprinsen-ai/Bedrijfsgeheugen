@@ -9,7 +9,7 @@
   "security_sensitive": false,
   "obligation_id": "powerhouse-ci-path-scope-fanout-v1",
   "root_cause": "Specialist Revenue Learning and LinkedIn Revenue Cockpit workflows were triggered by every Supabase migration, and Revenue Learning also contained duplicate migration path entries, amplifying GitHub Actions work unrelated to the changed capability.",
-  "prevention_rule": "Specialist workflows must use the narrowest stable path patterns that cover their owned runtime/schema surfaces. Generic migration integrity remains in canonical Supabase/Required gates; specialist workflows must not subscribe to supabase/migrations/** unless every migration is semantically in-scope.",
+  "prevention_rule": "Specialist workflows must use the narrowest stable path patterns that cover their owned runtime/schema surfaces, explicitly include directly-read runtime/function directories, use PR/ref single-flight concurrency without event-type splitting when event type is not a distinct lineage, keep pull/push semantic filters aligned, and bound auxiliary runtime. Generic migration integrity remains in canonical Supabase/Required gates; specialist workflows must not subscribe to supabase/migrations/** unless every migration is semantically in-scope.",
   "enforcement": [
     ".github/workflows/revenue-learning.yml",
     ".github/workflows/linkedin-revenue-cockpit-tests.yml",
@@ -35,6 +35,7 @@
     ],
     "containment": "Replace generic migration globs with owned revenue/growth/linkedin filename scopes while preserving generic migration integrity in Supabase Preview and Required.",
     "regression": "tests/brain-ci-path-scope-fanout.test.mjs",
-    "resource_effect": "Fewer unrelated workflow starts, runner minutes, installs, compute, credits and energy/water proxy consumption."
+    "resource_effect": "Fewer unrelated workflow starts, runner minutes, installs, compute, credits and energy/water proxy consumption.",
+    "refinement": "After the first fanout fix landed, current-main readback still showed a missing direct powerhouse-runtime trigger, event-type-split concurrency keys, Revenue Learning pull/push migration-filter drift, and no explicit auxiliary timeout. The successor refinement closes those gaps without reintroducing broad migration fanout."
   }
 }
