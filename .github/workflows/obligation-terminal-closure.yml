@@ -94,17 +94,18 @@ jobs:
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
           if [ "${DELIVERY_LANE}" = "automation" ] && [ -n "${changed_paths}" ] && ! grep -Eq '^(portal-v2/|public/|src/|netlify/functions/|supabase/functions/|supabase/migrations/)' <<<"${changed_paths}"; then
             git fetch origin main --no-tags
-            observed_sha="$(git rev-parse origin/main)"
-            git merge-base --is-ancestor "${MERGE_SHA}" "${observed_sha}" || {
-              echo "::error::AUTOMATION_MAIN_CONTAINMENT_NOT_PROVEN:${MERGE_SHA}:${observed_sha}"
+            current_main_sha="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "${MERGE_SHA}" "${current_main_sha}" || {
+              echo "::error::AUTOMATION_MAIN_CONTAINMENT_NOT_PROVEN:${MERGE_SHA}:${current_main_sha}"
               exit 78
             }
+            observed_sha="${MERGE_SHA}"
             echo "mode=github_main" >> "$GITHUB_OUTPUT"
             echo "run_id=" >> "$GITHUB_OUTPUT"
             echo "observed_sha=${observed_sha}" >> "$GITHUB_OUTPUT"
             echo "deploy_id=" >> "$GITHUB_OUTPUT"
             echo "verified=true" >> "$GITHUB_OUTPUT"
-            echo "AUTOMATION_MAIN_READBACK_PROVEN:merge=${MERGE_SHA} observed=${observed_sha}"
+            echo "AUTOMATION_MAIN_READBACK_PROVEN:merge=${MERGE_SHA} current_main=${current_main_sha} observed=${observed_sha}"
             exit 0
           fi
 
