@@ -77,7 +77,9 @@ jobs:
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
           const metadata=parseDeliveryMetadata(process.env.PR_BODY||'');
           if(!metadata.obligationId) throw new Error('OBLIGATION_ID_MISSING');
+          if(!metadata.deliveryLane) throw new Error('DELIVERY_LANE_MISSING');
           await appendFile(process.env.GITHUB_OUTPUT,`obligation_id=${metadata.obligationId}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`delivery_lane=${metadata.deliveryLane}\n`);
           NODE
 
       - name: Wait for canonical production release readback
@@ -85,8 +87,27 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
+          DELIVERY_LANE: ${{ steps.identity.outputs.delivery_lane }}
         run: |
           set -euo pipefail
+
+          changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
+          if [ "${DELIVERY_LANE}" = "automation" ] && [ -n "${changed_paths}" ] && ! grep -Eq '^(portal-v2/|public/|src/|netlify/functions/|supabase/functions/|supabase/migrations/)' <<<"${changed_paths}"; then
+            git fetch origin main --no-tags
+            observed_sha="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "${MERGE_SHA}" "${observed_sha}" || {
+              echo "::error::AUTOMATION_MAIN_CONTAINMENT_NOT_PROVEN:${MERGE_SHA}:${observed_sha}"
+              exit 78
+            }
+            echo "mode=github_main" >> "$GITHUB_OUTPUT"
+            echo "run_id=" >> "$GITHUB_OUTPUT"
+            echo "observed_sha=${observed_sha}" >> "$GITHUB_OUTPUT"
+            echo "deploy_id=" >> "$GITHUB_OUTPUT"
+            echo "verified=true" >> "$GITHUB_OUTPUT"
+            echo "AUTOMATION_MAIN_READBACK_PROVEN:merge=${MERGE_SHA} observed=${observed_sha}"
+            exit 0
+          fi
+
           source_run_id=""
           source_conclusion=""
           for attempt in $(seq 1 42); do
@@ -373,7 +394,9 @@ jobs:
           const mode=process.env.PRODUCTION_READBACK_MODE||'canonical_run';
           const productionEvidence=mode==='canonical_run'
             ? `run:${process.env.PRODUCTION_RUN_ID}`
-            : `descendant:${process.env.PRODUCTION_OBSERVED_SHA}:deploy:${process.env.PRODUCTION_DEPLOY_ID}`;
+            : mode==='github_main'
+              ? `main:${process.env.PRODUCTION_OBSERVED_SHA}`
+              : `descendant:${process.env.PRODUCTION_OBSERVED_SHA}:deploy:${process.env.PRODUCTION_DEPLOY_ID}`;
           const terminal=[
             'Writer-Lease-State: RELEASED',
             'Terminal-State: LIVE_BEWEZEN',
