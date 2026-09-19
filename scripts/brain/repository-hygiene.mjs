@@ -23,6 +23,24 @@ export function mayDeleteOrphanBranch({ branch, openHeads, aheadBy, policy }) {
   return aheadBy === 0;
 }
 
+export function parseObligationLineage(pr = {}) {
+  const body = String(pr.body ?? "");
+  const obligationId = body.match(/^Obligation-ID:\s*(.+)$/mi)?.[1]?.trim() ?? "";
+  const supersedesRaw = body.match(/^Supersedes:\s*(.+)$/mi)?.[1]?.trim() ?? "";
+  const supersedes = /^\d+$/.test(supersedesRaw) ? Number(supersedesRaw) : null;
+  return { obligationId, supersedes };
+}
+
+export function mayAutoCloseSupersededObligation({ predecessor, successor }) {
+  if (!predecessor || !successor) return false;
+  if (predecessor.state !== "open" || successor.state !== "open") return false;
+  if (!(Number(successor.number) > Number(predecessor.number))) return false;
+  const oldMeta = parseObligationLineage(predecessor);
+  const newMeta = parseObligationLineage(successor);
+  if (!oldMeta.obligationId || oldMeta.obligationId !== newMeta.obligationId) return false;
+  return newMeta.supersedes === Number(predecessor.number);
+}
+
 function apiBase(repo) {
   return `https://api.github.com/repos/${repo}`;
 }
@@ -88,12 +106,49 @@ export async function buildPlan({ repo, policy, apply = false }) {
   const closedCandidates = [];
   const protectedCandidates = [];
   const deferredCandidates = [];
+  const supersededObligationPrs = [];
+  const protectedObligationPrs = [];
+  const closedPrNumbers = new Set();
   const budget = policy.resource_budget ?? {};
   const maxCandidateClosures = Number(budget.max_candidate_closures_per_run ?? 25);
+  const maxObligationSupersessions = Number(budget.max_obligation_supersessions_per_run ?? 25);
   const maxBranchEvaluations = Number(budget.max_branch_evaluations_per_run ?? 200);
   const maxBranchDeletes = Number(budget.max_branch_deletes_per_run ?? 100);
+
+  const byNumber = new Map(openPrs.map(pr => [Number(pr.number), pr]));
+  const successors = [...openPrs]
+    .filter(pr => parseObligationLineage(pr).supersedes !== null)
+    .sort((a, b) => Number(b.number) - Number(a.number));
+
+  for (const successor of successors) {
+    if (supersededObligationPrs.length >= maxObligationSupersessions) break;
+    const { supersedes } = parseObligationLineage(successor);
+    const predecessor = byNumber.get(Number(supersedes));
+    if (!predecessor) continue;
+    if (!mayAutoCloseSupersededObligation({ predecessor, successor })) {
+      protectedObligationPrs.push({
+        predecessor: predecessor.number,
+        successor: successor.number,
+        reason: "explicit-supersedes-contract-not-safe"
+      });
+      continue;
+    }
+    if (closedPrNumbers.has(Number(predecessor.number))) continue;
+    const item = {
+      obligation_id: parseObligationLineage(successor).obligationId,
+      predecessor: predecessor.number,
+      successor: successor.number,
+      head: predecessor.head?.ref ?? null,
+      reason: "explicit-same-obligation-supersession"
+    };
+    if (apply) await closePr(repo, predecessor.number);
+    supersededObligationPrs.push(item);
+    closedPrNumbers.add(Number(predecessor.number));
+    openHeads.delete(predecessor.head?.ref);
+  }
   for (const [familyId, prs] of families) {
-    const sorted = prs.sort((a, b) => b.number - a.number);
+    const sorted = prs.filter(pr => !closedPrNumbers.has(Number(pr.number))).sort((a, b) => b.number - a.number);
+    if (!sorted.length) continue;
     const newest = sorted[0];
     protectedCandidates.push({ family: familyId, number: newest.number, reason: "newest-open-candidate" });
     for (const pr of sorted.slice(1)) {
@@ -112,6 +167,7 @@ export async function buildPlan({ repo, policy, apply = false }) {
       const item = { family: familyId, number: pr.number, head: pr.head.ref, files: files.map(f => f.filename) };
       if (apply) {
         await closePr(repo, pr.number);
+        closedPrNumbers.add(Number(pr.number));
         if (pr.head?.ref?.startsWith(family.branch_prefix)) {
           await deleteBranch(repo, pr.head.ref);
           item.branch_deleted = true;
@@ -160,6 +216,7 @@ export async function buildPlan({ repo, policy, apply = false }) {
       branches_before: branches.length,
       open_prs_before: openPrs.length,
       superseded_candidates: closedCandidates.length,
+      superseded_obligation_prs: supersededObligationPrs.length,
       removable_orphan_writer_branches: orphanBranches.length,
       retained_unique_writer_branches: retainedUniqueBranches.length,
       deferred_candidates: deferredCandidates.length,
@@ -175,9 +232,12 @@ export async function buildPlan({ repo, policy, apply = false }) {
     },
     resource_budget: {
       max_candidate_closures_per_run: maxCandidateClosures,
+      max_obligation_supersessions_per_run: maxObligationSupersessions,
       max_branch_evaluations_per_run: maxBranchEvaluations,
       max_branch_deletes_per_run: maxBranchDeletes
     },
+    superseded_obligation_prs: supersededObligationPrs,
+    protected_obligation_prs: protectedObligationPrs,
     closed_candidates: closedCandidates,
     protected_candidates: protectedCandidates,
     deferred_candidates: deferredCandidates,
