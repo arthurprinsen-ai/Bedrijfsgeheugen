@@ -122,7 +122,7 @@ jobs:
 
           p = 'data-soevereiniteit.html'
           text = read(p)
-          title = 'Data-soevereiniteit: ChatGPT, bedrijfsgegevens en beleid | Bedrijfsgeheugen'
+          title = 'Data-soevereiniteit en ChatGPT-beleid | Bedrijfsgeheugen'
           text, n1 = re.subn(r'<title>.*?</title>', f'<title>{title}</title>', text, count=1, flags=re.S)
           text, n2 = re.subn(
               r'(<h1[^>]*>).*?(</h1>)',
@@ -219,10 +219,19 @@ jobs:
           exit $status
         continue-on-error: true
 
-      - name: SEO en interne links controleren
+      - name: SEO en interne links controleren op productiebuild
         id: seo
         if: steps.seo_scope.outputs.public == 'true'
-        run: python .github/scripts/seocontrole.py
+        working-directory: ${{ runner.temp }}/site
+        shell: bash
+        run: |
+          status=0
+          python .github/scripts/seocontrole.py || status=$?
+          cp seo-rapport.md "$GITHUB_WORKSPACE/seo-rapport.md" 2>/dev/null || true
+          if [ "$GITHUB_EVENT_NAME" != "pull_request" ] && [ -f seo-status.json ]; then
+            cp seo-status.json "$GITHUB_WORKSPACE/seo-status.json"
+          fi
+          exit $status
         continue-on-error: true
 
       - name: Niet-publieke portal/app wijziging expliciet goedkeuren
