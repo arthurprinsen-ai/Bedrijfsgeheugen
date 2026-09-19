@@ -1,3 +1,4 @@
+import { normalizeResourceDaily, resourceAnalyticsMarkup } from './resource-analytics.js';
 export const CSRD_TABS = Object.freeze([
   ['all','Totaal'],['climate','CO₂ & Klimaat'],['water','Water'],['circularity','Circulariteit'],['social','Social'],['governance','Governance']
 ]);
@@ -60,6 +61,7 @@ export function withBusinessValueEvidence(summary={},base={}){
 
 export function withResourceIntelligence(intelligence={},base=UNKNOWN_LIVE_IMPACT_SNAPSHOT){
   const resourceRows=arr(intelligence.resource_daily);
+  const normalizedDaily=normalizeResourceDaily(resourceRows);
   const businessRows=arr(intelligence.business_value);
   const compliance=arr(intelligence.compliance_evidence);
   const recommendations=arr(intelligence.recommendations);
@@ -68,7 +70,7 @@ export function withResourceIntelligence(intelligence={},base=UNKNOWN_LIVE_IMPAC
     ...structuredClone(base),
     actions,
     resourceIntelligence:{
-      resourceRows:resourceRows.length,businessValueRows:businessRows.length,complianceEvidence:compliance.length,recommendations:recommendations.length,
+      resourceRows:resourceRows.length,businessValueRows:businessRows.length,complianceEvidence:compliance.length,recommendations:recommendations.length,daily:normalizedDaily,
       truthPolicy:intelligence.truth_policy||'measured_or_evidence_backed_else_unknown',freshness:intelligence.freshness||{}
     },
     internal:{...(base.internal||{}),openEvidence:compliance.filter(item=>item.evidence_status!=='evidence_present'&&item.evidence_status!=='not_applicable').length}
@@ -125,6 +127,7 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
   return `<div class="csrd-cockpit" data-customer-view="${customerView}">
     <header class="csrd-top"><div><span class="csrd-kicker">CSRD & Impact</span><h2>Vandaag maken we morgen tastbaar.</h2><p>Inzicht. Actie. Impact. Voor jouw bedrijf, je mensen en de wereld.</p></div><div class="csrd-controls"><label>Bedrijf<select aria-label="Bedrijf"><option>${data.demo?'Demo MKB B.V.':'Actuele organisatie'}</option></select></label><label>Periode<select aria-label="Periode"><option>${data.period}</option></select></label><button class="csrd-outline" type="button" data-csrd-customer>${customerView?'Interne weergave':'Klantweergave'} ↗</button><button class="csrd-outline" type="button" data-csrd-benchmark>Vergelijk met sector</button><button class="csrd-outline csrd-close" type="button" data-csrd-close aria-label="Sluit CSRD dashboard">×</button></div></header>
     <nav class="csrd-tabs" aria-label="Impact domeinen">${CSRD_TABS.map(([id,label],i)=>`<button type="button" class="${i===0?'active':''}" data-csrd-tab="${id}">${label}</button>`).join('')}</nav>
+    ${resourceAnalyticsMarkup(data)}
     <section class="csrd-mobile-summary" aria-label="Mobiele CSRD samenvatting"><article><small>Totale impactscore</small><strong>${data.impactScore}${data.impactScore==='—'?'':'/100'}</strong><span>${delta}</span></article><article><small>CSRD readiness</small><strong>${data.readiness}${data.readiness==='—'?'':'%'}</strong><span>Evidence-gebaseerde rapportagegereedheid</span></article><article><small>Prioriteit</small><strong>${data.actions.length}</strong><span>Open resource-adviezen</span></article></section>
     <section class="csrd-stage"><aside class="csrd-score-card">${meter(data.impactScore,'Onze totale impactscore')}<div class="csrd-delta"><span>${delta}</span></div><p class="csrd-course">⌁ Alleen bewezen impact wordt als score getoond</p></aside><div class="csrd-world"><div class="csrd-sky"></div><div class="csrd-sun"></div><div class="csrd-hills"></div><div class="csrd-city"></div><div class="csrd-river"></div><div class="csrd-wind w1">✣</div><div class="csrd-wind w2">✣</div><div class="csrd-solar">▦ ▦ ▦</div><div class="csrd-building"><span>BEDRIJFSGEHEUGEN</span></div><div class="csrd-worldcopy"><strong>Je impact in één oogopslag.</strong><br><small>Van klimaat en water tot social, governance en bewijs.</small></div>${Object.entries(data.metrics).map(metricCard).join('')}<div class="csrd-orbit">PEOPLE <b>+</b> PLANET <b>+</b> PROGRESS</div></div><aside class="csrd-side"><article class="csrd-panel readiness"><div class="csrd-panelhead"><h3>CSRD Readiness</h3><span>readiness-overzicht · evidence-gebaseerd</span></div><div class="csrd-readyrow">${meter(data.readiness,'','%')}<p>Geen juridisch totaalvinkje; alleen aantoonbare dekking</p></div><ul>${readiness(data)}</ul><button type="button" data-csrd-open="audit">Bekijk details →</button></article><article class="csrd-panel"><div class="csrd-panelhead"><h3>Impact in real time</h3><span>${realtimeStatus}</span></div><div class="csrd-live">${data.realtime.map(([ic,v,s])=>`<div><i>${ic}</i><span><b>${v}</b><small>${s}</small></span></div>`).join('')}</div></article></aside></section>
     <section class="csrd-mobile-domains" aria-label="Impact per domein">${Object.entries(data.metrics).map(mobileDomainCard).join('')}</section>
@@ -136,6 +139,45 @@ export function csrdImpactMarkup(snapshot=DEFAULT_IMPACT_SNAPSHOT,{customerView=
 
 export function renderCsrdImpact(root,{openPage=()=>{},closePage=()=>{},snapshot=DEFAULT_IMPACT_SNAPSHOT}={}){
   let customerView=false;
-  const render=()=>{root.innerHTML=csrdImpactMarkup(snapshot,{customerView});root.querySelector('[data-csrd-close]')?.addEventListener('click',closePage);root.querySelector('[data-csrd-customer]')?.addEventListener('click',()=>{customerView=!customerView;render()});root.querySelector('[data-csrd-benchmark]')?.addEventListener('click',()=>openPage('cijfers-maatstaven'));root.querySelectorAll('[data-csrd-open]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.csrdOpen)));root.querySelectorAll('[data-csrd-focus]').forEach(btn=>btn.addEventListener('click',()=>{const domain=btn.dataset.csrdFocus;const tab=root.querySelector(`[data-csrd-tab="${domain}"]`);tab?.click();tab?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});}));root.querySelectorAll('[data-csrd-tab]').forEach(btn=>btn.addEventListener('click',()=>{root.querySelectorAll('[data-csrd-tab]').forEach(x=>x.classList.toggle('active',x===btn));const domain=btn.dataset.csrdTab;root.querySelectorAll('[data-domain]').forEach(card=>card.classList.toggle('csrd-muted',domain!=='all'&&card.dataset.domain!==domain));}));};
+  const resourceFilters={metric:'co2eKg',days:'30',provider:'all',resourceType:'all'};
+  const visibleData=()=>customerView?customerSafeSnapshot(snapshot):snapshot;
+  const bindResourceFilters=()=>{
+    root.querySelectorAll('[data-resource-filter]').forEach(control=>control.addEventListener('change',()=>{
+      resourceFilters[control.dataset.resourceFilter]=control.value;
+      const current=root.querySelector('.csrd-resource-dashboard');
+      if(!current)return;
+      const holder=document.createElement('div');
+      holder.innerHTML=resourceAnalyticsMarkup(visibleData(),resourceFilters);
+      current.replaceWith(holder.firstElementChild);
+      bindResourceFilters();
+      root.querySelector('[data-resource-sector-benchmark]')?.addEventListener('click',()=>openPage('cijfers-maatstaven'));
+    }));
+  };
+  const render=()=>{
+    root.innerHTML=csrdImpactMarkup(snapshot,{customerView});
+    const analytics=root.querySelector('.csrd-resource-dashboard');
+    if(analytics){
+      const holder=document.createElement('div');
+      holder.innerHTML=resourceAnalyticsMarkup(visibleData(),resourceFilters);
+      analytics.replaceWith(holder.firstElementChild);
+    }
+    bindResourceFilters();
+    root.querySelector('[data-resource-sector-benchmark]')?.addEventListener('click',()=>openPage('cijfers-maatstaven'));
+    root.querySelector('[data-csrd-close]')?.addEventListener('click',closePage);
+    root.querySelector('[data-csrd-customer]')?.addEventListener('click',()=>{customerView=!customerView;render()});
+    root.querySelector('[data-csrd-benchmark]')?.addEventListener('click',()=>openPage('cijfers-maatstaven'));
+    root.querySelectorAll('[data-csrd-open]').forEach(btn=>btn.addEventListener('click',()=>openPage(btn.dataset.csrdOpen)));
+    root.querySelectorAll('[data-csrd-focus]').forEach(btn=>btn.addEventListener('click',()=>{
+      const domain=btn.dataset.csrdFocus;
+      const tab=root.querySelector(`[data-csrd-tab="${domain}"]`);
+      tab?.click();
+      tab?.scrollIntoView({behavior:'smooth',block:'nearest',inline:'center'});
+    }));
+    root.querySelectorAll('[data-csrd-tab]').forEach(btn=>btn.addEventListener('click',()=>{
+      root.querySelectorAll('[data-csrd-tab]').forEach(x=>x.classList.toggle('active',x===btn));
+      const domain=btn.dataset.csrdTab;
+      root.querySelectorAll('[data-domain]').forEach(card=>card.classList.toggle('csrd-muted',domain!=='all'&&card.dataset.domain!==domain));
+    }));
+  };
   render();
 }
