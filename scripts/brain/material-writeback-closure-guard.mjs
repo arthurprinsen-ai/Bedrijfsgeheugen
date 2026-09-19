@@ -20,10 +20,11 @@ function normalize(paths){
   return [...new Set((paths||[]).map(v=>String(v||'').trim()).filter(Boolean))].sort();
 }
 
-export function evaluateMaterialWritebackClosure({changedPaths=[]}={}){
+export function evaluateMaterialWritebackClosure({changedPaths=[],regulatoryCandidateType=''}={}){
   const paths=normalize(changedPaths);
   const materialPaths=paths.filter(path=>!CLOSURE_ONLY.some(re=>re.test(path)));
-  const material=materialPaths.length>0;
+  const sourceObservation=String(regulatoryCandidateType||'').trim()==='source-observation' && materialPaths.length===1 && materialPaths[0]==='data/regulatory-source-state.json';
+  const material=materialPaths.length>0 && !sourceObservation;
   const evidence=Object.fromEntries(RULES.map(rule=>[rule.id,paths.filter(rule.matches)]));
   const missing=material?RULES.filter(rule=>evidence[rule.id].length===0).map(rule=>rule.id):[];
   return {
@@ -34,7 +35,8 @@ export function evaluateMaterialWritebackClosure({changedPaths=[]}={}){
     material_paths:materialPaths,
     evidence,
     missing,
-    status:missing.length===0?(material?'MATERIAL_WRITEBACK_CLOSURE_PROVEN':'NO_MATERIAL_DELTA'):'MATERIAL_WRITEBACK_CLOSURE_MISSING',
+    source_observation:sourceObservation,
+    status:missing.length===0?(sourceObservation?'SOURCE_OBSERVATION_WRITEBACK_NOT_REQUIRED':(material?'MATERIAL_WRITEBACK_CLOSURE_PROVEN':'NO_MATERIAL_DELTA')):'MATERIAL_WRITEBACK_CLOSURE_MISSING',
   };
 }
 
@@ -46,7 +48,7 @@ function diffPaths(base,head){
 if(import.meta.url==='file://'+process.argv[1]){
   const [base,head]=process.argv.slice(2);
   try{
-    const result=evaluateMaterialWritebackClosure({changedPaths:diffPaths(base,head)});
+    const result=evaluateMaterialWritebackClosure({changedPaths:diffPaths(base,head),regulatoryCandidateType:process.env.REGULATORY_CANDIDATE_TYPE||''});
     process.stdout.write(JSON.stringify(result,null,2)+'\n');
     if(!result.ok){
       process.stderr.write('MATERIAL_WRITEBACK_CLOSURE_BLOCKED: missing '+result.missing.join(', ')+'. Every material candidate must carry Brain learning, an activity ledger event, and human documentation in the same lineage.\n');
