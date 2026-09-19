@@ -38,6 +38,7 @@
     "max_candidate_closures_per_run": 25,
     "max_branch_evaluations_per_run": 200,
     "max_branch_deletes_per_run": 100,
-    "max_obligation_supersessions_per_run": 25
+    "max_obligation_supersessions_per_run": 25,
+    "max_workflow_cancels_per_run": 100
   }
 }
