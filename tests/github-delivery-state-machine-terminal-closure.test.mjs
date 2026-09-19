@@ -41,3 +41,13 @@ test('closed unmerged superseded PR with Supabase migrations remains fail closed
   assert.match(workflow,/UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS/);
   assert.match(workflow,/\^supabase\\\/migrations\\\/\[\^\/\]\+\\\.sql\$/);
 });
+
+
+test('automation-only closure uses GitHub main readback instead of waiting for website production', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/delivery_lane=/);
+  assert.match(workflow,/AUTOMATION_MAIN_READBACK_PROVEN/);
+  assert.match(workflow,/mode=github_main/);
+  assert.match(workflow,/portal-v2\/\|public\/\|src\/\|netlify\/functions\/\|supabase\/functions\/\|supabase\/migrations\//);
+  assert.match(workflow,/main:\$\{process\.env\.PRODUCTION_OBSERVED_SHA\}/);
+});
