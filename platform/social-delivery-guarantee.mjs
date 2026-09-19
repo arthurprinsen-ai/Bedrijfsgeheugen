@@ -53,7 +53,11 @@ function validInstagramArtifact(artifact) {
     gateInput &&
     typeof gateInput === 'object' &&
     gateInput.miraGatePassed === true &&
+    String(gateInput.contentPersona || '').toLowerCase() === 'mira' &&
+    gateInput.contentClass === 'mira_daily_life' &&
     gateInput.instagramVisual?.verified === true &&
+    gateInput.instagramVisual?.miraPresent === true &&
+    gateInput.instagramVisual?.genericBrandCreative !== true &&
     gateInput.instagramVisual?.identityClass === 'mira_daily_life' &&
     gateInput.instagramVisual?.placeholderDetected !== true &&
     gateInput.instagramVisual?.assetUrl &&

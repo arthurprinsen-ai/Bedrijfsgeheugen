@@ -93,7 +93,13 @@
             "requiresPerSlideExactAssetProof": true
           }
         }
-      }
+      },
+      "requiresContentPersona": "mira",
+      "requiresVisibleMira": true,
+      "blocksGenericBrandCreative": true,
+      "allowedContentClasses": [
+        "mira_daily_life"
+      ]
     }
   },
   "personalInstagramAutopublish": "blocked_unconnected",

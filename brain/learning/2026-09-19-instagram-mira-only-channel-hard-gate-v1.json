@@ -1,0 +1,48 @@
+{
+  "fingerprint": "instagram-mira-only-channel-hard-gate-v1",
+  "date": "2026-09-19",
+  "type": "CHANNEL_IDENTITY_PREVENTION",
+  "failure_class": "WRONG_CONTENT_IDENTITY_ON_INSTAGRAM",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "instagram-mira-only-channel-hard-gate-v1",
+  "root_cause": "The Instagram delivery contract proved technical media validity and Mira-style identity metadata, but did not require an explicit Mira content persona nor visible-Mira proof as a distinct semantic condition. As a result, generic Bedrijfsgeheugen creative could satisfy transport-oriented checks and reach the Instagram company channel.",
+  "prevention_rule": "Instagram is a Mira-only channel. Every Instagram artifact must explicitly declare contentPersona=mira and contentClass=mira_daily_life, the exact final asset must prove miraPresent=true, and generic Bedrijfsgeheugen brand creative must be blocked. Missing or contradictory identity evidence fails closed before scheduling or publishing.",
+  "enforcement": [
+    "config/social-channel-identity-contract.json",
+    "platform/social-channel-identity-gate.mjs",
+    "platform/social-delivery-guarantee.mjs",
+    "tests/social-learning-buffer-channel-identity-gate.test.mjs",
+    "tests/social-learning-buffer-instagram-media-gate.test.mjs",
+    "tests/social-learning-buffer-schedule.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-mira-only-channel-hard-gate-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-mira-only-channel-hard-gate-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "instagram-composio-publisher"
+  ],
+  "evidence": {
+    "incident": "A generic Bedrijfsgeheugen Instagram creative was published on the Instagram account even though the intended channel persona is Mira.",
+    "symptom": "Instagram showed a Bedrijfsgeheugen quote/brand post instead of Mira daily-life content.",
+    "blocked_classes": [
+      "generic Bedrijfsgeheugen brand creative",
+      "quote card",
+      "blog promo",
+      "LinkedIn creative",
+      "non-Mira artifact"
+    ],
+    "terminal_rule": "No LIVE or DONE claim until protected merge and main/readback evidence prove the exact gate is present."
+  },
+  "compiler": {
+    "failure_class": "WRONG_CONTENT_IDENTITY_ON_INSTAGRAM"
+  }
+}
