@@ -267,3 +267,18 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Workflow:** `.github/workflows/powerhouse-delivery-hygiene.yml` roept writer-lease admission expliciet aan met `enforceCurrentMainEpoch:false`.
 - **Rollback:** revert deze contractwijziging; dat herstelt de oude fail-closed admission maar ook de starvation door ongerelateerde main-beweging.
 - **Herbruikbare les:** valideer beweeglijke globale state zo laat mogelijk maar vóór de onomkeerbare actie. Houd CI head-bound; serialiseer alleen landing.
+
+
+## 2026-09-19 — RECOVERY — Duplicate social publication race condition
+- **Fingerprint:** `social-publish-atomic-claim-dedupe-v1`.
+- **Symptom/signal:** dezelfde canonieke social post kon door twee gelijktijdige publisher-runs tweemaal worden gepubliceerd.
+- **Impact:** dubbele externe publicatie, onbetrouwbare channel-state en risico op herhaalde side effects bij recovery.
+- **Root cause:** `powerhouse-social-publisher` las `content_ready` en riep daarna de provider aan zonder eerst atomair writer-ownership vast te leggen; twee runs konden daardoor tegelijk dezelfde side-effectgrens passeren.
+- **Evidence:** PR #2368; oorspronkelijke head `9a7dcb02a8892b4b9db3726b332d5893de11f8d9`; Buffer Social Learning/Required/BRAIN exposeerden daarnaast stale gate-contracten die in dezelfde lineage zijn hersteld.
+- **Final fix:** compare-and-set claim `content_ready -> dispatching` vóór Composio/Buffer; claim-losers stoppen met `ALREADY_CLAIMED_OR_DELIVERED`; Buffer 429 vóór create mag veilig terug naar `content_ready`; onzekere provider-uitkomst vereist reconciliation vóór retry.
+- **Regression gate:** `tests/social-learning-buffer-delivery-guarantee-regression.test.mjs` verifieert claim-before-provider, loser-stop en migratiesyntax; Instagram frame-worker test is gelijkgetrokken met `ffmpeg-static 5.3.0`.
+- **Skill projection:** `instagram-composio-publisher` en `powerhouse-delivery-concurrency` bevatten nu de verplichte atomic-claim/single-writer side-effectregel.
+- **Additional recovery:** ontbrekende semicolon vóór `revoke` in `20260917235907_social_content_integrity_invalidation_guard.sql` hersteld; PR-machine metadata gecorrigeerd naar canoniek schema.
+- **Owner:** Powerhouse social publishing / delivery control plane.
+- **Production status:** pending exact-head gates, protected merge/promotion en production/provider readback; merge of preview alleen is geen terminal bewijs.
+- **Reusable lesson:** ieder extern side effect krijgt eerst canoniek writer-ownership via atomic CAS; nooit retryen op basis van lokale onzekerheid.

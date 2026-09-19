@@ -45,3 +45,22 @@ test('reconciler never promotes a provider-sent post whose content integrity was
   assert.match(migration,/status='BLOCKED'/);
   assert.match(migration,/revoke execute on function public\.powerhouse_reconcile_content_outcomes_v1\(date\) from public, anon, authenticated/i);
 });
+
+
+test('social publisher atomically claims content_ready before any provider side effect',()=>{
+  const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+  const claimIndex=publisher.indexOf(".eq('state', 'content_ready')");
+  const dispatchIndex=publisher.indexOf("state: 'dispatching'");
+  const composioIndex=publisher.indexOf("publishInstagramViaComposio(db, art, runDate)");
+  const bufferIndex=publisher.indexOf("createPost(bufferToken, input)");
+  assert.ok(claimIndex>=0 && dispatchIndex>=0,'atomic claim contract must exist');
+  assert.ok(dispatchIndex<composioIndex,'Instagram provider call must occur only after dispatch claim');
+  assert.ok(dispatchIndex<bufferIndex,'Buffer provider call must occur only after dispatch claim');
+  assert.match(publisher,/ALREADY_CLAIMED_OR_DELIVERED/);
+  assert.match(publisher,/status === 429[\s\S]{0,500}state: 'content_ready'/);
+});
+
+test('content-integrity reconciler migration terminates function before privilege statements',()=>{
+  const migration=readFileSync('supabase/migrations/20260917235907_social_content_integrity_invalidation_guard.sql','utf8');
+  assert.match(migration,/\$function\$;\s*revoke execute on function public\.powerhouse_reconcile_content_outcomes_v1/);
+});
