@@ -262,6 +262,22 @@ Deno.serve(async (req) => {
       await recordObligation(db, runDate, row.channel, 'BLOCKED', null, evidence, 'Repair canonical gate evidence before any dispatch.', 'PRE_PUBLISH_GATE_BLOCKED');
       results.push({ channel: row.channel, status: 'blocked', violations: gate.violations || [] }); continue;
     }
+    // Single-writer idempotency barrier: claim the canonical publication row atomically
+    // before touching any external provider. Concurrent scheduler/manual runs may both
+    // observe content_ready, but only one is allowed to transition it to dispatching.
+    const { data: claimed, error: claimError } = await db.from('powerhouse_channel_decisions')
+      .update({ state: 'dispatching', updated_at: new Date().toISOString() })
+      .eq('run_date', runDate)
+      .eq('channel', row.channel)
+      .eq('decision', 'publish')
+      .eq('state', 'content_ready')
+      .select('channel')
+      .maybeSingle();
+    if (claimError) throw new Error(`PUBLICATION_CLAIM:${claimError.message}`);
+    if (!claimed) {
+      results.push({ channel: row.channel, status: 'skipped', reason: 'ALREADY_CLAIMED_OR_DELIVERED' });
+      continue;
+    }
     if (row.channel === 'instagram_company') {
       try {
         const direct = await publishInstagramViaComposio(db, art, runDate);
@@ -282,7 +298,17 @@ Deno.serve(async (req) => {
       }
     }
     const input: Record<string,unknown> = { text: clean(art.body), channelId: channelIds[row.channel], schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}) };
-    const created = await createPost(bufferToken, input);
+    let created: any;
+    try {
+      created = await createPost(bufferToken, input);
+    } catch (error) {
+      if (error instanceof BufferHttpError && error.status === 429) {
+        await db.from('powerhouse_channel_decisions')
+          .update({ state: 'content_ready', updated_at: new Date().toISOString() })
+          .eq('run_date', runDate).eq('channel', row.channel).eq('state', 'dispatching');
+      }
+      throw error;
+    }
     if (!created.post?.id) {
       const evidence = { ...(row.delivery_evidence || {}), provider: 'buffer', error: created.error || 'BUFFER_CREATE_FAILED', provider_truth_verified: false };
       await db.from('powerhouse_channel_decisions').update({ state: 'failed', delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
