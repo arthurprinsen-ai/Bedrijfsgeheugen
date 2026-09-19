@@ -114,7 +114,7 @@ test('terminal closure recovers a non-green historical canonical readback only t
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(workflow,/CANONICAL_READBACK_NOT_GREEN/);
   assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN/);
-  assert.match(workflow,/git merge-base --is-ancestor "\\$MERGE_SHA" "\\$observed"/);
+  assert.match(workflow,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
   assert.match(workflow,/api\\/connectors\\/readiness/);
   assert.match(workflow,/release\\.contract!=='BRAIN-DELIVERY-v2'/);
   assert.match(workflow,/release\\.production_authority!=='BG169'/);
