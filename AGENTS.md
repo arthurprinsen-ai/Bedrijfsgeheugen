@@ -356,3 +356,9 @@ Voor iedere huidige en toekomstige chat/agent die GitHub-delivery, recovery of t
 Canonieke learning: `brain/learning/2026-09-19-chat-github-terminal-recovery-prevention-v1.json`.
 - During same-lineage current-main reconciliation, never create a transient state where the open PR branch equals `main` and the candidate delta is reapplied later. Construct the full current-main tree plus candidate delta first, create one commit with current main as parent, then move the branch ref atomically. Transient equality can auto-close the PR and is a recoverable delivery defect.
 - For GitHub tree-based reconcile, `base_tree_sha` is mandatory and must equal the tree SHA of the exact current-main parent. Never create a replacement root tree from only the touched files. Before moving the branch ref, enforce expected changed-file/deletion budgets; repository-wide amplification is fail-closed and must leave main untouched.
+## Fast terminal delivery authority
+
+All repository-backed agents optimize for **time-to-terminal-proof**. Use the canonical Powerhouse continuity, concurrency and self-optimization skills before material work. Cheap admission/classifier/security checks fail fast; independent expensive gates run in parallel; healthy exact-head work is never duplicated; moving main is coalesced into one terminal reconciliation; a known failed historical production-readback immediately falls through to authoritative current-production descendant proof. Speed never bypasses protected merge, security gates, exact-head identity, main containment, production/provider readback, learning/writeback or skill projection.
+
+Canonical fingerprints: `delivery|fast-terminal|critical-path|v2`, `delivery|predictive-landing-coalescing|v1`.
+
