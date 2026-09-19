@@ -133,3 +133,20 @@ test('terminal evidence distinguishes canonical run from descendant live product
   assert.match(edge,/PRODUCTION_DESCENDANT_READBACK_NOT_VERIFIED/);
   assert.match(edge,/production-descendant:/);
 });
+
+
+test('control-plane evidence accepts verified github_main readback without a production run id', async()=>{
+  const endpoint=await readFile('netlify/functions/powerhouse-control-plane-evidence.mjs','utf8');
+  assert.match(endpoint,/\['canonical_run','descendant_live','github_main'\]/);
+  assert.match(endpoint,/GITHUB_MAIN_READBACK_SHA_MISMATCH/);
+  assert.match(endpoint,/production_readback_verified!==true/);
+  assert.match(endpoint,/github-main:\$\{productionObservedSha\}/);
+  assert.match(endpoint,/production_readback_mode:productionReadbackMode/);
+  assert.match(endpoint,/production_observed_sha:productionObservedSha/);
+});
+
+test('canonical production readback still requires a numeric workflow run id', async()=>{
+  const endpoint=await readFile('netlify/functions/powerhouse-control-plane-evidence.mjs','utf8');
+  assert.match(endpoint,/productionReadbackMode==='canonical_run'/);
+  assert.match(endpoint,/PRODUCTION_READBACK_RUN_INVALID/);
+});
