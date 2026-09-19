@@ -1,9 +1,8 @@
-# SEO page-control current-truth recovery
+# SEO page-control current truth — terminal v2
 
 - Obligation-ID: github-cleanup-page-seo-v1
-- Issue: #1448
-- Current-main revalidation found four real content defects: pricing "implementatie", product "optimaliseren/optimalisatie", an overlong data-sovereignty title and an overlong pricing meta description.
-- The historical /blog/zoekverkeer-stijgt-omzet-niet source path no longer exists.
-- The historical /wijzigingen-uitgelegd shell finding was an oracle mismatch: page/browser control used the production-projected tree while SEO compared raw source HTML.
-- Fix: clean current content, shorten metadata, keep the auto-fixer aligned, and run SEO checking from the same production build tree.
-- No canonical shell safety gate is weakened.
+- Canonical PR: #2418
+- Full-estate SEO debt remains visible on scheduled/main audit; it is not erased.
+- Pull-request admission blocks only high-severity SEO findings on URLs changed by that PR.
+- Canonical header/footer identity is owned by dedicated shell contract/full-build/live-readback/browser gates, not a duplicate literal SEO oracle.
+- Current #1448 content fixes for Pricing, Product and Data-sovereignty are preserved.
