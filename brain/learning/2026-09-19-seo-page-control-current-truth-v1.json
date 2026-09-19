@@ -1,0 +1,30 @@
+{
+  "fingerprint": "seo-page-control-current-truth-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "compiler": {
+    "failure_class": "SEO_RAW_SOURCE_ORACLE_AND_BRAND_LANGUAGE_DRIFT"
+  },
+  "root_cause": "The SEO checker mixed source-level search/brand semantics with a duplicate byte-level canonical shell oracle. Running it on the production-projected tree amplified false positives because build output is not the source authority for keyword/title ownership, while dedicated shell gates already prove rendered shell parity.",
+  "prevention_rule": "SEO semantics (keyword ownership, metadata, links, brand language) run against source HTML. Canonical header/footer parity is owned exclusively by the dedicated shell contract/full-build/live-readback gates. No second byte-comparison oracle may exist in seocontrole.py.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-page-control-current-truth-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-seo-page-control-current-truth-v1.test.mjs"
+    ],
+    "issue": "#1448",
+    "source_files": [
+      "prijzen.html",
+      "product.html",
+      "data-soevereiniteit.html",
+      ".github/workflows/paginacontrole.yml",
+      ".github/scripts/seocontrole.py"
+    ]
+  },
+  "scope": "WEBSITE_SEO",
+  "machine_enforceable": true
+}
