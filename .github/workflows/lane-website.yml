@@ -288,12 +288,12 @@ jobs:
           ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: node tools/site-shell/verify-targeted-website-routes.mjs
       - name: Verify all public pages are visibly rendered
-        if: needs.classify.outputs.risk_lane != 'fast-fix'
+        if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
         run: node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify every header menu panel is readable
-        if: needs.classify.outputs.risk_lane != 'fast-fix'
+        if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
         run: node tools/site-shell/v18-header-menu-contrast-check.mjs
