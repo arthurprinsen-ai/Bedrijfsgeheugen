@@ -48,7 +48,9 @@ function diffPaths(base,head){
 if(import.meta.url==='file://'+process.argv[1]){
   const [base,head]=process.argv.slice(2);
   try{
-    const result=evaluateMaterialWritebackClosure({changedPaths:diffPaths(base,head),regulatoryCandidateType:process.env.REGULATORY_CANDIDATE_TYPE||''});
+    const prBody=process.env.PR_BODY||'';
+    const regulatoryCandidateType=(prBody.match(/^Regulatory-Candidate-Type:\\s*(.+)$/mi)?.[1]||'').trim();
+    const result=evaluateMaterialWritebackClosure({changedPaths:diffPaths(base,head),regulatoryCandidateType});
     process.stdout.write(JSON.stringify(result,null,2)+'\n');
     if(!result.ok){
       process.stderr.write('MATERIAL_WRITEBACK_CLOSURE_BLOCKED: missing '+result.missing.join(', ')+'. Every material candidate must carry Brain learning, an activity ledger event, and human documentation in the same lineage.\n');
