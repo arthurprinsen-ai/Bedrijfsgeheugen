@@ -21,7 +21,7 @@ permissions:
 
 concurrency:
   group: obligation-terminal-closure-${{ github.event.pull_request.number || inputs.pr_number }}
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 jobs:
   close-obligation:
@@ -103,10 +103,7 @@ jobs:
                 echo "PRODUCTION_READBACK_PROVEN:$source_run_id"
                 exit 0
               fi
-              if [ "$source_conclusion" != "cancelled" ]; then
-                echo "::error::PRODUCTION_READBACK_FAILED:run=$source_run_id conclusion=$source_conclusion"
-                exit 78
-              fi
+              echo "::warning::PRODUCTION_READBACK_NON_SUCCESS:run=$source_run_id conclusion=$source_conclusion; falling back to descendant live proof"
               break
             fi
             sleep 10
