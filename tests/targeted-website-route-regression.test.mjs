@@ -56,3 +56,18 @@ test('website preview selection probes every affected route before trusting Netl
   assert.match(workflow, /AbortSignal\.timeout\(/);
   assert.match(workflow, /preview_mode=local-exact-candidate/);
 });
+
+
+test('risk-scoped browser policy preserves public visibility while limiting full menu crawl', async()=>{
+  const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
+  const config = JSON.parse(await readFile('site/website-release-risk.json','utf8'));
+  assert.match(workflow, /Verify affected routes on desktop and mobile/);
+  assert.match(workflow, /Verify all public pages are visibly rendered\n\s+env:/);
+  assert.match(workflow, /Verify every header menu panel is readable\n\s+if: needs\.classify\.outputs\.risk_lane == 'high-risk'/);
+  assert.ok(config.fastFixRequiredTestSets.includes('public-visibility'));
+});
+
+test('regulatory data changes map to a bounded set of affected public routes', async()=>{
+  const config = JSON.parse(await readFile('site/website-release-risk.json','utf8'));
+  assert.deepEqual(config.pageLocalAssets['data/regelgeving.json'],['/','/ai-act','/compliance-status','/benchmark','/monitor']);
+});
