@@ -17,5 +17,10 @@
   "skill_targets": [
     "powerhouse-continuity",
     "powerhouse-delivery-self-optimization"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-seo-order.test.mjs"
+    ]
+  }
 }
