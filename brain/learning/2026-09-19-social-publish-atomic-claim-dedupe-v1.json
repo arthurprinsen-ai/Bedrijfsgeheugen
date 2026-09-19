@@ -15,12 +15,15 @@
     "tests/social-learning-buffer-delivery-guarantee-regression.test.mjs",
     "tests/social-learning-buffer-rate-limit-regression.test.mjs",
     ".agents/skills/instagram-composio-publisher/SKILL.md",
-    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+    "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/social-learning-buffer-delivery-guarantee-regression.test.mjs",
-      "tests/social-learning-buffer-rate-limit-regression.test.mjs"
+      "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs"
     ]
   },
   "skill_targets": [
