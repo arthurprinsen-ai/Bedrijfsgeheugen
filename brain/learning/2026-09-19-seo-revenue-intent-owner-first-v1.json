@@ -1,0 +1,78 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "SEO-REVENUE-OPERATING-LOOP-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|revenue-growth|intent-owner-first|v1",
+  "date": "2026-09-19",
+  "obligation_id": "BG-SEO-REVENUE-20260919-CLOSURE",
+  "problem": "SEO opportunities could create duplicate content or optimize traffic without enough connection to orders, revenue, canonical intent ownership and production proof.",
+  "root_cause": "Search-demand signals, cannibalization controls, conversion outcomes and canonical money-page ownership were not represented as one durable operating rule across the SEO opportunity loop and agent skill layer.",
+  "skill_targets": [
+    "data",
+    "foresight",
+    "continuity",
+    "delivery"
+  ],
+  "prevention": [
+    "INTENT_OWNER_FIRST: when a canonical money or pillar page already owns the search intent, improve that owner before proposing new content.",
+    "NEW_CONTENT_REQUIRES_DISTINCT_INTENT_GAP: a blog or landing page may be proposed only when no existing canonical owns the intent and cannibalization has been checked.",
+    "SEO_REVENUE_PRIORITY: prioritize opportunities using commercial or transactional intent, search demand, CPC, trend, ranking gap, conversion gap, order rate and revenue rather than traffic volume alone.",
+    "DAILY_OPPORTUNITY_BOUND: rank at most five evidence-based SEO opportunities per daily cycle and prefer the smallest action with the clearest path to lead, order or revenue.",
+    "CANNIBALIZATION_CONSOLIDATION: duplicate or typo URLs must be consolidated into one canonical owner with internal references, sitemap/RSS/index cleanup and permanent redirect when appropriate.",
+    "INTERNAL_AUTHORITY_IS_CONTEXTUAL: strengthen money/support pages with relevant contextual internal links, not random sitewide link injection.",
+    "BOUNDED_MARKET_DATA: use existing Search Console evidence first and use paid DataForSEO calls only for bounded high-value gaps; never do estate-wide polling without evidence.",
+    "LIVE_PROOF_REQUIRES_RUNTIME_IDENTITY: merge is not terminal; verify the exact current production deploy identity and public page behavior before claiming LIVE & BEWEZEN.",
+    "DELIVERY_METADATA_USES_CANONICAL_LANES: PR metadata must use only delivery lanes allowed by config/powerhouse-delivery-hygiene-v1.json; domain labels such as seo-growth or seo-content are not delivery lanes."
+  ],
+  "implementation": [
+    "Revenue-oriented SEO opportunity scoring implemented in PR #2389.",
+    "Keyword cannibalization between onprijsd and ongeprijsd URLs consolidated in PR #2396.",
+    "Contextual internal authority for /excel-als-crm strengthened in PR #2399.",
+    "Canonical learning is projected automatically through scripts/brain/powerhouse-skill-projection.mjs.",
+    "Dedicated .agents SEO revenue skill documents durable execution behavior."
+  ],
+  "evidence": {
+    "pr_revenue": 2389,
+    "pr_cannibalization": 2396,
+    "pr_internal_link": 2399,
+    "merged_prs": [
+      2389,
+      2396,
+      2399
+    ],
+    "current_main_at_record": "1a8169c82dbbe2238e62a4f91de8600db193903e",
+    "production_deploy_at_record": "7ad66b4d60487ecd1297289d6d9527c3b1f96598",
+    "production_status": "BLOCKED_HARD_BOUNDARY_NETLIFY_SOURCE_HANDOFF",
+    "known_incident": "PR #2389 admission initially failed with DELIVERY_LANE_INVALID because Delivery-Lane used domain label seo-growth instead of canonical lane backend.",
+    "final_main_sha": "1a8169c82dbbe2238e62a4f91de8600db193903e",
+    "production_deploy_id": "6aae87a3977cfc000881553f",
+    "production_commit_ref": "1a8169c82dbbe2238e62a4f91de8600db193903e",
+    "production_state": "ready",
+    "production_published_at": "2026-09-19T13:03:42.737Z",
+    "production_redirect_rules_processed": 90,
+    "production_secret_scan_matches": 0,
+    "main_readback": {
+      "duplicate_removed_from_sitemap": true,
+      "duplicate_removed_from_blog_index": true,
+      "duplicate_removed_from_rss": true,
+      "permanent_redirect_config_present": true,
+      "excel_contextual_link_present": true,
+      "revenue_policy_and_opportunity_engine_present": true
+    },
+    "public_readback_note": "Netlify provider identity is exact and ready. The external web index reader still surfaced cached HTML for some pages immediately after deploy, and the direct container had no DNS; this cache limitation is recorded rather than treated as contradictory production identity.",
+    "revenue_merge_sha": "1a8169c82dbbe2238e62a4f91de8600db193903e",
+    "hard_boundary": "Connected Netlify deploy action requires a local repository source; current execution runner cannot resolve GitHub, and the GitHub connector exposes no workflow_dispatch action to materialize current-main source. No secret-export or ungated deploy workaround is permitted."
+  },
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-revenue-learning-v1.test.mjs"
+    ]
+  }
+}
