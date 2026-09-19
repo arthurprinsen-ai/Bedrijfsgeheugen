@@ -1,0 +1,20 @@
+{
+  "id": "required-exact-head-codeql-applicability-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "The exact-head Required aggregator could wait forever for Powerhouse CodeQL on PRs that do not match the CodeQL workflow path filters, such as regulatory data-only candidates.",
+  "root_cause": "The aggregator required a sibling workflow unconditionally even though that sibling workflow is intentionally path-filtered.",
+  "prevention": [
+    "BRAIN remains mandatory for every pull request.",
+    "Determine CodeQL applicability from the pull request changed filenames using the same effective JS/TS, package and workflow path set as powerhouse-codeql.yml.",
+    "Require exact-head CodeQL completed-success only when CodeQL is applicable.",
+    "Record an explicit NOT_APPLICABLE proof when CodeQL is intentionally not triggered.",
+    "Reuse existing sibling workflow runs; never launch duplicate CodeQL work."
+  ],
+  "evidence": {
+    "workflow": ".github/workflows/required-test.yml",
+    "codeql_workflow": ".github/workflows/powerhouse-codeql.yml",
+    "test": "tests/delivery-required-exact-head-critical-gates-v1.test.mjs",
+    "triggering_example": "PR #2327 data/regulatory-source-state.json"
+  }
+}
