@@ -282,3 +282,10 @@ This is mandatory for every current and future chat, agent, workflow and Powerho
 - If a prevention can be machine-enforced, prefer code, tests, constraints, CI/runtime assertions or policies over prose-only guidance.
 
 Canonical enforcement: `scripts/brain/material-writeback-closure-guard.mjs`, `.github/workflows/required-test.yml`, `.github/workflows/powerhouse-skill-projection.yml`, and `.github/workflows/obligation-terminal-closure.yml`.
+
+
+## Runner-aware simultaneous development
+
+Fingerprint: `github|ci-admission|single-flight-runner-budget-v1`.
+
+Every chat and agent treats GitHub runner capacity as a shared governed resource. Independent obligations may build simultaneously, but identical obligation/head work is deduplicated before dispatch. Native PR events and recovery dispatches for Required/BRAIN are one logical single-flight lane. Recovery reuses the current lineage; it never amplifies runners or starts repository-wide scans from feature-branch pushes.
