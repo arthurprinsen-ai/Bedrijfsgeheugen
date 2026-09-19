@@ -6,6 +6,8 @@ const truth={class:'author_observation',verified:true,evidenceRefs:['chat:verifi
 const run=(text,extra={})=>authorizeSocialPublication({channelKind:'linkedin_personal',channelId:CHANNELS.linkedin_personal.channelId,text,lineage,personalTruth:truth,companyPageInterchangeable:false,...extra});
 test('V4 and exact channel identities are canonical',()=>{assert.equal(CHANNEL_IDENTITY_CONTRACT_ID,'arthur-personal-linkedin-identity-v4');assert.equal(CHANNELS.linkedin_personal.channelId,'6a70381699afb44349f0fb35');assert.equal(CHANNELS.linkedin_company.channelId,'6a70381699afb44349f0fb36');assert.equal(CHANNELS.instagram_company.channelId,'6a70384d99afb44349f0fba9')});
 test('real harmless personal frustration passes',()=>assert.equal(run('Ik stond thuis vanochtend ruzie te maken met mijn printer. Volgens mij wint hij.').authorized,true));
+test('a bare first-person wrapper is not a personal-life story',()=>{const r=run('Ik denk vandaag na over hoe je processen slimmer maakt.');assert.equal(r.authorized,false);assert.ok(r.reasons.includes('CONCRETE_PERSONAL_LIFE_EVENT_REQUIRED')||r.reasons.includes('CONSULTANT_VOICE_ON_PERSONAL'))});
+test('weekend wrapper around leadership content is blocked',()=>{const r=run('Mijn weekendgedachte: leiderschap gaat over strategie concreet maken.');assert.equal(r.authorized,false);assert.ok(r.reasons.includes('BUSINESS_CONTENT_ON_PERSONAL')||r.reasons.includes('CONSULTANT_VOICE_ON_PERSONAL'))});
 for(const [name,text,reason] of [
  ['AI thought leadership','Ik merk dat AI organisaties helpt slimmer te werken.','BUSINESS_CONTENT_ON_PERSONAL'],
  ['consultancy with personal anchor','Ik zie in mijn werk dat consultancy en data organisaties vooruit helpen.','BUSINESS_CONTENT_ON_PERSONAL'],
