@@ -1,0 +1,39 @@
+{
+  "fingerprint": "website-public-visibility-regression-contract-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "STALE_REGRESSION_ORACLE_AFTER_SAFETY_HARDENING",
+  "scope": "GITHUB_WEBSITE_DELIVERY",
+  "machine_enforceable": true,
+  "root_cause": "Main intentionally promoted public-page visibility to an unconditional browser safety check, but fast-terminal regression tests still asserted the previous high-risk-only contract. This made unrelated backend/security candidates fail BRAIN on a stale oracle.",
+  "prevention_rule": "When a safety gate is strengthened on canonical main, its historical replay must be updated in the same lineage. Public visibility is universal for previewed website candidates; header-menu crawl and broad browser suites remain high-risk scoped.",
+  "enforcement": [
+    ".github/workflows/lane-website.yml",
+    "site/website-release-risk.json",
+    "tests/brain-fast-terminal-delivery-v2.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-delivery-self-optimization"
+  ],
+  "source_incident": "PR #2373 BRAIN run 35443491059",
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tests/brain-fast-terminal-delivery-v2.test.mjs",
+    ".github/workflows/lane-website.yml",
+    "site/website-release-risk.json",
+    "PR #2404 BRAIN backend reproduced stale replay failures 366 and 368 on current main",
+    "PR #2408 exact-head BRAIN run 35445247417 completed successfully after replay alignment"
+  ]
+}
