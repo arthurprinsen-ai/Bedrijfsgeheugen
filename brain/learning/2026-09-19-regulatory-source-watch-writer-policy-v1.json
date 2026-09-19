@@ -1,0 +1,19 @@
+{
+  "id": "regulatory-source-watch-writer-policy-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Repository Writer Candidate Shadow rejected the canonical regulatory source candidate with UNKNOWN_WRITER:regulatory-source-watch.",
+  "root_cause": "The regulatory source workflow existed and its state path was delivery-classified, but the repository writer allowlist did not register the writer identity.",
+  "prevention": [
+    "Register regulatory-source-watch explicitly in repository writer policy.",
+    "Permit only data/regulatory-source-state.json.",
+    "Keep all other data paths fail-closed.",
+    "Regression-test both the allowed canonical path and rejected neighboring data paths."
+  ],
+  "evidence": {
+    "blocked_pr": 2327,
+    "shadow_run": 35438779626,
+    "policy": "scripts/ci/repo-writer-policy.mjs",
+    "test": "tests/repo-writer-regulatory-source-watch-v1.test.mjs"
+  }
+}

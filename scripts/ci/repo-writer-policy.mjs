@@ -12,6 +12,7 @@ const POLICIES = Object.freeze({
   'native-daily-blog-proof': [/^data\/content-publication-ledger\.json$/],
   'paginacontrole': [/^[^/]+\.html$/, /^seo-status\.json$/, /^sitemap\.xml$/, /^netlify\.toml$/],
   'regelgeving-bijwerken': [/^data\/regelgeving\.json$/],
+  'regulatory-source-watch': [/^data\/regulatory-source-state\.json$/],
   'seo-controle': [/^sitemap\.xml$/, /^netlify\.toml$/],
   'weekblog': [/^blog\/.+/, /^sitemap\.xml$/],
 });
