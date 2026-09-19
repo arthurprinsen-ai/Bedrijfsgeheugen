@@ -1,8 +1,13 @@
 {
-  "version": 2,
+  "version": 3,
   "timeZone": "Europe/Amsterdam",
   "explorationRatio": 0.2,
-  "horizonsDays": [1, 3, 7, 30],
+  "horizonsDays": [
+    1,
+    3,
+    7,
+    30
+  ],
   "weights": {
     "reach": 1,
     "engagement": 2,
@@ -36,6 +41,38 @@
       "transparent_reasoning",
       "concrete_pattern_or_example",
       "clearly_labeled_opinion_or_hypothesis"
+    ]
+  },
+  "revenueGoal": {
+    "targetEUR": 1000000,
+    "targetDate": "2027-09-01",
+    "objective": "orders_and_revenue_from_owned_website",
+    "selectionPrinciple": "prefer improving an existing mapped money page over creating new content when search intent is already owned",
+    "opportunitySignals": [
+      "commercial_intent",
+      "transactional_intent",
+      "search_volume",
+      "cpc",
+      "trend",
+      "ranking_gap",
+      "conversion_gap",
+      "order_rate",
+      "revenue"
+    ],
+    "cannibalizationGuard": true
+  },
+  "dailySeoOpportunity": {
+    "cadence": "daily",
+    "maxCandidates": 5,
+    "minimumActionableCandidates": 1,
+    "newContentOnlyWhen": "no_existing_canonical_owns_the_intent",
+    "preferredActions": [
+      "money-page-upgrade",
+      "internal-link",
+      "serp-ctr",
+      "conversion",
+      "evidence-gap",
+      "new-support-content"
     ]
   }
 }
