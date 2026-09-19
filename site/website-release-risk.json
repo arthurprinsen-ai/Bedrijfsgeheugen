@@ -9,7 +9,9 @@
     "tests/site-shell-website-release-risk.test.mjs",
     "tools/brain-delivery-system.mjs",
     "tools/site-shell/website-release-risk.mjs",
-    "site/website-release-risk.json"
+    "site/website-release-risk.json",
+    "brain/learning/",
+    "tests/brain-"
   ],
   "highRiskPaths": [
     ".github/workflows/",
@@ -25,10 +27,35 @@
   ],
   "normalRootHtml": true,
   "pageLocalAssets": {
-    "assets/pages/ai-act/": ["/ai-act"]
+    "assets/pages/ai-act/": [
+      "/ai-act"
+    ]
   },
-  "fastFixRequiredTestSets": ["baseline", "preview", "targeted-browser", "public-visibility"],
-  "normalRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo"],
-  "highRiskRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo", "shared-contracts", "full-regression"],
-  "controlPlaneRequiredTestSets": ["baseline", "syntax-preflight"]
+  "fastFixRequiredTestSets": [
+    "baseline",
+    "preview",
+    "targeted-browser"
+  ],
+  "normalRequiredTestSets": [
+    "baseline",
+    "static",
+    "preview",
+    "targeted-browser",
+    "public-visibility",
+    "page-seo"
+  ],
+  "highRiskRequiredTestSets": [
+    "baseline",
+    "static",
+    "preview",
+    "targeted-browser",
+    "public-visibility",
+    "page-seo",
+    "shared-contracts",
+    "full-regression"
+  ],
+  "controlPlaneRequiredTestSets": [
+    "baseline",
+    "syntax-preflight"
+  ]
 }

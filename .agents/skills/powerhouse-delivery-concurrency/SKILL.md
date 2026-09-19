@@ -134,3 +134,15 @@ Concurrency safety includes diagnostic correctness:
 Canonical source: `brain/learning/2026-09-19-chat-github-terminal-recovery-prevention-v1.json`.
 - During same-lineage current-main reconciliation, never create a transient state where the open PR branch equals `main` and the candidate delta is reapplied later. Construct the full current-main tree plus candidate delta first, create one commit with current main as parent, then move the branch ref atomically. Transient equality can auto-close the PR and is a recoverable delivery defect.
 - For GitHub tree-based reconcile, `base_tree_sha` is mandatory and must equal the tree SHA of the exact current-main parent. Never create a replacement root tree from only the touched files. Before moving the branch ref, enforce expected changed-file/deletion budgets; repository-wide amplification is fail-closed and must leave main untouched.
+## Predictive landing coalescing
+
+Fingerprint: `delivery|predictive-landing-coalescing|v1`.
+
+To reduce repeated rebase/retest churn without weakening `behind_by = 0`:
+- allow independent candidates to build and prove their own exact heads in parallel;
+- do not reconcile a healthy candidate merely because main moved while its gates are still running;
+- immediately before terminal landing, read current main and overlap; if the candidate is behind, rebuild exactly once onto the freshest current-main tree, preserving the full union and bounded delta;
+- if several ready candidates touch disjoint paths, order landings by shortest remaining terminal critical path and downstream fan-out cost; after each landing, reconcile only the candidates that became behind and are next to land;
+- forecast repeated-main-movement risk from recent merge velocity and gate duration; delay only the short landing lease, never the development work;
+- keep one canonical candidate per obligation and never create duplicate PRs to escape a moving main.
+
