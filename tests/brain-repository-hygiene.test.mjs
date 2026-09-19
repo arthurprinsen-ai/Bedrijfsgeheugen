@@ -4,7 +4,10 @@ import {
   candidateFamily,
   filesAreDiscardable,
   isControlledWriterBranch,
-  mayDeleteOrphanBranch
+  mayDeleteOrphanBranch,
+  parseObligationLineage,
+  mayAutoCloseSupersededObligation,
+  cancellableWorkflowRuns
 } from "../scripts/brain/repository-hygiene.mjs";
 
 const policy = {
@@ -56,4 +59,44 @@ test("deletes orphan writer branch only when it has no unique commits", () => {
     aheadBy: 0,
     policy
   }), false);
+});
+
+
+test("parses canonical obligation lineage without guessing", () => {
+  assert.deepEqual(
+    parseObligationLineage({ body: "Obligation-ID: OBL-1\nSupersedes: 42\n" }),
+    { obligationId: "OBL-1", supersedes: 42 }
+  );
+  assert.deepEqual(
+    parseObligationLineage({ body: "Obligation-ID: OBL-1\nSupersedes: none\n" }),
+    { obligationId: "OBL-1", supersedes: null }
+  );
+});
+
+test("auto-closes only explicit newer same-obligation successors", () => {
+  const predecessor={number:42,state:"open",body:"Obligation-ID: OBL-1\n"};
+  const successor={number:43,state:"open",body:"Obligation-ID: OBL-1\nSupersedes: 42\n"};
+  assert.equal(mayAutoCloseSupersededObligation({predecessor,successor}),true);
+  assert.equal(mayAutoCloseSupersededObligation({
+    predecessor,
+    successor:{...successor,body:"Obligation-ID: OBL-2\nSupersedes: 42\n"}
+  }),false);
+  assert.equal(mayAutoCloseSupersededObligation({
+    predecessor,
+    successor:{...successor,body:"Obligation-ID: OBL-1\nSupersedes: none\n"}
+  }),false);
+});
+
+
+test("selects only nonterminal workflow runs for cancellation", () => {
+  const runs=[
+    {id:1,status:"queued"},
+    {id:2,status:"in_progress"},
+    {id:3,status:"waiting"},
+    {id:4,status:"requested"},
+    {id:5,status:"pending"},
+    {id:6,status:"completed"},
+    {id:7,status:"completed",conclusion:"failure"}
+  ];
+  assert.deepEqual(cancellableWorkflowRuns(runs).map(x=>x.id),[1,2,3,4,5]);
 });

@@ -7,14 +7,18 @@
       "title_prefix": "Paginacontrole candidate ",
       "branch_prefix": "writer/paginacontrole/",
       "auto_close_when_superseded": true,
-      "discardable_files": ["seo-status.json"]
+      "discardable_files": [
+        "seo-status.json"
+      ]
     },
     {
       "id": "seo-controle",
       "title_prefix": "SEO candidate ",
       "branch_prefix": "writer/seo-controle/",
       "auto_close_when_superseded": true,
-      "discardable_files": ["seo-status.json"]
+      "discardable_files": [
+        "seo-status.json"
+      ]
     }
   ],
   "orphan_branch_cleanup_prefixes": [
@@ -33,6 +37,8 @@
   "resource_budget": {
     "max_candidate_closures_per_run": 25,
     "max_branch_evaluations_per_run": 200,
-    "max_branch_deletes_per_run": 100
+    "max_branch_deletes_per_run": 100,
+    "max_obligation_supersessions_per_run": 25,
+    "max_workflow_cancels_per_run": 100
   }
 }

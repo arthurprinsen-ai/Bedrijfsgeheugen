@@ -172,3 +172,32 @@ Mandatory:
 
 Required metrics: `time_to_first_failure`, `time_to_required_green`, `time_to_protected_merge`, `time_to_production_proof`, `queue_wait_seconds`, `duplicate_gate_dispatch_prevented_count`, `main_reconcile_count`, `known_failed_readback_wait_avoided_seconds`, `critical_path_seconds`.
 
+
+
+## Explicit obligation supersession hygiene
+
+Fingerprint: `github|hygiene|explicit-obligation-supersession|v1`.
+
+Repository cleanup must collapse duplicate executable PRs without guessing semantic equivalence. A newer open PR may auto-close an older open PR only when both carry the exact same non-empty `Obligation-ID` and the newer PR explicitly declares `Supersedes: <older PR number>`. Same-title, same-files, temporal proximity, or heuristic similarity are never sufficient.
+
+The repository hygiene control plane applies this cleanup with a bounded per-run budget before candidate-family and orphan-branch cleanup. This reduces duplicate CI, queue pressure and stale WIP while preserving unique work fail-closed.
+
+
+## GitHub queue amplification guard
+
+Fingerprint: `github|queue-amplification|path-scope-and-push-scope|v1`.
+
+Treat queued runner work as a governed resource. Global recovery supervisors must not run on every feature-branch push when pull-request exact-head workflows plus scheduled recovery already cover the same obligation. Domain workflows must trigger only for files/migrations they actually consume. Cross-cutting integrity checks belong in one cheapest existing owner lane and must not force unrelated heavyweight suites.
+
+Before adding a workflow trigger, ask:
+1. does this changed path materially affect this workflow's contract;
+2. is another existing gate already the canonical owner of the same invariant;
+3. can the check be moved to the cheapest already-triggered lane;
+4. will the trigger create duplicate exact-head work or queue amplification?
+
+A broad trigger is a regression unless it has explicit cross-cutting ownership evidence.
+
+
+### Obsolete-run cancellation
+
+When a canonical explicit successor closes its predecessor, repository hygiene must also cancel nonterminal Actions runs for the predecessor head. Cancellation is bounded by the central resource budget; terminal/completed runs are evidence and are never rewritten. This keeps obsolete exact-head work from occupying runner capacity after canonical ownership has moved.
