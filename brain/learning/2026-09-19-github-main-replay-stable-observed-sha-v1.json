@@ -8,6 +8,11 @@
     "Use current main only as the ancestry witness.",
     "After containment is proven, emit the obligation merge SHA as production_observed_sha.",
     "Keep current main SHA only as diagnostic evidence.",
-    "Regression-test replay after main advances."
-  ]
+    "Regression-test replay after main advances.",
+    "Run the terminal descendant-recovery contract in the Required backend lane so BRAIN and the native required test cannot disagree on this evidence contract."
+  ],
+  "evidence": {
+    "required_backend": ".github/workflows/lane-backend.yml",
+    "regression": "tests/brain-control-plane-terminal-descendant-recovery-v1.test.mjs"
+  }
 }
