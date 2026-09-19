@@ -172,3 +172,13 @@ Mandatory:
 
 Required metrics: `time_to_first_failure`, `time_to_required_green`, `time_to_protected_merge`, `time_to_production_proof`, `queue_wait_seconds`, `duplicate_gate_dispatch_prevented_count`, `main_reconcile_count`, `known_failed_readback_wait_avoided_seconds`, `critical_path_seconds`.
 
+## CI path-scope efficiency
+
+Fingerprint: `github|ci-path-scope|semantic-admission-v1`.
+
+- Auxiliary workflows must admit only files that can change the contract they verify; broad directory globs require an explicit semantic reason.
+- When a test reads a runtime file directly, that runtime file must be in the workflow path filter; broad unrelated migration admission is not a substitute.
+- Keep migration-history/integrity workflows broad when their purpose is repository-wide migration validity, but remove duplicate path entries and bound job runtime.
+- Use PR/ref single-flight concurrency without `github.event_name` when trigger type does not represent a distinct executable lineage.
+- Optimize runner cost by reducing false-positive workflow starts before attempting caching or weaker gates.
+
