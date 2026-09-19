@@ -75,5 +75,8 @@ jobs:
           python scripts/brain/check_powerhouse_supabase_security.py --self-test
           python scripts/brain/check_powerhouse_supabase_security.py origin/main "${{ github.event.pull_request.head.sha }}"
 
+      - name: Verify migration history integrity
+        run: node --test tests/supabase-migration-history-integrity.test.mjs tests/notion-synced-posts-migration-reproducibility.test.mjs
+
       - name: Contract evidence
         run: node --test tests/candidate-environment.test.mjs
