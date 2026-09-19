@@ -6,15 +6,15 @@ export const CHANNELS=Object.freeze(contract.channels);
 const FIRST_PERSON=/\b(ik|mijn|mij|me|voor mij|bij mij)\b/i;
 const LIVED_CONTEXT=/\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport)\b/i;
 const LIVED_ACTION=/\b(stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|baalde|lachte|schrok|voelde|dacht ineens)\b/i;
-const BUSINESS=/\b(bedrijfsgeheugen|consultancy|consultant|klant|opdrachtgever|organisatie|organisaties|bedrijf|bedrijven|data|\bai\b|digitalisering|transformatie|propositie|dienstverlening|expertise|scan|offerte|lead|omzet|sales|framework|business)\b/i;
+const BUSINESS=/\b(bedrijfsgeheugen|consultancy|consultant|klant|opdrachtgever|organisatie|organisaties|bedrijf|bedrijven|data|\bai\b|digitalisering|transformatie|propositie|dienstverlening|expertise|scan|offerte|lead|omzet|sales|framework|business|strategie|management|directeur|eigenaar|mkb|prospect|dashboard)\b/i;
 const CORPORATE=/\b(wij helpen|wij bieden|wij zorgen|onze klanten|onze aanpak|onze dienstverlening|onze expertise|neem contact op|vrijblijvend gesprek|ons aanbod)\b/i;
 const MORAL=/\b(dit geldt ook voor organisaties|de les voor bedrijven|wat organisaties hiervan kunnen leren|in mijn werk zie ik|bij een klant|voor leiders|managementles|de les is|wat we hiervan kunnen leren|dit leert mij dat)\b/i;
 const CONSULTANT=/\b(thought leadership|best practice|proces(?:sen)? slimmer|effici[eë]nter werken|waarde creëren|transformatie|governance|roadmap|stakeholder|executie|implementatie|optimaliseren|schaalbaar|future.?proof|leiderschap|strategie concreet maken)\b/i;
 function hasConcretePersonalLife(text){
-  return FIRST_PERSON.test(text) && (
-    (LIVED_CONTEXT.test(text) && LIVED_ACTION.test(text)) ||
-    /\bmijn\s+(kind|dochter|zoon|gezin|auto|fiets|tuin|telefoon|printer|weekend|vakantie|training|wedstrijd)\b/i.test(text)
-  );
+ return FIRST_PERSON.test(text)&&(
+   (LIVED_CONTEXT.test(text)&&LIVED_ACTION.test(text))||
+   /\bmijn\s+(kind|dochter|zoon|gezin|auto|fiets|tuin|telefoon|printer|weekend|vakantie|training|wedstrijd)\b/i.test(text)
+ );
 }
 const has=v=>typeof v==='string'&&v.trim().length>0;
 const refs=t=>Array.isArray(t?.evidenceRefs)?t.evidenceRefs.filter(has):[];
@@ -29,7 +29,8 @@ export function authorizeSocialPublication(input={}){
   if(!hasConcretePersonalLife(text)) reasons.push('CONCRETE_PERSONAL_LIFE_EVENT_REQUIRED');
   if(BUSINESS.test(text)&&!exactException) reasons.push('BUSINESS_CONTENT_ON_PERSONAL');
   if(CORPORATE.test(text)) reasons.push('CORPORATE_VOICE_ON_PERSONAL');
-  if(MORAL.test(text)) reasons.push('FORCED_BUSINESS_MORAL');\n  if(CONSULTANT.test(text)&&!exactException) reasons.push('CONSULTANT_VOICE_ON_PERSONAL');
+  if(MORAL.test(text)) reasons.push('FORCED_BUSINESS_MORAL');
+  if(CONSULTANT.test(text)&&!exactException) reasons.push('CONSULTANT_VOICE_ON_PERSONAL');
   if(input.companyPageInterchangeable!==false) reasons.push('COMPANY_PAGE_INTERCHANGEABLE_NOT_REJECTED');
   if(!contract.personalTruthClasses.includes(input.personalTruth?.class)) reasons.push('FIRST_PERSON_TRUTH_CLASS_REQUIRED');
   if(contract.personalTruthRequiresEvidenceRefs&&refs(input.personalTruth).length===0) reasons.push('FIRST_PERSON_EVIDENCE_REQUIRED');
