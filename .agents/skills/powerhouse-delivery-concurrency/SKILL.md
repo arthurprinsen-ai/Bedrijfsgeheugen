@@ -148,6 +148,14 @@ To reduce repeated rebase/retest churn without weakening `behind_by = 0`:
 
 
 
+## External side-effect single-writer rule
+
+Fingerprint: `side-effect|atomic-claim-before-provider|v1`.
+
+GitHub landing serialization is not enough for external actions. Any workflow that can publish, send, create, charge, mutate an external system or otherwise produce a non-trivial side effect must acquire a canonical compare-and-set claim before the provider call. The claim key must bind the business obligation plus the specific channel/resource/date or equivalent idempotency domain. Concurrent losers stop without side effects. A retry is permitted only when evidence proves the previous attempt did not cross the external side-effect boundary; otherwise provider reconciliation is mandatory before any retry.
+
+Reference incident: social publisher duplicate publication on 2026-09-19. Root cause was two runs reading `content_ready` before either persisted delivery state. Prevention is enforced in `powerhouse-social-publisher` and its social-learning regression suite.
+
 ## Universal error + live learning closure v2
 
 Fingerprint: `powerhouse|error-live|semantic-learning-closure|required|v2`.

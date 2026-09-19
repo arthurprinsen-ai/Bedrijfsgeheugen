@@ -1,0 +1,46 @@
+{
+  "fingerprint": "social-publish-atomic-claim-dedupe-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "DUPLICATE_EXTERNAL_SIDE_EFFECT",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "SOCIAL-DUPLICATE-PUBLISH-20260919",
+  "root_cause": "Non-atomic read-then-side-effect sequencing around powerhouse_channel_decisions allowed concurrent writers to cross the external provider boundary.",
+  "prevention_rule": "Every external social publish must atomically compare-and-set its canonical decision from content_ready to dispatching before the provider call; only the claim winner may cross the provider side-effect boundary. Uncertain provider outcomes require provider reconciliation before retry.",
+  "enforcement": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/social-learning-buffer-delivery-guarantee-regression.test.mjs",
+    "tests/social-learning-buffer-rate-limit-regression.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md",
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+    "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "powerhouse-delivery-concurrency"
+  ],
+  "evidence": {
+    "incident": "Duplicate social publication from concurrent publisher runs",
+    "symptom": "The same canonical social artifact could be published twice when two runs observed content_ready before either persisted provider delivery state.",
+    "safe_retry_boundary": "Only before a provider side effect is proven to have occurred; otherwise reconcile external truth first.",
+    "discovered_gate_repairs": [
+      "Correct PR machine metadata to allowed delivery lane/candidate type/exact Base-SHA.",
+      "Terminate 20260917235907 reconciler function with semicolon before revoke.",
+      "Align ffmpeg-static regression assertion with repository version 5.3.0."
+    ]
+  },
+  "compiler": {
+    "failure_class": "DUPLICATE_EXTERNAL_SIDE_EFFECT"
+  }
+}
