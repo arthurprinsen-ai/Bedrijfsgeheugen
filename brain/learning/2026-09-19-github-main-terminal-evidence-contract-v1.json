@@ -1,0 +1,19 @@
+{
+  "id": "github-main-terminal-evidence-contract-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Automation-only terminal closure produced production_readback_mode=github_main, but the durable Supabase evidence ingest rejected that mode with HTTP 422.",
+  "root_cause": "The producer contract in obligation-terminal-closure.yml evolved without the consumer validation contract in growth-datahub-ingest being updated in the same lineage.",
+  "prevention": [
+    "Treat terminal evidence readback modes as a shared producer-consumer contract.",
+    "Accept github_main only with a valid observed SHA and explicit production_readback_verified=true.",
+    "Persist github_main with a dedicated github-main:<sha> remote reference instead of pretending it is a deployment descendant.",
+    "Keep a regression test that reads both workflow and Supabase consumer contract."
+  ],
+  "evidence": {
+    "producer": ".github/workflows/obligation-terminal-closure.yml",
+    "consumer": "supabase/functions/growth-datahub-ingest/index.ts",
+    "test": "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "incident_run": "35436438329"
+  }
+}
