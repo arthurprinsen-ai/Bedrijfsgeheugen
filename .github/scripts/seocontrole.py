@@ -353,36 +353,10 @@ def main():
             bevindingen.append(('laag', url, 'uitroepteken in de tekst'))
 
 
-    # -- 6. kop en voettekst identiek op elke pagina --
-    def schoon(x):
-        # aria-current markeert de actieve pagina en mag per pagina verschillen
-        x = re.sub(r'\s+aria-current="page"', '', x or '')
-        return re.sub(r'\s+', ' ', x).strip()
-
-    ref_kop = ref_voet = None
-    if os.path.exists(CANONIEK_KOP):
-        ref_kop = schoon(io.open(CANONIEK_KOP, encoding='utf-8').read())
-    if os.path.exists(CANONIEK_VOET):
-        ref_voet = schoon(io.open(CANONIEK_VOET, encoding='utf-8').read())
-
-    for url, p in sorted(P.items()):
-        naam = os.path.basename(p['bestand'])[:-5]
-        if naam in GEEN_BALK:
-            continue
-        s = p['ruw']
-        m = re.search(r'<nav class="bgkop"[\s\S]*?</nav>', s)
-        if ref_kop and (not m or schoon(m.group(0)) != ref_kop):
-            bevindingen.append(('hoog', url,
-                'de menubalk wijkt af van .github/canoniek/kop.html'))
-        vs = re.findall(r'<footer[\s\S]*?</footer>', s)
-        if ref_voet:
-            if len(vs) != 1:
-                bevindingen.append(('hoog', url,
-                    'er staan %d voetteksten op deze pagina, er hoort er precies een' % len(vs)))
-            elif schoon(vs[0]) != ref_voet:
-                bevindingen.append(('hoog', url,
-                    'de voettekst wijkt af van .github/canoniek/voet.html'))
-
+    # -- 6. canonical shell --
+    # Canonical shell identity is owned by the dedicated shell contract/full-build/live-readback
+    # gates. SEO intentionally does not duplicate literal header/footer byte comparison here.
+    # This avoids contradictory oracles while preserving fail-closed shell verification.
 
     # -- 7. staat elke pagina in de sitemap --
     # De sitemap wordt bij elke build gegenereerd (tools/bouw-sitemap.mjs).
@@ -405,6 +379,12 @@ def main():
                 bevindingen.append(('hoog', url, 'staat niet in sitemap.xml'))
             elif url == '/' and '/' not in in_sitemap:
                 bevindingen.append(('hoog', url, 'staat niet in sitemap.xml'))
+
+    # Pull requests fail only on high-severity findings for URLs changed by that PR.
+    # Scheduled/main runs leave SEO_SCOPE_URLS empty and therefore audit the full estate.
+    scope_raw = os.environ.get('SEO_SCOPE_URLS', '').strip()
+    scope_urls = {u.strip().rstrip('/') or '/' for u in scope_raw.splitlines() if u.strip()}
+    gate_bevindingen = [b for b in bevindingen if not scope_urls or (b[1].rstrip('/') or '/') in scope_urls]
 
     bevindingen.sort(key=lambda b: (orde[b[0]], b[1]))
     tel = {k: sum(1 for b in bevindingen if b[0] == k) for k in orde}
@@ -454,7 +434,10 @@ def main():
         json.dumps(status, ensure_ascii=False, indent=1) + '\n')
     print('\n'.join(regels))
     # alleen hoge bevindingen laten falen; midden en laag zijn een melding
-    sys.exit(1 if tel['hoog'] else 0)
+    gate_hoog = sum(1 for b in gate_bevindingen if b[0] == 'hoog')
+    if scope_urls:
+        print('PR-gate scope: %s; hoge bevindingen in scope: %d' % (', '.join(sorted(scope_urls)), gate_hoog))
+    sys.exit(1 if gate_hoog else 0)
 
 
 if __name__ == '__main__':
