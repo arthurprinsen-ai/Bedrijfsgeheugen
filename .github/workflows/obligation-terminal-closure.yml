@@ -173,6 +173,13 @@ jobs:
             sleep 5
           done
 
+          if [ -n "$source_run_id" ]; then
+            if [ "$source_conclusion" != "cancelled" ]; then
+              echo "::error::PRODUCTION_READBACK_FAILED:run=$source_run_id conclusion=$source_conclusion merge=$MERGE_SHA"
+              exit 78
+            fi
+          fi
+
           echo "Canonical production readback unavailable/cancelled; proving current live production contains merge ${MERGE_SHA}."
           for attempt in $(seq 1 24); do
             nonce="${MERGE_SHA}-descendant-${attempt}-$(date +%s)"
