@@ -1,0 +1,25 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "RESOURCE-SUSTAINABILITY-VISIBILITY-CONTRACT-DRIFT-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "resource-governor|website-visibility|test-contract-drift|v1",
+  "date": "2026-09-19",
+  "obligation_id": "BG-RESOURCE-SUSTAINABILITY-20260919-01",
+  "failure_class": "TEST_CONTRACT_DRIFT",
+  "scope": "GENERAL",
+  "machine_enforceable": true,
+  "security_sensitive": false,
+  "problem": "A stricter fail-closed website visibility baseline was correctly introduced, but fast-terminal regression tests still encoded the older optimization that skipped full public-page visibility for fast-fix and normal-risk work.",
+  "root_cause": "Performance-oriented regression assertions were coupled to an implementation shortcut instead of the higher-order invariant that all public pages must remain visibly rendered.",
+  "prevention": [
+    "SAFETY_BASELINE_OVERRIDES_SPEED_OPTIMIZATION",
+    "PUBLIC_VISIBILITY_GATE_REMAINS_UNCONDITIONAL_WHEN_BROWSER_VERIFICATION_RUNS",
+    "FAST_FIX_RETAINS_TARGETED_PROOF_AND_PUBLIC_VISIBILITY",
+    "REGRESSION_TESTS_ASSERT_INVARIANTS_NOT_OBSOLETE_SHORTCUTS"
+  ],
+  "implementation": [
+    "Update tests/brain-fast-terminal-delivery-v2.test.mjs to require public-visibility for fast-fix.",
+    "Assert the public-page visibility step has no conditional if-clause.",
+    "Retain bounded affected-route verification for targeted checks while preserving the global visibility safety net."
+  ]
+}
