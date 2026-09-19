@@ -46,10 +46,10 @@ test('terminal closure requires exact-head critical gates before LIVE_BEWEZEN', 
 });
 
 
-test('regulatory data maps to bounded affected routes and normal risk avoids sitewide browser sweeps', async()=>{
+test('regulatory data keeps bounded routes while runtime visibility remains mandatory and broad sweeps stay high-risk', async()=>{
   const risk=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
   assert.deepEqual(risk.pageLocalAssets['data/regelgeving.json'],['/','/ai-act','/compliance-status','/benchmark','/monitor']);
-  assert.ok(risk.normalRequiredTestSets.includes('public-visibility'));
+  assert.ok(risk.normalRequiredTestSets.includes('targeted-browser'));
   assert.ok(risk.highRiskRequiredTestSets.includes('public-visibility'));
   const lane=await readFile('.github/workflows/lane-website.yml','utf8');
   assert.match(lane,/Verify all public pages are visibly rendered\n\s+env:/);
