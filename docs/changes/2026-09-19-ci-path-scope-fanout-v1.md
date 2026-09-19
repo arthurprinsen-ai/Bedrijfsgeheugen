@@ -9,7 +9,7 @@ Specialist Revenue Learning and LinkedIn Revenue Cockpit workflows were starting
 - Revenue Learning now reacts only to revenue/growth migrations plus its owned code/tests.
 - LinkedIn Revenue Cockpit now reacts only to LinkedIn/revenue migrations plus its owned code/tests.
 - Broad Supabase migration integrity remains covered by canonical Supabase Preview/Required gates.
-- Regression: `tests/delivery-ci-path-scope-fanout.test.mjs`.
+- Regression: `tests/brain-ci-path-scope-fanout.test.mjs`.
 - Skill authority: `powerhouse-delivery-self-optimization`.
 
 ## Terminal requirement
