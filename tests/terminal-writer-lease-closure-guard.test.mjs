@@ -22,3 +22,22 @@ test('closure guard never merges, bypasses protection or mutates main',()=>{
   assert.match(yaml,/pull-requests:\s*write/);
   assert.match(yaml,/contents:\s*read/);
 });
+
+
+test('terminally proven merged successor prevents predecessor resurrection',()=>{
+  assert.match(yaml,/actions:\s*read/);
+  assert.match(yaml,/Supersedes: /);
+  assert.match(yaml,/Obligation-ID: /);
+  assert.match(yaml,/obligation-terminal-closure\.yml\/runs\?per_page=100/);
+  assert.match(yaml,/\.display_title==\$title/);
+  assert.match(yaml,/\.status=="completed"/);
+  assert.match(yaml,/\.conclusion=="success"/);
+  assert.match(yaml,/remains closed because merged successor PR/);
+});
+
+test('unproven or missing successor still reopens the predecessor fail closed',()=>{
+  const successorGuard=yaml.indexOf('terminal_success');
+  const reopen=yaml.indexOf('--method PATCH "repos/$repo/pulls/$PR_NUMBER"');
+  assert.ok(successorGuard>=0 && reopen>successorGuard);
+  assert.match(yaml,/test "\$state" = open/);
+});
