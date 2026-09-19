@@ -1,0 +1,32 @@
+{
+  "id": "writer-material-writeback-closure-compat-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Writer candidates were required by the material writeback guard to carry closure artifacts, while writer path policy rejected those same mandatory artifacts.",
+  "root_cause": "Two independently correct governance controls had incompatible path contracts.",
+  "prevention": [
+    "Permit only the canonical closure-artifact path families for every bounded writer candidate.",
+    "Do not broaden each writer's material business-path allowlist.",
+    "Regression-test that mandatory closure artifacts pass while arbitrary workflow/code paths remain rejected."
+  ],
+  "evidence": {
+    "policy": "scripts/ci/repo-writer-policy.mjs",
+    "test": "tests/brain-writer-material-writeback-closure-compat-v1.test.mjs",
+    "blocked_pr": 2225
+  },
+  "fingerprint": "control-plane|writer-material-writeback-closure-compat|v1",
+  "failure_class": "CLASSIFIER_GAP",
+  "scope": "GITHUB",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-writer-material-writeback-closure-compat-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}

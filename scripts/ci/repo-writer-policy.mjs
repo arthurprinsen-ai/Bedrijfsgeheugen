@@ -17,6 +17,13 @@ const POLICIES = Object.freeze({
   'weekblog': [/^blog\/.+/, /^sitemap\.xml$/],
 });
 
+const MATERIAL_WRITEBACK_CLOSURE_PATHS = Object.freeze([
+  /^brain\/learning\/.+\.json$/,
+  /^docs\/development-ledger-events\/.+\.md$/,
+  /^docs\/development-ledger\/.+\.md$/,
+  /^docs\/(changes|learning)\/.+\.md$/,
+]);
+
 const IMPACT_BUDGETS = Object.freeze({
   // Paginacontrole performs deterministic metadata/link/status repairs only.
   'paginacontrole': Object.freeze({ maxChangedLinesPerFile: 50 }),
@@ -25,7 +32,7 @@ const IMPACT_BUDGETS = Object.freeze({
 export function allowedForWriter(writer) {
   const policy = POLICIES[String(writer || '')];
   if (!policy) throw new Error(`UNKNOWN_WRITER:${writer || ''}`);
-  return [...policy];
+  return [...policy, ...MATERIAL_WRITEBACK_CLOSURE_PATHS];
 }
 
 export function validateWriterPaths(writer, files = [], diffStats = []) {
