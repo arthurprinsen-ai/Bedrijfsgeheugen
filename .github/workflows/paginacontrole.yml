@@ -74,7 +74,18 @@ jobs:
               if [[ "$file" != */* && "$file" == *.html ]]; then
                 stem="${file%.html}"
                 [[ "$stem" == "index" ]] && url="/" || url="/$stem"
-                urls+="$url"
+                urls+="$url"$'\n'
+              elif [[ "$file" =~ ^blog/([^/]+)/index\.html$ ]]; then
+                urls+="/blog/${BASH_REMATCH[1]}/"$'\n'
+              fi
+            done < <(git diff --name-only "$base...$head")
+          fi
+          echo "public=$public" >> "$GITHUB_OUTPUT"
+          {
+            echo "urls<<EOF"
+            printf '%s' "$urls"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
           if [ "$public" = "true" ]; then
             echo "Publieke pagina/SEO-scope geraakt."
           else
