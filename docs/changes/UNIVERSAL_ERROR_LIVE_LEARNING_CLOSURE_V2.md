@@ -53,8 +53,8 @@ De laatste reconcile/landing mag niet alleen op branchnaam vertrouwen. Activeer 
 
 ## Safety-oracle synchronisatie
 
-Regressietests mogen een strengere actuele safety-baseline niet terugtrekken naar een ouder contract. `public-visibility` blijft verplicht voor fast-fix, normal-risk en high-risk previewflows; alleen brede header/menu/browser-sweeps blijven high-risk gescopeerd.
+Regressietests mogen de actuele safety-baseline niet zelf uitvinden. Lees vóór een oracle-wijziging altijd de exacte kandidaatversie van de canonieke runtime/config-bron en workflow. Voor de huidige website-lane geldt: `public-visibility` is verplicht voor fast-fix en high-risk; normal-risk gebruikt bewust begrensde targeted checks zonder sitewide `public-visibility` sweep.
 
 ## Stale regression-oracles
 
-Als een canoniek veiligheidscontract strenger wordt, moet de bijbehorende regression-oracle in dezelfde lineage mee veranderen. Een test die nog een permissiever oud contract verwacht is een false-negative delivery defect. Herstel altijd de test naar het strengere actuele contract; verzwak nooit de runtime-gate om de test groen te krijgen.
+Als een canoniek veiligheidscontract verandert, moet de bijbehorende regression-oracle in dezelfde lineage mee veranderen. Maar een falende test is op zichzelf geen bewijs dat het runtimecontract gewijzigd is. De bronvolgorde is: exact-head canonieke config/runtime/workflow → afgeleide oracle → CI-resultaat. Bij verschil wordt eerst de bronwaarheid vastgesteld; pas daarna wordt de test of runtime aangepast. Verzwak nooit een runtime-gate uitsluitend om CI groen te krijgen.
