@@ -26,5 +26,15 @@
   ],
   "compiler": {
     "failure_class": "GITHUB_DELIVERY"
+  },
+  "evidence": {
+    "incident": "Specialist GitHub Actions fanout from unrelated Supabase migrations",
+    "observed_patterns": [
+      "Revenue Learning subscribed to generic supabase/migrations/** and duplicated migration path entries",
+      "LinkedIn Revenue Cockpit subscribed to generic supabase/migrations/**"
+    ],
+    "containment": "Replace generic migration globs with owned revenue/growth/linkedin filename scopes while preserving generic migration integrity in Supabase Preview and Required.",
+    "regression": "tests/brain-ci-path-scope-fanout.test.mjs",
+    "resource_effect": "Fewer unrelated workflow starts, runner minutes, installs, compute, credits and energy/water proxy consumption."
   }
 }
