@@ -20,3 +20,19 @@ test('critical gate aggregation reuses existing workflow runs instead of duplica
   assert.doesNotMatch(block,/workflow dispatch|gh workflow run|node --test|npm test/i);
   assert.match(block,/sort_by\(\.created_at\) \| last/);
 });
+
+
+test('CodeQL exact-head evidence is required only for paths that trigger the CodeQL workflow', async()=>{
+  const workflow=await readFile('.github/workflows/required-test.yml','utf8');
+  const block=workflow.slice(workflow.indexOf('Require exact-head BRAIN and CodeQL sibling workflows'),workflow.indexOf('Aggregate admission and selected lane results'));
+  assert.match(block,/PR_NUMBER:/);
+  assert.match(block,/pulls\/\$\{PR_NUMBER\}\/files\?per_page=100/);
+  assert.match(block,/\\\.\(js\|mjs\|cjs\|ts\|tsx\)\$/);
+  assert.match(block,/package\(-lock\)\?/);
+  assert.match(block,/powerhouse-codeql\\\.yml/);
+  assert.match(block,/CRITICAL_EXACT_HEAD_GATE_NOT_APPLICABLE:Powerhouse-CodeQL/);
+  const brainIndex=block.indexOf('require_workflow "unified-brain-delivery.yml" "BRAIN"');
+  const codeqlGuardIndex=block.indexOf('if grep -Eq');
+  const codeqlIndex=block.indexOf('require_workflow "powerhouse-codeql.yml" "Powerhouse-CodeQL"');
+  assert.ok(brainIndex>=0 && codeqlGuardIndex>brainIndex && codeqlIndex>codeqlGuardIndex);
+});
