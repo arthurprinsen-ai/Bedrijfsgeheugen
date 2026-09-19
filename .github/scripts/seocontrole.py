@@ -116,17 +116,6 @@ VERBODEN_WOORDEN = {
 }
 GEEN_TAALEIS = {'privacy', '404', 'index-oud', 'klantportaal', 'klantportaal-demo'}
 
-# -- kop en voettekst --
-# Elke pagina heeft exact dezelfde balk en voettekst. De referentie staat in
-# .github/canoniek/. Wijkt een pagina af, dan is dat altijd een fout: zo zijn
-# er eerder zeven verschillende voetteksten ontstaan, waarvan een met het
-# verkeerde e-mailadres erin.
-CANONIEK_KOP = '.github/canoniek/kop.html'
-CANONIEK_VOET = '.github/canoniek/voet.html'
-# de homepage draagt dezelfde kop, maar met knoppen in plaats van links: daar
-# schakelt de eenpagina-app mee tussen weergaven. Vandaar hier een uitzondering.
-GEEN_BALK = {'klantportaal', 'klantportaal-demo', 'index-oud', 'index', 'prototype-v18-stable', 'klant-login'}
-
 MIN_INKOMEND = 3          # minimaal aantal pagina's dat hierheen linkt
 MIN_UITGAAND = 2          # minimaal aantal interne links vanaf deze pagina
 GEEN_LINKEIS = {'index', '404', 'bedankt', 'privacy', 'contact'}
