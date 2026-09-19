@@ -1,0 +1,24 @@
+{
+  "fingerprint": "seo-shell-oracle-single-authority-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "DUPLICATE_INCONSISTENT_RELEASE_ORACLE",
+  "scope": "WEBSITE_SEO",
+  "machine_enforceable": true,
+  "root_cause": "The legacy Python SEO checker compared raw header/footer fragments against canonical template bytes while the modern production build and JS shell contract validate projected semantic shell state. Both oracles could disagree and create estate-wide false high-severity drift.",
+  "prevention_rule": "Canonical shell truth has one authority: tools/controleer-site-ui.mjs verifyPageShell/verifyGlobalComponentHashes and its canonical shell workflows. SEO strategy checking must not independently reimplement shell equality.",
+  "enforcement": [
+    ".github/scripts/seocontrole.py",
+    "tools/controleer-site-ui.mjs",
+    "tests/brain-seo-shell-oracle-ownership-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-shell-oracle-ownership-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization"
+  ],
+  "source_incident": "PR #2370 page/SEO runs 35443318451 and 35443318462"
+}
