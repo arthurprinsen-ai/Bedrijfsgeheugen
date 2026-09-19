@@ -112,7 +112,7 @@ test('fulfilled obligations refresh terminal identity on replay', async()=>{
 
 test('terminal closure recovers only cancelled or missing canonical readback through descendant live proof', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/source_conclusion[\\s\\S]*cancelled/);
+  assert.match(workflow,/source_conclusion[\s\S]*cancelled/);
   assert.match(workflow,/PRODUCTION_READBACK_FAILED/);
   assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN/);
   assert.match(workflow,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
