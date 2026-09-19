@@ -1,0 +1,11 @@
+{
+  "id": "github-main-terminal-regression-alignment-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "A legacy descendant-recovery regression still asserted exactly two production readback modes after github_main became a third strict mode.",
+  "root_cause": "Contract implementation and regression expectation were updated in separate commits.",
+  "prevention": [
+    "Keep terminal evidence mode allowlist and all regression assertions synchronized in the same lineage.",
+    "Assert github_main remains distinct from descendant_live and requires exact verified main proof."
+  ]
+}
