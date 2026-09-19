@@ -51,3 +51,12 @@ test('automation-only closure uses GitHub main readback instead of waiting for w
   assert.match(workflow,/portal-v2\/\|public\/\|src\/\|netlify\/functions\/\|supabase\/functions\/\|supabase\/migrations\//);
   assert.match(workflow,/main:\$\{process\.env\.PRODUCTION_OBSERVED_SHA\}/);
 });
+
+
+test('Supabase terminal evidence accepts and preserves github_main readback', async()=>{
+  const ingest=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(ingest,/\['canonical_run','descendant_live','github_main'\]/);
+  assert.match(ingest,/productionReadbackMode==='github_main'/);
+  assert.match(ingest,/PRODUCTION_GITHUB_MAIN_READBACK_NOT_VERIFIED/);
+  assert.match(ingest,/github-main:\$\{productionObservedSha\}/);
+});
