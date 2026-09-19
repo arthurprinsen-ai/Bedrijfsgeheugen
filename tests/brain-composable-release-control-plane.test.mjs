@@ -36,7 +36,7 @@ test('website lane keeps targeted proof for normal changes and broad visibility 
   const broadStart = website.indexOf('      - name: Verify broad high-risk browser contracts', visibilityStart);
   assert.notEqual(broadStart, -1);
   const visibility = website.slice(visibilityStart, broadStart);
-  assert.match(visibility, /if:\s*needs\.classify\.outputs\.risk_lane != 'fast-fix'/);
+  assert.match(visibility, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
   const broad = website.slice(broadStart);
   assert.match(broad, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
 });
