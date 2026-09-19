@@ -18,5 +18,16 @@
   "skill_targets": [
     "powerhouse-delivery-self-optimization",
     "powerhouse-continuity"
-  ]
+  ],
+  "fingerprint": "risk-scoped-website-browser-v1",
+  "failure_class": "CI",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-risk-scoped-website-browser-v1.test.mjs"
+    ]
+  }
 }
