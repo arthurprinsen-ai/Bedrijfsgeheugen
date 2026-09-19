@@ -5,6 +5,6 @@
 - Failure class: GITHUB_DELIVERY
 - Root cause: specialist workflows subscribed to generic Supabase migration changes and Revenue Learning duplicated path entries.
 - Prevention: narrow specialist path filters; keep generic migration integrity in canonical Supabase/Required gates.
-- Regression: tests/delivery-ci-path-scope-fanout.test.mjs
+- Regression: tests/brain-ci-path-scope-fanout.test.mjs
 - Skill projection: .agents/skills/powerhouse-delivery-self-optimization/SKILL.md
 - Delivery status: RECORDED_PENDING_FINAL_DELIVERY_READBACK
