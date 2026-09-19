@@ -1,0 +1,20 @@
+{
+  "id": "regulatory-source-observation-writeback-guard-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Required preflight blocked canonical regulatory source observations because the material writeback guard required implementation-style learning, ledger and human documentation for a pure source-state projection.",
+  "root_cause": "The writeback guard classified all non-closure changed files as material implementation work and had no narrow source-observation semantic.",
+  "prevention": [
+    "Exempt only Regulatory-Candidate-Type: source-observation.",
+    "Require the sole material path to be exactly data/regulatory-source-state.json.",
+    "Keep implementation candidates, missing metadata, extra files and neighboring data paths fail-closed.",
+    "Regression-test both the exact exemption and its rejection boundaries."
+  ],
+  "evidence": {
+    "blocked_pr": 2327,
+    "required_run": 35439013347,
+    "guard": "scripts/brain/material-writeback-closure-guard.mjs",
+    "workflow": ".github/workflows/required-test.yml",
+    "test": "tests/brain-material-writeback-closure-guard.test.mjs"
+  }
+}
