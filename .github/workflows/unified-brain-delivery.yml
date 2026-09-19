@@ -33,7 +33,8 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: unified-brain-delivery-${{ github.event_name }}-${{ inputs.pr_number || github.event.pull_request.number || github.run_id }}
+  # Native PR and recovery dispatch for the same PR are one logical flight.
+  group: unified-brain-delivery-${{ inputs.pr_number || github.event.pull_request.number || github.ref_name }}
   # Single-flight is PR-scoped; exact candidate identity remains enforced in admission and BG169.
   cancel-in-progress: true
 
