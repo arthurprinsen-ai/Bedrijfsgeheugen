@@ -108,7 +108,7 @@ jobs:
           NODE
       - name: Enforce material writeback closure
         env:
-          REGULATORY_CANDIDATE_TYPE: ${{ github.event.pull_request && contains(github.event.pull_request.body, 'Regulatory-Candidate-Type: source-observation') && 'source-observation' || '' }}
+          PR_BODY: ${{ github.event.pull_request.body }}
         run: node scripts/brain/material-writeback-closure-guard.mjs "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify material writeback closure regression
         run: node --test tests/brain-material-writeback-closure-guard.test.mjs
