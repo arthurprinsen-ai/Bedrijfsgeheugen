@@ -10,4 +10,5 @@
 - Governance incident: PR #2354 reached terminal closure while a late exact-head Required run exposed one stale release-lane assertion.
 - Root cause: terminal closure did not independently aggregate exact-head Required/BRAIN/CodeQL before writing terminal state.
 - Prevention: terminal closure now fails closed on any non-green/latest exact-head critical gate, and the stale browser-risk assertion is aligned with the bounded fast-fix contract.
+- Parallel PR #2356 contained a useful unique optimization. Its route mapping and high-risk-only sitewide browser rule were coalesced into this canonical successor instead of keeping a duplicate delivery lane.
 
