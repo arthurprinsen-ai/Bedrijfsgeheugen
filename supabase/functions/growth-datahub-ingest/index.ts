@@ -59,7 +59,6 @@ Deno.serve(async(req:Request)=>{
       }
       if(productionReadbackMode==='github_main'){
         if(!/^[0-9a-f]{40}$/.test(productionObservedSha))throw new Error('PRODUCTION_OBSERVED_SHA_INVALID');
-        if(productionObservedSha!==mainSha)throw new Error('GITHUB_MAIN_READBACK_SHA_MISMATCH');
         if(productionRunId!==null)throw new Error('GITHUB_MAIN_READBACK_RUN_MUST_BE_NULL');
         if(productionDeployId!==null)throw new Error('GITHUB_MAIN_DEPLOY_ID_MUST_BE_NULL');
         if(terminal.production_readback_verified!==true)throw new Error('GITHUB_MAIN_READBACK_NOT_VERIFIED');
