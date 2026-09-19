@@ -40,9 +40,9 @@
       2396,
       2399
     ],
-    "current_main_at_record": "a5cb7aef24f3eca1464db053438ce7153c5a5261",
+    "current_main_at_record": "1a8169c82dbbe2238e62a4f91de8600db193903e",
     "production_deploy_at_record": "7ad66b4d60487ecd1297289d6d9527c3b1f96598",
-    "production_status": "STALE_VS_MAIN_PENDING_ONE_FINAL_DEPLOY",
+    "production_status": "BLOCKED_HARD_BOUNDARY_NETLIFY_SOURCE_HANDOFF",
     "known_incident": "PR #2389 admission initially failed with DELIVERY_LANE_INVALID because Delivery-Lane used domain label seo-growth instead of canonical lane backend.",
     "final_main_sha": "1a8169c82dbbe2238e62a4f91de8600db193903e",
     "production_deploy_id": "6aae87a3977cfc000881553f",
@@ -59,6 +59,8 @@
       "excel_contextual_link_present": true,
       "revenue_policy_and_opportunity_engine_present": true
     },
-    "public_readback_note": "Netlify provider identity is exact and ready. The external web index reader still surfaced cached HTML for some pages immediately after deploy, and the direct container had no DNS; this cache limitation is recorded rather than treated as contradictory production identity."
+    "public_readback_note": "Netlify provider identity is exact and ready. The external web index reader still surfaced cached HTML for some pages immediately after deploy, and the direct container had no DNS; this cache limitation is recorded rather than treated as contradictory production identity.",
+    "revenue_merge_sha": "1a8169c82dbbe2238e62a4f91de8600db193903e",
+    "hard_boundary": "Connected Netlify deploy action requires a local repository source; current execution runner cannot resolve GitHub, and the GitHub connector exposes no workflow_dispatch action to materialize current-main source. No secret-export or ungated deploy workaround is permitted."
   }
 }
