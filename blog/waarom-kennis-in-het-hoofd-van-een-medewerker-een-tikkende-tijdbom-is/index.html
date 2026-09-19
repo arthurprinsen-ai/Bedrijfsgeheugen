@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<!-- Google tag (gtag.js) -->
+<script>
+function bgLoadGoogleAnalytics(){
+  if(document.querySelector('script[data-bg-ga]'))return;
+  var s=document.createElement('script');s.async=true;s.dataset.bgGa='1';
+  s.src='https://www.googletagmanager.com/gtag/js?id=G-912L0PB68G';document.head.appendChild(s);
+}
+</script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);try{if(arguments[0]==='consent'&&arguments[1]==='update'&&arguments[2]&&arguments[2].analytics_storage==='granted'){bgLoadGoogleAnalytics();}}catch(e){}}
+  // Consent Mode v2 — standaard geen toestemming; analytics uit tot de bezoeker kiest
+  gtag('consent', 'default', {
+    ad_storage: 'denied',
+    ad_user_data: 'denied',
+    ad_personalization: 'denied',
+    analytics_storage: 'denied',
+    wait_for_update: 500
+  });
+  try{ if(localStorage.getItem('bg_consent')==='granted'){ bgLoadGoogleAnalytics(); gtag('consent','update',{analytics_storage:'granted'}); } }catch(e){}
+  gtag('js', new Date());
+  gtag('config', 'G-912L0PB68G');
+</script><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kennis borgen mkb: voorkom afhankelijkheid van één medewerker</title>
+<meta name="description" content="Kennis borgen mkb voorkomt dat cruciale proceskennis verdwijnt bij ziekte, vertrek of pensioen. Zo maak je kennis onderdeel van het dagelijkse werk.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/blog/waarom-kennis-in-het-hoofd-van-een-medewerker-een-tikkende-tijdbom-is/">
+<meta name="bg-zoekwoord" content="kennis borgen mkb">
+<meta name="theme-color" content="#2742D6">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kennis borgen mkb: voorkom afhankelijkheid van één medewerker">
+<meta property="og:description" content="Kennis borgen mkb voorkomt dat cruciale proceskennis verdwijnt bij ziekte, vertrek of pensioen. Zo maak je kennis onderdeel van het dagelijkse werk.">
+<meta property="og:url" content="https://www.bedrijfsgeheugen.nl/blog/waarom-kennis-in-het-hoofd-van-een-medewerker-een-tikkende-tijdbom-is/">
+<script>document.documentElement.classList.add('js')</script>
+
+
+
+
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--oranje:#FF4F17;--oranje-t:#C2410C;--geel:#FFE86B;--lijn:#DCDFE6;--grijs:#5C646E}
+*{margin:0;padding:0;box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{font-family:'Instrument Sans',sans-serif;background:var(--papier);color:var(--inkt);line-height:1.65;font-size:16.5px;padding-bottom:92px}
+h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;line-height:1.12}
+.wrap{max-width:1120px;margin:0 auto;padding:0 1.5rem}
+@keyframes pulsdot{0%,100%{box-shadow:0 0 0 0 rgba(46,204,113,.5)}50%{box-shadow:0 0 0 6px rgba(46,204,113,0)}}
+@media(prefers-reduced-motion:reduce){.tb-status i{animation:none}}
+@media(max-width:640px){.tb-icons a{width:34px;height:34px}.tb-icons svg{width:16px;height:16px}}
+.btn{display:inline-block;border:2px solid var(--inkt);border-radius:10px;padding:.65rem 1.3rem;font-weight:700;text-decoration:none;color:var(--inkt);font-size:.95rem}
+.btn.blauw{background:var(--blauw);border-color:var(--blauw);color:#fff}
+.btn.oranje{background:var(--oranje);border-color:var(--oranje);color:var(--inkt)}
+.logo{font-family:'Bricolage Grotesque',sans-serif;font-weight:800;font-size:1.25rem;color:var(--inkt);text-decoration:none;letter-spacing:-.02em;display:inline-flex;align-items:center;gap:.55rem}
+.logo b{color:var(--blauw)}
+.logo svg{width:26px;height:26px;transform:rotate(-5deg);flex-shrink:0}
+/* ── artikel ── */
+.kruimel{padding:1.6rem 0 0;font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.04em;text-transform:uppercase;color:var(--grijs)}
+.kruimel a{color:var(--grijs);text-decoration:none}
+.kruimel a:hover{color:var(--blauw)}
+.artikelkop{padding:1.4rem 0 1.6rem}
+.eyebrow{font-family:'IBM Plex Mono',ui-monospace,monospace;font-size:.7rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#C2410C;display:block;margin-bottom:1rem}
+.artikelkop h1{font-size:clamp(2rem,4.6vw,3rem);font-weight:800;max-width:20em}
+.artikelmeta{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--grijs);margin-top:1.1rem;display:flex;gap:.6rem;flex-wrap:wrap;align-items:center}
+.artikel{max-width:44rem}
+.artikel p{margin:1.1rem 0;color:#2A2E33}
+.artikel .lead{font-size:1.15rem;color:#3C424A}
+.artikel h2{font-size:clamp(1.5rem,3vw,1.85rem);font-weight:800;margin:2.6rem 0 .5rem}
+.artikel h3{font-size:1.2rem;font-weight:700;margin:1.8rem 0 .3rem}
+.artikel a{color:var(--blauw);font-weight:600;text-decoration:underline;text-underline-offset:2px}
+.artikel ul,.artikel ol{margin:1rem 0 1.2rem 1.3rem;color:#2A2E33}
+.artikel li{margin-bottom:.5rem}
+.artikel strong{font-weight:700;color:var(--inkt)}
+.callout{background:#fff;border:2px solid var(--inkt);border-radius:14px;padding:1.3rem 1.5rem;margin:1.8rem 0}
+.callout p{margin:.3rem 0}
+.stap{list-style:none;margin:1.4rem 0;padding:0;counter-reset:s}
+.stap>li{counter-increment:s;position:relative;padding:0 0 1.1rem 3rem;margin:0}
+.stap>li::before{content:counter(s);position:absolute;left:0;top:-.1rem;width:2.1rem;height:2.1rem;border-radius:50%;background:var(--blauw);color:#fff;font-family:'Bricolage Grotesque';font-weight:800;display:flex;align-items:center;justify-content:center;font-size:1rem}
+.stap>li strong{display:block;margin-bottom:.15rem}
+.cta-blok{background:var(--inkt);color:#fff;border-radius:18px;padding:2.4rem;margin:3rem 0}
+.cta-blok h2{color:#fff;font-size:1.6rem;margin:0 0 .6rem;max-width:18em}
+.cta-blok p{color:#C8CBD2;max-width:34em;margin:0 0 1.4rem}
+.cta-blok .knoppen{display:flex;gap:.8rem;flex-wrap:wrap}
+.cta-blok .btn{background:#fff}
+.faq{margin:1.4rem 0 0}
+.faq details{border-bottom:1px solid var(--lijn);padding:1rem 0}
+.faq summary{font-family:'Bricolage Grotesque';font-weight:700;font-size:1.1rem;cursor:pointer;list-style:none;display:flex;justify-content:space-between;gap:1rem}
+.faq summary::-webkit-details-marker{display:none}
+.faq summary::after{content:"+";color:var(--blauw);font-weight:800}
+.faq details[open] summary::after{content:"–"}
+.faq details p{margin:.7rem 0 0;color:#2A2E33}
+.xfooter{background:var(--inkt);color:#C8CBD2;padding:3.5rem 0 1.5rem;margin-top:4rem;font-size:.92rem}
+.fgrid{display:grid;grid-template-columns:1.3fr 1fr 1fr 1.1fr;gap:2.5rem}
+@media(max-width:860px){.fgrid{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.fgrid{grid-template-columns:1fr}}
+.flogo{font-family:'Bricolage Grotesque';font-weight:800;font-size:1.35rem;color:#fff}
+.flogo b{color:#8FA3FF}
+.fkol.merk p{margin-top:.9rem;font-size:.9rem;color:#9AA1AB;max-width:26em}
+.fkol h4{color:#fff;font-size:.95rem;margin-bottom:.9rem;font-family:'Bricolage Grotesque'}
+.fkol a{display:block;color:#C8CBD2;text-decoration:none;padding:.22rem 0}
+.fkol a:hover{color:var(--geel)}
+.fklein{display:block;margin-top:.9rem;font-size:.78rem;color:#7E8590}
+.fonder{border-top:1px solid rgba(255,255,255,.14);margin-top:2.5rem;padding-top:1.3rem;font-size:.8rem;color:#7E8590}
+
+.tabelwrap{overflow-x:auto;margin:1.6rem 0;border:1px solid var(--lijn);border-radius:10px}
+.artikel table{border-collapse:collapse;width:100%;font-size:.95rem;background:#fff}
+.artikel th,.artikel td{text-align:left;padding:.7rem .9rem;border-bottom:1px solid var(--lijn);vertical-align:top}
+.artikel th{font-family:'IBM Plex Mono',monospace;font-size:.72rem;letter-spacing:.05em;text-transform:uppercase;color:var(--grijs);background:#F4F3EF}
+.artikel tr:last-child td{border-bottom:none}
+.faq-blok{margin-top:2.6rem;border-top:2px solid var(--inkt);padding-top:1.6rem}
+.faq-blok h2{margin-top:0}
+.faq-item{border-bottom:1px solid var(--lijn);padding:1rem 0}
+.faq-item h3{font-size:1.05rem;margin-bottom:.4rem}
+.faq-item p{margin:0}
+.slot-cta{margin-top:2.6rem;background:var(--inkt);color:#fff;padding:1.8rem;border-radius:14px}
+.slot-cta h2{color:#fff;margin-top:0;font-size:1.4rem}
+.slot-cta p{color:#D8DBE0}
+.slot-cta .knoppen{display:flex;flex-wrap:wrap;gap:.7rem;margin-top:1.1rem}
+.slot-cta a{display:inline-block;padding:.75rem 1.2rem;border-radius:999px;font-weight:600;text-decoration:none;font-size:.92rem}
+.slot-cta a.primair{background:var(--oranje);color:var(--inkt);border:none}
+.slot-cta a.secundair{background:transparent;color:#fff;border:1px solid rgba(255,255,255,.4)}
+</style>
+
+
+<script>
+(function(){
+  function loadGoat(){if(document.querySelector('script[data-bg-goat]'))return;var s=document.createElement('script');s.async=true;s.dataset.bgGoat='1';s.dataset.goatcounter='https://bedrijfsgeheugen.goatcounter.com/count';s.src='https://gc.zgo.at/count.js';document.head.appendChild(s);}
+  window.addEventListener('load',function(){setTimeout(loadGoat,5000);},{once:true});
+})();
+</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"BlogPosting","headline":"Kennis borgen mkb: voorkom afhankelijkheid van één medewerker","description":"Kennis borgen mkb voorkomt dat cruciale proceskennis verdwijnt bij ziekte, vertrek of pensioen. Zo maak je kennis onderdeel van het dagelijkse werk.","datePublished":"2026-09-19","dateModified":"2026-09-19","inLanguage":"nl-NL","mainEntityOfPage":"https://www.bedrijfsgeheugen.nl/blog/waarom-kennis-in-het-hoofd-van-een-medewerker-een-tikkende-tijdbom-is/","author":{"@type":"Person","name":"Arthur Prinsen","url":"https://www.bedrijfsgeheugen.nl/over-ons"},"publisher":{"@id":"https://www.bedrijfsgeheugen.nl/#org"},"articleSection":"Kennisborging","keywords":"kennis borgen mkb"},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wat betekent kennis borgen in het mkb?","acceptedAnswer":{"@type":"Answer","text":"Kennis borgen betekent dat cruciale proceskennis, uitzonderingen en beslisregels niet alleen in hoofden zitten, maar tijdens het werk vindbaar en overdraagbaar worden vastgelegd."}},{"@type":"Question","name":"Waarom is alleen documentatie niet genoeg?","acceptedAnswer":{"@type":"Answer","text":"Documentatie veroudert als het losstaat van het dagelijkse proces. Kennisborging werkt beter wanneer wijzigingen, uitzonderingen en beslissingen worden vastgelegd op het moment dat ze ontstaan."}},{"@type":"Question","name":"Waar begin je met kennis borgen?","acceptedAnswer":{"@type":"Answer","text":"Begin bij één kernproces dat sterk afhankelijk is van één persoon. Leg vast welke uitzonderingen, beslissingen en overdrachten nodig zijn om dat proces ook zonder die persoon te laten functioneren."}}]},{"@type":"BreadcrumbList","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.bedrijfsgeheugen.nl/"},{"@type":"ListItem","position":2,"name":"Blog","item":"https://www.bedrijfsgeheugen.nl/blog/"},{"@type":"ListItem","position":3,"name":"Kennis borgen mkb: voorkom afhankelijkheid van één medewerker","item":"https://www.bedrijfsgeheugen.nl/blog/waarom-kennis-in-het-hoofd-van-een-medewerker-een-tikkende-tijdbom-is/"}]}]}</script>
+<link rel="icon" type="image/png" href="/favicon.png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="stylesheet" href="/assets/stijl.css">
+
+<meta property="og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/banner-li-bedrijf.jpg">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="stylesheet" href="/assets/kop.css?v=0466dd43">
+<style id="bg-cluster-stijl">
+.bg-cluster{max-width:1120px;margin:2rem auto;padding:1rem 1.15rem;background:#fff;
+ border:1px solid #DCDFE6;border-radius:13px;font-family:'Instrument Sans',system-ui,sans-serif}
+.bg-cluster b{display:block;font-family:'Bricolage Grotesque',sans-serif;font-size:.95rem;letter-spacing:-.02em;margin-bottom:.5rem}
+.bg-cluster ul{list-style:none;margin:0;padding:0;display:grid;gap:.4rem}
+.bg-cluster li{font-size:.88rem;line-height:1.5;color:#5C646E}
+.bg-cluster a{color:#2742D6;font-weight:600;text-decoration:none}
+.bg-cluster a:hover{text-decoration:underline}
+@media(max-width:820px){.bg-cluster{margin:1.5rem 1rem}}
+</style>
+</head>
+<body data-content-id="blog:instagram-groeikalender-v2-hoe-mira-dagelijks-scoort-tot-31-12-2026">
+<div class="bgtop"><div class="bgtop-in">
+  <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
+  <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
+</div></div>
+<nav class="bgkop" id="bgkop"><div class="bgkop-in">
+<a class="bgkop-logo" href="/" aria-label="Bedrijfsgeheugen.nl — naar de homepage"><img src="/assets/merk/logo-merk.png" alt="" width="34" height="34"><span><span class="bgkop-woord">Bedrijfs<b>geheugen</b></span><span class="bgkop-payoff">Aanpakken zonder aanmodderen.</span></span></a>
+<div class="bgkop-links"><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/systemen-koppelen"><b>Systemen koppelen</b><span>Twee pakketten laten praten, zonder overtypen</span></a><a href="/ai-adoptie"><b>AI &amp; governance</b><span>Verantwoord aan de slag, met afspraken die gelden</span></a><a href="/ai-marketing-mkb"><b>AI-marketing</b><span>Zichtbaar blijven zonder er elke week tijd in te steken</span></a><a href="/due-diligence"><b>Due diligence &amp; exit</b><span>Wat weet dit bedrijf, en wat als de eigenaar wegloopt</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/afas-koppeling"><b>AFAS-koppeling</b><span>Aanvragen, orders en uren automatisch in AFAS</span></a><a href="/exact-online-koppeling"><b>Exact Online</b><span>Webshop, CRM of urenregistratie naar je boekhouding</span></a><a href="/twinfield-koppeling"><b>Twinfield</b><span>Facturen en uren zonder handmatig inboeken</span></a><a href="/webshop-koppeling"><b>Webshop koppelen</b><span>Shopify of WooCommerce naar je administratie</span></a><a href="/api-koppeling-laten-maken"><b>API-koppeling laten maken</b><span>Twee pakketten die allebei een API hebben</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Het bedrijfsgeheugen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/bedrijfsgeheugen"><b>Wat is een bedrijfsgeheugen?</b><span>Waar het over gaat, in gewone taal</span></a><a href="/product"><b>Het portaal</b><span>Waar alles doorheen loopt en zichtbaar blijft</span></a><a href="/frisse-blik"><b>Frisse blik</b><span>In 30 minuten zien waar de grootste kansen liggen</span></a><a href="/zelfscan"><b>Zelfscan</b><span>Zeven vragen over waar kennis bij jou weglekt</span></a><a href="/ai-scan"><b>AI-scan</b><span>Waar levert AI bij jou echt iets op</span></a><a href="/afmaakindex"><b>De Afmaakindex</b><span>Wat draait er nog van vorig jaar</span></a><a href="/monitor"><b>Bedrijfsgeheugen-index</b><span>Meet in tien minuten wat overtypen je kost</span></a><a href="/benchmark"><b>Benchmark</b><span>Hoe je scoort naast vergelijkbare bedrijven</span></a><a href="/hoe-het-werkt"><b>Hoe het werkt</b><span>Een handeling per keer, vaste prijs, geen traject</span></a></div></div><div class="bgkop-groep"><button class="bgkop-trig" type="button" aria-expanded="false">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-paneel"><a href="/blog/"><b>Blog</b><span>Wat we tegenkomen, uitgelegd zonder jargon</span></a><a href="/ai-act"><b>AI Act</b><span>Wat er nu geldt voor bedrijven van 3 tot 250 man</span></a><a href="/data-soevereiniteit"><b>Data-soevereiniteit</b><span>Waar gaan je gegevens heen bij ChatGPT en Copilot</span></a><a href="/ai-in-bi"><b>AI in business intelligence</b><span>Wat werkt op je cijfers, en wat niet</span></a><a href="/ai-in-data-engineering"><b>AI in data engineering</b><span>Wat zin heeft en waar de grens ligt</span></a><a href="/monitor"><b>Bedrijfsgeheugen-index</b><span>Meet in tien minuten wat het bij jou kost</span></a><a href="/ai-capability-model"><b>AI-capabilitymodel</b><span>De 86 capabilities, plus een scan in negen vragen</span></a><a href="/begrippen"><b>Begrippenlijst</b><span>De termen, in gewone taal</span></a></div></div><a href="/over-ons">Over ons</a></div>
+<a class="bgkop-cta" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+<button class="bgkop-knop" id="bgkopKnop" aria-label="Menu openen" aria-expanded="false" aria-controls="bgkopMob"><span></span><span></span><span></span></button>
+</div>
+<div class="bgkop-mob" id="bgkopMob" hidden><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Oplossingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/systemen-koppelen">Systemen koppelen</a><a href="/ai-adoptie">AI &amp; governance</a><a href="/ai-marketing-mkb">AI-marketing</a><a href="/due-diligence">Due diligence &amp; exit</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Koppelingen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/afas-koppeling">AFAS-koppeling</a><a href="/exact-online-koppeling">Exact Online</a><a href="/twinfield-koppeling">Twinfield</a><a href="/webshop-koppeling">Webshop koppelen</a><a href="/api-koppeling-laten-maken">API-koppeling laten maken</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Kennis<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/blog/">Blog</a><a href="/ai-act">AI Act</a><a href="/data-soevereiniteit">Data-soevereiniteit</a><a href="/ai-in-bi">AI in business intelligence</a><a href="/ai-in-data-engineering">AI in data engineering</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/ai-capability-model">AI-capabilitymodel</a><a href="/begrippen">Begrippenlijst</a></div><button class="bgkop-macc" type="button" aria-expanded="false" aria-haspopup="true">Het bedrijfsgeheugen<svg viewBox="0 0 12 12" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M2.5 4.5L6 8l3.5-3.5"/></svg></button><div class="bgkop-mpaneel" hidden><a href="/bedrijfsgeheugen">Wat is een bedrijfsgeheugen?</a><a href="/product">Het portaal</a><a href="/frisse-blik">Frisse blik</a><a href="/zelfscan">Zelfscan</a><a href="/ai-scan">AI-scan</a><a href="/afmaakindex">De Afmaakindex</a><a href="/monitor">Bedrijfsgeheugen-index</a><a href="/benchmark">Benchmark</a><a href="/hoe-het-werkt">Hoe het werkt</a></div><a href="/expertises">Alle expertises</a><a href="/over-ons">Over ons</a><a class="bgkop-mcta" href="/frisse-blik">Plan een Frisse blik &rarr;</a></div>
+<script src="/assets/js/menu.js?v=198c58e3" defer></script></nav>
+
+<main>
+<div class="wrap">
+<nav class="bgkruim" aria-label="Kruimelpad"><a href="/">Home</a><span aria-hidden="true">&rsaquo;</span><a href="/blog/">Blog</a><span aria-hidden="true">&rsaquo;</span><span aria-current="page">Kennis borgen mkb: voorkom afhankelijkheid van één medewerker</span></nav>
+<div class="voortgang" id="vg"></div>
+<article class="artikel" data-content-id="blog:waarom-kennis-in-het-hoofd-van-een-medewerker-een-tikkende-tijdbom-is">
+<div class="artikelkop"><span class="eyebrow">Kennisborging · Powerhouse dagelijkse learning</span><h1>Kennis borgen mkb: voorkom afhankelijkheid van één medewerker</h1><div class="artikelmeta"><span>19-09-2026</span> · <span>Arthur Prinsen</span></div></div>
+<p class="lead">Kennis borgen mkb begint niet met een handboek, maar met voorkomen dat één medewerker de enige drager van cruciale proceskennis blijft.</p>
+<p>In veel MKB-bedrijven zit de belangrijkste bedrijfskennis niet in een systeem, maar in de hoofden van een paar mensen die er al jaren werken. Zij weten welke klant net iets anders behandeld wil worden, welke leverancier je moet bellen als iets misgaat, welke stap in het proces “eigenlijk altijd” op een bepaalde manier wordt gedaan, en waarom dat zo is gegroeid. Die kennis staat zelden op papier, omdat er nooit een directe aanleiding was om hem op te schrijven.</p>
+<h2>Kennis borgen mkb is meer dan documentatie</h2>
+<p>Dat werkt prima, tot het moment dat het niet meer werkt: iemand wordt ziek, gaat met pensioen, neemt ontslag, of is simpelweg twee weken op vakantie op het verkeerde moment. Dan blijkt dat de kennis niet was geborgd, maar geleend was — van één persoon, tijdelijk beschikbaar voor het bedrijf, maar nooit eigendom van het bedrijf zelf.</p>
+<figure><svg role="img" viewBox="0 0 640 240" aria-labelledby="fig1t"><title id="fig1t">Van persoonsafhankelijkheid naar geborgde proceskennis</title><rect x="20" y="70" width="180" height="100" rx="16" fill="none" stroke="currentColor"/><text x="110" y="120" text-anchor="middle">Kennis in één hoofd</text><path d="M215 120h90" stroke="currentColor" stroke-width="3"/><path d="M290 108l16 12-16 12" fill="none" stroke="currentColor" stroke-width="3"/><rect x="320" y="45" width="290" height="150" rx="16" fill="none" stroke="currentColor"/><text x="465" y="95" text-anchor="middle">Proces + bron + eigenaar</text><text x="465" y="135" text-anchor="middle">vindbaar tijdens het werk</text></svg><figcaption>Het doel is niet meer documentatie, maar minder afhankelijkheid van één persoon.</figcaption></figure>
+<p>Een veelgemaakte denkfout is dat kennisborging hetzelfde is als documentatie. Bedrijven kopen een wiki, richten een SharePoint-map in, of laten iemand een handboek schrijven, en denken dat het probleem daarmee is opgelost. In de praktijk veroudert die documentatie snel, wordt hij niet geraadpleegd, of mist hij precies de nuances die het proces in de praktijk werkbaar maken. Documentatie is een hulpmiddel, geen doel. Het eigenlijke probleem is dat kennis vaak niet expliciet wordt gemaakt op het moment dat hij ontstaat — tijdens het werk zelf, in de beslissingen die mensen dagelijks nemen.</p>
+<h2>Waarom overdracht bij vertrek te laat is</h2>
+<p>Een andere denkfout is dat overdracht iets is wat je aan het einde doet: bij vertrek, bij pensionering, bij een laatste gesprek. Tegen die tijd is veel van de context al vervlogen. Mensen die iets al jaren doen, vergeten vaak zelf welke stappen ze automatisch uitvoeren en waarom, simpelweg omdat het routine is geworden. Overdracht die pas begint als iemand de deur uitloopt, komt vrijwel altijd te laat en te oppervlakkig.</p>
+<figure><svg role="img" viewBox="0 0 640 240" aria-labelledby="fig2t"><title id="fig2t">Kennisborging als dagelijkse lus</title><circle cx="150" cy="120" r="55" fill="none" stroke="currentColor"/><text x="150" y="125" text-anchor="middle">Beslissing</text><circle cx="320" cy="120" r="55" fill="none" stroke="currentColor"/><text x="320" y="125" text-anchor="middle">Vastleggen</text><circle cx="490" cy="120" r="55" fill="none" stroke="currentColor"/><text x="490" y="125" text-anchor="middle">Hergebruiken</text><path d="M207 120h55M377 120h55" stroke="currentColor" stroke-width="3"/></svg><figcaption>Borg kennis op het moment dat een uitzondering of beslissing ontstaat, zodat zij later opnieuw gebruikt kan worden.</figcaption></figure>
+<h2>Maak kennis onderdeel van het dagelijkse werk</h2>
+<p>Wat wél helpt, is kennisborging inbedden in het gewone werkproces in plaats van als apart project te behandelen. Dat betekent: vastleggen wanneer een uitzondering wordt gemaakt en waarom, korte toelichtingen bij beslissingen die niet vanzelfsprekend zijn, en het expliciet maken van impliciete regels zodra ze zichtbaar worden — niet pas wanneer iemand vertrekt. Het gaat minder om een groot documentatieproject en meer om een gewoonte: kennis die ontstaat, wordt op het moment zelf vastgelegd, niet achteraf gereconstrueerd.</p>
+<p>Voor de continuïteit van een MKB-bedrijf is dit relevanter dan het vaak wordt behandeld. Een bedrijf dat afhankelijk is van een handvol mensen voor zijn kernprocessen, loopt een risico dat zelden op de agenda staat totdat het zich voordoet. Het is geen HR-vraagstuk en geen IT-project, maar een structureel onderdeel van hoe een organisatie werkt en blijft werken, ook als individuele mensen komen en gaan.</p>
+<p>Herken je dit in je eigen organisatie? Kijk eens naar één kernproces dat volledig afhankelijk is van één persoon, en vraag je af wat er gebeurt als die persoon er morgen niet is. <a href="https://www.bedrijfsgeheugen.nl/frisse-blik">Bekijk de Frisse blik &rarr;</a></p>
+<p>Wil je eerst zelf zien waar de grootste afhankelijkheid zit? <a href="https://www.bedrijfsgeheugen.nl/zelfscan">Doe de zelfscan</a>. Lees ook hoe <a href="https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen">een bedrijfsgeheugen</a> kennis overdraagbaar maakt.</p>
+<section class="faq-blok"><h2>Veelgestelde vragen over kennis borgen mkb</h2><div class="faq-item"><h3>Wat betekent kennis borgen in het mkb?</h3><p>Kennis borgen betekent dat cruciale proceskennis, uitzonderingen en beslisregels niet alleen in hoofden zitten, maar tijdens het werk vindbaar en overdraagbaar worden vastgelegd.</p></div><div class="faq-item"><h3>Waarom is alleen documentatie niet genoeg?</h3><p>Documentatie veroudert als het losstaat van het dagelijkse proces. Kennisborging werkt beter wanneer wijzigingen, uitzonderingen en beslissingen worden vastgelegd op het moment dat ze ontstaan.</p></div><div class="faq-item"><h3>Waar begin je met kennis borgen?</h3><p>Begin bij één kernproces dat sterk afhankelijk is van één persoon. Leg vast welke uitzonderingen, beslissingen en overdrachten nodig zijn om dat proces ook zonder die persoon te laten functioneren.</p></div></section>
+</article></div>
+</main>
+
+<script>
+(function(){var j=document.querySelectorAll('.jr');var y=new Date().getFullYear();j.forEach(function(e){e.textContent=y});})();
+</script>
+<!-- Cookiebanner (AVG/GDPR) — toestemming voor Google Analytics -->
+<style>
+#bgCookie{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:99999;max-width:660px;margin:0 auto;background:#fff;color:#16213e;border:1px solid #e4e4ec;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.20);padding:1.15rem 1.25rem;font:400 .92rem/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:none}
+#bgCookie.bgShow{display:block}
+#bgCookie h4{margin:0 0 .45rem;font-size:1.02rem;font-weight:700}
+#bgCookie p{margin:0}
+#bgCookie a{color:var(--blauw,#1a56db);text-decoration:underline}
+#bgCookie .bgBtns{display:flex;gap:.6rem;flex-wrap:wrap;margin-top:.95rem}
+#bgCookie button{flex:1 1 auto;min-width:140px;padding:.72rem 1rem;border-radius:9px;border:1.5px solid var(--blauw,#1a56db);font-weight:700;cursor:pointer;font-size:.92rem;font-family:inherit}
+#bgCookie .bgAccept{background:var(--blauw,#1a56db);color:#fff}
+#bgCookie .bgDeny{background:#fff;color:var(--blauw,#1a56db)}
+#bgCookie button:focus-visible{outline:3px solid rgba(26,86,219,.4);outline-offset:2px}
+@media(max-width:520px){#bgCookie .bgBtns{flex-direction:column-reverse}}
+</style>
+<div id="bgCookie" role="dialog" aria-label="Cookiemelding" aria-describedby="bgCookieTxt">
+  <h4>🍪 Cookies &amp; privacy</h4>
+  <p id="bgCookieTxt">Bedrijfsgeheugen gebruikt noodzakelijke cookies voor een goede werking van de site. Met jouw toestemming gebruiken we ook analytische cookies (Google Analytics) om te meten hoe de site wordt gebruikt en die te verbeteren. Je keuze wordt onthouden en je kunt 'm altijd wijzigen. Meer weten? Zie onze <a href="/privacy">privacyverklaring</a>.</p>
+  <div class="bgBtns">
+    <button type="button" class="bgDeny" id="bgCookieDeny">Alleen noodzakelijk</button>
+    <button type="button" class="bgAccept" id="bgCookieAccept">Accepteren</button>
+  </div>
+</div>
+<script>
+(function(){
+  var KEY='bg_consent';
+  function applyConsent(state){try{if(typeof gtag==='function'){gtag('consent','update',{analytics_storage:(state==='granted'?'granted':'denied'),ad_storage:'denied',ad_user_data:'denied',ad_personalization:'denied'});}}catch(e){}}
+  function el(){return document.getElementById('bgCookie');}
+  function show(){var b=el();if(b)b.classList.add('bgShow');}
+  function hide(){var b=el();if(b)b.classList.remove('bgShow');}
+  function choose(state){try{localStorage.setItem(KEY,state);localStorage.setItem(KEY+'_ts',new Date().toISOString());}catch(e){}applyConsent(state);hide();}
+  window.bgOpenCookies=function(){show();};
+  document.addEventListener('DOMContentLoaded',function(){
+    var a=document.getElementById('bgCookieAccept'),d=document.getElementById('bgCookieDeny');
+    if(a)a.addEventListener('click',function(){choose('granted');});
+    if(d)d.addEventListener('click',function(){choose('denied');});
+    var stored=null;try{stored=localStorage.getItem(KEY);}catch(e){}
+    if(stored!=='granted'&&stored!=='denied'){show();}
+  });
+})();
+</script>
+<script src="/assets/stijl.js" defer></script>
+<footer class="bgvoet"><div class="bgvoet-in">
+  <div class="bgvoet-net">
+    <div>
+      <span class="bgvoet-merk">Bedrijfs<b>geheugen</b>.nl</span>
+      <p class="bgvoet-over">Systemen koppelen, kennis borgen en AI die past.<br>Voor mkb-bedrijven van 3 tot 250 medewerkers.</p>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Oplossingen</span>
+      <a href="/systemen-koppelen">Systemen koppelen</a>
+      <a href="/ai-adoptie">AI &amp; governance</a>
+      <a href="/ai-marketing-mkb">AI-marketing</a>
+      <a href="/workshops">AI-workshops</a>
+      <a href="/due-diligence">Due diligence &amp; exit</a>
+      <a href="/expertises">Alle expertises</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Koppelingen</span>
+      <a href="/afas-koppeling">AFAS-koppeling</a>
+      <a href="/exact-online-koppeling">Exact Online</a>
+      <a href="/twinfield-koppeling">Twinfield</a>
+      <a href="/webshop-koppeling">Webshop koppelen</a>
+      <a href="/api-koppeling-laten-maken">API-koppeling laten maken</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Kennis</span>
+      <a href="/blog/">Blog</a>
+      <a href="/ai-act">AI Act</a>
+      <a href="/data-soevereiniteit">Data-soevereiniteit</a>
+      <a href="/ai-in-bi">AI in business intelligence</a>
+      <a href="/ai-in-data-engineering">AI in data engineering</a>
+      <a href="/monitor">Bedrijfsgeheugen-index</a>
+      <a href="/benchmark">Benchmark</a>
+      <a href="/begrippen">Begrippenlijst</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Het bedrijfsgeheugen</span>
+      <a href="/bedrijfsgeheugen">Wat is een bedrijfsgeheugen?</a>
+      <a href="/product">Het portaal</a>
+      <a href="/frisse-blik">Frisse blik</a>
+      <a href="/zelfscan">Zelfscan</a>
+      <a href="/ai-scan">AI-scan</a>
+      <a href="/afmaakindex">De Afmaakindex</a>
+      <a href="/monitor">Bedrijfsgeheugen-index</a>
+      <a href="/hoe-het-werkt">Hoe het werkt</a>
+      <a href="/wijzigingen">Wijzigingen</a>
+    </div>
+    <div class="bgvoet-kolom">
+      <span class="bgvoet-kop">Over ons</span>
+      <a href="/over-ons">Ons verhaal</a>
+      <a href="/voor-mkb">Voor het mkb</a>
+      <a href="/investeerders-ma">Investeerders &amp; M&amp;A</a>
+      <a href="/contact">Contact</a>
+    </div>
+    <div class="bgvoet-cta">
+      <b>Plan een Frisse blik</b>
+      <p>In 30 minuten bekijken we samen waar de grootste kansen liggen.</p>
+      <a class="bgvoet-knop" href="/frisse-blik">Plan een Frisse blik &rarr;</a>
+    </div>
+  </div>
+  <div class="bgvoet-onder">
+    <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
+    <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
+  </div>
+</div></footer>
+</body>
+</html>
