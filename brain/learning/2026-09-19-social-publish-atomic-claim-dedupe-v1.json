@@ -1,33 +1,40 @@
 {
-  "version": "social-publish-atomic-claim-dedupe-v1",
-  "observed_at": "2026-09-19T14:29:00+02:00",
-  "type": "RECOVERY",
+  "fingerprint": "social-publish-atomic-claim-dedupe-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "DUPLICATE_EXTERNAL_SIDE_EFFECT",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
   "obligation_id": "SOCIAL-DUPLICATE-PUBLISH-20260919",
-  "incident": "Duplicate social publication from concurrent publisher runs",
-  "symptom": "The same canonical social artifact could be published twice when two runs observed content_ready before either persisted provider delivery state.",
   "root_cause": "Non-atomic read-then-side-effect sequencing around powerhouse_channel_decisions allowed concurrent writers to cross the external provider boundary.",
-  "prevention": [
-    "Atomically compare-and-set content_ready to dispatching before every external provider write.",
-    "Only the run that wins the claim may call Composio, Buffer, or another provider.",
-    "A claim loser exits ALREADY_CLAIMED_OR_DELIVERED without regeneration or replacement.",
-    "Retry only when evidence proves the previous attempt did not cross the provider side-effect boundary; otherwise reconcile provider truth first.",
-    "Keep provider readback/external_id mandatory before treating delivery as covered."
+  "prevention_rule": "Every external social publish must atomically compare-and-set its canonical decision from content_ready to dispatching before the provider call; only the claim winner may cross the provider side-effect boundary. Uncertain provider outcomes require provider reconciliation before retry.",
+  "enforcement": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/social-learning-buffer-delivery-guarantee-regression.test.mjs",
+    "tests/social-learning-buffer-rate-limit-regression.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md",
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
   ],
-  "enforcement": {
-    "runtime": "supabase/functions/powerhouse-social-publisher/index.ts",
-    "regression_tests": [
+  "evaluation": {
+    "historical_replay": [
       "tests/social-learning-buffer-delivery-guarantee-regression.test.mjs",
       "tests/social-learning-buffer-rate-limit-regression.test.mjs"
-    ],
-    "skills": [
-      ".agents/skills/instagram-composio-publisher/SKILL.md",
-      ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
     ]
   },
-  "discovered_gate_repairs": [
-    "Correct PR machine metadata to allowed delivery lane/candidate type/exact Base-SHA.",
-    "Terminate 20260917235907 reconciler function with semicolon before revoke.",
-    "Align ffmpeg-static regression assertion with repository version 5.3.0."
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "powerhouse-delivery-concurrency"
   ],
-  "terminal_rule": "Do not claim LIVE_BEWEZEN until exact-head required gates, protected merge/promotion, and production/provider readback are proven."
+  "evidence": {
+    "incident": "Duplicate social publication from concurrent publisher runs",
+    "symptom": "The same canonical social artifact could be published twice when two runs observed content_ready before either persisted provider delivery state.",
+    "safe_retry_boundary": "Only before a provider side effect is proven to have occurred; otherwise reconcile external truth first.",
+    "discovered_gate_repairs": [
+      "Correct PR machine metadata to allowed delivery lane/candidate type/exact Base-SHA.",
+      "Terminate 20260917235907 reconciler function with semicolon before revoke.",
+      "Align ffmpeg-static regression assertion with repository version 5.3.0."
+    ]
+  }
 }
