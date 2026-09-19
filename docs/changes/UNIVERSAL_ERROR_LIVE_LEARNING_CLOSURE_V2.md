@@ -62,3 +62,7 @@ Als een canoniek veiligheidscontract verandert, moet de bijbehorende regression-
 ## Config ↔ runtime ↔ oracle convergence
 
 Een veiligheidsregel is pas consistent als workflow/runtime, declaratieve configuratie en regression-oracle dezelfde strengste waarheid uitdrukken. Als de runtime strenger is geworden, moeten config en tests in dezelfde lineage worden bijgewerkt. De runtime-gate wordt nooit verzwakt om een oude test of configuratie passend te maken.
+
+## Isolated terminal successor
+
+Als een gedeelde branch ondanks een actieve terminal writer lease blijft muteren, wordt niet eindeloos opnieuw gerebind. Powerhouse maakt dan precies één geïsoleerde recovery successor voor dezelfde obligation vanaf actuele `main`, neemt uitsluitend de goedgekeurde delta mee, zet `Supersedes` naar de vervuilde voorganger en sluit die voorganger. Daarmee wordt head-thrash technisch beëindigd zonder learning of werk te verliezen.

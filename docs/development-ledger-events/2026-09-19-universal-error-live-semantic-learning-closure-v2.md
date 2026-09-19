@@ -31,3 +31,6 @@
 - ERROR: BRAIN replay exposed representation drift: runtime workflow enforced public visibility for normal-risk runs, while `site/website-release-risk.json` omitted it.
 - RECOVERY: aligned `normalRequiredTestSets` with the already-stricter runtime gate; no safety control weakened.
 - PREVENTION: runtime workflow, declarative risk config and regression oracle must converge in the same lineage when safety requirements tighten.
+- ERROR: parallel writer kept mutating the shared terminal branch after lease activation, cancelling healthy exact-head CI.
+- ROOT CAUSE: lease metadata did not technically isolate branch mutation.
+- RECOVERY/PREVENTION: create exactly one isolated same-obligation successor from current main, preserve only approved delta, set explicit Supersedes, close contaminated predecessor, and continue terminal delivery only on successor.
