@@ -26,7 +26,7 @@ test('required test is a stable aggregator and preserves the protected test cont
   assert.doesNotMatch(required, /make-cost-governor-policy\.test\.mjs/);
 });
 
-test('website lane keeps targeted proof for fast-fix and broad visibility for wider changes', () => {
+test('website lane keeps targeted proof for normal changes and broad visibility for high-risk changes', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   assert.match(website, /classifyWebsiteRelease/);
   assert.match(website, /\n  browser:/);
