@@ -41,7 +41,8 @@
   "fastFixRequiredTestSets": [
     "baseline",
     "preview",
-    "targeted-browser"
+    "targeted-browser",
+    "public-visibility"
   ],
   "normalRequiredTestSets": [
     "baseline",
