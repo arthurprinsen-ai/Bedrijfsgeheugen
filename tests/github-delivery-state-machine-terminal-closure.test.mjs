@@ -62,3 +62,14 @@ test('github_main readback records the obligation merge SHA while using current 
   const githubMainBlock=workflow.slice(start,end);
   assert.doesNotMatch(githubMainBlock,/echo "observed_sha=\$\{observed_sha\}"/);
 });
+
+
+test('failed canonical production readback falls through to descendant containment proof instead of forcing a recovery loop', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/CANONICAL_PRODUCTION_READBACK_FAILED_FALLING_BACK_TO_DESCENDANT_PROOF/);
+  const canonicalFailure=workflow.indexOf('CANONICAL_PRODUCTION_READBACK_FAILED_FALLING_BACK_TO_DESCENDANT_PROOF');
+  const descendantProof=workflow.indexOf('PRODUCTION_DESCENDANT_READBACK_PROVEN');
+  assert.ok(canonicalFailure>=0 && descendantProof>canonicalFailure);
+  const failureBlock=workflow.slice(Math.max(0,canonicalFailure-300),descendantProof);
+  assert.doesNotMatch(failureBlock,/PRODUCTION_READBACK_FAILED:[^\n]*\n\s*exit 78/);
+});

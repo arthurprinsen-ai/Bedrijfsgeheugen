@@ -1,0 +1,23 @@
+{
+  "id": "terminal-readback-descendant-fallback-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Terminal closure repeatedly failed when the first canonical production readback was red even though a later live production deploy could already contain the same merge.",
+  "root_cause": "The workflow exited immediately on a non-cancelled canonical readback failure and never reached its existing descendant-production containment proof.",
+  "prevention": [
+    "Treat canonical production readback success as the preferred fast path.",
+    "On canonical failure, continue fail-closed into the existing live descendant containment proof rather than terminating immediately.",
+    "Claim terminal success only when the live production SHA contains the merge and the production contract/readiness checks pass.",
+    "Do not add a second deployment mechanism."
+  ],
+  "evidence": {
+    "workflow": ".github/workflows/obligation-terminal-closure.yml",
+    "test": "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+    "observed_failure_runs": [35441539670,35441522424,35441473669]
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-self-optimization",
+    "powerhouse-toolchain-authority"
+  ]
+}

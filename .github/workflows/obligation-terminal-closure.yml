@@ -125,15 +125,14 @@ jobs:
                 exit 0
               fi
               if [ "$source_conclusion" != "cancelled" ]; then
-                echo "::error::PRODUCTION_READBACK_FAILED:run=$source_run_id conclusion=$source_conclusion"
-                exit 78
+                echo "::warning::CANONICAL_PRODUCTION_READBACK_FAILED_FALLING_BACK_TO_DESCENDANT_PROOF:run=$source_run_id conclusion=$source_conclusion"
               fi
               break
             fi
             sleep 10
           done
 
-          echo "Canonical production readback unavailable/cancelled; proving current live production contains merge ${MERGE_SHA}."
+          echo "Canonical production readback unavailable/cancelled/failed; proving current live production contains merge ${MERGE_SHA}."
           for attempt in $(seq 1 36); do
             nonce="${MERGE_SHA}-descendant-${attempt}-$(date +%s)"
             if curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/release.json?bg_terminal_recovery=${nonce}" -o /tmp/release.json               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/?bg_terminal_recovery=${nonce}" -o /tmp/runtime.html               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/api/connectors/readiness?bg_terminal_recovery=${nonce}" -o /tmp/readiness.json; then
