@@ -87,11 +87,20 @@ export async function buildPlan({ repo, policy, apply = false }) {
 
   const closedCandidates = [];
   const protectedCandidates = [];
+  const deferredCandidates = [];
+  const budget = policy.resource_budget ?? {};
+  const maxCandidateClosures = Number(budget.max_candidate_closures_per_run ?? 25);
+  const maxBranchEvaluations = Number(budget.max_branch_evaluations_per_run ?? 200);
+  const maxBranchDeletes = Number(budget.max_branch_deletes_per_run ?? 100);
   for (const [familyId, prs] of families) {
     const sorted = prs.sort((a, b) => b.number - a.number);
     const newest = sorted[0];
     protectedCandidates.push({ family: familyId, number: newest.number, reason: "newest-open-candidate" });
     for (const pr of sorted.slice(1)) {
+      if (closedCandidates.length >= maxCandidateClosures) {
+        deferredCandidates.push({ family: familyId, number: pr.number, reason: "resource-budget" });
+        continue;
+      }
       const family = candidateFamily(pr, policy);
       const files = await changedFiles(repo, pr.number);
       const isBot = pr.user?.login === "github-actions[bot]";
@@ -115,15 +124,26 @@ export async function buildPlan({ repo, policy, apply = false }) {
 
   const orphanBranches = [];
   const retainedUniqueBranches = [];
+  const deferredOrphanBranches = [];
+  let branchEvaluations = 0;
+  let branchDeletes = 0;
   for (const b of branches) {
     const name = b.name;
     if (!isControlledWriterBranch(name, policy) || openHeads.has(name)) continue;
+    if (branchEvaluations >= maxBranchEvaluations) {
+      deferredOrphanBranches.push({ branch: name, reason: "evaluation-budget" });
+      continue;
+    }
+    branchEvaluations += 1;
     const cmp = await compare(repo, policy.default_branch, name);
     if (mayDeleteOrphanBranch({ branch: name, openHeads, aheadBy: cmp.ahead_by, policy })) {
       const item = { branch: name, ahead_by: cmp.ahead_by, behind_by: cmp.behind_by };
-      if (apply) {
+      if (apply && branchDeletes < maxBranchDeletes) {
         await deleteBranch(repo, name);
         item.deleted = true;
+        branchDeletes += 1;
+      } else if (apply) {
+        item.deferred = "delete-budget";
       }
       orphanBranches.push(item);
     } else {
@@ -141,7 +161,11 @@ export async function buildPlan({ repo, policy, apply = false }) {
       open_prs_before: openPrs.length,
       superseded_candidates: closedCandidates.length,
       removable_orphan_writer_branches: orphanBranches.length,
-      retained_unique_writer_branches: retainedUniqueBranches.length
+      retained_unique_writer_branches: retainedUniqueBranches.length,
+      deferred_candidates: deferredCandidates.length,
+      deferred_orphan_writer_branches: deferredOrphanBranches.length,
+      branch_evaluations: branchEvaluations,
+      branch_deletes: branchDeletes
     },
     thresholds: {
       warning: policy.branch_warning_threshold,
@@ -149,10 +173,17 @@ export async function buildPlan({ repo, policy, apply = false }) {
       warning_exceeded: branches.length > policy.branch_warning_threshold,
       hard_exceeded: branches.length > policy.branch_hard_threshold
     },
+    resource_budget: {
+      max_candidate_closures_per_run: maxCandidateClosures,
+      max_branch_evaluations_per_run: maxBranchEvaluations,
+      max_branch_deletes_per_run: maxBranchDeletes
+    },
     closed_candidates: closedCandidates,
     protected_candidates: protectedCandidates,
+    deferred_candidates: deferredCandidates,
     removable_orphan_writer_branches: orphanBranches,
-    retained_unique_writer_branches: retainedUniqueBranches
+    retained_unique_writer_branches: retainedUniqueBranches,
+    deferred_orphan_writer_branches: deferredOrphanBranches
   };
 
   return report;
