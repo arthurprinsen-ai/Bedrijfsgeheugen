@@ -55,3 +55,29 @@ test('continuity and delivery skills make closure a runtime obligation, not advi
     assert.match(source,/human.*documentation/i);
   }
 });
+
+
+test('canonical regulatory source observation does not require a material closure bundle',()=>{
+  const result=evaluateMaterialWritebackClosure({
+    changedPaths:['data/regulatory-source-state.json'],
+    regulatoryCandidateType:'source-observation',
+  });
+  assert.equal(result.ok,true);
+  assert.equal(result.material,false);
+  assert.equal(result.source_observation,true);
+  assert.equal(result.status,'SOURCE_OBSERVATION_WRITEBACK_NOT_REQUIRED');
+});
+
+test('regulatory source observation exemption is exact-path and exact-type only',()=>{
+  for(const candidate of [
+    {changedPaths:['data/regulatory-source-state.json'],regulatoryCandidateType:''},
+    {changedPaths:['data/regulatory-source-state.json'],regulatoryCandidateType:'implementation'},
+    {changedPaths:['data/regulatory-source-state.json','data/regelgeving.json'],regulatoryCandidateType:'source-observation'},
+    {changedPaths:['data/regelgeving.json'],regulatoryCandidateType:'source-observation'},
+  ]){
+    const result=evaluateMaterialWritebackClosure(candidate);
+    assert.equal(result.ok,false);
+    assert.equal(result.material,true);
+    assert.deepEqual(result.missing,['brain_learning','activity_ledger','human_documentation']);
+  }
+});
