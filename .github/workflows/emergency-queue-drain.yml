@@ -1,0 +1,58 @@
+name: Emergency Queue Drain
+
+on:
+  push:
+    branches:
+      - ops/emergency-queue-drain-20260919
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: emergency-queue-drain
+  cancel-in-progress: true
+
+jobs:
+  drain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Cancel only obsolete closed-PR-head runs
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          open_heads="$(gh api --paginate "repos/$repo/pulls?state=open&per_page=100" --jq '.[].head.sha' | sort -u)"
+          closed_heads="$(gh api --paginate "repos/$repo/pulls?state=closed&per_page=100" --jq '.[].head.sha' | sort -u)"
+          cancelled=0
+          examined=0
+          while read -r run; do
+            id="$(jq -r '.id' <<<"$run")"
+            sha="$(jq -r '.head_sha // empty' <<<"$run")"
+            status="$(jq -r '.status // empty' <<<"$run")"
+            [ -n "$sha" ] || continue
+            examined=$((examined+1))
+            grep -qx "$sha" <<<"$closed_heads" || continue
+            if grep -qx "$sha" <<<"$open_heads"; then
+              echo "PROTECT_OPEN_HEAD:$sha run=$id"
+              continue
+            fi
+            case "$status" in
+              queued|in_progress|pending|waiting|requested)
+                if gh api --method POST "repos/$repo/actions/runs/$id/cancel" >/dev/null 2>&1; then
+                  cancelled=$((cancelled+1))
+                  echo "CANCELLED_OBSOLETE_RUN:$id:$sha"
+                fi
+                ;;
+            esac
+            [ "$cancelled" -lt 100 ] || break
+          done < <(
+            { gh api "repos/$repo/actions/runs?status=queued&per_page=100" --jq '.workflow_runs[]';
+              gh api "repos/$repo/actions/runs?status=in_progress&per_page=100" --jq '.workflow_runs[]'; } |
+            jq -c .
+          )
+          echo "QUEUE_DRAIN_RESULT:examined=$examined cancelled=$cancelled"
