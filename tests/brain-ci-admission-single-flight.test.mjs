@@ -26,5 +26,5 @@ test('skill projection supersedes stale same-PR/ref work', async () => {
 
 test('Required executes this CI admission regression', async () => {
   const yml = await readFile('.github/workflows/required-test.yml','utf8');
-  assert.match(yml,/tests\/github-actions-ci-admission-single-flight\.test\.mjs/);
+  assert.match(yml,/tests\/brain-ci-admission-single-flight\.test\.mjs/);
 });
