@@ -279,7 +279,32 @@ jobs:
           const unique=[...new Map(expected.map(x=>[`${x.version}:${x.name}`,x])).values()]
             .filter(item=>existsSync(`supabase/migrations/${item.version}_${item.name}.sql`))
             .sort((a,b)=>a.version.localeCompare(b.version)||a.name.localeCompare(b.name));
-          const compact=unique.map(({version,name})=>({version,name}));
+
+          // Historical supersession lineage can contain a migration under an older
+          // timestamp while current main carries the exact same migration name under
+          // its canonical production identity. Reconcile by stable migration name to
+          // current main, but fail closed on ambiguity or malformed identities.
+          execFileSync('git',['fetch','origin','main','--no-tags'],{stdio:'ignore'});
+          const currentMigrationPaths=execFileSync(
+            'git',
+            ['ls-tree','-r','--name-only','origin/main','--','supabase/migrations'],
+            {encoding:'utf8'}
+          ).split(/\r?\n/).filter(Boolean);
+          const canonical=unique.map(item=>{
+            const matches=currentMigrationPaths.filter(candidate=>{
+              const base=path.basename(candidate,'.sql');
+              const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
+              return match && match[2]===item.name;
+            });
+            if(matches.length>1) throw new Error(`SUPABASE_MIGRATION_CANONICAL_IDENTITY_AMBIGUOUS:${item.name}:${matches.join(',')}`);
+            if(matches.length===0) return item;
+            const base=path.basename(matches[0],'.sql');
+            const match=base.match(/^(\d{14})_([a-z0-9_]+)$/);
+            if(!match) throw new Error(`SUPABASE_MIGRATION_CANONICAL_IDENTITY_INVALID:${matches[0]}`);
+            return {...item,version:match[1],canonical_path:matches[0],historical_version:item.version};
+          });
+          const compact=[...new Map(canonical.map(x=>[`${x.version}:${x.name}`,x])).values()]
+            .map(({version,name})=>({version,name}));
           await appendFile(process.env.GITHUB_OUTPUT,`required=${compact.length>0}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`expected=${JSON.stringify(compact)}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`lineage_depth=${depth}\n`);

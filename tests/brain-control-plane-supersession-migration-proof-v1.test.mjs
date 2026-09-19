@@ -34,3 +34,13 @@ test('terminal migration proof excludes superseded aliases absent from the canon
   assert.match(workflow,/existsSync/);
   assert.match(workflow,/supabase\/migrations\/\$\{item\.version\}_\$\{item\.name\}\.sql/);
 });
+
+
+test('terminal migration proof reconciles historical migration timestamp to current canonical main identity', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/execFileSync\('git',\['fetch','origin','main','--no-tags'\]/);
+  assert.match(workflow,/execFileSync\(\s*'git',\s*\['ls-tree','-r','--name-only','origin\/main'/);
+  assert.match(workflow,/SUPABASE_MIGRATION_CANONICAL_IDENTITY_AMBIGUOUS/);
+  assert.match(workflow,/historical_version:item\.version/);
+  assert.match(workflow,/match\[2\]===item\.name/);
+});

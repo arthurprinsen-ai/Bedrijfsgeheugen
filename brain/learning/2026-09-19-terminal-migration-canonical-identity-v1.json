@@ -1,0 +1,19 @@
+{
+  "id": "terminal-migration-canonical-identity-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Terminal obligation closure was blocked by MIGRATION_LEDGER_IDENTITY_MISMATCH when a historical supersession lineage referenced the same migration name under an older timestamp than the canonical migration on current main and production.",
+  "root_cause": "Terminal migration proof treated historical timestamp identity as immutable even after the migration was canonically rebased to a new timestamp before production application.",
+  "prevention": [
+    "Traverse historical lineage for semantic migration provenance, then reconcile each stable migration name to the unique canonical migration identity on current main.",
+    "Fail closed when more than one current-main migration has the same stable name.",
+    "Keep exact version+name verification against the production Supabase migration ledger after reconciliation."
+  ],
+  "evidence": {
+    "historical_identity": "20260918180200_powerhouse_policy_canonicalization_guard_v1",
+    "canonical_identity": "20260918181638_powerhouse_policy_canonicalization_guard_v1",
+    "production_ledger_verified": true,
+    "workflow": ".github/workflows/obligation-terminal-closure.yml",
+    "test": "tests/brain-control-plane-supersession-migration-proof-v1.test.mjs"
+  }
+}
