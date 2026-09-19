@@ -87,9 +87,7 @@ begin
 
   return jsonb_build_object('ok',v_blocked=0,'publication_date',p_date,'updated',v_updated,'provider_truth_verified_count',v_provider_verified,'outcome_verified_count',v_outcome_verified,'blocked_count',v_blocked,'truth_contract','GREEN MEANS OUTCOME VERIFIED','missing_provider_fingerprint','PROVIDER_RECORD_MISSING');
 end;
-$function$
-
-
+$function$;
 
 revoke execute on function public.powerhouse_reconcile_content_outcomes_v1(date) from public, anon, authenticated;
 grant execute on function public.powerhouse_reconcile_content_outcomes_v1(date) to service_role;
