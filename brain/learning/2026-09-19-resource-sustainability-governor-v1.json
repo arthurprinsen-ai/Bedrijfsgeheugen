@@ -5,6 +5,16 @@
   "fingerprint": "powerhouse|resource-sustainability-governor|v1",
   "date": "2026-09-19",
   "obligation_id": "BG-RESOURCE-SUSTAINABILITY-20260919-01",
+  "failure_class": "RESOURCE_GOVERNANCE",
+  "scope": "GENERAL",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-resource-sustainability-governor.test.mjs"
+    ]
+  },
   "problem": "Resource cost, credits, compute, data movement and sustainability were present in delivery guidance but were not enforced as one explicit canonical invariant across every chat, agent, skill, workflow and connector.",
   "root_cause": "Resource governance was distributed across general cost/performance guidance and platform-specific behavior instead of one canonical ONE BRAIN governor with common preflight, postflight, evidence and learning requirements.",
   "prevention": [
