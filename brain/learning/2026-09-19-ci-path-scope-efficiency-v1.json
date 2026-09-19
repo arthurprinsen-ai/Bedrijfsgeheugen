@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "CI-PATH-SCOPE-EFFICIENCY-v1",
+  "status": "ACTIVE_PREVENTION_CANDIDATE",
+  "fingerprint": "github|ci-path-scope|semantic-admission-v1",
+  "date": "2026-09-19",
+  "obligation_id": "github-ci-path-scope-efficiency-v1",
+  "problem": "Auxiliary GitHub workflows consumed runners for unrelated changes because LinkedIn Revenue Cockpit admitted every Supabase migration and Revenue Learning carried duplicate path entries.",
+  "root_cause": "Workflow admission was directory-broad instead of contract-semantic, while one cockpit dependency (powerhouse-runtime) was not explicitly wired.",
+  "evidence": {
+    "linkedin_previous_path": "supabase/migrations/**",
+    "linkedin_required_runtime": "supabase/functions/powerhouse-runtime/**",
+    "revenue_learning_duplicate_paths": true
+  },
+  "skill_targets": [
+    "delivery"
+  ],
+  "prevention": [
+    "SEMANTIC_PATH_FILTERS_FOR_AUXILIARY_WORKFLOWS",
+    "DIRECT_RUNTIME_DEPENDENCY_MUST_BE_WIRED",
+    "NO_DUPLICATE_PATH_ENTRIES",
+    "PR_REF_SINGLE_FLIGHT_WITHOUT_EVENT_SPLIT",
+    "BOUNDED_AUXILIARY_JOB_RUNTIME"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ]
+  }
+}
