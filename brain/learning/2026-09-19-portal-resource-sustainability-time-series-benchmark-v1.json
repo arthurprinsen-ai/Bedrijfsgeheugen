@@ -1,0 +1,60 @@
+{
+  "version": "portal-resource-sustainability-time-series-benchmark-v1",
+  "date": "2026-09-19",
+  "obligationId": "BG-20260919-RESOURCE-SUSTAINABILITY-DASHBOARD-V1",
+  "fingerprint": "portal-resource-sustainability-time-series-benchmark-v1",
+  "type": "learning_prevention",
+  "problem": "Portal resource usage, provider cost, AI token and credit consumption, CO2e, energy and water impact existed in canonical resource telemetry, but the customer portal did not expose them together as a selectable daily time-series and benchmark cockpit.",
+  "existing_state": {
+    "resource_authority": "public.powerhouse_resource_intelligence_daily_v1",
+    "impact_surface": "portal-v2/csrd-impact.js",
+    "truth_policy": "measured_or_evidence_backed_else_unknown",
+    "decision": "extend the existing CSRD & Impact owner instead of creating a second dashboard or resource ledger"
+  },
+  "implementation": {
+    "pr": 2362,
+    "candidateHead": "80bf2f1daf71c87a79b7af57949cc9e4546be1f1",
+    "mergeSha": "276efe38f8b5b9ca2332a09c19117900ea816ff2",
+    "files": [
+      "portal-v2/resource-analytics.js",
+      "portal-v2/csrd-impact.js",
+      "portal-v2/csrd-impact.css",
+      "portal-v2/tests/resource-analytics.test.mjs",
+      "portal-v2/tests/csrd-impact.test.mjs"
+    ]
+  },
+  "learning": [
+    "Absolute resource totals alone are insufficient; the portal must support time-series, provider/resource filters and an own-history baseline before external comparison.",
+    "Cost, tokens, credits and requests must be selected only from matching resource units or types; they must never leak into CO2e, water or energy totals.",
+    "Missing physical telemetry remains NULL/unknown and must never be normalized to zero.",
+    "External sector benchmark values require comparable evidence; until then use the tenant's own selected-period average as the visible baseline.",
+    "SCI-style carbon intensity and analogous energy/water intensity are useful only when both numerator and functional-unit denominator are evidence-backed.",
+    "Material portal changes must include Brain learning and an activity-ledger event in the same lineage before terminal closure."
+  ],
+  "external_research": {
+    "finops": "Unit economics should relate technology cost and resource efficiency to a meaningful unit of business activity or value.",
+    "sci": "Software Carbon Intensity is expressed per functional unit such as user, transaction or API call.",
+    "sei": "Software Energy Intensity expresses kWh per functional unit.",
+    "wue": "Water Usage Effectiveness expresses liters per kWh for datacenter water efficiency."
+  },
+  "prevention": [
+    "Reuse public.powerhouse_resource_intelligence_daily_v1 as the single resource-intelligence authority.",
+    "Keep provider/resource/unit separation covered by regression tests.",
+    "Require provenance for physical impact factors and preserve null_not_zero semantics.",
+    "Do not render synthetic sector values, physical telemetry or sustainability claims.",
+    "Carry learning, activity-ledger and human documentation writeback in the same material delivery lineage."
+  ],
+  "productionEvidence": {
+    "netlifyDeployId": "6aae7eba4e189f000836f8f4",
+    "commitRef": "276efe38f8b5b9ca2332a09c19117900ea816ff2",
+    "state": "ready",
+    "context": "production",
+    "portalV2Tests": "success",
+    "portalProductionDomReadback": "success",
+    "portalLivePreview": "success",
+    "codeql": "success",
+    "qualityIntelligence": "success"
+  },
+  "status": "PRODUCTION_DEPLOYED_WRITEBACK_RECOVERY",
+  "terminalNote": "The implementation is deployed and read back in production. This recovery writeback exists to close the material learning/activity lineage that the original candidate omitted."
+}
