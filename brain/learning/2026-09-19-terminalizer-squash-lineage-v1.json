@@ -9,7 +9,7 @@
   "prevention_rule": "Post-merge lineage verification must explicitly fetch the candidate SHA and accept either direct ancestry or exact candidate-tree/merge-tree equivalence, while still requiring the merge SHA to be contained in current main. Any other state fails closed.",
   "enforcement": [
     ".github/workflows/powerhouse-obligation-terminalizer.yml",
-    "tests/powerhouse-obligation-terminalizer-squash.test.mjs",
+    "tests/brain-obligation-terminalizer-squash.test.mjs",
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
   ],
   "evidence": {
@@ -20,7 +20,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-obligation-terminalizer-squash.test.mjs"
+      "tests/brain-obligation-terminalizer-squash.test.mjs"
     ]
   }
 }
