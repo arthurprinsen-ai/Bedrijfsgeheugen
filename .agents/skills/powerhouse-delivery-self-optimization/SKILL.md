@@ -172,3 +172,12 @@ Mandatory:
 
 Required metrics: `time_to_first_failure`, `time_to_required_green`, `time_to_protected_merge`, `time_to_production_proof`, `queue_wait_seconds`, `duplicate_gate_dispatch_prevented_count`, `main_reconcile_count`, `known_failed_readback_wait_avoided_seconds`, `critical_path_seconds`.
 
+
+
+## Explicit obligation supersession hygiene
+
+Fingerprint: `github|hygiene|explicit-obligation-supersession|v1`.
+
+Repository cleanup must collapse duplicate executable PRs without guessing semantic equivalence. A newer open PR may auto-close an older open PR only when both carry the exact same non-empty `Obligation-ID` and the newer PR explicitly declares `Supersedes: <older PR number>`. Same-title, same-files, temporal proximity, or heuristic similarity are never sufficient.
+
+The repository hygiene control plane applies this cleanup with a bounded per-run budget before candidate-family and orphan-branch cleanup. This reduces duplicate CI, queue pressure and stale WIP while preserving unique work fail-closed.
