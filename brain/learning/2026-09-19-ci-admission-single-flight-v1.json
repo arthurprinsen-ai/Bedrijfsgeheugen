@@ -24,5 +24,17 @@
     "ONE_EXECUTABLE_LINEAGE_PER_OBLIGATION",
     "CI_ADMISSION_REGRESSION_REQUIRED"
   ],
-  "candidate_head": "85584014d75ed6429fba1a96f5540036db5e8d16"
+  "candidate_head": "85584014d75ed6429fba1a96f5540036db5e8d16",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ]
+  }
 }
