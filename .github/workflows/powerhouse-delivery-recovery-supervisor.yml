@@ -111,6 +111,11 @@ jobs:
           cutoff_epoch="$(date -u -d '24 hours ago' +%s)"
           closed="$(gh api "repos/$repo/pulls?state=closed&base=main&sort=updated&direction=desc&per_page=100")"
           terminal_runs="$(gh api "repos/$repo/actions/workflows/obligation-terminal-closure.yml/runs?per_page=100")"
+          active_terminal_count="$(jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="pending")] | length' <<<"$terminal_runs")"
+          if [ "$active_terminal_count" -gt 0 ]; then
+            echo "::notice::Terminal closure recovery already active globally; serial recovery prevents duplicate dispatch storms."
+            exit 0
+          fi
 
           jq -c '.[] | select(.merged_at != null)' <<<"$closed" | while read -r pr; do
             number="$(jq -r '.number' <<<"$pr")"
@@ -132,6 +137,8 @@ jobs:
               continue
             }
 
-            echo "::notice::PR#$number is merged but nonterminal; dispatching canonical terminal closure recovery."
+            echo "::notice::PR#$number is merged but nonterminal; dispatching one canonical terminal closure recovery."
             gh workflow run obligation-terminal-closure.yml --ref main -f pr_number="$number"
+            echo "::notice::Serialized recovery: one terminal closure dispatched; remaining obligations wait for the next supervisor cycle."
+            break
           done
