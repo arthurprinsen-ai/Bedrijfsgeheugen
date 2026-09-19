@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import { createPortalBusinessInput } from '../platform/contracts/portal-business-input.mjs';
 import { projectCanonicalObject } from '../platform/read-models/portal-projection-layers.mjs';
 import { createPortalBusinessInputHandler } from '../platform/api/portal-business-input-handler.mjs';
@@ -119,4 +120,16 @@ test('demo and preview boot do not eagerly load the durable BusinessInput store'
   const demo=createPortalDomainState(demoClient,{legacyStorage:null,businessInputStoreLoader:loader});await demo.init();demo.set('portal.profile.employees',12);await demo.flush();assert.equal(demo.initialized(),true);assert.equal(loads,0);
   const previewClient={load:async()=>({mode:'preview',state:null}),write:async state=>({mode:'preview',state}),authHeaders:async()=>({}),isDemo:()=>false};
   const preview=createPortalDomainState(previewClient,{legacyStorage:null,businessInputStoreLoader:loader});await preview.init();assert.equal(preview.initialized(),true);assert.equal(loads,0);
+});
+
+
+test('portal-state-eu adds admin cockpit readback without weakening canonical tenant get/put authority', async()=>{
+  const src=await readFile('supabase/functions/portal-state-eu/index.ts','utf8');
+  assert.match(src,/action==='control_plane_cockpit'/);
+  assert.match(src,/powerhouse_obligation_cockpit_v1/);
+  assert.match(src,/powerhouse_control_plane_metrics_v1/);
+  assert.match(src,/bg_portal_state_get_internal/);
+  assert.match(src,/bg_portal_state_put_internal/);
+  const block=src.slice(src.indexOf("if(action==='control_plane_cockpit')"),src.indexOf("if(action==='governance')"));
+  assert.doesNotMatch(block,/bg_portal_state_put_internal|\.insert\(|\.update\(|\.delete\(|\.upsert\(/);
 });
