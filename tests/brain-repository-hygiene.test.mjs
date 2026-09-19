@@ -6,7 +6,8 @@ import {
   isControlledWriterBranch,
   mayDeleteOrphanBranch,
   parseObligationLineage,
-  mayAutoCloseSupersededObligation
+  mayAutoCloseSupersededObligation,
+  cancellableWorkflowRuns
 } from "../scripts/brain/repository-hygiene.mjs";
 
 const policy = {
@@ -84,4 +85,18 @@ test("auto-closes only explicit newer same-obligation successors", () => {
     predecessor,
     successor:{...successor,body:"Obligation-ID: OBL-1\nSupersedes: none\n"}
   }),false);
+});
+
+
+test("selects only nonterminal workflow runs for cancellation", () => {
+  const runs=[
+    {id:1,status:"queued"},
+    {id:2,status:"in_progress"},
+    {id:3,status:"waiting"},
+    {id:4,status:"requested"},
+    {id:5,status:"pending"},
+    {id:6,status:"completed"},
+    {id:7,status:"completed",conclusion:"failure"}
+  ];
+  assert.deepEqual(cancellableWorkflowRuns(runs).map(x=>x.id),[1,2,3,4,5]);
 });
