@@ -1,0 +1,22 @@
+# BG-20260919-UNIVERSAL-ERROR-LIVE-LEARNING-CLOSURE-V2
+
+- Fingerprint: `powerhouse|error-live|semantic-learning-closure|required|v2`
+- Scope: all Powerhouse chats, agents, workflows, incidents, recoveries and live deliveries.
+- STARTED: inspected the existing universal learning policy, material writeback guard, skill projection and terminal closure.
+- FINDING: path-presence closure was machine-enforced, but semantic learning quality was not.
+- ACTION: strengthened the central guard to validate root cause, prevention/regression and test/evidence semantics in the changed Brain learning.
+- ACTION: updated continuity and delivery skills plus the universal learning policy.
+- TEST: added regression coverage for semantic learning and terminal production/skill projection requirements.
+- WRITEBACK: canonical Brain learning + this append-only ledger + human documentation are in the same obligation lineage.
+- NEXT: exact-head Required/BRAIN/CodeQL gates, protected merge, production/main readback, automatic skill projection and terminal evidence.
+- ERROR: PR #2375 head was contaminated by five commits from a different resource-governor obligation.
+- RECOVERY: rebuilt the canonical branch from exact current main using the full main tree plus only the eight approved obligation paths; unrelated commits were excluded.
+- PREVENTION: obligation identity must be enforced by bounded expected paths, not branch name alone.
+- ERROR: contamination repeated at head `13da9161...` while the PR remained in BUILDING state.
+- PREVENTION: terminal reconcile now requires an explicit `TERMINAL_DELIVERY` writer lease bound to obligation + PR scope + exact head + main epoch; non-owners DEFER until terminal closure releases it.
+- ERROR: BRAIN backend replay found 2 stale fast-terminal safety oracle assertions (1176/1178 tests passed).
+- ROOT CAUSE: tests still expected `public-visibility` to be high-risk-only, while the canonical website lane now requires it for all preview paths.
+- FIX/PREVENTION: align test oracle to mandatory public visibility; keep only broad header/menu/browser sweeps high-risk scoped.
+- ERROR: BRAIN backend found a stale regression oracle that still treated public visibility as high-risk-only while the canonical website lane already required it unconditionally.
+- RECOVERY: updated only the regression oracle to the stricter live contract; runtime safety gate unchanged.
+- PREVENTION: stricter safety-policy changes require same-lineage oracle alignment; stale permissive expectations fail closed.

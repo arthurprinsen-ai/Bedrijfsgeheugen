@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse-error-live-semantic-learning-closure-v2",
+  "obligation_id": "BG-20260919-UNIVERSAL-ERROR-LIVE-LEARNING-CLOSURE-V2",
+  "title": "Universal semantic error and live learning closure",
+  "status": "CANDIDATE",
+  "root_cause": "The existing material writeback guard proved that learning, ledger and documentation files existed, but did not verify that the learning contained reusable root-cause, prevention and evidence semantics. That allowed checkbox-style closure to satisfy path presence while carrying weak learning value. During delivery, the same PR branch was also mutated by commits belonging to a different resource-governor obligation, demonstrating that branch identity alone does not protect obligation lineage. The contamination repeated while the PR was still in BUILDING state, confirming that terminal writer ownership must be activated before final reconciliation rather than relying on branch naming or social coordination. Backend replay then exposed a stale regression oracle: two fast-terminal tests still encoded the older rule that public visibility only belonged to high-risk/full-site sweeps, while the current safer website lane requires public visibility for every preview path.",
+  "impact": "Chats, agents or workflows could technically satisfy closure without enough durable information to prevent recurrence or teach the next worker.",
+  "failed_approaches": [
+    "Relying on prose policy alone.",
+    "Treating the presence of a learning file as equivalent to useful learning."
+  ],
+  "fix": "Extend the central material-writeback guard with semantic validation and bind the same rule into continuity/delivery skills and the universal learning policy.",
+  "prevention_rule": "Every material candidate must include semantic learning with fingerprint, failure class, evaluation replay, root cause, prevention/regression and evidence. After merge, LIVE_BEWEZEN remains blocked until production readback, outcome evidence and required skill projection are proven by terminal closure. A canonical obligation branch must be bounded by an expected-path allowlist; cross-obligation changed paths trigger fail-closed recovery by rebuilding from the exact current-main base tree plus only the obligation-approved delta before any terminal landing. Before final reconcile/landing, set an explicit TERMINAL_DELIVERY writer lease bound to obligation, PR scope, exact head and exact main epoch; non-owners must DEFER until terminal closure releases the lease. Test oracles must follow the current canonical safety contract: mandatory public visibility is never weakened for fast-fix or normal-risk work; only broad header/menu/browser sweeps remain high-risk scoped.",
+  "regression_contract": "tests/brain-material-writeback-closure-guard.test.mjs",
+  "tests": [
+    "tests/brain-material-writeback-closure-guard.test.mjs"
+  ],
+  "evidence": [
+    "scripts/brain/material-writeback-closure-guard.mjs",
+    "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json",
+    ".github/workflows/required-test.yml",
+    ".github/workflows/powerhouse-skill-projection.yml",
+    ".github/workflows/obligation-terminal-closure.yml",
+    "PR #2375 cross-obligation contamination observed at head a08e3d182b63a46679e027fd31d5a218edbc9606",
+    "PR #2375 repeated contamination observed at head 13da9161b39f10e92880105688d6ed020b8e7113 before terminal writer lease activation.",
+    "BRAIN backend lane run 35444437798 job 105901904714: 1176/1178 passed; failures 366 and 368 were stale safety-oracle expectations."
+  ],
+  "outcome": "Candidate makes learning quality fail-closed before merge and retains terminal live/skill evidence after merge.",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}
