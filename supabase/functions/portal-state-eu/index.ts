@@ -14,10 +14,30 @@ Deno.serve(async(req:Request)=>{
   let body:any; try{body=await req.json()}catch{return json({error:'INVALID_JSON'},400)}
   const action=String(body?.action||'');
   const tenantId=String(body?.tenantId||'').trim();
-  if(!tenantId)return json({error:'INVALID_REQUEST'},400);
+  if(action!=='control_plane_cockpit'&&!tenantId)return json({error:'INVALID_REQUEST'},400);
   const url=Deno.env.get('SUPABASE_URL'); const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+
+  if(action==='control_plane_cockpit'){
+    const {data:obligations,error:obligationError}=await client
+      .from('powerhouse_obligation_cockpit_v1')
+      .select('obligation_id,obligation_key,requested_goal,current_state,owner,operation_status,next_action,blocker,evidence_count,red_evidence_count,latest_evidence_at,policy_version,skill_version,production_observed_sha,latest_remote_ref,outcome_verified,migration_readback_verified,reconciliation_jobs,retry_count,escalated_jobs,actual_result,created_at,updated_at,time_to_terminal_seconds')
+      .order('updated_at',{ascending:false})
+      .limit(100);
+    if(obligationError)return json({error:'CONTROL_PLANE_COCKPIT_READ_FAILED'},500);
+    const {data:metrics,error:metricsError}=await client
+      .from('powerhouse_control_plane_metrics_v1')
+      .select('*')
+      .maybeSingle();
+    if(metricsError)return json({error:'CONTROL_PLANE_METRICS_READ_FAILED'},500);
+    return json({
+      contract:'powerhouse-control-plane-admin-cockpit-v1',
+      obligations:Array.isArray(obligations)?obligations:[],
+      metrics:metrics||{},
+      generatedAt:new Date().toISOString()
+    });
+  }
 
   if(action==='governance'){
     const {data,error}=await client.from('brain_ai_governance_registry')

@@ -434,6 +434,13 @@
       "authority": "supabase/migrations/20260918194500_powerhouse_source_observation_immutable_v1.sql",
       "evidence_contract": "tests/powerhouse-organism-propagation.test.mjs",
       "required": true
+    },
+    {
+      "id": "netlify_function:powerhouse-control-plane",
+      "type": "netlify_function",
+      "authority": "netlify/functions/powerhouse-control-plane.mjs",
+      "evidence_contract": "tests/brain-control-plane-admin-cockpit-v1.test.mjs",
+      "required": true
     }
   ]
 }
