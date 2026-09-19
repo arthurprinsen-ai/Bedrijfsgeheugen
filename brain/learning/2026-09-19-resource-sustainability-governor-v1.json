@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-RESOURCE-SUSTAINABILITY-GOVERNOR-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "powerhouse|resource-sustainability-governor|v1",
+  "date": "2026-09-19",
+  "obligation_id": "BG-RESOURCE-SUSTAINABILITY-20260919-01",
+  "failure_class": "RESOURCE_GOVERNANCE",
+  "scope": "GENERAL",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-resource-sustainability-governor.test.mjs"
+    ]
+  },
+  "problem": "Resource cost, credits, compute, data movement and sustainability were present in delivery guidance but were not enforced as one explicit canonical invariant across every chat, agent, skill, workflow and connector.",
+  "root_cause": "Resource governance was distributed across general cost/performance guidance and platform-specific behavior instead of one canonical ONE BRAIN governor with common preflight, postflight, evidence and learning requirements.",
+  "prevention": [
+    "RESOURCE_PREFLIGHT_REQUIRED: material work identifies affected platforms, known quota/budget state and expected marginal resource use before expensive execution.",
+    "REUSE_BEFORE_SPEND: prefer reuse, cache/readback, dedupe, batching and incremental processing before new external work.",
+    "NO_UNBOUNDED_RETRIES_OR_DUPLICATE_PROVIDER_CALLS.",
+    "NO_AUTONOMOUS_PAID_CAPACITY_INCREASE.",
+    "SUSTAINABILITY_EVIDENCE_MUST_DISTINGUISH_MEASURED_ESTIMATED_AND_UNKNOWN.",
+    "RESOURCE_OUTCOMES_WRITE_BACK_TO_SHARED_BRAIN_AND_SKILLS."
+  ],
+  "implementation": [
+    "Expand config/brain-cost-policy.json to schema v2 as the canonical resource and sustainability authority.",
+    "Add .agents/skills/powerhouse-resource-sustainability/SKILL.md.",
+    "Make the governor mandatory in AGENTS.md read order and ONE BRAIN contract.",
+    "Track platform meters for Supabase, Netlify, Notion, GitHub, Composio, OpenArt and Placid.",
+    "Block promotion for resource regressions without verified outcome gain."
+  ]
+}

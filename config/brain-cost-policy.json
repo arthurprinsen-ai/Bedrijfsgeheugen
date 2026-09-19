@@ -1,8 +1,10 @@
 {
-  "schemaVersion": 1,
+  "schemaVersion": 2,
+  "policyId": "BRAIN-RESOURCE-SUSTAINABILITY-v1",
+  "authority": "ONE_BRAIN",
+  "timezone": "Europe/Amsterdam",
   "monthlyLimitCredits": 10000,
   "monthlyTokenLimit": 10000,
-  "timezone": "Europe/Amsterdam",
   "allocations": {
     "production_core": 4500,
     "publishing_sync": 2000,
@@ -16,7 +18,119 @@
     "orangeBelow": 0.90,
     "redBelow": 1.00
   },
-  "unknownComponentDecision": "BUDGET_DEFERRED",
-  "maxProductionExperimentsPerDay": 1,
-  "maxIdenticalRetriesPerHypothesis": 2
+  "governance": {
+    "preflightRequired": true,
+    "postflightRequired": true,
+    "obligationLineageRequired": true,
+    "unknownUsageDecision": "MEASURE_OR_DEFER",
+    "unknownComponentDecision": "BUDGET_DEFERRED",
+    "paidCapacityIncreaseAllowedAutonomously": false,
+    "maxProductionExperimentsPerDay": 1,
+    "maxIdenticalRetriesPerHypothesis": 2
+  },
+  "platforms": {
+    "supabase": {
+      "meters": ["database_compute", "storage_bytes", "egress_bytes", "edge_function_invocations", "realtime_messages"],
+      "optimizations": ["indexed_queries", "bounded_selects", "incremental_processing", "retention_ttl", "cache_reuse", "batch_writes"]
+    },
+    "netlify": {
+      "meters": ["build_minutes", "function_invocations", "bandwidth_bytes", "deploy_count"],
+      "optimizations": ["skip_unchanged_builds", "scoped_builds", "artifact_reuse", "preview_dedupe", "compressed_assets"]
+    },
+    "notion": {
+      "meters": ["api_calls", "pages_read", "pages_written"],
+      "optimizations": ["existing_view_first", "targeted_reads", "batched_updates", "dedupe", "no_full_workspace_scans_without_need"]
+    },
+    "github": {
+      "meters": ["actions_minutes", "workflow_runs", "artifact_bytes", "api_calls"],
+      "optimizations": ["cheap_gates_first", "path_scoped_ci", "cancel_superseded_runs", "artifact_reuse", "bounded_retries"]
+    },
+    "composio": {
+      "meters": ["connector_calls", "task_runs", "provider_calls"],
+      "optimizations": ["direct_specialist_connector_first", "batching", "readback_once", "dedupe", "idempotency"]
+    },
+    "openart": {
+      "meters": ["generation_credits", "render_seconds", "outputs_generated"],
+      "optimizations": ["reuse_existing_assets", "draft_low_cost_first", "single_best_candidate", "no_duplicate_regeneration"]
+    },
+    "placid": {
+      "meters": ["render_credits", "renders"],
+      "optimizations": ["template_reuse", "batch_renders", "no_rerender_if_input_hash_unchanged"]
+    }
+  },
+  "decisionOrder": [
+    "reuse_existing_result",
+    "cache_or_readback",
+    "dedupe",
+    "batch",
+    "incremental_or_delta",
+    "smallest_capable_model_or_tool",
+    "cheap_preflight_gate",
+    "execute_once",
+    "verify_once",
+    "learn_and_prevent"
+  ],
+  "requiredObservationFields": [
+    "obligation_id",
+    "component_id",
+    "tool_or_platform",
+    "operation_class",
+    "baseline_usage",
+    "estimated_marginal_cost",
+    "actual_usage",
+    "retry_count",
+    "cache_hit",
+    "dedupe_hit",
+    "bytes_processed",
+    "compute_seconds",
+    "api_calls",
+    "storage_delta_bytes",
+    "egress_bytes",
+    "outcome_value",
+    "cost_per_verified_outcome"
+  ],
+  "sustainability": {
+    "mode": "proxy_when_provider_exact_data_unavailable",
+    "neverPresentEstimateAsMeasured": true,
+    "optimizeFor": [
+      "lower_compute_seconds",
+      "lower_bytes_processed",
+      "lower_network_egress",
+      "fewer_generation_cycles",
+      "fewer_builds_and_deploys",
+      "higher_cache_reuse",
+      "higher_batch_efficiency"
+    ],
+    "proxies": {
+      "energy": ["compute_seconds", "build_minutes", "render_seconds", "bytes_processed"],
+      "carbon": ["energy_proxy", "provider_region_factor_if_known"],
+      "water": ["energy_proxy", "provider_water_factor_if_published"]
+    },
+    "reportingRule": "label_as_measured_estimated_or_unknown"
+  },
+  "promotionRules": {
+    "blockIf": [
+      "cost_regression_without_outcome_gain",
+      "unbounded_retry_behavior",
+      "avoidable_duplicate_external_calls",
+      "paid_capacity_increase_without_human_approval"
+    ],
+    "preferCandidateWhen": [
+      "equal_or_better_outcome_at_lower_resource_cost",
+      "equal_or_better_outcome_with_lower_compute_or_egress",
+      "higher_reuse_or_cache_rate_without_truth_loss"
+    ]
+  },
+  "learningWriteback": {
+    "required": true,
+    "materialOutcomes": [
+      "RESOURCE_SAVING",
+      "RESOURCE_REGRESSION",
+      "BUDGET_PRESSURE",
+      "SUSTAINABILITY_IMPROVEMENT",
+      "SUSTAINABILITY_REGRESSION"
+    ],
+    "updateRelevantSkills": true,
+    "updateSharedContext": true
+  }
 }

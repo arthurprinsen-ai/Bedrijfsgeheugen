@@ -162,6 +162,28 @@ Voor alle huidige en toekomstige chats, agents, skills, workflows en recovery-ro
 
 Canonieke skill: `.agents/skills/powerhouse-toolchain-authority/SKILL.md`.
 
+
+## Resource & Sustainability Governor — verplichte ONE BRAIN invariant
+
+Fingerprint: `powerhouse|resource-sustainability-governor|v1`.
+
+Voor iedere huidige en toekomstige chat, agent, skill, workflow, connector en delivery-lane is `config/brain-cost-policy.json` de canonieke resource- en sustainability-authority.
+
+Niet-onderhandelbare regels:
+- iedere materiële obligation krijgt vóór uitvoering een resource-preflight met relevante platformen, huidig bekend budget/quota, verwachte marginale kosten en de goedkoopste veilige uitvoeringsroute;
+- beslisvolgorde is: hergebruik → cache/readback → dedupe → batch → incremental/delta → kleinste capabele model/tool → goedkope preflight-gates → één uitvoering → één readback → learning/prevention;
+- meet waar beschikbaar credits, API-calls, compute/build/render-tijd, opslagdelta, bytes verwerkt, egress, retries, cache/dedupe hits en cost-per-verified-outcome;
+- Supabase, Netlify, Notion, GitHub, Composio, OpenArt en Placid volgen de platformmeters en optimalisaties uit de canonieke policy; nieuwe platformen erven dezelfde regels vóór production-authority;
+- CO2/energie/water worden alleen als gemeten gerapporteerd wanneer providerbewijs bestaat; anders worden ze expliciet als proxy/schatting of onbekend gelabeld;
+- sustainability-optimalisatie gebruikt compute, build/render-tijd, bytes verwerkt, netwerk-egress en generatierondes als primaire technische proxies wanneer exacte providerdata ontbreekt;
+- geen blind retries, dubbele provider-calls, onnodige rebuilds/rerenders/regeneraties of volledige workspace-scans wanneer een begrensde delta/readback volstaat;
+- lagere kosten mogen truth, quality, security, privacy, evidence, tenant isolation of outcome obligations nooit verzwakken;
+- betaalde capaciteit, abonnementen of externe resource-limieten mogen niet autonoom worden verhoogd;
+- een kandidaat met hogere resourcekosten zonder aantoonbare outcome-winst is niet promotable; gelijk/beter outcome met lagere resourcekosten heeft voorkeur;
+- materiële uitkomsten worden als `RESOURCE_SAVING`, `RESOURCE_REGRESSION`, `BUDGET_PRESSURE`, `SUSTAINABILITY_IMPROVEMENT` of `SUSTAINABILITY_REGRESSION` teruggeschreven naar het gedeelde Brain en geprojecteerd naar relevante skills.
+
+Canonieke skill: `.agents/skills/powerhouse-resource-sustainability/SKILL.md`.
+
 ## Kansen actief zien en benutten
 Agents zoeken niet alleen fouten; zij zoeken ook dagelijks aantoonbare kansen op:
 - SEO en zoekvraag;
@@ -223,11 +245,13 @@ Een fout in één optimalisatie of verbetering mag de rest van het systeem niet 
 1. `AGENTS.md`
 2. `.agents/skills/powerhouse-continuity/SKILL.md`
 3. `.agents/skills/powerhouse-toolchain-authority/SKILL.md`
-4. `config/brain-chat-learning-contract.json`
-5. `config/powerhouse-runtime-authority.json`
-6. `docs/development-operating-system.md`
-7. `docs/development-ledger.md`
-8. `docs/self-healing-agents.md`
+4. `.agents/skills/powerhouse-resource-sustainability/SKILL.md`
+5. `config/brain-cost-policy.json`
+6. `config/brain-chat-learning-contract.json`
+7. `config/powerhouse-runtime-authority.json`
+8. `docs/development-operating-system.md`
+9. `docs/development-ledger.md`
+10. `docs/self-healing-agents.md`
 9. `docs/outcome-obligations.md`
 10. `config/outcome-obligations.json`
 11. `docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md`
