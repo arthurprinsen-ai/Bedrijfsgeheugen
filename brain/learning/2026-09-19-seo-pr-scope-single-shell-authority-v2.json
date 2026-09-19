@@ -1,0 +1,24 @@
+{
+  "fingerprint": "seo-pr-scope-single-shell-authority-v2",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "compiler": {
+    "failure_class": "GLOBAL_SEO_DEBT_BLOCKING_BOUNDED_PR_AND_DUPLICATE_SHELL_ORACLE"
+  },
+  "root_cause": "SEO CI mixed a full-estate debt audit with bounded PR admission and duplicated canonical shell byte comparison already owned by dedicated shell gates. Unrelated historical SEO debt therefore blocked safe page fixes and the duplicate shell oracle contradicted green canonical build/readback checks.",
+  "prevention_rule": "PR SEO admission blocks only high-severity findings on URLs changed by that PR. Main/scheduled runs remain full-estate audits. Canonical shell identity has one machine authority: dedicated shell contract/full-build/live-readback/browser gates, not SEO literal fragment comparison.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-pr-scope-current-truth-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-seo-pr-scope-current-truth-v2.test.mjs"
+    ],
+    "issue": "#1448",
+    "supersedes_pr": "#2417"
+  },
+  "scope": "WEBSITE_SEO_CI",
+  "machine_enforceable": true
+}
