@@ -28,3 +28,6 @@
 - ROOT CAUSE: the test oracle had been changed from an inferred stricter rule without first reading the exact-head canonical risk config and website workflow.
 - RECOVERY: restored the regression oracle to the canonical contract; runtime safety configuration was not weakened or changed.
 - PREVENTION: regression-oracle edits are SOURCE-OF-TRUTH-FIRST: read exact-head config/runtime/workflow before changing assertions; a failing old oracle alone is not evidence that the runtime contract changed.
+- ERROR: BRAIN replay exposed representation drift: runtime workflow enforced public visibility for normal-risk runs, while `site/website-release-risk.json` omitted it.
+- RECOVERY: aligned `normalRequiredTestSets` with the already-stricter runtime gate; no safety control weakened.
+- PREVENTION: runtime workflow, declarative risk config and regression oracle must converge in the same lineage when safety requirements tighten.
