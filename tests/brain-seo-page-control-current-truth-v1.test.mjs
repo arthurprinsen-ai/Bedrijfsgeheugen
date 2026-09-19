@@ -14,9 +14,12 @@ test('current SEO cleanup removes known #1448 source findings', async()=>{
   assert.ok(desc.length>=110 && desc.length<=165, `pricing description length ${desc.length}`);
 });
 
-test('SEO strategy checker uses the same production-projected tree as page checks', async()=>{
+test('SEO semantic checks stay on source truth while canonical shell has one authority', async()=>{
   const wf=await readFile('.github/workflows/paginacontrole.yml','utf8');
-  assert.match(wf,/SEO en interne links controleren op productiebuild/);
-  assert.match(wf,/working-directory: \$\{\{ runner\.temp \}\}\/site/);
+  const seo=await readFile('.github/scripts/seocontrole.py','utf8');
+  assert.match(wf,/name: SEO en interne links controleren\n/);
+  assert.doesNotMatch(wf,/SEO en interne links controleren op productiebuild/);
+  assert.doesNotMatch(seo,/de menubalk wijkt af van \.github\/canoniek\/kop\.html/);
+  assert.doesNotMatch(seo,/de voettekst wijkt af van \.github\/canoniek\/voet\.html/);
   assert.match(wf,/Data-soevereiniteit en ChatGPT-beleid \| Bedrijfsgeheugen/);
 });
