@@ -1,0 +1,55 @@
+{
+  "id": "chat-github-terminal-recovery-prevention-v1",
+  "fingerprint": "github|chat-terminal-recovery|exact-head-observability|v1",
+  "date": "2026-09-19",
+  "type": "incident_prevention",
+  "source": "chat+github-runtime-evidence",
+  "symptom": [
+    "Recovery supervisor falsely failed after breaking a jq-to-while pipeline under set -euo pipefail.",
+    "A workflow could fail before jobs existed because a YAML plain scalar contained ': ' inside an if expression.",
+    "github_main terminal evidence accepted a verified observed SHA without requiring equality to canonical main_sha.",
+    "Terminal evidence HTTP 422 responses were retried with curl -f while the response body containing the actual rejection reason was discarded."
+  ],
+  "root_cause": [
+    "Control-plane shell treated expected consumer early-exit as producer failure.",
+    "Workflow syntax was not serialized safely for YAML parsing.",
+    "Terminal evidence semantics checked verification but omitted exact main identity equality.",
+    "Transport error handling prioritized generic retry over diagnostic evidence preservation."
+  ],
+  "prevention": [
+    "Under pipefail, never use producer | while ... break for bounded selection; use process substitution, mapfile, or another construction that cannot turn expected consumer exit into producer SIGPIPE failure.",
+    "Quote complete GitHub Actions if expressions whenever embedded string literals contain YAML-significant ': ' or similar parser hazards; validate workflow parseability before relying on runtime jobs.",
+    "For production_readback_mode=github_main require production_observed_sha === main_sha in addition to verified=true and null run/deploy identities.",
+    "For terminal API writeback capture HTTP status and sanitized response body before failing; never use an option that discards the only root-cause evidence.",
+    "Exact-head BRAIN, CodeQL and Required must be green before protected merge; reuse existing sibling runs instead of duplicating expensive CI.",
+    "A chat or agent keeps ownership through merge, production readback, canonical learning/prevention writeback, skill projection readback and writer-lease release.",
+    "Regression tests for human-readable policy/skill surfaces must assert semantic invariants and required concepts, not incidental word order or prose phrasing.",
+    "When reconciling an open PR onto current main, never transiently move its branch ref to exactly main and only then reapply the delta; GitHub may auto-close the PR. Build the full current-main-union tree plus candidate delta first, create one commit with current main as parent, then atomically move the branch ref.",
+    "Before GitHub create_tree-based reconciliation, require a non-empty verified base_tree_sha from the exact current main commit; after building the candidate tree and before moving the branch ref, enforce expected-scope/diff-size guardrails so an accidental repository-wide deletion or amplification fails closed."
+  ],
+  "failed_approaches": [
+    "Blind rerun after generic red status.",
+    "Treating merge or auto-merge as terminal completion.",
+    "Assuming a 422 was caused by the latest code change without preserving the endpoint rejection body.",
+    "Over-specific prose regex that failed despite the required status + response-body contract being present.",
+    "Force-moving an open PR branch to exactly current main before reapplying its delta, which allowed GitHub to auto-close the PR during the transient-equal state.",
+    "Calling create_tree without a verified base_tree_sha, which produced a partial root tree and a candidate diff deleting thousands of unrelated files."
+  ],
+  "evidence": {
+    "source_pr": 2339,
+    "candidate_head": "725a4ec55e7774b04367d830950baff91de789bc",
+    "main_sha": "b13bfd77c57769a90c6a0701482f6d0f686f2a4b",
+    "production_readback_run": 35437611144,
+    "skill_projection_run": 35437611196,
+    "supervisor_fix": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "terminalizer_fix": ".github/workflows/powerhouse-obligation-terminalizer.yml",
+    "terminal_authority": "supabase/functions/growth-datahub-ingest/index.ts",
+    "terminal_observability": ".github/workflows/obligation-terminal-closure.yml"
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-delivery-self-optimization"
+  ],
+  "status": "LIVE_BEWEZEN_SOURCE"
+}

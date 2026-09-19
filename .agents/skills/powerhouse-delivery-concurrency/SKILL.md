@@ -119,3 +119,18 @@ This refines `github|delivery-state-machine|parallel-build-serialized-landing|v1
 Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.
 
 Every material delivery candidate must carry canonical Brain learning, an append-only activity/development ledger event, and human-readable documentation in the same lineage before Required may pass. This is machine-enforced by `scripts/brain/material-writeback-closure-guard.mjs`; missing closure evidence is a delivery failure, not optional documentation debt. Automatic skill projection and terminal production/readback remain mandatory downstream.
+
+## Terminal recovery diagnostics under parallel delivery
+
+Fingerprint: `github|chat-terminal-recovery|exact-head-observability|v1`.
+
+Concurrency safety includes diagnostic correctness:
+- never let an expected early consumer exit under `pipefail` create a false producer failure; prefer process substitution for bounded selection;
+- a failed workflow with zero jobs is syntax/parse evidence until disproven, not a reason to rebuild the candidate;
+- exact-head merge authority is incomplete until BRAIN, Powerhouse CodeQL and Required are all terminal green for the same head;
+- for `github_main` evidence, `production_observed_sha` must equal `main_sha` exactly;
+- preserve HTTP status + sanitized response body on terminal evidence writes so retries are cause-directed rather than blind.
+
+Canonical source: `brain/learning/2026-09-19-chat-github-terminal-recovery-prevention-v1.json`.
+- During same-lineage current-main reconciliation, never create a transient state where the open PR branch equals `main` and the candidate delta is reapplied later. Construct the full current-main tree plus candidate delta first, create one commit with current main as parent, then move the branch ref atomically. Transient equality can auto-close the PR and is a recoverable delivery defect.
+- For GitHub tree-based reconcile, `base_tree_sha` is mandatory and must equal the tree SHA of the exact current-main parent. Never create a replacement root tree from only the touched files. Before moving the branch ref, enforce expected changed-file/deletion budgets; repository-wide amplification is fail-closed and must leave main untouched.

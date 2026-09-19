@@ -132,3 +132,21 @@ When a PR or branch supersedes an earlier lineage:
 - if a required predecessor-only delta is found, classify the obligation as `RECOVERABLE_INCOMPLETE` and repair the current canonical lineage before terminal completion.
 
 Reference incident: #2129 → #2148 silently lost the backend registration of `tests/supabase-instagram-media-job-materializer-v1.test.mjs`; #2158 restored it and production-readback proved the exact merged SHA.
+
+## First-time-right terminal diagnostics
+
+Fingerprint: `github|chat-terminal-recovery|exact-head-observability|v1`.
+
+Predict and remove these avoidable delivery failures before another CI cycle:
+- shell pipeline can generate SIGPIPE because a bounded consumer exits early under `pipefail` → replace with process substitution or equivalent;
+- workflow can fail before job creation because YAML parses an unquoted Actions expression containing significant `: ` text → quote/validate the complete expression;
+- terminal `github_main` proof can drift because observed SHA is only “verified” → require the exact invariant `production_observed_sha === main_sha`;
+- terminal API error handling hides the server rejection body → capture status + sanitized response body, then fail closed;
+- Required can outpace critical sibling workflows → aggregate existing exact-head BRAIN and Powerhouse CodeQL terminal outcomes instead of launching duplicate heavy CI.
+
+These are cost, latency and correctness signals. A blind retry without new diagnostic evidence is a self-optimization failure.
+- For policy/skill regression tests, assert semantic invariants rather than incidental prose word order; brittle wording regex is avoidable CI churn.
+
+Canonical source: `brain/learning/2026-09-19-chat-github-terminal-recovery-prevention-v1.json`.
+- During same-lineage current-main reconciliation, never create a transient state where the open PR branch equals `main` and the candidate delta is reapplied later. Construct the full current-main tree plus candidate delta first, create one commit with current main as parent, then move the branch ref atomically. Transient equality can auto-close the PR and is a recoverable delivery defect.
+- For GitHub tree-based reconcile, `base_tree_sha` is mandatory and must equal the tree SHA of the exact current-main parent. Never create a replacement root tree from only the touched files. Before moving the branch ref, enforce expected changed-file/deletion budgets; repository-wide amplification is fail-closed and must leave main untouched.
