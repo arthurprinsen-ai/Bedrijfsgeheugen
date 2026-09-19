@@ -27,6 +27,17 @@ const aliases: Record<string, string> = {
 function businessSignal(text: string) {
   return /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|digitalisering|AI|data|dashboard|frisse blik|scan|afspraak|offerte)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text);
 }
+function concretePersonalLifeSignal(text: string) {
+  const firstPerson = /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
+  const context = /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport)\b/i.test(text);
+  const action = /\b(stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|baalde|lachte|schrok|voelde|dacht ineens)\b/i.test(text);
+  const ownedConcrete = /\bmijn\s+(kind|dochter|zoon|gezin|auto|fiets|tuin|telefoon|printer|weekend|vakantie|training|wedstrijd)\b/i.test(text);
+  return firstPerson && ((context && action) || ownedConcrete);
+}
+function consultantVoiceSignal(text: string) {
+  return /\b(thought leadership|best practice|proces(?:sen)? slimmer|effici[eë]nter werken|waarde creëren|transformatie|governance|roadmap|stakeholder|executie|implementatie|optimaliseren|schaalbaar|future.?proof|leiderschap|strategie concreet maken)\b/i.test(text)
+    || /\b(dit geldt ook voor organisaties|de les voor bedrijven|wat organisaties hiervan kunnen leren|in mijn werk zie ik|bij een klant|voor leiders|managementles|de les is|wat we hiervan kunnen leren|dit leert mij dat)\b/i.test(text);
+}
 function personalViolations(text: string, body: any, finalHash: string) {
   const out: Array<{ code: string; message: string }> = [];
   const require = (ok: boolean, code: string, message: string) => { if (!ok) out.push({ code, message }); };
@@ -41,6 +52,7 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(body.arthur_anchor_verified === true, 'ARTHUR_ANCHOR_UNVERIFIED', 'Een geverifieerd Arthur-anker is verplicht.');
   require(body.first_person_claims_verified === true, 'FIRST_PERSON_CLAIMS_UNVERIFIED', 'Eerste-persoonsclaims zijn niet geverifieerd.');
   require(body.personal_life_topic === true, 'PERSONAL_LIFE_TOPIC_REQUIRED', 'Persoonlijk onderwerp is niet bewezen.');
+  require(concretePersonalLifeSignal(text), 'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED', 'De uiteindelijke tekst moet zelf een concrete persoonlijke gebeurtenis of dagelijkse ervaring bevatten; metadata alleen is onvoldoende.');
   require(body.business_topic === false, 'BUSINESS_TOPIC_DEFAULT_BLOCK', 'Zakelijk onderwerp is geblokkeerd op Arthur persoonlijk.');
   require(body.corporate_voice === false, 'CORPORATE_VOICE_BLOCKED', 'Corporate/consultantstem is geblokkeerd.');
   require(body.company_page_interchangeable === false, 'COMPANY_PAGE_INTERCHANGEABLE_BLOCKED', 'Tekst mag niet uitwisselbaar zijn met de bedrijfspagina.');
@@ -50,6 +62,7 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(clean(body.final_text_hash) === finalHash, 'FINAL_TEXT_HASH_MISMATCH', 'Final-text hash is niet exact gebonden aan de beoordeelde tekst.');
   if (body.sensitive_private_detail === true && body.sensitive_private_approval !== true) out.push({ code: 'SENSITIVE_PRIVATE_DETAIL_BLOCK', message: 'Privé/sensitief detail vereist exacte goedkeuring.' });
   if (businessSignal(text)) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
+  if (consultantVoiceSignal(text)) out.push({ code: 'FINAL_TEXT_CONSULTANT_VOICE_BLOCK', message: 'Uiteindelijke tekst klinkt als consultant/thought-leadership of forceert een zakelijke moraal.' });
   return out;
 }
 function hasVisionEvidence(value: any) {
