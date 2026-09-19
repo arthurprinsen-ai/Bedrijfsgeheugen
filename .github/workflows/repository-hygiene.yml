@@ -1,0 +1,62 @@
+name: Repository Hygiene Control Plane
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: audit or apply
+        required: true
+        default: audit
+        type: choice
+        options:
+          - audit
+          - apply
+  schedule:
+    - cron: "17 4 * * *"
+  pull_request:
+    paths:
+      - ".github/workflows/repository-hygiene.yml"
+      - "config/repository-hygiene-policy.json"
+      - "scripts/brain/repository-hygiene.mjs"
+      - "tests/brain-repository-hygiene.test.mjs"
+
+permissions:
+  contents: write
+  pull-requests: write
+  actions: read
+
+concurrency:
+  group: repository-hygiene-control-plane
+  cancel-in-progress: false
+
+jobs:
+  contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Verify repository hygiene contract
+        run: node --test tests/brain-repository-hygiene.test.mjs
+
+  hygiene:
+    if: github.event_name != 'pull_request'
+    needs: contract
+    runs-on: ubuntu-latest
+    env:
+      GITHUB_TOKEN: ${{ github.token }}
+      HYGIENE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'audit' }}
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Build and optionally apply deterministic cleanup plan
+        run: node scripts/brain/repository-hygiene.mjs
+      - name: Publish machine-readable hygiene evidence
+        uses: actions/upload-artifact@v4
+        with:
+          name: repository-hygiene-${{ github.run_id }}
+          path: repository-hygiene-report.json
+          retention-days: 30
