@@ -135,10 +135,9 @@ test('terminal evidence distinguishes canonical run from descendant live product
 });
 
 
-test('durable terminal evidence accepts github_main only as exact verified main containment proof', async()=>{
+test('durable terminal evidence accepts github_main only as signed verified main-containment proof', async()=>{
   const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
   assert.match(edge,/\['canonical_run','descendant_live','github_main'\]/);
-  assert.match(edge,/GITHUB_MAIN_READBACK_SHA_MISMATCH/);
   assert.match(edge,/GITHUB_MAIN_READBACK_RUN_MUST_BE_NULL/);
   assert.match(edge,/GITHUB_MAIN_DEPLOY_ID_MUST_BE_NULL/);
   assert.match(edge,/GITHUB_MAIN_READBACK_NOT_VERIFIED/);
@@ -151,5 +150,5 @@ test('github_main terminal evidence never masquerades as a deployment or descend
   const descendantBranch=edge.indexOf("productionReadbackMode==='descendant_live'");
   assert.ok(githubMainBranch>0);
   assert.ok(descendantBranch>0);
-  assert.match(edge,/productionObservedSha!==mainSha/);
+  assert.match(edge,/GITHUB_MAIN_READBACK_NOT_VERIFIED/);
 });

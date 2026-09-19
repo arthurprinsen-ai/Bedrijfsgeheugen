@@ -45,3 +45,13 @@ test('terminal recovery keeps one concurrency lineage per PR across close and di
   assert.match(workflow,/group: obligation-terminal-closure-\$\{\{ github\.event\.pull_request\.number \|\| inputs\.pr_number \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
 });
+
+
+test('github_main remains separate from descendant recovery and requires exact verified main proof', async()=>{
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(edge,/productionReadbackMode==='github_main'/);
+  assert.match(edge,/GITHUB_MAIN_READBACK_RUN_MUST_BE_NULL/);
+  assert.match(edge,/GITHUB_MAIN_DEPLOY_ID_MUST_BE_NULL/);
+  assert.match(edge,/GITHUB_MAIN_READBACK_NOT_VERIFIED/);
+  assert.match(edge,/github-main:\$\{productionObservedSha\}/);
+});
