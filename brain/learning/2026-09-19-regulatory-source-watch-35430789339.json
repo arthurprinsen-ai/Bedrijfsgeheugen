@@ -1,0 +1,19 @@
+{
+  "id": "regulatory-source-watch-35430789339",
+  "date": "2026-09-19",
+  "type": "source_observation",
+  "problem": "Official regulatory source observations were captured but the writer candidate could not satisfy the material writeback closure contract because writer boundaries intentionally permit only the state projection.",
+  "root_cause": "The source-observation writer and the material closure contract have different responsibilities: the writer may only update data/regulatory-source-state.json, while terminal delivery requires learning, ledger and human documentation in the same canonical lineage.",
+  "prevention": [
+    "Keep the writer boundary narrow and fail closed.",
+    "Promote a blocked material writer candidate into one canonical recovery successor that carries the state projection plus required closure artifacts.",
+    "Close the writer PR as superseded after the successor is established.",
+    "Preserve the original official-source hashes and timestamps unchanged."
+  ],
+  "evidence": {
+    "source_pr": 2327,
+    "source_head": "058d241fc0e434e02748c3329fe1e2334ce850cb",
+    "state_projection": "data/regulatory-source-state.json",
+    "official_source_count": 4
+  }
+}
