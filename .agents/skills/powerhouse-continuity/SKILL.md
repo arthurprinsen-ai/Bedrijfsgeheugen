@@ -229,3 +229,17 @@ Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.
 For every material repository-backed chat/agent execution, durable closure is part of the execution itself. Required CI must fail closed unless the same candidate contains: canonical Brain learning, an append-only activity/development ledger event, and human-readable change/learning documentation. Policy text, a chat statement, or a local skill result is not evidence that closure happened.
 
 The runtime sequence is mandatory: material action → Brain learning → activity ledger → human documentation → deterministic skill projection → protected delivery → production/provider readback → next-agent discoverability. A missing closure artifact is `WRITEBACK_INCOMPLETE`, never terminal success.
+
+## Exact-head terminal recovery observability
+
+Fingerprint: `github|chat-terminal-recovery|exact-head-observability|v1`.
+
+When continuity/recovery touches GitHub delivery:
+- under `pipefail`, avoid producer pipelines whose bounded consumer intentionally `break`s; use process substitution or an equivalent that cannot convert expected early-consumer completion into SIGPIPE failure;
+- classify jobless failed workflow runs as YAML/workflow-parse incidents before product-code diagnosis;
+- `github_main` terminal proof requires `production_observed_sha === main_sha`;
+- preserve HTTP status and a sanitized response body for terminal writeback failures before fail-closed exit;
+- keep the same chat/agent lineage alive through exact-head BRAIN + CodeQL + Required, protected merge, production readback, canonical learning/prevention writeback, skill projection readback and writer-lease release.
+
+Canonical source: `brain/learning/2026-09-19-chat-github-terminal-recovery-prevention-v1.json`.
+- For GitHub tree-based reconcile, `base_tree_sha` is mandatory and must equal the tree SHA of the exact current-main parent. Never create a replacement root tree from only the touched files. Before moving the branch ref, enforce expected changed-file/deletion budgets; repository-wide amplification is fail-closed and must leave main untouched.

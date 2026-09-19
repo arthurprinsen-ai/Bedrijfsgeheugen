@@ -341,3 +341,18 @@ Regels:
 - een learning-write zonder actuele projectie/readback is `LEARNING_WRITTEN_SKILL_SYNC_PENDING` en nooit `LIVE & BEWEZEN`;
 - handmatige `SKILL.md`-wijzigingen zijn alleen nodig voor blijvende operating principles; incidentkennis blijft in canonical Brain learning en wordt dynamisch geconsumeerd.
 
+## GitHub terminal recovery observability — permanent chat/agent contract
+
+Fingerprint: `github|chat-terminal-recovery|exact-head-observability|v1`.
+
+Voor iedere huidige en toekomstige chat/agent die GitHub-delivery, recovery of terminal closure uitvoert:
+- onder `set -o pipefail` mag een begrensde consumer die bewust vroeg stopt geen producer-SIGPIPE als delivery-failure veroorzaken; gebruik process substitution, `mapfile` of een equivalent zonder verwachte broken-pipe;
+- behandel een workflow-run zonder jobs eerst als YAML/workflow-parse incident; quote volledige Actions-`if` expressies wanneer literals YAML-significante `: ` of vergelijkbare tekens bevatten;
+- `production_readback_mode=github_main` is alleen geldig wanneer `production_readback_verified=true` én `production_observed_sha === main_sha`;
+- API/writeback failures moeten HTTP-status plus gesanitized response body bewaren vóór fail-closed exit; een generieke transportcode zonder server-redencode is onvoldoende diagnosebewijs;
+- Required mag pas groen worden nadat bestaande exact-head BRAIN en Powerhouse CodeQL sibling-runs terminal succesvol zijn; start geen duplicaat zware CI;
+- de uitvoerende chat/agent blijft eigenaar door protected merge → production readback → Brain learning/prevention writeback → skill projection/readback → writer-lease release.
+
+Canonieke learning: `brain/learning/2026-09-19-chat-github-terminal-recovery-prevention-v1.json`.
+- During same-lineage current-main reconciliation, never create a transient state where the open PR branch equals `main` and the candidate delta is reapplied later. Construct the full current-main tree plus candidate delta first, create one commit with current main as parent, then move the branch ref atomically. Transient equality can auto-close the PR and is a recoverable delivery defect.
+- For GitHub tree-based reconcile, `base_tree_sha` is mandatory and must equal the tree SHA of the exact current-main parent. Never create a replacement root tree from only the touched files. Before moving the branch ref, enforce expected changed-file/deletion budgets; repository-wide amplification is fail-closed and must leave main untouched.
