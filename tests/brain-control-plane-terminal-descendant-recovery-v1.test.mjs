@@ -10,10 +10,11 @@ test('central terminal closure owns descendant-safe recovery', async()=>{
   assert.match(workflow,/Terminal-Production-Readback:/);
 });
 
-test('real canonical readback failures do not downgrade into descendant recovery', async()=>{
+test('non-green canonical readback falls through only to verified descendant recovery', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/if \[ "\$source_conclusion" != "cancelled" \]/);
-  assert.match(workflow,/PRODUCTION_READBACK_FAILED/);
+  assert.match(workflow,/CANONICAL_READBACK_NOT_GREEN/);
+  assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN/);
+  assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN/);
 });
 
 test('Edge terminal authority requires explicit verified descendant proof', async()=>{
