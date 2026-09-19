@@ -1,0 +1,16 @@
+{
+  "id": "lane-aware-terminal-readback-v1-final-recovery",
+  "date": "2026-09-19",
+  "type": "recovery",
+  "obligation_id": "lane-aware-terminal-readback-v1",
+  "supersedes_pr": 2330,
+  "problem": "The original obligation merged before the durable github_main evidence contract and replay semantics were fully aligned.",
+  "recovery": "Re-run the same canonical obligation on current main after the lane-aware classifier, durable github_main authority, regression alignment and replay semantics are live.",
+  "expected_terminal_chain": [
+    "protected merge",
+    "github_main containment proof",
+    "durable Brain evidence",
+    "writer lease release",
+    "immutable terminal artifact"
+  ]
+}
