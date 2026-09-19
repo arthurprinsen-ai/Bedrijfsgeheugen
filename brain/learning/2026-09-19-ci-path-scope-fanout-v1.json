@@ -1,0 +1,30 @@
+{
+  "fingerprint": "github|ci-path-scope|specialist-fanout-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "GITHUB_DELIVERY",
+  "scope": "GITHUB",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "powerhouse-ci-path-scope-fanout-v1",
+  "root_cause": "Specialist Revenue Learning and LinkedIn Revenue Cockpit workflows were triggered by every Supabase migration, and Revenue Learning also contained duplicate migration path entries, amplifying GitHub Actions work unrelated to the changed capability.",
+  "prevention_rule": "Specialist workflows must use the narrowest stable path patterns that cover their owned runtime/schema surfaces. Generic migration integrity remains in canonical Supabase/Required gates; specialist workflows must not subscribe to supabase/migrations/** unless every migration is semantically in-scope.",
+  "enforcement": [
+    ".github/workflows/revenue-learning.yml",
+    ".github/workflows/linkedin-revenue-cockpit-tests.yml",
+    "tests/delivery-ci-path-scope-fanout.test.mjs",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-ci-path-scope-fanout.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY"
+  }
+}
