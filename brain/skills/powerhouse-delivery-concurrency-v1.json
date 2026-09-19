@@ -23,7 +23,10 @@
     "Use expected-head/CAS semantics for protected merge and treat CAS refusal or merge conflict as recovery input rather than terminal failure.",
     "Use changed-path, contract, dependency and mutable-resource overlap to predict collision risk before terminal landing.",
     "Treat rising behind_by, multiple TERMINAL_DELIVERY candidates, duplicate Obligation-ID, stale merge-base, main movement during gates and repeated reconciliations as leading indicators.",
-    "Continue after merge through production/main readback, outcome evidence, learning writeback and skill projection before claiming LIVE & BEWEZEN."
+    "Continue after merge through production/main readback, outcome evidence, learning writeback and skill projection before claiming LIVE & BEWEZEN.",
+    "Keep healthy candidate gates running while main moves; reconcile only at the terminal landing boundary unless overlap/conflict invalidates the candidate earlier.",
+    "At terminal landing, coalesce drift into one freshest-main full-union reconciliation, then rerun exact-head gates once.",
+    "Order multiple ready disjoint candidates by shortest remaining terminal critical path and downstream fan-out cost while preserving one-at-a-time landing authority."
   ],
   "forbidden_patterns": [
     "treating a green candidate on an older main epoch as currently merge-authorized",
@@ -42,7 +45,10 @@
     "terminal candidate count",
     "duplicate obligation count",
     "reconciliation count",
-    "gate elapsed time"
+    "gate elapsed time",
+    "recent main merge velocity",
+    "remaining terminal critical path",
+    "expected downstream revalidation fan-out"
   ],
   "canonical_evidence": {
     "reference_incident_pr": 2074,
@@ -62,5 +68,9 @@
     "architecture-integrator",
     "reliability",
     "repository-writer"
+  ],
+  "secondary_fingerprints": [
+    "delivery|predictive-landing-coalescing|v1",
+    "delivery|fast-terminal|critical-path|v2"
   ]
 }

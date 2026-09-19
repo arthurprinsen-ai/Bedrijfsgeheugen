@@ -89,3 +89,34 @@ Use **CSRD** (Corporate Sustainability Reporting Directive) in product copy and 
 `portal-csrd-impact-native-v2-single-canonical-module-v1`
 
 Prevent recurrence of: standalone sustainability demos, duplicated portal implementations, customer leakage of internal evidence metadata, unsupported live/audit claims, and navigation entries that bypass the canonical page registry.
+
+
+## Resource & Sustainability analytics (2026-09-19)
+
+The canonical CSRD & Impact page also owns the operational Resource & Sustainability cockpit. It must reuse `public.powerhouse_resource_intelligence_daily_v1` through the existing portal read model; a second dashboard or competing resource ledger is not allowed.
+
+### Interactive lenses
+
+The dashboard supports:
+- metric: provider cost, CO2e, water, energy, tokens, credits and requests;
+- period: 7, 30, 90 days or all measured history;
+- provider and resource type;
+- daily time-series trend;
+- provider distribution;
+- own-period average as an immediately available baseline benchmark;
+- provenance/evidence completeness;
+- drill-through to the canonical sector benchmark page.
+
+Cost/tokens/credits/requests are only selected from matching resource units or resource types. Physical telemetry remains nullable. Missing CO2e, water or energy is never converted to zero.
+
+### Intensity and external benchmark rule
+
+Absolute totals are useful but insufficient for optimization. The target model therefore supports intensity ratios per functional unit, aligned with software carbon/energy/water intensity practice. A ratio is rendered only when both numerator and functional-unit denominator are evidence-backed. Examples include CO2e per 1,000 requests, water per 1,000 requests, energy per action and cost per realized business-value unit.
+
+External or sector benchmark numbers are never invented. Until a comparable benchmark source is connected, the dashboard uses the tenant's own selected-period average and routes the user to `cijfers-maatstaven` for evidence-backed external comparison.
+
+### Regression guard
+
+`portal-v2/tests/resource-analytics.test.mjs` verifies unit separation, null semantics, period/provider filtering, daily aggregation and the absence of synthetic sector values.
+
+Change-prevention fingerprint: `portal-resource-sustainability-time-series-benchmark-v1`.

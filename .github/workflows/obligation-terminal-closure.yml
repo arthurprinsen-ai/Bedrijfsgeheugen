@@ -82,6 +82,46 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`delivery_lane=${metadata.deliveryLane}\n`);
           NODE
 
+      - name: Verify exact-head critical delivery gates before terminal claim
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
+          PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          require_workflow() {
+            workflow="$1"
+            label="$2"
+            for attempt in $(seq 1 60); do
+              payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=50")"
+              run_id="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$payload")"
+              status="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$payload")"
+              conclusion="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$payload")"
+              if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+                [ "$conclusion" = "success" ] || {
+                  echo "::error::TERMINAL_CRITICAL_GATE_FAILED:${label}:run=${run_id}:conclusion=${conclusion}:head=${HEAD_SHA}"
+                  exit 78
+                }
+                echo "TERMINAL_CRITICAL_GATE_PROVEN:${label}:run=${run_id}:head=${HEAD_SHA}"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "::error::TERMINAL_CRITICAL_GATE_NOT_TERMINAL:${label}:head=${HEAD_SHA}"
+            exit 78
+          }
+
+          require_workflow "required-test.yml" "Required"
+          require_workflow "unified-brain-delivery.yml" "BRAIN"
+
+          changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/powerhouse-codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then
+            require_workflow "powerhouse-codeql.yml" "Powerhouse-CodeQL"
+          else
+            echo "TERMINAL_CRITICAL_GATE_NOT_APPLICABLE:Powerhouse-CodeQL:head=${HEAD_SHA}"
+          fi
+
       - name: Wait for canonical production release readback
         id: production
         env:
@@ -110,7 +150,10 @@ jobs:
 
           source_run_id=""
           source_conclusion=""
-          for attempt in $(seq 1 42); do
+          # Fast bounded canonical wait. A historical failed/cancelled canonical run is
+          # not terminal evidence; fall through immediately to current-production
+          # descendant proof instead of forcing a new recovery cycle.
+          for attempt in $(seq 1 12); do
             runs="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/production-release-readback.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=20")"
             source_run_id="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .id // empty' <<<"$runs")"
             status="$(jq -r '[.workflow_runs[] | select(.head_sha=="'"$MERGE_SHA"'")] | sort_by(.created_at) | last | .status // empty' <<<"$runs")"
@@ -124,17 +167,14 @@ jobs:
                 echo "PRODUCTION_READBACK_PROVEN:$source_run_id"
                 exit 0
               fi
-              if [ "$source_conclusion" != "cancelled" ]; then
-                echo "::error::PRODUCTION_READBACK_FAILED:run=$source_run_id conclusion=$source_conclusion"
-                exit 78
-              fi
+              echo "::warning::CANONICAL_READBACK_NOT_GREEN:run=$source_run_id conclusion=$source_conclusion; proving current live descendant instead"
               break
             fi
-            sleep 10
+            sleep 5
           done
 
           echo "Canonical production readback unavailable/cancelled; proving current live production contains merge ${MERGE_SHA}."
-          for attempt in $(seq 1 36); do
+          for attempt in $(seq 1 24); do
             nonce="${MERGE_SHA}-descendant-${attempt}-$(date +%s)"
             if curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/release.json?bg_terminal_recovery=${nonce}" -o /tmp/release.json               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/?bg_terminal_recovery=${nonce}" -o /tmp/runtime.html               && curl -fsSL --connect-timeout 10 --max-time 30 -H 'Cache-Control: no-cache'                 "https://www.bedrijfsgeheugen.nl/api/connectors/readiness?bg_terminal_recovery=${nonce}" -o /tmp/readiness.json; then
               read -r observed deploy_id context contract authority < <(node --input-type=module - <<'NODE'
@@ -165,7 +205,7 @@ jobs:
                 fi
               fi
             fi
-            sleep 10
+            sleep 5
           done
           echo "::error::PRODUCTION_DESCENDANT_READBACK_NOT_PROVEN:$MERGE_SHA"
           exit 78

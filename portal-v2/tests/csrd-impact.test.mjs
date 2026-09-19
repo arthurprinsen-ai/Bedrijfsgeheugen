@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { findPortalPage, PORTAL_SECTIONS } from '../../portal-next/portal-content-map.js';
-import { CSRD_TABS, DEFAULT_IMPACT_SNAPSHOT, customerSafeSnapshot, csrdImpactMarkup, withResourceFootprint } from '../csrd-impact.js';
+import { CSRD_TABS, DEFAULT_IMPACT_SNAPSHOT, customerSafeSnapshot, csrdImpactMarkup, withResourceFootprint, withResourceIntelligence } from '../csrd-impact.js';
 
 test('CSRD impact is a first-class portal page in Inzicht', () => {
   const page = findPortalPage('csrd-impact');
@@ -89,4 +89,17 @@ test('resource footprint becomes data-backed only with complete canonical lineag
   assert.deepEqual(snapshot.resourceFootprint?.methodologies, ['provider-model-resource-factor']);
   assert.deepEqual(snapshot.resourceFootprint?.sources, ['powerhouse_resource_impact_v1']);
   assert.match(csrdImpactMarkup(snapshot), /Data-backed · 100% brondekking/);
+});
+
+
+test('resource intelligence keeps normalized daily rows available to the analytics dashboard', () => {
+  const snapshot = withResourceIntelligence({
+    resource_daily:[{day:'2026-09-19T00:00:00Z',provider:'openai',resource_type:'ai_tokens',unit:'tokens',resource_amount:1234,usage_events:4,co2e_kg:0.12,water_liters:1.5,energy_kwh:0.3,provenance_complete:true}]
+  });
+  assert.equal(snapshot.resourceIntelligence.daily.length,1);
+  assert.equal(snapshot.resourceIntelligence.daily[0].provider,'openai');
+  const html = csrdImpactMarkup(snapshot);
+  assert.match(html,/Resource & Sustainability/);
+  assert.match(html,/Tokens/);
+  assert.match(html,/Credits/);
 });

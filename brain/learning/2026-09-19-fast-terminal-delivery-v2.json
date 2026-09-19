@@ -1,0 +1,58 @@
+{
+  "fingerprint": "delivery|fast-terminal|critical-path|v2",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "AVOIDABLE_DELIVERY_LATENCY",
+  "scope": "GITHUB",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Delivery recovery spent avoidable time serializing independent gates, chasing moving main before terminal landing, and treating a known failed historical production-readback as a hard terminal error instead of immediately proving the current live descendant.",
+  "prevention_rule": "Schedule delivery by predicted critical path: fail cheap, parallelize independent expensive gates, preserve healthy exact-head evidence, coalesce main drift into one terminal reconciliation, and fall through from known failed canonical readback to authoritative live-descendant proof without weakening exact-head or production evidence.",
+  "enforcement": [
+    ".github/workflows/obligation-terminal-closure.yml",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "AGENTS.md",
+    "tests/brain-fast-terminal-delivery-v2.test.mjs",
+    ".github/workflows/lane-website.yml",
+    "site/website-release-risk.json",
+    "tests/brain-composable-release-control-plane.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-fast-terminal-delivery-v2.test.mjs",
+      "tests/brain-composable-release-control-plane.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-delivery-self-optimization"
+  ],
+  "secondary_incident": {
+    "class": "OVERBROAD_WEBSITE_RISK_CLASSIFICATION",
+    "symptom": "A redirect-only netlify.toml change plus closure evidence escalated to high-risk and ran full public-page visibility/header/full-regression browser checks.",
+    "root_cause": "Website risk treated every netlify.toml delta as high-risk and counted Brain learning/regression evidence as unowned website artifacts.",
+    "prevention": "Detect append-only canonical 301 redirect blocks as fast-fix, classify closure evidence as non-artifact, and run only baseline + preview + targeted browser proof for that bounded case."
+  },
+  "terminal_gate_incident": {
+    "class": "PREMATURE_TERMINAL_CLAIM",
+    "symptom": "A merged candidate could receive LIVE_BEWEZEN from terminal closure while an exact-head Required run later exposed a failing regression contract.",
+    "root_cause": "Obligation Terminal Closure verified main/production/skill evidence but did not independently require exact-head Required, BRAIN and applicable Powerhouse CodeQL success before writing terminal state.",
+    "prevention": "Terminal closure must read latest exact-head critical workflow outcomes and fail closed unless Required, BRAIN and applicable CodeQL are completed successfully before production/readback evidence is persisted."
+  },
+  "website_risk_scope": {
+    "fingerprint": "risk-scoped-website-browser-v1",
+    "rule": "Fast-fix and normal-risk candidates use exact affected-route browser proof; sitewide visibility, header-menu crawl and broad browser contracts are reserved for high-risk candidates.",
+    "regulatory_routes": [
+      "/",
+      "/ai-act",
+      "/compliance-status",
+      "/benchmark",
+      "/monitor"
+    ],
+    "reason": "Avoid sitewide Chromium work when the classifier already owns a bounded route set."
+  }
+}
