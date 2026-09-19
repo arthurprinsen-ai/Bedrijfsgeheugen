@@ -47,7 +47,7 @@ Deno.serve(async(req:Request)=>{
       const mainSha=required(terminal.main_sha,'MAIN_SHA').toLowerCase();
       if(!/^[0-9a-f]{40}$/.test(candidateSha)||!/^[0-9a-f]{40}$/.test(mainSha))throw new Error('SHA_INVALID');
       const productionReadbackMode=String(terminal.production_readback_mode||'canonical_run');
-      if(!['canonical_run','descendant_live'].includes(productionReadbackMode))throw new Error('PRODUCTION_READBACK_MODE_INVALID');
+      if(!['canonical_run','descendant_live','github_main'].includes(productionReadbackMode))throw new Error('PRODUCTION_READBACK_MODE_INVALID');
       const productionRunId=terminal.production_readback_run_id==null?null:Number(terminal.production_readback_run_id);
       const productionObservedSha=String(terminal.production_observed_sha||mainSha).toLowerCase();
       const productionDeployId=String(terminal.production_deploy_id||'').trim()||null;
@@ -56,6 +56,12 @@ Deno.serve(async(req:Request)=>{
         if(!/^[0-9a-f]{40}$/.test(productionObservedSha))throw new Error('PRODUCTION_OBSERVED_SHA_INVALID');
         if(!productionDeployId)throw new Error('PRODUCTION_DEPLOY_ID_MISSING');
         if(terminal.production_readback_verified!==true)throw new Error('PRODUCTION_DESCENDANT_READBACK_NOT_VERIFIED');
+      }
+      if(productionReadbackMode==='github_main'){
+        if(!/^[0-9a-f]{40}$/.test(productionObservedSha))throw new Error('PRODUCTION_OBSERVED_SHA_INVALID');
+        if(terminal.production_readback_verified!==true)throw new Error('GITHUB_MAIN_READBACK_NOT_VERIFIED');
+        if(productionObservedSha!==mainSha)throw new Error('GITHUB_MAIN_READBACK_SHA_MISMATCH');
+        if(productionDeployId)throw new Error('GITHUB_MAIN_DEPLOY_ID_UNEXPECTED');
       }
       const projectionRequired=terminal.skill_projection_required===true;
       const projectionRunId=terminal.skill_projection_run_id==null?null:Number(terminal.skill_projection_run_id);
@@ -169,7 +175,7 @@ Deno.serve(async(req:Request)=>{
           p_expected_version:Number(operation.version),
           p_status:'VERIFIED',
           p_dispatch_generation:null,
-          p_remote_ref:`github-run:${productionRunId}`,
+          p_remote_ref:productionReadbackMode==='canonical_run'?`github-run:${productionRunId}`:productionReadbackMode==='github_main'?`github-main:${productionObservedSha}`:`production-descendant:${productionObservedSha}:${productionDeployId}`,
           p_evidence:{...(operation.evidence||{}),...baseEvidence,terminal_verification:'VERIFIED'}
         });
         if(transitioned.error)throw new Error(`OPERATION_VERIFY_FAILED:${transitioned.error.message}`);
@@ -185,7 +191,7 @@ Deno.serve(async(req:Request)=>{
         status:'GREEN',
         error_class:null,
         remote_status:200,
-        remote_ref:productionReadbackMode==='canonical_run'?`github-run:${productionRunId}`:`production-descendant:${productionObservedSha}:${productionDeployId}`,
+        remote_ref:productionReadbackMode==='canonical_run'?`github-run:${productionRunId}`:productionReadbackMode==='github_main'?`github-main:${productionObservedSha}`:`production-descendant:${productionObservedSha}:${productionDeployId}`,
         candidate_identity:candidateSha,
         tested_identity:mainSha,
         payload_sha256:terminalPayloadHash,
