@@ -196,3 +196,8 @@ Before adding a workflow trigger, ask:
 4. will the trigger create duplicate exact-head work or queue amplification?
 
 A broad trigger is a regression unless it has explicit cross-cutting ownership evidence.
+
+
+### Obsolete-run cancellation
+
+When a canonical explicit successor closes its predecessor, repository hygiene must also cancel nonterminal Actions runs for the predecessor head. Cancellation is bounded by the central resource budget; terminal/completed runs are evidence and are never rewritten. This keeps obsolete exact-head work from occupying runner capacity after canonical ownership has moved.
