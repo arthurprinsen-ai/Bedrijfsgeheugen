@@ -17,10 +17,10 @@ export function authorizeSocialPublication(input={}){
  if(input.channelKind==='linkedin_personal'){
   const exception=input.businessException;
   const exactException=exception?.explicitUserRequest===true&&has(exception?.contentId)&&exception.contentId===input.lineage?.contentId&&exception?.singleUse===true;
-  if(!PERSONAL.test(text)) reasons.push('PERSONAL_LIFE_TOPIC_REQUIRED');
+  if(!hasConcretePersonalLife(text)) reasons.push('CONCRETE_PERSONAL_LIFE_EVENT_REQUIRED');
   if(BUSINESS.test(text)&&!exactException) reasons.push('BUSINESS_CONTENT_ON_PERSONAL');
   if(CORPORATE.test(text)) reasons.push('CORPORATE_VOICE_ON_PERSONAL');
-  if(MORAL.test(text)) reasons.push('FORCED_BUSINESS_MORAL');
+  if(MORAL.test(text)) reasons.push('FORCED_BUSINESS_MORAL');\n  if(CONSULTANT.test(text)&&!exactException) reasons.push('CONSULTANT_VOICE_ON_PERSONAL');
   if(input.companyPageInterchangeable!==false) reasons.push('COMPANY_PAGE_INTERCHANGEABLE_NOT_REJECTED');
   if(!contract.personalTruthClasses.includes(input.personalTruth?.class)) reasons.push('FIRST_PERSON_TRUTH_CLASS_REQUIRED');
   if(contract.personalTruthRequiresEvidenceRefs&&refs(input.personalTruth).length===0) reasons.push('FIRST_PERSON_EVIDENCE_REQUIRED');
