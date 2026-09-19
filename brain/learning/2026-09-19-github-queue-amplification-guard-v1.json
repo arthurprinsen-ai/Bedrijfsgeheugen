@@ -1,0 +1,27 @@
+{
+  "fingerprint": "github|queue-amplification|path-scope-and-push-scope|v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "AVOIDABLE_DELIVERY_LATENCY",
+  "scope": "GITHUB",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Broad GitHub Actions triggers caused unrelated branch pushes and unrelated Supabase migrations to start recovery, revenue and LinkedIn workflows, multiplying queued work while exact-head delivery was already saturated.",
+  "prevention_rule": "Global recovery supervision runs on main push, schedule or manual dispatch, not every branch push. Domain workflows watch only owned files/migrations. Generic migration-history integrity is verified once in the existing Supabase preview lane instead of re-running heavy revenue suites.",
+  "enforcement": [
+    ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    ".github/workflows/linkedin-revenue-cockpit-tests.yml",
+    ".github/workflows/revenue-learning.yml",
+    ".github/workflows/supabase-pr-preview.yml",
+    "tests/brain-github-queue-amplification-guard-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-queue-amplification-guard-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization"
+  ]
+}
