@@ -18,5 +18,19 @@
     "historical_replay": [
       "tests/brain-runtime-authority-retired-make-registry.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "STALE_RUNTIME_REGISTRY_AUTHORITY"
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-runtime-authority-retired-make-registry.test.mjs"
+    ],
+    "authority_sources": [
+      "config/powerhouse-runtime-authority.json",
+      "docs/brain/component-registry.json"
+    ],
+    "issue": "#1884",
+    "candidate_pr": "#2409"
   }
 }
