@@ -9,8 +9,7 @@
   "prevention_rule": "SEO semantics (keyword ownership, metadata, links, brand language) run against source HTML. Canonical header/footer parity is owned exclusively by the dedicated shell contract/full-build/live-readback gates. No second byte-comparison oracle may exist in seocontrole.py.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-seo-page-control-current-truth-v1.test.mjs",
-      "tests/seo-v18-canonical-header.test.mjs"
+      "tests/brain-seo-page-control-current-truth-v1.test.mjs"
     ]
   },
   "evidence": {
