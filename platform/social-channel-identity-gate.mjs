@@ -3,10 +3,19 @@ import crypto from 'node:crypto';
 const contract=JSON.parse(fs.readFileSync(new URL('../config/social-channel-identity-contract.json',import.meta.url),'utf8'));
 export const CHANNEL_IDENTITY_CONTRACT_ID=contract.contractId;
 export const CHANNELS=Object.freeze(contract.channels);
-const PERSONAL=/\b(ik|mijn|mij|voor mij|bij mij|thuis|vandaag|gisteren|weekend|vakantie|hockey|tuin|auto|printer|robotstofzuiger)\b/i;
+const FIRST_PERSON=/\b(ik|mijn|mij|me|voor mij|bij mij)\b/i;
+const LIVED_CONTEXT=/\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport)\b/i;
+const LIVED_ACTION=/\b(stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|baalde|lachte|schrok|voelde|dacht ineens)\b/i;
 const BUSINESS=/\b(bedrijfsgeheugen|consultancy|consultant|klant|opdrachtgever|organisatie|organisaties|bedrijf|bedrijven|data|\bai\b|digitalisering|transformatie|propositie|dienstverlening|expertise|scan|offerte|lead|omzet|sales|framework|business)\b/i;
 const CORPORATE=/\b(wij helpen|wij bieden|wij zorgen|onze klanten|onze aanpak|onze dienstverlening|onze expertise|neem contact op|vrijblijvend gesprek|ons aanbod)\b/i;
-const MORAL=/\b(dit geldt ook voor organisaties|de les voor bedrijven|wat organisaties hiervan kunnen leren|in mijn werk zie ik|bij een klant|voor leiders|managementles)\b/i;
+const MORAL=/\b(dit geldt ook voor organisaties|de les voor bedrijven|wat organisaties hiervan kunnen leren|in mijn werk zie ik|bij een klant|voor leiders|managementles|de les is|wat we hiervan kunnen leren|dit leert mij dat)\b/i;
+const CONSULTANT=/\b(thought leadership|best practice|proces(?:sen)? slimmer|effici[eë]nter werken|waarde creëren|transformatie|governance|roadmap|stakeholder|executie|implementatie|optimaliseren|schaalbaar|future.?proof|leiderschap|strategie concreet maken)\b/i;
+function hasConcretePersonalLife(text){
+  return FIRST_PERSON.test(text) && (
+    (LIVED_CONTEXT.test(text) && LIVED_ACTION.test(text)) ||
+    /\bmijn\s+(kind|dochter|zoon|gezin|auto|fiets|tuin|telefoon|printer|weekend|vakantie|training|wedstrijd)\b/i.test(text)
+  );
+}
 const has=v=>typeof v==='string'&&v.trim().length>0;
 const refs=t=>Array.isArray(t?.evidenceRefs)?t.evidenceRefs.filter(has):[];
 export function authorizeSocialPublication(input={}){
