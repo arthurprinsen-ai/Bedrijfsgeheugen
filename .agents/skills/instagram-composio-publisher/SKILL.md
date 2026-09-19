@@ -68,3 +68,12 @@ Hard rules:
 - Write final post id/permalink, asset identity, prompt/script, publish timestamp, outcome and subsequent performance learning back to the canonical Powerhouse/Notion lineage.
 
 Learning fingerprint: `mira-human-problem-fresh-openart-reel-v1`.
+
+
+## Atomic publication claim and duplicate prevention
+
+Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
+
+Every social side effect is single-writer and idempotent. Before Composio, Buffer, or any future provider receives a publish/create request, the canonical `powerhouse_channel_decisions` row must be atomically claimed from `content_ready` to `dispatching` with a compare-and-set predicate on the same run date, channel and decision. Only the run that obtains the claim may call the provider. A concurrent run that cannot claim must return `ALREADY_CLAIMED_OR_DELIVERED` and must not publish, regenerate or create a replacement.
+
+A retryable transport failure that is proven to occur before the provider side effect may restore `dispatching -> content_ready`; uncertainty after a provider call is never permission to retry. Reconcile provider truth/external identity first. Provider readback and canonical external id remain mandatory before publication is considered delivered.
