@@ -58,3 +58,7 @@ Regressietests mogen de actuele safety-baseline niet zelf uitvinden. Lees vóór
 ## Stale regression-oracles
 
 Als een canoniek veiligheidscontract verandert, moet de bijbehorende regression-oracle in dezelfde lineage mee veranderen. Maar een falende test is op zichzelf geen bewijs dat het runtimecontract gewijzigd is. De bronvolgorde is: exact-head canonieke config/runtime/workflow → afgeleide oracle → CI-resultaat. Bij verschil wordt eerst de bronwaarheid vastgesteld; pas daarna wordt de test of runtime aangepast. Verzwak nooit een runtime-gate uitsluitend om CI groen te krijgen.
+
+## Config ↔ runtime ↔ oracle convergence
+
+Een veiligheidsregel is pas consistent als workflow/runtime, declaratieve configuratie en regression-oracle dezelfde strengste waarheid uitdrukken. Als de runtime strenger is geworden, moeten config en tests in dezelfde lineage worden bijgewerkt. De runtime-gate wordt nooit verzwakt om een oude test of configuratie passend te maken.
