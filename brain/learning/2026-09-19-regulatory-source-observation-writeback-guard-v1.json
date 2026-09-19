@@ -8,13 +8,15 @@
     "Exempt only Regulatory-Candidate-Type: source-observation.",
     "Require the sole material path to be exactly data/regulatory-source-state.json.",
     "Keep implementation candidates, missing metadata, extra files and neighboring data paths fail-closed.",
-    "Regression-test both the exact exemption and its rejection boundaries."
+    "Regression-test both the exact exemption and its rejection boundaries.",
+    "Do not embed YAML-significant regulatory metadata literals containing ': ' inside unquoted GitHub Actions expressions; pass the PR body and parse metadata in Node instead."
   ],
   "evidence": {
     "blocked_pr": 2327,
     "required_run": 35439013347,
     "guard": "scripts/brain/material-writeback-closure-guard.mjs",
     "workflow": ".github/workflows/required-test.yml",
-    "test": "tests/brain-material-writeback-closure-guard.test.mjs"
+    "test": "tests/brain-material-writeback-closure-guard.test.mjs",
+    "required_parse_recovery": ".github/workflows/required-test.yml"
   }
 }
