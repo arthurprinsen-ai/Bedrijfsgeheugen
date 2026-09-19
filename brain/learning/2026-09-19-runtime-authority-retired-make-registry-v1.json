@@ -1,0 +1,22 @@
+{
+  "fingerprint": "runtime-authority-retired-make-registry-drift-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "STALE_RUNTIME_REGISTRY_AUTHORITY",
+  "scope": "POWERHOUSE_RUNTIME_GOVERNANCE",
+  "machine_enforceable": true,
+  "root_cause": "The component registry was an old generated snapshot and represented historical Make-backed PH Agent 01-16 entries as active after the canonical runtime authority retired the Make execution estate.",
+  "prevention_rule": "A component registry may retain historical Make identities only as provenance. PH Agent 01-16 must resolve to runtime=make, status=legacy_retired_path, authority=NONE and production_execution_allowed=false while the canonical runtime authority classifies the Make estate as LEGACY_RETIRED_PATH. Registry source authority version/fingerprint must match the canonical contract.",
+  "enforcement": [
+    "config/powerhouse-runtime-authority.json",
+    "docs/brain/component-registry.json",
+    "tests/brain-runtime-authority-retired-make-registry.test.mjs"
+  ],
+  "issue": "#1884",
+  "candidate_pr": "#2363",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-retired-make-registry.test.mjs"
+    ]
+  }
+}
