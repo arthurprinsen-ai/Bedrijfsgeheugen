@@ -29,6 +29,13 @@
   "pageLocalAssets": {
     "assets/pages/ai-act/": [
       "/ai-act"
+    ],
+    "data/regelgeving.json": [
+      "/",
+      "/ai-act",
+      "/compliance-status",
+      "/benchmark",
+      "/monitor"
     ]
   },
   "fastFixRequiredTestSets": [

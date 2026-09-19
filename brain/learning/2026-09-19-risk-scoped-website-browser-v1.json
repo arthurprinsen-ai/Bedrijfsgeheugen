@@ -1,0 +1,33 @@
+{
+  "id": "risk-scoped-website-browser-v1",
+  "date": "2026-09-19",
+  "type": "optimization",
+  "problem": "Normal and data-only website changes paid the cost of a sitewide public-page visibility crawl and full header-menu readability crawl even when the release-risk classifier had a bounded affected-route set.",
+  "root_cause": "The browser job always executed two global checks whenever any preview was required; risk_lane was only used for the separate broad high-risk browser contracts.",
+  "prevention": [
+    "Keep sitewide visibility and menu browser checks mandatory for high-risk changes.",
+    "For normal-risk changes, use targeted desktop/mobile route verification against the classifier's affected routes.",
+    "Map regulatory data changes to a bounded explicit public-route set instead of defaulting to a single generic route.",
+    "Do not skip baseline, syntax, static or page-SEO contracts required by the selected lane."
+  ],
+  "evidence": {
+    "workflow": ".github/workflows/lane-website.yml",
+    "risk_config": "site/website-release-risk.json",
+    "test": "tests/targeted-website-route-regression.test.mjs"
+  },
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization",
+    "powerhouse-continuity"
+  ],
+  "fingerprint": "risk-scoped-website-browser-v1",
+  "failure_class": "CI",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-risk-scoped-website-browser-v1.test.mjs"
+    ]
+  }
+}
