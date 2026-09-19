@@ -14,10 +14,6 @@ on:
       - 'tests/notion-synced-posts-migration-reproducibility.test.mjs'
       - 'supabase/migration-history.lock.json'
       - 'supabase/migrations/**'
-      - 'tests/supabase-migration-history-integrity.test.mjs'
-      - 'tests/notion-synced-posts-migration-reproducibility.test.mjs'
-      - 'supabase/migrations/**'
-      - 'supabase/migration-history.lock.json'
       - 'platform/growth-intelligence-engine.mjs'
       - 'netlify/functions/growth-intelligence-daily.mjs'
       - '.github/workflows/revenue-learning.yml'
@@ -40,7 +36,7 @@ on:
       - '.github/workflows/revenue-learning.yml'
 
 concurrency:
-  group: revenue-learning-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
+  group: revenue-learning-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 permissions:
@@ -49,6 +45,7 @@ permissions:
 jobs:
   revenue-learning:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
