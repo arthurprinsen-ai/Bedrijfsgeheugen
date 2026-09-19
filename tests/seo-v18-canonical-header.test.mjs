@@ -14,10 +14,11 @@ test('SEO validator does not duplicate canonical shell ownership', async () => {
   assert.doesNotMatch(source, /re\.search\([^\n]*bgkop/);
 });
 
-test('dedicated canonical shell workflow remains the shell authority', async () => {
-  const workflow = await readFile('.github/workflows/canonical-brand-shell.yml', 'utf8');
-  assert.match(workflow, /canonical/i);
-  assert.match(workflow, /shell/i);
+test('dedicated canonical shell workflows remain the shell authority', async () => {
+  const fullBuild = await readFile('.github/workflows/canonical-brand-shell-full-build.yml', 'utf8');
+  const liveReadback = await readFile('.github/workflows/canonical-brand-shell-live-readback.yml', 'utf8');
+  assert.match(fullBuild, /Canonical brand shell full build/);
+  assert.match(liveReadback, /Canonical brand shell live readback/);
 });
 
 test('de oude V17-header wordt niet meer gebruikt als referentie', async () => {
