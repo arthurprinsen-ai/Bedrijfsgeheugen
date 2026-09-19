@@ -1,0 +1,31 @@
+{
+  "fingerprint": "supabase-capture-trigger-execute-least-privilege-v1",
+  "date": "2026-09-19",
+  "type": "SECURITY_PREVENTION",
+  "scope": "SUPABASE_SECURITY",
+  "machine_enforceable": true,
+  "compiler": {
+    "failure_class": "TRIGGER_FUNCTION_CLIENT_EXECUTE_PRIVILEGE"
+  },
+  "root_cause": "Seven SECURITY DEFINER functions exist solely as trigger functions but inherited direct EXECUTE grants for PUBLIC, anon and authenticated, exposing unnecessary REST RPC entrypoints.",
+  "prevention_rule": "Trigger-only SECURITY DEFINER capture functions must revoke direct execution from PUBLIC, anon and authenticated. Server-side service_role may retain EXECUTE for controlled diagnostics; trigger invocation remains database-owned.",
+  "enforcement": [
+    "supabase/migrations/20260919123730_restrict_capture_trigger_execute_v1.sql",
+    "tests/brain-supabase-capture-trigger-execute-security-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-capture-trigger-execute-security-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-supabase-capture-trigger-execute-security-v1.test.mjs"
+    ],
+    "provider_migration": "restrict_capture_trigger_execute_v1",
+    "security_advisor_warn_count_before": 14,
+    "security_advisor_warn_count_after": 0,
+    "remaining_info": "rls_enabled_no_policy:120"
+  },
+  "source_issue": "#1863"
+}
