@@ -101,10 +101,10 @@ jobs:
             }
             echo "mode=github_main" >> "$GITHUB_OUTPUT"
             echo "run_id=" >> "$GITHUB_OUTPUT"
-            echo "observed_sha=${observed_sha}" >> "$GITHUB_OUTPUT"
+            echo "observed_sha=${MERGE_SHA}" >> "$GITHUB_OUTPUT"
             echo "deploy_id=" >> "$GITHUB_OUTPUT"
             echo "verified=true" >> "$GITHUB_OUTPUT"
-            echo "AUTOMATION_MAIN_READBACK_PROVEN:merge=${MERGE_SHA} observed=${observed_sha}"
+            echo "AUTOMATION_MAIN_READBACK_PROVEN:merge=${MERGE_SHA} contained_by=${observed_sha}"
             exit 0
           fi
 
