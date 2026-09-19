@@ -12,7 +12,7 @@
     "Treating the presence of a learning file as equivalent to useful learning."
   ],
   "fix": "Extend the central material-writeback guard with semantic validation and bind the same rule into continuity/delivery skills and the universal learning policy.",
-  "prevention_rule": "Every material candidate must include semantic learning with fingerprint, failure class, evaluation replay, root cause, prevention/regression and evidence. After merge, LIVE_BEWEZEN remains blocked until production readback, outcome evidence and required skill projection are proven by terminal closure. A canonical obligation branch must be bounded by an expected-path allowlist; cross-obligation changed paths trigger fail-closed recovery by rebuilding from the exact current-main base tree plus only the obligation-approved delta before any terminal landing. Before final reconcile/landing, set an explicit TERMINAL_DELIVERY writer lease bound to obligation, PR scope, exact head and exact main epoch; non-owners must DEFER until terminal closure releases the lease. Test oracles must follow the current canonical safety contract: mandatory public visibility is never weakened for fast-fix or normal-risk work; only broad header/menu/browser sweeps remain high-risk scoped.",
+  "prevention_rule": "Every material candidate must include semantic learning with fingerprint, failure class, evaluation replay, root cause, prevention/regression and evidence. After merge, LIVE_BEWEZEN remains blocked until production readback, outcome evidence and required skill projection are proven by terminal closure. A canonical obligation branch must be bounded by an expected-path allowlist; cross-obligation changed paths trigger fail-closed recovery by rebuilding from the exact current-main base tree plus only the obligation-approved delta before any terminal landing. Before final reconcile/landing, set an explicit TERMINAL_DELIVERY writer lease bound to obligation, PR scope, exact head and exact main epoch; non-owners must DEFER until terminal closure releases the lease. Test oracles must follow the current canonical safety contract: mandatory public visibility is never weakened for fast-fix or normal-risk work; only broad header/menu/browser sweeps remain high-risk scoped. For safety behavior, runtime enforcement is authority over derived classifier lists: regression tests must assert the executable workflow invariant first and use config lists only for their actual classifier semantics.",
   "regression_contract": "tests/brain-material-writeback-closure-guard.test.mjs",
   "tests": [
     "tests/brain-material-writeback-closure-guard.test.mjs"
@@ -25,7 +25,8 @@
     ".github/workflows/obligation-terminal-closure.yml",
     "PR #2375 cross-obligation contamination observed at head a08e3d182b63a46679e027fd31d5a218edbc9606",
     "PR #2375 repeated contamination observed at head 13da9161b39f10e92880105688d6ed020b8e7113 before terminal writer lease activation.",
-    "BRAIN backend lane run 35444437798 job 105901904714: 1176/1178 passed; failures 366 and 368 were stale safety-oracle expectations."
+    "BRAIN backend lane run 35444437798 job 105901904714: 1176/1178 passed; failures 366 and 368 were stale safety-oracle expectations.",
+    "BRAIN backend lane head 26485ef: remaining failure showed normalRequiredTestSets is not the runtime authority for mandatory visibility; lane-website enforces visibility unconditionally for preview flows."
   ],
   "outcome": "Candidate makes learning quality fail-closed before merge and retains terminal live/skill evidence after merge.",
   "compiler": {
