@@ -23,7 +23,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-fast-terminal-delivery-v2.test.mjs",
-      "tests/brain-composable-release-control-plane.test.mjs"
+      "tests/brain-composable-release-control-plane.test.mjs",
+      "tests/brain-control-plane-terminal-descendant-recovery-v1.test.mjs",
+      "tests/delivery-control-plane-vertical-slice.test.mjs"
     ]
   },
   "skill_targets": [
@@ -54,5 +56,11 @@
       "/monitor"
     ],
     "reason": "Avoid sitewide Chromium work when the classifier already owns a bounded route set."
+  },
+  "regression_oracle_incident": {
+    "class": "STALE_TERMINAL_READBACK_ORACLE",
+    "symptom": "BRAIN backend/automation lanes still required real canonical readback failure to hard-stop after fast-terminal policy adopted independently verified current-production descendant proof for any historical non-green canonical run.",
+    "root_cause": "Two older regression tests encoded the superseded cancelled-only fallback rule and were not updated in the same policy change.",
+    "prevention": "Historical replay now includes both terminal descendant recovery oracles; non-green canonical runs may fall through only to independently verified descendant-live proof with merge ancestry, production contract/authority, deploy identity, runtime and connector readiness."
   }
 }

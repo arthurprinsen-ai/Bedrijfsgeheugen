@@ -110,15 +110,15 @@ test('fulfilled obligations refresh terminal identity on replay', async()=>{
 });
 
 
-test('terminal closure recovers only cancelled or missing canonical readback through descendant live proof', async()=>{
+test('terminal closure recovers a non-green historical canonical readback only through verified descendant live proof', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/source_conclusion.*cancelled/);
-  assert.match(workflow,/PRODUCTION_READBACK_FAILED/);
+  assert.match(workflow,/CANONICAL_READBACK_NOT_GREEN/);
   assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN/);
-  assert.match(workflow,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
-  assert.match(workflow,/api\/connectors\/readiness/);
-  assert.match(workflow,/release\.contract!=='BRAIN-DELIVERY-v2'/);
-  assert.match(workflow,/release\.production_authority!=='BG169'/);
+  assert.match(workflow,/git merge-base --is-ancestor "\\$MERGE_SHA" "\\$observed"/);
+  assert.match(workflow,/api\\/connectors\\/readiness/);
+  assert.match(workflow,/release\\.contract!=='BRAIN-DELIVERY-v2'/);
+  assert.match(workflow,/release\\.production_authority!=='BG169'/);
+  assert.doesNotMatch(workflow,/PRODUCTION_READBACK_FAILED:run=\\$source_run_id conclusion=\\$source_conclusion/);
 });
 
 test('terminal evidence distinguishes canonical run from descendant live production proof', async()=>{

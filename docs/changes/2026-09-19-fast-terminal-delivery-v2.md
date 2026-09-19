@@ -14,3 +14,6 @@
 - Normal-risk website changes now use targeted affected-route browser proof; sitewide visibility/header crawls are high-risk-only.
 - `data/regelgeving.json` is explicitly mapped to `/`, `/ai-act`, `/compliance-status`, `/benchmark` and `/monitor`.
 
+## Regression-oracle alignment
+
+The terminal-readback policy now has matching historical oracles: a historical non-green canonical readback may not itself count as success, but it may fall through to an independently verified current-production descendant proof. That proof still requires merge ancestry plus the production BRAIN contract/authority, deploy identity, runtime and connector-readiness evidence. The older cancelled-only assertions were removed because they contradicted the already adopted fast-terminal authority.

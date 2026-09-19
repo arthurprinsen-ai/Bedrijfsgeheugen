@@ -12,3 +12,9 @@
 - Prevention: terminal closure now fails closed on any non-green/latest exact-head critical gate, and the stale browser-risk assertion is aligned with the bounded fast-fix contract.
 - Parallel PR #2356 contained a useful unique optimization. Its route mapping and high-risk-only sitewide browser rule were coalesced into this canonical successor instead of keeping a duplicate delivery lane.
 
+## Recovery — stale terminal readback oracle
+
+- Trigger: exact-head BRAIN run for merged PR #2358 failed in backend and automation lanes.
+- Root cause: two historical regression tests still encoded the retired cancelled-only descendant-fallback rule.
+- Fix: align both tests with the canonical non-green -> independently verified descendant-live contract and add them to the learning historical replay set.
+- Safety: no runtime workflow, branch protection, production proof or security gate is weakened; this recovery changes test authority and documentation only.
