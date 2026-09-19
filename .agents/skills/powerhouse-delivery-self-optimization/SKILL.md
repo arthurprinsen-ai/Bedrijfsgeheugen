@@ -172,3 +172,13 @@ Mandatory:
 
 Required metrics: `time_to_first_failure`, `time_to_required_green`, `time_to_protected_merge`, `time_to_production_proof`, `queue_wait_seconds`, `duplicate_gate_dispatch_prevented_count`, `main_reconcile_count`, `known_failed_readback_wait_avoided_seconds`, `critical_path_seconds`.
 
+## Specialist workflow path-scope discipline
+
+Fingerprint: `github|ci-path-scope|specialist-fanout-v1`.
+
+Specialist workflows must subscribe only to their owned implementation, tests and schema surfaces. Do not use broad `supabase/migrations/**` triggers in a specialist workflow merely to obtain generic migration safety; that proof belongs in the canonical Supabase/Required gates. Remove duplicate path entries, keep bounded PR/ref concurrency, and treat unnecessary workflow starts as runner/credit/energy waste.
+
+When adding a migration-triggered specialist workflow:
+- prefer stable semantic filename patterns such as `*linkedin*.sql`, `*revenue*.sql` or the owned function directory;
+- use a broad migration glob only when every migration is genuinely in-scope and document why;
+- add a regression that fails if the trigger widens unintentionally.
