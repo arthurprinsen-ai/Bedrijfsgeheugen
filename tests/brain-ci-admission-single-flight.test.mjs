@@ -28,3 +28,26 @@ test('Required executes this CI admission regression', async () => {
   const yml = await readFile('.github/workflows/required-test.yml','utf8');
   assert.match(yml,/tests\/brain-ci-admission-single-flight\.test\.mjs/);
 });
+
+test('LinkedIn revenue cockpit only admits relevant revenue runtime and migration changes', async () => {
+  const yml = await readFile('.github/workflows/linkedin-revenue-cockpit-tests.yml','utf8');
+  assert.match(yml,/supabase\/functions\/powerhouse-runtime\/\*\*/);
+  assert.match(yml,/supabase\/migrations\/\*linkedin\*\.sql/);
+  assert.match(yml,/supabase\/migrations\/\*revenue\*\.sql/);
+  assert.doesNotMatch(yml,/supabase\/migrations\/\*\*\//);
+  const concurrency = yml.slice(yml.indexOf('concurrency:'), yml.indexOf('\npermissions:'));
+  assert.doesNotMatch(concurrency,/github\.event_name/);
+  assert.match(concurrency,/cancel-in-progress: true/);
+});
+
+test('Revenue Learning keeps migration integrity coverage without duplicate path fan-out', async () => {
+  const yml = await readFile('.github/workflows/revenue-learning.yml','utf8');
+  const count = needle => yml.split(needle).length - 1;
+  assert.equal(count("supabase/migrations/**"), 2, 'one pull_request path plus one main-push path');
+  assert.equal(count("supabase/migration-history.lock.json"), 2, 'one pull_request path plus one main-push path');
+  assert.equal(count("tests/supabase-migration-history-integrity.test.mjs"), 2, 'one pull_request path plus one main-push path');
+  const concurrency = yml.slice(yml.indexOf('concurrency:'), yml.indexOf('\npermissions:'));
+  assert.doesNotMatch(concurrency,/github\.event_name/);
+  assert.match(concurrency,/cancel-in-progress: true/);
+  assert.match(yml,/timeout-minutes: 10/);
+});
