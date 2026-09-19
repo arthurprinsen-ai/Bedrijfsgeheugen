@@ -1,0 +1,12 @@
+{
+  "id": "github-main-observed-merge-identity-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "github_main containment was proven against current main, but terminal evidence incorrectly persisted the moving current-main SHA as the observed production identity.",
+  "root_cause": "Containment witness identity and obligation production identity were conflated.",
+  "prevention": [
+    "Use current main only to prove the merge SHA is an ancestor.",
+    "Persist the obligation merge SHA as production_observed_sha for github_main.",
+    "Keep durable authority strict: github_main observed SHA must equal main_sha for that obligation."
+  ]
+}
