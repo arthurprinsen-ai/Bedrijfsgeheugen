@@ -199,3 +199,17 @@ Mandatory:
 - require the merge SHA itself to be contained in current `origin/main`;
 - fail closed when neither ancestry nor exact tree equivalence can be proven;
 - record the lineage proof mode in terminal evidence so later readback can distinguish `ancestor` from `squash_tree_equivalent`.
+
+
+## Terminal evidence must fail closed
+
+Fingerprint: `github|terminalizer|evidence-all-checks-required-v1`.
+
+A successful workflow conclusion is not sufficient terminal proof when its emitted evidence contains a false check. Environment values written to `$GITHUB_ENV` are available to later steps, not to commands later in the same step.
+
+Mandatory:
+- pass same-step computed proof values directly into the process that materializes lineage evidence;
+- never assign `LIVE_BEWEZEN` before all terminal evidence checks are evaluated;
+- compute a complete check map and fail hard when any required check is false;
+- persist `lineage_mode` in terminal evidence;
+- treat a green workflow with any false terminal check as a false-green incident requiring prevention writeback.

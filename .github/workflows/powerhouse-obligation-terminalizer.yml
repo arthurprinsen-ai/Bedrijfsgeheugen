@@ -52,7 +52,7 @@ jobs:
           fi
           echo "LINEAGE_MODE=$lineage_mode" >> "$GITHUB_ENV"
           git merge-base --is-ancestor "$MERGE_SHA" origin/main
-          PR_BODY="$PR_BODY" CANDIDATE_SHA="$CANDIDATE_SHA" MERGE_SHA="$MERGE_SHA" PR_NUMBER="$PR_NUMBER" node --input-type=module - <<'NODE'
+          PR_BODY="$PR_BODY" CANDIDATE_SHA="$CANDIDATE_SHA" MERGE_SHA="$MERGE_SHA" PR_NUMBER="$PR_NUMBER" LINEAGE_MODE="$lineage_mode" node --input-type=module - <<'NODE'
           import { writeFileSync, readFileSync } from 'node:fs';
           import { validateMachineReadablePrBody } from './tools/delivery/github-delivery-state-machine.mjs';
           const policy=JSON.parse(readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
@@ -120,6 +120,18 @@ jobs:
           import { readFileSync, writeFileSync } from 'node:fs';
           const lineage=JSON.parse(readFileSync('.artifacts/terminal-lineage.json','utf8'));
           const preflight=JSON.parse(readFileSync('/tmp/chat-learning-preflight.json','utf8'));
+          const checks={
+            merged_lineage_verified:['ancestor','squash_tree_equivalent'].includes(lineage.lineage_mode),
+            deploy_promotion_readback:Boolean(process.env.PRODUCTION_SHA),
+            runtime_function_readback:Boolean(process.env.PRODUCTION_SHA),
+            outcome_evidence:true,
+            learning_projection:preflight?.status==='READY',
+            skill_projection:true
+          };
+          const failedChecks=Object.entries(checks).filter(([,ok])=>!ok).map(([name])=>name);
+          if(failedChecks.length){
+            throw new Error(`TERMINAL_EVIDENCE_NOT_PROVEN:${failedChecks.join(',')}`);
+          }
           const evidence={
             contract:'POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1',
             fingerprint:'github|delivery-state-machine|parallel-build-serialized-landing|v1',
@@ -129,16 +141,9 @@ jobs:
             candidate_head_sha:process.env.CANDIDATE_SHA,
             merge_sha:process.env.MERGE_SHA,
             production_sha:process.env.PRODUCTION_SHA,
-            checks:{
-              merged_lineage_verified:['ancestor','squash_tree_equivalent'].includes(lineage.lineage_mode),
-              deploy_promotion_readback:true,
-              runtime_function_readback:true,
-              outcome_evidence:true,
-              learning_projection:preflight?.status==='READY',
-              skill_projection:true
-            }
+            lineage_mode:lineage.lineage_mode,
+            checks
           };
-          if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));
           NODE

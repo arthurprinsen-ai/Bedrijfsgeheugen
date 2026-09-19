@@ -1,0 +1,35 @@
+{
+  "fingerprint": "github-terminalizer-evidence-false-green-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "TERMINAL_EVIDENCE_FALSE_GREEN",
+  "scope": "GITHUB_DELIVERY_TERMINALIZATION",
+  "machine_enforceable": true,
+  "root_cause": "The terminalizer wrote LINEAGE_MODE to GITHUB_ENV and then read it from Node later in the same shell step, where GitHub had not yet applied that environment update. The materialization step also assigned LIVE_BEWEZEN before validating every evidence check and only asserted learning_projection, so merged_lineage_verified=false could coexist with a successful workflow.",
+  "prevention_rule": "Same-step proof values must be passed directly to the consuming process. Terminal status may become LIVE_BEWEZEN only after every required evidence check evaluates true; any false check must fail the terminalizer hard.",
+  "enforcement": [
+    ".github/workflows/powerhouse-obligation-terminalizer.yml",
+    "tests/brain-obligation-terminalizer-evidence-failclosed.test.mjs",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-obligation-terminalizer-evidence-failclosed.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "FALSE_SUCCESS",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "incident_pr": "#2419",
+    "terminalizer_run": "35450985293",
+    "candidate_sha": "e16fdacf13ff0c9dab3efa3c2b1f3a547d67bc48",
+    "merge_sha": "2b2f1b3e4e12f82ab72fabbe4818df03c9b66d56",
+    "observed_false_check": "merged_lineage_verified=false",
+    "observed_lineage_mode_env": "squash_tree_equivalent"
+  }
+}
