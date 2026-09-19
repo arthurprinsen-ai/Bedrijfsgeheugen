@@ -344,7 +344,12 @@ jobs:
               expected_migrations:$expected_migrations
             }' > /tmp/control-plane-terminal-evidence.json
 
-          curl -fsSL             --retry 3             --retry-all-errors             --connect-timeout 10             --max-time 30             -H "Authorization: Bearer ${oidc_token}"             -H "Content-Type: application/json"             --data-binary @/tmp/control-plane-terminal-evidence.json             "https://www.bedrijfsgeheugen.nl/api/powerhouse/control-plane/evidence"             -o /tmp/control-plane-terminal-readback.json
+          http_status="$(curl -sS             --retry 3             --retry-all-errors             --connect-timeout 10             --max-time 30             -H "Authorization: Bearer ${oidc_token}"             -H "Content-Type: application/json"             --data-binary @/tmp/control-plane-terminal-evidence.json             "https://www.bedrijfsgeheugen.nl/api/powerhouse/control-plane/evidence"             -o /tmp/control-plane-terminal-readback.json             -w '%{http_code}')"
+          if [ "$http_status" -lt 200 ] || [ "$http_status" -ge 300 ]; then
+            echo "::error::CONTROL_PLANE_EVIDENCE_HTTP_${http_status}"
+            jq -c '{ok,error,terminal_state,obligation_id,candidate_head_sha,main_sha,migration_readback_required,migration_readback_verified}' /tmp/control-plane-terminal-readback.json 2>/dev/null || head -c 1200 /tmp/control-plane-terminal-readback.json || true
+            exit 78
+          fi
 
           jq -e '
             .ok == true and

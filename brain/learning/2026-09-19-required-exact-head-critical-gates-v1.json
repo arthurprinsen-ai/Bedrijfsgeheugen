@@ -1,0 +1,20 @@
+{
+  "id": "required-exact-head-critical-gates-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "GitHub branch protection required only the status context test, allowing auto-merge while exact-head BRAIN or Powerhouse CodeQL were still running or red.",
+  "root_cause": "The required-test aggregator covered its own delivery lanes but did not consume the terminal state of the existing sibling BRAIN and CodeQL workflows for the same candidate SHA.",
+  "prevention": [
+    "Keep one native required context to avoid branch-protection fragmentation.",
+    "Before test can succeed, require completed-success BRAIN and Powerhouse CodeQL runs for the exact pull-request head SHA.",
+    "Reuse existing workflow runs through read-only GitHub Actions API calls; never duplicate expensive CI.",
+    "Fail closed on red, cancelled, missing or non-terminal critical exact-head evidence.",
+    "Run the terminal descendant-recovery oracle in Required backend so critical terminal evidence semantics are identical in BRAIN and the native required context."
+  ],
+  "evidence": {
+    "workflow": ".github/workflows/required-test.yml",
+    "test": "tests/delivery-required-exact-head-critical-gates-v1.test.mjs",
+    "backend_parity_workflow": ".github/workflows/lane-backend.yml",
+    "terminal_oracle": "tests/brain-control-plane-terminal-descendant-recovery-v1.test.mjs"
+  }
+}

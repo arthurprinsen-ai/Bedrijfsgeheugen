@@ -8,6 +8,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: read
   contents: read
   statuses: read
   pull-requests: read
@@ -151,6 +152,7 @@ jobs:
           tests/klantportaal-demostand.test.mjs
           tests/klantportaal-tekenen-via-supabase.test.mjs
           tests/platform-promotion-activation-gate.test.mjs
+          tests/delivery-required-exact-head-critical-gates-v1.test.mjs
           tests/seo-v18-canonical-header.test.mjs
           tests/seo-homepage-scroll-story-interaction.test.mjs
           tests/seo-homepage-process-progress.test.mjs
@@ -244,6 +246,38 @@ jobs:
       AUTOMATION: ${{ needs.automation.result }}
       WEBSITE: ${{ needs.website.result }}
     steps:
+      - name: Require exact-head BRAIN and CodeQL sibling workflows
+        if: github.event_name == 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EXACT_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          require_workflow() {
+            workflow="$1"
+            label="$2"
+            for attempt in $(seq 1 80); do
+              payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${EXACT_HEAD_SHA}&event=pull_request&per_page=20")"
+              run_id="$(jq -r --arg sha "$EXACT_HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$payload")"
+              status="$(jq -r --arg sha "$EXACT_HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$payload")"
+              conclusion="$(jq -r --arg sha "$EXACT_HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$payload")"
+              if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+                [ "$conclusion" = "success" ] || {
+                  echo "::error::CRITICAL_EXACT_HEAD_GATE_FAILED:${label}:run=${run_id}:conclusion=${conclusion}:head=${EXACT_HEAD_SHA}"
+                  exit 78
+                }
+                echo "CRITICAL_EXACT_HEAD_GATE_PROVEN:${label}:run=${run_id}:head=${EXACT_HEAD_SHA}"
+                return 0
+              fi
+              sleep 10
+            done
+            echo "::error::CRITICAL_EXACT_HEAD_GATE_NOT_TERMINAL:${label}:head=${EXACT_HEAD_SHA}"
+            exit 78
+          }
+          require_workflow "unified-brain-delivery.yml" "BRAIN"
+          require_workflow "powerhouse-codeql.yml" "Powerhouse-CodeQL"
+
       - name: Aggregate admission and selected lane results
         run: |
           set -euo pipefail

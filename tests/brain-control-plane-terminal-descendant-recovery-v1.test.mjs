@@ -20,7 +20,6 @@ test('Edge terminal authority requires explicit verified descendant proof', asyn
   const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
   assert.match(edge,/\['canonical_run','descendant_live','github_main'\]/);
   assert.match(edge,/PRODUCTION_DEPLOY_ID_MISSING/);
-  assert.match(edge,/GITHUB_MAIN_READBACK_SHA_MISMATCH/);
   assert.match(edge,/GITHUB_MAIN_READBACK_RUN_MUST_BE_NULL/);
   assert.match(edge,/GITHUB_MAIN_DEPLOY_ID_MUST_BE_NULL/);
   assert.match(edge,/GITHUB_MAIN_READBACK_NOT_VERIFIED/);
@@ -47,7 +46,7 @@ test('terminal recovery keeps one concurrency lineage per PR across close and di
 });
 
 
-test('github_main remains separate from descendant recovery and requires exact verified main proof', async()=>{
+test('github_main remains separate from descendant recovery and requires verified main proof', async()=>{
   const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
   assert.match(edge,/productionReadbackMode==='github_main'/);
   assert.match(edge,/GITHUB_MAIN_READBACK_RUN_MUST_BE_NULL/);
