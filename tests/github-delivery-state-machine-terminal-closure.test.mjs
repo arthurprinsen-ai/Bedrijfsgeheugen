@@ -51,3 +51,12 @@ test('automation-only closure uses GitHub main readback instead of waiting for w
   assert.match(workflow,/portal-v2\/\|public\/\|src\/\|netlify\/functions\/\|supabase\/functions\/\|supabase\/migrations\//);
   assert.match(workflow,/main:\$\{process\.env\.PRODUCTION_OBSERVED_SHA\}/);
 });
+
+
+test('github_main replay evidence remains bound to the obligation merge sha when main advances', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.ok(workflow.includes('current_main_sha="$(git rev-parse origin/main)"'));
+  assert.ok(workflow.includes('git merge-base --is-ancestor "${MERGE_SHA}" "${current_main_sha}"'));
+  assert.ok(workflow.includes('observed_sha="${MERGE_SHA}"'));
+  assert.ok(workflow.includes('current_main=${current_main_sha} observed=${observed_sha}'));
+});
