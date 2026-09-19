@@ -219,19 +219,10 @@ jobs:
           exit $status
         continue-on-error: true
 
-      - name: SEO en interne links controleren op productiebuild
+      - name: SEO en interne links controleren
         id: seo
         if: steps.seo_scope.outputs.public == 'true'
-        working-directory: ${{ runner.temp }}/site
-        shell: bash
-        run: |
-          status=0
-          python .github/scripts/seocontrole.py || status=$?
-          cp seo-rapport.md "$GITHUB_WORKSPACE/seo-rapport.md" 2>/dev/null || true
-          if [ "$GITHUB_EVENT_NAME" != "pull_request" ] && [ -f seo-status.json ]; then
-            cp seo-status.json "$GITHUB_WORKSPACE/seo-status.json"
-          fi
-          exit $status
+        run: python .github/scripts/seocontrole.py
         continue-on-error: true
 
       - name: Niet-publieke portal/app wijziging expliciet goedkeuren
