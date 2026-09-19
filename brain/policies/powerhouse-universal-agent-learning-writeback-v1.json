@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_UNIVERSAL_AGENT_LEARNING_WRITEBACK_CONTRACT",
   "version": "POWERHOUSE-UNIVERSAL-AGENT-LEARNING-WRITEBACK-v1",
-  "revision": 8,
+  "revision": 9,
   "fingerprint": "powerhouse|all-agents|existing-state-first|activity-ledger|writeback|required|v1",
   "status": "ACTIVE",
   "scope": "all current and future material Powerhouse chats, agents, skills, workflows, scenarios, development runs, incidents, recoveries and production verifications",
@@ -45,7 +45,10 @@
     "PENDING_REQUIRED_STATUS_BLOCKS_PROTECTED_PROMOTION",
     "NO_MATERIAL_LEARNING_WITHOUT_SKILL_PROJECTION",
     "SKILL_PROJECTION_IS_DERIVED_NOT_PARALLEL_TRUTH",
-    "SKILL_PROJECTION_DRIFT_BLOCKS_TERMINAL_COMPLETION"
+    "SKILL_PROJECTION_DRIFT_BLOCKS_TERMINAL_COMPLETION",
+    "NO_MATERIAL_ERROR_WITHOUT_DURABLE_SEMANTIC_LEARNING",
+    "NO_CHECKBOX_ONLY_LEARNING_CLOSURE",
+    "NO_LIVE_BEWEZEN_WITHOUT_PRODUCTION_OUTCOME_AND_SKILL_PROJECTION_RECEIPT"
   ],
   "autonomous_execution_contract": {
     "required": true,
@@ -517,5 +520,30 @@
     ],
     "rule": "A material learning is not terminal until the deterministic skill projection is current and read back. Skills are projections of canonical Brain learning and may never become an independent truth source.",
     "bounded_preflight_rule": "Skill projection scans canonical brain/learning outside the bounded explicit-source queue; projected task-relevant entries enter preflight without duplicating raw learning sources."
+  },
+  "semantic_learning_closure": {
+    "required": true,
+    "fingerprint": "powerhouse|error-live|semantic-learning-closure|required|v2",
+    "scope": "all material chats, agents, workflows, incidents, recoveries, changes and live deliveries",
+    "pre_merge_required": [
+      "canonical_learning",
+      "activity_ledger",
+      "human_documentation",
+      "root_cause_or_open_obligation",
+      "prevention_or_regression",
+      "test_or_evidence"
+    ],
+    "post_live_required": [
+      "production_or_provider_readback",
+      "outcome_evidence",
+      "canonical_learning_durable",
+      "skill_projection_green",
+      "terminal_evidence_receipt",
+      "writer_lease_released"
+    ],
+    "checkbox_only_learning": "FORBIDDEN",
+    "known_fingerprint_reuse": "REQUIRED_BEFORE_FRESH_DIAGNOSIS",
+    "repeat_error_without_prevention_strengthening": "LEARNING_FAILURE",
+    "machine_enforceable_prevention": "PREFER_CODE_TEST_CONSTRAINT_CI_RUNTIME_POLICY_OVER_PROSE"
   }
 }
