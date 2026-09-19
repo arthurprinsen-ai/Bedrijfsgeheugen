@@ -8,8 +8,10 @@ on:
       - "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json"
       - ".agents/skills/**"
       - "scripts/brain/powerhouse-skill-projection.mjs"
+      - "scripts/brain/learning-canonicalization-gate.mjs"
       - "scripts/brain/chat-learning-preflight.mjs"
       - "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+      - "tests/brain-learning-canonicalization-gate-v1.test.mjs"
       - ".github/workflows/powerhouse-skill-projection.yml"
   push:
     branches: [main]
@@ -19,8 +21,10 @@ on:
       - "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json"
       - ".agents/skills/**"
       - "scripts/brain/powerhouse-skill-projection.mjs"
+      - "scripts/brain/learning-canonicalization-gate.mjs"
       - "scripts/brain/chat-learning-preflight.mjs"
       - "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+      - "tests/brain-learning-canonicalization-gate-v1.test.mjs"
       - ".github/workflows/powerhouse-skill-projection.yml"
 
 permissions:
@@ -31,9 +35,29 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+      - name: Evaluate changed learning before canonicalization
+        env:
+          POWERHOUSE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          POWERHOUSE_HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node scripts/brain/learning-canonicalization-gate.mjs
+
+      - name: Publish learning canonicalization evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: learning-canonicalization-evidence-${{ github.run_id }}
+          path: .artifacts/learning-canonicalization-evidence.json
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Verify learning canonicalization gate contract
+        run: node --test tests/brain-learning-canonicalization-gate-v1.test.mjs
+
       - name: Reconcile all canonical learning into skill projection
         run: node scripts/brain/powerhouse-skill-projection.mjs
       - name: Verify learning to skill projection contract
