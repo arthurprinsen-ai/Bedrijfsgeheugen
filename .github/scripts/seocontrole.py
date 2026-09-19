@@ -353,10 +353,10 @@ def main():
             bevindingen.append(('laag', url, 'uitroepteken in de tekst'))
 
 
-    # -- 6. canonical shell ownership --
-    # Kop/voet worden bewust NIET hier byte-voor-byte vergeleken.
-    # De dedicated canonical brand shell contract/full-build/live-readback gates
-    # zijn de enige authority voor shell-pariteit. SEO blijft bron-semantiek bewaken.
+    # -- 6. canonical shell --
+    # Canonical shell identity is owned by the dedicated shell contract/full-build/live-readback
+    # gates. SEO intentionally does not duplicate literal header/footer byte comparison here.
+    # This avoids contradictory oracles while preserving fail-closed shell verification.
 
     # -- 7. staat elke pagina in de sitemap --
     # De sitemap wordt bij elke build gegenereerd (tools/bouw-sitemap.mjs).
@@ -379,6 +379,12 @@ def main():
                 bevindingen.append(('hoog', url, 'staat niet in sitemap.xml'))
             elif url == '/' and '/' not in in_sitemap:
                 bevindingen.append(('hoog', url, 'staat niet in sitemap.xml'))
+
+    # Pull requests fail only on high-severity findings for URLs changed by that PR.
+    # Scheduled/main runs leave SEO_SCOPE_URLS empty and therefore audit the full estate.
+    scope_raw = os.environ.get('SEO_SCOPE_URLS', '').strip()
+    scope_urls = {u.strip().rstrip('/') or '/' for u in scope_raw.splitlines() if u.strip()}
+    gate_bevindingen = [b for b in bevindingen if not scope_urls or (b[1].rstrip('/') or '/') in scope_urls]
 
     bevindingen.sort(key=lambda b: (orde[b[0]], b[1]))
     tel = {k: sum(1 for b in bevindingen if b[0] == k) for k in orde}
@@ -428,7 +434,10 @@ def main():
         json.dumps(status, ensure_ascii=False, indent=1) + '\n')
     print('\n'.join(regels))
     # alleen hoge bevindingen laten falen; midden en laag zijn een melding
-    sys.exit(1 if tel['hoog'] else 0)
+    gate_hoog = sum(1 for b in gate_bevindingen if b[0] == 'hoog')
+    if scope_urls:
+        print('PR-gate scope: %s; hoge bevindingen in scope: %d' % (', '.join(sorted(scope_urls)), gate_hoog))
+    sys.exit(1 if gate_hoog else 0)
 
 
 if __name__ == '__main__':
