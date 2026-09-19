@@ -1,0 +1,21 @@
+{
+  "fingerprint": "website-seo-current-truth-cleanup-v1",
+  "date": "2026-09-19",
+  "type": "WEBSITE_SEO_PREVENTION",
+  "issue": "#1448",
+  "candidate_pr": "#2364",
+  "root_cause": "Historic SEO findings were partially stale and partially still present. The first cleanup also stopped before carrying mandatory same-lineage Brain learning, activity ledger and human documentation.",
+  "prevention_rule": "Revalidate SEO findings against the current candidate, fix only verified current defects, and require canonical page/SEO gates plus same-lineage learning, ledger and human documentation before closure.",
+  "verified_current_scope": [
+    "/wijzigingen-uitgelegd canonical menu",
+    "/data-soevereiniteit title length",
+    "/prijzen blocked brand language and description length",
+    "/product blocked brand language",
+    "two published blog routes flagged for blocked brand language"
+  ],
+  "enforcement": [
+    ".github/scripts/seocontrole.py",
+    ".github/scripts/paginacontrole.py",
+    "tests/seo-brand-language-cleanup-v1.test.mjs"
+  ]
+}
