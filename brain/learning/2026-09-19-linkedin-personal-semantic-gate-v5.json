@@ -15,18 +15,18 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "Ik denk vandaag na over hoe je processen slimmer maakt. => BLOCK",
-      "Mijn weekendgedachte: leiderschap gaat over strategie concreet maken. => BLOCK",
-      "Ik stond thuis vanochtend ruzie te maken met mijn printer. Volgens mij wint hij. => PASS"
+      "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs"
     ]
   },
   "evidence": [
     "platform/social-channel-identity-gate.mjs",
     "supabase/functions/bg-pre-publish-review/index.ts",
+    "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs",
     "tests/social-learning-buffer-channel-identity-gate.test.mjs",
     "Supabase bg-pre-publish-review production version 13 readback recorded on PR #2424"
   ],
   "tests": [
+    "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs",
     "tests/social-learning-buffer-channel-identity-gate.test.mjs"
   ],
   "production_readback": "PR #2424 records production Edge Function readback for FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED and FINAL_TEXT_CONSULTANT_VOICE_BLOCK; repository main readback remains required after protected merge.",
