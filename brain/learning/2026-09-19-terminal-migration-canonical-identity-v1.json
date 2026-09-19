@@ -15,5 +15,17 @@
     "production_ledger_verified": true,
     "workflow": ".github/workflows/obligation-terminal-closure.yml",
     "test": "tests/brain-control-plane-supersession-migration-proof-v1.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-control-plane-supersession-migration-proof-v1.test.mjs"
+    ]
   }
 }
