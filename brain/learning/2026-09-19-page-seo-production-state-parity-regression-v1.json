@@ -9,13 +9,13 @@
   "prevention_rule": "Pagina- en SEO-controle must run browser and SEO strategy checks against the same canonical production-projected site tree. Raw-source shell differences may never be promoted to production SEO defects.",
   "enforcement": [
     ".github/workflows/paginacontrole.yml",
-    "tests/seo-page-control-production-state-parity-v1.test.mjs",
-    "tests/seo-brand-language-cleanup-v1.test.mjs"
+    "tests/brain-seo-page-control-production-state-parity-v1.test.mjs",
+    "tests/brain-seo-brand-language-cleanup-v1.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/seo-page-control-production-state-parity-v1.test.mjs",
-      "tests/seo-brand-language-cleanup-v1.test.mjs"
+      "tests/brain-seo-page-control-production-state-parity-v1.test.mjs",
+      "tests/brain-seo-brand-language-cleanup-v1.test.mjs"
     ]
   },
   "issue": "#1448",
