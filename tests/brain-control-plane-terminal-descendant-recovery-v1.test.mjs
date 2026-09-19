@@ -18,7 +18,7 @@ test('real canonical readback failures do not downgrade into descendant recovery
 
 test('Edge terminal authority requires explicit verified descendant proof', async()=>{
   const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
-  assert.match(edge,/\['canonical_run','descendant_live'\]/);
+  assert.match(edge,/\['canonical_run','descendant_live','github_main'\]/);
   assert.match(edge,/PRODUCTION_DEPLOY_ID_MISSING/);
   assert.match(edge,/PRODUCTION_DESCENDANT_READBACK_NOT_VERIFIED/);
   assert.match(edge,/production_observed_sha/);
@@ -40,4 +40,15 @@ test('terminal recovery keeps one concurrency lineage per PR across close and di
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(workflow,/group: obligation-terminal-closure-\$\{\{ github\.event\.pull_request\.number \|\| inputs\.pr_number \}\}/);
   assert.match(workflow,/cancel-in-progress: false/);
+});
+
+
+test('github_main remains separate from descendant recovery and requires exact verified main proof', async()=>{
+  const edge=await readFile('supabase/functions/growth-datahub-ingest/index.ts','utf8');
+  assert.match(edge,/productionReadbackMode==='github_main'/);
+  assert.match(edge,/productionObservedSha!==mainSha/);
+  assert.match(edge,/GITHUB_MAIN_READBACK_RUN_MUST_BE_NULL/);
+  assert.match(edge,/GITHUB_MAIN_DEPLOY_ID_MUST_BE_NULL/);
+  assert.match(edge,/GITHUB_MAIN_READBACK_NOT_VERIFIED/);
+  assert.match(edge,/github-main:\$\{productionObservedSha\}/);
 });
