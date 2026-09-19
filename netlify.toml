@@ -365,3 +365,9 @@
   to = "/compliance-status"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/bedrijf-overdraagbaar-maken.html"
+  to = "/bedrijf-overdraagbaar-maken"
+  status = 301
+  force = true

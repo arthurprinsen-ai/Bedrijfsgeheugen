@@ -1,0 +1,31 @@
+{
+  "fingerprint": "seo|clean-url|bedrijf-overdraagbaar-maken|redirect|v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "SEO_REDIRECT_MISSING",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "A clean URL existed without the canonical .html-to-clean 301 redirect, while material website changes now require closure evidence in the same delivery lineage.",
+  "prevention_rule": "Every material SEO routing recovery must carry a deterministic redirect regression, Brain learning, development ledger and human change documentation before Required can pass. Before closing or superseding an active canonical landing lane because its branch equals main, prove every unique candidate file/delta is contained in current main; otherwise keep the obligation RECOVERABLE_INCOMPLETE and rebuild it on the current main epoch.",
+  "enforcement": [
+    "netlify.toml",
+    "tests/brain-seo-clean-url-bedrijf-overdraagbaar-maken-v1.test.mjs",
+    "Required material-writeback closure guard"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-clean-url-bedrijf-overdraagbaar-maken-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-self-optimization"
+  ],
+  "secondary_incident": {
+    "class": "CANONICAL_LANDING_DELTA_SILENT_DROP",
+    "symptom": "The recovery PR was closed after its branch became equal to a newer main epoch even though its unique redirect delta and closure artifacts were not present on main.",
+    "root_cause": "Landing serialization and merged-branch cleanup treated branch/main equality as sufficient closure evidence without first proving unique candidate delta containment in current main."
+  }
+}
