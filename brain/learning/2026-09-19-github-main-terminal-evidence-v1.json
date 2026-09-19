@@ -1,0 +1,14 @@
+{
+  "id": "github-main-terminal-evidence-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Lane-aware terminal closure produced valid github_main evidence, but the canonical durable Brain ingest rejected the new evidence mode with HTTP 422.",
+  "root_cause": "The control-plane workflow and durable evidence authority had diverged: workflow supported github_main while Supabase ingest allowed only canonical_run and descendant_live.",
+  "prevention": [
+    "Accept github_main only when production_observed_sha exactly equals main_sha.",
+    "Require production_readback_verified=true.",
+    "Reject run IDs and deploy IDs for github_main evidence.",
+    "Persist github_main with a distinct github-main:<sha> remote reference.",
+    "Keep canonical_run and descendant_live validation unchanged."
+  ]
+}
