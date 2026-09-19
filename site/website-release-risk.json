@@ -25,10 +25,43 @@
   ],
   "normalRootHtml": true,
   "pageLocalAssets": {
-    "assets/pages/ai-act/": ["/ai-act"]
+    "assets/pages/ai-act/": [
+      "/ai-act"
+    ],
+    "data/regelgeving.json": [
+      "/",
+      "/ai-act",
+      "/compliance-status",
+      "/benchmark",
+      "/monitor"
+    ]
   },
-  "fastFixRequiredTestSets": ["baseline", "preview", "targeted-browser", "public-visibility"],
-  "normalRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo"],
-  "highRiskRequiredTestSets": ["baseline", "static", "preview", "targeted-browser", "public-visibility", "page-seo", "shared-contracts", "full-regression"],
-  "controlPlaneRequiredTestSets": ["baseline", "syntax-preflight"]
+  "fastFixRequiredTestSets": [
+    "baseline",
+    "preview",
+    "targeted-browser",
+    "public-visibility"
+  ],
+  "normalRequiredTestSets": [
+    "baseline",
+    "static",
+    "preview",
+    "targeted-browser",
+    "public-visibility",
+    "page-seo"
+  ],
+  "highRiskRequiredTestSets": [
+    "baseline",
+    "static",
+    "preview",
+    "targeted-browser",
+    "public-visibility",
+    "page-seo",
+    "shared-contracts",
+    "full-regression"
+  ],
+  "controlPlaneRequiredTestSets": [
+    "baseline",
+    "syntax-preflight"
+  ]
 }
