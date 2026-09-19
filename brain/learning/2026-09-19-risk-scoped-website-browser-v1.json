@@ -1,0 +1,34 @@
+{
+  "id": "risk-scoped-website-browser-v1",
+  "date": "2026-09-19",
+  "type": "optimization",
+  "problem": "Normal and data-only website changes need bounded affected-route browser proof without paying for unnecessary full header-menu/broad browser regression, while public-page visibility remains a mandatory safety baseline.",
+  "root_cause": "The original optimization coupled public visibility and header-menu crawling as one global cost. Current main correctly retains public visibility as a safety baseline while allowing expensive menu/broad browser work to be risk-scoped.",
+  "prevention": [
+    "Keep public-page visibility mandatory for previewed website changes, including fast-fix safety coverage.",
+    "Reserve full header-menu readability and broad browser contracts for high-risk changes.",
+    "For bounded normal-risk changes, use targeted desktop/mobile affected-route verification plus the mandatory visibility baseline.",
+    "Map regulatory data changes to a bounded explicit public-route set instead of defaulting to a generic route.",
+    "Do not skip baseline, syntax, static or page-SEO contracts required by the selected lane."
+  ],
+  "evidence": {
+    "workflow": ".github/workflows/lane-website.yml",
+    "risk_config": "site/website-release-risk.json",
+    "test": "tests/targeted-website-route-regression.test.mjs"
+  },
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization",
+    "powerhouse-continuity"
+  ],
+  "fingerprint": "risk-scoped-website-browser-v1",
+  "failure_class": "CI",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-risk-scoped-website-browser-v1.test.mjs"
+    ]
+  }
+}
