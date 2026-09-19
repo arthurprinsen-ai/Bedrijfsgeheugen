@@ -14,7 +14,7 @@ test('non-green historical canonical readback requires independently verified de
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(workflow,/CANONICAL_READBACK_NOT_GREEN/);
   assert.match(workflow,/PRODUCTION_DESCENDANT_READBACK_PROVEN/);
-  assert.match(workflow,/git merge-base --is-ancestor "\\$MERGE_SHA" "\\$observed"/);
+  assert.match(workflow,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
   assert.doesNotMatch(workflow,/PRODUCTION_READBACK_FAILED:run=\\$source_run_id conclusion=\\$source_conclusion/);
 });
 
