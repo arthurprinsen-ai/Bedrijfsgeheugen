@@ -6,6 +6,23 @@ on:
   merge_group:
     types: [checks_requested]
   workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'Candidate PR number'
+        required: false
+        type: string
+      base_sha:
+        description: 'Immutable PR base SHA'
+        required: false
+        type: string
+      head_sha:
+        description: 'Immutable candidate head SHA'
+        required: false
+        type: string
+      candidate_branch:
+        description: 'Immutable candidate branch'
+        required: false
+        type: string
 
 permissions:
   actions: read
@@ -14,7 +31,8 @@ permissions:
   pull-requests: read
 
 concurrency:
-  group: required-test-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.merge_group.head_sha || github.run_id }}
+  # Native PR and recovery dispatch for the same PR are one logical flight.
+  group: required-test-${{ inputs.pr_number || github.event.pull_request.number || github.event.merge_group.head_sha || github.ref_name }}
   # Single-flight is PR-scoped; exact candidate identity remains enforced inside the gates below.
   cancel-in-progress: true
 
@@ -129,6 +147,7 @@ jobs:
           tests/brain-production-promotion-observability.test.mjs
           tests/control-plane-supabase-terminal-readback-v1.test.mjs
           tests/delivery-test-coverage-guard.test.mjs
+          tests/brain-ci-admission-single-flight.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/daily-cost-optimizer.test.mjs
           tests/data-ai-passport.test.mjs

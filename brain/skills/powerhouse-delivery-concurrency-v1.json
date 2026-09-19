@@ -26,7 +26,12 @@
     "Continue after merge through production/main readback, outcome evidence, learning writeback and skill projection before claiming LIVE & BEWEZEN.",
     "Keep healthy candidate gates running while main moves; reconcile only at the terminal landing boundary unless overlap/conflict invalidates the candidate earlier.",
     "At terminal landing, coalesce drift into one freshest-main full-union reconciliation, then rerun exact-head gates once.",
-    "Order multiple ready disjoint candidates by shortest remaining terminal critical path and downstream fan-out cost while preserving one-at-a-time landing authority."
+    "Order multiple ready disjoint candidates by shortest remaining terminal critical path and downstream fan-out cost while preserving one-at-a-time landing authority.",
+    "Use one PR-scoped single-flight identity for Required across native pull_request and recovery workflow_dispatch triggers; supersede stale same-PR runs.",
+    "Use one PR-scoped single-flight identity for BRAIN delivery across native pull_request and recovery workflow_dispatch triggers; supersede stale same-PR runs.",
+    "Never run repository-wide recovery on feature-branch push; admit recovery from main, explicit dispatch or bounded schedule.",
+    "Require auxiliary PR workflows to use bounded PR/ref concurrency and path-scoped admission whenever static scope is knowable.",
+    "Optimize time-to-terminal-proof per runner, credit, compute, energy and water proxy by deduping before expensive execution."
   ],
   "forbidden_patterns": [
     "treating a green candidate on an older main epoch as currently merge-authorized",
@@ -35,7 +40,10 @@
     "merging a candidate with behind_by greater than zero",
     "bypassing branch protection or required gates after a race",
     "dropping current-main changes during reconciliation",
-    "claiming completion at merge without readback and canonical writeback"
+    "claiming completion at merge without readback and canonical writeback",
+    "using github.run_id as the concurrency identity for recovery-dispatched same-PR CI",
+    "starting repository-wide recovery scans on every feature-branch push",
+    "redispatching healthy current-head Required or BRAIN work that is already queued or running"
   ],
   "prediction_signals": [
     "behind_by velocity",
@@ -71,6 +79,7 @@
   ],
   "secondary_fingerprints": [
     "delivery|predictive-landing-coalescing|v1",
-    "delivery|fast-terminal|critical-path|v2"
+    "delivery|fast-terminal|critical-path|v2",
+    "github|ci-admission|single-flight-runner-budget-v1"
   ]
 }

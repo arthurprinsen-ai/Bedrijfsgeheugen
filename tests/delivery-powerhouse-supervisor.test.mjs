@@ -63,9 +63,9 @@ test('supervisor reuses Required and BRAIN, cancels only stale queued work and n
 });
 
 
-test('supervisor reacts to every push including main and retains watchdog schedule',()=>{
+test('supervisor runs repository-wide recovery only on main push and retains watchdog schedule',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
-  assert.match(yaml,/on:\s*\n\s*push:\s*\n\s*workflow_dispatch:/);
+  assert.match(yaml,/on:\s*\n(?:\s*#.*\n)*\s*push:\s*\n\s*branches:\s*\[main\]\s*\n\s*workflow_dispatch:/);
   assert.doesNotMatch(yaml,/branches-ignore:\s*\[main\]/);
   assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
   assert.match(yaml,/pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);

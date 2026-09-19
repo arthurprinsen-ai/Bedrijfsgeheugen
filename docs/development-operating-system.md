@@ -180,3 +180,12 @@ This rule exists because a previous portal migration repeatedly rebuilt a green 
 
 ## Release gate
 A candidate is green only when relevant tests pass, required knowledge files exist, preview is verifiably healthy, rollback is known and all obligations created by the change have either verified outcome evidence or an explicit valid hard boundary. Production is green only after the exact promoted SHA is verified in production, all technically resolvable obligations in the affected scope are closed, and the canonical runtime/learning/documentation writeback has been read back successfully.
+
+
+## CI admission and runner-budget contract
+
+Canonical fingerprint: `github|ci-admission|single-flight-runner-budget-v1`.
+
+Powerhouse optimizes for parallel independent development with bounded execution fan-out. Required and BRAIN use one PR-scoped concurrency identity across native PR triggers and recovery dispatches, so recovery supersedes rather than duplicates delivery. Repository-wide recovery is forbidden on feature-branch push. Auxiliary workflows must use path-scoped admission where possible and PR/ref-scoped `cancel-in-progress`.
+
+This applies to all current and future chats, agents, skills and workflows. A new workflow that increases unbounded PR fan-out or creates a second same-obligation executable lineage is a regression.
