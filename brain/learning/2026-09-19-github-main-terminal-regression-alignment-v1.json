@@ -2,10 +2,13 @@
   "id": "github-main-terminal-regression-alignment-v1",
   "date": "2026-09-19",
   "type": "prevention",
-  "problem": "A legacy descendant-recovery regression still asserted exactly two production readback modes after github_main became a third strict mode.",
-  "root_cause": "Contract implementation and regression expectation were updated in separate commits.",
+  "problem": "Legacy regression and durable evidence replay rules did not account for current main advancing after an automation merge.",
+  "root_cause": "github_main initially required observed_sha to equal the merge SHA, even though terminal recovery can run after later commits have advanced main.",
   "prevention": [
-    "Keep terminal evidence mode allowlist and all regression assertions synchronized in the same lineage.",
-    "Assert github_main remains distinct from descendant_live and requires exact verified main proof."
+    "Trust github_main only from the OIDC-verified terminal workflow.",
+    "Require production_readback_verified=true and a valid observed SHA.",
+    "Require null production run ID and null deploy ID.",
+    "Allow observed current-main SHA to be a later descendant because ancestry is proven by the signed GitHub workflow before evidence submission.",
+    "Keep descendant_live and canonical_run contracts unchanged."
   ]
 }
