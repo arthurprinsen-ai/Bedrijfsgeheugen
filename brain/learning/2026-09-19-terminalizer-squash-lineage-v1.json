@@ -22,5 +22,12 @@
     "historical_replay": [
       "tests/brain-obligation-terminalizer-squash.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
