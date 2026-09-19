@@ -1,47 +1,42 @@
 {
-  "peildatum": "24 augustus 2026",
-  "peildatumISO": "2026-08-24",
-  "omnibusStatus": "Definitief aangenomen als Regulation (EU) 2026/1744; gepubliceerd in het Publicatieblad op 24 juli 2026 en in werking getreden op 27 juli 2026 — geen verdere parlementaire stappen vereist.",
+  "peildatum": "19 september 2026",
+  "peildatumISO": "2026-09-19",
+  "omnibusStatus": "De Digital Omnibus op AI (Verordening (EU) 2026/1744) is op 8 juli 2026 ondertekend, op 24 juli 2026 gepubliceerd in het Publicatieblad van de EU en op 27 juli 2026 definitief in werking getreden; de wijzigingen zijn daarmee formeel en definitief aangenomen.",
   "deadlines": [
     {
-      "date": "2026-08-02",
-      "label": "Art. 50 AI Act — transparantieverplichtingen (o.a. chatbots, deepfakes) van toepassing voor systemen op de markt ná 2 aug 2026; reeds verstreken",
-      "kort": "Art. 50 transparantie live"
+      "date": "2025-02-02",
+      "label": "Verboden AI-praktijken (art. 5) en AI-geletterdheidsplicht (art. 4) van kracht; reeds verstreken",
+      "kort": "Verboden & AI-literacy"
+    },
+    {
+      "date": "2025-08-02",
+      "label": "GPAI-verplichtingen (art. 53-55) van kracht voor nieuw op markt gebrachte modellen; reeds verstreken",
+      "kort": "GPAI-verplichtingen nieuw"
     },
     {
       "date": "2026-08-02",
-      "label": "GPAI handhaving actief — Europese Commissie kan vanaf vandaag boetes opleggen aan aanbieders van GPAI-modellen (art. 101 AI Act)",
-      "kort": "GPAI enforcement actief"
-    },
-    {
-      "date": "2026-08-15",
-      "label": "Nederlandse Cyberbeveiligingswet (NIS2) in werking getreden — Eerste Kamer stemde 7 juli 2026 voor, wet van kracht per 15 augustus 2026",
-      "kort": "NIS2 NL van kracht"
+      "label": "Transparantieplicht art. 50 van kracht en GPAI-handhavingsbevoegdheden Commissie/AI Office actief (boetes tot €15M of 3%); reeds verstreken",
+      "kort": "Art. 50 & GPAI-handhaving"
     },
     {
       "date": "2026-12-02",
-      "label": "Art. 50(2) watermerken AI-gegenereerde inhoud — deadline voor systemen die vóór 2 aug 2026 al op de markt waren; ook: nieuw verbod op NCII/CSAM-genererende AI (Omnibus art. 5)",
-      "kort": "Watermerken & NCII-verbod"
-    },
-    {
-      "date": "2027-02-02",
-      "label": "AI Act — lidstaten leggen handhavingsbevoegdheden en sanctieregels vast (verwacht, conform overgangsbepalingen AI Act)",
-      "kort": "Nationale sanctieregels verwacht"
+      "label": "Watermerkverplichting (art. 50 lid 2) voor AI-systemen die vóór 2 augustus 2026 op de markt waren: overgangsperiode loopt af; nieuwe verboden NCII/CSAM (art. 5 via Omnibus) van kracht",
+      "kort": "Watermerk & nieuwe verboden"
     },
     {
       "date": "2027-08-02",
-      "label": "GPAI bestaande modellen — aanbieders van GPAI-modellen die vóór 2 aug 2025 op de markt waren moeten dan volledig voldoen aan hoofdstuk V AI Act",
-      "kort": "GPAI legacy-deadline"
+      "label": "Nationale regelgevende sandboxen operationeel (uitgesteld via Omnibus van 2 aug 2026); tevens deadline voor GPAI-modellen die vóór 2 aug 2025 op markt waren om te voldoen aan art. 53-55",
+      "kort": "Sandboxen & GPAI bestaand"
     },
     {
       "date": "2027-12-02",
-      "label": "Hoog-risico AI Annex III (uitgesteld via Omnibus) — standalone systemen zoals biometrie, HR/rekrutering, kredietscoring, onderwijs, kritieke infrastructuur",
-      "kort": "Annex III hoog-risico"
+      "label": "Hoog-risico AI Annex III (stand-alone systemen) volledig verplicht — uitgesteld via Omnibus van 2 augustus 2026",
+      "kort": "Hoog-risico Annex III"
     },
     {
       "date": "2028-08-02",
-      "label": "Hoog-risico AI Annex I (uitgesteld via Omnibus) — AI ingebed in gereguleerde producten (machinerie, medische hulpmiddelen, luchtvaartuigen e.d.)",
-      "kort": "Annex I productgebonden"
+      "label": "Hoog-risico AI ingebed in gereglementeerde producten Annex I (medische hulpmiddelen, machines e.d.) verplicht — uitgesteld via Omnibus van 2 augustus 2027",
+      "kort": "Hoog-risico Annex I"
     }
   ],
   "fines": {
@@ -55,6 +50,37 @@
     "bedrijfAI2024": "22,7%",
     "bedrijfAI2023": "14%",
     "afhaakErvaring": "74,6%",
-    "gartnerTop": "n.v.t. — geen CBS-bron beschikbaar voor dit cijfer op peildatum"
-  }
+    "gartnerTop": "<5%"
+  },
+  "sourceBaseline": {
+    "eu-ai-act": {
+      "framework": "EU_AI_ACT",
+      "authority": "EUR-Lex",
+      "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
+      "contentSha256": "036e856465302443526d9bf8f62c5202e457b006cde6762608d39fa0cfd6da2e",
+      "checkedAt": "2026-09-19T07:59:41.882188Z"
+    },
+    "eu-nis2-directive": {
+      "framework": "NIS2_CBW",
+      "authority": "EUR-Lex",
+      "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
+      "contentSha256": "4fa666a68933c07ddf702d003079087b6e136a3d468af326a9b6984414711561",
+      "checkedAt": "2026-09-19T07:59:41.882188Z"
+    },
+    "nl-cyberbeveiligingswet": {
+      "framework": "NIS2_CBW",
+      "authority": "NCSC",
+      "url": "https://www.ncsc.nl/cyberbeveiligingswet-nis2",
+      "contentSha256": "587188967b113711770931fea12b71350e802a1d4cebc04badf71a6659aaf11c",
+      "checkedAt": "2026-09-19T07:59:41.882188Z"
+    },
+    "eu-gdpr": {
+      "framework": "GDPR_DATA",
+      "authority": "EUR-Lex",
+      "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
+      "contentSha256": "c1f63a998e0f87842b785f9f68442f9ce2ead9df773fd8189ab5f315ce8a143a",
+      "checkedAt": "2026-09-19T07:59:41.882188Z"
+    }
+  },
+  "interpretationStatus": "candidate_evidence_review"
 }
