@@ -41,6 +41,11 @@ export function mayAutoCloseSupersededObligation({ predecessor, successor }) {
   return newMeta.supersedes === Number(predecessor.number);
 }
 
+export function cancellableWorkflowRuns(runs = []) {
+  const cancellable = new Set(["queued", "in_progress", "waiting", "requested", "pending"]);
+  return runs.filter(run => cancellable.has(String(run?.status ?? "")) && Number.isInteger(Number(run?.id)));
+}
+
 function apiBase(repo) {
   return `https://api.github.com/repos/${repo}`;
 }
@@ -85,6 +90,23 @@ async function closePr(repo, number) {
   return gh(`/repos/${repo}/pulls/${number}`, { method: "PATCH", body: { state: "closed" } });
 }
 
+async function cancelRunsForHead(repo, headSha, { remainingBudget }) {
+  if (!headSha || remainingBudget <= 0) return { cancelled: 0, deferred: 0 };
+  const payload = await gh(`/repos/${repo}/actions/runs?head_sha=${encodeURIComponent(headSha)}&per_page=100`);
+  const runs = cancellableWorkflowRuns(payload?.workflow_runs ?? []);
+  let cancelled = 0;
+  for (const run of runs.slice(0, remainingBudget)) {
+    try {
+      await gh(`/repos/${repo}/actions/runs/${run.id}/cancel`, { method: "POST" });
+      cancelled += 1;
+    } catch (error) {
+      // A run may become terminal between read and cancel. Preserve hygiene progress.
+      if (!/-> (409|422):/.test(String(error?.message ?? error))) throw error;
+    }
+  }
+  return { cancelled, deferred: Math.max(0, runs.length - remainingBudget) };
+}
+
 async function deleteBranch(repo, branch) {
   return gh(`/repos/${repo}/git/refs/heads/${encodeURIComponent(branch)}`, { method: "DELETE" });
 }
@@ -112,7 +134,10 @@ export async function buildPlan({ repo, policy, apply = false }) {
   const budget = policy.resource_budget ?? {};
   const maxCandidateClosures = Number(budget.max_candidate_closures_per_run ?? 25);
   const maxObligationSupersessions = Number(budget.max_obligation_supersessions_per_run ?? 25);
+  const maxWorkflowCancels = Number(budget.max_workflow_cancels_per_run ?? 100);
   const maxBranchEvaluations = Number(budget.max_branch_evaluations_per_run ?? 200);
+  let workflowCancels = 0;
+  let deferredWorkflowCancels = 0;
   const maxBranchDeletes = Number(budget.max_branch_deletes_per_run ?? 100);
 
   const byNumber = new Map(openPrs.map(pr => [Number(pr.number), pr]));
@@ -141,7 +166,14 @@ export async function buildPlan({ repo, policy, apply = false }) {
       head: predecessor.head?.ref ?? null,
       reason: "explicit-same-obligation-supersession"
     };
-    if (apply) await closePr(repo, predecessor.number);
+    if (apply) {
+      await closePr(repo, predecessor.number);
+      const cancel = await cancelRunsForHead(repo, predecessor.head?.sha, { remainingBudget: Math.max(0, maxWorkflowCancels - workflowCancels) });
+      workflowCancels += cancel.cancelled;
+      deferredWorkflowCancels += cancel.deferred;
+      item.workflow_runs_cancelled = cancel.cancelled;
+      if (cancel.deferred) item.workflow_runs_deferred = cancel.deferred;
+    }
     supersededObligationPrs.push(item);
     closedPrNumbers.add(Number(predecessor.number));
     openHeads.delete(predecessor.head?.ref);
@@ -168,6 +200,11 @@ export async function buildPlan({ repo, policy, apply = false }) {
       if (apply) {
         await closePr(repo, pr.number);
         closedPrNumbers.add(Number(pr.number));
+        const cancel = await cancelRunsForHead(repo, pr.head?.sha, { remainingBudget: Math.max(0, maxWorkflowCancels - workflowCancels) });
+        workflowCancels += cancel.cancelled;
+        deferredWorkflowCancels += cancel.deferred;
+        item.workflow_runs_cancelled = cancel.cancelled;
+        if (cancel.deferred) item.workflow_runs_deferred = cancel.deferred;
         if (pr.head?.ref?.startsWith(family.branch_prefix)) {
           await deleteBranch(repo, pr.head.ref);
           item.branch_deleted = true;
@@ -222,7 +259,9 @@ export async function buildPlan({ repo, policy, apply = false }) {
       deferred_candidates: deferredCandidates.length,
       deferred_orphan_writer_branches: deferredOrphanBranches.length,
       branch_evaluations: branchEvaluations,
-      branch_deletes: branchDeletes
+      branch_deletes: branchDeletes,
+      workflow_runs_cancelled: workflowCancels,
+      workflow_runs_deferred: deferredWorkflowCancels
     },
     thresholds: {
       warning: policy.branch_warning_threshold,
@@ -233,6 +272,7 @@ export async function buildPlan({ repo, policy, apply = false }) {
     resource_budget: {
       max_candidate_closures_per_run: maxCandidateClosures,
       max_obligation_supersessions_per_run: maxObligationSupersessions,
+      max_workflow_cancels_per_run: maxWorkflowCancels,
       max_branch_evaluations_per_run: maxBranchEvaluations,
       max_branch_deletes_per_run: maxBranchDeletes
     },
