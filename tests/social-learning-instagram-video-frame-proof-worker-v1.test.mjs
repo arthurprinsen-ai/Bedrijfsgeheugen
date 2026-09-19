@@ -9,7 +9,7 @@ const netlify=fs.readFileSync('netlify.toml','utf8');
 const pkg=JSON.parse(fs.readFileSync('package.json','utf8'));
 
 test('Instagram reel proof extracts exact OpenArt video frames automatically',()=>{
-  assert.equal(pkg.dependencies['ffmpeg-static'],'5.2.0');
+  assert.equal(pkg.dependencies['ffmpeg-static'],'5.3.0');
   assert.match(netlify,/external_node_modules = \["ffmpeg-static"\]/);
   assert.match(extractor,/OPENART_CDN_URL_REQUIRED/);
   assert.match(extractor,/instagram-exact-video-frame-extraction-v1/);
