@@ -117,7 +117,7 @@ jobs:
             exit 0
           fi
 
-          jq -c '.[] | select(.merged_at != null)' <<<"$closed" | while read -r pr; do
+          while read -r pr; do
             number="$(jq -r '.number' <<<"$pr")"
             merged_at="$(jq -r '.merged_at' <<<"$pr")"
             body="$(jq -r '.body // ""' <<<"$pr")"
@@ -141,4 +141,4 @@ jobs:
             gh workflow run obligation-terminal-closure.yml --ref main -f pr_number="$number"
             echo "::notice::Serialized recovery: one terminal closure dispatched; remaining obligations wait for the next supervisor cycle."
             break
-          done
+          done < <(jq -c '.[] | select(.merged_at != null)' <<<"$closed")
