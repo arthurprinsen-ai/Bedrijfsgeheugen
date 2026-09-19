@@ -1,0 +1,31 @@
+{
+  "fingerprint": "control-plane|learning-canonicalization-gate|v1",
+  "date": "2026-09-18",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "FALSE_SUCCESS",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "The learning compiler classified required replay/shadow/canary modes but canonical skill projection did not consume that plan, so canonical_eligible=false was descriptive rather than an enforced gate.",
+  "prevention_rule": "Every new or modified canonical learning must execute historical regression replay and any compiler-required shadow/canary tests before skill projection. Missing compiler metadata, missing evaluation tests, unsafe test paths or red evaluation blocks canonicalization.",
+  "enforcement": [
+    "scripts/brain/learning-canonicalization-gate.mjs",
+    ".github/workflows/powerhouse-skill-projection.yml pre-projection gate",
+    "classified tests/brain-* evaluation paths only",
+    "immutable evaluation artifact"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-toolchain-authority"
+  ]
+}
