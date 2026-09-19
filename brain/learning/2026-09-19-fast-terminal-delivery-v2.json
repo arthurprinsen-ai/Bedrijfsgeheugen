@@ -42,5 +42,17 @@
     "symptom": "A merged candidate could receive LIVE_BEWEZEN from terminal closure while an exact-head Required run later exposed a failing regression contract.",
     "root_cause": "Obligation Terminal Closure verified main/production/skill evidence but did not independently require exact-head Required, BRAIN and applicable Powerhouse CodeQL success before writing terminal state.",
     "prevention": "Terminal closure must read latest exact-head critical workflow outcomes and fail closed unless Required, BRAIN and applicable CodeQL are completed successfully before production/readback evidence is persisted."
+  },
+  "website_risk_scope": {
+    "fingerprint": "risk-scoped-website-browser-v1",
+    "rule": "Fast-fix and normal-risk candidates use exact affected-route browser proof; sitewide visibility, header-menu crawl and broad browser contracts are reserved for high-risk candidates.",
+    "regulatory_routes": [
+      "/",
+      "/ai-act",
+      "/compliance-status",
+      "/benchmark",
+      "/monitor"
+    ],
+    "reason": "Avoid sitewide Chromium work when the classifier already owns a bounded route set."
   }
 }
