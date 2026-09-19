@@ -23,3 +23,8 @@
 - ERROR: second BRAIN replay left one stale assertion because `normalRequiredTestSets` was incorrectly treated as the runtime authority.
 - ROOT CAUSE: classifier metadata and executable safety enforcement were conflated.
 - PREVENTION: runtime workflow is authority for safety invariants; config arrays are tested only for their classifier semantics.
+
+- ERROR: exact-head backend matrix run `35445027732` job `105902439716` failed 1/1178 because test 368 expected normal-risk `public-visibility` although the canonical `site/website-release-risk.json` intentionally excludes that sitewide sweep for normal risk.
+- ROOT CAUSE: the test oracle had been changed from an inferred stricter rule without first reading the exact-head canonical risk config and website workflow.
+- RECOVERY: restored the regression oracle to the canonical contract; runtime safety configuration was not weakened or changed.
+- PREVENTION: regression-oracle edits are SOURCE-OF-TRUTH-FIRST: read exact-head config/runtime/workflow before changing assertions; a failing old oracle alone is not evidence that the runtime contract changed.
