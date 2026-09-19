@@ -1,0 +1,17 @@
+{
+  "id": "regulatory-source-state-delivery-classification-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "A valid regulatory source observation candidate was blocked before CI because data/regulatory-source-state.json was unclassified delivery work.",
+  "root_cause": "Regulatory tools, tests and workflows were mapped to the automation lane, but their canonical state projection file was omitted from the lane policy.",
+  "prevention": [
+    "Classify data/regulatory-source-state.json as automation delivery work.",
+    "Keep unrelated data files fail-closed.",
+    "Regression-test the canonical regulatory state path explicitly."
+  ],
+  "evidence": {
+    "blocked_pr": 2327,
+    "policy": "config/brain-delivery-system.json",
+    "test": "tests/brain-delivery-system.test.mjs"
+  }
+}
