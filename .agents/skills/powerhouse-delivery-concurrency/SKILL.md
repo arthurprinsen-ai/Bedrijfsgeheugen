@@ -171,3 +171,20 @@ This is mandatory for every current and future chat, agent, workflow and Powerho
 - If a prevention can be machine-enforced, prefer code, tests, constraints, CI/runtime assertions or policies over prose-only guidance.
 
 Canonical enforcement: `scripts/brain/material-writeback-closure-guard.mjs`, `.github/workflows/required-test.yml`, `.github/workflows/powerhouse-skill-projection.yml`, and `.github/workflows/obligation-terminal-closure.yml`.
+
+
+## CI admission / runner single-flight invariant
+
+Fingerprint: `github|ci-admission|single-flight-runner-budget-v1`.
+
+Parallel development is encouraged; duplicate execution is forbidden.
+
+- One active Required run per PR across native `pull_request` and recovery `workflow_dispatch`.
+- One active BRAIN delivery run per PR across those same trigger types.
+- Repository-wide recovery may run on `main`, explicit dispatch and the bounded schedule, never on every feature-branch push.
+- Superseded same-PR/ref work uses `cancel-in-progress: true`; healthy current-head work is reused, not redispatched.
+- Auxiliary PR workflows require bounded PR/ref concurrency and path-scoped admission where scope is statically knowable.
+- Multiple independent obligations may execute simultaneously; a second executable lineage for the same Obligation-ID is forbidden.
+- Serialize only the mutable landing boundary. Keep independent development and gates parallel.
+
+Optimize time-to-terminal-proof per runner/credit/energy unit: reuse, dedupe, cheap admission first, then bounded parallel expensive work.
