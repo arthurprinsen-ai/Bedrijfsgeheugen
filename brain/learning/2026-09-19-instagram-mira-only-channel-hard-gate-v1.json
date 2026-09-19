@@ -21,15 +21,10 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/social-learning-buffer-channel-identity-gate.test.mjs",
-      "tests/social-learning-buffer-instagram-media-gate.test.mjs",
-      "tests/social-learning-buffer-schedule.test.mjs"
+      "tests/brain-instagram-mira-only-channel-hard-gate-v1.test.mjs"
     ],
     "canary": [
-      "Buffer Social Learning",
-      "Required test",
-      "Powerhouse CodeQL",
-      "BRAIN delivery"
+      "tests/brain-instagram-mira-only-channel-hard-gate-v1.test.mjs"
     ]
   },
   "skill_targets": [
