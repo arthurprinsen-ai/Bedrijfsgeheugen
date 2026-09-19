@@ -56,5 +56,18 @@
     "qualityIntelligence": "success"
   },
   "status": "PRODUCTION_DEPLOYED_WRITEBACK_RECOVERY",
-  "terminalNote": "The implementation is deployed and read back in production. This recovery writeback exists to close the material learning/activity lineage that the original candidate omitted."
+  "terminalNote": "The implementation is deployed and read back in production. This recovery writeback exists to close the material learning/activity lineage that the original candidate omitted.",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs",
+      "tests/brain-resource-business-value-contract.test.mjs"
+    ]
+  }
 }
