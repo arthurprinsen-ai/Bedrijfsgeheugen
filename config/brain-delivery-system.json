@@ -474,6 +474,7 @@
       "owner": "agent-integration-control-plane",
       "paths": [
         "automation/",
+        "data/regulatory-source-state.json",
         "make/",
         "notion/",
         "tests/delivery-",
