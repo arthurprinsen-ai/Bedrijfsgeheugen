@@ -13,12 +13,12 @@
   "enforcement": [
     ".github/workflows/revenue-learning.yml",
     ".github/workflows/linkedin-revenue-cockpit-tests.yml",
-    "tests/delivery-ci-path-scope-fanout.test.mjs",
+    "tests/brain-ci-path-scope-fanout.test.mjs",
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-ci-path-scope-fanout.test.mjs"
+      "tests/brain-ci-path-scope-fanout.test.mjs"
     ]
   },
   "skill_targets": [
