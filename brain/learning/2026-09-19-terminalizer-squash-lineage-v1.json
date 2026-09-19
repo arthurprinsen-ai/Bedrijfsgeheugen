@@ -17,5 +17,10 @@
     "failing_run": "35450074361",
     "merge_sha": "39bf2e30fef0674e68edbf91ba30f1ea6c2fe4b3",
     "candidate_sha": "86cec9e1cd0feba9a0d2ed9a835b6564997d9496"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-obligation-terminalizer-squash.test.mjs"
+    ]
   }
 }
