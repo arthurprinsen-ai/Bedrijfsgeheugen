@@ -8,12 +8,13 @@
   "repeat_count": 1,
   "security_sensitive": false,
   "root_cause": "Repository hygiene only understood title-based generated candidate families, so explicit same-obligation successor PRs could coexist with their predecessors and multiply CI/WIP even though canonical lineage already identified the successor.",
-  "prevention_rule": "Before generic candidate-family cleanup, close an older open PR only when a newer open PR has the exact same non-empty Obligation-ID and explicitly declares Supersedes: <older PR number>. Never infer supersession from similarity.",
+  "prevention_rule": "Before generic candidate-family cleanup, close an older open PR only when a newer open PR has the exact same non-empty Obligation-ID and explicitly declares Supersedes: <older PR number>. Never infer supersession from similarity. When a predecessor is closed, cancel its queued/in-progress/waiting/requested/pending GitHub Actions runs within a bounded per-run cancellation budget so obsolete heads stop consuming runner capacity.",
   "enforcement": [
     "scripts/brain/repository-hygiene.mjs",
     "config/repository-hygiene-policy.json",
     "tests/brain-repository-hygiene.test.mjs",
-    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    ".github/workflows/repository-hygiene.yml"
   ],
   "evaluation": {
     "historical_replay": [
