@@ -1,0 +1,17 @@
+{
+  "id": "lane-aware-terminal-readback-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Automation-only obligations waited for website production readback even when their production surface was GitHub main itself.",
+  "root_cause": "The generic terminal closure workflow applied canonical website production polling to every delivery lane.",
+  "prevention": [
+    "Parse Delivery-Lane during terminal closure.",
+    "For automation-only changes with no deployable portal, website, Netlify runtime or Supabase paths, prove production by merge containment in current main.",
+    "Keep canonical production release and descendant readback for changes that touch deployable runtime surfaces.",
+    "Emit an explicit github_main readback mode in terminal evidence."
+  ],
+  "evidence": {
+    "workflow": ".github/workflows/obligation-terminal-closure.yml",
+    "test": "tests/github-delivery-state-machine-terminal-closure.test.mjs"
+  }
+}
