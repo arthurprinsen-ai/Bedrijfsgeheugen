@@ -10,12 +10,12 @@ const frames=(identityClass='mira_daily_life',placeholderDetected=false)=>[
 ];
 const run=(mediaKind,extra={})=>authorizeSocialPublication({
  channelKind:'instagram_company',channelId:CHANNELS.instagram_company.channelId,text:'Mira zoekt de laatste versie.',lineage,
- miraGatePassed:true,mediaKind,assetUrl:'https://cdn.example/final.mp4',assetMimeType:'video/mp4',
- instagramVisual:{verified:true,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames()},
+ miraGatePassed:true,contentPersona:'mira',contentClass:'mira_daily_life',mediaKind,assetUrl:'https://cdn.example/final.mp4',assetMimeType:'video/mp4',
+ instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames()},
  ...extra
 });
 const imageVisual=(extra={})=>({
- verified:true,evidenceRefs:['vision:final-image'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,
+ verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-image'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,
  identityClass:'mira_daily_life',formatVerified:true,width:1080,height:1350,colorSpace:'RGB',hasAlpha:false,
  decodeComplete:true,visualComplete:true,grayOrEmptyDetected:false,...extra
 });
@@ -24,28 +24,28 @@ const runImage=(visualExtra={},extra={})=>run('image',{
 });
 
 test('video requires start middle and end frame evidence',()=>{
- const r=run('video',{instagramVisual:{verified:true,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames().slice(0,2)}});
+ const r=run('video',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames().slice(0,2)}});
  assert.equal(r.authorized,false);
  assert.ok(r.reasons.includes('INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED'));
 });
 
 test('video blocks a Mira identity mismatch in any sampled frame',()=>{
  const f=frames(); f[1]={...f[1],identityClass:'generic_person'};
- const r=run('video',{instagramVisual:{verified:true,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:f}});
+ const r=run('video',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:f}});
  assert.equal(r.authorized,false);
  assert.ok(r.reasons.includes('INSTAGRAM_MIRA_FRAME_IDENTITY_REQUIRED'));
 });
 
 test('reel blocks a placeholder in any sampled frame',()=>{
  const f=frames(); f[2]={...f[2],placeholderDetected:true};
- const r=run('reel',{instagramVisual:{verified:true,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:f}});
+ const r=run('reel',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:f}});
  assert.equal(r.authorized,false);
  assert.ok(r.reasons.includes('INSTAGRAM_VIDEO_PLACEHOLDER_BLOCKED'));
 });
 
 test('video and reel require verified publish format',()=>{
  for(const kind of ['video','reel']){
-  const r=run(kind,{instagramVisual:{verified:true,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:false,frameEvidence:frames()}});
+  const r=run(kind,{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:false,frameEvidence:frames()}});
   assert.equal(r.authorized,false);
   assert.ok(r.reasons.includes('INSTAGRAM_MEDIA_FORMAT_UNVERIFIED'));
  }
@@ -98,6 +98,24 @@ test('image requires verified publish format and exact final asset readback',()=
  const mismatch=runImage({assetUrl:'https://cdn.example/other.jpg'});
  assert.equal(mismatch.authorized,false);
  assert.ok(mismatch.reasons.includes('INSTAGRAM_FINAL_ASSET_MISMATCH'));
+});
+
+test('Instagram blocks content that is not explicitly assigned to Mira',()=>{
+ const r=runImage({}, {contentPersona:'bedrijfsgeheugen'});
+ assert.equal(r.authorized,false);
+ assert.ok(r.reasons.includes('INSTAGRAM_MIRA_PERSONA_REQUIRED'));
+});
+
+test('Instagram blocks generic brand creative even when other media proof exists',()=>{
+ const r=runImage({genericBrandCreative:true});
+ assert.equal(r.authorized,false);
+ assert.ok(r.reasons.includes('INSTAGRAM_GENERIC_BRAND_CREATIVE_BLOCKED'));
+});
+
+test('Instagram requires Mira to be visibly present in the final asset',()=>{
+ const r=runImage({miraPresent:false});
+ assert.equal(r.authorized,false);
+ assert.ok(r.reasons.includes('INSTAGRAM_VISIBLE_MIRA_REQUIRED'));
 });
 
 test('valid 1080x1350 RGB JPEG final image authorizes',()=>assert.equal(runImage().authorized,true));
