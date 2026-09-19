@@ -1,0 +1,21 @@
+{
+  "id": "github-hygiene-terminal-cost-control-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Parallel recovery and audit-only hygiene amplified GitHub Actions queue pressure, repository drift and avoidable CI cost.",
+  "root_cause": "Recovery could dispatch multiple terminal closures concurrently across obligations, while scheduled hygiene classified debt without applying already fail-closed cleanup.",
+  "prevention": [
+    "Serialize terminal closure recovery globally and dispatch at most one missing terminal closure per supervisor cycle.",
+    "Keep per-PR terminal closure concurrency non-cancelling so an active canonical proof is never replaced by a newer duplicate.",
+    "Preserve fail-closed semantics for real production-readback failures; only missing or cancelled readbacks may use descendant live proof.",
+    "Run scheduled repository hygiene in apply mode using explicit resource budgets and existing unique-commit protections.",
+    "Bound candidate closures, branch evaluations and deletions per run to reduce API, runner and queue amplification."
+  ],
+  "enforcement": {
+    "recovery_workflow": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "terminal_workflow": ".github/workflows/obligation-terminal-closure.yml",
+    "hygiene_workflow": ".github/workflows/repository-hygiene.yml",
+    "policy": "config/repository-hygiene-policy.json",
+    "runtime": "scripts/brain/repository-hygiene.mjs"
+  }
+}

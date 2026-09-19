@@ -29,5 +29,10 @@
     "backup/"
   ],
   "branch_warning_threshold": 250,
-  "branch_hard_threshold": 500
+  "branch_hard_threshold": 500,
+  "resource_budget": {
+    "max_candidate_closures_per_run": 25,
+    "max_branch_evaluations_per_run": 200,
+    "max_branch_deletes_per_run": 100
+  }
 }

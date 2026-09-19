@@ -1,6 +1,13 @@
 name: Repository Hygiene Control Plane
 
 on:
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/repository-hygiene.yml"
+      - "config/repository-hygiene-policy.json"
+      - "scripts/brain/repository-hygiene.mjs"
+      - "tests/brain-repository-hygiene.test.mjs"
   workflow_dispatch:
     inputs:
       mode:
@@ -46,7 +53,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       GITHUB_TOKEN: ${{ github.token }}
-      HYGIENE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'audit' }}
+      HYGIENE_MODE: ${{ github.event_name == 'workflow_dispatch' && inputs.mode || 'apply' }}
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
