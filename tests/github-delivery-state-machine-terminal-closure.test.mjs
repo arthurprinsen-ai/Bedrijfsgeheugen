@@ -51,3 +51,11 @@ test('automation-only closure uses GitHub main readback instead of waiting for w
   assert.match(workflow,/portal-v2\/\|public\/\|src\/\|netlify\/functions\/\|supabase\/functions\/\|supabase\/migrations\//);
   assert.match(workflow,/main:\$\{process\.env\.PRODUCTION_OBSERVED_SHA\}/);
 });
+
+
+test('github_main readback records the obligation merge SHA while using current main only as containment proof', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/echo "observed_sha=\\\$\{MERGE_SHA\}"/);
+  assert.match(workflow,/AUTOMATION_MAIN_READBACK_PROVEN:merge=\\\$\{MERGE_SHA\} contained_by=\\\$\{observed_sha\}/);
+  assert.doesNotMatch(workflow,/echo "observed_sha=\\\$\{observed_sha\}"[^\n]*github_main/);
+});
