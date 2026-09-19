@@ -353,3 +353,11 @@ test('ignored development ledger evidence never activates shared runtime lanes',
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation','backend']);
   assert.deepEqual(plan.ignoredPaths, ['docs/development-ledger-events/2026-09-19-example.md']);
 });
+
+
+test('regulatory source state projection is automation delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const path = 'data/regulatory-source-state.json';
+  const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
+});
