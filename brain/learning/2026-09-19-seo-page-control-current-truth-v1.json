@@ -1,0 +1,29 @@
+{
+  "fingerprint": "seo-page-control-current-truth-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "compiler": {
+    "failure_class": "SEO_RAW_SOURCE_ORACLE_AND_BRAND_LANGUAGE_DRIFT"
+  },
+  "root_cause": "The page/browser control already evaluated the canonical production-projected site, while the SEO strategy checker evaluated raw repository HTML. This produced shell false positives and allowed current source wording/metadata findings to persist independently.",
+  "prevention_rule": "Public SEO strategy checks must execute against the same production-projected site tree as page/browser checks. Source auto-fixes may not reintroduce metadata that violates the checker. Known blocked brand language and title/meta limits stay covered by regression.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-page-control-current-truth-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-seo-page-control-current-truth-v1.test.mjs"
+    ],
+    "issue": "#1448",
+    "source_files": [
+      "prijzen.html",
+      "product.html",
+      "data-soevereiniteit.html",
+      ".github/workflows/paginacontrole.yml"
+    ]
+  },
+  "scope": "WEBSITE_SEO",
+  "machine_enforceable": true
+}
