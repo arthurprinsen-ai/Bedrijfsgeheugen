@@ -1,0 +1,13 @@
+{
+  "id": "github-main-replay-stable-observed-sha-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "A terminal replay after main advanced proved merge containment but emitted the current main tip as production_observed_sha, which violated the strict github_main durable evidence contract tied to the obligation merge SHA.",
+  "root_cause": "The workflow conflated containment witness (current main tip) with terminal evidence identity (the obligation merge SHA).",
+  "prevention": [
+    "Use current main only as the ancestry witness.",
+    "After containment is proven, emit the obligation merge SHA as production_observed_sha.",
+    "Keep current main SHA only as diagnostic evidence.",
+    "Regression-test replay after main advances."
+  ]
+}
