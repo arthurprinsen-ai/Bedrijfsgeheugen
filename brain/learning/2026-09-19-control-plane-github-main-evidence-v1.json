@@ -1,0 +1,17 @@
+{
+  "id": "control-plane-github-main-evidence-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "Lane-aware terminal closure proved github_main production readback but the durable evidence endpoint still required a numeric production workflow run id, causing HTTP 422.",
+  "root_cause": "The terminal evidence API contract only modeled website-style canonical production runs and had not been extended with a GitHub-main production authority variant.",
+  "prevention": [
+    "Model production_readback_mode explicitly.",
+    "canonical_run requires a positive production_readback_run_id.",
+    "github_main requires production_readback_verified=true and production_observed_sha equal to main_sha.",
+    "Persist readback mode, observed SHA and verification state into durable Brain evidence."
+  ],
+  "evidence": {
+    "endpoint": "netlify/functions/powerhouse-control-plane-evidence.mjs",
+    "test": "tests/delivery-control-plane-vertical-slice.test.mjs"
+  }
+}
