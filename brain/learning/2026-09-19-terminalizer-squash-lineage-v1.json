@@ -1,0 +1,21 @@
+{
+  "fingerprint": "github-terminalizer-squash-tree-equivalence-v1",
+  "date": "2026-09-19",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "POST_MERGE_SQUASH_LINEAGE_FALSE_NEGATIVE",
+  "scope": "GITHUB_DELIVERY_TERMINALIZATION",
+  "machine_enforceable": true,
+  "root_cause": "The obligation terminalizer required candidate SHA ancestry under the merge SHA. A protected squash merge creates a new merge commit rather than preserving the candidate commit as an ancestor, and merged-branch cleanup can also remove the candidate ref before the terminalizer validates it.",
+  "prevention_rule": "Post-merge lineage verification must explicitly fetch the candidate SHA and accept either direct ancestry or exact candidate-tree/merge-tree equivalence, while still requiring the merge SHA to be contained in current main. Any other state fails closed.",
+  "enforcement": [
+    ".github/workflows/powerhouse-obligation-terminalizer.yml",
+    "tests/powerhouse-obligation-terminalizer-squash.test.mjs",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "evidence": {
+    "incident_pr": "#2415",
+    "failing_run": "35450074361",
+    "merge_sha": "39bf2e30fef0674e68edbf91ba30f1ea6c2fe4b3",
+    "candidate_sha": "86cec9e1cd0feba9a0d2ed9a835b6564997d9496"
+  }
+}

@@ -37,7 +37,20 @@ jobs:
           set -euo pipefail
           mkdir -p .artifacts
           git fetch origin main --no-tags
-          git merge-base --is-ancestor "$CANDIDATE_SHA" "$MERGE_SHA"
+          git fetch origin "$CANDIDATE_SHA" --no-tags || true
+          lineage_mode=""
+          if git cat-file -e "$CANDIDATE_SHA^{commit}" 2>/dev/null; then
+            if git merge-base --is-ancestor "$CANDIDATE_SHA" "$MERGE_SHA"; then
+              lineage_mode="ancestor"
+            elif [ "$(git rev-parse "$CANDIDATE_SHA^{tree}")" = "$(git rev-parse "$MERGE_SHA^{tree}")" ]; then
+              lineage_mode="squash_tree_equivalent"
+            fi
+          fi
+          if [ -z "$lineage_mode" ]; then
+            echo "::error::POST_MERGE_CANDIDATE_NOT_CONTAINED_OR_TREE_EQUIVALENT:$CANDIDATE_SHA:$MERGE_SHA"
+            exit 78
+          fi
+          echo "LINEAGE_MODE=$lineage_mode" >> "$GITHUB_ENV"
           git merge-base --is-ancestor "$MERGE_SHA" origin/main
           PR_BODY="$PR_BODY" CANDIDATE_SHA="$CANDIDATE_SHA" MERGE_SHA="$MERGE_SHA" PR_NUMBER="$PR_NUMBER" node --input-type=module - <<'NODE'
           import { writeFileSync, readFileSync } from 'node:fs';
@@ -53,6 +66,7 @@ jobs:
             obligation_id:result.metadata.obligationId,
             candidate_head_sha:process.env.CANDIDATE_SHA,
             merge_sha:process.env.MERGE_SHA,
+            lineage_mode:process.env.LINEAGE_MODE||'unknown',
             pr_number:Number(process.env.PR_NUMBER),
             writer_lease:result.lease
           },null,2));
@@ -116,7 +130,7 @@ jobs:
             merge_sha:process.env.MERGE_SHA,
             production_sha:process.env.PRODUCTION_SHA,
             checks:{
-              main_contains_candidate:true,
+              merged_lineage_verified:['ancestor','squash_tree_equivalent'].includes(lineage.lineage_mode),
               deploy_promotion_readback:true,
               runtime_function_readback:true,
               outcome_evidence:true,

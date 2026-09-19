@@ -184,3 +184,18 @@ When adding a migration-triggered specialist workflow:
 - add a regression that fails if the trigger widens unintentionally.
 - wire every directly-read runtime/function directory explicitly into the specialist workflow path filter; do not rely on unrelated schema globs as a proxy.
 - use one PR/ref single-flight concurrency key without event-type splitting when event type is not a distinct delivery lineage, and bound auxiliary job runtime with an explicit timeout.
+
+
+## Squash-merge terminal lineage proof
+
+Fingerprint: `github|terminalizer|squash-tree-equivalence-v1`.
+
+Post-merge terminal proof must not assume the candidate commit is an ancestor of the merge commit. GitHub squash merges create a new commit, and branch cleanup may remove the candidate ref before the terminalizer runs.
+
+Mandatory:
+- fetch the candidate SHA explicitly before lineage validation;
+- accept direct ancestry when present;
+- otherwise accept only exact candidate-tree == merge-tree equivalence as squash-merge containment proof;
+- require the merge SHA itself to be contained in current `origin/main`;
+- fail closed when neither ancestry nor exact tree equivalence can be proven;
+- record the lineage proof mode in terminal evidence so later readback can distinguish `ancestor` from `squash_tree_equivalent`.
