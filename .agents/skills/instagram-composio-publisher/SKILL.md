@@ -56,6 +56,7 @@ For Mira Instagram Reels, the canonical content-production chain is:
 `Powerhouse human problem -> concrete personal moment -> fixed Mira reference -> NEW OpenArt image2video asset -> exact-media/visible-Mira proof -> Composio Instagram publish -> Instagram permalink/readback -> canonical outcome + learning writeback`.
 
 Hard rules:
+- Instagram is Mira-only. Every Instagram artifact must declare `contentPersona=mira` and `contentClass=mira_daily_life`; every final visual must prove `miraPresent=true`. Generic Bedrijfsgeheugen brand cards, quote cards, blog promos, LinkedIn creatives and any other non-Mira creative are hard-blocked even when technically valid media.
 - Start from a concrete personal problem that real people recognize: work/private overlap, school/children, planning, group chats, meetings, part-time handovers, forgotten agreements, social awkwardness, time pressure, mental load or small daily chaos.
 - Recognition and human experience come first. Bedrijfsgeheugen meaning comes second.
 - A Mira Reel requires a newly generated OpenArt video for that run. Existing OpenArt history items, earlier Mira MP4 URLs, old posts and prior-generation media may be used only as reference/evidence, never as the final asset.
@@ -77,3 +78,10 @@ Fingerprint: `social-publish-atomic-claim-dedupe-v1`.
 Every social side effect is single-writer and idempotent. Before Composio, Buffer, or any future provider receives a publish/create request, the canonical `powerhouse_channel_decisions` row must be atomically claimed from `content_ready` to `dispatching` with a compare-and-set predicate on the same run date, channel and decision. Only the run that obtains the claim may call the provider. A concurrent run that cannot claim must return `ALREADY_CLAIMED_OR_DELIVERED` and must not publish, regenerate or create a replacement.
 
 A retryable transport failure that is proven to occur before the provider side effect may restore `dispatching -> content_ready`; uncertainty after a provider call is never permission to retry. Reconcile provider truth/external identity first. Provider readback and canonical external id remain mandatory before publication is considered delivered.
+
+
+## Mira-only channel containment (2026-09-19)
+
+Fingerprint: `instagram-mira-only-channel-hard-gate-v1`.
+
+The Instagram company channel is semantically owned by Mira. Publication must fail closed unless the exact artifact is explicitly Mira, the exact final media visibly contains Mira, and the content class is `mira_daily_life`. A generic Bedrijfsgeheugen visual can never be reclassified as Mira merely to pass transport. Unknown identity, missing persona metadata, generic brand creative, or contradictory visual evidence must block scheduling and publishing. There is no fallback from rejected Instagram content to a generic company post.
