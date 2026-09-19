@@ -33,3 +33,15 @@ test('redirect-only Netlify changes use targeted browser proof instead of full-s
   assert.ok(risk.nonArtifactPaths.includes('tests/brain-'));
 });
 
+test('terminal closure requires exact-head critical gates before LIVE_BEWEZEN', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  const gate=workflow.indexOf('Verify exact-head critical delivery gates before terminal claim');
+  const production=workflow.indexOf('Wait for canonical production release readback');
+  const persist=workflow.indexOf('Persist canonical Brain terminal evidence before terminal claim');
+  assert.ok(gate > -1 && production > gate && persist > production);
+  assert.match(workflow,/require_workflow "required-test\.yml" "Required"/);
+  assert.match(workflow,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
+  assert.match(workflow,/require_workflow "powerhouse-codeql\.yml" "Powerhouse-CodeQL"/);
+  assert.match(workflow,/TERMINAL_CRITICAL_GATE_FAILED/);
+});
+
