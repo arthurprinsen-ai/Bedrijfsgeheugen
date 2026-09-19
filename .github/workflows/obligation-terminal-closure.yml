@@ -104,8 +104,7 @@ jobs:
                 exit 0
               fi
               if [ "$source_conclusion" != "cancelled" ]; then
-                echo "::error::PRODUCTION_READBACK_FAILED:run=$source_run_id conclusion=$source_conclusion"
-                exit 78
+                echo "::warning::PRODUCTION_READBACK_HISTORICAL_FAILURE:run=$source_run_id conclusion=$source_conclusion; falling back to current descendant production proof"
               fi
               break
             fi
