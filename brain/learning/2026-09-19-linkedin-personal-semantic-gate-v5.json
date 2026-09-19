@@ -1,0 +1,38 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "linkedin-personal-semantic-gate-v5",
+  "compiler": {
+    "failure_class": "SEMANTIC_IDENTITY_GATE_ESCAPE"
+  },
+  "root_cause": "The personal LinkedIn gate trusted shallow first-person tokens and caller-supplied identity flags, allowing business or thought-leadership copy to masquerade as personal content.",
+  "prevention": [
+    "Authorize personal LinkedIn only when the final text itself contains a concrete first-person lived event or daily-life experience.",
+    "Block consultant/thought-leadership phrasing and forced business morals in final copy.",
+    "Treat metadata booleans as supporting evidence only; they cannot substitute for semantic inspection of final text.",
+    "Keep Buffer transport truth separate from content-identity truth."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs"
+    ]
+  },
+  "evidence": [
+    "platform/social-channel-identity-gate.mjs",
+    "supabase/functions/bg-pre-publish-review/index.ts",
+    "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs",
+    "tests/social-learning-buffer-channel-identity-gate.test.mjs",
+    "Supabase bg-pre-publish-review production version 13 readback recorded on PR #2424"
+  ],
+  "tests": [
+    "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs",
+    "tests/social-learning-buffer-channel-identity-gate.test.mjs"
+  ],
+  "production_readback": "PR #2424 records production Edge Function readback for FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED and FINAL_TEXT_CONSULTANT_VOICE_BLOCK; repository main readback remains required after protected merge.",
+  "skill_targets": [
+    "content",
+    "delivery",
+    "social"
+  ]
+}
