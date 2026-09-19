@@ -28,7 +28,7 @@ test('redirect-only Netlify changes use targeted browser proof instead of full-s
   const risk=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
   assert.match(lane,/redirect-only:netlify\.toml/);
   assert.match(lane,/risk_lane == 'high-risk'/);
-  assert.deepEqual(risk.fastFixRequiredTestSets,['baseline','preview','targeted-browser']);
+  assert.deepEqual(risk.fastFixRequiredTestSets,['baseline','preview','targeted-browser','public-visibility']);
   assert.ok(risk.nonArtifactPaths.includes('brain/learning/'));
   assert.ok(risk.nonArtifactPaths.includes('tests/brain-'));
 });
@@ -46,12 +46,13 @@ test('terminal closure requires exact-head critical gates before LIVE_BEWEZEN', 
 });
 
 
-test('regulatory data maps to bounded affected routes and normal risk avoids sitewide browser sweeps', async()=>{
+test('regulatory data maps to bounded routes while public visibility remains universal and broad browser sweeps stay high-risk', async()=>{
   const risk=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
   assert.deepEqual(risk.pageLocalAssets['data/regelgeving.json'],['/','/ai-act','/compliance-status','/benchmark','/monitor']);
-  assert.ok(!risk.normalRequiredTestSets.includes('public-visibility'));
+  assert.ok(risk.fastFixRequiredTestSets.includes('public-visibility'));
   assert.ok(risk.highRiskRequiredTestSets.includes('public-visibility'));
   const lane=await readFile('.github/workflows/lane-website.yml','utf8');
-  assert.match(lane,/Verify all public pages are visibly rendered\n\s+if: needs\.classify\.outputs\.risk_lane == 'high-risk'/);
+  assert.match(lane,/Verify all public pages are visibly rendered\n\s+env:/);
+  assert.doesNotMatch(lane,/Verify all public pages are visibly rendered\n\s+if:/);
   assert.match(lane,/Verify every header menu panel is readable\n\s+if: needs\.classify\.outputs\.risk_lane == 'high-risk'/);
 });
