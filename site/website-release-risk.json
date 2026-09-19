@@ -49,6 +49,7 @@
     "static",
     "preview",
     "targeted-browser",
+    "public-visibility",
     "page-seo"
   ],
   "highRiskRequiredTestSets": [
