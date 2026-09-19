@@ -353,36 +353,10 @@ def main():
             bevindingen.append(('laag', url, 'uitroepteken in de tekst'))
 
 
-    # -- 6. kop en voettekst identiek op elke pagina --
-    def schoon(x):
-        # aria-current markeert de actieve pagina en mag per pagina verschillen
-        x = re.sub(r'\s+aria-current="page"', '', x or '')
-        return re.sub(r'\s+', ' ', x).strip()
-
-    ref_kop = ref_voet = None
-    if os.path.exists(CANONIEK_KOP):
-        ref_kop = schoon(io.open(CANONIEK_KOP, encoding='utf-8').read())
-    if os.path.exists(CANONIEK_VOET):
-        ref_voet = schoon(io.open(CANONIEK_VOET, encoding='utf-8').read())
-
-    for url, p in sorted(P.items()):
-        naam = os.path.basename(p['bestand'])[:-5]
-        if naam in GEEN_BALK:
-            continue
-        s = p['ruw']
-        m = re.search(r'<nav class="bgkop"[\s\S]*?</nav>', s)
-        if ref_kop and (not m or schoon(m.group(0)) != ref_kop):
-            bevindingen.append(('hoog', url,
-                'de menubalk wijkt af van .github/canoniek/kop.html'))
-        vs = re.findall(r'<footer[\s\S]*?</footer>', s)
-        if ref_voet:
-            if len(vs) != 1:
-                bevindingen.append(('hoog', url,
-                    'er staan %d voetteksten op deze pagina, er hoort er precies een' % len(vs)))
-            elif schoon(vs[0]) != ref_voet:
-                bevindingen.append(('hoog', url,
-                    'de voettekst wijkt af van .github/canoniek/voet.html'))
-
+    # -- 6. canonical shell ownership --
+    # Kop/voet worden bewust NIET hier byte-voor-byte vergeleken.
+    # De dedicated canonical brand shell contract/full-build/live-readback gates
+    # zijn de enige authority voor shell-pariteit. SEO blijft bron-semantiek bewaken.
 
     # -- 7. staat elke pagina in de sitemap --
     # De sitemap wordt bij elke build gegenereerd (tools/bouw-sitemap.mjs).
