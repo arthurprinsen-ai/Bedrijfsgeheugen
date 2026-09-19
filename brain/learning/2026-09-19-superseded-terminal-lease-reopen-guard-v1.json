@@ -1,0 +1,20 @@
+{
+  "id": "superseded-terminal-lease-reopen-guard-v1",
+  "date": "2026-09-19",
+  "type": "prevention",
+  "problem": "A terminally proven recovery successor superseded PR #2327, but the terminal writer lease closure guard reopened the predecessor after manual closure.",
+  "root_cause": "The closure guard treated every unmerged TERMINAL_DELIVERY lease as resumable and did not inspect same-obligation Supersedes lineage or successor terminal evidence.",
+  "prevention": [
+    "Before auto-reopening an unmerged terminal lease, search for a merged successor with the same Obligation-ID and exact Supersedes predecessor relation.",
+    "Keep the predecessor closed only when the successor has a completed successful Obligation Terminal Closure workflow.",
+    "If no matching terminally proven successor exists, retain fail-closed auto-reopen behavior.",
+    "Never infer supersession from title, branch name or timestamps alone."
+  ],
+  "evidence": {
+    "predecessor_pr": 2327,
+    "successor_pr": 2345,
+    "successor_terminal_run": 35439226045,
+    "workflow": ".github/workflows/powerhouse-terminal-writer-lease-closure-guard.yml",
+    "test": "tests/terminal-writer-lease-closure-guard.test.mjs"
+  }
+}

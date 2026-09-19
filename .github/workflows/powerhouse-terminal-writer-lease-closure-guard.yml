@@ -5,6 +5,7 @@ on:
     types: [closed]
 
 permissions:
+  actions: read
   contents: read
   pull-requests: write
 
@@ -31,6 +32,29 @@ jobs:
             exit 1
           fi
           repo="$GITHUB_REPOSITORY"
+          obligation_id="$(sed -n 's/^Obligation-ID: //p' <<<"$PR_BODY" | head -n1)"
+          if [ -n "$obligation_id" ]; then
+            closed_prs="$(gh api "repos/$repo/pulls?state=closed&base=main&sort=updated&direction=desc&per_page=100")"
+            successor_number="$(jq -r --arg predecessor "$PR_NUMBER" --arg obligation "$obligation_id" '
+              [ .[]
+                | select(.merged_at != null)
+                | ((.body // "") | split("\n")) as $lines
+                | select(($lines | index("Supersedes: " + $predecessor)) != null)
+                | select(($lines | index("Obligation-ID: " + $obligation)) != null)
+                | .number
+              ] | first // empty
+            ' <<<"$closed_prs")"
+            if [ -n "$successor_number" ]; then
+              terminal_title="Obligation Terminal Closure PR #$successor_number"
+              terminal_runs="$(gh api "repos/$repo/actions/workflows/obligation-terminal-closure.yml/runs?per_page=100")"
+              terminal_success="$(jq --arg title "$terminal_title" '[.workflow_runs[] | select(.display_title==$title and .status=="completed" and .conclusion=="success")] | length' <<<"$terminal_runs")"
+              if [ "$terminal_success" -gt 0 ]; then
+                echo "::notice::PR#$PR_NUMBER remains closed because merged successor PR#$successor_number with the same obligation is terminally proven."
+                exit 0
+              fi
+            fi
+          fi
+
           gh api --method PATCH "repos/$repo/pulls/$PR_NUMBER" -f state=open >/tmp/reopen.json
           state="$(gh api "repos/$repo/pulls/$PR_NUMBER" --jq '.state')"
           test "$state" = open
