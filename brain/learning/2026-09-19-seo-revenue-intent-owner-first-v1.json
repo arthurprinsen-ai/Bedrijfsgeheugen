@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_LEARNING",
   "version": "SEO-REVENUE-OPERATING-LOOP-v1",
-  "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+  "status": "ACTIVE_PREVENTION",
   "fingerprint": "seo|revenue-growth|intent-owner-first|v1",
   "date": "2026-09-19",
   "obligation_id": "BG-SEO-REVENUE-20260919-CLOSURE",
@@ -36,12 +36,29 @@
     "pr_cannibalization": 2396,
     "pr_internal_link": 2399,
     "merged_prs": [
+      2389,
       2396,
       2399
     ],
     "current_main_at_record": "a5cb7aef24f3eca1464db053438ce7153c5a5261",
     "production_deploy_at_record": "7ad66b4d60487ecd1297289d6d9527c3b1f96598",
     "production_status": "STALE_VS_MAIN_PENDING_ONE_FINAL_DEPLOY",
-    "known_incident": "PR #2389 admission initially failed with DELIVERY_LANE_INVALID because Delivery-Lane used domain label seo-growth instead of canonical lane backend."
+    "known_incident": "PR #2389 admission initially failed with DELIVERY_LANE_INVALID because Delivery-Lane used domain label seo-growth instead of canonical lane backend.",
+    "final_main_sha": "1a8169c82dbbe2238e62a4f91de8600db193903e",
+    "production_deploy_id": "6aae87a3977cfc000881553f",
+    "production_commit_ref": "1a8169c82dbbe2238e62a4f91de8600db193903e",
+    "production_state": "ready",
+    "production_published_at": "2026-09-19T13:03:42.737Z",
+    "production_redirect_rules_processed": 90,
+    "production_secret_scan_matches": 0,
+    "main_readback": {
+      "duplicate_removed_from_sitemap": true,
+      "duplicate_removed_from_blog_index": true,
+      "duplicate_removed_from_rss": true,
+      "permanent_redirect_config_present": true,
+      "excel_contextual_link_present": true,
+      "revenue_policy_and_opportunity_engine_present": true
+    },
+    "public_readback_note": "Netlify provider identity is exact and ready. The external web index reader still surfaced cached HTML for some pages immediately after deploy, and the direct container had no DNS; this cache limitation is recorded rather than treated as contradictory production identity."
   }
 }
