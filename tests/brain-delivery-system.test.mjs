@@ -305,3 +305,35 @@ test('regulatory workflows remain narrowly automation-scoped', async () => {
     assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation'], `${path} must remain automation-only`);
   }
 });
+
+
+test('closure learning evidence does not fan automation control-plane work into portal and website lanes', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({
+    changedPaths:[
+      '.github/workflows/obligation-terminal-closure.yml',
+      'brain/learning/2026-09-19-lane-aware-terminal-readback-v1.json',
+      'docs/changes/2026-09-19-lane-aware-terminal-readback-v1.md',
+      'docs/development-ledger-events/2026-09-19-lane-aware-terminal-readback-v1.md',
+      'tests/github-delivery-state-machine-terminal-closure.test.mjs'
+    ],
+    headSha:'15459cd89295612b',
+    policy
+  });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation','backend']);
+  assert.deepEqual(plan.nonExecutableSharedPaths, [
+    'brain/learning/2026-09-19-lane-aware-terminal-readback-v1.json',
+    'docs/changes/2026-09-19-lane-aware-terminal-readback-v1.md'
+  ]);
+});
+
+test('learning-only writeback remains non-executable and is handled by skill projection instead of runtime lanes', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({
+    changedPaths:['brain/learning/2026-09-19-example.json'],
+    headSha:'15459cd89295612b',
+    policy
+  });
+  assert.deepEqual(plan.lanes, []);
+  assert.deepEqual(plan.nonExecutableSharedPaths, ['brain/learning/2026-09-19-example.json']);
+});
