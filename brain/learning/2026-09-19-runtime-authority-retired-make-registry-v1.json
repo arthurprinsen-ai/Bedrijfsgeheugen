@@ -13,5 +13,10 @@
     "tests/brain-runtime-authority-retired-make-registry.test.mjs"
   ],
   "issue": "#1884",
-  "candidate_pr": "#2363"
+  "candidate_pr": "#2363",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-runtime-authority-retired-make-registry.test.mjs"
+    ]
+  }
 }
