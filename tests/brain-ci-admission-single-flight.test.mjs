@@ -42,7 +42,8 @@ test('LinkedIn revenue cockpit only admits relevant revenue runtime and migratio
 
 test('Revenue Learning keeps migration integrity coverage without duplicate path fan-out', async () => {
   const yml = await readFile('.github/workflows/revenue-learning.yml','utf8');
-  const count = needle => yml.split(needle).length - 1;
+  const admission = yml.slice(0, yml.indexOf('concurrency:'));
+  const count = needle => admission.split(needle).length - 1;
   assert.equal(count("supabase/migrations/**"), 2, 'one pull_request path plus one main-push path');
   assert.equal(count("supabase/migration-history.lock.json"), 2, 'one pull_request path plus one main-push path');
   assert.equal(count("tests/supabase-migration-history-integrity.test.mjs"), 2, 'one pull_request path plus one main-push path');
