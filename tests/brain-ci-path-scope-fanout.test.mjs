@@ -39,3 +39,21 @@ test('specialist workflows retain bounded concurrency cancellation',()=>{
     assert.match(yaml,/cancel-in-progress:\s*true/);
   }
 });
+
+
+test('direct runtime dependency and PR-ref single-flight refinement',()=>{
+  const linkedin=readFileSync('.github/workflows/linkedin-revenue-cockpit-tests.yml','utf8');
+  const revenue=readFileSync('.github/workflows/revenue-learning.yml','utf8');
+  assert.match(linkedin,/supabase\/functions\/powerhouse-runtime\/\*\*/);
+  const liConcurrency=linkedin.slice(linkedin.indexOf('concurrency:'),linkedin.indexOf('\npermissions:'));
+  const revConcurrency=revenue.slice(revenue.indexOf('concurrency:'),revenue.indexOf('\npermissions:'));
+  assert.doesNotMatch(liConcurrency,/github\.event_name/);
+  assert.doesNotMatch(revConcurrency,/github\.event_name/);
+  assert.match(liConcurrency,/github\.event\.pull_request\.number \|\| github\.ref_name/);
+  assert.match(revConcurrency,/github\.event\.pull_request\.number \|\| github\.ref_name/);
+  const push=revenue.slice(revenue.indexOf('  push:'),revenue.indexOf('\nconcurrency:'));
+  assert.match(push,/supabase\/migrations\/\*revenue\*\.sql/);
+  assert.match(push,/supabase\/migrations\/\*growth\*\.sql/);
+  assert.doesNotMatch(push,/revenue_learning/);
+  assert.match(revenue,/timeout-minutes:\s*10/);
+});
