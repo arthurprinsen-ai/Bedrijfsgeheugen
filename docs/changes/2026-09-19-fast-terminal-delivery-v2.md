@@ -11,4 +11,6 @@
 - Redirect-only `netlify.toml` changes are now machine-classified as bounded fast-fix work; they no longer trigger full-site visibility/header/browser sweeps.
 - Terminal closure now independently requires latest exact-head Required + BRAIN + applicable Powerhouse CodeQL success before it may persist `LIVE_BEWEZEN`.
 - The release-control-plane regression now encodes the intended risk budget: redirect-only fast-fix uses targeted route proof; broader changes retain public visibility/full checks.
+- Normal-risk website changes now use targeted affected-route browser proof; sitewide visibility/header crawls are high-risk-only.
+- `data/regelgeving.json` is explicitly mapped to `/`, `/ai-act`, `/compliance-status`, `/benchmark` and `/monitor`.
 
