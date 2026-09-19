@@ -25,4 +25,20 @@ Search intent remains single-owner. Existing money-page authority is improved be
 
 ## Terminal evidence
 
-At record creation, #2396 and #2399 were merged into main but Netlify production still identified commit `7ad66b4d60487ecd1297289d6d9527c3b1f96598`. Final closure requires one deploy of the latest main containing all three SEO obligations, followed by public readback, then this event can be considered terminal.
+Core SEO delivery is production-proven at main commit `1a8169c82dbbe2238e62a4f91de8600db193903e`.
+
+Netlify production deploy:
+- deploy ID: `6aae87a3977cfc000881553f`
+- state: `ready`
+- commit_ref: `1a8169c82dbbe2238e62a4f91de8600db193903e`
+- published_at: `2026-09-19T13:03:42.737Z`
+- redirect rules processed: 90, without provider-reported errors
+- secret scan matches: 0
+
+Main readback on the same lineage confirms:
+- `onprijsd-probleem-bedrijfsvoering` is absent from sitemap, blog index and RSS;
+- the permanent redirect to the canonical `ongeprijsd` URL is present in `_redirects`;
+- the contextual `/excel-als-crm` link is present on `bedrijf-overdraagbaar-maken.html`;
+- the revenue-first content policy, commercial opportunity engine and regression test are present on main.
+
+The external web index reader still returned cached HTML for some pages immediately after the deploy, while the isolated container could not resolve public DNS. That observation is retained as cache/readback provenance and is not substituted for provider deployment identity.
