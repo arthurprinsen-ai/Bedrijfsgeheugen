@@ -4,7 +4,7 @@ export const RESOURCE_ANALYTICS_METRICS=Object.freeze([
 ]);
 
 const arr=value=>Array.isArray(value)?value:[];
-const num=value=>Number.isFinite(Number(value))?Number(value):null;
+const num=value=>value===null||value===undefined||value===''?null:(Number.isFinite(Number(value))?Number(value):null);
 const lower=value=>String(value??'').trim().toLowerCase();
 
 export function normalizeResourceDaily(rows=[]){
@@ -125,11 +125,11 @@ export function resourceAnalyticsMarkup(data,filters={}){
       <article><small>${label} totaal</small><strong>${fmt(model.total,unit)}</strong><span>${model.daily.length} dagen met meetdata</span></article>
       <article><small>Dag-gemiddelde</small><strong>${fmt(model.average,unit)}</strong><span>eigen benchmark geselecteerde periode</span></article>
       <article><small>Laatste meetdag</small><strong>${fmt(model.latest,unit)}</strong><span>${model.deltaPct==null?'geen vorige meetdag':`${model.deltaPct>0?'+':''}${model.deltaPct.toFixed(1)}% vs vorige meetdag`}</span></article>
-      <article><small>Provenance compleet</small><strong>${quality==null?'—':quality+'%'}</strong><span>evidence-deking van selectie</span></article>
+      <article><small>Provenance compleet</small><strong>${quality==null?'—':quality+'%'}</strong><span>evidence-dekking van selectie</span></article>
     </div>
     <div class="csrd-resource-grid">
       <article class="csrd-panel csrd-trend-panel"><div class="csrd-panelhead"><h3>${label} per dag</h3><span>${model.provider==='all'?'alle providers':esc(model.provider)} · ${model.resourceType==='all'?'alle resources':esc(model.resourceType)}</span></div>${lineSvg(model.daily)}</article>
-      <article class="csrd-panel csrd-provider-panel"><div class="csrd-panelhead"><h3>Verdeling per provider</h3><span>${label}</span></div><div class="csrd-provider-bars">${model.providers.length?model.providers.slice(0,8).map(x=>`<div><span>${esc(x.name)}</span><i style="--w :${Math.max(2,x.value/maxProvider*100)}%"></i><b>${fmt(x.value,unit)}</b></div>`).join(''):'<p>Nog geen providerdata voor deze selectie.</p>'}</div></article>
+      <article class="csrd-panel csrd-provider-panel"><div class="csrd-panelhead"><h3>Verdeling per provider</h3><span>${label}</span></div><div class="csrd-provider-bars">${model.providers.length?model.providers.slice(0,8).map(x=>`<div><span>${esc(x.name)}</span><i style="--w:${Math.max(2,x.value/maxProvider*100)}%"></i><b>${fmt(x.value,unit)}</b></div>`).join(''):'<p>Nog geen providerdata voor deze selectie.</p>'}</div></article>
     </div>
     <div class="csrd-benchmark-strip">
       <span><b>Benchmark:</b> eigen periodegemiddelde ${fmt(model.average,unit)}</span>
