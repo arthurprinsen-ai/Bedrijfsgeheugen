@@ -337,3 +337,19 @@ test('learning-only writeback remains non-executable and is handled by skill pro
   assert.deepEqual(plan.lanes, []);
   assert.deepEqual(plan.nonExecutableSharedPaths, ['brain/learning/2026-09-19-example.json']);
 });
+
+
+test('ignored development ledger evidence never activates shared runtime lanes', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({
+    changedPaths:[
+      'docs/development-ledger-events/2026-09-19-example.md',
+      '.github/workflows/obligation-terminal-closure.yml',
+      'tests/github-delivery-state-machine-terminal-closure.test.mjs'
+    ],
+    headSha:'e88024ae87db0084',
+    policy
+  });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation','backend']);
+  assert.deepEqual(plan.ignoredPaths, ['docs/development-ledger-events/2026-09-19-example.md']);
+});
