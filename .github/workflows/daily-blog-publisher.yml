@@ -1,8 +1,7 @@
 name: Native daily blog publisher
+# Recovery-only publisher. Scheduled delivery is owned exclusively by powerhouse-daily-blog.yml.
 
 on:
-  schedule:
-    - cron: '35 5 * * *'
   workflow_dispatch:
     inputs:
       business_date:
