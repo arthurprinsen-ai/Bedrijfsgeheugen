@@ -289,3 +289,10 @@ Canonical enforcement: `scripts/brain/material-writeback-closure-guard.mjs`, `.g
 Fingerprint: `github|ci-admission|single-flight-runner-budget-v1`.
 
 Every chat and agent treats GitHub runner capacity as a shared governed resource. Independent obligations may build simultaneously, but identical obligation/head work is deduplicated before dispatch. Native PR events and recovery dispatches for Required/BRAIN are one logical single-flight lane. Recovery reuses the current lineage; it never amplifies runners or starts repository-wide scans from feature-branch pushes.
+
+
+## Channel semantic isolation before scoring
+
+Fingerprint: `content|channel-semantic-isolation|personal-company|v1`.
+
+Channel identity is a hard eligibility invariant before recommendation scoring or creative generation. A personal-source recommendation may never become eligible for `linkedin_company`; the company lane rejects personal targets/personal-truth evidence and must materialize its measurable canonical campaign link before generation. `linkedin_personal` final copy must itself preserve a concrete first-person event and verified source anchors; metadata-only personal truth is insufficient. If either invariant fails, remain fail-closed and regenerate/recover within the same canonical lineage. Production proof for this control is recorded in `brain/evidence/2026-09-20-content-channel-semantic-isolation-v1-production.json`.

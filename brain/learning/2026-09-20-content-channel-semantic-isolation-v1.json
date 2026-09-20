@@ -11,13 +11,23 @@
   "root_cause": "The recommendation selector scored generic LinkedIn affinity without first enforcing channel identity. A verified personal recommendation could therefore outrank business recommendations for linkedin_company, while AI rewriting of a verified personal source could remove the concrete first-person event required by the final truth gate.",
   "prevention_rule": "Recommendation eligibility is channel-specific before scoring. linkedin_company rejects personal targets and personal-truth evidence, creates a canonical measurable campaign link, and requires company-page semantics. linkedin_personal final copy is rejected unless the text itself preserves first-person concrete source anchors and contains no business bridge.",
   "evaluation": {
-    "historical_replay": ["tests/brain-content-channel-semantic-isolation-v1.test.mjs"],
-    "canary": ["tests/brain-content-channel-semantic-isolation-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-content-channel-semantic-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-channel-semantic-isolation-v1.test.mjs"
+    ]
   },
   "evidence": {
     "incident_company": "2026-09-20 company artifact reused printer/personal content and failed doorklik gate",
     "incident_personal": "2026-09-20 personal rewrite lost a concrete first-person event and failed FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED",
     "canonicalization_test": "tests/brain-content-channel-semantic-isolation-v1.test.mjs"
   },
-  "outcome": {"status":"RECORDED_PENDING_FINAL_DELIVERY_READBACK"}
+  "outcome": {
+    "status": "LIVE_PROVEN",
+    "main_merge_sha": "56618d748a9b0d417b0198086aa097b4ef36b1ef",
+    "edge_function_version": 15,
+    "production_evidence": "brain/evidence/2026-09-20-content-channel-semantic-isolation-v1-production.json",
+    "truth_boundary": "semantic isolation control is production-proven; downstream publish gates may still block individual channels"
+  }
 }
