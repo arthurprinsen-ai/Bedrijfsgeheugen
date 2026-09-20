@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { evaluateCompletion } from '../platform/agents/completion-supervisor.mjs';
 
-const migration=fs.readFileSync('supabase/migrations/20260920072000_social_publication_authority_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migrations/20260920073025_social_publication_authority_v1.sql','utf8');
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
 
 test('central authority issues exact-bound one-time capabilities',()=>{
