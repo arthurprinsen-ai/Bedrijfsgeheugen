@@ -10,6 +10,7 @@ export const PAGE_NAVIGATION = Object.freeze({
   overzicht:["Open businesscase",[["Open businesscase","businesscase"],["Open profiel","profiel"],["Open advies","advies"]]],
   profiel:["Werk profiel bij",[["Vul ontbrekende gegevens aan","gegevens-invullen"],["Open eindconclusie","eindconclusie"],["Bekijk wijzigingen","wijzigingen"]]],
   "data-ai":["Prioriteer datakans",[["Open koppelingen","koppelingen"],["Bekijk AI-scan","ai-scan"],["Open bronnenstatus","bronnenstatus"]]],
+  "trust-center":["Controleer bewijs",[["Open bronnenstatus","bronnenstatus"],["Open audittrail","audittrail"],["Bekijk outcomes","outcomes-evidence"]]],
   "ai-scan":["Start kansanalyse",[["Open kansenkaart","kansenkaart"],["Maak businesscase","businesscase"],["Zet actie uit","actieve-acties"]]],
   kansenkaart:["Kies volgende kans",[["Open AI-scan","ai-scan"],["Maak businesscase","businesscase"],["Plan in roadmap","roadmap"]]],
   "csrd-impact":["Open impactcockpit",[["Open audit","audit"],["Open compliance","compliance-governance"],["Bekijk acties","actieve-acties"]]],
@@ -81,6 +82,22 @@ function bcgContent(model,primaryAction,actions){
 
 function specialistContent(pageId,model,navigation){
   const [primaryAction,actions]=navigation;
+  if(pageId==='trust-center'){
+    const runtime=model?.portal?.runtime||{};
+    const sources=Array.isArray(runtime?.sources?.items)?runtime.sources.items:[];
+    const healthy=sources.filter(item=>item?.healthy!==false).length;
+    const audit=Array.isArray(runtime?.audit?.items)?runtime.audit.items:[];
+    const outcomes=Array.isArray(runtime?.outcomes?.items)?runtime.outcomes.items:[];
+    const verified=outcomes.filter(item=>item?.healthy===true||String(item?.status).toLowerCase()==='ok').length;
+    const updated=runtime?.sources?.updatedAt||runtime?.observability?.updatedAt||'Onbekend';
+    const blocks=[
+      {type:'metrics',title:'Vertrouwensbasis',items:[['Bronnen gezond',sources.length?healthy+'/'+sources.length:'—'],['Auditbewijzen',audit.length?String(audit.length):'—'],['Geverifieerde outcomes',outcomes.length?verified+'/'+outcomes.length:'—'],['Laatste bronupdate',String(updated)]],derived:Boolean(sources.length||audit.length||outcomes.length)},
+      {type:'worklist',title:'Wat Powerhouse altijd controleerbaar maakt',items:[['Feit ≠ afleiding','Klantfeit, berekening, hypothese en voorspelling krijgen een verschillende bewijsstatus.'],['Geen nepzekerheid','Geen confidence-percentage zonder gekalibreerd modelbewijs.'],['Bron en actualiteit','Materiële AI-output toont herkomst, freshness en evidence-status.'],['Tegenspraak zichtbaar','Conflicterende bronnen en ontbrekend bewijs worden niet weggepoetst.'],['Actie pas bewezen na readback','Een agentactie telt pas als uitgevoerd na provider/runtime-verificatie.'],['Leren van uitkomsten','Werkelijk resultaat en correcties beïnvloeden volgend advies.']],derived:false},
+      {type:'actions',title:'Controleer zelf',items:actions}
+    ];
+    if(!sources.length&&!audit.length&&!outcomes.length)blocks.splice(1,0,{type:'empty',title:'Nog geen runtime-bewijs geladen',copy:'Het Trust Center blijft bewust leeg waar bron-, audit- of outcomebewijs ontbreekt. Powerhouse presenteert dit niet als bewezen.'});
+    return {primaryAction,blocks,derived:Boolean(sources.length||audit.length||outcomes.length)};
+  }
   if(pageId==='billing'){
     const billing=model?.portal?.admin?.billing ?? model?.admin?.billing ?? null;
     const hasBilling=Boolean(billing&&typeof billing==='object'&&(billing.plan||billing.status));
