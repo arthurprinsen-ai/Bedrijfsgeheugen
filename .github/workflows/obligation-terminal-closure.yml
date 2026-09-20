@@ -267,6 +267,8 @@ jobs:
           let prNumber=Number(process.env.PR_NUMBER);
           if(!Number.isInteger(prNumber)||prNumber<1) throw new Error('TERMINAL_PR_NUMBER_INVALID');
 
+          // Legacy failure fingerprint retained for historical replay/learning compatibility:
+          // UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS
           const expected=[];
           const visited=new Set();
           let depth=0;
