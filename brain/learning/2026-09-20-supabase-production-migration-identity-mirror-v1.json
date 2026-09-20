@@ -1,0 +1,31 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "supabase-production-migration-identity-mirror-v1",
+  "compiler": {
+    "failure_class": "MIGRATION_IDENTITY_DRIFT",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Repository migration filename 20260920111000_admin_composio_key_onboarding.sql did not match the actual production Supabase migration identity 20260920112118_admin_composio_key_onboarding after direct production application.",
+  "prevention": [
+    "Production migration history is authoritative for an already-applied migration identity.",
+    "If a production migration is applied before repository reconciliation, the repository filename must be updated to the exact production version before terminal closure.",
+    "Never rewrite production migration history merely to fit a stale repository filename.",
+    "Terminal migration readback must compare both exact version and exact name."
+  ],
+  "evidence": [
+    "supabase/migrations/20260920112118_admin_composio_key_onboarding.sql",
+    "tests/brain-supabase-production-migration-identity-mirror.test.mjs"
+  ],
+  "tests": [
+    "tests/brain-supabase-production-migration-identity-mirror.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "supabase"
+  ],
+  "skill_projection_required": true
+}
