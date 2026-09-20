@@ -257,7 +257,9 @@ Fingerprint: `delivery|supabase-migration-identity|production-mirror|v1`.
 When a Supabase migration has already been applied in production, production migration history is the canonical identity. The repository must mirror the exact production `version` and `name` before terminal success.
 
 Mandatory:
-- compare both migration version and name;
+- compare migration version, name, and effective contract semantics;
 - never mutate production migration history just to fit a stale repo filename;
 - if a direct production apply generated a different version, rename/reconcile the repository migration to that exact production version;
-- treat version/name drift as recoverable incomplete state, not `LIVE_BEWEZEN`.
+- when multiple applied versions share the same semantic migration name, identify the latest effective applied version whose statements match the current production contract; never stop at the first matching name;
+- reject repository filenames that represent superseded production identities for the same semantic migration;
+- treat version/name/semantic drift as recoverable incomplete state, not `LIVE_BEWEZEN`.
