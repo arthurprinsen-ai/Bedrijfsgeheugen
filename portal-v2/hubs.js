@@ -7,7 +7,7 @@ const PORTAL_CORE = Object.freeze([
   'wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen',
   'os:impact-engine','os:scenario-simulator','os:next-best-actions','os:monitoring-learning','os:evidence-health','os:capability-graph'
 ]);
-const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','os:evidence-health','os:capability-graph']);
+const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center','os:evidence-health','os:capability-graph']);
 const TASKS = Object.freeze(['taken-werkstromen','actieve-acties','roadmap','recovery-obligations','outcomes-evidence','wijzigingen','advies','os:next-best-actions','os:monitoring-learning','os:scenario-simulator']);
 const MORE = Object.freeze(['gebruikers','documenten','instellingen','billing','frisse-blik','audit','audittrail','compliance-governance','compliance-command-center','learning-writeback','self-heal']);
 
