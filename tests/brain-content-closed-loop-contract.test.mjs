@@ -132,9 +132,9 @@ test('autonomous improvement fixes executor rather than weakening immutable iden
 });
 
 
-test('closed loop freezes Instagram winner before media materialization', async () => {
-  const loop = await readFile('supabase/functions/powerhouse-content-loop/index.ts', 'utf8');
-  const orchestrator = await readFile('supabase/functions/powerhouse-content-orchestrator/index.ts', 'utf8');
+test('closed loop freezes Instagram winner before media materialization', () => {
+  const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
+  const orchestrator = read('supabase/functions/powerhouse-content-orchestrator/index.ts');
   assert.match(loop, /powerhouse_select_instagram_daily_winner_v1/);
   assert.match(loop, /powerhouse_ensure_instagram_media_job_v1/);
   assert.ok(loop.indexOf('powerhouse_select_instagram_daily_winner_v1') < loop.indexOf('powerhouse-instagram-media-router'));
