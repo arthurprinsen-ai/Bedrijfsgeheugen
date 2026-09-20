@@ -56,8 +56,33 @@ function recommendationScore(row:any, channel:string) {
   if (channel === 'instagram_company' && (target === 'instagram' || topic.includes('instagram'))) score += 120;
   return score;
 }
+function recommendationEligible(row:any, channel:string) {
+  const target = clean(row?.target_channel).toLowerCase();
+  const topic = clean(row?.topic_key).toLowerCase();
+  const evidence = row?.evidence || {};
+  if (!['suggested',''].includes(clean(row?.status))) return false;
+  if (channel === 'linkedin_company') {
+    if (target === 'linkedin_personal' || topic.includes('linkedin_personal')) return false;
+    if (evidence?.identity_contract === PERSONAL_CONTRACT || evidence?.personal_truth_verified === true) return false;
+    return !target || target === 'cross-channel' || target === 'linkedin' || target === 'linkedin_company' || target === 'company';
+  }
+  if (channel === 'blog') return !target || target === 'cross-channel' || target === 'blog';
+  if (channel === 'instagram_company') return target === 'instagram' || target === 'instagram_company' || target === 'cross-channel';
+  return true;
+}
 function pickRecommendation(recs:any[], channel:string) {
-  return [...(recs || [])].filter((r)=>['suggested',''].includes(clean(r?.status))).sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
+  return [...(recs || [])]
+    .filter((r)=>recommendationEligible(r,channel))
+    .sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
+}
+function personalFinalCopyValid(body:string, sourceText:string) {
+  const text=clean(body).toLowerCase();
+  const source=clean(sourceText).toLowerCase();
+  const hasFirstPerson=/\bik\b|\bmijn\b|\bme\b/.test(text);
+  const anchors=['printer','08:07','08:10','cyaan'].filter(x=>source.includes(x));
+  const preserved=anchors.length===0 || anchors.filter(x=>text.includes(x)).length>=Math.min(2,anchors.length);
+  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|management|ondernemer|organisatie|proces|digitalisering/i.test(body);
+  return hasFirstPerson && preserved && noBusinessBridge;
 }
 function hardBoundary(channel:string, reason?:string) {
   const capabilityReason = reason || executor_capabilities[channel]?.reason || 'NO_AUTHORIZED_EXECUTOR';
@@ -173,15 +198,36 @@ Deno.serve(async (req) => {
     if (pending.channel === 'linkedin_personal' && !personalSource) throw new Error('PERSONAL_TRUTH_SOURCE_UNVERIFIED');
     if (pending.channel === 'instagram_company' && !instagramVisibleIdentityProven(instagramProof)) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
 
-    const recommendation = pending.delivery_evidence?.fallback_recommendation_id ? recs.find((r:any)=>r.recommendation_id===pending.delivery_evidence.fallback_recommendation_id) : pickRecommendation(recs,pending.channel);
+    const recommendation = pending.delivery_evidence?.fallback_recommendation_id
+      ? recs.find((r:any)=>r.recommendation_id===pending.delivery_evidence.fallback_recommendation_id && recommendationEligible(r,pending.channel)) || pickRecommendation(recs,pending.channel)
+      : pickRecommendation(recs,pending.channel);
+    let companyTrackingUrl:string|null=null;
+    if (pending.channel==='linkedin_company') {
+      const key=`li-company-${runDate.replaceAll('-','')}`;
+      companyTrackingUrl=`https://www.bedrijfsgeheugen.nl/g/${key}`;
+      const {error:linkError}=await db.from('bg_campaign_links').upsert({
+        key,destination:'https://www.bedrijfsgeheugen.nl/frisse-blik',campaign_key:`powerhouse-${runDate}-linkedin-company`,
+        status:'active',updated_at:new Date().toISOString()
+      },{onConflict:'key'});
+      if(linkError) throw new Error('COMPANY_TRACKING_LINK_WRITE_FAILED');
+    }
     const artifactTool = { name:'content_artifact',description:'Definitieve kanaaleigen content',input_schema:{type:'object',additionalProperties:false,properties:{title:{type:'string'},body:{type:'string'},cta:{type:'string'},hook_type:{type:'string'},focus_keyword:{type:'string'},meta_description:{type:'string'}},required:['title','body','cta','hook_type','focus_keyword','meta_description']}};
-    const system = pending.channel==='linkedin_personal' ? 'Schrijf uitsluitend uit de geverifieerde persoonlijke bron. Geen businessbrug, verkoop, verzonnen ervaring of zakelijke moraal.'
+    const system = pending.channel==='linkedin_personal'
+      ? 'Schrijf uitsluitend uit de geverifieerde persoonlijke bron. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen en minstens twee herkenbare bronankers behouden. Geen businessbrug, verkoop, managementles, verzonnen ervaring of zakelijke moraal.'
+      : pending.channel==='linkedin_company'
+      ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
       : pending.channel==='instagram_company' ? 'Schrijf Mira daily-life caption passend bij de reeds bewezen finale media. Geen interne kantoorproblemen of geforceerde businessmoraal.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
     stage = 'artifact-ai';
     const artifact = await callAI(apiKey,gov.model_id,system,{channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,
-      verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules},artifactTool,pending.channel==='blog'?4800:2600);
-    const bodyText = clean(artifact.body), finalTextHash = await digest(bodyText);
+      tracking_url:companyTrackingUrl,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules},artifactTool,pending.channel==='blog'?4800:2600);
+    let bodyText = clean(artifact.body);
+    if (pending.channel==='linkedin_personal' && !personalFinalCopyValid(bodyText,clean(personalSource?.evidence?.source_text))) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
+    if (pending.channel==='linkedin_company') {
+      if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
+      if (/printer|08:07|08:10|cyaan/i.test(bodyText) && clean(recommendation?.topic_key).toLowerCase().includes('linkedin_personal')) throw new Error('COMPANY_PERSONAL_CONTENT_LEAK_BLOCKED');
+    }
+    const finalTextHash = await digest(bodyText);
     const personalEvidence = pending.channel==='linkedin_personal' ? {...(personalSource.evidence||{}),content_id:clean(personalSource.evidence?.content_id)||`${runDate}:linkedin_personal`,calendar_date:runDate,
       channel_id:PERSONAL_CHANNEL,channel_kind:'linkedin_personal',identity_contract:PERSONAL_CONTRACT,identity_gate_version:PERSONAL_GATE,personal_truth_verified:true,
       prediction_lineage_present:true,prior_prediction_decision_id:`decision:${runDate}:linkedin_personal`,publication_intent:'publish',final_text_hash:finalTextHash} : null;
