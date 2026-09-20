@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse-universal-agent-compliance-verification-v1",
+  "obligation_id": "powerhouse-universal-agent-compliance-verification-v1",
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "GOVERNANCE_ASSURANCE",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "User trust cannot rely on an agent claiming that logging, documentation, learning and skill updates happened. Assurance must come from fail-closed repository/runtime controls and terminal evidence that can be read back independently of the chat.",
+  "prevention_rule": "For every material Powerhouse execution routed through the canonical repository-backed delivery path, require Brain learning, append-only ledger evidence, human-readable documentation, semantic root-cause/prevention/evidence validation, automatic learning-to-skill projection, protected delivery and production/provider readback before terminal success. Treat any missing artifact or projection as WRITEBACK_INCOMPLETE or LEARNING_WRITTEN_SKILL_SYNC_PENDING, never LIVE_BEWEZEN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "canary": [
+      ".github/workflows/required-test.yml",
+      ".github/workflows/obligation-terminal-closure.yml"
+    ]
+  },
+  "evidence": [
+    "scripts/brain/material-writeback-closure-guard.mjs",
+    ".github/workflows/required-test.yml",
+    ".github/workflows/obligation-terminal-closure.yml",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "outcome": {
+    "status": "VERIFIED_ON_MAIN",
+    "verified_at": "2026-09-20T10:23:00+02:00",
+    "truth_boundary": "This verifies enforcement for material Powerhouse work that traverses the canonical repository-backed delivery/runtime path. It does not claim observability for arbitrary external actions that bypass that path."
+  }
+}
