@@ -36,6 +36,8 @@ test('geregistreerde money page krijgt schema conversion context en tracker', ()
   assert.ok(out.includes('data-bg-page-role="money"'));
   assert.ok(out.includes('data-bg-funnel-stage="decide"'));
   assert.ok(out.includes('data-bg-intent-role="primary"'));
+  assert.ok(out.includes('<meta name="bg-keyword-cluster" content="kosten digitalisering mkb">'));
+  assert.ok(out.includes('<meta name="bg-zoekwoord" content="kosten digitalisering mkb">'));
   assert.ok(out.includes(`data-bg-intent-owner="${ORIGIN}/prijzen"`));
   assert.ok(out.includes('id="bg-conversion-tracker"'));
   assert.equal(enrichRegisteredPage(out, entry), out, 'estate enrichment is idempotent');
