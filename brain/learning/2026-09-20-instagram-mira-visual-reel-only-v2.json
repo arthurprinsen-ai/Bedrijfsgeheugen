@@ -27,5 +27,10 @@
   },
   "skill_targets": [
     "instagram-composio-publisher"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs"
+    ]
+  }
 }

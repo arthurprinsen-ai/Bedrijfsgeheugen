@@ -28,7 +28,7 @@ const instagram=(extra={})=>authorizeSocialPublication({
 });
 
 const validInstagramVisual={
- verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-frame'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,
+ verified:true,miraPresent:true,genericBrandCreative:false,semanticVerified:true,evidenceMethod:'vision',dailyLifeScene:true,miraCentralSubject:true,textDominant:false,brandTemplateDominant:false,evidenceRefs:['vision:final-frame'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,
  identityClass:'mira_daily_life',formatVerified:true,width:1080,height:1350,colorSpace:'RGB',hasAlpha:false,
  decodeComplete:true,visualComplete:true,grayOrEmptyDetected:false
 };
