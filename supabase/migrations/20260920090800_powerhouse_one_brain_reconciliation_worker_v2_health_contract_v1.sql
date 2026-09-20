@@ -19,3 +19,7 @@ begin
   );
   execute 'create or replace view public.powerhouse_one_brain_runtime_health_v1 as ' || v_def;
 end $$;
+
+alter view public.powerhouse_one_brain_runtime_health_v1 set (security_invoker = true);
+revoke all on public.powerhouse_one_brain_runtime_health_v1 from public, anon, authenticated;
+grant select on public.powerhouse_one_brain_runtime_health_v1 to service_role;
