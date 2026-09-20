@@ -1,0 +1,22 @@
+{
+  "fingerprint": "postgres-view-replace-upgrade-column-order-v1",
+  "obligation_id": "terminal-autonomous-reconciler-v1",
+  "compiler": {
+    "failure_class": "MIGRATION_UPGRADE_COMPATIBILITY",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A fresh Supabase preview accepted the v2 view definition, but existing production already had the v1 view. CREATE OR REPLACE VIEW requires existing output columns to retain their names and order; inserting blocked_obligations before stale_planned_operations attempted an implicit column rename and PostgreSQL rejected the migration with 42P16.",
+  "prevention_rule": "For CREATE OR REPLACE VIEW on an existing canonical view, preserve the complete existing column prefix in the same order and append new columns only at the end, or use an explicitly reviewed drop/recreate migration when dependency impact is proven safe. Preview validation must include upgrade-path compatibility, not only fresh-schema validity.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-terminal-health-lifecycle-v2.test.mjs"],
+    "canary": ["tests/brain-terminal-health-lifecycle-v2.test.mjs"]
+  },
+  "outcome": {
+    "status": "CANDIDATE_VERIFIED",
+    "production_mutated_by_failed_attempt": false,
+    "postgres_error": "42P16"
+  }
+}
