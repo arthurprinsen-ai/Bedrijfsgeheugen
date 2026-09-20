@@ -1,0 +1,34 @@
+{
+  "fingerprint": "buffer-rate-limit-central-authority-v2",
+  "date": "2026-09-20",
+  "type": "EXTERNAL_SIDE_EFFECT_PREVENTION",
+  "failure_class": "RATE_LIMIT_RETRY_COULD_DUPLICATE_EXTERNAL_PUBLICATION",
+  "scope": "SOCIAL_PUBLISHING_RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "buffer-rate-limit-circuit-breaker-v2",
+  "root_cause": "A Buffer 429 could occur during provider reconciliation or immediately after provider create. Without a persistent cooldown and persisted provider create identity, repeated runs could keep polling or recreate a post while external truth was still uncertain.",
+  "prevention_rule": "Persist Retry-After as canonical cooldown, suppress LinkedIn Buffer polling during that window, persist provider post id immediately after create, and never recreate after uncertain readback. Reconcile provider truth later. Instagram direct Composio authority remains independent.",
+  "enforcement": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/brain-buffer-rate-limit-central-authority-v2.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-buffer-rate-limit-central-authority-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-buffer-rate-limit-central-authority-v2.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "instagram-composio-publisher"
+  ],
+  "evidence": {
+    "previous_incident": "Buffer 429 caused repeated reconciliation pressure and created duplicate-publication risk.",
+    "safe_retry_boundary": "Retry create only when no external provider side effect occurred; after create ack, preserve external id and reconcile.",
+    "authority_constraint": "Central social publication capability remains mandatory before external side effects."
+  }
+}
