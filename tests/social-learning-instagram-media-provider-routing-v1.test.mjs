@@ -56,8 +56,7 @@ test('Instagram media job table is registered as a quality surface',()=>{
 
 test('content loop invokes Instagram router as real TypeScript before publish',()=>{
  assert.match(contentLoop,/stepResults\.push\(await invoke\(url, expected, 'powerhouse-instagram-media-router', \{ runDate \}\)\);/);
- assert.doesNotMatch(contentLoop,/dispatch\.
-\s*stepResults/);
+ assert.doesNotMatch(contentLoop,/dispatch\.[\s\S]*stepResults/);
 });
 
 test('materialized provider asset cannot regress to waiting-provider-connection',()=>{
