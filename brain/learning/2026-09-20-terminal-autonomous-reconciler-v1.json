@@ -1,0 +1,38 @@
+{
+  "fingerprint": "terminal-autonomous-reconciler-v1",
+  "date": "2026-09-20",
+  "status": "CANDIDATE_VERIFIED",
+  "root_cause": "Detection, ownership, recovery and terminal verification were separate mechanisms without one aggregate fail-closed terminal invariant. In addition, the replay-window optimizer reused the configured 12-hour safe floor as both champion and challenger, making challenger_window < champion_window impossible and recreating a false insufficient-evidence blocker after promotion.",
+  "evidence": {
+    "pr": 2440,
+    "candidate_head": "pending_exact_head",
+    "supabase_preview_contract": "success_on_1472f820358bbd69ddd934148ee404c7325a76cf",
+    "supabase_security_contract": "success_on_1472f820358bbd69ddd934148ee404c7325a76cf",
+    "public_rls_guard": "success_on_1472f820358bbd69ddd934148ee404c7325a76cf",
+    "autonomous_improvement_completion_gate": "success_on_1472f820358bbd69ddd934148ee404c7325a76cf"
+  },
+  "truth_boundary": "Candidate is not LIVE_PROVEN until protected merge, versioned production migration application, cron/function/view readback and runtime health readback succeed.",
+  "obligation_id": "terminal-autonomous-reconciler-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "prevention_rule": "Aggregate control-plane health fails closed on GREEN_STALE, ESCALATED reconciliation or stale PLANNED work; only explicitly NOT_STARTED side-effect-free internal work can be auto-requeued; obligations never auto-fulfil without outcome evidence; production and preview health remain separate signals; an already-proven optimization at the 12-hour safe floor is a terminal idempotent no-op.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-autonomous-reconciler-v1.test.mjs",
+      "tests/brain-autonomous-improvement-floor-terminal-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-autonomous-reconciler-v1.test.mjs",
+      "tests/brain-autonomous-improvement-floor-terminal-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "status": "CANDIDATE_VERIFIED",
+    "truth_boundary": "Do not promote to LIVE_PROVEN before protected merge, versioned production migration, active cron readback and functional runtime readback."
+  }
+}
