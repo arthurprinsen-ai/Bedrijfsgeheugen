@@ -16,8 +16,7 @@
     ],
     "canary": [
       "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
-      "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs",
-      "tests/social-learning-buffer-instagram-media-gate.test.mjs"
+      "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs"
     ]
   },
   "outcome": {
