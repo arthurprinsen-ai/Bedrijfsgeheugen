@@ -35,5 +35,5 @@ as $$
   );
 $$;
 
-revoke all on function public.powerhouse_system_map_inventory_v1() from public, anon, authenticated;
+revoke execute on function public.powerhouse_system_map_inventory_v1() from public, anon, authenticated;
 grant execute on function public.powerhouse_system_map_inventory_v1() to service_role;
