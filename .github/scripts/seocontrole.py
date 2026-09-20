@@ -187,10 +187,8 @@ def claimt(zoekwoord, pagina):
     """
     woorden = [w for w in zoekwoord.split() if w not in ('van', 'de', 'het', 'een', 'in', 'je')]
     expliciet = norm(pagina.get('zoekwoord', ''))
-    if expliciet:
-        expliciet_woorden = expliciet.split()
-        if not all(any(d.startswith(w[:max(4, len(w) - 2)]) for d in expliciet_woorden) for w in woorden):
-            return False
+    if expliciet and expliciet != norm(zoekwoord):
+        return False
     doel = norm(zonder_merk(pagina['titel'])) + ' ' + norm(' '.join(pagina['h1']))
     return all(any(d.startswith(w[:max(4, len(w) - 2)]) for d in doel.split()) for w in woorden)
 
@@ -396,6 +394,10 @@ def main():
             if naam in ('404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt'):
                 continue
             if 'noindex' in p['ruw']:
+                continue
+            canonical_path = urlparse(p.get('canon', '')).path.rstrip('/') or '/'
+            current_path = url.rstrip('/') or '/'
+            if p.get('canon') and canonical_path != current_path:
                 continue
             if url.rstrip('/') and url.rstrip('/') not in in_sitemap:
                 bevindingen.append(('hoog', url, 'staat niet in sitemap.xml'))
