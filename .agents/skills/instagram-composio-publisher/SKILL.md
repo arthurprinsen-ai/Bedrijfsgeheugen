@@ -144,3 +144,10 @@ Before any Instagram media generation or publication attempt, call/reuse the can
 - Publication authority fails closed on `INSTAGRAM_DAILY_WINNER_REQUIRED`, `INSTAGRAM_DAILY_WINNER_LINEAGE_MISMATCH`, `INSTAGRAM_DECISION_WINNER_LINEAGE_MISMATCH`, or winner/media-format mismatch.
 - A blocked media/provider boundary does not permit selection of a second winner or fallback publication. Reuse the same winner and exact-media lineage when recovery becomes possible.
 - Metrics and learning must write back to the same winner row; do not attach outcomes to a different recommendation after publication.
+
+
+## Accepted daily-winner lifecycle
+
+Fingerprint: `instagram-accepted-winner-downstream-lineage-v1`.
+
+After the canonical selector freezes the daily Instagram winner it may transition that recommendation from `suggested` to `accepted`. Downstream orchestrator/publisher logic must continue to accept that exact recommendation only when its ID matches the persisted daily-winner row and `evidence.daily_winner=true`. This exception is winner-specific; generic recommendations keep the stricter suggested/empty eligibility rule. Never select a second winner because the frozen winner is already `accepted`.
