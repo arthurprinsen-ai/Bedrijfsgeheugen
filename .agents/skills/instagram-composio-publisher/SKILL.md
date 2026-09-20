@@ -191,3 +191,10 @@ Use `powerhouse-composio-instagram-setup` as the canonical bootstrap/status cont
 - never expose or log the Composio API key or Instagram OAuth credentials.
 
 Do not improvise direct provider auth or switch transport providers.
+
+
+## Admin-only Composio key onboarding
+
+Fingerprint: `admin-composio-key-onboarding-v1`.
+
+Use `/api/powerhouse-composio-config` through the authenticated Powerhouse admin surface to onboard or rotate `COMPOSIO_API_KEY`. The browser may send the key once over TLS but must never persist it. Netlify Identity + `isPowerhouseAdmin` is the human boundary; `x-bg-service-token` is the server-to-server boundary; `powerhouse_set_composio_api_key_v1` is the only allowed Vault writer and can mutate only `COMPOSIO_API_KEY`. Validate the candidate key against Composio before storage.
