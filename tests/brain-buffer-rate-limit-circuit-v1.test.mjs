@@ -9,6 +9,8 @@ test('Buffer 429 opens a persistent circuit and preserves LinkedIn content_ready
   assert.match(source,/openBufferCircuit/);
   assert.match(source,/buffer_retry_at/);
   assert.match(source,/BUFFER_RATE_LIMITED/);
+  assert.match(source,/record_type:'CurrentState',record_kind:'current_state'/);
+  assert.doesNotMatch(source,/record_type:'RuntimeState'|record_kind:'runtime_state'/);
   assert.match(source,/state:'content_ready'/);
   assert.match(source,/deferred_rate_limit/);
 });
