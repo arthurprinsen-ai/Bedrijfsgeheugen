@@ -314,3 +314,13 @@ Every chat, agent and runtime worker treats terminal control-plane health as a f
 - Reuse `public.powerhouse_terminal_control_plane_health_v1` and `public.powerhouse_terminal_autonomous_reconcile_v1`; do not create a second health truth or recovery scheduler.
 
 Canonical source: `brain/learning/2026-09-20-terminal-autonomous-reconciler-v1.json`.
+
+
+### Terminal health lifecycle v2
+
+- Current runtime health and historical proof are separate. Only an explicitly versioned desired state with `desired_state.lifecycle=RETIRED` is excluded from current truth health.
+- Retirement preserves the historical `brain_production_truth`; never create a fresh observation just to turn a retired proof green.
+- Current `BLOCKED` obligations and active `GREEN_STALE`, `DRIFTED`, or `UNKNOWN` production truth keep `control_plane_healthy=false`.
+- An ESCALATED reconciliation can auto-resolve when its underlying operation is already terminal (`VERIFIED` or `COMPENSATED`).
+- A historical `selftest-*` may be compensated only when it is still `PLANNED`, older than 24h, `dispatch_generation=0`, and has no `remote_ref`; compensation means “did not execute”, never “succeeded”.
+- Use the same canonical reconciler and health view. Do not create a parallel lifecycle monitor.
