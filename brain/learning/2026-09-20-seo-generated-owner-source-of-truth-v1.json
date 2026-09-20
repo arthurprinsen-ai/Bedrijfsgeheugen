@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "seo-generated-owner-source-of-truth-v1",
+  "compiler": {
+    "failure_class": "SEO",
+    "scope": "website",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Four high-severity SEO ownership findings survived because V18 production generators rewrote page titles and explicit bg keyword ownership from stale tools/zoekwoorden.mjs and V18 view metadata after source HTML had been corrected.",
+  "prevention": [
+    "Generated routes must derive keyword ownership and title overrides from the same canonical SEO registry semantics as the audit.",
+    "V18 view metadata must not carry conflicting legacy keyword ownership for routes also governed by tools/zoekwoorden.mjs.",
+    "Regression coverage must pin generator-level ownership for /blog/, /investeerders-ma, /product and /systemen-koppelen."
+  ],
+  "evidence": [
+    "tools/zoekwoorden.mjs",
+    "tools/v18-views-lijst.mjs",
+    "tests/brain-seo-generated-owner-source-of-truth.test.mjs",
+    "Pagina/SEO diagnose run 35533314225"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs",
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "seo-growth",
+    "website-release"
+  ],
+  "skill_projection_required": true
+}
