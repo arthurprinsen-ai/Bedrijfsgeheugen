@@ -188,3 +188,10 @@ Parallel development is encouraged; duplicate execution is forbidden.
 - Serialize only the mutable landing boundary. Keep independent development and gates parallel.
 
 Optimize time-to-terminal-proof per runner/credit/energy unit: reuse, dedupe, cheap admission first, then bounded parallel expensive work.
+
+
+## Buffer 429 idempotency under central publication authority
+
+Fingerprint: `buffer-rate-limit-central-authority-v2`.
+
+Persist Buffer Retry-After as canonical cooldown and suppress repeated provider polling during that window. After Buffer create acknowledgement, persist the provider post id before readback; a rate-limited or uncertain readback may never trigger a replacement create. Reconcile provider truth later. Buffer cooldown applies to Buffer-backed LinkedIn lanes and must not hijack Instagram's direct Mira/Composio authority.
