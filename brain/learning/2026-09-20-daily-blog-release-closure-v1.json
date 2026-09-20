@@ -32,5 +32,12 @@
     "initial_gate_failures": "Missing metadata plus technical SEO contract failures and Lighthouse performance below threshold.",
     "repair": "Machine metadata restored, SEO contract brought to 100 and third-party render blockers removed from the article critical path.",
     "truth_rule": "Generated or previewed is not published; public production readback is required."
+  },
+  "compiler": {
+    "failure_class": "DAILY_CONTENT_GENERATED_WITHOUT_RELEASE_AND_LEARNING_CLOSURE",
+    "scope": "WEBSITE_CI_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
