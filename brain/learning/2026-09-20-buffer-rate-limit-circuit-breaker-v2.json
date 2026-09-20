@@ -1,6 +1,6 @@
 {
   "fingerprint": "buffer|rate-limit|provider-create-idempotency|v2",
-  "obligation_id": "buffer-rate-limit-circuit-breaker-v2",
+  "obligation_id": "buffer-rate-limit-circuit-breaker-v1",
   "compiler": {
     "failure_class": "BUFFER_429_CAN_REPEAT_EXTERNAL_SIDE_EFFECT",
     "scope": "RUNTIME",
