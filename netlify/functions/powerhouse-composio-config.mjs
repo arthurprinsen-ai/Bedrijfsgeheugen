@@ -27,7 +27,7 @@ export default async request=>{
     try{body=await request.json()}catch{return reply({error:'INVALID_JSON'},400)}
   }
   const action=String(body?.action||'status').trim();
-  if(!['status','set_api_key','create_link'].includes(action))return reply({error:'INVALID_ACTION'},400);
+  if(!['status','set_api_key','create_link','resume'].includes(action))return reply({error:'INVALID_ACTION'},400);
   const payload={action};
   if(action==='set_api_key'){
     const apiKey=String(body?.apiKey||'').trim();
