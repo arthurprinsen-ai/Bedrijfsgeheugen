@@ -62,8 +62,6 @@ begin
     )
   order by
     r.priority desc,
-    coalesce((r.evidence->>'commercial_problem_fit')::numeric,0) desc,
-    coalesce((r.evidence->>'share_trigger')::numeric,0) desc,
     r.updated_at desc,
     r.recommendation_id
   limit 1
@@ -89,7 +87,7 @@ begin
       'content_key',v_rec.content_key,
       'recommendation_type',v_rec.recommendation_type,
       'reason',v_rec.reason,
-      'ranking','priority_desc_then_commercial_problem_fit_then_share_trigger_then_updated_at_then_id',
+      'ranking','priority_desc_then_updated_at_then_id',
       'mira_persona',true,
       'daily_life',true,
       'selected_evidence',v_rec.evidence
