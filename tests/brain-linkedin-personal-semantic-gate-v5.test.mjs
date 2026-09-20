@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {CHANNELS,authorizeSocialPublication} from '../platform/social-channel-identity-gate.mjs';
 
-const lineage={contentId:'brain-personal-v5',calendarDate:'2026-09-19',predictionId:'pred-v5',sourceDecisionId:'decision-v5'};
+const lineage={contentId:'brain-personal-v5',calendarDate:'2026-09-20',predictionId:'pred-v5',sourceDecisionId:'decision-v5'};
 const personalTruth={class:'author_observation',verified:true,evidenceRefs:['brain:linkedin-personal-semantic-gate-v5']};
 const run=(text)=>authorizeSocialPublication({
   channelKind:'linkedin_personal',
@@ -23,6 +23,25 @@ test('weekend wrapper cannot turn leadership thought-leadership into personal co
   const result=run('Mijn weekendgedachte: leiderschap gaat over strategie concreet maken.');
   assert.equal(result.authorized,false);
   assert.ok(result.reasons.includes('CONSULTANT_VOICE_ON_PERSONAL')||result.reasons.includes('BUSINESS_CONTENT_ON_PERSONAL'));
+});
+
+test('explicit business exception can never bypass personal-life-only policy',()=>{
+  const result=authorizeSocialPublication({
+    channelKind:'linkedin_personal',
+    channelId:CHANNELS.linkedin_personal.channelId,
+    text:'Ik zat thuis en dacht aan mijn klant en Bedrijfsgeheugen.',
+    lineage,
+    personalTruth,
+    companyPageInterchangeable:false,
+    businessException:{explicitUserRequest:true,contentId:lineage.contentId,singleUse:true}
+  });
+  assert.equal(result.authorized,false);
+  assert.ok(result.reasons.includes('BUSINESS_CONTENT_ON_PERSONAL'));
+});
+
+test('personal family and sport frustration remains allowed',()=>{
+  const result=run('Ik stond vanochtend thuis met mijn zoon zijn hockeyspullen te zoeken. Natuurlijk lag alles op de plek waar ik al drie keer had gekeken.');
+  assert.equal(result.authorized,true);
 });
 
 test('concrete harmless lived personal event remains allowed',()=>{
