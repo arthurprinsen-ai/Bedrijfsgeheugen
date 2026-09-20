@@ -18,21 +18,23 @@ retired_truth as (
   where coalesce(ds.desired_state->>'lifecycle','ACTIVE') = 'RETIRED'
 )
 select
+  -- Preserve the v1 column prefix/order for CREATE OR REPLACE VIEW upgrade compatibility.
   now() as observed_at,
   (select count(*) from public.brain_obligations where state in ('OPEN','READY','RUNNING','BLOCKED')) as nonterminal_obligations,
-  (select count(*) from public.brain_obligations where state='BLOCKED') as blocked_obligations,
   (select count(*) from public.brain_operations where status='PLANNED' and updated_at < now() - interval '15 minutes') as stale_planned_operations,
   (select count(*) from public.brain_reconciliation_jobs where state='ESCALATED') as escalated_reconciliation_jobs,
   (select count(*) from active_truth where status='GREEN_STALE') as stale_green_truths,
-  (select count(*) from active_truth where status in ('DRIFTED','UNKNOWN')) as non_green_active_truths,
-  (select count(*) from retired_truth) as retired_truths,
   (
     (select count(*) from public.brain_obligations where state='BLOCKED') = 0
     and (select count(*) from public.brain_reconciliation_jobs where state='ESCALATED') = 0
     and (select count(*) from public.brain_operations where status='PLANNED' and updated_at < now() - interval '15 minutes') = 0
     and (select count(*) from active_truth where status='GREEN_STALE') = 0
     and (select count(*) from active_truth where status in ('DRIFTED','UNKNOWN')) = 0
-  ) as control_plane_healthy;
+  ) as control_plane_healthy,
+  -- v2 columns are append-only to keep existing view consumers and PostgreSQL replacement semantics stable.
+  (select count(*) from public.brain_obligations where state='BLOCKED') as blocked_obligations,
+  (select count(*) from active_truth where status in ('DRIFTED','UNKNOWN')) as non_green_active_truths,
+  (select count(*) from retired_truth) as retired_truths;
 
 revoke all on public.powerhouse_terminal_control_plane_health_v1 from public, anon, authenticated;
 grant select on public.powerhouse_terminal_control_plane_health_v1 to service_role;
