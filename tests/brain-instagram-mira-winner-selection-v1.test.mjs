@@ -45,3 +45,9 @@ test('winner flow stays server-only and reuses canonical reconciliation/secret R
   assert.match(sql,/revoke execute on function public\.powerhouse_select_instagram_daily_winner_v1\(date\) from public, anon, authenticated/i);
   assert.doesNotMatch(loop,/console\.log\([^\n]*(token|secret|key)/i);
 });
+
+test('accepted frozen Instagram winner remains eligible downstream', async () => {
+  const orchestrator=await readFile('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+  assert.match(orchestrator,/\\['suggested','accepted',''\\]\\.includes\\(clean\\(row\\?\\.status\\)\\)/);
+  assert.match(orchestrator,/INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED/);
+});
