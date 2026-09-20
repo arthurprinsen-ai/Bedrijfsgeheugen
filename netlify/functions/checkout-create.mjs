@@ -1,3 +1,4 @@
+import {billingReadiness} from '../../platform/saas/billing-readiness.mjs';
 import {createPortalProjectStore} from './_portal-project-store.mjs';
 
 const out=(status,body)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -9,8 +10,9 @@ export default async request=>{
   if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||company.length<2)return out(400,{error:'invalid_request'});
   const plan=await createPortalProjectStore().getPlan(code);
   if(!plan||!plan.direct_checkout||!plan.monthly_price_cents)return out(400,{error:'plan_not_self_serve'});
+  const readiness=billingReadiness();
+  if(!readiness.selfServeAvailable)return out(503,{error:'billing_not_configured'});
   const key=process.env.STRIPE_SECRET_KEY;
-  if(!key)return out(503,{error:'billing_not_configured'});
   const origin=new URL(request.url).origin;
   const p=new URLSearchParams();
   p.set('mode','subscription');

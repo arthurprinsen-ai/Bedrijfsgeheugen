@@ -1,6 +1,6 @@
 {
   "type": "POWERHOUSE_LEARNING",
-  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v2",
+  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v3",
   "fingerprint": "saas-pricing-checkout-entitlements-closure-v1",
   "status": "CANDIDATE",
   "compiler": {
@@ -20,7 +20,9 @@
     "Iedere materiële PR krijgt bij creatie volledige Powerhouse delivery metadata inclusief immutable Base-SHA.",
     "Entitlements worden server-side afgedwongen; browser/UI gating is nooit de security authority.",
     "Pricing leest commerciële waarheid uit één canonical planmodel zodat prijs, checkout en runtime entitlement niet kunnen driften.",
-    "Alle betaalde runtime-capabilities gebruiken één centrale fail-closed entitlement-policy; stores en handlers mogen planlogica niet opnieuw hardcoden."
+    "Alle betaalde runtime-capabilities gebruiken één centrale fail-closed entitlement-policy; stores en handlers mogen planlogica niet opnieuw hardcoden.",
+    "Self-service checkout mag pas beschikbaar zijn als zowel provider-secret als webhook-secret aantoonbaar aanwezig zijn; één secret is onvoldoende.",
+    "Elke nieuwe runtime surface moet in dezelfde lineage aan de canonieke System Map-inventaris worden toegevoegd; anders is delivery onvolledig."
   ],
   "regression_contract": [
     "tests/saas-pricing-entitlements.test.mjs",
@@ -33,7 +35,9 @@
     "Powerhouse Quality Intelligence Surface Gate green after SaaS tables/functions registration.",
     "Canonical brand shell full build exposed and then closed the two-H1 checkout defect.",
     "BRAIN admission accepted exact head after complete delivery metadata was added.",
-    "V2 centraliseert subscription-status, numerieke limieten, booleans en agent modes in platform/saas/entitlement-policy.mjs."
+    "V2 centraliseert subscription-status, numerieke limieten, booleans en agent modes in platform/saas/entitlement-policy.mjs.",
+    "Billing readiness is now a first-class fail-closed contract with a secret-safe public readiness projection.",
+    "PR #2502 first failed BRAIN because checkout-readiness.mjs was missing from the canonical System Map inventory; the inventory was updated on the same candidate."
   ],
   "evaluation": {
     "historical_replay": [
