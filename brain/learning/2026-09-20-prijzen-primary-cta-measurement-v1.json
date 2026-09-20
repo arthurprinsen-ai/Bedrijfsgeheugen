@@ -1,0 +1,31 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "prijzen-primary-cta-measurement-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_SEO_CONVERSION_CONTRACT_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The native pricing page visually contained the Frisse Blik CTA but its canonical primary CTA lacked the SEO/growth measurement attributes required by the money-page production contract.",
+  "prevention": [
+    "Native money pages must expose the registry primary_cta as an absolute internal URL with data-bg-conversion, data-bg-page-role and data-bg-funnel-stage.",
+    "Production readback remains fail-closed when the visual CTA exists but measurement semantics are absent.",
+    "Regression must bind the prices-page CTA to the SEO intent registry contract."
+  ],
+  "evidence": [
+    "prijzen.html",
+    "tools/seo-order-engine/money-contract-v2.mjs",
+    "tests/brain-prijzen-primary-cta-measurement.test.mjs"
+  ],
+  "evaluation": {
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "seo-order-engine",
+    "website-release"
+  ],
+  "skill_projection_required": true
+}
