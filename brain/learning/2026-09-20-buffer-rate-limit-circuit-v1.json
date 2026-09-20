@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "buffer-rate-limit-circuit-v1",
+  "compiler": {
+    "failure_class": "CONNECTOR_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The social publisher returned immediately on Buffer HTTP 429 without persisting provider reset state. Because the canonical content loop runs every five minutes, subsequent runs could hit Buffer again before Retry-After elapsed, wasting calls while LinkedIn remained undelivered.",
+  "prevention": [
+    "Persist Buffer Retry-After as a canonical runtime circuit state.",
+    "Skip Buffer audit and LinkedIn dispatch while the circuit is open.",
+    "Keep LinkedIn decisions content_ready and idempotent; do not regenerate or duplicate posts.",
+    "Allow the independent Instagram Composio lane to continue while Buffer is rate-limited.",
+    "Let the existing canonical closed loop resume Buffer delivery automatically after retry_at."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+  ],
+  "tests": [
+    "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "social",
+    "resource-sustainability"
+  ],
+  "skill_projection_required": true,
+  "production_readback": "Pending protected merge, exact-main Supabase deployment and live 429 circuit readback."
+}

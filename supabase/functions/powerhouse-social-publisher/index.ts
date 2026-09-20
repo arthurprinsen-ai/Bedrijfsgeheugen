@@ -107,6 +107,49 @@ async function deletePost(token: string, id: string) { const body = await buffer
 async function review(url: string, payload: any) { const response = await fetch(`${url}/functions/v1/bg-pre-publish-review`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }); const body = await response.json().catch(() => ({})); return { http: response.status, ...body }; }
 async function recordObligation(db: any, runDate: string, channel: string, status: string, externalId: string | null, evidence: any, nextAction: string | null, error: string | null = null) { const mapped = obligationChannels[channel]; if (!mapped) return; const { error: rpcError } = await db.rpc('record_content_publication_state', { p_tenant_id: 'canonical', p_publication_date: runDate, p_channel: mapped, p_status: status, p_content_id: null, p_slug: null, p_external_id: externalId, p_canonical_url: null, p_evidence: evidence || {}, p_metrics: {}, p_next_action: nextAction, p_error: error }); if (rpcError) throw new Error(`OBLIGATION_WRITE:${rpcError.message}`); }
 
+const BUFFER_CIRCUIT_RECORD='buffer-rate-limit-circuit-v1';
+function parseRetrySeconds(value:unknown){
+  const n=Number.parseInt(clean(value),10);
+  return Number.isFinite(n)&&n>0?Math.min(n,172800):900;
+}
+async function readBufferCircuit(db:any){
+  const {data,error}=await db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id',BUFFER_CIRCUIT_RECORD).maybeSingle();
+  if(error) throw new Error(`BUFFER_CIRCUIT_READ:${error.message}`);
+  const retryAt=clean(data?.result?.retry_at);
+  const active=!!retryAt && Date.parse(retryAt)>Date.now();
+  return {active,retry_at:retryAt||null,retry_after_seconds:Number(data?.result?.retry_after_seconds||0)};
+}
+async function openBufferCircuit(db:any,retryAfter:unknown,source:string){
+  const seconds=parseRetrySeconds(retryAfter);
+  const retryAt=new Date(Date.now()+seconds*1000).toISOString();
+  const now=new Date().toISOString();
+  const result={state:'OPEN',provider:'buffer',reason:'HTTP_429',retry_after_seconds:seconds,retry_at:retryAt,source,opened_at:now};
+  const {error}=await db.from('brain_records').upsert({
+    tenant_id:'canonical',record_id:BUFFER_CIRCUIT_RECORD,record_type:'RuntimeState',record_kind:'runtime_state',subject_id:'buffer',
+    status:'IN_PROGRESS',observed_at:now,executed:true,verified:false,result,payload:{provider:'buffer',fingerprint:'buffer-rate-limit-circuit-v1'},
+    idempotency_key:BUFFER_CIRCUIT_RECORD,source_revision:'powerhouse-social-publisher',stored_at:now,updated_at:now
+  },{onConflict:'tenant_id,record_id'});
+  if(error) throw new Error(`BUFFER_CIRCUIT_WRITE:${error.message}`);
+  return {active:true,...result};
+}
+async function markLinkedInRateLimited(db:any,runDate:string,circuit:any){
+  const {data:rows,error}=await db.from('powerhouse_channel_decisions')
+    .select('channel,delivery_evidence')
+    .eq('run_date',runDate)
+    .eq('decision','publish')
+    .in('channel',['linkedin_personal','linkedin_company'])
+    .in('state',['content_ready','dispatching']);
+  if(error) throw new Error(`BUFFER_RATE_LIMIT_DECISION_READ:${error.message}`);
+  for(const row of rows||[]){
+    const evidence={...(row.delivery_evidence||{}),provider:'buffer',buffer_rate_limited:true,buffer_retry_at:circuit.retry_at,
+      buffer_retry_after_seconds:circuit.retry_after_seconds,provider_truth_verified:false,error:'BUFFER_RATE_LIMITED'};
+    await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+      .eq('run_date',runDate).eq('channel',row.channel);
+    await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,
+      `Buffer rate limit open until ${circuit.retry_at}; canonical closed loop retries automatically after reset.`,'BUFFER_RATE_LIMITED');
+  }
+}
+
 async function issuePublishCapability(db:any,runDate:string,channel:string,textHash:string,mediaSha:string){
   const policyVersion=channel==='instagram_company'?PUBLICATION_AUTHORITY+'|'+INSTAGRAM_POLICY:PUBLICATION_AUTHORITY+'|'+GATE;
   const {data,error}=await db.rpc('powerhouse_issue_social_publish_capability_v1',{
@@ -265,9 +308,25 @@ Deno.serve(async (req) => {
   if (integrationError || !integration?.token) return json({ ok: false, error: 'BUFFER_TOKEN_MISSING' }, 503);
   const bufferToken = integration.token;
 
-  const containment_sweep = await containmentSweepInstagram(db, bufferToken);
-  const provider_reconciliation = await reconcileExistingProviderTruth(db, bufferToken, runDate);
-  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation });
+  let bufferCircuit = await readBufferCircuit(db);
+  let containment_sweep:any = { skipped:false };
+  let provider_reconciliation:any[] = [];
+  if (!bufferCircuit.active) {
+    try {
+      containment_sweep = await containmentSweepInstagram(db, bufferToken);
+      provider_reconciliation = await reconcileExistingProviderTruth(db, bufferToken, runDate);
+    } catch (error) {
+      if (error instanceof BufferHttpError && error.status === 429) {
+        bufferCircuit = await openBufferCircuit(db,error.retryAfter,'provider-audit');
+        await markLinkedInRateLimited(db,runDate,bufferCircuit);
+        containment_sweep = { skipped:true, reason:'BUFFER_RATE_LIMITED', retry_at:bufferCircuit.retry_at };
+        provider_reconciliation = [];
+      } else throw error;
+    }
+  } else {
+    containment_sweep = { skipped:true, reason:'BUFFER_RATE_LIMIT_CIRCUIT_OPEN', retry_at:bufferCircuit.retry_at };
+  }
+  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
   const channels = ['linkedin_personal','linkedin_company','instagram_company'];
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
@@ -290,6 +349,16 @@ Deno.serve(async (req) => {
 
   for (const row of rows || []) {
     const art: any = artifactByChannel.get(row.channel) || null;
+    if (['linkedin_personal','linkedin_company'].includes(row.channel) && bufferCircuit.active) {
+      const evidence={...(row.delivery_evidence||{}),provider:'buffer',buffer_rate_limited:true,buffer_retry_at:bufferCircuit.retry_at,
+        buffer_retry_after_seconds:bufferCircuit.retry_after_seconds,provider_truth_verified:false,error:'BUFFER_RATE_LIMITED'};
+      await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+        .eq('run_date',runDate).eq('channel',row.channel);
+      await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,
+        `Buffer rate limit open until ${bufferCircuit.retry_at}; canonical closed loop retries automatically after reset.`,'BUFFER_RATE_LIMITED');
+      results.push({channel:row.channel,status:'deferred_rate_limit',retry_at:bufferCircuit.retry_at});
+      continue;
+    }
     if (!art?.body) {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
       continue;
@@ -378,9 +447,16 @@ Deno.serve(async (req) => {
       created = await createPost(bufferToken, input);
     } catch (error) {
       if (error instanceof BufferHttpError && error.status === 429) {
+        bufferCircuit = await openBufferCircuit(db,error.retryAfter,'create-post');
+        const evidence={...(row.delivery_evidence||{}),provider:'buffer',buffer_rate_limited:true,buffer_retry_at:bufferCircuit.retry_at,
+          buffer_retry_after_seconds:bufferCircuit.retry_after_seconds,provider_truth_verified:false,error:'BUFFER_RATE_LIMITED'};
         await db.from('powerhouse_channel_decisions')
-          .update({ state: 'content_ready', updated_at: new Date().toISOString() })
+          .update({ state: 'content_ready', delivery_evidence:evidence, updated_at: new Date().toISOString() })
           .eq('run_date', runDate).eq('channel', row.channel).eq('state', 'dispatching');
+        await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,
+          `Buffer rate limit open until ${bufferCircuit.retry_at}; canonical closed loop retries automatically after reset.`,'BUFFER_RATE_LIMITED');
+        results.push({channel:row.channel,status:'deferred_rate_limit',retry_at:bufferCircuit.retry_at});
+        continue;
       }
       throw error;
     }
@@ -405,7 +481,7 @@ Deno.serve(async (req) => {
     await recordObligation(db, runDate, row.channel, providerStatus === 'sent' ? 'PUBLISHED' : 'DISPATCHED', readback.id, evidence, providerStatus === 'sent' ? 'Verify public/outcome proof, then measure and learn.' : 'Await provider send, then reconcile.', null);
     results.push({ channel: row.channel, status: providerStatus, post_id: readback.id, provider_truth_verified: true });
   }
-  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, results, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
+  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, results, buffer_circuit:bufferCircuit, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
   } catch (error) {
     if (error instanceof BufferHttpError && error.status === 429) {
       return json({ ok: false, error: 'BUFFER_RATE_LIMITED', retryable: true, retry_after: error.retryAfter }, 429);
