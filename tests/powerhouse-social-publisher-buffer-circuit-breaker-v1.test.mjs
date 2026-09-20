@@ -14,3 +14,5 @@ test('Buffer 429 cooldown prevents repeated provider polling and preserves creat
   assert.match(source, /BUFFER_RATE_LIMITED_READBACK/);
   assert.match(source, /if \(row\.channel === 'instagram_company'.*provider.*buffer/);
 });
+
+// Metadata-only gate refresh: runtime assertions above are unchanged.
