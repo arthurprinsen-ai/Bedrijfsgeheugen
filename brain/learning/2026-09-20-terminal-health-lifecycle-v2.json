@@ -1,0 +1,21 @@
+{
+  "fingerprint": "terminal-health-lifecycle-v2",
+  "obligation_id": "terminal-autonomous-reconciler-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The first terminal health aggregate treated expired historical proof as current runtime truth and could leave an escalated reconciliation open after its operation had become terminal. Lifecycle was implicit, so time-boxed selftests could pollute current health indefinitely.",
+  "prevention_rule": "Current control-plane health evaluates only active desired states, explicitly retired proof remains historical evidence, BLOCKED obligations and active DRIFTED/UNKNOWN/GREEN_STALE truth fail closed, and escalated reconciliation is closed only when the underlying operation is terminal or a historical selftest is proven never dispatched and is compensated.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-terminal-health-lifecycle-v2.test.mjs"],
+    "canary": ["tests/brain-terminal-health-lifecycle-v2.test.mjs"]
+  },
+  "outcome": {
+    "status": "CANDIDATE_VERIFIED",
+    "truth_boundary": "Retirement does not fabricate a fresh observation or success; genuine blocked obligations remain visible."
+  }
+}
