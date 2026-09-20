@@ -1,0 +1,28 @@
+{
+  "fingerprint": "seo|daily-revenue-execution|intent-evidence-first|v2",
+  "obligation_id": "seo-revenue:daily-execution:v2",
+  "compiler": {
+    "failure_class": "SEO_DAILY_SELECTION_CAN_PUBLISH_WITHOUT_CURRENT_COMMERCIAL_EVIDENCE",
+    "scope": "CONTENT",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The recovery publisher can select the oldest approved candidate when learning is stale or unavailable, so content age can substitute for current SEO-to-revenue evidence.",
+  "prevention_rule": "Every daily SEO cycle must make an explicit evidence-backed decision: UPDATE_MONEY_PAGE, CREATE_INTENT_GAP_CONTENT, or NO_ACTION_EVIDENCE_INSUFFICIENT. Never use oldest-approved/content age as a revenue-selection fallback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure.test.mjs"
+    ]
+  },
+  "evidence": {
+    "candidate_pr": 2428,
+    "candidate_head_sha": "d33267ff7da862fad68d689b96eca26eea6feacb",
+    "skill_projection": "Powerhouse Skill Projection succeeded on candidate head",
+    "production_readback": "pending protected merge and production/main readback",
+    "canonicalization_test": "tests/brain-material-writeback-closure.test.mjs"
+  },
+  "outcome": {
+    "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  }
+}
