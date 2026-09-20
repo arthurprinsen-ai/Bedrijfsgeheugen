@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {entitlementAllows,normalizeEntitlementRecord,planRuntimePolicy,requireEntitlement} from '../platform/saas/entitlement-policy.mjs';
+import {billingReadiness,requireBillingReady} from '../platform/saas/billing-readiness.mjs';
 
 test('pricing communicates equal intelligence and self-serve tiers',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
@@ -58,4 +59,25 @@ test('connector creation now requires an active subscription policy',async()=>{
   assert.match(source,/getPlanRuntimePolicy/);
   assert.match(source,/SUBSCRIPTION_REQUIRED/);
   assert.match(source,/PLAN_DATA_SOURCE_LIMIT/);
+});
+
+test('billing readiness fails closed until both Stripe secrets exist',()=>{
+  assert.deepEqual(billingReadiness({}),{
+    provider:'stripe',stripeSecretConfigured:false,webhookSecretConfigured:false,selfServeAvailable:false,state:'blocked'
+  });
+  assert.throws(()=>requireBillingReady({}),/BILLING_NOT_CONFIGURED/);
+  assert.equal(billingReadiness({STRIPE_SECRET_KEY:'sk_live_x',STRIPE_WEBHOOK_SECRET:'whsec_x'}).selfServeAvailable,true);
+});
+
+test('checkout endpoint uses the billing readiness contract',async()=>{
+  const source=await readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8');
+  assert.match(source,/billingReadiness/);
+  assert.match(source,/selfServeAvailable/);
+});
+
+test('checkout readiness endpoint never exposes secret values',async()=>{
+  const source=await readFile(new URL('../netlify/functions/checkout-readiness.mjs',import.meta.url),'utf8');
+  assert.match(source,/selfServeAvailable/);
+  assert.doesNotMatch(source,/STRIPE_SECRET_KEY/);
+  assert.doesNotMatch(source,/STRIPE_WEBHOOK_SECRET/);
 });
