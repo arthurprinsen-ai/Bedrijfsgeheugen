@@ -28,6 +28,32 @@ class BufferHttpError extends Error {
   }
 }
 
+function bufferRetryAt(retryAfter: string | null) {
+  const raw = clean(retryAfter);
+  const now = Date.now();
+  if (!raw) return new Date(now + 15 * 60_000).toISOString();
+  const numeric = Number(raw);
+  if (Number.isFinite(numeric) && numeric >= 0) {
+    const millis = numeric > 1_000_000_000 ? numeric * 1000 : now + numeric * 1000;
+    return new Date(Math.max(now + 60_000, Math.min(millis, now + 24 * 60 * 60_000))).toISOString();
+  }
+  const parsed = Date.parse(raw);
+  if (Number.isFinite(parsed)) return new Date(Math.max(now + 60_000, Math.min(parsed, now + 24 * 60 * 60_000))).toISOString();
+  return new Date(now + 15 * 60_000).toISOString();
+}
+
+function activeBufferCooldown(rows: any[]) {
+  const now = Date.now();
+  let latest = 0;
+  for (const row of rows || []) {
+    if (!['linkedin_personal','linkedin_company'].includes(clean(row?.channel))) continue;
+    const value = clean(row?.delivery_evidence?.buffer_rate_limit_until);
+    const parsed = value ? Date.parse(value) : NaN;
+    if (Number.isFinite(parsed)) latest = Math.max(latest, parsed);
+  }
+  return latest > now ? new Date(latest).toISOString() : null;
+}
+
 const COMPOSIO_BASE='https://backend.composio.dev/api/v3';
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:string,text:string){
@@ -168,12 +194,36 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
   if (obligationError) throw new Error(`OBLIGATION_RECONCILE_READ:${obligationError.message}`);
   const obligationByChannel = new Map((obligations || []).map((item: any) => [item.channel, item]));
   const results: any[] = [];
+  const existingCooldown = activeBufferCooldown(rows || []);
+  if (existingCooldown) {
+    for (const row of rows || []) {
+      if (!['linkedin_personal','linkedin_company'].includes(row.channel)) continue;
+      const obligation: any = obligationByChannel.get(obligationChannels[row.channel]) || null;
+      const ref = clean(row.delivery_ref) || clean(obligation?.external_id);
+      if (!ref) continue;
+      results.push({ channel: row.channel, post_id: ref, state: row.state, reason: 'BUFFER_RATE_LIMIT_COOLDOWN', retry_at: existingCooldown, provider_truth_verified: row.delivery_evidence?.provider_truth_verified === true });
+    }
+    return { results, rate_limited: true, retry_at: existingCooldown };
+  }
   for (const row of rows || []) {
+    if (row.channel === 'instagram_company' && clean(row.delivery_evidence?.provider).toLowerCase() !== 'buffer') continue;
     const obligation: any = obligationByChannel.get(obligationChannels[row.channel]) || null;
     const ref = clean(row.delivery_ref) || clean(obligation?.external_id);
     if (!ref) continue;
     const lineageRecovered = !clean(row.delivery_ref) && !!ref;
-    const provider = await getPost(token, ref);
+    let provider: any;
+    try {
+      provider = await getPost(token, ref);
+    } catch (error) {
+      if (error instanceof BufferHttpError && error.status === 429) {
+        const retryAt = bufferRetryAt(error.retryAfter);
+        const evidence = { ...(row.delivery_evidence || {}), provider: 'buffer', provider_truth_verified: false, buffer_rate_limited: true, buffer_rate_limit_until: retryAt, buffer_rate_limit_observed_at: new Date().toISOString() };
+        await db.from('powerhouse_channel_decisions').update({ delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
+        results.push({ channel: row.channel, post_id: ref, state: row.state, reason: 'BUFFER_RATE_LIMITED', retry_at: retryAt, provider_truth_verified: false });
+        return { results, rate_limited: true, retry_at: retryAt };
+      }
+      throw error;
+    }
     if (!provider) {
       const evidence = { ...(obligation?.evidence || {}), ...(row.delivery_evidence || {}), provider: 'buffer', provider_truth_verified: false, provider_truth_checked_at: new Date().toISOString(), error: 'PROVIDER_RECORD_MISSING', stale_delivery_ref: true, stale_delivery_ref_value: ref, lineage_recovered_from_obligation: lineageRecovered, recovery_policy: row.channel === 'linkedin_personal' ? 'FAIL_CLOSED_NO_REPLACEMENT_WITHOUT_PERSONAL_TRUTH' : 'REENTER_CANONICAL_LOOP_IDEMPOTENTLY' };
       await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_ref: ref, delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
@@ -205,7 +255,7 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
     await recordObligation(db, runDate, row.channel, status === 'sent' ? 'PUBLISHED' : 'DISPATCHED', ref, evidence, status === 'sent' ? 'Collect metrics and promote to LIVE_PROVEN only with public/provider outcome proof.' : 'Await provider send and reconcile again.', null);
     results.push({ channel: row.channel, post_id: ref, state: nextState, provider_status: status, provider_truth_verified: providerTruth, lineage_recovered_from_obligation: lineageRecovered });
   }
-  return results;
+  return { results, rate_limited: false, retry_at: null };
 }
 async function containmentSweepInstagram(db:any,token:string){
   const {data:rows,error}=await db.from('powerhouse_channel_decisions')
@@ -266,8 +316,9 @@ Deno.serve(async (req) => {
   const bufferToken = integration.token;
 
   const containment_sweep = await containmentSweepInstagram(db, bufferToken);
-  const provider_reconciliation = await reconcileExistingProviderTruth(db, bufferToken, runDate);
-  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation });
+  const reconciliation = await reconcileExistingProviderTruth(db, bufferToken, runDate);
+  const provider_reconciliation = reconciliation.results;
+  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_rate_limited: reconciliation.rate_limited, retry_at: reconciliation.retry_at });
 
   const channels = ['linkedin_personal','linkedin_company','instagram_company'];
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
@@ -292,6 +343,10 @@ Deno.serve(async (req) => {
     const art: any = artifactByChannel.get(row.channel) || null;
     if (!art?.body) {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
+      continue;
+    }
+    if (reconciliation.rate_limited && ['linkedin_personal','linkedin_company'].includes(row.channel)) {
+      results.push({ channel: row.channel, status: 'deferred_rate_limit', reason: 'BUFFER_RATE_LIMIT_COOLDOWN', retry_at: reconciliation.retry_at });
       continue;
     }
     const textHash = await digest(clean(art.body));
@@ -378,9 +433,14 @@ Deno.serve(async (req) => {
       created = await createPost(bufferToken, input);
     } catch (error) {
       if (error instanceof BufferHttpError && error.status === 429) {
+        const retryAt = bufferRetryAt(error.retryAfter);
+        const evidence = { ...(row.delivery_evidence || {}), provider: 'buffer', provider_truth_verified: false, buffer_rate_limited: true, buffer_rate_limit_until: retryAt, buffer_rate_limit_observed_at: new Date().toISOString() };
         await db.from('powerhouse_channel_decisions')
-          .update({ state: 'content_ready', updated_at: new Date().toISOString() })
+          .update({ state: 'content_ready', delivery_evidence: evidence, updated_at: new Date().toISOString() })
           .eq('run_date', runDate).eq('channel', row.channel).eq('state', 'dispatching');
+        await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,`Buffer cooldown actief tot ${retryAt}; retry daarna automatisch met hetzelfde artifact.`,'BUFFER_RATE_LIMITED');
+        results.push({ channel: row.channel, status: 'deferred_rate_limit', reason: 'BUFFER_RATE_LIMITED', retry_at: retryAt });
+        continue;
       }
       throw error;
     }
@@ -389,7 +449,22 @@ Deno.serve(async (req) => {
       await db.from('powerhouse_channel_decisions').update({ state: 'failed', delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
       await recordObligation(db, runDate, row.channel, 'FAILED', null, evidence, 'Retry only through canonical loop after provider preflight.', created.error || 'BUFFER_CREATE_FAILED'); results.push({ channel: row.channel, status: 'failed', error: created.error || 'BUFFER_CREATE_FAILED' }); continue;
     }
-    const readback = await getPost(bufferToken, created.post.id);
+    const createEvidence = { ...(row.delivery_evidence || {}), provider: 'buffer', provider_post_id: created.post.id, provider_create_ack: true, provider_truth_verified: false, final_text_hash: textHash };
+    await db.from('powerhouse_channel_decisions').update({ delivery_ref: created.post.id, delivery_evidence: createEvidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel).eq('state', 'dispatching');
+    let readback: any;
+    try {
+      readback = await getPost(bufferToken, created.post.id);
+    } catch (error) {
+      if (error instanceof BufferHttpError && error.status === 429) {
+        const retryAt = bufferRetryAt(error.retryAfter);
+        const evidence = { ...createEvidence, buffer_rate_limited: true, buffer_rate_limit_until: retryAt, buffer_rate_limit_observed_at: new Date().toISOString() };
+        await db.from('powerhouse_channel_decisions').update({ delivery_ref: created.post.id, delivery_evidence: evidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
+        await recordObligation(db,runDate,row.channel,'DISPATCHED',created.post.id,evidence,`Provider create is bevestigd; readback uitgesteld tot Buffer cooldown eindigt op ${retryAt}. Niet opnieuw publiceren.`,'BUFFER_RATE_LIMITED_READBACK');
+        results.push({ channel: row.channel, status: 'deferred_rate_limit_readback', post_id: created.post.id, retry_at: retryAt, provider_truth_verified: false });
+        continue;
+      }
+      throw error;
+    }
     const readbackOk = !!readback && readback.id === created.post.id && readback.channelId === channelIds[row.channel] && clean(readback.text) === clean(art.body) && (!future || new Date(readback.dueAt).getTime() === due.getTime());
     if (!readbackOk) {
       const containment = await deletePost(bufferToken, created.post.id);
