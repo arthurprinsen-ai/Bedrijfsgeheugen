@@ -58,3 +58,52 @@ test('readiness endpoint exposes only server capability state and no provider se
   assert.deepEqual(await res.json(),engine.readiness);
   assert.equal(store.calls.length,0);
 });
+
+
+test('connector activation blocks refresh faster than the active plan',async()=>{
+  const connector={id:'c1',version:1,state:'Draft',runtime:{refreshMinutes:60}};
+  const evidence={id:'e1',status:'TEST_PASSED',connector_versie:1,evidence:{
+    configVersion:1,testExecutionId:'e1',sourceReadSuccess:true,
+    extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}
+  }};
+  const store={
+    configured:true,
+    async get(){return connector;},
+    async getExecution(){return evidence;},
+    async getPlanRuntimePolicy(){return {planCode:'control',refreshMinutes:1440};},
+    async saveDraft(){throw new Error('must not persist');}
+  };
+  const engine={activationEligibility:()=>({eligible:true,reason:'ELIGIBLE'})};
+  const res=await handlePortalConnectorsRequest({
+    request:req('POST','/api/connectors/c1/activate',{testExecutionId:'e1'}),
+    user:{id:'u1',tenantId:'tenant-a'},store,engine
+  });
+  assert.equal(res.status,409);
+  assert.deepEqual(await res.json(),{error:'PLAN_REFRESH_LIMIT',planCode:'control',minimumRefreshMinutes:1440,requestedRefreshMinutes:60});
+});
+
+test('connector activation persists effective allowed refresh policy',async()=>{
+  const connector={id:'c1',version:1,state:'Draft',runtime:{refreshMinutes:60}};
+  const evidence={id:'e1',status:'TEST_PASSED',connector_versie:1,evidence:{
+    configVersion:1,testExecutionId:'e1',sourceReadSuccess:true,
+    extractionResult:{ok:true},validationResult:{ok:true},targetSafeTestResult:{ok:true}
+  }};
+  let persisted=null;
+  const store={
+    configured:true,
+    async get(){return connector;},
+    async getExecution(){return evidence;},
+    async getPlanRuntimePolicy(){return {planCode:'scale',refreshMinutes:60};},
+    async saveDraft(tenant,draft){persisted=draft;return draft;}
+  };
+  const engine={activationEligibility:()=>({eligible:true,reason:'ELIGIBLE'})};
+  const res=await handlePortalConnectorsRequest({
+    request:req('POST','/api/connectors/c1/activate',{testExecutionId:'e1'}),
+    user:{id:'u1',tenantId:'tenant-a'},store,engine
+  });
+  assert.equal(res.status,200);
+  assert.equal(persisted.state,'Active');
+  assert.equal(persisted.runtime.refreshMinutes,60);
+  assert.equal(persisted.runtime.refreshPolicy.planCode,'scale');
+  assert.equal(persisted.runtime.refreshPolicy.minimumRefreshMinutes,60);
+});
