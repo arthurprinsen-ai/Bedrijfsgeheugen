@@ -1,6 +1,6 @@
 {
   "type": "POWERHOUSE_LEARNING",
-  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v1",
+  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v2",
   "fingerprint": "saas-pricing-checkout-entitlements-closure-v1",
   "status": "CANDIDATE",
   "compiler": {
@@ -19,7 +19,8 @@
     "Iedere nieuwe HTML-route krijgt vóór de eerste build title, description, canonical, robots en exact één H1.",
     "Iedere materiële PR krijgt bij creatie volledige Powerhouse delivery metadata inclusief immutable Base-SHA.",
     "Entitlements worden server-side afgedwongen; browser/UI gating is nooit de security authority.",
-    "Pricing leest commerciële waarheid uit één canonical planmodel zodat prijs, checkout en runtime entitlement niet kunnen driften."
+    "Pricing leest commerciële waarheid uit één canonical planmodel zodat prijs, checkout en runtime entitlement niet kunnen driften.",
+    "Alle betaalde runtime-capabilities gebruiken één centrale fail-closed entitlement-policy; stores en handlers mogen planlogica niet opnieuw hardcoden."
   ],
   "regression_contract": [
     "tests/saas-pricing-entitlements.test.mjs",
@@ -31,7 +32,8 @@
     "Powerhouse Supabase Security Contract green after explicit per-table revokes and security_invoker entitlement view.",
     "Powerhouse Quality Intelligence Surface Gate green after SaaS tables/functions registration.",
     "Canonical brand shell full build exposed and then closed the two-H1 checkout defect.",
-    "BRAIN admission accepted exact head after complete delivery metadata was added."
+    "BRAIN admission accepted exact head after complete delivery metadata was added.",
+    "V2 centraliseert subscription-status, numerieke limieten, booleans en agent modes in platform/saas/entitlement-policy.mjs."
   ],
   "evaluation": {
     "historical_replay": [
