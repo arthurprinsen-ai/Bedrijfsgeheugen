@@ -1,0 +1,42 @@
+{
+  "status": "LIVE_PROVEN",
+  "fingerprint": "content|channel-semantic-isolation|personal-company|v1",
+  "obligation_id": "content-channel-semantic-isolation-v1",
+  "verified_at_utc": "2026-09-20T07:45:15Z",
+  "main_merge_sha": "56618d748a9b0d417b0198086aa097b4ef36b1ef",
+  "supabase_project_ref": "adhjwmvyoixzjtmiroln",
+  "edge_function": {
+    "slug": "powerhouse-content-orchestrator",
+    "version": 15,
+    "status": "ACTIVE",
+    "verify_jwt": false,
+    "exact_main_source_match": true,
+    "semantic_isolation_markers": [
+      "recommendationEligible",
+      "personalFinalCopyValid",
+      "COMPANY_TRACKING_LINK_WRITE_FAILED"
+    ]
+  },
+  "runtime_readback": {
+    "linkedin_company": {
+      "state": "decided",
+      "pre_publish_gate": "blocked",
+      "block_reason": "doorklik",
+      "truth": "company lane no longer reuses the prior personal printer recommendation; it now carries a business recommendation and remains fail-closed until measurable company tracking is present"
+    },
+    "linkedin_personal": {
+      "state": "content_ready",
+      "pre_publish_gate": "blocked",
+      "block_reason": "FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED",
+      "truth": "personal lane remains grounded in the verified Arthur source and fails closed when final copy loses concrete first-person semantics"
+    },
+    "instagram_company": {
+      "state": "blocked",
+      "block_reason": "EXACT_FINAL_MEDIA_PROOF_REQUIRED"
+    },
+    "blog": {
+      "state": "content_ready"
+    }
+  },
+  "truth_boundary": "LIVE_PROVEN applies to the semantic-isolation control itself, not to channels that remain correctly blocked by downstream publication gates."
+}
