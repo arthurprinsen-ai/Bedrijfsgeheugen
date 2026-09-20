@@ -16,7 +16,7 @@ export const ZOEKWOORD_PER_PAGINA = {
   "/afas-pocket-koppelen": "afas pocket app koppelen",
   "/blog/automatiseren-zonder-traject/": "erp implementatie mislukt",
   "/ai-marketing-mkb": "ai marketing mkb",
-  "/product": "kennisborging mkb",
+  "/product": "bedrijfsgeheugen platform",
   "/blog/werkinstructie-voorbeeld/": "werkinstructie voorbeeld",
   "/ai-adoptie": "ai adoptie mkb",
   "/ai-act": "ai act",
@@ -49,10 +49,10 @@ export const ZOEKWOORD_PER_PAGINA = {
   "/blog/kennis-borgen-in-je-bedrijf/": "kennis borgen bedrijf",
   "/blog/microsoft-copilot-mkb/": "microsoft copilot mkb",
   "/blog/klantvragen-automatiseren-zonder-controle-te-verliezen/": "klantvragen automatiseren",
-  "/blog/": "kennisbank digitalisering mkb",
+  "/blog/": "digitalisering mkb kennisbank",
   "/connect": "shopify koppelen boekhouding",
   "/due-diligence": "due diligence processen",
-  "/investeerders-ma": "due diligence overname mkb",
+  "/investeerders-ma": "bedrijfskennis bij overname",
   "/excel-als-crm": "excel als crm",
   "/monitor": "digitaliseringsmonitor mkb",
   "/kennisverlies-vergrijzing-mkb": "kennis borgen pensionering",
@@ -77,7 +77,7 @@ export const ZOEKWOORD_PER_PAGINA = {
   "/contact": "contact bedrijfsgeheugen",
   "/start": "beginnen met digitaliseren",
   "/meer": "overzicht bedrijfsgeheugen",
-  "/systemen-koppelen": "exact online koppeling"
+  "/systemen-koppelen": "systemen koppelen mkb"
 };
 
 // Het pad van een bestand terug naar het adres zoals het in de lijst staat.
@@ -100,7 +100,7 @@ export function zoekwoordVoor(bestand) {
 // of die hun eigen zoekwoord niet noemden. Staat een pagina hier, dan wint deze
 // titel van wat er in het bestand of in de weergavelijst staat.
 export const TITEL_PER_PAGINA = {
-  "/product": "Kennisborging mkb: alles op één plek | Bedrijfsgeheugen",
+  "/product": "Bedrijfsgeheugen platform voor het mkb | Bedrijfsgeheugen",
   "/zelfscan": "Gratis zelfscan: waar lekt je tijd weg? | Bedrijfsgeheugen",
   "/frisse-blik": "Frisse blik: van gevoel naar agenda | Bedrijfsgeheugen",
   "/security": "Beveiliging en eigenaarschap van je data | Bedrijfsgeheugen",
@@ -112,9 +112,9 @@ export const TITEL_PER_PAGINA = {
   "/prijzen": "Kosten digitalisering mkb: vaste prijzen | Bedrijfsgeheugen",
   "/api-koppeling-laten-maken": "AFAS API koppeling laten maken | Bedrijfsgeheugen",
   "/ai-governance": "AI governance voor het mkb | Bedrijfsgeheugen",
-  "/systemen-koppelen": "Exact Online koppeling en andere systemen | Bedrijfsgeheugen",
-  "/blog/": "Kennisbank digitalisering mkb | Bedrijfsgeheugen",
-  "/investeerders-ma": "Due diligence bij overname in het mkb | Bedrijfsgeheugen",
+  "/systemen-koppelen": "Systemen koppelen mkb | Bedrijfsgeheugen",
+  "/blog/": "Digitalisering mkb kennisbank | Bedrijfsgeheugen",
+  "/investeerders-ma": "Bedrijfskennis bij overname | Bedrijfsgeheugen",
   "/voor-mkb": "Digitalisering voor het mkb | Bedrijfsgeheugen",
   "/wijzigingen-uitgelegd": "Impactanalyse van een wijziging | Bedrijfsgeheugen",
   "/meer": "Overzicht Bedrijfsgeheugen | Bedrijfsgeheugen"
