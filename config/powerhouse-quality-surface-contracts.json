@@ -54,14 +54,14 @@
       "id": "function:powerhouse-content-loop",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-loop/index.ts",
-      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
       "required": true
     },
     {
       "id": "function:powerhouse-content-orchestrator",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-orchestrator/index.ts",
-      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
       "required": true
     },
     {
@@ -75,7 +75,7 @@
       "id": "function:powerhouse-instagram-media-router",
       "type": "function",
       "authority": "supabase/functions/powerhouse-instagram-media-router/index.ts",
-      "evidence_contract": "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
       "required": true
     },
     {
@@ -142,6 +142,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:powerhouse-control-plane",
+      "type": "netlify_function",
+      "authority": "netlify/functions/powerhouse-control-plane.mjs",
+      "evidence_contract": "tests/brain-control-plane-admin-cockpit-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:powerhouse-control-plane-evidence",
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-control-plane-evidence.mjs",
@@ -153,6 +160,13 @@
       "type": "netlify_function",
       "authority": "netlify/functions/revenue-learning-evaluate.mjs",
       "evidence_contract": "tests/revenue-learning-evaluate.test.mjs",
+      "required": true
+    },
+    {
+      "id": "netlify_function:social-publication-delivery",
+      "type": "netlify_function",
+      "authority": "netlify/functions/social-publication-delivery.mjs",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
       "required": true
     },
     {
@@ -187,7 +201,7 @@
       "id": "rpc:bg_geheim",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
       "required": true
     },
     {
@@ -254,10 +268,31 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_consume_social_publish_capability_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_ensure_instagram_media_job_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_instagram_provider_policy_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260918111500_instagram_media_provider_router_v1.sql",
-      "evidence_contract": "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_issue_social_publish_capability_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
       "required": true
     },
     {
@@ -271,7 +306,7 @@
       "id": "rpc:powerhouse_reconcile_content_outcomes_v1",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-content-loop/index.ts",
-      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
       "required": true
     },
     {
@@ -279,6 +314,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260918095000_powerhouse_unified_data_intelligence_spine_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-dataforseo-intelligence-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_select_instagram_daily_winner_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
       "required": true
     },
     {
@@ -387,6 +429,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_instagram_daily_winners_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql",
+      "evidence_contract": "tests/instagram-daily-winner-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_instagram_media_jobs_v1",
       "type": "table",
       "authority": "supabase/migrations/20260918111500_instagram_media_provider_router_v1.sql",
@@ -429,34 +478,6 @@
       "required": true
     },
     {
-      "id": "table:public.powerhouse_source_observation_v1",
-      "type": "table",
-      "authority": "supabase/migrations/20260918194500_powerhouse_source_observation_immutable_v1.sql",
-      "evidence_contract": "tests/powerhouse-organism-propagation.test.mjs",
-      "required": true
-    },
-    {
-      "id": "netlify_function:powerhouse-control-plane",
-      "type": "netlify_function",
-      "authority": "netlify/functions/powerhouse-control-plane.mjs",
-      "evidence_contract": "tests/brain-control-plane-admin-cockpit-v1.test.mjs",
-      "required": true
-    },
-    {
-      "id": "rpc:powerhouse_issue_social_publish_capability_v1",
-      "type": "rpc",
-      "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
-      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
-      "required": true
-    },
-    {
-      "id": "rpc:powerhouse_consume_social_publish_capability_v1",
-      "type": "rpc",
-      "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
-      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
-      "required": true
-    },
-    {
       "id": "table:public.powerhouse_social_publish_capabilities_v1",
       "type": "table",
       "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
@@ -464,10 +485,10 @@
       "required": true
     },
     {
-      "id": "netlify_function:social-publication-delivery",
-      "type": "netlify_function",
-      "authority": "netlify/functions/social-publication-delivery.mjs",
-      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "id": "table:public.powerhouse_source_observation_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260918194500_powerhouse_source_observation_immutable_v1.sql",
+      "evidence_contract": "tests/powerhouse-organism-propagation.test.mjs",
       "required": true
     }
   ]
