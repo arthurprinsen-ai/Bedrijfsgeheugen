@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const CHANNELS = ['email_newsletter','linkedin_personal','linkedin_company','linkedin_article_personal','linkedin_article_company','instagram_company','blog'];
-const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
+const PERSONAL_CONTRACT = 'arthur-personal-linkedin-personal-life-only-v5';
 const PERSONAL_GATE = 'channel-identity-hard-gate-v3';
 const PERSONAL_CHANNEL = '6a70381699afb44349f0fb35';
 const VERSION = 'v10-closed-loop';
@@ -43,8 +43,8 @@ function validPersonalSource(row:any) {
   const lineage = Array.isArray(e.source_lineage) ? e.source_lineage.length > 0 : !!e.source_lineage;
   return row?.target_channel === 'linkedin_personal' && e.identity_contract === PERSONAL_CONTRACT && e.identity_gate_version === PERSONAL_GATE
     && e.personal_truth_verified === true && !!clean(e.content_id) && lineage && e.arthur_anchor_verified === true
-    && e.first_person_claims_verified === true && e.personal_life_topic === true && e.business_topic === false
-    && e.corporate_voice === false && e.company_page_interchangeable === false && e.forced_business_moral === false
+    && e.first_person_claims_verified === true && e.personal_life_topic === true && e.personal_life_only === true && e.business_topic === false
+    && e.business_bridge === false && e.corporate_voice === false && e.company_page_interchangeable === false && e.forced_business_moral === false
     && (e.sensitive_private_detail !== true || e.sensitive_private_approval === true);
 }
 function recommendationScore(row:any, channel:string) {
@@ -81,7 +81,7 @@ function personalFinalCopyValid(body:string, sourceText:string) {
   const hasFirstPerson=/\bik\b|\bmijn\b|\bme\b/.test(text);
   const anchors=['printer','08:07','08:10','cyaan'].filter(x=>source.includes(x));
   const preserved=anchors.length===0 || anchors.filter(x=>text.includes(x)).length>=Math.min(2,anchors.length);
-  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|management|ondernemer|organisatie|proces|digitalisering/i.test(body);
+  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|bedrijven|klant|opdrachtgever|management|ondernemer|organisatie|proces|digitalisering|consultancy|consultant|data|\bai\b|transformatie|propositie|offerte|lead|omzet|sales|strategie|mkb|dashboard/i.test(body);
   return hasFirstPerson && preserved && noBusinessBridge;
 }
 function hardBoundary(channel:string, reason?:string) {
@@ -224,7 +224,7 @@ Deno.serve(async (req) => {
     }
     const artifactTool = { name:'content_artifact',description:'Definitieve kanaaleigen content',input_schema:{type:'object',additionalProperties:false,properties:{title:{type:'string'},body:{type:'string'},cta:{type:'string'},hook_type:{type:'string'},focus_keyword:{type:'string'},meta_description:{type:'string'}},required:['title','body','cta','hook_type','focus_keyword','meta_description']}};
     const system = pending.channel==='linkedin_personal'
-      ? 'Schrijf uitsluitend uit de geverifieerde persoonlijke bron. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen en minstens twee herkenbare bronankers behouden. Geen businessbrug, verkoop, managementles, verzonnen ervaring of zakelijke moraal.'
+      ? 'Schrijf uitsluitend over Arthurs persoonlijke leven vanuit de geverifieerde persoonlijke bron. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete privégebeurtenis uit source_text vertellen. Toegestaan zijn gezin, kinderen, school, hockey/sport, reizen, auto, huis/tuin, consumententechniek, familie, vrije tijd en dagelijkse menselijke irritaties. Bedrijven, klanten, MKB, consultancy, werk, bedrijfsprocessen, Bedrijfsgeheugen, zakelijke AI/data/digitalisering, verkoop, leads, cases, zakelijke lessen en iedere businessbrug zijn absoluut verboden. Verzin geen ervaring.'
       : pending.channel==='linkedin_company'
       ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
       : pending.channel==='instagram_company' ? 'Schrijf Mira daily-life caption passend bij de reeds bewezen finale media. Geen interne kantoorproblemen of geforceerde businessmoraal.'
@@ -240,7 +240,7 @@ Deno.serve(async (req) => {
     }
     const finalTextHash = await digest(bodyText);
     const personalEvidence = pending.channel==='linkedin_personal' ? {...(personalSource.evidence||{}),content_id:clean(personalSource.evidence?.content_id)||`${runDate}:linkedin_personal`,calendar_date:runDate,
-      channel_id:PERSONAL_CHANNEL,channel_kind:'linkedin_personal',identity_contract:PERSONAL_CONTRACT,identity_gate_version:PERSONAL_GATE,personal_truth_verified:true,
+      channel_id:PERSONAL_CHANNEL,channel_kind:'linkedin_personal',identity_contract:PERSONAL_CONTRACT,identity_gate_version:PERSONAL_GATE,personal_truth_verified:true,personal_life_only:true,business_bridge:false,
       prediction_lineage_present:true,prior_prediction_decision_id:`decision:${runDate}:linkedin_personal`,publication_intent:'publish',final_text_hash:finalTextHash} : null;
     const instagramEvidence = pending.channel==='instagram_company' ? {...instagramProof,exact_final_media_proven:true,final_media_sha256:instagramProof.final_media_sha256,media_url:instagramProof.media_url,mira_gate_passed:true} : null;
     const artifactType = pending.channel==='blog'?'blog':pending.channel==='instagram_company'?'instagram_post':'linkedin_post';
