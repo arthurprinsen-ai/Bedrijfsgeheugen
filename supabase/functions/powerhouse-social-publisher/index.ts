@@ -125,7 +125,7 @@ async function openBufferCircuit(db:any,retryAfter:unknown,source:string){
   const now=new Date().toISOString();
   const result={state:'OPEN',provider:'buffer',reason:'HTTP_429',retry_after_seconds:seconds,retry_at:retryAt,source,opened_at:now};
   const {error}=await db.from('brain_records').upsert({
-    tenant_id:'canonical',record_id:BUFFER_CIRCUIT_RECORD,record_type:'RuntimeState',record_kind:'runtime_state',subject_id:'buffer',
+    tenant_id:'canonical',record_id:BUFFER_CIRCUIT_RECORD,record_type:'CurrentState',record_kind:'current_state',subject_id:'buffer',
     status:'IN_PROGRESS',observed_at:now,executed:true,verified:false,result,payload:{provider:'buffer',fingerprint:'buffer-rate-limit-circuit-v1'},
     idempotency_key:BUFFER_CIRCUIT_RECORD,source_revision:'powerhouse-social-publisher',stored_at:now,updated_at:now
   },{onConflict:'tenant_id,record_id'});
