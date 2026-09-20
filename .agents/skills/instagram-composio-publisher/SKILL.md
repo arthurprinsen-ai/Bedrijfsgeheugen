@@ -128,3 +128,19 @@ This invariant is machine-enforced in database capability RPCs, publisher runtim
 The central-social-publication-authority-v1 invariant is currently production-proven by the canonical evidence lineage. Do not preserve or reissue LIVE_PROVEN merely from code/PR/merge state. A material publisher change must re-prove all of the following: capability table/RPC existence and definitions, active exact-source Edge Function deployment with intended auth mode, fail-closed endpoint behavior, and provider containment/pending-queue readback.
 
 Production evidence fingerprint: central-social-publication-authority-v1-live-proof-2026-09-20.
+
+
+## Ex-ante daily winner lineage
+
+Fingerprint: `instagram-mira-winner-selection-v1`.
+
+Before any Instagram media generation or publication attempt, call/reuse the canonical daily winner contract. Exactly one `powerhouse_instagram_daily_winners_v1` row may exist per run date.
+
+- The winner is selected before media generation and is immutable for that date.
+- Only Mira daily-life image/Reel recommendations are eligible. Reel winners require the OpenArt route.
+- The winner `recommendation_id` and `score_version` must remain identical across channel decision, media job, artifact, publication capability, provider/readback row and learning outcome.
+- Never independently re-rank inside a downstream publisher or media worker after the daily winner exists.
+- The winner/media-job format is authoritative for Instagram normalization. A Reel must be written/read back as `reel`; do not inherit a stale `carousel` value from an experiment recipe.
+- Publication authority fails closed on `INSTAGRAM_DAILY_WINNER_REQUIRED`, `INSTAGRAM_DAILY_WINNER_LINEAGE_MISMATCH`, `INSTAGRAM_DECISION_WINNER_LINEAGE_MISMATCH`, or winner/media-format mismatch.
+- A blocked media/provider boundary does not permit selection of a second winner or fallback publication. Reuse the same winner and exact-media lineage when recovery becomes possible.
+- Metrics and learning must write back to the same winner row; do not attach outcomes to a different recommendation after publication.

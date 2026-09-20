@@ -68,3 +68,12 @@ test('materialized provider asset cannot regress to waiting-provider-connection'
  assert.match(router,/assetMaterialized\?'ASSET_MATERIALIZED'/);
  assert.match(router,/Exact asset already materialized; submit it with required frame\/image evidence for canonical vision proof/);
 });
+
+
+test('media router uses the frozen winner job format before recommendation metadata', () => {
+  const winnerMigration = fs.readFileSync('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql', 'utf8');
+  assert.match(router, /inferType\(input\.postType,job\?\.post_type/);
+  assert.match(router, /generation_evidence\?\.daily_winner_format/);
+  assert.match(winnerMigration, /powerhouse_ensure_instagram_media_job_v1/);
+  assert.match(winnerMigration, /daily_winner_recommendation_id/);
+});

@@ -25,7 +25,7 @@ Deno.serve(async req=>{
   db.from('bg_integrations').select('integration,status').in('integration',['openart','openart_mcp','placid']),
   db.from('powerhouse_instagram_media_jobs_v1').select('*').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
  ]);
- const postType=inferType(input.postType,ob?.evidence?.post_type,ob?.evidence?.media_type,art?.generation_evidence?.post_type,art?.generation_evidence?.media_type,art?.generation_evidence?.format,rec?.evidence?.format,rec?.recommendation_type);
+ const postType=inferType(input.postType,job?.post_type,ob?.evidence?.post_type,ob?.evidence?.media_type,art?.generation_evidence?.daily_winner_format,art?.generation_evidence?.post_type,art?.generation_evidence?.media_type,art?.generation_evidence?.format,rec?.evidence?.format,rec?.recommendation_type);
  if(!['image','reel'].includes(postType))return json({ok:false,error:'INSTAGRAM_MIRA_VISUAL_OR_REEL_ONLY',postType},422);
  const {data:policy}=await db.rpc('powerhouse_instagram_provider_policy_v1',{p_post_type:postType});
  const active=new Set((ints||[]).filter((x:any)=>['actief','active','connected','ready'].includes(clean(x.status).toLowerCase())).map((x:any)=>clean(x.integration).toLowerCase()));
