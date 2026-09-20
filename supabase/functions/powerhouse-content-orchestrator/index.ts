@@ -151,6 +151,9 @@ Deno.serve(async (req) => {
       db.from('content_publication_obligations').select('*').eq('tenant_id','canonical').eq('publication_date',runDate),
       db.from('powerhouse_media_proof_evidence_v1').select('*').eq('publication_date',runDate).eq('channel','instagram').order('updated_at',{ascending:false}).limit(1).maybeSingle(),
     ]);
+    const winnerResult = await db.from('powerhouse_instagram_daily_winners_v1').select('*').eq('run_date',runDate).maybeSingle();
+    if (winnerResult.error) throw new Error('INSTAGRAM_DAILY_WINNER_READ_FAILED');
+    const instagramWinner = winnerResult.data || null;
     const run = runResult.data, recs = recResult.data || [], rules = rulesResult.data || [], gov = governanceResult.data;
     const existing = existingResult.data || [], obligations = obligationsResult.data || [], mediaProof = mediaProofResult.data || null;
     if (!run) throw new Error('DAILY_RUN_MISSING');
@@ -181,7 +184,11 @@ Deno.serve(async (req) => {
       const stale = previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
       const hour = String(decision.scheduled_hour_local).padStart(2,'0');
       const evidence = { ...(stale?{}:(previous?.delivery_evidence||{})), content_brief:decision.content_brief,decision_engine:VERSION,decision_source:decision.decision_source,
-        capability_state:decision.capability_state,capability_reason:decision.capability_reason,executor_capabilities,fallback_recommendation_id:decision.fallback_recommendation_id,
+        capability_state:decision.capability_state,capability_reason:decision.capability_reason,executor_capabilities,
+        fallback_recommendation_id:channel==='instagram_company'?(instagramWinner?.recommendation_id||decision.fallback_recommendation_id):decision.fallback_recommendation_id,
+        daily_winner_recommendation_id:channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
+        daily_winner_score_version:channel==='instagram_company'?instagramWinner?.score_version||null:null,
+        daily_winner_format:channel==='instagram_company'?instagramWinner?.selected_format||null:null,
         personal_source_recommendation_id:channel==='linkedin_personal'?personalSource?.recommendation_id||null:null,
         personal_truth_verified:channel==='linkedin_personal'?personalSource?.evidence?.personal_truth_verified===true:null,
         stale_delivery_ref:false,recovery_from_provider_missing:stale };
@@ -198,9 +205,13 @@ Deno.serve(async (req) => {
     if (pending.channel === 'linkedin_personal' && !personalSource) throw new Error('PERSONAL_TRUTH_SOURCE_UNVERIFIED');
     if (pending.channel === 'instagram_company' && !instagramVisibleIdentityProven(instagramProof)) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
 
-    const recommendation = pending.delivery_evidence?.fallback_recommendation_id
-      ? recs.find((r:any)=>r.recommendation_id===pending.delivery_evidence.fallback_recommendation_id && recommendationEligible(r,pending.channel)) || pickRecommendation(recs,pending.channel)
+    const requiredRecommendationId = pending.channel==='instagram_company'
+      ? clean(instagramWinner?.recommendation_id)
+      : clean(pending.delivery_evidence?.fallback_recommendation_id);
+    const recommendation = requiredRecommendationId
+      ? recs.find((r:any)=>clean(r.recommendation_id)===requiredRecommendationId && recommendationEligible(r,pending.channel)) || null
       : pickRecommendation(recs,pending.channel);
+    if (pending.channel==='instagram_company' && (!instagramWinner || !recommendation)) throw new Error('INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED');
     let companyTrackingUrl:string|null=null;
     if (pending.channel==='linkedin_company') {
       const key=`li-company-${runDate.replaceAll('-','')}`;
@@ -237,9 +248,17 @@ Deno.serve(async (req) => {
     stage = 'write-artifact';
     const {error:artifactError} = await db.from('powerhouse_content_artifacts').upsert({run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
       content_brief:pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:gov.model_id,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
-      recommendation_id:recommendation?.recommendation_id||null,final_copy_approved:pending.channel==='linkedin_company',identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},status:'content_ready',updated_at:new Date().toISOString()});
+      recommendation_id:recommendation?.recommendation_id||null,
+      daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
+      daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
+      daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:null,
+      final_copy_approved:pending.channel==='linkedin_company',identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},status:'content_ready',updated_at:new Date().toISOString()});
     if (artifactError) throw new Error('ARTIFACT_WRITE_FAILED');
-    const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},updated_at:new Date().toISOString()})
+    const {error:decisionError} = await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:{...(pending.delivery_evidence||{}),
+      daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:pending.delivery_evidence?.daily_winner_recommendation_id||null,
+      daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:pending.delivery_evidence?.daily_winner_score_version||null,
+      daily_winner_format:pending.channel==='instagram_company'?instagramWinner?.selected_format||null:pending.delivery_evidence?.daily_winner_format||null,
+      identity_gate_evidence:personalEvidence,instagram_media_proof:instagramEvidence},updated_at:new Date().toISOString()})
       .eq('run_date',runDate).eq('channel',pending.channel).eq('state','decided');
     if (decisionError) throw new Error('DECISION_STATE_WRITE_FAILED');
     return json({ok:true,runDate,generated:true,channel:pending.channel,title:artifact.title,executor_capabilities,personal_truth_verified:pending.channel==='linkedin_personal'?true:null});
