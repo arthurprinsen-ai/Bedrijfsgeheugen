@@ -6,6 +6,7 @@ const USER_ID='bedrijfsgeheugen-owner';
 const ALIAS='bedrijfsgeheugen-instagram';
 const SERVICE_TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const clean=(v:unknown)=>String(v??'').trim();
+const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 async function sha256(v:string){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
@@ -57,10 +58,27 @@ Deno.serve(async(req:Request)=>{
     await writeState(db,'BLOCKED_AMBIGUOUS',result);return json({ok:true,...result},409);
   }
   if(accounts.length===1){
-    const account=accounts[0],result={ready:true,state:'ACTIVE',reason:null,api_key_present:true,active_accounts:1,connected_account_id:clean(account?.id),user_id:clean(account?.user_id),alias:clean(account?.alias)};
-    await writeState(db,'ACTIVE',result);return json({ok:true,...result});
+    const account=accounts[0],result:any={ready:true,state:'ACTIVE',reason:null,api_key_present:true,active_accounts:1,connected_account_id:clean(account?.id),user_id:clean(account?.user_id),alias:clean(account?.alias)};
+    await writeState(db,'ACTIVE',result);
+    if(action==='resume'){
+      if(!serviceOk)return json({ok:false,error:'ADMIN_SERVICE_AUTH_REQUIRED'},403);
+      if(!expected)return json({ok:false,error:'SCHEDULER_AUTH_REQUIRED'},503);
+      const publisherResponse=await fetch(url+'/functions/v1/powerhouse-social-publisher',{
+        method:'POST',
+        headers:{'content-type':'application/json','x-powerhouse-token':expected},
+        body:JSON.stringify({runDate:localDate(),trigger:'composio-oauth-complete'})
+      });
+      const publisher:any=await publisherResponse.json().catch(()=>({}));
+      result.resume_attempted=true;
+      result.publisher_http=publisherResponse.status;
+      result.publisher_ok=publisherResponse.ok&&publisher?.ok!==false;
+      result.publisher_results=Array.isArray(publisher?.results)?publisher.results:[];
+      await writeState(db,result.publisher_ok?'ACTIVE_RESUMED':'ACTIVE_RESUME_FAILED',result);
+      return json({ok:result.publisher_ok,...result},result.publisher_ok?200:502);
+    }
+    return json({ok:true,...result});
   }
-  if(action==='status'||action==='set_api_key'){
+  if(action==='status'||action==='set_api_key'||action==='resume'){
     const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED',api_key_present:true,active_accounts:0,stored:action==='set_api_key'?true:undefined};
     await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result});
   }
