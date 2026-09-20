@@ -130,3 +130,14 @@ test('autonomous improvement fixes executor rather than weakening immutable iden
   assert.match(migration, /payload_sha256=excluded\.payload_sha256/);
   assert.match(migration, /position\('payload_sha256=excluded\.payload_sha256' in v_executor\)>0/);
 });
+
+
+test('closed loop freezes Instagram winner before media materialization', async () => {
+  const loop = await readFile('supabase/functions/powerhouse-content-loop/index.ts', 'utf8');
+  const orchestrator = await readFile('supabase/functions/powerhouse-content-orchestrator/index.ts', 'utf8');
+  assert.match(loop, /powerhouse_select_instagram_daily_winner_v1/);
+  assert.match(loop, /powerhouse_ensure_instagram_media_job_v1/);
+  assert.ok(loop.indexOf('powerhouse_select_instagram_daily_winner_v1') < loop.indexOf('powerhouse-instagram-media-router'));
+  assert.match(orchestrator, /powerhouse_instagram_daily_winners_v1/);
+  assert.match(orchestrator, /daily_winner_recommendation_id/);
+});
