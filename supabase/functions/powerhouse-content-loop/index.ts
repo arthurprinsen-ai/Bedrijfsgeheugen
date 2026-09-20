@@ -34,6 +34,11 @@ Deno.serve(async (req) => {
     if (first.error) throw new Error('RECONCILE_PRE_FAILED');
     stepResults.push({ name: 'reconcile_pre', ok: true, body: first.data });
 
+    // Freeze one ex-ante Mira winner before any media generation or publication work.
+    const winner = await db.rpc('powerhouse_select_instagram_daily_winner_v1', { p_date: runDate });
+    if (winner.error) throw new Error('INSTAGRAM_DAILY_WINNER_SELECTION_FAILED');
+    stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, body: winner.data });
+
     // Instagram media must be provider-routed and proven before orchestration or dispatch.
     stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));
 
