@@ -49,6 +49,6 @@ test('Powerhouse Control Center is wired into the native Portal V2 registry and 
 test('cockpit keeps the canonical runtime truth boundary explicit',async()=>{
   const module=await readFile('portal-v2/modules/powerhouse-observability.js','utf8');
   assert.match(module,/Geen runtime-evidence = geen verzonnen status/);
-  assert.match(module,/Runtime gekoppeld/);
-  assert.match(module,/Geen runtimebewijs/);
+  assert.match(module,/Admin runtime gekoppeld/);
+  assert.match(module,/Inloggen vereist/);
 });

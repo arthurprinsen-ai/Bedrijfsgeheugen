@@ -1,7 +1,9 @@
 {
   "fingerprint": "powerhouse-control-center-admin-gate-v1",
   "obligation_id": "powerhouse-control-center-admin-gate-v1",
-  "skill_targets": ["powerhouse-continuity"],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
   "compiler": {
     "failure_class": "OBSERVABILITY_AUTHORIZATION_GAP",
     "scope": "SECURITY",
@@ -12,13 +14,25 @@
   "root_cause": "The Powerhouse Control Center initially reused authenticated portal runtime evidence. Authentication protected the data from anonymous users, but any authenticated tenant user could potentially call the general Brain projection and the Control Center route itself did not enforce an administrator authorization boundary.",
   "prevention_rule": "Internal Powerhouse observability must use a dedicated fail-closed server-side authorization boundary. Require a valid Netlify Identity user plus an approved admin role or production allowlist entry. Never fall back from the admin observability endpoint to the ordinary tenant Brain API. Render no observability data before admin authorization succeeds.",
   "evaluation": {
-    "historical_replay": ["tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"],
-    "canary": ["tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs",
+      "tests/brain-powerhouse-control-center-admin-endpoint-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs",
+      "tests/brain-powerhouse-control-center-admin-endpoint-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs",
+      "tests/brain-powerhouse-control-center-admin-endpoint-v1.test.mjs"
+    ]
   },
   "evidence": [
     "platform/auth/powerhouse-admin.mjs",
     "netlify/functions/powerhouse-observability.mjs",
     "portal-v2/modules/powerhouse-observability.js"
   ],
-  "outcome": {"status":"CANDIDATE_IMPLEMENTED"}
+  "outcome": {
+    "status": "CANDIDATE_IMPLEMENTED"
+  }
 }
