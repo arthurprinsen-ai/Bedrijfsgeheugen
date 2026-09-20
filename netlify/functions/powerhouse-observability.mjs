@@ -5,6 +5,7 @@ import { createRemoteRecordAdapter } from '../../brain/operating-loop/remote-rec
 import { resolveIdentityTenant } from '../../platform/read-models/portal-server-state.mjs';
 import { principalFromUser } from '../../brain/operating-loop/object-access-policy.mjs';
 import { isPowerhouseAdmin } from '../../platform/auth/powerhouse-admin.mjs';
+import { POWERHOUSE_SYSTEM_MAP } from '../../platform/system-map/canonical-system-map.mjs';
 
 const reply=(body,status=200)=>Response.json(body,{status,headers:{
   'cache-control':'private, no-store',
@@ -35,7 +36,7 @@ export default async request=>{
   const principal=principalFromUser(user,tenantId);
   try{
     const projection=await store.getProjection(tenantId,{principal});
-    return reply(projection,200);
+    return reply({ ...projection, systemMap:POWERHOUSE_SYSTEM_MAP },200);
   }catch(error){
     if(error?.code==='OBJECT_ACCESS_DENIED')return reply({error:error.code},403);
     return reply({error:'OBSERVABILITY_UNAVAILABLE'},503);
