@@ -15,14 +15,14 @@
   ],
   "evidence": [
     "supabase/functions/powerhouse-content-orchestrator/index.ts",
-    "tests/powerhouse-content-orchestrator-pending-selection.test.mjs"
+    "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"
   ],
   "tests": [
-    "tests/powerhouse-content-orchestrator-pending-selection.test.mjs"
+    "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-content-orchestrator-pending-selection.test.mjs"
+      "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"
     ]
   },
   "skill_targets": [
