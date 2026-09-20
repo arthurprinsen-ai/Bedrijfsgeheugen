@@ -42,9 +42,12 @@ test('admin observability endpoint projects System Map and portal renders it fir
     readFile('portal-v2/modules/powerhouse-observability.js','utf8')
   ]);
   assert.match(api,/POWERHOUSE_SYSTEM_MAP/);
-  assert.match(api,/systemMap:POWERHOUSE_SYSTEM_MAP/);
+  assert.match(api,/systemMap:\{\.\.\.POWERHOUSE_SYSTEM_MAP,supabaseInventory\}/);
+  assert.match(api,/loadSupabaseSystemMapInventory/);
+  assert.match(api,/status:'UNAVAILABLE'/);
   assert.match(ui,/Systeemkaart/);
   assert.match(ui,/systemMapView/);
   assert.match(ui,/tab:'system-map'/);
   assert.match(ui,/Iedere huidige en toekomstige agent/);
+  assert.match(ui,/providerreadback ontbreekt/);
 });
