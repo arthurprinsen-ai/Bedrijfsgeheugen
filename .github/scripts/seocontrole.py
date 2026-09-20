@@ -187,8 +187,11 @@ def claimt(zoekwoord, pagina):
     """
     woorden = [w for w in zoekwoord.split() if w not in ('van', 'de', 'het', 'een', 'in', 'je')]
     expliciet = norm(pagina.get('zoekwoord', ''))
-    if expliciet and expliciet != norm(zoekwoord):
-        return False
+    if expliciet:
+        # Canonical SEO enrichment emits the authoritative keyword cluster meta.
+        # Ownership is therefore proven by an exact meta match; title/H1 remains
+        # a fallback only for legacy pages without canonical metadata.
+        return expliciet == norm(zoekwoord)
     doel = norm(zonder_merk(pagina['titel'])) + ' ' + norm(' '.join(pagina['h1']))
     return all(any(d.startswith(w[:max(4, len(w) - 2)]) for d in doel.split()) for w in woorden)
 
