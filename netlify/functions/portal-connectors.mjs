@@ -1,3 +1,4 @@
+// Shared platform/api and platform/saas modules are part of this Netlify runtime bundle; production readback must treat their changes as deploy-relevant.
 import {getUser} from '@netlify/identity';
 import {handlePortalConnectorsRequest} from '../../platform/api/portal-connectors-handler.mjs';
 import {createPortalConnectorsStore} from './_portal-connectors-store.mjs';

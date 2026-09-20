@@ -37,6 +37,15 @@ test('Netlify-hosted backend function changes require exact production deploymen
   assert.match(workflow, /Install production browser verifier[\s\S]*browser_required == 'true'/);
 });
 
+test('shared Netlify runtime dependencies also require exact production deployment', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  for (const prefix of ['platform/api/','platform/saas/','platform/connectors/','platform/read-models/']) {
+    assert.match(workflow,new RegExp(prefix.replaceAll('/','\\/')));
+  }
+  assert.match(workflow,/netlifyRuntimePrefixes/);
+  assert.match(workflow,/netlifyRuntimeRequired=.*netlifyRuntimePrefixes/);
+});
+
 test('Portal V2 changes require exact Netlify deployment and browser readback of the portal shell', async () => {
   const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(workflow, /portalRequired=.*suites\.portal === true/);
@@ -102,6 +111,8 @@ test('production truth governance fails closed across PR, merge, deploy and live
   assert.equal(contract.productionTruth.netlifyReadyWithoutShaMatchIsLive, false);
   assert.equal(contract.productionTruth.exactMainToProductionShaMatchRequired, true);
   assert.equal(contract.productionTruth.liveReadbackRequired, true);
+  assert.equal(contract.productionTruth.sharedNetlifyRuntimeDeploymentRequired, true);
+  assert.deepEqual(contract.productionTruth.sharedNetlifyRuntimePrefixes, ['platform/api/','platform/saas/','platform/connectors/','platform/read-models/']);
   assert.deepEqual(contract.productionTruth.requiredLineage, [
     'source_pr', 'head_sha', 'delivery_pr', 'main_sha', 'netlify_deploy_id', 'netlify_commit_ref', 'live_readback',
   ]);

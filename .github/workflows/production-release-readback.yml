@@ -49,7 +49,14 @@ jobs:
           const websiteRequired=readbackControlPlaneOnly ? false : suites.website === true;
           const portalRequired=readbackControlPlaneOnly ? false : suites.portal === true;
           const browserRequired=websiteRequired || portalRequired;
-          const netlifyRuntimeRequired=!readbackControlPlaneOnly && changedPaths.some(path => path.startsWith('netlify/functions/'));
+          const netlifyRuntimePrefixes=[
+            'netlify/functions/',
+            'platform/api/',
+            'platform/saas/',
+            'platform/connectors/',
+            'platform/read-models/',
+          ];
+          const netlifyRuntimeRequired=!readbackControlPlaneOnly && changedPaths.some(path => netlifyRuntimePrefixes.some(prefix => path.startsWith(prefix)));
           const deploymentRequired=browserRequired || netlifyRuntimeRequired;
 
           let routes=[];
