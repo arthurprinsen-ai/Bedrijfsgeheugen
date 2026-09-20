@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "social-publisher-dispatching-state-contract-v1",
+  "compiler": {
+    "failure_class": "STATE_MACHINE_SCHEMA_DRIFT",
+    "scope": "SOCIAL_PUBLISHER",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The social publisher introduced an atomic content_ready -> dispatching claim before provider side effects, but the powerhouse_channel_decisions database check constraint did not include dispatching. Production therefore raised SQLSTATE 23514 immediately after a successful pre-publish review, before capability issuance or provider dispatch.",
+  "prevention": [
+    "Every runtime state transition must be represented in the database state constraint in the same delivery lineage.",
+    "Regression-test publisher claim states against the migration that defines allowed database states.",
+    "Keep dispatching as the single-writer idempotency barrier before any external provider side effect.",
+    "Do not bypass the atomic claim to recover from constraint drift."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "supabase/migrations/20260920102000_social_publisher_dispatching_state_contract.sql",
+    "tests/brain-social-publisher-dispatching-state-contract.test.mjs",
+    "production:SQLSTATE 23514 powerhouse_channel_decisions_state_chk"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-publisher-dispatching-state-contract.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "delivery",
+    "social",
+    "instagram-composio-publisher"
+  ],
+  "skill_projection_required": true
+}
