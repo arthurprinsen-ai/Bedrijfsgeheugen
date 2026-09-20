@@ -21,6 +21,10 @@
     "canary": [
       "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs",
       "tests/brain-powerhouse-control-center-admin-endpoint-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-control-center-admin-gate-v1.test.mjs",
+      "tests/brain-powerhouse-control-center-admin-endpoint-v1.test.mjs"
     ]
   },
   "evidence": [
