@@ -89,7 +89,7 @@ function specialistContent(pageId,model,navigation){
     const audit=Array.isArray(runtime?.audit?.items)?runtime.audit.items:[];
     const outcomes=Array.isArray(runtime?.outcomes?.items)?runtime.outcomes.items:[];
     const verified=outcomes.filter(item=>item?.healthy===true||String(item?.status).toLowerCase()==='ok').length;
-    const updated=runtime?.sources?.updatedAt||runtime?.observability?.updatedAt||'Onbekend';
+    const updated=runtime?.sources?.updatedAt||runtime?.observability?.updatedAt||'—';
     const blocks=[
       {type:'metrics',title:'Vertrouwensbasis',items:[['Bronnen gezond',sources.length?healthy+'/'+sources.length:'—'],['Auditbewijzen',audit.length?String(audit.length):'—'],['Geverifieerde outcomes',outcomes.length?verified+'/'+outcomes.length:'—'],['Laatste bronupdate',String(updated)]],derived:Boolean(sources.length||audit.length||outcomes.length)},
       {type:'worklist',title:'Wat Powerhouse altijd controleerbaar maakt',items:[['Feit ≠ afleiding','Klantfeit, berekening, hypothese en voorspelling krijgen een verschillende bewijsstatus.'],['Geen nepzekerheid','Geen confidence-percentage zonder gekalibreerd modelbewijs.'],['Bron en actualiteit','Materiële AI-output toont herkomst, freshness en evidence-status.'],['Tegenspraak zichtbaar','Conflicterende bronnen en ontbrekend bewijs worden niet weggepoetst.'],['Actie pas bewezen na readback','Een agentactie telt pas als uitgevoerd na provider/runtime-verificatie.'],['Leren van uitkomsten','Werkelijk resultaat en correcties beïnvloeden volgend advies.']],derived:false},
