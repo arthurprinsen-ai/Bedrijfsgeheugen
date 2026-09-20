@@ -56,10 +56,11 @@ def laad_canonieke_eigenaren():
         eigenaren = {}
         for entry in paginas:
             route = urlparse(entry.get('route', '')).path or '/'
-            for zw in [entry.get('primary_keyword', '')] + entry.get('secondary_keywords', []):
-                zw = norm(zw)
-                if zw and zw not in eigenaren:
-                    eigenaren[zw] = route
+            # The registry contract has one primary keyword owner per page. Secondary
+            # keywords are supporting variants and do not each need an exact title/H1 claim.
+            zw = norm(entry.get('primary_keyword', ''))
+            if zw and zw not in eigenaren:
+                eigenaren[zw] = route
         return eigenaren
     except (OSError, ValueError, TypeError):
         return None
@@ -217,7 +218,7 @@ def lees_paginas():
             'bestand': f, 'url': url, 'ruw': s, 'hoofd': hoofd,
             'titel': html.unescape((re.search(r'<title>(.*?)</title>', s, re.S) or [None, ''])[1]),
             'meta': html.unescape((re.search(r'<meta name="description" content="(.*?)"', s, re.S) or [None, ''])[1]),
-            'zoekwoord': html.unescape((re.search(r'<meta name="bg-zoekwoord" content="(.*?)"', s, re.S) or [None, ''])[1]),
+            'zoekwoord': html.unescape((re.search(r'<meta name="(?:bg-zoekwoord|bg-keyword-cluster)" content="(.*?)"', s, re.S) or [None, ''])[1]),
             'h1': re.findall(r'<h1[^>]*>(.*?)</h1>', s, re.S),
             'h2': [norm(x) for x in re.findall(r'<h2[^>]*>(.*?)</h2>', s, re.S)],
             'canon': (re.search(r'<link rel="canonical" href="(.*?)"', s) or [None, ''])[1],
