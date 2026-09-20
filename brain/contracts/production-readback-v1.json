@@ -23,7 +23,22 @@
     "netlifyReadyWithoutShaMatchIsLive": false,
     "exactMainToProductionShaMatchRequired": true,
     "liveReadbackRequired": true,
-    "requiredLineage": ["source_pr", "head_sha", "delivery_pr", "main_sha", "netlify_deploy_id", "netlify_commit_ref", "live_readback"]
+    "requiredLineage": [
+      "source_pr",
+      "head_sha",
+      "delivery_pr",
+      "main_sha",
+      "netlify_deploy_id",
+      "netlify_commit_ref",
+      "live_readback"
+    ],
+    "sharedNetlifyRuntimeDeploymentRequired": true,
+    "sharedNetlifyRuntimePrefixes": [
+      "platform/api/",
+      "platform/saas/",
+      "platform/connectors/",
+      "platform/read-models/"
+    ]
   },
   "connectorReadiness": {
     "maxAttempts": 8,
@@ -36,7 +51,11 @@
   },
   "websiteReadback": {
     "exactCommitMarker": true,
-    "routes": ["/", "/prijzen", "/over-ons"],
+    "routes": [
+      "/",
+      "/prijzen",
+      "/over-ons"
+    ],
     "maxAttempts": 40,
     "contentAndShellVerification": true
   },
@@ -50,6 +69,28 @@
     "regressionTest": "tests/brain-production-release-readback-scope.test.mjs",
     "writeback": "canonical-universal-learning",
     "knownLesson": "docs/brain/lessons/production-readback-readiness-503-2026-09-15.json",
-    "requiredFields": ["fingerprint", "event_kind", "stage", "component_type", "component_id", "owner", "reason", "rootCause", "failedApproach", "fix", "preventionRule", "regressionTest", "evidence", "status", "first_seen", "last_seen", "last_changed", "evidence_hash", "retry_budget", "required_intervention", "next_escalation_at"]
+    "requiredFields": [
+      "fingerprint",
+      "event_kind",
+      "stage",
+      "component_type",
+      "component_id",
+      "owner",
+      "reason",
+      "rootCause",
+      "failedApproach",
+      "fix",
+      "preventionRule",
+      "regressionTest",
+      "evidence",
+      "status",
+      "first_seen",
+      "last_seen",
+      "last_changed",
+      "evidence_hash",
+      "retry_budget",
+      "required_intervention",
+      "next_escalation_at"
+    ]
   }
 }
