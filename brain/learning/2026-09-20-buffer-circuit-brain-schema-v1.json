@@ -1,0 +1,38 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "buffer-rate-limit-circuit-brain-schema-v1",
+  "compiler": {
+    "failure_class": "SCHEMA_CONTRACT_MISMATCH",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The first Buffer circuit implementation used non-canonical brain_records values RuntimeState/runtime_state. Production schema only allows CurrentState/current_state, so a live 429 could fail while persisting the circuit state.",
+  "prevention": [
+    "Validate brain_records record_type and record_kind against live database constraints before production writeback.",
+    "Use CurrentState/current_state for runtime provider circuit state.",
+    "Regression-test both accepted canonical values and absence of the invalid values.",
+    "Keep the Buffer circuit fail-safe: LinkedIn stays content_ready and no duplicate publication is created."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+  ],
+  "tests": [
+    "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "social",
+    "data-contracts"
+  ],
+  "skill_projection_required": true,
+  "production_readback": "Pending protected merge, exact-main publisher deploy and live brain_records circuit-state readback."
+}
