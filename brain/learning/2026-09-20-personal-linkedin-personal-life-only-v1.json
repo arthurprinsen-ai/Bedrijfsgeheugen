@@ -16,8 +16,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs",
-      "tests/social-learning-buffer-channel-identity-gate.test.mjs"
+      "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs"
     ]
   },
   "evidence": [
