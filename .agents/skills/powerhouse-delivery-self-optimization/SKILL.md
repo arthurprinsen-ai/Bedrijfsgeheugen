@@ -231,3 +231,20 @@ Provider-runtime proof is not complete when it exists only in PR prose. For ever
 - reject missing, duplicate, malformed, non-ACTIVE or hash-invalid provider identities fail-closed.
 
 This complements direct provider inspection: the deployment/readback actor establishes provider truth; the canonical control plane immutably binds that truth to the exact terminal obligation and main SHA.
+
+
+## Exact-head merge admission; generic status contexts are not authority
+
+Fingerprint: `delivery|exact-head-required-workflow|no-generic-context-merge|v1`.
+
+A GitHub branch-protection status named `test`, mergeability, or a stale green check is never sufficient merge authority.
+
+Before every protected merge, the executing agent/writer must independently prove on the **current PR head SHA**:
+- the canonical `Required test` workflow run for that exact SHA is completed with `success`;
+- canonical BRAIN and CodeQL are completed with `success` when applicable;
+- any fail-closed domain workflow relevant to the mutation has not completed red;
+- the PR head has not moved since those checks were read.
+
+If Required is queued/in-progress, if the head moved, or if a relevant Supabase security/preview workflow is red, merge is forbidden even when GitHub reports the PR as mergeable.
+
+Reference incident: PR #2475 merged at head `539a9a934d11f6373636da6144a38e76b8f28e46` while its Supabase Security Contract and Supabase PR Preview were red and Required was still in progress. The generic protected context name `test` was therefore not adequate evidence of canonical Required completion.
