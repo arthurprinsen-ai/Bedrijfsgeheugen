@@ -1,0 +1,43 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "composio-security-required-merge-admission-v1",
+  "compiler": {
+    "failure_class": "MERGE_ADMISSION_FALSE_GREEN",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "PR #2475 merged while canonical Required was still in progress and Supabase Security Contract plus Supabase PR Preview were red. The migration also used REVOKE ALL while the machine security contract intentionally requires explicit REVOKE EXECUTE for SECURITY DEFINER functions.",
+  "prevention": [
+    "Use explicit REVOKE EXECUTE ON FUNCTION ... FROM public, anon, authenticated for internal SECURITY DEFINER RPCs.",
+    "Regression-test the exact canonical revocation syntax.",
+    "Never use generic branch-protection context names or mergeable=true as merge authority.",
+    "Before merge, independently verify the canonical Required workflow on the current exact PR head is completed success and re-read the head immediately before merge.",
+    "Treat red domain security/preview workflows as merge blockers for their affected surfaces."
+  ],
+  "evidence": [
+    "supabase/migrations/20260920111000_admin_composio_key_onboarding.sql",
+    "tests/brain-admin-composio-key-onboarding.test.mjs",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "tests": [
+    "tests/brain-admin-composio-key-onboarding.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "security",
+    "supabase"
+  ],
+  "skill_projection_required": true,
+  "production_readback": "Pending exact-head gates, protected merge and canonical migration/security readback.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-admin-composio-key-onboarding.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-admin-composio-key-onboarding.test.mjs"
+    ]
+  }
+}
