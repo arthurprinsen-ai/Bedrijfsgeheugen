@@ -197,5 +197,25 @@
     "authority": "CANONICAL_POLICY_REMAINS_AUTHORITATIVE",
     "required_agent_entrypoint": "AGENTS.md",
     "regression": "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+  },
+  "system_map_registration": {
+    "required": true,
+    "canonical_human_authority": {
+      "notion_page_id": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+      "title": "Powerhouse Canonical System Map & Agent Update Contract"
+    },
+    "machine_manifest": "platform/system-map/canonical-system-map.mjs",
+    "portal_surface": "powerhouse-control-center/system-map",
+    "required_inventory_sources": [
+      ".agents/skills",
+      "platform/agents",
+      "netlify/functions",
+      "supabase/functions",
+      ".github/workflows"
+    ],
+    "runtime_actor_rule": "Every material chat, agent, workflow and autonomous capability must emit canonical runtime evidence carrying actor identity so the live System Map can project active actors automatically.",
+    "structural_change_rule": "Creating, renaming, retiring or materially rewiring an agent, skill, workflow, Netlify function, Supabase function, intelligence layer or authority relation requires the System Map manifest and human System Map to be updated in the same lineage.",
+    "fail_closed_state": "SYSTEM_MAP_WRITEBACK_INCOMPLETE",
+    "terminal_rule": "No structural topology change may become LIVE_BEWEZEN while repository inventory, runtime actor evidence or canonical System Map writeback is stale or missing."
   }
 }

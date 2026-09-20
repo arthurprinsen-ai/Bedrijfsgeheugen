@@ -335,3 +335,20 @@ Fingerprint: `postgres-view-replace-upgrade-column-order-v1`.
 - Never rely on PostgreSQL to reinterpret a shifted output column as a rename; production will reject this with `42P16`.
 - A drop/recreate view migration requires explicit dependency analysis and is not the default repair.
 - Release verification for view evolution must include an upgrade-path replay against the previous canonical view shape.
+
+
+## Live System Map registration
+
+Fingerprint: `powerhouse-canonical-system-map-agent-update-contract-v1`.
+
+Every current and future material chat, agent, workflow, skill or autonomous capability must remain discoverable in the one canonical System Map. The human authority is Notion page `3dcda36a-ac8a-8152-be3d-edbb32b06239`; the machine manifest is `platform/system-map/canonical-system-map.mjs`; the operator surface is the `Systeemkaart` tab in Powerhouse Control Center.
+
+Mandatory:
+- read the existing System Map before structural work;
+- reuse an existing component/agent before creating a new one;
+- on create/rename/retire/rewire, update identity, owner, domain, inputs, outputs and relations in the same lineage;
+- emit runtime evidence with actor identity so active chats/agents/workflows appear automatically;
+- keep repository inventories for skills, agent-fabric modules, Netlify functions, Supabase Edge Functions and GitHub workflows synchronized;
+- require System Map read-after-write before a structural change may be `LIVE_BEWEZEN`.
+
+A material component that exists in execution but not in the canonical System Map is `SYSTEM_MAP_WRITEBACK_INCOMPLETE`, not done.

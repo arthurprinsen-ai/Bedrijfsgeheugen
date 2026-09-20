@@ -5,7 +5,7 @@ const lower=value=>String(value??'').toLowerCase();
 
 const PERIODS={today:1,week:7,month:30,all:0};
 const TABS=[
-  ['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
+  ['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
   ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs']
 ];
 
@@ -107,6 +107,50 @@ function overview(events,observability){
   <section class="poc-panel"><div class="poc-panelhead"><h4>Dagelijkse activiteit</h4><span>${s.events} events · ${s.sources} bronnen · ${s.layers} lagen</span></div>${timeline(events.slice(0,80))}</section>`;
 }
 
+function systemMapView(systemMap,events){
+  if(!systemMap)return empty('De canonieke System Map ontbreekt in de beveiligde runtimeprojectie.');
+  const snapshot=systemMap.providerSnapshot||{};
+  const inventories=systemMap.inventories||{};
+  const liveSupabase=systemMap.supabaseInventory||{};
+  const supabaseCatalog=liveSupabase.inventory||{};
+  const liveTables=arr(supabaseCatalog.tables),liveViews=arr(supabaseCatalog.views),liveDbFunctions=arr(supabaseCatalog.functions),liveCron=arr(supabaseCatalog.active_cron_jobs);
+  const runtimeActors=unique(events.map(e=>e.actor).filter(Boolean));
+  const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
+  const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
+  const flows=arr(systemMap.flow).map(edge=>`<div class="psm-edge"><b>${esc(edge.from)}</b><span>→</span><b>${esc(edge.to)}</b><small>${esc(edge.label)}</small></div>`).join('');
+  const inventory=(title,items)=>`<details class="psm-inventory"><summary><b>${esc(title)}</b><span>${arr(items).length}</span></summary><div>${arr(items).map(item=>`<code>${esc(item)}</code>`).join('')}</div></details>`;
+  const contract=systemMap.agentRegistrationContract||{};
+  return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Powerhouse met elkaar</h4><p>GitHub definieert en levert, Netlify ontsluit, Supabase is de canonieke runtime, Notion projecteert de menselijke waarheid en Portal V2 maakt alles bestuurbaar. Runtime-actors worden automatisch toegevoegd zodra zij evidence met actor-identiteit leveren.</p></div><small>Snapshot ${esc(fmtTime(systemMap.observedAt))}</small></section>
+  <div class="poc-kpis psm-kpis">
+    ${kpi('Supabase tabellen',liveSupabase.status==='LIVE'?liveTables.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
+    ${kpi('Supabase views',liveSupabase.status==='LIVE'?liveViews.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
+    ${kpi('DB functions',liveSupabase.status==='LIVE'?liveDbFunctions.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
+    ${kpi('Actieve cron-jobs',liveSupabase.status==='LIVE'?liveCron.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
+    ${kpi('GitHub workflows',snapshot.github?.workflows??arr(inventories.githubWorkflows).length,'delivery + intelligence')}
+    ${kpi('Netlify functions',snapshot.netlify?.functions??arr(inventories.netlifyFunctions).length,'API + portal boundary')}
+  </div>
+  <section class="poc-panel"><div class="poc-panelhead"><h4>Vier authorities + surfaces</h4><span>één Powerhouse, geen parallelle waarheid</span></div><div class="psm-sources">${sourceCards}</div></section>
+  <section class="poc-panel"><div class="poc-panelhead"><h4>Intelligentielagen</h4><span>${arr(systemMap.intelligenceLayers).length} gekoppelde lagen</span></div><div class="psm-layers">${layers}</div></section>
+  <div class="poc-grid2">
+    <section class="poc-panel"><h4>Datastroom & samenhang</h4><div class="psm-flow">${flows}</div></section>
+    <section class="poc-panel"><h4>Agents die nu in runtime zichtbaar zijn</h4><div class="psm-actors">${runtimeActors.length?runtimeActors.map(actor=>`<span>${esc(actor)}</span>`).join(''):empty('Nog geen actor-events binnen de geladen runtime-evidence.')}</div><p class="poc-note">Dit is dynamisch: een chat/agent/workflow die canonieke runtime-evidence schrijft, verschijnt hier zonder handmatige pagina-edit.</p></section>
+  </div>
+  <section class="poc-panel"><div class="poc-panelhead"><h4>Volledige technische inventaris</h4><span>expand/collapse</span></div>
+    <div class="psm-inventories">
+      ${inventory('GitHub workflows',inventories.githubWorkflows)}
+      ${inventory('Netlify functions',inventories.netlifyFunctions)}
+      ${inventory('Supabase Edge Functions',inventories.supabaseFunctions)}
+      ${liveSupabase.status==='LIVE'?inventory('Supabase tabellen · live',liveTables):''}
+      ${liveSupabase.status==='LIVE'?inventory('Supabase views · live',liveViews):''}
+      ${liveSupabase.status==='LIVE'?inventory('Supabase databasefuncties · live',liveDbFunctions):''}
+      ${liveSupabase.status==='LIVE'?inventory('Supabase cron-jobs · live',liveCron):`<div class="poc-empty">Supabase live inventory: ${esc(liveSupabase.reason||'UNAVAILABLE')}</div>`}
+      ${inventory('Powerhouse skills',inventories.skills)}
+      ${inventory('Agent fabric modules',inventories.agentFabricModules)}
+    </div>
+  </section>
+  <section class="poc-panel psm-contract"><div><span>Agent update contract</span><h4>Iedere huidige en toekomstige agent moet zichzelf vindbaar maken</h4><p>${esc(contract.rule||'')}</p></div><div class="poc-checks">${arr(contract.onCreateOrChange).map(item=>`<span>${esc(item)}</span>`).join('')}</div><p class="poc-note"><b>Fail-closed:</b> ${esc(contract.failClosed||'')}</p></section>`;
+}
+
 async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
   const identity=globalThis.netlifyIdentity;
   const user=identity?.currentUser?.();
@@ -123,7 +167,7 @@ async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
   if(response.status===403)return {status:'forbidden',runtime:null};
   if(!response.ok)return {status:'error',runtime:null};
   const projection=await response.json();
-  return {status:'ready',runtime:mapRuntimeProjection(projection)};
+  return {status:'ready',runtime:{...mapRuntimeProjection(projection),systemMap:projection.systemMap||null}};
 }
 
 function accessState(root,status,onLogin){
@@ -137,7 +181,7 @@ function accessState(root,status,onLogin){
 }
 
 export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fetch}={}){
-  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'overview'};
+  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'system-map'};
   const root=document.createElement('section');root.className='poc';container.innerHTML='';container.appendChild(root);
   let securedRuntime=null;
   let destroyed=false;
@@ -166,7 +210,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
     root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render()}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):deliveryView(events,obs);
+    body.innerHTML=state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):deliveryView(events,obs);
   }
 
   async function refresh(){
