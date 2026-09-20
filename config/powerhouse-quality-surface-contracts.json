@@ -462,6 +462,13 @@
       "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
       "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "netlify_function:social-publication-delivery",
+      "type": "netlify_function",
+      "authority": "netlify/functions/social-publication-delivery.mjs",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
     }
   ]
 }
