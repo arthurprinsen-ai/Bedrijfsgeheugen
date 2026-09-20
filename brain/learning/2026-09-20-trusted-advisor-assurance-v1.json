@@ -15,9 +15,7 @@
   "prevention_rule": "Every material customer-facing AI analysis, summary, recommendation, chat answer and autonomous action must inherit the Trusted Advisor assurance contract: distinguish facts from derivations and hypotheses, expose provenance/freshness/evidence gaps, never invent confidence percentages, fail closed on missing evidence, require provider/runtime readback for executed actions, and feed verified outcomes and customer corrections back into future advice.",
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/trusted-advisor-assurance.test.mjs",
-      "portal-v2/tests/ask-portal-trust.test.mjs",
-      "portal-v2/tests/no-demo-data.test.mjs"
+      "tests/brain-trusted-advisor-assurance-v1.test.mjs"
     ]
   },
   "evidence": [
