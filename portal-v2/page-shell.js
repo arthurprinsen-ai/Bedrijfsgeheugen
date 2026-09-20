@@ -18,6 +18,7 @@ import { mountRoadmapWorkspace } from './modules/roadmap-workspace.js';
 import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
 import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js';
 import { mountPowerhouseObservability } from './modules/powerhouse-observability.js';
+import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -298,6 +299,7 @@ export function openPortalPage(pageId){
     mountChangeWizard(wizard,{domainState:portalContext.domainState,onSaved:()=>openPortalPage('wijzigingen')});
   }
   ensureRuntimeEvidence();
+  mountTrustedAdvisorAssurance(root.querySelector('.pvbody'),{pageId,state:portalStateSnapshot(),openPage:openPortalPage});
   mountAskPortal(root.querySelector('.pvbody'),{currentPage:()=>pageId});
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
@@ -320,6 +322,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./entrepreneur-intelligence.css');
   ensureStylesheet('./legacy-external-placements.css');
   ensureStylesheet('./powerhouse-observability.css');
+  ensureStylesheet('./trusted-advisor-assurance.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
