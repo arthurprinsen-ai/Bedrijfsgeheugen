@@ -10,7 +10,8 @@ const run=(text)=>authorizeSocialPublication({
   text,
   lineage,
   personalTruth,
-  companyPageInterchangeable:false
+  companyPageInterchangeable:false,
+  personalLifeOnlyVerified:true
 });
 
 test('business advice with first-person wrapper cannot masquerade as personal content',()=>{
@@ -28,4 +29,11 @@ test('weekend wrapper cannot turn leadership thought-leadership into personal co
 test('concrete harmless lived personal event remains allowed',()=>{
   const result=run('Ik stond thuis vanochtend ruzie te maken met mijn printer. Volgens mij wint hij.');
   assert.equal(result.authorized,true);
+});
+
+
+test('personal lane fails closed when life-only verification is missing',()=>{
+  const result=authorizeSocialPublication({channelKind:'linkedin_personal',channelId:CHANNELS.linkedin_personal.channelId,text:'Ik stond thuis vanochtend met mijn printer.',lineage,personalTruth,companyPageInterchangeable:false});
+  assert.equal(result.authorized,false);
+  assert.ok(result.reasons.includes('PERSONAL_LIFE_ONLY_UNVERIFIED'));
 });

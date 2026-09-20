@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "personal-linkedin-personal-life-only-v1",
+  "compiler": {
+    "failure_class": "PERSONAL_CHANNEL_BUSINESS_CONTENT_LEAK"
+  },
+  "root_cause": "The existing personal LinkedIn semantic gate blocked many business signals but still retained a single-use business exception and did not require an explicit machine-verifiable personal-life-only policy flag across contract, generation and pre-publish runtime.",
+  "prevention": [
+    "Personal LinkedIn is exclusively personal life; business exceptions are forbidden.",
+    "Require explicit personal-life-only policy verification before authorization.",
+    "Inspect final text semantically for business, consultant, corporate and forced-business-moral signals.",
+    "Constrain the generator prompt and final-copy validator to the same personal-life-only fingerprint.",
+    "Keep business topics on the company page and keep personal/company learning models separate."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs"
+    ]
+  },
+  "evidence": [
+    "config/social-channel-identity-contract.json",
+    "platform/social-channel-identity-gate.mjs",
+    "supabase/functions/bg-pre-publish-review/index.ts",
+    "supabase/functions/powerhouse-content-orchestrator/index.ts"
+  ],
+  "tests": [
+    "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs",
+    "tests/social-learning-buffer-channel-identity-gate.test.mjs"
+  ],
+  "production_readback": "Pending protected merge, Supabase function deployment/readback and exact-main terminal closure.",
+  "skill_targets": [
+    "content",
+    "social",
+    "delivery"
+  ],
+  "skill_projection_required": true
+}

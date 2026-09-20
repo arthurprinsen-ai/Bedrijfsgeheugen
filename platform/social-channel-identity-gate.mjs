@@ -10,6 +10,7 @@ const BUSINESS=/\b(bedrijfsgeheugen|consultancy|consultant|klant|opdrachtgever|o
 const CORPORATE=/\b(wij helpen|wij bieden|wij zorgen|onze klanten|onze aanpak|onze dienstverlening|onze expertise|neem contact op|vrijblijvend gesprek|ons aanbod)\b/i;
 const MORAL=/\b(dit geldt ook voor organisaties|de les voor bedrijven|wat organisaties hiervan kunnen leren|in mijn werk zie ik|bij een klant|voor leiders|managementles|de les is|wat we hiervan kunnen leren|dit leert mij dat)\b/i;
 const CONSULTANT=/\b(thought leadership|best practice|proces(?:sen)? slimmer|effici[eë]nter werken|waarde creëren|transformatie|governance|roadmap|stakeholder|executie|implementatie|optimaliseren|schaalbaar|future.?proof|leiderschap|strategie concreet maken)\b/i;
+const PERSONAL_LIFE_ONLY_POLICY='personal-linkedin-personal-life-only-v1';
 function hasConcretePersonalLife(text){
  return FIRST_PERSON.test(text)&&(
    (LIVED_CONTEXT.test(text)&&LIVED_ACTION.test(text))||
@@ -24,13 +25,13 @@ export function authorizeSocialPublication(input={}){
  if(!text) reasons.push('EMPTY_CONTENT');
  if(contract.requiredLineage.some(k=>!has(input.lineage?.[k]))) reasons.push('LINEAGE_INCOMPLETE');
  if(input.channelKind==='linkedin_personal'){
-  const exception=input.businessException;
-  const exactException=exception?.explicitUserRequest===true&&has(exception?.contentId)&&exception.contentId===input.lineage?.contentId&&exception?.singleUse===true;
+  if(contract.personalLinkedInPolicyFingerprint!==PERSONAL_LIFE_ONLY_POLICY) reasons.push('PERSONAL_LIFE_ONLY_POLICY_UNAVAILABLE');
+  if(input.personalLifeOnlyVerified!==true) reasons.push('PERSONAL_LIFE_ONLY_UNVERIFIED');
   if(!hasConcretePersonalLife(text)) reasons.push('CONCRETE_PERSONAL_LIFE_EVENT_REQUIRED');
-  if(BUSINESS.test(text)&&!exactException) reasons.push('BUSINESS_CONTENT_ON_PERSONAL');
+  if(BUSINESS.test(text)) reasons.push('BUSINESS_CONTENT_ON_PERSONAL');
   if(CORPORATE.test(text)) reasons.push('CORPORATE_VOICE_ON_PERSONAL');
   if(MORAL.test(text)) reasons.push('FORCED_BUSINESS_MORAL');
-  if(CONSULTANT.test(text)&&!exactException) reasons.push('CONSULTANT_VOICE_ON_PERSONAL');
+  if(CONSULTANT.test(text)) reasons.push('CONSULTANT_VOICE_ON_PERSONAL');
   if(input.companyPageInterchangeable!==false) reasons.push('COMPANY_PAGE_INTERCHANGEABLE_NOT_REJECTED');
   if(!contract.personalTruthClasses.includes(input.personalTruth?.class)) reasons.push('FIRST_PERSON_TRUTH_CLASS_REQUIRED');
   if(contract.personalTruthRequiresEvidenceRefs&&refs(input.personalTruth).length===0) reasons.push('FIRST_PERSON_EVIDENCE_REQUIRED');
