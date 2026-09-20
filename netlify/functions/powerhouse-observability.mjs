@@ -18,6 +18,24 @@ const reply=(body,status=200)=>Response.json(body,{status,headers:{
 const authorityUrl=()=>String(Netlify.env.get('BRAIN_OPERATING_AUTHORITY_URL')||'').trim();
 const adminEmails=()=>String(Netlify.env.get('POWERHOUSE_ADMIN_EMAILS')||'').trim();
 
+
+async function loadSupabaseSystemMapInventory(){
+  const baseUrl=String(Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')||'').trim().replace(/\/$/,'');
+  const serviceToken=String(Netlify.env.get('BG_PORTAL_EU_SERVICE_TOKEN')||'').trim();
+  if(!baseUrl||!serviceToken)return {status:'UNAVAILABLE',reason:'SUPABASE_INVENTORY_CONFIG_MISSING',inventory:null};
+  try{
+    const response=await fetch(`${baseUrl}/functions/v1/powerhouse-system-map-inventory`,{
+      method:'POST',
+      headers:{'content-type':'application/json','x-bg-service-token':serviceToken}
+    });
+    const body=await response.json().catch(()=>null);
+    if(!response.ok)return {status:'UNAVAILABLE',reason:body?.error||`SUPABASE_INVENTORY_${response.status}`,inventory:null};
+    return {status:'LIVE',reason:null,inventory:body?.inventory||null,generatedAt:body?.generatedAt||null};
+  }catch(error){
+    return {status:'UNAVAILABLE',reason:error?.message||'SUPABASE_INVENTORY_READ_FAILED',inventory:null};
+  }
+}
+
 export default async request=>{
   if(request.method!=='GET')return new Response('Method Not Allowed',{status:405,headers:{allow:'GET'}});
   const authorization=request.headers.get('authorization')||'';
@@ -36,7 +54,8 @@ export default async request=>{
   const principal=principalFromUser(user,tenantId);
   try{
     const projection=await store.getProjection(tenantId,{principal});
-    return reply({ ...projection, systemMap:POWERHOUSE_SYSTEM_MAP },200);
+    const supabaseInventory=await loadSupabaseSystemMapInventory();
+    return reply({ ...projection, systemMap:{...POWERHOUSE_SYSTEM_MAP,supabaseInventory} },200);
   }catch(error){
     if(error?.code==='OBJECT_ACCESS_DENIED')return reply({error:error.code},403);
     return reply({error:'OBSERVABILITY_UNAVAILABLE'},503);
