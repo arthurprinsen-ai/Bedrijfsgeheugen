@@ -201,8 +201,9 @@ Deno.serve(async (req) => {
     }
 
     stage = 'select-pending';
-    const {data:pending,error:pendingError} = await db.from('powerhouse_channel_decisions').select('*').eq('run_date',runDate).eq('decision','publish').eq('state','decided').order('priority',{ascending:false}).limit(1).maybeSingle();
+    const {data:pendingRows,error:pendingError} = await db.from('powerhouse_channel_decisions').select('*').eq('run_date',runDate).eq('decision','publish').eq('state','decided').order('priority',{ascending:false}).limit(1);
     if (pendingError) throw new Error('PENDING_READ_FAILED');
+    const pending = Array.isArray(pendingRows) ? pendingRows[0] || null : null;
     if (!pending) return json({ok:true,runDate,generated:false,reason:'NO_PENDING_ARTIFACT',executor_capabilities,personal_source_ready:!!personalSource});
     if (pending.channel === 'linkedin_personal' && !personalSource) throw new Error('PERSONAL_TRUTH_SOURCE_UNVERIFIED');
     if (pending.channel === 'instagram_company' && !instagramVisibleIdentityProven(instagramProof)) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
