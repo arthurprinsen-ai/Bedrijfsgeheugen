@@ -5,8 +5,11 @@ function escapeAttr(value) {
 function markAnchorInContent(content, entry) {
   if (!entry?.primary_cta?.url || !entry?.primary_cta?.action) return content;
   const absolute = entry.primary_cta.url;
-  const relative = absolute.startsWith('https://www.bedrijfsgeheugen.nl/') ? absolute.slice('https://www.bedrijfsgeheugen.nl'.length) : absolute;
-  const targets = [...new Set([absolute, relative])].map(value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\  const target = entry.primary_cta.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const relative = absolute.startsWith('https://www.bedrijfsgeheugen.nl/')
+    ? absolute.slice('https://www.bedrijfsgeheugen.nl'.length)
+    : absolute;
+  const targets = [...new Set([absolute, relative])]
+    .map(value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\  const target = entry.primary_cta.url.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
   const re = new RegExp(`<a\\b([^>]*\\bhref=(?:"${target}"|'${target}')[^>]*)>`, 'i');'));
   const target = `(?:${targets.join('|')})`;
   const re = new RegExp(`<a\\b([^>]*\\bhref=(?:"${target}"|'${target}')[^>]*)>`, 'i');
