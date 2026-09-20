@@ -1,0 +1,80 @@
+{
+  "id": "trusted-advisor-assurance-v1",
+  "fingerprint": "powerhouse|trusted-advisor|assurance|v1",
+  "scope": [
+    "portal",
+    "agents",
+    "chats",
+    "analysis",
+    "summaries",
+    "recommendations",
+    "autonomous-actions"
+  ],
+  "principle": "No AI claim is trusted by presentation alone; trust must be earned through provenance, evidence, uncertainty, verification and outcome readback.",
+  "truth_states": [
+    "verified",
+    "grounded",
+    "derived",
+    "hypothesis",
+    "prediction",
+    "insufficient_evidence",
+    "unverified"
+  ],
+  "hard_rules": [
+    "Never present a hypothesis, model output or prediction as a customer fact.",
+    "Never invent a confidence percentage when no calibrated probability exists.",
+    "Every material AI output must expose provenance, freshness and evidence state.",
+    "Missing evidence must lower the trust state and remain visible to the customer.",
+    "Recommendations must expose assumptions, alternatives, downside and evidence gaps.",
+    "Autonomous actions require policy permission plus provider/runtime readback; transport success is not verification.",
+    "Outcome readback must update future advice and advisor track record.",
+    "Conflicting source evidence must be surfaced, not silently averaged away.",
+    "Customer corrections become canonical tenant knowledge and invalidate stale derived claims.",
+    "The same trust contract applies to every present and future chat and agent."
+  ],
+  "portal_surfaces": {
+    "all_pages": [
+      "assurance strip",
+      "why trust this",
+      "source health",
+      "freshness",
+      "uncertainty"
+    ],
+    "analysis_and_summary": [
+      "fact/derived/hypothesis/prediction label",
+      "evidence drawer",
+      "counter-evidence"
+    ],
+    "recommendations": [
+      "reason",
+      "alternatives",
+      "assumptions",
+      "expected impact range",
+      "decision owner",
+      "verification plan"
+    ],
+    "chat": [
+      "tenant-bound context",
+      "answer provenance",
+      "claim verification state",
+      "limitations"
+    ],
+    "trust_center": [
+      "source coverage",
+      "freshness",
+      "quality",
+      "advisor track record",
+      "corrections",
+      "audit trail",
+      "model/agent activity"
+    ],
+    "actions": [
+      "approval class",
+      "execution evidence",
+      "provider readback",
+      "rollback",
+      "outcome"
+    ]
+  },
+  "fail_closed": true
+}
