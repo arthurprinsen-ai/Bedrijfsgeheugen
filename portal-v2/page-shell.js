@@ -17,6 +17,7 @@ import { mountExecutionLadderWorkspace } from './modules/execution-ladder-worksp
 import { mountRoadmapWorkspace } from './modules/roadmap-workspace.js';
 import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
 import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js';
+import { mountPowerhouseObservability } from './modules/powerhouse-observability.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -68,6 +69,7 @@ const COPY = {
   datahubstatus:['Datahubstatus','Volg structurering, verrijking en verbinding van bedrijfsdata zonder onbewezen live-status te tonen.'],
   'brain-verwerking':['Brain-verwerking','Maak zichtbaar wat het bedrijfsbrein met context doet: begrijpen, verbinden, prioriteren en adviseren.'],
   agentstatus:['Agentstatus','Overzicht van agents, hun taakgebied en hun aantoonbare uitvoeringsstatus.'],
+  'powerhouse-control-center':['Powerhouse Control Center','Volg dagelijks wat AI, chats, agents, workflows en infrastructuur doen: activiteit, fouten, learnings, skills, delivery, kosten en bewijs in één filterbare cockpit.'],
   'actieve-acties':['Actieve acties','Van inzicht naar concrete uitvoering, eigenaar, voortgang en bewijs.'],
   'recovery-obligations':['Open recovery obligations','Elke containment of blokkade blijft zichtbaar totdat root cause, fix, test en heractivatie aantoonbaar gesloten zijn.'],
   'outcomes-evidence':['Outcomes & evidence','Koppel acties aan gemeten resultaat en bewijs zodat effect niet op aannames rust.'],
@@ -76,7 +78,7 @@ const COPY = {
   audittrail:['Audittrail','Maak besluiten, acties, wijzigingen en bewijs terugvindbaar in één traceerbare keten.']
 };
 
-const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
+const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
 const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
@@ -271,6 +273,7 @@ export function openPortalPage(pageId){
   else if(pageId==='strategy-dna') renderStrategyDna(native,{openPage:openPortalPage});
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
+  else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
   else if(['strategiemodellen','modellen'].includes(pageId)&&contract)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
@@ -316,6 +319,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./csrd-impact.css');
   ensureStylesheet('./entrepreneur-intelligence.css');
   ensureStylesheet('./legacy-external-placements.css');
+  ensureStylesheet('./powerhouse-observability.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
