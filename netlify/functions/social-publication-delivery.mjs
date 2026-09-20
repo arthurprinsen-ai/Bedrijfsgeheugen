@@ -109,25 +109,16 @@ function authorizeInstagramSource(source) {
   });
 }
 
-async function createProviderPost(channel, source, hour) {
-  if (channel === 'instagram') {
-    const auth = authorizeInstagramSource(source);
-    if (!auth.authorized) throw new Error(`INSTAGRAM_MIRA_GATE_BLOCKED:${auth.reasons.join(',')}`);
-  }
-  const input = {
-    text:source.text,
-    channelId:CHANNELS[channel],
-    schedulingType:'automatic',
-    mode:hour >= 17 ? 'shareNow' : 'addToQueue',
-    ...(source.kind === 'idea' && source.ideaId ? { ideaId:source.ideaId } : {}),
-    ...(source.media.length ? { assets:toAssets(source.media) } : {}),
-    ...(channel === 'instagram' ? { metadata:{ instagram:{ type:source.media.some((x) => x.type === 'video') ? 'reel' : 'post', shouldShareToFeed:true, isAiGenerated:true } } } : {}),
-  };
-  const query = `mutation CreatePost($input: CreatePostInput!) { createPost(input: $input) { ... on PostActionSuccess { post { id status text dueAt sentAt channelId } } ... on MutationError { message } } }`;
-  const data = await buffer({ query, variables:{ input } });
-  const result = data?.createPost;
-  if (!result?.post?.id) throw new Error(`BUFFER_CREATE_FAILED:${result?.message || 'missing_post'}`);
-  return result.post;
+async function triggerCanonicalPublisher(dateString) {
+  if (!SUPABASE_EDGE_URL || !POWERHOUSE_TOKEN) throw new Error('POWERHOUSE_DELIVERY_CONFIG_REQUIRED');
+  const response = await fetch(SUPABASE_EDGE_URL + '/functions/v1/powerhouse-social-publisher', {
+    method:'POST',
+    headers:{ 'content-type':'application/json', 'x-powerhouse-token':POWERHOUSE_TOKEN },
+    body:JSON.stringify({ runDate:dateString }),
+  });
+  const body = await response.json().catch(() => ({}));
+  if (!response.ok || body?.ok === false) throw new Error(body?.error || ('CANONICAL_SOCIAL_PUBLISHER_HTTP_' + response.status));
+  return body;
 }
 
 async function recordState({ date, channel, status, providerPost = null, reason = null, source = null }) {
@@ -178,13 +169,20 @@ export async function runSocialPublicationDelivery({ now = new Date() } = {}) {
       continue;
     }
 
-    const created = await createProviderPost(channel, decision.source, local.hour);
+    const canonical = await triggerCanonicalPublisher(local.date);
+    const canonicalChannel = channel === 'instagram' ? 'instagram_company' : channel;
+    const canonicalResult = (canonical?.results || []).find((item) => item?.channel === canonicalChannel) || null;
     posts = await getProviderPosts(local.date);
-    const readback = posts.find((x) => x.id === created.id) || created;
-    if (!['scheduled','sending','sent'].includes(String(readback.status).toLowerCase())) throw new Error(`PROVIDER_READBACK_NOT_COVERED:${channel}:${readback.status}`);
+    if (channel === 'instagram') {
+      results.push({ channel, action:'DELEGATED_TO_CANONICAL_PUBLISHER', canonical:canonicalResult });
+      continue;
+    }
+    const readback = posts
+      .filter((x) => x.channelId === CHANNELS[channel] && ['scheduled','sending','sent'].includes(String(x.status).toLowerCase()))
+      .sort((a,b) => String(b.dueAt || b.sentAt || '').localeCompare(String(a.dueAt || a.sentAt || '')))[0] || null;
+    if (!readback) throw new Error('CANONICAL_PROVIDER_READBACK_MISSING:' + channel);
     if (channel === 'linkedin_personal' && normalizeText(readback.text) !== normalizeText(decision.source.text)) throw new Error('PERSONAL_PROVIDER_TEXT_MISMATCH');
-    await recordState({ date:local.date, channel, status:String(readback.status).toLowerCase() === 'sent' ? 'LIVE_PROVEN' : 'DISPATCHED', providerPost:readback, source:decision.source });
-    results.push({ channel, action:'CREATE', providerId:readback.id, providerStatus:readback.status });
+    results.push({ channel, action:'DELEGATED_TO_CANONICAL_PUBLISHER', providerId:readback.id, providerStatus:readback.status, canonical:canonicalResult });
   }
   return { ok:true, date:local.date, results };
 }

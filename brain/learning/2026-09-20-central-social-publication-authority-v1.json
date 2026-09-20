@@ -1,0 +1,35 @@
+{
+  "fingerprint": "central-social-publication-authority-v1",
+  "date": "2026-09-20",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "DOCUMENTED_POLICY_WITHOUT_SINGLE_RUNTIME_CHOKEPOINT",
+  "scope": "RUNTIME_DATABASE_CI_PROVIDER_CONTAINMENT",
+  "machine_enforceable": true,
+  "repeat_count": 2,
+  "obligation_id": "central-social-publication-authority-v1",
+  "root_cause": "Channel rules and learning existed, but provider side effects were not cryptographically bound to one central authorization decision. A component could hold transport credentials and act after or outside semantic policy validation; provider-scheduled state could also outlive an internal BLOCKED state.",
+  "prevention_rule": "Every external social side effect requires a short-lived one-time capability issued from canonical database state and bound to run date, channel identity, exact text hash, exact final-media hash and policy version. Instagram additionally requires exact-final Mira vision proof and OpenArt lineage. Invalid scheduled provider state must be cancelled and read back as contained; internal BLOCKED alone is not containment. CI forbids direct provider side-effect primitives outside the canonical publisher.",
+  "enforcement": [
+    "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "platform/agents/completion-supervisor.mjs",
+    "tests/brain-central-social-publication-authority-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-central-social-publication-authority-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "instagram-composio-publisher"
+  ],
+  "evidence": {
+    "incident": "A generic Bedrijfsgeheugen Instagram post was visible after Mira-only behavior had already been documented and learned.",
+    "terminal_rule": "Not LIVE until merged, deployed and production readback proves authority plus containment.",
+    "regression_test": "tests/brain-central-social-publication-authority-v1.test.mjs",
+    "provider_containment": "Invalid scheduled Instagram provider state must reach CONTAINED only after external cancellation succeeds."
+  },
+  "compiler": {
+    "failure_class": "DOCUMENTED_POLICY_WITHOUT_SINGLE_RUNTIME_CHOKEPOINT"
+  }
+}

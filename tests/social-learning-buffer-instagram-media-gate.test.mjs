@@ -11,11 +11,11 @@ const frames=(identityClass='mira_daily_life',placeholderDetected=false)=>[
 const run=(mediaKind,extra={})=>authorizeSocialPublication({
  channelKind:'instagram_company',channelId:CHANNELS.instagram_company.channelId,text:'Mira zoekt de laatste versie.',lineage,
  miraGatePassed:true,contentPersona:'mira',contentClass:'mira_daily_life',mediaKind,assetUrl:'https://cdn.example/final.mp4',assetMimeType:'video/mp4',
- instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames()},
+ instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,semanticVerified:true,evidenceMethod:'vision',dailyLifeScene:true,miraCentralSubject:true,textDominant:false,brandTemplateDominant:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames()},
  ...extra
 });
 const imageVisual=(extra={})=>({
- verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-image'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,
+ verified:true,miraPresent:true,genericBrandCreative:false,semanticVerified:true,evidenceMethod:'vision',dailyLifeScene:true,miraCentralSubject:true,textDominant:false,brandTemplateDominant:false,evidenceRefs:['vision:final-image'],assetUrl:'https://cdn.example/final.jpg',placeholderDetected:false,
  identityClass:'mira_daily_life',formatVerified:true,width:1080,height:1350,colorSpace:'RGB',hasAlpha:false,
  decodeComplete:true,visualComplete:true,grayOrEmptyDetected:false,...extra
 });
@@ -24,28 +24,28 @@ const runImage=(visualExtra={},extra={})=>run('image',{
 });
 
 test('video requires start middle and end frame evidence',()=>{
- const r=run('video',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames().slice(0,2)}});
+ const r=run('video',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,semanticVerified:true,evidenceMethod:'vision',dailyLifeScene:true,miraCentralSubject:true,textDominant:false,brandTemplateDominant:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:frames().slice(0,2)}});
  assert.equal(r.authorized,false);
  assert.ok(r.reasons.includes('INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED'));
 });
 
 test('video blocks a Mira identity mismatch in any sampled frame',()=>{
  const f=frames(); f[1]={...f[1],identityClass:'generic_person'};
- const r=run('video',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:f}});
+ const r=run('video',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,semanticVerified:true,evidenceMethod:'vision',dailyLifeScene:true,miraCentralSubject:true,textDominant:false,brandTemplateDominant:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:f}});
  assert.equal(r.authorized,false);
  assert.ok(r.reasons.includes('INSTAGRAM_MIRA_FRAME_IDENTITY_REQUIRED'));
 });
 
 test('reel blocks a placeholder in any sampled frame',()=>{
  const f=frames(); f[2]={...f[2],placeholderDetected:true};
- const r=run('reel',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:f}});
+ const r=run('reel',{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,semanticVerified:true,evidenceMethod:'vision',dailyLifeScene:true,miraCentralSubject:true,textDominant:false,brandTemplateDominant:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:true,frameEvidence:f}});
  assert.equal(r.authorized,false);
  assert.ok(r.reasons.includes('INSTAGRAM_VIDEO_PLACEHOLDER_BLOCKED'));
 });
 
 test('video and reel require verified publish format',()=>{
  for(const kind of ['video','reel']){
-  const r=run(kind,{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:false,frameEvidence:frames()}});
+  const r=run(kind,{instagramVisual:{verified:true,miraPresent:true,genericBrandCreative:false,semanticVerified:true,evidenceMethod:'vision',dailyLifeScene:true,miraCentralSubject:true,textDominant:false,brandTemplateDominant:false,evidenceRefs:['vision:final-media'],assetUrl:'https://cdn.example/final.mp4',placeholderDetected:false,identityClass:'mira_daily_life',formatVerified:false,frameEvidence:frames()}});
   assert.equal(r.authorized,false);
   assert.ok(r.reasons.includes('INSTAGRAM_MEDIA_FORMAT_UNVERIFIED'));
  }
@@ -123,13 +123,12 @@ test('reel authorizes exact verified Mira MP4 with complete frame evidence',()=>
 
 test('OpenArt Veo and Placid cannot bypass the canonical media gate',()=>{
  const policy=CHANNELS.instagram_company.mediaPolicy;
- assert.deepEqual(policy.allowedKinds,['image','video','reel','carousel']);
+ assert.deepEqual(policy.allowedKinds,['image','reel']);
  assert.deepEqual(policy.requiredVideoFramePositions,['start','middle','end']);
  assert.deepEqual(policy.generatorsMayNotBypassGate,['openart','veo','placid']);
  assert.equal(policy.providerLineageRequired,true);
  assert.deepEqual(policy.providerRouting.reel.allowedProviders,['openart']);
- assert.deepEqual(policy.providerRouting.video.allowedProviders,['openart']);
- assert.deepEqual(policy.providerRouting.image.allowedProviders,['openart','placid']);
- assert.deepEqual(policy.providerRouting.carousel.imageSlideAllowedProviders,['openart','placid']);
- assert.deepEqual(policy.providerRouting.carousel.videoSlideAllowedProviders,['openart']);
+ assert.equal(policy.providerRouting.reel.requiredProvider,'openart');
+ assert.deepEqual(policy.providerRouting.image.allowedProviders,['openart']);
+ assert.equal(policy.providerRouting.image.requiredProvider,'openart');
 });

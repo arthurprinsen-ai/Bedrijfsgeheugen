@@ -26,6 +26,7 @@ Deno.serve(async req=>{
   db.from('powerhouse_instagram_media_jobs_v1').select('*').eq('tenant_id','canonical').eq('publication_date',runDate).eq('channel','instagram').maybeSingle()
  ]);
  const postType=inferType(input.postType,ob?.evidence?.post_type,ob?.evidence?.media_type,art?.generation_evidence?.post_type,art?.generation_evidence?.media_type,art?.generation_evidence?.format,rec?.evidence?.format,rec?.recommendation_type);
+ if(!['image','reel'].includes(postType))return json({ok:false,error:'INSTAGRAM_MIRA_VISUAL_OR_REEL_ONLY',postType},422);
  const {data:policy}=await db.rpc('powerhouse_instagram_provider_policy_v1',{p_post_type:postType});
  const active=new Set((ints||[]).filter((x:any)=>['actief','active','connected','ready'].includes(clean(x.status).toLowerCase())).map((x:any)=>clean(x.integration).toLowerCase()));
  const ready=(p:string)=>p==='openart'?(active.has('openart')||active.has('openart_mcp')):active.has(p);
@@ -47,11 +48,12 @@ Deno.serve(async req=>{
   let proof:any={};
 
   if(postType==='image'){
+   if(provider!=='openart')return json({ok:false,error:'OPENART_REQUIRED_FOR_MIRA_VISUAL'},422);
    const u=clean(manifest.asset_url||manifest.assetUrl);if(!u)return json({ok:false,error:'ASSET_URL_REQUIRED'},422);
    const v=await invoke(base,token,'powerhouse-instagram-media-verifier',{publicationDate:runDate,mediaUrl:u,provider,mediaType:'image',writeObligation:false});
    if(!v.body?.pass)return json({ok:false,error:'VISION_PROOF_FAILED',detail:v.body},422);
    proof={exact_final_media_proven:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:'image',media_provider:provider,media_url:u,final_media_sha256:v.body.sha256,instagram_visual:v.body.visual};
-  } else if(postType==='reel'||postType==='video'){
+  } else if(postType==='reel'){
    if(provider!=='openart')return json({ok:false,error:'OPENART_REQUIRED_FOR_VIDEO'},422);
    const u=clean(manifest.asset_url||manifest.assetUrl);if(!u)return json({ok:false,error:'VIDEO_ASSET_URL_REQUIRED'},422);
    const final=await hashRemote(u);if(final.contentType!=='video/mp4')return json({ok:false,error:'VIDEO_MP4_REQUIRED'},422);

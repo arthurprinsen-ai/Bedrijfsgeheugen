@@ -1,0 +1,39 @@
+{
+  "fingerprint": "instagram-mira-visual-reel-only-v2",
+  "date": "2026-09-20",
+  "type": "CHANNEL_IDENTITY_PREVENTION",
+  "failure_class": "GENERIC_TEXT_CARD_BYPASSED_MIRA_ONLY_POLICY",
+  "scope": "RUNTIME_AND_DATABASE",
+  "machine_enforceable": true,
+  "repeat_count": 2,
+  "security_sensitive": false,
+  "obligation_id": "instagram-mira-visual-reel-only-v2",
+  "root_cause": "The v1 Mira-only contract still accepted technically valid image/video/carousel classes and did not require Mira to be the central subject or explicitly reject text-dominant and brand-template-dominant creative. A generic text-led Bedrijfsgeheugen post could therefore remain inside an Instagram-capable path despite the intended Mira-only semantics.",
+  "prevention_rule": "Instagram accepts only exact-final Mira visuals (image) and Mira Reels (reel). Mira must be the central visible subject in a genuine daily-life scene, proven by vision. Text-dominant, brand-template-dominant, generic company creative, carousel and generic video are fail-closed. Static visuals and Reels use OpenArt; no transport may bypass the gate.",
+  "enforcement": [
+    "config/social-channel-identity-contract.json",
+    "platform/social-channel-identity-gate.mjs",
+    "supabase/functions/powerhouse-instagram-media-verifier/index.ts",
+    "supabase/functions/powerhouse-instagram-media-router/index.ts",
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "supabase/migrations/20260920065000_instagram_mira_visual_reel_only_v2.sql",
+    "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
+  "evidence": {
+    "incident": "Instagram showed a generic text-led Bedrijfsgeheugen creative instead of a real Mira visual/reel.",
+    "observed_at": "2026-09-20T08:03:00+02:00",
+    "terminal_rule": "Do not claim LIVE until protected merge, required checks, deployment and production/main readback prove v2."
+  },
+  "skill_targets": [
+    "instagram-composio-publisher"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GENERIC_TEXT_CARD_BYPASSED_MIRA_ONLY_POLICY"
+  }
+}
