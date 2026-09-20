@@ -52,6 +52,7 @@ declare
   v_requeued integer := 0;
   v_truth_reconciled integer := 0;
   v_jobs_resolved integer := 0;
+  v_terminal_jobs integer := 0;
   v_selftests_compensated integer := 0;
   v_health jsonb;
 begin
@@ -152,7 +153,8 @@ begin
    where j.operation_id=o.id
      and j.state='ESCALATED'
      and o.status in ('VERIFIED','COMPENSATED');
-  get diagnostics v_jobs_resolved = v_jobs_resolved + row_count;
+  get diagnostics v_terminal_jobs = row_count;
+  v_jobs_resolved := v_jobs_resolved + v_terminal_jobs;
 
   -- Only active desired states require fresh production truth. Retired proofs remain historical evidence.
   for v_truth in
