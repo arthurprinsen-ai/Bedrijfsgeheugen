@@ -19,9 +19,6 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs"
-    ],
-    "canary": [
-      ".github/workflows/obligation-terminal-closure.yml"
     ]
   }
 }
