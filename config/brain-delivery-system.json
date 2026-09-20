@@ -462,7 +462,8 @@
         "tools/apply-tabbladen.mjs",
         "tools/bouw-inhoudspaginas.mjs",
         "tools/bouw-losse-paginas.mjs",
-        "afsluiten.html"
+        "afsluiten.html",
+        "tools/zoekwoorden.mjs"
       ],
       "requiredContracts": [
         "BG166",
