@@ -20,6 +20,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-daily-blog-release-closure-20260920-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-daily-blog-release-closure-20260920-v1.test.mjs"
     ]
   },
   "skill_targets": [
