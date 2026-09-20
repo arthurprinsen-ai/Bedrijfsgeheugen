@@ -9,13 +9,50 @@
       "type": "profile",
       "identity": "arthur",
       "personalMeansPersonal": true,
-      "businessContentDefault": "blocked",
-      "businessExceptionScope": "exact_content_id",
+      "businessContentDefault": "blocked_without_exception",
+      "businessExceptionScope": "none",
       "requiresPersonalLifeTopic": true,
       "blocksCorporateVoice": true,
       "blocksForcedBusinessMoral": true,
       "blocksCompanyPageInterchangeableCopy": true,
-      "requiresFirstPersonTruthClassification": true
+      "requiresFirstPersonTruthClassification": true,
+      "personalLifeOnlyPolicy": "personal-linkedin-personal-life-only-v1",
+      "requiresPersonalLifeOnlyVerified": true,
+      "allowedTopicClasses": [
+        "family",
+        "parenting",
+        "children_school",
+        "hockey_sport",
+        "travel_holiday",
+        "car_transport",
+        "home_garden",
+        "consumer_technology",
+        "shopping_daily_services",
+        "family_generations",
+        "free_time",
+        "daily_routines",
+        "daily_frustrations",
+        "human_observations"
+      ],
+      "blockedTopicClasses": [
+        "companies",
+        "clients",
+        "mkb",
+        "consultancy",
+        "assignments",
+        "business_processes",
+        "organizational_ai",
+        "organizational_digitalization",
+        "bedrijfsgeheugen",
+        "sales",
+        "leads",
+        "offers",
+        "cases",
+        "business_lessons",
+        "thought_leadership"
+      ],
+      "externalSourcesMayOnlySuggestPersonalThemes": true,
+      "externalSourcesMayNotCreateArthurExperiences": true
     },
     "linkedin_company": {
       "channelId": "6a70381699afb44349f0fb36",
@@ -115,5 +152,6 @@
     "repeat_interaction",
     "conversation_starts",
     "relationship_warmth"
-  ]
+  ],
+  "personalLinkedInPolicyFingerprint": "personal-linkedin-personal-life-only-v1"
 }
