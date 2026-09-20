@@ -100,6 +100,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-system-map-inventory",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-system-map-inventory/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:resource-usage-eu",
       "type": "function",
       "authority": "supabase/functions/resource-usage-eu/index.ts",
@@ -153,6 +160,13 @@
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-control-plane-evidence.mjs",
       "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
+      "id": "netlify_function:powerhouse-observability",
+      "type": "netlify_function",
+      "authority": "netlify/functions/powerhouse-observability.mjs",
+      "evidence_contract": "tests/brain-powerhouse-live-system-map-v1.test.mjs",
       "required": true
     },
     {
@@ -328,6 +342,13 @@
       "type": "rpc",
       "authority": "supabase/functions/growth-datahub-ingest/index.ts",
       "evidence_contract": "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_system_map_inventory_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260920113500_powerhouse_live_system_map_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-live-system-map-v1.test.mjs",
       "required": true
     },
     {
