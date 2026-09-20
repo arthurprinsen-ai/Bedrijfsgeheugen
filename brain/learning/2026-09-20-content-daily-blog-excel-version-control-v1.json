@@ -12,7 +12,10 @@
   "prevention_rule": "Every material daily blog candidate must include Brain learning, a development-ledger event and human-readable documentation in the same obligation lineage before Required can become green.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-material-writeback-closure.test.mjs"
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
     ]
   },
   "evidence": {
@@ -20,7 +23,7 @@
     "seo_gate": "Blog Technical SEO Gate green after canonical metadata, FAQ/figures/sitemap and meta-description repair",
     "brain_gate": "BRAIN delivery green on candidate lineage",
     "writeback_gate": "Material writeback closure correctly blocked until learning/ledger/docs were added",
-    "canonicalization_test": "tests/brain-material-writeback-closure.test.mjs"
+    "canonicalization_test": "tests/brain-material-writeback-closure-guard.test.mjs"
   },
   "outcome": {
     "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
