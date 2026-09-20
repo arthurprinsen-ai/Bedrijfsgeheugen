@@ -19,5 +19,17 @@
   ],
   "tests": [
     "tests/powerhouse-content-orchestrator-pending-selection.test.mjs"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-content-orchestrator-pending-selection.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "content",
+    "delivery",
+    "orchestration"
+  ],
+  "skill_projection_required": true,
+  "production_readback": "Pending protected merge, Supabase function deployment/readback and closed-loop retry."
 }
