@@ -1,7 +1,7 @@
 import { readFile, writeFile, readdir } from 'node:fs/promises';
 import { join } from 'node:path';
 import { GLOBAL_COMPONENTS, PUBLIC_PAGE_EXCLUDES } from './contracts.mjs';
-import { ensureBrandShellCss, ensureFooterContact, ensureTrustBar, extractComponent, markPageSlots, replaceComponent } from './components.mjs';
+import { ensureBrandShellCss, ensureFooterContact, ensureTrustBar, ensureWhatsAppContact, extractComponent, markPageSlots, replaceComponent } from './components.mjs';
 import { ensureKnowledgeNavigation } from './ensure-knowledge-nav.mjs';
 import { scoopCss } from '../bouw-v18-chrome.mjs';
 
@@ -416,12 +416,12 @@ async function publiekePaginas() {
 
 export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL_SOURCE) {
   const sourceRaw = await readFile(sourcePath, 'utf8');
-  const sourcePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(sourceRaw)));
+  const sourcePrepared = ensureWhatsAppContact(ensureBrandShellCss(ensureFooterContact(ensureTrustBar(sourceRaw))));
   const shell = schilUitBron(sourcePrepared, sourcePath);
   const sourceCanonical = ensureKnowledgeNavigation(absolutiseerInterneHref(shell.bron));
   await writeFile(sourcePath, sourceCanonical, 'utf8');
   const homeRaw = await readFile('index.html', 'utf8');
-  const homePrepared = ensureBrandShellCss(ensureFooterContact(ensureTrustBar(homeRaw)));
+  const homePrepared = ensureWhatsAppContact(ensureBrandShellCss(ensureFooterContact(ensureTrustBar(homeRaw))));
   const homeProjected = ensureKnowledgeNavigation(absolutiseerInterneHref(projectGlobalComponents(homePrepared, sourceCanonical)));
   await writeFile('index.html', homeProjected, 'utf8');
 
