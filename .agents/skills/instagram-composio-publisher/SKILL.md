@@ -121,3 +121,10 @@ Mandatory containment semantics:
 - future Instagram publisher routes must inherit this authority and cannot introduce a parallel writer.
 
 This invariant is machine-enforced in database capability RPCs, publisher runtime, provider-containment sweep, completion evidence and CI anti-bypass tests.
+
+
+## Buffer 429 idempotency under central publication authority
+
+Fingerprint: `buffer-rate-limit-central-authority-v2`.
+
+Persist Buffer Retry-After as canonical cooldown and suppress repeated provider polling during that window. After Buffer create acknowledgement, persist the provider post id before readback; a rate-limited or uncertain readback may never trigger a replacement create. Reconcile provider truth later. Buffer cooldown applies to Buffer-backed LinkedIn lanes and must not hijack Instagram's direct Mira/Composio authority.
