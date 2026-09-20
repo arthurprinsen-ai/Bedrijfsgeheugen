@@ -30,5 +30,12 @@
     "previous_incident": "Buffer 429 caused repeated reconciliation pressure and created duplicate-publication risk.",
     "safe_retry_boundary": "Retry create only when no external provider side effect occurred; after create ack, preserve external id and reconcile.",
     "authority_constraint": "Central social publication capability remains mandatory before external side effects."
+  },
+  "compiler": {
+    "failure_class": "RATE_LIMIT_RETRY_COULD_DUPLICATE_EXTERNAL_PUBLICATION",
+    "scope": "SOCIAL_PUBLISHING_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
