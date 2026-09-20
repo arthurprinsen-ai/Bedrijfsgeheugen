@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "admin-composio-key-onboarding-v1",
+  "compiler": {
+    "failure_class": "EXTERNAL_SECRET_ONBOARDING_GAP",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Powerhouse could diagnose missing Composio authentication and generate Connect Links once a key existed, but had no admin-authenticated path to validate and store the project API key in canonical Vault.",
+  "prevention": [
+    "External provider API keys enter Powerhouse only through admin-authenticated server-side onboarding.",
+    "Validate the key against the provider before storing it.",
+    "Use a narrow service-role-only RPC dedicated to COMPOSIO_API_KEY; never expose a generic Vault writer.",
+    "Never persist provider keys in browser storage, repository files, logs, Brain records, or response bodies."
+  ],
+  "evidence": [
+    "netlify/functions/powerhouse-composio-config.mjs",
+    "supabase/functions/powerhouse-composio-instagram-setup/index.ts",
+    "supabase/migrations/20260920111000_admin_composio_key_onboarding.sql",
+    "tests/brain-admin-composio-key-onboarding.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-admin-composio-key-onboarding.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "security",
+    "delivery"
+  ],
+  "skill_projection_required": true
+}
