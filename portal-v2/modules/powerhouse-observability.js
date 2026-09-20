@@ -111,6 +111,9 @@ function systemMapView(systemMap,events){
   if(!systemMap)return empty('De canonieke System Map ontbreekt in de beveiligde runtimeprojectie.');
   const snapshot=systemMap.providerSnapshot||{};
   const inventories=systemMap.inventories||{};
+  const liveSupabase=systemMap.supabaseInventory||{};
+  const supabaseCatalog=liveSupabase.inventory||{};
+  const liveTables=arr(supabaseCatalog.tables),liveViews=arr(supabaseCatalog.views),liveDbFunctions=arr(supabaseCatalog.functions),liveCron=arr(supabaseCatalog.active_cron_jobs);
   const runtimeActors=unique(events.map(e=>e.actor).filter(Boolean));
   const sourceCards=arr(systemMap.sources).map(source=>`<article class="psm-source"><b>${esc(source.label)}</b><p>${esc(source.role)}</p><span>${source.authority?'Authority':'Surface/provider'}</span></article>`).join('');
   const layers=arr(systemMap.intelligenceLayers).map((layer,index)=>`<article class="psm-layer"><span>${String(index+1).padStart(2,'0')}</span><div><b>${esc(layer.label)}</b><p>${esc(layer.purpose)}</p></div></article>`).join('');
@@ -119,10 +122,10 @@ function systemMapView(systemMap,events){
   const contract=systemMap.agentRegistrationContract||{};
   return `<section class="psm-hero"><div><span>Levende architectuur · ${esc(systemMap.version)}</span><h4>Zo werkt heel Powerhouse met elkaar</h4><p>GitHub definieert en levert, Netlify ontsluit, Supabase is de canonieke runtime, Notion projecteert de menselijke waarheid en Portal V2 maakt alles bestuurbaar. Runtime-actors worden automatisch toegevoegd zodra zij evidence met actor-identiteit leveren.</p></div><small>Snapshot ${esc(fmtTime(systemMap.observedAt))}</small></section>
   <div class="poc-kpis psm-kpis">
-    ${kpi('Supabase tabellen',snapshot.supabase?.tables??'—','public schema')}
-    ${kpi('Supabase views',snapshot.supabase?.views??'—','public schema')}
-    ${kpi('DB functions',snapshot.supabase?.functions??'—','public schema')}
-    ${kpi('Actieve cron-jobs',snapshot.supabase?.activeCronJobs??'—','Supabase')}
+    ${kpi('Supabase tabellen',liveSupabase.status==='LIVE'?liveTables.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
+    ${kpi('Supabase views',liveSupabase.status==='LIVE'?liveViews.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
+    ${kpi('DB functions',liveSupabase.status==='LIVE'?liveDbFunctions.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
+    ${kpi('Actieve cron-jobs',liveSupabase.status==='LIVE'?liveCron.length:'—',liveSupabase.status==='LIVE'?'live catalogus':'providerreadback ontbreekt')}
     ${kpi('GitHub workflows',snapshot.github?.workflows??arr(inventories.githubWorkflows).length,'delivery + intelligence')}
     ${kpi('Netlify functions',snapshot.netlify?.functions??arr(inventories.netlifyFunctions).length,'API + portal boundary')}
   </div>
@@ -137,6 +140,10 @@ function systemMapView(systemMap,events){
       ${inventory('GitHub workflows',inventories.githubWorkflows)}
       ${inventory('Netlify functions',inventories.netlifyFunctions)}
       ${inventory('Supabase Edge Functions',inventories.supabaseFunctions)}
+      ${liveSupabase.status==='LIVE'?inventory('Supabase tabellen · live',liveTables):''}
+      ${liveSupabase.status==='LIVE'?inventory('Supabase views · live',liveViews):''}
+      ${liveSupabase.status==='LIVE'?inventory('Supabase databasefuncties · live',liveDbFunctions):''}
+      ${liveSupabase.status==='LIVE'?inventory('Supabase cron-jobs · live',liveCron):`<div class="poc-empty">Supabase live inventory: ${esc(liveSupabase.reason||'UNAVAILABLE')}</div>`}
       ${inventory('Powerhouse skills',inventories.skills)}
       ${inventory('Agent fabric modules',inventories.agentFabricModules)}
     </div>
