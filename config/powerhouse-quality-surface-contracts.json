@@ -170,6 +170,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:powerhouse-composio-config",
+      "type": "netlify_function",
+      "authority": "netlify/functions/powerhouse-composio-config.mjs",
+      "evidence_contract": "tests/brain-admin-composio-key-onboarding.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:powerhouse-control-plane",
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-control-plane.mjs",
@@ -363,6 +370,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql",
       "evidence_contract": "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_set_composio_api_key_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260920111000_admin_composio_key_onboarding.sql",
+      "evidence_contract": "tests/brain-admin-composio-key-onboarding.test.mjs",
       "required": true
     },
     {
