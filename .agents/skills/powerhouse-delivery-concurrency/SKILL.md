@@ -188,3 +188,10 @@ Parallel development is encouraged; duplicate execution is forbidden.
 - Serialize only the mutable landing boundary. Keep independent development and gates parallel.
 
 Optimize time-to-terminal-proof per runner/credit/energy unit: reuse, dedupe, cheap admission first, then bounded parallel expensive work.
+
+
+## Canonical authority drift and terminal supersession recovery
+
+Fingerprint: `powerhouse-control-plane-closure-health-v1`.
+
+Health contracts must reference the active canonical runtime authority, not a retired scheduler/function version. When a superseded closed-unmerged PR contains a Supabase migration, terminal recovery may reconcile it only when current main contains exactly one migration with the same stable migration name. Zero matches or multiple matches are fail-closed and must not be guessed away. The same lineage must include regression evidence, Brain learning, ledger writeback, human documentation, protected merge and production readback before terminal success.
