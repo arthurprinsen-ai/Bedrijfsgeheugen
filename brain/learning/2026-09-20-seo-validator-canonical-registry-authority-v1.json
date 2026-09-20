@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "seo-validator-canonical-registry-authority-v1",
+  "compiler": {
+    "failure_class": "SEO",
+    "scope": "website",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The legacy Python SEO audit maintained a second hard-coded keyword-owner map that had drifted from the canonical versioned SEO order registry. It therefore reported valid current pages as failing obsolete keyword ownership rules.",
+  "prevention": [
+    "Keyword ownership validation must derive from site/seo-order-map.json plus site/seo-order-expansion.json.",
+    "A legacy hard-coded map may only be fallback compatibility state, never the primary authority."
+  ],
+  "evidence": [
+    ".github/scripts/seocontrole.py",
+    "site/seo-order-map.json",
+    "site/seo-order-expansion.json",
+    "tests/brain-seo-validator-canonical-registry.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-validator-canonical-registry.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "seo-growth",
+    "website-release"
+  ],
+  "skill_projection_required": true
+}

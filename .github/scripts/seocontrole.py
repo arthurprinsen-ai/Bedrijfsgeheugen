@@ -14,6 +14,7 @@ De strategie zelf staat in Notion en wordt hier niet herhaald: alleen de regels
 die je automatisch kunt controleren staan hieronder.
 """
 import glob, html, io, json, os, re, sys, unicodedata
+from urllib.parse import urlparse
 
 # ── de clusters, zoals vastgelegd in de zoekwoordenstrategie ───────────────
 CLUSTERS = {
@@ -43,6 +44,25 @@ CLUSTERS = {
         '/ai-voor-bestuurders', '/ai-implementeren', '/ai-poc', '/workshops', '/ai-scan', '/benchmark',
         '/afmaakindex', '/ai-capability-model'],
 }
+
+# Canonical SEO ownership is maintained by the versioned SEO order registry.
+# The legacy EIGENAAR map below remains as fallback only when the registry is unavailable.
+def laad_canonieke_eigenaren():
+    try:
+        paginas = []
+        for pad in ('site/seo-order-map.json', 'site/seo-order-expansion.json'):
+            with io.open(pad, encoding='utf-8') as fh:
+                paginas.extend(json.load(fh).get('pages', []))
+        eigenaren = {}
+        for entry in paginas:
+            route = urlparse(entry.get('route', '')).path or '/'
+            for zw in [entry.get('primary_keyword', '')] + entry.get('secondary_keywords', []):
+                zw = norm(zw)
+                if zw and zw not in eigenaren:
+                    eigenaren[zw] = route
+        return eigenaren
+    except (OSError, ValueError, TypeError):
+        return None
 
 # ── zoekwoord → de pagina die het hoort te claimen ────────────────────────
 EIGENAAR = {
@@ -213,10 +233,11 @@ def lees_paginas():
 
 def main():
     P = lees_paginas()
-    bevindingen = []          # (ernst, pagina, tekst)
+    bevindingen = []
+    canonieke_eigenaren = laad_canonieke_eigenaren() or EIGENAAR          # (ernst, pagina, tekst)
 
     # ── 1. de ijzeren regel: één zoekwoord, één pagina ────────────────────
-    for zw, eigenaar in EIGENAAR.items():
+    for zw, eigenaar in canonieke_eigenaren.items():
         sleutel = eigenaar.rstrip('/') or '/'
         claimers = [u for u, p in P.items() if claimt(zw, p)]
         if sleutel not in claimers:
@@ -419,7 +440,7 @@ def main():
     # tegen waarschuwt.
     status = {'bijgewerkt': __import__('datetime').date.today().isoformat(),
               'zoekwoorden': []}
-    for zw, eigenaar in sorted(EIGENAAR.items()):
+    for zw, eigenaar in sorted(canonieke_eigenaren.items()):
         sleutel = eigenaar.rstrip('/') or '/'
         p = P.get(sleutel)
         status['zoekwoorden'].append({
