@@ -1,3 +1,4 @@
+import { mapRuntimeProjection } from '../runtime-evidence.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
 const lower=value=>String(value??'').toLowerCase();
@@ -106,16 +107,47 @@ function overview(events,observability){
   <section class="poc-panel"><div class="poc-panelhead"><h4>Dagelijkse activiteit</h4><span>${s.events} events · ${s.sources} bronnen · ${s.layers} lagen</span></div>${timeline(events.slice(0,80))}</section>`;
 }
 
-export function mountPowerhouseObservability(container,{domainState}={}){
-  const getRuntime=()=>domainState?.get?.()?.portal?.runtime||globalThis.__BG_PORTAL_DOMAIN_STATE__?.get?.()?.portal?.runtime||{};
+async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
+  const identity=globalThis.netlifyIdentity;
+  const user=identity?.currentUser?.();
+  if(!user)return {status:'unauthenticated',runtime:null};
+  let token='';
+  try{token=await user.jwt?.()||'';}catch{}
+  if(!token)return {status:'unauthenticated',runtime:null};
+  const response=await fetchImpl('/api/powerhouse-observability',{
+    method:'GET',
+    credentials:'same-origin',
+    headers:{accept:'application/json',authorization:`Bearer ${token}`}
+  });
+  if(response.status===401)return {status:'unauthenticated',runtime:null};
+  if(response.status===403)return {status:'forbidden',runtime:null};
+  if(!response.ok)return {status:'error',runtime:null};
+  const projection=await response.json();
+  return {status:'ready',runtime:mapRuntimeProjection(projection)};
+}
+
+function accessState(root,status,onLogin){
+  const copy=status==='forbidden'
+    ?['Geen toegang','Dit onderdeel is alleen beschikbaar voor geautoriseerde Powerhouse-beheerders.']
+    :status==='error'
+      ?['Beveiligde data niet beschikbaar','De admin-only observability-API kon niet veilig worden gelezen. Er wordt geen fallback naar de gewone klant-API gebruikt.']
+      :['Inloggen vereist','Log in met een geautoriseerd beheeraccount om het Powerhouse Control Center te openen.'];
+  root.innerHTML=`<section class="poc-panel poc-access"><span>🔒 Powerhouse Control Center</span><h3>${esc(copy[0])}</h3><p>${esc(copy[1])}</p>${status==='unauthenticated'?'<button type="button" class="poc-login">Inloggen</button>':''}</section>`;
+  root.querySelector('.poc-login')?.addEventListener('click',onLogin);
+}
+
+export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fetch}={}){
   const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'overview'};
   const root=document.createElement('section');root.className='poc';container.innerHTML='';container.appendChild(root);
+  let securedRuntime=null;
+  let destroyed=false;
 
   function render(){
-    const runtime=getRuntime();const obs=runtime.observability||{};
+    if(!securedRuntime){accessState(root,'unauthenticated',()=>globalThis.netlifyIdentity?.open?.('login'));return;}
+    const obs=securedRuntime.observability||{};
     const all=arr(obs.events);const events=filterEvents(all,state);
     const actors=unique(all.map(e=>e.actor)),layers=unique(all.map(e=>e.layer)),sources=unique(all.map(e=>e.source));
-    root.innerHTML=`<header class="poc-head"><div><span>Powerhouse Control Center</span><h3>Alles wat AI, agents, chats en delivery doen</h3><p>Dagelijks inzicht in activiteit, fouten, learnings, skills, systemen, GitHub/delivery en terminal bewijs. Geen runtime-evidence = geen verzonnen status.</p></div><div class="poc-live"><i></i><b>${all.length?'Runtime gekoppeld':'Geen runtimebewijs'}</b><small>${esc(obs.updatedAt?fmtTime(obs.updatedAt):'')}</small></div></header>
+    root.innerHTML=`<header class="poc-head"><div><span>Powerhouse Control Center</span><h3>Alles wat AI, agents, chats en delivery doen</h3><p>Dagelijks inzicht in activiteit, fouten, learnings, skills, systemen, GitHub/delivery en terminal bewijs. Geen runtime-evidence = geen verzonnen status.</p></div><div class="poc-live"><i></i><b>Admin runtime gekoppeld</b><small>${esc(obs.updatedAt?fmtTime(obs.updatedAt):'')}</small></div></header>
       <section class="poc-filters">
         <label>Periode<select data-filter="period"><option value="today">Vandaag</option><option value="week">7 dagen</option><option value="month">30 dagen</option><option value="all">Alles</option></select></label>
         <label>Actor<select data-filter="actor"><option value="all">Alle actors</option>${actors.map(v=>`<option>${esc(v)}</option>`).join('')}</select></label>
@@ -136,7 +168,18 @@ export function mountPowerhouseObservability(container,{domainState}={}){
     const body=root.querySelector('[data-body]');
     body.innerHTML=state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):deliveryView(events,obs);
   }
-  render();
-  const handler=()=>render();document.addEventListener('bg:runtime-evidence',handler);
-  return {render,destroy:()=>document.removeEventListener('bg:runtime-evidence',handler)};
+
+  async function refresh(){
+    root.innerHTML='<div class="poc-empty">Beveiligde Powerhouse-data laden…</div>';
+    const result=await adminRuntimeEvidence(fetchImpl);
+    if(destroyed)return;
+    if(result.status!=='ready'){securedRuntime=null;accessState(root,result.status,()=>globalThis.netlifyIdentity?.open?.('login'));return;}
+    securedRuntime=result.runtime;render();
+  }
+
+  const onAuth=()=>refresh();
+  globalThis.netlifyIdentity?.on?.('login',onAuth);
+  globalThis.netlifyIdentity?.on?.('logout',onAuth);
+  refresh();
+  return {render:refresh,destroy:()=>{destroyed=true;globalThis.netlifyIdentity?.off?.('login',onAuth);globalThis.netlifyIdentity?.off?.('logout',onAuth);}};
 }
