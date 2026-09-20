@@ -1,0 +1,31 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "paginacontrole-self-validation-trigger-v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The repaired paginacontrole workflow did not include its own workflow file in push/pull_request path filters, so a workflow-only repair could merge without executing the repaired workflow on that exact lineage.",
+  "prevention": [
+    "Workflow integrity changes must trigger the workflow they modify on pull_request and push.",
+    "A regression asserts both path filters include .github/workflows/paginacontrole.yml."
+  ],
+  "evidence": [
+    ".github/workflows/paginacontrole.yml",
+    "tests/brain-paginacontrole-self-validation.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-paginacontrole-self-validation.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "github-delivery",
+    "website-release"
+  ],
+  "skill_projection_required": true
+}
