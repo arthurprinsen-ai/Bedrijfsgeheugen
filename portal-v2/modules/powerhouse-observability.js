@@ -205,7 +205,7 @@ function integrationsView(model={}){
       <p class="poc-note">Na een geldige key maakt Powerhouse een Composio-hosted Instagram Connect Link. Meta/Instagram OAuth-credentials blijven bij Composio.</p>
       <button type="button" data-composio-link ${loading||!keyPresent||ready?'disabled':''}>Instagram koppelen</button>
       ${link?`<p class="poc-note"><a href="${esc(link)}" target="_blank" rel="noopener noreferrer">OAuth-link opnieuw openen</a></p>`:''}
-      ${ready?'<p class="poc-note"><b>Gereed:</b> exact één actieve Instagram-connection is gevalideerd. De publisher kan de bestaande Mira-winner hervatten.</p>':''}
+      ${ready?`<p class="poc-note"><b>Gereed:</b> exact één actieve Instagram-connection is gevalideerd. ${data.resume_attempted?(data.publisher_ok?'Publisher direct hervat.':'Publisher-resume vraagt aandacht.'):(model.polling?'Automatische hervatting wordt gestart.':'Publisher kan hervatten.')}</p>`:''}
     </section>
   </div>`;
 }
@@ -240,10 +240,12 @@ function accessState(root,status,onLogin){
 }
 
 export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fetch}={}){
-  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'system-map',composio:{loading:false,data:null,error:null}};
+  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'system-map',composio:{loading:false,data:null,error:null,polling:false,resumed:false}};
   const root=document.createElement('section');root.className='poc';container.innerHTML='';container.appendChild(root);
   let securedRuntime=null;
   let destroyed=false;
+  let composioPollTimer=null;
+  let composioPollCount=0;
 
   function render(){
     if(!securedRuntime){accessState(root,'unauthenticated',()=>globalThis.netlifyIdentity?.open?.('login'));return;}
@@ -284,6 +286,32 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
   }
 
 
+  function stopComposioPolling(){
+    if(composioPollTimer){clearTimeout(composioPollTimer);composioPollTimer=null;}
+    state.composio={...state.composio,polling:false};
+  }
+
+  function scheduleComposioPoll(){
+    if(destroyed||state.composio.resumed||composioPollCount>=60){stopComposioPolling();return;}
+    state.composio={...state.composio,polling:true};
+    composioPollTimer=setTimeout(async()=>{
+      composioPollCount+=1;
+      const result=await composioAdminRequest(fetchImpl,{action:'status'});
+      if(destroyed)return;
+      if(result?.ok!==false&&result?.ready===true){
+        stopComposioPolling();
+        const resumed=await composioAdminRequest(fetchImpl,{action:'resume'});
+        if(destroyed)return;
+        state.composio={loading:false,data:resumed,error:resumed?.ok===false?(resumed.error||resumed.detail||'COMPOSIO_RESUME_FAILED'):null,polling:false,resumed:resumed?.ok!==false};
+        render();
+        return;
+      }
+      state.composio={...state.composio,loading:false,data:result?.ok===false?state.composio.data:result,error:result?.ok===false?(result.error||null):null,polling:true};
+      render();
+      scheduleComposioPoll();
+    },5000);
+  }
+
   async function loadComposio(action='status',apiKey=''){
     state.composio={...state.composio,loading:true,error:null};
     render();
@@ -298,6 +326,11 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     render();
     if(action==='create_link'&&result.redirect_url){
       globalThis.open?.(result.redirect_url,'_blank','noopener,noreferrer');
+      stopComposioPolling();
+      composioPollCount=0;
+      state.composio={...state.composio,polling:true,resumed:false};
+      render();
+      scheduleComposioPoll();
     }
   }
 
@@ -313,5 +346,5 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
   globalThis.netlifyIdentity?.on?.('login',onAuth);
   globalThis.netlifyIdentity?.on?.('logout',onAuth);
   refresh();
-  return {render:refresh,destroy:()=>{destroyed=true;globalThis.netlifyIdentity?.off?.('login',onAuth);globalThis.netlifyIdentity?.off?.('logout',onAuth);}};
+  return {render:refresh,destroy:()=>{destroyed=true;stopComposioPolling();globalThis.netlifyIdentity?.off?.('login',onAuth);globalThis.netlifyIdentity?.off?.('logout',onAuth);}};
 }
