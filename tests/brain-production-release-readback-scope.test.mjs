@@ -37,6 +37,15 @@ test('Netlify-hosted backend function changes require exact production deploymen
   assert.match(workflow, /Install production browser verifier[\s\S]*browser_required == 'true'/);
 });
 
+test('shared Netlify runtime dependencies also require exact production deployment', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  for (const prefix of ['platform/api/','platform/saas/','platform/connectors/','platform/read-models/']) {
+    assert.match(workflow,new RegExp(prefix.replaceAll('/','\\/')));
+  }
+  assert.match(workflow,/netlifyRuntimePrefixes/);
+  assert.match(workflow,/netlifyRuntimeRequired=.*netlifyRuntimePrefixes/);
+});
+
 test('Portal V2 changes require exact Netlify deployment and browser readback of the portal shell', async () => {
   const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(workflow, /portalRequired=.*suites\.portal === true/);
