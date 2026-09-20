@@ -205,3 +205,10 @@ Use `/api/powerhouse-composio-config` through the authenticated Powerhouse admin
 Fingerprint: `security-definer-explicit-execute-revocation-v1`.
 
 For every server-only Supabase `SECURITY DEFINER` function used by this publication/onboarding chain, revoke execution explicitly in the same migration with `REVOKE EXECUTE ... FROM public, anon, authenticated`, then grant only the required server role. Do not rely on `REVOKE ALL` for this contract.
+
+
+## Provider-isolated scheduled resume
+
+Fingerprint: `instagram-buffer-independent-resume-v1`.
+
+Scheduled social delivery must invoke the canonical publisher before any Buffer provider read. Instagram/Composio is an independent lane and must continue when LinkedIn/Buffer is rate-limited or unavailable. Buffer failures may defer LinkedIn, but must never fail or suppress the Instagram canonical attempt.
