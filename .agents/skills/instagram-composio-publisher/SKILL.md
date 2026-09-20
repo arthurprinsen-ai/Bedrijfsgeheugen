@@ -177,3 +177,17 @@ Instagram Mira must not inherit generic company-page rules such as mandatory Bed
 Fingerprint: `instagram-composio-auth-preflight-v1`.
 
 Before an Instagram publication claim or publication-capability issue, verify that the canonical `COMPOSIO_API_KEY` exists. If it is absent, keep the decision recoverable at `content_ready`, record `COMPOSIO_INSTAGRAM_AUTH_REQUIRED`, and do not issue/consume a publication capability or touch any provider. Never switch to another transport implicitly.
+
+
+## Composio Instagram bootstrap
+
+Fingerprint: `instagram-composio-connect-link-setup-v1`.
+
+Use `powerhouse-composio-instagram-setup` as the canonical bootstrap/status controller for Instagram transport. It must:
+- read `COMPOSIO_API_KEY` only from canonical secret storage;
+- use Composio v3.1 managed auth configs and hosted Connect Links;
+- require exactly one active Instagram connected account before publication resumes;
+- fail closed on multiple active accounts or auth configs;
+- never expose or log the Composio API key or Instagram OAuth credentials.
+
+Do not improvise direct provider auth or switch transport providers.
