@@ -62,7 +62,7 @@ function recommendationEligible(row:any, channel:string) {
   const target = clean(row?.target_channel).toLowerCase();
   const topic = clean(row?.topic_key).toLowerCase();
   const evidence = row?.evidence || {};
-  if (!['suggested',''].includes(clean(row?.status))) return false;
+  if (!['suggested','accepted',''].includes(clean(row?.status))) return false;
   if (channel === 'linkedin_company') {
     if (target === 'linkedin_personal' || topic.includes('linkedin_personal')) return false;
     if (evidence?.identity_contract === PERSONAL_CONTRACT || evidence?.personal_truth_verified === true) return false;
