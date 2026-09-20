@@ -67,10 +67,13 @@ async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaTy
         placeholder_detected:{type:'boolean'},
         visual_complete:{type:'boolean'},
         daily_life_scene:{type:'boolean'},
+        mira_central_subject:{type:'boolean'},
+        text_dominant:{type:'boolean'},
+        brand_template_dominant:{type:'boolean'},
         confidence:{type:'number',minimum:0,maximum:1},
         reason:{type:'string'}
       },
-      required:['semantic_verified','mira_present','identity_class','evidence_method','placeholder_detected','visual_complete','daily_life_scene','confidence','reason']
+      required:['semantic_verified','mira_present','identity_class','evidence_method','placeholder_detected','visual_complete','daily_life_scene','mira_central_subject','text_dominant','brand_template_dominant','confidence','reason']
     }
   };
   const response=await fetch('https://api.anthropic.com/v1/messages',{
@@ -78,10 +81,10 @@ async function visionVerdict(apiKey:string,model:string,bytes:Uint8Array,mediaTy
     headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},
     body:JSON.stringify({
       model,max_tokens:700,
-      system:'Inspect only the supplied image. Mira is the Bedrijfsgeheugen fictional daily-life persona: a visibly present human character in a normal everyday-life scene. A text-only card, template label, hidden layer name, logo, caption or metadata never proves Mira. Be conservative: uncertain means mira_present=false.',
+      system:'Inspect only the supplied image. Mira is the Bedrijfsgeheugen fictional daily-life persona and must be the clearly visible central human subject in a normal everyday-life scene. A text-only card, quote card, spreadsheet/file-name joke card, generic company creative, template-first layout, logo, caption, metadata or tiny/background person never proves Mira. Text may only be secondary to the Mira scene. Be conservative: uncertain means mira_present=false.',
       messages:[{role:'user',content:[
         {type:'image',source:{type:'base64',media_type:mediaType,data:toBase64(bytes)}},
-        {type:'text',text:'Verify whether the exact final image visibly contains Mira in a genuine daily-life scene and is visually complete. Reject text-only/template cards and ambiguous identity.'}
+        {type:'text',text:'Verify whether the exact final image is a genuine Mira visual: Mira is the central visible subject in an everyday-life scene, not a text/quote/template-led company card. Reject text-dominant, brand-template-dominant, spreadsheet/file-name cards, generic company creative, tiny/background Mira, placeholders and ambiguous identity.'}
       ]}],
       tools:[tool],tool_choice:{type:'tool',name:'visual_verdict'}
     })
@@ -153,13 +156,18 @@ Deno.serve(async(req)=>{
       && verdict.placeholder_detected===false
       && verdict.visual_complete===true
       && verdict.daily_life_scene===true
+      && verdict.mira_central_subject===true
+      && verdict.text_dominant===false
+      && verdict.brand_template_dominant===false
       && Number(verdict.confidence)>=0.9;
     const evidenceRef=`vision:anthropic:${gov.data.model_id}:${hash.slice(0,16)}`;
     const visual={
       verified:pass,semantic_verified:verdict.semantic_verified===true,mira_present:verdict.mira_present===true,
       identity_class:clean(verdict.identity_class),evidence_method:'vision',
       placeholder_detected:verdict.placeholder_detected===true,visual_complete:verdict.visual_complete===true,
-      daily_life_scene:verdict.daily_life_scene===true,confidence:Number(verdict.confidence)||0,
+      daily_life_scene:verdict.daily_life_scene===true,mira_central_subject:verdict.mira_central_subject===true,
+      text_dominant:verdict.text_dominant===true,brand_template_dominant:verdict.brand_template_dominant===true,
+      confidence:Number(verdict.confidence)||0,
       reason:clean(verdict.reason).slice(0,500),asset_url:mediaUrl||null,width:size.width,height:size.height,
       format_verified:dimsOk,evidence_refs:[evidenceRef]
     };

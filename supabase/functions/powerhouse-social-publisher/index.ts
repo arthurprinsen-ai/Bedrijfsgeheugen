@@ -59,7 +59,7 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   const proof=art?.generation_evidence?.instagram_media_proof||{};
   if(!instagramIdentityProven(proof))throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
   const mediaType=clean(proof.media_type).toLowerCase();
-  if(!['reel','video'].includes(mediaType))throw new Error('COMPOSIO_ROUTE_REEL_ONLY_V1');
+  if(mediaType!=='reel')throw new Error('COMPOSIO_ROUTE_REEL_ONLY_V2');
   const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
@@ -108,6 +108,7 @@ async function recordObligation(db: any, runDate: string, channel: string, statu
 function instagramIdentityProven(evidence: any) {
   const proof = evidence?.instagram_media_proof || evidence || {};
   const mediaType = clean(proof?.media_type || evidence?.media_type).toLowerCase();
+  if (!['image','reel'].includes(mediaType)) return false;
   if (mediaType === 'carousel') {
     const slides = Array.isArray(proof?.carousel_manifest?.slides) ? proof.carousel_manifest.slides : [];
     return proof?.exact_final_media_proven === true && !!clean(proof?.final_media_sha256)
@@ -126,6 +127,8 @@ function instagramIdentityProven(evidence: any) {
   const width=Number(visual?.width),height=Number(visual?.height);
   const refs=Array.isArray(visual?.evidence_refs)?visual.evidence_refs.map(clean):[];
   const visible=visual?.verified===true&&visual?.semantic_verified===true&&visual?.mira_present===true
+    &&visual?.daily_life_scene===true&&visual?.mira_central_subject===true
+    &&visual?.text_dominant===false&&visual?.brand_template_dominant===false
     &&clean(visual?.identity_class)==='mira_daily_life'&&clean(visual?.evidence_method).toLowerCase()==='vision'
     &&refs.some((ref:string)=>/^vision:/i.test(ref));
   const dims=['reel','video'].includes(mediaType)?width===1080&&height===1920:width===1080&&height===1350;
@@ -179,6 +182,7 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
 function instagramInput(art:any,due:Date,future:boolean){
   const proof=art?.generation_evidence?.instagram_media_proof||{};
   const mediaType=clean(proof.media_type||proof.buffer_media_type).toLowerCase();
+  if(!['image','reel'].includes(mediaType)) throw new Error('INSTAGRAM_MIRA_VISUAL_OR_REEL_ONLY');
   if(!instagramIdentityProven(proof)) throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
   if(mediaType==='carousel'){
     const slides=proof.carousel_manifest.slides;

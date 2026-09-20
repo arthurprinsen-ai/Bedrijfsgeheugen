@@ -32,9 +32,7 @@
       "mediaPolicy": {
         "allowedKinds": [
           "image",
-          "video",
-          "reel",
-          "carousel"
+          "reel"
         ],
         "requiresExactFinalAsset": true,
         "requiresMiraIdentity": true,
@@ -66,31 +64,15 @@
         "providerRouting": {
           "image": {
             "allowedProviders": [
-              "openart",
-              "placid"
-            ]
+              "openart"
+            ],
+            "requiredProvider": "openart"
           },
           "reel": {
             "allowedProviders": [
               "openart"
             ],
             "requiredProvider": "openart"
-          },
-          "video": {
-            "allowedProviders": [
-              "openart"
-            ],
-            "requiredProvider": "openart"
-          },
-          "carousel": {
-            "imageSlideAllowedProviders": [
-              "openart",
-              "placid"
-            ],
-            "videoSlideAllowedProviders": [
-              "openart"
-            ],
-            "requiresPerSlideExactAssetProof": true
           }
         }
       },
@@ -99,7 +81,12 @@
       "blocksGenericBrandCreative": true,
       "allowedContentClasses": [
         "mira_daily_life"
-      ]
+      ],
+      "requiresVisionSemanticProof": true,
+      "requiresDailyLifeScene": true,
+      "requiresMiraCentralSubject": true,
+      "blocksTextDominantCreative": true,
+      "blocksBrandTemplateDominantCreative": true
     }
   },
   "personalInstagramAutopublish": "blocked_unconnected",

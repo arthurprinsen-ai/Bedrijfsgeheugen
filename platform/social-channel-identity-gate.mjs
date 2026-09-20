@@ -42,8 +42,14 @@ export function authorizeSocialPublication(input={}){
   if(channel?.requiresContentPersona&&String(input.contentPersona||'').toLowerCase()!==String(channel.requiresContentPersona).toLowerCase()) reasons.push('INSTAGRAM_MIRA_PERSONA_REQUIRED');
   if(Array.isArray(channel?.allowedContentClasses)&&!channel.allowedContentClasses.includes(input.contentClass)) reasons.push('INSTAGRAM_MIRA_CONTENT_CLASS_REQUIRED');
   const visual=input.instagramVisual,mediaKind=input.mediaKind||'image',policy=channel?.mediaPolicy||{};
+  if(Array.isArray(policy.allowedKinds)&&!policy.allowedKinds.includes(mediaKind)) reasons.push('INSTAGRAM_MEDIA_KIND_BLOCKED');
   if(channel?.requiresVisibleMira&&visual?.miraPresent!==true) reasons.push('INSTAGRAM_VISIBLE_MIRA_REQUIRED');
-  if(channel?.blocksGenericBrandCreative&&visual?.genericBrandCreative===true) reasons.push('INSTAGRAM_GENERIC_BRAND_CREATIVE_BLOCKED');
+  if(channel?.blocksGenericBrandCreative&&visual?.genericBrandCreative!==false) reasons.push('INSTAGRAM_GENERIC_BRAND_CREATIVE_BLOCKED');
+  if(channel?.requiresVisionSemanticProof&&(visual?.semanticVerified!==true||visual?.evidenceMethod!=='vision')) reasons.push('INSTAGRAM_VISION_SEMANTIC_PROOF_REQUIRED');
+  if(channel?.requiresDailyLifeScene&&visual?.dailyLifeScene!==true) reasons.push('INSTAGRAM_DAILY_LIFE_SCENE_REQUIRED');
+  if(channel?.requiresMiraCentralSubject&&visual?.miraCentralSubject!==true) reasons.push('INSTAGRAM_MIRA_CENTRAL_SUBJECT_REQUIRED');
+  if(channel?.blocksTextDominantCreative&&visual?.textDominant!==false) reasons.push('INSTAGRAM_TEXT_DOMINANT_CREATIVE_BLOCKED');
+  if(channel?.blocksBrandTemplateDominantCreative&&visual?.brandTemplateDominant!==false) reasons.push('INSTAGRAM_BRAND_TEMPLATE_DOMINANT_BLOCKED');
   if(visual?.verified!==true||refs(visual).length===0||!has(visual?.assetUrl)) reasons.push('INSTAGRAM_VISUAL_EVIDENCE_REQUIRED');
   if(visual?.placeholderDetected===true) reasons.push('INSTAGRAM_PLACEHOLDER_BLOCKED');
   if(visual?.identityClass!=='mira_daily_life') reasons.push('INSTAGRAM_MIRA_VISUAL_REQUIRED');
