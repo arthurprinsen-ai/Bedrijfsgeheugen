@@ -1,0 +1,23 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "orchestrator-select-pending-race-v1",
+  "compiler": {
+    "failure_class": "CONTENT_ORCHESTRATOR_PENDING_SELECTION_RUNTIME_FAILURE"
+  },
+  "root_cause": "The content orchestrator used PostgREST maybeSingle() after an ordered limited query for the next decided publication. In production this path returned an error at select-pending and aborted the closed loop before publication dispatch.",
+  "prevention": [
+    "Use deterministic array selection with explicit ordering and limit(1) for queue heads.",
+    "Treat empty result as NO_PENDING_ARTIFACT rather than an exception.",
+    "Log database error code/message/details for recoverable diagnostics.",
+    "Keep publication state fail-closed and let the canonical content loop retry after repair."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "tests/powerhouse-content-orchestrator-pending-selection.test.mjs"
+  ],
+  "tests": [
+    "tests/powerhouse-content-orchestrator-pending-selection.test.mjs"
+  ]
+}
