@@ -7,17 +7,18 @@
     "failure_class": "MIGRATION_IDENTITY_DRIFT",
     "scope": "DELIVERY_CONTROL_PLANE",
     "machine_enforceable": true,
-    "repeat_count": 1
+    "repeat_count": 2
   },
-  "root_cause": "Repository migration filename 20260920111000_admin_composio_key_onboarding.sql did not match the actual production Supabase migration identity 20260920112118_admin_composio_key_onboarding after direct production application.",
+  "root_cause": "Repository migration identity reconciliation stopped at the first production apply 20260920112118_admin_composio_key_onboarding, while the later security-recovery apply 20260920112436_admin_composio_key_onboarding is the latest effective production contract and matches the current least-privilege SQL.",
   "prevention": [
-    "Production migration history is authoritative for an already-applied migration identity.",
-    "If a production migration is applied before repository reconciliation, the repository filename must be updated to the exact production version before terminal closure.",
-    "Never rewrite production migration history merely to fit a stale repository filename.",
-    "Terminal migration readback must compare both exact version and exact name."
+    "Production migration history is authoritative for already-applied migration identities.",
+    "When multiple applied versions share the same semantic migration name, terminal reconciliation must identify the latest effective applied version whose statements match the current production contract; never stop at the first matching name.",
+    "Repository migration filename and content must mirror that latest effective production version before terminal closure.",
+    "Never rewrite production migration history merely to fit stale repository metadata.",
+    "Terminal migration readback must compare exact version, exact name, and effective contract semantics."
   ],
   "evidence": [
-    "supabase/migrations/20260920112118_admin_composio_key_onboarding.sql",
+    "supabase/migrations/20260920112436_admin_composio_key_onboarding.sql",
     "tests/brain-supabase-production-migration-identity-mirror.test.mjs"
   ],
   "tests": [
