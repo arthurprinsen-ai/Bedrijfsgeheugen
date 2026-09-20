@@ -216,3 +216,18 @@ Mandatory:
 - provider-runtime truth must remain distinct from Netlify/website production truth.
 
 Reference incident: PR #2465 was marked `LIVE_BEWEZEN` while the active `powerhouse-social-publisher` runtime still contained `RuntimeState/runtime_state`. Direct provider readback exposed the mismatch; Supabase v26 was then deployed from exact main and verified with `CurrentState/current_state`.
+
+
+## Durable provider readback evidence
+
+Fingerprint: `delivery|provider-readback|durable-terminal-evidence|v1`.
+
+Provider-runtime proof is not complete when it exists only in PR prose. For every terminal delivery that changes `supabase/functions/<slug>/`:
+- parse the exact function/version/runtime SHA evidence from the canonical PR lineage;
+- include those readbacks in the OIDC-authenticated terminal payload;
+- bind them into the terminal payload hash;
+- persist them in append-only `brain_delivery_evidence.evidence.provider_readbacks`;
+- require durable Supabase readback to return `provider_readback_verified=true` before `LIVE_BEWEZEN`;
+- reject missing, duplicate, malformed, non-ACTIVE or hash-invalid provider identities fail-closed.
+
+This complements direct provider inspection: the deployment/readback actor establishes provider truth; the canonical control plane immutably binds that truth to the exact terminal obligation and main SHA.
