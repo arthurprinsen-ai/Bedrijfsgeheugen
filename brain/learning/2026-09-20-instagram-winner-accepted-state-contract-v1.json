@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "instagram-winner-accepted-state-contract-v1",
+  "compiler": {
+    "failure_class": "CONTENT_ORCHESTRATOR_FROZEN_WINNER_STATE_CONTRACT_DRIFT"
+  },
+  "root_cause": "The Instagram daily-winner selector correctly froze the chosen recommendation by moving it to status accepted, but the downstream orchestrator recommendationEligible() contract still allowed only suggested or empty status. The orchestrator therefore rejected its own immutable winner and repeatedly failed with INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED.",
+  "prevention": [
+    "Treat accepted as an eligible downstream state for an already frozen Instagram daily winner.",
+    "Keep the immutable winner recommendation_id authoritative; never rerank or substitute another recommendation after winner selection.",
+    "Regression-test the exact accepted-state contract so selector and orchestrator state machines cannot drift independently.",
+    "Keep Mira identity, exact-media proof and publication-authority gates unchanged and fail closed."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
+    "production:bg_gezondheid:select-pending:INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED"
+  ],
+  "tests": [
+    "tests/brain-instagram-mira-winner-selection-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-mira-winner-selection-v1.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "content",
+    "instagram",
+    "delivery",
+    "orchestration"
+  ],
+  "skill_projection_required": true
+}
