@@ -5,6 +5,7 @@
  */
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+import { renderAnswerAssurance } from './trusted-advisor-assurance.js';
 
 export async function askPortal(question,{fetchImpl=globalThis.fetch,page='overzicht'}={}){
   const clean=String(question||'').trim();
@@ -14,11 +15,11 @@ export async function askPortal(question,{fetchImpl=globalThis.fetch,page='overz
     method:'POST',
     headers:{'content-type':'application/json'},
     credentials:'same-origin',
-    body:JSON.stringify({question:clean,context:{page}})
+    body:JSON.stringify({vraag:clean})
   });
   if(!response.ok)throw new Error(`PORTAALVRAAG_${response.status}`);
   const payload=await response.json();
-  return String(payload?.answer||payload?.text||'').trim();
+  return {text:String(payload?.antwoord||payload?.answer||payload?.text||'').trim(),assurance:payload?.assurance||null};
 }
 
 export function mountAskPortal(root,{fetchImpl=globalThis.fetch,currentPage=()=>'overzicht'}={}){
@@ -41,7 +42,7 @@ export function mountAskPortal(root,{fetchImpl=globalThis.fetch,currentPage=()=>
     button.disabled=true;output.textContent='Bezig met opzoeken in je eigen gegevens…';
     try{
       const answer=await askPortal(question,{fetchImpl,page:currentPage()});
-      output.innerHTML=answer?`<p>${esc(answer)}</p>`:'<p>Daar staat nog niets over in je portaal.</p>';
+      output.innerHTML=answer?.text?`<p>${esc(answer.text)}</p>${renderAnswerAssurance(answer.assurance||{})}`:'<p>Daar staat nog niets over in je portaal.</p>';
     }catch(error){
       output.innerHTML=`<p>Geen antwoord opgehaald (${esc(error.message)}). Log in of probeer het opnieuw.</p>`;
     }finally{button.disabled=false;}
