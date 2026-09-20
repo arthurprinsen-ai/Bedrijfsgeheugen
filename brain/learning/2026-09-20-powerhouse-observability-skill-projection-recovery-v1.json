@@ -1,0 +1,27 @@
+{
+  "fingerprint": "powerhouse-observability-skill-projection-recovery-v1",
+  "obligation_id": "powerhouse-observability-command-center-v1",
+  "skill_targets": ["powerhouse-continuity"],
+  "compiler": {
+    "failure_class": "POST_MERGE_SKILL_PROJECTION_GOVERNANCE_INCIDENT",
+    "scope": "DELIVERY_GOVERNANCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "PR #2445 merged through auto-merge while Powerhouse Skill Projection had already failed because the learning historical_replay pointed to a noncanonical test namespace. The repository's merge/required configuration did not treat that projection failure as a hard pre-merge blocker for this candidate.",
+  "prevention_rule": "All learning evaluation test paths must use a canonical executable namespace accepted by learning-canonicalization. A skill-projection failure is non-terminal and must trigger same-obligation successor recovery plus terminal readback; never treat merge itself as completion when projection is red.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-powerhouse-observability-command-center-v1.test.mjs"],
+    "canary": ["tests/brain-powerhouse-observability-command-center-v1.test.mjs"]
+  },
+  "evidence": [
+    "PR #2445",
+    "Powerhouse Skill Projection run 35500200331",
+    "LEARNING_EVALUATION_TEST_PATH_INVALID"
+  ],
+  "outcome": {
+    "status": "RECOVERY_CANDIDATE",
+    "predecessor_pr": 2445
+  }
+}
