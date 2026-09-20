@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "seo-validator-primary-keyword-contract-v1",
+  "compiler": {
+    "failure_class": "SEO",
+    "scope": "website",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "After switching the legacy audit to the canonical registry, it incorrectly promoted every secondary keyword to a mandatory exact title/H1 claim and still read only the retired bg-zoekwoord meta name instead of the current bg-keyword-cluster contract.",
+  "prevention": [
+    "Only primary_keyword is a mandatory owner/title-H1 claim in the canonical registry contract.",
+    "Legacy audit must recognize current bg-keyword-cluster metadata while retaining bg-zoekwoord compatibility."
+  ],
+  "evidence": [
+    ".github/scripts/seocontrole.py",
+    "site/seo-order-map.json",
+    "site/seo-order-expansion.json",
+    "tests/brain-seo-validator-registry-contract.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-validator-registry-contract.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "seo-growth",
+    "website-release"
+  ],
+  "skill_projection_required": true
+}
