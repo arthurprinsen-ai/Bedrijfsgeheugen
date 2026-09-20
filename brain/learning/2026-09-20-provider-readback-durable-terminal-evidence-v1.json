@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "provider-readback-durable-terminal-evidence-v1",
+  "compiler": {
+    "failure_class": "PROVIDER_EVIDENCE_NOT_DURABLE",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Supabase Edge Function provider version/runtime hashes were validated in PR metadata but were not yet bound into the immutable canonical terminal evidence stored in Supabase.",
+  "prevention": [
+    "Parse exact per-function provider readbacks from the canonical PR lineage.",
+    "Send provider readbacks through the OIDC-authenticated terminal evidence path.",
+    "Bind provider readbacks into the terminal payload hash and append-only brain_delivery_evidence.",
+    "Require provider_readback_verified=true on durable readback before LIVE_BEWEZEN."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-provider-durable-evidence.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-provider-durable-evidence.test.mjs"
+    ]
+  },
+  "evidence": [
+    ".github/workflows/obligation-terminal-closure.yml",
+    "supabase/functions/growth-datahub-ingest/index.ts",
+    "tests/brain-terminal-provider-durable-evidence.test.mjs"
+  ],
+  "tests": [
+    "tests/brain-terminal-provider-durable-evidence.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "runtime-truth",
+    "supabase"
+  ],
+  "skill_projection_required": true,
+  "production_readback": "Pending exact-head gates, protected merge, exact-main growth-datahub-ingest deploy and durable evidence readback."
+}

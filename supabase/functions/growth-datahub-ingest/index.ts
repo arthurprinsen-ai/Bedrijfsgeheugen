@@ -76,6 +76,22 @@ Deno.serve(async(req:Request)=>{
       const actor=required(terminal.actor||'github-actions','ACTOR');
       const migrationReadbackRequired=terminal.migration_readback_required===true;
       const expectedMigrations=Array.isArray(terminal.expected_migrations)?terminal.expected_migrations:[];
+      const providerReadbackRequired=terminal.provider_readback_required===true;
+      const providerReadbacks=Array.isArray(terminal.provider_readbacks)?terminal.provider_readbacks:[];
+      if(providerReadbackRequired&&providerReadbacks.length===0)throw new Error('PROVIDER_READBACK_EXPECTATIONS_MISSING');
+      const seenProviderFunctions=new Set<string>();
+      for(const item of providerReadbacks){
+        const fn=String(item?.function||'').trim();
+        const version=Number(item?.version);
+        const runtimeSha=String(item?.runtime_sha256||'').trim().toLowerCase();
+        const state=String(item?.state||'ACTIVE').trim().toUpperCase();
+        if(!/^[a-z0-9][a-z0-9_-]*$/.test(fn))throw new Error('PROVIDER_FUNCTION_IDENTITY_INVALID');
+        if(seenProviderFunctions.has(fn))throw new Error('PROVIDER_FUNCTION_DUPLICATE');
+        seenProviderFunctions.add(fn);
+        if(!Number.isInteger(version)||version<1)throw new Error('PROVIDER_VERSION_INVALID');
+        if(!/^[0-9a-f]{64}$/.test(runtimeSha))throw new Error('PROVIDER_RUNTIME_SHA256_INVALID');
+        if(state!=='ACTIVE')throw new Error('PROVIDER_RUNTIME_NOT_ACTIVE');
+      }
       if(migrationReadbackRequired&&expectedMigrations.length===0)throw new Error('MIGRATION_READBACK_EXPECTATIONS_MISSING');
       for(const migration of expectedMigrations){
         if(!/^\d{14}$/.test(String(migration?.version||''))||!/^[a-z0-9_]+$/.test(String(migration?.name||''))){
@@ -83,7 +99,7 @@ Deno.serve(async(req:Request)=>{
         }
       }
       const obligationPayloadHash=await sha256(obligationKey);
-      const terminalPayloadHash=await sha256(`${obligationKey}|${candidateSha}|${mainSha}|${productionReadbackMode}|${productionRunId??''}|${productionObservedSha}|${productionDeployId??''}|${projectionRunId??''}|${JSON.stringify(expectedMigrations)}`);
+      const terminalPayloadHash=await sha256(`${obligationKey}|${candidateSha}|${mainSha}|${productionReadbackMode}|${productionRunId??''}|${productionObservedSha}|${productionDeployId??''}|${projectionRunId??''}|${JSON.stringify(expectedMigrations)}|${JSON.stringify(providerReadbacks)}`);
       const one=(value:any)=>Array.isArray(value)?value[0]:value;
 
       let migrationReadback:any={
@@ -144,6 +160,9 @@ Deno.serve(async(req:Request)=>{
         expected_migrations:expectedMigrations,
         migration_readback:migrationReadback,
         migration_readback_verified:!migrationReadbackRequired||migrationReadback.all_matched===true,
+        provider_readback_required:providerReadbackRequired,
+        provider_readbacks:providerReadbacks,
+        provider_readback_verified:!providerReadbackRequired||providerReadbacks.length>0,
         recorded_at:new Date().toISOString()
       };
 
@@ -252,6 +271,9 @@ Deno.serve(async(req:Request)=>{
         migration_readback_required:migrationReadbackRequired,
         migration_readback_verified:!migrationReadbackRequired||migrationReadback.all_matched===true,
         migration_readback:migrationReadback,
+        provider_readback_required:providerReadbackRequired,
+        provider_readback_verified:!providerReadbackRequired||providerReadbacks.length>0,
+        provider_readbacks:providerReadbacks,
         durable_readback_verified:true
       }},200);
     }catch(error){

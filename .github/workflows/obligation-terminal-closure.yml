@@ -123,6 +123,7 @@ jobs:
           fi
 
       - name: Require explicit Supabase Edge Function provider readback before terminal claim
+        id: provider-readback
         if: always()
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -134,6 +135,8 @@ jobs:
           changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
           mapfile -t changed_functions < <(printf '%s\n' "$changed_paths" | sed -nE 's#^supabase/functions/([^/]+)/.*#\1#p' | sort -u)
           if [ "${#changed_functions[@]}" -eq 0 ]; then
+            echo "required=false" >> "$GITHUB_OUTPUT"
+            echo "readbacks=[]" >> "$GITHUB_OUTPUT"
             echo "SUPABASE_PROVIDER_READBACK_NOT_APPLICABLE"
             exit 0
           fi
@@ -145,15 +148,21 @@ jobs:
             exit 78
           fi
 
+          readbacks='[]'
           for fn in "${changed_functions[@]}"; do
             line="$(printf '%s\n' "$provider_lines" | grep -E "^function=${fn};version=[1-9][0-9]*;runtime_sha256=[0-9a-fA-F]{64}$" | tail -n1 || true)"
             if [ -z "$line" ]; then
               echo "::error::SUPABASE_PROVIDER_READBACK_INCOMPLETE:${fn}: expected Terminal-Supabase-Provider-Readback: function=${fn};version=<positive-int>;runtime_sha256=<64hex>"
               exit 78
             fi
+            version="$(sed -nE 's/.*;version=([1-9][0-9]*);.*/\1/p' <<<"$line")"
+            runtime_sha256="$(sed -nE 's/.*;runtime_sha256=([0-9a-fA-F]{64})$/\1/p' <<<"$line" | tr '[:upper:]' '[:lower:]')"
+            readbacks="$(jq -c --arg fn "$fn" --argjson version "$version" --arg runtime_sha256 "$runtime_sha256"               '. + [{function:$fn,version:$version,runtime_sha256:$runtime_sha256,state:"ACTIVE"}]' <<<"$readbacks")"
             echo "SUPABASE_PROVIDER_READBACK_DECLARED:${line}"
           done
 
+          echo "required=true" >> "$GITHUB_OUTPUT"
+          echo "readbacks=$readbacks" >> "$GITHUB_OUTPUT"
           echo "SUPABASE_PROVIDER_READBACK_COVERAGE_PROVEN:functions=${changed_functions[*]}"
 
       - name: Wait for canonical production release readback
@@ -404,6 +413,8 @@ jobs:
           TERMINAL_WORKFLOW_RUN_ID: ${{ github.run_id }}
           MIGRATION_READBACK_REQUIRED: ${{ steps.migration-scope.outputs.required }}
           EXPECTED_MIGRATIONS: ${{ steps.migration-scope.outputs.expected }}
+          PROVIDER_READBACK_REQUIRED: ${{ steps.provider-readback.outputs.required }}
+          PROVIDER_READBACKS: ${{ steps.provider-readback.outputs.readbacks }}
         run: |
           set -euo pipefail
           audience="powerhouse-control-plane-v1"
@@ -423,7 +434,7 @@ jobs:
             projection_json="null"
           fi
 
-          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "$([ -n "${PRODUCTION_RUN_ID:-}" ] && echo "${PRODUCTION_RUN_ID}" || echo null)"             --arg production_readback_mode "${PRODUCTION_READBACK_MODE:-canonical_run}"             --arg production_observed_sha "${PRODUCTION_OBSERVED_SHA:-${MERGE_SHA}}"             --arg production_deploy_id "${PRODUCTION_DEPLOY_ID:-}"             --argjson production_readback_verified "$([ "${PRODUCTION_READBACK_VERIFIED:-false}" = "true" ] && echo true || echo false)"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             --argjson migration_readback_required "$([ "${MIGRATION_READBACK_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson expected_migrations "${EXPECTED_MIGRATIONS:-[]}"             '{
+          jq -n             --arg obligation_id "${OBLIGATION_ID}"             --arg candidate_head_sha "${HEAD_SHA}"             --arg main_sha "${MERGE_SHA}"             --argjson production_readback_run_id "$([ -n "${PRODUCTION_RUN_ID:-}" ] && echo "${PRODUCTION_RUN_ID}" || echo null)"             --arg production_readback_mode "${PRODUCTION_READBACK_MODE:-canonical_run}"             --arg production_observed_sha "${PRODUCTION_OBSERVED_SHA:-${MERGE_SHA}}"             --arg production_deploy_id "${PRODUCTION_DEPLOY_ID:-}"             --argjson production_readback_verified "$([ "${PRODUCTION_READBACK_VERIFIED:-false}" = "true" ] && echo true || echo false)"             --argjson skill_projection_required "$([ "${PROJECTION_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson skill_projection_run_id "${projection_json}"             --arg learning_status "${learning_status}"             --arg policy_version "POWERHOUSE-GITHUB-DELIVERY-STATE-MACHINE-v1"             --arg skill_version "${skill_version}"             --argjson github_workflow_run_id "${TERMINAL_WORKFLOW_RUN_ID}"             --argjson migration_readback_required "$([ "${MIGRATION_READBACK_REQUIRED}" = "true" ] && echo true || echo false)"             --argjson expected_migrations "${EXPECTED_MIGRATIONS:-[]}"             --argjson provider_readback_required "$([ "${PROVIDER_READBACK_REQUIRED:-false}" = "true" ] && echo true || echo false)"             --argjson provider_readbacks "${PROVIDER_READBACKS:-[]}"             '{
               obligation_id:$obligation_id,
               candidate_head_sha:$candidate_head_sha,
               main_sha:$main_sha,
@@ -440,7 +451,9 @@ jobs:
               skill_version:$skill_version,
               github_workflow_run_id:$github_workflow_run_id,
               migration_readback_required:$migration_readback_required,
-              expected_migrations:$expected_migrations
+              expected_migrations:$expected_migrations,
+              provider_readback_required:$provider_readback_required,
+              provider_readbacks:$provider_readbacks
             }' > /tmp/control-plane-terminal-evidence.json
 
           http_status="$(curl -sS             --retry 3             --retry-all-errors             --connect-timeout 10             --max-time 30             -H "Authorization: Bearer ${oidc_token}"             -H "Content-Type: application/json"             --data-binary @/tmp/control-plane-terminal-evidence.json             "https://www.bedrijfsgeheugen.nl/api/powerhouse/control-plane/evidence"             -o /tmp/control-plane-terminal-readback.json             -w '%{http_code}')"
@@ -462,6 +475,10 @@ jobs:
             (
               env.MIGRATION_READBACK_REQUIRED != "true" or
               (.migration_readback_required == true and .migration_readback_verified == true)
+            ) and
+            (
+              env.PROVIDER_READBACK_REQUIRED != "true" or
+              (.provider_readback_required == true and .provider_readback_verified == true)
             )
           ' /tmp/control-plane-terminal-readback.json >/dev/null || {
             cat /tmp/control-plane-terminal-readback.json
