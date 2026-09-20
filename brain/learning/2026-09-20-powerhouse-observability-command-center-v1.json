@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse-observability-command-center-v1",
+  "obligation_id": "powerhouse-observability-command-center-v1",
+  "skill_targets": ["powerhouse-continuity"],
+  "compiler": {
+    "failure_class": "OBSERVABILITY_FRAGMENTATION",
+    "scope": "PORTAL_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Powerhouse had detailed runtime, delivery, learning and evidence mechanisms, but no single human-facing cockpit that combined AI/chat/agent activity, GitHub delivery, errors, system layers, documentation, learning and skill projection into one daily filterable view. This forced operators to reconstruct system truth from separate pages and tools.",
+  "prevention_rule": "Project observability from the existing canonical brain-operating-loop authority into one read-only Portal V2 cockpit. Never create a second operational truth store for dashboard convenience. Every metric must derive from runtime evidence; missing evidence remains unknown/empty. Keep filters and drill-down client-side over the canonical projection, and extend the projection rather than duplicating business logic.",
+  "evaluation": {
+    "historical_replay": ["tests/portal-powerhouse-observability-command-center.test.mjs"],
+    "canary": ["portal-v2/runtime-evidence.js","portal-v2/modules/powerhouse-observability.js"]
+  },
+  "evidence": [
+    "portal-v2/modules/powerhouse-observability.js",
+    "portal-v2/powerhouse-observability.css",
+    "portal-v2/runtime-evidence.js",
+    "portal-v2/page-registry.js",
+    "portal-v2/page-shell.js",
+    "portal-v2/hubs.js",
+    "tests/portal-powerhouse-observability-command-center.test.mjs"
+  ],
+  "outcome": {
+    "status": "CANDIDATE_IMPLEMENTED",
+    "capabilities": [
+      "daily period filters",
+      "actor/layer/status/source filters",
+      "full-text search",
+      "activity timeline",
+      "error clustering and recovery view",
+      "system-layer and component health",
+      "documentation and learning view",
+      "skill projection view",
+      "delivery and terminal evidence view",
+      "cost/value summary"
+    ]
+  }
+}
