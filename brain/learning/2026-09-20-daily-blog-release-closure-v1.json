@@ -1,0 +1,33 @@
+{
+  "fingerprint": "daily-blog-release-closure-20260920-v1",
+  "date": "2026-09-20",
+  "type": "CONTENT_DELIVERY_PREVENTION",
+  "failure_class": "DAILY_CONTENT_GENERATED_WITHOUT_RELEASE_AND_LEARNING_CLOSURE",
+  "scope": "WEBSITE_CI_PRODUCTION",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "content-daily-blog-20260920-excel-version-control-v1",
+  "root_cause": "The daily blog artifact was generated before all technical SEO, performance, machine metadata and canonical writeback requirements had been completed in the same delivery lineage.",
+  "prevention_rule": "A daily blog is not complete at generation. The same candidate must include technical SEO 100, Lighthouse thresholds, sitemap/index/RSS registration, exact PR metadata, Brain learning, ledger and human documentation, followed by protected merge, Netlify production deploy and public canonical readback.",
+  "enforcement": [
+    "blog/excel-versiebeheer-mkb/index.html",
+    "blog/index.html",
+    "blog/rss.xml",
+    "sitemap.xml",
+    "tests/brain-daily-blog-release-closure-20260920-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-release-closure-20260920-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "seo-revenue-growth"
+  ],
+  "evidence": {
+    "initial_gate_failures": "Missing metadata plus technical SEO contract failures and Lighthouse performance below threshold.",
+    "repair": "Machine metadata restored, SEO contract brought to 100 and third-party render blockers removed from the article critical path.",
+    "truth_rule": "Generated or previewed is not published; public production readback is required."
+  }
+}
