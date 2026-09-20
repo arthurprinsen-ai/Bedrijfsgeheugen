@@ -14,7 +14,7 @@ test('admin onboarding keeps browser behind Netlify Identity and server token',(
 test('Supabase key write is narrow and service-role only',()=>{
   assert.match(migration,/powerhouse_set_composio_api_key_v1/);
   assert.match(migration,/COMPOSIO_API_KEY/);
-  assert.match(migration,/revoke all .* from public,anon,authenticated/i);
+  assert.match(migration,/revoke execute on function public\.powerhouse_set_composio_api_key_v1\(text\) from public, anon, authenticated/i);
   assert.match(migration,/grant execute .* to service_role/i);
 });
 test('key is provider-validated before canonical storage',()=>{

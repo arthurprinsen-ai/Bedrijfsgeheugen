@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "security-definer-explicit-execute-revocation-v1",
+  "compiler": {
+    "failure_class": "SECURITY_CONTRACT_SYNTAX_DRIFT",
+    "scope": "SUPABASE_SECURITY_DEFINER",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The Composio Vault writer was already intended to be service-role only, but used REVOKE ALL. The canonical Supabase security gate requires explicit REVOKE EXECUTE for SECURITY DEFINER functions so browser-role execution denial is machine-verifiable.",
+  "prevention": [
+    "Every new SECURITY DEFINER function must explicitly REVOKE EXECUTE FROM public, anon, authenticated in the same migration.",
+    "Grant EXECUTE only to the minimum server-side role required.",
+    "Do not rely on REVOKE ALL as a substitute for the explicit execution-denial contract.",
+    "Keep deterministic search_path and regression-bind the exact revocation statement."
+  ],
+  "evidence": [
+    "supabase/migrations/20260920111000_admin_composio_key_onboarding.sql",
+    "tests/brain-admin-composio-key-onboarding.test.mjs",
+    "scripts/brain/check_powerhouse_supabase_security.py"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-admin-composio-key-onboarding.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "security",
+    "delivery"
+  ],
+  "skill_projection_required": true
+}

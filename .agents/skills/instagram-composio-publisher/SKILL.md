@@ -198,3 +198,10 @@ Do not improvise direct provider auth or switch transport providers.
 Fingerprint: `admin-composio-key-onboarding-v1`.
 
 Use `/api/powerhouse-composio-config` through the authenticated Powerhouse admin surface to onboard or rotate `COMPOSIO_API_KEY`. The browser may send the key once over TLS but must never persist it. Netlify Identity + `isPowerhouseAdmin` is the human boundary; `x-bg-service-token` is the server-to-server boundary; `powerhouse_set_composio_api_key_v1` is the only allowed Vault writer and can mutate only `COMPOSIO_API_KEY`. Validate the candidate key against Composio before storage.
+
+
+## SECURITY DEFINER revocation contract
+
+Fingerprint: `security-definer-explicit-execute-revocation-v1`.
+
+For every server-only Supabase `SECURITY DEFINER` function used by this publication/onboarding chain, revoke execution explicitly in the same migration with `REVOKE EXECUTE ... FROM public, anon, authenticated`, then grant only the required server role. Do not rely on `REVOKE ALL` for this contract.

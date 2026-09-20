@@ -29,5 +29,5 @@ begin
   return jsonb_build_object('stored',true,'name','COMPOSIO_API_KEY');
 end $$;
 
-revoke all on function public.powerhouse_set_composio_api_key_v1(text) from public,anon,authenticated;
+revoke execute on function public.powerhouse_set_composio_api_key_v1(text) from public, anon, authenticated;
 grant execute on function public.powerhouse_set_composio_api_key_v1(text) to service_role;
