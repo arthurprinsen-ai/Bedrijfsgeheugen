@@ -27,10 +27,8 @@
       "tests/brain-autonomous-improvement-floor-terminal-v1.test.mjs"
     ],
     "canary": [
-      "Supabase PR Preview Contract",
-      "Powerhouse Supabase Security Contract",
-      "Autonomous Improvement Completion Gate",
-      "Powerhouse public RLS regression guard"
+      "tests/brain-terminal-autonomous-reconciler-v1.test.mjs",
+      "tests/brain-autonomous-improvement-floor-terminal-v1.test.mjs"
     ]
   },
   "outcome": {
