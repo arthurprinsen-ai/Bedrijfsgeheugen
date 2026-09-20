@@ -7,7 +7,7 @@
   "machine_enforceable": true,
   "repeat_count": 1,
   "security_sensitive": false,
-  "obligation_id": "buffer-rate-limit-circuit-breaker-v2",
+  "obligation_id": "buffer-rate-limit-circuit-breaker-v1",
   "root_cause": "A Buffer 429 could occur during provider reconciliation or immediately after provider create. Without a persistent cooldown and persisted provider create identity, repeated runs could keep polling or recreate a post while external truth was still uncertain.",
   "prevention_rule": "Persist Retry-After as canonical cooldown, suppress LinkedIn Buffer polling during that window, persist provider post id immediately after create, and never recreate after uncertain readback. Reconcile provider truth later. Instagram direct Composio authority remains independent.",
   "enforcement": [
