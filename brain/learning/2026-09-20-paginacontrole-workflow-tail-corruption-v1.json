@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "paginacontrole-workflow-tail-corruption-v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The paginacontrole workflow contained duplicated appended YAML fragments after its real terminal step, making the workflow syntactically invalid so GitHub failed it before any job could start.",
+  "prevention": [
+    "Workflow source files must contain one canonical document body and may not contain duplicated appended tails.",
+    "A regression must assert one workflow name, one terminal Falen doorgeven step, and no known corruption sentinel.",
+    "Zero-job workflow failures must be treated as workflow-parse/config corruption before investigating job runtime."
+  ],
+  "evidence": [
+    ".github/workflows/paginacontrole.yml",
+    "tests/brain-paginacontrole-workflow-integrity.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-paginacontrole-workflow-integrity.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "website-release",
+    "github-delivery"
+  ],
+  "skill_projection_required": true
+}
