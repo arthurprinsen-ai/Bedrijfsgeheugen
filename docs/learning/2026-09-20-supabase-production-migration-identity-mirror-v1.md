@@ -1,7 +1,7 @@
 # Supabase migration identity must mirror production
 
-For migrations that are already applied in production, the immutable production migration version/name is the canonical identity.
+For migrations already applied in production, immutable production migration history is authoritative.
 
-The Composio admin onboarding migration was functionally present in production, but Supabase registered it as `20260920112118_admin_composio_key_onboarding` while the repository still used `20260920111000_admin_composio_key_onboarding.sql`.
+The Composio onboarding lineage contains two applied versions with the same semantic name: `20260920112118_admin_composio_key_onboarding` (initial apply) and `20260920112436_admin_composio_key_onboarding` (security recovery). The latter contains the explicit `REVOKE EXECUTE` contract and is the latest effective production identity matching the current runtime.
 
-The repository now mirrors the exact production identity. Future terminal closure must compare both version and name and fail closed on drift.
+The repository therefore mirrors `20260920112436_admin_composio_key_onboarding.sql`. Future terminal closure must not stop at the first matching migration name: it must compare version, name, and effective contract semantics and fail closed on drift.
