@@ -1,0 +1,23 @@
+{
+  "fingerprint": "buffer|rate-limit|provider-create-idempotency|v2",
+  "obligation_id": "buffer-rate-limit-circuit-breaker-v2",
+  "compiler": {
+    "failure_class": "BUFFER_429_CAN_REPEAT_EXTERNAL_SIDE_EFFECT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A Buffer 429 during provider readback could leave local state without durable provider identity, allowing a later retry to cross the external create boundary again.",
+  "prevention_rule": "Persist the Buffer provider post id immediately after create acknowledgement, store a bounded Retry-After cooldown, defer LinkedIn retries during cooldown, and never recreate a post when provider create is already acknowledged.",
+  "evaluation": {
+    "historical_replay": ["tests/social-learning-buffer-circuit-breaker-v1.test.mjs"],
+    "canary": ["tests/social-learning-buffer-circuit-breaker-v1.test.mjs"]
+  },
+  "evidence": {
+    "supersedes_pr": 2423,
+    "current_main_integration": "Mira/Composio Instagram authority preserved; Buffer cooldown applies to Buffer-backed LinkedIn lanes",
+    "canonicalization_test": "tests/social-learning-buffer-circuit-breaker-v1.test.mjs"
+  },
+  "outcome": {"status":"RECORDED_PENDING_FINAL_DELIVERY_READBACK"}
+}
