@@ -1,0 +1,33 @@
+{
+  "fingerprint": "powerhouse|trusted-advisor|assurance|v1",
+  "obligation_id": "trusted-advisor-assurance-v1",
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "TRUST_ASSURANCE_GAP",
+    "scope": "CUSTOMER_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Customer-facing AI output could be source-bound internally while the portal did not consistently expose provenance, freshness, uncertainty and verification state to the customer. That leaves trust dependent on presentation rather than inspectable evidence.",
+  "prevention_rule": "Every material customer-facing AI analysis, summary, recommendation, chat answer and autonomous action must inherit the Trusted Advisor assurance contract: distinguish facts from derivations and hypotheses, expose provenance/freshness/evidence gaps, never invent confidence percentages, fail closed on missing evidence, require provider/runtime readback for executed actions, and feed verified outcomes and customer corrections back into future advice.",
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/trusted-advisor-assurance.test.mjs",
+      "portal-v2/tests/ask-portal-trust.test.mjs",
+      "portal-v2/tests/no-demo-data.test.mjs"
+    ]
+  },
+  "evidence": [
+    "brain/policies/trusted-advisor-assurance-v1.json",
+    "portal-v2/trusted-advisor-assurance.js",
+    "portal-v2/trusted-advisor-parity.md",
+    "platform/api/portal-question-handler.mjs"
+  ],
+  "outcome": {
+    "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+    "truth_boundary": "This learning records the required trust contract and implementation lineage. LIVE & BEWEZEN is only valid after protected merge and production readback."
+  }
+}
