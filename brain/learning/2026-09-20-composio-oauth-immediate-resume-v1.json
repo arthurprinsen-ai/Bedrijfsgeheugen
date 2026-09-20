@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "composio-oauth-immediate-resume-v1",
+  "compiler": {
+    "failure_class": "EXTERNAL_AUTH_COMPLETION_RESUME_GAP",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "After Composio OAuth became ACTIVE, the setup path only reported readiness. Publication depended on the next scheduled delivery run or a manual follow-up.",
+  "prevention": [
+    "After hosted OAuth is opened, poll provider status for a bounded period only.",
+    "When exactly one active Instagram connection is observed, invoke exactly one admin-authenticated resume action.",
+    "Resume must call the canonical social publisher; never bypass identity, capability, or provider-readback gates.",
+    "Stop polling after success, timeout, destruction, or explicit failure; never persist auth state in browser storage."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-composio-instagram-setup/index.ts",
+    "netlify/functions/powerhouse-composio-config.mjs",
+    "portal-v2/modules/powerhouse-observability.js",
+    "tests/brain-composio-oauth-immediate-resume.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-composio-oauth-immediate-resume.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "delivery",
+    "security"
+  ],
+  "skill_projection_required": true
+}
