@@ -1,0 +1,18 @@
+{
+  "fingerprint": "powerhouse-control-plane-closure-health-v1",
+  "date": "2026-09-20",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "CANONICAL_RUNTIME_CONTRACT_DRIFT",
+  "scope": "RUNTIME",
+  "machine_enforceable": true,
+  "root_cause": "ONE BRAIN runtime-health still required the retired reconciliation worker v1 while production schedules and executes v2; terminal closure also rejected a closed-unmerged superseded migration before reconciling its stable migration identity to current main.",
+  "prevention_rule": "Health contracts must follow the active canonical runtime authority. Closed-unmerged supersession migrations may be accepted only when exactly one same-name canonical migration exists on current main; missing or ambiguous identity fails closed.",
+  "evidence": {
+    "runtime_before": "18 required / 17 active; architecture RED",
+    "runtime_after": "18 required / 18 active; architecture AMBER",
+    "terminal_failure": "UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:2384"
+  },
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ]
+}
