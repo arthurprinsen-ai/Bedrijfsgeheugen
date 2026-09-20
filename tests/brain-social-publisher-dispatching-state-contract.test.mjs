@@ -13,8 +13,8 @@ test('social publisher atomic claim state is allowed by database contract',()=>{
 
 test('dispatching claim remains before external provider side effects',()=>{
   const claimIndex=publisher.indexOf("state: 'dispatching'");
-  const instagramPublishIndex=publisher.indexOf('publishInstagramViaComposio');
-  const bufferCreateIndex=publisher.indexOf('createPost(bufferToken');
+  const instagramPublishIndex=publisher.indexOf('const direct = await publishInstagramViaComposio');
+  const bufferCreateIndex=publisher.indexOf('created = await createPost(bufferToken');
   assert.ok(claimIndex>=0);
   assert.ok(instagramPublishIndex>claimIndex);
   assert.ok(bufferCreateIndex>claimIndex);
