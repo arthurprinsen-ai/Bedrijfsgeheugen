@@ -43,7 +43,8 @@
     "PR #2502 first failed BRAIN because checkout-readiness.mjs was missing from the canonical System Map inventory; the inventory was updated on the same candidate.",
     "Refresh entitlement enforcement is centralized in platform/saas/entitlement-policy.mjs and applied before connector Active state.",
     "Regression coverage pins Control=1440 min minimum, Scale=60 min minimum and Enterprise=0/event-or-realtime semantics.",
-    "PR #2505 merged refresh enforcement but production readback initially returned success while Netlify current still pointed at the previous SHA because platform/* runtime dependencies were not classified as deploy-relevant."
+    "PR #2505 merged refresh enforcement but production readback initially returned success while Netlify current still pointed at the previous SHA because platform/* runtime dependencies were not classified as deploy-relevant.",
+    "PR #2508 portal lane exposed a stale connector activation fixture that lacked getPlanRuntimePolicy; the fixture was updated to preserve old activation evidence guarantees under the new fail-closed entitlement contract."
   ],
   "evaluation": {
     "historical_replay": [
