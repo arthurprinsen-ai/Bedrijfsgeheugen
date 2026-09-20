@@ -5,7 +5,7 @@ export const VIEWS = [
   { view: 'product', bestand: 'product.html', pad: '/product', naam: 'Platform',
     titel: 'Het portaal — kennis, processen en acties op één plek | Bedrijfsgeheugen',
     omschrijving: 'Het Bedrijfsgeheugen-portaal verbindt strategie, processen, kennis, rollen, systemen en acties bovenop AFAS, Exact Online en Microsoft 365.',
-    zoekwoord: 'kennisborging mkb' },
+    zoekwoord: 'bedrijfsgeheugen platform' },
   { view: 'solutions', bestand: 'oplossingen.html', pad: '/oplossingen', naam: 'Oplossingen',
     titel: 'Oplossingen — begin waar het werk vastloopt | Bedrijfsgeheugen',
     omschrijving: 'Systemen koppelen, kennis borgen, AI verantwoord toepassen en due diligence: we beginnen bij het probleem dat aantoonbaar tijd of marge kost.',
@@ -13,10 +13,8 @@ export const VIEWS = [
   { view: 'integrations', bestand: 'systemen-koppelen.html', pad: '/systemen-koppelen', naam: 'Koppelingen',
     titel: 'Systemen koppelen — niet vervangen, verbinden | Bedrijfsgeheugen',
     omschrijving: 'AFAS, Exact Online, Twinfield, webshops en Microsoft 365 aan elkaar knopen zodat dezelfde gegevens niet twee keer worden ingevoerd.',
-    // "systemen koppelen mkb" is in de zoekwoordstrategie toegewezen aan het blog:
-    // dat artikel telt 3.376 woorden en heeft vragenschema. De pijlerpagina pakt
-    // daarom de kortere variant en linkt door naar het blog.
-    zoekwoord: 'systemen koppelen' },
+    // Canonical ownership comes from the SEO registry; the generated view mirrors it.
+    zoekwoord: 'systemen koppelen mkb' },
   // 'pricing' staat hier niet meer: /prijzen is een eigen pagina (prijzen.html) met
   // vier pakketten, AI-niveaus en de zelfscan. De generator mag die niet overschrijven.
   { view: 'company', bestand: 'over-ons.html', pad: '/over-ons', naam: 'Over ons',
