@@ -25,6 +25,11 @@
   ],
   "evidence": {
     "incident": "A generic Bedrijfsgeheugen Instagram post was visible after Mira-only behavior had already been documented and learned.",
-    "terminal_rule": "Not LIVE until merged, deployed and production readback proves authority plus containment."
+    "terminal_rule": "Not LIVE until merged, deployed and production readback proves authority plus containment.",
+    "regression_test": "tests/brain-central-social-publication-authority-v1.test.mjs",
+    "provider_containment": "Invalid scheduled Instagram provider state must reach CONTAINED only after external cancellation succeeds."
+  },
+  "compiler": {
+    "failure_class": "DOCUMENTED_POLICY_WITHOUT_SINGLE_RUNTIME_CHOKEPOINT"
   }
 }

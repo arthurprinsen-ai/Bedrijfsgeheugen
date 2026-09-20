@@ -104,3 +104,20 @@ Hard pre-publish proof for every final asset:
 - any missing, ambiguous or contradictory field fails closed before scheduling/publishing.
 
 No transport, agent, direct Instagram call, Buffer call, Composio call, retry route or fallback may bypass this rule. A generic company post must be rerouted to the proper company channel, never reclassified as Mira.
+
+
+## Central publication authority — mandatory runtime choke point (2026-09-20)
+
+Fingerprint: central-social-publication-authority-v1.
+
+A Mira rule is not considered enforced merely because it exists in prompts, learning, tests or channel metadata. Every Instagram external side effect must pass the canonical powerhouse-social-publisher and consume a short-lived, one-time publication capability bound to the exact channel identity, final text hash, exact-final-media SHA and active policy version.
+
+Mandatory containment semantics:
+- no direct Buffer, Composio or Instagram write path outside the canonical publisher;
+- no provider write before capability consumption;
+- an invalid already-scheduled provider item is PENDING_PROVIDER_CANCELLATION, never safely BLOCKED;
+- only successful external cancellation/readback may establish CONTAINED;
+- a transport sent/scheduled result never substitutes for Mira identity or exact-final-media proof;
+- future Instagram publisher routes must inherit this authority and cannot introduce a parallel writer.
+
+This invariant is machine-enforced in database capability RPCs, publisher runtime, provider-containment sweep, completion evidence and CI anti-bypass tests.
