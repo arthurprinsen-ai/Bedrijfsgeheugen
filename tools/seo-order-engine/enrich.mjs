@@ -67,6 +67,9 @@ export function enrichRegisteredPage(input,entry){
   html=markPageContext(html,entry);
   html=ensureMeta(html,'bg-intent',entry.primary_intent);
   html=ensureMeta(html,'bg-keyword-cluster',entry.primary_keyword);
+  // Backward-compatible ownership contract: the canonical SEO audit still reads bg-zoekwoord.
+  // Keep both metadata keys aligned until all consumers have migrated to bg-keyword-cluster.
+  html=ensureMeta(html,'bg-zoekwoord',entry.primary_keyword);
   html=ensureMeta(html,'bg-intent-owner',entry.route);
   html=enrichMoneyPage(html,entry);
   html=enrichSupportHandoff(html,entry);
