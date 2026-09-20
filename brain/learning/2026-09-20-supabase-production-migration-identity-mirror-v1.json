@@ -27,5 +27,13 @@
     "delivery",
     "supabase"
   ],
-  "skill_projection_required": true
+  "skill_projection_required": true,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-production-migration-identity-mirror.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-production-migration-identity-mirror.test.mjs"
+    ]
+  }
 }
