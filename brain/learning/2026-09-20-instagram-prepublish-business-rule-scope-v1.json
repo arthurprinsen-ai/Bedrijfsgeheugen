@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "instagram-prepublish-business-rule-scope-v1",
+  "compiler": {
+    "failure_class": "CHANNEL_POLICY_SCOPE_DRIFT",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The pre-publish review applied the generic business-rule RPC to every channel except personal LinkedIn. Instagram Mira therefore inherited company-page rules such as a mandatory bedrijfsgeheugen.nl tracking link, contradicting the Mira-only daily-life channel contract.",
+  "prevention": [
+    "Apply generic business rules only to linkedin_company.",
+    "Keep instagram_company governed by Mira identity, exact-media, dimensions, provider and final-asset gates.",
+    "Do not require business CTAs, tracking links or business morals on Mira Instagram content.",
+    "Regression-test channel-specific rule scope so generic company rules cannot bleed into Instagram."
+  ],
+  "evidence": [
+    "supabase/functions/bg-pre-publish-review/index.ts",
+    "tests/brain-instagram-prepublish-rule-scope.test.mjs",
+    "production:instagram_company blocked by doorklik tracking-link rule"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-prepublish-rule-scope.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "content",
+    "delivery"
+  ],
+  "skill_projection_required": true
+}

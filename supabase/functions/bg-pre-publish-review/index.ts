@@ -161,7 +161,7 @@ Deno.serve(async (req) => {
 
   const identityBlockers = channel === 'linkedin_personal' ? personalViolations(text, body, finalHash) : otherIdentityViolations(channel, text, body);
   let genericBlockers: any[] = [];
-  if (channel !== 'linkedin_personal') {
+  if (channel === 'linkedin_company') {
     const { data: violations, error: ruleError } = await db.rpc('bg_brein_regels_check', {
       p_connectie_id: clean(body.connectie_id) || null,
       p_tekst: text,
@@ -185,6 +185,6 @@ Deno.serve(async (req) => {
     personal_truth_verified: channel === 'linkedin_personal' ? body.personal_truth_verified === true : null,
     personal_life_only_policy: channel === 'linkedin_personal' ? PERSONAL_LIFE_ONLY_POLICY : null,
     personal_life_only_verified: channel === 'linkedin_personal' ? body.personal_life_only_verified === true : null,
-    rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel !== 'linkedin_personal' },
+    rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel === 'linkedin_company' },
   }, pass ? 200 : 422);
 });

@@ -162,3 +162,11 @@ A successful proof write is not sufficient by itself. Require readback of the ag
 Fingerprint: `instagram-accepted-winner-downstream-lineage-v1`.
 
 After the canonical selector freezes the daily Instagram winner it may transition that recommendation from `suggested` to `accepted`. Downstream orchestrator/publisher logic must continue to accept that exact recommendation only when its ID matches the persisted daily-winner row and `evidence.daily_winner=true`. This exception is winner-specific; generic recommendations keep the stricter suggested/empty eligibility rule. Never select a second winner because the frozen winner is already `accepted`.
+
+
+
+## Channel-specific pre-publish rule scope
+
+Fingerprint: `instagram-prepublish-business-rule-scope-v1`.
+
+Instagram Mira must not inherit generic company-page rules such as mandatory Bedrijfsgeheugen tracking links, business CTAs or a forced business moral. Generic business-rule evaluation is scoped to `linkedin_company` only. Instagram remains fail-closed on its dedicated Mira identity, exact-final-media, dimensions, provider, final-asset, dedupe and publication-authority gates.
