@@ -21,7 +21,8 @@
     "Entitlements worden server-side afgedwongen; browser/UI gating is nooit de security authority.",
     "Pricing leest commerciële waarheid uit één canonical planmodel zodat prijs, checkout en runtime entitlement niet kunnen driften.",
     "Alle betaalde runtime-capabilities gebruiken één centrale fail-closed entitlement-policy; stores en handlers mogen planlogica niet opnieuw hardcoden.",
-    "Self-service checkout mag pas beschikbaar zijn als zowel provider-secret als webhook-secret aantoonbaar aanwezig zijn; één secret is onvoldoende."
+    "Self-service checkout mag pas beschikbaar zijn als zowel provider-secret als webhook-secret aantoonbaar aanwezig zijn; één secret is onvoldoende.",
+    "Elke nieuwe runtime surface moet in dezelfde lineage aan de canonieke System Map-inventaris worden toegevoegd; anders is delivery onvolledig."
   ],
   "regression_contract": [
     "tests/saas-pricing-entitlements.test.mjs",
@@ -35,7 +36,8 @@
     "Canonical brand shell full build exposed and then closed the two-H1 checkout defect.",
     "BRAIN admission accepted exact head after complete delivery metadata was added.",
     "V2 centraliseert subscription-status, numerieke limieten, booleans en agent modes in platform/saas/entitlement-policy.mjs.",
-    "Billing readiness is now a first-class fail-closed contract with a secret-safe public readiness projection."
+    "Billing readiness is now a first-class fail-closed contract with a secret-safe public readiness projection.",
+    "PR #2502 first failed BRAIN because checkout-readiness.mjs was missing from the canonical System Map inventory; the inventory was updated on the same candidate."
   ],
   "evaluation": {
     "historical_replay": [
