@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
-  "status": "ACTIVE",
+  "status": "CANDIDATE",
   "fingerprint": "seo-relative-primary-cta-measurement-v1",
   "compiler": {
     "failure_class": "SEO_RUNTIME_CONTRACT",
@@ -12,7 +12,9 @@
   "root_cause": "SEO conversion marking matched only the registry's absolute primary_cta URL while native page content commonly uses equivalent root-relative internal hrefs, so production could lose the measurable primary CTA contract.",
   "prevention": [
     "Internal primary CTA matching must treat canonical absolute and root-relative Bedrijfsgeheugen URLs as equivalent.",
-    "Regression coverage must include both absolute and root-relative CTA href forms."
+    "Regression coverage must include both absolute and root-relative CTA href forms.",
+    "A material recovery lineage must include an activity-ledger event before Required can pass.",
+    "Merge admission must never promote a PR whose exact-head Required or required Skill Projection gate is red."
   ],
   "evidence": [
     "tools/seo-order-engine/conversion.mjs",
@@ -20,8 +22,14 @@
     "canonical-brand-shell-live-readback run 35516789952"
   ],
   "evaluation": {
-    "historical_replay": ["tests/seo-order-conversion.test.mjs"]
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs",
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+    ]
   },
-  "skill_targets": ["website-release", "seo-growth"],
+  "skill_targets": [
+    "website-release",
+    "seo-growth"
+  ],
   "skill_projection_required": true
 }
