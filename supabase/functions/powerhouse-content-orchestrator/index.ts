@@ -222,7 +222,16 @@ Deno.serve(async (req) => {
       ? clean(instagramWinner?.recommendation_id)
       : clean(pending.delivery_evidence?.fallback_recommendation_id);
     const recommendation = requiredRecommendationId
-      ? recs.find((r:any)=>clean(r.recommendation_id)===requiredRecommendationId && recommendationEligible(r,pending.channel)) || null
+      ? recs.find((r:any)=>{
+          if(clean(r.recommendation_id)!==requiredRecommendationId) return false;
+          if(pending.channel==='instagram_company'){
+            return !!instagramWinner
+              && clean(instagramWinner.recommendation_id)===requiredRecommendationId
+              && r?.evidence?.daily_winner===true
+              && ['suggested','accepted'].includes(clean(r?.status));
+          }
+          return recommendationEligible(r,pending.channel);
+        }) || null
       : pickRecommendation(recs,pending.channel);
     if (pending.channel==='instagram_company' && (!instagramWinner || !recommendation)) throw new Error('INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED');
     let companyTrackingUrl:string|null=null;
