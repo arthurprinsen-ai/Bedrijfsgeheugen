@@ -1,3 +1,4 @@
+// CANONICAL_GENERATED_SEO_OWNERS_V1 — generated page keyword/title overrides must mirror the canonical SEO registry.
 // Eén zoekwoord, één pagina. Deze lijst komt uit de zoekwoordstrategie en is
 // dezelfde die .github/scripts/seocontrole.py hanteert: wijzigt de strategie,
 // werk dan beide bij.
