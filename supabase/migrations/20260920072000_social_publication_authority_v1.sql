@@ -24,7 +24,10 @@ grant select,insert,update on table public.powerhouse_social_publish_capabilitie
 create or replace function public.powerhouse_issue_social_publish_capability_v1(
   p_run_date date,p_channel text,p_channel_id text,p_final_text_hash text,p_final_media_sha256 text,p_policy_version text
 ) returns jsonb
-language plpgsql security definer set search_path=public,pg_catalog as $$
+language plpgsql
+security definer
+set search_path to 'public','pg_catalog'
+as $$
 declare
   v_decision record; v_artifact record; v_proof jsonb; v_visual jsonb;
   v_token text; v_token_hash text; v_id uuid; v_content_id text; v_obligation_id text;
@@ -98,7 +101,10 @@ end $$;
 create or replace function public.powerhouse_consume_social_publish_capability_v1(
   p_token text,p_run_date date,p_channel text,p_channel_id text,p_final_text_hash text,p_final_media_sha256 text,p_policy_version text,p_consumer text
 ) returns boolean
-language plpgsql security definer set search_path=public,pg_catalog as $$
+language plpgsql
+security definer
+set search_path to 'public','pg_catalog'
+as $$
 declare v_hash text; v_count int;
 begin
   v_hash:=encode(digest(coalesce(p_token,''),'sha256'),'hex');

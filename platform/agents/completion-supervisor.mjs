@@ -8,7 +8,6 @@ const REQUIRED_EVIDENCE = Object.freeze([
   'OBLIGATIONS_COMPLETE',
   'CAPABILITY_HANDOFF',
   'LEARNING_WRITEBACK',
-  'CHANNEL_POLICY_AUTHORIZATION',
 ]);
 
 const TRUSTED_PRODUCERS = Object.freeze({
@@ -165,6 +164,11 @@ export function evaluateCompletion(input = {}) {
 
   const { accepted, identityMismatch } = acceptedEvidence(input.evidence, obligationId, candidateIdentity, productionIdentity);
   const required = REQUIRED_EVIDENCE.filter(type => !accepted.has(type));
+  const channelPolicyRequired = input.channelPolicyRequired === true
+    || /(?:instagram|linkedin|social[-_ ]?publication|publish)/i.test(JSON.stringify({
+      obligationId, workId, claim:input.claim ?? '', materialObligations:input.materialObligations ?? [],
+    }));
+  if (channelPolicyRequired && !accepted.has('CHANNEL_POLICY_AUTHORIZATION')) required.push('CHANNEL_POLICY_AUTHORIZATION');
   if (!obligationId || !workId || !candidateIdentity) required.unshift('IDENTITY');
   if (!productionIdentity && required.some(type => !['IDENTITY','CANDIDATE_TESTS','PROTECTED_DELIVERY'].includes(type))) required.push('PRODUCTION_IDENTITY');
   if (identityMismatch) required.push('IDENTITY_MATCH');

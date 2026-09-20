@@ -441,6 +441,27 @@
       "authority": "netlify/functions/powerhouse-control-plane.mjs",
       "evidence_contract": "tests/brain-control-plane-admin-cockpit-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "rpc:powerhouse_issue_social_publish_capability_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_consume_social_publish_capability_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_social_publish_capabilities_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
     }
   ]
 }

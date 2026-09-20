@@ -29,7 +29,7 @@ test('publisher requires capability consumption before provider calls',()=>{
 test('only canonical publisher contains direct provider side-effect primitives',()=>{
   const roots=['supabase/functions','netlify/functions','platform','scripts'];
   const allowed=new Set(['supabase/functions/powerhouse-social-publisher/index.ts']);
-  const forbidden=['INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH','https://api.buffer.com'];
+  const forbidden=['INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH','mutation CreatePost','createPost(input'];
   const offenders=[];
   const walk=(dir)=>{
     for(const name of fs.readdirSync(dir)){
@@ -51,8 +51,8 @@ test('completion supervisor requires channel policy authorization evidence',()=>
     ['CANDIDATE_TESTS','BRAIN_DELIVERY'],['PROTECTED_DELIVERY','BG169'],['PRODUCTION_IDENTITY','BG169'],
     ['FUNCTIONAL_READBACK','PRODUCTION_READBACK'],['OBLIGATIONS_COMPLETE','OUTCOME_OBLIGATION_RUNTIME'],
     ['CAPABILITY_HANDOFF','BG167'],['LEARNING_WRITEBACK','BG168_BG166']
-  ].map(([type,producer])=>({type,producer,accepted:true,independent:true,taskIdentity:'x',candidateIdentity:'c',productionIdentity:type==='CANDIDATE_TESTS'?'':'p'}));
-  const result=evaluateCompletion({obligationId:'x',workId:'w',candidateIdentity:'c',productionIdentity:'p',materialObligations:[],evidence});
+  ].map(([type,producer])=>({type,producer,accepted:true,independent:true,taskIdentity:'social-publication:x',candidateIdentity:'c',productionIdentity:type==='CANDIDATE_TESTS'?'':'p'}));
+  const result=evaluateCompletion({obligationId:'social-publication:x',workId:'w',candidateIdentity:'c',productionIdentity:'p',channelPolicyRequired:true,materialObligations:[],evidence});
   assert.equal(result.success,false);
   assert.ok(result.required_evidence.includes('CHANNEL_POLICY_AUTHORIZATION'));
 });
