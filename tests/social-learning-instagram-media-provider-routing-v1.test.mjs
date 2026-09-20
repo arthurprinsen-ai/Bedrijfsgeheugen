@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const cfg=JSON.parse(fs.readFileSync('config/social-channel-identity-contract.json','utf8'));
-const sql=fs.readFileSync('supabase/migrations/20260920065000_instagram_mira_visual_reel_only_v2.sql','utf8');
+const sql=fs.readFileSync('supabase/migrations/20260920073022_instagram_mira_visual_reel_only_v2.sql','utf8');
 const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
 const contentLoop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
 
