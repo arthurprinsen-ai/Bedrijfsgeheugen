@@ -1,6 +1,6 @@
 {
   "type": "POWERHOUSE_LEARNING",
-  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v4",
+  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v5",
   "fingerprint": "saas-pricing-checkout-entitlements-closure-v1",
   "status": "CANDIDATE",
   "compiler": {
@@ -24,7 +24,8 @@
     "Self-service checkout mag pas beschikbaar zijn als zowel provider-secret als webhook-secret aantoonbaar aanwezig zijn; één secret is onvoldoende.",
     "Elke nieuwe runtime surface moet in dezelfde lineage aan de canonieke System Map-inventaris worden toegevoegd; anders is delivery onvolledig.",
     "Refresh/freshness is a runtime entitlement, not a pricing-page label: connector activation must fail closed when the requested cadence is faster than the active plan permits.",
-    "Missing connector cadence must default to the active plan cadence rather than an implicit faster schedule."
+    "Missing connector cadence must default to the active plan cadence rather than an implicit faster schedule.",
+    "Production readback must treat shared modules bundled into Netlify Functions as deploy-relevant; a green non-deployment readback is invalid when those dependencies changed."
   ],
   "regression_contract": [
     "tests/saas-pricing-entitlements.test.mjs",
@@ -41,7 +42,8 @@
     "Billing readiness is now a first-class fail-closed contract with a secret-safe public readiness projection.",
     "PR #2502 first failed BRAIN because checkout-readiness.mjs was missing from the canonical System Map inventory; the inventory was updated on the same candidate.",
     "Refresh entitlement enforcement is centralized in platform/saas/entitlement-policy.mjs and applied before connector Active state.",
-    "Regression coverage pins Control=1440 min minimum, Scale=60 min minimum and Enterprise=0/event-or-realtime semantics."
+    "Regression coverage pins Control=1440 min minimum, Scale=60 min minimum and Enterprise=0/event-or-realtime semantics.",
+    "PR #2505 merged refresh enforcement but production readback initially returned success while Netlify current still pointed at the previous SHA because platform/* runtime dependencies were not classified as deploy-relevant."
   ],
   "evaluation": {
     "historical_replay": [
