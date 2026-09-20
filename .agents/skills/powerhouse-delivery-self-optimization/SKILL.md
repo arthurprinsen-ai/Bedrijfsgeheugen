@@ -248,3 +248,16 @@ Before every protected merge, the executing agent/writer must independently prov
 If Required is queued/in-progress, if the head moved, or if a relevant Supabase security/preview workflow is red, merge is forbidden even when GitHub reports the PR as mergeable.
 
 Reference incident: PR #2475 merged at head `539a9a934d11f6373636da6144a38e76b8f28e46` while its Supabase Security Contract and Supabase PR Preview were red and Required was still in progress. The generic protected context name `test` was therefore not adequate evidence of canonical Required completion.
+
+
+## Production migration identity mirroring
+
+Fingerprint: `delivery|supabase-migration-identity|production-mirror|v1`.
+
+When a Supabase migration has already been applied in production, production migration history is the canonical identity. The repository must mirror the exact production `version` and `name` before terminal success.
+
+Mandatory:
+- compare both migration version and name;
+- never mutate production migration history just to fit a stale repo filename;
+- if a direct production apply generated a different version, rename/reconcile the repository migration to that exact production version;
+- treat version/name drift as recoverable incomplete state, not `LIVE_BEWEZEN`.
