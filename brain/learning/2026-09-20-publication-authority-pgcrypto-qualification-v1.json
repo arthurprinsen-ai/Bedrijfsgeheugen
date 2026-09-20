@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "publication-authority-pgcrypto-qualification-v1",
+  "compiler": {
+    "failure_class": "SECURITY_DEFINER_EXTENSION_SCHEMA_DRIFT",
+    "scope": "SOCIAL_PUBLICATION_AUTHORITY",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The publication-authority SECURITY DEFINER functions intentionally lock search_path to public,pg_catalog, but called pgcrypto digest() and gen_random_bytes() without schema qualification. In this Supabase project pgcrypto lives in extensions, so capability issuance failed after the pre-publish gate and atomic dispatch claim.",
+  "prevention": [
+    "Schema-qualify pgcrypto calls as extensions.digest and extensions.gen_random_bytes inside locked-search-path SECURITY DEFINER functions.",
+    "Do not widen SECURITY DEFINER search_path to recover extension lookup.",
+    "Regression-test that no unqualified digest/gen_random_bytes calls exist in the authority migration.",
+    "Preserve winner lineage, exact-media proof and dispatching-state authority checks unchanged."
+  ],
+  "evidence": [
+    "supabase/migrations/20260920102500_publication_authority_pgcrypto_qualification.sql",
+    "tests/brain-publication-authority-pgcrypto-qualification.test.mjs",
+    "production:PUBLICATION_AUTHORITY_ISSUE:function digest(text, unknown) does not exist"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-publication-authority-pgcrypto-qualification.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "delivery",
+    "social",
+    "security",
+    "instagram-composio-publisher"
+  ],
+  "skill_projection_required": true
+}
