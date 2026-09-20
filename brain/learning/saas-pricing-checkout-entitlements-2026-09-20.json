@@ -1,6 +1,6 @@
 {
   "type": "POWERHOUSE_LEARNING",
-  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v3",
+  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v4",
   "fingerprint": "saas-pricing-checkout-entitlements-closure-v1",
   "status": "CANDIDATE",
   "compiler": {
@@ -22,7 +22,9 @@
     "Pricing leest commerciële waarheid uit één canonical planmodel zodat prijs, checkout en runtime entitlement niet kunnen driften.",
     "Alle betaalde runtime-capabilities gebruiken één centrale fail-closed entitlement-policy; stores en handlers mogen planlogica niet opnieuw hardcoden.",
     "Self-service checkout mag pas beschikbaar zijn als zowel provider-secret als webhook-secret aantoonbaar aanwezig zijn; één secret is onvoldoende.",
-    "Elke nieuwe runtime surface moet in dezelfde lineage aan de canonieke System Map-inventaris worden toegevoegd; anders is delivery onvolledig."
+    "Elke nieuwe runtime surface moet in dezelfde lineage aan de canonieke System Map-inventaris worden toegevoegd; anders is delivery onvolledig.",
+    "Refresh/freshness is a runtime entitlement, not a pricing-page label: connector activation must fail closed when the requested cadence is faster than the active plan permits.",
+    "Missing connector cadence must default to the active plan cadence rather than an implicit faster schedule."
   ],
   "regression_contract": [
     "tests/saas-pricing-entitlements.test.mjs",
@@ -37,7 +39,9 @@
     "BRAIN admission accepted exact head after complete delivery metadata was added.",
     "V2 centraliseert subscription-status, numerieke limieten, booleans en agent modes in platform/saas/entitlement-policy.mjs.",
     "Billing readiness is now a first-class fail-closed contract with a secret-safe public readiness projection.",
-    "PR #2502 first failed BRAIN because checkout-readiness.mjs was missing from the canonical System Map inventory; the inventory was updated on the same candidate."
+    "PR #2502 first failed BRAIN because checkout-readiness.mjs was missing from the canonical System Map inventory; the inventory was updated on the same candidate.",
+    "Refresh entitlement enforcement is centralized in platform/saas/entitlement-policy.mjs and applied before connector Active state.",
+    "Regression coverage pins Control=1440 min minimum, Scale=60 min minimum and Enterprise=0/event-or-realtime semantics."
   ],
   "evaluation": {
     "historical_replay": [
