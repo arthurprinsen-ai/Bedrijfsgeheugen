@@ -55,6 +55,12 @@ Traffic volume alone must never outrank order/revenue evidence.
 - Prefer the smallest measurable intervention.
 - Every candidate needs target query/intent, canonical page, evidence, action, success metric and cannibalization risk.
 - A new blog is not the default output.
+- Every daily cycle must end in an execution decision, not only a report: `UPDATE_MONEY_PAGE`, `CREATE_INTENT_GAP_CONTENT`, or `NO_ACTION_EVIDENCE_INSUFFICIENT`.
+- `CREATE_INTENT_GAP_CONTENT` is allowed only when a distinct query/intent gap is evidenced and no existing canonical owner should absorb it.
+- When `CREATE_INTENT_GAP_CONTENT` wins, write the complete article in the same lineage, add useful internal links and a conversion path to the relevant money page / Frisse blik, then send it through candidate PR, required checks, protected merge and production readback.
+- Do not use `oldest-approved` or content age as a revenue-selection fallback. If current commercial evidence is unavailable or noisy, fail closed with `NO_ACTION_EVIDENCE_INSUFFICIENT` rather than publish filler.
+- When `UPDATE_MONEY_PAGE` wins, improve the canonical owner instead of creating supporting content with materially overlapping intent.
+- Persist the decision evidence and subsequent search/CTA/lead/order/revenue outcome so the next cycle can learn from actual commercial results.
 
 ## Cannibalization and consolidation
 
