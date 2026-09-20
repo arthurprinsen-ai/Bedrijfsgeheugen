@@ -30,7 +30,7 @@ export function authorizeSocialPublication(input={}){
   if(BUSINESS.test(text)&&!exactException) reasons.push('BUSINESS_CONTENT_ON_PERSONAL');
   if(CORPORATE.test(text)) reasons.push('CORPORATE_VOICE_ON_PERSONAL');
   if(MORAL.test(text)) reasons.push('FORCED_BUSINESS_MORAL');
-  if(CONSULTANT.test(text)&&!exactException) reasons.push('CONSULTANT_VOICE_ON_PERSONAL');
+  if(CONSULTANT.test(text)) reasons.push('CONSULTANT_VOICE_ON_PERSONAL');
   if(input.companyPageInterchangeable!==false) reasons.push('COMPANY_PAGE_INTERCHANGEABLE_NOT_REJECTED');
   if(!contract.personalTruthClasses.includes(input.personalTruth?.class)) reasons.push('FIRST_PERSON_TRUTH_CLASS_REQUIRED');
   if(contract.personalTruthRequiresEvidenceRefs&&refs(input.personalTruth).length===0) reasons.push('FIRST_PERSON_EVIDENCE_REQUIRED');
