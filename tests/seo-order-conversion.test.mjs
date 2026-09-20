@@ -17,6 +17,13 @@ test('primaire CTA wordt meetbaar gemarkeerd zonder href te veranderen', () => {
   assert.ok(out.includes('data-bg-funnel-stage="decide"'));
 });
 
+test('primaire CTA wordt ook gemarkeerd bij relatieve interne href', () => {
+  const html = `<html><body><main><a class="btn" href="/frisse-blik">Start gratis</a></main></body></html>`;
+  const out = markPrimaryConversions(html, entry);
+  assert.ok(out.includes('href="/frisse-blik"'));
+  assert.ok(out.includes('data-bg-conversion="frisse-blik"'));
+});
+
 test('conversion marking wijzigt nooit header mobile-menu of footer, alleen pagina-inhoud', () => {
   const html = `<html><body>
     <header data-bg-component="header"><a href="${ORIGIN}/frisse-blik">Header CTA</a></header>
