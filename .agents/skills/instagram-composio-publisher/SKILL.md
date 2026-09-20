@@ -212,3 +212,10 @@ For every server-only Supabase `SECURITY DEFINER` function used by this publicat
 Fingerprint: `instagram-buffer-independent-resume-v1`.
 
 Scheduled social delivery must invoke the canonical publisher before any Buffer provider read. Instagram/Composio is an independent lane and must continue when LinkedIn/Buffer is rate-limited or unavailable. Buffer failures may defer LinkedIn, but must never fail or suppress the Instagram canonical attempt.
+
+
+## Immediate OAuth completion resume
+
+Fingerprint: `composio-oauth-immediate-resume-v1`.
+
+After hosted Composio OAuth is opened, Control Center may poll setup status only for a bounded period. When exactly one ACTIVE Instagram account is observed, invoke exactly one admin-authenticated `resume` action. Resume must call the canonical `powerhouse-social-publisher`; never publish directly or bypass Mira identity, exact-media, capability, idempotency or provider-readback gates.
