@@ -6,6 +6,8 @@ const COMPANY = '6a70381699afb44349f0fb36';
 const INSTAGRAM = '6a70384d99afb44349f0fba9';
 const GATE = 'channel-identity-hard-gate-v3';
 const CONTRACT = 'arthur-personal-linkedin-identity-v4';
+const PUBLICATION_AUTHORITY = 'social-publication-authority-v1';
+const INSTAGRAM_POLICY = 'instagram-mira-visual-reel-only-v2';
 const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedin_company: COMPANY, instagram_company: INSTAGRAM };
 const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
 
@@ -105,6 +107,25 @@ async function deletePost(token: string, id: string) { const body = await buffer
 async function review(url: string, payload: any) { const response = await fetch(`${url}/functions/v1/bg-pre-publish-review`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }); const body = await response.json().catch(() => ({})); return { http: response.status, ...body }; }
 async function recordObligation(db: any, runDate: string, channel: string, status: string, externalId: string | null, evidence: any, nextAction: string | null, error: string | null = null) { const mapped = obligationChannels[channel]; if (!mapped) return; const { error: rpcError } = await db.rpc('record_content_publication_state', { p_tenant_id: 'canonical', p_publication_date: runDate, p_channel: mapped, p_status: status, p_content_id: null, p_slug: null, p_external_id: externalId, p_canonical_url: null, p_evidence: evidence || {}, p_metrics: {}, p_next_action: nextAction, p_error: error }); if (rpcError) throw new Error(`OBLIGATION_WRITE:${rpcError.message}`); }
 
+async function issuePublishCapability(db:any,runDate:string,channel:string,textHash:string,mediaSha:string){
+  const policyVersion=channel==='instagram_company'?PUBLICATION_AUTHORITY+'|'+INSTAGRAM_POLICY:PUBLICATION_AUTHORITY+'|'+GATE;
+  const {data,error}=await db.rpc('powerhouse_issue_social_publish_capability_v1',{
+    p_run_date:runDate,p_channel:channel,p_channel_id:channelIds[channel],p_final_text_hash:textHash,
+    p_final_media_sha256:mediaSha||'',p_policy_version:policyVersion
+  });
+  if(error)throw new Error('PUBLICATION_AUTHORITY_ISSUE:'+error.message);
+  if(data?.authorized!==true||!clean(data?.token))throw new Error('PUBLICATION_AUTHORITY_DENIED:'+(clean(data?.reason)||'UNKNOWN'));
+  return {token:clean(data.token),capabilityId:clean(data.capability_id),policyVersion};
+}
+async function consumePublishCapability(db:any,capability:any,runDate:string,channel:string,textHash:string,mediaSha:string){
+  const {data,error}=await db.rpc('powerhouse_consume_social_publish_capability_v1',{
+    p_token:capability.token,p_run_date:runDate,p_channel:channel,p_channel_id:channelIds[channel],
+    p_final_text_hash:textHash,p_final_media_sha256:mediaSha||'',p_policy_version:capability.policyVersion,p_consumer:'powerhouse-social-publisher'
+  });
+  if(error)throw new Error('PUBLICATION_AUTHORITY_CONSUME:'+error.message);
+  if(data!==true)throw new Error('PUBLICATION_AUTHORITY_CONSUME_DENIED');
+}
+
 function instagramIdentityProven(evidence: any) {
   const proof = evidence?.instagram_media_proof || evidence || {};
   const mediaType = clean(proof?.media_type || evidence?.media_type).toLowerCase();
@@ -131,9 +152,9 @@ function instagramIdentityProven(evidence: any) {
     &&visual?.text_dominant===false&&visual?.brand_template_dominant===false
     &&clean(visual?.identity_class)==='mira_daily_life'&&clean(visual?.evidence_method).toLowerCase()==='vision'
     &&refs.some((ref:string)=>/^vision:/i.test(ref));
-  const dims=['reel','video'].includes(mediaType)?width===1080&&height===1920:width===1080&&height===1350;
+  const dims=mediaType==='reel'?width===1080&&height===1920:width===1080&&height===1350;
   const provider=clean(proof?.media_provider||proof?.media_source).toLowerCase();
-  const providerOk=['reel','video'].includes(mediaType)?provider==='openart':['openart','placid'].includes(provider);
+  const providerOk=provider==='openart';
   return proof?.exact_final_media_proven===true&&!!clean(proof?.final_media_sha256)
     &&clean(proof?.mira_gate_result)==='PASS'&&visible&&dims&&providerOk;
 }
@@ -165,10 +186,17 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
     const evidence = { ...(obligation?.evidence || {}), ...(row.delivery_evidence || {}), provider: 'buffer', provider_truth_verified: providerTruth, provider_truth_checked_at: new Date().toISOString(), provider_status: status, provider_post_id: provider.id, provider_due_at: provider.dueAt || null, stale_delivery_ref: false, lineage_recovered_from_obligation: lineageRecovered };
 
     if (row.channel === 'instagram_company' && !instagramIdentityProven(evidence)) {
-      const blockedEvidence = { ...evidence, error: 'EXACT_FINAL_MEDIA_PROOF_REQUIRED', transport_verified_identity_unproven: true, republish_forbidden: true };
+      let containment:any={attempted:false,ok:false,reason:'NOT_CANCELLABLE'};
+      if (['scheduled','draft','needs_approval'].includes(status)) {
+        const pendingEvidence={...evidence,error:'EXACT_FINAL_MEDIA_PROOF_REQUIRED',transport_verified_identity_unproven:true,republish_forbidden:true,containment_state:'PENDING_PROVIDER_CANCELLATION'};
+        await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_ref:ref,delivery_evidence:pendingEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        containment={attempted:true,...await deletePost(token,ref)};
+      }
+      const contained=containment.ok===true;
+      const blockedEvidence = { ...evidence, error: 'EXACT_FINAL_MEDIA_PROOF_REQUIRED', transport_verified_identity_unproven: true, republish_forbidden: true, containment, containment_state:contained?'CONTAINED':'PENDING_PROVIDER_CANCELLATION' };
       await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_ref: ref, delivery_evidence: blockedEvidence, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
-      await recordObligation(db, runDate, row.channel, 'BLOCKED', ref, blockedEvidence, 'Bewijs immutable exact-final-media digest/frames + Mira PASS; transport sent alleen is onvoldoende.', 'EXACT_FINAL_MEDIA_PROOF_REQUIRED');
-      results.push({ channel: row.channel, post_id: ref, state: 'blocked', provider_status: status, provider_truth_verified: providerTruth, reason: 'EXACT_FINAL_MEDIA_PROOF_REQUIRED', transport_verified_identity_unproven: true });
+      await recordObligation(db, runDate, row.channel, 'BLOCKED', ref, blockedEvidence, contained?'Provider-publicatie geannuleerd; alleen nieuw exact Mira-asset mag opnieuw de canonieke loop in.':'Provider-cancellation nog niet bewezen; niet veilig of terminal verklaren.', contained?'EXACT_FINAL_MEDIA_PROOF_REQUIRED':'PROVIDER_CANCELLATION_PENDING');
+      results.push({ channel: row.channel, post_id: ref, state: 'blocked', provider_status: status, provider_truth_verified: providerTruth, reason: 'EXACT_FINAL_MEDIA_PROOF_REQUIRED', transport_verified_identity_unproven: true, containment });
       continue;
     }
 
@@ -178,6 +206,29 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
     results.push({ channel: row.channel, post_id: ref, state: nextState, provider_status: status, provider_truth_verified: providerTruth, lineage_recovered_from_obligation: lineageRecovered });
   }
   return results;
+}
+async function containmentSweepInstagram(db:any,token:string){
+  const {data:rows,error}=await db.from('powerhouse_channel_decisions')
+    .select('run_date,channel,state,delivery_ref,delivery_evidence')
+    .eq('channel','instagram_company')
+    .not('delivery_ref','is',null)
+    .in('state',['scheduled','blocked','dispatching']);
+  if(error)throw new Error('INSTAGRAM_CONTAINMENT_SWEEP_READ:'+error.message);
+  const out:any[]=[];
+  for(const row of rows||[]){
+    const ref=clean(row.delivery_ref);if(!ref)continue;
+    const provider=await getPost(token,ref);if(!provider)continue;
+    const status=clean(provider.status).toLowerCase();
+    if(instagramIdentityProven(row.delivery_evidence||{}))continue;
+    if(!['scheduled','draft','needs_approval'].includes(status)){
+      out.push({run_date:row.run_date,post_id:ref,status,containment:'NOT_CANCELLABLE'});continue;
+    }
+    const containment=await deletePost(token,ref);
+    const evidence={...(row.delivery_evidence||{}),republish_forbidden:true,containment,containment_state:containment.ok?'CONTAINED':'PENDING_PROVIDER_CANCELLATION',error:'INSTAGRAM_POLICY_REVALIDATION_FAILED'};
+    await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',row.run_date).eq('channel','instagram_company');
+    out.push({run_date:row.run_date,post_id:ref,status,containment});
+  }
+  return out;
 }
 function instagramInput(art:any,due:Date,future:boolean){
   const proof=art?.generation_evidence?.instagram_media_proof||{};
@@ -214,8 +265,9 @@ Deno.serve(async (req) => {
   if (integrationError || !integration?.token) return json({ ok: false, error: 'BUFFER_TOKEN_MISSING' }, 503);
   const bufferToken = integration.token;
 
+  const containment_sweep = await containmentSweepInstagram(db, bufferToken);
   const provider_reconciliation = await reconcileExistingProviderTruth(db, bufferToken, runDate);
-  if (mode === 'audit_only') return json({ ok: true, runDate, provider_reconciliation });
+  if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation });
 
   const channels = ['linkedin_personal','linkedin_company','instagram_company'];
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
@@ -266,6 +318,9 @@ Deno.serve(async (req) => {
       await recordObligation(db, runDate, row.channel, 'BLOCKED', null, evidence, 'Repair canonical gate evidence before any dispatch.', 'PRE_PUBLISH_GATE_BLOCKED');
       results.push({ channel: row.channel, status: 'blocked', violations: gate.violations || [] }); continue;
     }
+    const gatePassedEvidence={...(row.delivery_evidence||{}),pre_publish_gate:'passed',identity_gate_version:GATE,final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY};
+    await db.from('powerhouse_channel_decisions').update({delivery_evidence:gatePassedEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+
     // Single-writer idempotency barrier: claim the canonical publication row atomically
     // before touching any external provider. Concurrent scheduler/manual runs may both
     // observe content_ready, but only one is allowed to transition it to dispatching.
@@ -282,10 +337,25 @@ Deno.serve(async (req) => {
       results.push({ channel: row.channel, status: 'skipped', reason: 'ALREADY_CLAIMED_OR_DELIVERED' });
       continue;
     }
+    const mediaSha=row.channel==='instagram_company'?clean(art?.generation_evidence?.instagram_media_proof?.final_media_sha256):'';
+    let capability:any;
+    try{
+      capability=await issuePublishCapability(db,runDate,row.channel,textHash,mediaSha);
+      const authorityEvidence={...gatePassedEvidence,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
+      await db.from('powerhouse_channel_decisions').update({delivery_evidence:authorityEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+    }catch(error){
+      const message=error instanceof Error?error.message:String(error);
+      const evidence={...gatePassedEvidence,error:message,publication_authority:{issued:false,policy_version:row.channel==='instagram_company'?PUBLICATION_AUTHORITY+'|'+INSTAGRAM_POLICY:PUBLICATION_AUTHORITY+'|'+GATE}};
+      await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+      await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Repair central publication authority proof; external provider calls are forbidden without a capability.',message);
+      results.push({channel:row.channel,status:'blocked',reason:message});continue;
+    }
+
     if (row.channel === 'instagram_company') {
       try {
+        await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
         const direct = await publishInstagramViaComposio(db, art, runDate);
-        const evidence = { ...(row.delivery_evidence || {}), ...direct, pre_publish_gate:'passed', final_text_hash:textHash, transport_contract:'instagram-composio-primary-v1', make_dependency:false };
+        const evidence = { ...gatePassedEvidence, ...direct, pre_publish_gate:'passed', final_text_hash:textHash, transport_contract:'instagram-composio-primary-v1', make_dependency:false, publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true} };
         await db.from('powerhouse_channel_decisions').update({ state:'published', delivery_ref:direct.provider_post_id, delivery_evidence:evidence, updated_at:new Date().toISOString() }).eq('run_date',runDate).eq('channel',row.channel);
         await db.from('powerhouse_content_artifacts').update({ status:'published', updated_at:new Date().toISOString() }).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,'Collect Instagram outcome metrics and feed learning loop.',null);
@@ -304,6 +374,7 @@ Deno.serve(async (req) => {
     const input: Record<string,unknown> = { text: clean(art.body), channelId: channelIds[row.channel], schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}) };
     let created: any;
     try {
+      await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
       created = await createPost(bufferToken, input);
     } catch (error) {
       if (error instanceof BufferHttpError && error.status === 429) {
@@ -334,7 +405,7 @@ Deno.serve(async (req) => {
     await recordObligation(db, runDate, row.channel, providerStatus === 'sent' ? 'PUBLISHED' : 'DISPATCHED', readback.id, evidence, providerStatus === 'sent' ? 'Verify public/outcome proof, then measure and learn.' : 'Await provider send, then reconcile.', null);
     results.push({ channel: row.channel, status: providerStatus, post_id: readback.id, provider_truth_verified: true });
   }
-  return json({ ok: true, runDate, provider_reconciliation, results, provider_truth_verified: true });
+  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, results, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
   } catch (error) {
     if (error instanceof BufferHttpError && error.status === 429) {
       return json({ ok: false, error: 'BUFFER_RATE_LIMITED', retryable: true, retry_after: error.retryAfter }, 429);

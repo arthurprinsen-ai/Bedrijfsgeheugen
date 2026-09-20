@@ -8,6 +8,7 @@ const REQUIRED_EVIDENCE = Object.freeze([
   'OBLIGATIONS_COMPLETE',
   'CAPABILITY_HANDOFF',
   'LEARNING_WRITEBACK',
+  'CHANNEL_POLICY_AUTHORIZATION',
 ]);
 
 const TRUSTED_PRODUCERS = Object.freeze({
@@ -18,6 +19,7 @@ const TRUSTED_PRODUCERS = Object.freeze({
   OBLIGATIONS_COMPLETE:new Set(['OUTCOME_OBLIGATION_RUNTIME']),
   CAPABILITY_HANDOFF:new Set(['BG167']),
   LEARNING_WRITEBACK:new Set(['BG168_BG166']),
+  CHANNEL_POLICY_AUTHORIZATION:new Set(['SOCIAL_PUBLICATION_AUTHORITY']),
 });
 
 const TERMINAL_OBLIGATION_STATUSES = new Set(['COMPLETED','VERIFIED','PRODUCTION_GREEN','LIVE_VERIFIED','ROLLED_BACK_GREEN']);
@@ -91,7 +93,7 @@ function acceptedEvidence(evidence, obligationId, candidateIdentity, productionI
       identityMismatch = true;
       continue;
     }
-    if (['PROTECTED_DELIVERY','PRODUCTION_IDENTITY','FUNCTIONAL_READBACK','OBLIGATIONS_COMPLETE','CAPABILITY_HANDOFF','LEARNING_WRITEBACK'].includes(type)
+    if (['PROTECTED_DELIVERY','PRODUCTION_IDENTITY','FUNCTIONAL_READBACK','OBLIGATIONS_COMPLETE','CAPABILITY_HANDOFF','LEARNING_WRITEBACK','CHANNEL_POLICY_AUTHORIZATION'].includes(type)
       && text(item?.productionIdentity) !== productionIdentity) {
       identityMismatch = true;
       continue;
@@ -106,6 +108,7 @@ function nextAction(required) {
   if (required.includes('NEW_HYPOTHESIS_OR_FALLBACK') || required.includes('RECOVERY_PACKET') || required.includes('CANDIDATE_TESTS') || required.includes('OBLIGATIONS_COMPLETE')) return 'RECOVER';
   if (required.includes('PROTECTED_DELIVERY')) return 'PROMOTE';
   if (required.includes('PRODUCTION_IDENTITY') || required.includes('FUNCTIONAL_READBACK')) return 'READBACK';
+  if (required.includes('CHANNEL_POLICY_AUTHORIZATION')) return 'RECOVER';
   if (required.includes('CAPABILITY_HANDOFF') || required.includes('LEARNING_WRITEBACK')) return 'WRITEBACK';
   return 'CONTINUE';
 }
