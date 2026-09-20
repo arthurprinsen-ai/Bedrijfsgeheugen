@@ -231,3 +231,16 @@ Provider-runtime proof is not complete when it exists only in PR prose. For ever
 - reject missing, duplicate, malformed, non-ACTIVE or hash-invalid provider identities fail-closed.
 
 This complements direct provider inspection: the deployment/readback actor establishes provider truth; the canonical control plane immutably binds that truth to the exact terminal obligation and main SHA.
+
+
+## Production migration identity mirroring
+
+Fingerprint: `delivery|supabase-migration-identity|production-mirror|v1`.
+
+When a Supabase migration has already been applied in production, production migration history is the canonical identity. The repository must mirror the exact production `version` and `name` before terminal success.
+
+Mandatory:
+- compare both migration version and name;
+- never mutate production migration history just to fit a stale repo filename;
+- if a direct production apply generated a different version, rename/reconcile the repository migration to that exact production version;
+- treat version/name drift as recoverable incomplete state, not `LIVE_BEWEZEN`.
