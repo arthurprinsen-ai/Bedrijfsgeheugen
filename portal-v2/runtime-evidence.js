@@ -42,6 +42,74 @@ function economics(value) {
   };
 }
 
+
+function recordText(record={}) {
+  return [
+    record.type,record.eventType,record.category,record.subjectId,record.title,record.name,
+    record.status,record.state,record.actor,record.actorId,record.source,record.platform,
+    record.layer,record.component,record.message,record.detail,record.error,record.fingerprint
+  ].filter(Boolean).join(' ');
+}
+function classifyRecord(record={}) {
+  const hay=recordText(record).toLowerCase();
+  if(/skill|projection/.test(hay)) return 'skill';
+  if(/learning|writeback|memory|ledger|document/.test(hay)) return 'knowledge';
+  if(/github|pull request|workflow|commit|merge|deploy|release|production|readback|ci/.test(hay)) return 'delivery';
+  if(/error|fail|blocked|drift|incident|exception|timeout|rate.limit|429/.test(hay)) return 'error';
+  if(/agent|chat|worker|actor/.test(hay)) return 'agent';
+  if(/supabase|netlify|notion|buffer|openart|placid|composio/.test(hay)) return 'platform';
+  return 'activity';
+}
+function inferLayer(record={}) {
+  if(record.layer)return txt(record.layer);
+  const hay=recordText(record).toLowerCase();
+  if(/github|workflow|commit|merge|pull request|ci/.test(hay))return 'GitHub / Delivery';
+  if(/supabase|database|sql|migration/.test(hay))return 'Supabase / Data';
+  if(/netlify|deploy|website|site/.test(hay))return 'Netlify / Runtime';
+  if(/notion|document|ledger/.test(hay))return 'Notion / Documentatie';
+  if(/skill|projection/.test(hay))return 'Skills';
+  if(/learning|memory|writeback/.test(hay))return 'Brain / Learning';
+  if(/agent|chat|worker/.test(hay))return 'Agents / Chats';
+  return txt(record.component||record.domain||'Powerhouse');
+}
+function normalizeObservabilityRecord(record={},index=0) {
+  const status=txt(record.status||record.state||record.conclusion||record.outcome?.status||'UNKNOWN');
+  const severity=txt(record.severity||record.level||record.errorLevel||'');
+  return {
+    id:txt(record.id||record.eventId||record.correlationId||record.subjectId||`event-${index}`),
+    occurredAt:txt(record.occurredAt||record.recordedAt||record.observedAt||record.updatedAt||record.createdAt),
+    rawType:txt(record.type||record.eventType||record.kind||record.category||'event'),
+    category:classifyRecord(record),
+    subjectId:txt(record.subjectId||record.obligationId||record.correlationId||record.id),
+    title:txt(record.title||record.name||record.message||record.type||record.subjectId||'Event'),
+    detail:txt(record.detail||record.description||record.error||record.reason||record.message),
+    status,
+    severity,
+    actor:txt(record.actor?.name||record.actor||record.actorId||record.worker||record.agent||'system'),
+    source:txt(record.source||record.platform||record.provider||record.origin||'Powerhouse'),
+    layer:inferLayer(record),
+    fingerprint:txt(record.fingerprint||record.failureFingerprint||record.errorFingerprint)
+  };
+}
+function observabilityProjection({records,cockpit,health,lussen,geheugen,waarde,projection,bijgewerkt}) {
+  const normalized=records.map(normalizeObservabilityRecord);
+  const timeline=arr(cockpit.activityTimeline).map((item,index)=>normalizeObservabilityRecord(item,records.length+index));
+  const combined=[...normalized,...timeline];
+  const seen=new Set();
+  const events=combined.filter(item=>{const key=[item.id,item.occurredAt,item.title,item.status].join('|');if(seen.has(key))return false;seen.add(key);return true;});
+  return {
+    updatedAt:bijgewerkt||laatste(events),
+    events,
+    components:arr(health.components),
+    loops:lussen,
+    actors:projection.actors&&typeof projection.actors==='object'?projection.actors:{},
+    economics:economics(projection.decisionEconomics),
+    learningSummary:geheugen.memorySummary||geheugen.summary||{},
+    valueTotals:waarde.totals||{},
+    source:'brain-operating-loop'
+  };
+}
+
 export function mapRuntimeProjection(projection) {
   if (!projection || typeof projection !== 'object') return {};
   const records = arr(projection.records);
@@ -145,7 +213,8 @@ export function mapRuntimeProjection(projection) {
     economics: economics(projection.decisionEconomics),
     timeline: slice(arr(projection.auditTimeline), bijgewerkt),
     portfolio,
-    actors: projection.actors && typeof projection.actors === 'object' ? projection.actors : {}
+    actors: projection.actors && typeof projection.actors === 'object' ? projection.actors : {},
+    observability: observabilityProjection({records,cockpit,health,lussen,geheugen,waarde,projection,bijgewerkt})
   };
 }
 
