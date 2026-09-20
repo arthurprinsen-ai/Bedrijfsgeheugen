@@ -45,7 +45,9 @@ test('canonical multi-migration ledger verifier is represented by exact producti
 
 test('unmerged migration-bearing recovery remains fail-closed and separate from merged migration authority', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
-  assert.match(workflow,/UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS/);
+  assert.match(workflow,/UNMERGED_SUPERSEDES_MIGRATION_NOT_CANONICALIZED/);
+  assert.match(workflow,/UNMERGED_SUPERSEDES_MIGRATION_AMBIGUOUS/);
+  assert.match(workflow,/UNMERGED_SUPERSEDES_MIGRATION_CANONICALIZED/);
   const learning=JSON.parse(await readFile('brain/learning/2026-09-18-unmerged-supabase-supersedes-terminal-lineage-v1.json','utf8'));
   assert.equal(learning.prevention_rule.includes('merged production-authority ancestry'),true);
   assert.equal(learning.canonical_metadata_pattern.direct_supersedes,'last merged predecessor in the same obligation lineage');
