@@ -1,5 +1,5 @@
 # Buffer rate-limit circuit breaker v2
-- Obligation: `buffer-rate-limit-circuit-breaker-v2`
+- Obligation: `buffer-rate-limit-circuit-breaker-v1`
 - Supersedes: PR #2423
 - Root cause: a 429 after Buffer create but before readback could lose durable provider identity and permit duplicate retry side effects.
 - Fix: persist provider post id before readback; record Retry-After cooldown; defer Buffer-backed LinkedIn work while cooldown is active.
