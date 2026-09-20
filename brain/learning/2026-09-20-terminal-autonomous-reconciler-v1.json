@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "fingerprint": "terminal-autonomous-reconciler-v1",
+  "date": "2026-09-20",
+  "status": "CANDIDATE_VERIFIED",
+  "problem": "Powerhouse detected failures and drift but could leave PLANNED operations, ESCALATED reconciliation and GREEN_STALE production truth non-terminal while other surfaces still appeared healthy.",
+  "root_cause": [
+    "Detection, ownership, recovery and terminal verification were separate mechanisms without one aggregate fail-closed terminal health invariant.",
+    "The autonomous replay-window optimizer re-evaluated an already-promoted 12-hour safe floor by constructing another 12-hour challenger, making challenger_window < champion_window impossible and recreating a false INSUFFICIENT_REPLAY_EVIDENCE blocker."
+  ],
+  "fix": [
+    "Add one server-only terminal control-plane health view.",
+    "Every five minutes safely requeue only stale internal operations whose side-effect state is explicitly NOT_STARTED.",
+    "Reconcile GREEN_STALE through the existing canonical production-truth reconciler.",
+    "Treat ESCALATED reconciliation, stale planned work and stale green truth as unhealthy.",
+    "Make the 12-hour proven optimization floor an idempotent terminal no-op."
+  ],
+  "prevention_rules": [
+    "GREEN_STALE_IS_NEVER_TERMINAL",
+    "ESCALATED_RECONCILIATION_BLOCKS_HEALTHY",
+    "STALE_PLANNED_WORK_BLOCKS_HEALTHY",
+    "ONLY_SIDE_EFFECT_FREE_INTERNAL_WORK_MAY_BE_AUTO_REQUEUED",
+    "NO_OBLIGATION_MAY_BE_AUTO_FULFILLED_WITHOUT_OUTCOME_EVIDENCE",
+    "PRODUCTION_HEALTH_AND_PREVIEW_BRANCH_HEALTH_ARE_SEPARATE_SIGNALS",
+    "PROVEN_OPTIMIZATION_FLOOR_IS_TERMINAL_NO_OP"
+  ],
+  "evidence": {
+    "pr": 2440,
+    "candidate_head": "pending_exact_head",
+    "supabase_preview_contract": "success_on_1472f820358bbd69ddd934148ee404c7325a76cf",
+    "supabase_security_contract": "success_on_1472f820358bbd69ddd934148ee404c7325a76cf",
+    "public_rls_guard": "success_on_1472f820358bbd69ddd934148ee404c7325a76cf",
+    "autonomous_improvement_completion_gate": "success_on_1472f820358bbd69ddd934148ee404c7325a76cf"
+  },
+  "truth_boundary": "Candidate is not LIVE_PROVEN until protected merge, versioned production migration application, cron/function/view readback and runtime health readback succeed."
+}
