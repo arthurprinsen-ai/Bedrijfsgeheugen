@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse-live-system-map-v1",
+  "date": "2026-09-20",
+  "status": "CANDIDATE_IMPLEMENTED",
+  "obligation_id": "powerhouse-live-system-map-v1",
+  "skill_targets": ["powerhouse-continuity"],
+  "compiler": {
+    "failure_class": "ARCHITECTURE_OBSERVABILITY_GAP",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Powerhouse architecture truth existed across the canonical Notion System Map, repository contracts, runtime evidence and provider state, but the operator had no single live page that showed the complete intelligence chain, current GitHub/Netlify/Supabase inventory, runtime actors and authority relationships together. Static documentation alone can drift, while active agents can remain invisible unless registration is enforced.",
+  "prevention_rule": "Use one canonical live System Map in Powerhouse Control Center. Repository topology is machine-registered in platform/system-map/canonical-system-map.mjs and verified against skills, agent modules, Netlify functions, Supabase Edge Functions and GitHub workflows. Supabase catalog inventory is read live from the database through a read-only service-authenticated function. Every material chat/agent/workflow must emit actor identity and structural changes must update the System Map in the same lineage. Missing registration is SYSTEM_MAP_WRITEBACK_INCOMPLETE and blocks LIVE_BEWEZEN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "tests/brain-powerhouse-control-center-admin-endpoint-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "tests/brain-powerhouse-control-center-admin-endpoint-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "tests/brain-powerhouse-control-center-admin-endpoint-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "platform/system-map/canonical-system-map.mjs",
+    "portal-v2/modules/powerhouse-observability.js",
+    "netlify/functions/powerhouse-observability.mjs",
+    "supabase/functions/powerhouse-system-map-inventory/index.ts",
+    "supabase/migrations/20260920113500_powerhouse_live_system_map_v1.sql",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "truth_boundary": "Repository and portal implementation are candidate state until exact-head gates, protected merge, Supabase migration/function deployment, Netlify production deployment, admin API readback and canonical Notion System Map read-after-write are proven.",
+  "outcome": {
+    "status": "CANDIDATE_IMPLEMENTED"
+  }
+}
