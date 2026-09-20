@@ -1,0 +1,3 @@
+import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
+const s=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+test('instagram auth is checked before dispatch claim and capability issue',()=>{const a=s.indexOf("const composioApiKey=await secret(db,'COMPOSIO_API_KEY')");const b=s.indexOf("state: 'dispatching'");const c=s.indexOf('capability=await issuePublishCapability');assert.ok(a>=0&&b>a&&c>b);assert.match(s,/deferred_provider_auth/);assert.match(s,/COMPOSIO_INSTAGRAM_AUTH_REQUIRED/);});

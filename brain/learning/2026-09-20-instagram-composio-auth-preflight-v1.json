@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "instagram-composio-auth-preflight-v1",
+  "compiler": {
+    "failure_class": "EXTERNAL_PROVIDER_AUTH_CONFIG_GAP",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Instagram transport authentication was checked only after the publication capability had already been issued and consumed, so missing Composio credentials wasted authority tokens and repeated provider failures.",
+  "prevention": [
+    "Check COMPOSIO_API_KEY before dispatch claim, capability issue, capability consume, or provider calls.",
+    "Keep content_ready recoverable and record one explicit provider-auth blocker when credentials are absent.",
+    "Do not switch transport providers implicitly."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/brain-instagram-composio-auth-preflight.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-auth-preflight.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "delivery",
+    "social"
+  ],
+  "skill_projection_required": true
+}

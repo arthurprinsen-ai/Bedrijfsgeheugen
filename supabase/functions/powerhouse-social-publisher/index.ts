@@ -390,6 +390,20 @@ Deno.serve(async (req) => {
     const gatePassedEvidence={...(row.delivery_evidence||{}),pre_publish_gate:'passed',identity_gate_version:GATE,final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY};
     await db.from('powerhouse_channel_decisions').update({delivery_evidence:gatePassedEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
 
+    if(row.channel==='instagram_company'){
+      const composioApiKey=await secret(db,'COMPOSIO_API_KEY');
+      if(!composioApiKey){
+        const evidence={...gatePassedEvidence,provider:'composio',provider_config_ready:false,provider_truth_verified:false,error:'COMPOSIO_INSTAGRAM_AUTH_REQUIRED'};
+        await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+        await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,
+          'Configure COMPOSIO_API_KEY in the canonical secret store; no publication capability or provider call is attempted until transport auth exists.',
+          'COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
+        results.push({channel:row.channel,status:'deferred_provider_auth',reason:'COMPOSIO_INSTAGRAM_AUTH_REQUIRED'});
+        continue;
+      }
+    }
+
     // Single-writer idempotency barrier: claim the canonical publication row atomically
     // before touching any external provider. Concurrent scheduler/manual runs may both
     // observe content_ready, but only one is allowed to transition it to dispatching.
