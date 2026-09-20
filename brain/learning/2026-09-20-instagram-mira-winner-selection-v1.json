@@ -1,0 +1,27 @@
+{
+  "fingerprint": "instagram-mira-winner-selection-v1",
+  "obligation_id": "instagram-mira-winner-selection-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Instagram had strong Mira/media gates but no immutable ex-ante winner entity. Media materialization could independently pick the current highest recommendation, artifact generation could use another fallback recommendation, and social_posts normalization could inherit an old experiment recipe and classify a Reel as carousel. That broke recommendation-to-outcome lineage even when identity/media safety worked.",
+  "prevention_rule": "Exactly one immutable Instagram Mira daily winner is persisted before media generation. Media jobs, content artifacts, publish capabilities and social_posts must all carry the same recommendation_id and score_version. The media job winner format is authoritative for provider routing/readback normalization; a publish capability fails closed on any winner or format mismatch. Outcome evidence writes back to the same winner.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/instagram-daily-winner-lineage-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/instagram-daily-winner-lineage-v1.test.mjs",
+      "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs",
+      "tests/social-learning-buffer-instagram-media-gate.test.mjs"
+    ]
+  },
+  "outcome": {
+    "status": "CANDIDATE_VERIFIED",
+    "truth_boundary": "Implementation can be LIVE_PROVEN after protected merge, production migration/function deployment and exact production readback. A daily Instagram publication remains separately blocked until exact Mira media and provider proof exist."
+  }
+}
