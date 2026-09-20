@@ -1,7 +1,7 @@
 import test from 'node:test';import assert from 'node:assert/strict';import fs from 'node:fs';
 const edge=fs.readFileSync('supabase/functions/powerhouse-composio-instagram-setup/index.ts','utf8');
 const netlify=fs.readFileSync('netlify/functions/powerhouse-composio-config.mjs','utf8');
-const migration=fs.readFileSync('supabase/migrations/20260920112118_admin_composio_key_onboarding.sql','utf8');
+const migration=fs.readFileSync('supabase/migrations/20260920112436_admin_composio_key_onboarding.sql','utf8');
 const portal=fs.readFileSync('portal-v2/modules/powerhouse-observability.js','utf8');
 
 test('admin onboarding keeps browser behind Netlify Identity and server token',()=>{
