@@ -135,6 +135,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:checkout-readiness",
+      "type": "netlify_function",
+      "authority": "netlify/functions/checkout-readiness.mjs",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:instagram-video-frames",
       "type": "netlify_function",
       "authority": "netlify/functions/instagram-video-frames.mjs",
