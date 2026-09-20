@@ -3,6 +3,7 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const PARENT_CONTRACT = 'channel-identity-hard-gate-v3';
 const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
 const PERSONAL_CHANNEL = '6a70381699afb44349f0fb35';
+const PERSONAL_LIFE_ONLY_POLICY = 'personal-linkedin-personal-life-only-v1';
 const COMPANY_CHANNEL = '6a70381699afb44349f0fb36';
 const INSTAGRAM_CHANNEL = '6a70384d99afb44349f0fba9';
 const MAX_RULE_AGE_MS = 96 * 60 * 60 * 1000;
@@ -25,7 +26,7 @@ const aliases: Record<string, string> = {
 };
 
 function businessSignal(text: string) {
-  return /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|digitalisering|AI|data|dashboard|frisse blik|scan|afspraak|offerte)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text);
+  return /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|AI|data|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text);
 }
 function concretePersonalLifeSignal(text: string) {
   const firstPerson = /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
@@ -52,6 +53,8 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(body.arthur_anchor_verified === true, 'ARTHUR_ANCHOR_UNVERIFIED', 'Een geverifieerd Arthur-anker is verplicht.');
   require(body.first_person_claims_verified === true, 'FIRST_PERSON_CLAIMS_UNVERIFIED', 'Eerste-persoonsclaims zijn niet geverifieerd.');
   require(body.personal_life_topic === true, 'PERSONAL_LIFE_TOPIC_REQUIRED', 'Persoonlijk onderwerp is niet bewezen.');
+  require(body.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY, 'PERSONAL_LIFE_ONLY_POLICY_REQUIRED', 'De personal-life-only policy ontbreekt of is verouderd.');
+  require(body.personal_life_only_verified === true, 'PERSONAL_LIFE_ONLY_UNVERIFIED', 'De uiteindelijke tekst is niet expliciet als uitsluitend persoonlijk leven geverifieerd.');
   require(concretePersonalLifeSignal(text), 'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED', 'De uiteindelijke tekst moet zelf een concrete persoonlijke gebeurtenis of dagelijkse ervaring bevatten; metadata alleen is onvoldoende.');
   require(body.business_topic === false, 'BUSINESS_TOPIC_DEFAULT_BLOCK', 'Zakelijk onderwerp is geblokkeerd op Arthur persoonlijk.');
   require(body.corporate_voice === false, 'CORPORATE_VOICE_BLOCKED', 'Corporate/consultantstem is geblokkeerd.');
@@ -180,6 +183,8 @@ Deno.serve(async (req) => {
     final_text_hash: finalHash,
     violations: blockers,
     personal_truth_verified: channel === 'linkedin_personal' ? body.personal_truth_verified === true : null,
+    personal_life_only_policy: channel === 'linkedin_personal' ? PERSONAL_LIFE_ONLY_POLICY : null,
+    personal_life_only_verified: channel === 'linkedin_personal' ? body.personal_life_only_verified === true : null,
     rule_context: { source_updated_at: new Date(newest).toISOString(), generic_rule_check_applied: channel !== 'linkedin_personal' },
   }, pass ? 200 : 422);
 });
