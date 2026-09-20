@@ -1,3 +1,4 @@
+import {enforceConnectorRefreshPolicy} from '../saas/entitlement-policy.mjs';
 const SECRET_KEY=/password|secret|token|authorization|api[-_]?key|client[-_]?secret/i;
 const json=(body,status=200)=>Response.json(body,{status,headers:{'cache-control':'private, no-store','vary':'authorization, cookie'}});
 function tenantFromUser(user){return user?.tenantId||user?.app_metadata?.tenantId||user?.app_metadata?.tenant_id||null;}
@@ -78,8 +79,18 @@ export async function handlePortalConnectorsRequest({request,user,store,engine}=
     const persistedEvidence={...executionEvidence(execution),testExecutionId:execution.id||testExecutionId};
     const eligibility=typeof engine?.activationEligibility==='function'?engine.activationEligibility(connector,persistedEvidence):{eligible:false,reason:'TEST_EVIDENCE_REQUIRED'};
     if(!eligibility.eligible)return json({error:eligibility.reason},409);
+    if(typeof store?.getPlanRuntimePolicy!=='function')return json({error:'CONNECTOR_STORE_NOT_CONFIGURED'},503);
+    let refreshPolicy;
+    try{
+      refreshPolicy=enforceConnectorRefreshPolicy(await store.getPlanRuntimePolicy(tenantId),connector);
+    }catch(error){
+      const code=String(error?.code||'PLAN_REFRESH_POLICY_ERROR');
+      if(code==='SUBSCRIPTION_REQUIRED')return json({error:code},402);
+      if(code==='PLAN_REFRESH_LIMIT')return json({error:code,planCode:error?.planCode||null,minimumRefreshMinutes:error?.minimumRefreshMinutes||0,requestedRefreshMinutes:error?.requestedRefreshMinutes||0},409);
+      return json({error:code},422);
+    }
     const activationEvidence={...persistedEvidence,activatedAt:new Date().toISOString(),activatedBy:user.id};
-    return json(clean(await store.saveDraft(tenantId,{...connector,id,state:'Active',runtime:{...(connector.runtime||{}),activationEvidence,recoveryObligation:null}})));
+    return json(clean(await store.saveDraft(tenantId,{...connector,id,state:'Active',runtime:{...(connector.runtime||{}),refreshMinutes:refreshPolicy.effectiveRefreshMinutes,refreshPolicy,activationEvidence,recoveryObligation:null}})));
   }
   if(normalized.method==='POST'&&id&&action==='pause'){
     const connector=await store.get(tenantId,id);if(!connector)return json({error:'NOT_FOUND'},404);

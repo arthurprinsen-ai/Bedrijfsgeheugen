@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {entitlementAllows,normalizeEntitlementRecord,planRuntimePolicy,requireEntitlement} from '../platform/saas/entitlement-policy.mjs';
+import {entitlementAllows,enforceConnectorRefreshPolicy,enforceRefreshPolicy,normalizeEntitlementRecord,planRuntimePolicy,requireEntitlement} from '../platform/saas/entitlement-policy.mjs';
 import {billingReadiness,requireBillingReady} from '../platform/saas/billing-readiness.mjs';
 
 test('pricing communicates equal intelligence and self-serve tiers',async()=>{
@@ -80,4 +80,32 @@ test('checkout readiness endpoint never exposes secret values',async()=>{
   assert.match(source,/selfServeAvailable/);
   assert.doesNotMatch(source,/STRIPE_SECRET_KEY/);
   assert.doesNotMatch(source,/STRIPE_WEBHOOK_SECRET/);
+});
+
+test('refresh entitlement defaults safely and rejects faster-than-plan cadence',()=>{
+  const control={planCode:'control',refreshMinutes:1440};
+  const scale={planCode:'scale',refreshMinutes:60};
+  const enterprise={planCode:'enterprise',refreshMinutes:0};
+  assert.deepEqual(enforceRefreshPolicy(control),{
+    planCode:'control',minimumRefreshMinutes:1440,requestedRefreshMinutes:1440,effectiveRefreshMinutes:1440,mode:'interval'
+  });
+  assert.throws(()=>enforceRefreshPolicy(control,60),error=>error?.code==='PLAN_REFRESH_LIMIT'&&error.minimumRefreshMinutes===1440);
+  assert.equal(enforceRefreshPolicy(scale,60).effectiveRefreshMinutes,60);
+  assert.equal(enforceRefreshPolicy(enterprise,0).mode,'event_or_realtime');
+  assert.throws(()=>enforceRefreshPolicy(null,60),error=>error?.code==='SUBSCRIPTION_REQUIRED');
+});
+
+test('connector refresh policy accepts runtime and schedule cadence aliases',()=>{
+  const policy={planCode:'scale',refreshMinutes:60};
+  assert.equal(enforceConnectorRefreshPolicy(policy,{runtime:{refreshMinutes:120}}).effectiveRefreshMinutes,120);
+  assert.equal(enforceConnectorRefreshPolicy(policy,{schedule:{refreshMinutes:60}}).effectiveRefreshMinutes,60);
+  assert.throws(()=>enforceConnectorRefreshPolicy(policy,{refreshMinutes:15}),error=>error?.code==='PLAN_REFRESH_LIMIT');
+});
+
+test('connector activation applies the central refresh entitlement before Active state',async()=>{
+  const source=await readFile(new URL('../platform/api/portal-connectors-handler.mjs',import.meta.url),'utf8');
+  assert.match(source,/enforceConnectorRefreshPolicy/);
+  assert.match(source,/getPlanRuntimePolicy/);
+  assert.match(source,/PLAN_REFRESH_LIMIT/);
+  assert.match(source,/refreshPolicy\.effectiveRefreshMinutes/);
 });

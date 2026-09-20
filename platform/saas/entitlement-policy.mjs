@@ -63,3 +63,48 @@ export function planRuntimePolicy(record){
     seniorAdvisoryMinutesMonth:Number(e.senior_advisory_minutes_month||0)
   });
 }
+
+
+export function enforceRefreshPolicy(policy,requestedRefreshMinutes){
+  if(!policy){
+    const error=new Error('SUBSCRIPTION_REQUIRED');
+    error.code='SUBSCRIPTION_REQUIRED';
+    throw error;
+  }
+  const minimum=Number(policy.refreshMinutes);
+  if(!Number.isFinite(minimum)||minimum<0){
+    const error=new Error('INVALID_PLAN_REFRESH_POLICY');
+    error.code='INVALID_PLAN_REFRESH_POLICY';
+    throw error;
+  }
+  const requested=requestedRefreshMinutes===undefined||requestedRefreshMinutes===null||requestedRefreshMinutes===''
+    ? minimum
+    : Number(requestedRefreshMinutes);
+  if(!Number.isFinite(requested)||requested<0){
+    const error=new Error('INVALID_REFRESH_INTERVAL');
+    error.code='INVALID_REFRESH_INTERVAL';
+    throw error;
+  }
+  if(minimum>0&&requested<minimum){
+    const error=new Error('PLAN_REFRESH_LIMIT');
+    error.code='PLAN_REFRESH_LIMIT';
+    error.planCode=policy.planCode||null;
+    error.minimumRefreshMinutes=minimum;
+    error.requestedRefreshMinutes=requested;
+    throw error;
+  }
+  return Object.freeze({
+    planCode:policy.planCode||null,
+    minimumRefreshMinutes:minimum,
+    requestedRefreshMinutes:requested,
+    effectiveRefreshMinutes:requested,
+    mode:requested===0?'event_or_realtime':'interval'
+  });
+}
+
+export function enforceConnectorRefreshPolicy(policy,connector){
+  const requested=connector?.runtime?.refreshMinutes
+    ??connector?.schedule?.refreshMinutes
+    ??connector?.refreshMinutes;
+  return enforceRefreshPolicy(policy,requested);
+}
