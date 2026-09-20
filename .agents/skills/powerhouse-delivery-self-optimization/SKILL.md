@@ -199,3 +199,20 @@ Mandatory:
 - require the merge SHA itself to be contained in current `origin/main`;
 - fail closed when neither ancestry nor exact tree equivalence can be proven;
 - record the lineage proof mode in terminal evidence so later readback can distinguish `ancestor` from `squash_tree_equivalent`.
+
+
+## Supabase provider runtime terminal truth
+
+Fingerprint: `delivery|terminal-supabase-provider-readback|v1`.
+
+A website/main descendant is **not** sufficient production proof for changes under `supabase/functions/<slug>/`.
+
+Mandatory:
+- every changed Supabase Edge Function must have explicit provider readback before terminal `LIVE_BEWEZEN`;
+- terminal PR metadata must contain one line per changed function in the exact form `Terminal-Supabase-Provider-Readback: function=<slug>;version=<positive-int>;runtime_sha256=<64hex>`;
+- the evidence must come from the active Supabase provider runtime after deployment, not from repository source, preview, merge state or website release state;
+- missing, stale or incomplete provider evidence is `RECOVERABLE_INCOMPLETE`, never terminal success;
+- agents must deploy/read back the exact current-main function, append the provider version/hash to the same PR lineage, then resume terminal closure;
+- provider-runtime truth must remain distinct from Netlify/website production truth.
+
+Reference incident: PR #2465 was marked `LIVE_BEWEZEN` while the active `powerhouse-social-publisher` runtime still contained `RuntimeState/runtime_state`. Direct provider readback exposed the mismatch; Supabase v26 was then deployed from exact main and verified with `CurrentState/current_state`.
