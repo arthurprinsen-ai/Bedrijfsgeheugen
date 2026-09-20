@@ -302,7 +302,8 @@
         "tools/seo-growth/",
         "tools/supabase-",
         "tools/universal-event-",
-        "tools/universal-failure-"
+        "tools/universal-failure-",
+        "tests/saas-"
       ],
       "requiredContracts": [
         "BG166",
@@ -460,7 +461,8 @@
         "tests/commercial-intent-pages-v1.test.mjs",
         "tools/apply-tabbladen.mjs",
         "tools/bouw-inhoudspaginas.mjs",
-        "tools/bouw-losse-paginas.mjs"
+        "tools/bouw-losse-paginas.mjs",
+        "afsluiten.html"
       ],
       "requiredContracts": [
         "BG166",

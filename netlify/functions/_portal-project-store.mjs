@@ -16,6 +16,12 @@ export function createPortalProjectStore({
     const data=await response.json().catch(()=>[]);
     return Array.isArray(data)?data:[];
   }
+  async function mutate(path,{method='POST',body,prefer='return=representation'}={}){
+    const response=await fetchFn(`${root}/rest/v1/${path}`,{method,headers:{...headers,prefer},body:JSON.stringify(body||{})});
+    if(!response.ok)throw new Error(`Portal project store write failed (${response.status})`);
+    const data=await response.json().catch(()=>[]);
+    return Array.isArray(data)?data:[];
+  }
   return Object.freeze({
     async resolveTenant(user){
       const email=cleanEmail(user?.email);
@@ -24,6 +30,14 @@ export function createPortalProjectStore({
       const tenants=[...new Set(invites.map(row=>safeUuid(row?.organisatie_id)).filter(Boolean))];
       return tenants.length===1?tenants[0]:null;
     },
+    async getPlan(code){const key=String(code||'').trim().toLowerCase();if(!key)return null;const rows=await select(`saas_plans?code=eq.${encodeURIComponent(key)}&active=eq.true&select=*&limit=1`);return rows[0]||null;},
+    async findSubscription(providerSubscriptionId){const id=String(providerSubscriptionId||'').trim();if(!id)return null;const rows=await select(`saas_subscriptions?provider_subscription_id=eq.${encodeURIComponent(id)}&select=*&limit=1`);return rows[0]||null;},
+    async createOrganisation(name,slug){const rows=await mutate('organisaties',{body:{naam:String(name||'').trim(),slug:String(slug||'').trim()}});return rows[0]||null;},
+    async ensureCustomer(organisationId,name,email){const org=safeUuid(organisationId),mail=cleanEmail(email);if(!org||!mail)throw new Error('INVALID_CUSTOMER');const found=await select(`klanten?organisatie_id=eq.${org}&email=ilike.${encodeURIComponent(mail)}&select=*&limit=1`);if(found[0])return found[0];const rows=await mutate('klanten',{body:{organisatie_id:org,naam:String(name||'').trim(),email:mail}});return rows[0]||null;},
+    async ensureInvitation(organisationId,email){const org=safeUuid(organisationId),mail=cleanEmail(email);if(!org||!mail)throw new Error('INVALID_INVITATION');const rows=await mutate('uitnodigingen?on_conflict=email,organisatie_id',{body:{organisatie_id:org,email:mail,rol:'eigenaar'},prefer:'resolution=merge-duplicates,return=representation'});return rows[0]||null;},
+    async upsertSubscription(row){const rows=await mutate('saas_subscriptions?on_conflict=provider_subscription_id',{body:row,prefer:'resolution=merge-duplicates,return=representation'});return rows[0]||null;},
+    async patchSubscription(providerSubscriptionId,patch){const id=String(providerSubscriptionId||'').trim();if(!id)return null;const rows=await mutate(`saas_subscriptions?provider_subscription_id=eq.${encodeURIComponent(id)}`,{method:'PATCH',body:{...patch,updated_at:new Date().toISOString()}});return rows[0]||null;},
+    async getEntitlements(tenantId){const org=safeUuid(tenantId);if(!org)return null;const rows=await select(`saas_active_entitlements?organisation_id=eq.${org}&select=*&limit=1`);return rows[0]||null;},
     async get(tenantId){
       const organizationId=safeUuid(tenantId);
       if(!organizationId)return null;
