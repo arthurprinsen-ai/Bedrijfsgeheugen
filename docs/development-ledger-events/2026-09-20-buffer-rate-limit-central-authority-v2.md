@@ -7,3 +7,7 @@
 - Authority: central social publication capability remains mandatory; Instagram/Composio stays independent.
 - Regression: `tests/brain-buffer-rate-limit-central-authority-v2.test.mjs`.
 - Terminal status: pending exact-head CI, protected merge, function deploy and provider/runtime readback.
+
+## Lineage reconciliation
+
+2026-09-20: predecessor PR #2423 is closed as superseded and duplicate successor #2433 is closed. PR #2432 is the single canonical recovery lineage for `buffer-rate-limit-circuit-breaker-v2`.
