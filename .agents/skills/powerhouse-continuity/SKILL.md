@@ -324,3 +324,14 @@ Canonical source: `brain/learning/2026-09-20-terminal-autonomous-reconciler-v1.j
 - An ESCALATED reconciliation can auto-resolve when its underlying operation is already terminal (`VERIFIED` or `COMPENSATED`).
 - A historical `selftest-*` may be compensated only when it is still `PLANNED`, older than 24h, `dispatch_generation=0`, and has no `remote_ref`; compensation means “did not execute”, never “succeeded”.
 - Use the same canonical reconciler and health view. Do not create a parallel lifecycle monitor.
+
+
+### PostgreSQL view upgrade compatibility
+
+Fingerprint: `postgres-view-replace-upgrade-column-order-v1`.
+
+- Fresh-schema preview success is not sufficient proof for `CREATE OR REPLACE VIEW` changes.
+- Preserve every existing output column name and order as an immutable prefix. Append new columns only at the end.
+- Never rely on PostgreSQL to reinterpret a shifted output column as a rename; production will reject this with `42P16`.
+- A drop/recreate view migration requires explicit dependency analysis and is not the default repair.
+- Release verification for view evolution must include an upgrade-path replay against the previous canonical view shape.
