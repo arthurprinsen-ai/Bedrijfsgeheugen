@@ -12,3 +12,10 @@ Invalid scheduled Instagram provider state is cancellation-pending until the pro
 CI scans runtime code so direct provider side-effect primitives are allowed only in the canonical social publisher.
 
 Fingerprint: central-social-publication-authority-v1
+
+
+## Production status
+
+LIVE_PROVEN on 2026-09-20.
+
+Production readback verified the capability table and both authorization RPCs, redeployed the exact merged main publisher source as powerhouse-social-publisher version 24, confirmed ACTIVE with verify_jwt=false, and confirmed fail-closed request handling via HTTP 401 UNAUTHORIZED without the Powerhouse token. Buffer returned no pending Instagram items in scheduled/sending/approval/draft states.
