@@ -24,3 +24,9 @@ test('V18 generated product and integrations do not carry conflicting keyword ow
   assert.doesNotMatch(views,/zoekwoord: 'kennisborging mkb'/);
   assert.doesNotMatch(views,/zoekwoord: 'systemen koppelen' \}/);
 });
+
+test('SEO keyword generator is classified as website delivery',()=>{
+  const cfg=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
+  const website=cfg.lanes.find(lane=>lane.id==='website');
+  assert.ok(website.paths.includes('tools/zoekwoorden.mjs'));
+});
