@@ -19,6 +19,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs"
     ]
   }
 }
