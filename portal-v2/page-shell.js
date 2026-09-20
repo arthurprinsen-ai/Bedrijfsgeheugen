@@ -18,11 +18,13 @@ import { mountRoadmapWorkspace } from './modules/roadmap-workspace.js';
 import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligence.js';
 import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js';
 import { mountPowerhouseObservability } from './modules/powerhouse-observability.js';
+import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
   profiel:['Profiel per onderdeel','Bekijk de actuele stand per bedrijfsdomein, inclusief onderbouwing, risico’s en aanbevolen vervolgstappen.'],
   'data-ai':['Data en AI','Breng bronnen, datakwaliteit, AI-kansen en uitvoerbare verbeteringen samen.'],
+  'trust-center':['AI Trust Center','Controleer waarop Powerhouse vertrouwt: bronnen, actualiteit, bewijs, onzekerheid, verificatie en audittrail.'],
   'ai-scan':['AI-scan: kansenkaart','Prioriteer AI-kansen op waarde, haalbaarheid, risico en benodigde data.'],
   kansenkaart:['Kansenkaart','Eén overzicht van commerciële, operationele en digitale verbeterkansen.'],
   'csrd-impact':['CSRD & Impact','Van CO₂, water en circulariteit tot social, governance, readiness, acties en auditbewijs in één klantwaardige impactcockpit.'],
@@ -298,6 +300,7 @@ export function openPortalPage(pageId){
     mountChangeWizard(wizard,{domainState:portalContext.domainState,onSaved:()=>openPortalPage('wijzigingen')});
   }
   ensureRuntimeEvidence();
+  mountTrustedAdvisorAssurance(root.querySelector('.pvbody'),{pageId,state:portalStateSnapshot(),openPage:openPortalPage});
   mountAskPortal(root.querySelector('.pvbody'),{currentPage:()=>pageId});
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
   return true;
@@ -320,6 +323,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./entrepreneur-intelligence.css');
   ensureStylesheet('./legacy-external-placements.css');
   ensureStylesheet('./powerhouse-observability.css');
+  ensureStylesheet('./trusted-advisor-assurance.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
