@@ -51,6 +51,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-composio-instagram-setup",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-composio-instagram-setup/index.ts",
+      "evidence_contract": "tests/brain-instagram-composio-connect-link-setup.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-content-loop",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-loop/index.ts",

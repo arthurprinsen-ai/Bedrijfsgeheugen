@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "instagram-composio-connect-link-setup-v1",
+  "compiler": {
+    "failure_class": "MISSING_EXTERNAL_AUTH_BOOTSTRAP_PATH",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Powerhouse had a Composio runtime publisher but no canonical bootstrap path to inspect Instagram auth configs, create managed auth, generate a Connect Link, or validate exactly one active connected account.",
+  "prevention": [
+    "Use the server-side Composio v3.1 setup controller for status and Connect Link creation.",
+    "Keep COMPOSIO_API_KEY only in canonical secret storage and never return or log it.",
+    "Fail closed on multiple active Instagram accounts or multiple managed auth configs.",
+    "Use hosted Connect Links so Instagram OAuth credentials never pass through Powerhouse."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-composio-instagram-setup/index.ts",
+    "tests/brain-instagram-composio-connect-link-setup.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-connect-link-setup.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "delivery",
+    "security"
+  ],
+  "skill_projection_required": true
+}
