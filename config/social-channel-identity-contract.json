@@ -1,5 +1,5 @@
 {
-  "contractId": "arthur-personal-linkedin-identity-v4",
+  "contractId": "arthur-personal-linkedin-personal-life-only-v5",
   "rootContract": "growth-revenue-os-1m-2027-v1",
   "failClosed": true,
   "channels": {
@@ -9,8 +9,10 @@
       "type": "profile",
       "identity": "arthur",
       "personalMeansPersonal": true,
-      "businessContentDefault": "blocked",
-      "businessExceptionScope": "exact_content_id",
+      "businessContentDefault": "blocked_without_exception",
+      "businessExceptionScope": "none",
+      "personalLifeOnly": true,
+      "businessBridgeAlwaysBlocked": true,
       "requiresPersonalLifeTopic": true,
       "blocksCorporateVoice": true,
       "blocksForcedBusinessMoral": true,
