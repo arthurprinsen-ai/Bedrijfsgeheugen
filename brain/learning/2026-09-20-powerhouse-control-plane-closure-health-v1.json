@@ -1,0 +1,32 @@
+{
+  "fingerprint": "powerhouse-control-plane-closure-health-v1",
+  "date": "2026-09-20",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "CANONICAL_AUTHORITY_DRIFT_AND_SUPERSESSION_TERMINALIZATION_GAP",
+  "scope": "RUNTIME_DATABASE_CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "powerhouse-control-plane-closure-health-v1",
+  "root_cause": "ONE BRAIN runtime health still referenced the retired powerhouse-reconciliation-worker-v1 while production runs v2, and terminal closure rejected a closed-unmerged superseded migration even when current main already contained one exact canonical same-name migration.",
+  "prevention_rule": "Health contracts must reference the active canonical runtime authority. Terminal supersession recovery may canonicalize an unmerged migration only when exactly one same-name migration exists on current main; missing or ambiguous identity remains fail-closed.",
+  "enforcement": [
+    ".github/workflows/obligation-terminal-closure.yml",
+    "supabase/migrations/20260920090800_powerhouse_one_brain_reconciliation_worker_v2_health_contract_v1.sql",
+    "tests/brain-powerhouse-control-plane-closure-health-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-control-plane-closure-health-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ],
+  "evidence": {
+    "runtime_before": "18 required jobs but only 17 matched because health expected worker v1; architecture RED.",
+    "runtime_after": "18/18 jobs matched after production runtime contract repair.",
+    "terminal_failure": "UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS on PR 2384 despite canonical migration identity on current main.",
+    "truth_rule": "No terminal success without exact-head gates, protected merge and production readback."
+  }
+}
