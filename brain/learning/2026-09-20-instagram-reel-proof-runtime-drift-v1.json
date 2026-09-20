@@ -40,5 +40,12 @@
     "historical_replay": [
       "tests/brain-instagram-mira-winner-selection-v1.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
