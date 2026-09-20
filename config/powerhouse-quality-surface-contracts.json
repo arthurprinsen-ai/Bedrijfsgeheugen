@@ -128,6 +128,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:checkout-create",
+      "type": "netlify_function",
+      "authority": "netlify/functions/checkout-create.mjs",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:instagram-video-frames",
       "type": "netlify_function",
       "authority": "netlify/functions/instagram-video-frames.mjs",
@@ -146,6 +153,13 @@
       "type": "netlify_function",
       "authority": "netlify/functions/portal-business-input.mjs",
       "evidence_contract": "tests/portal-business-input.test.mjs",
+      "required": true
+    },
+    {
+      "id": "netlify_function:portal-entitlements",
+      "type": "netlify_function",
+      "authority": "netlify/functions/portal-entitlements.mjs",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
       "required": true
     },
     {
@@ -188,6 +202,13 @@
       "type": "netlify_function",
       "authority": "netlify/functions/social-publication-delivery.mjs",
       "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "netlify_function:stripe-webhook",
+      "type": "netlify_function",
+      "authority": "netlify/functions/stripe-webhook.mjs",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
       "required": true
     },
     {
@@ -517,6 +538,41 @@
       "type": "table",
       "authority": "supabase/migrations/20260918194500_powerhouse_source_observation_immutable_v1.sql",
       "evidence_contract": "tests/powerhouse-organism-propagation.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.saas_checkout_intents",
+      "type": "table",
+      "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.saas_plan_entitlements",
+      "type": "table",
+      "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.saas_plans",
+      "type": "table",
+      "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.saas_subscriptions",
+      "type": "table",
+      "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.saas_usage_counters",
+      "type": "table",
+      "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
+      "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
       "required": true
     }
   ]

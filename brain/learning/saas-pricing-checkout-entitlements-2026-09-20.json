@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v1",
+  "fingerprint": "saas-pricing-checkout-entitlements-closure-v1",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "cross-layer-saas-delivery-contract-drift"
+  },
+  "symptom": "Een end-to-end SaaS wijziging raakte pricing, Netlify functions, portal entitlements, Supabase schema en website-buildcontracts tegelijk. De eerste exact-head runs blokkeerden op ongeclassificeerde delivery paths, ontbrekende PR machine metadata, quality-surface registratie, database privilegecontracten en checkout-pagina SEO-semantiek.",
+  "root_cause": [
+    "Nieuwe surfaces waren functioneel toegevoegd voordat alle bestaande release- en quality-registries dezelfde uitbreiding kenden.",
+    "Productie-Supabase was handmatig gemigreerd vóórdat repository-migratiebestandsnamen exact aan de toegepaste productieversies waren gespiegeld.",
+    "De transactionele checkoutpagina voldeed inhoudelijk maar niet meteen aan estate-wide SEO-contracten voor title/description en exact één H1.",
+    "PR delivery metadata bevatte aanvankelijk alleen Obligation-ID en niet Delivery-Lane, Candidate-Type en immutable Base-SHA."
+  ],
+  "prevention": [
+    "Bij iedere nieuwe SaaS surface eerst delivery classifier, quality-surface registry en material-writeback closure meenemen in dezelfde candidate.",
+    "Repositorymigraties moeten exact dezelfde versie-identiteit en volgorde dragen als de production migration history.",
+    "Iedere nieuwe HTML-route krijgt vóór de eerste build title, description, canonical, robots en exact één H1.",
+    "Iedere materiële PR krijgt bij creatie volledige Powerhouse delivery metadata inclusief immutable Base-SHA.",
+    "Entitlements worden server-side afgedwongen; browser/UI gating is nooit de security authority.",
+    "Pricing leest commerciële waarheid uit één canonical planmodel zodat prijs, checkout en runtime entitlement niet kunnen driften."
+  ],
+  "regression_contract": [
+    "tests/saas-pricing-entitlements.test.mjs",
+    "config/powerhouse-quality-surface-contracts.json",
+    "config/brain-delivery-system.json"
+  ],
+  "evidence": [
+    "Supabase production migrations 20260920101730 and 20260920102825 applied and mirrored.",
+    "Powerhouse Supabase Security Contract green after explicit per-table revokes and security_invoker entitlement view.",
+    "Powerhouse Quality Intelligence Surface Gate green after SaaS tables/functions registration.",
+    "Canonical brand shell full build exposed and then closed the two-H1 checkout defect.",
+    "BRAIN admission accepted exact head after complete delivery metadata was added."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-system.test.mjs",
+      "tests/brain-material-writeback-closure-guard.test.mjs",
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+    ]
+  },
+  "outcome_evidence": {
+    "production_database": "canonical SaaS plan/entitlement/subscription/usage tables exist in production",
+    "runtime_enforcement": "new connector creation checks data_sources entitlement server-side",
+    "billing_safety": "checkout/webhook fail closed without Stripe production secrets"
+  },
+  "open_obligation": "Stripe production credentials and webhook registration remain an external activation dependency; no credential may be fabricated or stored in GitHub.",
+  "test_evidence": [
+    "tests/saas-pricing-entitlements.test.mjs",
+    "tests/brain-delivery-system.test.mjs",
+    "tests/brain-material-writeback-closure-guard.test.mjs",
+    "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+  ]
+}
