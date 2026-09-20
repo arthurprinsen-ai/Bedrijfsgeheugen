@@ -259,7 +259,7 @@ jobs:
           import { execFileSync } from 'node:child_process';
           import { appendFile } from 'node:fs/promises';
           import path from 'node:path';
-          import { existsSync } from 'node:fs';
+          import { existsSync, readdirSync } from 'node:fs';
           import { parseDeliveryMetadata } from './tools/delivery/delivery-hygiene.mjs';
 
           const repo=process.env.GITHUB_REPOSITORY;
@@ -305,9 +305,30 @@ jobs:
                 .filter(file=>file.status!=='removed' && /^supabase\/migrations\/[^/]+\.sql$/.test(String(file.filename||'')))
                 .map(file=>String(file.filename||''));
               if(migrationFiles.length>0){
-                throw new Error(`UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:${prNumber}:${migrationFiles.join(',')}`);
+                const currentMigrationFiles=readdirSync('supabase/migrations').filter(name=>name.endsWith('.sql'));
+                for(const migrationFile of migrationFiles){
+                  const base=path.basename(migrationFile,'.sql');
+                  const match=base.match(/^(\\d{14})_([a-z0-9_]+)$/);
+                  if(!match) throw new Error(`SUPABASE_MIGRATION_IDENTITY_INVALID:${migrationFile}`);
+                  const stableName=match[2];
+                  const canonicalMatches=currentMigrationFiles.filter(name=>{
+                    const current=path.basename(name,'.sql').match(/^(\\d{14})_([a-z0-9_]+)$/);
+                    return current && current[2]===stableName;
+                  });
+                  if(canonicalMatches.length===0) {
+                    throw new Error(`UNMERGED_SUPERSEDES_MIGRATION_NOT_CANONICALIZED:${prNumber}:${migrationFile}`);
+                  }
+                  if(canonicalMatches.length>1) {
+                    throw new Error(`UNMERGED_SUPERSEDES_MIGRATION_AMBIGUOUS:${prNumber}:${stableName}:${canonicalMatches.join(',')}`);
+                  }
+                  const canonicalBase=path.basename(canonicalMatches[0],'.sql');
+                  const canonicalMatch=canonicalBase.match(/^(\\d{14})_([a-z0-9_]+)$/);
+                  expected.push({version:canonicalMatch[1],name:canonicalMatch[2],source_pr:prNumber,canonicalized_from_unmerged:true});
+                  console.log(`UNMERGED_SUPERSEDES_MIGRATION_CANONICALIZED:${prNumber}:${migrationFile}->${canonicalMatches[0]}`);
+                }
+              } else {
+                console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
               }
-              console.log(`UNMERGED_SUPERSEDES_SAFE_TO_SKIP:${prNumber}`);
             }
 
             prNumber=metadata.supersedes===null ? 0 : Number(metadata.supersedes);
