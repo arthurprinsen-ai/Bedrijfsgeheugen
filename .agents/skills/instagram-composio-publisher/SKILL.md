@@ -170,3 +170,10 @@ After the canonical selector freezes the daily Instagram winner it may transitio
 Fingerprint: `instagram-prepublish-business-rule-scope-v1`.
 
 Instagram Mira must not inherit generic company-page rules such as mandatory Bedrijfsgeheugen tracking links, business CTAs or a forced business moral. Generic business-rule evaluation is scoped to `linkedin_company` only. Instagram remains fail-closed on its dedicated Mira identity, exact-final-media, dimensions, provider, final-asset, dedupe and publication-authority gates.
+
+
+## Composio auth preflight
+
+Fingerprint: `instagram-composio-auth-preflight-v1`.
+
+Before an Instagram publication claim or publication-capability issue, verify that the canonical `COMPOSIO_API_KEY` exists. If it is absent, keep the decision recoverable at `content_ready`, record `COMPOSIO_INSTAGRAM_AUTH_REQUIRED`, and do not issue/consume a publication capability or touch any provider. Never switch to another transport implicitly.
