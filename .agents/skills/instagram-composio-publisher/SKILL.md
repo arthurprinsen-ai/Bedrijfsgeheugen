@@ -144,3 +144,14 @@ Before any Instagram media generation or publication attempt, call/reuse the can
 - Publication authority fails closed on `INSTAGRAM_DAILY_WINNER_REQUIRED`, `INSTAGRAM_DAILY_WINNER_LINEAGE_MISMATCH`, `INSTAGRAM_DECISION_WINNER_LINEAGE_MISMATCH`, or winner/media-format mismatch.
 - A blocked media/provider boundary does not permit selection of a second winner or fallback publication. Reuse the same winner and exact-media lineage when recovery becomes possible.
 - Metrics and learning must write back to the same winner row; do not attach outcomes to a different recommendation after publication.
+
+
+## Reel proof aggregation and runtime identity
+
+Fingerprint: `instagram-reel-proof-runtime-drift-v1`.
+
+For Mira Reels, the aggregate proof must preserve the strictest frame-level identity fields instead of reconstructing a weaker summary. The aggregate is valid only when every required frame proves `mira_central_subject=true`, no required frame is text-dominant or brand-template-dominant, and all other exact-media/Mira gates pass.
+
+Before terminal publication claims, compare the active Supabase Edge Function runtime against canonical GitHub source for the router, verifier, orchestrator and publisher. Runtime/source drift is a blocking delivery defect, not a harmless deployment detail. After any fix, re-run the same immutable daily winner and exact asset; never generate a second winner to escape a failed writeback.
+
+A successful proof write is not sufficient by itself. Require readback of the aggregate proof, `PROOF_VERIFIED` media job, approved publication obligation, generated Instagram artifact, provider dispatch/readback, `social_posts.format=reel`, matching winner recommendation/score version, and winner outcome/learning closure.
