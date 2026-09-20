@@ -19,6 +19,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
     ]
   },
   "evidence": [
