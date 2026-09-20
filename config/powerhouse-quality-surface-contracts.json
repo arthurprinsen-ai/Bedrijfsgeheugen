@@ -163,6 +163,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:portal-connectors",
+      "type": "netlify_function",
+      "authority": "netlify/functions/portal-connectors.mjs",
+      "evidence_contract": "tests/portal-connectors-handler.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:portal-entitlements",
       "type": "netlify_function",
       "authority": "netlify/functions/portal-entitlements.mjs",
