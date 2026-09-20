@@ -11,7 +11,7 @@ test('company recommendation selection excludes personal truth and personal targ
 });
 
 test('company publication generation creates a measurable canonical campaign link',()=>{
-  assert.match(source,/li-company-\$\{runDate\.replaceAll\('-', ''\)\}/);
+  assert.match(source,/li-company-\$\{runDate\.replaceAll\('-',\s*''\)\}/);
   assert.match(source,/https:\/\/www\.bedrijfsgeheugen\.nl\/g\/\$\{key\}/);
   assert.match(source,/bg_campaign_links/);
   assert.match(source,/COMPANY_TRACKING_LINK_WRITE_FAILED/);
