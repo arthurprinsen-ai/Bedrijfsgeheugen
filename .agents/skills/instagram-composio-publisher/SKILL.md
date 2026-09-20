@@ -155,3 +155,10 @@ For Mira Reels, the aggregate proof must preserve the strictest frame-level iden
 Before terminal publication claims, compare the active Supabase Edge Function runtime against canonical GitHub source for the router, verifier, orchestrator and publisher. Runtime/source drift is a blocking delivery defect, not a harmless deployment detail. After any fix, re-run the same immutable daily winner and exact asset; never generate a second winner to escape a failed writeback.
 
 A successful proof write is not sufficient by itself. Require readback of the aggregate proof, `PROOF_VERIFIED` media job, approved publication obligation, generated Instagram artifact, provider dispatch/readback, `social_posts.format=reel`, matching winner recommendation/score version, and winner outcome/learning closure.
+
+
+## Accepted daily-winner lifecycle
+
+Fingerprint: `instagram-accepted-winner-downstream-lineage-v1`.
+
+After the canonical selector freezes the daily Instagram winner it may transition that recommendation from `suggested` to `accepted`. Downstream orchestrator/publisher logic must continue to accept that exact recommendation only when its ID matches the persisted daily-winner row and `evidence.daily_winner=true`. This exception is winner-specific; generic recommendations keep the stricter suggested/empty eligibility rule. Never select a second winner because the frozen winner is already `accepted`.
