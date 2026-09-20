@@ -1,0 +1,37 @@
+{
+  "status": "LIVE_PROVEN",
+  "verified_at_utc": "2026-09-20T07:34:00Z",
+  "main_merge_sha": "ae93dc264fc40d89c9c165083e352f3b3942a839",
+  "supabase_project_ref": "adhjwmvyoixzjtmiroln",
+  "database": {
+    "migration_name": "social_publication_authority_v1",
+    "production_history_version": "20260920073025",
+    "capability_table": "public.powerhouse_social_publish_capabilities_v1",
+    "issue_rpc": "public.powerhouse_issue_social_publish_capability_v1(date,text,text,text,text,text)",
+    "consume_rpc": "public.powerhouse_consume_social_publish_capability_v1(text,date,text,text,text,text,text,text)",
+    "definition_readback": true
+  },
+  "edge_function": {
+    "slug": "powerhouse-social-publisher",
+    "version": 24,
+    "status": "ACTIVE",
+    "verify_jwt": false,
+    "exact_main_source_redeployed": true,
+    "fail_closed_readback": {
+      "status_code": 401,
+      "body": {
+        "ok": false,
+        "error": "UNAUTHORIZED"
+      }
+    }
+  },
+  "provider_containment": {
+    "instagram_pending_queue_count": 0,
+    "checked_states": [
+      "scheduled",
+      "sending",
+      "needs_approval",
+      "draft"
+    ]
+  }
+}

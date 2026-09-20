@@ -121,3 +121,10 @@ Mandatory containment semantics:
 - future Instagram publisher routes must inherit this authority and cannot introduce a parallel writer.
 
 This invariant is machine-enforced in database capability RPCs, publisher runtime, provider-containment sweep, completion evidence and CI anti-bypass tests.
+
+
+## Production readback requirement
+
+The central-social-publication-authority-v1 invariant is currently production-proven by the canonical evidence lineage. Do not preserve or reissue LIVE_PROVEN merely from code/PR/merge state. A material publisher change must re-prove all of the following: capability table/RPC existence and definitions, active exact-source Edge Function deployment with intended auth mode, fail-closed endpoint behavior, and provider containment/pending-queue readback.
+
+Production evidence fingerprint: central-social-publication-authority-v1-live-proof-2026-09-20.
