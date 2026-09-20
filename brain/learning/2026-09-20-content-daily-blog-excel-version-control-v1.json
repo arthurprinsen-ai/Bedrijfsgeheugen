@@ -1,0 +1,28 @@
+{
+  "fingerprint": "content|daily-blog|excel-version-control|closure-v1",
+  "obligation_id": "content-daily-blog-20260920-excel-version-control-v1",
+  "compiler": {
+    "failure_class": "MATERIAL_CONTENT_DELIVERY_WITHOUT_LEARNING_CLOSURE",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The daily blog candidate initially carried publishable website changes without the same-lineage Brain learning, activity ledger event and human documentation required by the material writeback closure contract.",
+  "prevention_rule": "Every material daily blog candidate must include Brain learning, a development-ledger event and human-readable documentation in the same obligation lineage before Required can become green.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure.test.mjs"
+    ]
+  },
+  "evidence": {
+    "candidate_pr": 2426,
+    "seo_gate": "Blog Technical SEO Gate green after canonical metadata, FAQ/figures/sitemap and meta-description repair",
+    "brain_gate": "BRAIN delivery green on candidate lineage",
+    "writeback_gate": "Material writeback closure correctly blocked until learning/ledger/docs were added",
+    "canonicalization_test": "tests/brain-material-writeback-closure.test.mjs"
+  },
+  "outcome": {
+    "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  }
+}
