@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "fingerprint": "terminal-autonomous-reconciler-v1",
+  "authority": "Supabase production control plane",
+  "goal": "No incomplete or contradictory control-plane state can silently remain green.",
+  "cadence": "every_5_minutes",
+  "rules": [
+    "GREEN_STALE_IS_NEVER_TERMINAL",
+    "ESCALATED_RECONCILIATION_BLOCKS_HEALTHY",
+    "STALE_PLANNED_WORK_BLOCKS_HEALTHY",
+    "ONLY_SIDE_EFFECT_FREE_INTERNAL_WORK_MAY_BE_AUTO_REQUEUED",
+    "NO_OBLIGATION_MAY_BE_AUTO_FULFILLED_WITHOUT_OUTCOME_EVIDENCE",
+    "EXTERNAL_OR_HARD_BOUNDARY_WORK_REMAINS_VISIBLE_AND_FAILS_CLOSED",
+    "PRODUCTION_HEALTH_AND_PREVIEW_BRANCH_HEALTH_ARE_SEPARATE_SIGNALS"
+  ],
+  "healthView": "public.powerhouse_terminal_control_plane_health_v1",
+  "reconciler": "public.powerhouse_terminal_autonomous_reconcile_v1",
+  "cronJob": "powerhouse-terminal-autonomous-reconciler-v1"
+}
