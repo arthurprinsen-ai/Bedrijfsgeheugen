@@ -1,0 +1,38 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "seo-high-severity-ownership-closure-v1",
+  "compiler": {
+    "failure_class": "SEO",
+    "scope": "website",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": [
+    "Canonical registry primary intents were not consistently reflected in source page titles, leaving genuine title/H1 ownership gaps after the validator contract was corrected.",
+    "The legacy claim detector treated a more-specific explicit keyword as also claiming a shorter parent keyword, creating false cannibalization.",
+    "The sitemap audit required canonical alias source routes to appear independently even when their canonical points at another indexable route."
+  ],
+  "prevention": [
+    "Primary registry keywords must be represented in the owning page title or H1.",
+    "Explicit bg keyword ownership is exact; a more-specific keyword must not implicitly claim its parent keyword.",
+    "Canonical aliases are excluded from independent sitemap-presence requirements."
+  ],
+  "evidence": [
+    ".github/scripts/seocontrole.py",
+    "site/seo-order-map.json",
+    "tests/brain-seo-high-severity-ownership-closure.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs",
+      "tests/brain-learning-canonicalization-gate-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "seo-growth",
+    "website-release"
+  ],
+  "skill_projection_required": true
+}
