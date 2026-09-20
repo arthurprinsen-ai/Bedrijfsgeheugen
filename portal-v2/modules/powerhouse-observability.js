@@ -6,7 +6,7 @@ const lower=value=>String(value??'').toLowerCase();
 const PERIODS={today:1,week:7,month:30,all:0};
 const TABS=[
   ['system-map','Systeemkaart'],['overview','Overzicht'],['timeline','Tijdlijn'],['errors','Errors & herstel'],['layers','Lagen & systemen'],
-  ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs']
+  ['knowledge','Documentatie & learning'],['skills','Skills'],['delivery','Delivery & bewijs'],['integrations','Koppelingen']
 ];
 
 function timeMs(value){const n=Date.parse(value||'');return Number.isFinite(n)?n:0}
@@ -151,6 +151,65 @@ function systemMapView(systemMap,events){
   <section class="poc-panel psm-contract"><div><span>Agent update contract</span><h4>Iedere huidige en toekomstige agent moet zichzelf vindbaar maken</h4><p>${esc(contract.rule||'')}</p></div><div class="poc-checks">${arr(contract.onCreateOrChange).map(item=>`<span>${esc(item)}</span>`).join('')}</div><p class="poc-note"><b>Fail-closed:</b> ${esc(contract.failClosed||'')}</p></section>`;
 }
 
+
+async function adminIdentityToken(){
+  const identity=globalThis.netlifyIdentity;
+  const user=identity?.currentUser?.();
+  if(!user)return '';
+  try{return await user.jwt?.()||''}catch{return ''}
+}
+
+async function composioAdminRequest(fetchImpl=globalThis.fetch,{action='status',apiKey=''}={}){
+  const token=await adminIdentityToken();
+  if(!token)return {ok:false,error:'UNAUTHENTICATED'};
+  const isStatus=action==='status';
+  const response=await fetchImpl('/api/powerhouse-composio-config',{
+    method:isStatus?'GET':'POST',
+    credentials:'same-origin',
+    headers:{accept:'application/json','content-type':'application/json',authorization:`Bearer ${token}`},
+    ...(isStatus?{}:{body:JSON.stringify(action==='set_api_key'?{action,apiKey}:{action})})
+  });
+  const data=await response.json().catch(()=>({error:'INVALID_RESPONSE'}));
+  return {...data,httpStatus:response.status};
+}
+
+function integrationsView(model={}){
+  const data=model.data||{};
+  const loading=model.loading===true;
+  const ready=data.ready===true;
+  const keyPresent=data.api_key_present===true;
+  const active=Number(data.active_accounts||0);
+  const stateLabel=data.state||'ONBEKEND';
+  const reason=data.reason||'';
+  const link=data.redirect_url||'';
+  return `<div class="poc-grid2">
+    <section class="poc-panel">
+      <div class="poc-panelhead"><h4>Composio · Instagram</h4><span>${ready?'Verbonden':keyPresent?'Key aanwezig':'Key ontbreekt'}</span></div>
+      <div class="poc-kpis compact">
+        ${kpi('API-key',keyPresent?'Aanwezig':'Ontbreekt','alleen Supabase Vault')}
+        ${kpi('Instagram account',active===1?'1 actief':String(active),'exact één vereist')}
+        ${kpi('Setup status',stateLabel,reason||'canonieke providerstatus')}
+      </div>
+      ${model.error?`<p class="poc-note"><b>Fout:</b> ${esc(model.error)}</p>`:''}
+      <div class="poc-checks"><span>Netlify Identity admin-only</span><span>Server-to-server service token</span><span>Provider-validatie vóór opslag</span><span>Geen browserstorage</span></div>
+      <button type="button" data-composio-refresh ${loading?'disabled':''}>${loading?'Controleren…':'Status vernieuwen'}</button>
+    </section>
+    <section class="poc-panel">
+      <h4>Eenmalige veilige onboarding</h4>
+      <p class="poc-note">Kopieer in Composio via Settings → Project Settings → API Keys je project API-key. De waarde wordt uitsluitend over TLS naar de admin-API gestuurd, live gevalideerd en daarna in Supabase Vault opgeslagen. De sleutel wordt niet teruggelezen of in de browser bewaard.</p>
+      <form data-composio-key-form autocomplete="off">
+        <label>Composio project API-key<input type="password" name="apiKey" autocomplete="new-password" spellcheck="false" required minlength="20" placeholder="Plak API-key"></label>
+        <button type="submit" ${loading?'disabled':''}>Valideren en veilig opslaan</button>
+      </form>
+      <hr>
+      <p class="poc-note">Na een geldige key maakt Powerhouse een Composio-hosted Instagram Connect Link. Meta/Instagram OAuth-credentials blijven bij Composio.</p>
+      <button type="button" data-composio-link ${loading||!keyPresent||ready?'disabled':''}>Instagram koppelen</button>
+      ${link?`<p class="poc-note"><a href="${esc(link)}" target="_blank" rel="noopener noreferrer">OAuth-link opnieuw openen</a></p>`:''}
+      ${ready?'<p class="poc-note"><b>Gereed:</b> exact één actieve Instagram-connection is gevalideerd. De publisher kan de bestaande Mira-winner hervatten.</p>':''}
+    </section>
+  </div>`;
+}
+
 async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
   const identity=globalThis.netlifyIdentity;
   const user=identity?.currentUser?.();
@@ -181,7 +240,7 @@ function accessState(root,status,onLogin){
 }
 
 export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fetch}={}){
-  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'system-map'};
+  const state={period:'week',actor:'all',layer:'all',status:'all',source:'all',q:'',tab:'system-map',composio:{loading:false,data:null,error:null}};
   const root=document.createElement('section');root.className='poc';container.innerHTML='';container.appendChild(root);
   let securedRuntime=null;
   let destroyed=false;
@@ -208,9 +267,38 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.querySelector('[data-filter="status"]').value=state.status;
     root.querySelector('[data-filter="source"]').value=state.source;
     root.querySelectorAll('[data-filter]').forEach(control=>control.addEventListener(control.tagName==='INPUT'?'input':'change',()=>{state[control.dataset.filter]=control.value;render()}));
-    root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render()}));
+    root.querySelectorAll('[data-tab]').forEach(btn=>btn.addEventListener('click',()=>{state.tab=btn.dataset.tab;render();if(state.tab==='integrations'&&!state.composio.data&&!state.composio.loading)loadComposio('status')}));
     const body=root.querySelector('[data-body]');
-    body.innerHTML=state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):deliveryView(events,obs);
+    body.innerHTML=state.tab==='system-map'?systemMapView(securedRuntime.systemMap,all):state.tab==='overview'?overview(events,obs):state.tab==='timeline'?timeline(events):state.tab==='errors'?errorView(events):state.tab==='layers'?layerView(events,obs):state.tab==='knowledge'?knowledgeView(events):state.tab==='skills'?skillsView(events):state.tab==='delivery'?deliveryView(events,obs):integrationsView(state.composio);
+    if(state.tab==='integrations'){
+      body.querySelector('[data-composio-refresh]')?.addEventListener('click',()=>loadComposio('status'));
+      body.querySelector('[data-composio-link]')?.addEventListener('click',()=>loadComposio('create_link'));
+      body.querySelector('[data-composio-key-form]')?.addEventListener('submit',event=>{
+        event.preventDefault();
+        const input=event.currentTarget.querySelector('input[name="apiKey"]');
+        const apiKey=String(input?.value||'').trim();
+        if(input)input.value='';
+        loadComposio('set_api_key',apiKey);
+      });
+    }
+  }
+
+
+  async function loadComposio(action='status',apiKey=''){
+    state.composio={...state.composio,loading:true,error:null};
+    render();
+    const result=await composioAdminRequest(fetchImpl,{action,apiKey});
+    if(destroyed)return;
+    if(result?.ok===false){
+      state.composio={loading:false,data:state.composio.data,error:result.error||result.detail||'COMPOSIO_CONFIG_FAILED'};
+      render();
+      return;
+    }
+    state.composio={loading:false,data:result,error:null};
+    render();
+    if(action==='create_link'&&result.redirect_url){
+      globalThis.open?.(result.redirect_url,'_blank','noopener,noreferrer');
+    }
   }
 
   async function refresh(){

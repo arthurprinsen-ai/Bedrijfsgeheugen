@@ -4,7 +4,9 @@ const BASE='https://backend.composio.dev/api/v3.1';
 const SUBJECT='instagram-composio-setup';
 const USER_ID='bedrijfsgeheugen-owner';
 const ALIAS='bedrijfsgeheugen-instagram';
+const SERVICE_TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const clean=(v:unknown)=>String(v??'').trim();
+async function sha256(v:string){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_SETUP_'+r.status+':'+clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240));return b;}
@@ -21,10 +23,27 @@ Deno.serve(async(req:Request)=>{
   if(!url||!serviceKey)return json({ok:false,error:'CONFIG'},500);
   const db=createClient(url,serviceKey,{auth:{persistSession:false,autoRefreshToken:false}});
   const expected=clean((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data);
-  if(!expected||req.headers.get('x-powerhouse-token')!==expected)return json({ok:false,error:'UNAUTHORIZED'},401);
+  const schedulerOk=Boolean(expected&&req.headers.get('x-powerhouse-token')===expected);
+  const serviceToken=req.headers.get('x-bg-service-token')||'';
+  const serviceOk=Boolean(serviceToken&&await sha256(serviceToken)===SERVICE_TOKEN_HASH);
+  if(!schedulerOk&&!serviceOk)return json({ok:false,error:'UNAUTHORIZED'},401);
   let body:any={};try{body=await req.json()}catch{}
   const action=clean(body.action)||'status';
-  const key=await secret(db,'COMPOSIO_API_KEY');
+
+  let key=await secret(db,'COMPOSIO_API_KEY');
+  if(action==='set_api_key'){
+    if(!serviceOk)return json({ok:false,error:'ADMIN_SERVICE_AUTH_REQUIRED'},403);
+    const candidate=clean(body.api_key);
+    if(candidate.length<20)return json({ok:false,error:'COMPOSIO_API_KEY_INVALID'},400);
+    try{await api(candidate,'/auth_configs?limit=1')}catch(error){
+      const detail=error instanceof Error?error.message:'COMPOSIO_API_KEY_REJECTED';
+      return json({ok:false,error:'COMPOSIO_API_KEY_REJECTED',detail:detail.slice(0,180)},400);
+    }
+    const {data:stored,error:storeError}=await db.rpc('powerhouse_set_composio_api_key_v1',{p_secret:candidate});
+    if(storeError||stored?.stored!==true)throw new Error('COMPOSIO_API_KEY_STORE_FAILED');
+    key=candidate;
+  }
+
   if(!key){
     const result={ready:false,state:'BLOCKED_EXTERNAL_CONFIG',reason:'COMPOSIO_INSTAGRAM_AUTH_REQUIRED',api_key_present:false,active_accounts:0,resume_condition:'COMPOSIO_API_KEY_PRESENT'};
     await writeState(db,'BLOCKED_EXTERNAL_CONFIG',result);
@@ -41,8 +60,8 @@ Deno.serve(async(req:Request)=>{
     const account=accounts[0],result={ready:true,state:'ACTIVE',reason:null,api_key_present:true,active_accounts:1,connected_account_id:clean(account?.id),user_id:clean(account?.user_id),alias:clean(account?.alias)};
     await writeState(db,'ACTIVE',result);return json({ok:true,...result});
   }
-  if(action==='status'){
-    const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED',api_key_present:true,active_accounts:0};
+  if(action==='status'||action==='set_api_key'){
+    const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED',api_key_present:true,active_accounts:0,stored:action==='set_api_key'?true:undefined};
     await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result});
   }
   if(action!=='create_link')return json({ok:false,error:'UNSUPPORTED_ACTION'},400);
