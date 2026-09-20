@@ -1,0 +1,30 @@
+{
+  "fingerprint": "supabase|social-migration|production-ledger-identity|v1",
+  "obligation_id": "social-migration-production-identity-v1",
+  "compiler": {
+    "failure_class": "SCHEMA_DRIFT",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The merged Instagram/social publication migrations were deployed to Supabase after merge through the migration API, which registered production versions different from the pre-deploy repository timestamps. Terminal closure correctly rejected the mismatch.",
+  "prevention_rule": "Repository migration filenames must be reconciled to the exact versions recorded by the production Supabase migration ledger whenever the production migration authority assigns canonical versions. Terminal evidence remains fail-closed on version/name mismatch.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_migrations": [
+      "20260920073022_instagram_mira_visual_reel_only_v2",
+      "20260920073025_social_publication_authority_v1"
+    ],
+    "source_merge_pr": 2427,
+    "terminal_failure": "MIGRATION_LEDGER_IDENTITY_MISMATCH",
+    "canonicalization_test": "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs"
+  },
+  "outcome": {
+    "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  }
+}
