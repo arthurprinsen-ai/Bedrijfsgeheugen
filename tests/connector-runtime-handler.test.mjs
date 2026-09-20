@@ -18,6 +18,7 @@ function makeStore(){
     configured:true,calls:[],connector,executions,reviews,
     async resolveTenant(identity){this.calls.push(['resolveTenant',identity?.email]);return identity?.email==='member@example.nl'?'tenant-a':null;},
     async get(tenant,id){this.calls.push(['get',tenant,id]);return tenant==='tenant-a'&&id===connector.id?copy(connector):null;},
+    async getPlanRuntimePolicy(tenant){this.calls.push(['getPlanRuntimePolicy',tenant]);return tenant==='tenant-a'?{planCode:'scale',refreshMinutes:60}:null;},
     async saveDraft(tenant,draft){this.calls.push(['saveDraft',tenant,draft.state]);Object.assign(connector,copy(draft));return copy(connector);},
     async saveExecution(tenant,e){this.calls.push(['saveExecution',tenant,e.status]);const row={id:EXECUTION_ID,organisatie_id:tenant,connector_id:e.connectorId,connector_versie:e.connectorVersion,status:e.status,evidence:copy(e.evidence),dedupe_key:e.dedupeKey||null,fout:e.error||null};executions.set(EXECUTION_ID,row);return copy(row);},
     async getExecution(tenant,connectorId,id){this.calls.push(['getExecution',tenant,connectorId,id]);const row=executions.get(id);return row&&row.organisatie_id===tenant&&row.connector_id===connectorId?copy(row):null;},
