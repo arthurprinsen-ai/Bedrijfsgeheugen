@@ -111,6 +111,8 @@ test('production truth governance fails closed across PR, merge, deploy and live
   assert.equal(contract.productionTruth.netlifyReadyWithoutShaMatchIsLive, false);
   assert.equal(contract.productionTruth.exactMainToProductionShaMatchRequired, true);
   assert.equal(contract.productionTruth.liveReadbackRequired, true);
+  assert.equal(contract.productionTruth.sharedNetlifyRuntimeDeploymentRequired, true);
+  assert.deepEqual(contract.productionTruth.sharedNetlifyRuntimePrefixes, ['platform/api/','platform/saas/','platform/connectors/','platform/read-models/']);
   assert.deepEqual(contract.productionTruth.requiredLineage, [
     'source_pr', 'head_sha', 'delivery_pr', 'main_sha', 'netlify_deploy_id', 'netlify_commit_ref', 'live_readback',
   ]);
