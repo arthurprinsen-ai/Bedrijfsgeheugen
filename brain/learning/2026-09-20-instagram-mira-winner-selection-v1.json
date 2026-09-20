@@ -12,10 +12,10 @@
   "prevention_rule": "Exactly one immutable Instagram Mira daily winner is persisted before media generation. Media jobs, content artifacts, publish capabilities and social_posts must all carry the same recommendation_id and score_version. The media job winner format is authoritative for provider routing/readback normalization; a publish capability fails closed on any winner or format mismatch. Outcome evidence writes back to the same winner.",
   "evaluation": {
     "historical_replay": [
-      "tests/instagram-daily-winner-lineage-v1.test.mjs"
+      "tests/brain-instagram-mira-winner-selection-v1.test.mjs"
     ],
     "canary": [
-      "tests/instagram-daily-winner-lineage-v1.test.mjs",
+      "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
       "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs",
       "tests/social-learning-buffer-instagram-media-gate.test.mjs"
     ]
