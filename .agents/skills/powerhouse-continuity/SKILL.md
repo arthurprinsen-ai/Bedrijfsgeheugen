@@ -296,3 +296,21 @@ Every chat and agent treats GitHub runner capacity as a shared governed resource
 Fingerprint: `content|channel-semantic-isolation|personal-company|v1`.
 
 Channel identity is a hard eligibility invariant before recommendation scoring or creative generation. A personal-source recommendation may never become eligible for `linkedin_company`; the company lane rejects personal targets/personal-truth evidence and must materialize its measurable canonical campaign link before generation. `linkedin_personal` final copy must itself preserve a concrete first-person event and verified source anchors; metadata-only personal truth is insufficient. If either invariant fails, remain fail-closed and regenerate/recover within the same canonical lineage. Production proof for this control is recorded in `brain/evidence/2026-09-20-content-channel-semantic-isolation-v1-production.json`.
+
+
+## Terminal autonomous reconciliation
+
+Fingerprint: `terminal-autonomous-reconciler-v1`.
+
+Every chat, agent and runtime worker treats terminal control-plane health as a fail-closed invariant, not as a dashboard convenience.
+
+- `GREEN_STALE` is never terminal green; re-run the existing canonical production-truth reconciler.
+- An `ESCALATED` reconciliation job blocks overall control-plane health until it is resolved or has an evidenced hard boundary.
+- A stale `PLANNED` operation blocks health. Automatically requeue only internal work that is explicitly side-effect-free with `execution_resilience.side_effect_state=NOT_STARTED`; unknown/external side effects remain fail-closed.
+- Never auto-fulfil an obligation merely to obtain zero-open counts. Fulfilment requires actual outcome/readback evidence.
+- Production-project health and Supabase preview/branch migration health are separate signals; a preview `MIGRATIONS_FAILED` state must create/reconcile drift but must never cause destructive production rollback by inference.
+- A proven optimization at its configured safe lower bound is terminal/idempotent. Do not manufacture an impossible smaller challenger; `PROVEN_OPTIMIZATION_FLOOR_IS_TERMINAL_NO_OP`.
+- Material contradictions between evidence fields (for example blocker active while promotion + production readback are proven) are themselves defects and must remain visible until reconciled.
+- Reuse `public.powerhouse_terminal_control_plane_health_v1` and `public.powerhouse_terminal_autonomous_reconcile_v1`; do not create a second health truth or recovery scheduler.
+
+Canonical source: `brain/learning/2026-09-20-terminal-autonomous-reconciler-v1.json`.
