@@ -17,6 +17,9 @@ select
     and (select count(*) from public.brain_operations where status='PLANNED' and updated_at < now() - interval '15 minutes') = 0
   ) as control_plane_healthy;
 
+revoke all on public.powerhouse_terminal_control_plane_health_v1 from public, anon, authenticated;
+grant select on public.powerhouse_terminal_control_plane_health_v1 to service_role;
+
 create or replace function public.powerhouse_terminal_autonomous_reconcile_v1(
   p_now timestamptz default now()
 )
@@ -94,7 +97,7 @@ begin
 end
 $function$;
 
-revoke all on function public.powerhouse_terminal_autonomous_reconcile_v1(timestamptz) from public;
+revoke all on function public.powerhouse_terminal_autonomous_reconcile_v1(timestamptz) from public, anon, authenticated;
 grant execute on function public.powerhouse_terminal_autonomous_reconcile_v1(timestamptz) to service_role;
 
 do $$
