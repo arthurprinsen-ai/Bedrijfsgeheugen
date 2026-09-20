@@ -11,17 +11,18 @@
     "runtime_before": "18 required / 17 active; architecture RED",
     "runtime_after": "18 required / 18 active; architecture AMBER",
     "terminal_failure": "UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS:2384",
-    "canonicalization_test": "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs"
+    "canonicalization_test": "tests/brain-control-plane-supersession-migration-proof-v1.test.mjs"
   },
   "skill_targets": [
     "powerhouse-delivery-concurrency"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs"
+      "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs",
+      "tests/brain-control-plane-supersession-migration-proof-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs"
+      "tests/brain-control-plane-supersession-migration-proof-v1.test.mjs"
     ]
   }
 }
