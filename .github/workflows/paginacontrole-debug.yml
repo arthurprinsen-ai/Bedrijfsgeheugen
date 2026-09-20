@@ -44,7 +44,7 @@ jobs:
       - name: Production build — pricing rewrite
         run: BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
       - name: Production build — canonical policy + SEO enrichment
-        run: BG_PRICING_STAGE=normalize node tools/prijzen-uit-de-homepage.mjs
+        run: BG_PRICING_STAGE=all node tools/prijzen-uit-de-homepage.mjs
       - uses: actions/setup-python@v7
         with:
           python-version: '3.12'

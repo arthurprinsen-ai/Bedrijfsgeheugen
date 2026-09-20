@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "seo-diagnose-canonical-production-stage-v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "website",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The diagnostic workflow ran only the normalize stage of the canonical pricing/site pipeline before the legacy Python SEO audit. That skipped the pipeline's verify/finalization phase, so the audit could inspect an intermediate transformed estate rather than canonical final production output.",
+  "prevention": [
+    "SEO diagnostics must run the complete canonical production pipeline before legacy page/SEO auditing.",
+    "Regression coverage pins BG_PRICING_STAGE=all in the diagnostic workflow."
+  ],
+  "evidence": [
+    ".github/workflows/paginacontrole-debug.yml",
+    "tools/prijzen-uit-de-homepage.mjs",
+    "tests/brain-seo-diagnose-canonical-production-stage.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-diagnose-canonical-production-stage.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "website-release",
+    "seo-growth"
+  ],
+  "skill_projection_required": true
+}
