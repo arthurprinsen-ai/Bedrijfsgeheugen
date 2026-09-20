@@ -32,5 +32,8 @@
     "historical_replay": [
       "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "GENERIC_TEXT_CARD_BYPASSED_MIRA_ONLY_POLICY"
   }
 }
