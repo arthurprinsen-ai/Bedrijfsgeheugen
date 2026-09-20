@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "terminal-supabase-provider-runtime-false-positive-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_FALSE_POSITIVE",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Obligation terminal closure accepted website/current-main descendant proof for a Supabase Edge Function change. PR #2465 was therefore marked LIVE_BEWEZEN although the active powerhouse-social-publisher runtime still had RuntimeState/runtime_state.",
+  "prevention": [
+    "For every changed supabase/functions/<slug>/ path, require explicit active Supabase provider runtime readback before terminal success.",
+    "Keep Netlify/website release truth separate from Supabase Edge Function provider truth.",
+    "Require per-function provider version and runtime_sha256 evidence on the same PR lineage.",
+    "Treat missing provider evidence as recoverable incomplete state, never LIVE_BEWEZEN."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-supabase-provider-readback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-supabase-provider-readback.test.mjs"
+    ]
+  },
+  "evidence": [
+    ".github/workflows/obligation-terminal-closure.yml",
+    "tests/brain-terminal-supabase-provider-readback.test.mjs"
+  ],
+  "tests": [
+    "tests/brain-terminal-supabase-provider-readback.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "runtime-truth",
+    "supabase"
+  ],
+  "skill_projection_required": true,
+  "production_readback": "Pending protected merge and exact-main readback of the terminal-closure control plane."
+}
