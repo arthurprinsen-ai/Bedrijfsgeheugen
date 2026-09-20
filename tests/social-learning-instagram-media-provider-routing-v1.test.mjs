@@ -70,9 +70,8 @@ test('materialized provider asset cannot regress to waiting-provider-connection'
 });
 
 
-test('media router uses the frozen winner job format before recommendation metadata', async () => {
-  const router = await readFile('supabase/functions/powerhouse-instagram-media-router/index.ts', 'utf8');
-  const winnerMigration = await readFile('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql', 'utf8');
+test('media router uses the frozen winner job format before recommendation metadata', () => {
+  const winnerMigration = fs.readFileSync('supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql', 'utf8');
   assert.match(router, /inferType\(input\.postType,job\?\.post_type/);
   assert.match(router, /generation_evidence\?\.daily_winner_format/);
   assert.match(winnerMigration, /powerhouse_ensure_instagram_media_job_v1/);
