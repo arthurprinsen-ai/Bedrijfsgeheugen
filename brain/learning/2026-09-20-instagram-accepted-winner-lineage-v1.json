@@ -1,0 +1,30 @@
+{
+  "fingerprint": "instagram-accepted-winner-downstream-lineage-v1",
+  "date": "2026-09-20",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The daily winner selector correctly transitions the frozen Instagram recommendation to accepted, while the downstream orchestrator reused generic recommendation eligibility that only allowed suggested/empty status. The immutable winner was therefore rejected after successful selection and proof.",
+  "prevention": [
+    "A persisted daily winner is downstream-authoritative when recommendation_id matches the winner row, evidence.daily_winner=true, and status is suggested or accepted.",
+    "Generic non-winner recommendations remain restricted to suggested/empty status.",
+    "Never select a second Instagram winner to recover from downstream lifecycle-state mismatch."
+  ],
+  "evidence": {
+    "run_date": "2026-09-20",
+    "winner_recommendation_id": "50db782b-926f-4d3b-a2f4-2034b1767f3e",
+    "observed_status": "accepted",
+    "health_error": "select-pending:INSTAGRAM_DAILY_WINNER_LINEAGE_REQUIRED",
+    "media_job_status": "PROOF_VERIFIED"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-accepted-winner-lineage.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_VERIFIED_PENDING_PROTECTED_MERGE_AND_RUNTIME_READBACK"
+}
