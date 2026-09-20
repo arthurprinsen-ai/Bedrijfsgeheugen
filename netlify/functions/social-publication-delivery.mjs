@@ -143,13 +143,40 @@ export async function runSocialPublicationDelivery({ now = new Date() } = {}) {
   const context = await powerhouse('delivery_context', { date:local.date });
   const obligations = context.obligations || [];
   const artifacts = context.artifacts || [];
-  let posts = await getProviderPosts(local.date);
-  const ideas = await getIdeas();
-  const results = [];
 
+  // Provider-isolation contract: canonical publication runs before any Buffer read.
+  // Instagram/Composio must never be blocked by a LinkedIn/Buffer outage.
+  const canonical = await triggerCanonicalPublisher(local.date);
+  const canonicalByChannel = new Map((canonical?.results || []).map((item) => [item?.channel, item]));
+
+  let posts = [];
+  let ideas = [];
+  let bufferUnavailable = null;
+  try {
+    posts = await getProviderPosts(local.date);
+    ideas = await getIdeas();
+  } catch (error) {
+    bufferUnavailable = error?.message || String(error);
+  }
+
+  const results = [];
   for (const channel of REQUIRED_CHANNELS) {
     const obligation = obligations.find((x) => x.channel === channel);
     if (!obligation) { results.push({ channel, action:'BLOCK', reason:'OBLIGATION_REQUIRED' }); continue; }
+
+    const canonicalChannel = channel === 'instagram' ? 'instagram_company' : channel;
+    const canonicalResult = canonicalByChannel.get(canonicalChannel) || null;
+
+    if (channel === 'instagram') {
+      results.push({ channel, action:'DELEGATED_TO_CANONICAL_PUBLISHER', canonical:canonicalResult, buffer_independent:true });
+      continue;
+    }
+
+    if (bufferUnavailable) {
+      results.push({ channel, action:'DEFERRED_PROVIDER_UNAVAILABLE', reason:bufferUnavailable, canonical:canonicalResult });
+      continue;
+    }
+
     const channelPosts = posts.filter((x) => x.channelId === CHANNELS[channel]);
     const artifact = artifacts.find((x) => x.channel === channel) || null;
     const idea = channel === 'linkedin_company' ? ideaForCompany(ideas, local.date) : null;
@@ -169,12 +196,10 @@ export async function runSocialPublicationDelivery({ now = new Date() } = {}) {
       continue;
     }
 
-    const canonical = await triggerCanonicalPublisher(local.date);
-    const canonicalChannel = channel === 'instagram' ? 'instagram_company' : channel;
-    const canonicalResult = (canonical?.results || []).find((item) => item?.channel === canonicalChannel) || null;
-    posts = await getProviderPosts(local.date);
-    if (channel === 'instagram') {
-      results.push({ channel, action:'DELEGATED_TO_CANONICAL_PUBLISHER', canonical:canonicalResult });
+    try {
+      posts = await getProviderPosts(local.date);
+    } catch (error) {
+      results.push({ channel, action:'DEFERRED_PROVIDER_UNAVAILABLE', reason:error?.message || String(error), canonical:canonicalResult });
       continue;
     }
     const readback = posts
@@ -184,7 +209,7 @@ export async function runSocialPublicationDelivery({ now = new Date() } = {}) {
     if (channel === 'linkedin_personal' && normalizeText(readback.text) !== normalizeText(decision.source.text)) throw new Error('PERSONAL_PROVIDER_TEXT_MISMATCH');
     results.push({ channel, action:'DELEGATED_TO_CANONICAL_PUBLISHER', providerId:readback.id, providerStatus:readback.status, canonical:canonicalResult });
   }
-  return { ok:true, date:local.date, results };
+  return { ok:true, date:local.date, results, bufferUnavailable };
 }
 
 export default async function handler() {
