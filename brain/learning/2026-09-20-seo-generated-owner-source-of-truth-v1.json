@@ -9,17 +9,21 @@
     "machine_enforceable": true,
     "repeat_count": 1
   },
-  "root_cause": "Four high-severity SEO ownership findings survived because V18 production generators rewrote page titles and explicit bg keyword ownership from stale tools/zoekwoorden.mjs and V18 view metadata after source HTML had been corrected.",
+  "root_cause": "Four high-severity SEO ownership findings survived because V18 production generators rewrote page titles and explicit bg keyword ownership from stale tools/zoekwoorden.mjs and V18 view metadata after source HTML had been corrected. The recovery also exposed two delivery-governance gaps: tools/zoekwoorden.mjs was initially unclassified, and Supersedes pointed at #2504 from a different obligation instead of the immediate same-obligation predecessor #2509.",
   "prevention": [
     "Generated routes must derive keyword ownership and title overrides from the same canonical SEO registry semantics as the audit.",
     "V18 view metadata must not carry conflicting legacy keyword ownership for routes also governed by tools/zoekwoorden.mjs.",
-    "Regression coverage must pin generator-level ownership for /blog/, /investeerders-ma, /product and /systemen-koppelen."
+    "Regression coverage must pin generator-level ownership for /blog/, /investeerders-ma, /product and /systemen-koppelen.",
+    "Website generator inputs such as tools/zoekwoorden.mjs must be explicitly classified in the website lane.",
+    "Supersedes must point to the immediate predecessor in the same obligation lineage."
   ],
   "evidence": [
     "tools/zoekwoorden.mjs",
     "tools/v18-views-lijst.mjs",
     "tests/brain-seo-generated-owner-source-of-truth.test.mjs",
-    "Pagina/SEO diagnose run 35533314225"
+    "Pagina/SEO diagnose run 35533314225",
+    "config/brain-delivery-system.json",
+    "PR #2509 admission state BLOCKED_LINEAGE_AMBIGUOUS"
   ],
   "evaluation": {
     "historical_replay": [

@@ -7,3 +7,5 @@
 - Change: align generated ownership for `/blog/`, `/investeerders-ma`, `/product`, `/systemen-koppelen` with canonical registry semantics and remove conflicting V18 view ownership.
 - Expected outcome: 0 high-severity SEO findings after production build.
 - State: candidate pending exact-head gates, protected merge and production/main readback.
+
+- Delivery recovery: classify `tools/zoekwoorden.mjs` as website; #2509 merged but admission was blocked by cross-obligation `Supersedes: 2504`. Terminal recovery must supersede #2509 within the same obligation.
