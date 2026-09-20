@@ -1,0 +1,35 @@
+{
+  "fingerprint": "instagram-reel-proof-runtime-drift-v1",
+  "date": "2026-09-20",
+  "scope": "instagram_mira_reel_delivery",
+  "root_causes": [
+    {
+      "code": "REEL_AGGREGATE_PROOF_FIELDS_DROPPED",
+      "detail": "Frame-level vision evidence contained central-subject/template/text checks, but the router aggregate omitted them. The DB validator correctly rejected PROOF_VERIFIED writeback."
+    },
+    {
+      "code": "EDGE_RUNTIME_CODE_DRIFT",
+      "detail": "Supabase powerhouse-instagram-media-verifier runtime lagged GitHub main and did not return the newer strict visual fields, causing aggregate proof to evaluate mira_central_subject=false despite otherwise successful frame checks."
+    },
+    {
+      "code": "ORCHESTRATOR_PENDING_SELECTION_RUNTIME_FAILURE",
+      "detail": "The orchestrator select-pending client path using limit(1).maybeSingle() failed while equivalent SQL returned one row. Pending selection is hardened to limit(1) plus first-row extraction."
+    }
+  ],
+  "prevention": [
+    "Aggregate Reel proof must preserve mira_central_subject, text_dominant and brand_template_dominant from every verified frame.",
+    "Production Edge Function runtime identity must be compared against canonical GitHub main before terminal publication claims.",
+    "A successful proof write must be followed by media-job and obligation readback; partial evidence is not terminal delivery.",
+    "Pending queue selectors must tolerate one-row arrays and must not rely on maybeSingle when the runtime path has shown instability."
+  ],
+  "evidence": {
+    "winner_recommendation_id": "50db782b-926f-4d3b-a2f4-2034b1767f3e",
+    "winner_score_version": "instagram-mira-daily-winner-score-v1",
+    "openart_history_id": "Lhq1tVxofFM14AFBXRVq",
+    "final_media_sha256": "ccf287a1ecdc05671f803e8285973e52012b9788599a7ea7d4e592f5a12feff7",
+    "router_proof_fingerprint": "instagram-router-proof:2026-09-20:ccf287a1ecdc05671f803e8285973e52012b9788599a7ea7d4e592f5a12feff7",
+    "router_runtime_version_after_fix": 9,
+    "verifier_runtime_version_after_reconcile": 4
+  },
+  "status": "CANDIDATE_VERIFIED_PENDING_PROTECTED_MERGE_AND_PUBLICATION_READBACK"
+}
