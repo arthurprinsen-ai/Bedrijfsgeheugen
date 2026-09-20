@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "personal-linkedin-personal-life-only-v1",
+  "compiler": {
+    "failure_class": "PERSONAL_CHANNEL_BUSINESS_SCOPE_LEAK"
+  },
+  "root_cause": "The existing semantic personal LinkedIn gate still retained an exact-content business exception and did not require a machine-readable personal_life_only/business_bridge source contract, leaving a path for business topics to enter a personal-profile candidate before final-copy rejection.",
+  "prevention": [
+    "Personal LinkedIn is personal-life-only with no business exception.",
+    "Require personal_life_only=true and business_bridge=false at source eligibility.",
+    "Inspect final text independently and block all business/company/consultancy/organizational signals.",
+    "Route business themes to linkedin_company; never disguise them as personal anecdotes.",
+    "Keep personal-profile learning separate from company/commercial ranking."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs"
+    ]
+  },
+  "evidence": [
+    "config/social-channel-identity-contract.json",
+    "platform/social-channel-identity-gate.mjs",
+    "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "supabase/functions/bg-pre-publish-review/index.ts",
+    ".agents/skills/linkedin-personal-life-only/SKILL.md"
+  ],
+  "tests": [
+    "tests/brain-linkedin-personal-semantic-gate-v5.test.mjs"
+  ],
+  "skill_targets": [
+    "content",
+    "social",
+    "linkedin-personal"
+  ]
+}
