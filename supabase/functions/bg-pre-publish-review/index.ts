@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const PARENT_CONTRACT = 'channel-identity-hard-gate-v3';
-const PERSONAL_CONTRACT = 'arthur-personal-linkedin-identity-v4';
+const PERSONAL_CONTRACT = 'arthur-personal-linkedin-personal-life-only-v5';
 const PERSONAL_CHANNEL = '6a70381699afb44349f0fb35';
 const COMPANY_CHANNEL = '6a70381699afb44349f0fb36';
 const INSTAGRAM_CHANNEL = '6a70384d99afb44349f0fba9';
@@ -52,8 +52,10 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(body.arthur_anchor_verified === true, 'ARTHUR_ANCHOR_UNVERIFIED', 'Een geverifieerd Arthur-anker is verplicht.');
   require(body.first_person_claims_verified === true, 'FIRST_PERSON_CLAIMS_UNVERIFIED', 'Eerste-persoonsclaims zijn niet geverifieerd.');
   require(body.personal_life_topic === true, 'PERSONAL_LIFE_TOPIC_REQUIRED', 'Persoonlijk onderwerp is niet bewezen.');
+  require(body.personal_life_only === true, 'PERSONAL_LIFE_ONLY_REQUIRED', 'Persoonlijk LinkedIn mag uitsluitend over het persoonlijke leven gaan.');
   require(concretePersonalLifeSignal(text), 'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED', 'De uiteindelijke tekst moet zelf een concrete persoonlijke gebeurtenis of dagelijkse ervaring bevatten; metadata alleen is onvoldoende.');
   require(body.business_topic === false, 'BUSINESS_TOPIC_DEFAULT_BLOCK', 'Zakelijk onderwerp is geblokkeerd op Arthur persoonlijk.');
+  require(body.business_bridge === false, 'BUSINESS_BRIDGE_BLOCKED', 'Een brug van persoonlijk leven naar een zakelijke les of bedrijf is geblokkeerd.');
   require(body.corporate_voice === false, 'CORPORATE_VOICE_BLOCKED', 'Corporate/consultantstem is geblokkeerd.');
   require(body.company_page_interchangeable === false, 'COMPANY_PAGE_INTERCHANGEABLE_BLOCKED', 'Tekst mag niet uitwisselbaar zijn met de bedrijfspagina.');
   require(body.forced_business_moral === false, 'FORCED_BUSINESS_MORAL_BLOCKED', 'Geforceerde businessmoraal is geblokkeerd.');
