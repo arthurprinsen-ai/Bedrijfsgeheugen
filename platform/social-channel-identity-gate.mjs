@@ -42,7 +42,8 @@ export function authorizeSocialPublication(input={}){
   if(channel?.requiresMiraGate&&input.miraGatePassed!==true) reasons.push('MIRA_GATE_REQUIRED');
   if(channel?.requiresContentPersona&&String(input.contentPersona||'').toLowerCase()!==String(channel.requiresContentPersona).toLowerCase()) reasons.push('INSTAGRAM_MIRA_PERSONA_REQUIRED');
   if(Array.isArray(channel?.allowedContentClasses)&&!channel.allowedContentClasses.includes(input.contentClass)) reasons.push('INSTAGRAM_MIRA_CONTENT_CLASS_REQUIRED');
-  const visual=input.instagramVisual,mediaKind=input.mediaKind||'image',policy=channel?.mediaPolicy||{};
+  const visual=input.instagramVisual,mediaKind=String(input.mediaKind||'').toLowerCase(),policy=channel?.mediaPolicy||{};
+  if(mediaKind!=='reel') reasons.push('INSTAGRAM_REEL_REQUIRED');
   if(Array.isArray(policy.allowedKinds)&&!policy.allowedKinds.includes(mediaKind)) reasons.push('INSTAGRAM_MEDIA_KIND_BLOCKED');
   if(channel?.requiresVisibleMira&&visual?.miraPresent!==true) reasons.push('INSTAGRAM_VISIBLE_MIRA_REQUIRED');
   if(channel?.blocksGenericBrandCreative&&visual?.genericBrandCreative!==false) reasons.push('INSTAGRAM_GENERIC_BRAND_CREATIVE_BLOCKED');
@@ -56,16 +57,7 @@ export function authorizeSocialPublication(input={}){
   if(visual?.identityClass!=='mira_daily_life') reasons.push('INSTAGRAM_MIRA_VISUAL_REQUIRED');
   if(has(input.assetUrl)&&has(visual?.assetUrl)&&visual.assetUrl!==input.assetUrl) reasons.push('INSTAGRAM_FINAL_ASSET_MISMATCH');
   if((policy.requiresVerifiedPublishFormatFor||[]).includes(mediaKind)&&visual?.formatVerified!==true) reasons.push('INSTAGRAM_MEDIA_FORMAT_UNVERIFIED');
-  if(mediaKind==='image'){
-   if(visual?.width!==policy.requiredImageWidth||visual?.height!==policy.requiredImageHeight) reasons.push('INSTAGRAM_IMAGE_DIMENSIONS_REQUIRED');
-   if(input.assetMimeType!==policy.requiredImageMimeType) reasons.push('INSTAGRAM_IMAGE_JPEG_REQUIRED');
-   if(visual?.colorSpace!==policy.requiredImageColorSpace) reasons.push('INSTAGRAM_IMAGE_RGB_REQUIRED');
-   if(policy.requiresImageWithoutAlpha&&visual?.hasAlpha!==false) reasons.push('INSTAGRAM_IMAGE_ALPHA_BLOCKED');
-   if(policy.requiresCompleteImageDecode&&visual?.decodeComplete!==true) reasons.push('INSTAGRAM_IMAGE_DECODE_INCOMPLETE');
-   if(policy.requiresVisualCompleteness&&visual?.visualComplete!==true) reasons.push('INSTAGRAM_IMAGE_VISUAL_INCOMPLETE');
-   if(policy.blocksGrayOrEmptyImage&&visual?.grayOrEmptyDetected!==false) reasons.push('INSTAGRAM_IMAGE_GRAY_OR_EMPTY_BLOCKED');
-  }
-  if(mediaKind==='video'||mediaKind==='reel'){
+  if(mediaKind==='reel'){
    const required=policy.requiredVideoFramePositions||['start','middle','end'];
    const frames=Array.isArray(visual?.frameEvidence)?visual.frameEvidence:[];
    const complete=required.every(position=>frames.some(frame=>frame?.position===position&&frame?.verified===true&&refs(frame).length>0));
