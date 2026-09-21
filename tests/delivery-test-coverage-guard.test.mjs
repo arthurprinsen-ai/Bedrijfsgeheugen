@@ -1,35 +1,39 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readdirSync, readFileSync } from 'node:fs';
+import { execFileSync } from 'node:child_process';
 
 /**
  * Deze bewaking bestaat om één stil probleem zichtbaar te houden.
  *
  * CI draait niet `node --test tests/`, maar per lane een expliciete lijst met
- * testbestanden. Een testbestand dat in geen enkele workflow genoemd wordt,
- * draait dus nooit — het staat er, het lijkt bewaking, en het bewaakt niets.
- * Op 10 september 2026 gold dat voor 46 van de 429 testbestanden, waarvan er
- * twaalf rood stonden zonder dat iemand dat kon zien.
+ * testbestanden. Een GECOMMIT testbestand dat in geen enkele workflow genoemd
+ * wordt, draait dus nooit — het staat er, het lijkt bewaking, en het bewaakt niets.
  *
- * Zodra je een nieuw testbestand toevoegt, moet je het ook aan een lane
- * toevoegen (.github/workflows/lane-*.yml of required-test.yml). Vergeet je
- * dat, dan faalt deze test.
+ * Alleen Git-tracked testbestanden tellen als canonieke CI-verplichting.
+ * Tijdelijke fixtures die een parallelle test onder tests/ aanmaakt, mogen deze
+ * guard niet nondeterministisch rood maken.
  */
 
 const WORKFLOW_DIR = '.github/workflows';
 const TEST_DIRS = ['tests', 'portal-v2/tests'];
 
-/**
- * Testbestanden die bewust nog niet in CI hangen omdat ze op dit moment rood
- * staan. Ze zijn hier geregistreerd zodat ze zichtbaar zijn in plaats van
- * onzichtbaar. Deze lijst hoort korter te worden, nooit langer.
- */
 const BEKEND_ROOD = Object.freeze({
   'tests/social-learning-evaluate.test.mjs': 'bij commerciele tegenspraak schrijft de evaluator helemaal geen learning weg; de test verwacht een niet-PROVEN learning op effectMetric revenue'
 });
 
+function trackedTestFiles() {
+  const raw = execFileSync(
+    'git',
+    ['ls-files', '-z', '--', 'tests/*.test.mjs', 'portal-v2/tests/*.test.mjs'],
+    { encoding: 'utf8' }
+  );
+  return raw.split('\0').map(value => value.trim()).filter(Boolean).sort();
+}
+
 function referencedTestFiles() {
   const referenced = new Set();
+  const tracked = trackedTestFiles();
   for (const file of readdirSync(WORKFLOW_DIR)) {
     if (!file.endsWith('.yml') && !file.endsWith('.yaml')) continue;
     const source = readFileSync(`${WORKFLOW_DIR}/${file}`, 'utf8');
@@ -37,25 +41,29 @@ function referencedTestFiles() {
       const pattern = match[0];
       if (!pattern.includes('*')) { referenced.add(pattern); continue; }
       const regex = new RegExp(`^${pattern.replace(/[.]/g, '\\.').replace(/\//g, '\\/').replace(/\*/g, '[A-Za-z0-9_.-]*')}$`);
-      for (const candidate of allTestFiles()) if (regex.test(candidate)) referenced.add(candidate);
+      for (const candidate of tracked) if (regex.test(candidate)) referenced.add(candidate);
     }
   }
   return referenced;
 }
 
 function allTestFiles() {
-  return TEST_DIRS.flatMap(dir =>
-    readdirSync(dir).filter(name => name.endsWith('.test.mjs')).map(name => `${dir}/${name}`));
+  return trackedTestFiles();
 }
 
-test('elk testbestand wordt door minstens één workflow gedraaid', () => {
+test('elk gecommit testbestand wordt door minstens één workflow gedraaid', () => {
   const referenced = referencedTestFiles();
   const orphans = allTestFiles().filter(file => !referenced.has(file) && !(file in BEKEND_ROOD));
   assert.deepEqual(
     orphans, [],
-    `deze testbestanden draaien nergens in CI en bewaken dus niets:\n  ${orphans.join('\n  ')}\n` +
+    `deze gecommitte testbestanden draaien nergens in CI en bewaken dus niets:\n  ${orphans.join('\n  ')}\n` +
     'Voeg ze toe aan een lane in .github/workflows/, of zet ze met een reden in BEKEND_ROOD.'
   );
+});
+
+test('tijdelijke niet-gecommit testfixtures creëren geen CI coverage-verplichting', () => {
+  const tracked = new Set(allTestFiles());
+  assert.equal(tracked.has('tests/terminal-obligation-boundary.test.mjs'), false);
 });
 
 test('de lijst met bekend rode tests bevat geen bestanden die inmiddels wel draaien', () => {
