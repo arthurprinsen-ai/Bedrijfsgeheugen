@@ -1,0 +1,50 @@
+{
+  "fingerprint": "instagram-daily-mira-provider-isolation-v1",
+  "date": "2026-09-21",
+  "type": "PROVIDER_DELIVERY_RELIABILITY",
+  "failure_class": "INSTAGRAM_DAILY_DELIVERY_PROVIDER_CROSSOVER_AND_RETRY_STORM",
+  "scope": "INSTAGRAM_DAILY_MIRA_DELIVERY",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Three independent defects combined: non-Buffer Instagram provider IDs were passed through Buffer reconciliation, Buffer sync kept calling during an active 24h rate-limit window, and the Instagram media router incremented attempts on every identical preflight blocker. In addition, Powerhouse had no valid COMPOSIO_API_KEY, so the daily autonomous route could not use the direct Instagram transport.",
+  "prevention_rule": "Instagram provider identity is isolated by provider ownership; Buffer calls are forbidden while the canonical circuit is open; identical replacement blockers do not increment attempts; the exact proven Mira Reel is reused across recovery; Composio remains primary and Buffer is a bounded secondary transport only when its circuit is closed. Non-Mira content, image fallback, second-winner generation, duplicate publication and Make are forbidden.",
+  "enforcement": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "supabase/functions/powerhouse-instagram-media-router/index.ts",
+    "supabase/functions/bg-buffer-sync/index.ts",
+    "config/powerhouse-quality-surface-contracts.json",
+    "platform/system-map/canonical-system-map.mjs",
+    "tests/brain-instagram-composio-auth-preflight.test.mjs",
+    "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
+  "evidence": [
+    "Buffer create mutation returned RATE_LIMIT_EXCEEDED with 24h window on 2026-09-21",
+    "Powerhouse Composio runtime status had no valid API key / active account",
+    "media job reached attempts=162 before retry-stability fix",
+    "powerhouse-social-publisher production v31",
+    "powerhouse-instagram-media-router production v11",
+    "bg-buffer-sync production v9",
+    "PR #2525 exact-head CI"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-auth-preflight.test.mjs",
+      "tests/brain-instagram-buffer-independent-resume.test.mjs",
+      "tests/brain-instagram-mira-reel-only-v3.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-composio-auth-preflight.test.mjs",
+      "tests/brain-instagram-buffer-independent-resume.test.mjs"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after exact-head required gates, protected merge, exact production source/readback and provider delivery evidence.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
