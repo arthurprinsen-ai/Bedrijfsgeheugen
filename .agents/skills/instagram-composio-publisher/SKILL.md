@@ -172,11 +172,11 @@ Fingerprint: `instagram-prepublish-business-rule-scope-v1`.
 Instagram Mira must not inherit generic company-page rules such as mandatory Bedrijfsgeheugen tracking links, business CTAs or a forced business moral. Generic business-rule evaluation is scoped to `linkedin_company` only. Instagram remains fail-closed on its dedicated Mira identity, exact-final-media, dimensions, provider, final-asset, dedupe and publication-authority gates.
 
 
-## Composio auth preflight
+## Instagram transport preflight and bounded fallback
 
-Fingerprint: `instagram-composio-auth-preflight-v1`.
+Fingerprint: `instagram-daily-mira-provider-isolation-v1`.
 
-Before an Instagram publication claim or publication-capability issue, verify that the canonical `COMPOSIO_API_KEY` exists. If it is absent, keep the decision recoverable at `content_ready`, record `COMPOSIO_INSTAGRAM_AUTH_REQUIRED`, and do not issue/consume a publication capability or touch any provider. Never switch to another transport implicitly.
+Before an Instagram publication claim or publication-capability issue, verify canonical Composio auth and the Buffer circuit state. Composio remains the primary transport. If Composio auth is unavailable while the Buffer circuit is open, keep the same proven Mira Reel recoverable at `content_ready` and perform no provider mutation. If Composio auth is unavailable and the Buffer circuit is closed, Buffer may be used only as the explicitly governed secondary Instagram transport through the same canonical publisher, exact-media proof, Mira Reel-only gate, one-time publication capability, atomic claim, dedupe and provider readback. A 429 reopens the circuit and reuses the exact same proven asset after cooldown. Never regenerate to escape a transport failure and never use Make.
 
 
 ## Composio Instagram bootstrap
@@ -240,3 +240,14 @@ Hard invariants:
 
 No Mira or not a Reel means no Instagram publication.
 
+
+
+## Daily Mira provider isolation and retry stability (2026-09-21)
+
+Fingerprint: `instagram-daily-mira-provider-isolation-v1`.
+
+- Never send a non-Buffer Instagram external id through Buffer reconciliation or containment. Provider ownership is authoritative.
+- Buffer sync must read the canonical rate-limit circuit first and perform zero Buffer calls while `retry_at` is in the future.
+- The same unresolved replacement/external-id blocker is one state, not a new attempt on every preflight. Increment retry/attempt lineage only when the blocker identity or provider state changes.
+- Preserve and reuse the exact generated Mira Reel across auth/rate-limit recovery. No non-Mira content, image fallback, second winner or duplicate publication.
+- Composio primary and bounded Buffer fallback are both subordinate to the same central publication authority and Mira Reel proof.
