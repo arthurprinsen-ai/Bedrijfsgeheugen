@@ -100,6 +100,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-meta-instagram-setup",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-meta-instagram-setup/index.ts",
+      "evidence_contract": "tests/brain-instagram-meta-direct-config.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-runtime",
       "type": "function",
       "authority": "supabase/functions/powerhouse-runtime/index.ts",
@@ -212,6 +219,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:powerhouse-meta-instagram-config",
+      "type": "netlify_function",
+      "authority": "netlify/functions/powerhouse-meta-instagram-config.mjs",
+      "evidence_contract": "tests/brain-instagram-meta-direct-config.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:powerhouse-observability",
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-observability.mjs",
@@ -268,17 +282,17 @@
       "required": true
     },
     {
-      "id": "rpc:bg_geheim",
-      "type": "rpc",
-      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
-      "required": true
-    },
-    {
       "id": "rpc:bg_content_lessen",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
       "evidence_contract": "tests/brain-instagram-direct-social-ingest.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:bg_geheim",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
       "required": true
     },
     {
@@ -405,6 +419,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260920111000_admin_composio_key_onboarding.sql",
       "evidence_contract": "tests/brain-admin-composio-key-onboarding.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_set_meta_instagram_credentials_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260921121500_meta_instagram_direct_credentials.sql",
+      "evidence_contract": "tests/brain-instagram-meta-direct-config.test.mjs",
       "required": true
     },
     {
