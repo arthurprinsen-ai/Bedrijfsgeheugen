@@ -199,6 +199,11 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
   const results: any[] = [];
   for (const row of rows || []) {
     const obligation: any = obligationByChannel.get(obligationChannels[row.channel]) || null;
+    const declaredProvider = clean(row.delivery_evidence?.provider || obligation?.evidence?.provider).toLowerCase();
+    if (row.channel === 'instagram_company' && declaredProvider && declaredProvider !== 'buffer') {
+      results.push({ channel: row.channel, post_id: clean(row.delivery_ref) || clean(obligation?.external_id), state: row.state, reason: 'NON_BUFFER_INSTAGRAM_PROVIDER_OWNED', provider: declaredProvider, provider_truth_verified: row.delivery_evidence?.provider_truth_verified === true || obligation?.evidence?.provider_truth_verified === true });
+      continue;
+    }
     const ref = clean(row.delivery_ref) || clean(obligation?.external_id);
     if (!ref) continue;
     const lineageRecovered = !clean(row.delivery_ref) && !!ref;
@@ -246,6 +251,11 @@ async function containmentSweepInstagram(db:any,token:string){
   const out:any[]=[];
   for(const row of rows||[]){
     const ref=clean(row.delivery_ref);if(!ref)continue;
+    const declaredProvider=clean(row.delivery_evidence?.provider).toLowerCase();
+    if(declaredProvider && declaredProvider!=='buffer'){
+      out.push({run_date:row.run_date,post_id:ref,containment:'SKIPPED_NON_BUFFER_PROVIDER',provider:declaredProvider});
+      continue;
+    }
     const provider=await getPost(token,ref);if(!provider)continue;
     const status=clean(provider.status).toLowerCase();
     if(instagramIdentityProven(row.delivery_evidence||{}))continue;
