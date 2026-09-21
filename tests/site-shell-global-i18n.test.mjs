@@ -14,6 +14,11 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/batches/);
   assert.match(runtime,/meta\[name="description"\]/);
   assert.match(runtime,/\/api\/i18n-translate/);
+  assert.match(runtime,/data-bg-language-switcher/);
+  assert.match(runtime,/bgSharedMobileNav|data-bg-shared-mobile-view/);
+  assert.doesNotMatch(fs.readFileSync('assets/i18n.css','utf8'),/position:\s*fixed/);
+  assert.match(runtime,/batch\.length >= 30/);
+  assert.match(fs.readFileSync('netlify\/functions\/_brain-ai.mjs','utf8'),/maxTokens:4000/);
   assert.match(injector,/\.html/);
   assert.match(fn,/runTranslation/);
 });
