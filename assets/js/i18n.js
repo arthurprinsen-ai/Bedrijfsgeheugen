@@ -15,8 +15,23 @@
 
   const cssEscape = value => String(value).replace(/"/g, '&quot;');
   const normalizeLocale = value => String(value || '').toLowerCase().split('-')[0];
-  const isPortal = () => location.pathname.startsWith('/portal') || location.pathname.startsWith('/klantportaal');
+  const isPortal = () => {
+    const pathname = location.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
+    return pathname.startsWith('/portal') || pathname.startsWith('/klantportaal');
+  };
   const context = () => isPortal() ? 'portal' : 'public';
+  const pathLocale = () => {
+    const match = location.pathname.match(/^\/(nl|en)(?:\/|$)/i);
+    if (match) return normalizeLocale(match[1]);
+    const marker = normalizeLocale(document.documentElement.dataset.bgStaticLocale || document.querySelector('meta[name="bg-static-locale"]')?.content);
+    return SUPPORTED.has(marker) ? marker : null;
+  };
+  const localizedHref = target => {
+    const normalized = normalizeLocale(target);
+    const stripped = location.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
+    const pathname = '/' + normalized + (stripped === '/' ? '/' : stripped);
+    return pathname.replace(/\/+/g,'/') + location.search + location.hash;
+  };
 
   const CORE_EN = new Map([
     ['Ontdekken','Discover'],['Oplossingen','Solutions'],['Platform','Platform'],['Prijzen','Pricing'],['Cases','Cases'],
@@ -50,6 +65,8 @@
   function cacheId(target,source) { return target + '|' + source; }
 
   function preferredLocale() {
+    const routed = pathLocale();
+    if (routed) return routed;
     try {
       const stored = normalizeLocale(localStorage.getItem(STORAGE_KEY));
       if (SUPPORTED.has(stored)) return stored;
@@ -283,30 +300,23 @@
 
   async function setLocale(next) {
     const normalized = normalizeLocale(next);
-    if (!SUPPORTED.has(normalized) || normalized === locale) { closeMenus(); return; }
-    const previous = locale;
-    const previousEpoch = localeEpoch;
-    locale = normalized;
-    localeEpoch += 1;
-    document.documentElement.dataset.bgI18nBusy = 'true';
-    delete document.documentElement.dataset.bgI18nError;
-    closeMenus();
-    try {
-      await apply(document.body);
-      try { localStorage.setItem(STORAGE_KEY, locale); } catch {}
-      document.cookie = 'bg_locale=' + encodeURIComponent(locale) + '; Path=/; Max-Age=31536000; SameSite=Lax';
-      syncControls();
-      document.dispatchEvent(new CustomEvent('bg:localechange',{detail:{locale}}));
-    } catch (error) {
-      locale = previous;
-      localeEpoch = previousEpoch + 1;
-      await apply(document.body).catch(()=>{});
-      document.documentElement.dataset.bgI18nError = 'true';
-      syncControls();
-      throw error;
-    } finally {
-      delete document.documentElement.dataset.bgI18nBusy;
+    if (!SUPPORTED.has(normalized)) { closeMenus(); return; }
+    const routed = pathLocale();
+    if (routed) {
+      if (normalized === routed) { closeMenus(); return; }
+      try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
+      document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+      location.assign(localizedHref(normalized));
+      return;
     }
+    if (normalized !== locale) {
+      try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
+      document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+      location.assign(localizedHref(normalized));
+      return;
+    }
+    closeMenus();
+    return;
   }
 
   function closeMenus() {
@@ -409,18 +419,34 @@
       }
       if (!roots.size) return;
       mountControl();
-      if (locale !== 'en') return;
+      if (locale !== 'en' || pathLocale() !== 'en') return;
       clearTimeout(mutationTimer);
-      mutationTimer = setTimeout(()=>apply(document.body).catch(()=>{}), 40);
+      mutationTimer = setTimeout(()=>{
+        for (const root of roots) apply(root).catch(()=>{});
+      },40);
     });
     observer.observe(document.body,{subtree:true,childList:true});
   }
 
   async function init() {
+    const routed = pathLocale();
     locale = preferredLocale();
     bindControlEvents();
     mountControl();
-    await apply(document.body).catch(()=>{ syncControls(); showLocaleError(); });
+    document.documentElement.lang = locale;
+    document.documentElement.dataset.bgLocale = locale;
+    syncControls();
+
+    if (!routed && locale === 'en') {
+      location.replace(localizedHref('en'));
+      return;
+    }
+
+    // Static /nl and /en routes already contain translated document copy.
+    // Runtime translation remains only for content inserted dynamically after load.
+    if (!routed) {
+      await apply(document.body).catch(()=>{ syncControls(); showLocaleError(); });
+    }
     startObserver();
   }
 
