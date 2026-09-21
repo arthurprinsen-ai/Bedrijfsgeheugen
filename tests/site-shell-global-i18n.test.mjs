@@ -21,10 +21,12 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/batch\.length >= 20/);
   assert.match(runtime,/mountControl\(\)/);
   const brain = fs.readFileSync('netlify/functions/_brain-ai.mjs','utf8');
-  assert.match(brain,/maxTokens:4000/);
+  assert.match(brain,/claude-haiku-4-5-20251001/);
+  assert.match(brain,/maxTokens:2600/);
   assert.match(brain,/firstBracket/);
   assert.match(brain,/fenced/);
-  assert.match(runtime,/successfully translated batches/);
+  assert.match(runtime,/translation_unavailable/);
+  assert.match(runtime,/requestPart/);
   assert.doesNotMatch(runtime,/locale = previous;\s*try \{ localStorage\.setItem\(STORAGE_KEY, locale\)/);
   assert.match(injector,/\.html/);
   assert.match(injector,/v18-mobile-drawer/);
