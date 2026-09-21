@@ -110,7 +110,7 @@
       "id": "function:powerhouse-social-publisher",
       "type": "function",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/brain-instagram-direct-social-ingest.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
       "required": true
     },
     {
@@ -271,7 +271,7 @@
       "id": "rpc:bg_geheim",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/brain-instagram-direct-social-ingest.test.mjs",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
       "required": true
     },
     {
@@ -348,7 +348,7 @@
       "id": "rpc:powerhouse_consume_social_publish_capability_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
-      "evidence_contract": "tests/brain-instagram-direct-social-ingest.test.mjs",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
       "required": true
     },
     {
@@ -369,7 +369,7 @@
       "id": "rpc:powerhouse_issue_social_publish_capability_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
-      "evidence_contract": "tests/brain-instagram-direct-social-ingest.test.mjs",
+      "evidence_contract": "tests/brain-central-social-publication-authority-v1.test.mjs",
       "required": true
     },
     {
@@ -425,7 +425,7 @@
       "id": "rpc:record_content_publication_state",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/brain-instagram-direct-social-ingest.test.mjs",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
       "required": true
     },
     {
