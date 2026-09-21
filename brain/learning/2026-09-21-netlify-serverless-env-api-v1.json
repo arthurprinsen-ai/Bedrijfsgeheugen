@@ -1,0 +1,35 @@
+{
+  "fingerprint": "netlify-serverless-env-api-v1",
+  "date": "2026-09-21",
+  "type": "RUNTIME_API_MISMATCH",
+  "failure_class": "EDGE_ENV_API_USED_IN_SERVERLESS_FUNCTION",
+  "scope": "NETLIFY_FUNCTION_RUNTIME",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": true,
+  "root_cause": "The Composio secret bridge is a Netlify serverless function, but it read secrets using Netlify.env, which is the Edge Functions environment API. Netlify serverless functions expose scoped environment variables through process.env.",
+  "prevention_rule": "For Netlify serverless functions, read environment variables through process.env. Reserve Netlify.env for Edge Functions. Regression tests must distinguish the two runtime APIs.",
+  "evidence": [
+    "Netlify production lists COMPOSIO_API_KEY with production context and functions/runtime scopes.",
+    "The deploySucceeded handler executed and reached Supabase, but api_key_present remained false.",
+    "Netlify serverless environment-variable documentation specifies process.env for Functions, while Edge Functions use Netlify.env."
+  ],
+  "enforcement": [
+    "netlify/functions/powerhouse-composio-secret-sync.mjs",
+    "tests/brain-composio-cross-runtime-secret-sync.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-composio-cross-runtime-secret-sync.test.mjs"],
+    "canary": ["tests/brain-composio-cross-runtime-secret-sync.test.mjs"],
+    "shadow": ["tests/brain-composio-cross-runtime-secret-sync.test.mjs"]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after exact-head gates, protected merge, production deploy, deploySucceeded execution, Supabase api_key_present=true and Composio setup readback.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

@@ -5,9 +5,9 @@ import { readFileSync } from 'node:fs';
 const source=readFileSync(new URL('../netlify/functions/powerhouse-composio-secret-sync.mjs',import.meta.url),'utf8');
 
 test('Composio secret sync bridges Netlify production secret to canonical Supabase onboarding without exposing it',()=>{
-  assert.match(source,/Netlify\.env\.get\('COMPOSIO_API_KEY'\)/);
-  assert.match(source,/Netlify\.env\.get\('BG_PORTAL_EU_SUPABASE_URL'\)/);
-  assert.match(source,/Netlify\.env\.get\('BG_PORTAL_EU_SERVICE_TOKEN'\)/);
+  assert.match(source,/process\.env\.COMPOSIO_API_KEY/);
+  assert.match(source,/process\.env\.BG_PORTAL_EU_SUPABASE_URL/);
+  assert.match(source,/process\.env\.BG_PORTAL_EU_SERVICE_TOKEN/);
   assert.match(source,/action:'status'/);
   assert.match(source,/action:'set_api_key',api_key:apiKey/);
   assert.match(source,/x-bg-service-token/);
