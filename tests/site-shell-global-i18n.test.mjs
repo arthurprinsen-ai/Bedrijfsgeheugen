@@ -27,7 +27,7 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(brain,/maxTokens:2600/);
   assert.match(brain,/firstBracket/);
   assert.match(brain,/fenced/);
-  assert.match(runtime,/translation_unavailable/);
+  assert.match(runtime,/translation_incomplete/);
   assert.match(runtime,/requestPart/);
   assert.match(runtime,/localeEpoch/);
   assert.doesNotMatch(runtime,/let run = 0/);
@@ -36,6 +36,11 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/\['Aanmelden','Sign up'\]/);
   assert.match(runtime,/\['Ontdekken','Discover'\]/);
   assert.match(runtime,/applyLocalTranslations/);
+  assert.match(runtime,/input\[type="submit"\]/);
+  assert.match(runtime,/\['placeholder','title','aria-label','alt'\]/);
+  assert.match(runtime,/stillMissing/);
+  assert.match(runtime,/await requestPart\(\[source\]\)/);
+  assert.doesNotMatch(runtime,/translated === source/);
   assert.match(runtime,/synchronous so selecting English visibly changes the menu/);
   assert.doesNotMatch(runtime,/locale = previous;\s*try \{ localStorage\.setItem\(STORAGE_KEY, locale\)/);
   assert.match(injector,/\.html/);

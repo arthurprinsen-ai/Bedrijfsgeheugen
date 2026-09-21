@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-atomic-whole-site-en-v1",
+  "compiler": {
+    "failure_class": "I18N_PARTIAL_LANGUAGE_STATE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The language runtime allowed English selection and partial translation success even when one or more website strings were unresolved. It also skipped option text and several user-facing attributes, so the page could legally end in a mixed Dutch/English state.",
+  "prevention": [
+    "English activation is atomic: do not persist or confirm the English locale until every meaningful source string on the current document has a translation result.",
+    "Retry unresolved strings individually after bounded batch retries before declaring translation incomplete.",
+    "Treat same-source translations as valid coverage for terms that are identical in Dutch and English.",
+    "Translate user-facing option text plus placeholder, title, aria-label, alt and submit/button/reset value attributes.",
+    "On incomplete coverage, revert to the prior locale instead of leaving a mixed-language page."
+  ],
+  "evidence": [
+    "assets/js/i18n.js",
+    "tests/site-shell-global-i18n.test.mjs",
+    "user requirement 2026-09-21: after clicking English the entire website must be English"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/site-shell-global-i18n.test.mjs"],
+    "canary": ["tests/site-shell-global-i18n.test.mjs"],
+    "production_readback_required": true
+  },
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-immediate-menu-translation-v1"
+  ],
+  "skill_targets": ["website-release","powerhouse-continuity"],
+  "skill_projection_required": false
+}
