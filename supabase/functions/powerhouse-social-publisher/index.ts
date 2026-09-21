@@ -7,7 +7,7 @@ const INSTAGRAM = '6a70384d99afb44349f0fba9';
 const GATE = 'channel-identity-hard-gate-v3';
 const CONTRACT = 'arthur-personal-linkedin-identity-v4';
 const PUBLICATION_AUTHORITY = 'social-publication-authority-v1';
-const INSTAGRAM_POLICY = 'instagram-mira-visual-reel-only-v2';
+const INSTAGRAM_POLICY = 'instagram-mira-reel-only-v3';
 const channelIds: Record<string,string> = { linkedin_personal: PERSONAL, linkedin_company: COMPANY, instagram_company: INSTAGRAM };
 const obligationChannels: Record<string,string> = { linkedin_personal: 'linkedin_personal', linkedin_company: 'linkedin_company', instagram_company: 'instagram' };
 
@@ -61,7 +61,7 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   const proof=art?.generation_evidence?.instagram_media_proof||{};
   if(!instagramIdentityProven(proof))throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
   const mediaType=clean(proof.media_type).toLowerCase();
-  if(mediaType!=='reel')throw new Error('COMPOSIO_ROUTE_REEL_ONLY_V2');
+  if(mediaType!=='reel')throw new Error('INSTAGRAM_MIRA_REEL_ONLY_V3');
   const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
@@ -172,21 +172,7 @@ async function consumePublishCapability(db:any,capability:any,runDate:string,cha
 function instagramIdentityProven(evidence: any) {
   const proof = evidence?.instagram_media_proof || evidence || {};
   const mediaType = clean(proof?.media_type || evidence?.media_type).toLowerCase();
-  if (!['image','reel'].includes(mediaType)) return false;
-  if (mediaType === 'carousel') {
-    const slides = Array.isArray(proof?.carousel_manifest?.slides) ? proof.carousel_manifest.slides : [];
-    return proof?.exact_final_media_proven === true && !!clean(proof?.final_media_sha256)
-      && clean(proof?.mira_gate_result) === 'PASS' && slides.length >= 2
-      && slides.every((slide:any) => {
-        const p=slide?.proof||{},v=p?.visual||slide?.visual||{},refs=Array.isArray(v?.evidence_refs)?v.evidence_refs.map(clean):[];
-        const provider=clean(slide?.provider).toLowerCase(),kind=clean(slide?.kind||'image').toLowerCase();
-        const providerOk=kind==='video'?provider==='openart':['openart','placid'].includes(provider);
-        return providerOk && !!clean(slide?.asset_url) && !!clean(slide?.sha256) && p?.identity_gate_result==='PASS'
-          && v?.verified===true && v?.semantic_verified===true && v?.mira_present===true
-          && clean(v?.identity_class)==='mira_daily_life' && clean(v?.evidence_method).toLowerCase()==='vision'
-          && refs.some((ref:string)=>/^vision:/i.test(ref));
-      });
-  }
+  if (mediaType !== 'reel') return false;
   const visual = proof?.instagram_visual || {};
   const width=Number(visual?.width),height=Number(visual?.height);
   const refs=Array.isArray(visual?.evidence_refs)?visual.evidence_refs.map(clean):[];
@@ -195,7 +181,7 @@ function instagramIdentityProven(evidence: any) {
     &&visual?.text_dominant===false&&visual?.brand_template_dominant===false
     &&clean(visual?.identity_class)==='mira_daily_life'&&clean(visual?.evidence_method).toLowerCase()==='vision'
     &&refs.some((ref:string)=>/^vision:/i.test(ref));
-  const dims=mediaType==='reel'?width===1080&&height===1920:width===1080&&height===1350;
+  const dims=width===1080&&height===1920;
   const provider=clean(proof?.media_provider||proof?.media_source).toLowerCase();
   const providerOk=provider==='openart';
   return proof?.exact_final_media_proven===true&&!!clean(proof?.final_media_sha256)
