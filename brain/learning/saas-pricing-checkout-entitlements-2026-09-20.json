@@ -1,6 +1,6 @@
 {
   "type": "POWERHOUSE_LEARNING",
-  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260920-v5",
+  "version": "SAAS-PRICING-CHECKOUT-ENTITLEMENTS-20260921-v5",
   "fingerprint": "saas-pricing-checkout-entitlements-closure-v1",
   "status": "CANDIDATE",
   "compiler": {
@@ -25,7 +25,9 @@
     "Elke nieuwe runtime surface moet in dezelfde lineage aan de canonieke System Map-inventaris worden toegevoegd; anders is delivery onvolledig.",
     "Refresh/freshness is a runtime entitlement, not a pricing-page label: connector activation must fail closed when the requested cadence is faster than the active plan permits.",
     "Missing connector cadence must default to the active plan cadence rather than an implicit faster schedule.",
-    "Production readback must treat shared modules bundled into Netlify Functions as deploy-relevant; a green non-deployment readback is invalid when those dependencies changed."
+    "Production readback must treat shared modules bundled into Netlify Functions as deploy-relevant; a green non-deployment readback is invalid when those dependencies changed.",
+    "Customer agent execution must resolve agent_mode from the server-side active tenant subscription before transitioning to Executing.",
+    "Plan autonomy can only narrow execution rights; it may never bypass the existing risk, blast-radius, reversibility, test, verifier or budget envelope."
   ],
   "regression_contract": [
     "tests/saas-pricing-entitlements.test.mjs",
@@ -44,7 +46,9 @@
     "Refresh entitlement enforcement is centralized in platform/saas/entitlement-policy.mjs and applied before connector Active state.",
     "Regression coverage pins Control=1440 min minimum, Scale=60 min minimum and Enterprise=0/event-or-realtime semantics.",
     "PR #2505 merged refresh enforcement but production readback initially returned success while Netlify current still pointed at the previous SHA because platform/* runtime dependencies were not classified as deploy-relevant.",
-    "PR #2508 portal lane exposed a stale connector activation fixture that lacked getPlanRuntimePolicy; the fixture was updated to preserve old activation evidence guarantees under the new fail-closed entitlement contract."
+    "PR #2508 portal lane exposed a stale connector activation fixture that lacked getPlanRuntimePolicy; the fixture was updated to preserve old activation evidence guarantees under the new fail-closed entitlement contract.",
+    "Agent Fabric gateway now fails closed on Executing without a trusted entitlement resolver.",
+    "Control recommend blocks execution; Scale approval_required needs explicit approval evidence; Enterprise guardrailed_autonomous still passes through canAgentExecute safety controls."
   ],
   "evaluation": {
     "historical_replay": [

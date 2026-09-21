@@ -1,3 +1,4 @@
+import {enforceAgentMode,planRuntimePolicy} from '../saas/entitlement-policy.mjs';
 import { beginMaterialRun } from '../../scripts/brain/powerhouse-universal-runtime-ingress.mjs';
 
 export const AGENT_FABRIC_COMMANDS = Object.freeze({
@@ -55,7 +56,7 @@ function requireIngressReceipt(receipt, runtime) {
   return receipt;
 }
 
-export function createAgentFabricGateway({ fabric, rootDir = process.cwd() } = {}) {
+export function createAgentFabricGateway({ fabric, rootDir = process.cwd(), entitlementResolver = null } = {}) {
   for (const method of ['intake','intakeOpportunity','transition','recordLearning','getWork','listWork','suggestLearning']) {
     requireMethod(fabric, method);
   }
@@ -71,8 +72,30 @@ export function createAgentFabricGateway({ fabric, rootDir = process.cwd() } = {
         return fabric.intake(payload);
       case AGENT_FABRIC_COMMANDS.INTAKE_OPPORTUNITY:
         return fabric.intakeOpportunity(payload);
-      case AGENT_FABRIC_COMMANDS.TRANSITION_WORK:
+      case AGENT_FABRIC_COMMANDS.TRANSITION_WORK: {
+        if(payload.status==='Executing'){
+          if(typeof entitlementResolver!=='function'){
+            const error=new Error('AGENT_ENTITLEMENT_RESOLVER_REQUIRED');
+            error.code='AGENT_ENTITLEMENT_RESOLVER_REQUIRED';
+            throw error;
+          }
+          const work=fabric.getWork(payload.workId);
+          if(!work?.tenantId){
+            const error=new Error('AGENT_WORK_TENANT_REQUIRED');
+            error.code='AGENT_WORK_TENANT_REQUIRED';
+            throw error;
+          }
+          const policy=planRuntimePolicy(await entitlementResolver(work.tenantId));
+          const decision=enforceAgentMode(policy,{status:payload.status,approvalEvidence:payload.approvalEvidence});
+          if(!decision.allowed){
+            const error=new Error(decision.reason);
+            error.code=decision.reason;
+            error.agentMode=decision.agentMode;
+            throw error;
+          }
+        }
         return fabric.transition(payload);
+      }
       case AGENT_FABRIC_COMMANDS.RECORD_LEARNING:
         return fabric.recordLearning(payload);
       default:

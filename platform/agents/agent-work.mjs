@@ -1,3 +1,4 @@
+import {enforceAgentMode} from '../saas/entitlement-policy.mjs';
 export const AGENT_WORK_STATES = Object.freeze(['Detected','Assigned','Investigating','FixPrepared','WaitingApproval','Executing','Verifying','Resolved','LearningRecorded']);
 export const AUTONOMY_LEVELS = Object.freeze(['L0','L1','L2','L3','L4','L5']);
 
@@ -13,8 +14,12 @@ export function createAgentWork(input) {
   });
 }
 
-export function canAgentExecute({ autonomyLevel, actionPolicy, risk, blastRadius, reversible, testsAvailable, verifierAvailable, budgetAvailable }) {
+export function canAgentExecute({ autonomyLevel, actionPolicy, risk, blastRadius, reversible, testsAvailable, verifierAvailable, budgetAvailable, planPolicy = null, approvalEvidence = null }) {
   if (!AUTONOMY_LEVELS.includes(autonomyLevel)) throw new TypeError('invalid autonomy level');
+  if (planPolicy) {
+    const planDecision=enforceAgentMode(planPolicy,{status:'Executing',approvalEvidence});
+    if (!planDecision.allowed) return Object.freeze({ allowed:false, reason:planDecision.reason, agentMode:planDecision.agentMode });
+  }
   if (actionPolicy === 'DENY') return Object.freeze({ allowed:false, reason:'POLICY_DENY' });
   if (autonomyLevel === 'L0' || autonomyLevel === 'L1' || autonomyLevel === 'L2') return Object.freeze({ allowed:false, reason:'AUTONOMY_PREPARE_ONLY' });
   if (risk === 'High' || blastRadius === 'High') return Object.freeze({ allowed:false, reason:'HIGH_IMPACT_REQUIRES_REVIEW' });

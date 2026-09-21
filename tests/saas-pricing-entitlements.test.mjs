@@ -1,8 +1,9 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
-import {entitlementAllows,enforceConnectorRefreshPolicy,enforceRefreshPolicy,normalizeEntitlementRecord,planRuntimePolicy,requireEntitlement} from '../platform/saas/entitlement-policy.mjs';
+import {entitlementAllows,enforceAgentMode,enforceConnectorRefreshPolicy,enforceRefreshPolicy,normalizeEntitlementRecord,planRuntimePolicy,requireEntitlement} from '../platform/saas/entitlement-policy.mjs';
 import {billingReadiness,requireBillingReady} from '../platform/saas/billing-readiness.mjs';
+import {canAgentExecute} from '../platform/agents/agent-work.mjs';
 
 test('pricing communicates equal intelligence and self-serve tiers',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
@@ -108,4 +109,35 @@ test('connector activation applies the central refresh entitlement before Active
   assert.match(source,/getPlanRuntimePolicy/);
   assert.match(source,/PLAN_REFRESH_LIMIT/);
   assert.match(source,/refreshPolicy\.effectiveRefreshMinutes/);
+});
+
+
+test('agent mode policy preserves commercial autonomy boundaries',()=>{
+  const recommend={planCode:'control',agentMode:'recommend'};
+  const approval={planCode:'scale',agentMode:'approval_required'};
+  const autonomous={planCode:'enterprise',agentMode:'guardrailed_autonomous'};
+  assert.deepEqual(enforceAgentMode(recommend,{status:'Executing'}),{
+    allowed:false,reason:'PLAN_RECOMMEND_ONLY',agentMode:'recommend'
+  });
+  assert.deepEqual(enforceAgentMode(approval,{status:'Executing'}),{
+    allowed:false,reason:'PLAN_APPROVAL_REQUIRED',agentMode:'approval_required'
+  });
+  assert.equal(enforceAgentMode(approval,{status:'Executing',approvalEvidence:{approved:true,approvedBy:'owner',approvedAt:'2026-09-21T07:00:00Z'}}).allowed,true);
+  assert.equal(enforceAgentMode(autonomous,{status:'Executing'}).allowed,true);
+  assert.throws(()=>enforceAgentMode(null,{status:'Executing'}),error=>error?.code==='SUBSCRIPTION_REQUIRED');
+});
+
+
+test('autonomy envelope still applies after plan mode permits execution',()=>{
+  const base={autonomyLevel:'L4',actionPolicy:'ALLOW',risk:'Low',blastRadius:'Low',reversible:true,testsAvailable:true,verifierAvailable:true,budgetAvailable:true};
+  assert.deepEqual(canAgentExecute({...base,planPolicy:{agentMode:'recommend'}}),{
+    allowed:false,reason:'PLAN_RECOMMEND_ONLY',agentMode:'recommend'
+  });
+  assert.deepEqual(canAgentExecute({...base,planPolicy:{agentMode:'approval_required'}}),{
+    allowed:false,reason:'PLAN_APPROVAL_REQUIRED',agentMode:'approval_required'
+  });
+  assert.equal(canAgentExecute({...base,planPolicy:{agentMode:'approval_required'},approvalEvidence:{approved:true,approvedBy:'owner',approvedAt:'2026-09-21T07:00:00Z'}}).allowed,true);
+  assert.deepEqual(canAgentExecute({...base,planPolicy:{agentMode:'guardrailed_autonomous'},risk:'High'}),{
+    allowed:false,reason:'HIGH_IMPACT_REQUIRES_REVIEW'
+  });
 });
