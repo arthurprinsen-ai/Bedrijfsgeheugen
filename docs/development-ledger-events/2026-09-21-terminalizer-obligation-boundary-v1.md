@@ -6,3 +6,5 @@
 - Expected outcome: website-only recovery #2510 can terminalize without inheriting unrelated historical migration lineage.
 
 - Recovery: learning evaluation now references `tests/brain-terminal-obligation-boundary.test.mjs` so semantic closure and skill projection are machine-verifiable.
+
+- Contract recovery: two pre-existing Brain tests were updated from the retired mismatch error to the canonical obligation-boundary behavior and added to historical replay.
