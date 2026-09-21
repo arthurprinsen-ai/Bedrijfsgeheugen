@@ -19,7 +19,7 @@
   const context = () => isPortal() ? 'portal' : 'public';
 
   const CORE_EN = new Map([
-    ['Oplossingen','Solutions'],['Platform','Platform'],['Prijzen','Pricing'],['Cases','Cases'],
+    ['Ontdekken','Discover'],['Oplossingen','Solutions'],['Platform','Platform'],['Prijzen','Pricing'],['Cases','Cases'],
     ['Kennis & bedrijf','Knowledge & business'],['Kennis','Knowledge'],['Over ons','About us'],['Meer','More'],
     ['Start','Start'],['Gratis zelfscan','Free self-scan'],['Frisse Blik Scan','Fresh Perspective Scan'],
     ['Inloggen','Log in'],['Aanmelden','Sign up'],['Home','Home'],['Taal','Language'],
@@ -184,6 +184,22 @@
     return out;
   }
 
+  function applyLocalTranslations(items) {
+    if (locale !== 'en') return;
+    for (const item of items) {
+      const value = localTranslation('en', item.source);
+      if (!value) continue;
+      if (item.kind === 'text') {
+        const original = ORIGINAL.get(item.node) || '';
+        const leading = original.match(/^\s*/)?.[0] || '';
+        const trailing = original.match(/\s*$/)?.[0] || '';
+        item.node.nodeValue = leading + value + trailing;
+      } else {
+        item.node.setAttribute(item.attr, value);
+      }
+    }
+  }
+
   async function apply(root=document.body) {
     const requestEpoch = localeEpoch;
     document.documentElement.lang = locale === 'en' ? 'en' : 'nl';
@@ -199,6 +215,12 @@
       return;
     }
     const items = collect(root);
+
+    // Apply canonical navigation/auth translations immediately. This is intentionally
+    // synchronous so selecting English visibly changes the menu even if the remote
+    // translation provider is slow or temporarily unavailable.
+    applyLocalTranslations(items);
+
     const extras = [];
     if (root === document.body) {
       if (meaningful(document.title)) extras.push(document.documentElement.dataset.bgOriginalTitle || document.title);
@@ -377,6 +399,8 @@
       if (!roots.size) return;
       mountControl();
       if (locale !== 'en') return;
+      // Dynamic menu rebuilds get the deterministic English core copy immediately.
+      applyLocalTranslations(collect(document.body));
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(()=>apply(document.body).catch(()=>{}), 40);
     });
