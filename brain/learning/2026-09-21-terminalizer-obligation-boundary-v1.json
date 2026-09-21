@@ -24,5 +24,10 @@
     "delivery",
     "website-release"
   ],
-  "skill_projection_required": true
+  "skill_projection_required": true,
+  "evaluation": {
+    "historical_replay": [
+      "tests/terminal-obligation-boundary.test.mjs"
+    ]
+  }
 }
