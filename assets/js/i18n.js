@@ -9,7 +9,7 @@
   let locale = 'nl';
   let observer;
   let mutationTimer;
-  let run = 0;
+  let localeEpoch = 0;
   let cache = loadCache();
   let controlsBound = false;
 
@@ -17,6 +17,20 @@
   const normalizeLocale = value => String(value || '').toLowerCase().split('-')[0];
   const isPortal = () => location.pathname.startsWith('/portal') || location.pathname.startsWith('/klantportaal');
   const context = () => isPortal() ? 'portal' : 'public';
+
+  const CORE_EN = new Map([
+    ['Oplossingen','Solutions'],['Platform','Platform'],['Prijzen','Pricing'],['Cases','Cases'],
+    ['Kennis & bedrijf','Knowledge & business'],['Kennis','Knowledge'],['Over ons','About us'],['Meer','More'],
+    ['Start','Start'],['Gratis zelfscan','Free self-scan'],['Frisse Blik Scan','Fresh Perspective Scan'],
+    ['Inloggen','Log in'],['Aanmelden','Sign up'],['Home','Home'],['Taal','Language'],
+    ['Nederlands','Dutch'],['English','English'],['Voor het Nederlandse mkb','For Dutch SMEs'],
+    ['Vaste prijs, geen uurtje-factuurtje','Fixed price, no hourly billing'],
+    ['In twee weken draaiend','Up and running in two weeks']
+  ]);
+
+  function localTranslation(target, source) {
+    return target === 'en' ? (CORE_EN.get(source) || null) : null;
+  }
 
   function loadCache() {
     try {
@@ -103,11 +117,13 @@
     });
   }
 
-  async function translate(strings, target, requestRun) {
+  async function translate(strings, target, requestEpoch) {
     const unique = [...new Set(strings)];
     const out = new Map();
     const missing = [];
     for (const source of unique) {
+      const local = localTranslation(target, source);
+      if (local) { out.set(source, local); continue; }
       const hit = cache[cacheId(target,source)];
       if (typeof hit === 'string' && hit) out.set(source,hit);
       else missing.push(source);
@@ -123,7 +139,7 @@
     }
     if (batch.length) batches.push(batch);
     async function requestPart(part) {
-      if (requestRun !== run) return false;
+      if (requestEpoch !== localeEpoch) return false;
       let response;
       for (let attempt=0; attempt<2; attempt++) {
         try {
@@ -146,7 +162,7 @@
       }
       let payload;
       try { payload = await response.json(); } catch { return false; }
-      if (requestRun !== run) return false;
+      if (requestEpoch !== localeEpoch) return false;
       if (!Array.isArray(payload.translations) || payload.translations.length !== part.length) return false;
       let wrote = false;
       part.forEach((source,i) => {
@@ -169,7 +185,7 @@
   }
 
   async function apply(root=document.body) {
-    const requestRun = ++run;
+    const requestEpoch = localeEpoch;
     document.documentElement.lang = locale === 'en' ? 'en' : 'nl';
     document.documentElement.dataset.bgLocale = locale;
     if (locale === 'nl') {
@@ -191,8 +207,8 @@
         if (meaningful(value)) extras.push(value);
       });
     }
-    const map = await translate(items.map(item=>item.source).concat(extras), locale, requestRun);
-    if (requestRun !== run || locale !== 'en') return;
+    const map = await translate(items.map(item=>item.source).concat(extras), locale, requestEpoch);
+    if (requestEpoch !== localeEpoch || locale !== 'en') return;
     if (root === document.body) {
       const originalTitle = document.documentElement.dataset.bgOriginalTitle || document.title;
       document.documentElement.dataset.bgOriginalTitle = originalTitle;
@@ -237,6 +253,7 @@
     if (!SUPPORTED.has(normalized) || normalized === locale) { closeMenus(); return; }
     const previous = locale;
     locale = normalized;
+    localeEpoch += 1;
     try { localStorage.setItem(STORAGE_KEY, locale); } catch {}
     document.cookie = 'bg_locale=' + encodeURIComponent(locale) + '; Path=/; Max-Age=31536000; SameSite=Lax';
     document.documentElement.dataset.bgI18nBusy = 'true';
@@ -369,7 +386,7 @@
     setLocale,
     translateText: async text => {
       if (locale === 'nl' || !meaningful(text)) return text;
-      const map = await translate([String(text)], locale, run);
+      const map = await translate([String(text)], locale, localeEpoch);
       return map.get(String(text)) || text;
     }
   });
