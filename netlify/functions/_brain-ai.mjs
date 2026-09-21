@@ -98,8 +98,21 @@ export async function runTranslation({ strings, source='nl', target='en', dataCl
     }),
   });
   let translations;
-  try { translations = JSON.parse(result.text); } catch { throw new Error('Translation response was not valid JSON'); }
-  if (!Array.isArray(translations) || translations.length !== strings.length || translations.some(x=>typeof x !== 'string')) throw new Error('Translation response shape mismatch');
+  const raw = String(result.text || '').trim();
+  const candidates = [raw];
+  const fenced = raw.match(/\`\`\`(?:json)?\\s*([\\s\\S]*?)\`\`\`/i);
+  if (fenced?.[1]) candidates.push(fenced[1].trim());
+  const firstBracket = raw.indexOf('[');
+  const lastBracket = raw.lastIndexOf(']');
+  if (firstBracket >= 0 && lastBracket > firstBracket) candidates.push(raw.slice(firstBracket,lastBracket+1));
+  for (const candidate of candidates) {
+    try {
+      const parsed = JSON.parse(candidate);
+      if (Array.isArray(parsed)) { translations = parsed; break; }
+    } catch {}
+  }
+  if (!Array.isArray(translations)) throw new Error('Translation response was not valid JSON');
+  if (translations.length !== strings.length || translations.some(x=>typeof x !== 'string')) throw new Error('Translation response shape mismatch');
   const metered = await attachTokenUsage(result, {
     requestId,
     componentKey:isPortal?'agent:portal-translation':'agent:website-translation',
