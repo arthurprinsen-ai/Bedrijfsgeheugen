@@ -7,6 +7,7 @@
   const SKIP = new Set(['SCRIPT','STYLE','CODE','PRE','TEXTAREA','INPUT','SELECT','OPTION','NOSCRIPT','SVG']);
   let locale = 'nl';
   let observer;
+  let mutationTimer;
   let run = 0;
 
   const cssEscape = value => String(value).replace(/"/g, '&quot;');
@@ -182,7 +183,8 @@
         if (m.type === 'childList') m.addedNodes.forEach(n => { if (n.nodeType === 1) roots.add(n); });
       }
       if (!roots.size) return;
-      queueMicrotask(()=>roots.forEach(root=>apply(root).catch(()=>{})));
+      clearTimeout(mutationTimer);
+      mutationTimer = setTimeout(()=>apply(document.body).catch(()=>{}), 40);
     });
     observer.observe(document.body,{subtree:true,childList:true});
   }
