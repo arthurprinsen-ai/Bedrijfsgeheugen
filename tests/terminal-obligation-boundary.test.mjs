@@ -1,3 +1,4 @@
+// Historical replay for terminalizer obligation boundary.
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
