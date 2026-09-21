@@ -195,7 +195,7 @@ def claimt(zoekwoord, pagina):
 
 def lees_paginas():
     paginas = {}
-    for f in sorted(glob.glob('*.html') + glob.glob('blog/*/index.html')):
+    for f in sorted(glob.glob('*.html') + ['blog/index.html'] + glob.glob('blog/*/index.html')):
         naam = os.path.basename(f)[:-5]
         if naam in OVERSLAAN:
             continue
