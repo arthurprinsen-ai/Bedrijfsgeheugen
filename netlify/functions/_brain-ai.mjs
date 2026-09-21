@@ -92,7 +92,7 @@ export async function runTranslation({ strings, source='nl', target='en', dataCl
     policies, providerRegistry, aiUseCases,
     contextPolicy:{ allowedFields:['strings','source','target'], pseudonymizeFields:[] },
     invokeModel:authorized => anthropic({
-      authorized, apiKey, system, maxTokens:1800, fetchImpl,
+      authorized, apiKey, system, maxTokens:4000, fetchImpl,
       provenance:{ source:isPortal?'visible-portal-text':'public-site-text', providerModelId:MODEL_ID },
       renderUser:ctx => JSON.stringify({source:ctx.source,target:ctx.target,strings:ctx.strings})
     }),

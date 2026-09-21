@@ -11,6 +11,7 @@
   let mutationTimer;
   let run = 0;
   let cache = loadCache();
+  let controlsBound = false;
 
   const cssEscape = value => String(value).replace(/"/g, '&quot;');
   const normalizeLocale = value => String(value || '').toLowerCase().split('-')[0];
@@ -114,7 +115,7 @@
     const batches = [];
     let batch = [], chars = 0;
     for (const source of missing) {
-      if (batch.length >= 60 || chars + source.length > 7600) {
+      if (batch.length >= 30 || chars + source.length > 3500) {
         if (batch.length) batches.push(batch);
         batch = []; chars = 0;
       }
@@ -123,12 +124,17 @@
     if (batch.length) batches.push(batch);
     for (const part of batches) {
       if (requestRun !== run) return new Map();
-      const response = await fetch('/api/i18n-translate', {
-        method:'POST',
-        headers:{'content-type':'application/json'},
-        body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
-      });
-      if (!response.ok) throw new Error('translation_failed');
+      let response;
+      for (let attempt=0; attempt<2; attempt++) {
+        response = await fetch('/api/i18n-translate', {
+          method:'POST',
+          headers:{'content-type':'application/json'},
+          body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
+        });
+        if (response.ok) break;
+        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 250));
+      }
+      if (!response?.ok) throw new Error('translation_failed_' + (response?.status || 'network'));
       const payload = await response.json();
       if (requestRun !== run || !Array.isArray(payload.translations)) return new Map();
       part.forEach((source,i) => {
@@ -197,49 +203,122 @@
       btn.classList.toggle('is-active', selected);
     });
     document.querySelectorAll('[data-bg-language-current]').forEach(el => {
-      el.textContent = locale.toUpperCase();
+      el.textContent = locale === 'nl' ? 'Taal · NL' : 'Language · EN';
       el.setAttribute('aria-label', locale === 'nl' ? 'Taal: Nederlands' : 'Language: English');
+    });
+    document.querySelectorAll('[data-bg-language-label]').forEach(el => {
+      el.textContent = locale === 'nl' ? 'Taal' : 'Language';
     });
   }
 
   async function setLocale(next) {
     const normalized = normalizeLocale(next);
-    if (!SUPPORTED.has(normalized)) return;
+    if (!SUPPORTED.has(normalized) || normalized === locale) { closeMenus(); return; }
+    const previous = locale;
     locale = normalized;
     try { localStorage.setItem(STORAGE_KEY, locale); } catch {}
     document.cookie = 'bg_locale=' + encodeURIComponent(locale) + '; Path=/; Max-Age=31536000; SameSite=Lax';
-    document.dispatchEvent(new CustomEvent('bg:localechange',{detail:{locale}}));
+    document.documentElement.dataset.bgI18nBusy = 'true';
+    delete document.documentElement.dataset.bgI18nError;
+    syncControls();
     closeMenus();
-    await apply(document.body);
+    document.dispatchEvent(new CustomEvent('bg:localechange',{detail:{locale}}));
+    try {
+      await apply(document.body);
+    } catch (error) {
+      locale = previous;
+      try { localStorage.setItem(STORAGE_KEY, locale); } catch {}
+      document.cookie = 'bg_locale=' + encodeURIComponent(locale) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+      document.documentElement.dataset.bgI18nError = 'true';
+      syncControls();
+      throw error;
+    } finally {
+      delete document.documentElement.dataset.bgI18nBusy;
+    }
   }
 
   function closeMenus() {
     document.querySelectorAll('[data-bg-language-menu]').forEach(menu => menu.hidden = true);
-    document.querySelectorAll('[data-bg-language-current]').forEach(btn => btn.setAttribute('aria-expanded','false'));
+    document.querySelectorAll('button[data-bg-language-current]').forEach(btn => btn.setAttribute('aria-expanded','false'));
+  }
+
+  function languageControl(mode) {
+    const wrap = document.createElement('div');
+    wrap.dataset.bgLanguageSwitcher = mode;
+    wrap.dataset.bgNoTranslate = '';
+    if (mode === 'mobile') {
+      wrap.className = 'bg-mobile-language';
+      wrap.innerHTML = '<span class="bg-mobile-language-label" data-bg-language-label>Taal</span>' +
+        '<div class="bg-mobile-language-options" role="group" aria-label="Taal kiezen">' +
+        '<button type="button" data-bg-language-option="nl">Nederlands</button>' +
+        '<button type="button" data-bg-language-option="en">English</button></div>' +
+        '<span class="bg-language-error" data-bg-language-error hidden>Wisselen mislukt. Probeer opnieuw.</span>';
+    } else {
+      wrap.className = 'bgkop-language';
+      wrap.innerHTML = '<button type="button" class="bgkop-language-current" data-bg-language-current aria-haspopup="listbox" aria-expanded="false">Taal · NL</button>' +
+        '<div class="bgkop-language-menu" data-bg-language-menu role="listbox" hidden>' +
+        '<button type="button" role="option" data-bg-language-option="nl">Nederlands</button>' +
+        '<button type="button" role="option" data-bg-language-option="en">English</button></div>' +
+        '<span class="bg-language-error" data-bg-language-error hidden>Wisselen mislukt. Probeer opnieuw.</span>';
+    }
+    return wrap;
   }
 
   function mountControl() {
-    if (document.querySelector('[data-bg-language-switcher]')) return;
-    const wrap = document.createElement('div');
-    wrap.className = 'bg-language-switcher';
-    wrap.dataset.bgLanguageSwitcher = '';
-    wrap.innerHTML = '<button type="button" class="bg-language-current" data-bg-language-current aria-haspopup="listbox" aria-expanded="false">NL</button>' +
-      '<div class="bg-language-menu" data-bg-language-menu role="listbox" hidden>' +
-      '<button type="button" role="option" data-bg-language-option="nl">Nederlands</button>' +
-      '<button type="button" role="option" data-bg-language-option="en">English</button>' +
-      '</div>';
-    document.body.appendChild(wrap);
-    const current = wrap.querySelector('[data-bg-language-current]');
-    const menu = wrap.querySelector('[data-bg-language-menu]');
-    current.addEventListener('click', () => {
-      const opening = menu.hidden;
-      closeMenus();
-      menu.hidden = !opening;
-      current.setAttribute('aria-expanded', String(opening));
-    });
-    wrap.querySelectorAll('[data-bg-language-option]').forEach(btn => btn.addEventListener('click',()=>setLocale(btn.dataset.bgLanguageOption)));
-    document.addEventListener('click', e => { if (!wrap.contains(e.target)) closeMenus(); });
+    document.querySelectorAll('.bg-language-switcher').forEach(el => el.remove());
+
+    const desktopHost = document.querySelector('.bgkop-links');
+    if (desktopHost && !desktopHost.querySelector('[data-bg-language-switcher="desktop"]')) {
+      desktopHost.appendChild(languageControl('desktop'));
+    }
+
+    const mobileRoot = document.querySelector('[data-bg-shared-mobile-view="root"]');
+    if (mobileRoot && !mobileRoot.querySelector('[data-bg-language-switcher="mobile"]')) {
+      const control = languageControl('mobile');
+      const cta = mobileRoot.querySelector('.bg-shared-mobile-cta');
+      mobileRoot.insertBefore(control, cta || null);
+    }
+
+    const legacyMobile = document.getElementById('bgkopMob');
+    if (!mobileRoot && legacyMobile && !legacyMobile.querySelector('[data-bg-language-switcher="mobile"]')) {
+      legacyMobile.appendChild(languageControl('mobile'));
+    }
+
     syncControls();
+  }
+
+  function showLocaleError() {
+    document.querySelectorAll('[data-bg-language-error]').forEach(el => {
+      el.hidden = false;
+      clearTimeout(el._bgTimer);
+      el._bgTimer = setTimeout(() => { el.hidden = true; }, 4500);
+    });
+  }
+
+  function bindControlEvents() {
+    if (controlsBound) return;
+    controlsBound = true;
+    document.addEventListener('click', event => {
+      const option = event.target.closest?.('[data-bg-language-option]');
+      if (option) {
+        event.preventDefault();
+        setLocale(option.dataset.bgLanguageOption).catch(showLocaleError);
+        return;
+      }
+      const current = event.target.closest?.('button[data-bg-language-current]');
+      if (current) {
+        event.preventDefault();
+        const wrap = current.closest('[data-bg-language-switcher]');
+        const menu = wrap?.querySelector('[data-bg-language-menu]');
+        if (!menu) return;
+        const opening = menu.hidden;
+        closeMenus();
+        menu.hidden = !opening;
+        current.setAttribute('aria-expanded', String(opening));
+        return;
+      }
+      if (!event.target.closest?.('[data-bg-language-switcher]')) closeMenus();
+    });
   }
 
   function startObserver() {
@@ -259,8 +338,9 @@
 
   async function init() {
     locale = preferredLocale();
+    bindControlEvents();
     mountControl();
-    await apply(document.body).catch(()=>syncControls());
+    await apply(document.body).catch(()=>{ syncControls(); showLocaleError(); });
     startObserver();
   }
 
