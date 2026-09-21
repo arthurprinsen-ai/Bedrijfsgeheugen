@@ -9,6 +9,13 @@
       "required": true
     },
     {
+      "id": "function:bg-buffer-sync",
+      "type": "function",
+      "authority": "supabase/functions/bg-buffer-sync/index.ts",
+      "evidence_contract": "tests/social-learning-buffer-schedule.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:bg-notion-sync",
       "type": "function",
       "authority": "supabase/functions/bg-notion-sync/index.ts",
