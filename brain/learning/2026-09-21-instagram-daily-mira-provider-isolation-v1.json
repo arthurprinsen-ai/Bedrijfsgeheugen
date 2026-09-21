@@ -39,5 +39,12 @@
       "tests/social-learning-buffer-rate-limit-regression.test.mjs"
     ]
   },
-  "terminal_rule": "LIVE_BEWEZEN only after exact-head required gates, protected merge, exact production source/readback and provider delivery evidence."
+  "terminal_rule": "LIVE_BEWEZEN only after exact-head required gates, protected merge, exact production source/readback and provider delivery evidence.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
