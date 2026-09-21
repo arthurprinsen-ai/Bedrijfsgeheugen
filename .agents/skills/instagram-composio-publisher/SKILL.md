@@ -262,3 +262,10 @@ Fingerprint: `instagram-daily-mira-provider-isolation-v1`.
 - The same unresolved replacement/external-id blocker is one state, not a new attempt on every preflight. Increment retry/attempt lineage only when the blocker identity or provider state changes.
 - Preserve and reuse the exact generated Mira Reel across auth/rate-limit recovery. No non-Mira content, image fallback, second winner or duplicate publication.
 - Composio primary and bounded Buffer fallback are both subordinate to the same central publication authority and Mira Reel proof.
+
+
+## Cross-runtime secret binding
+
+Fingerprint: `composio-cross-runtime-secret-binding-v1`.
+
+Do not infer that a secret configured in one runtime is available in another. The canonical Instagram publisher executes in Supabase, while the operator-facing configuration UI executes in Netlify. `COMPOSIO_API_KEY` must therefore be projected server-to-server through the authenticated canonical onboarding route. The bridge reads the Netlify secret only at runtime, performs a status-first preflight, writes only when Supabase lacks the key, and must never log, return, commit, or expose the secret value. The bridge is configuration plumbing only; it must never become a second publication writer.
