@@ -68,24 +68,13 @@
       "requiresMiraGate": true,
       "mediaPolicy": {
         "allowedKinds": [
-          "image",
           "reel"
         ],
         "requiresExactFinalAsset": true,
         "requiresMiraIdentity": true,
         "requiresVerifiedPublishFormatFor": [
-          "image",
-          "video",
           "reel"
         ],
-        "requiredImageWidth": 1080,
-        "requiredImageHeight": 1350,
-        "requiredImageMimeType": "image/jpeg",
-        "requiredImageColorSpace": "RGB",
-        "requiresImageWithoutAlpha": true,
-        "requiresCompleteImageDecode": true,
-        "requiresVisualCompleteness": true,
-        "blocksGrayOrEmptyImage": true,
         "requiredVideoFramePositions": [
           "start",
           "middle",
@@ -99,19 +88,16 @@
         ],
         "providerLineageRequired": true,
         "providerRouting": {
-          "image": {
-            "allowedProviders": [
-              "openart"
-            ],
-            "requiredProvider": "openart"
-          },
           "reel": {
             "allowedProviders": [
               "openart"
             ],
             "requiredProvider": "openart"
           }
-        }
+        },
+        "requiresDailyReel": true,
+        "imageFallbackAllowed": false,
+        "genericFallbackAllowed": false
       },
       "requiresContentPersona": "mira",
       "requiresVisibleMira": true,
