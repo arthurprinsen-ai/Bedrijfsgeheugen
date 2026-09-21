@@ -1,47 +1,47 @@
 {
-  "peildatum": "19 september 2026",
-  "peildatumISO": "2026-09-19",
-  "omnibusStatus": "De Digital Omnibus op AI (Verordening (EU) 2026/1744) is op 8 juli 2026 vastgesteld, op 24 juli 2026 gepubliceerd in het Publicatieblad van de EU en sinds 27 juli 2026 in werking.",
+  "peildatum": "21 september 2026",
+  "peildatumISO": "2026-09-21",
+  "omnibusStatus": "Verordening (EU) 2026/1744 (Digital Omnibus on AI) is definitief aangenomen: gepubliceerd in het Publicatieblad op 24 juli 2026 en in werking getreden op 27 juli 2026 — dit is vastgesteld recht, geen voorstel meer.",
   "deadlines": [
     {
-      "date": "2025-02-02",
-      "label": "Verboden AI-praktijken (art. 5) en AI-geletterdheidsplicht (art. 4) van kracht; reeds verstreken",
-      "kort": "Verboden & AI-literacy"
-    },
-    {
-      "date": "2025-08-02",
-      "label": "GPAI-verplichtingen (art. 53-55) van kracht voor nieuw op de markt gebrachte modellen; reeds verstreken",
-      "kort": "GPAI-verplichtingen nieuw"
+      "date": "2026-08-02",
+      "label": "Art. 50 transparantieverplichtingen van toepassing (informatieplicht bij AI-interactie; art. 50(1) machine-readable labeling nieuwe systemen) — niet uitgesteld",
+      "kort": "Art. 50 transparantie van kracht"
     },
     {
       "date": "2026-08-02",
-      "label": "Transparantieverplichtingen van art. 50 en GPAI-handhavingsbevoegdheden zijn van toepassing; reeds verstreken",
-      "kort": "Art. 50 & GPAI-handhaving"
+      "label": "GPAI-handhavingsbevoegdheden Commissie en AI Office van kracht (boetes t/m 3% wereldwijde omzet of €15 mln) — niet uitgesteld",
+      "kort": "GPAI handhaving actief"
     },
     {
       "date": "2026-08-15",
-      "label": "Nederlandse Cyberbeveiligingswet (implementatie NIS2) in werking getreden",
-      "kort": "NIS2/Cbw NL van kracht"
+      "label": "Nederlandse Cyberbeveiligingswet (NIS2-implementatie) in werking getreden — goedgekeurd Eerste Kamer 7 juli 2026, geldt voor >8.000 organisaties",
+      "kort": "Cbw/NIS2 van kracht"
     },
     {
       "date": "2026-12-02",
-      "label": "Overgangsperiode art. 50 lid 2 voor vóór 2 augustus 2026 op de markt gebrachte systemen eindigt; aanvullende art. 5-bepalingen gaan gelden",
-      "kort": "Art. 50 overgang & nieuwe verboden"
+      "label": "Art. 50(2) watermerkverplichting voor vóór 2 aug. 2026 bestaande systemen van toepassing; nieuwe verboden art. 5 (NCII/'nudifiers' en CSAM) van kracht — vier maanden reprieve via Digital Omnibus",
+      "kort": "Watermerk legacy & art. 5 verboden"
     },
     {
       "date": "2027-08-02",
-      "label": "Ten minste één nationale AI-regulatory sandbox moet operationeel zijn; tevens deadline voor bestaande GPAI-modellen om aan hoofdstuk V te voldoen",
-      "kort": "Sandboxen & GPAI bestaand"
+      "label": "GPAI-modellen op markt vóór 2 aug. 2025 moeten volledig compliant zijn (art. 111(3)) — overgangsperiode eindigt",
+      "kort": "GPAI legacy modellen compliant"
+    },
+    {
+      "date": "2027-08-02",
+      "label": "Lidstaten: ten minste één nationaal AI-regelgevingssandbox operationeel; Commissie: gedelegeerde handelingen sectorale regels Annex I gereed",
+      "kort": "AI sandbox & delegated acts"
     },
     {
       "date": "2027-12-02",
-      "label": "Hoog-risico AI-systemen op grond van art. 6 lid 2 en Annex III: hoofdstuk III afdelingen 1-3 van toepassing",
-      "kort": "Hoog-risico Annex III"
+      "label": "Hoog-risico AI-verplichtingen Annex III (standalone systemen: recruitment, credit scoring, wetshandhaving, onderwijs, biometrie) van toepassing — uitgesteld van 2 aug. 2026 via Digital Omnibus (EU) 2026/1744",
+      "kort": "Annex III hoog-risico van kracht"
     },
     {
       "date": "2028-08-02",
-      "label": "Hoog-risico AI-systemen op grond van art. 6 lid 1 en Annex I: hoofdstuk III afdelingen 1-3 van toepassing",
-      "kort": "Hoog-risico Annex I"
+      "label": "Hoog-risico AI ingebed in gereguleerde producten Annex I (o.a. medische hulpmiddelen MDR/IVDR) van toepassing — uitgesteld van 2 aug. 2027 via Digital Omnibus (EU) 2026/1744",
+      "kort": "Annex I embedded hoog-risico"
     }
   ],
   "fines": {
@@ -51,11 +51,11 @@
   },
   "stats": {
     "mkbAI": "29,8%",
-    "grootAI": "59,2%",
+    "grootAI": "66,2%",
     "bedrijfAI2024": "22,7%",
     "bedrijfAI2023": "14%",
     "afhaakErvaring": "74,6%",
-    "gartnerTop": "n.v.t. — geen CBS-bron beschikbaar voor dit cijfer op peildatum"
+    "gartnerTop": "<5%"
   },
   "sourceBaseline": {
     "eu-ai-act": {
@@ -87,5 +87,5 @@
       "checkedAt": "2026-09-19T07:59:41.882188Z"
     }
   },
-  "interpretationStatus": "official_source_verified_2026-09-19"
+  "interpretationStatus": "candidate_evidence_review"
 }
