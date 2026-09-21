@@ -14,17 +14,22 @@ const validVisual={
   textDominant:false,
   brandTemplateDominant:false,
   evidenceRefs:['vision:exact-final-mira'],
-  assetUrl:'https://cdn.example/mira-final.jpg',
+  assetUrl:'https://cdn.example/mira-final.mp4',
   placeholderDetected:false,
   identityClass:'mira_daily_life',
   formatVerified:true,
   width:1080,
-  height:1350,
+  height:1920,
   colorSpace:'RGB',
   hasAlpha:false,
   decodeComplete:true,
   visualComplete:true,
   grayOrEmptyDetected:false,
+  frameEvidence:[
+    {position:'start',verified:true,evidenceRefs:['vision:start'],identityClass:'mira_daily_life',placeholderDetected:false},
+    {position:'middle',verified:true,evidenceRefs:['vision:middle'],identityClass:'mira_daily_life',placeholderDetected:false},
+    {position:'end',verified:true,evidenceRefs:['vision:end'],identityClass:'mira_daily_life',placeholderDetected:false},
+  ],
 };
 
 const authorize=(extra={})=>authorizeSocialPublication({
@@ -35,9 +40,9 @@ const authorize=(extra={})=>authorizeSocialPublication({
   miraGatePassed:true,
   contentPersona:'mira',
   contentClass:'mira_daily_life',
-  mediaKind:'image',
-  assetUrl:'https://cdn.example/mira-final.jpg',
-  assetMimeType:'image/jpeg',
+  mediaKind:'reel',
+  assetUrl:'https://cdn.example/mira-final.mp4',
+  assetMimeType:'video/mp4',
   instagramVisual:validVisual,
   ...extra,
 });

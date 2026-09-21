@@ -7,10 +7,14 @@ const sql=fs.readFileSync('supabase/migrations/20260920073022_instagram_mira_vis
 const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
 const contentLoop=fs.readFileSync('supabase/functions/powerhouse-content-loop/index.ts','utf8');
 
-test('Instagram provider policy permits only Mira image or Reel',()=>{
+test('legacy v2 migration is superseded by the v3 Reel-only contract',()=>{
   assert.match(sql,/not in \('image','reel'\)/);
   assert.match(sql,/INSTAGRAM_MIRA_VISUAL_OR_REEL_ONLY/);
   assert.match(sql,/required_provider','openart'/);
+  const p=cfg.channels.instagram_company.mediaPolicy;
+  assert.deepEqual(p.allowedKinds,['reel']);
+  assert.equal(p.imageFallbackAllowed,false);
+  assert.equal(p.genericFallbackAllowed,false);
 });
 
 test('router fail-closes non image/reel and requires OpenArt',()=>{
@@ -31,14 +35,16 @@ test('sent unproven lineage cannot duplicate',()=>{
   assert.match(router,/Never duplicate/);
 });
 
-test('canonical channel contract carries exact v2 provider matrix',()=>{
+test('canonical channel contract carries exact v3 Reel-only provider matrix',()=>{
  const p=cfg.channels.instagram_company.mediaPolicy;
  assert.equal(p.providerLineageRequired,true);
- assert.deepEqual(p.allowedKinds,['image','reel']);
+ assert.deepEqual(p.allowedKinds,['reel']);
  assert.deepEqual(p.providerRouting.reel.allowedProviders,['openart']);
  assert.equal(p.providerRouting.reel.requiredProvider,'openart');
- assert.deepEqual(p.providerRouting.image.allowedProviders,['openart']);
- assert.equal(p.providerRouting.image.requiredProvider,'openart');
+ assert.equal(p.providerRouting.image,undefined);
+ assert.equal(p.requiresDailyReel,true);
+ assert.equal(p.imageFallbackAllowed,false);
+ assert.equal(p.genericFallbackAllowed,false);
  assert.equal(cfg.channels.instagram_company.requiresMiraCentralSubject,true);
  assert.equal(cfg.channels.instagram_company.blocksTextDominantCreative,true);
  assert.equal(cfg.channels.instagram_company.blocksBrandTemplateDominantCreative,true);

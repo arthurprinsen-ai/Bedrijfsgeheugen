@@ -219,3 +219,24 @@ Scheduled social delivery must invoke the canonical publisher before any Buffer 
 Fingerprint: `composio-oauth-immediate-resume-v1`.
 
 After hosted Composio OAuth is opened, Control Center may poll setup status only for a bounded period. When exactly one ACTIVE Instagram account is observed, invoke exactly one admin-authenticated `resume` action. Resume must call the canonical `powerhouse-social-publisher`; never publish directly or bypass Mira identity, exact-media, capability, idempotency or provider-readback gates.
+
+## Mira Reel only hard gate v3 (2026-09-21)
+
+Fingerprint: instagram-mira-reel-only-v3.
+
+This supersedes the older visual-or-reel allowance. The connected bedrijfsgeheugen.nl Instagram account has exactly one valid publication class: a Mira Reel.
+
+Hard invariants:
+- every Instagram publication must have contentPersona=mira and contentClass=mira_daily_life;
+- final media kind must be reel; images, static cards, feed-image fallbacks, carousels, stories and generic videos are forbidden;
+- final media must be a newly generated OpenArt MP4 at 1080x1920;
+- exact-final-media SHA/proof is mandatory;
+- vision proof must show Mira visibly present and central in a genuine daily-life scene;
+- start/middle/end frame evidence is mandatory and every required frame must preserve Mira identity;
+- text-dominant, brand-template-dominant and generic Bedrijfsgeheugen creative fail closed;
+- missing provider/video readiness creates a recoverable blocker; it never authorizes an image fallback;
+- only powerhouse-social-publisher may perform the Instagram provider mutation after one-time publication-capability consumption;
+- provider readback must prove the published media is the exact Reel before terminal success.
+
+No Mira or not a Reel means no Instagram publication.
+

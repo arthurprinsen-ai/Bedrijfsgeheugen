@@ -1,0 +1,54 @@
+{
+  "fingerprint": "instagram-mira-reel-only-v3",
+  "date": "2026-09-21",
+  "type": "CHANNEL_IDENTITY_PREVENTION",
+  "failure_class": "NON_REEL_OR_NON_MIRA_INSTAGRAM_PUBLICATION_ESCAPE",
+  "scope": "RUNTIME_DATABASE_AUTHORITY_AND_SKILL",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "supersedes": [
+    "instagram-mira-visual-reel-only-v2",
+    "instagram-mira-only-channel-hard-gate-v1"
+  ],
+  "root_cause": "The canonical Instagram policy still admitted image as a valid media kind while parallel execution and stale regression contracts could bypass or normalize non-Reel publication semantics.",
+  "prevention_rule": "Instagram bedrijfsgeheugen.nl is fail-closed Mira Reel only. Non-Mira content and every non-Reel media kind are rejected before publication-capability issuance and provider mutation. Missing video/provider readiness never falls back to image. Tests, provider routing, database authority and skills must all encode the same Reel-only invariant.",
+  "enforcement": [
+    "config/social-channel-identity-contract.json",
+    "platform/social-channel-identity-gate.mjs",
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "supabase/migrations/20260921090000_instagram_mira_reel_only_v3.sql",
+    "tests/brain-instagram-mira-reel-only-v3.test.mjs",
+    "tests/social-learning-buffer-instagram-media-gate.test.mjs",
+    "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
+  "evidence": [
+    "tests/brain-instagram-mira-reel-only-v3.test.mjs",
+    "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs",
+    "tests/brain-instagram-mira-only-channel-hard-gate-v1.test.mjs",
+    "tests/social-learning-buffer-instagram-media-gate.test.mjs",
+    "tests/social-learning-buffer-channel-identity-gate.test.mjs",
+    "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+    "supabase/migrations/20260921090000_instagram_mira_reel_only_v3.sql",
+    "platform/social-channel-identity-gate.mjs"
+  ],
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-mira-reel-only-v3.test.mjs",
+      "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs",
+      "tests/brain-instagram-mira-only-channel-hard-gate-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-mira-reel-only-v3.test.mjs"
+    ]
+  },
+  "terminal_rule": "Do not claim LIVE until protected merge, required checks, migration/runtime deployment and production Instagram capability/readback prove v3."
+}
