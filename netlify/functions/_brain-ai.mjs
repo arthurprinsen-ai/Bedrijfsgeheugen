@@ -7,18 +7,27 @@ import { createAiUsageStore } from './_ai-usage-store.mjs';
 
 const MODEL_ID = 'ANTHROPIC-SONNET';
 const MODEL = 'claude-sonnet-5';
+const TRANSLATION_MODEL_ID = 'ANTHROPIC-HAIKU';
+const TRANSLATION_MODEL = 'claude-haiku-4-5-20251001';
 
-const providerRegistry = createProviderRegistry([{
-  id:MODEL_ID, provider:'Anthropic', model:MODEL, status:'Approved',
-  allowedDataClasses:['Public','Confidential'], allowedPurposes:['website-answer','portal-project-answer','ui-translation'],
-  trainingAllowed:false, persistentProviderMemory:false,
-}]);
+const providerRegistry = createProviderRegistry([
+  {
+    id:MODEL_ID, provider:'Anthropic', model:MODEL, status:'Approved',
+    allowedDataClasses:['Public','Confidential'], allowedPurposes:['website-answer','portal-project-answer'],
+    trainingAllowed:false, persistentProviderMemory:false,
+  },
+  {
+    id:TRANSLATION_MODEL_ID, provider:'Anthropic', model:TRANSLATION_MODEL, status:'Approved',
+    allowedDataClasses:['Public','Confidential'], allowedPurposes:['ui-translation'],
+    trainingAllowed:false, persistentProviderMemory:false,
+  }
+]);
 
 const aiUseCases = [
   createAIUseCase({ id:'AI-WEBSITE-QA', tenantId:'PUBLIC', purpose:'website-answer', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:MODEL_ID, dataClasses:['Public'], humanOversight:'Escalate when provided sources do not answer', autonomy:'L1', controls:['SOURCE_ONLY','TRANSPARENCY','NO_PERSISTENCE'], evidence:['WEBSITE-INDEX'], state:AI_USE_CASE_STATES.ACTIVE }),
   createAIUseCase({ id:'AI-PORTAL-QA', tenantId:'REQUEST_SCOPED', purpose:'portal-project-answer', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:MODEL_ID, dataClasses:['Confidential'], humanOversight:'User initiates every request; no autonomous action', autonomy:'L1', controls:['REQUEST_SCOPED_CONTEXT','NO_PERSISTENCE'], evidence:['PORTAL-REQUEST-CONTEXT'], state:AI_USE_CASE_STATES.ACTIVE }),
-  createAIUseCase({ id:'AI-PUBLIC-TRANSLATION', tenantId:'PUBLIC', purpose:'ui-translation', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:MODEL_ID, dataClasses:['Public'], humanOversight:'User can switch back to canonical Dutch source', autonomy:'L1', controls:['TRANSLATION_ONLY','NO_PERSISTENCE'], evidence:['SOURCE-TEXT'], state:AI_USE_CASE_STATES.ACTIVE }),
-  createAIUseCase({ id:'AI-PORTAL-TRANSLATION', tenantId:'REQUEST_SCOPED', purpose:'ui-translation', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:MODEL_ID, dataClasses:['Confidential'], humanOversight:'User can switch back to canonical Dutch source', autonomy:'L1', controls:['REQUEST_SCOPED_CONTEXT','TRANSLATION_ONLY','NO_PERSISTENCE'], evidence:['VISIBLE-PORTAL-TEXT'], state:AI_USE_CASE_STATES.ACTIVE }),
+  createAIUseCase({ id:'AI-PUBLIC-TRANSLATION', tenantId:'PUBLIC', purpose:'ui-translation', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:TRANSLATION_MODEL_ID, dataClasses:['Public'], humanOversight:'User can switch back to canonical Dutch source', autonomy:'L1', controls:['TRANSLATION_ONLY','NO_PERSISTENCE'], evidence:['SOURCE-TEXT'], state:AI_USE_CASE_STATES.ACTIVE }),
+  createAIUseCase({ id:'AI-PORTAL-TRANSLATION', tenantId:'REQUEST_SCOPED', purpose:'ui-translation', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:TRANSLATION_MODEL_ID, dataClasses:['Confidential'], humanOversight:'User can switch back to canonical Dutch source', autonomy:'L1', controls:['REQUEST_SCOPED_CONTEXT','TRANSLATION_ONLY','NO_PERSISTENCE'], evidence:['VISIBLE-PORTAL-TEXT'], state:AI_USE_CASE_STATES.ACTIVE }),
 ];
 
 const policies = [
@@ -28,12 +37,12 @@ const policies = [
   { id:'PORTAL-UI-TRANSLATION', subjectId:'portal-requester', action:ACTIONS.AI_PROCESS, resourceType:'TranslationContext', purpose:'ui-translation', dataClass:'Confidential', tenantId:'REQUEST_SCOPED', decision:DECISIONS.ALLOW },
 ];
 
-async function anthropic({ authorized, apiKey, system, maxTokens, renderUser, provenance, fetchImpl = fetch }) {
+async function anthropic({ authorized, apiKey, system, maxTokens, renderUser, provenance, model = MODEL, fetchImpl = fetch }) {
   if (!apiKey) throw new Error('Anthropic API key missing');
   const response = await fetchImpl('https://api.anthropic.com/v1/messages', {
     method:'POST',
     headers:{ 'content-type':'application/json', 'x-api-key':apiKey, 'anthropic-version':'2023-06-01' },
-    body:JSON.stringify({ model:MODEL, max_tokens:maxTokens, system, messages:[{ role:'user', content:renderUser(authorized.context) }] }),
+    body:JSON.stringify({ model, max_tokens:maxTokens, system, messages:[{ role:'user', content:renderUser(authorized.context) }] }),
   });
   if (!response.ok) {
     let detail = '';
@@ -88,12 +97,12 @@ export async function runTranslation({ strings, source='nl', target='en', dataCl
   const aiUseCaseId = isPortal ? 'AI-PORTAL-TRANSLATION' : 'AI-PUBLIC-TRANSLATION';
   const system = 'You are the Bedrijfsgeheugen translation layer. Translate faithfully between Dutch and English. Preserve meaning, product names, numbers, currencies, URLs, punctuation and placeholders. Never add claims, explanations or marketing copy. Return ONLY a valid JSON array of strings in the same order and same length as the input.';
   const result = await runGovernedProductionAI({
-    request:{ requestId, tenantId, requesterId, aiUseCaseId, purpose:'ui-translation', resourceType:'TranslationContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass, context:{ strings, source, target } },
+    request:{ requestId, tenantId, requesterId, aiUseCaseId, purpose:'ui-translation', resourceType:'TranslationContext', resourceId:requestId, providerModelId:TRANSLATION_MODEL_ID, dataClass, context:{ strings, source, target } },
     policies, providerRegistry, aiUseCases,
     contextPolicy:{ allowedFields:['strings','source','target'], pseudonymizeFields:[] },
     invokeModel:authorized => anthropic({
-      authorized, apiKey, system, maxTokens:4000, fetchImpl,
-      provenance:{ source:isPortal?'visible-portal-text':'public-site-text', providerModelId:MODEL_ID },
+      authorized, apiKey, system, maxTokens:2600, model:TRANSLATION_MODEL, fetchImpl,
+      provenance:{ source:isPortal?'visible-portal-text':'public-site-text', providerModelId:TRANSLATION_MODEL_ID },
       renderUser:ctx => JSON.stringify({source:ctx.source,target:ctx.target,strings:ctx.strings})
     }),
   });

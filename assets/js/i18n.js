@@ -122,37 +122,49 @@
       batch.push(source); chars += source.length;
     }
     if (batch.length) batches.push(batch);
-    for (const part of batches) {
-      if (requestRun !== run) return new Map();
-      try {
-        let response;
-        for (let attempt=0; attempt<2; attempt++) {
+    async function requestPart(part) {
+      if (requestRun !== run) return false;
+      let response;
+      for (let attempt=0; attempt<2; attempt++) {
+        try {
           response = await fetch('/api/i18n-translate', {
             method:'POST',
             headers:{'content-type':'application/json'},
             body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
           });
-          if (response.ok) break;
-          if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 250));
-        }
-        if (!response?.ok) continue;
-        const payload = await response.json();
-        if (requestRun !== run) return new Map();
-        if (!Array.isArray(payload.translations) || payload.translations.length !== part.length) continue;
-        part.forEach((source,i) => {
-          const translated = typeof payload.translations[i] === 'string' && payload.translations[i].trim()
-            ? payload.translations[i].trim()
-            : null;
-          if (!translated) return;
-          out.set(source,translated);
-          cache[cacheId(target,source)] = translated;
-        });
-        saveCache();
-      } catch {
-        // Keep the successfully translated batches. One provider/API failure must
-        // never make the entire language switch appear to do nothing.
+        } catch { response = null; }
+        if (response?.ok) break;
+        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 300));
       }
+      if (!response?.ok) {
+        if (part.length > 5) {
+          let any = false;
+          for (let i=0;i<part.length;i+=5) any = (await requestPart(part.slice(i,i+5))) || any;
+          return any;
+        }
+        return false;
+      }
+      let payload;
+      try { payload = await response.json(); } catch { return false; }
+      if (requestRun !== run) return false;
+      if (!Array.isArray(payload.translations) || payload.translations.length !== part.length) return false;
+      let wrote = false;
+      part.forEach((source,i) => {
+        const translated = typeof payload.translations[i] === 'string' && payload.translations[i].trim()
+          ? payload.translations[i].trim()
+          : null;
+        if (!translated || translated === source) return;
+        wrote = true;
+        out.set(source,translated);
+        cache[cacheId(target,source)] = translated;
+      });
+      if (wrote) saveCache();
+      return wrote;
     }
+
+    let anyTranslated = out.size > 0;
+    for (const part of batches) anyTranslated = (await requestPart(part)) || anyTranslated;
+    if (missing.length && !anyTranslated) throw new Error('translation_unavailable');
     return out;
   }
 
