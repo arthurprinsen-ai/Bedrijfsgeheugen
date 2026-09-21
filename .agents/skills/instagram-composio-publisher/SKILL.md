@@ -276,3 +276,10 @@ Do not infer that a secret configured in one runtime is available in another. Th
 Fingerprint: `composio-secret-sync-deploy-trigger-v1`.
 
 A Netlify scheduled function is intentionally not a public HTTP endpoint. When a security-sensitive cross-runtime configuration bridge must become effective in the same release, reuse its idempotent status-first operation from a production-only `deploySucceeded` platform event. Never add a public trigger merely to obtain immediate proof. The deploy-event bridge may synchronize configuration only; publication remains owned by the canonical social publisher and content loop.
+
+
+## Netlify runtime environment API
+
+Fingerprint: `netlify-serverless-env-api-v1`.
+
+Use `process.env` for Netlify serverless Functions, including scheduled functions and platform-event handlers. Do not use `Netlify.env` there; that API belongs to Edge Functions. A production secret can be correctly scoped and still appear absent if the wrong runtime API is used.
