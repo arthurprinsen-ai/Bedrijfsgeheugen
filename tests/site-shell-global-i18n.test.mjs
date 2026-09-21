@@ -18,9 +18,15 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/data-bg-mobile-view/);
   assert.match(runtime,/data-bg-shared-mobile-view/);
   assert.doesNotMatch(fs.readFileSync('assets/i18n.css','utf8'),/position:\s*fixed/);
-  assert.match(runtime,/batch\.length >= 30/);
+  assert.match(runtime,/bg_i18n_cache_v2/);
+  assert.match(runtime,/batch\.length >= 20/);
   assert.match(runtime,/mountControl\(\)/);
-  assert.match(fs.readFileSync('netlify\/functions\/_brain-ai.mjs','utf8'),/maxTokens:4000/);
+  const brain = fs.readFileSync('netlify/functions/_brain-ai.mjs','utf8');
+  assert.match(brain,/maxTokens:4000/);
+  assert.match(brain,/firstBracket/);
+  assert.match(brain,/fenced/);
+  assert.match(runtime,/successfully translated batches/);
+  assert.doesNotMatch(runtime,/locale = previous;\s*try \{ localStorage\.setItem\(STORAGE_KEY, locale\)/);
   assert.match(injector,/\.html/);
   assert.match(injector,/v18-mobile-drawer/);
   assert.match(injector,/data-bg-language-switcher="mobile"/);
