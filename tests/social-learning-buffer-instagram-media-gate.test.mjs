@@ -69,9 +69,9 @@ test('Instagram requires a Mira daily-life scene',()=>{
 });
 test('Instagram blocks text-dominant and brand-template-dominant Reel creative',()=>{
  let r=run({instagramVisual:reelVisual({textDominant:true})});
- assert.equal(r.authorized,false); assert.ok(r.reasons.includes('INSTAGRAM_TEXT_DOMINANT_BLOCKED'));
+ assert.equal(r.authorized,false); assert.ok(r.reasons.includes('INSTAGRAM_TEXT_DOMINANT_CREATIVE_BLOCKED'));
  r=run({instagramVisual:reelVisual({brandTemplateDominant:true})});
- assert.equal(r.authorized,false); assert.ok(r.reasons.includes('INSTAGRAM_BRAND_TEMPLATE_BLOCKED'));
+ assert.equal(r.authorized,false); assert.ok(r.reasons.includes('INSTAGRAM_BRAND_TEMPLATE_DOMINANT_BLOCKED'));
 });
 test('reel requires exact final asset readback',()=>{
  const r=run({instagramVisual:reelVisual({assetUrl:'https://cdn.example/other.mp4'})});
