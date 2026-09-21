@@ -294,3 +294,5 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Owner:** website release + SEO order engine; dezelfde delivery-lineage blijft eigenaar tot protected merge en exact provider/readback.
 - **Preventie:** toets semantiek op de build-retained component, niet op een vervangbare shell; inventariseer expliciete collectie-indexen naast geneste artikelen.
 - **Terminalregel:** `DEPLOY_PENDING` en `PRODUCTION_READBACK_PENDING` zijn nooit gebruikershandoff; alleen terminal readback sluit de recovery.
+
+- **BRAIN recovery extension (same lineage):** BRAIN exposed inherited System Map drift from the immediately preceding i18n release: `netlify/functions/i18n-translate.mjs` was not registered in `platform/system-map/canonical-system-map.mjs`. The inventory and observed provider count are updated; `tests/brain-powerhouse-live-system-map-v1.test.mjs` is added to historical replay. New runtime topology without System Map writeback remains `WRITEBACK_INCOMPLETE`.
