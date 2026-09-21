@@ -22,5 +22,8 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/mountControl\(\)/);
   assert.match(fs.readFileSync('netlify\/functions\/_brain-ai.mjs','utf8'),/maxTokens:4000/);
   assert.match(injector,/\.html/);
+  assert.match(injector,/v18-mobile-drawer/);
+  assert.match(injector,/data-bg-language-switcher="mobile"/);
+  assert.match(injector,/\/inloggen/);
   assert.match(fn,/runTranslation/);
 });
