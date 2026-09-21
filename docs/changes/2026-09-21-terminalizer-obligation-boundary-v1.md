@@ -4,3 +4,6 @@ The obligation terminalizer now stops supersession traversal when a historical p
 
 
 The recovery now pins `tests/brain-terminal-obligation-boundary.test.mjs` as the historical replay required by learning canonicalization.
+
+
+Existing Supabase terminal-readback and supersession-migration contract tests now assert `SUPERSEDES_OBLIGATION_BOUNDARY`, keeping the historical safety suite aligned with the corrected lineage semantics.

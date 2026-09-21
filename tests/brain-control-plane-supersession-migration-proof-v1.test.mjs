@@ -6,7 +6,7 @@ test('terminal migration proof traverses supersession lineage', async()=>{
   const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
   assert.match(workflow,/across supersession lineage/);
   assert.match(workflow,/SUPERSEDES_LINEAGE_CYCLE/);
-  assert.match(workflow,/SUPERSEDES_OBLIGATION_MISMATCH/);
+  assert.match(workflow,/SUPERSEDES_OBLIGATION_BOUNDARY/);
   assert.match(workflow,/SUPERSEDES_PR_NOT_TERMINAL/);
   assert.match(workflow,/UNMERGED_SUPERSEDES_SAFE_TO_SKIP/);
   assert.match(workflow,/UNMERGED_SUPERSEDES_HAS_SUPABASE_MIGRATIONS/);

@@ -9,7 +9,7 @@ test('terminal closure derives exact Supabase migration identities across the sa
   assert.ok(workflow.includes("/^supabase\\/migrations\\/[^/]+\\.sql$/"));
   assert.match(workflow,/migration_readback_required/);
   assert.match(workflow,/expected_migrations/);
-  assert.match(workflow,/SUPERSEDES_OBLIGATION_MISMATCH/);
+  assert.match(workflow,/SUPERSEDES_OBLIGATION_BOUNDARY/);
   assert.match(workflow,/source_pr:prNumber/);
 });
 
