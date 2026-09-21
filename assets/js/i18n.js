@@ -5,7 +5,7 @@
   const SUPPORTED = new Set(['nl','en']);
   const ORIGINAL = new WeakMap();
   const ATTR_ORIGINAL = new WeakMap();
-  const SKIP = new Set(['SCRIPT','STYLE','CODE','PRE','TEXTAREA','INPUT','SELECT','OPTION','NOSCRIPT','SVG']);
+  const SKIP = new Set(['SCRIPT','STYLE','CODE','PRE','TEXTAREA','INPUT','SELECT','NOSCRIPT','SVG']);
   let locale = 'nl';
   let observer;
   let mutationTimer;
@@ -65,7 +65,7 @@
 
   function meaningful(text) {
     const s = String(text || '').replace(/\s+/g,' ').trim();
-    if (s.length < 2 || s.length > 900) return false;
+    if (s.length < 2 || s.length > 3000) return false;
     if (/^[\d\s€$£¥%+\-–—.,:/()]+$/.test(s)) return false;
     if (/^(https?:\/\/|www\.)/i.test(s)) return false;
     return /[A-Za-zÀ-ÿ]/.test(s);
@@ -78,8 +78,12 @@
   function rememberAttrs(el) {
     if (ATTR_ORIGINAL.has(el)) return;
     const values = {};
-    for (const attr of ['placeholder','title','aria-label']) {
+    for (const attr of ['placeholder','title','aria-label','alt']) {
       if (el.hasAttribute?.(attr) && meaningful(el.getAttribute(attr))) values[attr] = el.getAttribute(attr);
+    }
+    const type = String(el.getAttribute?.('type') || '').toLowerCase();
+    if ((type === 'submit' || type === 'button' || type === 'reset') && el.hasAttribute?.('value') && meaningful(el.getAttribute('value'))) {
+      values.value = el.getAttribute('value');
     }
     if (Object.keys(values).length) ATTR_ORIGINAL.set(el, values);
   }
@@ -95,8 +99,8 @@
       rememberText(node);
       items.push({ kind:'text', node, source:ORIGINAL.get(node).replace(/\s+/g,' ').trim() });
     }
-    root.querySelectorAll?.('[placeholder],[title],[aria-label]').forEach(el => {
-      if (shouldSkipElement(el)) return;
+    root.querySelectorAll?.('[placeholder],[title],[aria-label],[alt],input[type="submit"][value],input[type="button"][value],input[type="reset"][value]').forEach(el => {
+      if (el.closest?.('[data-bg-no-translate],.notranslate,[translate="no"],[contenteditable="true"]')) return;
       rememberAttrs(el);
       const original = ATTR_ORIGINAL.get(el);
       if (!original) return;
@@ -169,7 +173,7 @@
         const translated = typeof payload.translations[i] === 'string' && payload.translations[i].trim()
           ? payload.translations[i].trim()
           : null;
-        if (!translated || translated === source) return;
+        if (!translated) return;
         wrote = true;
         out.set(source,translated);
         cache[cacheId(target,source)] = translated;
@@ -178,9 +182,17 @@
       return wrote;
     }
 
-    let anyTranslated = out.size > 0;
-    for (const part of batches) anyTranslated = (await requestPart(part)) || anyTranslated;
-    if (missing.length && !anyTranslated) throw new Error('translation_unavailable');
+    for (const part of batches) await requestPart(part);
+
+    const unresolved = missing.filter(source => !out.has(source));
+    for (const source of unresolved) {
+      await requestPart([source]);
+    }
+
+    const stillMissing = unique.filter(source => !out.has(source));
+    if (stillMissing.length) {
+      throw new Error('translation_incomplete:' + stillMissing.length);
+    }
     return out;
   }
 
@@ -215,11 +227,6 @@
       return;
     }
     const items = collect(root);
-
-    // Apply canonical navigation/auth translations immediately. This is intentionally
-    // synchronous so selecting English visibly changes the menu even if the remote
-    // translation provider is slow or temporarily unavailable.
-    applyLocalTranslations(items);
 
     const extras = [];
     if (root === document.body) {
@@ -278,18 +285,22 @@
     const normalized = normalizeLocale(next);
     if (!SUPPORTED.has(normalized) || normalized === locale) { closeMenus(); return; }
     const previous = locale;
+    const previousEpoch = localeEpoch;
     locale = normalized;
     localeEpoch += 1;
-    try { localStorage.setItem(STORAGE_KEY, locale); } catch {}
-    document.cookie = 'bg_locale=' + encodeURIComponent(locale) + '; Path=/; Max-Age=31536000; SameSite=Lax';
     document.documentElement.dataset.bgI18nBusy = 'true';
     delete document.documentElement.dataset.bgI18nError;
-    syncControls();
     closeMenus();
-    document.dispatchEvent(new CustomEvent('bg:localechange',{detail:{locale}}));
     try {
       await apply(document.body);
+      try { localStorage.setItem(STORAGE_KEY, locale); } catch {}
+      document.cookie = 'bg_locale=' + encodeURIComponent(locale) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+      syncControls();
+      document.dispatchEvent(new CustomEvent('bg:localechange',{detail:{locale}}));
     } catch (error) {
+      locale = previous;
+      localeEpoch = previousEpoch + 1;
+      await apply(document.body).catch(()=>{});
       document.documentElement.dataset.bgI18nError = 'true';
       syncControls();
       throw error;
@@ -399,8 +410,6 @@
       if (!roots.size) return;
       mountControl();
       if (locale !== 'en') return;
-      // Dynamic menu rebuilds get the deterministic English core copy immediately.
-      applyLocalTranslations(collect(document.body));
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(()=>apply(document.body).catch(()=>{}), 40);
     });
