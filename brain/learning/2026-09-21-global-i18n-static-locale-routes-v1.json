@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-static-locale-routes-v1",
+  "compiler": {
+    "failure_class": "I18N_RUNTIME_TRANSLATION_ARCHITECTURE_MISMATCH",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The public website tried to become bilingual by translating the already-rendered Dutch DOM at runtime. This made language switching dependent on client-side events, mutation timing, browser state and a remote AI request. The result repeatedly allowed English to appear selected while the actual document remained Dutch.",
+  "prevention": [
+    "Public website language variants must be built as deterministic locale routes under /nl and /en.",
+    "Language switching navigates to the corresponding locale URL instead of mutating the full static document in place.",
+    "Each localized document must carry the correct html lang value, canonical URL and reciprocal hreflang links including x-default.",
+    "Internal website links must remain within the active locale.",
+    "Production English route generation fails closed when any static translation is unresolved; mixed-language static documents are not publishable.",
+    "Runtime translation remains only for content inserted dynamically after a localized document has loaded."
+  ],
+  "evidence": [
+    "tools/site-shell/build-localized-routes.mjs",
+    "assets/js/i18n.js",
+    "netlify.toml",
+    "tests/site-shell-static-locales.test.mjs",
+    "user production screenshots showing English selected while Dutch copy remained visible"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/site-shell-static-locales.test.mjs","tests/site-shell-global-i18n.test.mjs"],
+    "canary": ["tests/site-shell-static-locales.test.mjs"],
+    "production_readback_required": true
+  },
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-atomic-whole-site-en-v1"
+  ],
+  "skill_targets": ["website-release","powerhouse-continuity"],
+  "skill_projection_required": false
+}
