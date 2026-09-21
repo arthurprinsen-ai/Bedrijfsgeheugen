@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-translation-provider-resilience-v1",
+  "compiler": {
+    "failure_class": "I18N_PROVIDER_BATCH_FAILURE_NO_VISIBLE_TRANSLATION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2
+  },
+  "root_cause": "The selected English locale was visible in the menu while page text stayed Dutch because the runtime could receive repeated translation batch failures from the server-side AI translation path. The previous resilience change preserved the locale but deliberately swallowed failed batches, turning a backend/provider failure into a silent no-op for visitors.",
+  "prevention": [
+    "Use a dedicated low-latency translation model instead of the general Sonnet reasoning model for UI translation.",
+    "Failed large translation batches must be retried as smaller bounded batches before giving up.",
+    "If no missing source string can be translated, the runtime must surface translation_unavailable instead of silently presenting an English-selected Dutch page.",
+    "Keep translation model/provider registration explicit and separate from website and portal QA models."
+  ],
+  "evidence": [
+    "user production screenshot 2026-09-21 17:38 showing English selected while Prijzen, Cases, Kennis, Over ons, Gratis zelfscan and Frisse Blik Scan remained Dutch",
+    "netlify/functions/_brain-ai.mjs",
+    "assets/js/i18n.js",
+    "tests/site-shell-global-i18n.test.mjs",
+    "Anthropic model registry confirms claude-haiku-4-5-20251001 is active"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/site-shell-global-i18n.test.mjs"
+    ],
+    "canary": [
+      "tests/site-shell-global-i18n.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-english-switch-runtime-resilience-v1"
+  ],
+  "skill_targets": [
+    "website-release",
+    "powerhouse-continuity"
+  ],
+  "skill_projection_required": false
+}
