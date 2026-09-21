@@ -35,6 +35,7 @@
       "tests/brain-instagram-mira-reel-only-v3.test.mjs"
     ],
     "canary": [
+      "tests/brain-instagram-composio-auth-preflight.test.mjs",
       "tests/brain-instagram-buffer-independent-resume.test.mjs"
     ]
   },
