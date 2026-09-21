@@ -27,6 +27,11 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(brain,/fenced/);
   assert.match(runtime,/translation_unavailable/);
   assert.match(runtime,/requestPart/);
+  assert.match(runtime,/localeEpoch/);
+  assert.doesNotMatch(runtime,/let run = 0/);
+  assert.match(runtime,/\['Prijzen','Pricing'\]/);
+  assert.match(runtime,/\['Inloggen','Log in'\]/);
+  assert.match(runtime,/\['Aanmelden','Sign up'\]/);
   assert.doesNotMatch(runtime,/locale = previous;\s*try \{ localStorage\.setItem\(STORAGE_KEY, locale\)/);
   assert.match(injector,/\.html/);
   assert.match(injector,/v18-mobile-drawer/);
