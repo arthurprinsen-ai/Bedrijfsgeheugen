@@ -18,7 +18,9 @@
   "evidence": [
     "Obligation Terminal Closure run 35537568958",
     ".github/workflows/obligation-terminal-closure.yml",
-    "tests/brain-terminal-obligation-boundary.test.mjs"
+    "tests/brain-terminal-obligation-boundary.test.mjs",
+    "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs",
+    "tests/brain-control-plane-supersession-migration-proof-v1.test.mjs"
   ],
   "skill_targets": [
     "delivery",
@@ -27,7 +29,9 @@
   "skill_projection_required": true,
   "evaluation": {
     "historical_replay": [
-      "tests/brain-terminal-obligation-boundary.test.mjs"
+      "tests/brain-terminal-obligation-boundary.test.mjs",
+      "tests/brain-control-plane-supabase-terminal-readback-v1.test.mjs",
+      "tests/brain-control-plane-supersession-migration-proof-v1.test.mjs"
     ]
   }
 }
