@@ -17,9 +17,9 @@ async function callSetup(baseUrl,serviceToken,payload){
 }
 
 export async function syncComposioSecret(){
-  const apiKey=clean(Netlify.env.get('COMPOSIO_API_KEY'));
-  const baseUrl=clean(Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')).replace(/\/$/,'');
-  const serviceToken=clean(Netlify.env.get('BG_PORTAL_EU_SERVICE_TOKEN'));
+  const apiKey=clean(process.env.COMPOSIO_API_KEY);
+  const baseUrl=clean(process.env.BG_PORTAL_EU_SUPABASE_URL).replace(/\/$/,'');
+  const serviceToken=clean(process.env.BG_PORTAL_EU_SERVICE_TOKEN);
   if(!apiKey||!baseUrl||!serviceToken)return json({ok:false,error:'SERVER_CONFIG'},500);
 
   const status=await callSetup(baseUrl,serviceToken,{action:'status'});
