@@ -5,6 +5,8 @@
   "failure_class": "NON_REEL_OR_NON_MIRA_INSTAGRAM_PUBLICATION_ESCAPE",
   "scope": "RUNTIME_DATABASE_AUTHORITY_AND_SKILL",
   "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
   "supersedes": [
     "instagram-mira-visual-reel-only-v2",
     "instagram-mira-only-channel-hard-gate-v1"
@@ -19,5 +21,12 @@
     "tests/brain-instagram-mira-reel-only-v3.test.mjs",
     ".agents/skills/instagram-composio-publisher/SKILL.md"
   ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-mira-reel-only-v3.test.mjs",
+      "tests/brain-instagram-mira-visual-reel-only-v2.test.mjs",
+      "tests/brain-instagram-mira-only-channel-hard-gate-v1.test.mjs"
+    ]
+  },
   "terminal_rule": "Do not claim LIVE until protected merge, required checks, migration/runtime deployment and production Instagram capability/readback prove v3."
 }
