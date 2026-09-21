@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow,noarchive">
+<title>Instagram koppelen · Powerhouse</title>
+<style>
+body{font-family:system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;margin:0;background:#f5f7f8;color:#122026}
+main{max-width:760px;margin:48px auto;padding:0 20px}.card{background:#fff;border:1px solid #dfe6e8;border-radius:18px;padding:24px;margin:16px 0;box-shadow:0 8px 24px rgba(0,0,0,.04)}
+h1{font-size:30px;margin:0 0 8px}h2{font-size:20px}.muted{color:#61727a}.row{display:grid;gap:12px}.status{padding:12px 14px;border-radius:12px;background:#eef3f4;margin:12px 0}
+label{display:grid;gap:6px;font-weight:600}input{font:inherit;padding:12px;border:1px solid #cfd9dc;border-radius:10px}button{font:inherit;font-weight:700;padding:12px 16px;border:0;border-radius:10px;cursor:pointer;background:#122026;color:#fff}button.secondary{background:#e8eef0;color:#122026}button:disabled{opacity:.5;cursor:not-allowed}code{word-break:break-all}.ok{background:#eaf8ee}.bad{background:#fff0ef}
+</style>
+<script src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+</head>
+<body><main>
+<h1>Instagram direct koppelen</h1>
+<p class="muted">Beveiligde Meta Instagram Login-koppeling voor de Mira publisher. Tokens en app-secret worden alleen server-side in Vault opgeslagen.</p>
+<div id="message"></div>
+<section class="card">
+<h2>1. Meta App</h2>
+<p class="muted">Maak of gebruik een Meta Business App met Instagram API with Instagram Login en voeg deze redirect-URI exact toe:</p>
+<p><code>https://www.bedrijfsgeheugen.nl/api/powerhouse-meta-instagram-oauth-callback</code></p>
+<div class="row">
+<label>Instagram App ID<input id="app-id" inputmode="numeric" autocomplete="off"></label>
+<label>Instagram App Secret<input id="app-secret" type="password" autocomplete="new-password"></label>
+<button id="save-app">App-config veilig opslaan</button>
+</div>
+</section>
+<section class="card">
+<h2>2. Instagram autoriseren</h2>
+<div id="status" class="status">Status wordt geladen…</div>
+<button id="connect" disabled>Verbind Instagram</button>
+<button id="login" class="secondary" hidden>Inloggen als beheerder</button>
+</section>
+</main>
+<script>
+const $=s=>document.querySelector(s);
+const message=(text,kind='')=>$('#message').innerHTML=text?'<div class="status '+kind+'">'+String(text).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]))+'</div>':'';
+const currentUser=()=>window.netlifyIdentity?.currentUser?.()||null;
+const token=()=>currentUser()?.token?.access_token||'';
+async function api(body){
+  const t=token();if(!t)throw new Error('Inloggen vereist');
+  const r=await fetch('/api/powerhouse-meta-instagram-config',{method:'POST',headers:{authorization:'Bearer '+t,'content-type':'application/json'},body:JSON.stringify(body)});
+  const data=await r.json().catch(()=>({}));
+  if(!r.ok)throw new Error(data.detail||data.error||'Aanvraag mislukt');
+  return data;
+}
+async function load(){
+  const user=currentUser();
+  $('#login').hidden=!!user;
+  if(!user){$('#status').textContent='Inloggen vereist.';$('#connect').disabled=true;return;}
+  try{
+    const data=await api({action:'status'});
+    $('#status').textContent=data.ready?'Direct Meta actief'+(data.username?' · @'+data.username:''):data.app_credentials_present?'App-config staat klaar; Instagram autorisatie ontbreekt.':'Meta App-config ontbreekt.';
+    $('#status').className='status '+(data.ready?'ok':'');
+    $('#connect').disabled=!data.app_credentials_present;
+  }catch(e){$('#status').textContent=e.message;$('#status').className='status bad';}
+}
+$('#login').addEventListener('click',()=>window.netlifyIdentity?.open?.('login'));
+$('#save-app').addEventListener('click',async()=>{
+  message('');
+  try{
+    const appId=$('#app-id').value.trim(),appSecret=$('#app-secret').value.trim();
+    await api({action:'set_app_credentials',appId,appSecret});
+    $('#app-secret').value='';message('Meta App-config veilig opgeslagen.','ok');await load();
+  }catch(e){message(e.message,'bad');}
+});
+$('#connect').addEventListener('click',async()=>{
+  message('');
+  try{const data=await api({action:'start_oauth'});location.assign(data.authorize_url);}
+  catch(e){message(e.message,'bad');}
+});
+window.netlifyIdentity?.on?.('login',()=>{window.netlifyIdentity.close();load()});
+window.netlifyIdentity?.on?.('logout',load);
+window.netlifyIdentity?.init?.();
+const params=new URLSearchParams(location.search);
+if(params.get('connected')==='1')message('Instagram is gekoppeld'+(params.get('username')?' als @'+params.get('username'):'')+'.','ok');
+if(params.get('error'))message(params.get('error'),'bad');
+load();
+</script></body></html>

@@ -242,6 +242,18 @@ No Mira or not a Reel means no Instagram publication.
 
 
 
+## Meta Instagram OAuth onboarding and token lifecycle (2026-09-21)
+
+Fingerprint: `instagram-meta-oauth-onboarding-v1`.
+
+- Direct Meta credentials must be acquired through Instagram OAuth from an authenticated Powerhouse admin surface; do not ask users to paste long-lived runtime tokens into browser storage.
+- Store Meta App ID/App Secret and Instagram access token/user id only server-side in Supabase Vault through service-role-only RPCs.
+- OAuth state must be signed, short-lived and validated on callback before exchanging the authorization code.
+- Request only `instagram_business_basic` and `instagram_business_content_publish` for the Mira publishing path unless another documented capability requires more.
+- Exchange the short-lived authorization token for a long-lived token server-side, validate `user_id` + username via `graph.instagram.com`, then store runtime credentials.
+- Refresh the long-lived token on a bounded daily schedule. Missing auth is a fail-closed configuration state and must never cause blind duplicate publication.
+- Exact redirect URI: `https://www.bedrijfsgeheugen.nl/api/powerhouse-meta-instagram-oauth-callback`.
+
 ## Direct Meta primary transport (2026-09-21)
 
 Fingerprint: `instagram-meta-direct-primary-v1`.

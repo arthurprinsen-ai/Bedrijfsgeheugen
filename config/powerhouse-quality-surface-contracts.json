@@ -103,7 +103,7 @@
       "id": "function:powerhouse-meta-instagram-setup",
       "type": "function",
       "authority": "supabase/functions/powerhouse-meta-instagram-setup/index.ts",
-      "evidence_contract": "tests/brain-instagram-meta-direct-config.test.mjs",
+      "evidence_contract": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
       "required": true
     },
     {
@@ -167,6 +167,13 @@
       "type": "netlify_function",
       "authority": "netlify/functions/linkedin-revenue-cockpit.mjs",
       "evidence_contract": "contracts/openapi/powerhouse-public-api.yaml",
+      "required": true
+    },
+    {
+      "id": "netlify_function:meta-instagram-token-refresh",
+      "type": "netlify_function",
+      "authority": "netlify/functions/meta-instagram-token-refresh.mjs",
+      "evidence_contract": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
       "required": true
     },
     {
@@ -243,7 +250,14 @@
       "id": "netlify_function:powerhouse-meta-instagram-config",
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-meta-instagram-config.mjs",
-      "evidence_contract": "tests/brain-instagram-meta-direct-config.test.mjs",
+      "evidence_contract": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
+      "required": true
+    },
+    {
+      "id": "netlify_function:powerhouse-meta-instagram-oauth-callback",
+      "type": "netlify_function",
+      "authority": "netlify/functions/powerhouse-meta-instagram-oauth-callback.mjs",
+      "evidence_contract": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
       "required": true
     },
     {
@@ -286,6 +300,13 @@
       "type": "route",
       "authority": "portal-v2/compliance.html",
       "evidence_contract": "portal-v2/tests/regulatory-baseline.test.mjs",
+      "required": true
+    },
+    {
+      "id": "route:/powerhouse-instagram-connect",
+      "type": "route",
+      "authority": "portal-v2/powerhouse-instagram-connect.html",
+      "evidence_contract": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
       "required": true
     },
     {
@@ -440,6 +461,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260920111000_admin_composio_key_onboarding.sql",
       "evidence_contract": "tests/brain-admin-composio-key-onboarding.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_set_meta_instagram_app_credentials_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260921152000_instagram_meta_oauth_onboarding_v1.sql",
+      "evidence_contract": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
       "required": true
     },
     {
