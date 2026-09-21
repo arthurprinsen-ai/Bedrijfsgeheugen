@@ -27,3 +27,14 @@ test('Control Center no longer consumes ordinary portal runtime evidence',async(
   assert.match(src,/Inloggen vereist/);
   assert.doesNotMatch(src,/domainState\?\.get/);
 });
+
+
+test('Control Center login actively loads and initializes Netlify Identity before opening login',async()=>{
+  const src=await readFile('portal-v2/modules/powerhouse-observability.js','utf8');
+  const state=await readFile('portal-v2/portal-state.js','utf8');
+  assert.match(src,/ensureIdentityWidget/);
+  assert.match(src,/await ensureIdentityWidget\(\)/);
+  assert.match(src,/identity\.open\('login'\)/);
+  assert.match(state,/identity\.init\?\.\(\)/);
+  assert.match(state,/identityWidgetPromise/);
+});

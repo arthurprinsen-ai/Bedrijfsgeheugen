@@ -67,19 +67,35 @@ function withDemoMarker(state){
  return next;
 }
 
+let identityWidgetPromise=null;
+function initializeIdentityWidget(identity){
+ if(!identity)return null;
+ try{identity.init?.()}catch{}
+ return identity;
+}
 export function ensureIdentityWidget(){
- if(globalThis.window?.netlifyIdentity)return Promise.resolve(globalThis.window.netlifyIdentity);
+ const ready=globalThis.window?.netlifyIdentity;
+ if(ready)return Promise.resolve(initializeIdentityWidget(ready));
  if(!globalThis.document)return Promise.resolve(null);
- return new Promise(resolve=>{
+ if(identityWidgetPromise)return identityWidgetPromise;
+ identityWidgetPromise=new Promise(resolve=>{
+  const finish=()=>resolve(initializeIdentityWidget(globalThis.window?.netlifyIdentity||null));
   const existing=document.querySelector('script[data-v2-identity]');
-  if(existing){existing.addEventListener('load',()=>resolve(globalThis.window?.netlifyIdentity||null),{once:true});return;}
+  if(existing){
+   if(globalThis.window?.netlifyIdentity){finish();return;}
+   existing.addEventListener('load',finish,{once:true});
+   existing.addEventListener('error',()=>resolve(null),{once:true});
+   setTimeout(finish,1500);
+   return;
+  }
   const script=document.createElement('script');
   script.src='https://identity.netlify.com/v1/netlify-identity-widget.js';
   script.async=true;script.dataset.v2Identity='true';
-  script.addEventListener('load',()=>resolve(globalThis.window?.netlifyIdentity||null),{once:true});
+  script.addEventListener('load',finish,{once:true});
   script.addEventListener('error',()=>resolve(null),{once:true});
   document.head.appendChild(script);
  });
+ return identityWidgetPromise;
 }
 
 export function createPortalStateClient({fetchImpl=globalThis.fetch,identityProvider=()=>globalThis.window?.netlifyIdentity||null,demoMode=isPortalDemoRoute(),customerMode=isPortalCustomerRoute()}={}){
