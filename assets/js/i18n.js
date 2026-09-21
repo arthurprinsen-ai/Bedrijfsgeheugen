@@ -244,7 +244,11 @@
       el.setAttribute('aria-label', locale === 'nl' ? 'Taal: Nederlands' : 'Language: English');
     });
     document.querySelectorAll('[data-bg-language-label]').forEach(el => {
-      el.textContent = locale === 'nl' ? 'Taal' : 'Language';
+      el.textContent = 'Language';
+    });
+    document.querySelectorAll('[data-bg-language-select]').forEach(select => {
+      if (select.value !== locale) select.value = locale;
+      select.setAttribute('aria-label', 'Language');
     });
   }
 
@@ -283,11 +287,12 @@
     wrap.dataset.bgNoTranslate = '';
     if (mode === 'mobile') {
       wrap.className = 'bg-mobile-language';
-      wrap.innerHTML = '<span class="bg-mobile-language-label" data-bg-language-label>Taal</span>' +
-        '<div class="bg-mobile-language-options" role="group" aria-label="Taal kiezen">' +
-        '<button type="button" data-bg-language-option="nl">Nederlands</button>' +
-        '<button type="button" data-bg-language-option="en">English</button></div>' +
-        '<span class="bg-language-error" data-bg-language-error hidden>Wisselen mislukt. Probeer opnieuw.</span>';
+      wrap.innerHTML = '<span class="bg-mobile-language-label" data-bg-language-label>Language</span>' +
+        '<div class="bg-mobile-language-select-wrap">' +
+        '<select class="bg-mobile-language-select" data-bg-language-select aria-label="Language">' +
+        '<option value="en">English</option><option value="nl">Dutch</option></select>' +
+        '<span class="bg-mobile-language-chevron" aria-hidden="true">⌄</span></div>' +
+        '<span class="bg-language-error" data-bg-language-error hidden>Switching language failed. Try again.</span>';
     } else {
       wrap.className = 'bgkop-language';
       wrap.innerHTML = '<button type="button" class="bgkop-language-current" data-bg-language-current aria-haspopup="listbox" aria-expanded="false">Taal · NL</button>' +
@@ -334,6 +339,11 @@
   function bindControlEvents() {
     if (controlsBound) return;
     controlsBound = true;
+    document.addEventListener('change', event => {
+      const select = event.target.closest?.('[data-bg-language-select]');
+      if (!select) return;
+      setLocale(select.value).catch(showLocaleError);
+    });
     document.addEventListener('click', event => {
       const option = event.target.closest?.('[data-bg-language-option]');
       if (option) {
