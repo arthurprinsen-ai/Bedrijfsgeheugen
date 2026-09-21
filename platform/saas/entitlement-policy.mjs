@@ -108,3 +108,26 @@ export function enforceConnectorRefreshPolicy(policy,connector){
     ??connector?.refreshMinutes;
   return enforceRefreshPolicy(policy,requested);
 }
+
+
+export function enforceAgentMode(policy,{status,approvalEvidence}={}){
+  if(status!=='Executing')return Object.freeze({allowed:true,reason:'NOT_EXECUTION_TRANSITION',agentMode:policy?.agentMode||null});
+  if(!policy){
+    const error=new Error('SUBSCRIPTION_REQUIRED');
+    error.code='SUBSCRIPTION_REQUIRED';
+    throw error;
+  }
+  const mode=String(policy.agentMode||'none');
+  if(mode==='recommend')return Object.freeze({allowed:false,reason:'PLAN_RECOMMEND_ONLY',agentMode:mode});
+  if(mode==='approval_required'){
+    const approved=Boolean(
+      approvalEvidence&&
+      approvalEvidence.approved===true&&
+      String(approvalEvidence.approvedBy||'').trim()&&
+      String(approvalEvidence.approvedAt||'').trim()
+    );
+    return Object.freeze({allowed:approved,reason:approved?'PLAN_APPROVAL_SATISFIED':'PLAN_APPROVAL_REQUIRED',agentMode:mode});
+  }
+  if(mode==='guardrailed_autonomous')return Object.freeze({allowed:true,reason:'PLAN_AUTONOMY_ALLOWED',agentMode:mode});
+  return Object.freeze({allowed:false,reason:'PLAN_AGENT_MODE_DENY',agentMode:mode});
+}
