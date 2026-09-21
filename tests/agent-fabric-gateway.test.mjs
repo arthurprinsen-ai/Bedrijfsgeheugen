@@ -64,3 +64,42 @@ test('gateway fails closed when material runtime identity is absent or incomplet
     /runtime\.candidateId is required/i,
   );
 });
+
+
+test('gateway enforces SaaS agent mode before Executing transition', async () => {
+  const fabric=fakeFabric();
+  fabric.getWork=()=>({id:'W1',tenantId:'TENANT-A'});
+  const recommendGateway=createAgentFabricGateway({
+    fabric,
+    entitlementResolver:async()=>({organisation_id:'TENANT-A',plan_code:'control',status:'active',entitlements:{agent_mode:'recommend'}}),
+  });
+  await assert.rejects(
+    ()=>recommendGateway.command({type:AGENT_FABRIC_COMMANDS.TRANSITION_WORK,runtime,payload:{workId:'W1',status:'Executing'}}),
+    error=>error?.code==='PLAN_RECOMMEND_ONLY',
+  );
+
+  const approvalGateway=createAgentFabricGateway({
+    fabric,
+    entitlementResolver:async()=>({organisation_id:'TENANT-A',plan_code:'scale',status:'active',entitlements:{agent_mode:'approval_required'}}),
+  });
+  await assert.rejects(
+    ()=>approvalGateway.command({type:AGENT_FABRIC_COMMANDS.TRANSITION_WORK,runtime,payload:{workId:'W1',status:'Executing'}}),
+    error=>error?.code==='PLAN_APPROVAL_REQUIRED',
+  );
+  const approved=await approvalGateway.command({
+    type:AGENT_FABRIC_COMMANDS.TRANSITION_WORK,
+    runtime,
+    payload:{workId:'W1',status:'Executing',approvalEvidence:{approved:true,approvedBy:'owner',approvedAt:'2026-09-21T07:00:00Z'}},
+  });
+  assert.equal(approved.op,'transition');
+});
+
+test('gateway fails closed for customer execution without entitlement resolver', async () => {
+  const fabric=fakeFabric();
+  fabric.getWork=()=>({id:'W1',tenantId:'TENANT-A'});
+  const gateway=createAgentFabricGateway({fabric});
+  await assert.rejects(
+    ()=>gateway.command({type:AGENT_FABRIC_COMMANDS.TRANSITION_WORK,runtime,payload:{workId:'W1',status:'Executing'}}),
+    error=>error?.code==='AGENT_ENTITLEMENT_RESOLVER_REQUIRED',
+  );
+});
