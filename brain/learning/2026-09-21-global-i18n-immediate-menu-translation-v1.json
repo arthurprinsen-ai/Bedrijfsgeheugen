@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-immediate-menu-translation-v1",
+  "compiler": {
+    "failure_class": "I18N_CORE_MENU_WAITED_ON_REMOTE_PROVIDER",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Canonical menu translations existed locally, but apply() waited for the full remote translation pipeline before writing any translated text. If the provider was slow or failing, English could be selected while the entire visible mobile menu remained Dutch even though deterministic local translations were already available.",
+  "prevention": [
+    "Canonical navigation and authentication copy must be applied synchronously before any remote translation request.",
+    "Remote AI translation is enrichment for non-core page copy and must never block visible menu language switching.",
+    "Dynamic menu rebuilds must reapply the deterministic core translation immediately.",
+    "The local core catalog must cover every canonical mobile menu heading and action visible in production."
+  ],
+  "evidence": [
+    "user production screenshot 2026-09-21 18:16 showing English selected while Prijzen, Kennis, Over ons, Gratis zelfscan, Inloggen and Aanmelden remained Dutch",
+    "assets/js/i18n.js",
+    "tests/site-shell-global-i18n.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/site-shell-global-i18n.test.mjs"],
+    "canary": ["tests/site-shell-global-i18n.test.mjs"],
+    "production_readback_required": true
+  },
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-locale-epoch-race-v1",
+    "global-i18n-native-mobile-select-v1"
+  ],
+  "skill_targets": ["website-release","powerhouse-continuity"],
+  "skill_projection_required": false
+}
