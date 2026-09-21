@@ -5,6 +5,7 @@ import { existsSync, readFileSync } from 'node:fs';
 const orchestrator = readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts', 'utf8');
 const publisher = readFileSync('supabase/functions/powerhouse-social-publisher/index.ts', 'utf8');
 const prePublishReview = readFileSync('supabase/functions/bg-pre-publish-review/index.ts', 'utf8');
+const instagramRouter = readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts', 'utf8');
 const registry = JSON.parse(readFileSync('config/powerhouse-quality-surface-contracts.json', 'utf8'));
 const cockpitMigration = 'supabase/migrations/20260916163500_content_operations_cockpit_projection_repair_v1.sql';
 
@@ -63,6 +64,23 @@ test('social publisher retains identity gate, provider reconciliation, exact rea
   assert.match(publisher, /deletePost\(bufferToken, created\.post\.id\)/);
   assert.match(publisher, /provider_truth_verified:\s*true/);
   assert.match(publisher, /x-powerhouse-token/);
+});
+
+test('Instagram transport remains Mira-proof gated, provider-isolated and resilient to Composio auth loss', () => {
+  assert.match(publisher, /NON_BUFFER_INSTAGRAM_PROVIDER_OWNED/);
+  assert.match(publisher, /instagram-composio-primary-buffer-fallback-v1/);
+  assert.match(publisher, /instagramInput\(art,due,future\)/);
+  assert.match(publisher, /if\(instagramComposioApiKey\)/);
+  assert.match(publisher, /if\(!instagramComposioApiKey && bufferCircuit\.active\)/);
+  assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
+  assert.match(publisher, /BUFFER_RATE_LIMITED/);
+  assert.doesNotMatch(publisher, /fall back to Make/i);
+});
+
+test('Instagram replacement retry accounting is stable while the same external blocker persists', () => {
+  assert.match(instagramRouter, /sameReplacement/);
+  assert.match(instagramRouter, /attempts:sameReplacement\?\(job\?\.attempts\|\|0\):\(job\?\.attempts\|\|0\)\+1/);
+  assert.match(instagramRouter, /Never duplicate/);
 });
 
 test('Instagram proof is bound to exact final media and canonical profile', () => {
