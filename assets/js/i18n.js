@@ -267,16 +267,17 @@
   function mountControl() {
     document.querySelectorAll('.bg-language-switcher').forEach(el => el.remove());
 
-    const desktopHost = document.querySelector('.bgkop-links');
+    const desktopHost = document.querySelector('.bgkop-links, .navlinks, .v17-nav-links, [data-bg-desktop-nav], .desktop-nav');
     if (desktopHost && !desktopHost.querySelector('[data-bg-language-switcher="desktop"]')) {
       desktopHost.appendChild(languageControl('desktop'));
     }
 
-    const mobileRoot = document.querySelector('[data-bg-shared-mobile-view="root"]');
+    const mobileRoot = document.querySelector('[data-bg-mobile-view="root"], [data-bg-shared-mobile-view="root"]');
     if (mobileRoot && !mobileRoot.querySelector('[data-bg-language-switcher="mobile"]')) {
       const control = languageControl('mobile');
-      const cta = mobileRoot.querySelector('.bg-shared-mobile-cta');
-      mobileRoot.insertBefore(control, cta || null);
+      const auth = mobileRoot.querySelector('a[href="/inloggen"], a[href="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
+      const cta = mobileRoot.querySelector('.bg-mobile-cta, .bg-shared-mobile-cta');
+      mobileRoot.insertBefore(control, auth || cta || null);
     }
 
     const legacyMobile = document.getElementById('bgkopMob');
@@ -324,12 +325,13 @@
   function startObserver() {
     observer?.disconnect();
     observer = new MutationObserver(mutations => {
-      if (locale !== 'en') return;
       const roots = new Set();
       for (const m of mutations) {
         if (m.type === 'childList') m.addedNodes.forEach(n => { if (n.nodeType === 1) roots.add(n); });
       }
       if (!roots.size) return;
+      mountControl();
+      if (locale !== 'en') return;
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(()=>apply(document.body).catch(()=>{}), 40);
     });
