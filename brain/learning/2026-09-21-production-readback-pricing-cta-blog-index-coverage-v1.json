@@ -4,24 +4,27 @@
   "status": "ACTIVE",
   "fingerprint": "production-readback-pricing-cta-blog-index-coverage-v1",
   "compiler": {
-    "failure_class": "PRODUCTION_READBACK_AND_SEO_VALIDATOR_DRIFT",
+    "failure_class": "PRODUCTION_READBACK_SEO_AND_SYSTEM_MAP_WRITEBACK_DRIFT",
     "scope": "WEBSITE",
     "machine_enforceable": true,
     "repeat_count": 1
   },
-  "root_cause": "Two independent regressions surfaced after exact-SHA production promotion. The pricing page regression test accepted a measurable Frisse Blik marker in the replaceable footer, while canonical shell projection replaces that footer and therefore removed the only matching marker from the production artifact. Separately, seocontrole.py enumerated top-level HTML and blog article indexes but omitted the canonical blog/index.html collection route, so the /blog/ keyword owner was falsely reported as not claiming an exact keyword already present in its title.",
+  "root_cause": "Two independent regressions surfaced after exact-SHA production promotion. The pricing page regression test accepted a measurable Frisse Blik marker in the replaceable footer, while canonical shell projection replaces that footer and therefore removed the only matching marker from the production artifact. Separately, seocontrole.py enumerated top-level HTML and blog article indexes but omitted the canonical blog/index.html collection route, so the /blog/ keyword owner was falsely reported as not claiming an exact keyword already present in its title. A third inherited closure gap was exposed by BRAIN: the preceding i18n release added netlify/functions/i18n-translate.mjs without registering it in the canonical System Map inventory.",
   "prevention": [
     "A primary CTA regression for a native page must bind the measurement contract to retained page main content, never to a replaceable global shell component.",
     "The pricing hero Start gratis CTA carries the registry action, role and funnel attributes directly so canonical shell projection preserves measurement semantics.",
     "SEO estate discovery must enumerate canonical collection indexes such as blog/index.html in addition to nested article indexes.",
-    "Production readback failures are recovery work owned by the same agent lineage; do not hand DEPLOY_PENDING or PRODUCTION_READBACK_PENDING back to the user."
+    "Production readback failures are recovery work owned by the same agent lineage; do not hand DEPLOY_PENDING or PRODUCTION_READBACK_PENDING back to the user.",
+    "Every new Netlify function must update the canonical System Map inventory in the same delivery lineage; a stale topology inventory is WRITEBACK_INCOMPLETE."
   ],
   "evidence": [
     "prijzen.html",
     ".github/scripts/seocontrole.py",
     "tests/brain-prijzen-primary-cta-measurement.test.mjs",
     ".github/workflows/canonical-brand-shell-live-readback.yml",
-    ".github/workflows/pagina-controle.yml"
+    ".github/workflows/pagina-controle.yml",
+    "platform/system-map/canonical-system-map.mjs",
+    "tests/brain-powerhouse-live-system-map-v1.test.mjs"
   ],
   "related_fingerprints": [
     "prijzen-primary-cta-measurement-v1",
@@ -35,7 +38,8 @@
     "exact_main_sha": "e21be12adebd2cb83d97d2105e678f401237a6a3",
     "production_readback_required": true,
     "historical_replay": [
-      "tests/brain-prijzen-primary-cta-measurement.test.mjs"
+      "tests/brain-prijzen-primary-cta-measurement.test.mjs",
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs"
     ]
   },
   "skill_targets": [
