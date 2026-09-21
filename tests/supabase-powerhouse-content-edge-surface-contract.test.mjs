@@ -74,7 +74,7 @@ test('Instagram transport remains Mira-proof gated, provider-isolated and resili
   assert.match(publisher, /if\(!instagramComposioApiKey && bufferCircuit\.active\)/);
   assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
   assert.match(publisher, /BUFFER_RATE_LIMITED/);
-  assert.doesNotMatch(publisher, /fall back to Make/i);
+  assert.doesNotMatch(publisher, /publishInstagramViaMake|make\\.com|hook\\.eu/i);
 });
 
 test('Instagram replacement retry accounting is stable while the same external blocker persists', () => {
