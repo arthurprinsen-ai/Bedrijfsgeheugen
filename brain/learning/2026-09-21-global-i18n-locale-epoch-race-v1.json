@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-locale-epoch-race-v1",
+  "compiler": {
+    "failure_class": "I18N_TRANSLATION_ABORTED_BY_CONCURRENT_APPLY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The i18n runtime used one global run counter for every apply cycle. Dynamic DOM mutations on the live site could start another apply while the explicit English translation request was still in flight. That increment invalidated the first request, so translated results were discarded even though English stayed selected in the menu.",
+  "prevention": [
+    "Invalidate translation work only when the selected locale changes, not whenever another same-locale apply cycle starts.",
+    "Use a locale epoch that increments exclusively on locale transitions.",
+    "Keep a deterministic local English fallback for canonical navigation and authentication labels so core menu language visibly changes even if the remote translation provider is degraded.",
+    "Dynamic same-locale applies may run concurrently without cancelling each other; final writes remain guarded by the locale epoch."
+  ],
+  "evidence": [
+    "user production screenshot 2026-09-21 17:55 showing English selected while Oplossingen, Prijzen, Kennis, Over ons, Gratis zelfscan, Inloggen and Aanmelden remained Dutch",
+    "assets/js/i18n.js",
+    "tests/site-shell-global-i18n.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/site-shell-global-i18n.test.mjs"
+    ],
+    "canary": [
+      "tests/site-shell-global-i18n.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-translation-provider-resilience-v1"
+  ],
+  "skill_targets": [
+    "website-release",
+    "powerhouse-continuity"
+  ],
+  "skill_projection_required": false
+}
