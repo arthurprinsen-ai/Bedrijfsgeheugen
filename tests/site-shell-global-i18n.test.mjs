@@ -14,6 +14,8 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/meta\[name="description"\]/);
   assert.match(runtime,/\/api\/i18n-translate/);
   assert.match(runtime,/data-bg-language-switcher/);
+  assert.match(runtime,/data-bg-language-select/);
+  assert.match(runtime,/addEventListener\('change'/);
   assert.match(runtime,/data-bg-mobile-view/);
   assert.match(runtime,/data-bg-shared-mobile-view/);
   assert.doesNotMatch(fs.readFileSync('assets/i18n.css','utf8'),/position:\s*fixed/);
@@ -36,6 +38,8 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(injector,/\.html/);
   assert.match(injector,/v18-mobile-drawer/);
   assert.match(injector,/data-bg-language-switcher="mobile"/);
+  assert.match(injector,/data-bg-language-select/);
+  assert.match(injector,/<option value="en">English<\/option><option value="nl">Dutch<\/option>/);
   assert.match(injector,/\/inloggen/);
   assert.match(fn,/runTranslation/);
 });

@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-native-mobile-select-v1",
+  "compiler": {
+    "failure_class": "I18N_MOBILE_LANGUAGE_CONTROL_UX_MISMATCH",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The mobile language control used two custom side-by-side buttons. The requested reference behavior uses one compact menu row backed by the browser's native select control, which on iOS opens the familiar system language chooser with a checkmark next to the active option.",
+  "prevention": [
+    "Mobile language switching should use a native select control inside the menu so iOS and other browsers provide the expected native chooser interaction.",
+    "The mobile selector must remain in the menu, never float above content or WhatsApp.",
+    "The native select value must stay synchronized with bg_locale and delegated locale changes.",
+    "Desktop may retain its compact custom dropdown; the mobile interaction follows the native selector pattern."
+  ],
+  "evidence": [
+    "user reference screenshot 2026-09-21 showing neno.co native English/Dutch chooser",
+    "assets/js/i18n.js",
+    "assets/i18n.css",
+    "tools/site-shell/apply-i18n.mjs",
+    "tests/site-shell-global-i18n.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/site-shell-global-i18n.test.mjs"],
+    "canary": ["tests/site-shell-global-i18n.test.mjs"],
+    "production_readback_required": true
+  },
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-locale-epoch-race-v1"
+  ],
+  "skill_targets": ["website-release","powerhouse-continuity"],
+  "skill_projection_required": false
+}
