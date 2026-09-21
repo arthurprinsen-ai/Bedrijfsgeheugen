@@ -1,0 +1,23 @@
+{
+  "fingerprint": "instagram-mira-reel-only-v3",
+  "date": "2026-09-21",
+  "type": "CHANNEL_IDENTITY_PREVENTION",
+  "failure_class": "NON_REEL_OR_NON_MIRA_INSTAGRAM_PUBLICATION_ESCAPE",
+  "scope": "RUNTIME_DATABASE_AUTHORITY_AND_SKILL",
+  "machine_enforceable": true,
+  "supersedes": [
+    "instagram-mira-visual-reel-only-v2",
+    "instagram-mira-only-channel-hard-gate-v1"
+  ],
+  "root_cause": "The canonical Instagram policy still admitted image as a valid media kind while a parallel execution path could bypass the intended Reel flow.",
+  "prevention_rule": "Instagram bedrijfsgeheugen.nl is fail-closed Mira Reel only. Non-Mira content and every non-Reel media kind are rejected before publication capability issuance and provider mutation. Missing video/provider readiness never falls back to image.",
+  "enforcement": [
+    "config/social-channel-identity-contract.json",
+    "platform/social-channel-identity-gate.mjs",
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "supabase/migrations/20260921090000_instagram_mira_reel_only_v3.sql",
+    "tests/brain-instagram-mira-reel-only-v3.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
+  "terminal_rule": "Do not claim LIVE until protected merge, required checks, migration/runtime deployment and production Instagram capability/readback prove v3."
+}
