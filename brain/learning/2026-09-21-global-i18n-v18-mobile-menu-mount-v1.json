@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-v18-mobile-menu-mount-v1",
+  "compiler": {
+    "failure_class": "I18N_MOBILE_NAV_SELECTOR_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The global language selector was mounted against an older shared-mobile navigation selector, while the production V18 mobile drawer is built with data-bg-mobile-view. The release therefore passed code/build checks but the control was absent from the actual mobile menu shown to visitors.",
+  "prevention": [
+    "Language controls must target the active canonical V18 mobile root data-bg-mobile-view=root as well as legacy selectors during migration.",
+    "Runtime navigation created after i18n initialization must trigger idempotent language-control remounting.",
+    "A site-wide UI control is not production-proven from static source inspection alone; exact production mobile navigation readback must verify visible placement and interaction.",
+    "The language selector must remain inside navigation and never occupy the floating WhatsApp/content layer."
+  ],
+  "evidence": [
+    "assets/js/i18n.js",
+    "assets/js/v18-mobile-drilldown.js",
+    "assets/v18-mobile-drilldown.css",
+    "tests/site-shell-global-i18n.test.mjs",
+    "PR #2537",
+    "production screenshot 2026-09-21 showing V18 mobile drawer without language selector before recovery"
+  ],
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "powerhouse|material-run|closure-artifacts|required|v1"
+  ],
+  "evaluation": {
+    "recovery_pr": 2537,
+    "merged_main_sha": "1b92f23af05a08649aa87256f5108fecae5472ae",
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "website-release",
+    "powerhouse-continuity"
+  ],
+  "skill_projection_required": false
+}
