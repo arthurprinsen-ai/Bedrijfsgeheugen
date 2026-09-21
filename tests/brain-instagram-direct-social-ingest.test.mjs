@@ -21,3 +21,11 @@ test('direct social ingest is downstream of provider truth', () => {
   const ingest = source.indexOf('const socialIngest=await ingestDirectInstagramSocialPost');
   assert.ok(publish >= 0 && ingest > publish);
 });
+
+test('publisher surface contract covers canonical RPC choke points', () => {
+  assert.match(source, /db\.rpc\('bg_geheim'/);
+  assert.match(source, /db\.rpc\('bg_content_lessen'\)/);
+  assert.match(source, /db\.rpc\('powerhouse_issue_social_publish_capability_v1'/);
+  assert.match(source, /db\.rpc\('powerhouse_consume_social_publish_capability_v1'/);
+  assert.match(source, /db\.rpc\('record_content_publication_state'/);
+});
