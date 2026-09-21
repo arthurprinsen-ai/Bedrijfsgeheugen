@@ -29,5 +29,11 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
-  }
+  },
+  "evidence": [
+    "2026-09-21 provider-verified Instagram Reel delivery_ref 18559588405078914 existed in powerhouse_channel_decisions while no matching social_posts row existed",
+    "bg-buffer-sync production v9 skipped with BUFFER_RATE_LIMIT_COOLDOWN while the canonical Buffer circuit was open, proving Buffer-dependent ingest could not close the direct-publication learning gap",
+    "powerhouse-content-closed-loop-v1 is active every five minutes and invokes bg-buffer-sync, providing single-owner automatic resume after retry_at without a parallel retry scheduler",
+    "tests/brain-instagram-direct-social-ingest.test.mjs enforces provider-truth-gated idempotent social_posts ingest, frozen-winner lineage and bg_content_lessen refresh"
+  ]
 }
