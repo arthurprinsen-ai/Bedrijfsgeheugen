@@ -1,6 +1,7 @@
 (() => {
   'use strict';
   const STORAGE_KEY = 'bg_locale';
+  const CACHE_KEY = 'bg_i18n_cache_v1';
   const SUPPORTED = new Set(['nl','en']);
   const ORIGINAL = new WeakMap();
   const ATTR_ORIGINAL = new WeakMap();
@@ -9,11 +10,29 @@
   let observer;
   let mutationTimer;
   let run = 0;
+  let cache = loadCache();
 
   const cssEscape = value => String(value).replace(/"/g, '&quot;');
   const normalizeLocale = value => String(value || '').toLowerCase().split('-')[0];
   const isPortal = () => location.pathname.startsWith('/portal') || location.pathname.startsWith('/klantportaal');
   const context = () => isPortal() ? 'portal' : 'public';
+
+  function loadCache() {
+    try {
+      const parsed = JSON.parse(localStorage.getItem(CACHE_KEY) || '{}');
+      return parsed && typeof parsed === 'object' ? parsed : {};
+    } catch { return {}; }
+  }
+
+  function saveCache() {
+    try {
+      const entries = Object.entries(cache);
+      if (entries.length > 1800) cache = Object.fromEntries(entries.slice(-1400));
+      localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
+    } catch {}
+  }
+
+  function cacheId(target,source) { return target + '|' + source; }
 
   function preferredLocale() {
     try {
@@ -84,17 +103,42 @@
   }
 
   async function translate(strings, target, requestRun) {
-    const unique = [...new Set(strings)].slice(0,60);
-    if (!unique.length) return new Map();
-    const response = await fetch('/api/i18n-translate', {
-      method:'POST',
-      headers:{'content-type':'application/json'},
-      body:JSON.stringify({ target, source:'nl', context:context(), strings:unique })
-    });
-    if (!response.ok) throw new Error('translation_failed');
-    const payload = await response.json();
-    if (requestRun !== run || !Array.isArray(payload.translations)) return new Map();
-    return new Map(unique.map((s,i)=>[s,payload.translations[i] || s]));
+    const unique = [...new Set(strings)];
+    const out = new Map();
+    const missing = [];
+    for (const source of unique) {
+      const hit = cache[cacheId(target,source)];
+      if (typeof hit === 'string' && hit) out.set(source,hit);
+      else missing.push(source);
+    }
+    const batches = [];
+    let batch = [], chars = 0;
+    for (const source of missing) {
+      if (batch.length >= 60 || chars + source.length > 7600) {
+        if (batch.length) batches.push(batch);
+        batch = []; chars = 0;
+      }
+      batch.push(source); chars += source.length;
+    }
+    if (batch.length) batches.push(batch);
+    for (const part of batches) {
+      if (requestRun !== run) return new Map();
+      const response = await fetch('/api/i18n-translate', {
+        method:'POST',
+        headers:{'content-type':'application/json'},
+        body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
+      });
+      if (!response.ok) throw new Error('translation_failed');
+      const payload = await response.json();
+      if (requestRun !== run || !Array.isArray(payload.translations)) return new Map();
+      part.forEach((source,i) => {
+        const translated = payload.translations[i] || source;
+        out.set(source,translated);
+        cache[cacheId(target,source)] = translated;
+      });
+      saveCache();
+    }
+    return out;
   }
 
   async function apply(root=document.body) {
@@ -103,12 +147,36 @@
     document.documentElement.dataset.bgLocale = locale;
     if (locale === 'nl') {
       restore(root);
+      if (root === document.body) {
+        const originalTitle=document.documentElement.dataset.bgOriginalTitle;
+        if (originalTitle) document.title=originalTitle;
+        document.querySelectorAll('meta[data-bg-original-content]').forEach(meta=>meta.setAttribute('content',meta.getAttribute('data-bg-original-content')||''));
+      }
       syncControls();
       return;
     }
     const items = collect(root);
-    const map = await translate(items.map(item=>item.source), locale, requestRun);
+    const extras = [];
+    if (root === document.body) {
+      if (meaningful(document.title)) extras.push(document.documentElement.dataset.bgOriginalTitle || document.title);
+      document.querySelectorAll('meta[name="description"],meta[property="og:title"],meta[property="og:description"]').forEach(meta => {
+        const value = meta.getAttribute('data-bg-original-content') || meta.getAttribute('content');
+        if (meaningful(value)) extras.push(value);
+      });
+    }
+    const map = await translate(items.map(item=>item.source).concat(extras), locale, requestRun);
     if (requestRun !== run || locale !== 'en') return;
+    if (root === document.body) {
+      const originalTitle = document.documentElement.dataset.bgOriginalTitle || document.title;
+      document.documentElement.dataset.bgOriginalTitle = originalTitle;
+      document.title = map.get(originalTitle) || originalTitle;
+      document.querySelectorAll('meta[name="description"],meta[property="og:title"],meta[property="og:description"]').forEach(meta => {
+        const attr='data-bg-original-content';
+        const original=meta.getAttribute(attr) || meta.getAttribute('content') || '';
+        if (!meta.hasAttribute(attr)) meta.setAttribute(attr,original);
+        meta.setAttribute('content', map.get(original) || original);
+      });
+    }
     for (const item of items) {
       const value = map.get(item.source);
       if (!value) continue;
