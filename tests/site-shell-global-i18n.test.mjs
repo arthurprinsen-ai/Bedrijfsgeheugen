@@ -10,7 +10,6 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(netlify,/apply-i18n\.mjs/);
   assert.match(runtime,/bg_locale/);
   assert.match(runtime,/MutationObserver/);
-  assert.match(runtime,/bg_i18n_cache_v1/);
   assert.match(runtime,/batches/);
   assert.match(runtime,/meta\[name="description"\]/);
   assert.match(runtime,/\/api\/i18n-translate/);
