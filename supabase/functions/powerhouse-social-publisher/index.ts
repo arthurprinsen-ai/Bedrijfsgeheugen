@@ -91,7 +91,9 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   const readbackId=deepPickId(rb,['ig_media_id','media_id','id']);
   if(readbackId!==mediaId)throw new Error('COMPOSIO_INSTAGRAM_READBACK_ID_MISMATCH');
   const permalink=deepPickString(rb,['permalink','permalink_url','url']);
-  return {provider:'composio',provider_post_id:mediaId,container_id:containerId,permalink:permalink||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256)};
+  const publishedAt=deepPickString(rb,['timestamp','created_time','created_at'])||new Date().toISOString();
+  const mediaTypeReadback=deepPickString(rb,['media_product_type','media_type','type'])||'REELS';
+  return {provider:'composio',provider_post_id:mediaId,container_id:containerId,permalink:permalink||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),published_at:publishedAt,media_type:mediaTypeReadback,media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256)};
 }
 
 async function bufferRequest(token: string, query: string, variables?: Record<string,unknown>) {
@@ -106,6 +108,37 @@ async function createPost(token: string, input: Record<string,unknown>) { const 
 async function deletePost(token: string, id: string) { const body = await bufferRequest(token, `mutation { deletePost(input:{id:"${esc(id)}"}) { __typename ... on DeletePostSuccess { id } ... on VoidMutationError { message } } }`); const result = body?.data?.deletePost || {}; return { ok: result.__typename === 'DeletePostSuccess' && result.id === id, id: result.id || null, error: result.message || body?.errors?.[0]?.message || null }; }
 async function review(url: string, payload: any) { const response = await fetch(`${url}/functions/v1/bg-pre-publish-review`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(payload) }); const body = await response.json().catch(() => ({})); return { http: response.status, ...body }; }
 async function recordObligation(db: any, runDate: string, channel: string, status: string, externalId: string | null, evidence: any, nextAction: string | null, error: string | null = null) { const mapped = obligationChannels[channel]; if (!mapped) return; const { error: rpcError } = await db.rpc('record_content_publication_state', { p_tenant_id: 'canonical', p_publication_date: runDate, p_channel: mapped, p_status: status, p_content_id: null, p_slug: null, p_external_id: externalId, p_canonical_url: null, p_evidence: evidence || {}, p_metrics: {}, p_next_action: nextAction, p_error: error }); if (rpcError) throw new Error(`OBLIGATION_WRITE:${rpcError.message}`); }
+
+async function ingestDirectInstagramSocialPost(db:any,runDate:string,art:any,direct:any,textHash:string){
+  if(direct?.provider_truth_verified!==true||!clean(direct?.provider_post_id))throw new Error('DIRECT_INSTAGRAM_SOCIAL_INGEST_REQUIRES_PROVIDER_TRUTH');
+  const {data:winner,error:winnerError}=await db.from('powerhouse_instagram_daily_winners_v1')
+    .select('recommendation_id,score_version,selected_format')
+    .eq('run_date',runDate).maybeSingle();
+  if(winnerError)throw new Error('DIRECT_INSTAGRAM_WINNER_READ:'+winnerError.message);
+  const now=new Date().toISOString();
+  const post={
+    tenant_id:'bedrijfsgeheugen',
+    post_id:clean(direct.provider_post_id),
+    platform:'instagram',
+    external_post_id:clean(direct.provider_post_id),
+    published_at:clean(direct.published_at)||now,
+    content_hash:textHash,
+    format:clean(winner?.selected_format)||'reel',
+    hook_type:clean(art?.generation_evidence?.hook_type)||null,
+    learning_status:'observed',
+    channel_id:INSTAGRAM,
+    channel_name:'bedrijfsgeheugen.nl',
+    channel_kind:'instagram_company',
+    winner_recommendation_id:winner?.recommendation_id||null,
+    winner_score_version:clean(winner?.score_version)||null,
+    updated_at:now
+  };
+  const {error}=await db.from('social_posts').upsert(post,{onConflict:'tenant_id,platform,external_post_id',ignoreDuplicates:false});
+  if(error)throw new Error('DIRECT_INSTAGRAM_SOCIAL_INGEST:'+error.message);
+  const {error:lessonError}=await db.rpc('bg_content_lessen');
+  if(lessonError)throw new Error('DIRECT_INSTAGRAM_SOCIAL_LEARNING:'+lessonError.message);
+  return {post_id:post.post_id,format:post.format,winner_recommendation_id:post.winner_recommendation_id,winner_score_version:post.winner_score_version};
+}
 
 const BUFFER_CIRCUIT_RECORD='buffer-rate-limit-circuit-v1';
 function parseRetrySeconds(value:unknown){
@@ -440,7 +473,8 @@ Deno.serve(async (req) => {
           await db.from('powerhouse_channel_decisions').update({ state:'published', delivery_ref:direct.provider_post_id, delivery_evidence:evidence, updated_at:new Date().toISOString() }).eq('run_date',runDate).eq('channel',row.channel);
           await db.from('powerhouse_content_artifacts').update({ status:'published', updated_at:new Date().toISOString() }).eq('run_date',runDate).eq('channel',row.channel);
           await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,'Collect Instagram outcome metrics and feed learning loop.',null);
-          results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,permalink:direct.permalink,provider:'composio',provider_truth_verified:true});
+          const socialIngest=await ingestDirectInstagramSocialPost(db,runDate,art,direct,textHash);
+          results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,permalink:direct.permalink,provider:'composio',provider_truth_verified:true,social_ingest:socialIngest});
           continue;
         }
 

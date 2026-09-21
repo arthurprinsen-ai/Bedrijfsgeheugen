@@ -251,3 +251,12 @@ Fingerprint: `instagram-daily-mira-provider-isolation-v1`.
 - The same unresolved replacement/external-id blocker is one state, not a new attempt on every preflight. Increment retry/attempt lineage only when the blocker identity or provider state changes.
 - Preserve and reuse the exact generated Mira Reel across auth/rate-limit recovery. No non-Mira content, image fallback, second winner or duplicate publication.
 - Composio primary and bounded Buffer fallback are both subordinate to the same central publication authority and Mira Reel proof.
+
+
+## Direct provider truth must enter social learning immediately
+
+Fingerprint: `instagram-direct-social-learning-ingest-v1`.
+
+A provider-verified Composio Instagram publish must not wait for Buffer ingestion before it becomes part of the canonical social data spine. In the same canonical publisher execution, upsert `social_posts` idempotently on `tenant_id + platform + external_post_id`, preserve `format=reel`, the frozen daily-winner recommendation and score version, and the final caption hash, then run the canonical content-learning refresh. Buffer sync may enrich measurements later but is never the sole bridge from direct Instagram publication to learning.
+
+The existing five-minute `powerhouse-content-closed-loop-v1` supervisor is the recovery owner for an open Buffer circuit: while cooldown is active, Buffer sync must perform zero provider calls; after `retry_at`, the same supervisor resumes the sync automatically. Do not add a parallel retry scheduler or a second publication writer.

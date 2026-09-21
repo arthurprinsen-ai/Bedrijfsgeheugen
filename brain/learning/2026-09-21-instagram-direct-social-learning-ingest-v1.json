@@ -1,0 +1,39 @@
+{
+  "fingerprint": "instagram-direct-social-learning-ingest-v1",
+  "date": "2026-09-21",
+  "type": "SOCIAL_LEARNING_DATA_SPINE",
+  "failure_class": "DIRECT_INSTAGRAM_PUBLISH_BYPASSED_SOCIAL_POSTS",
+  "scope": "INSTAGRAM_COMPOSIO_PUBLISH",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "The Composio primary Instagram route wrote provider truth, the publication obligation and the channel decision but social_posts was populated only by bg-buffer-sync. During a Buffer rate-limit circuit, a successfully published direct Reel was therefore absent from the canonical social-learning spine.",
+  "prevention_rule": "Every provider-verified direct Instagram publication must idempotently upsert social_posts in the same canonical publisher execution, preserve the frozen daily winner and Reel format, then invoke bg_content_lessen. Buffer sync remains a measurement/import lane, never the sole publication-learning bridge.",
+  "enforcement": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/brain-instagram-direct-social-ingest.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-direct-social-ingest.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-direct-social-ingest.test.mjs"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after exact-head gates, protected merge, active Edge Function source equality, a provider-verified Reel present in social_posts with format=reel and frozen-winner lineage, and read-after-write learning evidence.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "2026-09-21 provider-verified Instagram Reel delivery_ref 18559588405078914 existed in powerhouse_channel_decisions while no matching social_posts row existed",
+    "bg-buffer-sync production v9 skipped with BUFFER_RATE_LIMIT_COOLDOWN while the canonical Buffer circuit was open, proving Buffer-dependent ingest could not close the direct-publication learning gap",
+    "powerhouse-content-closed-loop-v1 is active every five minutes and invokes bg-buffer-sync, providing single-owner automatic resume after retry_at without a parallel retry scheduler",
+    "tests/brain-instagram-direct-social-ingest.test.mjs enforces provider-truth-gated idempotent social_posts ingest, frozen-winner lineage and bg_content_lessen refresh"
+  ]
+}

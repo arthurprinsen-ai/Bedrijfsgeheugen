@@ -275,6 +275,13 @@
       "required": true
     },
     {
+      "id": "rpc:bg_content_lessen",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/brain-instagram-direct-social-ingest.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:bg_growth_ingest_event",
       "type": "rpc",
       "authority": "supabase/functions/growth-datahub-ingest/index.ts",
