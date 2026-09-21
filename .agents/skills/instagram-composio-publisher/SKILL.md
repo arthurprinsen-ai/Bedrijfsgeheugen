@@ -269,3 +269,10 @@ Fingerprint: `instagram-daily-mira-provider-isolation-v1`.
 Fingerprint: `composio-cross-runtime-secret-binding-v1`.
 
 Do not infer that a secret configured in one runtime is available in another. The canonical Instagram publisher executes in Supabase, while the operator-facing configuration UI executes in Netlify. `COMPOSIO_API_KEY` must therefore be projected server-to-server through the authenticated canonical onboarding route. The bridge reads the Netlify secret only at runtime, performs a status-first preflight, writes only when Supabase lacks the key, and must never log, return, commit, or expose the secret value. The bridge is configuration plumbing only; it must never become a second publication writer.
+
+
+## Immediate secure activation of scheduled configuration bridges
+
+Fingerprint: `composio-secret-sync-deploy-trigger-v1`.
+
+A Netlify scheduled function is intentionally not a public HTTP endpoint. When a security-sensitive cross-runtime configuration bridge must become effective in the same release, reuse its idempotent status-first operation from a production-only `deploySucceeded` platform event. Never add a public trigger merely to obtain immediate proof. The deploy-event bridge may synchronize configuration only; publication remains owned by the canonical social publisher and content loop.

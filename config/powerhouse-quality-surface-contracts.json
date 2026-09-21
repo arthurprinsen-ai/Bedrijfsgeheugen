@@ -212,6 +212,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:powerhouse-composio-secret-sync-deploy",
+      "type": "netlify_function",
+      "authority": "netlify/functions/powerhouse-composio-secret-sync-deploy.mjs",
+      "evidence_contract": "tests/brain-composio-secret-sync-deploy-event.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:powerhouse-control-plane",
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-control-plane.mjs",

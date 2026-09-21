@@ -16,7 +16,7 @@ async function callSetup(baseUrl,serviceToken,payload){
   return {response,data};
 }
 
-export default async ()=>{
+export async function syncComposioSecret(){
   const apiKey=clean(Netlify.env.get('COMPOSIO_API_KEY'));
   const baseUrl=clean(Netlify.env.get('BG_PORTAL_EU_SUPABASE_URL')).replace(/\/$/,'');
   const serviceToken=clean(Netlify.env.get('BG_PORTAL_EU_SERVICE_TOKEN'));
@@ -40,5 +40,7 @@ export default async ()=>{
   };
   return json(result);
 };
+
+export default async ()=>syncComposioSecret();
 
 export const config={schedule:'17 4 * * *'};
