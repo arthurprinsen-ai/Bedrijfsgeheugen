@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-static-mobile-drawer-injection-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_ONLY_GLOBAL_CONTROL_NOT_VISIBLE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2
+  },
+  "root_cause": "The language selector depended on runtime DOM discovery. The canonical V18 mobile drawer is generated during the build and its runtime structure differed across shell generations, so selector-based mounting remained brittle and production screenshots repeatedly showed no NL/EN control.",
+  "prevention": [
+    "Critical global navigation controls must be projected into the canonical built HTML, not depend solely on runtime selector discovery.",
+    "The i18n build injector must place the mobile language selector directly inside aside.v18-mobile-drawer before the login action when present.",
+    "Runtime mounting remains an idempotent compatibility fallback, not the primary visibility mechanism.",
+    "Production acceptance requires a visible mobile menu control in the built artifact and working delegated language interaction."
+  ],
+  "evidence": [
+    "tools/site-shell/apply-i18n.mjs",
+    "assets/js/i18n.js",
+    "tests/site-shell-global-i18n.test.mjs",
+    "production screenshot 2026-09-21 14:46 showing the mobile drawer without NL/EN after runtime-only recovery"
+  ],
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-v18-mobile-menu-mount-v1"
+  ],
+  "evaluation": {
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "website-release",
+    "powerhouse-continuity"
+  ],
+  "skill_projection_required": false
+}
