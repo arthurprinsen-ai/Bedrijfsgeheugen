@@ -35,8 +35,7 @@
       "tests/brain-instagram-mira-reel-only-v3.test.mjs"
     ],
     "canary": [
-      "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs",
-      "tests/social-learning-buffer-rate-limit-regression.test.mjs"
+      "tests/brain-instagram-buffer-independent-resume.test.mjs"
     ]
   },
   "terminal_rule": "LIVE_BEWEZEN only after exact-head required gates, protected merge, exact production source/readback and provider delivery evidence.",
