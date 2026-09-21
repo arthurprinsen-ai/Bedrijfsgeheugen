@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-english-switch-runtime-resilience-v1",
+  "compiler": {
+    "failure_class": "I18N_LANGUAGE_SWITCH_NO_VISIBLE_TRANSLATION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The English selector could become active while the page remained Dutch because the translation pipeline treated any single provider/batch failure or non-bare JSON response as fatal. setLocale then reverted the locale, and the v1 browser cache could preserve stale Dutch fallbacks for the English key.",
+  "prevention": [
+    "Translation parsing must accept valid JSON arrays even when the provider wraps them in a JSON code fence or surrounding text.",
+    "A failed translation batch must not roll back successful batches or revert the selected locale.",
+    "The English translation cache version must be bumped after a broken translation contract so stale fallbacks cannot survive the repair.",
+    "Large pages must use bounded translation batches with independent failure isolation."
+  ],
+  "evidence": [
+    "assets/js/i18n.js",
+    "netlify/functions/_brain-ai.mjs",
+    "tests/site-shell-global-i18n.test.mjs",
+    "user production report 2026-09-21: clicking English changed no website text"
+  ],
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-static-mobile-drawer-injection-v1"
+  ],
+  "evaluation": {
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "website-release",
+    "powerhouse-continuity"
+  ],
+  "skill_projection_required": false
+}
