@@ -322,7 +322,8 @@ jobs:
             const pr=JSON.parse(execFileSync('gh',['api',`repos/${repo}/pulls/${prNumber}`],{encoding:'utf8'}));
             const metadata=parseDeliveryMetadata(pr.body||'');
             if(metadata.obligationId!==obligation) {
-              throw new Error(`SUPERSEDES_OBLIGATION_MISMATCH:${prNumber}:${metadata.obligationId}:${obligation}`);
+              console.log(`SUPERSEDES_OBLIGATION_BOUNDARY:${prNumber}:${metadata.obligationId}:${obligation}`);
+              break;
             }
             const merge=String(pr.merge_commit_sha||'');
             if(pr.merged===true){

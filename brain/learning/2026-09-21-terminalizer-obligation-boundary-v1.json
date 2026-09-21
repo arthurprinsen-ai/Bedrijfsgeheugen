@@ -1,0 +1,28 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "terminalizer-obligation-boundary-v1",
+  "compiler": {
+    "failure_class": "DELIVERY_TERMINALIZATION",
+    "scope": "control-plane",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Terminal closure traversed historical Supersedes metadata across an obligation boundary. PR #2509 pointed to #2504 from another obligation, causing migration lineage derivation to fail even though production readback for #2510 was already proven.",
+  "prevention": [
+    "Terminal supersession traversal is scoped to one Obligation-ID.",
+    "Encountering a predecessor with another Obligation-ID is a terminal lineage boundary, not an error.",
+    "Cycles, malformed metadata, open predecessors and ambiguous migration identities remain fail-closed."
+  ],
+  "evidence": [
+    "Obligation Terminal Closure run 35537568958",
+    ".github/workflows/obligation-terminal-closure.yml",
+    "tests/terminal-obligation-boundary.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "website-release"
+  ],
+  "skill_projection_required": true
+}
