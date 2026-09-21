@@ -282,3 +282,15 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Owner:** Powerhouse social publishing / delivery control plane.
 - **Production status:** pending exact-head gates, protected merge/promotion en production/provider readback; merge of preview alleen is geen terminal bewijs.
 - **Reusable lesson:** ieder extern side effect krijgt eerst canoniek writer-ownership via atomic CAS; nooit retryen op basis van lokale onzekerheid.
+
+
+## 2026-09-21 — RECOVERY — production readback CTA + SEO estate discovery
+- **Fingerprint:** `production-readback-pricing-cta-blog-index-coverage-v1`.
+- **Symptoom:** exact main `e21be12adebd2cb83d97d2105e678f401237a6a3` was Netlify production-ready and canonical Production Release Readback was groen, maar Canonical brand shell live readback faalde op `live-prijzen.html: primaire CTA is niet meetbaar gemarkeerd`; Pagina- en SEO-controle meldde één hoge fout voor `/blog/`.
+- **Root cause 1:** de eerdere CTA-regressie accepteerde de meetmarker in een vervangbare footer. De canonical shell projecteert een nieuwe footer en verwijderde daardoor de enige match uit het productieartifact.
+- **Root cause 2:** `.github/scripts/seocontrole.py` scande top-level HTML en `blog/*/index.html`, maar niet `blog/index.html`; daardoor kon de canonieke blog-index ondanks een exact zoekwoord in de title niet als owner worden gelezen.
+- **Fix:** de retained pricing hero-CTA `Start gratis` draagt rechtstreeks `data-bg-conversion="frisse-blik"`, `data-bg-page-role="money"` en `data-bg-funnel-stage="decide"`; SEO estate discovery bevat expliciet `blog/index.html`.
+- **Regressie:** `tests/brain-prijzen-primary-cta-measurement.test.mjs` bindt de CTA aan de retained hoofdinhoud en borgt blog-index discovery.
+- **Owner:** website release + SEO order engine; dezelfde delivery-lineage blijft eigenaar tot protected merge en exact provider/readback.
+- **Preventie:** toets semantiek op de build-retained component, niet op een vervangbare shell; inventariseer expliciete collectie-indexen naast geneste artikelen.
+- **Terminalregel:** `DEPLOY_PENDING` en `PRODUCTION_READBACK_PENDING` zijn nooit gebruikershandoff; alleen terminal readback sluit de recovery.
