@@ -242,6 +242,17 @@ No Mira or not a Reel means no Instagram publication.
 
 
 
+## Direct Meta primary transport (2026-09-21)
+
+Fingerprint: `instagram-meta-direct-primary-v1`.
+
+- The canonical Instagram writer remains `powerhouse-social-publisher`; do not create a parallel direct writer.
+- Prefer the official Meta Instagram API when `META_INSTAGRAM_ACCESS_TOKEN` and `META_INSTAGRAM_USER_ID` are available.
+- Direct Meta must create the Reel container, wait for processing `FINISHED`, call `media_publish`, and read back the exact resulting media id/permalink.
+- If Meta returns a published media id but readback is temporarily unavailable, persist that exact id in `dispatching` / verification-pending state and reconcile it. Never issue a second publish to recover a readback failure.
+- Composio is a bounded secondary transport when Meta direct auth is unavailable; Buffer remains the final bounded fallback. All transports remain subordinate to Mira-only, exact-final-media, atomic claim, one-time capability and dedupe gates.
+- Missing Meta credentials are a configuration state, never permission to bypass publication authority or reuse a non-Mira asset.
+
 ## Daily Mira provider isolation and retry stability (2026-09-21)
 
 Fingerprint: `instagram-daily-mira-provider-isolation-v1`.
