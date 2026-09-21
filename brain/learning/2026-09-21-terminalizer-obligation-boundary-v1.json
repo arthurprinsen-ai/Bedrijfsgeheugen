@@ -18,11 +18,16 @@
   "evidence": [
     "Obligation Terminal Closure run 35537568958",
     ".github/workflows/obligation-terminal-closure.yml",
-    "tests/terminal-obligation-boundary.test.mjs"
+    "tests/brain-terminal-obligation-boundary.test.mjs"
   ],
   "skill_targets": [
     "delivery",
     "website-release"
   ],
-  "skill_projection_required": true
+  "skill_projection_required": true,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-obligation-boundary.test.mjs"
+    ]
+  }
 }

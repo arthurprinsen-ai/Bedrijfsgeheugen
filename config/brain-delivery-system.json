@@ -492,7 +492,7 @@
         "tests/repository-writer-slow-canary-sla.test.mjs",
         "tests/terminal-writer-lease-",
         "tools/regulatory-",
-        "tests/terminal-obligation-"
+        "tests/brain-terminal-obligation-"
       ],
       "requiredContracts": [
         "BG166",

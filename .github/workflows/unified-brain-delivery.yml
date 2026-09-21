@@ -141,7 +141,7 @@ jobs:
               node --test tests/components/*.test.mjs tests/site-baseline-guardian.test.mjs tests/page-composition.test.mjs 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
               ;;
             automation)
-              (node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/github-delivery-state-machine*.test.mjs tests/brain-delivery-system.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
+              (node scripts/brain/test-all.mjs && node --test tests/delivery-*.test.mjs tests/github-delivery-state-machine*.test.mjs tests/brain-delivery-system.test.mjs tests/brain-terminal-obligation-boundary.test.mjs) 2>&1 | tee .artifacts/lane-${{ matrix.id }}.log
               ;;
             *)
               echo "Unknown delivery lane: ${{ matrix.id }}" | tee .artifacts/lane-${{ matrix.id }}.log
