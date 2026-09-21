@@ -9,9 +9,12 @@ test('direct Meta credentials are admin-only and never browser-persisted',()=>{
   assert.match(edge,/META_INSTAGRAM_ACCESS_TOKEN/);assert.match(edge,/graph\.instagram\.com/);
 });
 test('credentials are validated before vault storage',()=>{
-  const validate=edge.indexOf('await validateMeta(candidateToken');
-  const store=edge.indexOf('powerhouse_set_meta_instagram_credentials_v1');
-  assert.ok(validate>=0&&store>validate);
+  const setStart=edge.indexOf("if(action==='set_credentials')");
+  const validate=edge.indexOf('await validateMeta(candidateToken',setStart);
+  const store=edge.indexOf('await storeRuntimeCredentials(db,candidateToken',setStart);
+  assert.ok(setStart>=0&&validate>setStart&&store>validate);
+  assert.match(edge,/async function storeRuntimeCredentials/);
+  assert.match(edge,/powerhouse_set_meta_instagram_credentials_v1/);
 });
 test('vault writer is service role only',()=>{
   assert.match(migration,/revoke execute .* from public, anon, authenticated/i);

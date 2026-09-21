@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "instagram-meta-oauth-onboarding-v1",
+  "compiler": {
+    "failure_class": "INSTAGRAM_DIRECT_META_CREDENTIAL_BOOTSTRAP_GAP",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Direct Meta publishing was production-ready but could not become active without a secure first-party authorization path for Meta app credentials and Instagram OAuth.",
+  "prevention": [
+    "Provide an authenticated admin-only OAuth onboarding surface instead of requiring manual long-lived runtime-token pasting.",
+    "Keep app secret and runtime access token server-side in Supabase Vault only.",
+    "Sign and expire OAuth state before callback token exchange.",
+    "Refresh long-lived Instagram tokens automatically before expiry.",
+    "Fail closed when app or runtime credentials are absent and never bypass publication authority or Mira identity gates."
+  ],
+  "evidence": [
+    "powerhouse-instagram-connect.html",
+    "netlify/functions/powerhouse-meta-instagram-config.mjs",
+    "netlify/functions/powerhouse-meta-instagram-oauth-callback.mjs",
+    "netlify/functions/meta-instagram-token-refresh.mjs",
+    "supabase/functions/powerhouse-meta-instagram-setup/index.ts",
+    "supabase/migrations/20260921152000_instagram_meta_oauth_onboarding_v1.sql",
+    "tests/brain-instagram-meta-oauth-onboarding.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-instagram-meta-oauth-onboarding.test.mjs"],
+    "production_readback_required": true
+  },
+  "skill_targets": ["instagram-composio-publisher","delivery","social"],
+  "skill_projection_required": true
+}

@@ -150,3 +150,11 @@ test('instagram canonical publisher prefers direct Meta while retaining readback
   assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
   assert.match(publisher, /record_content_publication_state/);
 });
+
+test('meta Instagram setup uses the canonical secret reader without exposing secrets', () => {
+  const setup = read('supabase/functions/powerhouse-meta-instagram-setup/index.ts');
+  assert.match(setup, /db\.rpc\('bg_geheim'/);
+  assert.match(setup, /META_INSTAGRAM_ACCESS_TOKEN/);
+  assert.match(setup, /META_INSTAGRAM_APP_SECRET/);
+  assert.doesNotMatch(setup, /console\.log\([^\n]*(accessToken|appSecret|META_INSTAGRAM_APP_SECRET)/);
+});
