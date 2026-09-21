@@ -13,6 +13,8 @@ test('Meta direct is the primary Instagram transport and keeps existing hard gat
   assert.match(source,/instagramIdentityProven/);
   assert.match(source,/powerhouse_issue_social_publish_capability_v1/);
   assert.match(source,/powerhouse_consume_social_publish_capability_v1/);
+  assert.match(source,/bg_geheim/);
+  assert.match(source,/record_content_publication_state/);
   const meta=source.indexOf("if(instagramMetaConfig)");
   const composio=source.indexOf("if(instagramComposioApiKey)");
   assert.ok(meta>=0&&composio>meta);
