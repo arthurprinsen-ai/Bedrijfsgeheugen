@@ -242,6 +242,17 @@ No Mira or not a Reel means no Instagram publication.
 
 
 
+## Direct Meta primary transport (2026-09-21)
+
+Fingerprint: `instagram-meta-direct-primary-v1`.
+
+- The canonical Instagram writer remains `powerhouse-social-publisher`; do not create a parallel direct writer.
+- Prefer the official Meta Instagram API when `META_INSTAGRAM_ACCESS_TOKEN` and `META_INSTAGRAM_USER_ID` are available.
+- Direct Meta must create the Reel container, wait for processing `FINISHED`, call `media_publish`, and read back the exact resulting media id/permalink.
+- If Meta returns a published media id but readback is temporarily unavailable, persist that exact id in `dispatching` / verification-pending state and reconcile it. Never issue a second publish to recover a readback failure.
+- Composio is a bounded secondary transport when Meta direct auth is unavailable; Buffer remains the final bounded fallback. All transports remain subordinate to Mira-only, exact-final-media, atomic claim, one-time capability and dedupe gates.
+- Missing Meta credentials are a configuration state, never permission to bypass publication authority or reuse a non-Mira asset.
+
 ## Daily Mira provider isolation and retry stability (2026-09-21)
 
 Fingerprint: `instagram-daily-mira-provider-isolation-v1`.
@@ -251,12 +262,3 @@ Fingerprint: `instagram-daily-mira-provider-isolation-v1`.
 - The same unresolved replacement/external-id blocker is one state, not a new attempt on every preflight. Increment retry/attempt lineage only when the blocker identity or provider state changes.
 - Preserve and reuse the exact generated Mira Reel across auth/rate-limit recovery. No non-Mira content, image fallback, second winner or duplicate publication.
 - Composio primary and bounded Buffer fallback are both subordinate to the same central publication authority and Mira Reel proof.
-
-
-## Direct provider truth must enter social learning immediately
-
-Fingerprint: `instagram-direct-social-learning-ingest-v1`.
-
-A provider-verified Composio Instagram publish must not wait for Buffer ingestion before it becomes part of the canonical social data spine. In the same canonical publisher execution, upsert `social_posts` idempotently on `tenant_id + platform + external_post_id`, preserve `format=reel`, the frozen daily-winner recommendation and score version, and the final caption hash, then run the canonical content-learning refresh. Buffer sync may enrich measurements later but is never the sole bridge from direct Instagram publication to learning.
-
-The existing five-minute `powerhouse-content-closed-loop-v1` supervisor is the recovery owner for an open Buffer circuit: while cooldown is active, Buffer sync must perform zero provider calls; after `retry_at`, the same supervisor resumes the sync automatically. Do not add a parallel retry scheduler or a second publication writer.

@@ -17,9 +17,11 @@ test('central authority issues exact-bound one-time capabilities',()=>{
 
 test('publisher requires capability consumption before provider calls',()=>{
   const consume=publisher.indexOf('await consumePublishCapability');
+  const meta=publisher.lastIndexOf('publishInstagramViaMeta(db,art)');
   const composio=publisher.lastIndexOf('publishInstagramViaComposio(db, art, runDate)');
   const buffer=publisher.indexOf('created = await createPost(bufferToken, input)');
   assert.ok(consume>0);
+  assert.ok(meta>consume);
   assert.ok(composio>consume);
   assert.ok(buffer>consume);
   assert.match(publisher,/containmentSweepInstagram/);

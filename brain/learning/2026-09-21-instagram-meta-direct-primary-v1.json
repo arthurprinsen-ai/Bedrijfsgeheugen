@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "instagram-meta-direct-primary-v1",
+  "compiler": {
+    "failure_class": "INSTAGRAM_TRANSPORT_INTERMEDIARY_DEPENDENCY",
+    "scope": "INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Instagram delivery used extra transport hops even though the canonical publisher already enforced identity, exact media, idempotency and readback.",
+  "prevention": [
+    "Keep powerhouse-social-publisher as the only Instagram writer and prefer the official Meta API when configured.",
+    "Keep Mira identity proof, exact-final-media SHA, atomic claim, one-time publication capability and duplicate prevention mandatory.",
+    "After Meta returns a media id, reconcile that exact object after readback uncertainty instead of creating a replacement.",
+    "Register every new runtime surface with an executable evidence contract."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "supabase/functions/powerhouse-meta-instagram-setup/index.ts",
+    "netlify/functions/powerhouse-meta-instagram-config.mjs",
+    "supabase/migrations/20260921121500_meta_instagram_direct_credentials.sql",
+    "tests/brain-instagram-meta-direct-primary.test.mjs",
+    "tests/brain-instagram-meta-direct-config.test.mjs",
+    "config/powerhouse-quality-surface-contracts.json"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-meta-direct-primary.test.mjs",
+      "tests/brain-instagram-meta-direct-config.test.mjs"
+    ],
+    "production_readback_required": true
+  },
+  "skill_targets": ["instagram-composio-publisher","delivery","social"],
+  "skill_projection_required": true
+}

@@ -141,3 +141,12 @@ test('closed loop freezes Instagram winner before media materialization', () => 
   assert.match(orchestrator, /powerhouse_instagram_daily_winners_v1/);
   assert.match(orchestrator, /daily_winner_recommendation_id/);
 });
+
+test('instagram canonical publisher prefers direct Meta while retaining readback and fail-closed identity gates', () => {
+  const publisher = read('supabase/functions/powerhouse-social-publisher/index.ts');
+  assert.match(publisher, /publishInstagramViaMeta/);
+  assert.match(publisher, /instagram-meta-primary-composio-buffer-fallback-v1/);
+  assert.match(publisher, /META_READBACK_PENDING/);
+  assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
+  assert.match(publisher, /record_content_publication_state/);
+});

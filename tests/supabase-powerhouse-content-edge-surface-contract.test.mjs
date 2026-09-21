@@ -66,12 +66,13 @@ test('social publisher retains identity gate, provider reconciliation, exact rea
   assert.match(publisher, /x-powerhouse-token/);
 });
 
-test('Instagram transport remains Mira-proof gated, provider-isolated and resilient to Composio auth loss', () => {
+test('Instagram transport remains Mira-proof gated, Meta-primary and resilient to transport auth loss', () => {
   assert.match(publisher, /NON_BUFFER_INSTAGRAM_PROVIDER_OWNED/);
-  assert.match(publisher, /instagram-composio-primary-buffer-fallback-v1/);
+  assert.match(publisher, /instagram-meta-primary-composio-buffer-fallback-v1/);
   assert.match(publisher, /instagramInput\(art,due,future\)/);
+  assert.match(publisher, /if\(instagramMetaConfig\)/);
   assert.match(publisher, /if\(instagramComposioApiKey\)/);
-  assert.match(publisher, /if\(!instagramComposioApiKey && bufferCircuit\.active\)/);
+  assert.match(publisher, /if\(!instagramMetaConfig&&!instagramComposioApiKey&&bufferCircuit\.active\)/);
   assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
   assert.match(publisher, /BUFFER_RATE_LIMITED/);
   assert.doesNotMatch(publisher, /publishInstagramViaMake|make\\.com|hook\\.eu/i);
