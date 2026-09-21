@@ -1,4 +1,5 @@
 import { mapRuntimeProjection } from '../runtime-evidence.js';
+import { ensureIdentityWidget } from '../portal-state.js';
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
 const lower=value=>String(value??'').toLowerCase();
@@ -229,6 +230,12 @@ async function adminRuntimeEvidence(fetchImpl=globalThis.fetch){
   return {status:'ready',runtime:{...mapRuntimeProjection(projection),systemMap:projection.systemMap||null}};
 }
 
+async function openAdminLogin(){
+  const identity=await ensureIdentityWidget();
+  if(!identity?.open)throw new Error('IDENTITY_WIDGET_UNAVAILABLE');
+  identity.open('login');
+}
+
 function accessState(root,status,onLogin){
   const copy=status==='forbidden'
     ?['Geen toegang','Dit onderdeel is alleen beschikbaar voor geautoriseerde Powerhouse-beheerders.']
@@ -236,7 +243,15 @@ function accessState(root,status,onLogin){
       ?['Beveiligde data niet beschikbaar','De admin-only observability-API kon niet veilig worden gelezen. Er wordt geen fallback naar de gewone klant-API gebruikt.']
       :['Inloggen vereist','Log in met een geautoriseerd beheeraccount om het Powerhouse Control Center te openen.'];
   root.innerHTML=`<section class="poc-panel poc-access"><span>🔒 Powerhouse Control Center</span><h3>${esc(copy[0])}</h3><p>${esc(copy[1])}</p>${status==='unauthenticated'?'<button type="button" class="poc-login">Inloggen</button>':''}</section>`;
-  root.querySelector('.poc-login')?.addEventListener('click',onLogin);
+  root.querySelector('.poc-login')?.addEventListener('click',async()=>{
+    const button=root.querySelector('.poc-login');
+    if(button){button.disabled=true;button.textContent='Inloggen openen…';}
+    try{await onLogin();}catch{
+      if(button){button.disabled=false;button.textContent='Inloggen';}
+      const note=document.createElement('p');note.className='poc-note';note.textContent='Inloggen kon niet worden geopend. Vernieuw de pagina en probeer opnieuw.';
+      root.querySelector('.poc-access')?.appendChild(note);
+    }
+  });
 }
 
 export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fetch}={}){
@@ -248,7 +263,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
   let composioPollCount=0;
 
   function render(){
-    if(!securedRuntime){accessState(root,'unauthenticated',()=>globalThis.netlifyIdentity?.open?.('login'));return;}
+    if(!securedRuntime){accessState(root,'unauthenticated',()=>openAdminLogin());return;}
     const obs=securedRuntime.observability||{};
     const all=arr(obs.events);const events=filterEvents(all,state);
     const actors=unique(all.map(e=>e.actor)),layers=unique(all.map(e=>e.layer)),sources=unique(all.map(e=>e.source));
@@ -338,7 +353,7 @@ export function mountPowerhouseObservability(container,{fetchImpl=globalThis.fet
     root.innerHTML='<div class="poc-empty">Beveiligde Powerhouse-data laden…</div>';
     const result=await adminRuntimeEvidence(fetchImpl);
     if(destroyed)return;
-    if(result.status!=='ready'){securedRuntime=null;accessState(root,result.status,()=>globalThis.netlifyIdentity?.open?.('login'));return;}
+    if(result.status!=='ready'){securedRuntime=null;accessState(root,result.status,()=>openAdminLogin());return;}
     securedRuntime=result.runtime;render();
   }
 
