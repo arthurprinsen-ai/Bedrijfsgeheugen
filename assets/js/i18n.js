@@ -1,7 +1,7 @@
 (() => {
   'use strict';
   const STORAGE_KEY = 'bg_locale';
-  const CACHE_KEY = 'bg_i18n_cache_v1';
+  const CACHE_KEY = 'bg_i18n_cache_v2';
   const SUPPORTED = new Set(['nl','en']);
   const ORIGINAL = new WeakMap();
   const ATTR_ORIGINAL = new WeakMap();
@@ -115,7 +115,7 @@
     const batches = [];
     let batch = [], chars = 0;
     for (const source of missing) {
-      if (batch.length >= 30 || chars + source.length > 3500) {
+      if (batch.length >= 20 || chars + source.length > 2400) {
         if (batch.length) batches.push(batch);
         batch = []; chars = 0;
       }
@@ -124,25 +124,34 @@
     if (batch.length) batches.push(batch);
     for (const part of batches) {
       if (requestRun !== run) return new Map();
-      let response;
-      for (let attempt=0; attempt<2; attempt++) {
-        response = await fetch('/api/i18n-translate', {
-          method:'POST',
-          headers:{'content-type':'application/json'},
-          body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
+      try {
+        let response;
+        for (let attempt=0; attempt<2; attempt++) {
+          response = await fetch('/api/i18n-translate', {
+            method:'POST',
+            headers:{'content-type':'application/json'},
+            body:JSON.stringify({ target, source:'nl', context:context(), strings:part })
+          });
+          if (response.ok) break;
+          if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 250));
+        }
+        if (!response?.ok) continue;
+        const payload = await response.json();
+        if (requestRun !== run) return new Map();
+        if (!Array.isArray(payload.translations) || payload.translations.length !== part.length) continue;
+        part.forEach((source,i) => {
+          const translated = typeof payload.translations[i] === 'string' && payload.translations[i].trim()
+            ? payload.translations[i].trim()
+            : null;
+          if (!translated) return;
+          out.set(source,translated);
+          cache[cacheId(target,source)] = translated;
         });
-        if (response.ok) break;
-        if (attempt === 0) await new Promise(resolve => setTimeout(resolve, 250));
+        saveCache();
+      } catch {
+        // Keep the successfully translated batches. One provider/API failure must
+        // never make the entire language switch appear to do nothing.
       }
-      if (!response?.ok) throw new Error('translation_failed_' + (response?.status || 'network'));
-      const payload = await response.json();
-      if (requestRun !== run || !Array.isArray(payload.translations)) return new Map();
-      part.forEach((source,i) => {
-        const translated = payload.translations[i] || source;
-        out.set(source,translated);
-        cache[cacheId(target,source)] = translated;
-      });
-      saveCache();
     }
     return out;
   }
@@ -226,9 +235,6 @@
     try {
       await apply(document.body);
     } catch (error) {
-      locale = previous;
-      try { localStorage.setItem(STORAGE_KEY, locale); } catch {}
-      document.cookie = 'bg_locale=' + encodeURIComponent(locale) + '; Path=/; Max-Age=31536000; SameSite=Lax';
       document.documentElement.dataset.bgI18nError = 'true';
       syncControls();
       throw error;
