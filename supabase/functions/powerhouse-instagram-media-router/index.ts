@@ -33,9 +33,10 @@ Deno.serve(async req=>{
  const historical=!!clean(ob?.external_id);
 
  if(historical&&(ob?.status==='BLOCKED'||ob?.evidence?.republish_forbidden===true)){
+  const sameReplacement=job?.status==='REPLACEMENT_REQUIRED'&&clean(job?.replacement_of_external_id)===clean(ob.external_id);
   const row={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:'REPLACEMENT_REQUIRED',required_provider:policy?.required_provider||null,
    asset_manifest:job?.asset_manifest||{},proof_manifest:job?.proof_manifest||{},replacement_of_external_id:ob.external_id,republish_forbidden:true,
-   provider_connection_state:'REPLACEMENT_DELETE_AUTHORITY_UNAVAILABLE',attempts:(job?.attempts||0)+1,last_error:'SENT_UNPROVEN_REPLACEMENT_REQUIRED',
+   provider_connection_state:'REPLACEMENT_DELETE_AUTHORITY_UNAVAILABLE',attempts:sameReplacement?(job?.attempts||0):(job?.attempts||0)+1,last_error:'SENT_UNPROVEN_REPLACEMENT_REQUIRED',
    next_action:'Never duplicate. Controlled replacement requires delete/replace authority plus a new provider-routed proven asset.',updated_at:new Date().toISOString()};
   await db.from('powerhouse_instagram_media_jobs_v1').upsert(row,{onConflict:'tenant_id,publication_date,channel'});
   return json({ok:true,ready:false,runDate,postType,status:row.status,republish_forbidden:true,external_id:ob.external_id});
