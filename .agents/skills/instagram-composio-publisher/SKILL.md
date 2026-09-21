@@ -283,3 +283,10 @@ A Netlify scheduled function is intentionally not a public HTTP endpoint. When a
 Fingerprint: `netlify-serverless-env-api-v1`.
 
 Use `process.env` for Netlify serverless Functions, including scheduled functions and platform-event handlers. Do not use `Netlify.env` there; that API belongs to Edge Functions. A production secret can be correctly scoped and still appear absent if the wrong runtime API is used.
+
+
+## Authenticated immediate configuration recovery
+
+Fingerprint: `composio-authenticated-immediate-secret-sync-v1`.
+
+When a provider event demonstrably reaches the target but scoped secret visibility remains inconsistent and the provider-side cause is not proven, do not guess. Reuse the canonical idempotent configuration operation through a POST-only authenticated serverless control endpoint. Authenticate with an existing Powerhouse service secret by hash, never store the raw authentication secret in source, never expose the provider secret, and never grant the configuration endpoint publication authority.
