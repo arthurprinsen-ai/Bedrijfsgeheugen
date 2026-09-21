@@ -1,30 +1,16 @@
 {
- "bijgewerkt": "2026-09-11",
+ "bijgewerkt": "2026-09-21",
  "zoekwoorden": [
   {
-   "zoekwoord": "afas koppeling kosten",
-   "pagina": "/blog/wat-kost-een-afas-koppeling/",
+   "zoekwoord": "afas koppeling",
+   "pagina": "/afas-koppeling",
    "bestaat": true,
    "claimt": true,
-   "type": "cluster"
+   "type": "pijler"
   },
   {
-   "zoekwoord": "afas pocket app koppelen",
+   "zoekwoord": "afas pocket koppelen",
    "pagina": "/afas-pocket-koppelen",
-   "bestaat": true,
-   "claimt": true,
-   "type": "cluster"
-  },
-  {
-   "zoekwoord": "afmaakindex",
-   "pagina": "/afmaakindex",
-   "bestaat": true,
-   "claimt": true,
-   "type": "cluster"
-  },
-  {
-   "zoekwoord": "ai act compliance mkb",
-   "pagina": "/ai-act",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
@@ -37,8 +23,8 @@
    "type": "pijler"
   },
   {
-   "zoekwoord": "ai capability model",
-   "pagina": "/ai-capability-model",
+   "zoekwoord": "ai automatisering mkb",
+   "pagina": "/ai-automatisering-mkb",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
@@ -51,21 +37,14 @@
    "type": "cluster"
   },
   {
-   "zoekwoord": "ai implementeren mkb",
+   "zoekwoord": "ai implementatie mkb",
    "pagina": "/ai-implementeren",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
   },
   {
-   "zoekwoord": "ai marketing mkb",
-   "pagina": "/ai-marketing-mkb",
-   "bestaat": true,
-   "claimt": true,
-   "type": "cluster"
-  },
-  {
-   "zoekwoord": "ai pilot opzetten mkb",
+   "zoekwoord": "ai poc mkb",
    "pagina": "/ai-poc",
    "bestaat": true,
    "claimt": true,
@@ -74,13 +53,6 @@
   {
    "zoekwoord": "ai scan mkb",
    "pagina": "/ai-scan",
-   "bestaat": true,
-   "claimt": true,
-   "type": "cluster"
-  },
-  {
-   "zoekwoord": "ai strategie directie",
-   "pagina": "/ai-voor-bestuurders",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
@@ -100,15 +72,29 @@
    "type": "cluster"
   },
   {
-   "zoekwoord": "bedrijfsgeheugen",
-   "pagina": "/bedrijfsgeheugen",
+   "zoekwoord": "bedrijf overdraagbaar maken",
+   "pagina": "/bedrijf-overdraagbaar-maken",
    "bestaat": true,
    "claimt": true,
-   "type": "pijler"
+   "type": "cluster"
   },
   {
-   "zoekwoord": "bedrijfsopvolging familiebedrijf kennis",
-   "pagina": "/blog/bedrijfsopvolging-begin-bij-het-geheugen/",
+   "zoekwoord": "bedrijfsgeheugen platform",
+   "pagina": "/product",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "bedrijfskennis bij overname",
+   "pagina": "/investeerders-ma",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "bedrijfskennis borgen",
+   "pagina": "/bedrijfsgeheugen",
    "bestaat": true,
    "claimt": true,
    "type": "pijler"
@@ -121,20 +107,6 @@
    "type": "cluster"
   },
   {
-   "zoekwoord": "begrippenlijst mkb",
-   "pagina": "/begrippen",
-   "bestaat": true,
-   "claimt": true,
-   "type": "cluster"
-  },
-  {
-   "zoekwoord": "benchmark mkb digitalisering",
-   "pagina": "/benchmark",
-   "bestaat": true,
-   "claimt": true,
-   "type": "cluster"
-  },
-  {
    "zoekwoord": "business case ai mkb",
    "pagina": "/business-case-ai",
    "bestaat": true,
@@ -142,29 +114,29 @@
    "type": "cluster"
   },
   {
-   "zoekwoord": "chatgpt bedrijfsgegevens beleid",
-   "pagina": "/data-soevereiniteit",
+   "zoekwoord": "digitalisering mkb",
+   "pagina": "/",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
   },
   {
-   "zoekwoord": "data soevereiniteit",
-   "pagina": "/data-soevereiniteit",
-   "bestaat": true,
-   "claimt": true,
+   "zoekwoord": "digitalisering mkb kennisbank",
+   "pagina": "/blog/",
+   "bestaat": false,
+   "claimt": false,
    "type": "cluster"
   },
   {
-   "zoekwoord": "erp implementatie mislukt",
-   "pagina": "/blog/automatiseren-zonder-traject/",
+   "zoekwoord": "due diligence bedrijfskennis",
+   "pagina": "/due-diligence",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
   },
   {
    "zoekwoord": "eu ai act mkb",
-   "pagina": "/blog/eu-ai-act-mkb/",
+   "pagina": "/ai-act",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
@@ -177,32 +149,32 @@
    "type": "cluster"
   },
   {
-   "zoekwoord": "kennisborging mkb",
-   "pagina": "/product",
-   "bestaat": true,
-   "claimt": true,
-   "type": "cluster"
-  },
-  {
-   "zoekwoord": "kennisverlies mkb",
-   "pagina": "/blog/wat-is-een-bedrijfsgeheugen/",
-   "bestaat": true,
-   "claimt": true,
-   "type": "pijler"
-  },
-  {
-   "zoekwoord": "prijzen digitalisering mkb",
+   "zoekwoord": "kosten digitalisering mkb",
    "pagina": "/prijzen",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
   },
   {
-   "zoekwoord": "systemen koppelen mkb",
-   "pagina": "/blog/systemen-koppelen-mkb/",
+   "zoekwoord": "microsoft 365 koppeling",
+   "pagina": "/microsoft-365-koppeling",
    "bestaat": true,
    "claimt": true,
-   "type": "pijler"
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "power bi implementatie mkb",
+   "pagina": "/power-bi-implementatie",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "systemen koppelen mkb",
+   "pagina": "/systemen-koppelen",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
   },
   {
    "zoekwoord": "twinfield koppeling",
@@ -212,22 +184,8 @@
    "type": "cluster"
   },
   {
-   "zoekwoord": "wat kost digitalisering mkb",
-   "pagina": "/blog/wat-kost-digitalisering-mkb/",
-   "bestaat": true,
-   "claimt": true,
-   "type": "pijler"
-  },
-  {
-   "zoekwoord": "webshop koppelen boekhouding",
+   "zoekwoord": "webshop koppeling mkb",
    "pagina": "/webshop-koppeling",
-   "bestaat": true,
-   "claimt": true,
-   "type": "cluster"
-  },
-  {
-   "zoekwoord": "werkinstructie voorbeeld",
-   "pagina": "/blog/werkinstructie-voorbeeld/",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
