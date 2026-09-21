@@ -33,7 +33,10 @@
       35592353706
     ],
     "exact_main_sha": "e21be12adebd2cb83d97d2105e678f401237a6a3",
-    "production_readback_required": true
+    "production_readback_required": true,
+    "historical_replay": [
+      "tests/brain-prijzen-primary-cta-measurement.test.mjs"
+    ]
   },
   "skill_targets": [
     "seo-order-engine",
