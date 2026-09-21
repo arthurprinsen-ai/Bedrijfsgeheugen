@@ -10,18 +10,22 @@ const MODEL = 'claude-sonnet-5';
 
 const providerRegistry = createProviderRegistry([{
   id:MODEL_ID, provider:'Anthropic', model:MODEL, status:'Approved',
-  allowedDataClasses:['Public','Confidential'], allowedPurposes:['website-answer','portal-project-answer'],
+  allowedDataClasses:['Public','Confidential'], allowedPurposes:['website-answer','portal-project-answer','ui-translation'],
   trainingAllowed:false, persistentProviderMemory:false,
 }]);
 
 const aiUseCases = [
   createAIUseCase({ id:'AI-WEBSITE-QA', tenantId:'PUBLIC', purpose:'website-answer', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:MODEL_ID, dataClasses:['Public'], humanOversight:'Escalate when provided sources do not answer', autonomy:'L1', controls:['SOURCE_ONLY','TRANSPARENCY','NO_PERSISTENCE'], evidence:['WEBSITE-INDEX'], state:AI_USE_CASE_STATES.ACTIVE }),
   createAIUseCase({ id:'AI-PORTAL-QA', tenantId:'REQUEST_SCOPED', purpose:'portal-project-answer', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:MODEL_ID, dataClasses:['Confidential'], humanOversight:'User initiates every request; no autonomous action', autonomy:'L1', controls:['REQUEST_SCOPED_CONTEXT','NO_PERSISTENCE'], evidence:['PORTAL-REQUEST-CONTEXT'], state:AI_USE_CASE_STATES.ACTIVE }),
+  createAIUseCase({ id:'AI-PUBLIC-TRANSLATION', tenantId:'PUBLIC', purpose:'ui-translation', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:MODEL_ID, dataClasses:['Public'], humanOversight:'User can switch back to canonical Dutch source', autonomy:'L1', controls:['TRANSLATION_ONLY','NO_PERSISTENCE'], evidence:['SOURCE-TEXT'], state:AI_USE_CASE_STATES.ACTIVE }),
+  createAIUseCase({ id:'AI-PORTAL-TRANSLATION', tenantId:'REQUEST_SCOPED', purpose:'ui-translation', ownerId:'Bedrijfsgeheugen', legalRole:'Deployer', riskClass:AI_RISK_CLASSES.TRANSPARENCY, providerModelId:MODEL_ID, dataClasses:['Confidential'], humanOversight:'User can switch back to canonical Dutch source', autonomy:'L1', controls:['REQUEST_SCOPED_CONTEXT','TRANSLATION_ONLY','NO_PERSISTENCE'], evidence:['VISIBLE-PORTAL-TEXT'], state:AI_USE_CASE_STATES.ACTIVE }),
 ];
 
 const policies = [
   { id:'PUBLIC-WEBSITE-QA', subjectId:'public-visitor', action:ACTIONS.AI_PROCESS, resourceType:'QuestionContext', purpose:'website-answer', dataClass:'Public', tenantId:'PUBLIC', decision:DECISIONS.ALLOW },
   { id:'PORTAL-REQUEST-QA', subjectId:'portal-requester', action:ACTIONS.AI_PROCESS, resourceType:'QuestionContext', purpose:'portal-project-answer', dataClass:'Confidential', tenantId:'REQUEST_SCOPED', decision:DECISIONS.ALLOW },
+  { id:'PUBLIC-UI-TRANSLATION', subjectId:'public-visitor', action:ACTIONS.AI_PROCESS, resourceType:'TranslationContext', purpose:'ui-translation', dataClass:'Public', tenantId:'PUBLIC', decision:DECISIONS.ALLOW },
+  { id:'PORTAL-UI-TRANSLATION', subjectId:'portal-requester', action:ACTIONS.AI_PROCESS, resourceType:'TranslationContext', purpose:'ui-translation', dataClass:'Confidential', tenantId:'REQUEST_SCOPED', decision:DECISIONS.ALLOW },
 ];
 
 async function anthropic({ authorized, apiKey, system, maxTokens, renderUser, provenance, fetchImpl = fetch }) {
@@ -74,4 +78,33 @@ export async function runPortalAnswer({ question, projectContext, apiKey, system
     invokeModel:authorized => anthropic({ authorized, apiKey, system, maxTokens:500, fetchImpl, provenance:{ source:'request-scoped-project-context', providerModelId:MODEL_ID }, renderUser:ctx => `PROJECTGEGEVENS (JSON):\n\n${ctx.projectContext}\n\n---\n\nVRAAG VAN DE KLANT:\n${ctx.question}` }),
   });
   return attachTokenUsage(result, { requestId, componentKey:'agent:portal-qa', usageStore, usageContext:{ ...(usageContext ?? {}), activityType:'portal_qa' } });
+}
+
+
+export async function runTranslation({ strings, source='nl', target='en', dataClass='Public', apiKey, fetchImpl=fetch, usageStore, requestId=crypto.randomUUID() }) {
+  const isPortal = dataClass === 'Confidential';
+  const tenantId = isPortal ? 'REQUEST_SCOPED' : 'PUBLIC';
+  const requesterId = isPortal ? 'portal-requester' : 'public-visitor';
+  const aiUseCaseId = isPortal ? 'AI-PORTAL-TRANSLATION' : 'AI-PUBLIC-TRANSLATION';
+  const system = 'You are the Bedrijfsgeheugen translation layer. Translate faithfully between Dutch and English. Preserve meaning, product names, numbers, currencies, URLs, punctuation and placeholders. Never add claims, explanations or marketing copy. Return ONLY a valid JSON array of strings in the same order and same length as the input.';
+  const result = await runGovernedProductionAI({
+    request:{ requestId, tenantId, requesterId, aiUseCaseId, purpose:'ui-translation', resourceType:'TranslationContext', resourceId:requestId, providerModelId:MODEL_ID, dataClass, context:{ strings, source, target } },
+    policies, providerRegistry, aiUseCases,
+    contextPolicy:{ allowedFields:['strings','source','target'], pseudonymizeFields:[] },
+    invokeModel:authorized => anthropic({
+      authorized, apiKey, system, maxTokens:1800, fetchImpl,
+      provenance:{ source:isPortal?'visible-portal-text':'public-site-text', providerModelId:MODEL_ID },
+      renderUser:ctx => JSON.stringify({source:ctx.source,target:ctx.target,strings:ctx.strings})
+    }),
+  });
+  let translations;
+  try { translations = JSON.parse(result.text); } catch { throw new Error('Translation response was not valid JSON'); }
+  if (!Array.isArray(translations) || translations.length !== strings.length || translations.some(x=>typeof x !== 'string')) throw new Error('Translation response shape mismatch');
+  const metered = await attachTokenUsage(result, {
+    requestId,
+    componentKey:isPortal?'agent:portal-translation':'agent:website-translation',
+    usageStore,
+    usageContext:{tenantId,activityType:'ui_translation'}
+  });
+  return Object.freeze({ translations, tokenUsage:metered.tokenUsage, tokenMetering:metered.tokenMetering, canonicalTokenMetering:metered.canonicalTokenMetering });
 }
