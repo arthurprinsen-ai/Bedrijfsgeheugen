@@ -34,6 +34,9 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(runtime,/\['Prijzen','Pricing'\]/);
   assert.match(runtime,/\['Inloggen','Log in'\]/);
   assert.match(runtime,/\['Aanmelden','Sign up'\]/);
+  assert.match(runtime,/\['Ontdekken','Discover'\]/);
+  assert.match(runtime,/applyLocalTranslations/);
+  assert.match(runtime,/synchronous so selecting English visibly changes the menu/);
   assert.doesNotMatch(runtime,/locale = previous;\s*try \{ localStorage\.setItem\(STORAGE_KEY, locale\)/);
   assert.match(injector,/\.html/);
   assert.match(injector,/v18-mobile-drawer/);
