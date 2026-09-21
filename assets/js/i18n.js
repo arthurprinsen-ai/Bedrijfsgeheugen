@@ -15,7 +15,10 @@
 
   const cssEscape = value => String(value).replace(/"/g, '&quot;');
   const normalizeLocale = value => String(value || '').toLowerCase().split('-')[0];
-  const isPortal = () => location.pathname.startsWith('/portal') || location.pathname.startsWith('/klantportaal');
+  const isPortal = () => {
+    const pathname = location.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
+    return pathname.startsWith('/portal') || pathname.startsWith('/klantportaal');
+  };
   const context = () => isPortal() ? 'portal' : 'public';
   const pathLocale = () => {
     const match = location.pathname.match(/^\/(nl|en)(?:\/|$)/i);
