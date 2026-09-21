@@ -491,7 +491,8 @@
         "tests/repository-writer-permission-boundary.test.mjs",
         "tests/repository-writer-slow-canary-sla.test.mjs",
         "tests/terminal-writer-lease-",
-        "tools/regulatory-"
+        "tools/regulatory-",
+        "tests/terminal-obligation-"
       ],
       "requiredContracts": [
         "BG166",
