@@ -21,3 +21,5 @@ Exact-head gates must pass, protected merge and exact Netlify production deploy 
 ## 22 September 2026 — Project API key rotated
 
 The Composio Project API key was rotated in the production hosting environment after the previous provider validation returned a rejected-key response. No secret material is recorded here. The next production deployment must revalidate the provider connection and persist only non-secret readiness evidence.
+
+Runtime revalidation is intentionally performed only after a normal protected deployment.
