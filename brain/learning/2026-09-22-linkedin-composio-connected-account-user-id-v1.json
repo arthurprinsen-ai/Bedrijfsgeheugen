@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "linkedin-composio-connected-account-user-id-v1",
+  "compiler": {
+    "failure_class": "COMPOSIO_CONNECTED_ACCOUNT_USER_CONTEXT_MISSING",
+    "scope": "LINKEDIN",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "Composio v3.1 LinkedIn tool execution requires the connected account user_id in addition to connected_account_id. Production readback with only connected_account_id returned ActionExecute_ConnectedAccountEntityIdRequired.",
+  "prevention": [
+    "Forward the exact connected account user_id on every LinkedIn Composio tool execution.",
+    "Treat missing connected-account user context as a hard configuration/runtime error rather than retrying blindly.",
+    "Persist granted LinkedIn scopes in canonical capability state without exposing tokens.",
+    "Keep company-page capability fail-closed until r_organization_admin is present and GET_COMPANY_INFO succeeds."
+  ],
+  "evidence": [
+    "Composio request 2168 returned ActionExecute_ConnectedAccountEntityIdRequired",
+    "Composio request 2169 succeeded for LINKEDIN_GET_MY_INFO with user_id",
+    "Composio request 2170 returned missing r_organization_admin for company ACLs",
+    "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+    "tests/brain-linkedin-composio-capability-proof.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-linkedin-composio-capability-proof.test.mjs"],
+    "production_readback_required": true
+  },
+  "skill_targets": ["personal-linkedin-life-only","delivery","social"],
+  "skill_projection_required": true
+}

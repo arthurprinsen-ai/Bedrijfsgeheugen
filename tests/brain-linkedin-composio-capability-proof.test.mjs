@@ -41,3 +41,16 @@ test('LinkedIn Composio execution uses v3.1 latest tool semantics',()=>{
   assert.match(setup,/LINKEDIN_GET_COMPANY_INFO',\{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'\}/);
   assert.doesNotMatch(setup,/api\/v3'|api\/v3"/);
 });
+
+test('connected-account user_id is forwarded to every Composio LinkedIn tool call',()=>{
+  assert.match(setup,/COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED/);
+  assert.match(setup,/user_id:userId/);
+  assert.match(setup,/execute\(key,accountId,userId,'LINKEDIN_GET_MY_INFO'/);
+  assert.match(setup,/execute\(key,accountId,userId,'LINKEDIN_GET_COMPANY_INFO'/);
+});
+
+test('company capability stays fail-closed when organization scope is absent',()=>{
+  assert.match(setup,/company_scope_required:companyReady\?null:'r_organization_admin'/);
+  assert.match(setup,/granted_scopes:grantedScopes/);
+  assert.match(setup,/company_ready:companyReady/);
+});
