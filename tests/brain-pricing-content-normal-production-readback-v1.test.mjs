@@ -22,3 +22,21 @@ test('pricing page keeps mobile controls clickable and exposes monthly/yearly bi
   assert.match(pricing, /touch-action:manipulation/);
   assert.match(pricing, /card\.hidden=card\.getAttribute\('data-bg-group'\)!==group/);
 });
+
+
+test('pricing page exposes lifecycle segmentation for growth recovery M&A and portfolio', async () => {
+  const fs = await import('node:fs/promises');
+  const pricing = await fs.readFile(new URL('../prijzen.html', import.meta.url), 'utf8');
+  for (const stage of ['grow','loss','crisis','buy','sell','portfolio']) {
+    assert.match(pricing, new RegExp('data-bg-stage="' + stage + '"'));
+    assert.match(pricing, new RegExp('data-bg-stage-panel="' + stage + '"'));
+  }
+  assert.match(pricing, /Herstelscan/);
+  assert.match(pricing, /13-weeks cashflow/);
+  assert.match(pricing, /Operational &amp; Data DD|Operational & Data DD/);
+  assert.match(pricing, /Exit Readiness Scan/);
+  assert.match(pricing, /Portfolio Control/);
+  assert.match(pricing, /Normalized EBITDA/);
+  assert.match(pricing, /key-person risk/i);
+  assert.match(pricing, /Juridisch insolventieadvies/);
+});
