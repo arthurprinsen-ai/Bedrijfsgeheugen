@@ -1,0 +1,37 @@
+{
+  "fingerprint": "business-context-feedback-workspace-v1",
+  "compiler": {
+    "failure_class": "CONTEXT_NOT_USER_CORRECTABLE",
+    "scope": "PORTAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The living business context engine could infer and render stage, events, goals, health, maturity and journey, but the entrepreneur could not explicitly confirm or correct that context in the Portal. That left the feedback loop incomplete and risked Powerhouse continuing from an inference that the user disagreed with.",
+  "prevention_rule": "Every material inferred company context shown in Portal must expose a tenant-scoped user confirmation/correction path. Explicit entrepreneur confirmation must be persisted to canonical Portal state, flushed through the existing business-input writeback, and then become the highest-priority context source for Powerhouse. Unknown context must remain unproven until confirmed or supported by data.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-company-lifecycle-context.test.mjs",
+      "portal-v2/tests/business-context-workspace.test.mjs",
+      "portal-v2/tests/lifecycle-context.test.mjs"
+    ],
+    "source": [
+      "portal-v2/modules/business-context-workspace.js",
+      "portal-v2/page-shell.js",
+      "portal-v2/business-context.css",
+      "brain/context/business-context-engine.mjs"
+    ],
+    "outcome": "Entrepreneurs can confirm the inferred company phase or select a different phase plus multiple simultaneous strategic events and goals; the selection is persisted in portal.business_context and written back through the canonical Portal/Powerhouse state flow."
+  }
+}
