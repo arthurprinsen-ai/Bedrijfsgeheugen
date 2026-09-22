@@ -1,0 +1,37 @@
+{
+  "fingerprint": "social-publication-daily-channel-fence-v1",
+  "date": "2026-09-22",
+  "type": "PUBLICATION_DUPLICATE_PREVENTION",
+  "failure_class": "MULTIPLE_ACTIVE_SOCIAL_PUBLISH_CAPABILITIES_PER_DAY_CHANNEL",
+  "scope": "POWERHOUSE_SOCIAL_PUBLICATION_AUTHORITY",
+  "machine_enforceable": true,
+  "repeat_count": 5,
+  "security_sensitive": false,
+  "root_cause": "The social publication capability contract was unique per token but did not enforce one active capability for the same business date and channel. Parallel scheduler or recovery issuance could therefore create multiple independently valid capabilities for the same canonical daily publication obligation.",
+  "prevention_rule": "Serialize capability issuance per run_date and channel with a PostgreSQL advisory transaction lock, enforce a partial unique index on non-revoked capabilities, and allow recovery only by revoking an expired unconsumed capability. A consumed or still-valid capability keeps the day/channel claimed and must never be replaced by a second provider side effect.",
+  "evidence": [
+    "Historical production evidence for 2026-09-20 instagram_company contained five non-revoked capabilities that had all been consumed.",
+    "The production hotfix revoked later duplicate active capabilities while preserving audit evidence.",
+    "Production readback after the hotfix showed zero run_date/channel groups with more than one non-revoked capability.",
+    "The source-controlled migration and regression test encode the same production invariant."
+  ],
+  "enforcement": [
+    "supabase/migrations/20260922080500_social_publication_daily_channel_fence_v1.sql",
+    "tests/brain-social-publication-daily-channel-fence-v1.test.mjs",
+    "docs/changes/2026-09-22-social-publication-daily-channel-fence-v1.md",
+    "docs/development-ledger-events/2026-09-22-social-publication-daily-channel-fence-v1.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-publication-daily-channel-fence-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Source parity is complete only after protected merge of the exact candidate and main readback contains the migration, regression test, learning, ledger event, and human documentation.",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": false
+  }
+}
