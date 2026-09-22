@@ -1,0 +1,30 @@
+{
+  "fingerprint": "production-source-snapshot-recovery-v1",
+  "date": "2026-09-22",
+  "type": "PRODUCTION_TRANSPORT_RECOVERY",
+  "failure_class": "NETLIFY_API_DEPLOY_REQUIRES_EXACT_SOURCE_ARTIFACT",
+  "scope": "GITHUB_TO_NETLIFY_PRODUCTION_SOURCE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "The Netlify site is currently deployed through an API source upload rather than GitHub auto-build. A main merge therefore does not by itself create a new Netlify Functions build. The existing Production Source Snapshot workflow can create an exact-main source artifact on a GitHub-hosted runner.",
+  "prevention_rule": "For API-sourced Netlify production recovery, create an exact-main source artifact through the canonical Production Source Snapshot workflow, then deploy only that artifact through the authorized Netlify transport. Do not infer deployment from a GitHub merge alone.",
+  "evidence": [
+    "Current Netlify deploy reports deploy_source=api and has_source_zip=true.",
+    "Current production commit_ref remains older than current GitHub main.",
+    "The Production Source Snapshot workflow packages git archive of exact GITHUB_SHA."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-production-release-readback-scope.test.mjs"],
+    "canary": ["tests/brain-production-promotion-observability.test.mjs"],
+    "shadow": ["tests/delivery-production-release-readback-noop-merge.test.mjs"]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after exact-main source artifact, authorized Netlify production deploy, exact commit_ref readback, and provider readiness verification.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
