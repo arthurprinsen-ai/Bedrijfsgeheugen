@@ -41,7 +41,7 @@ jobs:
           retention-days: 1
  
       - name: Deploy exact source through authorized Netlify transport
-        if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
+        if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
         env:
           NETLIFY_MCP_PROXY_PATH: ${{ secrets.NETLIFY_MCP_PROXY_PATH_TEMP }}
           EXPECTED_SHA: ${{ github.sha }}
@@ -60,7 +60,7 @@ jobs:
           npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
 
       - name: Prove exact production identity
-        if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
+        if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
         env:
           EXPECTED_SHA: ${{ github.sha }}
         run: |
