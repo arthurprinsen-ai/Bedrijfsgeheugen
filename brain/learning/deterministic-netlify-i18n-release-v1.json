@@ -11,21 +11,21 @@
   "prevention_rule": "Production and preview release builds must never call an external translation provider. Static translation generation is an explicit pre-release content-generation task enabled only with STATIC_I18N_NETWORK=1. Netlify release builds pin STATIC_I18N_NETWORK=0 and may only package already-canonical content plus runtime translation capabilities.",
   "evaluation": {
     "historical_replay": [
-      "tests/site-shell-global-i18n.test.mjs"
+      "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs"
     ],
     "canary": [
-      "tests/site-shell-global-i18n.test.mjs"
+      "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs"
     ],
     "shadow": [
-      "tests/site-shell-global-i18n.test.mjs"
+      "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs"
     ]
   },
   "evidence": {
     "root_cause_scope": "tools/site-shell/build-localized-routes.mjs and Netlify build-scope ANTHROPIC_API_KEY",
     "production_readback": "Pending protected merge, exact Netlify production deploy and release.json/public route verification.",
     "tests": [
-      "tests/site-shell-global-i18n.test.mjs",
-      "Exact Netlify build diagnostic proved the release chain is deterministic when external translation is disabled."
+      "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs",
+      "tests/site-shell-global-i18n.test.mjs"
     ]
   }
 }
