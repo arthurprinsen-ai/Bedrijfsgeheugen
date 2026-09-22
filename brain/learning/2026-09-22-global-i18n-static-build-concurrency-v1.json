@@ -1,0 +1,35 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-static-build-concurrency-v1",
+  "compiler": {
+    "failure_class": "STATIC_I18N_BUILD_TOO_SLOW_FOR_PREVIEW_SLA",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The bounded static localization build was correct but still translated batches sequentially. Netlify preview status exceeded the six-minute smoke-test window, so a structurally correct build could not meet delivery latency requirements.",
+  "prevention": [
+    "Static translation batches should run through a bounded worker pool rather than purely sequential execution.",
+    "Concurrency must remain capped to protect provider rate limits and resource governance.",
+    "Recursive per-batch fallback remains authoritative when a concurrent batch fails.",
+    "The concurrency level must be configurable through STATIC_I18N_CONCURRENCY without requiring code changes."
+  ],
+  "evidence": [
+    "GitHub Live Preview Smoke run 35689543690 timed out waiting six minutes for Netlify preview on head 6b02c4dc56811ddb75ed55bc1ca7688725995b3f",
+    "tools/site-shell/build-localized-routes.mjs",
+    "tests/site-shell-static-locales.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/site-shell-static-locales.test.mjs"],
+    "canary": ["Netlify deploy-preview localized build"],
+    "production_readback_required": true
+  },
+  "related_fingerprints": [
+    "global-i18n-static-locale-build-resilience-v2",
+    "global-nl-en-i18n-v1"
+  ],
+  "skill_targets": ["website-release","powerhouse-continuity"],
+  "skill_projection_required": false
+}
