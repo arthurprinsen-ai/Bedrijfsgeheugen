@@ -1,0 +1,30 @@
+{
+  "fingerprint": "netlify-production-transport-self-executing-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "The authorized Netlify production transport existed but only executed on a manual workflow_dispatch with deploy=true. A normal push that updated the transport workflow created a source snapshot but skipped the actual provider deploy, so production could remain on an older commit even after main advanced.",
+  "prevention_rule": "For the API-sourced Netlify production lane, a push that changes the canonical production-source-snapshot workflow must execute the authorized exact-source deploy and prove exact production identity. Manual dispatch remains supported but is no longer required for this recovery path.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-promotion-observability.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "PR #2591 Required preflight exposed missing closure artifacts for this recovery candidate."
+    ],
+    "outcome": "Candidate changes the deploy/readback steps to execute on the workflow-file push as well as explicit deploy dispatch.",
+    "production_readback": "Pending merge, exact-source Netlify deploy and provider production readback."
+  }
+}
