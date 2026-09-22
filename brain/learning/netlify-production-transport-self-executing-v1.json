@@ -12,6 +12,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-promotion-observability.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-release-readback-scope.test.mjs"
     ]
   },
   "evidence": {
