@@ -32,3 +32,12 @@ test('capability state exposes no Composio secret values',()=>{
   assert.match(setup,/api_key_present:true/);
   assert.doesNotMatch(setup,/result=.*apiKey/);
 });
+
+test('LinkedIn Composio execution uses v3.1 latest tool semantics',()=>{
+  assert.match(setup,/https:\/\/backend\.composio\.dev\/api\/v3\.1/);
+  assert.match(setup,/version:'latest'/);
+  assert.match(setup,/arguments:args/);
+  assert.match(setup,/LINKEDIN_GET_MY_INFO',\{\}/);
+  assert.match(setup,/LINKEDIN_GET_COMPANY_INFO',\{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'\}/);
+  assert.doesNotMatch(setup,/api\/v3'|api\/v3"/);
+});
