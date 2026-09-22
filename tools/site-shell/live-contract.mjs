@@ -28,6 +28,11 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
     for (const cls of PRICING) assert.ok(hasClassElement(html, cls), `${path}: pricing-tool ontbreekt: ${cls}`);
     assert.ok(!/id="bgkopMob"/i.test(html), `${path}: legacy pricing mobile menu staat live`);
     assert.ok(!/class="[^"]*\bbgkop\b/i.test(html), `${path}: legacy pricing header staat live`);
+    assert.ok(html.includes('<h3>Build</h3>'), `${path}: canoniek Build-pakket ontbreekt live`);
+    assert.ok(html.includes('Wat moet het opleveren om zichzelf terug te verdienen?'), `${path}: waarde/terugverdienbewijs ontbreekt live`);
+    assert.ok(!html.includes('<h3>Transform</h3>'), `${path}: legacy Transform-pakket staat live`);
+    assert.ok(!html.includes('Per jaar'), `${path}: legacy jaar-toggle staat live`);
+    assert.ok(!html.includes('2 maanden gratis'), `${path}: legacy jaar-korting staat live`);
   } else {
     for (const cls of PRICING) assert.ok(!hasClassElement(html, cls), `${path}: pricing-tool staat buiten prijzen: ${cls}`);
   }

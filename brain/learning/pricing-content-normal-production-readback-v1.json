@@ -1,0 +1,21 @@
+{
+  "fingerprint": "pricing-content-normal-production-readback-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The normal production readback fetched the live pricing page but only validated shell identity and pricing tools. Canonical commercial copy could therefore drift while production still reported LIVE_VERIFIED.",
+  "prevention_rule": "The normal production live contract must verify the canonical Build/value-proof pricing proposition and reject legacy Transform and annual-toggle copy.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-content-normal-production-readback-v1.test.mjs"],
+    "canary": ["tests/brain-pricing-content-normal-production-readback-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-content-normal-production-readback-v1.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-pricing-content-normal-production-readback-v1.test.mjs"],
+    "production_readback": "Pending protected merge and normal Production Release Readback on exact main SHA."
+  }
+}
