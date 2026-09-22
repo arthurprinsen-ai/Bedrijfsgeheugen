@@ -1,0 +1,36 @@
+{
+  "fingerprint": "api-source-release-identity-marker-v1",
+  "date": "2026-09-22",
+  "type": "PRODUCTION_BUILD_IDENTITY_RECOVERY",
+  "failure_class": "NETLIFY_API_SOURCE_COMMIT_REF_NULL",
+  "scope": "NETLIFY_API_SOURCE_RELEASE_EVIDENCE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Netlify API-source deploys can have deploy metadata commit_ref=null and omit COMMIT_REF/HEAD during the build. The final release-evidence step required those provider variables, so an otherwise valid API-source build exited with code 2.",
+  "prevention_rule": "Stamp the exact GitHub SHA into .bg-source-commit before API-source upload. Release evidence may use that marker only when it is exactly 40 hex; if provider env and marker both exist they must match. Production deploy remains explicit workflow_dispatch deploy=true only.",
+  "evidence": [
+    "Netlify deploy 6ab254dd2116c8947f08bf50 was terminal error with deploy_source=api, has_source_zip=true, commit_ref=null and build exit code 2.",
+    "tools/bouw-release-evidence.mjs required COMMIT_REF/HEAD before this fix.",
+    "The failed canonical workflow run 35714761271 used exact source e88be69fd853515cb1336af8fe80cd4a068b6f98 and its transport step succeeded before the provider build failed."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-promotion-observability.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-production-release-readback-noop-merge.test.mjs"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after protected merge, a fresh explicit deploy=true run on then-current main, Netlify state ready, release.json exact SHA/context/deploy_id, and public blog content readback.",
+  "compiler": {
+    "failure_class": "SOURCE_IDENTITY_INVARIANT",
+    "scope": "PRODUCTION_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
