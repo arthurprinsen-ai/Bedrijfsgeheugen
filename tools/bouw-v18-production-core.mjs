@@ -57,6 +57,22 @@ const megaMenuContrastContract = `<style id="v18-megamenu-contrast-contract">
 [data-bg-megamenu-heading]{color:#000!important;font-weight:800!important}
 [data-bg-megamenu-link],[data-bg-megamenu-link] *{color:#000!important;font-weight:700!important}
 .v17-solutions-mega .v17-mega-route,.v17-solutions-mega .v17-mega-route b{color:#14171a}
+/* Het Meer-paneel is één sitebreed component. Pagina-CSS of de positie van
+   de Meer-trigger mag de breedte/centrering niet veranderen. Op desktop
+   centreert het paneel daarom op de viewport en gebruikt het exact dezelfde
+   leesbreedte op iedere route. */
+@media(min-width:1101px){
+  [data-bg-megamenu-root="true"]{
+    position:fixed!important;
+    left:50vw!important;
+    right:auto!important;
+    top:var(--bg-megamenu-top,160px)!important;
+    transform:translateX(-50%)!important;
+    width:min(1190px,calc(100vw - 32px))!important;
+    max-width:calc(100vw - 32px)!important;
+    box-sizing:border-box!important;
+  }
+}
 </style>
 <script id="v18-megamenu-contrast-marker">
 (function(){
@@ -84,6 +100,18 @@ const megaMenuContrastContract = `<style id="v18-megamenu-contrast-contract">
   function apply(){
     var root=findMenuRoot();
     if(!root)return;
+    root.setAttribute('data-bg-megamenu-root','true');
+    function syncGeometry(){
+      var header=root.closest('header')||document.querySelector('header.v17-header');
+      if(!header)return;
+      root.style.setProperty('--bg-megamenu-top',Math.round(header.getBoundingClientRect().bottom)+'px');
+    }
+    syncGeometry();
+    if(root.getAttribute('data-bg-megamenu-geometry-bound')!=='true'){
+      root.setAttribute('data-bg-megamenu-geometry-bound','true');
+      addEventListener('resize',syncGeometry,{passive:true});
+      addEventListener('scroll',syncGeometry,{passive:true});
+    }
     var headings=root.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]');
     for(var i=0;i<headings.length;i+=1){var heading=headings[i];if(LABELS.indexOf(norm(heading.textContent))!==-1)heading.setAttribute('data-bg-megamenu-heading','true');}
     var links=root.querySelectorAll('a');
