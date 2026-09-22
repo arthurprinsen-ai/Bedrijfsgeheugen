@@ -309,3 +309,10 @@ When a provider event demonstrably reaches the target but scoped secret visibili
 Fingerprint: `composio-runtime-secret-reload-v1`.
 
 After rotating a Netlify Functions runtime credential, do not treat the control-plane update itself as runtime proof. Require a fresh production Functions deployment followed by provider and canonical Supabase readback before declaring the integration ready.
+
+
+## Post-rotation deployment ordering
+
+Fingerprint: `composio-post-rotation-runtime-rebuild-v2`.
+
+For Netlify Functions credentials, compare the credential `updated_at` with the production deployment `published_at`. If the credential is newer, provider validation is not meaningful until a later protected Functions deployment is live. Fail closed and force exactly one post-rotation rebuild before re-validating.

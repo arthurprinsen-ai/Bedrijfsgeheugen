@@ -1,0 +1,36 @@
+{
+  "fingerprint": "composio-post-rotation-runtime-rebuild-v2",
+  "date": "2026-09-22",
+  "type": "RUNTIME_CONFIGURATION_REFRESH",
+  "failure_class": "CREDENTIAL_ROTATED_AFTER_ACTIVE_FUNCTION_DEPLOY",
+  "scope": "NETLIFY_FUNCTIONS_COMPOSIO_SYNC",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": true,
+  "root_cause": "The production Composio Project API key was updated at 2026-09-22T08:15:34Z, after the currently active Netlify Functions deployment. The live function therefore still validated the prior credential until a later Functions deployment occurred.",
+  "prevention_rule": "When a production credential is rotated after the active Functions deployment, force one new protected Functions deployment after the rotation timestamp before provider validation. Compare credential updated_at with deployment published_at and fail closed when deployment is older.",
+  "evidence": [
+    "Netlify COMPOSIO_API_KEY updated_at is 2026-09-22T08:15:34Z with production/functions/runtime scopes.",
+    "The active Netlify production deployment predates the latest credential rotation.",
+    "A direct authenticated sync-now canary before the post-rotation rebuild still returned COMPOSIO_API_KEY_REJECTED."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-composio-cross-runtime-secret-sync.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-composio-secret-sync-now.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-composio-secret-sync-deploy-event.test.mjs"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after exact-head gates, protected merge, Netlify production deployment published after 2026-09-22T08:15:34Z, successful provider validation, and Supabase setup-state readback.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}

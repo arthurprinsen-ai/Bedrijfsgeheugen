@@ -1,4 +1,4 @@
-const clean = v => String(v ?? '').trim();
+const clean = (v) => String(v ?? '').trim();
 const json=(body,status=200)=>Response.json(body,{status,headers:{
   'cache-control':'private, no-store',
   'pragma':'no-cache',
