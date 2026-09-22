@@ -1,0 +1,23 @@
+{
+  "fingerprint": "pricing-production-git-deploy-recovery-v1",
+  "compiler": {
+    "failure_class": "production_promotion_transport_dependency"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Production Source Snapshot failed when NETLIFY_MCP_PROXY_PATH_TEMP was absent.",
+      "A material prijzen.html commit on the Netlify-connected repository is used to re-enter the canonical Git production path."
+    ]
+  },
+  "root_cause": "Production promotion depended on an ephemeral GitHub Actions secret that was not present, so the exact-source snapshot could not invoke the Netlify transport.",
+  "prevention_rule": "Prefer the connected Git production path for website releases and treat missing ephemeral transport credentials as a recoverable deployment-path failure rather than terminal success.",
+  "evidence": {
+    "tests": [
+      "Required test must pass with same-lineage closure artifacts",
+      "V18 Production Promotion",
+      "Canonical brand shell contract"
+    ],
+    "production_readback": "After merge, release.json and /prijzen must be checked before LIVE & BEWEZEN is claimed.",
+    "outcome": "pending merge and production readback"
+  }
+}
