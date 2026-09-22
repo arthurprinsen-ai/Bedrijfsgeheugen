@@ -1,0 +1,32 @@
+{
+  "fingerprint": "pricing-production-source-promotion-trigger-v1",
+  "compiler": {
+    "failure_class": "MERGED_NOT_EXACTLY_DEPLOYED",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The pricing interaction fix was merged to main while Netlify production still exposed the prior commit. Exact-head readback correctly remained pending because the latest source had not yet received a production deploy side effect.",
+  "prevention_rule": "When a website fix is merged but exact production identity remains on an older SHA, trigger the canonical Production Source Snapshot transport so the exact current main source is packaged, deployed and proven before declaring LIVE & BEWEZEN.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "source": [
+      ".github/workflows/production-source-snapshot.yml"
+    ],
+    "outcome": "Exact current main is forced through the authorized Netlify transport and bounded production identity/content proof."
+  }
+}
