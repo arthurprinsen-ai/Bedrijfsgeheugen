@@ -1,0 +1,33 @@
+{
+  "fingerprint": "goal-action-evidence-production-promotion-v1",
+  "compiler": {
+    "failure_class": "MERGED_NOT_EXACTLY_DEPLOYED",
+    "scope": "PORTAL_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The goal scenario evidence and execution loop was merged to main while Netlify production still referenced the preceding main commit.",
+  "prevention_rule": "For material Portal changes, terminal success requires exact current main SHA on a ready Netlify production deploy plus successful production readback. Use the existing Production Source Snapshot transport; do not invent a second deployment path.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-goal-scenario-engine.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-goal-scenario-engine.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": [
+      ".github/workflows/production-source-snapshot.yml"
+    ],
+    "outcome": "Exact source promotion is re-triggered for the merged goal action evidence loop.",
+    "tests": [
+      "tests/brain-goal-scenario-engine.test.mjs",
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+    ]
+  }
+}
