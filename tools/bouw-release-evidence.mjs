@@ -6,6 +6,8 @@ import { applySitewideAnalytics } from './site-shell/analytics-sitebreed.mjs';
 import { applyMoneyPrerender } from './site-shell/money-prerender.mjs';
 import { applyLettertypeTerugval } from './site-shell/lettertype-terugval.mjs';
 import { repairWijzigingenEncoding } from './site-shell/repair-wijzigingen-encoding.mjs';
+import { readFile } from 'node:fs/promises';
+import { resolveReleaseCommitRef } from './site-shell/release-source-identity.mjs';
 
 // Standalone URLs are real documents. They may inherit the historical homepage
 // one-page router through the canonical shell; that router can remove the active
@@ -39,10 +41,13 @@ await repairWijzigingenEncoding();
 // geschreven, zodat de evidence exact bij de gevalideerde deploy-output hoort.
 await finalizeSiteContracts();
 
-const commitRef = String(process.env.COMMIT_REF || process.env.HEAD || '').trim();
-if (!/^[a-f0-9]{40}$/i.test(commitRef)) {
-  throw new Error('Netlify COMMIT_REF/HEAD is required for exact production evidence');
+let sourceMarker = '';
+try {
+  sourceMarker = await readFile('.bg-source-commit', 'utf8');
+} catch (error) {
+  if (error?.code !== 'ENOENT') throw error;
 }
+const commitRef = resolveReleaseCommitRef({ env: process.env, markerText: sourceMarker });
 const evidence = {
   contract: 'BRAIN-DELIVERY-v2',
   production_authority: 'BG169',
