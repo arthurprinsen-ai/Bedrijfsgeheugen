@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "contract": "powerhouse-regulatory-source-state-v1",
-  "checkedAt": "2026-09-19T07:59:41.882188Z",
+  "checkedAt": "2026-09-22T08:28:58.362204Z",
   "sources": {
     "eu-ai-act": {
       "id": "eu-ai-act",
@@ -10,17 +10,17 @@
       "jurisdiction": "EU",
       "url": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
       "finalUrl": "https://eur-lex.europa.eu/eli/reg/2024/1689/oj",
-      "checkedAt": "2026-09-19T07:59:41.882188Z",
+      "checkedAt": "2026-09-22T08:28:58.362204Z",
       "httpStatus": 202,
       "contentType": "text/html; charset=UTF-8",
-      "contentSha256": "036e856465302443526d9bf8f62c5202e457b006cde6762608d39fa0cfd6da2e",
-      "rawSha256": "be297993dffc2ef79832041a5a1936ab9590f5de359264ce5a72038e28e4a4cc",
+      "contentSha256": "009482d445149d5f270a6532e1f19247a072b6a748ead6177b2c5368d3130287",
+      "rawSha256": "23caa5627f5d14bcd2587c97b807d64aba172ed77b1118cd11f4b0ac39dd679b",
       "bytes": 2035,
       "etag": null,
       "lastModified": null,
-      "previousSha256": null,
-      "changed": false,
-      "firstObservation": true
+      "previousSha256": "036e856465302443526d9bf8f62c5202e457b006cde6762608d39fa0cfd6da2e",
+      "changed": true,
+      "firstObservation": false
     },
     "eu-nis2-directive": {
       "id": "eu-nis2-directive",
@@ -29,17 +29,17 @@
       "jurisdiction": "EU",
       "url": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
       "finalUrl": "https://eur-lex.europa.eu/eli/dir/2022/2555/oj",
-      "checkedAt": "2026-09-19T07:59:41.882188Z",
+      "checkedAt": "2026-09-22T08:28:58.362204Z",
       "httpStatus": 202,
       "contentType": "text/html; charset=UTF-8",
-      "contentSha256": "4fa666a68933c07ddf702d003079087b6e136a3d468af326a9b6984414711561",
-      "rawSha256": "6edba5c29a1c882373b61a079454c1c692e3d348da0d2eeb2f704511699ec093",
+      "contentSha256": "20b1e1288ac8bcb839a303dc2ab29af78681f8f4271f221e57dc83293cedd75d",
+      "rawSha256": "c2be52c37494496a3411bedf7f7f37ff5822a5dd57811a368f318167643ac48f",
       "bytes": 2035,
       "etag": null,
       "lastModified": null,
-      "previousSha256": null,
-      "changed": false,
-      "firstObservation": true
+      "previousSha256": "4fa666a68933c07ddf702d003079087b6e136a3d468af326a9b6984414711561",
+      "changed": true,
+      "firstObservation": false
     },
     "nl-cyberbeveiligingswet": {
       "id": "nl-cyberbeveiligingswet",
@@ -48,17 +48,17 @@
       "jurisdiction": "NL",
       "url": "https://www.ncsc.nl/cyberbeveiligingswet-nis2",
       "finalUrl": "https://www.ncsc.nl/cyberbeveiligingswet-nis2",
-      "checkedAt": "2026-09-19T07:59:41.882188Z",
+      "checkedAt": "2026-09-22T08:28:58.362204Z",
       "httpStatus": 200,
       "contentType": "text/html; charset=utf-8",
-      "contentSha256": "587188967b113711770931fea12b71350e802a1d4cebc04badf71a6659aaf11c",
-      "rawSha256": "82a36403ed64c3a6b71658c01399bffef81492cb91a87f12663d1ae283edc030",
+      "contentSha256": "323317173371a60eabd609f91422573ca13617cee1f45ac6a2cc8c2d1e4aab8b",
+      "rawSha256": "1d6e1e7b0e97d9b47152809d04df43e8f4ef883ab4f3bc36978d1b6ffbb727b1",
       "bytes": 385359,
       "etag": null,
       "lastModified": null,
-      "previousSha256": null,
-      "changed": false,
-      "firstObservation": true
+      "previousSha256": "587188967b113711770931fea12b71350e802a1d4cebc04badf71a6659aaf11c",
+      "changed": true,
+      "firstObservation": false
     },
     "eu-gdpr": {
       "id": "eu-gdpr",
@@ -67,17 +67,17 @@
       "jurisdiction": "EU",
       "url": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
       "finalUrl": "https://eur-lex.europa.eu/eli/reg/2016/679/oj",
-      "checkedAt": "2026-09-19T07:59:41.882188Z",
+      "checkedAt": "2026-09-22T08:28:58.362204Z",
       "httpStatus": 202,
       "contentType": "text/html; charset=UTF-8",
-      "contentSha256": "c1f63a998e0f87842b785f9f68442f9ce2ead9df773fd8189ab5f315ce8a143a",
-      "rawSha256": "dced8ec0384201c6cf3f8a6e3df806818ec5a5f72560c94ee32cddcb5f9d0e97",
+      "contentSha256": "021a6e18dde763803be3716f5546e607c19d9986e65cfe8b7378068e550308a8",
+      "rawSha256": "3a0a7e18b1f617a553a04bcc43e6721547aac310774e50bccf87f492dcff9b46",
       "bytes": 2035,
       "etag": null,
       "lastModified": null,
-      "previousSha256": null,
-      "changed": false,
-      "firstObservation": true
+      "previousSha256": "c1f63a998e0f87842b785f9f68442f9ce2ead9df773fd8189ab5f315ce8a143a",
+      "changed": true,
+      "firstObservation": false
     }
   }
 }
