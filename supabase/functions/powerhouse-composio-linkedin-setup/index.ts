@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const BASE='https://backend.composio.dev/api/v3.1';
-const EXEC_BASE='https://backend.composio.dev/api/v3';
+const EXEC_BASE='https://backend.composio.dev/api/v3.1';
 const SUBJECT='linkedin-composio-setup';
 const SERVICE_TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const clean=(v:unknown)=>String(v??'').trim();
@@ -9,11 +9,11 @@ const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,
 async function sha256(v:string){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_LINKEDIN_SETUP_'+r.status+':'+clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240));return b;}
-async function execute(key:string,accountId:string,toolSlug:string,text:string){
+async function execute(key:string,accountId:string,toolSlug:string,args:Record<string,unknown>={}){
   const r=await fetch(`${EXEC_BASE}/tools/execute/${toolSlug}`,{
     method:'POST',
     headers:{'x-api-key':key,'content-type':'application/json'},
-    body:JSON.stringify({connected_account_id:accountId,text})
+    body:JSON.stringify({connected_account_id:accountId,version:'latest',arguments:args})
   });
   const b:any=await r.json().catch(()=>({}));
   if(!r.ok||b?.successful!==true)throw new Error(`COMPOSIO_${toolSlug}_${r.status}:${clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240)}`);
@@ -74,14 +74,14 @@ Deno.serve(async(req:Request)=>{
 
     const account=accounts[0];
     const accountId=clean(account?.id||account?.connected_account_id);
-    const who=await execute(key,accountId,'LINKEDIN_GET_MY_INFO','Return the authenticated LinkedIn member identity, including the exact author/member id or URN needed to create a post.');
+    const who=await execute(key,accountId,'LINKEDIN_GET_MY_INFO',{});
     const personCandidates=deepFindStrings(who,['author','author_id','person_id','member_id','id','sub']);
     const personAuthor=normalizePersonUrn(personCandidates.find(v=>!!v)||'');
 
     let companies:any=null;
     let companyError:string|null=null;
     try{
-      companies=await execute(key,accountId,'LINKEDIN_GET_COMPANY_INFO','Return every organization/page where this authenticated LinkedIn account has APPROVED ADMINISTRATOR access for publishing.');
+      companies=await execute(key,accountId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
     }catch(error){
       companyError=error instanceof Error?error.message:String(error);
     }
