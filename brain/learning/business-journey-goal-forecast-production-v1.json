@@ -1,0 +1,35 @@
+{
+  "fingerprint": "business-journey-goal-forecast-production-v1",
+  "compiler": {
+    "failure_class": "MERGED_NOT_EXACTLY_DEPLOYED",
+    "scope": "PORTAL_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The Journey/Goals/Forecast cockpit merged to main, while Netlify production still identified the prior main SHA. The canonical Production Source Snapshot transport must be explicitly refreshed for this release lineage.",
+  "prevention_rule": "A material Portal feature is terminal only when the exact current main SHA is present on Netlify production and production readback verifies the affected Portal routes. Promotion-only candidates must carry learning, ledger and human documentation in the same lineage.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-goal-forecast-engine.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/business-journey-forecast-ui.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-goal-forecast-engine.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-goal-forecast-engine.test.mjs",
+      "portal-v2/tests/business-journey-forecast-ui.test.mjs"
+    ],
+    "source": [
+      ".github/workflows/production-source-snapshot.yml",
+      "portal-v2/modules/business-context-workspace.js",
+      "brain/context/goal-forecast-engine.mjs"
+    ],
+    "outcome": "Canonical source snapshot promotion binds the Journey/Goals/Forecast cockpit to exact production identity before terminal success."
+  }
+}
