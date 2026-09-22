@@ -1,0 +1,36 @@
+{
+  "fingerprint": "secure-netlify-source-transport-v1",
+  "date": "2026-09-22",
+  "type": "PRODUCTION_TRANSPORT_RECOVERY",
+  "failure_class": "NETLIFY_MCP_DEPLOY_COMMAND_REQUIRES_SECURE_RUNNER_HANDOFF",
+  "scope": "GITHUB_TO_NETLIFY_PRODUCTION_SOURCE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": true,
+  "root_cause": "The connected Netlify MCP deploy action returns a credential-bearing CLI proxy command because source upload must execute from a source directory. The canonical Production Source Snapshot workflow provided exact-SHA packaging but no secure transport handoff.",
+  "prevention_rule": "Keep deployment in Production Source Snapshot. Supply the temporary Netlify MCP proxy only as an encrypted GitHub Actions secret, verify exact SHA, skip when already live, require release.json exact-SHA plus deploy-id readback, and delete the temporary secret after execution.",
+  "evidence": [
+    "Production Source Snapshot run 35713466502 produced production-source-a324eaa4c1addc8645074313e57731487e31d886 with SHA-256 c0ac8f606a08bc1171546643cb562ead475f870245ec0756f4f9f2002642aeb6.",
+    "Netlify production remained commit_ref 368a652f54788f45a9678d0f5045ba1cdb9cb2e1 while main advanced to a324eaa4c1addc8645074313e57731487e31d886.",
+    "Netlify MCP deploy command text is not execution evidence."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-promotion-observability.test.mjs"
+    ],
+    "shadow": [
+      "tests/delivery-production-release-readback-noop-merge.test.mjs"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN requires workflow success and public release.json commit_ref equal to exact dispatched main SHA, production context, non-empty deploy_id, and public target readback.",
+  "compiler": {
+    "failure_class": "SECURE_TRANSPORT_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
