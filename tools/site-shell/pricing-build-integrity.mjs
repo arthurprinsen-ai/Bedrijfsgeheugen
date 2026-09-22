@@ -30,7 +30,7 @@ function assertCanonical(html) {
   const missing = required.filter(token => !html.includes(token));
   if (missing.length) throw new Error(`pricing integrity: missing canonical tokens: ${missing.join(' | ')}`);
   if (/€\s?(?:99|299|749)\b/.test(html)) throw new Error('pricing integrity: legacy package price returned');
-  if (/class=["'][^"']*\\bjr\\b/i.test(html)) throw new Error('pricing integrity: legacy hidden annual pricing residue returned');
+  if (/class=["'][^"']*\bjr\b/i.test(html)) throw new Error('pricing integrity: legacy hidden annual pricing residue returned');
   const billingRequired = [
     'data-bg-billing="monthly"',
     'data-bg-billing="yearly"',
