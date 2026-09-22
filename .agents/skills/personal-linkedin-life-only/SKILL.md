@@ -37,3 +37,13 @@ Business exceptions are not allowed. If a topic is business-oriented, route it t
 ## Learning
 
 Keep personal-profile performance separate from company-page performance. Optimize personal LinkedIn for recognition, humor, conversation and personal engagement, not commercial conversion.
+
+
+## Provider capability proof (2026-09-22)
+
+Fingerprint: `linkedin-composio-capability-proof-v1`.
+
+- A LinkedIn connection in an external dashboard is not sufficient publication evidence. Powerhouse must read the active provider connection itself.
+- Personal posting identity must be resolved through the authenticated LinkedIn member identity before any provider side effect.
+- Company-page posting capability must be proven separately from personal capability; do not infer organization permissions from a personal connection.
+- Capability discovery is read-only and runs before the canonical social publisher. The publisher remains the sole writer and all existing personal-truth, daily-channel and dedupe gates remain mandatory.
