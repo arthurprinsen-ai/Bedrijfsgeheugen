@@ -59,10 +59,12 @@ function renderGoalScenarios(state,goals){
   if(!scenarios.length)return '';
   return '<section class="v2scenariosection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Wat-als</span><h3>Welke hefbomen brengen je dichter bij je doel?</h3></div><p>Effecten hieronder zijn scenario-aannames, geen voorspellingen. Koppel bewijs aan een aanname voordat Powerhouse haar als onderbouwd behandelt.</p></div><div class="v2scenariogrid">'+scenarios.map(item=>{
     const levers=(GOAL_LEVERS[item.goalId]||[]);
-    const actionRows=(item.nextBestActions||[]).map(action=>'<button type="button" data-scenario-open="'+esc(action.page)+'"><span><b>'+esc(action.label)+'</b><small>'+esc(action.action)+'</small></span><i>→</i></button>').join('');
+    const actionRows=(item.nextBestActions||[]).map(action=>'<div class="v2nextbestrow"><button type="button" data-scenario-open="'+esc(action.page)+'"><span><b>'+esc(action.label)+'</b><small>'+esc(action.action)+'</small></span><i>→</i></button><button type="button" class="v2roadmapadd" data-scenario-roadmap="'+esc(item.goalId)+'" data-lever-id="'+esc(action.leverId)+'">+ Roadmap</button></div>').join('');
     const leverInputs=levers.map(lever=>{
       const active=item.levers.find(x=>x.id===lever.id);
-      return '<label class="v2lever"><span><b>'+esc(lever.label)+'</b><small>Verwacht effect op '+esc(item.label)+' ('+esc(item.unit)+')</small></span><input type="number" step="any" data-scenario-effect="'+esc(item.goalId)+'" data-lever-id="'+esc(lever.id)+'" value="'+esc(active?.effect??'')+'" placeholder="bijv. 2"></label>';
+      const refs=(active?.sourceRefs||[]).join(', ');
+      const directionHint=item.direction==='down'?'negatief effect = verbetering':'positief effect = verbetering';
+      return '<div class="v2lever" data-alignment="'+esc(active?.alignment||'neutral')+'"><span><b>'+esc(lever.label)+'</b><small>Verwacht effect op '+esc(item.label)+' ('+esc(item.unit)+') · '+directionHint+'</small></span><input type="number" step="any" data-scenario-effect="'+esc(item.goalId)+'" data-lever-id="'+esc(lever.id)+'" value="'+esc(active?.effect??'')+'" placeholder="bijv. 2"><input type="text" data-scenario-evidence="'+esc(item.goalId)+'" data-lever-id="'+esc(lever.id)+'" value="'+esc(refs)+'" placeholder="bewijs-ID's, komma-gescheiden"></div>';
     }).join('');
     const before=fmt(item.baselineExpected,item.unit), after=fmt(item.scenarioExpected,item.unit), target=fmt(item.target,item.unit);
     const improvement=item.gapImprovement==null?'—':fmt(item.gapImprovement,item.unit);
@@ -76,7 +78,9 @@ function collectGoalScenarios(root,goals,previous={}){
     root.querySelectorAll('[data-scenario-effect="'+goalId+'"]').forEach(input=>{
       const id=input.dataset.leverId;
       const raw=input.value;
-      levers[id]={...(levers[id]||{}),effect:raw===''?null:Number(raw)};
+      const evidenceInput=root.querySelector('[data-scenario-evidence="'+goalId+'"][data-lever-id="'+id+'"]');
+      const source_refs=String(evidenceInput?.value||'').split(',').map(x=>x.trim()).filter(Boolean);
+      levers[id]={...(levers[id]||{}),effect:raw===''?null:Number(raw),source_refs};
     });
     next[goalId]={...(previous?.[goalId]||{}),levers};
   }
@@ -107,6 +111,43 @@ function renderForm(root,state,message){
 function checkedValues(root,name){
   return Array.from(root.querySelectorAll('input[name="'+name+'"]:checked')).map(input=>input.value);
 }
+async function addScenarioActionToRoadmap(domainState,goalId,leverId){
+  const state=domainState?.get?.()||{};
+  const scenario=buildGoalScenarios(state,[goalId])[0];
+  const action=scenario?.nextBestActions?.find(item=>item.leverId===leverId);
+  if(!action)return {added:false,reason:'ACTION_NOT_FOUND'};
+  const current=Array.isArray(domainState?.get?.('portal.roadmap.items'))?domainState.get('portal.roadmap.items'):[];
+  const id='goal-'+goalId+'-'+leverId;
+  if(current.some(item=>String(item?.id)===id))return {added:false,reason:'ALREADY_ON_ROADMAP'};
+  const lever=scenario.levers.find(item=>item.id===leverId);
+  const item={
+    id,
+    title:action.action,
+    dimension:'Doel: '+(USER_GOALS[goalId]?.label||goalId),
+    owner:'',
+    progress:0,
+    sprint:1,
+    start:1,
+    duration:1,
+    done:false,
+    status:'Gepland',
+    source:'goal-scenario-cockpit',
+    goalScenario:{
+      goalId,
+      leverId,
+      target:scenario.target,
+      targetDate:scenario.targetDate,
+      expectedEffect:action.effect,
+      unit:action.unit,
+      evidenceMode:action.evidenceMode,
+      sourceRefs:[...(lever?.sourceRefs||[])]
+    }
+  };
+  domainState?.set?.('portal.roadmap.items',[...current,item]);
+  await domainState?.flush?.();
+  return {added:true,item};
+}
+
 async function persistContext(domainState,{stage,events,goals,targetStage,goalTargets,goalScenarios}){
   domainState?.set?.('portal.business_context.stage',stage);
   domainState?.set?.('portal.business_context.events',events);
@@ -129,6 +170,18 @@ export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onU
     root.querySelector('[data-context-edit]')?.addEventListener('click',()=>{if(editor)editor.hidden=false;});
     root.querySelector('[data-context-target-stage]')?.addEventListener('change',event=>{domainState?.set?.('portal.business_context.target_stage',event.target.value||null);});
     root.querySelectorAll('[data-scenario-open]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.scenarioOpen)));
+    root.querySelectorAll('[data-scenario-roadmap]').forEach(button=>button.addEventListener('click',async()=>{
+      try{
+        onSaveStatus?.('saving');
+        const result=await addScenarioActionToRoadmap(domainState,button.dataset.scenarioRoadmap,button.dataset.leverId);
+        onSaveStatus?.('saved');
+        draw(result.added?'Actie toegevoegd aan de roadmap.':'Deze actie staat al op de roadmap.');
+        onUpdated?.();
+      }catch(error){
+        onSaveStatus?.('error');
+        draw('Actie kon niet aan de roadmap worden toegevoegd.');
+      }
+    }));
     root.querySelector('[data-context-confirm]')?.addEventListener('click',async()=>{
       try{
         onSaveStatus?.('saving');
