@@ -333,7 +333,7 @@
       wrap.innerHTML = '<span class="bg-mobile-language-label" data-bg-language-label>Language</span>' +
         '<div class="bg-mobile-language-select-wrap">' +
         '<select class="bg-mobile-language-select" data-bg-language-select aria-label="Language">' +
-        '<option value="en">English</option><option value="nl">Dutch</option></select>' +
+        '<option value="nl">Dutch</option><option value="en">English</option></select>' +
         '<span class="bg-mobile-language-chevron" aria-hidden="true">⌄</span></div>' +
         '<span class="bg-language-error" data-bg-language-error hidden>Switching language failed. Try again.</span>';
     } else {
