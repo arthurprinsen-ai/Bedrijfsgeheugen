@@ -1,3 +1,4 @@
+import {buildGoalForecasts,buildJourneyProgress} from './goal-forecast-engine.mjs';
 const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const child of Object.values(value))freeze(child);}return value;};
 const arr=v=>Array.isArray(v)?v:[];
 const num=v=>Number.isFinite(Number(v))?Number(v):null;
@@ -172,8 +173,8 @@ export function buildBusinessContext(state={}){
   const models=unique([...stage.models,...eventDefs.flatMap(x=>x.models),...goalDefs.flatMap(x=>x.models)]);
   const pages=unique([...stage.pages,...eventDefs.flatMap(x=>x.pages),...goalDefs.flatMap(x=>x.pages)]);
   const priorities=priorityRank(detected.stage,events,goals);
-  return freeze({
-    schemaVersion:'business-context.v2',
+  const base={
+    schemaVersion:'business-context.v3',
     primary:{...detected,label:stage.label,intent:stage.intent},
     events,
     eventLabels:eventDefs.map(x=>x.label),
@@ -188,17 +189,23 @@ export function buildBusinessContext(state={}){
     journey:journey(detected.stage,events),
     evidenceMode:detected.source==='default'?'unproven-default':'derived',
     learningKey:`business-context:${detected.stage}:${[...events].sort().join('+')||'none'}`
-  });
+  };
+  const goalForecasts=buildGoalForecasts(state,goals);
+  const targetJourney=buildJourneyProgress(state,base);
+  return freeze({...base,goalForecasts,targetJourney});
 }
 
 export function buildContextNarrative(context){
   const overlays=[...context.eventLabels,...context.goalLabels];
   const primary=context.evidenceMode==='unproven-default'?'Bedrijfsfase nog niet expliciet vastgesteld':context.primary.label;
+  const forecastRisks=(context.goalForecasts||[]).filter(item=>['at-risk','off-track'].includes(item.trackStatus)).map(item=>item.goalId);
   return freeze({
     headline:overlays.length?`${primary} · ${overlays.slice(0,2).join(' · ')}`:primary,
     now:context.priorities.slice(0,3),
     decide:context.models.slice(0,4),
     do:context.pages.filter(x=>['actieve-acties','roadmap','os:next-best-actions','taken-werkstromen'].includes(x)).slice(0,3),
-    next:context.journey.next
+    next:context.journey.next,
+    target:context.targetJourney?.target||null,
+    forecastRisks
   });
 }
