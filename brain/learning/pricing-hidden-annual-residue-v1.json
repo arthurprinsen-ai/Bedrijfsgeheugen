@@ -1,0 +1,22 @@
+{
+  "fingerprint": "pricing-hidden-annual-residue-v1",
+  "compiler": {
+    "failure_class": "STALE_HIDDEN_COMMERCIAL_STATE",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The visible annual pricing toggle was removed, but legacy .jr/#tj CSS and a hidden Enterprise annual price remained in prijzen.html. Browser/text extraction therefore still exposed € 49.950 /jaar even though the intended commercial model is monthly-only.",
+  "prevention_rule": "Removing a pricing mode must remove its DOM payload and control CSS, not merely hide the control. Pricing build integrity and live production readback must reject hidden .jr annual markup and the legacy Enterprise € 49.950 annual amount.",
+  "evaluation": {
+    "historical_replay": ["tools/site-shell/test-live-contract.mjs"],
+    "canary": ["tools/site-shell/test-live-contract.mjs", "tools/site-shell/pricing-build-integrity.mjs"],
+    "shadow": ["production /prijzen DOM readback"]
+  },
+  "evidence": {
+    "tests": ["tools/site-shell/test-live-contract.mjs"],
+    "source": ["prijzen.html", "tools/site-shell/live-contract.mjs", "tools/site-shell/pricing-build-integrity.mjs"],
+    "outcome": "Enterprise pricing has one monthly amount in the canonical DOM; hidden annual pricing residue is rejected before and after deployment."
+  }
+}
