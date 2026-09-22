@@ -1,0 +1,36 @@
+{
+  "fingerprint": "goal-scenario-evidence-execution-loop-v1",
+  "compiler": {
+    "failure_class": "GOAL_LEVER_WITHOUT_EVIDENCE_OR_EXECUTION",
+    "scope": "PORTAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Goal lever scenarios could quantify what-if effects and navigate to relevant modules, but next-best ranking did not reject effects that moved away from the goal, the cockpit had no direct evidence-entry control, and lever recommendations were not converted into durable execution items.",
+  "prevention_rule": "Rank quantified goal levers by directional support for the target, never by magnitude alone. Keep forecast and scenario truth separate. Let the entrepreneur attach source references to lever assumptions and convert a chosen next-best lever into one deduplicated roadmap item carrying goal, target, expected effect, unit and evidence lineage for later outcome comparison.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-goal-scenario-engine.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-goal-scenario-engine.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-goal-scenario-engine.test.mjs",
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+    ],
+    "source": [
+      "brain/context/goal-scenario-engine.mjs",
+      "portal-v2/modules/business-context-workspace.js",
+      "portal-v2/business-context.css",
+      "portal-v2/modules/roadmap-board.js"
+    ],
+    "outcome": "Goal Scenario Cockpit rejects goal-opposing effects from next-best ranking, captures source references, and can write a goal-linked action into the canonical roadmap."
+  }
+}
