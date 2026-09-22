@@ -88,13 +88,14 @@ function specialistContent(pageId,model,navigation){
   const [primaryAction,actions]=navigation;
   if(['bedrijfssituatie','herstel-continuiteit','portfolio-control','due-diligence','exit'].includes(pageId)){
     const projection=buildLifecycleProjection(model);
-    const ctx=projection.context;
-    const contextRows=Object.values(LIFECYCLE_CONTEXTS).map(item=>[item.label,item.id===projection.stage?'Actuele context':'Beschikbaar']);
+    const effectiveStage=pageId==='portfolio-control'?'portfolio':pageId==='herstel-continuiteit'?(projection.stage==='crisis'?'crisis':'loss'):pageId==='exit'?'sell':pageId==='due-diligence'&& !['buy','sell'].includes(projection.stage)?'buy':projection.stage;
+    const ctx=LIFECYCLE_CONTEXTS[effectiveStage];
+    const contextRows=Object.values(LIFECYCLE_CONTEXTS).map(item=>[item.label,item.id===projection.stage?'Gedetecteerde context':'Beschikbaar']);
     const connected=[['Bronnen',String(projection.connected.sources)],['Acties',String(projection.connected.actions)],['Outcomes',String(projection.connected.outcomes)],['Risico’s',String(projection.connected.risks)]];
-    const pages=(pageId==='herstel-continuiteit'?LIFECYCLE_CONTEXTS[projection.stage==='crisis'?'crisis':'loss'].pages:pageId==='portfolio-control'?LIFECYCLE_CONTEXTS.portfolio.pages:ctx.pages).map(id=>[id,'Verbonden contextmodule']);
+    const pages=ctx.pages.map(id=>[id,'Verbonden contextmodule']);
     const modelRows=ctx.models.map(name=>[name,'Relevant voor '+ctx.label]);
     const blocks=[
-      {type:'metrics',title:'Contextstatus',items:[['Bedrijfssituatie',ctx.label],['Herkomst',projection.source],['Plan',projection.plan.code||'—'],['Contextbewijs',projection.confidence?Math.round(projection.confidence*100)+'%':'Nog niet expliciet bewezen']],derived:projection.source!=='default'},
+      {type:'metrics',title:'Contextstatus',items:[['Werkcontext',ctx.label],['Herkomst',projection.source],['Plan',projection.plan.code||'—'],['Contextbewijs',projection.confidence?Math.round(projection.confidence*100)+'%':'Nog niet expliciet bewezen']],derived:projection.source!=='default'},
       {type:'worklist',title:'Powerhouse-verbindingen',items:connected,derived:true},
       {type:'worklist',title:'Relevante modellen',items:modelRows,derived:false},
       {type:'worklist',title:'Verbonden portaalonderdelen',items:pages,derived:false},
