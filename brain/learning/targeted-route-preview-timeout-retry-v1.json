@@ -1,0 +1,22 @@
+{
+  "fingerprint": "targeted-route-preview-timeout-retry-v1",
+  "compiler": {
+    "failure_class": "TRANSIENT_EXTERNAL_DEPENDENCY",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The targeted website browser gate treated a transient Netlify deploy-preview cold-start navigation timeout as a functional route regression. The preview later became reachable, so a single 45-second page.goto attempt was too brittle for provider startup variance.",
+  "prevention_rule": "Targeted browser verification may retry only Playwright TimeoutError navigation failures, with a bounded maximum of three attempts and short backoff. Any non-timeout error or any content, identity, asset, or page-error regression remains fail-closed.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-targeted-route-preview-timeout-retry-v1.test.mjs"],
+    "canary": ["tests/brain-targeted-route-preview-timeout-retry-v1.test.mjs"],
+    "shadow": ["tests/brain-targeted-route-preview-timeout-retry-v1.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-targeted-route-preview-timeout-retry-v1.test.mjs"],
+    "observed_failure": "GitHub Required run 35730876000 timed out on the first navigation to deploy-preview-2609 while preceding static and exact-artifact checks were green.",
+    "production_readback": "Pending rerun, protected merge, exact production identity and pricing content proof."
+  }
+}
