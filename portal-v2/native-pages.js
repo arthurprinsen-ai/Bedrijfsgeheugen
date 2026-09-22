@@ -95,6 +95,7 @@ function specialistContent(pageId,model,navigation){
     const healthRows=Object.entries(business.health).map(([key,value])=>[key,String(value)]);
     const maturityRows=Object.entries(business.maturity).map(([key,value])=>[key,value==null?'—':Math.round(value*100)+'%']);
     const connected=[['Bronnen',String(projection.connected.sources)],['Acties',String(projection.connected.actions)],['Outcomes',String(projection.connected.outcomes)],['Risico’s',String(projection.connected.risks)]];
+    const historyRows=(business.history||[]).slice(-8).map(item=>[item.label,item.observedAt?('Vastgelegd '+item.observedAt):'Vastgelegde historische context']);
     const nextStages=(business.journey.next||[]).map(id=>[projection.stages[id]?.label||id,'Waarschijnlijke volgende bedrijfsfase wanneer de huidige context verandert']);
     const nowRows=(business.priorities||[]).map(id=>[id,'Nu relevant op basis van fase, gebeurtenis en doel']);
     const modelRows=(business.models||[]).map(name=>[name,'Actief/relevant in deze bedrijfscontext']);
@@ -109,6 +110,7 @@ function specialistContent(pageId,model,navigation){
       {type:'worklist',title:'Relevante modellen',items:modelRows,derived:true},
       {type:'worklist',title:'Verbonden portaalonderdelen',items:pageRows,derived:true},
       {type:'worklist',title:'Powerhouse-verbindingen',items:connected,derived:true},
+      {type:'worklist',title:'Bedrijfsreis — historie',items:historyRows.length?historyRows:[['—','Nog geen eerdere contextmomenten vastgelegd']],derived:historyRows.length>0},
       {type:'worklist',title:'Bedrijfsreis — wat kan hierna komen?',items:nextStages.length?nextStages:[['—','Geen volgende fase afgeleid']],derived:primaryKnown},
       {type:'worklist',title:'Gedeelde intelligence-kern',items:SCALE_CORE_SURFACES.map(name=>[name,'Dezelfde intelligence-kern; pakketgrenzen sturen schaal, snelheid, autonomie, governance en begeleiding.']),derived:false},
       {type:'actions',title:'Volgende acties',items:actions}
