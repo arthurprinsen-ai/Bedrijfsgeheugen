@@ -158,3 +158,10 @@ test('meta Instagram setup uses the canonical secret reader without exposing sec
   assert.match(setup, /META_INSTAGRAM_APP_SECRET/);
   assert.doesNotMatch(setup, /console\.log\([^\n]*(accessToken|appSecret|META_INSTAGRAM_APP_SECRET)/);
 });
+
+test('linkedin composio capability is checked before social dispatch', () => {
+  const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
+  const capability = loop.indexOf("'powerhouse-composio-linkedin-setup'");
+  const publisher = loop.indexOf("'powerhouse-social-publisher'");
+  assert.ok(capability >= 0 && publisher > capability);
+});
