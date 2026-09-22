@@ -55,15 +55,18 @@ jobs:
           EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
+          for attempt in $(seq 1 12); do
+            current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?predeploy=${EXPECTED_SHA}-${attempt}" || true)"
+            observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
+            if [ "$observed" = "$EXPECTED_SHA" ]; then
+              echo "Exact SHA is already live via Git-linked Netlify deploy; no transport side effect required."
+              exit 0
+            fi
+            sleep 10
+          done
           if [ -z "${NETLIFY_MCP_PROXY_PATH:-}" ]; then
-            echo "::error::NETLIFY_MCP_PROXY_PATH_TEMP is missing"
+            echo "::error::Netlify Git deploy did not reach ${EXPECTED_SHA} and NETLIFY_MCP_PROXY_PATH_TEMP is missing"
             exit 78
-          fi
-          current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?predeploy=${EXPECTED_SHA}" || true)"
-          observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
-          if [ "$observed" = "$EXPECTED_SHA" ]; then
-            echo "Exact SHA is already live; no deploy side effect required."
-            exit 0
           fi
           npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
 
