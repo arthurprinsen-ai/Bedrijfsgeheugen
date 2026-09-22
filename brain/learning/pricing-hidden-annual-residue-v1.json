@@ -10,13 +10,25 @@
   "root_cause": "The visible annual pricing toggle was removed, but legacy .jr/#tj CSS and a hidden Enterprise annual price remained in prijzen.html. Browser/text extraction therefore still exposed € 49.950 /jaar even though the intended commercial model is monthly-only.",
   "prevention_rule": "Removing a pricing mode must remove its DOM payload and control CSS, not merely hide the control. Pricing build integrity and live production readback must reject hidden .jr annual markup and the legacy Enterprise € 49.950 annual amount.",
   "evaluation": {
-    "historical_replay": ["tools/site-shell/test-live-contract.mjs"],
-    "canary": ["tools/site-shell/test-live-contract.mjs", "tools/site-shell/pricing-build-integrity.mjs"],
-    "shadow": ["production /prijzen DOM readback"]
+    "historical_replay": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ]
   },
   "evidence": {
-    "tests": ["tools/site-shell/test-live-contract.mjs"],
-    "source": ["prijzen.html", "tools/site-shell/live-contract.mjs", "tools/site-shell/pricing-build-integrity.mjs"],
+    "tests": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "source": [
+      "prijzen.html",
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/pricing-build-integrity.mjs"
+    ],
     "outcome": "Enterprise pricing has one monthly amount in the canonical DOM; hidden annual pricing residue is rejected before and after deployment."
   }
 }
