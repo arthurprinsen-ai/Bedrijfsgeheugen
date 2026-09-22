@@ -1,0 +1,30 @@
+{
+  "type":"POWERHOUSE_LEARNING",
+  "version":"v1",
+  "status":"ACTIVE",
+  "fingerprint":"composio-v31-tool-execution-v1",
+  "compiler":{
+    "failure_class":"COMPOSIO_PINNED_BASE_TOOL_VERSION",
+    "scope":"SOCIAL_PROVIDER",
+    "machine_enforceable":true,
+    "repeat_count":1
+  },
+  "root_cause":"Direct Composio tool execution still used /api/v3, whose default tool version resolved to the pinned base toolkit. Modern LinkedIn tools then failed with HTTP 400 even though the connected account itself was active.",
+  "prevention":[
+    "Use Composio /api/v3.1 for direct tool execution so current tool versions resolve correctly.",
+    "Keep connected-account discovery and tool execution version semantics aligned.",
+    "Regression-test both LinkedIn capability execution and the shared Instagram Composio publisher transport."
+  ],
+  "evidence":[
+    "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/brain-linkedin-composio-capability-proof.test.mjs",
+    "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs"
+  ],
+  "evaluation":{
+    "historical_replay":["COMPOSIO_LINKEDIN_GET_MY_INFO_400"],
+    "production_readback_required":true
+  },
+  "skill_targets":["personal-linkedin-life-only","instagram-composio-publisher"],
+  "skill_projection_required":true
+}
