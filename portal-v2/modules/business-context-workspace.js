@@ -71,6 +71,24 @@ function renderGoalScenarios(state,goals){
     return '<article class="v2scenariocard"><div class="v2forecasttitle"><div><h4>'+esc(USER_GOALS[item.goalId]?.label||item.goalId)+'</h4><small>'+esc(item.label)+'</small></div><span>'+esc(item.scenarioStatus==='target-reached'?'Doel in scenario bereikt':'Scenario')+'</span></div><div class="v2scenarioflow"><div><small>Baseline</small><b>'+before+'</b></div><i>→</i><div><small>Met aannames</small><b>'+after+'</b></div><i>→</i><div><small>Doel</small><b>'+target+'</b></div></div><div class="v2scenarioimprovement"><span>Verkleining doelgat</span><b>'+improvement+'</b></div><div class="v2levergrid">'+leverInputs+'</div><div class="v2nextbest"><h5>Volgende beste acties</h5>'+actionRows+'</div><small class="v2truthline">Forecast: '+esc(item.truth.forecast)+' · scenario: wat-als-aannames · '+item.truth.evidenceLinkedEffects+' effecten met bewijs gekoppeld</small></article>';
   }).join('')+'</div></section>';
 }
+
+function renderOutcomeLearning(context){
+  const learning=context?.goalOutcomeLearning;
+  if(!learning||(!learning.records.length&&!learning.calibrations.length))return '<section class="v2learningempty"><div><span class="v2workspaceeyebrow">Leren van resultaat</span><h3>Wat werkte echt?</h3><p>Nog geen gemeten goal-scenario outcomes beschikbaar. Voeg na uitvoering bewijs toe in Outcomes & evidence; daarna vergelijkt Powerhouse verwacht en werkelijk effect.</p></div><button type="button" data-outcome-open="outcomes-evidence">Meet resultaat →</button></section>';
+  const calibrationRows=learning.calibrations.map(item=>{
+    const factor=item.calibrationFactor==null?'—':new Intl.NumberFormat('nl-NL',{maximumFractionDigits:2}).format(item.calibrationFactor)+'×';
+    const status=item.calibrationStatus==='available'?'Gekalibreerd':'Nog leren';
+    return '<article class="v2calibrationcard" data-calibration-status="'+esc(item.calibrationStatus)+'"><div><h4>'+esc(item.goalId)+' · '+esc(item.leverId)+'</h4><small>'+item.verifiedObservations+' geverifieerde metingen</small></div><strong>'+esc(factor)+'</strong><span>'+esc(status)+'</span></article>';
+  }).join('');
+  const recent=learning.records.slice().sort((a,b)=>String(b.observedAt||'').localeCompare(String(a.observedAt||''))).slice(0,6).map(item=>{
+    const expected=fmt(item.expectedEffect,'');
+    const realized=fmt(item.realizedEffect,'');
+    const label=({'overperformed':'Beter dan verwacht','within-range':'Zoals verwacht','underperformed':'Minder dan verwacht','opposite-direction':'Tegengesteld effect','unquantified':'Niet kwantificeerbaar'})[item.classification]||item.classification;
+    return '<article class="v2outcomerow"><div><b>'+esc(item.goalId)+' · '+esc(item.leverId)+'</b><small>'+esc(label)+(item.verified?' · geverifieerd':' · nog niet geverifieerd')+'</small></div><span>verwacht '+expected+' → werkelijk '+realized+'</span></article>';
+  }).join('');
+  return '<section class="v2learningsection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Learning loop</span><h3>Wat werkte echt?</h3></div><button type="button" data-outcome-open="outcomes-evidence">Open Outcomes & evidence</button></div><p>Pas vanaf 3 geverifieerde uitkomsten per hefboom gebruikt Powerhouse een historische correctiefactor. Tot die tijd blijft het scenario een aanname.</p><div class="v2calibrationgrid">'+calibrationRows+'</div><div class="v2outcomelist">'+recent+'</div></section>';
+}
+
 function collectGoalScenarios(root,goals,previous={}){
   const next={...previous};
   for(const goalId of goals){
@@ -103,7 +121,7 @@ function renderForm(root,state,message){
   const stage=stored.stage||context.primary.stage;
   const events=Array.isArray(stored.events)?stored.events:context.events;
   const goals=Array.isArray(stored.goals)?stored.goals:context.goals;
-  root.innerHTML=renderSummary(context)+renderJourney(state,context)+renderForecasts(state,goals)+renderGoalScenarios(state,goals)
+  root.innerHTML=renderSummary(context)+renderJourney(state,context)+renderForecasts(state,goals)+renderGoalScenarios(state,goals)+renderOutcomeLearning(context)
     +'<section class="v2legacyprofilecard"><h3>Klopt deze bedrijfssituatie?</h3><p>Powerhouse gebruikt deze context om analyses, modellen, scenario’s, prioriteiten en portaalonderdelen te ordenen. Je kunt meerdere gebeurtenissen en doelen tegelijk kiezen.</p><div class="v2contextconfirm"><button type="button" class="pvprimary" data-context-confirm>Dit klopt</button><button type="button" data-context-edit>Pas situatie aan</button><span data-context-message>'+esc(message||'')+'</span></div></section>'
     +'<section class="v2legacyprofilecard" data-context-editor hidden><label class="v2contextfield"><span>Primaire bedrijfsfase</span><select data-context-stage>'+stageOptions(stage)+'</select></label><div class="v2contextgroup"><h4>Wat speelt er tegelijk?</h4>'+checkboxGrid(STRATEGIC_EVENTS,events,'events')+'</div><div class="v2contextgroup"><h4>Wat wil je bereiken?</h4>'+checkboxGrid(USER_GOALS,goals,'goals')+'</div>'+renderGoalTargets(state,goals)+'<div class="v2formactions"><button type="button" class="pvprimary" data-context-save>Opslaan & Powerhouse bijwerken</button><span data-context-save-message>De context en meetbare doelen worden tenant-scoped opgeslagen en gebruikt door het brein.</span></div></section>';
   return context;
@@ -170,6 +188,7 @@ export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onU
     root.querySelector('[data-context-edit]')?.addEventListener('click',()=>{if(editor)editor.hidden=false;});
     root.querySelector('[data-context-target-stage]')?.addEventListener('change',event=>{domainState?.set?.('portal.business_context.target_stage',event.target.value||null);});
     root.querySelectorAll('[data-scenario-open]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.scenarioOpen)));
+    root.querySelectorAll('[data-outcome-open]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.outcomeOpen)));
     root.querySelectorAll('[data-scenario-roadmap]').forEach(button=>button.addEventListener('click',async()=>{
       try{
         onSaveStatus?.('saving');

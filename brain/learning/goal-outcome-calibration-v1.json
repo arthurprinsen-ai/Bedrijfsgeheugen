@@ -1,0 +1,37 @@
+{
+  "fingerprint": "goal-outcome-calibration-v1",
+  "compiler": {
+    "failure_class": "SCENARIO_WITHOUT_MEASURED_FEEDBACK",
+    "scope": "PORTAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Goal scenarios and roadmap actions existed, but verified realized effects did not yet calibrate future scenario guidance.",
+  "prevention_rule": "Keep raw scenario assumptions immutable. Require at least three verified quantified outcomes per goal/lever before applying a historical calibration factor. Project calibrated effects separately from raw assumptions and keep Outcomes & evidence as the measurement authority.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-goal-outcome-learning.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/business-goal-outcome-learning-ui.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-goal-outcome-learning.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-goal-outcome-learning.test.mjs",
+      "portal-v2/tests/business-goal-outcome-learning-ui.test.mjs"
+    ],
+    "source": [
+      "brain/context/goal-outcome-learning.mjs",
+      "brain/context/goal-scenario-engine.mjs",
+      "brain/context/business-context-engine.mjs",
+      "portal-v2/modules/business-context-workspace.js",
+      "portal-v2/business-context.css"
+    ],
+    "outcome": "Verified realized effects can calibrate future goal scenarios only after sufficient repeated evidence, while raw assumptions remain separately visible."
+  }
+}

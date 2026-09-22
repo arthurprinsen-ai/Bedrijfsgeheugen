@@ -1,5 +1,6 @@
 import {buildGoalForecasts,buildJourneyProgress} from './goal-forecast-engine.mjs';
 import {buildGoalScenarios} from './goal-scenario-engine.mjs';
+import {buildGoalOutcomeLearning} from './goal-outcome-learning.mjs';
 const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const child of Object.values(value))freeze(child);}return value;};
 const arr=v=>Array.isArray(v)?v:[];
 const num=v=>Number.isFinite(Number(v))?Number(v):null;
@@ -193,8 +194,9 @@ export function buildBusinessContext(state={}){
   };
   const goalForecasts=buildGoalForecasts(state,goals);
   const goalScenarios=buildGoalScenarios(state,goals);
+  const goalOutcomeLearning=buildGoalOutcomeLearning(state);
   const targetJourney=buildJourneyProgress(state,base);
-  return freeze({...base,goalForecasts,goalScenarios,targetJourney});
+  return freeze({...base,goalForecasts,goalScenarios,goalOutcomeLearning,targetJourney});
 }
 
 export function buildContextNarrative(context){

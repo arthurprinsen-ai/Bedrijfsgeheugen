@@ -1,4 +1,5 @@
 import {buildGoalForecast,GOAL_METRICS} from './goal-forecast-engine.mjs';
+import {calibrationFor} from './goal-outcome-learning.mjs';
 
 const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const child of Object.values(value))freeze(child);}return value;};
 const arr=value=>Array.isArray(value)?value:[];
@@ -72,19 +73,25 @@ export function buildGoalScenario(state={},goalId,options={}){
   const levers=catalog.map(item=>{
     const input=assumptions[item.id]||{};
     const effect=num(input.effect);
+    const calibration=calibrationFor(state,goalId,item.id);
+    const adjusted=effect!=null&&calibration.calibrationFactor!=null?Number((effect*calibration.calibrationFactor).toFixed(2)):null;
     return freeze({
       ...item,
       effect,
+      evidenceAdjustedEffect:adjusted,
       unit:forecast?.unit||metric.unit,
       sourceRefs:freeze(arr(input.source_refs||input.sourceRefs).filter(Boolean)),
       note:String(input.note||'').trim()||null,
       evidenceMode:arr(input.source_refs||input.sourceRefs).filter(Boolean).length?'evidence-linked':'scenario-assumption',
-      alignment:effectAlignment(effect,metric.direction)
+      alignment:effectAlignment(effect,metric.direction),
+      calibration
     });
   });
   const base=scenarioBase(forecast);
   const totalEffect=levers.reduce((sum,item)=>sum+(item.effect||0),0);
+  const adjustedTotalEffect=levers.reduce((sum,item)=>sum+(item.evidenceAdjustedEffect??item.effect??0),0);
   const scenarioExpected=base==null?null:Number((base+totalEffect).toFixed(2));
+  const evidenceAdjustedScenarioExpected=base==null?null:Number((base+adjustedTotalEffect).toFixed(2));
   const baselineGap=gap(base,forecast?.target,metric.direction);
   const scenarioGap=gap(scenarioExpected,forecast?.target,metric.direction);
   const improvement=baselineGap==null||scenarioGap==null?null:Number((baselineGap-scenarioGap).toFixed(2));
@@ -102,6 +109,7 @@ export function buildGoalScenario(state={},goalId,options={}){
     targetDate:forecast?.targetDate??null,
     baselineGap,
     scenarioExpected,
+    evidenceAdjustedScenarioExpected,
     scenarioGap,
     gapImprovement:improvement,
     scenarioStatus:targetStatus(scenarioExpected,forecast?.target,metric.direction),
@@ -115,7 +123,8 @@ export function buildGoalScenario(state={},goalId,options={}){
       forecast:forecast?.forecast?'observed-history-forecast':'no-forecast',
       scenario:'what-if-assumptions-not-prediction',
       quantifiedEffects:ranked.length,
-      evidenceLinkedEffects:ranked.filter(item=>item.evidenceMode==='evidence-linked').length
+      evidenceLinkedEffects:ranked.filter(item=>item.evidenceMode==='evidence-linked').length,
+      calibratedEffects:levers.filter(item=>item.calibration?.calibrationStatus==='available').length
     })
   });
 }
