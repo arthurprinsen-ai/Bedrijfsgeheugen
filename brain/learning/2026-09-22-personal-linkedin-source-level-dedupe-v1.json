@@ -1,0 +1,33 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "personal-linkedin-source-level-dedupe-v1",
+  "compiler": {
+    "failure_class": "CONTENT_DEDUPE",
+    "scope": "linkedin_personal",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The daily no-gap fallback randomized over prior personal artifacts but did not exclude source content_ids already used on earlier days. Minor rewrites changed final text hashes, allowing the same underlying printer story to recur.",
+  "prevention": [
+    "Deduplicate personal LinkedIn fallback selection at source content_id level before generation.",
+    "Do not treat a rewritten text hash as a new personal-life source.",
+    "A used source remains ineligible for later no-gap fallback runs."
+  ],
+  "evidence": [
+    "public.powerhouse_prepare_daily_content_fallbacks_v1(date)",
+    "supabase/migrations/20260922073100_prevent_personal_linkedin_fallback_source_reuse_v1.sql",
+    "tests/brain-personal-linkedin-source-level-dedupe.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-personal-linkedin-source-level-dedupe.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "personal-linkedin-life-only",
+    "content-publishing"
+  ],
+  "skill_projection_required": true
+}
