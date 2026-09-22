@@ -1,0 +1,40 @@
+{
+  "fingerprint": "portal-powerhouse-lifecycle-context-scale-v1",
+  "compiler": {
+    "failure_class": "CONTEXT_SURFACES_NOT_CONNECTED",
+    "scope": "PORTAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Portal V2 already contained most strategic, scenario, M&A, execution and evidence capabilities and Scale already had the operational entitlements for forecasting, scenario analysis, approvals, audit trail, 15 sources and hourly refresh. The missing layer was a canonical company-lifecycle context that connected growth, loss/recovery, acute continuity, buy-side, sell-side and portfolio situations to the relevant Brain models, portal pages, decisions, evidence and actions.",
+  "prevention_rule": "New commercial lifecycle propositions must not remain website-only. Every material company stage or buyer context must be represented in the Powerhouse Brain context contract, projected into decision/executive context, exposed in Portal V2, connected to relevant models/pages/actions/evidence, and covered by canonical brain plus portal tests. Core intelligence workspaces remain available across paid plans; tiers differ by scale, freshness, automation, governance and advisory envelope.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-company-lifecycle-context.test.mjs",
+      "portal-v2/tests/lifecycle-context.test.mjs",
+      "tests/saas-pricing-entitlements.test.mjs"
+    ],
+    "source": [
+      "brain/context/company-lifecycle.mjs",
+      "brain/operating-loop/company-decision-projection.mjs",
+      "brain/operating-loop/executive-cockpit.mjs",
+      "portal-v2/lifecycle-context.js",
+      "portal-v2/native-pages.js",
+      "portal-v2/page-registry.js",
+      "platform/saas/entitlement-policy.mjs"
+    ],
+    "outcome": "Powerhouse and Portal V2 share lifecycle semantics for growth, recovery, continuity, M&A and portfolio contexts; Scale exposes the full intelligence workspace while retaining its operational envelope."
+  }
+}
