@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {buildCompanyLifecycleContext,inferCompanyLifecycleContext,COMPANY_LIFECYCLE_CONTEXTS} from '../brain/context/company-lifecycle.mjs';
+import {buildBusinessContext,buildContextNarrative} from '../brain/context/business-context-engine.mjs';
 import {buildCompanyDecisionProjection} from '../brain/operating-loop/company-decision-projection.mjs';
 
 test('explicit lifecycle context wins and exposes connected models/pages',()=>{
@@ -37,4 +38,43 @@ test('brain records project lifecycle context into decision context',()=>{
   const projection=buildCompanyDecisionProjection(records,{tenantId:'t1'});
   assert.equal(projection.lifecycleContext.stage,'buy');
   assert.equal(projection.nextDecisionContext.lifecycleContext.stage,'buy');
+});
+
+
+test('business context supports one primary stage plus simultaneous strategic events and goals',()=>{
+  const ctx=buildBusinessContext({
+    portal:{
+      business_context:{stage:'scale',events:['funding','buy'],goals:['automate','valuation']},
+      finance:{revenue_growth_pct:45,cash_runway_weeks:40},
+      maturity:{strategy:.7,process:.4,data:.5,technology:.6,people:.5,governance:.3}
+    }
+  });
+  assert.equal(ctx.primary.stage,'scale');
+  assert.deepEqual(ctx.events,['funding','buy']);
+  assert.deepEqual(ctx.goals,['automate','valuation']);
+  assert.ok(ctx.models.includes('capacity-model'));
+  assert.ok(ctx.models.includes('normalized-ebitda'));
+  assert.ok(ctx.models.includes('automation-potential'));
+  assert.ok(ctx.pages.includes('due-diligence'));
+  assert.ok(ctx.pages.includes('data-ai'));
+  assert.equal(ctx.journey.current,'scale');
+  assert.ok(ctx.journey.next.includes('professionalize'));
+});
+
+test('context narrative converts context into now decide do next surfaces',()=>{
+  const ctx=buildBusinessContext({portal:{business_context:{stage:'loss',events:['restructure'],goals:['cash']},finance:{profit:-1,cash_runway_weeks:20}}});
+  const narrative=buildContextNarrative(ctx);
+  assert.match(narrative.headline,/Verlies & herstel/);
+  assert.ok(narrative.now.includes('margin-leakage'));
+  assert.ok(ctx.models.includes('13-week-cashflow'));
+  assert.ok(ctx.pages.includes('actieve-acties'));
+});
+
+test('business context fails closed when the primary phase is not evidenced',()=>{
+  const ctx=buildBusinessContext({});
+  assert.equal(ctx.primary.stage,'grow');
+  assert.equal(ctx.primary.confidence,0);
+  assert.equal(ctx.evidenceMode,'unproven-default');
+  const narrative=buildContextNarrative(ctx);
+  assert.match(narrative.headline,/nog niet expliciet vastgesteld/i);
 });
