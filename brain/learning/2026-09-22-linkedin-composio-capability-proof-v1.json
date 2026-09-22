@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "linkedin-composio-capability-proof-v1",
+  "compiler": {
+    "failure_class": "LINKEDIN_PROVIDER_CAPABILITY_ASSUMPTION",
+    "scope": "LINKEDIN",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "A connected LinkedIn account was being treated as sufficient evidence for both personal and company publishing even though organization publishing can require separate administrator roles and OAuth scopes.",
+  "prevention": [
+    "Read the active Composio LinkedIn account before any LinkedIn provider side effect.",
+    "Prove personal author identity with LINKEDIN_GET_MY_INFO.",
+    "Prove organization publishing capability separately with LINKEDIN_GET_COMPANY_INFO and approved administrator access.",
+    "Never infer company-page write access from personal LinkedIn connectivity alone.",
+    "Keep capability discovery read-only; only the canonical social publisher may own write side effects."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+    "supabase/functions/powerhouse-content-loop/index.ts",
+    "tests/brain-linkedin-composio-capability-proof.test.mjs",
+    "config/powerhouse-quality-surface-contracts.json"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-linkedin-composio-capability-proof.test.mjs"],
+    "production_readback_required": true
+  },
+  "skill_targets": ["instagram-composio-publisher","delivery","social"],
+  "skill_projection_required": true
+}
