@@ -11,13 +11,13 @@
   "prevention_rule": "A pricing or website release is not terminal after merge. When provider commit_ref differs from current main, use the canonical Production Source Snapshot transport and require bounded production release.json readback before marking the change live.",
   "evaluation": {
     "historical_replay": [
-      "tests/pricing-production-promotion-recovery-v1.test.mjs"
+      "tests/brain-pricing-production-promotion-recovery-v1.test.mjs"
     ],
     "canary": [
-      "tests/pricing-production-promotion-recovery-v1.test.mjs"
+      "tests/brain-pricing-production-promotion-recovery-v1.test.mjs"
     ],
     "shadow": [
-      "tests/pricing-production-promotion-recovery-v1.test.mjs"
+      "tests/brain-pricing-production-promotion-recovery-v1.test.mjs"
     ]
   },
   "evidence": {
