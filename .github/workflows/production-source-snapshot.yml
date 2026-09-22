@@ -1,6 +1,6 @@
 name: Production Source Snapshot
 # operational refresh: 2026-09-22 composio runtime
-# Operational snapshot refresh: 2026-09-22
+# Operational snapshot refresh: 2026-09-22 pricing-production-deploy
 
 on:
   push:
