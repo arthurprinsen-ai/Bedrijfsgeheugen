@@ -19,6 +19,7 @@ import { mountEntrepreneurIntelligence } from './modules/entrepreneur-intelligen
 import { mountLegacyExternalPlacements } from './modules/legacy-external-placements.js';
 import { mountPowerhouseObservability } from './modules/powerhouse-observability.js';
 import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
+import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -276,6 +277,7 @@ export function openPortalPage(pageId){
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
+  else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
   else if(['strategiemodellen','modellen'].includes(pageId)&&contract)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});
@@ -324,6 +326,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./legacy-external-placements.css');
   ensureStylesheet('./powerhouse-observability.css');
   ensureStylesheet('./trusted-advisor-assurance.css');
+  ensureStylesheet('./business-context.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');
