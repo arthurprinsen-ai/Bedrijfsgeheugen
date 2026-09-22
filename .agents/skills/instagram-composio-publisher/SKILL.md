@@ -302,3 +302,10 @@ Use `process.env` for Netlify serverless Functions, including scheduled function
 Fingerprint: `composio-authenticated-immediate-secret-sync-v1`.
 
 When a provider event demonstrably reaches the target but scoped secret visibility remains inconsistent and the provider-side cause is not proven, do not guess. Reuse the canonical idempotent configuration operation through a POST-only authenticated serverless control endpoint. Authenticate with an existing Powerhouse service secret by hash, never store the raw authentication secret in source, never expose the provider secret, and never grant the configuration endpoint publication authority.
+
+
+## Runtime credential rotation proof
+
+Fingerprint: `composio-runtime-secret-reload-v1`.
+
+After rotating a Netlify Functions runtime credential, do not treat the control-plane update itself as runtime proof. Require a fresh production Functions deployment followed by provider and canonical Supabase readback before declaring the integration ready.
