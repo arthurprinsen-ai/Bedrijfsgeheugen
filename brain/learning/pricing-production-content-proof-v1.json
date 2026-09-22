@@ -1,0 +1,21 @@
+{
+  "fingerprint": "pricing-production-content-proof-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Release identity proved that the expected main SHA was deployed, but it did not prove that the built public pricing page still contained the canonical pricing proposition after all build transforms and CDN publication.",
+  "prevention_rule": "A pricing release is terminal only when production identity and production content both pass. Live /prijzen must contain Build and the value/payback proof and must not contain the legacy Transform label or annual-toggle copy.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-production-content-proof-v1.test.mjs"],
+    "canary": ["tests/brain-pricing-production-content-proof-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-production-content-proof-v1.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-pricing-production-content-proof-v1.test.mjs"],
+    "production_readback": "Pending protected merge and push-triggered exact-source deployment with pricing content proof."
+  }
+}
