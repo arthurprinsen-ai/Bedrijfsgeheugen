@@ -1,0 +1,37 @@
+{
+  "fingerprint": "business-journey-goal-forecast-cockpit-v1",
+  "compiler": {
+    "failure_class": "CONTEXT_WITHOUT_VISIBLE_PROGRESS_OR_GOAL_FORECAST",
+    "scope": "PORTAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The Portal could infer and confirm company context, but entrepreneurs could not see a clear visual route from current business stage to desired stage, nor measurable goal progress, required pace, milestone dates and evidence-aware forecasts in one cockpit.",
+  "prevention_rule": "Every confirmed business context must support an optional desired stage and measurable goals. Portal and Powerhouse must show current state, target, progress, required pace, milestones and forecast status. Forecast values and bands may only be shown when at least three historical observations exist; otherwise the UI must explicitly show insufficient evidence instead of inventing confidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/goal-forecast-engine.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/business-journey-forecast-ui.test.mjs"
+    ],
+    "shadow": [
+      "tests/goal-forecast-engine.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/goal-forecast-engine.test.mjs",
+      "portal-v2/tests/business-journey-forecast-ui.test.mjs"
+    ],
+    "source": [
+      "brain/context/goal-forecast-engine.mjs",
+      "brain/context/business-context-engine.mjs",
+      "portal-v2/modules/business-context-workspace.js",
+      "portal-v2/modules/overview.js",
+      "portal-v2/business-context.css"
+    ],
+    "outcome": "Entrepreneurs can set destination stage and measurable goals, see milestones and distance to target, and receive evidence-aware forecasts that feed the shared Powerhouse business context."
+  }
+}
