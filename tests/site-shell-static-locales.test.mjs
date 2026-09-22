@@ -17,8 +17,10 @@ test('static locale routes are built and language switching navigates between th
   assert.match(build,/ANTHROPIC_API_KEY/);
   assert.match(build,/claude-haiku-4-5-20251001/);
   assert.match(build,/STATIC_I18N_ROUTES/);
-  assert.match(build,/portal-v2/);
+  assert.match(build,/publicRoutesFromSitemap/);
+  assert.match(build,/ESSENTIAL_ROUTES/);
   assert.match(build,/applyTranslations/);
+  assert.match(build,/chars \+ source\.length > 3200/);
   assert.match(build,/rewriteLinks/);
 
   assert.match(runtime,/pathLocale/);
@@ -33,5 +35,6 @@ test('English build fails closed in production rather than publishing mixed-lang
   assert.match(build,/Missing static English translation/);
   assert.match(build,/Translation response shape mismatch/);
   assert.match(build,/ANTHROPIC_API_KEY is required for production static English routes/);
-  assert.match(build,/throw lastError/);
+  assert.match(build,/translateResilient/);
+  assert.match(build,/Static English translation failed for/);
 });
