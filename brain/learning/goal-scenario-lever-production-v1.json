@@ -11,13 +11,13 @@
   "prevention_rule": "After material Portal/Brain changes, terminal success requires exact current main SHA on the production deploy plus successful Production Source Snapshot and Production Release Readback. A ready older deploy is not terminal evidence.",
   "evaluation": {
     "historical_replay": [
-      ".github/workflows/production-source-snapshot.yml"
+      "tests/brain-goal-scenario-engine.test.mjs"
     ],
     "canary": [
-      "Production Release Readback"
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
     ],
     "shadow": [
-      "Powerhouse Skill Projection"
+      "tests/brain-goal-forecast-engine.test.mjs"
     ]
   },
   "evidence": {
