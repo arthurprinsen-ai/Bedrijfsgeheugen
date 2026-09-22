@@ -1,0 +1,21 @@
+{
+  "fingerprint": "live-pricing-contract-fixture-parity-v1",
+  "compiler": {
+    "failure_class": "TEST_FIXTURE_DRIFT",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The positive canonical live-contract fixture still modeled the pre-Build pricing page. After production-readback began requiring Build and the value/payback proof, the fixture itself failed before live production could be evaluated.",
+  "prevention_rule": "Whenever the immutable live pricing contract gains a required commercial token, its positive fixture must be updated in the same lineage and continue to reject legacy commercial copy.",
+  "evaluation": {
+    "historical_replay": ["tools/site-shell/test-live-contract.mjs"],
+    "canary": ["tools/site-shell/test-live-contract.mjs"],
+    "shadow": ["tools/site-shell/test-live-contract.mjs"]
+  },
+  "evidence": {
+    "tests": ["tools/site-shell/test-live-contract.mjs"],
+    "outcome": "Positive pricing fixture contains Build and value/payback proof while the live contract still rejects Transform and annual-toggle copy."
+  }
+}
