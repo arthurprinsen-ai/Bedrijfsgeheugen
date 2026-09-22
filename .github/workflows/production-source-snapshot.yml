@@ -1,5 +1,5 @@
 name: Production Source Snapshot
-# operational refresh: 2026-09-22 composio runtime
+# operational refresh: 2026-09-22 pricing funnel production
 # Operational snapshot refresh: 2026-09-22
 
 on:
