@@ -1,0 +1,27 @@
+{
+  "fingerprint": "website-megamenu-sitewide-parity-v1",
+  "compiler": {
+    "failure_class": "SITE_SHELL_ROUTE_GEOMETRY_DRIFT",
+    "root_cause": "The existing V18 megamenu browser contract verified readability on the homepage only. Page-specific computed layout drift on routes such as /wijzigingen could therefore narrow and offset the same menu without failing the release gate."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-megamenu-sitewide-parity.test.mjs"
+    ]
+  },
+  "prevention": {
+    "prevention_rule": "Treat the desktop Meer panel as one canonical viewport-centered component and verify representative public routes against the homepage for identical navigation labels, width and left edge.",
+    "regression_contract": [
+      "data-bg-megamenu-root owns canonical desktop geometry",
+      "browser check covers /, /wijzigingen, /prijzen, /product, /kennis/, /over-ons",
+      "route geometry may differ by no more than 2px at the same viewport"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/v18-megamenu-regression-lock.test.mjs",
+      "tools/site-shell/v18-megamenu-browser-check.mjs"
+    ],
+    "outcome": "Candidate build and static regression checks must pass before promotion; the same multi-route browser contract is reused by production readback."
+  }
+}
