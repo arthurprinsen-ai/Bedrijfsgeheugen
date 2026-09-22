@@ -1,0 +1,30 @@
+{
+  "fingerprint": "composio-netlify-source-rebuild-v1",
+  "date": "2026-09-22",
+  "type": "PRODUCTION_TRANSPORT_RECOVERY",
+  "failure_class": "NETLIFY_API_DEPLOY_REQUIRES_EXACT_SOURCE_ARCHIVE",
+  "scope": "NETLIFY_PRODUCTION_TRANSPORT",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": true,
+  "root_cause": "The active Bedrijfsgeheugen Netlify production deploy is API-sourced rather than Git-connected auto-deploy. A rotated production Functions secret therefore does not become active on GitHub main merge alone; an exact source archive must be submitted through the authorized Netlify build transport.",
+  "prevention_rule": "For API-sourced Netlify production, generate an exact main source snapshot and use the authorized Netlify build proxy whenever runtime environment variables rotate. Do not treat a GitHub merge as a Netlify deployment.",
+  "evidence": [
+    "Current Netlify production metadata reports deploy_source=api.",
+    "Current production deploy commit predates the latest COMPOSIO_API_KEY rotation.",
+    "Netlify Functions documentation requires a new deploy for environment-variable changes to take effect."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-production-release-readback-scope.test.mjs"],
+    "canary": ["tests/brain-composio-cross-runtime-secret-sync.test.mjs"],
+    "shadow": ["tests/brain-composio-secret-sync-deploy-event.test.mjs"]
+  },
+  "terminal_rule": "Terminal success requires exact source snapshot, authorized Netlify API build, ready production deploy, Composio setup provider readback, and canonical Supabase state.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  }
+}
