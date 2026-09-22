@@ -6,6 +6,10 @@ const labels = ['BEDRIJF', 'KENNIS', 'VERTROUWEN', 'SUPPORT'];
 const maxAttempts = Number.parseInt(process.env.MEGAMENU_CHECK_ATTEMPTS || '12', 10);
 const retryDelayMs = Number.parseInt(process.env.MEGAMENU_CHECK_RETRY_MS || '5000', 10);
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+const routes = (process.env.MEGAMENU_ROUTES || '/,/wijzigingen,/prijzen,/product,/kennis/,/over-ons')
+  .split(',')
+  .map(route => route.trim())
+  .filter(Boolean);
 
 async function openVisibleMegamenu(page) {
   const candidates = page.getByText(/^Meer(?:\s*▼)?$/i, { exact: true });
@@ -33,8 +37,9 @@ async function openVisibleMegamenu(page) {
   throw lastClickError || new Error(`visible Meer trigger not found/openable; candidates=${count}`);
 }
 
-async function inspectMegamenu(page) {
-  await page.goto(baseUrl, { waitUntil: 'domcontentloaded', timeout: 30_000 });
+async function inspectMegamenu(page, route = '/') {
+  const url = new URL(route, baseUrl).href;
+  await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30_000 });
   await openVisibleMegamenu(page);
 
   return page.evaluate((expectedLabels) => {
@@ -59,7 +64,7 @@ async function inspectMegamenu(page) {
     };
     const isPromoLink = (el) => { const t=norm(el.textContent); return t.includes('MENSEN EERST. DAN TECHNIEK.')||t.includes('BEDRIJFSGEHEUGEN'); };
     const root=findMenuRoot();
-    if(!root)return { headings: expectedLabels.map(label=>({label,found:false})), ordinaryLinks: [], rootFound:false };
+    if(!root)return { headings: expectedLabels.map(label=>({label,found:false})), ordinaryLinks: [], rootFound:false, geometry:null, navLabels:[] };
 
     const headings = expectedLabels.map((label)=>{
       const el=[...root.querySelectorAll('h1,h2,h3,h4,h5,h6,[role="heading"]')].find((node)=>norm(node.textContent)===label&&visible(node));
@@ -76,8 +81,31 @@ async function inspectMegamenu(page) {
         return{text:norm(el.textContent),color:s.color,fontWeight:s.fontWeight,marked:el.hasAttribute('data-bg-megamenu-link'),descendants};
       });
 
-    return { headings, ordinaryLinks, rootFound:true };
+    const rect=root.getBoundingClientRect();
+    const navLabels=[...document.querySelectorAll('header.v17-header .navbtn,header.v17-header a[data-view]')]
+      .filter(visible)
+      .map(el=>norm(el.textContent));
+    return {
+      headings,
+      ordinaryLinks,
+      rootFound:true,
+      geometry:{
+        left:Math.round(rect.left*10)/10,
+        right:Math.round(rect.right*10)/10,
+        width:Math.round(rect.width*10)/10
+      },
+      navLabels
+    };
   }, labels);
+}
+
+function assertParity(reference, current, route) {
+  assert.ok(reference.geometry && current.geometry, `${route}: missing mega-menu geometry`);
+  assert.ok(Math.abs(reference.geometry.width-current.geometry.width)<=2,
+    `${route}: mega-menu width drifted: ${current.geometry.width}px vs ${reference.geometry.width}px`);
+  assert.ok(Math.abs(reference.geometry.left-current.geometry.left)<=2,
+    `${route}: mega-menu left edge drifted: ${current.geometry.left}px vs ${reference.geometry.left}px`);
+  assert.deepEqual(current.navLabels, reference.navLabels, `${route}: desktop navigation differs from homepage`);
 }
 
 function assertMegamenu(result) {
@@ -104,11 +132,20 @@ const browser = await chromium.launch({ headless: true });
 let lastError;
 try {
   for (let attempt = 1; attempt <= maxAttempts; attempt += 1) {
-    const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+    const pages = [];
     try {
-      const result = await inspectMegamenu(page);
-      assertMegamenu(result);
-      console.log(`V18 megamenu contrast browser contract passed on attempt ${attempt}:`, JSON.stringify(result));
+      let reference = null;
+      const routeResults = [];
+      for (const route of routes) {
+        const page = await browser.newPage({ viewport: { width: 1440, height: 900 } });
+        pages.push(page);
+        const result = await inspectMegamenu(page, route);
+        assertMegamenu(result);
+        if (!reference) reference = result;
+        else assertParity(reference, result, route);
+        routeResults.push({ route, geometry: result.geometry, navLabels: result.navLabels });
+      }
+      console.log(`V18 megamenu sitewide contract passed on attempt ${attempt}:`, JSON.stringify(routeResults));
       lastError = null;
       break;
     } catch (error) {
@@ -116,7 +153,7 @@ try {
       console.warn(`V18 megamenu check attempt ${attempt}/${maxAttempts} failed: ${error?.message || error}`);
       if (attempt < maxAttempts) await sleep(retryDelayMs);
     } finally {
-      await page.close();
+      for (const page of pages) await page.close();
     }
   }
   if (lastError) throw lastError;
