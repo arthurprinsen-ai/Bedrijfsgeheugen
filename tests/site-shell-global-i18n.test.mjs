@@ -8,6 +8,11 @@ test('global NL/EN runtime and build injector are wired',()=>{
   const injector=fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
   const fn=fs.readFileSync('netlify/functions/i18n-translate.mjs','utf8');
   assert.match(netlify,/apply-i18n\.mjs/);
+  assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
+  const localized=fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
+  assert.match(localized,/STATIC_I18N_OFFLINE_RELEASE/);
+  assert.match(localized,/STATIC_I18N_NETWORK/);
+  assert.doesNotMatch(localized,/CONTEXT === 'production'.*ANTHROPIC_API_KEY/s);
   assert.match(runtime,/bg_locale/);
   assert.match(runtime,/MutationObserver/);
   assert.match(runtime,/batches/);
