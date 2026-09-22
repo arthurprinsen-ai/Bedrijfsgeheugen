@@ -70,8 +70,10 @@ function inferStage(state={}){
 function detectEvents(state={}){
   const record=latestContextRecord(state);
   const explicit=arr(state?.portal?.business_context?.events||state?.company?.strategic_events||record?.payload?.business_context?.events||record?.payload?.strategic_events).map(lower).filter(x=>STRATEGIC_EVENTS[x]);
+  const legacyStage=lower(state?.portal?.lifecycle?.stage||state?.portal?.context?.stage||state?.company?.lifecycle_stage||record?.payload?.lifecycle_stage||record?.payload?.stage);
   const t=lower(state?.portal?.transaction?.type||state?.transaction?.type||state?.ma?.type);
   const mapped=[];
+  if(STRATEGIC_EVENTS[legacyStage])mapped.push(legacyStage);
   if(['buy','buy-side','acquisition','acquire'].includes(t))mapped.push('buy');
   if(['sell','sell-side','exit','divest'].includes(t))mapped.push('sell');
   if(['merger','merge'].includes(t))mapped.push('merger');
@@ -129,15 +131,17 @@ function contextHistory(state={}){
 }
 
 function priorityRank(stage,events,goals){
-  const ids=[stage,...events,...goals];
   const now=[];
-  if(ids.some(x=>['crisis','restructure'].includes(x)))now.push('cash-runway','critical-obligations','13-week-actions');
-  if(ids.some(x=>['loss'].includes(x)))now.push('margin-leakage','working-capital','customer-profitability');
-  if(ids.some(x=>['scale','automate'].includes(x)))now.push('capacity-bottlenecks','automation-opportunities','capability-gaps');
+  if(stage==='crisis')now.push('cash-runway','critical-obligations','13-week-actions');
+  if(stage==='loss')now.push('margin-leakage','working-capital','customer-profitability');
+  if(stage==='scale')now.push('capacity-bottlenecks','automation-opportunities','capability-gaps');
+  if(stage==='stagnate')now.push('growth-gap','customer-profitability','portfolio-focus');
+  if(events.includes('restructure')&&stage!=='crisis')now.push('cash-runway','critical-obligations','13-week-actions');
   if(events.includes('buy'))now.push('quality-of-earnings','deal-risks','integration-readiness');
   if(events.includes('sell'))now.push('exit-readiness','value-leakage','data-room-evidence');
   if(events.includes('integration'))now.push('synergy-tracking','dependency-resolution','100-day-plan');
   if(events.includes('funding'))now.push('funding-need','runway','funding-story');
+  if(goals.includes('automate')&&stage!=='scale')now.push('automation-opportunities','capacity-bottlenecks');
   return unique(now).slice(0,8);
 }
 
@@ -183,7 +187,7 @@ export function buildBusinessContext(state={}){
     history:contextHistory(state),
     journey:journey(detected.stage,events),
     evidenceMode:detected.source==='default'?'unproven-default':'derived',
-    learningKey:`business-context:${detected.stage}:${events.sort().join('+')||'none'}`
+    learningKey:`business-context:${detected.stage}:${[...events].sort().join('+')||'none'}`
   });
 }
 
