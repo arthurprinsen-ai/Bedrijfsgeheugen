@@ -29,10 +29,18 @@ jobs:
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+      - name: Stamp exact API-source identity
+        run: |
+          set -euo pipefail
+          printf '%s\n' "$GITHUB_SHA" > .bg-source-commit
+
       - name: Package production source
         run: |
           set -euo pipefail
-          git archive --format=zip --output=production-source.zip "$GITHUB_SHA"
+          tmpdir="$(mktemp -d)"
+          git archive "$GITHUB_SHA" | tar -x -C "$tmpdir"
+          printf '%s\n' "$GITHUB_SHA" > "$tmpdir/.bg-source-commit"
+          (cd "$tmpdir" && zip -qr "$GITHUB_WORKSPACE/production-source.zip" .)
       - uses: actions/upload-artifact@v4
         with:
           name: production-source-${{ github.sha }}
@@ -41,7 +49,7 @@ jobs:
           retention-days: 1
  
       - name: Deploy exact source through authorized Netlify transport
-        if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
         env:
           NETLIFY_MCP_PROXY_PATH: ${{ secrets.NETLIFY_MCP_PROXY_PATH_TEMP }}
           EXPECTED_SHA: ${{ github.sha }}
@@ -60,7 +68,7 @@ jobs:
           npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
 
       - name: Prove exact production identity
-        if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
         env:
           EXPECTED_SHA: ${{ github.sha }}
         run: |
