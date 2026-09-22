@@ -1,0 +1,22 @@
+{
+  "fingerprint": "netlify-git-deploy-first-v1",
+  "compiler": {
+    "failure_class": "RELEASE_TRANSPORT_CONFIGURATION",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": "The production snapshot workflow required NETLIFY_MCP_PROXY_PATH_TEMP before checking whether the repository's normal Git-linked Netlify production deploy had already promoted the exact main SHA. This caused a false terminal transport failure even when Netlify successfully deployed the same commit automatically.",
+  "prevention_rule": "On protected-main push, production transport first performs a bounded exact-SHA readback window for the Git-linked Netlify deploy. Only if that deploy does not arrive may the MCP proxy fallback be required. Exact identity and pricing-content proof remain mandatory after either route.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-netlify-git-deploy-first-v1.test.mjs"],
+    "canary": ["tests/brain-netlify-git-deploy-first-v1.test.mjs"],
+    "shadow": ["tests/brain-netlify-git-deploy-first-v1.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-netlify-git-deploy-first-v1.test.mjs"],
+    "observed_failure": "Production Source Snapshot exited 78 for a missing proxy secret while the native Netlify Git integration had already promoted the exact protected-main SHA.",
+    "production_readback": "Pending protected merge and exact production identity plus pricing content proof."
+  }
+}
