@@ -316,3 +316,11 @@ After rotating a Netlify Functions runtime credential, do not treat the control-
 Fingerprint: `composio-post-rotation-runtime-rebuild-v2`.
 
 For Netlify Functions credentials, compare the credential `updated_at` with the production deployment `published_at`. If the credential is newer, provider validation is not meaningful until a later protected Functions deployment is live. Fail closed and force exactly one post-rotation rebuild before re-validating.
+
+
+## Composio tool-version execution rule (2026-09-22)
+
+Fingerprint: `composio-v31-tool-execution-v1`.
+
+- Direct Composio tool execution must use the v3.1 API surface (or an explicitly pinned modern toolkit version); never rely on v3's base-version default for current social tools.
+- Connected-account ACTIVE state and tool execution success are separate proofs. A provider is usable only after the required read/write tool succeeds under the canonical account.
