@@ -7,7 +7,7 @@ const shell = ({ pricing = false, extraBeforeFooter = '', mobile = 'ONTDEKKEN KE
 <div class="bg-uniform-trust" data-bg-component="trustbar">Vaste prijs, geen uurtje-factuurtje · In twee weken draaiend · Voor het Nederlandse mkb</div>
 <header class="v17-header" data-bg-component="header"><nav>hoofdmenu</nav></header>
 <aside class="v18-mobile-drawer" data-bg-component="mobile-menu">${mobile}</aside>
-<main data-bg-component="main">inhoud${pricing ? '<section data-bg-component="page-tools"><div class="bgx-vraagbalk"></div><div class="bgx-rekenaar"></div><div class="bgx-rol"></div></section>' : ''}</main>
+<main data-bg-component="main">inhoud${pricing ? '<section><h3>Build</h3><p>Wat moet het opleveren om zichzelf terug te verdienen?</p></section><section data-bg-component="page-tools"><div class="bgx-vraagbalk"></div><div class="bgx-rekenaar"></div><div class="bgx-rol"></div></section>' : ''}</main>
 ${extraBeforeFooter}
 <footer data-bg-component="footer"><a href="mailto:arthur@bedrijfsgeheugen.nl">mail</a><a href="tel:+31627483345">bel</a><span>ma–vr 08:00–18:00</span></footer>
 </body></html>`, COMMIT);
