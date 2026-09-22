@@ -21,6 +21,9 @@ test('static locale routes are built and language switching navigates between th
   assert.match(build,/ESSENTIAL_ROUTES/);
   assert.match(build,/applyTranslations/);
   assert.match(build,/chars \+ source\.length > 3200/);
+  assert.match(build,/STATIC_I18N_CONCURRENCY/);
+  assert.match(build,/Promise\.all/);
+  assert.match(build,/Math\.min\(4/);
   assert.match(build,/rewriteLinks/);
 
   assert.match(runtime,/pathLocale/);
