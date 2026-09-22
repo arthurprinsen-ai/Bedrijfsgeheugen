@@ -31,11 +31,12 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-production-release-readback-scope.test.mjs",
-      "tests/brain-production-promotion-observability.test.mjs"
+      "tests/site-shell-trustbar-css-only-repair.test.mjs"
     ],
     "canary": [
-      "tests/brain-production-promotion-observability.test.mjs"
+      "Blog Technical SEO Gate on PR #2581",
+      "Netlify deploy-preview on PR #2581",
+      "Required test exact-head gate on PR #2581"
     ],
     "shadow": [
       "tests/brain-production-release-readback-scope.test.mjs"
