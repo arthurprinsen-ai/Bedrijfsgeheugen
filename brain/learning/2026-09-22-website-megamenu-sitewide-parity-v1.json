@@ -6,8 +6,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "2026-09-22 screenshots showed /wijzigingen with a much narrower Meer panel than the accepted wide menu on another public page.",
-      "Existing v18-megamenu-browser-check used only baseUrl and therefore could not detect cross-route geometry drift."
+      "tests/brain-website-megamenu-sitewide-parity.test.mjs"
     ]
   },
   "prevention": {
