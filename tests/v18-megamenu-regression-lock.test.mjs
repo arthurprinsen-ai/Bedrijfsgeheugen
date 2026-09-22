@@ -66,3 +66,19 @@ test('production readback also rechecks header menu contrast', async () => {
   const productionReadback = await readProductionReadback();
   assert.match(productionReadback, /v18-header-menu-contrast-check\.mjs/);
 });
+
+test('Meer megamenu has one canonical desktop geometry on every public shell', () => {
+  assert.match(core, /data-bg-megamenu-root/);
+  assert.match(core, /position:fixed!important/);
+  assert.match(core, /left:50vw!important/);
+  assert.match(core, /width:min\(1190px,calc\(100vw - 32px\)\)!important/);
+  assert.match(core, /--bg-megamenu-top/);
+  assert.match(browserCheck, /MEGAMENU_ROUTES/);
+  for (const route of ['/wijzigingen', '/prijzen', '/product', '/kennis/', '/over-ons']) {
+    assert.ok(browserCheck.includes(route), `sitewide browser guard missing ${route}`);
+  }
+  assert.match(browserCheck, /assertParity/);
+  assert.match(browserCheck, /desktop navigation differs from homepage/);
+  assert.match(browserCheck, /mega-menu width drifted/);
+  assert.match(browserCheck, /mega-menu left edge drifted/);
+});
