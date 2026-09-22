@@ -48,7 +48,8 @@ const num=value=>Number.isFinite(Number(value))?Number(value):null;
 const lower=value=>String(value??'').trim().toLowerCase();
 
 export function detectLifecycleContext(state={}){
-  const explicit=lower(state?.portal?.lifecycle?.stage||state?.portal?.context?.stage||state?.company?.lifecycle_stage);
+  const runtimeContext=arr(state?.portal?.runtime?.context?.items).find(item=>LIFECYCLE_CONTEXTS[lower(item?.stage||item?.lifecycle_stage||item?.payload?.lifecycle_stage)]);
+  const explicit=lower(state?.portal?.lifecycle?.stage||state?.portal?.context?.stage||state?.company?.lifecycle_stage||runtimeContext?.stage||runtimeContext?.lifecycle_stage||runtimeContext?.payload?.lifecycle_stage);
   if(LIFECYCLE_CONTEXTS[explicit])return Object.freeze({stage:explicit,source:'explicit',confidence:1,reasons:Object.freeze(['expliciet gekozen bedrijfsstadium'])});
 
   const transaction=lower(state?.portal?.transaction?.type||state?.transaction?.type||state?.ma?.type);
