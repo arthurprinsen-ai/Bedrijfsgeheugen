@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing-billing-toggle-mobile-interaction-v1",
+  "compiler": {
+    "failure_class": "PRICING_INTERACTION_REGRESSION",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The pricing page had direction buttons whose interaction only scrolled and did not visibly switch plan groups, while the previously removed annual billing state was no longer exposed as an intentional control. On mobile, floating conversion UI could also visually overlap pricing cards, making CTAs feel or become untappable.",
+  "prevention_rule": "Pricing controls must be real state-changing controls: direction buttons visibly switch the active plan group, monthly/yearly billing must be exposed as an accessible visible toggle with canonical annual values, and all pricing CTAs/toggles must retain explicit pointer/touch interaction priority on mobile. Hidden legacy annual markup remains forbidden.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "source": [
+      "prijzen.html",
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/pricing-build-integrity.mjs"
+    ],
+    "outcome": "Pricing page exposes working monthly/yearly billing controls, visible group switching and mobile-safe touch targets; production contract verifies the intended annual values instead of treating them as residue."
+  }
+}
