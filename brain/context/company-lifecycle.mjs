@@ -1,3 +1,4 @@
+import {buildBusinessContext} from './business-context-engine.mjs';
 const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const child of Object.values(value))freeze(child);}return value;};
 
 export const COMPANY_LIFECYCLE_CONTEXTS=freeze({
@@ -33,15 +34,25 @@ export function inferCompanyLifecycleContext(state={}){
 }
 
 export function buildCompanyLifecycleContext(state={}){
-  const detected=inferCompanyLifecycleContext(state);
-  const definition=COMPANY_LIFECYCLE_CONTEXTS[detected.stage];
+  const businessContext=buildBusinessContext(state);
+  const legacy=COMPANY_LIFECYCLE_CONTEXTS[businessContext.primary.stage]||COMPANY_LIFECYCLE_CONTEXTS.grow;
   return freeze({
-    ...detected,
-    intent:definition.intent,
-    models:[...definition.models],
-    portal_pages:[...definition.portal_pages],
-    signals:[...definition.signals],
-    evidence_mode:detected.source==='default'?'unproven-default':'derived',
-    learning_key:`company-lifecycle:${detected.stage}`
+    stage:businessContext.primary.stage,
+    source:businessContext.primary.source,
+    confidence:businessContext.primary.confidence,
+    reasons:[...businessContext.primary.reasons],
+    intent:businessContext.primary.intent||legacy.intent,
+    models:[...businessContext.models],
+    portal_pages:[...businessContext.pages],
+    signals:[...(legacy.signals||[])],
+    events:[...businessContext.events],
+    goals:[...businessContext.goals],
+    health:businessContext.health,
+    maturity:businessContext.maturity,
+    priorities:[...businessContext.priorities],
+    journey:businessContext.journey,
+    evidence_mode:businessContext.evidenceMode,
+    learning_key:businessContext.learningKey,
+    businessContext
   });
 }
