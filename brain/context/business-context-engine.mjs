@@ -39,8 +39,14 @@ export const USER_GOALS=freeze({
   resilience:{label:'Risico verlagen',models:['risk-heatmap','dependency-map','scenario-planning'],pages:['compliance-governance','os:scenario-simulator','audittrail']}
 });
 
+function latestContextRecord(state={}){
+  return arr(state?.records).slice().sort((a,b)=>String(b?.observedAt||b?.observed_at||'').localeCompare(String(a?.observedAt||a?.observed_at||'')))
+    .find(record=>record?.payload?.business_context||record?.payload?.lifecycle_stage||record?.payload?.stage||record?.payload?.strategic_events||record?.payload?.goals);
+}
+
 function explicitStage(state){
-  return lower(state?.portal?.business_context?.stage||state?.portal?.lifecycle?.stage||state?.portal?.context?.stage||state?.company?.lifecycle_stage);
+  const record=latestContextRecord(state);
+  return lower(state?.portal?.business_context?.stage||state?.portal?.lifecycle?.stage||state?.portal?.context?.stage||state?.company?.lifecycle_stage||record?.payload?.business_context?.stage||record?.payload?.lifecycle_stage||record?.payload?.stage);
 }
 
 function inferStage(state={}){
@@ -62,7 +68,8 @@ function inferStage(state={}){
 }
 
 function detectEvents(state={}){
-  const explicit=arr(state?.portal?.business_context?.events||state?.company?.strategic_events).map(lower).filter(x=>STRATEGIC_EVENTS[x]);
+  const record=latestContextRecord(state);
+  const explicit=arr(state?.portal?.business_context?.events||state?.company?.strategic_events||record?.payload?.business_context?.events||record?.payload?.strategic_events).map(lower).filter(x=>STRATEGIC_EVENTS[x]);
   const t=lower(state?.portal?.transaction?.type||state?.transaction?.type||state?.ma?.type);
   const mapped=[];
   if(['buy','buy-side','acquisition','acquire'].includes(t))mapped.push('buy');
@@ -74,7 +81,8 @@ function detectEvents(state={}){
 }
 
 function detectGoals(state={}){
-  return unique(arr(state?.portal?.business_context?.goals||state?.portal?.goals||state?.company?.goals).map(lower).filter(x=>USER_GOALS[x]));
+  const record=latestContextRecord(state);
+  return unique(arr(state?.portal?.business_context?.goals||state?.portal?.goals||state?.company?.goals||record?.payload?.business_context?.goals||record?.payload?.goals).map(lower).filter(x=>USER_GOALS[x]));
 }
 
 function health(state={}){
