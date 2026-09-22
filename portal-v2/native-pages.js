@@ -1,5 +1,6 @@
 import { pageMetrics, pageWorklist, hasPageData, emptyStateCopy } from './page-metrics.js';
 import { buildBcgModel } from './models/bcg.js';
+import { buildLifecycleProjection, LIFECYCLE_CONTEXTS, SCALE_CORE_SURFACES } from './lifecycle-context.js';
 
 /**
  * Navigatie per pagina: de primaire actie en de drie vervolgstappen.
@@ -8,6 +9,9 @@ import { buildBcgModel } from './models/bcg.js';
  */
 export const PAGE_NAVIGATION = Object.freeze({
   overzicht:["Open businesscase",[["Open businesscase","businesscase"],["Open profiel","profiel"],["Open advies","advies"]]],
+  bedrijfssituatie:["Open context",[["Open Impact Engine","os:impact-engine"],["Open scenario’s","os:scenario-simulator"],["Open besluiten","os:next-best-actions"]]],
+  "herstel-continuiteit":["Open herstelcontext",[["Open waarde & financiering","waarde-financiering"],["Open recovery obligations","recovery-obligations"],["Open acties","actieve-acties"]]],
+  "portfolio-control":["Open portfolio-context",[["Open BCG","model-bcg"],["Open due diligence","due-diligence"],["Open Impact Engine","os:impact-engine"]]],
   profiel:["Werk profiel bij",[["Vul ontbrekende gegevens aan","gegevens-invullen"],["Open eindconclusie","eindconclusie"],["Bekijk wijzigingen","wijzigingen"]]],
   "data-ai":["Prioriteer datakans",[["Open koppelingen","koppelingen"],["Bekijk AI-scan","ai-scan"],["Open bronnenstatus","bronnenstatus"]]],
   "trust-center":["Controleer bewijs",[["Open bronnenstatus","bronnenstatus"],["Open audittrail","audittrail"],["Bekijk outcomes","outcomes-evidence"]]],
@@ -82,6 +86,26 @@ function bcgContent(model,primaryAction,actions){
 
 function specialistContent(pageId,model,navigation){
   const [primaryAction,actions]=navigation;
+  if(['bedrijfssituatie','herstel-continuiteit','portfolio-control','due-diligence','exit'].includes(pageId)){
+    const projection=buildLifecycleProjection(model);
+    const effectiveStage=pageId==='portfolio-control'?'portfolio':pageId==='herstel-continuiteit'?(projection.stage==='crisis'?'crisis':'loss'):pageId==='exit'?'sell':pageId==='due-diligence'&& !['buy','sell'].includes(projection.stage)?'buy':projection.stage;
+    const ctx=LIFECYCLE_CONTEXTS[effectiveStage];
+    const contextRows=Object.values(LIFECYCLE_CONTEXTS).map(item=>[item.label,item.id===projection.stage?'Gedetecteerde context':'Beschikbaar']);
+    const connected=[['Bronnen',String(projection.connected.sources)],['Acties',String(projection.connected.actions)],['Outcomes',String(projection.connected.outcomes)],['Risico’s',String(projection.connected.risks)]];
+    const pages=ctx.pages.map(id=>[id,'Verbonden contextmodule']);
+    const modelRows=ctx.models.map(name=>[name,'Relevant voor '+ctx.label]);
+    const blocks=[
+      {type:'metrics',title:'Contextstatus',items:[['Werkcontext',projection.source==='default'?'—':ctx.label],['Herkomst',projection.source==='default'?'—':projection.source],['Plan',projection.plan.code||'—'],['Contextbewijs',projection.confidence?Math.round(projection.confidence*100)+'%':'—']],derived:projection.source!=='default'},
+      {type:'worklist',title:'Powerhouse-verbindingen',items:connected,derived:true},
+      {type:'worklist',title:'Relevante modellen',items:modelRows,derived:false},
+      {type:'worklist',title:'Verbonden portaalonderdelen',items:pages,derived:false},
+      {type:'worklist',title:'Scale — volledige kernintelligentie',items:SCALE_CORE_SURFACES.map(name=>[name,'Beschikbaar in de gedeelde intelligence-kern; Scale verschilt op schaal, snelheid, automation en governance.']),derived:false},
+      {type:'worklist',title:'Alle bedrijfssituaties',items:contextRows,derived:false},
+      {type:'actions',title:'Volgende acties',items:actions}
+    ];
+    if(projection.source==='default')blocks.splice(1,0,{type:'empty',title:'Bedrijfssituatie nog niet expliciet vastgesteld',copy:'Powerhouse gebruikt groei alleen als navigatiestandaard. Kies of onderbouw de context met klantdata; verlies, crisis, buy-side, sell-side en portfolio worden niet geraden.'});
+    return {primaryAction,blocks,derived:projection.source!=='default',lifecycle:projection};
+  }
   if(pageId==='trust-center'){
     const runtime=model?.portal?.runtime||{};
     const sources=Array.isArray(runtime?.sources?.items)?runtime.sources.items:[];

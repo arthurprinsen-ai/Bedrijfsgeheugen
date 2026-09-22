@@ -1,5 +1,6 @@
 import {buildCompanyLedger} from './company-ledger.mjs';
 import {buildRevenueCalibrationContext} from '../learning/company-revenue-learning-bridge.mjs';
+import {buildCompanyLifecycleContext} from '../context/company-lifecycle.mjs';
 
 const BUCKETS=['NOW','NEXT','LATER','DO_NOT_DO'];
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
@@ -70,7 +71,9 @@ export function buildCompanyDecisionProjection(records,{tenantId}={}){
   }));
   const revenuePredictions=projectRevenuePredictions(scoped);
   const revenueCalibration=buildRevenueCalibrationContext(scoped);
+  const lifecycleContext=buildCompanyLifecycleContext({records:scoped});
   return {
+    lifecycleContext,
     companyDecisions,
     priorityPortfolio,
     decisionEconomics:ledger.economics,
@@ -79,7 +82,7 @@ export function buildCompanyDecisionProjection(records,{tenantId}={}){
     actors:ledger.actors,
     revenuePredictions,
     revenueCalibration,
-    nextDecisionContext:revenueCalibration.next_decision_context
+    nextDecisionContext:{...(revenueCalibration.next_decision_context||{}),lifecycleContext}
   };
 }
 
