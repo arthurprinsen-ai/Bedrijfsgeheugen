@@ -9,11 +9,11 @@ const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,
 async function sha256(v:string){const d=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(v));return [...new Uint8Array(d)].map(b=>b.toString(16).padStart(2,'0')).join('');}
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_LINKEDIN_SETUP_'+r.status+':'+clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240));return b;}
-async function execute(key:string,accountId:string,toolSlug:string,args:Record<string,unknown>={}){
+async function execute(key:string,accountId:string,userId:string,toolSlug:string,args:Record<string,unknown>={}){
   const r=await fetch(`${EXEC_BASE}/tools/execute/${toolSlug}`,{
     method:'POST',
     headers:{'x-api-key':key,'content-type':'application/json'},
-    body:JSON.stringify({connected_account_id:accountId,version:'latest',arguments:args})
+    body:JSON.stringify({connected_account_id:accountId,user_id:userId,version:'latest',arguments:args})
   });
   const b:any=await r.json().catch(()=>({}));
   if(!r.ok||b?.successful!==true)throw new Error(`COMPOSIO_${toolSlug}_${r.status}:${clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240)}`);
@@ -74,14 +74,17 @@ Deno.serve(async(req:Request)=>{
 
     const account=accounts[0];
     const accountId=clean(account?.id||account?.connected_account_id);
-    const who=await execute(key,accountId,'LINKEDIN_GET_MY_INFO',{});
+    const userId=clean(account?.user_id);
+    if(!userId)throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED');
+    const grantedScopes=clean(account?.data?.scope).split(/[\s,]+/).map((v:string)=>v.trim()).filter(Boolean);
+    const who=await execute(key,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
     const personCandidates=deepFindStrings(who,['author','author_id','person_id','member_id','id','sub']);
     const personAuthor=normalizePersonUrn(personCandidates.find(v=>!!v)||'');
 
     let companies:any=null;
     let companyError:string|null=null;
     try{
-      companies=await execute(key,accountId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
+      companies=await execute(key,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
     }catch(error){
       companyError=error instanceof Error?error.message:String(error);
     }
@@ -97,13 +100,15 @@ Deno.serve(async(req:Request)=>{
       api_key_present:true,
       active_accounts:1,
       connected_account_id:accountId,
-      user_id:clean(account?.user_id),
+      user_id:userId,
       alias:clean(account?.alias),
+      granted_scopes:grantedScopes,
       personal_ready:personalReady,
       personal_author_urn:personAuthor||null,
       company_ready:companyReady,
       company_author_urns:orgUrns,
       company_count:orgUrns.length,
+      company_scope_required:companyReady?null:'r_organization_admin',
       company_capability_error:companyError?companyError.slice(0,220):null,
       toolkit_version_policy:'latest'
     };
