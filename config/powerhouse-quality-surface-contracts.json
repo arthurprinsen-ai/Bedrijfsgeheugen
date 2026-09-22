@@ -65,6 +65,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-composio-linkedin-setup",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+      "evidence_contract": "tests/brain-linkedin-composio-capability-proof.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-content-loop",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-loop/index.ts",
