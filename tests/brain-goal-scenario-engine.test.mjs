@@ -38,3 +38,17 @@ test('multiple goals keep separate lever catalogs and scenarios',()=>{
   assert.equal(scenarios[1].scenarioExpected,57);
   assert.ok(GOAL_LEVERS.valuation.some(x=>x.id==='multiple-risk'));
 });
+
+
+test('next-best actions exclude quantified effects that move away from the goal',()=>{
+  const state={portal:{business_context:{goals:['automate'],goal_targets:{automate:{current_value:1000,target_value:500,target_date:'2027-09-22'}},goal_scenarios:{automate:{levers:{
+    workflow:{effect:-150,source_refs:['e-workflow']},
+    integration:{effect:120,source_refs:['e-integration']}
+  }}}}}};
+  const result=buildGoalScenario(state,'automate',{now:'2026-09-22T12:00:00Z'});
+  assert.equal(result.levers.find(x=>x.id==='workflow').alignment,'supports-goal');
+  assert.equal(result.levers.find(x=>x.id==='integration').alignment,'moves-away');
+  assert.ok(result.nextBestActions.some(x=>x.leverId==='workflow'));
+  assert.ok(!result.nextBestActions.some(x=>x.leverId==='integration'));
+  assert.equal(result.harmfulLevers.length,1);
+});
