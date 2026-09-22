@@ -358,12 +358,19 @@ async function translateAll(strings) {
     throw new Error('Static English translation failed for "' + part[0].slice(0,120) + '": ' + (lastError?.message || 'unknown error'));
   }
 
-  for (let i=0;i<batches.length;i++) {
-    const part = batches[i];
-    await translateResilient(part);
-    console.log('STATIC_I18N_BATCH',i+1,'of',batches.length,'strings',part.length);
-    await new Promise(r=>setTimeout(r,200));
+  const concurrency = Math.max(1, Math.min(4, Number(process.env.STATIC_I18N_CONCURRENCY || 4)));
+  let cursor = 0;
+  async function worker(workerId) {
+    while (true) {
+      const index = cursor++;
+      if (index >= batches.length) return;
+      const part = batches[index];
+      await translateResilient(part);
+      console.log('STATIC_I18N_BATCH',index+1,'of',batches.length,'strings',part.length,'worker',workerId);
+      await new Promise(r=>setTimeout(r,120));
+    }
   }
+  await Promise.all(Array.from({length:Math.min(concurrency,batches.length)},(_,i)=>worker(i+1)));
   return result;
 }
 
