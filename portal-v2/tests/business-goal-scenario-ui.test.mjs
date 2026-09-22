@@ -19,3 +19,14 @@ test('scenario actions navigate into relevant portal modules',()=>{
 test('goal scenario cockpit is responsive',()=>{
   for(const selector of ['.v2scenariosection','.v2scenariogrid','.v2scenarioflow','.v2levergrid','.v2nextbest'])assert.ok(css.includes(selector),selector);
 });
+
+
+test('goal scenario cockpit captures evidence and can turn a lever into roadmap execution',()=>{
+  for(const token of ['data-scenario-evidence','bewijs-ID', 'data-scenario-roadmap','+ Roadmap','addScenarioActionToRoadmap','portal.roadmap.items','goalScenario'])assert.ok(workspace.includes(token),token);
+});
+
+test('scenario UI distinguishes goal-supporting and goal-opposing effects',()=>{
+  assert.ok(workspace.includes('data-alignment'));
+  assert.ok(css.includes('[data-alignment="supports-goal"]'));
+  assert.ok(css.includes('[data-alignment="moves-away"]'));
+});
