@@ -7,10 +7,33 @@ const MODEL = 'claude-haiku-4-5-20251001';
 const SITE = 'https://www.bedrijfsgeheugen.nl';
 const LOCALES = ['nl','en'];
 const EXCLUDED_TOP = new Set(['.git','.github','node_modules','assets','components','email','intern','preview','site','tools','tests','docs','brain','platform','config','.netlify','dist','nl','en']);
-const INCLUDED_DIRS = new Set(['blog','kennis','portal','portal-v2','portal-next']);
+const INCLUDED_DIRS = new Set(['blog','kennis']);
 const SKIP_TAGS = new Set(['script','style','code','pre','noscript','svg','textarea']);
 const ATTRS = new Set(['placeholder','title','aria-label','alt']);
 const TRANSLATION_CACHE_FILE = path.join(ROOT,'.cache','bg-static-i18n-en.json');
+const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
+const ESSENTIAL_ROUTES = new Set([
+  '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
+  '/zelfscan', '/frisse-blik', '/inloggen', '/aanmelden', '/contact', '/privacy'
+]);
+
+function normalizedRoute(route) {
+  if (!route) return '/';
+  let value = String(route).replace(/\/index\.html$/,'/').replace(/\.html$/,'');
+  if (!value.startsWith('/')) value = '/' + value;
+  return value.length > 1 ? value.replace(/\/$/,'') : '/';
+}
+
+function publicRoutesFromSitemap() {
+  const routes = new Set(ESSENTIAL_ROUTES);
+  try {
+    const xml = fs.readFileSync(SITEMAP_FILE,'utf8');
+    for (const match of xml.matchAll(/<loc>https:\/\/www\.bedrijfsgeheugen\.nl([^<]*)<\/loc>/g)) {
+      routes.add(normalizedRoute(match[1] || '/'));
+    }
+  } catch {}
+  return routes;
+}
 
 function walk(dir, rel='') {
   const out = [];
@@ -254,7 +277,7 @@ function parseTranslations(raw) {
 
 async function translateBatch(strings,key) {
   const controller = new AbortController();
-  const timer = setTimeout(()=>controller.abort(),45000);
+  const timer = setTimeout(()=>controller.abort(),60000);
   try {
     const response = await fetch('https://api.anthropic.com/v1/messages',{
       method:'POST',
@@ -265,7 +288,7 @@ async function translateBatch(strings,key) {
       },
       body:JSON.stringify({
         model:MODEL,
-        max_tokens:8000,
+        max_tokens:6000,
         system:'Translate Dutch website UI and marketing copy faithfully into natural English. Preserve Bedrijfsgeheugen, product names, URLs, numbers, currencies, placeholders and factual meaning. Do not add or remove claims. Return ONLY one valid JSON array of strings, same order and same length as input.',
         messages:[{role:'user',content:JSON.stringify(strings)}]
       }),
@@ -303,39 +326,53 @@ async function translateAll(strings) {
   const batches = [];
   let batch=[], chars=0;
   for (const source of missing) {
-    if (batch.length >= 45 || chars + source.length > 7000) {
+    if (batch.length >= 18 || chars + source.length > 3200) {
       batches.push(batch); batch=[]; chars=0;
     }
     batch.push(source); chars += source.length;
   }
   if (batch.length) batches.push(batch);
 
-  for (let i=0;i<batches.length;i++) {
-    const part = batches[i];
-    let translated = null;
+  async function translateResilient(part, depth=0) {
     let lastError;
-    for (let attempt=0;attempt<3;attempt++) {
+    for (let attempt=0;attempt<4;attempt++) {
       try {
-        translated = await translateBatch(part,key);
-        break;
+        const translated = await translateBatch(part,key);
+        part.forEach((source,index)=>{
+          cache[source]=translated[index];
+          result.set(source,translated[index]);
+        });
+        saveCache(cache);
+        return;
       } catch (error) {
         lastError = error;
-        await new Promise(r=>setTimeout(r,700*(attempt+1)));
+        await new Promise(r=>setTimeout(r,900*(attempt+1)));
       }
     }
-    if (!translated) throw lastError || new Error('Static translation failed');
-    part.forEach((source,index)=>{
-      cache[source]=translated[index];
-      result.set(source,translated[index]);
-    });
-    saveCache(cache);
+    if (part.length > 1) {
+      const mid = Math.ceil(part.length/2);
+      await translateResilient(part.slice(0,mid),depth+1);
+      await translateResilient(part.slice(mid),depth+1);
+      return;
+    }
+    throw new Error('Static English translation failed for "' + part[0].slice(0,120) + '": ' + (lastError?.message || 'unknown error'));
+  }
+
+  for (let i=0;i<batches.length;i++) {
+    const part = batches[i];
+    await translateResilient(part);
     console.log('STATIC_I18N_BATCH',i+1,'of',batches.length,'strings',part.length);
+    await new Promise(r=>setTimeout(r,200));
   }
   return result;
 }
 
-const files = walk(ROOT).sort();
+const discoveredFiles = walk(ROOT).sort();
+const publicRoutes = publicRoutesFromSitemap();
+const files = discoveredFiles.filter(file => publicRoutes.has(normalizedRoute(routeFor(file))));
 const aliases = routeAliases(files);
+if (!files.length) throw new Error('No public HTML files selected for localized build');
+console.log('STATIC_I18N_SCOPE',JSON.stringify({discovered:discoveredFiles.length,public:files.length}));
 const parsed = new Map();
 const allStrings = new Set();
 

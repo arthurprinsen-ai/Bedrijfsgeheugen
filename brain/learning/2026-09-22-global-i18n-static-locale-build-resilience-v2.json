@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "global-i18n-static-locale-build-resilience-v2",
+  "compiler": {
+    "failure_class": "STATIC_LOCALE_PRODUCTION_BUILD_FAILURE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The first static locale-route production build attempted to translate an unnecessarily broad HTML surface, including portal variants, in relatively large provider batches. CI structure checks passed, but the production Netlify build failed before publish. The architecture was correct; the build execution envelope was not bounded enough.",
+  "prevention": [
+    "Static website localization must scope source documents to public sitemap routes plus explicit essential public routes.",
+    "Portal HTML is excluded from the public static-route build and remains a separate locale concern because portal copy is partly runtime-generated and confidentiality-classified.",
+    "Translation batches must be bounded by both item count and character count.",
+    "Provider failures must recursively split batches down to single strings before failing the production build.",
+    "Deploy-preview must execute the same locale-route build stage as production so structural build regressions are caught before merge.",
+    "The mobile selector must default visually to Dutch before hydration so an uninitialized selector cannot falsely display English on Dutch content."
+  ],
+  "evidence": [
+    "Netlify production deploy 6ab18c278ee55800089cbdff failed at building site for main 6e0d9f8ecbc1e2ee576381e2a5270e4ae857a8db",
+    "tools/site-shell/build-localized-routes.mjs",
+    "netlify.toml",
+    "assets/js/i18n.js",
+    "tools/site-shell/apply-i18n.mjs",
+    "tests/site-shell-static-locales.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/site-shell-static-locales.test.mjs"],
+    "canary": ["deploy-preview locale-route build"],
+    "production_readback_required": true
+  },
+  "related_fingerprints": [
+    "global-nl-en-i18n-v1",
+    "global-i18n-static-locale-routes-v1"
+  ],
+  "skill_targets": ["website-release","powerhouse-continuity"],
+  "skill_projection_required": false
+}
