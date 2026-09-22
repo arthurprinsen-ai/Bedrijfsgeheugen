@@ -1,7 +1,7 @@
 import { createClient } from 'npm:@supabase/supabase-js@2';
 
 const BASE='https://backend.composio.dev/api/v3.1';
-const EXEC_BASE='https://backend.composio.dev/api/v3';
+const EXEC_BASE='https://backend.composio.dev/api/v3.1';
 const SUBJECT='linkedin-composio-setup';
 const SERVICE_TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const clean=(v:unknown)=>String(v??'').trim();
