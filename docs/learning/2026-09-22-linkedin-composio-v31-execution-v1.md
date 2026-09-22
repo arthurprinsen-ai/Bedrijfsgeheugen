@@ -33,3 +33,8 @@ Personal LinkedIn identity and company-page capability remain separate checks. T
 ## Required terminal proof
 
 Exact-head CI must be green, the PR must merge, the Supabase Edge Function must be redeployed, and the provider readback must return canonical personal/company capability state before this recovery is considered complete.
+
+
+## Shared social publisher follow-through
+
+The same provider-version invariant applies to `powerhouse-social-publisher`. Its Composio Instagram execution path must use `/api/v3.1/tools/execute/*`; v3 is not an allowed direct-tool endpoint. v3.1 may use either structured `arguments` or natural-language `text` as defined by Composio, while canonical publication authority, exact-media proof, dedupe and provider readback remain unchanged.
