@@ -15,9 +15,15 @@
     "A direct authenticated sync-now canary before the post-rotation rebuild still returned COMPOSIO_API_KEY_REJECTED."
   ],
   "evaluation": {
-    "historical_replay": ["credential updated_at must be older than production deploy published_at"],
-    "canary": ["authenticated sync-now after post-rotation deployment"],
-    "shadow": ["no social publication path invoked"]
+    "historical_replay": [
+      "tests/brain-composio-cross-runtime-secret-sync.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-composio-secret-sync-now.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-composio-secret-sync-deploy-event.test.mjs"
+    ]
   },
   "terminal_rule": "LIVE_BEWEZEN only after exact-head gates, protected merge, Netlify production deployment published after 2026-09-22T08:15:34Z, successful provider validation, and Supabase setup-state readback.",
   "compiler": {
