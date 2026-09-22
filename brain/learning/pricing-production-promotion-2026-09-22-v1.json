@@ -11,7 +11,7 @@
   "prevention_rule": "For website obligations, a protected main merge must be followed by the canonical Production Source Snapshot deployment path and exact release.json readback. A stale Netlify commit must trigger a bounded recovery promotion rather than being treated as live.",
   "evaluation": {
     "historical_replay": [
-      "tests/pricing-production-promotion-recovery-v1.test.mjs"
+      "tests/brain-pricing-production-promotion-recovery-v1.test.mjs"
     ]
   },
   "evidence": {
