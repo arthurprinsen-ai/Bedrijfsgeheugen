@@ -1,0 +1,32 @@
+{
+  "fingerprint": "pricing-lifecycle-segmentation-v1",
+  "compiler": {
+    "failure_class": "UNDERSPECIFIED_BUYER_CONTEXT",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The pricing page primarily segmented by generic package size and operating cadence. That made it harder for materially different buyer contexts such as growth, turnaround, distress, buy-side M&A, sell-side exit preparation and portfolio oversight to identify the correct commercial entry point.",
+  "prevention_rule": "Pricing pages for Bedrijfsgeheugen must preserve the canonical product ladder while also mapping materially different business situations to explicit first-step offers, indicative pricing, decision models and next actions. High-urgency/distress paths must clearly separate business/data support from regulated legal or insolvency advice.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "source": [
+      "prijzen.html"
+    ],
+    "outcome": "Pricing can now route growth, loss/recovery, acute continuity, buy-side, sell-side and investor/portfolio visitors to a transparent first step with explicit price guidance and relevant analytical models."
+  }
+}
