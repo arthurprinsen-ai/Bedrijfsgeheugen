@@ -1,0 +1,38 @@
+{
+  "fingerprint": "living-business-context-os-v1",
+  "compiler": {
+    "failure_class": "SINGLE_STAGE_PORTAL_CONTEXT",
+    "scope": "PORTAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The first lifecycle implementation treated company context primarily as one stage at a time. Entrepreneurs can be in a primary company phase while simultaneously raising funding, buying a company, preparing succession, automating growth, improving valuation or integrating an acquisition. Portal and Brain therefore needed a composable context model rather than a single-stage switch.",
+  "prevention_rule": "Every material Portal/Brain recommendation must be able to consume one evidence-backed primary company phase plus zero or more strategic-event overlays, entrepreneur goals, business-health dimensions, capability maturity and historical context records. Package tier must remain orthogonal: it controls operating envelope, not business meaning. Unproven phases must remain visibly unproven.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-company-lifecycle-context.test.mjs",
+      "portal-v2/tests/lifecycle-context.test.mjs"
+    ],
+    "source": [
+      "brain/context/business-context-engine.mjs",
+      "brain/context/company-lifecycle.mjs",
+      "brain/operating-loop/executive-cockpit.mjs",
+      "brain/operating-loop/company-decision-projection.mjs",
+      "portal-v2/lifecycle-context.js",
+      "portal-v2/native-pages.js"
+    ],
+    "outcome": "Portal and Powerhouse now share a composable business context with primary phase, concurrent events/goals, health, maturity, history, journey, relevant models/pages and context-aware decision/executive projections."
+  }
+}
