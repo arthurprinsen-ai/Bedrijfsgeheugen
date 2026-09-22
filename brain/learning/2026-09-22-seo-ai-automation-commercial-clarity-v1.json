@@ -1,0 +1,32 @@
+{
+  "fingerprint": "seo|money-page|commercial-clarity|canonical-pricing|v1",
+  "obligation_id": "seo-revenue:ai-automation-commercial-clarity:2026-09-22",
+  "compiler": {
+    "failure_class": "SEO_MONEY_PAGE_CONVERSION_CLARITY_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The AI automation money page owned the intent but kept the concrete buying path and current canonical commercial amounts behind additional navigation, weakening decide-stage conversion clarity.",
+  "prevention_rule": "For decide-stage money pages, surface verified canonical pricing/start-point information and the primary conversion path early. Reuse canonical pricing and improve the existing intent owner before creating overlapping content.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure.test.mjs"
+    ]
+  },
+  "evidence": {
+    "public_page": "https://www.bedrijfsgeheugen.nl/ai-automatisering-mkb",
+    "pricing_source": "https://www.bedrijfsgeheugen.nl/prijzen",
+    "observed_2026_09_22": {
+      "scan_eur_ex_vat": 2950,
+      "transform_from_eur_ex_vat": 14500
+    },
+    "candidate_branch": "candidate/seo-ai-automation-commercial-clarity-20260922",
+    "production_readback": "pending protected merge/deploy"
+  },
+  "outcome": {
+    "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+    "target_metric": "organic landing -> primary CTA -> scan/lead -> order -> revenue"
+  }
+}
