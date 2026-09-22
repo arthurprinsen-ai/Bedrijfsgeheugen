@@ -1,5 +1,6 @@
 import {buildKnowledgeTimeline} from '../knowledge/timeline-projection.mjs';
 import {buildCompanyLifecycleContext} from '../context/company-lifecycle.mjs';
+import {buildContextNarrative} from '../context/business-context-engine.mjs';
 
 const arr=v=>Array.isArray(v)?v:[];
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
@@ -28,6 +29,8 @@ export function buildExecutiveCockpit(projection,{now=new Date().toISOString()}=
   const blockedKnowledge=openKnowledgeObligations.filter(x=>x.status==='BLOCKED').length;
   const knowledgeHealth=Object.freeze({total:knowledgeTimeline.length,verified:knowledgeTimeline.filter(x=>x.status==='VERIFIED').length,open:openKnowledgeObligations.length,blocked:blockedKnowledge,status:blockedKnowledge?'BLOCKED':openKnowledgeObligations.length?'ATTENTION':'HEALTHY'});
   const lifecycleContext=buildCompanyLifecycleContext(projection);
-  const managementSummary={asOf:now,businessHealth:businessHealth.status,lifecycleContext,verifiedValue:{...(projection.verifiedValue?.totals||{})},topRecommendations:recommendedActions.slice(0,5),openLoops,integrations:{...(integrationSummary||{})},memoryFreshness:{...(projection.livingMemory?.summary||{})},knowledgeHealth};
-  return Object.freeze({schemaVersion:'brain-executive-cockpit.v1',tenantId:String(projection.tenantId),managementSummary:Object.freeze(managementSummary),businessHealth:Object.freeze(businessHealth),opportunities:Object.freeze(opportunities),threats:Object.freeze(threats),roadmap:Object.freeze(roadmap),recommendedActions:Object.freeze(recommendedActions),activityTimeline:Object.freeze(activityTimeline),knowledgeTimeline:Object.freeze(knowledgeTimeline),openKnowledgeObligations:Object.freeze(openKnowledgeObligations),knowledgeHealth,lifecycleContext,integrations:projection.integrationHealth||{components:[],summary:{}},openLoops});
+  const businessContext=lifecycleContext.businessContext;
+  const contextNarrative=buildContextNarrative(businessContext);
+  const managementSummary={asOf:now,businessHealth:businessHealth.status,lifecycleContext,businessContext,contextNarrative,verifiedValue:{...(projection.verifiedValue?.totals||{})},topRecommendations:recommendedActions.slice(0,5),openLoops,integrations:{...(integrationSummary||{})},memoryFreshness:{...(projection.livingMemory?.summary||{})},knowledgeHealth};
+  return Object.freeze({schemaVersion:'brain-executive-cockpit.v1',tenantId:String(projection.tenantId),managementSummary:Object.freeze(managementSummary),businessHealth:Object.freeze(businessHealth),opportunities:Object.freeze(opportunities),threats:Object.freeze(threats),roadmap:Object.freeze(roadmap),recommendedActions:Object.freeze(recommendedActions),activityTimeline:Object.freeze(activityTimeline),knowledgeTimeline:Object.freeze(knowledgeTimeline),openKnowledgeObligations:Object.freeze(openKnowledgeObligations),knowledgeHealth,lifecycleContext,businessContext,contextNarrative,integrations:projection.integrationHealth||{components:[],summary:{}},openLoops});
 }
