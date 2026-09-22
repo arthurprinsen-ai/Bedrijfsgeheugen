@@ -35,13 +35,15 @@ export function inferCompanyLifecycleContext(state={}){
 
 export function buildCompanyLifecycleContext(state={}){
   const businessContext=buildBusinessContext(state);
-  const legacy=COMPANY_LIFECYCLE_CONTEXTS[businessContext.primary.stage]||COMPANY_LIFECYCLE_CONTEXTS.grow;
+  const legacyDetected=inferCompanyLifecycleContext(state);
+  const legacyStage=COMPANY_LIFECYCLE_CONTEXTS[legacyDetected.stage]?legacyDetected.stage:businessContext.primary.stage;
+  const legacy=COMPANY_LIFECYCLE_CONTEXTS[legacyStage]||COMPANY_LIFECYCLE_CONTEXTS.grow;
   return freeze({
-    stage:businessContext.primary.stage,
-    source:businessContext.primary.source,
-    confidence:businessContext.primary.confidence,
-    reasons:[...businessContext.primary.reasons],
-    intent:businessContext.primary.intent||legacy.intent,
+    stage:legacyStage,
+    source:legacyDetected.source!=='default'?legacyDetected.source:businessContext.primary.source,
+    confidence:legacyDetected.source!=='default'?legacyDetected.confidence:businessContext.primary.confidence,
+    reasons:legacyDetected.source!=='default'?[...legacyDetected.reasons]:[...businessContext.primary.reasons],
+    intent:legacy.intent||businessContext.primary.intent,
     models:[...businessContext.models],
     portal_pages:[...businessContext.pages],
     signals:[...(legacy.signals||[])],
