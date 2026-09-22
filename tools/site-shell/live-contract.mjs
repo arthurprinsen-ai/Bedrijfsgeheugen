@@ -32,7 +32,7 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
     assert.ok(html.includes('Wat moet het opleveren om zichzelf terug te verdienen?'), `${path}: waarde/terugverdienbewijs ontbreekt live`);
     assert.ok(!html.includes('<h3>Transform</h3>'), `${path}: legacy Transform-pakket staat live`);
     assert.ok(!html.includes('2 maanden gratis'), `${path}: legacy jaar-korting staat live`);
-    assert.ok(!/class=["'][^"']*\\bjr\\b/i.test(html), `${path}: legacy verborgen jaarprijs staat live`);
+    assert.ok(!/class=["'][^"']*\bjr\b/i.test(html), `${path}: legacy verborgen jaarprijs staat live`);
     assert.ok(html.includes('data-bg-billing="monthly"'), `${path}: maandtoggle ontbreekt live`);
     assert.ok(html.includes('data-bg-billing="yearly"'), `${path}: jaartoggle ontbreekt live`);
     assert.ok(html.includes('2 maanden voordeel'), `${path}: jaarvoordeel-label ontbreekt live`);
