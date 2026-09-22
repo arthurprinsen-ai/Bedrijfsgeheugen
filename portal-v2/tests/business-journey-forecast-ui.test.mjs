@@ -2,9 +2,9 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const workspace=fs.readFileSync(new URL('../portal-v2/modules/business-context-workspace.js',import.meta.url),'utf8');
-const overview=fs.readFileSync(new URL('../portal-v2/modules/overview.js',import.meta.url),'utf8');
-const css=fs.readFileSync(new URL('../portal-v2/business-context.css',import.meta.url),'utf8');
+const workspace=fs.readFileSync(new URL('../modules/business-context-workspace.js',import.meta.url),'utf8');
+const overview=fs.readFileSync(new URL('../modules/overview.js',import.meta.url),'utf8');
+const css=fs.readFileSync(new URL('../business-context.css',import.meta.url),'utf8');
 
 test('business context workspace exposes interactive destination and measurable goals',()=>{
   for(const token of ['data-context-target-stage','Waar sta je en waar wil je heen?','data-goal-current','data-goal-target','data-goal-date','Opslaan & Powerhouse bijwerken']) assert.ok(workspace.includes(token),token);
