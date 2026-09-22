@@ -5,7 +5,7 @@
   "failure_class": "MULTIPLE_ACTIVE_SOCIAL_PUBLISH_CAPABILITIES_PER_DAY_CHANNEL",
   "scope": "POWERHOUSE_SOCIAL_PUBLICATION_AUTHORITY",
   "machine_enforceable": true,
-  "repeat_count": 1,
+  "repeat_count": 5,
   "security_sensitive": false,
   "root_cause": "The social publication capability contract was unique per token but did not enforce one active capability for the same business date and channel. Parallel scheduler or recovery issuance could therefore create multiple independently valid capabilities for the same canonical daily publication obligation.",
   "prevention_rule": "Serialize capability issuance per run_date and channel with a PostgreSQL advisory transaction lock, enforce a partial unique index on non-revoked capabilities, and allow recovery only by revoking an expired unconsumed capability. A consumed or still-valid capability keeps the day/channel claimed and must never be replaced by a second provider side effect.",
@@ -23,16 +23,15 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "2026-09-20 instagram_company duplicate capability incident"
-    ],
-    "regression": [
-      "one active non-revoked capability per run_date+channel",
-      "expired unconsumed capability may be reclaimed",
-      "consumed or still-valid capability blocks replacement"
-    ],
-    "production_readback": [
-      "zero active duplicate groups after migration"
+      "tests/brain-social-publication-daily-channel-fence-v1.test.mjs"
     ]
   },
-  "terminal_rule": "Source parity is complete only after protected merge of the exact candidate and main readback contains the migration, regression test, learning, ledger event, and human documentation."
+  "terminal_rule": "Source parity is complete only after protected merge of the exact candidate and main readback contains the migration, regression test, learning, ledger event, and human documentation.",
+  "compiler": {
+    "failure_class": "DATA_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 5,
+    "security_sensitive": false
+  }
 }
