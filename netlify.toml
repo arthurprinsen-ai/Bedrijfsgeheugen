@@ -371,3 +371,9 @@
   to = "/bedrijf-overdraagbaar-maken"
   status = 301
   force = true
+
+[[redirects]]
+  from = "/ai-automatisering-mkb.html"
+  to = "/ai-automatisering-mkb"
+  status = 301
+  force = true
