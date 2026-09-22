@@ -42,15 +42,15 @@ jobs:
       - name: Deploy exact source through authorized Netlify transport
         if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
         env:
-          NETLIFY_MCP_PROXY_PATH: \${{ secrets.NETLIFY_MCP_PROXY_PATH_TEMP }}
-          EXPECTED_SHA: \${{ github.sha }}
+          NETLIFY_MCP_PROXY_PATH: ${{ secrets.NETLIFY_MCP_PROXY_PATH_TEMP }}
+          EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
-          if [ -z "\${NETLIFY_MCP_PROXY_PATH:-}" ]; then
+          if [ -z "${NETLIFY_MCP_PROXY_PATH:-}" ]; then
             echo "::error::NETLIFY_MCP_PROXY_PATH_TEMP is missing"
             exit 78
           fi
-          current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?predeploy=\${EXPECTED_SHA}" || true)"
+          current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?predeploy=${EXPECTED_SHA}" || true)"
           observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
           if [ "$observed" = "$EXPECTED_SHA" ]; then
             echo "Exact SHA is already live; no deploy side effect required."
@@ -61,11 +61,11 @@ jobs:
       - name: Prove exact production identity
         if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
         env:
-          EXPECTED_SHA: \${{ github.sha }}
+          EXPECTED_SHA: ${{ github.sha }}
         run: |
           set -euo pipefail
           for attempt in $(seq 1 60); do
-            if curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?deploy_proof=\${EXPECTED_SHA}-\${attempt}" -o /tmp/release.json; then
+            if curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?deploy_proof=${EXPECTED_SHA}-${attempt}" -o /tmp/release.json; then
               observed="$(node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/release.json","utf8"));process.stdout.write(String(x.commit_ref||""))')"
               context="$(node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/release.json","utf8"));process.stdout.write(String(x.context||""))')"
               deploy_id="$(node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/release.json","utf8"));process.stdout.write(String(x.deploy_id||""))')"
@@ -76,5 +76,5 @@ jobs:
             fi
             sleep 10
           done
-          echo "::error::Netlify production did not expose exact SHA \${EXPECTED_SHA} within bounded readback"
+          echo "::error::Netlify production did not expose exact SHA ${EXPECTED_SHA} within bounded readback"
           exit 78
