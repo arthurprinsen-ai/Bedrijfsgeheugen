@@ -7,6 +7,12 @@ on:
     paths:
       - '.github/workflows/production-source-snapshot.yml'
   workflow_dispatch:
+    inputs:
+      deploy:
+        description: Deploy this exact source to Netlify production
+        required: false
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -32,3 +38,43 @@ jobs:
           path: production-source.zip
           if-no-files-found: error
           retention-days: 1
+ 
+      - name: Deploy exact source through authorized Netlify transport
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
+        env:
+          NETLIFY_MCP_PROXY_PATH: \${{ secrets.NETLIFY_MCP_PROXY_PATH_TEMP }}
+          EXPECTED_SHA: \${{ github.sha }}
+        run: |
+          set -euo pipefail
+          if [ -z "\${NETLIFY_MCP_PROXY_PATH:-}" ]; then
+            echo "::error::NETLIFY_MCP_PROXY_PATH_TEMP is missing"
+            exit 78
+          fi
+          current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?predeploy=\${EXPECTED_SHA}" || true)"
+          observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
+          if [ "$observed" = "$EXPECTED_SHA" ]; then
+            echo "Exact SHA is already live; no deploy side effect required."
+            exit 0
+          fi
+          npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
+
+      - name: Prove exact production identity
+        if: github.event_name == 'workflow_dispatch' && inputs.deploy == true
+        env:
+          EXPECTED_SHA: \${{ github.sha }}
+        run: |
+          set -euo pipefail
+          for attempt in $(seq 1 60); do
+            if curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?deploy_proof=\${EXPECTED_SHA}-\${attempt}" -o /tmp/release.json; then
+              observed="$(node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/release.json","utf8"));process.stdout.write(String(x.commit_ref||""))')"
+              context="$(node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/release.json","utf8"));process.stdout.write(String(x.context||""))')"
+              deploy_id="$(node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("/tmp/release.json","utf8"));process.stdout.write(String(x.deploy_id||""))')"
+              if [ "$observed" = "$EXPECTED_SHA" ] && [ "$context" = "production" ] && [ -n "$deploy_id" ]; then
+                echo "NETLIFY_EXACT_PRODUCTION_PROVEN sha=$observed deploy=$deploy_id"
+                exit 0
+              fi
+            fi
+            sleep 10
+          done
+          echo "::error::Netlify production did not expose exact SHA \${EXPECTED_SHA} within bounded readback"
+          exit 78
