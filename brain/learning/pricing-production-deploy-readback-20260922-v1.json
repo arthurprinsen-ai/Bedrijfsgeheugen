@@ -1,0 +1,22 @@
+{
+  "fingerprint": "pricing-production-deploy-readback-20260922-v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The pricing funnel was protected-merged to GitHub main, but Netlify production still served an older commit_ref. The content change was correct; the remaining failure was release transport drift between repository truth and provider production.",
+  "prevention_rule": "A pricing or website release is not terminal after merge. When provider commit_ref differs from current main, use the canonical Production Source Snapshot transport and require bounded production release.json readback before marking the change live.",
+  "evaluation": {
+    "historical_replay": ["public pricing still exposed the legacy annual toggle and Transform while main already contained Build and value proof"],
+    "canary": ["deploy preview for the exact promotion candidate"],
+    "shadow": ["Netlify production commit_ref versus current GitHub main SHA"]
+  },
+  "evidence": {
+    "tests": ["Required admission for PR #2599 passed before material-writeback enforcement requested this closure evidence."],
+    "outcome": "The promotion candidate changes only the canonical production snapshot workflow marker so the already-authorized exact-source transport executes from protected main.",
+    "production_readback": "Pending protected merge, Netlify ready state, exact commit_ref match and public pricing functional readback."
+  }
+}
