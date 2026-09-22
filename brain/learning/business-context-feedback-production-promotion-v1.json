@@ -1,0 +1,34 @@
+{
+  "fingerprint": "business-context-feedback-production-promotion-v1",
+  "compiler": {
+    "failure_class": "MERGED_NOT_EXACTLY_DEPLOYED",
+    "scope": "PORTAL_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The interactive business-context feedback workspace merged to main, while Netlify production still identified the previous exact source SHA. The canonical Production Source Snapshot transport must be triggered for an exact-source production deployment.",
+  "prevention_rule": "Material Portal UI changes must not be called live after merge alone. Trigger the existing Production Source Snapshot transport when production identity lags main and require exact current-main commit_ref, ready deploy, Portal DOM readback and Production Release Readback before terminal success.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-company-lifecycle-context.test.mjs",
+      "portal-v2/tests/business-context-workspace.test.mjs"
+    ],
+    "source": [
+      ".github/workflows/production-source-snapshot.yml",
+      "portal-v2/modules/business-context-workspace.js"
+    ],
+    "outcome": "The entrepreneur context feedback workspace is only terminal when the exact current main source is deployed and production readback is green."
+  }
+}
