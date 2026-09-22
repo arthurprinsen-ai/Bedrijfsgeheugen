@@ -1,0 +1,24 @@
+{
+  "fingerprint": "production-source-snapshot-push-promotion-v1",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The canonical Production Source Snapshot workflow listened for pushes to main when its workflow file changed, but both the Netlify deploy step and the exact production proof step were conditioned only on workflow_dispatch with deploy=true. A protected push therefore packaged source without performing the authorized production side effect.",
+  "prevention_rule": "When the canonical production snapshot workflow is intentionally changed on protected main, the push run must execute the same authorized Netlify exact-source deploy and bounded commit_ref proof as an explicit deploy=true workflow dispatch. A regression test guards both conditions.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-source-push-promotion-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-production-source-push-promotion-v1.test.mjs"
+    ],
+    "outcome": "The promotion transport condition now covers the workflow's protected main push trigger as well as explicit deploy=true dispatch.",
+    "production_readback": "Pending protected merge; the corrected push-triggered workflow must deploy its exact merge SHA and expose it through production release.json."
+  }
+}
