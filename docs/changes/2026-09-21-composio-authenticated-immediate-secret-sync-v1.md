@@ -16,3 +16,8 @@ A dedicated serverless control endpoint reuses the existing idempotent `syncComp
 ## Definition of done
 
 Exact-head gates must pass, protected merge and exact Netlify production deploy must complete, the endpoint must be invoked from Supabase without exposing the raw scheduler token, and Supabase must then prove `COMPOSIO_API_KEY` presence plus the resulting Composio setup state.
+
+
+## 22 September 2026 — Project API key rotated
+
+The Composio Project API key was rotated in the production hosting environment after the previous provider validation returned a rejected-key response. No secret material is recorded here. The next production deployment must revalidate the provider connection and persist only non-secret readiness evidence.
