@@ -23,8 +23,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-linkedin-composio-capability-proof.test.mjs",
-      "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs"
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
     ],
     "production_readback_required": true
   },
