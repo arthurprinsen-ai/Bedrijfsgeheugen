@@ -1,0 +1,30 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "linkedin-composio-v31-execution-v1",
+  "compiler": {
+    "failure_class": "COMPOSIO_LINKEDIN_LEGACY_TOOL_EXECUTION",
+    "scope": "LINKEDIN",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The LinkedIn capability verifier used Composio API v3 tool execution, whose default tool version can resolve to the legacy pinned definition. Production readback returned HTTP 400 for LINKEDIN_GET_MY_INFO.",
+  "prevention": [
+    "Use Composio API v3.1 for LinkedIn tool execution.",
+    "Explicitly request version latest for deterministic current-tool execution.",
+    "Use structured arguments for read-only LinkedIn capability calls instead of natural-language inference.",
+    "Treat provider readback failure as an implementation failure and do not infer capability from dashboard connectivity."
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+    "tests/brain-linkedin-composio-capability-proof.test.mjs",
+    "production readback request 2158 returned COMPOSIO_LINKEDIN_GET_MY_INFO_400"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-linkedin-composio-capability-proof.test.mjs"],
+    "production_readback_required": true
+  },
+  "skill_targets": ["personal-linkedin-life-only","delivery","social"],
+  "skill_projection_required": true
+}
