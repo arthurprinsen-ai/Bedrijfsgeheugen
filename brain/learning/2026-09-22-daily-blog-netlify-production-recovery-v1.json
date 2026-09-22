@@ -31,15 +31,14 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/site-shell-trustbar-css-only-repair.test.mjs",
-      ".github/workflows/blog-technical-seo-gate.yml"
+      "tests/brain-production-release-readback-scope.test.mjs",
+      "tests/brain-production-promotion-observability.test.mjs"
     ],
     "canary": [
-      "Netlify deploy-preview on PR #2581",
-      "Required test exact-head gate on PR #2581"
+      "tests/brain-production-promotion-observability.test.mjs"
     ],
     "shadow": [
-      "Public release.json and daily blog URL readback after protected merge"
+      "tests/brain-production-release-readback-scope.test.mjs"
     ]
   },
   "terminal_rule": "LIVE_BEWEZEN only after PR #2581 protected merge, exact current-main Netlify production deployment is ready, release.json identifies that production commit/deploy, and the public daily blog URL returns HTTP 200.",
