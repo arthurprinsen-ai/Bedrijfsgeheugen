@@ -155,3 +155,10 @@ test('Mira visible identity incident is promoted into canonical learning and ski
   assert.match(skill, /reel\/video 1080x1920/);
   assert.match(skill, /Never treat any of these as identity proof/);
 });
+
+
+test('shared Composio social publisher uses v3.1 tool execution', () => {
+  const publisher = fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+  assert.match(publisher, /COMPOSIO_BASE='https:\/\/backend\.composio\.dev\/api\/v3\.1'/);
+  assert.doesNotMatch(publisher, /COMPOSIO_BASE='https:\/\/backend\.composio\.dev\/api\/v3'/);
+});
