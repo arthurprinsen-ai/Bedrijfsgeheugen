@@ -28,7 +28,7 @@ class BufferHttpError extends Error {
   }
 }
 
-const COMPOSIO_BASE='https://backend.composio.dev/api/v3';
+const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:string,text:string){
   const response=await fetch(`${COMPOSIO_BASE}/tools/execute/${toolSlug}`,{
