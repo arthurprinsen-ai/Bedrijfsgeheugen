@@ -95,7 +95,7 @@ function specialistContent(pageId,model,navigation){
     const pages=ctx.pages.map(id=>[id,'Verbonden contextmodule']);
     const modelRows=ctx.models.map(name=>[name,'Relevant voor '+ctx.label]);
     const blocks=[
-      {type:'metrics',title:'Contextstatus',items:[['Werkcontext',ctx.label],['Herkomst',projection.source],['Plan',projection.plan.code||'—'],['Contextbewijs',projection.confidence?Math.round(projection.confidence*100)+'%':'Nog niet expliciet bewezen']],derived:projection.source!=='default'},
+      {type:'metrics',title:'Contextstatus',items:[['Werkcontext',projection.source==='default'?'—':ctx.label],['Herkomst',projection.source==='default'?'—':projection.source],['Plan',projection.plan.code||'—'],['Contextbewijs',projection.confidence?Math.round(projection.confidence*100)+'%':'—']],derived:projection.source!=='default'},
       {type:'worklist',title:'Powerhouse-verbindingen',items:connected,derived:true},
       {type:'worklist',title:'Relevante modellen',items:modelRows,derived:false},
       {type:'worklist',title:'Verbonden portaalonderdelen',items:pages,derived:false},
