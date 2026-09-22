@@ -31,10 +31,14 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
     assert.ok(html.includes('<h3>Build</h3>'), `${path}: canoniek Build-pakket ontbreekt live`);
     assert.ok(html.includes('Wat moet het opleveren om zichzelf terug te verdienen?'), `${path}: waarde/terugverdienbewijs ontbreekt live`);
     assert.ok(!html.includes('<h3>Transform</h3>'), `${path}: legacy Transform-pakket staat live`);
-    assert.ok(!html.includes('Per jaar'), `${path}: legacy jaar-toggle staat live`);
     assert.ok(!html.includes('2 maanden gratis'), `${path}: legacy jaar-korting staat live`);
     assert.ok(!/class=["'][^"']*\\bjr\\b/i.test(html), `${path}: legacy verborgen jaarprijs staat live`);
-    assert.ok(!html.includes('€ 49.950'), `${path}: legacy Enterprise-jaarprijs staat live`);
+    assert.ok(html.includes('data-bg-billing="monthly"'), `${path}: maandtoggle ontbreekt live`);
+    assert.ok(html.includes('data-bg-billing="yearly"'), `${path}: jaartoggle ontbreekt live`);
+    assert.ok(html.includes('2 maanden voordeel'), `${path}: jaarvoordeel-label ontbreekt live`);
+    assert.ok(html.includes('data-yearly="€ 14.950"'), `${path}: Control jaarprijs ontbreekt live`);
+    assert.ok(html.includes('data-yearly="€ 24.950"'), `${path}: Scale jaarprijs ontbreekt live`);
+    assert.ok(html.includes('data-yearly="vanaf € 49.950"'), `${path}: Enterprise jaarprijs ontbreekt live`);
   } else {
     for (const cls of PRICING) assert.ok(!hasClassElement(html, cls), `${path}: pricing-tool staat buiten prijzen: ${cls}`);
   }
