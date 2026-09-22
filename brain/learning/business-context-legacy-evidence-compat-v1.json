@@ -1,0 +1,33 @@
+{
+  "fingerprint": "business-context-legacy-evidence-compat-v1",
+  "compiler": {
+    "failure_class": "LEGACY_CONTEXT_EVIDENCE_MISMATCH",
+    "scope": "PORTAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The new multi-context engine correctly separates business phase from strategic-event overlays, but the legacy lifecycle compatibility projection inherited the primary phase evidence mode. Explicit buy/sell/portfolio legacy lifecycle input therefore appeared as unproven in the compatibility contract even though it was explicit.",
+  "prevention_rule": "Legacy lifecycle compatibility projections must preserve evidence semantics independently from the new primary business-phase axis. Explicit legacy M&A/portfolio context is always derived/evidenced even when the modern primary company phase remains unproven.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "source": [
+      "brain/context/company-lifecycle.mjs",
+      "brain/context/business-context-engine.mjs"
+    ],
+    "outcome": "Explicit legacy M&A lifecycle context remains compatible and evidence-backed while modern business phase and strategic overlays stay separate."
+  }
+}
