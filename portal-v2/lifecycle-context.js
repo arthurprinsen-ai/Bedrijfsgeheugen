@@ -74,7 +74,9 @@ export function detectLifecycleContext(state={}){
 
 export function buildLifecycleProjection(state={}){
   const businessContext=buildBusinessContext(state);
-  const detected={
+  const legacyDetected=detectLifecycleContext(state);
+  const useLegacy=legacyDetected.source!=='default'&&Boolean(LIFECYCLE_CONTEXTS[legacyDetected.stage]);
+  const detected=useLegacy?legacyDetected:{
     stage:businessContext.primary.stage,
     source:businessContext.primary.source,
     confidence:businessContext.primary.confidence,
