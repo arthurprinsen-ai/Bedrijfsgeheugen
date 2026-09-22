@@ -40,3 +40,40 @@ test('native lifecycle pages render context, models, connections and Scale core'
   assert.ok(titles.includes('Scale — volledige kernintelligentie'));
   assert.equal(page.lifecycle.stage,'buy');
 });
+
+
+test('portal business context carries stage overlays health maturity journey and relevant surfaces',()=>{
+  const state={portal:{
+    business_context:{stage:'scale',events:['funding','buy'],goals:['automate']},
+    finance:{revenue_growth_pct:40,cash_runway_weeks:30},
+    maturity:{strategy:.8,process:.4,data:.5,technology:.7,people:.5,governance:.4},
+    runtime:{sources:{items:[{id:'s1'}]},actions:{items:[{id:'a1'}]},outcomes:{items:[{id:'o1'}]}},
+    admin:{billing:{plan:'scale',status:'active'}}
+  }};
+  const projection=buildLifecycleProjection(state);
+  assert.equal(projection.businessContext.primary.stage,'scale');
+  assert.deepEqual(projection.businessContext.events,['funding','buy']);
+  assert.ok(projection.businessContext.models.includes('normalized-ebitda'));
+  assert.ok(projection.businessContext.pages.includes('due-diligence'));
+  assert.ok(projection.businessContext.journey.next.includes('professionalize'));
+  assert.equal(projection.businessContext.health.cash,'healthy');
+  assert.equal(projection.businessContext.maturity.process,.4);
+  assert.match(projection.narrative.headline,/Snelle groei/);
+});
+
+test('bedrijfssituatie page returns living company journey instead of a package-only view',()=>{
+  const state={portal:{
+    business_context:{stage:'professionalize',events:['succession'],goals:['valuation']},
+    maturity:{strategy:.7,process:.4,data:.5,technology:.6,people:.45,governance:.35},
+    runtime:{sources:{items:[{id:'s1'}]},actions:{items:[{id:'a1'}]},outcomes:{items:[{id:'o1'}]}},
+    admin:{billing:{plan:'control',status:'active'}}
+  }};
+  const page=nativePageContent('bedrijfssituatie',state);
+  const titles=page.blocks.map(b=>b.title);
+  for(const expected of ['Waar staat het bedrijf nu?','Wat speelt tegelijk?','Nu weten / nu beslissen / nu doen','Bedrijfsgezondheid','Volwassenheid per capability','Bedrijfsreis — wat kan hierna komen?']){
+    assert.ok(titles.includes(expected),expected);
+  }
+  assert.equal(page.businessContext.primary.stage,'professionalize');
+  assert.ok(page.businessContext.events.includes('succession'));
+  assert.ok(page.businessContext.goals.includes('valuation'));
+});
