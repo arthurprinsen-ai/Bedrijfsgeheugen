@@ -1,0 +1,29 @@
+{
+  "fingerprint": "goal-scenario-lever-production-v1",
+  "compiler": {
+    "failure_class": "MERGED_NOT_EXACTLY_DEPLOYED",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The goal scenario lever cockpit was merged to main while production still referenced the previous source identity.",
+  "prevention_rule": "After material Portal/Brain changes, terminal success requires exact current main SHA on the production deploy plus successful Production Source Snapshot and Production Release Readback. A ready older deploy is not terminal evidence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-goal-scenario-engine.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-goal-forecast-engine.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": [
+      ".github/workflows/production-source-snapshot.yml"
+    ],
+    "outcome": "Exact source promotion is explicitly triggered and production identity must match current main before LIVE_BEWEZEN."
+  }
+}
