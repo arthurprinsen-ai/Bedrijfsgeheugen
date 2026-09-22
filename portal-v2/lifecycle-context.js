@@ -1,3 +1,4 @@
+import {buildBusinessContext,buildContextNarrative,BUSINESS_STAGES,STRATEGIC_EVENTS,USER_GOALS} from '../brain/context/business-context-engine.mjs';
 export const LIFECYCLE_CONTEXTS=Object.freeze({
   grow:Object.freeze({
     id:'grow',label:'Groeien & professionaliseren',intent:'scale_value',
@@ -72,8 +73,21 @@ export function detectLifecycleContext(state={}){
 }
 
 export function buildLifecycleProjection(state={}){
-  const detected=detectLifecycleContext(state);
-  const context=LIFECYCLE_CONTEXTS[detected.stage];
+  const businessContext=buildBusinessContext(state);
+  const detected={
+    stage:businessContext.primary.stage,
+    source:businessContext.primary.source,
+    confidence:businessContext.primary.confidence,
+    reasons:Object.freeze([...(businessContext.primary.reasons||[])])
+  };
+  const context=LIFECYCLE_CONTEXTS[detected.stage]||Object.freeze({
+    id:businessContext.primary.stage,
+    label:businessContext.primary.label,
+    intent:businessContext.primary.intent,
+    questions:Object.freeze([]),
+    models:Object.freeze([...businessContext.models]),
+    pages:Object.freeze([...businessContext.pages])
+  });
   const runtime=state?.portal?.runtime||{};
   const sources=arr(runtime?.sources?.items||state?.portal?.sources);
   const actions=arr(runtime?.actions?.items||state?.portal?.actions?.items||state?.portal?.actions);
@@ -83,6 +97,11 @@ export function buildLifecycleProjection(state={}){
   return Object.freeze({
     ...detected,
     context,
+    businessContext,
+    narrative:buildContextNarrative(businessContext),
+    stages:BUSINESS_STAGES,
+    strategicEvents:STRATEGIC_EVENTS,
+    userGoals:USER_GOALS,
     connected:Object.freeze({
       sources:sources.length,
       actions:actions.length,
