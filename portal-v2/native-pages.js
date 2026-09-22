@@ -102,7 +102,8 @@ function specialistContent(pageId,model,navigation){
     const pageRows=(business.pages||[]).map(id=>[id,'Wordt door Powerhouse vanuit dezelfde context aangestuurd']);
     const overlayRows=overlays.length?overlays.map(x=>[x,'Actieve context-overlay']):[['—','Geen aanvullende gebeurtenis of ondernemersdoel vastgelegd']];
     const blocks=[
-      {type:'metrics',title:'Waar staat het bedrijf nu?',items:[['Primaire fase',stageLabel],['Actieve overlays',overlays.length?String(overlays.length):'0'],['Plan',projection.plan.code||'—'],['Contextbewijs',primaryKnown?Math.round((business.primary.confidence||0)*100)+'%':'—']],derived:primaryKnown},
+      {type:'metrics',title:'Contextstatus',items:[['Primaire fase',stageLabel],['Actieve overlays',overlays.length?String(overlays.length):'—'],['Plan',projection.plan.code||'—'],['Contextbewijs',primaryKnown?Math.round((business.primary.confidence||0)*100)+'%':'—']],derived:primaryKnown},
+      {type:'worklist',title:'Waar staat het bedrijf nu?',items:[[stageLabel,overlays.length?overlays.join(' · '):(primaryKnown?'Geen aanvullende overlays':'Nog niet bewezen')]],derived:primaryKnown||overlays.length>0},
       {type:'worklist',title:'Wat speelt tegelijk?',items:overlayRows,derived:overlays.length>0},
       {type:'worklist',title:'Nu weten / nu beslissen / nu doen',items:nowRows.length?nowRows:[['—','Nog onvoldoende context om prioriteiten als feit te presenteren']],derived:nowRows.length>0&&primaryKnown},
       {type:'worklist',title:'Bedrijfsgezondheid',items:healthRows,derived:Object.values(business.health).some(v=>v!=='unknown')},
@@ -112,7 +113,7 @@ function specialistContent(pageId,model,navigation){
       {type:'worklist',title:'Powerhouse-verbindingen',items:connected,derived:true},
       {type:'worklist',title:'Bedrijfsreis — historie',items:historyRows.length?historyRows:[['—','Nog geen eerdere contextmomenten vastgelegd']],derived:historyRows.length>0},
       {type:'worklist',title:'Bedrijfsreis — wat kan hierna komen?',items:nextStages.length?nextStages:[['—','Geen volgende fase afgeleid']],derived:primaryKnown},
-      {type:'worklist',title:'Gedeelde intelligence-kern',items:SCALE_CORE_SURFACES.map(name=>[name,'Dezelfde intelligence-kern; pakketgrenzen sturen schaal, snelheid, autonomie, governance en begeleiding.']),derived:false},
+      {type:'worklist',title:'Scale — volledige kernintelligentie',items:SCALE_CORE_SURFACES.map(name=>[name,'Dezelfde intelligence-kern; pakketgrenzen sturen schaal, snelheid, autonomie, governance en begeleiding.']),derived:false},
       {type:'actions',title:'Volgende acties',items:actions}
     ];
     if(!primaryKnown)blocks.splice(1,0,{type:'empty',title:'Bedrijfsfase nog niet bewezen',copy:'Powerhouse gebruikt geen fase als feit zonder expliciete invoer of voldoende klantdata. Gebeurtenissen, doelen, gezondheid en modellen kunnen wel afzonderlijk zichtbaar zijn zodra daar bewijs voor is.'});
