@@ -11,10 +11,10 @@
   "prevention_rule": "For material Portal changes, terminal success requires exact current main SHA on a ready Netlify production deploy plus successful production readback. Use the existing Production Source Snapshot transport; do not invent a second deployment path.",
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+      "tests/brain-goal-scenario-engine.test.mjs"
     ],
     "canary": [
-      ".github/workflows/production-source-snapshot.yml"
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
     ],
     "shadow": [
       "tests/brain-goal-scenario-engine.test.mjs"
@@ -24,6 +24,10 @@
     "source": [
       ".github/workflows/production-source-snapshot.yml"
     ],
-    "outcome": "Exact source promotion is re-triggered for the merged goal action evidence loop."
+    "outcome": "Exact source promotion is re-triggered for the merged goal action evidence loop.",
+    "tests": [
+      "tests/brain-goal-scenario-engine.test.mjs",
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+    ]
   }
 }
