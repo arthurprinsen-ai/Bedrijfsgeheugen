@@ -46,6 +46,9 @@ Deno.serve(async (req) => {
     // Instagram media must be provider-routed and proven before orchestration or dispatch.
     stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));
 
+    // Read provider capability before any social dispatch. This is read-only and fail-closed.
+    stepResults.push(await invoke(url, expected, 'powerhouse-composio-linkedin-setup', { action: 'status', runDate }));
+
     // Provider truth must be established before orchestration can preserve or replan delivery state.
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 
