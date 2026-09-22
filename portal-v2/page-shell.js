@@ -277,7 +277,7 @@ export function openPortalPage(pageId){
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
-  else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
+  else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);
   else if(['strategiemodellen','modellen'].includes(pageId)&&contract)mountWorkspace(native,contract,{title:view.title,description:view.description,saveStatus:portalContext.domainState?.status?.()||'idle'});

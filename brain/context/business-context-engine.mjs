@@ -1,4 +1,5 @@
 import {buildGoalForecasts,buildJourneyProgress} from './goal-forecast-engine.mjs';
+import {buildGoalScenarios} from './goal-scenario-engine.mjs';
 const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const child of Object.values(value))freeze(child);}return value;};
 const arr=v=>Array.isArray(v)?v:[];
 const num=v=>Number.isFinite(Number(v))?Number(v):null;
@@ -191,8 +192,9 @@ export function buildBusinessContext(state={}){
     learningKey:`business-context:${detected.stage}:${[...events].sort().join('+')||'none'}`
   };
   const goalForecasts=buildGoalForecasts(state,goals);
+  const goalScenarios=buildGoalScenarios(state,goals);
   const targetJourney=buildJourneyProgress(state,base);
-  return freeze({...base,goalForecasts,targetJourney});
+  return freeze({...base,goalForecasts,goalScenarios,targetJourney});
 }
 
 export function buildContextNarrative(context){
@@ -206,6 +208,7 @@ export function buildContextNarrative(context){
     do:context.pages.filter(x=>['actieve-acties','roadmap','os:next-best-actions','taken-werkstromen'].includes(x)).slice(0,3),
     next:context.journey.next,
     target:context.targetJourney?.target||null,
-    forecastRisks
+    forecastRisks,
+    scenarioPriorities:(context.goalScenarios||[]).flatMap(item=>item.nextBestActions||[]).slice(0,5)
   });
 }
