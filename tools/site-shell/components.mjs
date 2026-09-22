@@ -80,7 +80,7 @@ export function markPageSlots(input) {
 
 export function ensureTrustBar(input) {
   let html = String(input);
-  if (html.includes('data-bg-component="trustbar"') || html.includes('bg-uniform-trust')) return markPageSlots(html);
+  if (html.includes('data-bg-component="trustbar"') || /<[^>]+class=["'][^"']*\bbg-uniform-trust\b[^"']*["'][^>]*>/i.test(html)) return markPageSlots(html);
   const header = html.search(/<header\b[^>]*\bv17-header\b/i);
   if (header >= 0) html = html.slice(0, header) + TRUST_BAR_HTML + html.slice(header);
   else {

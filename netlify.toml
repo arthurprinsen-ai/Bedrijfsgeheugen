@@ -22,6 +22,8 @@
 # Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
 # functie leest process.env. Zonder deze uitzondering faalt elke build.
 [build.environment]
+  NODE_VERSION = "22.12.0"
+  NODE_OPTIONS = "--max-old-space-size=2048"
   SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml"
 
 [functions]
