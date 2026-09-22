@@ -8,3 +8,17 @@ test('live pricing contract rejects legacy commercial copy', () => {
   const source = shell('<div class="bgx-vraagbalk"></div><div class="bgx-rekenaar"></div><div class="bgx-rol"></div><h3>Transform</h3><p>Per jaar</p><p>2 maanden gratis</p>', 'x');
   assert.throws(() => verifyLiveSite({home:source,pricing:source,content:source,expectedCommit:'x'}));
 });
+
+
+test('pricing page keeps mobile controls clickable and exposes monthly/yearly billing', async () => {
+  const fs = await import('node:fs/promises');
+  const pricing = await fs.readFile(new URL('../prijzen.html', import.meta.url), 'utf8');
+  assert.match(pricing, /data-bg-billing="monthly"/);
+  assert.match(pricing, /data-bg-billing="yearly"/);
+  assert.match(pricing, /2 maanden voordeel/);
+  assert.match(pricing, /data-yearly="€ 14\.950"/);
+  assert.match(pricing, /data-yearly="€ 24\.950"/);
+  assert.match(pricing, /data-yearly="vanaf € 49\.950"/);
+  assert.match(pricing, /touch-action:manipulation/);
+  assert.match(pricing, /card\.hidden=card\.getAttribute\('data-bg-group'\)!==group/);
+});
