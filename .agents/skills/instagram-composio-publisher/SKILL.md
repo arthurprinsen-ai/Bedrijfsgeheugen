@@ -42,7 +42,7 @@ Use this skill for every Instagram publish, retry, recovery, transport incident,
 
 ## API contract
 
-Use current Composio v3 tool execution: `https://backend.composio.dev/api/v3/tools/execute/{tool_slug}`. Do not route to the obsolete `/api/v3.1/tools/execute` endpoint and do not force an invented `version=latest`.
+Use current Composio v3.1 tool execution: `https://backend.composio.dev/api/v3.1/tools/execute/{tool_slug}`. v3.1 resolves current tool versions by default. For structured calls use `arguments`; for natural-language execution use `text`; never send both in the same call.
 
 ## Definition of done
 
@@ -316,3 +316,12 @@ After rotating a Netlify Functions runtime credential, do not treat the control-
 Fingerprint: `composio-post-rotation-runtime-rebuild-v2`.
 
 For Netlify Functions credentials, compare the credential `updated_at` with the production deployment `published_at`. If the credential is newer, provider validation is not meaningful until a later protected Functions deployment is live. Fail closed and force exactly one post-rotation rebuild before re-validating.
+
+
+## Shared Composio v3.1 execution rule (2026-09-22)
+
+Fingerprint: `linkedin-composio-v31-execution-v1`.
+
+- The v3.1 execution rule is shared by LinkedIn capability verification and Instagram Composio publishing.
+- Do not regress `powerhouse-social-publisher` to `/api/v3/tools/execute/*`; v3 can resolve the legacy base tool version.
+- v3.1 accepts either structured `arguments` or natural-language `text`. The Instagram publisher currently uses `text`; this is valid, but provider readback remains mandatory.
