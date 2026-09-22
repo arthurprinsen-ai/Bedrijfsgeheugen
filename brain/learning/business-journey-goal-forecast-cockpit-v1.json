@@ -11,18 +11,18 @@
   "prevention_rule": "Every confirmed business context must support an optional desired stage and measurable goals. Portal and Powerhouse must show current state, target, progress, required pace, milestones and forecast status. Forecast values and bands may only be shown when at least three historical observations exist; otherwise the UI must explicitly show insufficient evidence instead of inventing confidence.",
   "evaluation": {
     "historical_replay": [
-      "tests/goal-forecast-engine.test.mjs"
+      "tests/brain-goal-forecast-engine.test.mjs"
     ],
     "canary": [
       "portal-v2/tests/business-journey-forecast-ui.test.mjs"
     ],
     "shadow": [
-      "tests/goal-forecast-engine.test.mjs"
+      "tests/brain-goal-forecast-engine.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
-      "tests/goal-forecast-engine.test.mjs",
+      "tests/brain-goal-forecast-engine.test.mjs",
       "portal-v2/tests/business-journey-forecast-ui.test.mjs"
     ],
     "source": [
