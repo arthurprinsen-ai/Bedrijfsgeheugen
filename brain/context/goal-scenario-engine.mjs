@@ -58,6 +58,11 @@ function assumptionMap(state,goalId){
 function scenarioBase(forecast){
   return forecast?.forecast?.expected??forecast?.current??null;
 }
+function effectAlignment(effect,direction){
+  if(effect==null||effect===0)return 'neutral';
+  if(direction==='down')return effect<0?'supports-goal':'moves-away';
+  return effect>0?'supports-goal':'moves-away';
+}
 
 export function buildGoalScenario(state={},goalId,options={}){
   const metric=GOAL_METRICS[goalId];if(!metric)return null;
@@ -73,7 +78,8 @@ export function buildGoalScenario(state={},goalId,options={}){
       unit:forecast?.unit||metric.unit,
       sourceRefs:freeze(arr(input.source_refs||input.sourceRefs).filter(Boolean)),
       note:String(input.note||'').trim()||null,
-      evidenceMode:arr(input.source_refs||input.sourceRefs).filter(Boolean).length?'evidence-linked':'scenario-assumption'
+      evidenceMode:arr(input.source_refs||input.sourceRefs).filter(Boolean).length?'evidence-linked':'scenario-assumption',
+      alignment:effectAlignment(effect,metric.direction)
     });
   });
   const base=scenarioBase(forecast);
@@ -83,7 +89,8 @@ export function buildGoalScenario(state={},goalId,options={}){
   const scenarioGap=gap(scenarioExpected,forecast?.target,metric.direction);
   const improvement=baselineGap==null||scenarioGap==null?null:Number((baselineGap-scenarioGap).toFixed(2));
   const ranked=[...levers].filter(item=>item.effect!=null&&item.effect!==0).sort((a,b)=>Math.abs(b.effect)-Math.abs(a.effect));
-  const nextBest=ranked.length?ranked.slice(0,3):catalog.slice(0,3).map(item=>({...item,effect:null,unit:forecast?.unit||metric.unit,evidenceMode:'suggested-not-quantified',sourceRefs:[],note:null}));
+  const supportive=ranked.filter(item=>item.alignment==='supports-goal');
+  const nextBest=supportive.length?supportive.slice(0,3):catalog.slice(0,3).map(item=>({...item,effect:null,unit:forecast?.unit||metric.unit,evidenceMode:'suggested-not-quantified',sourceRefs:[],note:null,alignment:'unquantified'}));
   return freeze({
     schemaVersion:'goal-scenario.v1',
     goalId,
@@ -101,7 +108,9 @@ export function buildGoalScenario(state={},goalId,options={}){
     forecastStatus:forecast?.forecastStatus||'insufficient-evidence',
     levers:freeze(levers),
     rankedLevers:freeze(ranked),
-    nextBestActions:freeze(nextBest.map(item=>freeze({leverId:item.id,label:item.label,action:item.action,page:item.page,effect:item.effect,unit:item.unit,evidenceMode:item.evidenceMode}))),
+    supportiveLevers:freeze(supportive),
+    harmfulLevers:freeze(ranked.filter(item=>item.alignment==='moves-away')),
+    nextBestActions:freeze(nextBest.map(item=>freeze({leverId:item.id,label:item.label,action:item.action,page:item.page,effect:item.effect,unit:item.unit,evidenceMode:item.evidenceMode,alignment:item.alignment}))),
     truth:freeze({
       forecast:forecast?.forecast?'observed-history-forecast':'no-forecast',
       scenario:'what-if-assumptions-not-prediction',
