@@ -47,3 +47,11 @@ Fingerprint: `linkedin-composio-capability-proof-v1`.
 - Personal posting identity must be resolved through the authenticated LinkedIn member identity before any provider side effect.
 - Company-page posting capability must be proven separately from personal capability; do not infer organization permissions from a personal connection.
 - Capability discovery is read-only and runs before the canonical social publisher. The publisher remains the sole writer and all existing personal-truth, daily-channel and dedupe gates remain mandatory.
+
+
+## Composio tool-version execution rule (2026-09-22)
+
+Fingerprint: `composio-v31-tool-execution-v1`.
+
+- Direct Composio tool execution must use the v3.1 API surface (or an explicitly pinned modern toolkit version); never rely on v3's base-version default for current social tools.
+- Connected-account ACTIVE state and tool execution success are separate proofs. A provider is usable only after the required read/write tool succeeds under the canonical account.
