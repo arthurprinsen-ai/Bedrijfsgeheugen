@@ -64,7 +64,7 @@ function renderGoalScenarios(state,goals){
       const active=item.levers.find(x=>x.id===lever.id);
       const refs=(active?.sourceRefs||[]).join(', ');
       const directionHint=item.direction==='down'?'negatief effect = verbetering':'positief effect = verbetering';
-      return '<div class="v2lever" data-alignment="'+esc(active?.alignment||'neutral')+'"><span><b>'+esc(lever.label)+'</b><small>Verwacht effect op '+esc(item.label)+' ('+esc(item.unit)+') · '+directionHint+'</small></span><input type="number" step="any" data-scenario-effect="'+esc(item.goalId)+'" data-lever-id="'+esc(lever.id)+'" value="'+esc(active?.effect??'')+'" placeholder="bijv. 2"><input type="text" data-scenario-evidence="'+esc(item.goalId)+'" data-lever-id="'+esc(lever.id)+'" value="'+esc(refs)+'" placeholder="bewijs-ID's, komma-gescheiden"></div>';
+      return '<div class="v2lever" data-alignment="'+esc(active?.alignment||'neutral')+'"><span><b>'+esc(lever.label)+'</b><small>Verwacht effect op '+esc(item.label)+' ('+esc(item.unit)+') · '+directionHint+'</small></span><input type="number" step="any" data-scenario-effect="'+esc(item.goalId)+'" data-lever-id="'+esc(lever.id)+'" value="'+esc(active?.effect??'')+'" placeholder="bijv. 2"><input type="text" data-scenario-evidence="'+esc(item.goalId)+'" data-lever-id="'+esc(lever.id)+'" value="'+esc(refs)+'" placeholder="bewijs-IDs, komma-gescheiden"></div>';
     }).join('');
     const before=fmt(item.baselineExpected,item.unit), after=fmt(item.scenarioExpected,item.unit), target=fmt(item.target,item.unit);
     const improvement=item.gapImprovement==null?'—':fmt(item.gapImprovement,item.unit);
