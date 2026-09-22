@@ -1,0 +1,12 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+test('production source snapshot deploys and proves exact source on protected main push',()=>{
+  const workflow=fs.readFileSync('.github/workflows/production-source-snapshot.yml','utf8');
+  const pushGuard=/\(github\.event_name == 'workflow_dispatch' && inputs\.deploy == true\) \|\| github\.event_name == 'push'/g;
+  const matches=workflow.match(pushGuard)||[];
+  assert.equal(matches.length,2);
+  assert.match(workflow,/NETLIFY_MCP_PROXY_PATH_TEMP/);
+  assert.match(workflow,/NETLIFY_EXACT_PRODUCTION_PROVEN/);
+});

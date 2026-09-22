@@ -1,0 +1,27 @@
+{
+  "fingerprint": "pricing-production-push-promotion-20260922-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The canonical production snapshot workflow packaged exact source on main push but did not execute the authorized Netlify deploy because its deploy/proof steps were restricted to workflow_dispatch only. This left production on an older commit after a valid pricing merge.",
+  "prevention_rule": "When the production snapshot workflow itself is changed on protected main, its push-triggered run must execute the same authorized Netlify transport and exact production proof as an explicit deploy dispatch, while retaining bounded readback and fail-closed identity checks.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-production-push-promotion-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-production-push-promotion-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "Production Source Snapshot run 35717260615 completed successfully but logs showed only source packaging; deploy/proof steps were skipped by the workflow_dispatch-only condition."
+    ],
+    "outcome": "Candidate restores push-triggered authorized deployment and exact-SHA proof for the snapshot workflow.",
+    "production_readback": "Pending protected merge and exact Netlify production identity."
+  }
+}
