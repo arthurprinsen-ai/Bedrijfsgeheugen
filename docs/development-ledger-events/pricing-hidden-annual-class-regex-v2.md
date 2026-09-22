@@ -5,3 +5,5 @@
 - Fix: correct `.jr` class-boundary regex in live and build-integrity contracts.
 - Verification: `tools/site-shell/test-live-contract.mjs` negative fixture plus canonical pricing regression test.
 - Delivery state: pending exact-head gates, merge, production deployment and production readback.
+
+- Machine-readable delivery metadata is bound to this recovery candidate so Required/BRAIN admission evaluates the exact head under the website lane.
