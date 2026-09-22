@@ -6,6 +6,7 @@ import { directievragenMarkup, DIRECTIEVRAGEN_STIJL } from './directievragen.js'
 import { openPortalPage } from '../page-shell.js';
 import { renderLegacyOverviewComplete } from './legacy-overview-complete.js';
 import { mountControlPlaneCockpit } from '../control-plane-cockpit.js';
+import { buildBusinessContext, BUSINESS_STAGES } from '../../brain/context/business-context-engine.mjs';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);
@@ -91,6 +92,25 @@ function renderLegacyOverviewInsights(root,state){
  return true;
 }
 
+
+function renderBusinessJourneyOverview(root,state){
+ const main=root?.querySelector?.('.main');if(!main)return false;
+ const context=buildBusinessContext(state);
+ let section=main.querySelector('[data-business-journey-overview]');
+ if(!section){section=(root.ownerDocument||document).createElement('section');section.dataset.businessJourneyOverview='true';section.className='business-journey-overview';const anchor=main.querySelector('[data-legacy-overview-insights]')||main.querySelector('.dashboard');anchor?.after?.(section);}
+ const target=context.targetJourney?.target;
+ const targetLabel=target?BUSINESS_STAGES[target]?.label||target:'Nog niet gekozen';
+ const forecasts=context.goalForecasts||[];
+ const forecastRows=forecasts.slice(0,3).map(item=>{
+   const progress=item.progress==null?'—':Math.round(item.progress)+'%';
+   const status=({ 'on-track':'Op koers','at-risk':'Risico','off-track':'Niet op koers'})[item.trackStatus]||'Nog geen forecast';
+   return '<div class="bjo-goal"><span><b>'+item.label+'</b><small>'+progress+' · '+status+'</small></span><i style="width:'+(item.progress==null?0:Math.round(item.progress))+'%"></i></div>';
+ }).join('');
+ section.innerHTML='<article><div class="bjo-head"><div><span>Bedrijfsreis</span><h3>'+(context.evidenceMode==='unproven-default'?'Fase nog niet bevestigd':context.primary.label)+'</h3></div><button type="button" data-pv-page="bedrijfssituatie">Open reis →</button></div><div class="bjo-route"><span>Nu</span><b>'+context.primary.label+'</b><em>→</em><span>Doel</span><b>'+targetLabel+'</b></div><div class="bjo-goals">'+(forecastRows||'<p>Leg doelen vast om voortgang en forecast hier te volgen.</p>')+'</div></article>';
+ bindPageButtons(section);
+ return true;
+}
+
 function renderDirectievragen(root,state){
  const doel=root?.querySelector?.('.main');
  if(!doel)return false;
@@ -117,6 +137,7 @@ export function applyOverviewDashboard(root=document,state={}){
  ensureControlPlaneCockpit(root);
  renderLegacyOverviewComplete(root,state,openPortalPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
  renderLegacyOverviewInsights(root,state);
+ renderBusinessJourneyOverview(root,state);
  renderDirectievragen(root,state);
  ensureOverviewReorder(root);
  if(isDemoCustomer(state)&&renderDemoOverview(root)){bindPageButtons(root.querySelector?.('.ovz'));return true;}

@@ -1,0 +1,38 @@
+const freeze=value=>{if(value&&typeof value==='object'&&!Object.isFrozen(value)){Object.freeze(value);for(const child of Object.values(value))freeze(child);}return value;};
+const arr=v=>Array.isArray(v)?v:[];
+const num=v=>Number.isFinite(Number(v))?Number(v):null;
+const at=(state,path)=>String(path||'').split('.').filter(Boolean).reduce((value,key)=>value==null?undefined:value[key],state);
+
+export const GOAL_METRICS=freeze({
+  revenue_growth:{id:'revenue_growth',label:'Omzetgroei',metric:'revenue_growth_pct',unit:'%',direction:'up',paths:['portal.finance.revenue_growth_pct','portal.metrics.revenueGrowthPct','finance.revenue_growth_pct']},
+  profit:{id:'profit',label:'EBITDA-marge',metric:'ebitda_margin_pct',unit:'%',direction:'up',paths:['portal.finance.ebitda_margin_pct','portal.metrics.ebitdaMarginPct','finance.ebitda_margin_pct']},
+  cash:{id:'cash',label:'Cash runway',metric:'cash_runway_weeks',unit:'weken',direction:'up',paths:['portal.finance.cash_runway_weeks','finance.cash_runway_weeks']},
+  automate:{id:'automate',label:'Handmatig werk',metric:'manual_hours_year',unit:'uur/jaar',direction:'down',paths:['portal.metrics.manual_hours_year','portal.profile.manual_hours_year']},
+  valuation:{id:'valuation',label:'Ondernemingswaarde',metric:'enterprise_value',unit:'€',direction:'up',paths:['portal.valueFinance.enterpriseValue','portal.finance.enterprise_value','finance.enterprise_value']},
+  exit:{id:'exit',label:'Exit-readiness',metric:'exit_readiness_pct',unit:'%',direction:'up',paths:['portal.exit.readiness_pct','portal.dueDiligence.transferability_pct']},
+  resilience:{id:'resilience',label:'Restrisico',metric:'risk_score_pct',unit:'%',direction:'down',paths:['portal.compliance.risk_pct','portal.metrics.risk_score_pct']}
+});
+
+function currentFromState(state,metric){for(const path of metric.paths||[]){const value=num(at(state,path));if(value!=null)return {value,source:path};}return {value:null,source:null};}
+function normalizePoint(point){const value=num(point?.value);const date=String(point?.date||point?.observedAt||point?.observed_at||'');if(value==null||!date)return null;const ts=Date.parse(date);return Number.isFinite(ts)?{date:new Date(ts).toISOString(),ts,value}:null;}
+function historyForGoal(state,goalId,target={}){const pools=[target.history,state?.portal?.goal_history?.[goalId],state?.portal?.metrics?.history?.[target.metric||GOAL_METRICS[goalId]?.metric],state?.portal?.business_context?.goal_history?.[goalId]];return pools.flatMap(arr).map(normalizePoint).filter(Boolean).sort((a,b)=>a.ts-b.ts);}
+function linearForecast(points,targetTs){if(points.length<3)return null;const x0=points[0].ts;const xs=points.map(p=>(p.ts-x0)/86400000);const ys=points.map(p=>p.value);const n=xs.length,meanX=xs.reduce((a,b)=>a+b,0)/n,meanY=ys.reduce((a,b)=>a+b,0)/n;const denom=xs.reduce((s,x)=>s+(x-meanX)**2,0);if(!denom)return null;const slope=xs.reduce((s,x,i)=>s+(x-meanX)*(ys[i]-meanY),0)/denom;const intercept=meanY-slope*meanX;const targetX=(targetTs-x0)/86400000;const expected=intercept+slope*targetX;const residuals=xs.map((x,i)=>ys[i]-(intercept+slope*x));const rmse=Math.sqrt(residuals.reduce((s,r)=>s+r*r,0)/Math.max(1,n-2));const horizon=Math.max(1,targetX-xs.at(-1));const widening=1+Math.min(2,horizon/Math.max(30,(xs.at(-1)-xs[0])||30));const band=rmse*1.96*widening;return {expected,lower:expected-band,upper:expected+band,slopePerDay:slope,points:n,method:'linear-trend',rmse};}
+function progress(current,target,direction){if(current==null||target==null)return null;if(direction==='down'){if(current<=target)return 100;const baseline=Math.max(Math.abs(current),1);return Math.max(0,Math.min(100,100-((current-target)/baseline*100)));}if(target===0)return current>=target?100:null;return Math.max(0,Math.min(100,(current/target)*100));}
+function requiredPace(current,target,targetTs,nowTs,direction){if(current==null||target==null||!Number.isFinite(targetTs)||targetTs<=nowTs)return null;const days=Math.max(1,(targetTs-nowTs)/86400000);const delta=target-current;return {perDay:delta/days,perMonth:(delta/days)*30.4375,direction};}
+function onTrack(forecast,target,direction){if(!forecast||target==null)return null;if(direction==='down')return forecast.expected<=target?'on-track':forecast.lower<=target?'at-risk':'off-track';return forecast.expected>=target?'on-track':forecast.upper>=target?'at-risk':'off-track';}
+function milestoneDates(nowTs,targetTs){if(!Number.isFinite(targetTs)||targetTs<=nowTs)return [];const total=targetTs-nowTs;return [.25,.5,.75,1].map((fraction,index)=>({id:'m'+(index+1),fraction,date:new Date(nowTs+(total*fraction)).toISOString(),label:index===3?'Doeldatum':String(Math.round(fraction*100))+'% checkpoint'}));}
+
+export function buildGoalForecast(state={},goalId,{now=new Date().toISOString()}={}){
+  const metric=GOAL_METRICS[goalId];if(!metric)return null;
+  const target=state?.portal?.business_context?.goal_targets?.[goalId]||{};
+  const explicitCurrent=num(target.current_value);const derived=currentFromState(state,metric);const current=explicitCurrent!=null?explicitCurrent:derived.value;const currentSource=explicitCurrent!=null?'entrepreneur':derived.source;
+  const targetValue=num(target.target_value);const targetTs=Date.parse(target.target_date||'');const nowTs=Date.parse(now);const points=historyForGoal(state,goalId,{...target,metric:metric.metric});const forecast=Number.isFinite(targetTs)?linearForecast(points,targetTs):null;const status=onTrack(forecast,targetValue,metric.direction);
+  return freeze({goalId,label:metric.label,metric:metric.metric,unit:target.unit||metric.unit,direction:metric.direction,current,currentSource,target:targetValue,targetDate:Number.isFinite(targetTs)?new Date(targetTs).toISOString():null,progress:progress(current,targetValue,metric.direction),requiredPace:requiredPace(current,targetValue,targetTs,nowTs,metric.direction),historyPoints:points.length,forecast:forecast?freeze({expected:Number(forecast.expected.toFixed(2)),lower:Number(forecast.lower.toFixed(2)),upper:Number(forecast.upper.toFixed(2)),points:forecast.points,method:forecast.method,evidence:'trend-from-observed-history'}):null,forecastStatus:forecast?'available':'insufficient-evidence',trackStatus:status,milestones:milestoneDates(nowTs,targetTs),evidence:freeze({current:currentSource,historyPoints:points.length,minimumHistoryPoints:3})});
+}
+
+export function buildGoalForecasts(state={},goalIds=[],options={}){return freeze(arr(goalIds).map(id=>buildGoalForecast(state,id,options)).filter(Boolean));}
+
+export function buildJourneyProgress(state={},context){
+  const targetStage=String(state?.portal?.business_context?.target_stage||'').trim();const current=context?.primary?.stage||null;const order=['start','validate','grow','scale','professionalize','mature'];const currentIndex=order.indexOf(current),targetIndex=order.indexOf(targetStage);const forward=currentIndex>=0&&targetIndex>=0&&targetIndex>=currentIndex;const stages=forward?order.slice(currentIndex,targetIndex+1):[current,targetStage].filter(Boolean);
+  return freeze({current,target:targetStage||null,stages,note:!targetStage?'Kies een gewenste bedrijfsfase om de reis zichtbaar te maken.':current===targetStage?'Gewenste fase bereikt.':forward?'Route zichtbaar; echte voortgang komt uit milestones en outcomes, niet alleen uit tijd.':'Niet-lineaire route: Powerhouse gebruikt acties en outcomes in plaats van een vaste fasevolgorde.'});
+}

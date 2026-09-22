@@ -1,7 +1,17 @@
 import {buildBusinessContext,BUSINESS_STAGES,STRATEGIC_EVENTS,USER_GOALS} from '../../brain/context/business-context-engine.mjs';
+import {buildGoalForecasts,buildJourneyProgress,GOAL_METRICS} from '../../brain/context/goal-forecast-engine.mjs';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const selected=(value,current)=>String(value)===String(current)?' selected':'';
+
+const fmt=(value,unit='')=>{
+  if(value==null||!Number.isFinite(Number(value)))return '—';
+  const n=Number(value);
+  if(unit==='€')return new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+  return new Intl.NumberFormat('nl-NL',{maximumFractionDigits:1}).format(n)+(unit?' '+unit:'');
+};
+const dateLabel=value=>{if(!value)return '—';const d=new Date(value);return Number.isFinite(d.getTime())?new Intl.DateTimeFormat('nl-NL',{day:'2-digit',month:'short',year:'numeric'}).format(d):'—';};
+const trackLabel=status=>({ 'on-track':'Op koers','at-risk':'Risico op missen','off-track':'Niet op koers'})[status]||'Nog niet voorspelbaar';
 
 function stageOptions(current){
   return Object.values(BUSINESS_STAGES).map(item=>'<option value="'+esc(item.id)+'"'+selected(item.id,current)+'>'+esc(item.label)+'</option>').join('');
@@ -20,24 +30,59 @@ function renderSummary(context){
   const health=Object.entries(context.health).map(([key,value])=>'<span><b>'+esc(key)+'</b> '+esc(value)+'</span>').join('');
   return '<section class="v2contextsummary"><div><span class="v2workspaceeyebrow">Powerhouse-context</span><h3>'+esc(context.primary.label)+'</h3><p>'+esc(statusLabel(context))+(overlays.length?' · '+esc(overlays.join(' · ')):'')+'</p></div><div class="v2contexthealth">'+health+'</div></section>';
 }
+
+function renderJourney(state,context){
+  const journey=buildJourneyProgress(state,context);
+  const target=state?.portal?.business_context?.target_stage||'';
+  const nodes=journey.stages.length?journey.stages:[context.primary.stage];
+  return '<section class="v2journey"><div class="v2journeyhead"><div><span class="v2workspaceeyebrow">Bedrijfsreis</span><h3>Waar sta je en waar wil je heen?</h3></div><label>Gewenste fase<select data-context-target-stage><option value="">Nog niet gekozen</option>'+stageOptions(target)+'</select></label></div><div class="v2journeytrack">'+nodes.map((id,index)=>'<div class="v2journeynode '+(id===context.primary.stage?'current':'')+' '+(id===target?'target':'')+'"><i>'+String(index+1)+'</i><span>'+esc(BUSINESS_STAGES[id]?.label||id)+'</span></div>').join('<b>→</b>')+'</div><p>'+esc(journey.note)+'</p></section>';
+}
+function renderGoalTargets(state,goals){
+  if(!goals.length)return '<section class="v2goalempty"><h3>Doelen & voorspellingen</h3><p>Kies eerst één of meer doelen. Daarna kun je per doel een meetbare huidige stand, doelwaarde en doeldatum vastleggen.</p></section>';
+  const targets=state?.portal?.business_context?.goal_targets||{};
+  return '<section class="v2goaltargets"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Doelen</span><h3>Maak doelen meetbaar</h3></div><p>Powerhouse voorspelt alleen met minimaal 3 historische meetpunten. Zonder bewijs toont het benodigde tempo, maar geen schijnforecast.</p></div><div class="v2goaleditgrid">'+goals.map(id=>{const metric=GOAL_METRICS[id];const target=targets[id]||{};if(!metric)return '';return '<article data-goal-editor="'+esc(id)+'"><h4>'+esc(USER_GOALS[id]?.label||id)+'</h4><small>'+esc(metric.label)+' · '+esc(metric.unit)+'</small><label>Huidige stand<input type="number" step="any" data-goal-current="'+esc(id)+'" value="'+esc(target.current_value??'')+'"></label><label>Doelwaarde<input type="number" step="any" data-goal-target="'+esc(id)+'" value="'+esc(target.target_value??'')+'"></label><label>Doeldatum<input type="date" data-goal-date="'+esc(id)+'" value="'+esc(String(target.target_date||'').slice(0,10))+'"></label></article>';}).join('')+'</div></section>';
+}
+function renderForecasts(state,goals){
+  const forecasts=buildGoalForecasts(state,goals);
+  if(!forecasts.length)return '';
+  return '<section class="v2forecastsection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Forecast</span><h3>Liggen je doelen op koers?</h3></div><p>Verwachting en bandbreedte worden alleen getoond als de tijdreeks voldoende bewijs bevat.</p></div><div class="v2forecastgrid">'+forecasts.map(item=>{
+    const pct=item.progress==null?null:Math.round(item.progress);
+    const forecast=item.forecast?'<div class="v2forecastband"><b>Verwachting '+fmt(item.forecast.expected,item.unit)+'</b><span>band '+fmt(item.forecast.lower,item.unit)+' – '+fmt(item.forecast.upper,item.unit)+'</span><small>'+item.forecast.points+' meetpunten · '+esc(item.forecast.method)+'</small></div>':'<div class="v2forecastband unavailable"><b>Nog geen betrouwbare forecast</b><span>'+item.historyPoints+'/3 historische meetpunten beschikbaar</span><small>Powerhouse verzint geen waarschijnlijkheid zonder trendbewijs.</small></div>';
+    const pace=item.requiredPace?fmt(item.requiredPace.perMonth,item.unit)+' per maand':'—';
+    return '<article class="v2forecastcard" data-track="'+esc(item.trackStatus||'unknown')+'"><div class="v2forecasttitle"><div><h4>'+esc(USER_GOALS[item.goalId]?.label||item.goalId)+'</h4><small>'+esc(item.label)+'</small></div><span>'+esc(trackLabel(item.trackStatus))+'</span></div><div class="v2goalnumbers"><div><small>Nu</small><b>'+fmt(item.current,item.unit)+'</b></div><div><small>Doel</small><b>'+fmt(item.target,item.unit)+'</b></div><div><small>Datum</small><b>'+dateLabel(item.targetDate)+'</b></div></div><div class="v2progress"><i style="width:'+(pct==null?0:pct)+'%"></i></div><small class="v2progresslabel">'+(pct==null?'Voortgang nog niet berekenbaar':pct+'% van doel')+' · benodigd tempo '+pace+'</small>'+forecast+'<div class="v2milestones">'+item.milestones.map(m=>'<span><i></i><b>'+esc(m.label)+'</b><small>'+dateLabel(m.date)+'</small></span>').join('')+'</div></article>';
+  }).join('')+'</div></section>';
+}
+function collectGoalTargets(root,goals,previous={}){
+  const next={...previous};
+  for(const id of goals){
+    const current=root.querySelector('[data-goal-current="'+id+'"]')?.value;
+    const target=root.querySelector('[data-goal-target="'+id+'"]')?.value;
+    const date=root.querySelector('[data-goal-date="'+id+'"]')?.value;
+    next[id]={...(previous[id]||{}),current_value:current===''?null:Number(current),target_value:target===''?null:Number(target),target_date:date||null};
+  }
+  return next;
+}
+
 function renderForm(root,state,message){
   const context=buildBusinessContext(state);
   const stored=state?.portal?.business_context||{};
   const stage=stored.stage||context.primary.stage;
   const events=Array.isArray(stored.events)?stored.events:context.events;
   const goals=Array.isArray(stored.goals)?stored.goals:context.goals;
-  root.innerHTML=renderSummary(context)
+  root.innerHTML=renderSummary(context)+renderJourney(state,context)+renderForecasts(state,goals)
     +'<section class="v2legacyprofilecard"><h3>Klopt deze bedrijfssituatie?</h3><p>Powerhouse gebruikt deze context om analyses, modellen, scenario’s, prioriteiten en portaalonderdelen te ordenen. Je kunt meerdere gebeurtenissen en doelen tegelijk kiezen.</p><div class="v2contextconfirm"><button type="button" class="pvprimary" data-context-confirm>Dit klopt</button><button type="button" data-context-edit>Pas situatie aan</button><span data-context-message>'+esc(message||'')+'</span></div></section>'
-    +'<section class="v2legacyprofilecard" data-context-editor hidden><label class="v2contextfield"><span>Primaire bedrijfsfase</span><select data-context-stage>'+stageOptions(stage)+'</select></label><div class="v2contextgroup"><h4>Wat speelt er tegelijk?</h4>'+checkboxGrid(STRATEGIC_EVENTS,events,'events')+'</div><div class="v2contextgroup"><h4>Wat wil je bereiken?</h4>'+checkboxGrid(USER_GOALS,goals,'goals')+'</div><div class="v2formactions"><button type="button" class="pvprimary" data-context-save>Opslaan & Powerhouse bijwerken</button><span data-context-save-message>De context wordt tenant-scoped opgeslagen en gebruikt door het brein.</span></div></section>';
+    +'<section class="v2legacyprofilecard" data-context-editor hidden><label class="v2contextfield"><span>Primaire bedrijfsfase</span><select data-context-stage>'+stageOptions(stage)+'</select></label><div class="v2contextgroup"><h4>Wat speelt er tegelijk?</h4>'+checkboxGrid(STRATEGIC_EVENTS,events,'events')+'</div><div class="v2contextgroup"><h4>Wat wil je bereiken?</h4>'+checkboxGrid(USER_GOALS,goals,'goals')+'</div>'+renderGoalTargets(state,goals)+'<div class="v2formactions"><button type="button" class="pvprimary" data-context-save>Opslaan & Powerhouse bijwerken</button><span data-context-save-message>De context en meetbare doelen worden tenant-scoped opgeslagen en gebruikt door het brein.</span></div></section>';
   return context;
 }
 function checkedValues(root,name){
   return Array.from(root.querySelectorAll('input[name="'+name+'"]:checked')).map(input=>input.value);
 }
-async function persistContext(domainState,{stage,events,goals}){
+async function persistContext(domainState,{stage,events,goals,targetStage,goalTargets}){
   domainState?.set?.('portal.business_context.stage',stage);
   domainState?.set?.('portal.business_context.events',events);
   domainState?.set?.('portal.business_context.goals',goals);
+  if(targetStage!==undefined)domainState?.set?.('portal.business_context.target_stage',targetStage||null);
+  if(goalTargets!==undefined)domainState?.set?.('portal.business_context.goal_targets',goalTargets||{});
   domainState?.patch?.('portal.business_context',{confirmed:true,confirmed_at:new Date().toISOString(),confirmation_source:'entrepreneur'});
   return domainState?.flush?.();
 }
@@ -51,11 +96,12 @@ export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onU
     renderForm(root,state,message);
     const editor=root.querySelector('[data-context-editor]');
     root.querySelector('[data-context-edit]')?.addEventListener('click',()=>{if(editor)editor.hidden=false;});
+    root.querySelector('[data-context-target-stage]')?.addEventListener('change',event=>{domainState?.set?.('portal.business_context.target_stage',event.target.value||null);});
     root.querySelector('[data-context-confirm]')?.addEventListener('click',async()=>{
       try{
         onSaveStatus?.('saving');
         const current=buildBusinessContext(domainState?.get?.()||{});
-        await persistContext(domainState,{stage:current.primary.stage,events:[...current.events],goals:[...current.goals]});
+        await persistContext(domainState,{stage:current.primary.stage,events:[...current.events],goals:[...current.goals],targetStage:domainState?.get?.('portal.business_context.target_stage')||null,goalTargets:domainState?.get?.('portal.business_context.goal_targets')||{}});
         onSaveStatus?.('saved');
         draw('Bevestigd en teruggeschreven naar Powerhouse.');
         onUpdated?.();
@@ -68,11 +114,13 @@ export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onU
       const stage=root.querySelector('[data-context-stage]')?.value;
       const events=checkedValues(root,'events');
       const goals=checkedValues(root,'goals');
+      const targetStage=root.querySelector('[data-context-target-stage]')?.value||domainState?.get?.('portal.business_context.target_stage')||null;
+      const goalTargets=collectGoalTargets(root,goals,domainState?.get?.('portal.business_context.goal_targets')||{});
       const message=root.querySelector('[data-context-save-message]');
       try{
         onSaveStatus?.('saving');
         if(message)message.textContent='Opslaan…';
-        await persistContext(domainState,{stage,events,goals});
+        await persistContext(domainState,{stage,events,goals,targetStage,goalTargets});
         onSaveStatus?.('saved');
         draw('Situatie aangepast en Powerhouse opnieuw gevoed.');
         onUpdated?.();
