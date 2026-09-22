@@ -1,5 +1,6 @@
 import {buildBusinessContext,BUSINESS_STAGES,STRATEGIC_EVENTS,USER_GOALS} from '../../brain/context/business-context-engine.mjs';
 import {buildGoalForecasts,buildJourneyProgress,GOAL_METRICS} from '../../brain/context/goal-forecast-engine.mjs';
+import {buildGoalScenarios,GOAL_LEVERS} from '../../brain/context/goal-scenario-engine.mjs';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const selected=(value,current)=>String(value)===String(current)?' selected':'';
@@ -52,6 +53,35 @@ function renderForecasts(state,goals){
     return '<article class="v2forecastcard" data-track="'+esc(item.trackStatus||'unknown')+'"><div class="v2forecasttitle"><div><h4>'+esc(USER_GOALS[item.goalId]?.label||item.goalId)+'</h4><small>'+esc(item.label)+'</small></div><span>'+esc(trackLabel(item.trackStatus))+'</span></div><div class="v2goalnumbers"><div><small>Nu</small><b>'+fmt(item.current,item.unit)+'</b></div><div><small>Doel</small><b>'+fmt(item.target,item.unit)+'</b></div><div><small>Datum</small><b>'+dateLabel(item.targetDate)+'</b></div></div><div class="v2progress"><i style="width:'+(pct==null?0:pct)+'%"></i></div><small class="v2progresslabel">'+(pct==null?'Voortgang nog niet berekenbaar':pct+'% van doel')+' · benodigd tempo '+pace+'</small>'+forecast+'<div class="v2milestones">'+item.milestones.map(m=>'<span><i></i><b>'+esc(m.label)+'</b><small>'+dateLabel(m.date)+'</small></span>').join('')+'</div></article>';
   }).join('')+'</div></section>';
 }
+
+function renderGoalScenarios(state,goals){
+  const scenarios=buildGoalScenarios(state,goals);
+  if(!scenarios.length)return '';
+  return '<section class="v2scenariosection"><div class="v2goalhead"><div><span class="v2workspaceeyebrow">Wat-als</span><h3>Welke hefbomen brengen je dichter bij je doel?</h3></div><p>Effecten hieronder zijn scenario-aannames, geen voorspellingen. Koppel bewijs aan een aanname voordat Powerhouse haar als onderbouwd behandelt.</p></div><div class="v2scenariogrid">'+scenarios.map(item=>{
+    const levers=(GOAL_LEVERS[item.goalId]||[]);
+    const actionRows=(item.nextBestActions||[]).map(action=>'<button type="button" data-scenario-open="'+esc(action.page)+'"><span><b>'+esc(action.label)+'</b><small>'+esc(action.action)+'</small></span><i>→</i></button>').join('');
+    const leverInputs=levers.map(lever=>{
+      const active=item.levers.find(x=>x.id===lever.id);
+      return '<label class="v2lever"><span><b>'+esc(lever.label)+'</b><small>Verwacht effect op '+esc(item.label)+' ('+esc(item.unit)+')</small></span><input type="number" step="any" data-scenario-effect="'+esc(item.goalId)+'" data-lever-id="'+esc(lever.id)+'" value="'+esc(active?.effect??'')+'" placeholder="bijv. 2"></label>';
+    }).join('');
+    const before=fmt(item.baselineExpected,item.unit), after=fmt(item.scenarioExpected,item.unit), target=fmt(item.target,item.unit);
+    const improvement=item.gapImprovement==null?'—':fmt(item.gapImprovement,item.unit);
+    return '<article class="v2scenariocard"><div class="v2forecasttitle"><div><h4>'+esc(USER_GOALS[item.goalId]?.label||item.goalId)+'</h4><small>'+esc(item.label)+'</small></div><span>'+esc(item.scenarioStatus==='target-reached'?'Doel in scenario bereikt':'Scenario')+'</span></div><div class="v2scenarioflow"><div><small>Baseline</small><b>'+before+'</b></div><i>→</i><div><small>Met aannames</small><b>'+after+'</b></div><i>→</i><div><small>Doel</small><b>'+target+'</b></div></div><div class="v2scenarioimprovement"><span>Verkleining doelgat</span><b>'+improvement+'</b></div><div class="v2levergrid">'+leverInputs+'</div><div class="v2nextbest"><h5>Volgende beste acties</h5>'+actionRows+'</div><small class="v2truthline">Forecast: '+esc(item.truth.forecast)+' · scenario: wat-als-aannames · '+item.truth.evidenceLinkedEffects+' effecten met bewijs gekoppeld</small></article>';
+  }).join('')+'</div></section>';
+}
+function collectGoalScenarios(root,goals,previous={}){
+  const next={...previous};
+  for(const goalId of goals){
+    const levers={...(previous?.[goalId]?.levers||{})};
+    root.querySelectorAll('[data-scenario-effect="'+goalId+'"]').forEach(input=>{
+      const id=input.dataset.leverId;
+      const raw=input.value;
+      levers[id]={...(levers[id]||{}),effect:raw===''?null:Number(raw)};
+    });
+    next[goalId]={...(previous?.[goalId]||{}),levers};
+  }
+  return next;
+}
 function collectGoalTargets(root,goals,previous={}){
   const next={...previous};
   for(const id of goals){
@@ -69,7 +99,7 @@ function renderForm(root,state,message){
   const stage=stored.stage||context.primary.stage;
   const events=Array.isArray(stored.events)?stored.events:context.events;
   const goals=Array.isArray(stored.goals)?stored.goals:context.goals;
-  root.innerHTML=renderSummary(context)+renderJourney(state,context)+renderForecasts(state,goals)
+  root.innerHTML=renderSummary(context)+renderJourney(state,context)+renderForecasts(state,goals)+renderGoalScenarios(state,goals)
     +'<section class="v2legacyprofilecard"><h3>Klopt deze bedrijfssituatie?</h3><p>Powerhouse gebruikt deze context om analyses, modellen, scenario’s, prioriteiten en portaalonderdelen te ordenen. Je kunt meerdere gebeurtenissen en doelen tegelijk kiezen.</p><div class="v2contextconfirm"><button type="button" class="pvprimary" data-context-confirm>Dit klopt</button><button type="button" data-context-edit>Pas situatie aan</button><span data-context-message>'+esc(message||'')+'</span></div></section>'
     +'<section class="v2legacyprofilecard" data-context-editor hidden><label class="v2contextfield"><span>Primaire bedrijfsfase</span><select data-context-stage>'+stageOptions(stage)+'</select></label><div class="v2contextgroup"><h4>Wat speelt er tegelijk?</h4>'+checkboxGrid(STRATEGIC_EVENTS,events,'events')+'</div><div class="v2contextgroup"><h4>Wat wil je bereiken?</h4>'+checkboxGrid(USER_GOALS,goals,'goals')+'</div>'+renderGoalTargets(state,goals)+'<div class="v2formactions"><button type="button" class="pvprimary" data-context-save>Opslaan & Powerhouse bijwerken</button><span data-context-save-message>De context en meetbare doelen worden tenant-scoped opgeslagen en gebruikt door het brein.</span></div></section>';
   return context;
@@ -77,17 +107,18 @@ function renderForm(root,state,message){
 function checkedValues(root,name){
   return Array.from(root.querySelectorAll('input[name="'+name+'"]:checked')).map(input=>input.value);
 }
-async function persistContext(domainState,{stage,events,goals,targetStage,goalTargets}){
+async function persistContext(domainState,{stage,events,goals,targetStage,goalTargets,goalScenarios}){
   domainState?.set?.('portal.business_context.stage',stage);
   domainState?.set?.('portal.business_context.events',events);
   domainState?.set?.('portal.business_context.goals',goals);
   if(targetStage!==undefined)domainState?.set?.('portal.business_context.target_stage',targetStage||null);
   if(goalTargets!==undefined)domainState?.set?.('portal.business_context.goal_targets',goalTargets||{});
+  if(goalScenarios!==undefined)domainState?.set?.('portal.business_context.goal_scenarios',goalScenarios||{});
   domainState?.patch?.('portal.business_context',{confirmed:true,confirmed_at:new Date().toISOString(),confirmation_source:'entrepreneur'});
   return domainState?.flush?.();
 }
 
-export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onUpdated}={}){
+export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onUpdated,openPage}={}){
   if(!root?.querySelectorAll)throw new TypeError('BUSINESS_CONTEXT_ROOT_REQUIRED');
   let destroyed=false;
   const draw=(message='')=>{
@@ -97,11 +128,12 @@ export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onU
     const editor=root.querySelector('[data-context-editor]');
     root.querySelector('[data-context-edit]')?.addEventListener('click',()=>{if(editor)editor.hidden=false;});
     root.querySelector('[data-context-target-stage]')?.addEventListener('change',event=>{domainState?.set?.('portal.business_context.target_stage',event.target.value||null);});
+    root.querySelectorAll('[data-scenario-open]').forEach(button=>button.addEventListener('click',()=>openPage?.(button.dataset.scenarioOpen)));
     root.querySelector('[data-context-confirm]')?.addEventListener('click',async()=>{
       try{
         onSaveStatus?.('saving');
         const current=buildBusinessContext(domainState?.get?.()||{});
-        await persistContext(domainState,{stage:current.primary.stage,events:[...current.events],goals:[...current.goals],targetStage:domainState?.get?.('portal.business_context.target_stage')||null,goalTargets:domainState?.get?.('portal.business_context.goal_targets')||{}});
+        await persistContext(domainState,{stage:current.primary.stage,events:[...current.events],goals:[...current.goals],targetStage:domainState?.get?.('portal.business_context.target_stage')||null,goalTargets:domainState?.get?.('portal.business_context.goal_targets')||{},goalScenarios:domainState?.get?.('portal.business_context.goal_scenarios')||{}});
         onSaveStatus?.('saved');
         draw('Bevestigd en teruggeschreven naar Powerhouse.');
         onUpdated?.();
@@ -116,11 +148,12 @@ export function mountBusinessContextWorkspace(root,{domainState,onSaveStatus,onU
       const goals=checkedValues(root,'goals');
       const targetStage=root.querySelector('[data-context-target-stage]')?.value||domainState?.get?.('portal.business_context.target_stage')||null;
       const goalTargets=collectGoalTargets(root,goals,domainState?.get?.('portal.business_context.goal_targets')||{});
+      const goalScenarios=collectGoalScenarios(root,goals,domainState?.get?.('portal.business_context.goal_scenarios')||{});
       const message=root.querySelector('[data-context-save-message]');
       try{
         onSaveStatus?.('saving');
         if(message)message.textContent='Opslaan…';
-        await persistContext(domainState,{stage,events,goals,targetStage,goalTargets});
+        await persistContext(domainState,{stage,events,goals,targetStage,goalTargets,goalScenarios});
         onSaveStatus?.('saved');
         draw('Situatie aangepast en Powerhouse opnieuw gevoed.');
         onUpdated?.();
