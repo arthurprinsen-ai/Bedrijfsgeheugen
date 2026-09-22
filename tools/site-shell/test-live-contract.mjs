@@ -42,6 +42,13 @@ assert.throws(() => verifyLiveSite({
 
 assert.throws(() => verifyLiveSite({
   home,
+  pricing: pricing.replace('<h3>Build</h3>', '<h3>Build</h3><span class="jr">vanaf € 49.950</span>'),
+  content,
+  expectedCommit: COMMIT
+}), /jaarprijs/i);
+
+assert.throws(() => verifyLiveSite({
+  home,
   pricing,
   content,
   expectedCommit: 'ffffffffffffffffffffffffffffffffffffffff'
