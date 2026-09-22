@@ -1,0 +1,25 @@
+{
+  "fingerprint": "pricing-neno-structure-2026-09-22-v1",
+  "compiler": {
+    "failure_class": "release-gate-closure-and-static-performance",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The pricing change exposed two pre-existing release blockers: missing material writeback closure artifacts and a changed support blog whose third-party runtime loads pushed Lighthouse performance below the repository threshold.",
+  "prevention_rule": "Every material website candidate must include Brain learning, development ledger and human-readable change documentation in the same lineage; changed static blog pages must avoid non-essential third-party runtime loads when the Lighthouse gate applies.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-neno-structure-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "BRAIN exact-head gate succeeded on 11aae3210d8483eee66a9c61007f72460aa45503.",
+      "Canonical shell, page/SEO and V18 promotion gates succeeded before the closure repair."
+    ],
+    "outcome": "Candidate updated to remove non-essential third-party loads and carry required closure artifacts; exact-head gates must rerun before merge.",
+    "production_readback": "Pending exact-head protected merge and production readback."
+  }
+}
