@@ -1,0 +1,25 @@
+{
+  "fingerprint": "pricing-production-promotion-2026-09-22-v1",
+  "compiler": {
+    "failure_class": "production-promotion-stale-netlify-source",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The pricing release merged to main successfully, but Netlify production remained on an older commit because no exact-source production deployment was triggered for the merge. The production readback correctly failed on commit identity mismatch.",
+  "prevention_rule": "For website obligations, a protected main merge must be followed by the canonical Production Source Snapshot deployment path and exact release.json readback. A stale Netlify commit must trigger a bounded recovery promotion rather than being treated as live.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-production-promotion-recovery-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "PR #2579 Required and BRAIN gates passed before merge.",
+      "Production Release Readback run 35713209331 failed because live commit_ref remained 368a652f54788f45a9678d0f5045ba1cdb9cb2e1 while the merged pricing SHA was a324eaa4c1addc8645074313e57731487e31d886."
+    ],
+    "outcome": "Recovery candidate triggers the canonical exact-source Netlify production deployment from protected main.",
+    "production_readback": "Pending recovery merge and exact production release.json verification."
+  }
+}
