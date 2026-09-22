@@ -114,3 +114,4 @@ jobs:
           done
           echo "::error::Live pricing page does not match canonical Build/value-proof/no-annual-toggle contract"
           exit 78
+# Operational snapshot refresh: 2026-09-22 goal-scenario-lever-cockpit
