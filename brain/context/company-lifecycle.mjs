@@ -53,7 +53,7 @@ export function buildCompanyLifecycleContext(state={}){
     maturity:businessContext.maturity,
     priorities:[...businessContext.priorities],
     journey:businessContext.journey,
-    evidence_mode:businessContext.evidenceMode,
+    evidence_mode:legacyDetected.source!=='default'?'derived':businessContext.evidenceMode,
     learning_key:businessContext.learningKey,
     businessContext
   });
