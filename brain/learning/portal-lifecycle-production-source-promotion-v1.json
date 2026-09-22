@@ -1,0 +1,35 @@
+{
+  "fingerprint": "portal-lifecycle-production-source-promotion-v1",
+  "compiler": {
+    "failure_class": "MERGED_NOT_EXACTLY_DEPLOYED",
+    "scope": "PORTAL_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The Portal/Powerhouse lifecycle context feature merged successfully, but Netlify production still pointed at the previous exact source SHA because the canonical Production Source Snapshot workflow only runs on a main push that touches its own workflow file.",
+  "prevention_rule": "When a material Portal/website change is merged and production identity remains on an older SHA, trigger the canonical exact-source snapshot transport and require exact main SHA, production-ready deploy and Portal/production readback before terminal success.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-company-lifecycle-context.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-company-lifecycle-context.test.mjs",
+      "portal-v2/tests/lifecycle-context.test.mjs"
+    ],
+    "source": [
+      ".github/workflows/production-source-snapshot.yml",
+      "portal-v2/lifecycle-context.js",
+      "brain/context/company-lifecycle.mjs"
+    ],
+    "outcome": "The exact current main source is transported to Netlify and the lifecycle Portal/Brain change is only terminal after production identity and functional readback are green."
+  }
+}
