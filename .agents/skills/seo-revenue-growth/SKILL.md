@@ -62,6 +62,13 @@ Traffic volume alone must never outrank order/revenue evidence.
 - When `UPDATE_MONEY_PAGE` wins, improve the canonical owner instead of creating supporting content with materially overlapping intent.
 - Persist the decision evidence and subsequent search/CTA/lead/order/revenue outcome so the next cycle can learn from actual commercial results.
 
+## Commercial clarity on money pages
+
+- For decide-stage money pages, expose the verified buying path early: start point, current price/range where canonically published, scope boundary, next step and primary CTA.
+- Reuse the canonical pricing source; never invent or independently drift commercial amounts on SEO pages.
+- Prefer improving the existing intent owner over creating a support article when the gap is conversion clarity rather than search intent.
+- Measure the path from organic landing → primary CTA → scan/lead → order → revenue.
+
 ## Cannibalization and consolidation
 
 When two URLs own materially the same intent:
