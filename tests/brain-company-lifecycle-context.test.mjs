@@ -78,3 +78,16 @@ test('business context fails closed when the primary phase is not evidenced',()=
   const narrative=buildContextNarrative(ctx);
   assert.match(narrative.headline,/nog niet expliciet vastgesteld/i);
 });
+
+
+test('business journey keeps evidence-backed historical context records',()=>{
+  const ctx=buildBusinessContext({records:[
+    {id:'c1',observedAt:'2026-01-01T00:00:00Z',payload:{lifecycle_stage:'professionalize'},evidenceIds:['e1']},
+    {id:'c2',observedAt:'2026-06-01T00:00:00Z',payload:{business_context:{stage:'scale',events:['funding']}},evidenceIds:['e2']}
+  ]});
+  assert.equal(ctx.primary.stage,'scale');
+  assert.equal(ctx.history.length,2);
+  assert.equal(ctx.history[0].stage,'professionalize');
+  assert.equal(ctx.history[1].stage,'scale');
+  assert.deepEqual(ctx.history[1].evidenceIds,['e2']);
+});
