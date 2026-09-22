@@ -31,6 +31,20 @@ function parseArgs(argv) {
   return out;
 }
 
+async function navigateWithRetry(page, url, { attempts = 3, timeout = 30_000 } = {}) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await page.goto(url, { waitUntil:'domcontentloaded', timeout });
+    } catch (error) {
+      lastError = error;
+      if (attempt >= attempts || error?.name !== 'TimeoutError') throw error;
+      await page.waitForTimeout(1_500 * attempt);
+    }
+  }
+  throw lastError;
+}
+
 async function observeRoute(browser, baseUrl, route, viewport) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
@@ -45,7 +59,8 @@ async function observeRoute(browser, baseUrl, route, viewport) {
     } catch {}
   });
   try {
-    const response = await page.goto(`${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`, { waitUntil:'domcontentloaded', timeout:45_000 });
+    const target = `${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`;
+    const response = await navigateWithRetry(page, target);
     await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
