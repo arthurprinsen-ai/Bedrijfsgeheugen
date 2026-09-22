@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing-hidden-annual-class-regex-v2",
+  "compiler": {
+    "failure_class": "REGRESSION_GATE_FALSE_NEGATIVE",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The hidden annual residue guard used /\\\\bjr\\\\b/ inside a JavaScript regex literal, which matches a literal backslash-b sequence instead of a word boundary. Once the visible yearly price became legitimate again, the old fallback check on € 49.950 disappeared and the test exposed this false negative.",
+  "prevention_rule": "When matching class-name word boundaries in JavaScript regex literals, use \\b rather than \\\\b. Hidden legacy `.jr` pricing markup must be rejected independently of whether the same numeric yearly price is valid in visible intentional billing controls.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tools/site-shell/test-live-contract.mjs",
+      "tests/brain-pricing-content-normal-production-readback-v1.test.mjs"
+    ],
+    "source": [
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/pricing-build-integrity.mjs"
+    ],
+    "outcome": "Hidden `.jr` annual residue is rejected by class semantics while legitimate visible yearly billing remains accepted."
+  }
+}
