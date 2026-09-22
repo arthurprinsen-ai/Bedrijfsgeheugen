@@ -1,0 +1,37 @@
+{
+  "fingerprint": "goal-scenario-lever-cockpit-v1",
+  "compiler": {
+    "failure_class": "GOAL_FORECAST_WITHOUT_ACTIONABLE_LEVERS",
+    "scope": "PORTAL_BRAIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The Portal could show goals, required pace and evidence-aware forecasts, but it did not connect a missed goal to explicit what-if levers, scenario impact and the next relevant Portal action.",
+  "prevention_rule": "Every measurable goal may expose context-relevant levers, but quantified lever impact must remain an explicit what-if assumption unless linked to evidence. The UI must distinguish forecast from scenario, show baseline versus scenario versus target, rank only quantified effects, and link next-best actions to existing Portal modules.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-goal-scenario-engine.test.mjs"
+    ],
+    "canary": [
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-goal-scenario-engine.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-goal-scenario-engine.test.mjs",
+      "portal-v2/tests/business-goal-scenario-ui.test.mjs"
+    ],
+    "source": [
+      "brain/context/goal-scenario-engine.mjs",
+      "brain/context/business-context-engine.mjs",
+      "portal-v2/modules/business-context-workspace.js",
+      "portal-v2/page-shell.js",
+      "portal-v2/business-context.css"
+    ],
+    "outcome": "Goal Cockpit connects target gaps to explicit what-if levers and relevant next actions without presenting assumptions as predictions."
+  }
+}
