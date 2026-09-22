@@ -88,23 +88,33 @@ function specialistContent(pageId,model,navigation){
   const [primaryAction,actions]=navigation;
   if(['bedrijfssituatie','herstel-continuiteit','portfolio-control','due-diligence','exit'].includes(pageId)){
     const projection=buildLifecycleProjection(model);
-    const effectiveStage=pageId==='portfolio-control'?'portfolio':pageId==='herstel-continuiteit'?(projection.stage==='crisis'?'crisis':'loss'):pageId==='exit'?'sell':pageId==='due-diligence'&& !['buy','sell'].includes(projection.stage)?'buy':projection.stage;
-    const ctx=LIFECYCLE_CONTEXTS[effectiveStage];
-    const contextRows=Object.values(LIFECYCLE_CONTEXTS).map(item=>[item.label,item.id===projection.stage?'Gedetecteerde context':'Beschikbaar']);
+    const business=projection.businessContext;
+    const primaryKnown=business.evidenceMode!=='unproven-default';
+    const stageLabel=primaryKnown?business.primary.label:'—';
+    const overlays=[...business.eventLabels,...business.goalLabels];
+    const healthRows=Object.entries(business.health).map(([key,value])=>[key,String(value)]);
+    const maturityRows=Object.entries(business.maturity).map(([key,value])=>[key,value==null?'—':Math.round(value*100)+'%']);
     const connected=[['Bronnen',String(projection.connected.sources)],['Acties',String(projection.connected.actions)],['Outcomes',String(projection.connected.outcomes)],['Risico’s',String(projection.connected.risks)]];
-    const pages=ctx.pages.map(id=>[id,'Verbonden contextmodule']);
-    const modelRows=ctx.models.map(name=>[name,'Relevant voor '+ctx.label]);
+    const nextStages=(business.journey.next||[]).map(id=>[projection.stages[id]?.label||id,'Waarschijnlijke volgende bedrijfsfase wanneer de huidige context verandert']);
+    const nowRows=(business.priorities||[]).map(id=>[id,'Nu relevant op basis van fase, gebeurtenis en doel']);
+    const modelRows=(business.models||[]).map(name=>[name,'Actief/relevant in deze bedrijfscontext']);
+    const pageRows=(business.pages||[]).map(id=>[id,'Wordt door Powerhouse vanuit dezelfde context aangestuurd']);
+    const overlayRows=overlays.length?overlays.map(x=>[x,'Actieve context-overlay']):[['—','Geen aanvullende gebeurtenis of ondernemersdoel vastgelegd']];
     const blocks=[
-      {type:'metrics',title:'Contextstatus',items:[['Werkcontext',projection.source==='default'?'—':ctx.label],['Herkomst',projection.source==='default'?'—':projection.source],['Plan',projection.plan.code||'—'],['Contextbewijs',projection.confidence?Math.round(projection.confidence*100)+'%':'—']],derived:projection.source!=='default'},
+      {type:'metrics',title:'Waar staat het bedrijf nu?',items:[['Primaire fase',stageLabel],['Actieve overlays',overlays.length?String(overlays.length):'0'],['Plan',projection.plan.code||'—'],['Contextbewijs',primaryKnown?Math.round((business.primary.confidence||0)*100)+'%':'—']],derived:primaryKnown},
+      {type:'worklist',title:'Wat speelt tegelijk?',items:overlayRows,derived:overlays.length>0},
+      {type:'worklist',title:'Nu weten / nu beslissen / nu doen',items:nowRows.length?nowRows:[['—','Nog onvoldoende context om prioriteiten als feit te presenteren']],derived:nowRows.length>0&&primaryKnown},
+      {type:'worklist',title:'Bedrijfsgezondheid',items:healthRows,derived:Object.values(business.health).some(v=>v!=='unknown')},
+      {type:'worklist',title:'Volwassenheid per capability',items:maturityRows,derived:Object.values(business.maturity).some(v=>v!=null)},
+      {type:'worklist',title:'Relevante modellen',items:modelRows,derived:true},
+      {type:'worklist',title:'Verbonden portaalonderdelen',items:pageRows,derived:true},
       {type:'worklist',title:'Powerhouse-verbindingen',items:connected,derived:true},
-      {type:'worklist',title:'Relevante modellen',items:modelRows,derived:false},
-      {type:'worklist',title:'Verbonden portaalonderdelen',items:pages,derived:false},
-      {type:'worklist',title:'Scale — volledige kernintelligentie',items:SCALE_CORE_SURFACES.map(name=>[name,'Beschikbaar in de gedeelde intelligence-kern; Scale verschilt op schaal, snelheid, automation en governance.']),derived:false},
-      {type:'worklist',title:'Alle bedrijfssituaties',items:contextRows,derived:false},
+      {type:'worklist',title:'Bedrijfsreis — wat kan hierna komen?',items:nextStages.length?nextStages:[['—','Geen volgende fase afgeleid']],derived:primaryKnown},
+      {type:'worklist',title:'Gedeelde intelligence-kern',items:SCALE_CORE_SURFACES.map(name=>[name,'Dezelfde intelligence-kern; pakketgrenzen sturen schaal, snelheid, autonomie, governance en begeleiding.']),derived:false},
       {type:'actions',title:'Volgende acties',items:actions}
     ];
-    if(projection.source==='default')blocks.splice(1,0,{type:'empty',title:'Bedrijfssituatie nog niet expliciet vastgesteld',copy:'Powerhouse gebruikt groei alleen als navigatiestandaard. Kies of onderbouw de context met klantdata; verlies, crisis, buy-side, sell-side en portfolio worden niet geraden.'});
-    return {primaryAction,blocks,derived:projection.source!=='default',lifecycle:projection};
+    if(!primaryKnown)blocks.splice(1,0,{type:'empty',title:'Bedrijfsfase nog niet bewezen',copy:'Powerhouse gebruikt geen fase als feit zonder expliciete invoer of voldoende klantdata. Gebeurtenissen, doelen, gezondheid en modellen kunnen wel afzonderlijk zichtbaar zijn zodra daar bewijs voor is.'});
+    return {primaryAction,blocks,derived:primaryKnown||overlays.length>0,lifecycle:projection,businessContext:business};
   }
   if(pageId==='trust-center'){
     const runtime=model?.portal?.runtime||{};
