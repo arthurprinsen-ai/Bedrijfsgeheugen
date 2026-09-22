@@ -1,0 +1,16 @@
+{
+  "fingerprint": "goal-outcome-calibration-v1",
+  "failure_class": "SCENARIO_WITHOUT_MEASURED_FEEDBACK",
+  "observed_problem": "Goal scenarios and roadmap actions existed, but verified realized effects did not yet calibrate future scenario guidance.",
+  "prevention": [
+    "Keep raw scenario assumptions immutable as user/analyst inputs.",
+    "Require at least three verified quantified outcomes per goal/lever before applying a historical calibration factor.",
+    "Expose expected-versus-realized evidence in Portal and keep Outcomes & evidence as the measurement authority.",
+    "Project calibrated effect separately from the raw assumption so provenance remains visible."
+  ],
+  "evals": [
+    "tests/brain-goal-outcome-learning.test.mjs",
+    "portal-v2/tests/business-goal-outcome-learning-ui.test.mjs"
+  ],
+  "status": "candidate"
+}
