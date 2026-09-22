@@ -109,6 +109,25 @@ function maturity(state={}){
   return freeze(Object.fromEntries(dimensions.map(k=>[k,num(raw[k])])) );
 }
 
+function contextHistory(state={}){
+  return arr(state?.records)
+    .filter(record=>{
+      const p=record?.payload||{};
+      return BUSINESS_STAGES[lower(p?.business_context?.stage||p?.lifecycle_stage||p?.stage)];
+    })
+    .sort((a,b)=>String(a?.observedAt||a?.observed_at||'').localeCompare(String(b?.observedAt||b?.observed_at||'')))
+    .map(record=>{
+      const p=record.payload||{};
+      const stage=lower(p?.business_context?.stage||p?.lifecycle_stage||p?.stage);
+      return freeze({
+        stage,
+        label:BUSINESS_STAGES[stage].label,
+        observedAt:record?.observedAt||record?.observed_at||null,
+        evidenceIds:arr(record?.evidenceIds||record?.evidence_ids).filter(Boolean)
+      });
+    });
+}
+
 function priorityRank(stage,events,goals){
   const ids=[stage,...events,...goals];
   const now=[];
@@ -161,6 +180,7 @@ export function buildBusinessContext(state={}){
     models,
     pages,
     priorities,
+    history:contextHistory(state),
     journey:journey(detected.stage,events),
     evidenceMode:detected.source==='default'?'unproven-default':'derived',
     learningKey:`business-context:${detected.stage}:${events.sort().join('+')||'none'}`
