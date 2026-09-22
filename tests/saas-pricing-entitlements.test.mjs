@@ -49,7 +49,8 @@ test('central entitlement policy enforces numeric boolean and mode values',()=>{
   assert.equal(entitlementAllows(record,'agent_mode',{allowedValues:['recommend']}),true);
   assert.equal(entitlementAllows(record,'sso'),false);
   assert.deepEqual(planRuntimePolicy(record),{
-    planCode:'control',status:'active',intelligenceCore:true,maxDataSources:5,refreshMinutes:1440,
+    planCode:'control',status:'active',intelligenceCore:true,coreWorkspaceAccess:true,lifecycleContextAccess:true,
+    recoveryWorkspaceAccess:true,maWorkspaceAccess:true,portfolioWorkspaceAccess:true,maxDataSources:5,refreshMinutes:1440,
     externalSignalScan:null,forecasting:false,scenarioAnalysis:false,agentMode:'recommend',
     organisations:0,sso:false,auditTrail:false,seniorAdvisoryMinutesMonth:0
   });
@@ -140,4 +141,24 @@ test('autonomy envelope still applies after plan mode permits execution',()=>{
   assert.deepEqual(canAgentExecute({...base,planPolicy:{agentMode:'guardrailed_autonomous'},risk:'High'}),{
     allowed:false,reason:'HIGH_IMPACT_REQUIRES_REVIEW'
   });
+});
+
+
+test('Scale keeps the complete intelligence workspace and differs by operating envelope, not model quality',()=>{
+  const scale={organisation_id:'org',plan_code:'scale',plan_name:'Scale',status:'active',entitlements:{
+    intelligence_core:true,data_sources:15,refresh_minutes:60,external_signal_scan:'daily',forecasting:true,scenario_analysis:true,
+    agent_mode:'approval_required',organisations:1,sso:false,audit_trail:true,senior_advisory_minutes_month:120
+  }};
+  const policy=planRuntimePolicy(scale);
+  assert.equal(policy.intelligenceCore,true);
+  assert.equal(policy.coreWorkspaceAccess,true);
+  assert.equal(policy.lifecycleContextAccess,true);
+  assert.equal(policy.recoveryWorkspaceAccess,true);
+  assert.equal(policy.maWorkspaceAccess,true);
+  assert.equal(policy.portfolioWorkspaceAccess,true);
+  assert.equal(policy.maxDataSources,15);
+  assert.equal(policy.refreshMinutes,60);
+  assert.equal(policy.agentMode,'approval_required');
+  assert.equal(policy.auditTrail,true);
+  assert.equal(policy.seniorAdvisoryMinutesMonth,120);
 });
