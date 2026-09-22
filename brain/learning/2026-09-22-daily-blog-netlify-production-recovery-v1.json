@@ -1,0 +1,53 @@
+{
+  "fingerprint": "daily-blog-netlify-production-recovery-2026-09-22-v1",
+  "date": "2026-09-22",
+  "type": "PRODUCTION_DELIVERY_RECOVERY",
+  "failure_class": "MULTI_STAGE_NETLIFY_BLOG_RELEASE_FAILURE",
+  "scope": "DAILY_BLOG_NETLIFY_PRODUCTION",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": {
+    "runtime": "Netlify production used Node 20.20.2 while the website build uses node:fs/promises.glob and current Netlify dependencies require Node >=22.12.",
+    "content_contract": "The generated daily blog initially missed parts of the technical SEO/evidence contract.",
+    "component_projection": "ensureTrustBar treated CSS text bg-uniform-trust as proof that an actual trustbar DOM element existed.",
+    "delivery_closure": "The material repair initially lacked Brain learning, activity-ledger and human documentation in the same candidate lineage."
+  },
+  "prevention_rule": [
+    "Pin Netlify builds to Node 22.12.0 or newer when active build code or dependencies require it.",
+    "Keep explicit Node heap capacity for localized route generation under a classified regression test.",
+    "Require full technical SEO and substantive evidence before a daily blog can merge.",
+    "Detect component presence from actual DOM elements, never a CSS selector substring alone.",
+    "Every material repair must include Brain learning, activity ledger and human documentation before Required test passes.",
+    "Never claim LIVE_BEWEZEN before protected merge, exact Netlify production identity and public HTTP 200 readback."
+  ],
+  "evidence": [
+    "Netlify candidate deploy 6ab23cfaa24d1c000850d835 failed.",
+    "Direct production reproduction deploy 6ab248ccf0fac166d565e4bb failed with the same build exit code.",
+    "Exact-source reproduction exposed Node 20 incompatibility at node:fs/promises.glob.",
+    "tests/site-shell-trustbar-css-only-repair.test.mjs covers trustbar CSS-only false positives and Netlify runtime invariants.",
+    "technical-seo-contract-100 became success on exact head bf07e9b009aba7376d9e7ea5a365a4954e835093.",
+    "Required-test preflight reported missing brain_learning, activity_ledger and human_documentation."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/site-shell-trustbar-css-only-repair.test.mjs",
+      ".github/workflows/blog-technical-seo-gate.yml"
+    ],
+    "canary": [
+      "Netlify deploy-preview on PR #2581",
+      "Required test exact-head gate on PR #2581"
+    ],
+    "shadow": [
+      "Public release.json and daily blog URL readback after protected merge"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after PR #2581 protected merge, exact current-main Netlify production deployment is ready, release.json identifies that production commit/deploy, and the public daily blog URL returns HTTP 200.",
+  "compiler": {
+    "failure_class": "RUNTIME_AND_CONTENT_CONTRACT_INVARIANT",
+    "scope": "PRODUCTION_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
