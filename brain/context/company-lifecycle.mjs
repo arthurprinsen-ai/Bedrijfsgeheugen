@@ -14,7 +14,9 @@ const number=value=>Number.isFinite(Number(value))?Number(value):null;
 const lower=value=>String(value??'').trim().toLowerCase();
 
 export function inferCompanyLifecycleContext(state={}){
-  const explicit=lower(state?.portal?.lifecycle?.stage||state?.portal?.context?.stage||state?.company?.lifecycle_stage);
+  const records=list(state?.records).slice().sort((a,b)=>String(b?.observedAt||b?.observed_at||'').localeCompare(String(a?.observedAt||a?.observed_at||'')));
+  const contextRecord=records.find(record=>COMPANY_LIFECYCLE_CONTEXTS[lower(record?.payload?.lifecycle_stage||record?.payload?.stage||record?.lifecycle_stage)]);
+  const explicit=lower(state?.portal?.lifecycle?.stage||state?.portal?.context?.stage||state?.company?.lifecycle_stage||contextRecord?.payload?.lifecycle_stage||contextRecord?.payload?.stage||contextRecord?.lifecycle_stage);
   if(COMPANY_LIFECYCLE_CONTEXTS[explicit])return freeze({stage:explicit,source:'explicit',confidence:1,reasons:['explicit-lifecycle-stage']});
   const transaction=lower(state?.portal?.transaction?.type||state?.transaction?.type||state?.ma?.type);
   if(['buy','buy-side','acquisition','acquire'].includes(transaction))return freeze({stage:'buy',source:'transaction',confidence:.95,reasons:['buy-side-transaction']});
