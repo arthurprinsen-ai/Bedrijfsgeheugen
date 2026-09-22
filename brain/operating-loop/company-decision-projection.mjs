@@ -72,8 +72,10 @@ export function buildCompanyDecisionProjection(records,{tenantId}={}){
   const revenuePredictions=projectRevenuePredictions(scoped);
   const revenueCalibration=buildRevenueCalibrationContext(scoped);
   const lifecycleContext=buildCompanyLifecycleContext({records:scoped});
+  const businessContext=lifecycleContext.businessContext;
   return {
     lifecycleContext,
+    businessContext,
     companyDecisions,
     priorityPortfolio,
     decisionEconomics:ledger.economics,
@@ -82,7 +84,7 @@ export function buildCompanyDecisionProjection(records,{tenantId}={}){
     actors:ledger.actors,
     revenuePredictions,
     revenueCalibration,
-    nextDecisionContext:{...(revenueCalibration.next_decision_context||{}),lifecycleContext}
+    nextDecisionContext:{...(revenueCalibration.next_decision_context||{}),lifecycleContext,businessContext}
   };
 }
 
