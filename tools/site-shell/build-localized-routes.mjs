@@ -316,11 +316,15 @@ async function translateAll(strings) {
   }
   if (!missing.length) return result;
 
+  const networkAllowed = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
+  if (!networkAllowed) {
+    console.warn('STATIC_I18N_OFFLINE_RELEASE English generation skipped: release builds never call external translation providers');
+    return null;
+  }
+
   const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
   if (!key) {
-    if (process.env.CONTEXT === 'production') throw new Error('ANTHROPIC_API_KEY is required for production static English routes');
-    console.warn('STATIC_I18N_SKIP_EN missing ANTHROPIC_API_KEY; CI validates structure only');
-    return null;
+    throw new Error('ANTHROPIC_API_KEY is required when STATIC_I18N_NETWORK=1');
   }
 
   const batches = [];
