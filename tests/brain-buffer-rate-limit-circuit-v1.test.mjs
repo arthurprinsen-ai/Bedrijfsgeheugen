@@ -26,7 +26,7 @@ test('open Buffer circuit never blocks personal LinkedIn direct transport',()=>{
   assert.match(source,/transport_contract:'linkedin-composio-direct-v1'/);
   assert.match(source,/buffer_dependency:false/);
   assert.match(source,/readLinkedInPersonalPostViaComposio/);
-  assert.match(source,/row\.channel === 'linkedin_personal' && declaredProvider === 'linkedin_direct'/);
+  assert.match(source,/row\.channel === 'linkedin_personal' && \(declaredProvider === 'linkedin_direct' \|\| \/\^urn:li:/);
   assert.match(source,/COMPOSIO_LINKEDIN_EXACT_RECONCILE_MISMATCH/);
   assert.match(source,/never route this claim through Buffer or create a replacement post/);
   assert.match(source,/publishInstagramViaComposio/);
