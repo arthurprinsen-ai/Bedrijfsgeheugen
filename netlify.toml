@@ -27,6 +27,12 @@
   STATIC_I18N_NETWORK = "1"
   SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml"
 
+[[redirects]]
+  from = "/api/i18n-translate"
+  to = "/.netlify/functions/i18n-translate"
+  status = 200
+  force = true
+
 [functions]
   directory = "netlify/functions"
   node_bundler = "esbuild"
