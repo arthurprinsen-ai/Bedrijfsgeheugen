@@ -1,0 +1,46 @@
+{
+  "fingerprint": "pricing-responsive-i18n-live-20260923-v2",
+  "failure_class": "RUNTIME_DOM_REPLACEMENT_AND_STATIC_LOCALE_DELIVERY_GAP",
+  "problem": "The pricing controls were visible in production but could stop reacting after runtime DOM replacement, while English routing still depended on client-side translation fallback and could remain Dutch or show a switching error.",
+  "root_cause": "The rescue controller initialized only on one DOM lifecycle path and did not re-synchronize after later DOM replacement. Separately, production had STATIC_I18N_NETWORK=0, so /en routes could be emitted as untranslated fallback documents and depended on a runtime translation request instead of carrying English content at release time.",
+  "prevention": [
+    "Pricing interaction uses delegated capture-phase click, touchend and keyboard handling and initializes both before and after DOMContentLoaded as appropriate.",
+    "A MutationObserver re-synchronizes lifecycle, package and billing state after runtime child-list replacement.",
+    "The pricing interaction asset URL is versioned whenever the rescue controller changes so returning mobile clients do not retain stale JavaScript.",
+    "Production localized builds enable static translation; deploy previews remain deterministic and offline.",
+    "Regression tests assert the self-repair controller and the production-versus-preview i18n environment contract.",
+    "Do not mark the incident LIVE_BEWEZEN until the exact merged candidate is deployed and both /prijzen and /en/prijzen are read back from production."
+  ],
+  "evidence": {
+    "source": [
+      "assets/js/pricing-interactions-rescue-v1.js",
+      "prijzen.html",
+      "netlify.toml",
+      "assets/js/i18n.js",
+      "tools/site-shell/build-localized-routes.mjs"
+    ],
+    "tests": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs",
+      "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs"
+    ],
+    "preview_deploy": "PENDING_NEW_HEAD",
+    "production_readback": "PENDING"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "visible controls with dead taps after DOM replacement",
+      "English selector navigating to untranslated runtime fallback"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-interactions-functional-v1.test.mjs",
+    "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "RUNTIME_DOM_REPLACEMENT_AND_STATIC_LOCALE_DELIVERY_GAP",
+    "scope": "WEBSITE_PRICING_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  }
+}
