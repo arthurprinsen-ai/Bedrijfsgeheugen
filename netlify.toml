@@ -16,7 +16,7 @@
 
 [build]
   publish = "."
-  command = "node tools/site-shell/pricing-build-integrity.mjs capture && node tools/bouw-powerhouse-auth.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/apply-tabbladen.mjs && node tools/bouw-v18-views.mjs && node tools/bouw-v18-chrome-alles.mjs && node tools/prijzen-uit-de-homepage.mjs && node tools/site-shell/pricing-build-integrity.mjs restore && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs && node tools/bouw-release-evidence.mjs"
+  command = "node tools/site-shell/pricing-build-integrity.mjs capture && node tools/bouw-powerhouse-auth.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/apply-tabbladen.mjs && node tools/bouw-v18-views.mjs && node tools/bouw-v18-chrome-alles.mjs && node tools/prijzen-uit-de-homepage.mjs && node tools/site-shell/pricing-build-integrity.mjs restore && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs && node tools/bouw-release-evidence.mjs && node tools/site-shell/pricing-build-integrity.mjs restore"
 
 # Netlify's geheimenscan slaat aan op de NAAM van de variabele in deze bestanden.
 # Daar staat nergens de waarde: de workflows gebruiken ${{ secrets.* }} en de
@@ -319,7 +319,7 @@
 # Nieuwe verbeteringen worden alleen op een aparte branch/PR getest; er is geen
 # alternatieve preview-composer meer die een andere website kan tonen.
 [context.deploy-preview]
-  command = "node tools/site-shell/pricing-build-integrity.mjs capture && node tools/bouw-powerhouse-auth.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/apply-tabbladen.mjs && node tools/bouw-v18-views.mjs && node tools/bouw-v18-chrome-alles.mjs && node tools/prijzen-uit-de-homepage.mjs && node tools/site-shell/pricing-build-integrity.mjs restore && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs && node tools/bouw-release-evidence.mjs"
+  command = "node tools/site-shell/pricing-build-integrity.mjs capture && node tools/bouw-powerhouse-auth.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/apply-tabbladen.mjs && node tools/bouw-v18-views.mjs && node tools/bouw-v18-chrome-alles.mjs && node tools/prijzen-uit-de-homepage.mjs && node tools/site-shell/pricing-build-integrity.mjs restore && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs && node tools/bouw-release-evidence.mjs && node tools/site-shell/pricing-build-integrity.mjs restore"
 
 [[redirects]]
   from = "/aanmelden.html"
