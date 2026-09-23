@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "PRICING-INTERACTIONS-FUNCTIONAL-20260923-v1",
+  "fingerprint": "pricing-controls-click-state-runtime-v1",
+  "status": "CANDIDATE",
+  "symptom": "On /prijzen the pricing direction switch, monthly/yearly billing toggle and lifecycle phase pills rendered correctly but did not reliably change visible state when clicked; spacing between the direction switch and billing controls was also inconsistent.",
+  "root_cause": [
+    "The pricing page depended on a single direct-listener initialization path for several independent control groups. When that runtime path was disrupted or a higher stacking context intercepted interaction, the controls still looked interactive while their state did not change.",
+    "Interactive groups did not share one delegated fallback event path, so there was no resilient recovery layer for clicks/taps after later page transforms.",
+    "The billing row used a negative top margin, which visually pulled it out of alignment with the price-direction switch."
+  ],
+  "fix": [
+    "Added a delegated capture-phase interaction guard for price direction, lifecycle stage, billing period and refresh controls.",
+    "Synchronised hidden state, aria-selected/aria-pressed, keyboard tab navigation and checkout billing parameters.",
+    "Raised the interactive control groups into an isolated stacking context and removed the negative billing-row offset."
+  ],
+  "prevention": [
+    "Pricing controls must remain operable through delegated event handling even if direct listeners fail or page transforms reorder runtime initialization.",
+    "Every pricing UI change must verify state transition semantics: selected/pressed state, hidden panel/card swap, price text change and checkout query update.",
+    "Do not use negative layout offsets to visually align stateful controls when normal flow can express the spacing."
+  ],
+  "evidence": [
+    "PR #2655 changes prices.html only for the runtime and layout hardening plus this required closure lineage.",
+    "BRAIN exact-head admission succeeds after machine metadata was added.",
+    "Canonical brand shell contract, full build, live-readback and V18 promotion workflows passed for the exact candidate head before closure artifacts were added."
+  ],
+  "regression_contract": [
+    "Price direction tabs switch visible card groups.",
+    "Monthly/yearly buttons change displayed recurring prices and billing query parameters.",
+    "Lifecycle phase buttons swap their corresponding panels.",
+    "Refresh buttons maintain one active/aria-pressed state."
+  ],
+  "compiler": {
+    "failure_class": "pricing-interaction-runtime-fragility"
+  }
+}
