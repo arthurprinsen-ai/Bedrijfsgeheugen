@@ -28,8 +28,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "visible controls with dead taps after DOM replacement",
-      "English selector navigating to untranslated runtime fallback"
+      "tests/brain-pricing-interactions-functional-v1.test.mjs",
+      "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs"
     ]
   },
   "test_evidence": [
