@@ -17,6 +17,22 @@ function extractSection(html, id) {
   throw new Error(`pricing integrity: unclosed #${id}`);
 }
 
+function pricingRuntimeTag(html) {
+  const match = html.match(/<script\b[^>]*src=["']\/assets\/js\/pricing-interactions-v4\.js\?v=20260923-3["'][^>]*><\/script>/i);
+  if (!match) throw new Error('pricing integrity: missing canonical pricing interaction runtime');
+  return match[0];
+}
+
+function restorePricingRuntime(built, source) {
+  const runtime = pricingRuntimeTag(source);
+  let next = built
+    .replace(/<script\b[^>]*src=["']\/assets\/js\/pricing-interactions-v4\.js[^"']*["'][^>]*><\/script>/gi, '')
+    .replace(/<script\b[^>]*id=["']bg-pricing-neno-v1-js["'][^>]*>[\s\S]*?<\/script>/gi, '')
+    .replace(/<script\b[^>]*id=["']bg-pricing-interaction-guard-v2["'][^>]*>[\s\S]*?<\/script>/gi, '');
+  if (!/<\/body>/i.test(next)) throw new Error('pricing integrity: missing </body> while restoring runtime');
+  return next.replace(/<\/body>/i, runtime + '</body>');
+}
+
 function assertCanonical(html) {
   const required = [
     '€ 2.950',
@@ -48,6 +64,10 @@ function assertCanonical(html) {
   ];
   const missingBilling = billingRequired.filter(token => !html.includes(token));
   if (missingBilling.length) throw new Error(`pricing integrity: missing billing controls: ${missingBilling.join(' | ')}`);
+  pricingRuntimeTag(html);
+  if (/id=["']bg-pricing-neno-v1-js["']/i.test(html) || /id=["']bg-pricing-interaction-guard-v2["']/i.test(html)) {
+    throw new Error('pricing integrity: legacy pricing interaction controller returned');
+  }
 }
 
 const mode = process.argv[2] || '';
@@ -61,7 +81,8 @@ if (mode === 'capture') {
   const [source, built] = await Promise.all([readFile(SNAPSHOT, 'utf8'), readFile(PAGE, 'utf8')]);
   const canonical = extractSection(source, 'pakketten');
   const current = extractSection(built, 'pakketten');
-  const restored = built.replace(current, canonical);
+  const restoredSection = built.replace(current, canonical);
+  const restored = restorePricingRuntime(restoredSection, source);
   assertCanonical(restored);
   await writeFile(PAGE, restored, 'utf8');
   console.log('Restored and verified canonical pricing section after build transforms');
