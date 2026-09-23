@@ -33,7 +33,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/saas-pricing-entitlements.test.mjs"
+      "tests/brain-pricing-full-portal-capability-parity-v1.test.mjs"
     ]
   }
 }
