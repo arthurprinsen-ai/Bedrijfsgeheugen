@@ -65,13 +65,24 @@ test('mobile taps have an external delegated rescue controller',async()=>{
     pricing(),
     readFile(new URL('../assets/js/pricing-interactions-rescue-v1.js',import.meta.url),'utf8')
   ]);
-  assert.match(html,/pricing-interactions-rescue-v1\.js\?v=20260923-1220/);
+  assert.match(html,/pricing-interactions-rescue-v1\.js\?v=20260923-1612/);
   assert.match(runtime,/document\.addEventListener\('click'/);
-  assert.match(runtime,/document\.addEventListener\('pointerup'/);
-  assert.match(runtime,/event\.pointerType !== 'touch'/);
+  assert.match(runtime,/document\.addEventListener\('touchend'/);
+  assert.match(runtime,/passive:false/);
   assert.match(runtime,/\[data-bg-stage\]/);
   assert.match(runtime,/\[data-bg-price-tab\]/);
   assert.match(runtime,/\[data-bg-billing\]/);
   assert.match(runtime,/panel\.hidden = !active/);
   assert.match(runtime,/searchParams\.set\('billing', billing\)/);
+});
+
+
+test('pricing rescue v2 survives DOM replacement and initializes immediately', async () => {
+  const source = await readFile(new URL('../assets/js/pricing-interactions-rescue-v1.js', import.meta.url), 'utf8');
+  assert.match(source, /__BG_PRICING_RESCUE_V2__/);
+  assert.match(source, /MutationObserver/);
+  assert.match(source, /syncFromDom\(\)/);
+  assert.match(source, /touchend/);
+  assert.match(source, /stopImmediatePropagation/);
+  assert.match(source, /dataset\.bgPricingInteractions = 'ready-v2'/);
 });

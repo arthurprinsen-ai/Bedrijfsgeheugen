@@ -24,7 +24,7 @@
 [build.environment]
   NODE_VERSION = "22.12.0"
   NODE_OPTIONS = "--max-old-space-size=2048"
-  STATIC_I18N_NETWORK = "0"
+  STATIC_I18N_NETWORK = "1"
   SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml"
 
 [functions]
@@ -374,3 +374,7 @@
   to = "/bedrijf-overdraagbaar-maken"
   status = 301
   force = true
+
+
+[context.deploy-preview.environment]
+  STATIC_I18N_NETWORK = "0"
