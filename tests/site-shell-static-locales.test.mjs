@@ -30,14 +30,18 @@ test('static locale routes are built and language switching navigates between th
   assert.match(runtime,/localizedHref/);
   assert.match(runtime,/location\.assign\(localizedHref\(normalized\)\)/);
   assert.match(runtime,/location\.replace\(localizedHref\('en'\)\)/);
-  assert.match(runtime,/Static \/nl and \/en routes already contain translated document copy/);
+  assert.match(runtime,/data-bg-static-translated/);
+  assert.match(runtime,/routed === 'en' && !staticTranslated/);
 });
 
-test('English build fails closed in production rather than publishing mixed-language pages', () => {
+test('offline production builds still emit English routes with explicit runtime fallback', () => {
   const build = fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
+  assert.match(build,/data-bg-static-translated/);
+  assert.match(build,/setLocaleMetadata\(enDoc,'en',route,Boolean\(translations\)\)/);
+  assert.match(build,/const enDoc = parse\(sourceHtml\)/);
+  assert.match(build,/fs\.writeFileSync\(enOut,serialize\(enDoc\)\)/);
+  assert.match(build,/runtimeFallback:!translations/);
   assert.match(build,/Missing static English translation/);
   assert.match(build,/Translation response shape mismatch/);
-  assert.match(build,/ANTHROPIC_API_KEY is required for production static English routes/);
   assert.match(build,/translateResilient/);
-  assert.match(build,/Static English translation failed for/);
 });
