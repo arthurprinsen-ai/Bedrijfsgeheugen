@@ -76,8 +76,22 @@ Deno.serve(async req=>{
      if(!fv.body?.pass)return json({ok:false,error:'VIDEO_FRAME_VISION_PROOF_FAILED',position:f.position,detail:fv.body},422);
      fps.push({position:f.position,seconds:Number(f.seconds||0),...fv.body.visual,sha256:fv.body.sha256});
    }
-   const visual={verified:true,semantic_verified:true,mira_present:true,identity_class:'mira_daily_life',evidence_method:'vision',placeholder_detected:false,visual_complete:true,daily_life_scene:true,mira_central_subject:fps.every(x=>x.mira_central_subject===true),text_dominant:fps.some(x=>x.text_dominant===true),brand_template_dominant:fps.some(x=>x.brand_template_dominant===true),confidence:Math.min(...fps.map(x=>Number(x.confidence)||0)),format_verified:true,width:1080,height:1920,asset_url:u,evidence_refs:fps.flatMap(x=>x.evidence_refs||[]),frame_evidence:fps};
-   proof={exact_final_media_proven:true,mira_gate_passed:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:postType,media_provider:'openart',media_url:u,final_media_sha256:final.sha256,instagram_visual:visual};
+   const temporal=manifest.temporal_proof||manifest.temporalProof||{};
+   const temporalRefs=Array.isArray(temporal.evidence_refs)?temporal.evidence_refs.map(clean).filter(Boolean):[];
+   const temporalPass=
+     temporal.single_continuous_take===true
+     && temporal.continuous_motion_verified===true
+     && temporal.scene_continuity_verified===true
+     && temporal.identity_continuity_verified===true
+     && temporal.human_motion_verified===true
+     && temporal.realistic_camera_motion===true
+     && temporal.slideshow_detected===false
+     && temporal.still_image_animation_detected===false
+     && ['vision','manual_vision'].includes(clean(temporal.evidence_method).toLowerCase())
+     && temporalRefs.some((x:string)=>/^temporal:/i.test(x));
+   if(!temporalPass)return json({ok:false,error:'MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED',detail:{required_contract:'mira-continuous-human-video-v1',required:['single_continuous_take','continuous_motion_verified','scene_continuity_verified','identity_continuity_verified','human_motion_verified','realistic_camera_motion','slideshow_detected=false','still_image_animation_detected=false','temporal evidence_ref']}},422);
+   const visual={verified:true,semantic_verified:true,mira_present:true,identity_class:'mira_daily_life',evidence_method:'vision',placeholder_detected:false,visual_complete:true,daily_life_scene:true,mira_central_subject:fps.every(x=>x.mira_central_subject===true),text_dominant:fps.some(x=>x.text_dominant===true),brand_template_dominant:fps.some(x=>x.brand_template_dominant===true),confidence:Math.min(...fps.map(x=>Number(x.confidence)||0)),format_verified:true,width:1080,height:1920,asset_url:u,evidence_refs:[...fps.flatMap(x=>x.evidence_refs||[]),...temporalRefs],frame_evidence:fps,temporal_proof:{...temporal,contract:'mira-continuous-human-video-v1',verified:true}};
+   proof={exact_final_media_proven:true,mira_gate_passed:true,identity_gate_result:'PASS',mira_gate_result:'PASS',media_type:postType,media_provider:'openart',media_url:u,final_media_sha256:final.sha256,instagram_visual:visual,temporal_proof:{...temporal,contract:'mira-continuous-human-video-v1',verified:true}};
   } else if(postType==='carousel'){
    const slides=Array.isArray(manifest.slides)?manifest.slides:[];if(slides.length<2)return json({ok:false,error:'CAROUSEL_MIN_TWO_SLIDES_REQUIRED'},422);
    const proven:any[]=[];
