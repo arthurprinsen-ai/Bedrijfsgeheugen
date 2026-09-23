@@ -84,5 +84,5 @@ test('pricing rescue v2 survives DOM replacement and initializes immediately', a
   assert.match(source, /syncFromDom\(\)/);
   assert.match(source, /touchend/);
   assert.match(source, /stopImmediatePropagation/);
-  assert.match(source, /data\.bgPricingInteractions = 'ready-v2'/);
+  assert.match(source, /dataset\.bgPricingInteractions = 'ready-v2'/);
 });
