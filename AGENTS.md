@@ -386,3 +386,20 @@ All repository-backed agents optimize for **time-to-terminal-proof**. Use the ca
 
 Canonical fingerprints: `delivery|fast-terminal|critical-path|v2`, `delivery|predictive-landing-coalescing|v1`.
 
+
+
+## Mira continuous human video — permanent Instagram rule
+
+Fingerprint: `mira-continuous-human-video-v1`.
+
+Iedere huidige en toekomstige chat, agent, skill, workflow of media-producer die een Mira Reel maakt of publiceert, erft verplicht deze regel:
+- Mira-video is één geloofwaardige doorlopende opname-ervaring, geen slideshow of reeks gegenereerde stilstaande beelden;
+- één consistente Mira-identiteit, scène, kleding, belichting en achtergrond door de hele Reel;
+- natuurlijke menselijke beweging van gezicht, ogen, mond, handen en lichaam is verplicht;
+- subtiele realistische camerabeweging/parallax is toegestaan; enkel zoom/pan op een stilstaand beeld geldt niet als video;
+- image-to-video/still-animation, morphing, scene resets, identity jumps, montageachtig beeld en frozen-body/frozen-face gedrag zijn fail-closed geblokkeerd;
+- start/midden/eindframe Mira-proof blijft verplicht maar is niet voldoende: vóór publicatie is ook `temporal_proof` volgens `docs/policies/mira-continuous-human-video-v1.md` verplicht;
+- geen fallback-provider of vervangende asset mag deze kwaliteitsgate omzeilen;
+- een Instagram-publicatiecapability mag pas worden uitgegeven nadat `mira-continuous-human-video-v1` PASS is.
+
+Canonieke enforcement: `powerhouse-instagram-media-router`, `bg-pre-publish-review`, DB-trigger `enforce_mira_continuous_video_capability_v1`, Brain record `mira-continuous-human-video-v1`.
