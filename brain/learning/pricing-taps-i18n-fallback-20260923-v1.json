@@ -33,5 +33,12 @@
     "tests/brain-pricing-interactions-functional-v1.test.mjs",
     "tests/site-shell-static-locales.test.mjs",
     "tests/site-shell-global-i18n.test.mjs"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "CLIENT_INTERACTION_AND_LOCALE_ROUTE_GAP",
+    "scope": "WEBSITE_PRICING_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
