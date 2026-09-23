@@ -46,3 +46,12 @@ test('yearly pricing is not display-only and reaches annual recurring checkout',
   assert.match(backend,/Number\(plan\.monthly_price_cents\)\*10/);
   assert.match(backend,/billingCycle==='yearly'\?'year':'month'/);
 });
+
+
+test('pricing route examples are not mislabeled as the complete business-context taxonomy',async()=>{
+  const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
+  assert.match(html,/Veelvoorkomende commerciële routes/i);
+  assert.match(html,/Dit is niet de volledige bedrijfscontext van Powerhouse/i);
+  assert.doesNotMatch(html,/<p class="eyebrow">Kies je bedrijfssituatie<\/p>/i);
+  assert.match(html,/aria-label="Veelvoorkomende commerciële routes"/i);
+});
