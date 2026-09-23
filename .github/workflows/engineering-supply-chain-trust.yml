@@ -27,7 +27,7 @@ jobs:
       - uses: actions/checkout@v4
       - id: github_dependency_review
         continue-on-error: true
-        uses: actions/dependency-review-action@v4
+        uses: actions/dependency-review-action@v5
         with:
           fail-on-severity: high
       - name: Fail-closed local dependency audit fallback
