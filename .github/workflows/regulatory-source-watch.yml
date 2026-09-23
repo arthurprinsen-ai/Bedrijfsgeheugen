@@ -37,7 +37,7 @@ jobs:
           SUPABASE_SERVICE_ROLE_KEY: ${{ secrets.SUPABASE_SERVICE_ROLE_KEY }}
         run: python3 tools/regulatory-brain-ingest.py
       - name: Preserve raw run evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: regulatory-source-raw-${{ github.run_id }}
           path: artifacts/regulatory

@@ -46,7 +46,7 @@ jobs:
           git archive "$GITHUB_SHA" | tar -x -C "$tmpdir"
           printf '%s\n' "$GITHUB_SHA" > "$tmpdir/.bg-source-commit"
           (cd "$tmpdir" && zip -qr "$GITHUB_WORKSPACE/production-source.zip" .)
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: production-source-${{ github.sha }}
           path: production-source.zip

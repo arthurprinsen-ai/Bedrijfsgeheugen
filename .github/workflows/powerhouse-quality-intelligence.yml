@@ -122,7 +122,7 @@ jobs:
       - name: Record Trivy/delta evidence
         if: always()
         run: node scripts/brain/quality/sensor-evidence.mjs trivy '${{ steps.vulnerability_delta.outcome }}' artifacts/quality/security/sensor-evidence.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-security-${{ github.sha }}
@@ -154,7 +154,7 @@ jobs:
       - name: Record deep frontend evidence
         if: always()
         run: node scripts/brain/quality/sensor-evidence.mjs cross_browser_semantic_visual '${{ steps.deep_frontend.outcome }}' artifacts/quality/frontend/sensor-evidence.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-frontend-${{ github.sha }}
@@ -176,7 +176,7 @@ jobs:
       - name: Record fuzz chaos evidence
         if: always()
         run: node scripts/brain/quality/sensor-evidence.mjs fuzz_chaos '${{ steps.fuzz_chaos.outcome }}' artifacts/quality/adversarial/sensor-evidence.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-adversarial-${{ github.sha }}
@@ -194,7 +194,7 @@ jobs:
           node-version: '22'
       - name: Execute safe fault-detection and recovery simulations
         run: node scripts/brain/quality/game-day.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-game-days-${{ github.sha }}
@@ -216,7 +216,7 @@ jobs:
       - name: Record k6 evidence
         if: always()
         run: node scripts/brain/quality/sensor-evidence.mjs k6 '${{ steps.k6.outcome }}' artifacts/quality/performance/sensor-evidence.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-performance-${{ github.sha }}
@@ -240,7 +240,7 @@ jobs:
       - name: Record mutation evidence
         if: always()
         run: node scripts/brain/quality/sensor-evidence.mjs mutation '${{ steps.mutation.outcome }}' artifacts/quality/mutation/sensor-evidence.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-mutation-${{ github.sha }}
@@ -266,7 +266,7 @@ jobs:
       - name: Record ZAP evidence
         if: always()
         run: node scripts/brain/quality/sensor-evidence.mjs zap '${{ steps.zap.outcome }}' artifacts/quality/zap/sensor-evidence.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-zap-${{ github.sha }}
@@ -299,7 +299,7 @@ jobs:
         with:
           subject-path: artifacts/quality/provenance/quality-intelligence-${{ github.sha }}.tar.gz
           sbom-path: artifacts/quality/provenance/quality-intelligence-${{ github.sha }}.cdx.json
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: quality-provenance-${{ github.sha }}
           path: artifacts/quality/provenance
@@ -316,7 +316,7 @@ jobs:
           node-version: '22'
       - name: Observe approved primary quality sources
         run: node scripts/brain/quality/innovation-scout.mjs
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: quality-innovation-scout-${{ github.sha }}

@@ -56,7 +56,7 @@ jobs:
           node -e "const r=require('./.artifacts/completion-supervisor-backfill-report.json'); if(r.productionMutation!==false||r.mode!=='active'||r.durableResumeEnabled!==true) process.exit(1); const bad=(r.dispatches||[]).filter(d=>!(r.resumeResults||[]).some(x=>x.dispatch?.obligationId===d.obligationId&&x.dispatch?.coalesceKey===d.coalesceKey)); if(bad.length) process.exit(1); console.log(JSON.stringify({candidateCount:r.candidateCount, dispatchCount:r.dispatches.length, resumed:r.resumeResults.length, skippedLiveVerified:r.skippedLiveVerified.length}))"
 
       - name: Upload immutable reconciliation and resume evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: completion-supervisor-backfill-resume-${{ github.run_id }}
           path: |

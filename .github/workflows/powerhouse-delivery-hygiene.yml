@@ -255,7 +255,7 @@ jobs:
           NODE
       - name: Upload admission evidence
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: powerhouse-delivery-hygiene-${{ github.run_id }}
           path: .artifacts/powerhouse-delivery-hygiene.json

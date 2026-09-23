@@ -144,7 +144,7 @@ jobs:
 
       - name: Upload visual review
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: v18-production-preview-visual-review
           path: visual-review/*.png

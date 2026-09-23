@@ -103,7 +103,7 @@ jobs:
           const plan = JSON.parse(await readFile('.artifacts/brain-delivery-plan.json', 'utf8'));
           await appendFile(process.env.GITHUB_OUTPUT, `has_lanes=${plan.lanes.length > 0}\n`);
           NODE
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: brain-delivery-plan
           path: .artifacts/
@@ -183,7 +183,7 @@ jobs:
           RUN_ID: ${{ github.run_id }}
       - name: Publish failed lane evidence for BG168/BG167 writeback
         if: failure()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: brain-delivery-failure-${{ matrix.id }}
           path: |
@@ -226,7 +226,7 @@ jobs:
             --current-main "$current_main"
       - name: Publish moving-main evidence
         if: needs.plan.outputs.has_lanes == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: brain-branch-drift
           path: .artifacts/brain-branch-drift.json
@@ -282,7 +282,7 @@ jobs:
           NODE
       - name: Publish main protection promotion evidence
         if: always() && needs.plan.outputs.has_lanes == 'true' && github.event_name == 'workflow_dispatch' && inputs.pr_number != '' && inputs.verification_only != true
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: main-protection-promotion-block-${{ github.run_id }}
           path: .artifacts/main-protection-promotion-block.json
@@ -438,7 +438,7 @@ jobs:
           echo "BRAIN-DELIVERY-v2 trace $TRACE_ID promoted and verified exact candidate $HEAD_SHA via BG169 transport $transport."
       - name: Publish BG169 production evidence
         if: always() && needs.plan.outputs.has_lanes == 'true'
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: bg169-production-evidence
           path: .artifacts/bg169-production-evidence.json

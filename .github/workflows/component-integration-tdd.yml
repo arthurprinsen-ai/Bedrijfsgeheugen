@@ -49,7 +49,7 @@ jobs:
         run: node tools/compose-home-migration.mjs dist/index.html
 
       - name: Upload full homepage candidate
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: component-homepage-candidate
           path: dist/index.html

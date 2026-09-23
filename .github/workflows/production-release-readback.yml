@@ -271,7 +271,7 @@ jobs:
           await writeFile('.artifacts/delivery-learning-route-production-readback.json',`${JSON.stringify(route,null,2)}\n`);
           NODE
       - if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: production-release-readback-${{ github.sha }}
           path: .artifacts/

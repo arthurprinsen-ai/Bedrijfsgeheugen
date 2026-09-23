@@ -28,7 +28,7 @@ jobs:
           node -e "const x=require('/tmp/content-growth-learning.json'); if(!x.version) process.exit(1)"
           echo 'content_types=blog,linkedin,social'
       - name: Upload learning evidence
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: content-growth-learning
           path: /tmp/content-growth-learning.json

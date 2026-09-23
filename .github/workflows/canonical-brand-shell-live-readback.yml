@@ -90,7 +90,7 @@ jobs:
         run: node tools/site-shell/ui-visual-regression/browser-check.mjs
       - name: Upload production visual regression diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: production-ui-visual-regression
           path: artifacts/ui-visual-regression/

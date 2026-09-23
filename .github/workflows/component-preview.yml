@@ -59,7 +59,7 @@ jobs:
         run: node --test tests/components/${{ matrix.component }}.test.mjs
       - name: Compose isolated preview
         run: node tools/compose-component-preview.mjs "${{ matrix.component }}" "preview/components/${{ matrix.component }}.html"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: component-preview-${{ matrix.component }}
           path: preview/components/${{ matrix.component }}.html

@@ -61,7 +61,7 @@ jobs:
         run: BG_PRICING_STAGE=verify node tools/prijzen-uit-de-homepage.mjs
       - name: Upload shell and SEO diagnostics
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: canonical-shell-gate-diagnostic
           path: |

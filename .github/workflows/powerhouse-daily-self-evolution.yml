@@ -43,7 +43,7 @@ jobs:
         run: node scripts/brain/continuous-improvement/capability-inventory.mjs
       - name: Run Engineering OS self-test
         run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: powerhouse-daily-self-evolution-${{ github.run_id }}
           path: artifacts/quality/
