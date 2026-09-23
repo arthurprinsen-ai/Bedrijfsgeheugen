@@ -211,12 +211,13 @@ function rewriteLinks(doc,sourceFile,locale,aliases) {
   visit(doc);
 }
 
-function setLocaleMetadata(doc,locale,route) {
+function setLocaleMetadata(doc,locale,route,translated=true) {
   const html = findFirst(doc,n=>n.tagName==='html');
   const head = findFirst(doc,n=>n.tagName==='head');
   if (!html || !head) throw new Error('HTML/head missing for route ' + route);
   setAttr(html,'lang',locale);
   setAttr(html,'data-bg-static-locale',locale);
+  setAttr(html,'data-bg-static-translated',translated ? 'true' : 'false');
 
   const localizedUrl = SITE + canonicalRoute(locale,route);
   const other = locale === 'en' ? 'nl' : 'en';
@@ -403,21 +404,21 @@ for (const file of files) {
 
   const nlDoc = parse(sourceHtml);
   rewriteLinks(nlDoc,file,'nl',aliases);
-  setLocaleMetadata(nlDoc,'nl',route);
+  setLocaleMetadata(nlDoc,'nl',route,true);
   const nlOut = outputPath('nl',file);
   ensureDir(nlOut);
   fs.writeFileSync(nlOut,serialize(nlDoc));
 
+  const enDoc = parse(sourceHtml);
   if (translations) {
-    const enDoc = parse(sourceHtml);
     const enRefs = collectTranslatables(enDoc);
     applyTranslations(enRefs,translations);
-    rewriteLinks(enDoc,file,'en',aliases);
-    setLocaleMetadata(enDoc,'en',route);
-    const enOut = outputPath('en',file);
-    ensureDir(enOut);
-    fs.writeFileSync(enOut,serialize(enDoc));
   }
+  rewriteLinks(enDoc,file,'en',aliases);
+  setLocaleMetadata(enDoc,'en',route,Boolean(translations));
+  const enOut = outputPath('en',file);
+  ensureDir(enOut);
+  fs.writeFileSync(enOut,serialize(enDoc));
 }
 
-console.log('STATIC_I18N_ROUTES',JSON.stringify({files:files.length,strings:allStrings.size,nl:true,en:Boolean(translations)}));
+console.log('STATIC_I18N_ROUTES',JSON.stringify({files:files.length,strings:allStrings.size,nl:true,en:true,staticEnglish:Boolean(translations),runtimeFallback:!translations}));

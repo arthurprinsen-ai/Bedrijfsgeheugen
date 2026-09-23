@@ -442,9 +442,11 @@
       return;
     }
 
-    // Static /nl and /en routes already contain translated document copy.
-    // Runtime translation remains only for content inserted dynamically after load.
-    if (!routed) {
+    // Fully translated static /en routes need no initial runtime pass.
+    // Offline release builds still emit /en routes, marked data-bg-static-translated="false";
+    // those routes translate in place at runtime instead of failing navigation.
+    const staticTranslated = document.documentElement.dataset.bgStaticTranslated !== 'false';
+    if (!routed || (routed === 'en' && !staticTranslated)) {
       await apply(document.body).catch(()=>{ syncControls(); showLocaleError(); });
     }
     startObserver();

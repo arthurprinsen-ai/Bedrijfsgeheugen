@@ -56,3 +56,12 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(injector,/\/inloggen/);
   assert.match(fn,/runTranslation/);
 });
+test('English locale fallback routes translate in place when static cache is unavailable',()=>{
+  const runtime=fs.readFileSync('assets/js/i18n.js','utf8');
+  const localized=fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
+  assert.match(localized,/data-bg-static-translated/);
+  assert.match(localized,/runtimeFallback:!translations/);
+  assert.match(runtime,/const staticTranslated = document\.documentElement\.dataset\.bgStaticTranslated !== 'false'/);
+  assert.match(runtime,/routed === 'en' && !staticTranslated/);
+  assert.match(runtime,/await apply\(document\.body\)/);
+});
