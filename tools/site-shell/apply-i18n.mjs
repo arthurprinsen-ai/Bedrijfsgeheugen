@@ -4,7 +4,7 @@ import path from 'node:path';
 const ROOT = process.cwd();
 const SKIP = new Set(['node_modules','.git','dist','.netlify']);
 const LINK = '<link rel="stylesheet" href="/assets/i18n.css" data-bg-i18n-asset>';
-const SCRIPT = '<script src="/assets/js/i18n.js" defer data-bg-i18n-asset></script>';
+const SCRIPT = '<script src="/assets/js/i18n.js?v=20260923-3" defer data-bg-i18n-asset></script>';
 const MOBILE_LANGUAGE = '<div class="bg-mobile-language" data-bg-language-switcher="mobile" data-bg-no-translate><span class="bg-mobile-language-label" data-bg-language-label>Language</span><div class="bg-mobile-language-select-wrap"><select class="bg-mobile-language-select" data-bg-language-select aria-label="Language"><option value="nl">Dutch</option><option value="en">English</option></select><span class="bg-mobile-language-chevron" aria-hidden="true">⌄</span></div><span class="bg-language-error" data-bg-language-error hidden>Switching language failed. Try again.</span></div>';
 
 function injectMobileLanguage(html) {
