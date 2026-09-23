@@ -111,7 +111,7 @@ async function verifyPricingInteractions(page, route, viewport) {
   return { ok, skipped:false, ...result };
 }
 
-async function observeRoute(browser, baseUrl, route, viewport) {
+async function observeRoute(browser, baseUrl, route, viewport, { verifyInteractions = true } = {}) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
   const failedAssets = [];
@@ -131,7 +131,7 @@ async function observeRoute(browser, baseUrl, route, viewport) {
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
-    const interactions = await verifyPricingInteractions(page, route, viewport);
+    const interactions = verifyInteractions ? await verifyPricingInteractions(page, route, viewport) : { ok:true, skipped:true, baseline:true };
     const visibleText = await page.locator('body').innerText().catch(() => '');
     const html = await page.content();
     const identity = routeIdentity({ route, canonical: canonical || page.url(), title });
@@ -187,7 +187,7 @@ export async function runCli(argv = process.argv.slice(2)) {
       for (const viewport of viewports) {
         let baselinePageErrors = [];
         if (baselineUrl) {
-          const baselineObservation = await observeRoute(browser, baselineUrl, route, viewport);
+          const baselineObservation = await observeRoute(browser, baselineUrl, route, viewport, { verifyInteractions:false });
           baselinePageErrors = baselineObservation.observedPageErrors;
           baseline.push({
             route,
