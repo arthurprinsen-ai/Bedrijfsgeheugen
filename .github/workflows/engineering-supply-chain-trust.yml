@@ -70,7 +70,7 @@ jobs:
           npm sbom --package-lock-only --sbom-format spdx > ../sbom.spdx.json
       - name: Build provenance subject outside source tree
         run: tar --exclude=.git --exclude=.sbom -czf "$RUNNER_TEMP/powerhouse-source.tgz" .
-      - uses: actions/attest-build-provenance@v2
+      - uses: actions/attest-build-provenance@v4
         with:
           subject-path: ${{ runner.temp }}/powerhouse-source.tgz
       - uses: actions/upload-artifact@v4
