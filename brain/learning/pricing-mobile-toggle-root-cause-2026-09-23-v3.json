@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "PRICING-MOBILE-TOGGLE-ROOT-CAUSE-20260923-v3",
+  "fingerprint": "pricing-mobile-global-table-css-and-duplicate-controller-v3",
+  "status": "CANDIDATE",
+  "symptom": "On mobile /prijzen, lifecycle routes and pricing sections visually fell apart and pricing controls were unreliable after repeated interaction fixes.",
+  "root_cause": [
+    "A legacy page-wide @media(max-width:900px) rule converted every table, thead, tbody, tr, th and td on the pricing page into block/card layout. New lifecycle and M&A matrices were unintentionally captured by that global selector.",
+    "Two independent JavaScript controllers owned the same lifecycle, package-direction and billing controls, creating duplicate event handling and divergent state/update paths."
+  ],
+  "fix": [
+    "Remove the obsolete page-wide mobile table-to-card transformation.",
+    "Keep matrices as native tables inside horizontal-scroll wrappers on narrow screens.",
+    "Remove the duplicate interaction guard and keep one canonical pricing controller.",
+    "Force hidden lifecycle panels and hidden plan cards to remain display:none on every viewport."
+  ],
+  "prevention": [
+    "Never use unscoped element selectors such as table,thead,tbody,tr,th,td inside page-level responsive rules when multiple table components exist.",
+    "Each interactive control group must have one canonical state owner; do not layer fallback click controllers over an existing functional controller.",
+    "Pricing mobile regression tests must assert absence of global table-to-block CSS, presence of scroll wrappers, single-controller ownership and hidden-panel semantics."
+  ],
+  "evidence": [
+    "prijzen.html contained the global mobile rule table,thead,tbody,tr,th,td{display:block;width:auto}.",
+    "prijzen.html simultaneously contained bg-pricing-neno-v1-js and bg-pricing-interaction-guard-v2 controlling the same pricing toggles.",
+    "PR #2666 removes both failure mechanisms and updates tests/brain-pricing-interactions-functional-v1.test.mjs."
+  ],
+  "regression_contract": [
+    "tests/brain-pricing-interactions-functional-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "pricing-mobile-responsive-selector-scope-and-controller-ownership"
+  },
+  "test_evidence": [
+    "tests/brain-pricing-interactions-functional-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs"
+    ]
+  }
+}
