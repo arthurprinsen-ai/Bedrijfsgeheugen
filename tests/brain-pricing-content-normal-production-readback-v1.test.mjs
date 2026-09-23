@@ -12,7 +12,10 @@ test('live pricing contract rejects legacy commercial copy', () => {
 
 test('pricing page keeps mobile controls clickable and exposes monthly/yearly billing', async () => {
   const fs = await import('node:fs/promises');
-  const pricing = await fs.readFile(new URL('../prijzen.html', import.meta.url), 'utf8');
+  const [pricing, runtime] = await Promise.all([
+    fs.readFile(new URL('../prijzen.html', import.meta.url), 'utf8'),
+    fs.readFile(new URL('../assets/pricing-interactions-v3.js', import.meta.url), 'utf8')
+  ]);
   assert.match(pricing, /data-bg-billing="monthly"/);
   assert.match(pricing, /data-bg-billing="yearly"/);
   assert.match(pricing, /2 maanden voordeel/);
@@ -20,7 +23,9 @@ test('pricing page keeps mobile controls clickable and exposes monthly/yearly bi
   assert.match(pricing, /data-yearly="€ 24\.950"/);
   assert.match(pricing, /data-yearly="vanaf € 49\.950"/);
   assert.match(pricing, /touch-action:manipulation/);
-  assert.match(pricing, /card\.hidden=card\.getAttribute\('data-bg-group'\)!==group/);
+  assert.match(pricing, /src="\/assets\/pricing-interactions-v3\.js\?v=20260923-1"/);
+  assert.match(runtime, /card\.hidden=!active/);
+  assert.match(runtime, /card\.classList\.toggle\('is-active',active\)/);
 });
 
 
