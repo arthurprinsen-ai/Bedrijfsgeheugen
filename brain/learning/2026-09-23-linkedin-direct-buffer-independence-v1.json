@@ -25,15 +25,11 @@
     "regression_test": "tests/brain-buffer-rate-limit-circuit-v1.test.mjs enforces direct personal LinkedIn transport and exact readback"
   },
   "scope_note": "LinkedIn organization admin lookup still lacks r_organization_admin. This does not block the personal LinkedIn transport and must not be worked around by weakening fail-closed guarantees.",
-  "evaluation": {
-    "historical_replay": [
-      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
-    ],
-    "canary": [
-      "Exact LinkedIn create response must yield a canonical post URN and LINKEDIN_GET_POST_CONTENT must verify the same URN, author, commentary and PUBLISHED lifecycle before status becomes published."
-    ],
-    "shadow": [
-      "With Buffer circuit open or Buffer unavailable, linkedin_personal must remain eligible for linkedin_direct while linkedin_company may be deferred until organization-native scope is available."
-    ]
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "SOCIAL_PUBLISHING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
