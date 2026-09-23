@@ -22,3 +22,5 @@ A provider rate-limit on an optional transport must never block a channel that h
 ## Verification
 
 The backend regression suite now asserts that an open Buffer circuit does not block personal LinkedIn, that direct LinkedIn create/readback calls are present, and that the old two-LinkedIn-channel Buffer gate cannot return.
+
+The guard also recognizes the LinkedIn URN itself (`urn:li:ugcPost:*` / `urn:li:share:*`) as authoritative routing evidence. This covers legacy rows where the provider field is absent, preventing those rows from ever falling through to Buffer.
