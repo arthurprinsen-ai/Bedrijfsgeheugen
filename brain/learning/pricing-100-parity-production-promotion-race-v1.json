@@ -1,0 +1,35 @@
+{
+  "fingerprint": "pricing-100-parity-production-promotion-race-v1",
+  "failure_class": "NETLIFY_PARALLEL_DEPLOY_OVERRIDES_CURRENT_MAIN",
+  "problem": "The pricing parity recovery was merged to current GitHub main, but Netlify production remained on a parallel pricing merge and therefore served an older built artifact without the full Portal capability section.",
+  "root_cause": "Concurrent pricing delivery lineages completed out of order between GitHub main and Netlify production. Commit identity alone was insufficient because Netlify's current deploy pointed to a different parallel lineage.",
+  "prevention": [
+    "After a pricing recovery merge, verify Netlify current deploy is the current main commit or a descendant containing that recovery.",
+    "If a parallel deploy wins the production race, create a governed promotion successor on the current main epoch rather than accepting stale production.",
+    "Terminal pricing completion requires public content readback of the parity tokens, not only GitHub merge or Netlify ready state."
+  ],
+  "evidence": {
+    "source": [
+      "prijzen.html",
+      "tools/site-shell/pricing-build-integrity.mjs"
+    ],
+    "production_observation": "GitHub main was 276a6d313662b59f2e73f320bcbf26de18d65719 while Netlify current deploy 6ab3844039f46f0008a4174a served commit e6a92c0341397e87a251802e951878dab0dfae2b and public /prijzen omitted the parity block.",
+    "acceptance": [
+      "public /prijzen contains full Portal capability heading",
+      "Trusted Advisor assurance present",
+      "Resource & Sustainability Intelligence present"
+    ]
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_PARALLEL_DEPLOY_OVERRIDES_CURRENT_MAIN",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-full-portal-capability-parity-v1.test.mjs"
+    ]
+  }
+}
