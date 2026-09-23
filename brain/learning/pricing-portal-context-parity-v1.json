@@ -1,0 +1,38 @@
+{
+  "fingerprint": "pricing-portal-context-parity-v1",
+  "failure_class": "PRICING_PORTAL_CONTEXT_DRIFT",
+  "problem": "Pricing grouped entrepreneur situations differently from the live Portal business-context engine and showed annual pricing without carrying annual billing into checkout.",
+  "prevention": [
+    "Business stage, strategic event and entrepreneur goal labels on pricing must mirror the canonical business-context engine.",
+    "Subscription tier is an operating envelope, never a company phase.",
+    "Control/Scale/Enterprise copy must match canonical entitlements for source count, refresh, forecasting/scenarios, automation, audit, organisations and advisory.",
+    "If yearly pricing is shown, checkout must carry billing_cycle and create an annual recurring subscription at the displayed annual amount."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs",
+      "tests/saas-pricing-entitlements.test.mjs"
+    ],
+    "source": [
+      "prijzen.html",
+      "afsluiten.html",
+      "netlify/functions/checkout-create.mjs",
+      "brain/context/business-context-engine.mjs",
+      "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql"
+    ],
+    "outcome": "Pricing vocabulary, tier promises and annual checkout are pinned to the live Portal/Powerhouse context and entitlement truth."
+  },
+  "compiler": {
+    "failure_class": "PRICING_PORTAL_CONTEXT_DRIFT",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ]
+  },
+  "root_cause": "Public pricing evolved around a six-situation commercial segmentation while Portal V2 moved to a canonical multi-context Business OS, and annual billing remained a presentation-only toggle because checkout did not consume the selected billing cadence."
+}
