@@ -1,0 +1,36 @@
+{
+  "fingerprint": "pricing-portal-parity-production-promotion-v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The feature was merged to main while Netlify production still exposed the previous Git-linked commit, so repository truth and production truth temporarily diverged.",
+  "prevention": [
+    "For material pricing or checkout changes, terminal delivery requires exact current-main source identity in Netlify production.",
+    "If Git-linked Netlify does not advance promptly, use the canonical Production Source Snapshot transport rather than declaring the merge live.",
+    "Verify pricing content and backend deployment identity after promotion."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ],
+    "source": [
+      ".github/workflows/production-source-snapshot.yml",
+      "prijzen.html",
+      "afsluiten.html",
+      "netlify/functions/checkout-create.mjs"
+    ],
+    "outcome": "Promotion candidate forces an exact-source production snapshot and requires exact production identity/readback."
+  }
+}
