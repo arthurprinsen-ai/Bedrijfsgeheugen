@@ -35,14 +35,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "The pre-fix pricing source contained all control markup and a syntactically valid direct-listener runtime, yet the user-observed page still failed to transition state. This reproduces the class of failure where render presence and syntax validity are insufficient evidence of interaction health."
-    ],
-    "candidate_checks": [
-      "Delegated capture-phase click handling covers price direction, billing, lifecycle stages and refresh controls.",
-      "ARIA selected/pressed states are updated together with hidden card/panel state.",
-      "Monthly/yearly selection updates displayed recurring prices and checkout billing query parameters.",
-      "Interactive groups use explicit stacking/isolation and no longer rely on the negative billing-row offset."
-    ],
-    "pass_condition": "Exact-head website tests pass and production promotion/readback completes after merge; functional interaction must show visible state transitions on the public page."
-  }
+      "tests/brain-pricing-interactions-functional-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-interactions-functional-v1.test.mjs"
+  ]
 }
