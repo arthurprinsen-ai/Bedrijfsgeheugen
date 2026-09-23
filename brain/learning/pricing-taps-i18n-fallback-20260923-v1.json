@@ -23,5 +23,12 @@
       "tests/site-shell-global-i18n.test.mjs"
     ],
     "production_readback": "PENDING"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs",
+      "tests/site-shell-static-locales.test.mjs",
+      "tests/site-shell-global-i18n.test.mjs"
+    ]
   }
 }
