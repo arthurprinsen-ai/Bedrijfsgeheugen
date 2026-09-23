@@ -1,0 +1,18 @@
+{
+  "fingerprint": "pricing-production-proof-contract-drift-20260923-v4",
+  "failure_class": "PRODUCTION_PROOF_CONTRACT_DRIFT",
+  "root_cause": "The canonical production pricing proof still enforced an obsolete no-annual-toggle contract while the live pricing implementation requires monthly/yearly billing controls, Start/Run & Grow tabs, lifecycle stages and English switching.",
+  "prevention": [
+    "Version production proof expectations together with pricing interaction behavior.",
+    "When pricing controls change, update the production source snapshot proof and its regression test in the same candidate.",
+    "Fail closed when website promotion evidence is classified as deployment-not-applicable while pricing runtime behavior changed."
+  ],
+  "evidence": [
+    ".github/workflows/production-source-snapshot.yml",
+    "tests/brain-pricing-production-content-proof-v1.test.mjs",
+    "PR #2685"
+  ],
+  "obligation_id": "pricing-responsive-i18n-live-20260923-v4",
+  "delivery_lane": "website",
+  "candidate_type": "implementation"
+}
