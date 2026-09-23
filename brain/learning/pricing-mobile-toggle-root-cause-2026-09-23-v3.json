@@ -32,5 +32,10 @@
   },
   "test_evidence": [
     "tests/brain-pricing-interactions-functional-v1.test.mjs"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs"
+    ]
+  }
 }
