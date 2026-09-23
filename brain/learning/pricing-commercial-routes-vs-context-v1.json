@@ -1,0 +1,7 @@
+{
+  "id":"pricing-commercial-routes-vs-business-context-v1",
+  "failure_class":"COMMERCIAL_ROUTE_CONFLATED_WITH_BUSINESS_CONTEXT",
+  "observation":"Six pricing examples were labeled as the complete company situation selector while Powerhouse supports a richer multi-context model.",
+  "prevention":"Pricing examples must be labeled as commercial routes; the canonical phase/event/goal taxonomy must remain explicit and parity-tested against the business-context engine.",
+  "verification":["tests/brain-pricing-portal-context-parity-v1.test.mjs"]
+}
