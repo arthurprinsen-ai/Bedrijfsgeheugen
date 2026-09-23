@@ -52,7 +52,7 @@
 .bg-pricing-intro .lead{max-width:62ch;color:var(--grijs);margin:12px 0 0}
 .bg-price-tabs{display:inline-flex;gap:6px;padding:5px;background:#F0EEE9;border:1px solid var(--lijn);border-radius:999px;margin:28px 0 26px}
 .bg-price-tabs button{border:0;background:transparent;border-radius:999px;padding:10px 16px;font:600 .9rem "Instrument Sans",sans-serif;cursor:pointer;color:var(--grijs)}
-.bg-price-tabs button[aria-selected="true"]{background:#fff;color:var(--inkt);box-shadow:0 1px 4px rgba(20,23,26,.12)}.bg-billing-toggle{display:flex;align-items:center;gap:8px;margin:-10px 0 24px;flex-wrap:wrap}.bg-billing-toggle .bg-billing-label{font-size:.78rem;font-weight:700;color:var(--grijs);margin-right:2px}.bg-billing-toggle button{border:1px solid var(--lijn);background:#fff;color:var(--grijs);border-radius:999px;padding:9px 14px;font:700 .84rem "Instrument Sans",sans-serif;cursor:pointer;touch-action:manipulation}.bg-billing-toggle button[aria-pressed="true"]{background:var(--inkt);border-color:var(--inkt);color:#fff}.bg-billing-save{font-size:.76rem;font-weight:700;color:#B8320B}.bg-price-tabs button,.bg-billing-toggle button,.bg-plan-cta{position:relative;z-index:60;pointer-events:auto;touch-action:manipulation}.bg-plan-card[hidden]{display:none!important}@media(max-width:760px){.bg-price-tabs,.bg-billing-toggle{position:relative;z-index:60}.bg-plan-grid{position:relative;z-index:40}.bg-plan-cta{min-height:48px;display:flex;align-items:center;justify-content:center}}
+.bg-price-tabs button[aria-selected="true"]{background:#fff;color:var(--inkt);box-shadow:0 1px 4px rgba(20,23,26,.12)}.bg-billing-toggle{display:flex;align-items:center;gap:8px;margin:-10px 0 24px;flex-wrap:wrap}.bg-billing-toggle .bg-billing-label{font-size:.78rem;font-weight:700;color:var(--grijs);margin-right:2px}.bg-billing-toggle button{border:1px solid var(--lijn);background:#fff;color:var(--grijs);border-radius:999px;padding:9px 14px;font:700 .84rem "Instrument Sans",sans-serif;cursor:pointer;touch-action:manipulation}.bg-billing-toggle button[aria-pressed="true"]{background:var(--inkt);border-color:var(--inkt);color:#fff}.bg-billing-save{font-size:.76rem;font-weight:700;color:#B8320B}.bg-price-tabs button,.bg-billing-toggle button,.bg-plan-cta{position:relative;z-index:60;pointer-events:auto;touch-action:manipulation}.bg-price-tabs,.bg-billing-toggle,.bg-lifecycle-tabs,#bgRefresh{position:relative;z-index:80;isolation:isolate}.bg-price-tabs button,.bg-billing-toggle button,.bg-lifecycle-tabs button,#bgRefresh button{pointer-events:auto!important;touch-action:manipulation!important;user-select:none;-webkit-tap-highlight-color:transparent}.bg-price-tabs{margin-bottom:14px}.bg-billing-toggle{margin-top:0}.bg-price-tabs button:focus-visible,.bg-billing-toggle button:focus-visible,.bg-lifecycle-tabs button:focus-visible,#bgRefresh button:focus-visible{outline:3px solid #A9B7FF;outline-offset:2px}.bg-plan-card[hidden]{display:none!important}@media(max-width:760px){.bg-price-tabs,.bg-billing-toggle{position:relative;z-index:60}.bg-plan-grid{position:relative;z-index:40}.bg-plan-cta{min-height:48px;display:flex;align-items:center;justify-content:center}}
 .bg-plan-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;align-items:stretch}
 .bg-plan-card{background:#fff;border:1px solid var(--lijn);border-radius:16px;padding:24px 20px;display:flex;flex-direction:column;min-height:100%}
 .bg-plan-card.pop{border:2px solid var(--blauw);position:relative}
@@ -330,6 +330,59 @@ else if(s>15||e>250||mode==='realtime'){plan='Enterprise';monthly='vanaf € 4.9
 else if(s>5||e>50||mode==='hourly'){plan='Scale';monthly='€ 2.495';yearly='€ 24.950';why='Past bij meerdere teams en systemen, tot 15 bronnen, uurverversing en voorspellende signalering.';href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=scale';cta='Start Scale online';}
 var oneOff=(stage==='loss'||stage==='crisis'||motionValue==='buy'||motionValue==='sell'),recurring=!oneOff,price=recurring?(billing==='yearly'?yearly+' /jaar':monthly+' /maand'):monthly+' eenmalig / vanaf';document.getElementById('bgRecPlan').textContent=plan;document.getElementById('bgRecPrice').textContent=price;document.getElementById('bgRecWhy').textContent=why;var a=document.getElementById('bgRecCta');if(href.indexOf('/afsluiten?plan=')>=0){try{var checkoutUrl=new URL(href,location.origin);checkoutUrl.searchParams.set('billing',billing);href=checkoutUrl.toString();}catch(_){}}a.href=href;a.textContent=cta;var labels={daily:'dagelijks',hourly:'ieder uur',realtime:'near-realtime'},stageLabel=situation?situation.options[situation.selectedIndex].text:stage,motionLabel=motionValue&&motion?motion.options[motion.selectedIndex].text:'geen specifieke gebeurtenis',goalLabel=goalValue&&goal?goal.options[goal.selectedIndex].text:'doel nog niet gekozen';document.getElementById('bgRecBreakdown').textContent=stageLabel+' · '+motionLabel+' · '+goalLabel+' · '+s+' bronnen · '+labels[mode]+' · '+emp.options[emp.selectedIndex].text+' medewerkers';}
 applyBilling('monthly');selectStage('grow');
+})();</script><script id="bg-pricing-interaction-guard-v2">(function(){
+'use strict';
+function q(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
+function init(){
+  if(document.documentElement.dataset.bgPricingGuard==='ready')return;
+  document.documentElement.dataset.bgPricingGuard='ready';
+
+  function group(key){
+    q('[data-bg-price-tab]').forEach(function(b){var a=b.dataset.bgPriceTab===key;b.setAttribute('aria-selected',String(a));b.tabIndex=a?0:-1;});
+    q('.bg-plan-card[data-bg-group]').forEach(function(c){var a=c.dataset.bgGroup===key;c.hidden=!a;c.setAttribute('aria-hidden',String(!a));});
+  }
+  function billing(key){
+    q('[data-bg-billing]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.bgBilling===key));});
+    q('.bg-billing-price').forEach(function(el){var v=el.getAttribute(key==='yearly'?'data-yearly':'data-monthly');if(v)el.textContent=v;});
+    q('.bg-billing-period').forEach(function(el){el.textContent=key==='yearly'?'/jaar':'/maand';});
+    q('a[href*="/afsluiten?plan="]').forEach(function(a){try{var u=new URL(a.href,location.origin);u.searchParams.set('billing',key);a.href=u.toString();}catch(e){}});
+  }
+  function stage(key){
+    q('[data-bg-stage]').forEach(function(b){var a=b.dataset.bgStage===key;b.setAttribute('aria-selected',String(a));b.tabIndex=a?0:-1;});
+    q('[data-bg-stage-panel]').forEach(function(p){var a=p.dataset.bgStagePanel===key;p.hidden=!a;p.setAttribute('aria-hidden',String(!a));});
+    var s=document.getElementById('bgSituation'),m=document.getElementById('bgMotion');
+    var phases=['start','validate','grow','scale','professionalize','mature','stagnate','loss','crisis'];
+    if(s&&phases.indexOf(key)>=0)s.value=key;
+    if(m&&phases.indexOf(key)<0)m.value=key;
+  }
+  function refresh(key){
+    q('#bgRefresh button[data-v]').forEach(function(b){var a=b.dataset.v===key;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));});
+  }
+
+  document.addEventListener('click',function(e){
+    var b=e.target.closest('[data-bg-price-tab],[data-bg-billing],[data-bg-stage],#bgRefresh button[data-v]');
+    if(!b)return;
+    if(b.matches('[data-bg-price-tab]')){e.preventDefault();group(b.dataset.bgPriceTab);}
+    else if(b.matches('[data-bg-billing]')){e.preventDefault();billing(b.dataset.bgBilling);}
+    else if(b.matches('[data-bg-stage]')){e.preventDefault();stage(b.dataset.bgStage);}
+    else if(b.matches('#bgRefresh button[data-v]')){e.preventDefault();refresh(b.dataset.v);}
+  },true);
+
+  document.addEventListener('keydown',function(e){
+    var b=e.target.closest('[role="tab"][data-bg-price-tab],[role="tab"][data-bg-stage]');
+    if(!b||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;
+    var sel=b.hasAttribute('data-bg-price-tab')?'[role="tab"][data-bg-price-tab]':'[role="tab"][data-bg-stage]';
+    var tabs=q(sel),i=tabs.indexOf(b);if(i<0)return;e.preventDefault();
+    var n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+    tabs[n].click();tabs[n].focus();
+  });
+
+  group((document.querySelector('[data-bg-price-tab][aria-selected="true"]')||{}).dataset?.bgPriceTab||'start');
+  billing((document.querySelector('[data-bg-billing][aria-pressed="true"]')||{}).dataset?.bgBilling||'monthly');
+  stage((document.querySelector('[data-bg-stage][aria-selected="true"]')||{}).dataset?.bgStage||'grow');
+  refresh((document.querySelector('#bgRefresh button.active')||{}).dataset?.v||'daily');
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
 })();</script></body>
 <!-- deploy-recovery: pricing-saas-data-advisory-2026-09-18-v2 -->
 </html>
