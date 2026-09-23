@@ -295,7 +295,7 @@ jobs:
           docker run --rm -v "$PWD:/work" -w /work anchore/syft:v${SYFT_VERSION} \
             dir:. -o cyclonedx-json=artifacts/quality/provenance/quality-intelligence-${GITHUB_SHA}.cdx.json
       - name: Attest exact-SHA SBOM
-        uses: actions/attest-sbom@v2
+        uses: actions/attest-sbom@v4
         with:
           subject-path: artifacts/quality/provenance/quality-intelligence-${{ github.sha }}.tar.gz
           sbom-path: artifacts/quality/provenance/quality-intelligence-${{ github.sha }}.cdx.json
