@@ -1,0 +1,38 @@
+{
+  "fingerprint": "pricing-language-dom-replacement-and-offline-en-route-20260923-v1",
+  "failure_class": "PUBLIC_UI_LISTENER_LOSS_AND_I18N_ROUTE_GAP",
+  "problem": "On iPhone Safari, pricing/lifecycle and monthly/yearly controls rendered but taps produced no state change. The language selector showed 'Switching language failed. Try again.' and the page remained Dutch.",
+  "root_cause": [
+    "Pricing bound click handlers directly to the initial button nodes. The shared mobile shell can replace/recompose DOM after those handlers are attached, leaving visible replacement buttons without listeners.",
+    "The language runtime redirected canonical unprefixed pages to /en/<route>. Release builds deliberately set STATIC_I18N_NETWORK=0, so when the static translation cache is incomplete the English route is not emitted at all. The selector therefore navigated to a route that could be absent."
+  ],
+  "fix": [
+    "Move pricing state handling to an external cache-busted runtime with document-level delegated click/change/input handlers.",
+    "Switch canonical unprefixed public pages between NL and EN in place using the existing runtime translation endpoint and persisted bg_locale state.",
+    "Keep static /nl and /en routes supported when present, but never require them for the interactive language toggle.",
+    "Cache-bust i18n.js from the site-wide injector."
+  ],
+  "prevention": [
+    "Interactive public controls that survive shell recomposition must use delegated event ownership or be rebound after replacement.",
+    "A user-facing language switch may not depend on a build artifact that offline release policy can legally omit.",
+    "Browser regression must click affected controls on mobile and verify DOM state changes, not merely verify that buttons render."
+  ],
+  "evidence": {
+    "production_before": "/prijzen rendered all lifecycle panels and exposed a language-switch failure message",
+    "source": [
+      "prijzen.html",
+      "assets/js/pricing-interactions-v4.js",
+      "assets/js/i18n.js",
+      "tools/site-shell/apply-i18n.mjs"
+    ],
+    "tests": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs",
+      "tests/site-shell-global-i18n.test.mjs"
+    ]
+  },
+  "compiler": {
+    "scope": "PUBLIC_WEBSITE_INTERACTIONS",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
