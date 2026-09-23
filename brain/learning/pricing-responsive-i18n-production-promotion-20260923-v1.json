@@ -1,0 +1,33 @@
+{
+  "fingerprint": "pricing-responsive-i18n-production-promotion-20260923-v1",
+  "failure_class": "PRODUCTION_RELEASE_TRANSPORT_DRIFT",
+  "problem": "The pricing responsive/i18n fix was merged to protected main, but Netlify production remained on an older deploy and therefore did not contain the merged candidate.",
+  "root_cause": "The normal main merge did not trigger a Netlify production deployment. The repository's canonical exact-source transport is Production Source Snapshot, but that workflow only auto-runs on a main push that changes its own workflow file.",
+  "prevention": [
+    "Treat GitHub merge and Netlify production identity as separate gates.",
+    "When production commit_ref differs from protected main, trigger the canonical Production Source Snapshot workflow rather than claiming the release live.",
+    "Require release.json commit_ref and production context to match the exact protected-main SHA.",
+    "Require public pricing content/readback before terminal closure."
+  ],
+  "evidence": {
+    "main_before_promotion": "8421e5afd4e8b8709cedd44136a182a5f67328c2",
+    "production_before_promotion_deploy": "6ab3ad55f0f4920007cb81bf",
+    "workflow": ".github/workflows/production-source-snapshot.yml",
+    "production_readback": "PENDING"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-production-promotion-recovery-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-production-promotion-recovery-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_RELEASE_TRANSPORT_DRIFT",
+    "scope": "WEBSITE_PRODUCTION_PROMOTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
