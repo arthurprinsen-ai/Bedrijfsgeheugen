@@ -22,5 +22,13 @@
   ],
   "compiler": {
     "failure_class": "production-source-readback-drift"
-  }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+  ]
 }
