@@ -16,15 +16,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "Search Console showed 53 URLs in 'Gevonden - momenteel niet geïndexeerd' while production contained build-generated routes not synchronized by the static sitemap.",
-      "The /inloggen view was configured geenIndex=true but the writer only added noindex when no robots meta existed."
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
-      "GitHub build check succeeded on candidate 6cff982ddfe3a3291130df567b766f5c584054c8.",
-      "Netlify deploy preview 6ab3aa979b53ce000802fada reached ready state.",
-      "GitHub contract and smoke checks succeeded before production promotion."
+      "tests/brain-search-indexing-sitemap-contract.test.mjs",
+      "GitHub build, contract, smoke and CodeQL gates for this delivery candidate.",
+      "Netlify deploy preview is used before production promotion."
     ],
     "production_readback": "Pending exact production promotion and live sitemap/readback; terminal evidence is appended to the governed PR after merge."
   }
