@@ -20,16 +20,16 @@
   ],
   "evidence": [
     "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql is the canonical seeded entitlement source.",
-    "tests/pricing-entitlement-source-parity.test.mjs reads that source and verifies prijzen.html directly."
+    "tests/brain-pricing-entitlement-source-parity-v1.test.mjs reads that source and verifies prijzen.html directly."
   ],
   "regression_contract": [
-    "tests/pricing-entitlement-source-parity.test.mjs"
+    "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
   ],
   "compiler": {
     "failure_class": "pricing-commercial-copy-entitlement-drift"
   },
   "test_evidence": [
-    "tests/pricing-entitlement-source-parity.test.mjs"
+    "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
