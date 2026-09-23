@@ -42,8 +42,11 @@ test('stijl.js voegt niets dubbel toe en koppelt de klikmeting aan vooraf geplaa
 });
 
 
-test('prijzen mobile counter stays in sticky flow to prevent CLS', () => {
+test('prijzen mobile matrices stay component-scoped and never rewrite every table', () => {
   const prijzen = readFileSync('prijzen.html', 'utf8');
-  assert.match(prijzen, /@media\(max-width:900px\)[\s\S]*tbody tr\.tier>td\{display:block;position:static;/);
-  assert.match(prijzen, /tbody tr\.tier>td\{display:grid;[\s\S]*position:fixed;/);
+  assert.match(prijzen, /id="bg-pricing-mobile-hardening-v3"/);
+  assert.match(prijzen, /\.bg-stage-matrix,\.tabelwrap\{overflow-x:auto/);
+  assert.match(prijzen, /\.bg-stage-matrix table,\.tabelwrap table\{display:table/);
+  assert.doesNotMatch(prijzen, /table,thead,tbody,tr,th,td\{display:block/);
+  assert.doesNotMatch(prijzen, /\.tabelwrap\{overflow:visible\}/);
 });
