@@ -13,12 +13,55 @@ test('pricing communicates equal intelligence and self-serve tiers',async()=>{
   assert.match(html,/Enterprise[^]*Bespreek Enterprise/);
 });
 
+
+test('pricing mirrors the Portal business-context model instead of treating Scale as a company phase',async()=>{
+  const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
+  for(const label of [
+    'Start &amp; validatie','Validatie &amp; eerste tractie','Snelle groei / opschalen','Professionaliseren',
+    'Volwassen &amp; stabiel','Stagnatie','Verlies &amp; herstel','Acute continuïteit',
+    'Financiering ophalen','Bedrijf kopen','Bedrijf verkopen','Post-merger integratie','Bedrijfsopvolging',
+    'MBO / MBI','Internationaliseren','Herstructureren','Investeerder / portfolio',
+    'Omzetgroei','Meer winst','Cash beschermen','Groei zonder extra FTE','Ondernemingswaarde verhogen',
+    'Verkoop voorbereiden','Risico verlagen'
+  ]) assert.ok(html.includes(label),label);
+  assert.match(html,/Je bedrijfsfase is niet je abonnement/i);
+  assert.match(html,/Primaire bedrijfsfase/i);
+  assert.match(html,/Wat speelt daarnaast/i);
+  assert.match(html,/Belangrijkste doel nu/i);
+});
+
+test('pricing tier copy matches canonical entitlement semantics',async()=>{
+  const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
+  assert.match(html,/Forecasting en scenarioanalyse op dagelijkse data/i);
+  assert.match(html,/Forecasting en scenarioanalyse op uuractuele data/i);
+  assert.match(html,/Audittrail op acties en goedkeuringen/i);
+  assert.match(html,/SSO, meerdere organisaties en strengere governance/i);
+  assert.match(html,/Volledig · dagelijkse data/i);
+  assert.match(html,/Volledig · uuractuele data/i);
+});
+
 test('checkout backend trusts canonical plans and direct-checkout entitlement',async()=>{
   const source=await readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8');
   assert.match(source,/getPlan\(code\)/);
   assert.match(source,/direct_checkout/);
   assert.match(source,/monthly_price_cents/);
   assert.match(source,/mode','subscription/);
+});
+
+
+test('yearly pricing is carried from pricing page through checkout and billed as ten monthly fees per year',async()=>{
+  const [pricing,checkoutPage,backend]=await Promise.all([
+    readFile(new URL('../prijzen.html',import.meta.url),'utf8'),
+    readFile(new URL('../afsluiten.html',import.meta.url),'utf8'),
+    readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8')
+  ]);
+  assert.match(pricing,/searchParams\.set\('billing',billing\)/);
+  assert.match(checkoutPage,/name="billing_cycle"/);
+  assert.match(checkoutPage,/q\.get\('billing'\)==='yearly'/);
+  assert.match(backend,/billing_cycle/);
+  assert.match(backend,/monthly_price_cents\)\*10/);
+  assert.match(backend,/billingCycle==='yearly'\?'year':'month'/);
+  assert.match(backend,/metadata\[billing_cycle\]/);
 });
 
 test('connector store enforces the server-side source entitlement',async()=>{
