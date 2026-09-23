@@ -7,8 +7,12 @@ test('production pricing promotion proves canonical live content', () => {
   assert.match(workflow,/Prove pricing production content/);
   assert.match(workflow,/<h3>Build<\/h3>/);
   assert.match(workflow,/Wat moet het opleveren om zichzelf terug te verdienen\?/);
-  assert.match(workflow,/<h3>Transform<\/h3>/);
-  assert.match(workflow,/Per jaar/);
-  assert.match(workflow,/2 maanden gratis/);
+  assert.match(workflow,/data-bg-billing="monthly"/);
+  assert.match(workflow,/data-bg-billing="yearly"/);
+  assert.match(workflow,/data-bg-price-tab="start"/);
+  assert.match(workflow,/data-bg-price-tab="run"/);
+  for (const stage of ['grow','loss','crisis','buy','sell','portfolio']) {
+    assert.match(workflow,new RegExp(`data-bg-stage="${stage}"`));
+  }
   assert.match(workflow,/PRICING_PRODUCTION_CONTENT_PROVEN/);
 });
