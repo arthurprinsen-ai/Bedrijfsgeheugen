@@ -9,3 +9,5 @@
 - Regression: `tests/brain-buffer-rate-limit-circuit-v1.test.mjs` now enforces Buffer independence for `linkedin_personal`.
 - Remaining scoped dependency: organization publishing still requires the missing LinkedIn organization-admin scope; this is isolated from personal publishing.
 - Production status: pending protected merge and production deployment/readback; do not mark LIVE_BEWEZEN before those gates complete.
+
+- Hardened legacy compatibility: any personal LinkedIn `urn:li:ugcPost:*` or `urn:li:share:*` reference is routed to native exact readback even if historical provider evidence is missing.
