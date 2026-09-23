@@ -1,0 +1,32 @@
+{
+  "fingerprint": "i18n-production-build-provider-fallback-20260923-v1",
+  "failure_class": "PRODUCTION_BUILD_EXTERNAL_PROVIDER_FAILURE",
+  "problem": "Netlify production deploy 6ab414eb5de9a8c4d1c9417f failed during build with exit code 2 while deploy previews passed.",
+  "root_cause": "Production enables STATIC_I18N_NETWORK=1. Static English generation treated an external Anthropic translation failure as fatal, so a temporary/provider-specific translation error could abort the entire production build even though runtime i18n fallback exists.",
+  "prevention": [
+    "Static translation provider failures must degrade to runtime i18n fallback instead of failing the deployment.",
+    "Keep build-time external provider calls non-critical when equivalent runtime fallback exists.",
+    "Production release remains fail-closed on exact Netlify SHA and live route proof, but not on optional static translation enrichment."
+  ],
+  "evidence": {
+    "failed_deploy_id": "6ab414eb5de9a8c4d1c9417f",
+    "failed_main_sha": "47a09970900485caa965646da48b2a083f6638c2",
+    "netlify_error": "Failed during stage 'building site': Build script returned non-zero exit code: 2",
+    "differing_env": "STATIC_I18N_NETWORK=1 in production versus 0 in deploy-preview"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-production-fallback-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-production-fallback-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_BUILD_EXTERNAL_PROVIDER_FAILURE",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
