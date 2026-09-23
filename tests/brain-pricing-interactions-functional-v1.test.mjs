@@ -4,23 +4,24 @@ import {readFile} from 'node:fs/promises';
 
 const pricing=()=>readFile(new URL('../prijzen.html',import.meta.url),'utf8');
 
-test('pricing interaction groups expose resilient delegated control hooks',async()=>{
+test('pricing controls have one canonical controller without duplicate guard',async()=>{
   const html=await pricing();
-  assert.match(html,/id="bg-pricing-interaction-guard-v2"/);
-  assert.match(html,/document\.addEventListener\('click',[\s\S]*?true\)/);
-  assert.match(html,/\[data-bg-price-tab\],\[data-bg-billing\],\[data-bg-stage\],#bgRefresh button\[data-v\]/);
+  assert.match(html,/id="bg-pricing-neno-v1-js"/);
+  assert.doesNotMatch(html,/id="bg-pricing-interaction-guard-v2"/);
+  assert.match(html,/stageButtons\.forEach[\s\S]*?addEventListener\('click'/);
+  assert.match(html,/tabs\.forEach[\s\S]*?addEventListener\('click'/);
+  assert.match(html,/billingButtons\.forEach[\s\S]*?addEventListener\('click'/);
   assert.match(html,/pointer-events:auto!important/);
   assert.match(html,/isolation:isolate/);
 });
 
-test('pricing direction tabs change visible plan groups and accessibility state',async()=>{
+test('pricing direction tabs change visible plan groups',async()=>{
   const html=await pricing();
   assert.match(html,/data-bg-price-tab="start"/);
   assert.match(html,/data-bg-price-tab="run"/);
   assert.match(html,/\.bg-plan-card\[data-bg-group\]/);
-  assert.match(html,/c\.hidden=!a/);
-  assert.match(html,/setAttribute\('aria-hidden',String\(!a\)\)/);
-  assert.match(html,/setAttribute\('aria-selected',String\(a\)\)/);
+  assert.match(html,/card\.hidden=card\.getAttribute\('data-bg-group'\)!==group/);
+  assert.match(html,/setAttribute\('aria-selected',String\(x\.getAttribute\('data-bg-price-tab'\)===group\)\)/);
 });
 
 test('billing toggle changes prices and checkout billing parameter',async()=>{
@@ -29,17 +30,32 @@ test('billing toggle changes prices and checkout billing parameter',async()=>{
   assert.match(html,/data-bg-billing="yearly"/);
   assert.match(html,/data-yearly="€ 14\.950"/);
   assert.match(html,/data-yearly="€ 24\.950"/);
-  assert.match(html,/searchParams\.set\('billing',key\)/);
-  assert.match(html,/el\.textContent=v/);
+  assert.match(html,/searchParams\.set\('billing',billing\)/);
+  assert.match(html,/el\.textContent=el\.getAttribute\(billing==='yearly'\?'data-yearly':'data-monthly'\)/);
 });
 
-test('lifecycle and refresh controls synchronize selected state',async()=>{
+test('lifecycle tabs hide every non-selected panel',async()=>{
   const html=await pricing();
   for(const stage of ['grow','loss','crisis','buy','sell','portfolio']){
     assert.match(html,new RegExp('data-bg-stage="'+stage+'"'));
     assert.match(html,new RegExp('data-bg-stage-panel="'+stage+'"'));
   }
-  assert.match(html,/p\.hidden=!a/);
-  assert.match(html,/b\.classList\.toggle\('active',a\)/);
-  assert.match(html,/setAttribute\('aria-pressed',String\(a\)\)/);
+  assert.match(html,/p\.hidden=p\.getAttribute\('data-bg-stage-panel'\)!==key/);
+  assert.match(html,/\.bg-lifecycle-panel\[hidden\],\.bg-plan-card\[hidden\]\{display:none!important\}/);
+});
+
+test('mobile pricing CSS never converts every table on the page into cards',async()=>{
+  const html=await pricing();
+  assert.match(html,/id="bg-pricing-mobile-hardening-v3"/);
+  assert.doesNotMatch(html,/table,thead,tbody,tr,th,td\{display:block/);
+  assert.doesNotMatch(html,/\.tabelwrap\{overflow:visible\}/);
+  assert.match(html,/\.bg-stage-matrix,\.tabelwrap\{overflow-x:auto/);
+  assert.match(html,/\.bg-stage-matrix table,\.tabelwrap table\{display:table/);
+});
+
+test('refresh controls update active state and recalculate recommendation',async()=>{
+  const html=await pricing();
+  assert.match(html,/refresh\.querySelectorAll\('button'\)\.forEach/);
+  assert.match(html,/x\.classList\.toggle\('active',x===b\)/);
+  assert.match(html,/render\(\)/);
 });
