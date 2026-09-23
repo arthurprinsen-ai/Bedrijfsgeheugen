@@ -2,19 +2,20 @@
   "fingerprint": "pricing-i18n-api-live-proof-20260923-v1",
   "failure_class": "I18N_API_ROUTE_MISSING",
   "problem": "The live pricing page could render and pricing taps could respond while English switching still failed because the browser called /api/i18n-translate and Netlify returned 404.",
-  "root_cause": "The live pricing page used critical inline JavaScript while production CSP enforces script-src 'self' without unsafe-inline, so the visible controls had no executable inline controller. A prior external rescue path also failed to provide a reliable ready marker. Separately, /api/i18n-translate was not explicitly routed to the existing Netlify function.",
+  "root_cause": "Production CSP blocks inline pricing JavaScript, and the V18 build pipeline rewrote prijzen.html after source capture. pricing-build-integrity restored only the pricing section, not the critical external runtime, so the final deploy could render controls without an executable controller. Separately, /api/i18n-translate lacked an explicit Netlify rewrite.",
   "prevention": [
-    "Critical pricing interactions must run from a self-hosted external script allowed by CSP, never inline JavaScript.",
-    "Use a new versioned asset URL when replacing the pricing runtime to prevent Safari/CDN stale-script reuse.",
-    "Netlify must explicitly route /api/i18n-translate to the i18n-translate function.",
-    "Website CI must execute real mobile pricing taps and actual English switching on an exact Netlify preview with Functions.",
-    "Do not weaken CSP with unsafe-inline to make interaction code work."
+    "Critical pricing interactions run from a self-hosted external script allowed by CSP.",
+    "pricing-build-integrity must re-inject and assert exactly one pricing runtime after all V18 transforms.",
+    "Use a new versioned asset URL for pricing runtime changes to avoid Safari/CDN stale-script reuse.",
+    "Netlify explicitly routes /api/i18n-translate to the i18n-translate function.",
+    "Website CI executes real mobile taps and English switching on the exact Netlify preview with Functions."
   ],
   "evidence": {
     "source": [
       "netlify.toml",
       "prijzen.html",
       "assets/js/pricing-interactions-live-v3.js",
+      "tools/site-shell/pricing-build-integrity.mjs",
       "tools/site-shell/pricing-interactions-browser-check.mjs",
       ".github/workflows/lane-website.yml"
     ],
