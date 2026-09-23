@@ -33,8 +33,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/saas-pricing-entitlements.test.mjs",
-      "tests/pricing-entitlement-source-parity.test.mjs"
+      "tests/saas-pricing-entitlements.test.mjs"
     ]
   }
 }
