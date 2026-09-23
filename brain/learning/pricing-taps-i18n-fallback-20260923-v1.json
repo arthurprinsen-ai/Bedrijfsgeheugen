@@ -1,0 +1,27 @@
+{
+  "fingerprint": "pricing-taps-i18n-fallback-20260923-v1",
+  "failure_class": "CLIENT_INTERACTION_AND_LOCALE_ROUTE_GAP",
+  "problem": "On iPhone the pricing lifecycle/package/billing controls rendered but taps produced no visible state change, while the language selector could navigate to an English route that an offline production build had not emitted.",
+  "root_cause": "Pricing interaction depended on one inline initialization path. The locale build intentionally disabled translation network access and returned null when its translation cache was incomplete, then skipped writing /en routes even though the runtime language switcher still navigated to them.",
+  "prevention": [
+    "Critical pricing controls have an external delegated click/pointerup controller in addition to source-level interaction logic.",
+    "Offline localized builds always emit both /nl and /en route trees.",
+    "English fallback routes are explicitly marked data-bg-static-translated=false and translated in place by the runtime.",
+    "Regression tests assert touch delegation, English route emission and runtime fallback behavior.",
+    "Do not claim closure until preview browser interaction and production /prijzen plus /en/prijzen readback succeed."
+  ],
+  "evidence": {
+    "source": [
+      "prijzen.html",
+      "assets/js/pricing-interactions-rescue-v1.js",
+      "assets/js/i18n.js",
+      "tools/site-shell/build-localized-routes.mjs"
+    ],
+    "tests": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs",
+      "tests/site-shell-static-locales.test.mjs",
+      "tests/site-shell-global-i18n.test.mjs"
+    ],
+    "production_readback": "PENDING"
+  }
+}
