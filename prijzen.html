@@ -17,25 +17,25 @@
  {"@type":"Question","name":"Hoeveel werk is het opzetten?","acceptedAnswer":{"@type":"Answer","text":"Het portaal staat er tijdens het traject al, gevuld met wat we samen hebben vastgelegd. Je begint niet met een leeg scherm."}}]}
 ]}</script><style>@media(max-width:900px){
  .tabelwrap{overflow:visible}
- table,thead,tbody,tr,th,td{display:block;width:auto}
- table{min-width:0}
- thead{position:absolute;left:-9999px}
- tbody{display:flex;flex-direction:column}
- tbody tr.groep{margin:22px 0 8px}
- tbody tr.groep th{background:none;padding:0;border:0;font-size:1.1rem;font-family:"Bricolage Grotesque",sans-serif}
- tbody tr:not(.groep):not(.tier){background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:14px 16px;margin-bottom:10px}
- tbody tr.accent{background:#FFFBE3;border-color:#EBD98A}
- tbody th{position:relative;width:auto;padding:0 0 0 34px;border:0;font-size:1rem;font-weight:500;background:none}
- .heb{position:absolute;left:0;top:2px;width:22px;height:22px}
- tbody td{border:0;border-top:1px solid var(--lijn);margin-top:8px;padding:8px 0 0;display:flex;justify-content:space-between;gap:14px;font-size:.92rem;text-align:right}
- tbody td::before{content:attr(data-p);color:var(--grijs);font-weight:500;text-align:left}
- .uitl{margin:8px 0 4px}
- tbody tr.tier{order:-1;position:sticky;top:0;bottom:auto;margin-bottom:12px;background:none;border:0;padding:0}
- tbody tr.tier>td{display:block;position:static;padding:16px 18px;margin-top:0;border-top:0;text-align:left}
- tbody tr.tier>td::before{content:none}
- .bg-tel{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
- .bg-zin{display:block;margin-top:8px;font-size:1rem}
- .bg-knop{display:block;margin-top:12px;text-align:center;white-space:normal}
+ .tabelwrap table,.tabelwrap thead,.tabelwrap tbody,.tabelwrap tr,.tabelwrap th,.tabelwrap td{display:block;width:auto}
+ .tabelwrap table{min-width:0}
+ .tabelwrap thead{position:absolute;left:-9999px}
+ .tabelwrap tbody{display:flex;flex-direction:column}
+ .tabelwrap tbody tr.groep{margin:22px 0 8px}
+ .tabelwrap tbody tr.groep th{background:none;padding:0;border:0;font-size:1.1rem;font-family:"Bricolage Grotesque",sans-serif}
+ .tabelwrap tbody tr:not(.groep):not(.tier){background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:14px 16px;margin-bottom:10px}
+ .tabelwrap tbody tr.accent{background:#FFFBE3;border-color:#EBD98A}
+ .tabelwrap tbody th{position:relative;width:auto;padding:0 0 0 34px;border:0;font-size:1rem;font-weight:500;background:none}
+ .tabelwrap .heb{position:absolute;left:0;top:2px;width:22px;height:22px}
+ .tabelwrap tbody td{border:0;border-top:1px solid var(--lijn);margin-top:8px;padding:8px 0 0;display:flex;justify-content:space-between;gap:14px;font-size:.92rem;text-align:right}
+ .tabelwrap tbody td::before{content:attr(data-p);color:var(--grijs);font-weight:500;text-align:left}
+ .tabelwrap .uitl{margin:8px 0 4px}
+ .tabelwrap tbody tr.tier{order:-1;position:sticky;top:0;bottom:auto;margin-bottom:12px;background:none;border:0;padding:0}
+ .tabelwrap tbody tr.tier>td{display:block;position:static;padding:16px 18px;margin-top:0;border-top:0;text-align:left}
+ .tabelwrap tbody tr.tier>td::before{content:none}
+ .tabelwrap .bg-tel{display:flex;flex-wrap:wrap;align-items:baseline;gap:8px}
+ .tabelwrap .bg-zin{display:block;margin-top:8px;font-size:1rem}
+ .tabelwrap .bg-knop{display:block;margin-top:12px;text-align:center;white-space:normal}
 }</style><script src="/assets/stijl.js" defer></script>
 
 <style id="quality-a11y-fix-v1">
@@ -92,7 +92,35 @@
 .bg-stage-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.bg-stage-card{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:20px;display:flex;flex-direction:column}.bg-stage-card.featured{border:2px solid var(--blauw)}.bg-stage-kicker{font:600 .68rem "IBM Plex Mono",monospace;letter-spacing:.08em;text-transform:uppercase;color:#B8320B}.bg-stage-card h4{font-family:"Bricolage Grotesque",sans-serif;font-size:1.2rem;margin:6px 0}.bg-stage-card>p{color:var(--grijs);font-size:.88rem}.bg-stage-price{font-family:"Bricolage Grotesque",sans-serif;font-size:1.65rem;font-weight:700;margin:10px 0 4px}.bg-stage-price small{font:500 .78rem "Instrument Sans",sans-serif;color:var(--grijs)}.bg-stage-card ul{list-style:none;margin:12px 0 18px;padding:0;font-size:.84rem}.bg-stage-card li{padding-left:18px;position:relative;margin:6px 0}.bg-stage-card li:before{content:"✓";position:absolute;left:0;color:var(--blauw);font-weight:800}.bg-stage-card a{margin-top:auto;display:block;text-align:center;text-decoration:none;background:var(--geel);border:1px solid #E9CF3F;color:var(--inkt);font-weight:700;border-radius:9px;padding:11px 12px;touch-action:manipulation}.bg-stage-card.featured a{background:var(--blauw);border-color:var(--blauw);color:#fff}
 .bg-stage-note{font-size:.75rem!important;margin:10px 0 0!important}.bg-stage-matrix{margin:26px 0 0;overflow-x:auto}.bg-stage-matrix table{min-width:820px;background:#fff;border:1px solid var(--lijn);border-radius:12px;overflow:hidden}.bg-stage-matrix th,.bg-stage-matrix td{font-size:.82rem}.bg-stage-matrix thead th{background:#F3F1EC}
 .bg-models{margin-top:24px;display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.bg-models article{background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:16px}.bg-models b{display:block;margin-bottom:6px}.bg-models p{margin:0;color:var(--grijs);font-size:.83rem}
-@media(max-width:900px){.bg-stage-grid,.bg-models{grid-template-columns:1fr}.bg-lifecycle-pricing{padding:20px 16px}.bg-lifecycle-tabs{margin-right:-16px;padding-right:16px}}
+@media(max-width:900px){
+.bg-stage-grid,.bg-models{grid-template-columns:1fr}
+.bg-lifecycle-pricing{padding:20px 16px}
+.bg-lifecycle-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));overflow:visible;margin:0;padding:2px 0 12px;gap:8px}
+.bg-lifecycle-tabs button{width:100%;min-height:46px;white-space:normal;line-height:1.25;padding:10px 9px}
+.bg-stage-matrix{overflow:visible}
+.bg-stage-matrix table,.bg-stage-matrix tbody,.bg-stage-matrix tr,.bg-stage-matrix th,.bg-stage-matrix td{display:block;width:100%;min-width:0}
+.bg-stage-matrix thead{display:none}
+.bg-stage-matrix tbody{display:grid;grid-template-columns:1fr;gap:10px}
+.bg-stage-matrix tbody tr{background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:14px}
+.bg-stage-matrix tbody th{padding:0 0 10px;border:0;font-weight:800;font-size:1rem;width:auto}
+.bg-stage-matrix tbody td{display:grid;grid-template-columns:minmax(92px,34%) 1fr;gap:10px;padding:8px 0;border:0;border-top:1px solid var(--lijn);text-align:left}
+.bg-stage-matrix tbody td::before{font-weight:700;color:var(--grijs)}
+.bg-stage-matrix tbody td:nth-of-type(1)::before{content:"Hoofdvraag"}
+.bg-stage-matrix tbody td:nth-of-type(2)::before{content:"Eerste stap"}
+.bg-stage-matrix tbody td:nth-of-type(3)::before{content:"Indicatie"}
+.bg-stage-matrix tbody td:nth-of-type(4)::before{content:"Modellen"}
+}
+@media(max-width:520px){
+.bg-lifecycle-tabs{grid-template-columns:1fr}
+.bg-lifecycle-pricing{margin-left:-4px;margin-right:-4px;padding:18px 12px}
+.bg-stage-summary{display:grid;grid-template-columns:1fr}
+.bg-stage-summary span{width:100%}
+.bg-stage-card{padding:18px 16px}
+.bg-price-tabs{grid-template-columns:1fr}
+.bg-billing-toggle{align-items:stretch}
+.bg-billing-toggle .bg-billing-label,.bg-billing-save{width:100%}
+.bg-billing-toggle button{flex:1 1 0;min-height:46px}
+}
 </style><style id="bg-pricing-value-v1">.bg-value-proof{margin-top:64px;padding:34px 0 8px;border-top:1px solid var(--lijn)}.bg-value-proof h2{font-size:clamp(1.7rem,4vw,2.4rem);max-width:25ch;margin-bottom:10px}.bg-value-proof>p{max-width:72ch;color:var(--grijs)}.bg-value-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:22px}.bg-value-grid article{background:#fff;border:1px solid var(--lijn);border-radius:14px;padding:20px}.bg-value-grid b,.bg-value-grid strong,.bg-value-grid span{display:block}.bg-value-grid b{font-size:.8rem;color:var(--grijs);text-transform:uppercase;letter-spacing:.05em}.bg-value-grid strong{font-family:"Bricolage Grotesque",sans-serif;font-size:1.35rem;margin:8px 0}.bg-value-grid span{font-size:.88rem;color:var(--grijs)}@media(max-width:900px){.bg-value-grid{grid-template-columns:1fr}.bg-value-proof{margin-top:42px}}</style></head><body><div class="bgtop"><div class="bgtop-in">
   <span class="bgtop-punten"><span>Vaste prijs, geen uurtje-factuurtje</span><span>In twee weken draaiend</span><span>Voor het Nederlandse mkb</span></span>
   <span class="bgtop-re">Voor ondernemers, directies en investeerders</span>
@@ -336,82 +364,6 @@
     <span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>
     <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
   </div>
-</div></footer><script id="bg-pricing-neno-v1-js">(function(){
-var stageButtons=[].slice.call(document.querySelectorAll('[data-bg-stage]')),stagePanels=[].slice.call(document.querySelectorAll('[data-bg-stage-panel]'));
-function selectStage(key){stageButtons.forEach(function(b){b.setAttribute('aria-selected',String(b.getAttribute('data-bg-stage')===key));});stagePanels.forEach(function(p){p.hidden=p.getAttribute('data-bg-stage-panel')!==key;});var s=document.getElementById('bgSituation'),m=document.getElementById('bgMotion'),phaseSet=['start','validate','grow','scale','professionalize','mature','stagnate','loss','crisis'];if(s&&phaseSet.indexOf(key)>=0&&s.value!==key)s.value=key;else if(m&&key&&!phaseSet.includes(key)&&m.value!==key)m.value=key;render();}
-stageButtons.forEach(function(b){b.addEventListener('click',function(){selectStage(b.getAttribute('data-bg-stage'));});});
-var tabs=[].slice.call(document.querySelectorAll('[data-bg-price-tab]')),cards=[].slice.call(document.querySelectorAll('.bg-plan-card[data-bg-group]')),billingButtons=[].slice.call(document.querySelectorAll('[data-bg-billing]')),billing='monthly';
-function selectGroup(group){tabs.forEach(function(x){x.setAttribute('aria-selected',String(x.getAttribute('data-bg-price-tab')===group));});cards.forEach(function(card){card.hidden=card.getAttribute('data-bg-group')!==group;});}
-tabs.forEach(function(b){b.addEventListener('click',function(){selectGroup(b.getAttribute('data-bg-price-tab'));});});
-function applyBilling(next){billing=next;billingButtons.forEach(function(b){b.setAttribute('aria-pressed',String(b.getAttribute('data-bg-billing')===billing));});document.querySelectorAll('.bg-billing-price').forEach(function(el){el.textContent=el.getAttribute(billing==='yearly'?'data-yearly':'data-monthly');});document.querySelectorAll('.bg-billing-period').forEach(function(el){el.textContent=billing==='yearly'?(el.tagName==='SMALL'?'/jaar':'per jaar'):(el.tagName==='SMALL'?'/maand':'per maand');});document.querySelectorAll('a[href*="/afsluiten?plan="]').forEach(function(a){try{var u=new URL(a.href,location.origin);u.searchParams.set('billing',billing);a.href=u.toString();}catch(_){}});render();}
-billingButtons.forEach(function(b){b.addEventListener('click',function(){applyBilling(b.getAttribute('data-bg-billing'));});});
-selectGroup('start');
-var situation=document.getElementById('bgSituation'),motion=document.getElementById('bgMotion'),goal=document.getElementById('bgGoal'),urgency=document.getElementById('bgUrgency'),emp=document.getElementById('bgEmployees'),src=document.getElementById('bgSources'),refresh=document.getElementById('bgRefresh'),mode='daily';
-if(refresh)refresh.querySelectorAll('button').forEach(function(b){b.addEventListener('click',function(){mode=b.getAttribute('data-v');refresh.querySelectorAll('button').forEach(function(x){x.classList.toggle('active',x===b);});render();});});
-[situation,motion,goal,urgency,emp].forEach(function(el){if(el)el.addEventListener('change',function(){if(el===situation)selectStage(situation.value);else if(el===motion&&['buy','sell','portfolio'].includes(motion.value))selectStage(motion.value);else render();});});if(src)src.addEventListener('input',render);
-function render(){if(!emp||!src||!refresh)return;var stage=situation?situation.value:'grow',motionValue=motion?motion.value:'',goalValue=goal?goal.value:'',u=urgency?urgency.value:'normal',e=Number(emp.value),s=Math.max(1,Number(src.value)||1),plan='Control',monthly='€ 1.495',yearly='€ 14.950',why='Past bij een overzichtelijke dataketen met maximaal 5 bronnen en dagelijkse synchronisatie. De gekozen bedrijfsfase en doelen blijven als context actief in het portaal.',href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=control',cta='Start online';
-if(stage==='loss'){plan=u==='urgent'?'Continuïteitsdiagnose':'Herstelscan';monthly=u==='urgent'?'vanaf € 7.500':'€ 4.950';yearly=monthly;why=u==='urgent'?'Eerst cash runway, verplichtingen en acute beslissingen objectief maken.':'Eerst vaststellen waar marge, cash en uitvoeringskracht weglekken.';href='https://www.bedrijfsgeheugen.nl/contact';cta='Bespreek herstel';}
-else if(stage==='crisis'){plan=u==='normal'?'Stabilize Sprint':'Continuïteitsdiagnose';monthly=u==='normal'?'vanaf € 19.500':'vanaf € 7.500';yearly=monthly;why='Acute continuïteitsdruk vraagt eerst om cash, scenario’s, afhankelijkheden en een bestuurbare actielijst.';href='https://www.bedrijfsgeheugen.nl/contact';cta='Bespreek urgentie';}
-else if(motionValue==='buy'){plan='Operational & Data DD';monthly='vanaf € 12.500';yearly=monthly;why='Voor aankoopbesluiten combineren we performance, operationele risico’s, data/tech en integratie-uitvoerbaarheid.';href='https://www.bedrijfsgeheugen.nl/contact';cta='Bespreek target';}
-else if(motionValue==='sell'){plan='Exit Readiness Scan';monthly='€ 4.950';yearly=monthly;why='Voor verkoop begint waardecreatie bij overdraagbaarheid, bewijs, KPI-kwaliteit en het wegnemen van vermijdbare risico’s.';href='https://www.bedrijfsgeheugen.nl/contact';cta='Check verkoopbaarheid';}
-else if(motionValue==='portfolio'){plan='Portfolio Control';monthly='vanaf € 3.500';yearly='vanaf € 35.000';why='Voor meerdere participaties is één vergelijkbare definitie van performance, risico en value creation belangrijker dan losse dashboards.';href='https://www.bedrijfsgeheugen.nl/contact';cta='Bespreek portfolio';}
-else if(s>15||e>250||mode==='realtime'){plan='Enterprise';monthly='vanaf € 4.995';yearly='vanaf € 49.950';why='Past bij 15+ bronnen, meerdere entiteiten, near-realtime eisen of zwaardere governance.';href='https://www.bedrijfsgeheugen.nl/contact';cta='Bespreek Enterprise';}
-else if(s>5||e>50||mode==='hourly'){plan='Scale';monthly='€ 2.495';yearly='€ 24.950';why='Past bij meerdere teams en systemen, tot 15 bronnen, uurverversing en voorspellende signalering.';href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=scale';cta='Start Scale online';}
-var oneOff=(stage==='loss'||stage==='crisis'||motionValue==='buy'||motionValue==='sell'),recurring=!oneOff,price=recurring?(billing==='yearly'?yearly+' /jaar':monthly+' /maand'):monthly+' eenmalig / vanaf';document.getElementById('bgRecPlan').textContent=plan;document.getElementById('bgRecPrice').textContent=price;document.getElementById('bgRecWhy').textContent=why;var a=document.getElementById('bgRecCta');if(href.indexOf('/afsluiten?plan=')>=0){try{var checkoutUrl=new URL(href,location.origin);checkoutUrl.searchParams.set('billing',billing);href=checkoutUrl.toString();}catch(_){}}a.href=href;a.textContent=cta;var labels={daily:'dagelijks',hourly:'ieder uur',realtime:'near-realtime'},stageLabel=situation?situation.options[situation.selectedIndex].text:stage,motionLabel=motionValue&&motion?motion.options[motion.selectedIndex].text:'geen specifieke gebeurtenis',goalLabel=goalValue&&goal?goal.options[goal.selectedIndex].text:'doel nog niet gekozen';document.getElementById('bgRecBreakdown').textContent=stageLabel+' · '+motionLabel+' · '+goalLabel+' · '+s+' bronnen · '+labels[mode]+' · '+emp.options[emp.selectedIndex].text+' medewerkers';}
-applyBilling('monthly');selectStage('grow');
-})();</script><script id="bg-pricing-interaction-guard-v2">(function(){
-'use strict';
-function q(s){return Array.prototype.slice.call(document.querySelectorAll(s));}
-function init(){
-  if(document.documentElement.dataset.bgPricingGuard==='ready')return;
-  document.documentElement.dataset.bgPricingGuard='ready';
-
-  function group(key){
-    q('[data-bg-price-tab]').forEach(function(b){var a=b.dataset.bgPriceTab===key;b.setAttribute('aria-selected',String(a));b.tabIndex=a?0:-1;});
-    q('.bg-plan-card[data-bg-group]').forEach(function(c){var a=c.dataset.bgGroup===key;c.hidden=!a;c.setAttribute('aria-hidden',String(!a));});
-  }
-  function billing(key){
-    q('[data-bg-billing]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.bgBilling===key));});
-    q('.bg-billing-price').forEach(function(el){var v=el.getAttribute(key==='yearly'?'data-yearly':'data-monthly');if(v)el.textContent=v;});
-    q('.bg-billing-period').forEach(function(el){el.textContent=key==='yearly'?'/jaar':'/maand';});
-    q('a[href*="/afsluiten?plan="]').forEach(function(a){try{var u=new URL(a.href,location.origin);u.searchParams.set('billing',key);a.href=u.toString();}catch(e){}});
-  }
-  function stage(key){
-    q('[data-bg-stage]').forEach(function(b){var a=b.dataset.bgStage===key;b.setAttribute('aria-selected',String(a));b.tabIndex=a?0:-1;});
-    q('[data-bg-stage-panel]').forEach(function(p){var a=p.dataset.bgStagePanel===key;p.hidden=!a;p.setAttribute('aria-hidden',String(!a));});
-    var s=document.getElementById('bgSituation'),m=document.getElementById('bgMotion');
-    var phases=['start','validate','grow','scale','professionalize','mature','stagnate','loss','crisis'];
-    if(s&&phases.indexOf(key)>=0)s.value=key;
-    if(m&&phases.indexOf(key)<0)m.value=key;
-  }
-  function refresh(key){
-    q('#bgRefresh button[data-v]').forEach(function(b){var a=b.dataset.v===key;b.classList.toggle('active',a);b.setAttribute('aria-pressed',String(a));});
-  }
-
-  document.addEventListener('click',function(e){
-    var b=e.target.closest('[data-bg-price-tab],[data-bg-billing],[data-bg-stage],#bgRefresh button[data-v]');
-    if(!b)return;
-    if(b.matches('[data-bg-price-tab]')){e.preventDefault();group(b.dataset.bgPriceTab);}
-    else if(b.matches('[data-bg-billing]')){e.preventDefault();billing(b.dataset.bgBilling);}
-    else if(b.matches('[data-bg-stage]')){e.preventDefault();stage(b.dataset.bgStage);}
-    else if(b.matches('#bgRefresh button[data-v]')){e.preventDefault();refresh(b.dataset.v);}
-  },true);
-
-  document.addEventListener('keydown',function(e){
-    var b=e.target.closest('[role="tab"][data-bg-price-tab],[role="tab"][data-bg-stage]');
-    if(!b||!['ArrowLeft','ArrowRight','Home','End'].includes(e.key))return;
-    var sel=b.hasAttribute('data-bg-price-tab')?'[role="tab"][data-bg-price-tab]':'[role="tab"][data-bg-stage]';
-    var tabs=q(sel),i=tabs.indexOf(b);if(i<0)return;e.preventDefault();
-    var n=e.key==='Home'?0:e.key==='End'?tabs.length-1:(i+(e.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
-    tabs[n].click();tabs[n].focus();
-  });
-
-  group((document.querySelector('[data-bg-price-tab][aria-selected="true"]')||{}).dataset?.bgPriceTab||'start');
-  billing((document.querySelector('[data-bg-billing][aria-pressed="true"]')||{}).dataset?.bgBilling||'monthly');
-  stage((document.querySelector('[data-bg-stage][aria-selected="true"]')||{}).dataset?.bgStage||'grow');
-  refresh((document.querySelector('#bgRefresh button.active')||{}).dataset?.v||'daily');
-}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
-})();</script></body>
+</div></footer><script src="/assets/pricing-interactions-v3.js?v=20260923-1" defer></script></body>
 <!-- deploy-recovery: pricing-saas-data-advisory-2026-09-18-v2 -->
 </html>
