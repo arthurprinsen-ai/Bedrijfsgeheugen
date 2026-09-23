@@ -168,7 +168,7 @@ jobs:
           const endpoint=`https://api.github.com/repos/${process.env.REPOSITORY}/commits/${process.env.HEAD_SHA}/status`;
           const previewBase=`https://deploy-preview-${process.env.PR_NUMBER}--bedrijfsgeheugen.netlify.app`;
           const routes=JSON.parse(process.env.ROUTES_JSON||'[]');
-          const deadline=Date.now()+30*1000;
+          const deadline=Date.now()+180*1000;
           async function routeReady(route){
             const target=`${previewBase}${route==='/'?'/':route}`;
             try {
