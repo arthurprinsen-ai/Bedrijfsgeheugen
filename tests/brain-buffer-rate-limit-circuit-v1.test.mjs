@@ -15,9 +15,15 @@ test('Buffer 429 opens a persistent circuit and preserves LinkedIn content_ready
   assert.match(source,/deferred_rate_limit/);
 });
 
-test('open Buffer circuit skips Buffer audit while leaving Instagram Composio lane available',()=>{
-  assert.match(source,/if \(!bufferCircuit\.active\)/);
+test('open Buffer circuit never blocks personal LinkedIn direct transport',()=>{
+  assert.match(source,/if \(!bufferCircuit\.active && bufferToken\)/);
   assert.match(source,/BUFFER_RATE_LIMIT_CIRCUIT_OPEN/);
-  assert.match(source,/\['linkedin_personal','linkedin_company'\]\.includes\(row\.channel\)/);
+  assert.match(source,/row\.channel === 'linkedin_company' && bufferCircuit\.active/);
+  assert.doesNotMatch(source,/\['linkedin_personal','linkedin_company'\]\.includes\(row\.channel\) && bufferCircuit\.active/);
+  assert.match(source,/publishLinkedInPersonalViaComposio/);
+  assert.match(source,/LINKEDIN_CREATE_LINKED_IN_POST/);
+  assert.match(source,/LINKEDIN_GET_POST_CONTENT/);
+  assert.match(source,/transport_contract:'linkedin-composio-direct-v1'/);
+  assert.match(source,/buffer_dependency:false/);
   assert.match(source,/publishInstagramViaComposio/);
 });

@@ -1,0 +1,46 @@
+{
+  "fingerprint": "linkedin-direct-buffer-independence-v1",
+  "date": "2026-09-23",
+  "type": "SOCIAL_PUBLISHING_TRANSPORT_RESILIENCE",
+  "failure_class": "BUFFER_HARD_DEPENDENCY_AND_LINKEDIN_FINDER_SCOPE_GAP",
+  "problem": "linkedin_personal depended on Buffer for both create and provider readback. Buffer HTTP 429 therefore blocked daily personal LinkedIn delivery. Direct LinkedIn author-feed listing also returned HTTP 403 because the connected app lacks the finder permission required for that endpoint.",
+  "root_cause": [
+    "The personal LinkedIn transport was coupled to Buffer even though the authenticated LinkedIn connection has member write access.",
+    "Verification depended on provider list/read patterns instead of retaining the exact post identifier returned by the write.",
+    "A Buffer circuit-open state gated both linkedin_personal and linkedin_company."
+  ],
+  "prevention": [
+    "Publish linkedin_personal directly through Composio/LinkedIn.",
+    "Persist the LinkedIn post URN returned by CREATE_LINKED_IN_POST as the canonical delivery_ref.",
+    "Read back exactly that URN with LINKEDIN_GET_POST_CONTENT; never depend on author-feed finder permission for write verification.",
+    "Keep the existing single-writer claim and publication capability as the idempotency authority.",
+    "On uncertain direct LinkedIn readback, fail closed and never create a replacement through Buffer.",
+    "Buffer circuit state may defer linkedin_company while it remains Buffer-dependent, but must never gate linkedin_personal."
+  ],
+  "evidence": {
+    "buffer_failure": "HTTP 429 Retry-After observed on Buffer account/readback calls",
+    "linkedin_connection": "LINKEDIN_GET_MY_INFO succeeded for authenticated member",
+    "linkedin_finder": "GET /rest/posts?q=author returned HTTP 403 ACCESS_DENIED",
+    "native_readback_contract": "LINKEDIN_CREATE_LINKED_IN_POST returns x_restli_id; LINKEDIN_GET_POST_CONTENT reads one exact post URN",
+    "regression_test": "tests/brain-buffer-rate-limit-circuit-v1.test.mjs enforces direct personal LinkedIn transport and exact readback"
+  },
+  "scope_note": "LinkedIn organization admin lookup still lacks r_organization_admin. This does not block the personal LinkedIn transport and must not be worked around by weakening fail-closed guarantees.",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "SOCIAL_PUBLISHING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
+    ]
+  }
+}

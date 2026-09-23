@@ -42,6 +42,61 @@ async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:
   }
   return body;
 }
+
+async function composioConnectedAccount(db:any,toolkit:string,secretName:string){
+  const apiKey=await secret(db,'COMPOSIO_API_KEY');
+  if(!apiKey)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_AUTH_REQUIRED`);
+  let accountId=await secret(db,secretName);
+  if(!accountId){
+    const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=${encodeURIComponent(toolkit)}&statuses=ACTIVE`,{headers:{'x-api-key':apiKey}});
+    const body:any=await response.json().catch(()=>({}));
+    if(!response.ok)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_ACCOUNT_DISCOVERY_${response.status}`);
+    const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
+    const active=items.filter((item:any)=>clean(item?.status).toUpperCase()==='ACTIVE'||!clean(item?.status));
+    if(active.length!==1)throw new Error(active.length===0?`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`:`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
+    accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+  }
+  if(!accountId)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`);
+  return {apiKey,accountId};
+}
+function deepPickLinkedInPostUrn(value:any):string{
+  if(typeof value==='string'&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(value.trim()))return value.trim();
+  if(!value||typeof value!=='object')return'';
+  for(const v of Object.values(value)){const found=deepPickLinkedInPostUrn(v);if(found)return found;}
+  return'';
+}
+async function publishLinkedInPersonalViaComposio(db:any,art:any){
+  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
+  const me=await composioExecute(apiKey,accountId,'LINKEDIN_GET_MY_INFO','Return the authenticated LinkedIn member id.');
+  const personId=deepPickString(me?.data||me,['id']);
+  if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
+  const author=`urn:li:person:${personId}`;
+  const commentary=clean(art.body);
+  const created=await composioExecute(
+    apiKey,accountId,'LINKEDIN_CREATE_LINKED_IN_POST',
+    `Create a PUBLIC LinkedIn post with lifecycleState PUBLISHED. Use author ${author}. Use this exact commentary, preserving wording and line breaks:
+${commentary}`
+  );
+  const createdData=created?.data||created;
+  const postUrn=clean(createdData?.x_restli_id)||deepPickLinkedInPostUrn(createdData);
+  if(!postUrn)throw new Error('COMPOSIO_LINKEDIN_POST_URN_MISSING');
+  const readback=await composioExecute(apiKey,accountId,'LINKEDIN_GET_POST_CONTENT',`Get LinkedIn post content for post_id ${postUrn}.`);
+  const rb=readback?.data||readback;
+  const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
+  const truth=rbUrn===postUrn&&clean(rb?.author)===author&&clean(rb?.commentary)===commentary&&clean(rb?.lifecycleState).toUpperCase()==='PUBLISHED';
+  if(!truth)throw new Error('COMPOSIO_LINKEDIN_EXACT_READBACK_MISMATCH');
+  const publishedAtMs=Number(rb?.publishedAt||createdData?.publishedAt||Date.now());
+  return {
+    provider:'linkedin_direct',
+    provider_post_id:postUrn,
+    provider_truth_verified:true,
+    provider_truth_checked_at:new Date().toISOString(),
+    provider_status:'published',
+    published_at:Number.isFinite(publishedAtMs)?new Date(publishedAtMs).toISOString():new Date().toISOString(),
+    author_urn:author,
+    linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
+  };
+}
 function deepPickId(value:any,preferred:string[]=[]):string{
   if(!value||typeof value!=='object')return'';
   for(const key of preferred){const v=value?.[key];if(typeof v==='string'&&v.trim())return v.trim();}
@@ -397,14 +452,13 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { /* default */ }
   const runDate = clean(body.runDate) || today();
   const mode = clean(body.mode) || 'run';
-  const { data: integration, error: integrationError } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').single();
-  if (integrationError || !integration?.token) return json({ ok: false, error: 'BUFFER_TOKEN_MISSING' }, 503);
-  const bufferToken = integration.token;
+  const { data: integration } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').maybeSingle();
+  const bufferToken = clean(integration?.token) || null;
 
   let bufferCircuit = await readBufferCircuit(db);
   let containment_sweep:any = { skipped:false };
   let provider_reconciliation:any[] = [];
-  if (!bufferCircuit.active) {
+  if (!bufferCircuit.active && bufferToken) {
     try {
       containment_sweep = await containmentSweepInstagram(db, bufferToken);
       provider_reconciliation = await reconcileExistingProviderTruth(db, bufferToken, runDate);
@@ -417,7 +471,7 @@ Deno.serve(async (req) => {
       } else throw error;
     }
   } else {
-    containment_sweep = { skipped:true, reason:'BUFFER_RATE_LIMIT_CIRCUIT_OPEN', retry_at:bufferCircuit.retry_at };
+    containment_sweep = { skipped:true, reason:bufferToken?'BUFFER_RATE_LIMIT_CIRCUIT_OPEN':'BUFFER_TOKEN_UNAVAILABLE_NON_BLOCKING', retry_at:bufferCircuit.retry_at };
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
@@ -442,7 +496,7 @@ Deno.serve(async (req) => {
 
   for (const row of rows || []) {
     const art: any = artifactByChannel.get(row.channel) || null;
-    if (['linkedin_personal','linkedin_company'].includes(row.channel) && bufferCircuit.active) {
+    if (row.channel === 'linkedin_company' && bufferCircuit.active) {
       const evidence={...(row.delivery_evidence||{}),provider:'buffer',buffer_rate_limited:true,buffer_retry_at:bufferCircuit.retry_at,
         buffer_retry_after_seconds:bufferCircuit.retry_after_seconds,provider_truth_verified:false,error:'BUFFER_RATE_LIMITED'};
       await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
@@ -530,6 +584,26 @@ Deno.serve(async (req) => {
       results.push({channel:row.channel,status:'blocked',reason:message});continue;
     }
 
+    if (row.channel === 'linkedin_personal') {
+      try {
+        await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
+        const direct=await publishLinkedInPersonalViaComposio(db,art);
+        const evidence={...gatePassedEvidence,...direct,pre_publish_gate:'passed',final_text_hash:textHash,personal_truth_verified:true,transport_contract:'linkedin-composio-direct-v1',buffer_dependency:false,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,'Collect LinkedIn outcome metrics and feed learning loop.',null);
+        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,provider:'linkedin_direct',provider_truth_verified:true});
+        continue;
+      } catch(error) {
+        const message=error instanceof Error?error.message:String(error);
+        const evidence={...(row.delivery_evidence||{}),provider:'linkedin_direct',provider_truth_verified:false,error:message,transport_contract:'linkedin-composio-direct-v1',buffer_dependency:false};
+        await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+        await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Repair the direct LinkedIn connection/readback for this exact claim; do not fall back to Buffer or issue a replacement post.',message);
+        results.push({channel:row.channel,status:'blocked_direct_linkedin',provider:'linkedin_direct',error:message});
+        continue;
+      }
+    }
+
     if (row.channel === 'instagram_company') {
       try {
         await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
@@ -587,6 +661,13 @@ Deno.serve(async (req) => {
         results.push({channel:row.channel,status:authMissing?'waiting_auth':'failed',provider:instagramMetaConfig?'meta':instagramComposioApiKey?'composio':'buffer',error:message});
         continue;
       }
+    }
+    if (!bufferToken) {
+      const evidence={...(row.delivery_evidence||{}),provider:'buffer',provider_truth_verified:false,error:'BUFFER_TOKEN_MISSING',buffer_dependency:true};
+      await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+      await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,'Restore Buffer only for remaining fallback channels; personal LinkedIn is independent.','BUFFER_TOKEN_MISSING');
+      results.push({channel:row.channel,status:'deferred_buffer_unavailable'});
+      continue;
     }
     const input: Record<string,unknown> = { text: clean(art.body), channelId: channelIds[row.channel], schedulingType: 'automatic', mode: future ? 'customScheduled' : 'shareNow', ...(future ? { dueAt: due.toISOString() } : {}) };
     let created: any;
