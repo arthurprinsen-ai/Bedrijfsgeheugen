@@ -142,8 +142,13 @@ for (const p of VIEWS) {
     || (geerfd && geerfd.toLowerCase() !== HOMEPAGE_WOORD ? geerfd : '');
   html = zetKop(html, titelVoor(p.bestand) || p.titel, p.omschrijving, canoniek, eigenZoekwoord);
   if (!eigenZoekwoord) html = html.replace(/<meta name="bg-zoekwoord"[^>]*>\s*/g, '');
-  if (p.geenIndex && !/name="robots"/.test(html)) {
-    html = html.replace('</head>', '<meta name="robots" content="noindex, follow">\n</head>');
+  if (p.geenIndex) {
+    const robotsTag = /<meta\\b[^>]*name=(?:"robots"|'robots')[^>]*>/i;
+    if (robotsTag.test(html)) {
+      html = html.replace(robotsTag, '<meta name="robots" content="noindex, follow">');
+    } else {
+      html = html.replace('</head>', '<meta name="robots" content="noindex, follow">\n</head>');
+    }
   }
 
   html = metGegevens(html);
