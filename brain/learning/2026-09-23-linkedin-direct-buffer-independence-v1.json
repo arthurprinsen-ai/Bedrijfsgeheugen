@@ -15,14 +15,16 @@
     "Read back exactly that URN with LINKEDIN_GET_POST_CONTENT; never depend on author-feed finder permission for write verification.",
     "Keep the existing single-writer claim and publication capability as the idempotency authority.",
     "On uncertain direct LinkedIn readback, fail closed and never create a replacement through Buffer.",
-    "Buffer circuit state may defer linkedin_company while it remains Buffer-dependent, but must never gate linkedin_personal."
+    "Buffer circuit state may defer linkedin_company while it remains Buffer-dependent, but must never gate linkedin_personal.",
+    "Treat any personal LinkedIn delivery_ref matching a LinkedIn post URN as LinkedIn-native even when legacy provider evidence is missing, so it can never fall through to Buffer."
   ],
   "evidence": {
     "buffer_failure": "HTTP 429 Retry-After observed on Buffer account/readback calls",
     "linkedin_connection": "LINKEDIN_GET_MY_INFO succeeded for authenticated member",
     "linkedin_finder": "GET /rest/posts?q=author returned HTTP 403 ACCESS_DENIED",
     "native_readback_contract": "LINKEDIN_CREATE_LINKED_IN_POST returns x_restli_id; LINKEDIN_GET_POST_CONTENT reads one exact post URN",
-    "regression_test": "tests/brain-buffer-rate-limit-circuit-v1.test.mjs enforces direct personal LinkedIn transport and exact readback"
+    "regression_test": "tests/brain-buffer-rate-limit-circuit-v1.test.mjs enforces direct personal LinkedIn transport and exact readback",
+    "urn_guard": "Personal LinkedIn reconciliation routes both provider=linkedin_direct and any urn:li:ugcPost/share delivery_ref to exact LinkedIn readback before Buffer."
   },
   "scope_note": "LinkedIn organization admin lookup still lacks r_organization_admin. This does not block the personal LinkedIn transport and must not be worked around by weakening fail-closed guarantees.",
   "compiler": {
