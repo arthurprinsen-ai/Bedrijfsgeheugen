@@ -376,7 +376,7 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
     const ref = clean(row.delivery_ref) || clean(obligation?.external_id);
     if (!ref) continue;
     const lineageRecovered = !clean(row.delivery_ref) && !!ref;
-    if (row.channel === 'linkedin_personal' && declaredProvider === 'linkedin_direct') {
+    if (row.channel === 'linkedin_personal' && (declaredProvider === 'linkedin_direct' || /^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))) {
       try {
         const {data:artifact,error:artifactError}=await db.from('powerhouse_content_artifacts').select('body').eq('run_date',runDate).eq('channel','linkedin_personal').maybeSingle();
         if(artifactError)throw new Error(`LINKEDIN_DIRECT_ARTIFACT_READ:${artifactError.message}`);
