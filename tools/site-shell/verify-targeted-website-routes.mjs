@@ -45,6 +45,72 @@ async function navigateWithRetry(page, url, { attempts = 3, timeout = 30_000 } =
   throw lastError;
 }
 
+async function verifyPricingInteractions(page, route, viewport) {
+  if (route !== '/prijzen' || Number(viewport?.width) > 430) return { ok:true, skipped:true };
+
+  const result = await page.evaluate(async () => {
+    const wait = ms => new Promise(resolve => setTimeout(resolve, ms));
+    const click = selector => {
+      const el = document.querySelector(selector);
+      if (!el) return false;
+      el.click();
+      return true;
+    };
+
+    const beforeVisible = [...document.querySelectorAll('[data-bg-stage-panel]')].filter(el => !el.hidden).map(el => el.getAttribute('data-bg-stage-panel'));
+    const stageClicked = click('[data-bg-stage="loss"]');
+    await wait(80);
+    const afterVisible = [...document.querySelectorAll('[data-bg-stage-panel]')].filter(el => !el.hidden).map(el => el.getAttribute('data-bg-stage-panel'));
+
+    const billingClicked = click('[data-bg-billing="yearly"]');
+    await wait(80);
+    const yearlyPressed = document.querySelector('[data-bg-billing="yearly"]')?.getAttribute('aria-pressed') === 'true';
+    const controlPrice = [...document.querySelectorAll('.bg-billing-price')].map(el => el.textContent || '').find(text => text.includes('14.950')) || '';
+
+    const language = document.querySelector('[data-bg-language-select]');
+    let languageChanged = false;
+    let languageErrorHidden = true;
+    if (language) {
+      language.value = 'en';
+      language.dispatchEvent(new Event('change',{bubbles:true}));
+      for (let i=0;i<40;i++) {
+        await wait(100);
+        if (document.documentElement.dataset.bgLocale === 'en' && document.documentElement.lang === 'en') break;
+      }
+      languageChanged = document.documentElement.dataset.bgLocale === 'en' && document.documentElement.lang === 'en';
+      languageErrorHidden = [...document.querySelectorAll('[data-bg-language-error]')].every(el => el.hidden);
+    }
+
+    return {
+      beforeVisible,
+      stageClicked,
+      afterVisible,
+      billingClicked,
+      yearlyPressed,
+      controlPrice,
+      languageControlFound:Boolean(language),
+      languageChanged,
+      languageErrorHidden,
+      runtime:document.documentElement.dataset.bgPricingInteractions || null
+    };
+  });
+
+  const ok =
+    result.beforeVisible.length === 1 &&
+    result.stageClicked &&
+    result.afterVisible.length === 1 &&
+    result.afterVisible[0] === 'loss' &&
+    result.billingClicked &&
+    result.yearlyPressed &&
+    result.controlPrice.includes('14.950') &&
+    result.languageControlFound &&
+    result.languageChanged &&
+    result.languageErrorHidden &&
+    result.runtime === 'v4';
+
+  return { ok, skipped:false, ...result };
+}
+
 async function observeRoute(browser, baseUrl, route, viewport) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
@@ -65,6 +131,7 @@ async function observeRoute(browser, baseUrl, route, viewport) {
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
+    const interactions = await verifyPricingInteractions(page, route, viewport);
     const visibleText = await page.locator('body').innerText().catch(() => '');
     const html = await page.content();
     const identity = routeIdentity({ route, canonical: canonical || page.url(), title });
@@ -76,6 +143,7 @@ async function observeRoute(browser, baseUrl, route, viewport) {
       canonical,
       title,
       identity,
+      interactions,
       visibleText,
       html,
       observedPageErrors:[...new Set(observedPageErrors)],
@@ -96,7 +164,7 @@ async function verifyRoute(browser, baseUrl, route, viewport, { baselinePageErro
     pageErrors,
     failedAssets:observation.failedAssets,
     httpOk:observation.httpOk,
-    identityOk:observation.identity.ok,
+    identityOk:observation.identity.ok && observation.interactions?.ok !== false,
   });
   const { visibleText, html, httpOk, ...evidence } = observation;
   return { ...evidence, baselinePageErrors:[...baselinePageErrors], allowExistingPageErrors, ...summary };
