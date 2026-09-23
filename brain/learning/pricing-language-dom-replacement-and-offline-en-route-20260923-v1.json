@@ -1,38 +1,46 @@
 {
+  "type": "POWERHOUSE_LEARNING",
+  "version": "PRICING-LANGUAGE-INTERACTIONS-20260923-v1",
   "fingerprint": "pricing-language-dom-replacement-and-offline-en-route-20260923-v1",
-  "failure_class": "PUBLIC_UI_LISTENER_LOSS_AND_I18N_ROUTE_GAP",
-  "problem": "On iPhone Safari, pricing/lifecycle and monthly/yearly controls rendered but taps produced no state change. The language selector showed 'Switching language failed. Try again.' and the page remained Dutch.",
+  "status": "CANDIDATE",
+  "symptom": "On iPhone Safari, pricing/lifecycle and monthly/yearly controls rendered but taps produced no state change. The language selector showed 'Switching language failed. Try again.' and the page remained Dutch.",
   "root_cause": [
-    "Pricing bound click handlers directly to the initial button nodes. The shared mobile shell can replace/recompose DOM after those handlers are attached, leaving visible replacement buttons without listeners.",
-    "The language runtime redirected canonical unprefixed pages to /en/<route>. Release builds deliberately set STATIC_I18N_NETWORK=0, so when the static translation cache is incomplete the English route is not emitted at all. The selector therefore navigated to a route that could be absent."
+    "Pricing bound click handlers directly to the initial button nodes. The shared mobile shell can replace or recompose DOM after those handlers are attached, leaving visible replacement buttons without listeners.",
+    "The language runtime redirected canonical unprefixed pages to /en/<route>. Release builds deliberately set STATIC_I18N_NETWORK=0, so when the static translation cache is incomplete the English route is not emitted. The selector could therefore navigate to a route that does not exist."
   ],
   "fix": [
-    "Move pricing state handling to an external cache-busted runtime with document-level delegated click/change/input handlers.",
+    "Move pricing state handling to an external cache-busted runtime with document-level delegated click, change and input handlers.",
     "Switch canonical unprefixed public pages between NL and EN in place using the existing runtime translation endpoint and persisted bg_locale state.",
     "Keep static /nl and /en routes supported when present, but never require them for the interactive language toggle.",
     "Cache-bust i18n.js from the site-wide injector."
   ],
   "prevention": [
-    "Interactive public controls that survive shell recomposition must use delegated event ownership or be rebound after replacement.",
+    "Interactive public controls that must survive shell recomposition use delegated event ownership or explicit rebinding after replacement.",
     "A user-facing language switch may not depend on a build artifact that offline release policy can legally omit.",
-    "Browser regression must click affected controls on mobile and verify DOM state changes, not merely verify that buttons render."
+    "Mobile browser regression must click affected controls and verify resulting DOM state changes rather than only checking that buttons render."
   ],
-  "evidence": {
-    "production_before": "/prijzen rendered all lifecycle panels and exposed a language-switch failure message",
-    "source": [
-      "prijzen.html",
-      "assets/js/pricing-interactions-v4.js",
-      "assets/js/i18n.js",
-      "tools/site-shell/apply-i18n.mjs"
-    ],
-    "tests": [
+  "evidence": [
+    "Public /prijzen exposed the language error text while remaining Dutch.",
+    "Production pricing source used direct per-node click listeners in bg-pricing-neno-v1-js.",
+    "build-localized-routes.mjs returns no English route output when STATIC_I18N_NETWORK=0 and translation cache is incomplete.",
+    "The candidate adds assets/js/pricing-interactions-v4.js, in-place i18n switching and mobile click assertions in verify-targeted-website-routes.mjs."
+  ],
+  "regression_contract": [
+    "tests/brain-pricing-interactions-functional-v1.test.mjs",
+    "tests/site-shell-global-i18n.test.mjs",
+    "tools/site-shell/verify-targeted-website-routes.mjs"
+  ],
+  "compiler": {
+    "failure_class": "public-ui-listener-lifetime-and-offline-i18n-route-gap"
+  },
+  "test_evidence": [
+    "tests/brain-pricing-interactions-functional-v1.test.mjs",
+    "tests/site-shell-global-i18n.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
       "tests/brain-pricing-interactions-functional-v1.test.mjs",
       "tests/site-shell-global-i18n.test.mjs"
     ]
-  },
-  "compiler": {
-    "scope": "PUBLIC_WEBSITE_INTERACTIONS",
-    "machine_enforceable": true,
-    "security_sensitive": false
   }
 }
