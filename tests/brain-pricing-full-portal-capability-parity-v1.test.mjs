@@ -4,6 +4,7 @@ import {readFile} from 'node:fs/promises';
 
 const pricing=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
 const read=path=>readFile(new URL('../'+path,import.meta.url),'utf8');
+const integrity=await read('tools/site-shell/pricing-build-integrity.mjs');
 const sources={
  nav:await read('portal-v2/navigation-model.js'),
  trust:await read('portal-v2/trusted-advisor-assurance.js'),
@@ -36,4 +37,11 @@ test('pricing capability claims remain grounded in canonical portal sources',()=
 test('pricing states the anti-drift contract explicitly',()=>{
  assert.equal(has(pricing,'capability die in de canonieke Portal V2-bronnen als klantfunctionaliteit bestaat'),true);
  assert.equal(has(pricing,'beloven we hier geen functionaliteit die niet in Portal V2 of de SaaS-entitlementlaag aantoonbaar bestaat'),true);
+});
+
+
+test('build integrity protects the full portal parity block',()=>{
+ assert.equal(has(integrity,'Dit is wat er daadwerkelijk in het portaal zit.'),true);
+ assert.equal(has(integrity,'Trusted Advisor assurance'),true);
+ assert.equal(has(integrity,'Resource & Sustainability Intelligence'),true);
 });
