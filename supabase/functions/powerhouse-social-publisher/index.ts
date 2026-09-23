@@ -53,8 +53,28 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
     if(!response.ok)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_ACCOUNT_DISCOVERY_${response.status}`);
     const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
     const active=items.filter((item:any)=>clean(item?.status).toUpperCase()==='ACTIVE'||!clean(item?.status));
-    if(active.length!==1)throw new Error(active.length===0?`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`:`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
-    accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+    if(active.length===0)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`);
+    if(active.length===1){
+      accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+    } else if(toolkit==='instagram'){
+      const matches:any[]=[];
+      for(const item of active){
+        const id=clean(item?.id||item?.connected_account_id);
+        if(!id)continue;
+        const proxy=await fetch(`${COMPOSIO_BASE.replace('/api/v3','')}/api/v3.1/tools/execute/proxy`,{
+          method:'POST',
+          headers:{'content-type':'application/json','x-api-key':apiKey},
+          body:JSON.stringify({endpoint:'/me?fields=id,username',method:'GET',connected_account_id:id,parameters:[]})
+        });
+        const pb:any=await proxy.json().catch(()=>({}));
+        const username=clean(pb?.data?.username||pb?.body?.data?.username).toLowerCase();
+        if(proxy.ok&&username==='bedrijfsgeheugen.nl')matches.push({id,username});
+      }
+      if(matches.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
+      accountId=matches[0].id;
+    } else {
+      throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
+    }
   }
   if(!accountId)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`);
   return {apiKey,accountId};
@@ -199,37 +219,69 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   const mediaType=clean(proof.media_type).toLowerCase();
   if(mediaType!=='reel')throw new Error('INSTAGRAM_MIRA_REEL_ONLY_V3');
   const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
-  const apiKey=await secret(db,'COMPOSIO_API_KEY');
-  if(!apiKey)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
-  let accountId=await secret(db,'COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
-  if(!accountId){
-    const accountsResponse=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=instagram&statuses=ACTIVE`,{headers:{'x-api-key':apiKey}});
-    const accountsBody:any=await accountsResponse.json().catch(()=>({}));
-    if(!accountsResponse.ok)throw new Error(`COMPOSIO_INSTAGRAM_ACCOUNT_DISCOVERY_${accountsResponse.status}`);
-    const items=Array.isArray(accountsBody?.items)?accountsBody.items:Array.isArray(accountsBody?.data?.items)?accountsBody.data.items:Array.isArray(accountsBody?.data)?accountsBody.data:[];
-    const active=items.filter((item:any)=>clean(item?.status).toUpperCase()==='ACTIVE'||!clean(item?.status));
-    if(active.length!==1)throw new Error(active.length===0?'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED':'COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
-    accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+
+  const {apiKey,accountId}=await composioConnectedAccount(db,'instagram','COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
+
+  async function proxy(endpoint:string,method:string,parameters:any[]=[]){
+    const response=await fetch('https://backend.composio.dev/api/v3.1/tools/execute/proxy',{
+      method:'POST',
+      headers:{'content-type':'application/json','x-api-key':apiKey},
+      body:JSON.stringify({endpoint,method,connected_account_id:accountId,parameters})
+    });
+    const body:any=await response.json().catch(()=>({}));
+    if(!response.ok||Number(body?.status||0)>=400){
+      throw new Error('COMPOSIO_INSTAGRAM_PROXY_'+response.status+':'+clean(body?.error?.message||body?.message||JSON.stringify(body)).slice(0,240));
+    }
+    return body?.data??body;
   }
-  if(!accountId)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED');
+
+  const me=await proxy('/me?fields=id,username','GET');
+  const userId=clean(me?.id);
+  const username=clean(me?.username).toLowerCase();
+  if(!userId||username!=='bedrijfsgeheugen.nl')throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_ACCOUNT_MISMATCH');
+
   const caption=clean(art.body);
-  const created=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA',
-    `Create an Instagram Reel media container using this exact public video URL: ${mediaUrl}. Use this exact caption, preserving wording and line breaks: ${caption}`);
-  const containerId=deepPickId(created?.data||created,['creation_id','container_id','id']);
+  const createQuery=new URLSearchParams({media_type:'REELS',video_url:mediaUrl,caption,share_to_feed:'true'}).toString();
+  const created=await proxy('/'+encodeURIComponent(userId)+'/media?'+createQuery,'POST');
+  const containerId=clean(created?.id);
   if(!containerId)throw new Error('COMPOSIO_MEDIA_CONTAINER_ID_MISSING');
-  const published=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH',
-    `Publish the Instagram media container with creation/container id ${containerId} now.`);
-  const mediaId=deepPickId(published?.data||published,['ig_media_id','media_id','id']);
+
+  let processing:any=null; let finished=false;
+  for(let attempt=0;attempt<10;attempt++){
+    processing=await proxy('/'+encodeURIComponent(containerId)+'?fields=status_code,status','GET');
+    const code=clean(processing?.status_code).toUpperCase();
+    if(code==='FINISHED'){finished=true;break;}
+    if(['ERROR','EXPIRED'].includes(code))throw new Error('COMPOSIO_MEDIA_PROCESSING_'+code);
+    await new Promise(resolve=>setTimeout(resolve,1500));
+  }
+  if(!finished)throw new Error('COMPOSIO_MEDIA_PROCESSING_PENDING');
+
+  const publishQuery=new URLSearchParams({creation_id:containerId}).toString();
+  const published=await proxy('/'+encodeURIComponent(userId)+'/media_publish?'+publishQuery,'POST');
+  const mediaId=clean(published?.id);
   if(!mediaId)throw new Error('COMPOSIO_PUBLISHED_MEDIA_ID_MISSING');
-  const readback=await composioExecute(apiKey,accountId,'INSTAGRAM_GET_IG_MEDIA',
-    `Get Instagram media with id ${mediaId} and return its id, permalink, media type, caption, timestamp and media URL.`);
-  const rb=readback?.data||readback;
-  const readbackId=deepPickId(rb,['ig_media_id','media_id','id']);
+
+  const rb=await proxy('/'+encodeURIComponent(mediaId)+'?fields=id,permalink,media_type,media_product_type,caption,timestamp,media_url','GET');
+  const readbackId=clean(rb?.id);
   if(readbackId!==mediaId)throw new Error('COMPOSIO_INSTAGRAM_READBACK_ID_MISMATCH');
-  const permalink=deepPickString(rb,['permalink','permalink_url','url']);
-  const publishedAt=deepPickString(rb,['timestamp','created_time','created_at'])||new Date().toISOString();
-  const mediaTypeReadback=deepPickString(rb,['media_product_type','media_type','type'])||'REELS';
-  return {provider:'composio',provider_post_id:mediaId,container_id:containerId,permalink:permalink||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),published_at:publishedAt,media_type:mediaTypeReadback,media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256)};
+  if(clean(rb?.caption)!==caption)throw new Error('COMPOSIO_INSTAGRAM_READBACK_CAPTION_MISMATCH');
+  const mediaTypeReadback=clean(rb?.media_product_type||rb?.media_type).toUpperCase();
+  if(!['REELS','REEL','VIDEO'].includes(mediaTypeReadback))throw new Error('COMPOSIO_INSTAGRAM_READBACK_MEDIA_TYPE_MISMATCH');
+
+  return {
+    provider:'composio_proxy',
+    provider_post_id:mediaId,
+    container_id:containerId,
+    permalink:clean(rb?.permalink)||null,
+    provider_truth_verified:true,
+    provider_truth_checked_at:new Date().toISOString(),
+    published_at:clean(rb?.timestamp)||new Date().toISOString(),
+    media_type:mediaTypeReadback,
+    media_url:mediaUrl,
+    final_media_sha256:clean(proof.final_media_sha256),
+    instagram_username:username,
+    provider_readback:{id:readbackId,permalink:clean(rb?.permalink),media_type:mediaTypeReadback,caption:clean(rb?.caption),timestamp:clean(rb?.timestamp)}
+  };
 }
 
 async function bufferRequest(token: string, query: string, variables?: Record<string,unknown>) {
