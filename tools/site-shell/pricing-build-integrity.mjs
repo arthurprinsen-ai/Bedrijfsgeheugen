@@ -2,6 +2,15 @@ import { readFile, writeFile, mkdir } from 'node:fs/promises';
 
 const SNAPSHOT = '.artifacts/pricing-source.html';
 const PAGE = 'prijzen.html';
+const PRICING_RUNTIME = '<script src="/assets/js/pricing-interactions-live-v3.js?v=20260923-1900" defer></script>';
+
+function ensurePricingRuntime(html) {
+  let out = html
+    .replace(/<script[^>]+pricing-interactions-rescue-v1\.js[^>]*><\/script>/gi,'')
+    .replace(/<script[^>]+pricing-interactions-live-v3\.js[^>]*><\/script>/gi,'');
+  if (!/<\/body>/i.test(out)) throw new Error('pricing integrity: missing </body> for pricing runtime injection');
+  return out.replace(/<\/body>/i, PRICING_RUNTIME + '</body>');
+}
 
 function extractSection(html, id) {
   const startToken = `<section id="${id}"`;
@@ -61,8 +70,10 @@ if (mode === 'capture') {
   const [source, built] = await Promise.all([readFile(SNAPSHOT, 'utf8'), readFile(PAGE, 'utf8')]);
   const canonical = extractSection(source, 'pakketten');
   const current = extractSection(built, 'pakketten');
-  const restored = built.replace(current, canonical);
+  const restored = ensurePricingRuntime(built.replace(current, canonical));
   assertCanonical(restored);
+  if (!restored.includes(PRICING_RUNTIME)) throw new Error('pricing integrity: CSP-safe pricing runtime missing after restore');
+  if ((restored.match(/pricing-interactions-live-v3\.js/g) || []).length !== 1) throw new Error('pricing integrity: pricing runtime must have exactly one owner');
   await writeFile(PAGE, restored, 'utf8');
   console.log('Restored and verified canonical pricing section after build transforms');
 } else {
