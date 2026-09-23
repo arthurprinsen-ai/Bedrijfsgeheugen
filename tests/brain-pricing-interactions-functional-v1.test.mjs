@@ -86,3 +86,11 @@ test('pricing rescue v3 survives DOM replacement and initializes immediately', a
   assert.match(source, /stopImmediatePropagation/);
   assert.match(source, /dataset\.bgPricingInteractions = 'ready-v3'/);
 });
+
+test('Netlify pricing restore re-injects the CSP-safe runtime after V18 transforms',async()=>{
+  const integrity=await readFile(new URL('../tools/site-shell/pricing-build-integrity.mjs',import.meta.url),'utf8');
+  assert.match(integrity,/PRICING_RUNTIME/);
+  assert.match(integrity,/pricing-interactions-live-v3\.js\?v=20260923-1900/);
+  assert.match(integrity,/ensurePricingRuntime/);
+  assert.match(integrity,/pricing runtime must have exactly one owner/);
+});
