@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing-parity-build-artifact-survival-v1",
+  "failure_class": "PRICING_CANONICAL_SOURCE_NOT_PRESERVED_BY_BUILD",
+  "problem": "The full Portal capability parity block existed in prijzen.html and all source-level checks passed, but Netlify's build pipeline regenerated the pricing intro and removed that block from the production artifact.",
+  "root_cause": "pricing-build-integrity.mjs protects only section#pakketten. The parity block had been inserted before that canonical protected section, so downstream normalizers/build transforms could discard it while CI still passed.",
+  "prevention": [
+    "Customer-visible pricing content that must survive production builds must live inside the canonical protected section#pakketten or be explicitly restored by pricing-build-integrity.mjs.",
+    "pricing-build-integrity.mjs must require the full Portal parity tokens so a build cannot silently drop the capability contract.",
+    "Production readback must verify built/public content, not only source HTML or commit identity."
+  ],
+  "evidence": {
+    "source": [
+      "prijzen.html",
+      "tools/site-shell/pricing-build-integrity.mjs",
+      "netlify.toml"
+    ],
+    "tests": [
+      "tests/brain-pricing-full-portal-capability-parity-v1.test.mjs"
+    ],
+    "production_observation": "Netlify production commit 1fd9b6a6d0b6fb035f6351aaac3e690cbf8e9ed7 was exact, but /prijzen did not contain the parity block after build."
+  },
+  "compiler": {
+    "failure_class": "PRICING_CANONICAL_SOURCE_NOT_PRESERVED_BY_BUILD",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-full-portal-capability-parity-v1.test.mjs"
+    ]
+  }
+}
