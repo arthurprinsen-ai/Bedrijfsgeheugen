@@ -296,3 +296,19 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Terminalregel:** `DEPLOY_PENDING` en `PRODUCTION_READBACK_PENDING` zijn nooit gebruikershandoff; alleen terminal readback sluit de recovery.
 
 - **BRAIN recovery extension (same lineage):** BRAIN exposed inherited System Map drift from the immediately preceding i18n release: `netlify/functions/i18n-translate.mjs` was not registered in `platform/system-map/canonical-system-map.mjs`. The inventory and observed provider count are updated; `tests/brain-powerhouse-live-system-map-v1.test.mjs` is added to historical replay. New runtime topology without System Map writeback remains `WRITEBACK_INCOMPLETE`.
+
+
+## 2026-09-23 — GOVERNANCE — Mira Reel must be one continuous human video
+- **Fingerprint:** `mira-continuous-human-video-v1`.
+- **Symptoom/signaal:** een gegenereerde Mira Reel kon visueel aanvoelen als losse beelden die tot video waren gemaakt, ondanks geldige start/midden/eindframe-identiteitsproof.
+- **Impact:** onnatuurlijk AI-/slideshowgevoel, lagere geloofwaardigheid van Mira en risico dat technisch geldige maar menselijk onrealistische Reels worden gepubliceerd.
+- **Root cause:** de bestaande gate bewees Mira-identiteit en formaat per frame, maar bewees geen temporele continuïteit van de volledige video. Drie correcte frames waren daardoor onvoldoende om slideshow/still-image-animation uit te sluiten.
+- **Definitieve fix:** `powerhouse-instagram-media-router` vereist nu `temporal_proof` voor Reels; `bg-pre-publish-review` blokkeert ontbrekende/ongeldige continuïteitsproof; DB-trigger `enforce_mira_continuous_video_capability_v1` verhindert uitgifte van een Instagram-publicatiecapability zonder dezelfde proof.
+- **Harde vereisten:** één doorlopende opname-ervaring; continue natuurlijke menselijke beweging; consistente scène en identiteit; realistische camerabeweging; `slideshow_detected=false`; `still_image_animation_detected=false`.
+- **Fail-closed:** ontbrekende of tegenstrijdige proof resulteert in `MIRA_CONTINUOUS_HUMAN_VIDEO_REQUIRED`; fallback-provider of dagelijkse-postdruk mag de gate niet omzeilen.
+- **Brain writeback:** `brain_records.record_id=mira-continuous-human-video-v1`, status VERIFIED, enforcement FAIL_CLOSED.
+- **Documentatie:** `docs/policies/mira-continuous-human-video-v1.md`; agent inheritance in `AGENTS.md`.
+- **Productie:** Supabase `powerhouse-instagram-media-router` v12 en `bg-pre-publish-review` v18 actief; DB-trigger en Brain governance record actief.
+- **Owner:** Powerhouse social media / Instagram Mira pipeline.
+- **Rollback:** alleen via expliciete nieuwe policyversie; niet stilzwijgend verwijderen of verzwakken.
+- **Herbruikbare les:** frame-level kwaliteit is niet gelijk aan video-level realisme; temporele continuïteit is een afzonderlijke publicatie-eis en moet vóór de side-effectgrens bewezen zijn.
