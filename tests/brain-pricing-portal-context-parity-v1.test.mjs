@@ -34,12 +34,14 @@ test('public tier promises stay within canonical SaaS entitlement boundaries',as
 });
 
 test('yearly pricing is not display-only and reaches annual recurring checkout',async()=>{
-  const [pricing,page,backend]=await Promise.all([
+  const [pricing,runtime,page,backend]=await Promise.all([
     readFile(new URL('../prijzen.html',import.meta.url),'utf8'),
+    readFile(new URL('../assets/pricing-interactions-v3.js',import.meta.url),'utf8'),
     readFile(new URL('../afsluiten.html',import.meta.url),'utf8'),
     readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8')
   ]);
-  assert.match(pricing,/searchParams\.set\('billing',billing\)/);
+  assert.match(pricing,/src="\/assets\/pricing-interactions-v3\.js\?v=20260923-1"/);
+  assert.match(runtime,/searchParams\.set\('billing',state\.billing\)/);
   assert.match(page,/name="billing_cycle"/);
   assert.match(page,/q\.get\('billing'\)==='yearly'/);
   assert.match(backend,/billing_cycle/);
