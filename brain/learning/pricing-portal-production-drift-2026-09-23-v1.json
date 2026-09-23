@@ -21,7 +21,7 @@
     "tests/brain-pricing-portal-context-parity-v1.test.mjs"
   ],
   "compiler": {
-    "failure_class": "production-source-readback-drift"
+    "failure_class": "pricing-production-source-drift"
   },
   "evaluation": {
     "historical_replay": [
