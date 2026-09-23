@@ -2,18 +2,19 @@
   "fingerprint": "pricing-i18n-api-live-proof-20260923-v1",
   "failure_class": "I18N_API_ROUTE_MISSING",
   "problem": "The live pricing page could render and pricing taps could respond while English switching still failed because the browser called /api/i18n-translate and Netlify returned 404.",
-  "root_cause": "The i18n runtime and Netlify function both used the /api/i18n-translate contract, but netlify.toml did not explicitly route that public path to /.netlify/functions/i18n-translate. Previous browser gates rendered pages but did not execute the language action and probe the API. The critical delegated pricing rescue was also delivered as a separate asset; the exact preview proved that its ready marker could be absent even while the page rendered.",
+  "root_cause": "The live pricing page used critical inline JavaScript while production CSP enforces script-src 'self' without unsafe-inline, so the visible controls had no executable inline controller. A prior external rescue path also failed to provide a reliable ready marker. Separately, /api/i18n-translate was not explicitly routed to the existing Netlify function.",
   "prevention": [
+    "Critical pricing interactions must run from a self-hosted external script allowed by CSP, never inline JavaScript.",
+    "Use a new versioned asset URL when replacing the pricing runtime to prevent Safari/CDN stale-script reuse.",
     "Netlify must explicitly route /api/i18n-translate to the i18n-translate function.",
-    "The critical pricing rescue is embedded inline in prijzen.html so tap handling cannot depend on a separate asset request.",
-    "Website CI must perform real mobile pricing taps and actual English switching on an exact Netlify preview with Functions.",
-    "The browser gate must probe the i18n endpoint before accepting the language flow.",
-    "Production closure requires the same interaction proof after merge."
+    "Website CI must execute real mobile pricing taps and actual English switching on an exact Netlify preview with Functions.",
+    "Do not weaken CSP with unsafe-inline to make interaction code work."
   ],
   "evidence": {
     "source": [
       "netlify.toml",
       "prijzen.html",
+      "assets/js/pricing-interactions-live-v3.js",
       "tools/site-shell/pricing-interactions-browser-check.mjs",
       ".github/workflows/lane-website.yml"
     ],
