@@ -1,0 +1,31 @@
+{
+  "fingerprint": "search-indexing-final-output-sitemap-sync-v1",
+  "compiler": {
+    "failure_class": "seo_delivery_contract_drift"
+  },
+  "root_cause": {
+    "summary": "The production build generated additional final HTML routes after the repository sitemap had been authored, while Netlify did not regenerate sitemap.xml from the final deployable HTML. Functional generated views also inherited the homepage robots meta, so geenIndex did not override index,follow when a robots tag already existed."
+  },
+  "prevention": {
+    "prevention_rule": "Generate sitemap.xml from the final production HTML on every deploy, exclude noindex/non-canonical routes, and overwrite inherited robots metadata for explicitly non-indexable generated views.",
+    "regression_contract": [
+      "Netlify build invokes tools/genereer-sitemap.mjs after localized/final route generation.",
+      "Generated views with geenIndex always emit noindex, follow even if a robots meta already exists.",
+      "Sitemap is derived from canonical final HTML rather than maintained independently."
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Search Console showed 53 URLs in 'Gevonden - momenteel niet geïndexeerd' while production contained build-generated routes not synchronized by the static sitemap.",
+      "The /inloggen view was configured geenIndex=true but the writer only added noindex when no robots meta existed."
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "GitHub build check succeeded on candidate 6cff982ddfe3a3291130df567b766f5c584054c8.",
+      "Netlify deploy preview 6ab3aa979b53ce000802fada reached ready state.",
+      "GitHub contract and smoke checks succeeded before production promotion."
+    ],
+    "production_readback": "Pending exact production promotion and live sitemap/readback; terminal evidence is appended to the governed PR after merge."
+  }
+}
