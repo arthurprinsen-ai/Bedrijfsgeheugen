@@ -7,7 +7,7 @@ De prijzenpagina en Portal V2 zijn inhoudelijk in lijn, maar die overeenkomst we
 `supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql` definieert de actieve SaaS-planlimieten voor Control, Scale en Enterprise.
 
 ## Nieuwe gate
-`tests/pricing-entitlement-source-parity.test.mjs` leest de entitlementseed rechtstreeks en controleert de klantbelofte in `prijzen.html`.
+`tests/brain-pricing-entitlement-source-parity-v1.test.mjs` leest de entitlementseed rechtstreeks en controleert de klantbelofte in `prijzen.html`.
 
 De gate bewaakt onder meer:
 - planprijzen en jaarprijzen;
