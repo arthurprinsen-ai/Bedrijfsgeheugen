@@ -1,0 +1,39 @@
+{
+  "fingerprint": "pricing-full-portal-capability-parity-v1",
+  "failure_class": "PRICING_PORTAL_CAPABILITY_COVERAGE_INCOMPLETE",
+  "problem": "The pricing page matched lifecycle and SaaS tiers but still omitted several customer-visible Portal V2 capability domains, creating an incomplete commercial representation of the product.",
+  "root_cause": "Parity checks focused on lifecycle, tier entitlements and checkout semantics instead of maintaining a customer-visible capability inventory against canonical Portal V2 source modules.",
+  "prevention": [
+    "Pricing must expose the customer-relevant Portal V2 capability domains, including assurance, impact, execution, compliance, resource intelligence and decision governance.",
+    "A regression test must verify both the pricing claims and the canonical source modules that ground those claims.",
+    "Future portal capability additions must be reviewed for commercial-surface impact rather than assuming lifecycle/tier parity is sufficient."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-full-portal-capability-parity-v1.test.mjs"
+    ],
+    "source": [
+      "prijzen.html",
+      "portal-v2/trusted-advisor-assurance.js",
+      "portal-v2/operating-system/impact-engine.js",
+      "portal-v2/execution-ladder-catalog.js",
+      "portal-v2/company-decisions.js",
+      "portal-v2/resource-analytics.js",
+      "portal-v2/foresight-intelligence.js",
+      "platform/saas/entitlement-policy.mjs"
+    ],
+    "outcome": "Pricing now carries an explicit customer-facing Portal V2 capability contract in addition to lifecycle and plan entitlement parity."
+  },
+  "compiler": {
+    "failure_class": "PRICING_PORTAL_CAPABILITY_COVERAGE_INCOMPLETE",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-full-portal-capability-parity-v1.test.mjs"
+    ]
+  }
+}
