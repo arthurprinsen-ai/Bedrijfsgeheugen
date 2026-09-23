@@ -25,7 +25,11 @@ function assertCanonical(html) {
     'vanaf € 4.995',
     'Run &amp; Grow · SaaS + advies',
     'Wat betekent ‘actueel’?',
-    'Niet elke databron kán realtime zijn'
+    'Niet elke databron kán realtime zijn',
+    'Je bedrijfsfase is niet je abonnement.',
+    'Primaire bedrijfsfase',
+    'Wat speelt daarnaast?',
+    'Belangrijkste doel nu'
   ];
   const missing = required.filter(token => !html.includes(token));
   if (missing.length) throw new Error(`pricing integrity: missing canonical tokens: ${missing.join(' | ')}`);
