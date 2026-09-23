@@ -11,10 +11,10 @@ page.on('requestfailed',request=>failedRequests.push({url:request.url(),failure:
 
 try{
   await page.goto(baseUrl+'/prijzen',{waitUntil:'networkidle',timeout:90000});
-  await page.waitForFunction(()=>document.documentElement.dataset.bgPricingInteractions==='ready-v2',{timeout:30000});
+  await page.waitForFunction(()=>document.documentElement.dataset.bgPricingInteractions==='ready-v3',{timeout:30000});
 
   const runtimeProbe=await page.evaluate(async()=>{
-    const script=[...document.scripts].find(s=>s.src.includes('pricing-interactions-rescue-v1.js'));
+    const script=[...document.scripts].find(s=>s.src.includes('pricing-interactions-live-v3.js'));
     let fetchStatus=null,contentType=null,head=null;
     if(script){
       try{
@@ -42,7 +42,7 @@ try{
     const state=await page.evaluate(()=>({
       yearly:document.querySelector('[data-bg-billing="yearly"]')?.getAttribute('aria-pressed')||null,
       monthly:document.querySelector('[data-bg-billing="monthly"]')?.getAttribute('aria-pressed')||null,
-      scriptSrc:[...document.scripts].find(s=>s.src.includes('pricing-interactions-rescue-v1.js'))?.src||null
+      scriptSrc:[...document.scripts].find(s=>s.src.includes('pricing-interactions-live-v3.js'))?.src||null
     }));
     throw new Error('Jaarlijks reageert niet: '+JSON.stringify({state,runtimeProbe,pageErrors,failedRequests,cause:String(error)}));
   }
