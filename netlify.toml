@@ -374,4 +374,7 @@
   to = "/bedrijf-overdraagbaar-maken"
   status = 301
   force = true
-\n[context.deploy-preview.environment]\n  STATIC_I18N_NETWORK = "0"\n
+
+
+[context.deploy-preview.environment]
+  STATIC_I18N_NETWORK = "0"
