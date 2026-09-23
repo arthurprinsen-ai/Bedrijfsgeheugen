@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "PRICING-ENTITLEMENT-SOURCE-PARITY-20260923-v1",
+  "fingerprint": "pricing-copy-vs-server-entitlements-single-source-verification-v1",
+  "status": "CANDIDATE",
+  "symptom": "The pricing page matched Portal V2 and SaaS entitlements, but parity was protected mainly by phrase-level assertions instead of a direct comparison with the canonical server-side entitlement seed.",
+  "root_cause": [
+    "Commercial pricing copy and canonical SaaS entitlement records live in different artifacts.",
+    "Existing tests validated selected phrases but did not fail when numeric limits, agent mode, advisory allowance or governance entitlements drifted from the Supabase seed."
+  ],
+  "fix": [
+    "Add a regression test that parses the canonical SaaS plan and entitlement seed directly from the Supabase migration.",
+    "Compare Control, Scale and Enterprise limits and operating modes against the actual pricing-page product cards.",
+    "Lock monthly and yearly pricing copy to the canonical seeded plan prices."
+  ],
+  "prevention": [
+    "Commercial product promises must be mechanically checked against server-side entitlements.",
+    "A future change to sources, freshness, agent mode, organisations, SSO, audit trail or advisory time must update both entitlement truth and customer-facing pricing copy in one lineage.",
+    "All paid plans keep the same intelligence core; tier differentiation remains scale, freshness, automation, governance and advisory envelope."
+  ],
+  "evidence": [
+    "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql is the canonical seeded entitlement source.",
+    "tests/brain-pricing-entitlement-source-parity-v1.test.mjs reads that source and verifies prijzen.html directly."
+  ],
+  "regression_contract": [
+    "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "pricing-commercial-copy-entitlement-drift"
+  },
+  "test_evidence": [
+    "tests/brain-pricing-entitlement-source-parity-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-full-portal-capability-parity-v1.test.mjs"
+    ]
+  }
+}
