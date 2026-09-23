@@ -50,12 +50,14 @@ test('checkout backend trusts canonical plans and direct-checkout entitlement',a
 
 
 test('yearly pricing is carried from pricing page through checkout and billed as ten monthly fees per year',async()=>{
-  const [pricing,checkoutPage,backend]=await Promise.all([
+  const [pricing,pricingRuntime,checkoutPage,backend]=await Promise.all([
     readFile(new URL('../prijzen.html',import.meta.url),'utf8'),
+    readFile(new URL('../assets/js/pricing-interactions-v4.js',import.meta.url),'utf8'),
     readFile(new URL('../afsluiten.html',import.meta.url),'utf8'),
     readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8')
   ]);
-  assert.match(pricing,/searchParams\.set\('billing',billing\)/);
+  assert.match(pricing,/src="\/assets\/js\/pricing-interactions-v4\.js\?v=20260923-3"/);
+  assert.match(pricingRuntime,/searchParams\.set\('billing',state\.billing\)/);
   assert.match(checkoutPage,/name="billing_cycle"/);
   assert.match(checkoutPage,/q\.get\('billing'\)==='yearly'/);
   assert.match(backend,/billing_cycle/);
