@@ -75,3 +75,14 @@ test('mobile taps have an external delegated rescue controller',async()=>{
   assert.match(runtime,/panel\.hidden = !active/);
   assert.match(runtime,/searchParams\.set\('billing', billing\)/);
 });
+
+
+test('pricing rescue v2 survives DOM replacement and initializes immediately', async () => {
+  const source = await readFile(new URL('../assets/js/pricing-interactions-rescue-v1.js', import.meta.url), 'utf8');
+  assert.match(source, /__BG_PRICING_RESCUE_V2__/);
+  assert.match(source, /MutationObserver/);
+  assert.match(source, /syncFromDom\(\)/);
+  assert.match(source, /touchend/);
+  assert.match(source, /stopImmediatePropagation/);
+  assert.match(source, /data\.bgPricingInteractions = 'ready-v2'/);
+});
