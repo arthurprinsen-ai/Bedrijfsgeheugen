@@ -37,10 +37,10 @@
       "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
     ],
     "canary": [
-      "Exact LinkedIn create response must yield a canonical post URN and LINKEDIN_GET_POST_CONTENT must verify the same URN, author, commentary and PUBLISHED lifecycle before status becomes published."
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
     ],
     "shadow": [
-      "With Buffer circuit open or Buffer unavailable, linkedin_personal must remain eligible for linkedin_direct while linkedin_company may be deferred until organization-native scope is available."
+      "tests/brain-buffer-rate-limit-circuit-v1.test.mjs"
     ]
   }
 }
