@@ -21,11 +21,15 @@ function parseEntitlements(sql){
   return plans;
 }
 
-const slicePlan=(html,name,nextName)=>{
-  const start=html.indexOf('<h3>'+name+'</h3>');
-  assert.ok(start>=0,'pricing card missing: '+name);
-  const end=nextName?html.indexOf('<h3>'+nextName+'</h3>',start+1):html.indexOf('</div>\n\n<div class="bg-value-proof"',start);
-  assert.ok(end>start,'pricing card boundary missing: '+name);
+const sliceDetailedPlan=(html,name,nextName)=>{
+  const cardsStart=html.indexOf('<div class="kaarten">');
+  assert.ok(cardsStart>=0,'detailed pricing card grid missing');
+  const start=html.indexOf('<h3>'+name+'</h3>',cardsStart);
+  assert.ok(start>=0,'detailed pricing card missing: '+name);
+  const end=nextName
+    ? html.indexOf('<h3>'+nextName+'</h3>',start+1)
+    : html.indexOf('</div>\n\n<div class="bg-value-proof"',start);
+  assert.ok(end>start,'detailed pricing card boundary missing: '+name);
   return html.slice(start,end);
 };
 
@@ -37,9 +41,9 @@ test('pricing copy is locked to canonical server-side SaaS entitlements',async()
   const e=parseEntitlements(sql);
   for(const plan of ['control','scale','enterprise']) assert.ok(e[plan],plan+' entitlements missing');
 
-  const control=slicePlan(html,'Control','Scale');
-  const scale=slicePlan(html,'Scale','Enterprise');
-  const enterprise=slicePlan(html,'Enterprise',null);
+  const control=sliceDetailedPlan(html,'Control','Scale');
+  const scale=sliceDetailedPlan(html,'Scale','Enterprise');
+  const enterprise=sliceDetailedPlan(html,'Enterprise',null);
 
   assert.equal(e.control.data_sources,5);
   assert.equal(e.control.refresh_minutes,1440);
@@ -92,7 +96,8 @@ test('all paid plans preserve the same intelligence core and differ only by oper
     assert.equal(e[plan].scenario_analysis,true,plan+' scenario analysis');
   }
   assert.match(html,/dezelfde kernintelligentie/i);
-  assert.match(html,/Het abonnement bepaalt alleen schaal, actualiteit, automatisering, governance en begeleiding/i);
+  assert.match(html,/Het abonnement bepaalt schaal, verversing, automatisering, governance en begeleiding/i);
+  assert.match(html,/Het pakket bepaalt alleen schaal, actualiteit, automatisering, governance en begeleiding/i);
 });
 
 test('pricing prices stay aligned with canonical SaaS plan seed',async()=>{
