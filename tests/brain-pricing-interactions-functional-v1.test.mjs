@@ -59,3 +59,19 @@ test('refresh controls update active state and recalculate recommendation',async
   assert.match(html,/x\.classList\.toggle\('active',x===b\)/);
   assert.match(html,/render\(\)/);
 });
+
+test('mobile taps have an external delegated rescue controller',async()=>{
+  const [html,runtime]=await Promise.all([
+    pricing(),
+    readFile(new URL('../assets/js/pricing-interactions-rescue-v1.js',import.meta.url),'utf8')
+  ]);
+  assert.match(html,/pricing-interactions-rescue-v1\.js\?v=20260923-1220/);
+  assert.match(runtime,/document\.addEventListener\('click'/);
+  assert.match(runtime,/document\.addEventListener\('pointerup'/);
+  assert.match(runtime,/event\.pointerType !== 'touch'/);
+  assert.match(runtime,/\[data-bg-stage\]/);
+  assert.match(runtime,/\[data-bg-price-tab\]/);
+  assert.match(runtime,/\[data-bg-billing\]/);
+  assert.match(runtime,/panel\.hidden = !active/);
+  assert.match(runtime,/searchParams\.set\('billing', billing\)/);
+});
