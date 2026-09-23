@@ -309,14 +309,24 @@
       location.assign(localizedHref(normalized));
       return;
     }
-    if (normalized !== locale) {
-      try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
-      document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
-      location.assign(localizedHref(normalized));
-      return;
+    if (normalized === locale) { closeMenus(); return; }
+    locale = normalized;
+    localeEpoch += 1;
+    try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
+    document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+    document.documentElement.lang = locale;
+    document.documentElement.dataset.bgLocale = locale;
+    const items = collect(document.body);
+    if (locale === 'en') applyLocalTranslations(items);
+    syncControls();
+    try {
+      await apply(document.body);
+      closeMenus();
+    } catch (error) {
+      syncControls();
+      showLocaleError();
+      throw error;
     }
-    closeMenus();
-    return;
   }
 
   function closeMenus() {
@@ -437,14 +447,13 @@
     document.documentElement.dataset.bgLocale = locale;
     syncControls();
 
-    if (!routed && locale === 'en') {
-      location.replace(localizedHref('en'));
-      return;
-    }
-
-    // Static /nl and /en routes already contain translated document copy.
-    // Runtime translation remains only for content inserted dynamically after load.
+    // Canonical unprefixed routes switch language in place. This keeps the
+    // control reliable even when an offline release does not emit /en routes.
+    // Static /nl and /en routes remain supported when they exist.
     if (!routed) {
+      const items = collect(document.body);
+      if (locale === 'en') applyLocalTranslations(items);
+      syncControls();
       await apply(document.body).catch(()=>{ syncControls(); showLocaleError(); });
     }
     startObserver();
