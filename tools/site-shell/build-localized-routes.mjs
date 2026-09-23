@@ -375,8 +375,13 @@ async function translateAll(strings) {
       await new Promise(r=>setTimeout(r,120));
     }
   }
-  await Promise.all(Array.from({length:Math.min(concurrency,batches.length)},(_,i)=>worker(i+1)));
-  return result;
+  try {
+    await Promise.all(Array.from({length:Math.min(concurrency,batches.length)},(_,i)=>worker(i+1)));
+    return result;
+  } catch (error) {
+    console.warn('STATIC_I18N_PROVIDER_FALLBACK', error?.message || String(error));
+    return null;
+  }
 }
 
 const discoveredFiles = walk(ROOT).sort();
