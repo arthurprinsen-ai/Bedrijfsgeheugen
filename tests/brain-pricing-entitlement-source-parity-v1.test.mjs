@@ -22,7 +22,9 @@ function parseEntitlements(sql){
 }
 
 const sliceDetailedPlan=(html,name,nextName)=>{
-  const cardsStart=html.indexOf('<div class="kaarten">');
+  const saasStart=html.indexOf('<div class="bg-saas-head">');
+  assert.ok(saasStart>=0,'SaaS pricing section missing');
+  const cardsStart=html.indexOf('<div class="kaarten bg-prijs-drie">',saasStart);
   assert.ok(cardsStart>=0,'detailed pricing card grid missing');
   const start=html.indexOf('<h3>'+name+'</h3>',cardsStart);
   assert.ok(start>=0,'detailed pricing card missing: '+name);
