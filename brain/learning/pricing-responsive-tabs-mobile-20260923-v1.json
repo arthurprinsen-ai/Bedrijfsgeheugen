@@ -1,0 +1,42 @@
+{
+  "fingerprint": "pricing-responsive-tabs-mobile-20260923-v1",
+  "failure_class": "PRICING_INTERACTION_RUNTIME_AND_MOBILE_SELECTOR_COLLISION",
+  "problem": "The pricing page could render lifecycle controls while showing multiple route panels or malformed mobile route/table content. Two overlapping inline pricing runtimes managed the same state, while a global mobile table selector converted every table on the page into the feature-matrix card layout.",
+  "root_cause": "Interaction state had two independent inline owners and the legacy mobile table-to-card rule was unscoped (`table, thead, tbody, tr, th, td`). The lifecycle matrix therefore inherited CSS intended only for `.tabelwrap`, and future interaction edits could diverge between the two runtimes.",
+  "prevention": [
+    "Pricing interactive state has exactly one versioned external runtime.",
+    "Mobile table transformations must be component-scoped; never target bare table/thead/tbody/tr/th/td selectors in page-level responsive CSS.",
+    "Lifecycle controls and panels must remain one-to-one, with explicit hidden, is-active, aria-selected and aria-hidden state.",
+    "Responsive regression tests must assert the absence of the global mobile table selector and the presence of component-specific lifecycle card rules.",
+    "Production closure requires public /prijzen readback after the merged build, not source-only verification."
+  ],
+  "evidence": {
+    "source": [
+      "prijzen.html",
+      "assets/pricing-interactions-v3.js"
+    ],
+    "tests": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs"
+    ],
+    "static_candidate_checks": [
+      "six data-bg-stage controls and six data-bg-stage-panel panels",
+      "old inline pricing runtimes absent",
+      "cache-busted external pricing runtime present",
+      "legacy mobile table transform scoped to .tabelwrap",
+      "lifecycle matrix has dedicated mobile card CSS"
+    ],
+    "production_readback": "PENDING_UNTIL_MERGE_AND_NETLIFY_PRODUCTION"
+  },
+  "compiler": {
+    "failure_class": "PRICING_INTERACTION_RUNTIME_AND_MOBILE_SELECTOR_COLLISION",
+    "scope": "WEBSITE_PRICING_RESPONSIVE_INTERACTIONS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs"
+    ]
+  }
+}
