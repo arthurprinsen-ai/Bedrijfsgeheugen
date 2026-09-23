@@ -1,0 +1,9 @@
+{
+  "fingerprint": "pricing-responsive-i18n-production-redeploy-20260923-v3",
+  "obligation_id": "pricing-responsive-i18n-live-20260923-v3",
+  "delivery_lane": "website",
+  "candidate_type": "promotion",
+  "base_sha": "15e3f774fd81573d9351f07758c4a765f327c427",
+  "purpose": "Force a clean Netlify rebuild of the already-merged responsive pricing and i18n release and verify production readback.",
+  "product_code_changed": false
+}
