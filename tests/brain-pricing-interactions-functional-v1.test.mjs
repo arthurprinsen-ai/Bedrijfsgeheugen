@@ -60,25 +60,23 @@ test('refresh controls update active state and recalculate recommendation',async
   assert.match(html,/render\(\)/);
 });
 
-test('mobile taps have an external delegated rescue controller',async()=>{
-  const [html,runtime]=await Promise.all([
-    pricing(),
-    readFile(new URL('../assets/js/pricing-interactions-rescue-v1.js',import.meta.url),'utf8')
-  ]);
-  assert.match(html,/pricing-interactions-rescue-v1\.js\?v=20260923-1612/);
-  assert.match(runtime,/document\.addEventListener\('click'/);
-  assert.match(runtime,/document\.addEventListener\('touchend'/);
-  assert.match(runtime,/passive:false/);
-  assert.match(runtime,/\[data-bg-stage\]/);
-  assert.match(runtime,/\[data-bg-price-tab\]/);
-  assert.match(runtime,/\[data-bg-billing\]/);
-  assert.match(runtime,/panel\.hidden = !active/);
-  assert.match(runtime,/searchParams\.set\('billing', billing\)/);
+test('mobile taps have an inline delegated rescue controller',async()=>{
+  const html=await pricing();
+  assert.match(html,/id="bg-pricing-live-rescue-v3"/);
+  assert.doesNotMatch(html,/pricing-interactions-rescue-v1\.js\?v=/);
+  assert.match(html,/document\.addEventListener\('click'/);
+  assert.match(html,/document\.addEventListener\('touchend'/);
+  assert.match(html,/passive:false/);
+  assert.match(html,/\[data-bg-stage\]/);
+  assert.match(html,/\[data-bg-price-tab\]/);
+  assert.match(html,/\[data-bg-billing\]/);
+  assert.match(html,/panel\.hidden = !active/);
+  assert.match(html,/searchParams\.set\('billing', billing\)/);
 });
 
 
 test('pricing rescue v2 survives DOM replacement and initializes immediately', async () => {
-  const source = await readFile(new URL('../assets/js/pricing-interactions-rescue-v1.js', import.meta.url), 'utf8');
+  const source = await pricing();
   assert.match(source, /__BG_PRICING_RESCUE_V2__/);
   assert.match(source, /MutationObserver/);
   assert.match(source, /syncFromDom\(\)/);
