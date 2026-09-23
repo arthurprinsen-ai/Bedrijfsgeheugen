@@ -31,7 +31,7 @@ function businessSignal(text: string) {
 function concretePersonalLifeSignal(text: string) {
   const firstPerson = /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
   const context = /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport)\b/i.test(text);
-  const action = /\b(stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|baalde|lachte|schrok|voelde|dacht ineens)\b/i.test(text);
+  const action = /\b(stond|staat|zat|liep|reed|ging|kwam|moest|moet|bleek|blijkt|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|baalde|lachte|schrok|voelde|dacht ineens|sta ik|stond ik)\b/i.test(text);
   const ownedConcrete = /\bmijn\s+(kind|dochter|zoon|gezin|auto|fiets|tuin|telefoon|printer|weekend|vakantie|training|wedstrijd)\b/i.test(text);
   return firstPerson && ((context && action) || ownedConcrete);
 }
@@ -102,6 +102,20 @@ function instagramProofViolations(body: any) {
     const complete = ['start','middle','end'].every((position) => frames.some((frame: any) => frame?.position === position && isVisibleMiraProof(frame)));
     if (!complete) out.push({ code: 'INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED', message: 'Start-, midden- en eindframe moeten elk vision-geverifieerd zichtbaar Mira-bewijs hebben.' });
     if (frames.some((frame: any) => frame?.placeholder_detected === true)) out.push({ code: 'INSTAGRAM_VIDEO_PLACEHOLDER_BLOCKED', message: 'Video bevat placeholder/broken frame.' });
+    const temporal = visual?.temporal_proof || body?.temporal_proof || {};
+    const temporalRefs = evidenceRefs(temporal);
+    const temporalPass = temporal?.verified === true
+      && temporal?.single_continuous_take === true
+      && temporal?.continuous_motion_verified === true
+      && temporal?.scene_continuity_verified === true
+      && temporal?.identity_continuity_verified === true
+      && temporal?.human_motion_verified === true
+      && temporal?.realistic_camera_motion === true
+      && temporal?.slideshow_detected === false
+      && temporal?.still_image_animation_detected === false
+      && ['vision','manual_vision'].includes(clean(temporal?.evidence_method).toLowerCase())
+      && temporalRefs.some((ref: string) => /^temporal:/i.test(ref));
+    if (!temporalPass) out.push({ code: 'INSTAGRAM_CONTINUOUS_HUMAN_VIDEO_REQUIRED', message: 'Mira Reel moet één doorlopende, menselijk bewegende video zijn; slideshow/still-image-animation of montageachtig beeld is geblokkeerd.' });
   } else {
     if (width !== 1080 || height !== 1350) out.push({ code: 'INSTAGRAM_STATIC_DIMENSIONS_INVALID', message: 'Mira feed-afbeelding moet exact 1080x1350 zijn.' });
   }
