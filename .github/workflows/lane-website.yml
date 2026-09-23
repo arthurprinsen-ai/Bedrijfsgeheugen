@@ -287,6 +287,10 @@ jobs:
           BASELINE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: node tools/site-shell/verify-targeted-website-routes.mjs
+      - name: Verify pricing taps and English route
+        env:
+          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
+        run: node tools/site-shell/pricing-interactions-browser-check.mjs
       - name: Verify all public pages are visibly rendered
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
