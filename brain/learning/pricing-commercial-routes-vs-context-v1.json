@@ -1,0 +1,33 @@
+{
+  "fingerprint": "pricing-commercial-routes-vs-context-v1",
+  "failure_class": "COMMERCIAL_ROUTE_CONFLATED_WITH_BUSINESS_CONTEXT",
+  "problem": "Six pricing examples were labeled as the complete company situation selector while Powerhouse supports a richer multi-context model.",
+  "prevention": [
+    "Pricing examples must be labeled as commercial routes rather than the complete company-context taxonomy.",
+    "The canonical phase, strategic-event and entrepreneur-goal taxonomy must remain explicit on pricing.",
+    "Regression tests must fail if the six commercial panels are relabeled as the complete company situation selector."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ],
+    "source": [
+      "prijzen.html",
+      "brain/context/business-context-engine.mjs"
+    ],
+    "outcome": "Commercial pricing routes are now clearly separated from the complete Portal/Powerhouse business context."
+  },
+  "compiler": {
+    "failure_class": "COMMERCIAL_ROUTE_CONFLATED_WITH_BUSINESS_CONTEXT",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The pricing page retained a legacy six-situation commercial selector label after Portal V2 moved to a multi-context model with independent phases, strategic events and goals."
+}
