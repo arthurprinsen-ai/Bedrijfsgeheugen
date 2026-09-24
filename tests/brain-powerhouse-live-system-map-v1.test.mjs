@@ -51,3 +51,17 @@ test('admin observability endpoint projects System Map and portal renders it fir
   assert.match(ui,/Iedere huidige en toekomstige agent/);
   assert.match(ui,/providerreadback ontbreekt/);
 });
+
+
+test('trigger-based MKB acquisition runtime is registered with fail-closed production proof',()=>{
+  const capability=POWERHOUSE_SYSTEM_MAP.runtimeCapabilities?.find(item=>item.id==='trigger-based-mkb-acquisition');
+  assert.ok(capability,'trigger-based MKB acquisition runtime missing from System Map');
+  assert.equal(capability.authority,'supabase');
+  assert.equal(capability.status,'LIVE_PROVEN_FAIL_CLOSED_RUNTIME');
+  assert.equal(capability.runtime?.view,'public.powerhouse_mkb_trigger_intelligence_v1');
+  assert.equal(capability.runtime?.schedulerJob,'powerhouse-commercial-learning-v1');
+  assert.equal(capability.safety?.relationshipActivationAloneIsTrigger,false);
+  assert.equal(capability.safety?.externalSideEffectsAllowed,false);
+  assert.equal(capability.productionEvidence?.firstControlledEligibleTriggers,0);
+  assert.equal(capability.productionEvidence?.ordinaryConnectionFalsePositives,0);
+});

@@ -58,3 +58,11 @@ De canonical opportunity authority projecteert commerciële context via `scripts
 
 ## Supabase runtime authority
 De production authority is `public.powerhouse_mkb_trigger_intelligence_v1` + `public.powerhouse_refresh_trigger_based_mkb_acquisition_v1(date)`. Alleen expliciete company-trigger evidence/headlines/samenvattingen of company-scoped predictive signals mogen worden geclassificeerd; een gewone connection/relationship activation is geen kooptrigger. De materialisatie hergebruikt `powerhouse_opportunities`, `powerhouse_forecasts` en `powerhouse_sales_actions`. Automatisch wordt uitsluitend `research_enrichment` via kanaal `internal` aangemaakt; direct outbound blijft onder de bestaande execution gates. De bestaande cron `powerhouse-commercial-learning-v1` wordt hergebruikt via `powerhouse_trigger_based_mkb_acquisition_cycle_v1`; nooit een tweede scheduler maken.
+
+
+## Production proof — 24 september 2026
+Status: `LIVE_PROVEN_FAIL_CLOSED_RUNTIME`.
+
+GitHub main bevat merge `4e16c5c496241ce516cd13373103c51b4f9fd6dd`. Supabase migration `trigger_based_mkb_acquisition_runtime_v1` is toegepast op project `adhjwmvyoixzjtmiroln`; view en beide runtimefuncties zijn teruggelezen. De bestaande cron `powerhouse-commercial-learning-v1` is actief op `27 * * * *` en voert `select public.powerhouse_trigger_based_mkb_acquisition_cycle_v1();` uit.
+
+De eerste gecontroleerde refresh gaf 0 eligible triggers, 0 opportunities, 0 interne research-actions, 0 forecasts en `external_outreach_executed=false`. Dit is een geldige fail-closed uitkomst: zonder expliciet company-level triggerbewijs wordt niets verzonnen. Negatieve readback: 0 gewone `connection_activated` events zijn als kooptrigger geclassificeerd. Supabase advisors rapporteren geen lint op de nieuwe trigger-view/functions; bestaande bredere projectwaarschuwingen blijven afzonderlijk bestaan.
