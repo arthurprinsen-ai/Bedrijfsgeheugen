@@ -34,5 +34,21 @@
   },
   "skill_targets": [
     "skills/mkb-voice-of-customer-problem-radar.md"
-  ]
+  ],
+  "evidence": {
+    "pr": 2834,
+    "branch": "powerhouse-people/evidence-source-registry-v1",
+    "registry": "config/powerhouse-people-evidence-sources.json",
+    "detection_contract": "config/powerhouse-people-problem-detection.json",
+    "regression": "tests/brain-powerhouse-people-evidence-source-registry-v1.test.mjs",
+    "documentation": "docs/changes/powerhouse-people-evidence-source-registry-v1.md",
+    "skill": "skills/mkb-voice-of-customer-problem-radar.md",
+    "source_classes": [
+      "official_statistics",
+      "national_working_conditions_survey",
+      "regulatory_guidance",
+      "legal_guidance",
+      "policy_proposal"
+    ]
+  }
 }
