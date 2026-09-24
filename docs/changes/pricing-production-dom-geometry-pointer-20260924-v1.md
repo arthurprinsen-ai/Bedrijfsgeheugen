@@ -26,23 +26,18 @@ No `force:true` and no DOM `.click()`.
 
 Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
 
-## v2 — locator.evaluate bleek ook auto-wait
+## Follow-up: direct DOM readiness
 
-Exact production `984f679515fff2d9e4a4f10c0b187e95e96a1561` was provider-proven via Netlify deploy `6ab58aa6affd510008595b0f` (`ready`, `production`, exact `commit_ref`). Route-readback was groen, maar de pricing interaction verifier faalde opnieuw:
+Exact-main production `984f679515fff2d9e4a4f10c0b187e95e96a1561` was provider-proven, but the production browser verifier still timed out in `locator.evaluate()` while waiting for `[data-bg-stage="loss"]`.
 
-- run: `36056415545`
-- failure: `locator.evaluate: Timeout 30000ms exceeded`
-- selector: `[data-bg-stage="loss"]`
+Root cause:
+`ready-v3` proved the rescue runtime had started, but not that the concrete lifecycle target was already observable to Playwright's Locator API.
 
-De eerdere recovery had `boundingBox()` verwijderd, maar gebruikte nog steeds `lossButton.evaluate(...)`. Playwright behandelt ook dat als Locator-actie met auto-wait.
+Recovery:
+- wait until both `ready-v3` and `document.querySelector('[data-bg-stage="loss"]')` are true;
+- read computed visibility and geometry through direct `page.evaluate`;
+- use Locator only for semantic assertions after the real pointer interaction;
+- fail immediately with explicit diagnostics if the control disappears between readiness, scroll and pointer geometry.
 
-v2 gebruikt daarom voor het lifecycle-control helemaal geen Locator meer voor existence/visibility/scroll/geometry:
-- `page.evaluate(() => document.querySelector(...))`;
-- expliciete missing/hidden/zero-size failure;
-- directe DOM `scrollIntoView`;
-- opnieuw directe DOM geometry;
-- echte `page.mouse.click` op het gemeten centrum;
-- semantische `aria-selected` controle via directe DOM-query.
-
-De product-UI wordt niet versoepeld en `force:true` blijft verboden.
+This removes the remaining Locator auto-wait from lifecycle target acquisition without weakening the real-pointer proof.
 
