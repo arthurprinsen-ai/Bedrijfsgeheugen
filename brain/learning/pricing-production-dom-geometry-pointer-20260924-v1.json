@@ -4,7 +4,7 @@
   "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
   "status": "IMPLEMENTED_CANDIDATE",
   "root_cause": "Exact production and affected-route readback were healthy, but the pricing browser proof produced sequential Playwright locator false negatives: scrollIntoViewIfNeeded timed out, then locator waitFor visible timed out, and after readiness recovery locator.boundingBox timed out for 30 seconds. The canonical HTML/CSS contains exactly one loss-stage control and mobile lifecycle tabs are rendered as a visible grid. The failure class is locator auto-wait/geometry instability, not missing production content.",
-  "prevention_rule": "After the product-specific ready-v3 marker, prove actionability from direct DOM computed visibility and getBoundingClientRect geometry. Fail closed for display:none, visibility:hidden, opacity 0 or zero-sized controls. Use page.mouse.click at the measured center to preserve a real pointer interaction. Do not use locator visibility/geometry auto-waits, force:true, or DOM click shortcuts when those auto-waits are the observed failure mode.",
+  "prevention_rule": "After the product-specific ready-v3 marker, prove actionability from direct DOM computed visibility and getBoundingClientRect geometry. Fail closed for display:none, visibility:hidden, opacity 0 or zero-sized controls. Use page.mouse.click at the measured center to preserve a real pointer interaction. Do not use locator visibility/geometry auto-waits, force:true, or DOM click shortcuts when those auto-waits are the observed failure mode. Any interaction-primitive migration must search and update every regression that asserts the retired primitive in the same candidate; regressions must assert semantics, not variable names or obsolete implementation details.",
   "failed_runs": [
     {
       "run_id": 36054089352,
@@ -37,7 +37,9 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs"
+      "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs",
+      "tests/brain-pricing-production-actionability-v1.test.mjs",
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs"
     ],
     "invariants": [
       "pricing ready-v3 marker remains the domain-specific readiness authority",
@@ -48,5 +50,8 @@
   },
   "skill_targets": [
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "failed_approaches": [
+    "Two older pricing actionability regressions still asserted retired locator auto-scroll/click primitives after the canonical verifier moved to DOM geometry plus page.mouse.click. The product fix was correct, but stale regression contracts blocked protected delivery."
   ]
 }
