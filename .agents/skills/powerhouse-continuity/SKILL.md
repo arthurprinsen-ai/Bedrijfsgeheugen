@@ -762,3 +762,18 @@ If production runtime is already merged but the canonical functional proof was c
 - terminal proof still requires exact production SHA/provider deploy identity and the real production browser interaction.
 
 Learning: `brain/learning/pricing-i18n-terminal-readback-refresh-20260924-v1.json`.
+
+
+## Production route visible-surface proof
+
+Fingerprint: `production-route-visible-surface-v1`.
+
+For generic production route verification:
+- do not use the `body` element's own Playwright `visible` state as the sole rendering sentinel;
+- require body attachment, non-empty rendered text and at least one genuinely visible top-level content surface;
+- continue to verify HTTP status, canonical identity, title, assets and page errors;
+- keep functional browser verifiers separate and mandatory for critical interactions;
+- never weaken a pricing/i18n click gate merely to compensate for a generic route sentinel false negative.
+
+Regression: `tests/brain-production-route-visible-surface-v1.test.mjs`.
+Learning: `brain/learning/production-route-visible-surface-20260924-v1.json`.
