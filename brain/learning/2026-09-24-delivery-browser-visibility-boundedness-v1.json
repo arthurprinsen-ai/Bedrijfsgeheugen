@@ -1,0 +1,28 @@
+{
+  "fingerprint": "delivery-browser-visibility-boundedness-v1",
+  "date": "2026-09-24",
+  "problem": "The Required website browser lane could remain in progress because standalone visibility verification contained an unbounded document.fonts.ready wait and overly expensive retry envelopes across the full sitemap.",
+  "root_cause": "The browser verifier relied on a job-level timeout but did not bound every asynchronous wait inside the route loop. A single unresolved browser promise could consume the runner until the outer job timeout.",
+  "fix": [
+    "Bound document.fonts.ready with a deterministic timeout",
+    "Reduce navigation retries and navigation timeout",
+    "Bound sitemap fetch",
+    "Add a total fail-closed sweep budget",
+    "Preserve product assertions while preventing runner leaks"
+  ],
+  "prevention_rule": "Every browser/readback loop must bound network navigation, page-side async waits and total sweep runtime; outer job timeout alone is not sufficient.",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-standalone-visibility-boundedness-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-browser-gate-boundedness/SKILL.md"
+  ],
+  "evidence": {
+    "pr": 2834,
+    "script": "tools/site-shell/standalone-visibility-check.mjs"
+  }
+}
