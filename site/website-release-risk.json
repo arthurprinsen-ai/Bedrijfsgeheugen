@@ -11,7 +11,9 @@
     "tools/site-shell/website-release-risk.mjs",
     "site/website-release-risk.json",
     "brain/learning/",
-    "tests/brain-"
+    "tests/brain-",
+    ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "tests/delivery-powerhouse-supervisor.test.mjs"
   ],
   "highRiskPaths": [
     ".github/workflows/",
