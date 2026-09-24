@@ -4,7 +4,7 @@
   "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
   "status": "IMPLEMENTED_CANDIDATE",
   "root_cause": "Exact production and affected-route readback were healthy, but the pricing browser proof produced sequential Playwright locator false negatives: scrollIntoViewIfNeeded timed out, then locator waitFor visible timed out, and after readiness recovery locator.boundingBox timed out for 30 seconds. The canonical HTML/CSS contains exactly one loss-stage control and mobile lifecycle tabs are rendered as a visible grid. The failure class is locator auto-wait/geometry instability, not missing production content. A fourth production replay proved that locator.evaluate also participates in Playwright locator auto-wait: exact production 984f6795 was ready, routes were healthy, but lossButton.evaluate timed out waiting for [data-bg-stage=\"loss\"].",
-  "prevention_rule": "After the product-specific ready-v3 marker, do not use a Playwright Locator for lifecycle geometry/actionability at all. Query the element directly inside page.evaluate with document.querySelector, return explicit missing/visibility/geometry state, scroll and re-read geometry through page.evaluate, then preserve a real page.mouse.click. Genuine missing, hidden, transparent or zero-sized controls remain fail-closed. Do not use locator waitFor, boundingBox, scrollIntoViewIfNeeded, locator.evaluate, force:true or DOM click shortcuts for this proof.",
+  "prevention_rule": "After the product-specific ready-v3 marker, do not use a Playwright Locator for lifecycle geometry/actionability at all. Query the element directly inside page.evaluate with document.querySelector, return explicit missing/visibility/geometry state, scroll and re-read geometry through page.evaluate, then preserve a real page.mouse.click. Genuine missing, hidden, transparent or zero-sized controls remain fail-closed. Do not use locator waitFor, boundingBox, scrollIntoViewIfNeeded, locator.evaluate, force:true or DOM click shortcuts for this proof. Regression contracts must assert interaction semantics (ready marker, visible geometry, real pointer, state transition), never obsolete locator implementation details.",
   "failed_runs": [
     {
       "run_id": 36054089352,
@@ -43,7 +43,9 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs"
+      "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs",
+      "tests/brain-pricing-production-actionability-v1.test.mjs",
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs"
     ],
     "invariants": [
       "pricing ready-v3 marker remains the domain-specific readiness authority",
@@ -55,5 +57,8 @@
   },
   "skill_targets": [
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "failed_approaches": [
+    "Legacy pricing actionability tests encoded retired locator-level primitives after the canonical verifier moved to direct DOM geometry and page.mouse.click, producing false CI failures despite a correct verifier."
   ]
 }
