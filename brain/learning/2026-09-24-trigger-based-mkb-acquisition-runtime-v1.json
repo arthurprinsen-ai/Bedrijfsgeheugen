@@ -1,0 +1,24 @@
+{
+  "fingerprint": "powerhouse-trigger-based-mkb-acquisition-runtime-v1",
+  "date": "2026-09-24",
+  "type": "COMMERCIAL_RUNTIME_PROJECTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "compiler": {
+    "failure_class": "COMMERCIAL_RUNTIME_MAPPING_GAP",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The canonical opportunity runtime preserved evidence and confidence but did not explicitly carry trigger, problem hypothesis, decision-maker, next action or partner-route fields from the trigger-based acquisition contract.",
+  "prevention_rule": "Commercial acquisition opportunities must fail closed unless explicit trigger context, evidence, decision-maker, next action and minimum confidence are present. Missing commercial context must never be fabricated.",
+  "evidence": {
+    "runtime": "scripts/opportunity/opportunity-scout.mjs",
+    "schema": "brain/contracts/opportunity.schema.json",
+    "tests": "tests/opportunity-scout.test.mjs",
+    "skill": ".agents/skills/trigger-based-mkb-acquisition/SKILL.md"
+  },
+  "skill_targets": [
+    "trigger-based-mkb-acquisition"
+  ]
+}
