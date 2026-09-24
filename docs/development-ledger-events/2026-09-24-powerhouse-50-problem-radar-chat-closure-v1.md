@@ -55,3 +55,19 @@
 - Recovery uses the existing canonical `Production Source Snapshot` workflow only; no alternate deploy authority.
 - Recovery status at candidate creation: `PROMOTION_PENDING` until provider readback proves `ready / production / commit_ref=current main`.
 
+## Netlify skipped linked-build fallback
+
+- Provider deploy `6ab57a396b0e16306cb97fee` returned `state=error`, `skipped=true`, `error_message=Skipped`.
+- Canonical runtime fix is already on protected main: a skipped Git-linked route falls through to the existing authorized exact-source transport.
+- Machine-readable marker: `linked_fallback="true"`.
+- Genuine provider errors remain fail-closed.
+- Regression: `tests/brain-netlify-linked-skipped-fallback-v1.test.mjs`.
+- This closure refreshes Production Source Snapshot so the fixed transport is exercised for exact-main production promotion.
+
+## Pricing actionability regression migration
+
+- BRAIN backend found a stale source-string assertion in `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
+- Production verifier is stricter: it scrolls the loss-stage control into view, checks its bounding box, compensates sticky chrome and performs a real pointer click.
+- The regression now asserts that semantic actionability sequence instead of requiring the obsolete literal `page.locator(...).click()` expression.
+- Runtime verifier was not weakened.
+
