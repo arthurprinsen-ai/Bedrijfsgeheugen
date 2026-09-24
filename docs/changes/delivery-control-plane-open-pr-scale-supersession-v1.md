@@ -34,3 +34,14 @@ De repository-janitor:
 - behoudt bestaande fail-closed readback en branch-cleanup guards.
 
 Hierdoor wordt queue-capaciteit automatisch teruggewonnen zonder de actuele delivery-authority te verzwakken.
+
+
+## Fix-op-fix integriteitsregel
+
+Tijdens de eerste stale-queue patch raakte de janitor-workflow zelf beschadigd door tab-delimited shell parsing en tekstuele patching. Dat is als aparte delivery-learning opgenomen.
+
+Nieuwe harde regel:
+- workflow-herstel wordt vanaf een schone canonieke basis opgebouwd, niet door onbegrensde tekstuele append/replace op een reeds gemuteerde workflow;
+- machine-output tussen GitHub CLI en shell wordt als JSON-per-record verwerkt, niet via tab-delimited parsing;
+- regressie controleert exact één reconcile-, readback- en uploadsectie;
+- een preventiefix is pas geldig als ook de integriteit van de preventieworkflow zelf wordt getest.
