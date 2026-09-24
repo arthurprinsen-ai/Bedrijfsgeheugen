@@ -18,7 +18,14 @@ async function run() {
     await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
 
     // Lifecycle toggle must change the actual visible panel.
-    await page.locator('[data-bg-stage="loss"]').click();
+    // Keep this a real pointer click: position the control below sticky chrome first.
+    const lossButton = page.locator('[data-bg-stage="loss"]');
+    await lossButton.scrollIntoViewIfNeeded();
+    const lossBox = await lossButton.boundingBox();
+    if (!lossBox || lossBox.width < 1 || lossBox.height < 1) throw new Error('loss stage control has no actionable box: ' + JSON.stringify(lossBox));
+    await page.evaluate(() => window.scrollBy(0, -120));
+    await page.waitForTimeout(100);
+    await lossButton.click({ timeout:15_000 });
     await page.waitForTimeout(150);
     const loss = page.locator('[data-bg-stage-panel="loss"]');
     const grow = page.locator('[data-bg-stage-panel="grow"]');
