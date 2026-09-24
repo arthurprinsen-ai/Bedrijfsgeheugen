@@ -284,3 +284,9 @@ Doel: stale-main regressies, unclassified tests en duplicate-obligation thrash n
 Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
 
 The anticipate-before-act forecast includes current queued/in-progress/pending/waiting/requested runs plus projected new runs. Soft thresholds are 12 active / 10 queued; hard thresholds 20 / 20; projected fan-out budget is 6. Under pressure prioritize: exact-head reuse -> dedupe -> batch writes -> skip optional lanes -> reap proven orphaned stale queue -> dispatch only missing critical single-flight work. Never use a fresh PR, fresh commit series or broad retry as a queue escape mechanism.
+
+## Workflow structural-anchor preservation
+
+Fingerprint: `github|workflow-structural-anchor|preserve-tested-order|v1`.
+
+A syntactically valid GitHub Actions edit can still be a regression when canonical tests intentionally assert neighboring job keys or structural anchors. Before inserting controls such as `timeout-minutes`, concurrency, permissions or conditions, inspect the contract tests for that workflow. If semantics allow, place the new key without disturbing an already-tested anchor. Never dismiss a structural test as cosmetic when it protects release-control composition.

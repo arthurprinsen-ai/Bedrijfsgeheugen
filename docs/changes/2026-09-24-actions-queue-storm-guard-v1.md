@@ -56,3 +56,9 @@ Daarom geldt nu:
 - onverwachte branch-head mutatie krijgt pas autoriteit na exacte diff-validatie tegen de laatst vertrouwde head.
 
 Dit voorkomt zowel eeuwige queue-zombies als runner-slots die door superseded delivery blijven hangen.
+
+
+## YAML structural-contract learning v6
+De browser-timeout uit v4 was semantisch geldig, maar werd vóór `needs:` geplaatst. Een bestaande composable-release regressietest gebruikt die key-volgorde bewust als structurele contractanchor en blokkeerde daardoor Required/BRAIN.
+
+Herstel: `browser:` wordt weer direct gevolgd door `needs:`; `timeout-minutes: 15` blijft actief maar staat erna. Nieuwe regel: bij workflow-control wijzigingen eerst bestaande structurele contracttests respecteren; verander geen bewezen anchor als de semantiek dat niet vereist.

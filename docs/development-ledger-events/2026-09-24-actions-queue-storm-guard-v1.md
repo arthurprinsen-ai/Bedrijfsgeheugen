@@ -56,3 +56,10 @@
 - In-progress stale threshold: 1800 seconden sinds laatste update.
 - Safe obsolete criteria: closed PR, PR head mismatch, branch head mismatch, missing non-main branch, old main SHA.
 - Governance: unexpected candidate-head movement is never silently trusted; validate exact diff before rebinding authority.
+
+
+## Queue governor v6 — structural workflow contract
+- Inherited regression uit #2807 gevonden: `timeout-minutes: 15` stond tussen `browser:` en `needs:`.
+- YAML was geldig, maar `tests/brain-composable-release-control-plane.test.mjs` bewaakt die structurele anchor.
+- Repair: timeout blijft 15 minuten maar wordt na `needs:` geplaatst.
+- Prevention: semantische no-op workflow edits mogen bestaande structural-regression anchors niet breken.
