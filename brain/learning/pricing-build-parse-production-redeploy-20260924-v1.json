@@ -1,0 +1,47 @@
+{
+  "fingerprint": "pricing-build-parse-production-redeploy-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_RECOVERY",
+  "root_cause": "Netlify production failed with exit code 2 because tools/site-shell/pricing-build-integrity.mjs contained invalid JavaScript RegExp string quoting. The syntax failure happened before the intended build logic could execute.",
+  "prevention": [
+    "Every production-critical Node build script changed in a PR must pass node --check or equivalent syntax validation before merge.",
+    "A Netlify build exit code 2 must be reproduced against the exact production-source artifact before changing unrelated application, SEO or i18n code.",
+    "After fixing a production build parser error, explicitly retrigger the canonical Production Source Snapshot when the workflow is path-scoped and would otherwise not run.",
+    "LIVE_BEWEZEN still requires provider success, exact release.json SHA/context/deploy-id and production browser proof."
+  ],
+  "evidence": {
+    "failed_deploy_ids": [
+      "6ab534bd62dd9930cdd76bd8",
+      "6ab536114682dc3f3a4f32d7"
+    ],
+    "reproduced_command": "node tools/site-shell/pricing-build-integrity.mjs capture",
+    "parser_file": "tools/site-shell/pricing-build-integrity.mjs",
+    "fixed_main_sha": "e223851136669000f1f58b6b1dadfe9e2f2adcc1",
+    "source_fix_pr": 2764
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-build-integrity-regex-syntax-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-build-integrity-regex-syntax-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-build-integrity-regex-syntax-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-build-integrity-regex-syntax-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "NETLIFY_PRODUCTION_BUILD_SCRIPT_PARSE_ERROR",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
