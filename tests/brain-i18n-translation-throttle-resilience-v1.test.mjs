@@ -8,7 +8,7 @@ const workflow=fs.readFileSync('.github/workflows/production-source-snapshot.yml
 test('static translation defaults to a single provider stream',()=>{
   assert.match(source,/STATIC_I18N_CONCURRENCY \|\| 1/);
   assert.match(source,/Math\.min\(2,/);
-  assert.match(source,/setTimeout\(r=>setTimeout/); // source retains explicit provider pacing
+  assert.match(source,/setTimeout\(r,750\)/);
 });
 
 test('static translation honors Retry-After and exponential backoff',()=>{
