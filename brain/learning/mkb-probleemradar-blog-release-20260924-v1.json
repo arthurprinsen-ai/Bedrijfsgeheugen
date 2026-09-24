@@ -12,11 +12,18 @@
     "Material content releases must include Brain learning, development ledger and human-readable change documentation in the same lineage."
   ],
   "evaluation": {
-    "historical_replay": ["Blog Technical SEO Gate"],
-    "shadow": ["PR #2733 technical-seo-contract-100"],
-    "canary": ["protected main production readback of all three article URLs"]
+    "historical_replay": [
+      "tests/brain-mkb-probleemradar-blog-release-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mkb-probleemradar-blog-release-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mkb-probleemradar-blog-release-v1.test.mjs"
+    ]
   },
   "test_evidence": [
+    "tests/brain-mkb-probleemradar-blog-release-v1.test.mjs",
     "blog/groeipijn-mkb-eigenaar-bottleneck/index.html",
     "blog/cashflow-overzicht-mkb/index.html",
     "blog/dubbele-invoer-voorkomen-systemen-koppelen/index.html",
@@ -30,7 +37,9 @@
     "initial_failure": "focus-keyword/FAQPage/figure requirements",
     "corrected_state": "technical-seo-contract-100 green before merge"
   },
-  "skill_targets": ["continuity"],
+  "skill_targets": [
+    "continuity"
+  ],
   "compiler": {
     "failure_class": "CONTENT_RELEASE_SEO_AND_WRITEBACK_CONTRACT_GAP",
     "scope": "WEBSITE_CONTENT_GROWTH",
