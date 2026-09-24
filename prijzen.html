@@ -364,6 +364,10 @@ else if(s>15||e>250||mode==='realtime'){plan='Enterprise';monthly='vanaf € 4.9
 else if(s>5||e>50||mode==='hourly'){plan='Scale';monthly='€ 2.495';yearly='€ 24.950';why='Past bij meerdere teams en systemen, tot 15 bronnen, uurverversing en voorspellende signalering.';href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=scale';cta='Start Scale online';}
 var oneOff=(stage==='loss'||stage==='crisis'||motionValue==='buy'||motionValue==='sell'),recurring=!oneOff,price=recurring?(billing==='yearly'?yearly+' /jaar':monthly+' /maand'):monthly+' eenmalig / vanaf';document.getElementById('bgRecPlan').textContent=plan;document.getElementById('bgRecPrice').textContent=price;document.getElementById('bgRecWhy').textContent=why;var a=document.getElementById('bgRecCta');if(href.indexOf('/afsluiten?plan=')>=0){try{var checkoutUrl=new URL(href,location.origin);checkoutUrl.searchParams.set('billing',billing);href=checkoutUrl.toString();}catch(_){}}a.href=href;a.textContent=cta;var labels={daily:'dagelijks',hourly:'ieder uur',realtime:'near-realtime'},stageLabel=situation?situation.options[situation.selectedIndex].text:stage,motionLabel=motionValue&&motion?motion.options[motion.selectedIndex].text:'geen specifieke gebeurtenis',goalLabel=goalValue&&goal?goal.options[goal.selectedIndex].text:'doel nog niet gekozen';document.getElementById('bgRecBreakdown').textContent=stageLabel+' · '+motionLabel+' · '+goalLabel+' · '+s+' bronnen · '+labels[mode]+' · '+emp.options[emp.selectedIndex].text+' medewerkers';}
 applyBilling('monthly');selectStage('grow');
+document.documentElement.dataset.bgPricingInteractions='ready-v3';
+document.documentElement.dataset.bgPricingSelectedStage='grow';
+document.documentElement.dataset.bgPricingSelectedGroup='start';
+document.documentElement.dataset.bgPricingBilling='monthly';
 })();</script><script src="/assets/js/pricing-interactions-rescue-v1.js?v=f7d85cb0d7ba" defer></script></body>
 <!-- deploy-recovery: pricing-saas-data-advisory-2026-09-18-v2 -->
 </html>
