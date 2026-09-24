@@ -549,3 +549,16 @@ For the pricing production build:
 Canonical learning: `brain/learning/pricing-interaction-section-build-preservation-20260924-v1.json`.
 Canonical regression: `tests/brain-pricing-runtime-build-preservation-v1.test.mjs`.
 Canonical browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+
+## Pricing terminal live-proof closure
+
+Fingerprint: `pricing-terminal-live-proof-closure-20260924-v1`.
+
+For pricing/i18n incident closure:
+- the canonical production snapshot workflow is the deployment authority; do not substitute an ad-hoc deploy path;
+- branch protection and the required `test` check remain mandatory before merge;
+- after protected merge, require Netlify provider-terminal readiness plus exact `release.json` commit/context/deploy-id readback;
+- execute `tools/site-shell/verify-pricing-i18n-production.mjs` against production and require visible lifecycle, plan-group, monthly/yearly and NL→EN state changes;
+- only after those proofs may Brain learning and ledger move to `LIVE_BEWEZEN`;
+- proof-trigger commits are operational artifacts and must preserve the same canonical obligation lineage rather than spawning a parallel delivery route.
