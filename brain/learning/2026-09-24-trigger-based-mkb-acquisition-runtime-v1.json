@@ -20,5 +20,10 @@
   },
   "skill_targets": [
     "trigger-based-mkb-acquisition"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/opportunity-scout.test.mjs"
+    ]
+  }
 }
