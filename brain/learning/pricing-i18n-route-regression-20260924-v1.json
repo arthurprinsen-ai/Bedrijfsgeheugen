@@ -1,0 +1,32 @@
+{
+  "fingerprint": "pricing-i18n-route-regression-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "LOCALIZED_ROUTE_REWRITE_REGRESSION",
+  "problem": "Production language switching on /prijzen failed because the localized wildcard rewrites for nested /en/* and /nl/* pages disappeared from _redirects after the earlier pricing/i18n repair.",
+  "root_cause": "A later repository change preserved only the locale root rewrites (/en and /nl) but removed the nested wildcard rewrites. The previous prevention test existed, yet the material route mutation landed without preserving the production routing invariant, so /en/prijzen no longer resolved to /en/prijzen.html.",
+  "failed_approaches": [
+    "Treating a prior LIVE_BEWEZEN claim as durable evidence after subsequent unrelated changes.",
+    "Verifying locale root routes without re-reading the current nested-route rewrite contract.",
+    "Assuming the language-switch failure was still caused by the translation provider before checking current production routing."
+  ],
+  "prevention": [
+    "Every public i18n production readback must test at least one nested localized route such as /en/prijzen, not only /en.",
+    "The /en/* -> /en/:splat.html and /nl/* -> /nl/:splat.html rewrites are invariant routing rules and may not be removed by later changes.",
+    "A new failure after an earlier LIVE_BEWEZEN release invalidates reliance on the old claim; current main and current production must be re-read.",
+    "Material routing fixes require same-lineage Brain learning, activity ledger, human documentation and production readback."
+  ],
+  "evidence": {
+    "observed_production": "/prijzen exposed 'Switching language failed. Try again.' and /en/prijzen was unavailable on 2026-09-24.",
+    "current_main_before_fix": "cc101a3e26981ff5494e80b7e584a3d95e51a72c",
+    "repair_commit": "b937fced16cbba2037f14be31d51ddc6dae3d60d",
+    "pull_request": 2709
+  },
+  "compiler": {
+    "failure_class": "LOCALIZED_ROUTE_REWRITE_REGRESSION",
+    "scope": "WEBSITE_PUBLIC_I18N_ROUTING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
