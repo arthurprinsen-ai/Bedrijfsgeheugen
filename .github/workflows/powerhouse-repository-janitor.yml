@@ -2,7 +2,7 @@ name: Powerhouse Repository Janitor
 
 on:
   schedule:
-    - cron: '17 3 * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -43,7 +43,7 @@ jobs:
           mkdir -p .artifacts
           mode="${REQUESTED_MODE:-dry-run}"
           if [ "$EVENT_NAME" = schedule ]; then mode=apply-safe; fi
-          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs.json
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs.json
           MODE="$mode" node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile } from 'node:fs/promises';
@@ -117,7 +117,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs-after.json
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs-after.json
           gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=100" > .artifacts/closed-prs-recent.json
           : > .artifacts/janitor-runtime-actions.ndjson
 
@@ -146,7 +146,111 @@ jobs:
 
           # Cancel only stale candidate executions. Never touch main and never cancel the current head of an open PR.
           for status in queued in_progress; do
-            gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=100" --jq '.workflow_runs[] | [.id,.head_branch,.head_sha,.status] | @tsv' | while IFS=$'\t' read -r run_id branch run_sha run_status; do
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=100" --jq '.workflow_runs[] | [.id,.head_branch,.head_sha,.status,.created_at] | @tsv' | while IFS=
+              [ -n "$branch" ] || continue
+              [ "$branch" != main ] || continue
+              current_pr_head="$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open") | .head.sha][0] // empty' .artifacts/open-prs-after.json)"
+              safe_cancel=false
+              reason=''
+              if [ -n "$current_pr_head" ] && [ "$current_pr_head" != "$run_sha" ]; then
+                safe_cancel=true
+                reason=STALE_PR_HEAD
+              elif [ -z "$current_pr_head" ]; then
+                # A queued run with no open PR cannot be the authoritative current
+                # delivery head. After a bounded TTL it is safe debris: reopening or
+                # creating a successor will emit fresh exact-head checks.
+                if [ "$run_status" = queued ] && [ -n "$created_at" ]; then
+                  created_epoch="$(date -u -d "$created_at" +%s 2>/dev/null || echo 0)"
+                  now_epoch="$(date -u +%s)"
+                  stale_after_seconds=21600
+                  if [ "$created_epoch" -gt 0 ] && [ $((now_epoch-created_epoch)) -ge "$stale_after_seconds" ]; then
+                    safe_cancel=true
+                    reason=STALE_QUEUED_NO_OPEN_PR
+                  fi
+                fi
+                if [ "$safe_cancel" != true ]; then
+                  encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
+                  branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
+                  if [ -n "$branch_json" ] && [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ]; then
+                    ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${encoded_branch}" --jq '.ahead_by' 2>/dev/null || echo UNPROVEN)"
+                    if [ "$ahead" = 0 ]; then
+                      safe_cancel=true
+                      reason=MERGED_OR_CONTAINED_BRANCH
+                    fi
+                  fi
+                fi
+              fi
+              [ "$safe_cancel" = true ] || continue
+              latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
+              case "$latest_status" in queued|in_progress) ;; *) continue ;; esac
+              if gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
+                jq -cn --arg type CANCEL_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
+              else
+                latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
+                case "$latest_status" in completed) continue ;; *) echo "::error::JANITOR_CANCEL_FAILED:${run_id}:${latest_status}"; exit 78 ;; esac
+              fi
+            done
+          done
+
+          # Delete only unprotected non-main refs with no open PR and zero commits ahead of main.
+          gh api --paginate "repos/${GITHUB_REPOSITORY}/branches?per_page=100" --jq '.[].name' | while IFS= read -r branch; do
+            [ -n "$branch" ] || continue
+            [ "$branch" != main ] || continue
+            open_pr_count="$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open")] | length' .artifacts/open-prs-after.json)"
+            [ "$open_pr_count" = 0 ] || continue
+            encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
+            branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
+            [ -n "$branch_json" ] || continue
+            [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ] || continue
+            head_sha="$(jq -r '.commit.sha' <<<"$branch_json")"
+            ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${encoded_branch}" --jq '.ahead_by' 2>/dev/null || echo UNPROVEN)"
+            [ "$ahead" = 0 ] || continue
+            # Re-read branch immediately before deletion: exact-head drift makes deletion fail closed.
+            latest_sha="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" --jq '.commit.sha' 2>/dev/null || echo MISSING)"
+            [ "$latest_sha" = "$head_sha" ] || { echo "::error::JANITOR_BRANCH_HEAD_DRIFT:${branch}:${head_sha}:${latest_sha}"; exit 78; }
+            gh api -X DELETE "repos/${GITHUB_REPOSITORY}/git/refs/heads/${encoded_branch}" >/dev/null
+            jq -cn --arg type DELETE_BRANCH --arg branch "$branch" --arg sha "$head_sha" --arg reason ALREADY_CONTAINED_IN_MAIN '{type:$type,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
+          done
+
+          jq -s '.' .artifacts/janitor-runtime-actions.ndjson > .artifacts/janitor-runtime-actions.json
+          cat .artifacts/janitor-runtime-actions.json
+      - name: Read back applied cleanup
+        if: (github.event_name == 'workflow_dispatch' && github.event.inputs.mode == 'apply-safe') || github.event_name == 'schedule'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          jq -c '.actions[] | select(.perform == true)' .artifacts/powerhouse-repository-janitor.json | while read -r action; do
+            pr="$(jq -r '.prNumber' <<<"$action")"
+            state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.state')"
+            [ "$state" = closed ] || { echo "::error::JANITOR_READBACK_FAILED:#${pr}:${state}"; exit 1; }
+          done
+          if [ -f .artifacts/janitor-runtime-actions.json ]; then
+            jq -c '.[] | select(.type == "AUTO_REOPEN_TERMINAL_LEASE")' .artifacts/janitor-runtime-actions.json | while read -r action; do
+              pr="$(jq -r '.pr_number' <<<"$action")"
+              state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.state')"
+              merged="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.merged')"
+              [ "$state" = open ] && [ "$merged" = false ] || { echo "::error::JANITOR_TERMINAL_LEASE_REOPEN_READBACK_FAILED:#${pr}:${state}:${merged}"; exit 78; }
+            done
+            jq -c '.[] | select(.type == "DELETE_BRANCH")' .artifacts/janitor-runtime-actions.json | while read -r action; do
+              branch="$(jq -r '.branch' <<<"$action")"
+              encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
+              if gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" >/dev/null 2>&1; then
+                echo "::error::JANITOR_BRANCH_DELETE_READBACK_FAILED:${branch}"
+                exit 1
+              fi
+            done
+          fi
+      - name: Upload janitor evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-repository-janitor-${{ github.run_id }}
+          path: |
+            .artifacts/powerhouse-repository-janitor.json
+            .artifacts/janitor-runtime-actions.json
+          if-no-files-found: error
+\t' read -r run_id branch run_sha run_status created_at; do
               [ -n "$branch" ] || continue
               [ "$branch" != main ] || continue
               current_pr_head="$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open") | .head.sha][0] // empty' .artifacts/open-prs-after.json)"
