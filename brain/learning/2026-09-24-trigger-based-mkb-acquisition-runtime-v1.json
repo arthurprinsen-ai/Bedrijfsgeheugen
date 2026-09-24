@@ -2,7 +2,7 @@
   "fingerprint": "powerhouse-trigger-based-mkb-acquisition-runtime-v1",
   "date": "2026-09-24",
   "type": "COMMERCIAL_RUNTIME_PROJECTION",
-  "status": "IMPLEMENTED_CANDIDATE_WITH_SUPABASE_RUNTIME",
+  "status": "LIVE_BEWEZEN",
   "compiler": {
     "failure_class": "COMMERCIAL_RUNTIME_MAPPING_GAP",
     "scope": "COMMERCIAL",
@@ -22,7 +22,22 @@
     "runtime_view": "public.powerhouse_mkb_trigger_intelligence_v1",
     "runtime_function": "public.powerhouse_refresh_trigger_based_mkb_acquisition_v1(date)",
     "scheduler_wrapper": "public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)",
-    "scheduler_job": "powerhouse-commercial-learning-v1"
+    "scheduler_job": "powerhouse-commercial-learning-v1",
+    "production_proof": "2026-09-24 rollback-safe Supabase canary",
+    "production_runtime": "view/functions present; cron active at 27 * * * *; latest cycle actioned",
+    "security_readback": "anon/authenticated denied; service_role SELECT/EXECUTE only",
+    "canary_result": {
+      "trigger_type": "growth",
+      "confidence": 0.884,
+      "opportunity_stage": "signal",
+      "expected_value_eur": 0,
+      "expected_revenue_value": 0,
+      "action_type": "research_enrichment",
+      "action_channel": "internal",
+      "external_side_effect_allowed": false,
+      "forecast_revenue_potential": 0,
+      "persistent_canary_rows_after_rollback": 0
+    }
   },
   "skill_targets": [
     "trigger-based-mkb-acquisition"
@@ -31,5 +46,6 @@
     "historical_replay": [
       "tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
     ]
-  }
+  },
+  "live_claim": "LIVE_BEWEZEN for trigger classification/materialization/scheduler/security boundary. Current real company-trigger candidate count is 0, which is a valid empty state."
 }
