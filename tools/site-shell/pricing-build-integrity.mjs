@@ -5,15 +5,15 @@ const PAGE = 'prijzen.html';
 
 function extractSection(html, id) {
   const escapedId = String(id).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const startRe = new RegExp('<section\\b[^>]*\\bid=["\\\']' + escapedId + '["\\\'][^>]*>', 'i');
+  const startRe = new RegExp("<section\\b[^>]*\\bid=[\"']" + escapedId + "[\"'][^>]*>", "i");
   const match = startRe.exec(String(html));
   const start = match?.index ?? -1;
   if (start < 0) throw new Error('pricing integrity: missing section#' + id);
-  const tags = /<section\\b[^>]*>|<\\/section\\s*>/gi;
+  const tags = /<section\b[^>]*>|<\/section\s*>/gi;
   tags.lastIndex = start;
   let depth = 0, m;
   while ((m = tags.exec(html))) {
-    if (/^<section\\b/i.test(m[0])) depth += 1; else depth -= 1;
+    if (/^<section\b/i.test(m[0])) depth += 1; else depth -= 1;
     if (depth === 0) return html.slice(start, tags.lastIndex);
   }
   throw new Error('pricing integrity: unclosed #' + id);
