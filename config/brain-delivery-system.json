@@ -226,7 +226,8 @@
         "intern/linkedin-revenue/",
         "tests/linkedin-revenue-",
         "netlify/functions/linkedin-revenue-cockpit.mjs",
-        "_redirects"
+        "_redirects",
+        "tests/linkedin-cockpit-"
       ]
     }
   ],
@@ -303,7 +304,8 @@
         "tools/supabase-",
         "tools/universal-event-",
         "tools/universal-failure-",
-        "tests/saas-"
+        "tests/saas-",
+        "tests/linkedin-cockpit-"
       ],
       "requiredContracts": [
         "BG166",

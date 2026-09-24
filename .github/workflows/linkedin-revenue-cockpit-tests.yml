@@ -8,6 +8,7 @@ on:
       - 'platform/linkedin-revenue-cockpit.mjs'
       - 'netlify/functions/linkedin-revenue-cockpit.mjs'
       - 'supabase/functions/powerhouse-runtime/**'
+      - 'supabase/functions/powerhouse-social-publisher/**'
       - 'supabase/migrations/*linkedin*.sql'
       - 'supabase/migrations/*revenue*.sql'
       - 'tests/linkedin-revenue-cockpit.test.mjs'

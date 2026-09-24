@@ -97,3 +97,35 @@ test('cockpit adapter projects predictive sales intelligence without inventing i
   assert.match(code, /revenueDensity/);
   assert.match(code, /Math\.max\(n\(x\.buyingWindowScore\)/);
 });
+
+
+test('LinkedIn cockpit autopilot is part of the canonical social publisher', () => {
+  const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
+  assert.match(source, /async function runLinkedInCockpitAutopilot\(db:any\)/);
+  assert.match(source, /LINKEDIN_CREATE_COMMENT_ON_POST/);
+  assert.match(source, /\.eq\('status','suggested'\)/);
+  assert.match(source, /status:'dispatching'/);
+  assert.match(source, /status:'executed'/);
+  assert.match(source, /provider_ack_verified:true/);
+  assert.match(source, /powerhouse_record_outcome/);
+});
+
+test('LinkedIn cockpit autopilot keeps unsupported DM and connection actions as capability exceptions', () => {
+  const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
+  assert.match(source, /\['reply_dm','activate_connection'\]\.includes\(type\)/);
+  assert.match(source, /LINKEDIN_CAPABILITY_NOT_AVAILABLE/);
+});
+
+test('LinkedIn cockpit autopilot requires concrete post context and exact comment text', () => {
+  const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
+  assert.match(source, /linkedin\\\.com/);
+  assert.match(source, /CONCRETE_POST_CONTEXT_REQUIRED/);
+  assert.match(source, /Comment text: \$\{message\}/);
+});
+
+test('canonical publisher exposes dedicated autopilot mode and runs it during normal delivery', () => {
+  const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
+  assert.match(source, /mode === 'cockpit_autopilot'/);
+  const calls = (source.match(/await runLinkedInCockpitAutopilot\(db\)/g) || []).length;
+  assert.ok(calls >= 2);
+});
