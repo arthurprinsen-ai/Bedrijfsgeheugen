@@ -1,0 +1,23 @@
+{
+  "fingerprint": "powerhouse-50-production-source-promotion-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_PROMOTION_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Powerhouse 50 was merged and fully gated on main, but Netlify production still served an older deploy because the Git-linked promotion path had not advanced after an inherited build parse failure. The canonical Production Source Snapshot workflow is the supported GitHub OIDC to Netlify transport.",
+  "prevention_rule": "When a main-contained change requires production proof and Netlify current deploy is stale, use the canonical Production Source Snapshot workflow via one governed promotion lineage. Promotion workflow edits are material and must carry brain learning, human documentation and a development-ledger event in the same candidate.",
+  "evidence": {
+    "powerhouse_50_merge": "94fd9cb6f04118ea9da2d318d49114562f8ce2f5",
+    "build_fix_main": "3e7ef0bd633d4249e91e1a1dadaf3513c33f1ce4",
+    "production_snapshot": ".github/workflows/production-source-snapshot.yml",
+    "promotion_pr": 2767
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "STALE_NETLIFY_PRODUCTION_PROMOTION",
+    "scope": "PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}
