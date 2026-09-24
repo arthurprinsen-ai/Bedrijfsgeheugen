@@ -520,3 +520,17 @@ For every Node script referenced by the canonical `netlify.toml` build command:
 - retain exact production SHA + provider + browser proof before `LIVE_BEWEZEN`.
 
 Canonical regression: `tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs`.
+
+
+## Pricing production browser actionability
+
+Fingerprint: `pricing-toggle-i18n-runtime-20260924-v1`, revision 5.
+
+For mobile/horizontally scrollable pricing controls, a production interaction proof must establish **actionability before state change**:
+- scroll the section/control into the viewport;
+- assert the control is visible;
+- assert a non-zero bounding box;
+- require a successful Playwright trial click;
+- only then perform the real click and assert the resulting visible/ARIA state.
+
+A DOM match alone is not proof that a user can interact with the control. Do not weaken this with forced clicks. Canonical regression: `tests/brain-pricing-production-actionability-proof-v1.test.mjs`.
