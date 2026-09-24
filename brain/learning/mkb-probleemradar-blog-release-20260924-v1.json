@@ -13,17 +13,11 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-mkb-probleemradar-blog-release-v1.test.mjs"
-    ],
-    "shadow": [
-      "tests/brain-mkb-probleemradar-blog-release-v1.test.mjs"
-    ],
-    "canary": [
-      "tests/brain-mkb-probleemradar-blog-release-v1.test.mjs"
+      "tests/brain-material-writeback-closure-guard.test.mjs"
     ]
   },
   "test_evidence": [
-    "tests/brain-mkb-probleemradar-blog-release-v1.test.mjs",
+    "tests/brain-material-writeback-closure-guard.test.mjs",
     "blog/groeipijn-mkb-eigenaar-bottleneck/index.html",
     "blog/cashflow-overzicht-mkb/index.html",
     "blog/dubbele-invoer-voorkomen-systemen-koppelen/index.html",
