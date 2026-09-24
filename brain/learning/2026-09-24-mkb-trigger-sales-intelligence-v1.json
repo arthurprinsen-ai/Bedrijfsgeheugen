@@ -70,5 +70,17 @@
     "brain/learning-ledger/2026-09-24-mkb-trigger-sales-intelligence-v1.md",
     "docs/brain/mkb-trigger-sales-intelligence-v1.md",
     "docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-revenue-learning-v1.test.mjs"
+    ]
+  }
 }
