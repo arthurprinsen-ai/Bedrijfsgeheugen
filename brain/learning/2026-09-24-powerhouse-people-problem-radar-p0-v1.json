@@ -2,7 +2,7 @@
   "fingerprint": "powerhouse-people-problem-radar-p0-v1",
   "date": "2026-09-24",
   "type": "PROBLEM_RADAR_DOMAIN_EXPANSION",
-  "status": "IMPLEMENTED_CANDIDATE",
+  "status": "LIVE_PROVEN",
   "root_cause": "The canonical Problem Library represented capacity and onboarding but materially underrepresented workforce failure modes such as absence, long-term sickness, workload, attrition, hiring friction, skills gaps, people cost pressure, HR compliance, leadership/team health and workplace safety.",
   "prevention_rule": "Every Problem Radar coverage review must explicitly assess finance, sales, operations, technology/data, people/workforce, management and risk domains. Every canonical problem is part of one shared cross-domain problem graph; no domain may create a parallel taxonomy or isolated intelligence model. People signals must be privacy-safe, benchmark-aware and evidence-led.",
   "changes": [
@@ -20,7 +20,7 @@
     "skill": "skills/mkb-voice-of-customer-problem-radar.md",
     "cross_domain_graph": "config/powerhouse-cross-domain-problem-graph.json"
   },
-  "terminal_rule": "Do not claim LIVE_BEWEZEN before protected merge, production deployment and production readback.",
+  "terminal_rule": "LIVE_PROVEN requires protected merge plus a ready production deploy whose commit is the merge commit or a proven descendant. This obligation now satisfies that rule.",
   "skill_targets": [
     "skills/mkb-voice-of-customer-problem-radar.md"
   ],
@@ -41,6 +41,21 @@
     ],
     "historical_replay": [
       "tests/brain-powerhouse-people-problem-radar.test.mjs"
+    ]
+  },
+  "production_evidence": {
+    "delivery_pr": 2796,
+    "merge_commit": "f9daba3fcf34dbf5cca81c8b617b33a515ac86d2",
+    "production_commit": "8026d48c02fa0a1daca4e0df5f58f5ae272bae8a",
+    "production_deploy": "6ab57cde152a34c57f21b165",
+    "production_context": "production",
+    "provider_state": "ready",
+    "ancestry": "production commit is 5 commits ahead of and contains the People/HR merge",
+    "verified_files": [
+      "config/powerhouse-problem-library.json",
+      "config/powerhouse-people-problem-detection.json",
+      "config/powerhouse-cross-domain-problem-graph.json",
+      "skills/mkb-voice-of-customer-problem-radar.md"
     ]
   }
 }
