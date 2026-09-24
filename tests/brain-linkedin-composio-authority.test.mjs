@@ -24,3 +24,10 @@ test('LinkedIn company fails closed unless exact Composio readback is proven', (
   assert.match(source, /republish_forbidden:true/);
   assert.match(source, /do not fall back to Buffer or issue a replacement post/);
 });
+
+
+test('Composio execution uses v3.1 latest tool semantics', () => {
+  assert.match(source,/https:\/\/backend\.composio\.dev\/api\/v3\.1/);
+  assert.match(source,/version:'latest'/);
+  assert.doesNotMatch(source,/backend\.composio\.dev\/api\/v3'/);
+});
