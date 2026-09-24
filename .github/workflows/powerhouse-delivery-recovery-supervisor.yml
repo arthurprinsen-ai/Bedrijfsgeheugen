@@ -6,7 +6,7 @@ on:
     branches: [main]
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '17,47 * * * *'
 
 permissions:
   contents: write
@@ -28,7 +28,24 @@ jobs:
           node-version: '22'
       - name: Verify recovery controller
         run: node --test tests/delivery-powerhouse-supervisor.test.mjs
+      - name: Queue pressure circuit breaker
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          queued="$(gh api "repos/$repo/actions/runs?status=queued&per_page=1" --jq '.total_count')"
+          running="$(gh api "repos/$repo/actions/runs?status=in_progress&per_page=1" --jq '.total_count')"
+          echo "Observed Actions pressure: queued=$queued in_progress=$running"
+          if [ "$queued" -ge 8 ] || [ "$running" -ge 16 ]; then
+            echo "RECOVERY_QUEUE_PRESSURE=true" >> "$GITHUB_ENV"
+            echo "::warning::Recovery dispatch suspended: Actions queue pressure is above the safe threshold."
+          else
+            echo "RECOVERY_QUEUE_PRESSURE=false" >> "$GITHUB_ENV"
+          fi
       - name: Recover exact-head critical delivery workflows
+        if: env.RECOVERY_QUEUE_PRESSURE != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
@@ -56,10 +73,10 @@ jobs:
             state="$(jq -r '.state' <<<"$decision")"
             echo "PR#$number $head $state"
             dispatch_required(){
-              gh workflow run required-test.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
+              gh workflow run required-test.yml --ref "$branch" -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
             }
             dispatch_brain(){
-              gh workflow run unified-brain-delivery.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
+              gh workflow run unified-brain-delivery.yml --ref "$branch" -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
             }
             case "$state" in
               ZERO_RUN_RECOVERY)
@@ -104,6 +121,7 @@ jobs:
           done
 
       - name: Recover merged obligations missing terminal closure
+        if: env.RECOVERY_QUEUE_PRESSURE != 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
