@@ -1,0 +1,16 @@
+{
+  "fingerprint": "netlify-terminal-deploy-wait-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_DELIVERY_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Production Source Snapshot used Netlify MCP with --no-wait, so the transport step could turn green before Netlify had finished building or promoting the deploy. A later SHA readback then had to distinguish slow promotion from provider failure without provider-terminal diagnostics.",
+  "prevention_rule": "For canonical production deploys, the provider side-effect step must wait for Netlify terminal completion. Only after that may release.json exact-SHA and browser interaction proofs run. Do not treat command acceptance as deployment success.",
+  "evidence": {
+    "workflow": ".github/workflows/production-source-snapshot.yml",
+    "regression": "tests/brain-netlify-terminal-deploy-wait-v1.test.mjs",
+    "skill": ".agents/skills/powerhouse-continuity/SKILL.md"
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
