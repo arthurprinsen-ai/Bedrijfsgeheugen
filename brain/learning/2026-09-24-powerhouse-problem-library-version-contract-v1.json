@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse-problem-library-version-contract-v1",
+  "date": "2026-09-24",
+  "type": "POST_MERGE_REGRESSION_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The canonical Problem Library was expanded from version 1.0.0 to 1.1.0 with PH-P031..PH-P040, but the long-standing baseline contract test still hard-coded version 1.0.0 and a minimum of 30 problems. The protected merge did not require the BRAIN backend lane, so the stale assertion was only surfaced after merge.",
+  "prevention_rule": "Any canonical problem taxonomy version/count change must co-change tests/brain-powerhouse-problem-library.test.mjs in the same candidate. Post-merge main readback must include this baseline regression before LIVE_BEWEZEN.",
+  "fix": [
+    "Update expected library version to 1.1.0.",
+    "Raise baseline minimum canonical problem count from 30 to 40.",
+    "Bind the regression to the same Powerhouse Problem Radar obligation."
+  ],
+  "evidence": {
+    "merged_pr": 2796,
+    "merged_sha": "f9daba3fcf34dbf5cca81c8b617b33a515ac86d2",
+    "failing_test": "tests/brain-powerhouse-problem-library.test.mjs",
+    "canonical_library": "config/powerhouse-problem-library.json"
+  },
+  "compiler": {
+    "failure_class": "CANONICAL_TAXONOMY_VERSION_TEST_DRIFT",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "invariants": [
+      "baseline problem-library test version equals the canonical library version",
+      "baseline problem count floor reflects the canonical expansion",
+      "post-merge LIVE_BEWEZEN remains blocked until main regression passes"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-library.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ]
+}
