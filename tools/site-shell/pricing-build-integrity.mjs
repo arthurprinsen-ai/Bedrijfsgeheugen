@@ -17,6 +17,29 @@ function extractSection(html, id) {
   throw new Error(`pricing integrity: unclosed #${id}`);
 }
 
+function extractScriptById(html, id) {
+  const re = new RegExp('<script\\b[^>]*\\bid=["\\']' + id + '["\\'][^>]*>[\\s\\S]*?<\\/script>', 'i');
+  const match = String(html).match(re);
+  if (!match) throw new Error(`pricing integrity: missing script #${id}`);
+  return match[0];
+}
+
+function ensurePricingRuntime(html, source) {
+  const inlineId = 'bg-pricing-neno-v1-js';
+  const inline = extractScriptById(source, inlineId);
+  const inlineRe = new RegExp('<script\\b[^>]*\\bid=["\\']' + inlineId + '["\\'][^>]*>[\\s\\S]*?<\\/script>', 'i');
+  let next = String(html);
+  if (inlineRe.test(next)) next = next.replace(inlineRe, inline);
+  else next = next.replace(/<\\/body>/i, inline + '\n</body>');
+
+  const rescueSrc = '/assets/js/pricing-interactions-rescue-v1.js?v=20260924-0750';
+  const rescueTag = `<script src="${rescueSrc}" defer></script>`;
+  const rescueRe = /<script\\b[^>]*src=["\\']\\/assets\\/js\\/pricing-interactions-rescue-v1\\.js(?:\\?[^"\\']*)?["\\'][^>]*><\\/script>/i;
+  if (rescueRe.test(next)) next = next.replace(rescueRe, rescueTag);
+  else next = next.replace(/<\\/body>/i, rescueTag + '\n</body>');
+  return next;
+}
+
 function assertCanonical(html) {
   const required = [
     '€ 2.950',
@@ -61,8 +84,13 @@ if (mode === 'capture') {
   const [source, built] = await Promise.all([readFile(SNAPSHOT, 'utf8'), readFile(PAGE, 'utf8')]);
   const canonical = extractSection(source, 'pakketten');
   const current = extractSection(built, 'pakketten');
-  const restored = built.replace(current, canonical);
+  const restoredSection = built.replace(current, canonical);
+  const restored = ensurePricingRuntime(restoredSection, source);
   assertCanonical(restored);
+  extractScriptById(restored, 'bg-pricing-neno-v1-js');
+  if (!restored.includes('/assets/js/pricing-interactions-rescue-v1.js?v=20260924-0750')) {
+    throw new Error('pricing integrity: rescue runtime missing after restore');
+  }
   await writeFile(PAGE, restored, 'utf8');
   console.log('Restored and verified canonical pricing section after build transforms');
 } else {
