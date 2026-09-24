@@ -4,19 +4,21 @@
   "type": "PROBLEM_RADAR_DOMAIN_EXPANSION",
   "status": "IMPLEMENTED_CANDIDATE",
   "root_cause": "The canonical Problem Library represented capacity and onboarding but materially underrepresented workforce failure modes such as absence, long-term sickness, workload, attrition, hiring friction, skills gaps, people cost pressure, HR compliance, leadership/team health and workplace safety.",
-  "prevention_rule": "Every Problem Radar coverage review must explicitly assess finance, sales, operations, technology/data, people/workforce, management and risk domains. People signals must be privacy-safe, benchmark-aware and evidence-led.",
+  "prevention_rule": "Every Problem Radar coverage review must explicitly assess finance, sales, operations, technology/data, people/workforce, management and risk domains. Every canonical problem is part of one shared cross-domain problem graph; no domain may create a parallel taxonomy or isolated intelligence model. People signals must be privacy-safe, benchmark-aware and evidence-led.",
   "changes": [
     "canonical problem library expanded from 30 to 40 problems",
     "PH-P031 through PH-P040 added as first-class people problems",
     "privacy-safe people detection contract added",
     "regression coverage added",
-    "Problem Radar skill updated"
+    "Problem Radar skill updated",
+    "cross-domain problem graph connects people evidence to finance, operations, sales, knowledge, risk, executive cockpit, opportunity scoring, content/sales and outcome learning"
   ],
   "evidence": {
     "library": "config/powerhouse-problem-library.json",
     "detection": "config/powerhouse-people-problem-detection.json",
     "regression": "tests/brain-powerhouse-people-problem-radar.test.mjs",
-    "skill": "skills/mkb-voice-of-customer-problem-radar.md"
+    "skill": "skills/mkb-voice-of-customer-problem-radar.md",
+    "cross_domain_graph": "config/powerhouse-cross-domain-problem-graph.json"
   },
   "terminal_rule": "Do not claim LIVE_BEWEZEN before protected merge, production deployment and production readback.",
   "skill_targets": [
