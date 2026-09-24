@@ -30,13 +30,13 @@ function ensurePricingRuntime(html, source) {
   const inlineRe = new RegExp(`<script\\b[^>]*\\bid=["']${inlineId}["'][^>]*>[\\s\\S]*?<\\/script>`, 'i');
   let next = String(html);
   if (inlineRe.test(next)) next = next.replace(inlineRe, inline);
-  else next = next.replace(/<\\/body>/i, inline + '\n</body>');
+  else next = next.replace(new RegExp('</body>', 'i'), inline + '\n</body>');
 
   const rescueSrc = '/assets/js/pricing-interactions-rescue-v1.js?v=20260924-0750';
   const rescueTag = `<script src="${rescueSrc}" defer></script>`;
-  const rescueRe = /<script\\b[^>]*src=["\\']\\/assets\\/js\\/pricing-interactions-rescue-v1\\.js(?:\\?[^"\\']*)?["\\'][^>]*><\\/script>/i;
+  const rescueRe = new RegExp(`<script\\b[^>]*src=["']\\/assets\\/js\\/pricing-interactions-rescue-v1\\.js(?:\\?[^"']*)?["'][^>]*><\\/script>`, 'i');
   if (rescueRe.test(next)) next = next.replace(rescueRe, rescueTag);
-  else next = next.replace(/<\\/body>/i, rescueTag + '\n</body>');
+  else next = next.replace(new RegExp('</body>', 'i'), rescueTag + '\n</body>');
   return next;
 }
 
