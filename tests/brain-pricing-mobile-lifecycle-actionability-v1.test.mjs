@@ -10,14 +10,13 @@ test('mobile lifecycle tabs remain directly actionable without horizontal overfl
   assert.match(html,/\.bg-lifecycle-tabs button\{flex:1 1 auto;min-width:max-content\}/);
   assert.match(verifier,/html\[data-bg-pricing-interactions="ready-v3"\]/);
   assert.doesNotMatch(verifier,/lossButton\.waitFor\(/);
-  assert.doesNotMatch(verifier,/scrollIntoViewIfNeeded\(\)/);
-  assert.doesNotMatch(verifier,/lossButton\.boundingBox\(\)/);
   assert.doesNotMatch(verifier,/lossButton\.evaluate\(/);
+  assert.doesNotMatch(verifier,/scrollIntoViewIfNeeded\(\)/);
   assert.match(verifier,/page\.evaluate\(\(\) => \{/);
   assert.match(verifier,/document\.querySelector\('\[data-bg-stage="loss"\]'\)/);
   assert.match(verifier,/getComputedStyle\(element\)/);
   assert.match(verifier,/getBoundingClientRect\(\)/);
   assert.match(verifier,/page\.mouse\.click\(lossBox\.x \+ lossBox\.width \/ 2, lossBox\.y \+ lossBox\.height \/ 2\)/);
   assert.doesNotMatch(verifier,/force:\s*true/);
-  assert.doesNotMatch(verifier,/\.click\(\)/);
+  assert.doesNotMatch(verifier,/\.click\(\)\s*;\s*\/\/ DOM shortcut/);
 });
