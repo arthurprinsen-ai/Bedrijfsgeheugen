@@ -15,6 +15,7 @@ async function run() {
     const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
     await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
     await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+    await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
 
     // Lifecycle toggle must change the actual visible panel.
     await page.locator('[data-bg-stage="loss"]').click();
