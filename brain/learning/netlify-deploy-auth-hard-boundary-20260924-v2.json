@@ -18,10 +18,19 @@
     "After account-level credential recovery, rerun canonical Production Source Snapshot and require exact production SHA plus pricing/i18n browser proof before LIVE_BEWEZEN."
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"],
-    "shadow": ["tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"]
+    "historical_replay": [
+      "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"
+    ]
   },
-  "test_evidence": ["tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"],
+  "test_evidence": [
+    "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"
+  ],
   "evidence": {
     "current_main_sha": "1b49aa2b9c5acbb1d10138b4c07e92585193d0d1",
     "failed_snapshot_run_id": "35991169738",
@@ -29,7 +38,10 @@
     "provider_error": "401 Unauthorized",
     "prior_failed_snapshot_run_id": "35990391702"
   },
-  "skill_targets": ["continuity", "delivery"],
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
   "compiler": {
     "failure_class": "DEPLOY_AUTH_HARD_BOUNDARY",
     "scope": "NETLIFY_PRODUCTION_DELIVERY",
