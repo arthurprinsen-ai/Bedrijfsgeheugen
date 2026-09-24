@@ -466,6 +466,16 @@ Fingerprint: `netlify-provider-build-failfast-diagnostics-20260924-v1`.
 - Provider `ready` is still not terminal closure: exact SHA and pricing/i18n browser proof remain required.
 
 
+## Netlify terminal deploy completion
+
+Fingerprint: `netlify-terminal-deploy-wait-v1`.
+
+- A production transport command being accepted or started is not deployment success.
+- Canonical Production Source Snapshot must wait for the Netlify provider-side deploy to reach terminal completion; do not use `--no-wait` in this production path.
+- Only after provider-terminal completion may exact `release.json` SHA/context/deploy-id proof and production browser interaction proof run.
+- If the deploy fails, surface the provider-terminal failure in the deploy step rather than masking it as a later generic SHA timeout.
+- `LIVE_BEWEZEN` still requires exact production SHA plus the relevant user-visible browser gates.
+
 ## Netlify OIDC linked-build fallback
 
 Fingerprint: `netlify-oidc-linked-build-fallback-20260924-v1`.
