@@ -51,3 +51,8 @@ Content is pre-sales. Schrijf vanuit concreet CEO/directie/MT-probleem, data, im
 
 ## Learning
 Meet minimaal trigger->response, response->meeting, meeting->scan, scan->sale, realized value en referral. Promote geen heuristiek tot harde policy zonder voldoende evidence.
+
+## Executable trigger runtime
+Fingerprint: `powerhouse-trigger-opportunity-runtime-v1`.
+
+Wanneer een observed company trigger via de canonical ingest binnenkomt, projecteert de runtime hem naar de bestaande predictive signal → forecast → opportunity → sales action → decision cycle lineage. Start altijd met `expected_value_eur=0`, `expected_revenue_value=0` en channel `internal_research`. Directe outreach blijft geblokkeerd totdat aparte observed commercial evidence en bestaande outbound-gates dit toestaan. Market/segment-signalen mogen nooit stilzwijgend als company opportunity worden behandeld.
