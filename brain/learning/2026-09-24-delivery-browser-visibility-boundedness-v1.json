@@ -17,7 +17,7 @@
     "Mirror specialist PR path scopes onto main push triggers so unrelated merges do not fan out specialist CI",
     "Replace run-id concurrency keys with stable ref/PR keys where supersession is intended"
   ],
-  "prevention_rule": "Every browser/readback or expensive PR specialist workflow must bound async waits and total runtime, and must use per-PR single-flight concurrency so the newest head supersedes older queued/in-progress work.",
+  "prevention_rule": "Every browser/readback or expensive CI workflow must bound async waits and total runtime, use stable supersession keys, scope specialist main triggers to owned paths, and validate YAML semantics after automated workflow rewrites rather than assuming branch-list formatting.",
   "compiler": {
     "failure_class": "UNBOUNDED_BROWSER_ASYNC_WAIT",
     "scope": "CI_WEBSITE_BROWSER_GATE",
@@ -47,5 +47,8 @@
     "script": "tools/site-shell/standalone-visibility-check.mjs",
     "regression": "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
     "skill": ".agents/skills/powerhouse-browser-gate-boundedness/SKILL.md"
-  }
+  },
+  "failed_approaches": [
+    "A generic text transformation assumed push.branches was a one-line YAML scalar and inserted paths before a multi-line branch list, producing an invalid semantic structure even though the file remained textually plausible."
+  ]
 }
