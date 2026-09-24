@@ -463,3 +463,14 @@ Every expensive PR-scoped workflow must use a stable per-PR concurrency group wi
 Do not key PR concurrency by commit SHA or `github.run_id`; those identities prevent supersession and create queue storms. Use the PR number, with a ref fallback only outside PR events.
 
 Canonical regression: `tests/brain-actions-pr-single-flight-v1.test.mjs`.
+
+
+## Main push fan-out governor
+
+Fingerprint: `github|actions|main-push-fanout-governor|v1`.
+
+A specialist workflow that is path-scoped on pull requests must normally use the same semantic path scope on `push: main`. Do not run specialist suites for unrelated merges merely because they reached main.
+
+Where newer current-state work supersedes older work, concurrency keys must be stable by PR/ref. Never use `github.run_id` as a concurrency identity when cancellation of stale runs is intended.
+
+Keep repository-wide invariants such as Main Write Integrity and canonical security/production authorities global when they genuinely must observe every main write.

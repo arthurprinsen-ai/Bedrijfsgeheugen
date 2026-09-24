@@ -13,7 +13,9 @@
     "Add a total fail-closed sweep budget",
     "Preserve product assertions while preventing runner leaks",
     "Make expensive PR workflows single-flight per PR so a new head cancels superseded queued/in-progress work",
-    "Bound expensive specialist jobs with explicit job timeouts"
+    "Bound expensive specialist jobs with explicit job timeouts",
+    "Mirror specialist PR path scopes onto main push triggers so unrelated merges do not fan out specialist CI",
+    "Replace run-id concurrency keys with stable ref/PR keys where supersession is intended"
   ],
   "prevention_rule": "Every browser/readback or expensive PR specialist workflow must bound async waits and total runtime, and must use per-PR single-flight concurrency so the newest head supersedes older queued/in-progress work.",
   "compiler": {
@@ -26,7 +28,8 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
-      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+      "tests/brain-actions-pr-single-flight-v1.test.mjs",
+      "tests/brain-actions-main-push-fanout-v1.test.mjs"
     ],
     "invariants": [
       "each navigation attempt has a finite timeout",

@@ -3,12 +3,24 @@ name: Engineering Intelligence and Trust
 on:
   push:
     branches: [main]
+    paths:
+      - 'config/engineering-trust.json'
+      - '.github/CODEOWNERS'
+      - '.github/dependabot.yml'
+      - '.github/workflows/engineering-supply-chain-trust.yml'
+      - '.github/workflows/engineering-intelligence-trust.yml'
+      - 'tools/delivery/candidate-environment.mjs'
+      - 'tools/ci/engineering-intelligence.mjs'
+      - 'tests/engineering-trust-contract.test.mjs'
+      - 'tests/engineering-supply-chain-workflows.test.mjs'
+      - 'tests/candidate-environment.test.mjs'
+      - 'tests/engineering-intelligence.test.mjs'
 
 permissions:
   contents: read
 
 concurrency:
-  group: engineering-intelligence-trust-${{ github.event_name }}-${{ github.ref }}
+  group: engineering-intelligence-trust-${{ github.event_name }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
