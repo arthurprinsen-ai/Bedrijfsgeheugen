@@ -361,3 +361,16 @@ test('regulatory source state projection is automation delivery work', async () 
   const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
   assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
 });
+
+
+test('opportunity scouting runtime and regressions are backend delivery work', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  for (const path of ['scripts/opportunity/opportunity-scout.mjs','tests/opportunity-scout.test.mjs']) {
+    const plan = createDeliveryPlan({ changedPaths:[path], headSha:'abc123def4567890', policy });
+    assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend'], `${path} must be backend delivery work`);
+  }
+  assert.throws(
+    () => createDeliveryPlan({ changedPaths:['scripts/unowned-opportunity-adjacent.mjs'], headSha:'abc123def4567890', policy }),
+    /unclassified delivery path/
+  );
+});
