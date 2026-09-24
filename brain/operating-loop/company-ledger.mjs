@@ -1,4 +1,18 @@
 const num=v=>Number.isFinite(Number(v))?Number(v):0;
+const canonicalProblemId=record=>{
+  const candidates=[
+    record?.problemId,
+    record?.problem_id,
+    record?.payload?.problemId,
+    record?.payload?.problem_id,
+    ...(Array.isArray(record?.references)?record.references:[])
+  ].map(v=>String(v??'').trim());
+  for(const value of candidates){
+    const match=value.match(/(?:problem:)?(PH-P\d{3})/);
+    if(match) return match[1];
+  }
+  return null;
+};
 
 function eventView(record){
   return {
@@ -8,6 +22,7 @@ function eventView(record){
     subjectId:record.subjectId,
     decisionId:record.decisionId||record.references?.find(x=>String(x).startsWith('decision:'))||null,
     actionId:record.actionId||null,
+    problemId:canonicalProblemId(record),
     actor:record.actor,
     actorType:record.actorType,
     owner:record.owner,
@@ -35,13 +50,24 @@ export function buildCompanyLedger(records,{tenantId}={}){
   }
   const decisionExpected=scoped.filter(r=>r.kind==='decision').reduce((sum,r)=>sum+num(r.economics?.expectedValue),0);
   const actualCost=scoped.filter(r=>['action','execution','outcome','value'].includes(r.kind)).reduce((sum,r)=>sum+num(r.economics?.cost),0);
-  const realizedValue=scoped.filter(r=>r.kind==='value'&&r.verified===true).reduce((sum,r)=>sum+num(r.economics?.realizedValue??r.payload?.realisedValue),0);
+  const verifiedValueRecords=scoped.filter(r=>r.kind==='value'&&r.verified===true&&r.executed===true&&Array.isArray(r.evidenceIds)&&r.evidenceIds.length>0);
+  const realizedValue=verifiedValueRecords.reduce((sum,r)=>sum+num(r.economics?.realizedValue??r.payload?.realisedValue),0);
+  const valueByProblem={};
+  for(const record of verifiedValueRecords){
+    const problemId=canonicalProblemId(record);
+    if(!problemId) continue;
+    if(!valueByProblem[problemId]) valueByProblem[problemId]={problemId,realizedValue:0,evidenceIds:[],outcomes:0};
+    valueByProblem[problemId].realizedValue+=num(record.economics?.realizedValue??record.payload?.realisedValue);
+    valueByProblem[problemId].evidenceIds.push(...record.evidenceIds);
+    valueByProblem[problemId].outcomes+=1;
+  }
   const currencies=[...new Set(scoped.map(r=>r.economics?.currency).filter(Boolean))];
   return {
     tenantId:tenantId||null,
     timeline,
     approvals,
     actors,
+    verifiedValueByProblem:Object.values(valueByProblem).map(item=>({...item,evidenceIds:[...new Set(item.evidenceIds)]})),
     economics:{
       expectedValue:decisionExpected,
       actualCost,
