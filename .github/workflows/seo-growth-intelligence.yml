@@ -16,8 +16,24 @@ on:
       - '.github/workflows/seo-growth-intelligence.yml'
   push:
     branches:
+    paths:
+      - 'tools/seo-growth/**'
+      - 'tools/seo-order-engine/**'
+      - 'netlify/functions/growth-event.mjs'
+      - 'config/seo-growth-*'
+      - 'config/seo-search-sources.json'
+      - 'config/seo-optimization-allowlist.json'
+      - 'config/universal-event-producers.json'
+      - 'config/brain-delivery-system.json'
+      - 'tests/seo-growth-*.test.mjs'
+      - 'tests/seo-order-*.test.mjs'
+      - '.github/workflows/seo-growth-intelligence.yml'
       - main
       - feat/seo-to-order-intelligence-loop-final-20260905
+
+concurrency:
+  group: seo-growth-intelligence-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   test:
