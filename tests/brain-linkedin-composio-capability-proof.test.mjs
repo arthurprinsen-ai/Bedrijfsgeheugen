@@ -50,7 +50,7 @@ test('connected-account user_id is forwarded to every Composio LinkedIn tool cal
 });
 
 test('company capability stays fail-closed when organization scope is absent',()=>{
-  assert.match(setup,/company_scope_required:companyReady\?null:'r_organization_admin'/);
+  assert.match(setup,/company_scope_required:companyReady\?null:\[/);\n  assert.match(setup,/r_organization_admin/);\n  assert.match(setup,/w_organization_social/);\n  assert.match(setup,/company_admin_scope_present:hasOrgAdminScope/);\n  assert.match(setup,/company_write_scope_present:hasOrgWriteScope/);
   assert.match(setup,/granted_scopes:grantedScopes/);
   assert.match(setup,/company_ready:companyReady/);
 });
