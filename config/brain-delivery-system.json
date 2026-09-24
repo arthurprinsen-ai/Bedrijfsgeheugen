@@ -463,7 +463,18 @@
         "tools/bouw-inhoudspaginas.mjs",
         "tools/bouw-losse-paginas.mjs",
         "afsluiten.html",
-        "tools/zoekwoorden.mjs"
+        "tools/zoekwoorden.mjs",
+        "koppelingen-per-branche.html",
+        "bouw-software-koppelen.html",
+        "zorg-software-koppelen.html",
+        "horeca-software-koppelen.html",
+        "retail-ecommerce-software-koppelen.html",
+        "logistiek-software-koppelen.html",
+        "zakelijke-dienstverlening-software-koppelen.html",
+        "industrie-productie-software-koppelen.html",
+        "vastgoed-software-koppelen.html",
+        "automotive-software-koppelen.html",
+        "tests/branche-applicaties-integraties.test.mjs"
       ],
       "requiredContracts": [
         "BG166",
