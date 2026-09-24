@@ -24,3 +24,6 @@ All external people evidence must be registered with provenance, evidence role a
 
 ## Terminal contract
 Only protected merge to `main`, successful production deploy and exact production readback may promote this obligation to LIVE_BEWEZEN.
+
+## Baseline refresh
+Before terminal merge, `main` advanced to `984f679515fff2d9e4a4f10c0b187e95e96a1561` via #2832, which fixes the unrelated pricing production pointer/readback regressions surfaced by the backend lane. This candidate is re-evaluated against that current base; no duplicate pricing implementation is introduced here.
