@@ -12,5 +12,12 @@
   },
   "skill_targets": [
     "powerhouse-continuity"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_DEPLOY_TERMINAL_STATE_OBSCURED",
+    "scope": "PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
