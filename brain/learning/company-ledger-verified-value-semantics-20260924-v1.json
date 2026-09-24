@@ -1,0 +1,53 @@
+{
+  "fingerprint": "company-ledger-verified-value-semantics-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "BACKWARD_COMPATIBILITY",
+  "problem": "Verified Value Created P0 tightened the shared company-ledger realizedValue aggregate to require execution and evidence, causing established company economics and projections to collapse to zero for valid historical verified value records.",
+  "root_cause": "One field was serving two contracts: legacy ledger economics and the new evidence-backed PH-Pxxx Verified Value Created metric. The stricter eligibility rule was applied to both instead of only the new metric.",
+  "prevention": [
+    "Keep economics.realizedValue backward compatible with historical verified value semantics.",
+    "Keep verifiedValueByProblem strict: executed=true, verified=true and at least one evidenceId.",
+    "Never strengthen a shared legacy aggregate when introducing a stricter derived metric; create a separate eligibility set.",
+    "Regression must prove both contracts in the same fixture."
+  ],
+  "evidence": {
+    "introducing_main_sha": "945febc5cb2d603dfaefcc8b1d12a36b075a7d1d",
+    "inherited_main_failure_run": 36020379269,
+    "blocked_pr": 2792,
+    "failing_tests": [
+      "brain/operating-loop/company-ledger.test.mjs",
+      "brain/operating-loop/company-decision-projection.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "STRICT_DERIVED_METRIC_OVERWROTE_LEGACY_AGGREGATE",
+    "scope": "POWERHOUSE_VALUE_LEDGER",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "brain/operating-loop/company-ledger.test.mjs",
+      "brain/operating-loop/company-decision-projection.test.mjs",
+      "tests/brain-company-ledger-verified-value-semantics-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-outcome-ledger-problem-value.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-ledger-verified-value-semantics-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "brain/operating-loop/company-ledger.test.mjs",
+    "brain/operating-loop/company-decision-projection.test.mjs",
+    "tests/brain-company-ledger-verified-value-semantics-v1.test.mjs",
+    "tests/brain-powerhouse-outcome-ledger-problem-value.test.mjs"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ],
+  "revision": 1
+}
