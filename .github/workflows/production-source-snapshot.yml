@@ -1,3 +1,4 @@
+# Operational snapshot refresh: 2026-09-24 provider-credit-deploy-auth-preflight-v1
 # Operational snapshot refresh: 2026-09-24 i18n-production-redeploy-after-env-v1
 # Operational snapshot refresh: 2026-09-24 i18n-translation-throttle-resilience-v1
 # Operational snapshot refresh: 2026-09-24 pricing-proof-oracle-v1
@@ -66,6 +67,7 @@ jobs:
       - name: Deploy exact source through authorized Netlify transport
         if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
         env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_MCP_PROXY_PATH: ${{ secrets.NETLIFY_MCP_PROXY_PATH_TEMP }}
           EXPECTED_SHA: ${{ github.sha }}
         run: |
@@ -79,11 +81,30 @@ jobs:
             fi
             sleep 10
           done
+          if [ -n "${NETLIFY_AUTH_TOKEN:-}" ]; then
+            echo "Using durable Netlify auth token for exact-source production deploy."
+            tmpdir="$(mktemp -d)"
+            unzip -q production-source.zip -d "$tmpdir"
+            npx -y netlify-cli@latest deploy --build --prod --site fd527056-493a-4d8a-8125-d00370104fa3 --dir "$tmpdir"
+            exit 0
+          fi
           if [ -z "${NETLIFY_MCP_PROXY_PATH:-}" ]; then
-            echo "::error::Netlify Git deploy did not reach ${EXPECTED_SHA} and NETLIFY_MCP_PROXY_PATH_TEMP is missing"
+            echo "::error::NETLIFY_DURABLE_DEPLOY_CREDENTIAL_MISSING: Git-linked deploy did not reach ${EXPECTED_SHA}; configure NETLIFY_AUTH_TOKEN. A temporary MCP proxy is not a durable production credential."
             exit 78
           fi
-          npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
+          set +e
+          proxy_output="$(npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH" 2>&1)"
+          proxy_rc=$?
+          set -e
+          if [ "$proxy_rc" -ne 0 ]; then
+            if printf '%s' "$proxy_output" | grep -q '401 Unauthorized'; then
+              echo "::error::NETLIFY_EPHEMERAL_PROXY_EXPIRED: NETLIFY_MCP_PROXY_PATH_TEMP is stale. Temporary MCP proxy URLs must never be used as persistent deployment credentials."
+            else
+              echo "::error::NETLIFY_DEPLOY_TRANSPORT_FAILED"
+            fi
+            exit "$proxy_rc"
+          fi
+          printf '%s\n' "$proxy_output"
 
       - name: Prove exact production identity
         if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
