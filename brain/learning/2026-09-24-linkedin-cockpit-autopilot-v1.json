@@ -1,0 +1,51 @@
+{
+  "fingerprint": "linkedin-cockpit-autopilot-capability-bounded-execution-v1",
+  "date": "2026-09-24",
+  "scope": "linkedin-revenue-cockpit",
+  "compiler": {
+    "failure_class": "manual_cockpit_execution_required_for_automatable_linkedin_actions"
+  },
+  "root_cause": "The LinkedIn revenue cockpit generated and prioritized evidence-backed actions, but the canonical social delivery path did not consume eligible cockpit actions. This left supported LinkedIn post-reply actions dependent on manual cockpit operation.",
+  "prevention_rules": [
+    "The cockpit is an observability and exception surface, not the primary execution surface.",
+    "Eligible LinkedIn post-reply actions must be atomically claimed before any provider call.",
+    "Only provider capabilities actually available through the connected LinkedIn transport may execute automatically.",
+    "Unsupported DM and connection activation actions must remain explicit capability exceptions; never fabricate or bypass transport capabilities.",
+    "Provider acknowledgement and canonical outcome writeback are required before an action is marked executed.",
+    "Every new RPC used by material runtime code must be registered in the quality-surface contract."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/linkedin-revenue-cockpit.test.mjs",
+      ".github/workflows/linkedin-revenue-cockpit-tests.yml"
+    ],
+    "quality_gates": [
+      "Powerhouse Quality Intelligence Surface Gate",
+      "Supabase PR Preview Contract",
+      "Required test"
+    ],
+    "pull_request": 2734,
+    "implementation": "supabase/functions/powerhouse-social-publisher/index.ts"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "scenario": "evidence-backed LinkedIn post reply",
+        "expected": "claimed once, executed through Composio, provider acknowledgement persisted, outcome written back"
+      },
+      {
+        "scenario": "LinkedIn DM or connection activation without supported provider capability",
+        "expected": "no external action; explicit capability exception retained for review"
+      },
+      {
+        "scenario": "concurrent publisher runs",
+        "expected": "only one run can claim a suggested action"
+      }
+    ]
+  },
+  "regression_contract": "tests/linkedin-revenue-cockpit.test.mjs",
+  "production_readback": {
+    "required": true,
+    "rule": "Do not call the autopilot LIVE_PROVEN until the merged main function is deployed and an authenticated runtime invocation returns cockpit_autopilot evidence from production."
+  }
+}
