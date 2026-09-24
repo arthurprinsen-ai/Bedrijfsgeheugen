@@ -1,0 +1,42 @@
+{
+  "fingerprint": "netlify-linked-skipped-fallback-v1",
+  "date": "2026-09-24",
+  "type": "DELIVERY_INCIDENT_LEARNING",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Production Source Snapshot treated a Netlify linked deploy with state=error and error_message=Skipped as a fatal provider build error, so execution exited before reaching the already-authorized exact-source MCP upload fallback.",
+  "prevention_rule": "Distinguish Netlify Skipped from a real failed build. For Skipped linked deploys, keep fail-closed identity checks but continue through the canonical exact-source upload transport. Real provider errors remain terminal failures.",
+  "failed_approaches": [
+    "Treating every Netlify state=error identically even when error_message=Skipped indicates no provider build was executed.",
+    "Stopping before the canonical exact-source fallback despite valid OIDC/proxy transport already being available."
+  ],
+  "compiler": {
+    "failure_class": "NETLIFY_LINKED_DEPLOY_SKIPPED_BLOCKED_FALLBACK",
+    "scope": "PRODUCTION_DEPLOY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-linked-skipped-fallback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-linked-skipped-fallback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-linked-skipped-fallback-v1.test.mjs"
+    ],
+    "invariants": [
+      "Skipped linked deploy never counts as production success",
+      "Skipped linked deploy reaches only the existing authorized exact-source fallback",
+      "real Netlify build errors still fail closed"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-netlify-linked-skipped-fallback-v1.test.mjs"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ]
+}

@@ -696,3 +696,14 @@ Fingerprint: `github|same-pr|zero-diff-autoclose-recovery|v1`.
 
 Preserve the obligation delta before moving a branch ref; after replay verify branch head and PR state, reopen the same canonical PR when GitHub auto-closes a transient zero-diff state, and re-prove exact-head gates.
 
+## Netlify linked skip continuity
+
+Fingerprint: `netlify|linked-skip|same-authority-fallback|v1`.
+
+If the canonical Git-linked production trigger is skipped by Netlify:
+- keep the same obligation and deployment authority;
+- treat `Skipped` as an incomplete transport outcome, never as LIVE;
+- continue through the existing authorized exact-source fallback when available;
+- retain exact source identity and provider readback requirements;
+- never fork to an ad-hoc manual deploy path merely because the linked build was skipped.
+
