@@ -24,7 +24,8 @@ test('pricing build integrity restores interaction runtimes after transforms',()
 });
 
 test('section extraction accepts class before id',()=>{
-  assert.match(source,/new RegExp\('\<section\\\\b/);
+  assert.ok(source.includes('const startRe = new RegExp('));
+  assert.ok(source.includes('\\\\bid='));
   assert.match(source,/missing section#/);
   assert.doesNotMatch(source,/const startToken = `?<section id=/);
 });
