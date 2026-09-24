@@ -58,3 +58,6 @@ De canonical opportunity authority projecteert commerciële context via `scripts
 
 ## Supabase runtime authority
 De production authority is `public.powerhouse_mkb_trigger_intelligence_v1` + `public.powerhouse_refresh_trigger_based_mkb_acquisition_v1(date)`. Alleen expliciete company-trigger evidence/headlines/samenvattingen of company-scoped predictive signals mogen worden geclassificeerd; een gewone connection/relationship activation is geen kooptrigger. De materialisatie hergebruikt `powerhouse_opportunities`, `powerhouse_forecasts` en `powerhouse_sales_actions`. Automatisch wordt uitsluitend `research_enrichment` via kanaal `internal` aangemaakt; direct outbound blijft onder de bestaande execution gates. De bestaande cron `powerhouse-commercial-learning-v1` wordt hergebruikt via `powerhouse_trigger_based_mkb_acquisition_cycle_v1`; nooit een tweede scheduler maken.
+
+## Production proof boundary
+Runtime fingerprint `powerhouse-trigger-based-mkb-acquisition-runtime-v1` is LIVE_BEWEZEN as of 2026-09-24: service-role-only authority, hourly canonical scheduler, rollback-safe canary, zero invented value, internal research only and no automatic external outreach. An empty real company-trigger set is valid and must never be filled with fabricated candidates.
