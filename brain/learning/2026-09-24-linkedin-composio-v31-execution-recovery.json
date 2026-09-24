@@ -1,0 +1,32 @@
+{
+  "fingerprint": "linkedin|composio-v31|structured-arguments|post-create-readback-containment|v1",
+  "date": "2026-09-24",
+  "system": "powerhouse-social-publisher",
+  "failure_classes": [
+    "COMPOSIO_V31_EXECUTION_PAYLOAD_DRIFT",
+    "PROVIDER_CREATE_SUCCEEDED_READBACK_PERMISSION_MISSING",
+    "DAILY_PUBLICATION_DUPLICATE_RISK_AFTER_POST_CREATE_FAILURE"
+  ],
+  "root_cause": [
+    "LinkedIn execution on Composio v3.1 was still using the legacy natural-language text payload without user_id.",
+    "The publisher treated an exact-readback failure after a successful LinkedIn create as a generic publication failure.",
+    "That can hide a real provider side effect and tempt a later retry to create a duplicate."
+  ],
+  "fix": [
+    "Use connected_account_id + user_id + version=latest + structured arguments for LinkedIn tool execution.",
+    "Use explicit author/commentary/visibility/lifecycleState for CREATE_LINKED_IN_POST.",
+    "Once CREATE returns a real LinkedIn post URN, set provider_create_success=true and republish_forbidden=true.",
+    "If post-create readback is unavailable or forbidden, keep the exact claim DISPATCHED/verification_pending instead of FAILED or retryable."
+  ],
+  "prevention": [
+    "Regression tests must reject legacy text execution for LinkedIn v3.1.",
+    "A provider-created post URN is an irreversible side-effect marker for the daily channel claim.",
+    "No Buffer fallback for LinkedIn.",
+    "Never issue a replacement LinkedIn post for the same run_date/channel when provider_create_success is true."
+  ],
+  "evidence": [
+    "Composio setup state proves one ACTIVE LinkedIn account with r_organization_admin and w_organization_social.",
+    "Company author resolved to urn:li:organization:18234216.",
+    "PR #2697 carries the structured v3.1 implementation and post-create containment."
+  ]
+}
