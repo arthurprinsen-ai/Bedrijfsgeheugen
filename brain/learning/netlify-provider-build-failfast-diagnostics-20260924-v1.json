@@ -1,0 +1,34 @@
+{
+  "fingerprint": "netlify-provider-build-failfast-diagnostics-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "An authorized Netlify deploy could enter provider state=error while Production Source Snapshot spent ten minutes waiting only for release.json to expose the expected SHA.",
+  "root_cause": "The workflow treated successful deploy submission as if the provider build were still progressing and did not retain deployId/buildId for provider-state readback.",
+  "prevention": [
+    "Capture Netlify deployId and buildId from the authorized deploy transport output.",
+    "Poll the provider deploy object before the release.json identity loop.",
+    "On provider state=error, read only a bounded sanitized set of deploy/build metadata and fail immediately.",
+    "Never print the OIDC-returned Netlify proxy or provider secrets.",
+    "Only proceed to exact production SHA and pricing/i18n browser proof after the provider deploy reports ready."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-netlify-provider-build-failfast-diagnostics-v1.test.mjs"],
+    "shadow": ["tests/brain-netlify-provider-build-failfast-diagnostics-v1.test.mjs"],
+    "canary": ["tests/brain-netlify-provider-build-failfast-diagnostics-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-netlify-provider-build-failfast-diagnostics-v1.test.mjs"],
+  "evidence": {
+    "failed_deploy_id": "6ab523e2b70db132e952f681",
+    "failed_build_id": "6ab523e1b70db132e952f67f",
+    "failed_source_sha": "58fa856fee9e32358da22b60b8e5aa72f19390e7",
+    "provider_state": "error"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "NETLIFY_PROVIDER_BUILD_ERROR_HIDDEN_BY_SHA_WAIT",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
