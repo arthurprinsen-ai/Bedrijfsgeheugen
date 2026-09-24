@@ -199,7 +199,7 @@ When the defect is an interaction, delivery proof must exercise the interaction.
 Required for pricing/i18n-class defects:
 - state-change assertions for the affected toggle/tab/control;
 - mobile production browser coverage when the defect was reported on mobile;
-- static localized public language navigation rather than provider-dependent runtime switching;
+- static localized routes remain required for direct-entry/SEO coverage, while unprefixed public language controls switch in place and may not depend on provider-route navigation;
 - English route/content verification and explicit rejection of the known runtime translation failure state;
 - exact interaction proof on the deployed production SHA before `LIVE_BEWEZEN`.
 
