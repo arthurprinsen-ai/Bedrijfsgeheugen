@@ -359,7 +359,7 @@ A material component that exists in execution but not in the canonical System Ma
 Fingerprint: `pricing-toggle-i18n-runtime-20260924-v1`.
 
 For user-visible toggles, tabs, billing switches and language controls:
-- marker-presence is never functional proof; require state-change proof by executing the actual click/change and asserting the resulting user-visible state;
+- marker-presence is never functional proof; require state-change proof by executing the actual click/change and asserting the resulting user-visible state; for pricing/i18n-class incidents the production Playwright verifier is authoritative and pre-browser HTML grep gates are forbidden;
 - candidate route health and generic browser smoke tests do not replace interaction-specific evidence;
 - public website language switching uses static localized routes as the primary path, not runtime translation-provider availability;
 - localized routes must have explicit routing coverage and be verified in the production browser;
