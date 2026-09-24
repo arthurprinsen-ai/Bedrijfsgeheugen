@@ -1,0 +1,33 @@
+{
+  "fingerprint": "netlify-oidc-linked-build-fallback-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "OIDC-authenticated MCP deploy returned success while Netlify current production remained on an older deploy, leaving exact-SHA readback blocked.",
+  "root_cause": "The delivery chain relied on direct MCP deployment after a Git-linked push miss. A direct MCP deploy can complete without proving that the linked production branch was rebuilt and published.",
+  "prevention": [
+    "After the bounded Git-linked wait, trigger a linked-repository Netlify build for branch main through the GitHub-OIDC bridge before using direct MCP deployment.",
+    "The OIDC bridge keeps the Netlify proxy credential server-side and returns only bounded build/deploy metadata.",
+    "If the linked build reaches the exact expected SHA, stop without a second side effect.",
+    "Only if Git-linked and linked-build delivery both fail may the MCP deploy fallback run.",
+    "Exact release.json SHA, production context, pricing content and pricing/i18n browser proof remain mandatory before LIVE_BEWEZEN."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-netlify-oidc-linked-build-fallback-v1.test.mjs"],
+    "shadow": ["tests/brain-netlify-oidc-linked-build-fallback-v1.test.mjs"],
+    "canary": ["tests/brain-netlify-oidc-linked-build-fallback-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-netlify-oidc-linked-build-fallback-v1.test.mjs"],
+  "evidence": {
+    "prior_main_sha": "58fa856fee9e32358da22b60b8e5aa72f19390e7",
+    "prior_snapshot_run_id": "36004986899",
+    "symptom": "MCP deploy step success while exact production identity stayed pending"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "NETLIFY_PRODUCTION_PROMOTION_GAP",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
