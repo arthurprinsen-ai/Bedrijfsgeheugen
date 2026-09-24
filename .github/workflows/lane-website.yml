@@ -106,7 +106,7 @@ jobs:
         with:
           node-version: '22'
       - name: Verify mandatory website baseline and release-risk contracts
-        run: node --test tests/site-baseline-guardian.test.mjs tests/site-shell-public-route-inventory.test.mjs tests/site-shell-website-release-risk.test.mjs tests/targeted-website-route-regression.test.mjs tests/website-static-syntax-preflight.test.mjs
+        run: node --test tests/site-baseline-guardian.test.mjs tests/site-shell-public-route-inventory.test.mjs tests/site-shell-website-release-risk.test.mjs tests/targeted-website-route-regression.test.mjs tests/website-static-syntax-preflight.test.mjs tests/branche-applicaties-integraties.test.mjs
 
   static:
     needs: [classify, syntax-preflight]
