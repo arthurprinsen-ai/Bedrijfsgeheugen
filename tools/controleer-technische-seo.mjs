@@ -9,6 +9,7 @@ const CANONICAL_OVERRIDES = new Map([
 const FUNCTIONELE_ROUTES = new Set([
   `${ORIGIN}/klantportaal`,
 ]);
+const UTILITY_ROUTES = new Set([...PUBLIC_UTILITY_ROUTES].map(route => `${ORIGIN}${route}`));
 
 function isSeoExclude(pad) {
   return SEO_EXCLUDES.has(pad) || /^shell-gate-.*\.html$/i.test(pad);
