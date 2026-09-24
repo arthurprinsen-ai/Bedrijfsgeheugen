@@ -67,8 +67,15 @@ test('supervisor runs repository-wide recovery only on main push and retains wat
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.match(yaml,/on:\s*\n(?:\s*#.*\n)*\s*push:\s*\n\s*branches:\s*\[main\]\s*\n\s*workflow_dispatch:/);
   assert.doesNotMatch(yaml,/branches-ignore:\s*\[main\]/);
-  assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
+  assert.match(yaml,/schedule:\s*\n\s*- cron: '17,47 \* \* \* \*'/);
   assert.match(yaml,/pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);
+  assert.match(yaml,/workflow run required-test\.yml --ref "\$branch"/);
+  assert.match(yaml,/workflow run unified-brain-delivery\.yml --ref "\$branch"/);
+  assert.doesNotMatch(yaml,/workflow run (?:required-test|unified-brain-delivery)\.yml --ref main/);
+  assert.match(yaml,/Queue pressure circuit breaker/);
+  assert.match(yaml,/queued" -ge 8/);
+  assert.match(yaml,/running" -ge 16/);
+  assert.match(yaml,/RECOVERY_QUEUE_PRESSURE=true/);
 });
 
 
@@ -121,4 +128,26 @@ test('supervisor resumes recent merged obligations without terminal truth and de
   assert.match(yaml,/display_title==\$title/);
   assert.match(yaml,/terminal closure already active; duplicate recovery dispatch suppressed/);
   assert.match(yaml,/workflow run obligation-terminal-closure\.yml --ref main -f pr_number=/);
+});
+
+
+test('high fan-out workflow concurrency cannot regress to per-run uniqueness',()=>{
+  const brain=fs.readFileSync('.github/workflows/brain-foundation-verify.yml','utf8');
+  assert.match(brain,/group: brain-foundation-\$\{\{ github\.ref_name \}\}/);
+  assert.doesNotMatch(brain,/concurrency:[\s\S]{0,160}github\.run_id/);
+
+  for (const file of [
+    'outcome-obligation-sweep.yml',
+    'canonical-brand-shell-live-readback.yml',
+    'seo-order-engine.yml',
+    'canonical-brand-shell-full-build.yml',
+    'live-preview-smoke.yml',
+    'prijzen-hero-seo-regression.yml',
+    'canonical-brand-shell-test.yml',
+    'paginacontrole-debug.yml'
+  ]) {
+    const yaml=fs.readFileSync(`.github/workflows/${file}`,'utf8');
+    assert.match(yaml,/concurrency:/,`${file} must be single-flight`);
+    assert.match(yaml,/cancel-in-progress:\s*true/,`${file} must supersede stale work`);
+  }
 });
