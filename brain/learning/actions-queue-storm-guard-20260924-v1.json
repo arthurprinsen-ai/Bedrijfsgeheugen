@@ -26,7 +26,13 @@
     "Branch existence alone is never proof that an old queued run is still authoritative.",
     "Unexpected candidate-head movement must be diff-validated against the previously trusted head before the new head can inherit delivery authority.",
     "Workflow YAML repairs must preserve existing structural regression anchors when semantics do not require changing them.",
-    "Before inserting a job-level control such as timeout-minutes, run or inspect the tests that assert neighboring YAML key order; prefer a placement that preserves both semantics and established contract."
+    "Before inserting a job-level control such as timeout-minutes, run or inspect the tests that assert neighboring YAML key order; prefer a placement that preserves both semantics and established contract.",
+    "Main verification/readback concurrency keys must be stable per event/ref or PR; github.run_id is forbidden in a cancel-in-progress main-push key because it prevents supersession.",
+    "Canonical brand shell live readback, Production Release Readback, Powerhouse CodeQL and Python CodeQL use latest-ref/latest-main single-flight semantics.",
+    "Agents/chats may arm or execute merge only after exact-head Required, BRAIN, applicable CodeQL and Skill Projection are all terminal success.",
+    "Unexpected branch/head movement is fail-closed until the exact diff from the previously trusted head has been inspected.",
+    "Queue fan-out forecasts must use the actual workflow trigger graph and distinguish runner-consuming work from skipped/no-op workflow shells.",
+    "When stale work itself blocks the repair and no safe direct cancellation action is available, at most one net-backlog-reducing control-plane recovery may proceed with explicit before/after evidence and no early auto-merge."
   ],
   "evaluation": {
     "historical_replay": [
@@ -75,7 +81,14 @@
       "old_main_sha"
     ],
     "unexpected_head_rule": "diff_validate_before_authority",
-    "website_timeout_structural_contract": "browser job keeps needs immediately after job label; timeout follows needs"
+    "website_timeout_structural_contract": "browser job keeps needs immediately after job label; timeout follows needs",
+    "main_single_flight_workflows": [
+      ".github/workflows/canonical-brand-shell-live-readback.yml",
+      ".github/workflows/production-release-readback.yml",
+      ".github/workflows/powerhouse-codeql.yml",
+      ".github/workflows/codeql.yml"
+    ],
+    "gate_first_merge_fingerprint": "github|merge-arming|exact-head-gates-first|v1"
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -90,7 +103,7 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 6,
+  "revision": 7,
   "failed_approaches": [
     "Repository-wide recovery on every main push plus a five-minute schedule.",
     "Dispatching recovery independently across many open PRs during runner saturation.",
@@ -106,6 +119,10 @@
     "Treating branch existence as sufficient evidence that a queued run was still live; PR #1444 remained merged while its branch later pointed at a different SHA.",
     "Allowing stale in-progress runs from superseded PR heads and old main epochs to retain runner slots indefinitely.",
     "Silently accepting an unexpected candidate head without first validating the exact diff from the previously trusted head.",
-    "Inserting timeout-minutes between the browser job label and its required needs anchor; YAML remained valid but broke the established composable-release structural regression."
+    "Inserting timeout-minutes between the browser job label and its required needs anchor; YAML remained valid but broke the established composable-release structural regression.",
+    "Using github.run_id in CodeQL concurrency keys on push, making every main run unique despite cancel-in-progress true.",
+    "Leaving Production Release Readback cancel-in-progress false, allowing obsolete main epochs to overlap.",
+    "Leaving Canonical brand shell live readback without a concurrency group, allowing several old main epochs to occupy runners simultaneously.",
+    "Enabling auto-merge on PR #2807 while Required was still running; the PR merged and Required was cancelled afterward."
   ]
 }

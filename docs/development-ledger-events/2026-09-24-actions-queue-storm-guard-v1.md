@@ -63,3 +63,13 @@
 - YAML was geldig, maar `tests/brain-composable-release-control-plane.test.mjs` bewaakt die structurele anchor.
 - Repair: timeout blijft 15 minuten maar wordt na `needs:` geplaatst.
 - Prevention: semantische no-op workflow edits mogen bestaande structural-regression anchors niet breken.
+
+
+## Queue governor v7 — latest-main single-flight
+- Remaining stale-run source: missing/unstable concurrency on main verification workflows.
+- `github.run_id` in a push concurrency key was identified as anti-deduplication.
+- Production Release Readback had `cancel-in-progress: false`.
+- Canonical brand shell live readback had no concurrency group.
+- Fix prepared: stable event/ref or PR concurrency with `cancel-in-progress: true`.
+- Merge sequencing prevention: no auto-merge before exact-head Required + BRAIN + applicable CodeQL + Skill Projection are terminal success.
+- Unexpected head movement remains fail-closed until exact diff validation.

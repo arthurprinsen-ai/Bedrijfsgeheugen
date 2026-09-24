@@ -219,3 +219,18 @@ Fingerprint: `github|actions-obsolete-run-identity|sha-bound|v1`.
 Queue/run authority is bound to the exact run SHA, not merely to a branch name. A stale queued or in-progress run may be reaped only when its identity is provably obsolete: closed PR, PR-head mismatch, branch-head mismatch, missing non-main branch, or old main SHA. In-progress cleanup additionally requires at least 1800 seconds without update.
 
 Unexpected candidate-head movement is fail-closed. Before a new head inherits authority, compare it to the last trusted head and verify that the diff is exactly the intended recovery delta. Never silently follow a moved branch.
+
+
+## Exact-head gate-first merge arming
+
+Fingerprint: `github|merge-arming|exact-head-gates-first|v1`.
+
+Auto-merge is not a waiting mechanism. Enable or execute merge only after the exact current PR head has terminal-success evidence for Required, BRAIN, applicable Powerhouse CodeQL and Skill Projection. Never arm auto-merge while any intended gate is queued or in progress. If a PR merges before all intended gates are terminal, record a governance incident and use terminal closure only as recovery evidence; the early merge is not compliant delivery proof.
+
+Unexpected branch/head movement is fail-closed until the exact diff from the last trusted head is inspected and accepted.
+
+## Latest-main verification single-flight
+
+Fingerprint: `github|main-verification|latest-ref-single-flight|v1`.
+
+Main verification/readback workflows use stable ref-level concurrency keys with `cancel-in-progress: true`. Never include `github.run_id` in a main-push concurrency identity: it makes every run unique and defeats cancellation. Canonical brand shell readback, production release readback and both CodeQL workflows are latest-ref/latest-main verification surfaces; a newer main contains the older main and supersedes its verification work unless a provider contract explicitly requires per-epoch completion.

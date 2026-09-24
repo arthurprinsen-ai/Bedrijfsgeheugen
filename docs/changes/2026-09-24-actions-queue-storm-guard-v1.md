@@ -62,3 +62,15 @@ Dit voorkomt zowel eeuwige queue-zombies als runner-slots die door superseded de
 De browser-timeout uit v4 was semantisch geldig, maar werd vóór `needs:` geplaatst. Een bestaande composable-release regressietest gebruikt die key-volgorde bewust als structurele contractanchor en blokkeerde daardoor Required/BRAIN.
 
 Herstel: `browser:` wordt weer direct gevolgd door `needs:`; `timeout-minutes: 15` blijft actief maar staat erna. Nieuwe regel: bij workflow-control wijzigingen eerst bestaande structurele contracttests respecteren; verander geen bewezen anchor als de semantiek dat niet vereist.
+
+
+## Latest-main single-flight v7
+The remaining long-running pressure source was workflow concurrency itself. Several main verification workflows either had no concurrency group, used `github.run_id` inside the key, or explicitly disabled cancellation. This meant old main epochs could keep consuming runners after a newer main already existed.
+
+The four verification surfaces now use stable latest-ref/latest-main single-flight:
+- Canonical brand shell live readback;
+- Production Release Readback;
+- Powerhouse CodeQL;
+- Python CodeQL.
+
+A second governance rule is now explicit: auto-merge may only be armed after exact-head Required, BRAIN, applicable CodeQL and Skill Projection are terminal success. PR #2807 proved why: it merged while Required was still active, and Required was cancelled afterward.
