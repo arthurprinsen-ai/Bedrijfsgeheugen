@@ -1,0 +1,104 @@
+{
+  "fingerprint": "powerhouse-trigger-based-mkb-acquisition-v1",
+  "date": "2026-09-24",
+  "type": "COMMERCIAL_STRATEGY_PREVENTION",
+  "status": "VERIFIED_DESIGN",
+  "compiler": {
+    "failure_class": "COMMERCIAL_STRATEGY_GAP",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "authority": "Bedrijfsgeheugen Powerhouse commercial intelligence",
+  "root_cause": "Generic acquisition without trigger evidence, explicit problem hypotheses, partner leverage and closed-loop outcome calibration creates low relevance, weak trust and poor learning.",
+  "prevention_rule": "MKB acquisition is trigger-based and problem-led; generic bulk cold outreach is not the default. Every commercial action must preserve evidence, hypothesis, next action, dedupe/fatigue safeguards and outcome lineage.",
+  "rule": "MKB acquisition is trigger-based and problem-led; generic bulk cold outreach is not the default.",
+  "canonical_flow": [
+    "external_evidence",
+    "commercial_graph",
+    "trigger",
+    "problem_hypothesis",
+    "opportunity",
+    "next_best_action",
+    "content_or_outreach",
+    "frisse_blik",
+    "benchmark_or_conversation",
+    "paid_scan",
+    "implementation",
+    "portal_saas",
+    "outcome",
+    "case_or_referral",
+    "learning"
+  ],
+  "reuse": [
+    "powerhouse_opportunities",
+    "powerhouse_forecasts",
+    "powerhouse_sales_actions",
+    "powerhouse_sales_outcomes",
+    "Commercial Graph",
+    "existing experiment/learning lineage"
+  ],
+  "triggers": [
+    "growth",
+    "new_management",
+    "buy_sell_ma",
+    "investor_pe",
+    "post_merger_integration",
+    "erp_afas_change",
+    "margin_cost_cashflow_pressure",
+    "talent_shortage_key_person_risk",
+    "regulation",
+    "financing",
+    "turnaround",
+    "ai_data_digitalisation"
+  ],
+  "partner_channels": [
+    "accountants",
+    "ma_advisors",
+    "investors_pe",
+    "banks",
+    "municipalities",
+    "industry_associations",
+    "erp_afas_partners",
+    "msp_it_partners",
+    "business_advisors"
+  ],
+  "offer_funnel": [
+    "problem_content",
+    "Frisse Blik",
+    "benchmark",
+    "conversation",
+    "paid_scan_2900",
+    "implementation",
+    "portal_saas",
+    "measurable_outcome",
+    "case_referral"
+  ],
+  "safeguards": [
+    "evidence_first",
+    "hypothesis_not_fact",
+    "dedupe",
+    "fatigue_guard",
+    "privacy_and_lawfulness",
+    "no_parallel_crm",
+    "closed_loop_outcome_learning"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ]
+  },
+  "evidence": {
+    "repo_contract": "docs/changes/2026-09-24-powerhouse-trigger-based-mkb-acquisition-v1.md",
+    "skill_projection": ".agents/skills/trigger-based-mkb-acquisition/SKILL.md",
+    "notion_human_handbook": "3dcda36a-ac8a-81ac-aad1-c88751e9e814",
+    "notion_system_map": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+    "skill_projection_gate": "success on candidate lineage before closure repair",
+    "delivery_pr": 2713
+  },
+  "skill_targets": [
+    "trigger-based-mkb-acquisition"
+  ],
+  "live_claim": "Documentation/skill design alone is not executable production proof."
+}
