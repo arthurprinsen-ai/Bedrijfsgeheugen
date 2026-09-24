@@ -365,3 +365,14 @@ Fingerprint: `delivery|imported-contract|runtime-derivation-required|v1`.
 
 When a canonical contract exports relative route/state identifiers but a runtime consumer works with absolute URLs or another transformed representation, the consumer must derive that representation explicitly before use. An import-presence test alone is insufficient; regressions must verify the runtime derivation used by the failing path.
 
+## Netlify linked-deploy Skipped fallback
+
+Fingerprint: `delivery|netlify-skipped|fallback-authority|v1`.
+
+- Netlify `state=error` with `error_message=Skipped` is not production success, but it is also not equivalent to a failed provider build.
+- When a linked deploy is explicitly skipped, continue only to the already-authorized canonical exact-source deployment transport.
+- Do not introduce a second deploy authority or silently mark the skip green.
+- Real Netlify error states remain fail-closed and preserve provider diagnostics.
+- Production completion still requires provider `ready`, `production`, and exact `commit_ref`.
+- Regression: `tests/brain-netlify-linked-skipped-fallback-v1.test.mjs`.
+
