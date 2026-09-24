@@ -408,3 +408,12 @@ Fingerprint: `production-readback-pricing-i18n-browser-gate-20260924-v1`.
 - Required visible behavior: lifecycle-stage click, plan-group click, monthly/yearly switch, NL→EN navigation, `/en/prijzen`, `html lang=en`, visible English pricing text and no known Dutch pricing H1.
 - Workflow changes to the readback itself must force one pricing-browser proof on introduction.
 - Only exact SHA + successful interaction proof may close the incident as `LIVE_BEWEZEN`.
+
+
+## Pricing dual-controller visible-state parity
+
+Fingerprint: `pricing-inline-rescue-visible-state-parity-20260924-v1`.
+
+When multiple pricing interaction controllers can touch the same lifecycle or plan-group state, they must apply one identical visible-state tuple: `hidden`, inline `style.display`, `aria-hidden`, active class, `aria-selected` and keyboard `tabIndex`. Never let one controller clear only `hidden` while another has left inline `display:none`.
+
+Production proof must wait for the canonical pricing runtime readiness marker and then execute the actual click. Route 200, marker presence or DOM mutation alone are not completion.
