@@ -22,3 +22,15 @@ De eerste pogingen bewezen twee preventieregels:
 
 ## Volgende productlaag
 De executive cockpit en Problem Radar moeten deze Problem IDs lezen als projectie van dezelfde canonieke waarheid; zij mogen geen eigen probleem-taxonomie creëren.
+
+
+## P0 executive projection
+
+De volgende productlaag projecteert de canonieke Problem Library nu naar de executive cockpit:
+- maximaal vijf `PH-Pxxx`-problemen onder “Wat vraagt vandaag aandacht?”;
+- evidence drawer “Waarom zegt Powerhouse dit?”;
+- impactlabel fail-safe naar `POTENTIAL` wanneer de bron geen geldig label levert;
+- zichtbare mapping naar actie, capability en outcome;
+- lokale/niet-canonieke probleem-ID's worden uitgesloten.
+
+Fingerprint: `powerhouse-50-problem-radar-executive-p0-v1`.

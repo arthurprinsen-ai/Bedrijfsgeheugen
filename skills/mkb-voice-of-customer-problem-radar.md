@@ -166,3 +166,21 @@ Regels:
 - dezelfde Problem ID wordt hergebruikt voor opportunity scoring, content, Frisse Blik, portal-detectie, capability-selectie en outcome-learning;
 - impactclaims volgen uitsluitend `OBSERVED`, `ESTIMATED`, `POTENTIAL`;
 - confidence en evidence-status blijven zichtbaar en kwalitatieve fora-signalen blijven expliciet niet-representatief.
+
+
+## Executive cockpit projection — 24 september 2026
+
+Fingerprint: `powerhouse-50-problem-radar-executive-p0-v1`.
+
+De directiecockpit projecteert voortaan maximaal vijf geprioriteerde problemen uit de canonieke `PH-Pxxx`-taal. De cockpit mag geen lokale probleem-ID's of tweede taxonomie tonen.
+
+Verplicht per probleemkaart:
+- canonieke `PH-Pxxx`;
+- evidence health en confidence;
+- impactlabel uitsluitend `OBSERVED`, `ESTIMATED` of `POTENTIAL`;
+- eerstvolgende actie;
+- capability-koppeling;
+- outcome-meetlat;
+- uitklapbaar antwoord op “Waarom zegt Powerhouse dit?” met bronreferenties en root-cause-status.
+
+Onbekende impactlabels degraderen fail-safe naar `POTENTIAL`. Ongeldige probleem-ID's worden niet in de directieprojectie opgenomen.

@@ -20,6 +20,25 @@ function safeEvidence(items,tenantId,now){
  return arr(items).map(item=>{try{const envelope=normalizeEvidenceEnvelope(item,tenantId);return Object.freeze({...item,evidence_health:evidenceHealth(envelope,{now})});}catch{return Object.freeze({...item,evidence_health:Object.freeze({status:'unavailable',confidence:0,stale:true})});}});
 }
 function priority(item){return Number(item?.priority??item?.score??item?.severity_score??0)||0;}
+const IMPACT_LABELS=new Set(['OBSERVED','ESTIMATED','POTENTIAL']);
+function normalizeProblem(item={},tenantId,now){
+ const problemId=txt(item.problem_id||item.problemId);
+ if(!/^PH-P\d{3}$/.test(problemId))return null;
+ const impactLabel=txt(item.impact_label||item.impactLabel||item.impact?.label).toUpperCase();
+ const evidence=safeEvidence([item],tenantId,now)[0];
+ return Object.freeze({...evidence,
+  problem_id:problemId,
+  title:txt(item.title||item.name||item.problem_name||problemId),
+  impact_label:IMPACT_LABELS.has(impactLabel)?impactLabel:'POTENTIAL',
+  impact_value:num(item.impact_value??item.impactValue??item.value),
+  root_causes:arr(item.root_causes||item.rootCauses),
+  actions:arr(item.actions),
+  capabilities:arr(item.capabilities),
+  outcome_metrics:arr(item.outcome_metrics||item.outcomes),
+  source_refs:arr(item.source_refs||item.evidence_refs||item.evidenceIds),
+  confidence:num(item.confidence??item.evidence_health?.confidence)??0
+ });
+}
 function needsDecision(item={}){
  const state=txt(item.decision_state||item.approval_state||item.status).toUpperCase();
  return Boolean(item.decision_required||item.requires_decision||item.approval_required||['PROPOSED','PENDING_APPROVAL','DECISION_REQUIRED','AWAITING_DECISION'].includes(state));
@@ -49,8 +68,9 @@ export function buildExecutiveProjection(state={}, {role='directie',tenantId,now
  const normalizedRole=ROLE_SECTIONS[role]?role:'directie';
  const source=state?.powerhouse?.executive;
  const sections=ROLE_SECTIONS[normalizedRole];
- const unavailable=Object.freeze({available:false,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:null,strategy_progress:null,risks:[],opportunities:[],next_best_actions:[],decision_queue:[],attention:[],outcomes:[],changes:[],forecasts:[],evidence_health:Object.freeze({healthy:0,stale:0,low_confidence:0,unavailable:0,total:0})});
+ const unavailable=Object.freeze({available:false,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:null,strategy_progress:null,problems:[],risks:[],opportunities:[],next_best_actions:[],decision_queue:[],attention:[],outcomes:[],changes:[],forecasts:[],evidence_health:Object.freeze({healthy:0,stale:0,low_confidence:0,unavailable:0,total:0})});
  if(!tenantId||!source||typeof source!=='object')return unavailable;
+ const problems=arr(source.problems).map(item=>normalizeProblem(item,tenantId,now)).filter(Boolean).sort((a,b)=>urgency(b)-urgency(a)).slice(0,5);
  const risks=safeEvidence(source.risks,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
  const opportunities=safeEvidence(source.opportunities,tenantId,now).sort((a,b)=>priority(b)-priority(a));
  const actions=safeEvidence(source.next_best_actions,tenantId,now).sort((a,b)=>priority(b)-priority(a)).slice(0,5);
@@ -59,8 +79,8 @@ export function buildExecutiveProjection(state={}, {role='directie',tenantId,now
  const forecasts=safeEvidence(source.forecasts,tenantId,now).sort((a,b)=>urgency(b)-urgency(a));
  const decisions=actions.filter(needsDecision);
  const attention=attentionItems({risks,actions,forecasts,changes});
- const evidence=[...risks,...opportunities,...actions,...outcomes,...changes,...forecasts];
+ const evidence=[...problems,...risks,...opportunities,...actions,...outcomes,...changes,...forecasts];
  const health={healthy:0,stale:0,low_confidence:0,unavailable:0,total:evidence.length};
  for(const item of evidence){const status=item.evidence_health.status;if(status==='healthy')health.healthy++;else if(status==='stale')health.stale++;else if(status==='low-confidence')health.low_confidence++;else health.unavailable++;}
- return Object.freeze({available:true,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:num(source.health_score),strategy_progress:num(source.strategy_progress),risks,opportunities,next_best_actions:actions,decision_queue:decisions,attention,outcomes,changes,forecasts,evidence_health:Object.freeze(health)});
+ return Object.freeze({available:true,role:normalizedRole,role_label:ROLE_LABELS[normalizedRole],sections,health_score:num(source.health_score),strategy_progress:num(source.strategy_progress),problems,risks,opportunities,next_best_actions:actions,decision_queue:decisions,attention,outcomes,changes,forecasts,evidence_health:Object.freeze(health)});
 }
