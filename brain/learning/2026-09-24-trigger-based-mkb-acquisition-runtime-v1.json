@@ -2,7 +2,7 @@
   "fingerprint": "powerhouse-trigger-based-mkb-acquisition-runtime-v1",
   "date": "2026-09-24",
   "type": "COMMERCIAL_RUNTIME_PROJECTION",
-  "status": "IMPLEMENTED_CANDIDATE",
+  "status": "IMPLEMENTED_CANDIDATE_WITH_SUPABASE_RUNTIME",
   "compiler": {
     "failure_class": "COMMERCIAL_RUNTIME_MAPPING_GAP",
     "scope": "COMMERCIAL",
@@ -10,20 +10,27 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "root_cause": "The canonical opportunity runtime preserved evidence and confidence but did not explicitly carry trigger, problem hypothesis, decision-maker, next action or partner-route fields from the trigger-based acquisition contract.",
-  "prevention_rule": "Commercial acquisition opportunities must fail closed unless explicit trigger context, evidence, decision-maker, next action and minimum confidence are present. Missing commercial context must never be fabricated.",
+  "root_cause": "The canonical opportunity scorer could validate explicit trigger context, but live Supabase events/signals were not yet materialized into canonical opportunities, forecasts and safe research actions from the scheduler-owned commercial loop.",
+  "prevention_rule": "Trigger acquisition must exist both as an in-process validation contract and as a scheduler-owned Supabase projection. Generic relationship activation is never a buying trigger; only explicit trigger evidence may materialize. Automatic side effects are internal research only until existing outbound gates are proven.",
   "evidence": {
     "runtime": "scripts/opportunity/opportunity-scout.mjs",
     "schema": "brain/contracts/opportunity.schema.json",
     "tests": "tests/opportunity-scout.test.mjs",
-    "skill": ".agents/skills/trigger-based-mkb-acquisition/SKILL.md"
+    "skill": ".agents/skills/trigger-based-mkb-acquisition/SKILL.md",
+    "supabase_migration": "supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
+    "supabase_test": "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
+    "runtime_view": "public.powerhouse_mkb_trigger_intelligence_v1",
+    "runtime_function": "public.powerhouse_refresh_trigger_based_mkb_acquisition_v1(date)",
+    "scheduler_wrapper": "public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)",
+    "scheduler_job": "powerhouse-commercial-learning-v1"
   },
   "skill_targets": [
     "trigger-based-mkb-acquisition"
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
+      "tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
+      "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
     ]
   }
 }
