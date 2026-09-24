@@ -8,7 +8,7 @@
 - Recovery budget: maximum 1 PR per supervisor cycle
 - Duplicate suppression: do not dispatch Required test or Unified Brain Delivery when equivalent active work already exists
 - Regression: `tests/delivery-powerhouse-supervisor.test.mjs`
-- Delivery PR: #2799
+- Delivery PR: #2804
 - Invariant: recovery automation must reduce backlog and must never amplify an already saturated Actions control plane
 
 ## Duplicate-obligation cleanup
