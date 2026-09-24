@@ -1,0 +1,62 @@
+{
+  "fingerprint": "branche-integrations-production-recovery-v1",
+  "compiler": {
+    "failure_class": "production_delivery_contract_and_netlify_proxy_expiry"
+  },
+  "root_cause": [
+    "New root-level branch integration pages and their regression test were initially absent from the website delivery classifier.",
+    "tests/branche-applicaties-integraties.test.mjs existed but was not executed by any CI workflow.",
+    "Portal V2 received an additional top-level desktop navigation item although the feature belongs under the existing Data/Koppelingen route and the contract requires ten desktop items.",
+    "Production Source Snapshot depended on NETLIFY_MCP_PROXY_PATH_TEMP; the stored GitHub Actions secret had expired and Netlify returned 401 Unauthorized."
+  ],
+  "prevention_rules": [
+    "Every committed regression test must be executed by at least one CI workflow before merge.",
+    "New public root-level pages must be registered in the delivery classifier in the same candidate.",
+    "Reuse the existing Data/Koppelingen Portal route unless a deliberate navigation contract change is required.",
+    "Treat temporary Netlify MCP proxy paths as expiring credentials; a 401 is a fail-closed production blocker and never production proof.",
+    "Do not claim LIVE_BEWEZEN without exact protected-main SHA readback from production."
+  ],
+  "evidence": {
+    "prs": [
+      2714,
+      2716,
+      2717,
+      2719
+    ],
+    "workflow_runs": [
+      {
+        "id": 35991169738,
+        "name": "Production Source Snapshot",
+        "outcome": "failure",
+        "reason": "401 Unauthorized"
+      },
+      {
+        "id": 35990915438,
+        "name": "BRAIN delivery PR #2717",
+        "outcome": "identified CI coverage and portal navigation regressions"
+      }
+    ],
+    "tests": [
+      "tests/branche-applicaties-integraties.test.mjs",
+      "tests/portal-v2-navigation-contract.test.mjs",
+      "tests/delivery-test-coverage-guard.test.mjs"
+    ],
+    "production_readback": {
+      "required": true,
+      "status": "blocked",
+      "blocker": "expired NETLIFY_MCP_PROXY_PATH_TEMP returned 401 Unauthorized"
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "incident": "PR #2714 branch integration release",
+        "expected_prevention": "classifier and CI coverage gate would block before merge; Portal top-level count remains canonical; expired Netlify proxy yields fail-closed state."
+      }
+    ]
+  },
+  "prevention": {
+    "status": "active",
+    "rule": "branch integrations release requires classifier coverage, executed regression tests, canonical portal navigation, valid Netlify production transport, and exact-SHA readback"
+  }
+}
