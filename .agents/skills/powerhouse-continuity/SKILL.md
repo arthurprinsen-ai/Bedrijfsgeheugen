@@ -549,3 +549,17 @@ For the pricing production build:
 Canonical learning: `brain/learning/pricing-interaction-section-build-preservation-20260924-v1.json`.
 Canonical regression: `tests/brain-pricing-runtime-build-preservation-v1.test.mjs`.
 Canonical browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+
+## Derived metric compatibility
+
+Fingerprint: `company-ledger-verified-value-semantics-20260924-v1`.
+
+When introducing a stricter evidence-backed metric on top of an existing Powerhouse aggregate:
+- do not silently tighten or redefine the established aggregate contract;
+- keep legacy economics compatible unless a separately versioned migration explicitly changes it;
+- model the stricter metric with its own eligibility set and field/read-model;
+- prove both old aggregate semantics and new strict semantics in one regression fixture;
+- treat a main-baseline regression discovered by an unrelated delivery lane as inherited baseline evidence, then repair the baseline separately before re-proving the blocked candidate.
+
+For Verified Value Created specifically, `verifiedValueByProblem` requires executed + verified + evidence, while `economics.realizedValue` retains verified-value ledger compatibility.
