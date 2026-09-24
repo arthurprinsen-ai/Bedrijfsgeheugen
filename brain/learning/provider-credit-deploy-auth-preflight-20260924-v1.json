@@ -1,0 +1,54 @@
+{
+  "fingerprint": "provider-credit-deploy-auth-preflight-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "EXTERNAL_PROVIDER_CREDIT_AND_EPHEMERAL_DEPLOY_AUTH",
+  "problem": "Public English localization failed because the configured Anthropic account had insufficient API credits, while the terminal Netlify fallback also failed because a short-lived MCP proxy URL had been stored as a persistent GitHub Actions secret.",
+  "root_cause": [
+    "Anthropic returned HTTP 400 invalid_request_error: credit balance too low. The same account-wide failure affected both Haiku translation and Sonnet website QA.",
+    "NETLIFY_MCP_PROXY_PATH_TEMP is a short-lived JWE/proxy credential. Persisting it in GitHub Actions outlived its validity window and caused HTTP 401 during terminal deployment.",
+    "The localized build retried non-transient provider errors and therefore discovered an unrecoverable credit condition late instead of failing immediately with a classified cause."
+  ],
+  "failed_approaches": [
+    "Treating provider pacing/rate limiting as the primary i18n cause before testing a one-string provider call.",
+    "Storing a temporary Netlify MCP proxy URL as if it were a durable CI deployment credential.",
+    "Using a raw GitHub zipball as Netlify source without stripping its top-level archive directory, which temporarily published a nested site tree without redirects/functions.",
+    "Testing production provider health through the broken nested deploy before first restoring the full site stack."
+  ],
+  "prevention": [
+    "Classify provider HTTP errors and fail immediately on non-transient credit/auth failures; retry only transient 429/5xx classes.",
+    "Production localization must surface STATIC_I18N_PROVIDER_CREDIT_EXHAUSTED distinctly from rate limiting or malformed translation output.",
+    "Production deployment prefers a durable NETLIFY_AUTH_TOKEN. A short-lived MCP proxy may only be a per-run fallback and must never be treated as a permanent credential.",
+    "A production source ZIP must have repository files at archive root and carry .bg-source-commit before Netlify upload.",
+    "Before terminal deployment, verify provider readiness and deploy credential class; do not spend a full build discovering a known hard boundary.",
+    "Never claim English LIVE_BEWEZEN while provider credits are exhausted or while the production browser proof has not passed."
+  ],
+  "evidence": {
+    "anthopic_health_observation": "2026-09-24 production diagnostic: HTTP 400 invalid_request_error, credit balance too low.",
+    "website_qa_observation": "2026-09-24 /api/vraag returned 502 on the same Anthropic account, proving account-wide provider failure.",
+    "netlify_transport_observation": "Production Source Snapshot run 35974869594 failed deploy transport with HTTP 401 Unauthorized.",
+    "rollback_recovery_deploy": "6ab4e3732584361314a5a3ec",
+    "failed_exact_source_deploy": "6ab4e20b053a78084f3ba6b9",
+    "production_run_id": 35974869594
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-provider-credit-deploy-auth-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-provider-credit-deploy-auth-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "compiler": {
+    "failure_class": "EXTERNAL_PROVIDER_CREDIT_AND_EPHEMERAL_DEPLOY_AUTH",
+    "scope": "WEBSITE_PUBLIC_I18N_AND_PRODUCTION_DEPLOY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
