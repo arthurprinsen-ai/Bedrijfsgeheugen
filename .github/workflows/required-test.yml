@@ -25,7 +25,7 @@ on:
         type: string
 
 permissions:
-  actions: read
+  actions: write
   contents: read
   statuses: read
   pull-requests: read
@@ -339,3 +339,41 @@ jobs:
             .bg-source-commit
           if-no-files-found: error
           retention-days: 1
+
+
+  dispatch-canonical-production-snapshot:
+    name: dispatch canonical production snapshot
+    runs-on: ubuntu-latest
+    steps:
+      - name: Dispatch main production workflow and wait for exact SHA
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          repo="$GITHUB_REPOSITORY"
+          expected="$(gh api "repos/$repo/commits/main" --jq '.sha')"
+          echo "EXPECTED_MAIN_SHA=$expected"
+          gh workflow run production-source-snapshot.yml --ref main -f deploy=true
+          run_id=""
+          for attempt in $(seq 1 60); do
+            payload="$(gh api "repos/$repo/actions/workflows/production-source-snapshot.yml/runs?event=workflow_dispatch&branch=main&per_page=30")"
+            run_id="$(jq -r --arg sha "$expected" '[.workflow_runs[] | select(.head_sha==$sha and .event=="workflow_dispatch")] | sort_by(.created_at) | last | .id // empty' <<<"$payload")"
+            [ -n "$run_id" ] && break
+            sleep 5
+          done
+          test -n "$run_id"
+          echo "PRODUCTION_SNAPSHOT_RUN_ID=$run_id"
+          for attempt in $(seq 1 180); do
+            run="$(gh api "repos/$repo/actions/runs/$run_id")"
+            status="$(jq -r '.status' <<<"$run")"
+            conclusion="$(jq -r '.conclusion // ""' <<<"$run")"
+            echo "PRODUCTION_SNAPSHOT state=$status conclusion=${conclusion:-pending}"
+            if [ "$status" = "completed" ]; then
+              [ "$conclusion" = "success" ]
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "::error::Production Source Snapshot did not complete within bounded wait"
+          exit 78
