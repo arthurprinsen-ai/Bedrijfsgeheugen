@@ -31,7 +31,9 @@
     "NO_DUPLICATE_ACTIVE_RUN_FOR_SAME_PR_AND_WORKFLOW",
     "BATCH_REPOSITORY_WRITES_BEFORE_CI",
     "STALE_ORPHANED_QUEUE_MUST_BE_REAPED",
-    "CONTROL_PLANE_CHANGES_MUST_NOT_TRIGGER_ARTIFACT_LANES"
+    "CONTROL_PLANE_CHANGES_MUST_NOT_TRIGGER_ARTIFACT_LANES",
+    "NO_UNVALIDATED_UNEXPECTED_CANDIDATE_HEAD_AUTHORITY",
+    "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -269,7 +271,10 @@
       "Healthy current-head queued/in-progress runs are reused; age alone is never cancellation evidence.",
       "Queued zombies require both configured stale age and a missing non-main head branch.",
       "Control-plane-only changes stay out of expensive artifact/browser lanes unless a real artifact path changed.",
-      "Record before/after queue counts and projected-versus-observed fan-out."
+      "Record before/after queue counts and projected-versus-observed fan-out.",
+      "Stale in-progress runs may be cancelled only after the configured inactivity threshold and only when their delivery identity is provably obsolete.",
+      "Run authority is SHA-bound: a branch that still exists on a different SHA does not keep an old run authoritative.",
+      "Unexpected candidate-head movement is fail-closed until the exact diff from the previously trusted head is inspected and accepted."
     ],
     "forbidden_patterns": [
       "push-triggered repository-wide recovery scan",
@@ -287,6 +292,18 @@
       "exact_main_readback",
       "guard_configuration_readback",
       "learning_and_skill_projection_current"
-    ]
+    ],
+    "obsolete_run_identity": {
+      "in_progress_min_age_seconds": 1800,
+      "cancel_only_if_any": [
+        "closed_pr",
+        "pr_head_sha_mismatch",
+        "branch_head_sha_mismatch",
+        "missing_non_main_branch",
+        "old_main_sha"
+      ],
+      "branch_existence_alone_is_authority": false,
+      "unexpected_head_requires_diff_validation": true
+    }
   }
 }

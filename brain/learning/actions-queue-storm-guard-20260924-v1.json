@@ -20,7 +20,13 @@
     "Borging, documentation, learning and skill changes for one obligation should be committed atomically when safe.",
     "Agents and chats must treat predicted queue amplification as a pre-mutation blocker, not something to clean up afterward.",
     "Governance, agent policy, skill and delivery-controller changes are non-artifact control-plane and must not trigger website preview/browser lanes unless a real website artifact also changes.",
-    "The website browser lane has a hard 15-minute timeout so a browser stall cannot retain runner capacity indefinitely."
+    "The website browser lane has a hard 15-minute timeout so a browser stall cannot retain runner capacity indefinitely.",
+    "Stale in-progress Actions runs are cancelled only after 1800 seconds without progress and only when their delivery identity is obsolete.",
+    "A queued or in-progress run is obsolete when its PR is closed, its PR/branch head moved away from the run SHA, its non-main branch disappeared, or its main SHA is no longer current.",
+    "Branch existence alone is never proof that an old queued run is still authoritative.",
+    "Unexpected candidate-head movement must be diff-validated against the previously trusted head before the new head can inherit delivery authority.",
+    "Workflow YAML repairs must preserve existing structural regression anchors when semantics do not require changing them.",
+    "Before inserting a job-level control such as timeout-minutes, run or inspect the tests that assert neighboring YAML key order; prefer a placement that preserves both semantics and established contract."
   ],
   "evaluation": {
     "historical_replay": [
@@ -59,7 +65,17 @@
       "brain/policies/",
       ".agents/skills/",
       "tools/delivery/"
-    ]
+    ],
+    "stale_in_progress_min_age_seconds": 1800,
+    "obsolete_run_identity_rules": [
+      "closed_pr",
+      "pr_head_sha_mismatch",
+      "branch_head_sha_mismatch",
+      "missing_non_main_branch",
+      "old_main_sha"
+    ],
+    "unexpected_head_rule": "diff_validate_before_authority",
+    "website_timeout_structural_contract": "browser job keeps needs immediately after job label; timeout follows needs"
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -74,7 +90,7 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 4,
+  "revision": 6,
   "failed_approaches": [
     "Repository-wide recovery on every main push plus a five-minute schedule.",
     "Dispatching recovery independently across many open PRs during runner saturation.",
@@ -86,6 +102,10 @@
     "Refreshing a PR through transient branch equality with main, which can auto-close the PR.",
     "Carrying unrelated baseline failures inside queue repair instead of fixing the canonical baseline first.",
     "Leaving the website browser lane without an explicit timeout, allowing a non-artifact governance PR to occupy a runner indefinitely.",
-    "Failing to classify AGENTS.md, brain/policies, .agents/skills and tools/delivery as non-artifact control-plane paths."
+    "Failing to classify AGENTS.md, brain/policies, .agents/skills and tools/delivery as non-artifact control-plane paths.",
+    "Treating branch existence as sufficient evidence that a queued run was still live; PR #1444 remained merged while its branch later pointed at a different SHA.",
+    "Allowing stale in-progress runs from superseded PR heads and old main epochs to retain runner slots indefinitely.",
+    "Silently accepting an unexpected candidate head without first validating the exact diff from the previously trusted head.",
+    "Inserting timeout-minutes between the browser job label and its required needs anchor; YAML remained valid but broke the established composable-release structural regression."
   ]
 }

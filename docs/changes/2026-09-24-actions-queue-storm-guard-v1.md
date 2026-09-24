@@ -43,3 +43,22 @@ Onder druk is de prioriteit: exact-head werk hergebruiken → dedupliceren → w
 Tijdens de governor-delivery bleek nog een tweede control-plane defect: governancebestanden (`AGENTS.md`, `brain/policies/`, `.agents/skills/`, `tools/delivery/`) werden niet als non-artifact herkend. Daardoor startte een pure policywijziging alsnog page/SEO/browser-CI.
 
 Dit is dichtgezet door die paden expliciet als control-plane te classificeren en met regressie te bewijzen dat `requires_preview=false` blijft. Daarnaast heeft de website-browserjob nu `timeout-minutes: 15`; een browserstall kan dus nooit onbeperkt runnercapaciteit vasthouden.
+
+
+## Zombie-run closure v5
+Nieuwe observatie: branch-existence is geen geldige autoriteitscheck. De negen queued zombies van PR #1444 waren gekoppeld aan oude head-SHA's, terwijl de branch later opnieuw bestond op een andere SHA. Ook bleven meerdere oude runs langdurig `in_progress` zonder state-update.
+
+Daarom geldt nu:
+- queued en in-progress worden beide door de janitor beoordeeld;
+- in-progress pas na minimaal 1800 seconden zonder update;
+- cancel alleen wanneer de run-identiteit aantoonbaar obsolete is: PR gesloten, PR/head-SHA verschoven, branch/head-SHA verschoven, non-main branch verdwenen, of main-SHA verouderd;
+- branch-existence alleen houdt een oude run niet meer kunstmatig levend;
+- onverwachte branch-head mutatie krijgt pas autoriteit na exacte diff-validatie tegen de laatst vertrouwde head.
+
+Dit voorkomt zowel eeuwige queue-zombies als runner-slots die door superseded delivery blijven hangen.
+
+
+## YAML structural-contract learning v6
+De browser-timeout uit v4 was semantisch geldig, maar werd vóór `needs:` geplaatst. Een bestaande composable-release regressietest gebruikt die key-volgorde bewust als structurele contractanchor en blokkeerde daardoor Required/BRAIN.
+
+Herstel: `browser:` wordt weer direct gevolgd door `needs:`; `timeout-minutes: 15` blijft actief maar staat erna. Nieuwe regel: bij workflow-control wijzigingen eerst bestaande structurele contracttests respecteren; verander geen bewezen anchor als de semantiek dat niet vereist.

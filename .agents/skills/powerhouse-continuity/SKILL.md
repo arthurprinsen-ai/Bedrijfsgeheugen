@@ -591,3 +591,11 @@ Canonical regressions: `tests/brain-actions-queue-storm-guard-v1.test.mjs` and `
 Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
 
 Every material chat/agent reads current Actions pressure and forecasts run fan-out before a repository mutation, retry, dispatch or recovery. Soft pressure starts at 12 active or 10 queued; hard circuit opens at 20 active or 20 queued; one action may not intentionally create more than 6 new runs. Under pressure: reuse exact-head work, keep one canonical obligation/PR, batch related writes, suppress optional CI and take only backlog-reducing recovery actions. Healthy current-head work is never cancelled for age alone.
+
+## Obsolete Actions-run identity
+
+Fingerprint: `github|actions-obsolete-run-identity|sha-bound|v1`.
+
+Queue/run authority is bound to the exact run SHA, not merely to a branch name. A stale queued or in-progress run may be reaped only when its identity is provably obsolete: closed PR, PR-head mismatch, branch-head mismatch, missing non-main branch, or old main SHA. In-progress cleanup additionally requires at least 1800 seconds without update.
+
+Unexpected candidate-head movement is fail-closed. Before a new head inherits authority, compare it to the last trusted head and verify that the diff is exactly the intended recovery delta. Never silently follow a moved branch.
