@@ -204,3 +204,10 @@ Required for pricing/i18n-class defects:
 - exact interaction proof on the deployed production SHA before `LIVE_BEWEZEN`.
 
 Production browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+
+## Queue-pressure and fan-out admission
+
+Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
+
+Concurrency includes runner capacity. Before any write/dispatch that can trigger CI, compute current pressure and projected fan-out. At >=12 active or >=10 queued, allow only essential single-flight work and batch related writes. At >=20 active or >=20 queued, open the circuit: no new recovery/optional runs. Never intentionally create >6 new runs from one action. One canonical PR per obligation and one active Required/BRAIN instance per PR/head are hard limits.

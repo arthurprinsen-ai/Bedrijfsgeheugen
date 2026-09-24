@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.4",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|v1.4",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.5",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|queue-pressure-governor|v1.5",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -24,7 +24,14 @@
     "NON_TERMINAL_INTERRUPTION_REQUIRES_RECOVERY",
     "READBACK_BEFORE_MUTATING_REPLAY",
     "RESUME_FROM_LAST_VERIFIED_CHECKPOINT",
-    "NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT"
+    "NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT",
+    "NO_MATERIAL_GITHUB_MUTATION_WITHOUT_QUEUE_PRESSURE_FORECAST",
+    "NO_RECOVERY_ACTION_THAT_INCREASES_SATURATED_BACKLOG",
+    "NO_UNBOUNDED_WORKFLOW_FANOUT",
+    "NO_DUPLICATE_ACTIVE_RUN_FOR_SAME_PR_AND_WORKFLOW",
+    "BATCH_REPOSITORY_WRITES_BEFORE_CI",
+    "STALE_ORPHANED_QUEUE_MUST_BE_REAPED",
+    "CONTROL_PLANE_CHANGES_MUST_NOT_TRIGGER_ARTIFACT_LANES"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -34,7 +41,10 @@
     "identify existing owner, component, data route, deploy route, provider route, outcome route and learning route",
     "reuse the existing component when capability already exists",
     "compute only the delta between verified current state and the requested outcome",
-    "skip rediscovery and redesign of already verified state unless fresh evidence invalidates it"
+    "skip rediscovery and redesign of already verified state unless fresh evidence invalidates it",
+    "read current GitHub Actions queued and in-progress counts before material repository mutation or dispatch",
+    "forecast projected workflow fan-out for the planned write, retry, reconcile or dispatch",
+    "when pressure is high, batch repository writes and reuse existing exact-head runs instead of creating new work"
   ],
   "loop_node_contract": {
     "required": true,
@@ -188,7 +198,10 @@
     "brain/learning/chat-agent-intrinsic-loop-node-2026-09-18.json",
     "docs/brain/chat-agent-intrinsic-loop-node.md",
     ".agents/skills/powerhouse-continuity/SKILL.md",
-    "brain/learning/2026-09-18-no-pending-terminal-output-v1.json"
+    "brain/learning/2026-09-18-no-pending-terminal-output-v1.json",
+    "brain/learning/actions-queue-storm-guard-20260924-v1.json",
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
   ],
   "skill_discovery": {
     "required": true,
@@ -217,5 +230,63 @@
     "structural_change_rule": "Creating, renaming, retiring or materially rewiring an agent, skill, workflow, Netlify function, Supabase function, intelligence layer or authority relation requires the System Map manifest and human System Map to be updated in the same lineage.",
     "fail_closed_state": "SYSTEM_MAP_WRITEBACK_INCOMPLETE",
     "terminal_rule": "No structural topology change may become LIVE_BEWEZEN while repository inventory, runtime actor evidence or canonical System Map writeback is stale or missing."
+  },
+  "queue_pressure_governor": {
+    "required": true,
+    "fingerprint": "github|actions-queue-pressure-governor|predict-before-dispatch|v1",
+    "applies_to": [
+      "chat",
+      "agent",
+      "workflow",
+      "recovery-supervisor",
+      "repository-writer"
+    ],
+    "authoritative_helper": "tools/delivery/predictive-controller.mjs#assessQueuePressure",
+    "thresholds": {
+      "soft_active": 12,
+      "soft_queued": 10,
+      "hard_active": 20,
+      "hard_queued": 20,
+      "max_projected_new_runs_per_action": 6
+    },
+    "pre_mutation_receipt": [
+      "queued",
+      "in_progress",
+      "pending",
+      "waiting",
+      "requested",
+      "projected_new_runs",
+      "pressure_state",
+      "planned_reduction_or_fanout"
+    ],
+    "rules": [
+      "Before any material GitHub write, workflow dispatch, retry, reconciliation or recovery action, read current queue pressure and estimate the new workflow runs that action can create.",
+      "If hard pressure is open, do not create new recovery or optional CI work. Reuse current exact-head work, deduplicate and reduce backlog.",
+      "If projected fan-out would cross a hard threshold or exceed the per-action fan-out budget, batch/coalesce writes or narrow scope before mutating.",
+      "Under soft pressure, optional workflows are forbidden; use one canonical candidate, one commit when practical, path-scoped gates and no duplicate dispatch.",
+      "A recovery action is invalid when its expected effect increases total active plus queued work on an already pressured control plane.",
+      "Related documentation, learning and skill writes for one obligation are tree-batched before remote CI when safe.",
+      "Healthy current-head queued/in-progress runs are reused; age alone is never cancellation evidence.",
+      "Queued zombies require both configured stale age and a missing non-main head branch.",
+      "Control-plane-only changes stay out of expensive artifact/browser lanes unless a real artifact path changed.",
+      "Record before/after queue counts and projected-versus-observed fan-out."
+    ],
+    "forbidden_patterns": [
+      "push-triggered repository-wide recovery scan",
+      "multi-PR recovery fan-out",
+      "duplicate PR to escape a queue",
+      "duplicate Required or BRAIN run for the same PR/head",
+      "sequential CI-triggering borging commits when one atomic commit is safe",
+      "full website/browser CI for pure recovery-control-plane edits",
+      "cancelling healthy current-head work solely for age",
+      "calling queue pressure a product-code failure"
+    ],
+    "terminal_evidence": [
+      "queue_before",
+      "queue_after",
+      "exact_main_readback",
+      "guard_configuration_readback",
+      "learning_and_skill_projection_current"
+    ]
   }
 }
