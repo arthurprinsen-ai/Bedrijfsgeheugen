@@ -1,6 +1,6 @@
 {
   "fingerprint": "seo-login-noindex-public-scope-20260924-v1",
-  "status": "ACTIVE_PREVENTION",
+  "status": "LIVE_PROVEN",
   "date": "2026-09-24",
   "type": "SEO_SCOPE_CLASSIFICATION",
   "root_cause": "The login route is intentionally noindex and should stay outside sitemap/indexable SEO inventory, but the technical SEO link validator assumed every internal destination must itself be an indexable canonical route. The missing concept was an explicit public utility-route class: valid internal destination, intentionally non-indexable.",
@@ -17,14 +17,18 @@
     "recovery_pr": 2797,
     "recovery_successor_branch": "recovery/pricing-terminal-live-proof-20260924-v3",
     "source_gate_run": 36028875604,
-    "terminal_state": "RECOVERY_V5_PENDING_PROTECTED_MERGE_AND_PRODUCTION_PROOF",
+    "terminal_state": "LIVE_BEWEZEN",
     "post_merge_bad_commit": "b68c39c9198d395fea591bc7dcf6c1432457ecec",
     "diagnose_run": 36044757083,
     "diagnose_failure": "ReferenceError: UTILITY_ROUTES is not defined",
     "closure_failure_run": 36044944567,
     "closure_failure": "MATERIAL_WRITEBACK_CLOSURE_MISSING: human_documentation",
     "human_documentation": "docs/changes/pricing-terminal-live-proof-recovery-v5-20260924.md",
-    "recovery_v5_branch": "recovery/pricing-terminal-live-proof-20260924-v5"
+    "recovery_v5_branch": "recovery/pricing-terminal-live-proof-20260924-v5",
+    "terminal_pr": 2812,
+    "terminal_feature_merge": "a38f2cbab0d496b7d666ccc132244ba5bb0817c4",
+    "terminal_production_main": "4dacb0b86ad23999cbaa3abc90fa36810fca48b6",
+    "terminal_production_deploy": "6ab57a94c9e953d1209d82ff"
   },
   "compiler": {
     "failure_class": "NOINDEX_UTILITY_MISCLASSIFIED_AS_PUBLIC_SEO",
@@ -49,7 +53,7 @@
   "skill_targets": [
     "powerhouse-continuity"
   ],
-  "revision": 3,
+  "revision": 4,
   "failed_approaches": [
     "Checking for the substring UTILITY_ROUTES before inserting the local declaration; PUBLIC_UTILITY_ROUTES satisfied that check and caused a ReferenceError at runtime."
   ]

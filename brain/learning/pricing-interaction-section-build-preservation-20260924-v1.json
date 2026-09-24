@@ -1,6 +1,6 @@
 {
   "fingerprint": "pricing-interaction-section-build-preservation-20260924-v1",
-  "status": "ACTIVE_PREVENTION",
+  "status": "LIVE_PROVEN",
   "date": "2026-09-24",
   "type": "PRODUCTION_BUILD_INTEGRITY",
   "root_cause": "The pricing build-integrity restore preserved only section#pakketten, while lifecycle, plan-group and billing interaction controls live in the preceding section#prijzen-pakketten. V18 transforms could therefore alter or remove interaction attributes before production even though the canonical source still contained them.",
@@ -21,7 +21,12 @@
     "failure": "Playwright timed out waiting for [data-bg-stage=\"loss\"] although exact source contained the selector.",
     "terminal_proof_pr": 2795,
     "terminal_proof_candidate": "ops/pricing-terminal-live-proof-20260924",
-    "terminal_proof_state": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_BROWSER_PROOF"
+    "terminal_proof_state": "LIVE_BEWEZEN",
+    "terminal_pr": 2812,
+    "terminal_feature_merge": "a38f2cbab0d496b7d666ccc132244ba5bb0817c4",
+    "terminal_production_main": "4dacb0b86ad23999cbaa3abc90fa36810fca48b6",
+    "terminal_production_deploy": "6ab57a94c9e953d1209d82ff",
+    "terminal_state": "LIVE_BEWEZEN"
   },
   "compiler": {
     "failure_class": "PRICING_INTERACTION_SECTION_NOT_PRESERVED",
@@ -29,7 +34,7 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 3,
+  "revision": 4,
   "evaluation": {
     "historical_replay": [
       "tests/brain-pricing-runtime-build-preservation-v1.test.mjs"
