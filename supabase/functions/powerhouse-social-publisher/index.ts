@@ -42,6 +42,28 @@ async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:
   }
   return body;
 }
+async function composioExecuteArgs(apiKey:string,connectedAccountId:string,userId:string,toolSlug:string,args:Record<string,unknown>){
+  const response=await fetch(COMPOSIO_BASE+'/tools/execute/'+toolSlug,{
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':apiKey},
+    body:JSON.stringify({connected_account_id:connectedAccountId,user_id:userId,version:'latest',arguments:args})
+  });
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok||body?.successful!==true){
+    const err=clean(body?.error||body?.message||body?.data?.message||JSON.stringify(body));
+    const e:any=new Error('COMPOSIO_'+toolSlug+'_'+response.status+':'+err.slice(0,240));
+    e.http=response.status;e.composioBody=body;throw e;
+  }
+  return body;
+}
+async function composioLinkedInContext(db:any){
+  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
+  const {data,error}=await db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
+  if(error)throw new Error('COMPOSIO_LINKEDIN_STATE_READ:'+error.message);
+  const userId=clean(data?.result?.user_id);
+  if(!userId)throw new Error('COMPOSIO_LINKEDIN_USER_ID_REQUIRED');
+  return {apiKey,accountId,userId};
+}
 
 async function composioConnectedAccount(db:any,toolkit:string,secretName:string){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
@@ -66,21 +88,17 @@ function deepPickLinkedInPostUrn(value:any):string{
   return'';
 }
 async function publishLinkedInPersonalViaComposio(db:any,art:any){
-  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
-  const me=await composioExecute(apiKey,accountId,'LINKEDIN_GET_MY_INFO','Return the authenticated LinkedIn member id.');
+  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
   const personId=deepPickString(me?.data||me,['id']);
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   const author=`urn:li:person:${personId}`;
   const commentary=clean(art.body);
-  const created=await composioExecute(
-    apiKey,accountId,'LINKEDIN_CREATE_LINKED_IN_POST',
-    `Create a PUBLIC LinkedIn post with lifecycleState PUBLISHED. Use author ${author}. Use this exact commentary, preserving wording and line breaks:
-${commentary}`
-  );
+  const created=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary,visibility:'PUBLIC',lifecycleState:'PUBLISHED'});
   const createdData=created?.data||created;
   const postUrn=clean(createdData?.x_restli_id)||deepPickLinkedInPostUrn(createdData);
   if(!postUrn)throw new Error('COMPOSIO_LINKEDIN_POST_URN_MISSING');
-  const readback=await composioExecute(apiKey,accountId,'LINKEDIN_GET_POST_CONTENT',`Get LinkedIn post content for post_id ${postUrn}.`);
+  const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:postUrn});
   const rb=readback?.data||readback;
   const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
   const truth=rbUrn===postUrn&&clean(rb?.author)===author&&clean(rb?.commentary)===commentary&&clean(rb?.lifecycleState).toUpperCase()==='PUBLISHED';
@@ -100,12 +118,12 @@ ${commentary}`
 async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expectedCommentary:string=''){
   const ref=clean(postUrn);
   if(!/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))throw new Error('COMPOSIO_LINKEDIN_POST_URN_INVALID');
-  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
-  const me=await composioExecute(apiKey,accountId,'LINKEDIN_GET_MY_INFO','Return the authenticated LinkedIn member id.');
+  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
   const personId=deepPickString(me?.data||me,['id']);
   if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
   const author=`urn:li:person:${personId}`;
-  const readback=await composioExecute(apiKey,accountId,'LINKEDIN_GET_POST_CONTENT',`Get LinkedIn post content for post_id ${ref}.`);
+  const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:ref});
   const rb=readback?.data||readback;
   const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
   const commentary=clean(rb?.commentary);
@@ -135,18 +153,14 @@ async function linkedinCompanyAuthorUrn(db:any):Promise<string>{
   return urns[0];
 }
 async function publishLinkedInCompanyViaComposio(db:any,art:any){
-  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
+  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
   const author=await linkedinCompanyAuthorUrn(db);
   const commentary=clean(art.body);
-  const created=await composioExecute(
-    apiKey,accountId,'LINKEDIN_CREATE_LINKED_IN_POST',
-    `Create a PUBLIC LinkedIn organization post with lifecycleState PUBLISHED. Use author ${author}. Use this exact commentary, preserving wording and line breaks:
-${commentary}`
-  );
+  const created=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary,visibility:'PUBLIC',lifecycleState:'PUBLISHED'});
   const createdData=created?.data||created;
   const postUrn=clean(createdData?.x_restli_id)||deepPickLinkedInPostUrn(createdData);
   if(!postUrn)throw new Error('COMPOSIO_LINKEDIN_COMPANY_POST_URN_MISSING');
-  const readback=await composioExecute(apiKey,accountId,'LINKEDIN_GET_POST_CONTENT',`Get LinkedIn post content for post_id ${postUrn}.`);
+  const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:postUrn});
   const rb=readback?.data||readback;
   const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
   const truth=rbUrn===postUrn&&clean(rb?.author)===author&&clean(rb?.commentary)===commentary&&clean(rb?.lifecycleState).toUpperCase()==='PUBLISHED';
@@ -166,9 +180,9 @@ ${commentary}`
 async function readLinkedInCompanyPostViaComposio(db:any,postUrn:string,expectedCommentary:string=''){
   const ref=clean(postUrn);
   if(!/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))throw new Error('COMPOSIO_LINKEDIN_COMPANY_POST_URN_INVALID');
-  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
+  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
   const author=await linkedinCompanyAuthorUrn(db);
-  const readback=await composioExecute(apiKey,accountId,'LINKEDIN_GET_POST_CONTENT',`Get LinkedIn post content for post_id ${ref}.`);
+  const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:ref});
   const rb=readback?.data||readback;
   const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
   const commentary=clean(rb?.commentary);
