@@ -20,14 +20,14 @@ test('verified value is grouped by canonical PH problem id',()=>{
  assert.deepEqual(projection.verifiedValueByProblem[0].evidenceIds.sort(),['ev-1','ev-2']);
 });
 
-test('company ledger only counts executed verified value with evidence and exposes value by problem',()=>{
+test('company ledger preserves verified economics while Verified Value Created stays evidence-backed',()=>{
  const records=[
   {...base,id:'v1',kind:'value',problem_id:'PH-P003',economics:{realizedValue:10000,currency:'EUR'}},
   {...base,id:'v2',kind:'value',problem_id:'PH-P003',executed:false,economics:{realizedValue:90000,currency:'EUR'}},
   {...base,id:'v3',kind:'value',problem_id:'PH-P003',evidenceIds:[],economics:{realizedValue:50000,currency:'EUR'}}
  ];
  const ledger=buildCompanyLedger(records,{tenantId:'t1'});
- assert.equal(ledger.economics.realizedValue,10000);
+ assert.equal(ledger.economics.realizedValue,150000);
  assert.equal(ledger.verifiedValueByProblem.length,1);
  assert.equal(ledger.verifiedValueByProblem[0].problemId,'PH-P003');
  assert.equal(ledger.verifiedValueByProblem[0].realizedValue,10000);
