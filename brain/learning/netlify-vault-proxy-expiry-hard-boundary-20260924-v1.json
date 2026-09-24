@@ -1,0 +1,49 @@
+{
+  "fingerprint": "netlify-vault-proxy-expiry-hard-boundary-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_DELIVERY_SECURITY_BOUNDARY",
+  "problem": "Production delivery could not promote current main because the OIDC bridge returned a stale Netlify MCP proxy. The linked-build trigger returned ok=false and the MCP fallback failed with 401 Unauthorized.",
+  "root_cause": "Both fallback paths depended on the same temporary Netlify MCP proxy stored in Supabase Vault under netlify_mcp_proxy_20260924. The credential had expired while the surrounding GitHub OIDC bridge remained healthy.",
+  "prevention": [
+    "Treat linked_build ok=false followed by Netlify MCP 401 Unauthorized as deploy-auth failure, not application, pricing, SEO or i18n failure.",
+    "Do not mutate website or application code after authoritative credential failure unless independent evidence proves a code defect.",
+    "Do not repeatedly retry a stale provider credential.",
+    "Credential recovery must use an authorized secret-store-native rotation path; never copy transient connector credentials into repository files, PR bodies, workflow inputs, logs, documentation or chat output.",
+    "Preserve the exact current-main artifact and SHA while credential authority is unavailable.",
+    "After credential rotation, rerun the canonical Production Source Snapshot and require provider success, exact release.json SHA/context/deploy-id and production browser proof before LIVE_BEWEZEN."
+  ],
+  "evidence": {
+    "source_sha": "dbb0c54d8685b63f2d31f0105fae36f0b1771a10",
+    "production_snapshot_run": 36010221414,
+    "production_readback_run": 36010220920,
+    "linked_build_trigger": "ok=false",
+    "mcp_fallback": "401 Unauthorized",
+    "current_netlify_deploy": "6ab5131f10d7810008497634",
+    "vault_secret_name": "netlify_mcp_proxy_20260924"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-vault-proxy-expiry-hard-boundary-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-vault-proxy-expiry-hard-boundary-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-vault-proxy-expiry-hard-boundary-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-netlify-vault-proxy-expiry-hard-boundary-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "NETLIFY_VAULT_PROXY_EXPIRED",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
