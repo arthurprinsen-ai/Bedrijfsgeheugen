@@ -1,0 +1,22 @@
+{
+  "id": "mkb-probleemradar-blog-release-20260924-v1",
+  "date": "2026-09-24",
+  "source": "voice-of-customer-probleemradar",
+  "root_cause": "Nieuwe probleemgestuurde content stond als korte Notion-kandidaat klaar, maar was nog geen release-eligible website-artifact. De eerste implementatie miste daarnaast expliciete technische SEO-contractvereisten zoals exacte focuszoekwoordplaatsing, FAQPage structured data en twee functionele figures.",
+  "prevention": [
+    "Zet Probleemradar-kandidaten pas op publiceren nadat title, meta description, focuszoekwoord, canonical, FAQPage, minimaal drie interne links en minimaal twee functionele figures contractueel zijn gevalideerd.",
+    "Gebruik de bestaande protected website delivery en productie-readback; omzeil de dagelijkse canonical blog-ledger niet om meerdere redactionele artikelen op dezelfde dag uit te brengen.",
+    "Houd kwalitatieve ondernemerssignalen expliciet gescheiden van representatieve statistiek en link kwantitatieve claims naar een controleerbare bron."
+  ],
+  "evidence": [
+    "PR #2733",
+    "Blog Technical SEO Gate technical-seo-contract-100",
+    "blog/groeipijn-mkb-eigenaar-bottleneck/index.html",
+    "blog/cashflow-overzicht-mkb/index.html",
+    "blog/dubbele-invoer-voorkomen-systemen-koppelen/index.html",
+    "blog/index.html",
+    "blog/rss.xml",
+    "sitemap.xml"
+  ],
+  "outcome": "Drie Voice-of-Customer onderwerpen zijn omgezet naar volledige SEO-artikelen en opgenomen in index, RSS en sitemap. Production-live blijft fail-closed tot protected merge en productie-readback."
+}
