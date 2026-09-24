@@ -234,6 +234,7 @@ jobs:
         run: node --test tests/tabbladen.test.mjs
 
   browser:
+    timeout-minutes: 15
     needs: [classify, syntax-preflight, preview-ready]
     if: needs.classify.outputs.requires_preview == 'true'
     runs-on: ubuntu-latest

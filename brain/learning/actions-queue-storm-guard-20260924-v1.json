@@ -18,7 +18,9 @@
     "A single action may not intentionally create more than six new runs; batch or narrow before mutation.",
     "One obligation has one executable PR and one active Required/BRAIN instance per PR/head.",
     "Borging, documentation, learning and skill changes for one obligation should be committed atomically when safe.",
-    "Agents and chats must treat predicted queue amplification as a pre-mutation blocker, not something to clean up afterward."
+    "Agents and chats must treat predicted queue amplification as a pre-mutation blocker, not something to clean up afterward.",
+    "Governance, agent policy, skill and delivery-controller changes are non-artifact control-plane and must not trigger website preview/browser lanes unless a real website artifact also changes.",
+    "The website browser lane has a hard 15-minute timeout so a browser stall cannot retain runner capacity indefinitely."
   ],
   "evaluation": {
     "historical_replay": [
@@ -50,7 +52,14 @@
     "soft_queued": 10,
     "hard_active": 20,
     "hard_queued": 20,
-    "max_projected_new_runs_per_action": 6
+    "max_projected_new_runs_per_action": 6,
+    "website_browser_timeout_minutes": 15,
+    "control_plane_non_artifact_paths": [
+      "AGENTS.md",
+      "brain/policies/",
+      ".agents/skills/",
+      "tools/delivery/"
+    ]
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -65,7 +74,7 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 3,
+  "revision": 4,
   "failed_approaches": [
     "Repository-wide recovery on every main push plus a five-minute schedule.",
     "Dispatching recovery independently across many open PRs during runner saturation.",
@@ -75,6 +84,8 @@
     "Allowing control-plane-only fixes to trigger full website/browser/artifact verification.",
     "Letting queued runs survive after their PR was merged and their branch no longer existed.",
     "Refreshing a PR through transient branch equality with main, which can auto-close the PR.",
-    "Carrying unrelated baseline failures inside queue repair instead of fixing the canonical baseline first."
+    "Carrying unrelated baseline failures inside queue repair instead of fixing the canonical baseline first.",
+    "Leaving the website browser lane without an explicit timeout, allowing a non-artifact governance PR to occupy a runner indefinitely.",
+    "Failing to classify AGENTS.md, brain/policies, .agents/skills and tools/delivery as non-artifact control-plane paths."
   ]
 }

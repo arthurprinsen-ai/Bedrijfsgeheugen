@@ -38,3 +38,12 @@
 - Stale orphaned queue janitor is carried forward from PR #2806.
 - Predictive helper: `tools/delivery/predictive-controller.mjs#assessQueuePressure`.
 - Skills: continuity, delivery-concurrency, delivery-self-optimization, resource-sustainability.
+
+
+## Queue governor v4 — browser stall closure
+- Rare issue found during terminal proof: policy-only PR still entered website preview/browser lanes.
+- Root cause: AGENTS.md, brain/policies/, .agents/skills/ and tools/delivery/ were absent from website non-artifact classification.
+- Fix: all four are now explicit control-plane non-artifact paths.
+- Regression: pure governance/delivery-policy changed-path set must classify as control-plane with requires_preview=false.
+- Browser runner hard timeout: 15 minutes.
+- Invariant: no unbounded browser job may retain a GitHub runner.

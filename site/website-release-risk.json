@@ -13,7 +13,11 @@
     "brain/learning/",
     "tests/brain-",
     ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
-    "tests/delivery-powerhouse-supervisor.test.mjs"
+    "tests/delivery-powerhouse-supervisor.test.mjs",
+    "AGENTS.md",
+    "brain/policies/",
+    ".agents/skills/",
+    "tools/delivery/"
   ],
   "highRiskPaths": [
     ".github/workflows/",

@@ -37,3 +37,9 @@ Onder druk is de prioriteit: exact-head werk hergebruiken → dedupliceren → w
 - geen zombie queued runs na verdwenen branches;
 - geen transient branch==main reconcile;
 - geen vermenging van bestaande baseline-regressies met queue-repair zonder canonieke baselinefix.
+
+
+## Browser-fan-out en stall-preventie v4
+Tijdens de governor-delivery bleek nog een tweede control-plane defect: governancebestanden (`AGENTS.md`, `brain/policies/`, `.agents/skills/`, `tools/delivery/`) werden niet als non-artifact herkend. Daardoor startte een pure policywijziging alsnog page/SEO/browser-CI.
+
+Dit is dichtgezet door die paden expliciet als control-plane te classificeren en met regressie te bewijzen dat `requires_preview=false` blijft. Daarnaast heeft de website-browserjob nu `timeout-minutes: 15`; een browserstall kan dus nooit onbeperkt runnercapaciteit vasthouden.
