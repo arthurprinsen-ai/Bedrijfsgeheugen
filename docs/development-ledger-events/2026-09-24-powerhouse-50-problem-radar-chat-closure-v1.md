@@ -71,3 +71,11 @@
 - The regression now asserts that semantic actionability sequence instead of requiring the obsolete literal `page.locator(...).click()` expression.
 - Runtime verifier was not weakened.
 
+## Exact-main production promotion v3
+
+- Closure main: `9a9778d4284d7b1df491e0fffea7c3df3ac30167`.
+- Netlify provider before promotion: deploy `6ab581bd1aa6dd00083bd4cb`, state `ready`, context `production`, commit_ref `bbb6ec5841eca4880d77ce0d09c6da458f7302b1`.
+- Exact-main equality remained open.
+- Recovery authority remains the canonical `Production Source Snapshot` only.
+- Status at candidate creation: `PROMOTION_PENDING`.
+
