@@ -152,3 +152,17 @@ A repeated complaint that Powerhouse cannot currently solve is not forced into m
 8. Publish through existing company LinkedIn/blog gates.
 9. Read back publication and performance.
 10. Write outcome and learning back to opportunity, problem radar and this skill.
+
+
+## Canonical PH-Pxxx mapping — 24 september 2026
+
+Fingerprint: `powerhouse-50-problem-library-v1`.
+
+De Probleemradar projecteert vanaf nu ieder genormaliseerd ondernemerssignaal naar een bestaande `PH-Pxxx` uit `config/powerhouse-problem-library.json` wanneer er een geldige match is. De radar mag geen parallelle probleemwaarheid onderhouden.
+
+Regels:
+- Voice-of-Customer is standaard `signal`, niet `fact` over een specifiek bedrijf;
+- een signaal zonder passende Problem ID wordt als `PROBLEM_LIBRARY_CANDIDATE` opgeslagen met bron/evidence, niet geforceerd gemapt;
+- dezelfde Problem ID wordt hergebruikt voor opportunity scoring, content, Frisse Blik, portal-detectie, capability-selectie en outcome-learning;
+- impactclaims volgen uitsluitend `OBSERVED`, `ESTIMATED`, `POTENTIAL`;
+- confidence en evidence-status blijven zichtbaar en kwalitatieve fora-signalen blijven expliciet niet-representatief.
