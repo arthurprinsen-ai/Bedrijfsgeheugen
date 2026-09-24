@@ -38,5 +38,12 @@
     "historical_replay": [
       "tests/brain-linkedin-composio-v31-execution.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "EXECUTION_CONTRACT_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
