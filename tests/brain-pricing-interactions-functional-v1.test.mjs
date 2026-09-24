@@ -66,11 +66,11 @@ test('refresh controls update active state and recalculate recommendation',async
 });
 
 test('real browser proof covers mobile pricing taps and English route',async()=>{
-  const browserCheck=await readFile(new URL('../tools/site-shell/pricing-interactions-browser-check.mjs',import.meta.url),'utf8');
+  const browserCheck=await readFile(new URL('../tools/site-shell/verify-pricing-i18n-production.mjs',import.meta.url),'utf8');
   assert.match(browserCheck,/\[data-bg-billing="yearly"\]/);
   assert.match(browserCheck,/\[data-bg-price-tab="run"\]/);
   assert.match(browserCheck,/\[data-bg-stage="loss"\]/);
-  assert.ok(browserCheck.includes("location.pathname.replace(/\\/$/,'')==='/en/prijzen'"));
+  assert.match(browserCheck,/waitForURL[\\s\\S]*\\/en\\/prijzen/);
 });
 
 test('final pricing build integrity reinjects exactly one canonical runtime',async()=>{
