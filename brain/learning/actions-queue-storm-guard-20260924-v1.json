@@ -9,18 +9,22 @@
     "Open a repository-wide circuit breaker when active or queued Actions work reaches the configured threshold.",
     "Allow at most one PR recovery per supervisor cycle.",
     "Suppress duplicate recovery dispatch when an equivalent active run already exists.",
-    "CI must regression-test these backpressure invariants so later workflow changes cannot silently restore fan-out."
+    "CI must regression-test these backpressure invariants so later workflow changes cannot silently restore fan-out.",
+    "Website release-risk must classify recovery-supervisor workflow and its regression tests as non-artifact control-plane changes, so CI-only fixes never launch full public-site browser crawls."
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs",
+      "tests/site-shell-website-release-risk.test.mjs"
     ],
     "shadow": [
-      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs",
+      "tests/site-shell-website-release-risk.test.mjs"
     ]
   },
   "test_evidence": [
-    "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    "tests/brain-actions-queue-storm-guard-v1.test.mjs",
+    "tests/site-shell-website-release-risk.test.mjs"
   ],
   "evidence": {
     "observed_in_progress": 19,
@@ -28,7 +32,8 @@
     "open_pull_requests_observed": 55,
     "recovery_workflow": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
     "circuit_breaker_active_runs": 20,
-    "recovery_pr_budget_per_cycle": 1
+    "recovery_pr_budget_per_cycle": 1,
+    "website_control_plane_browser_fanout_prevented": true
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md"
