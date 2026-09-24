@@ -1,0 +1,45 @@
+{
+  "fingerprint": "pricing-mobile-lifecycle-production-promotion-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_PROMOTION",
+  "problem": "The protected mobile pricing lifecycle fix is merged on main at d55043434174a50b5d495563cc307d38f2db84c2 while Netlify production still serves the previous deploy.",
+  "root_cause": "Production Source Snapshot is path-triggered and does not automatically run for pricing.html changes. An explicit canonical snapshot refresh is required to promote the exact current main through the existing GitHub OIDC to Netlify transport.",
+  "prevention": [
+    "Do not call a merged website fix live until Netlify release.json proves the exact merged SHA or a descendant containing it.",
+    "Use Production Source Snapshot for explicit current-main promotion; do not create ad-hoc deploy truth.",
+    "Carry learning, documentation and ledger evidence in the same material promotion lineage.",
+    "Require pricing mobile interaction and English route proof after provider-ready."
+  ],
+  "evidence": {
+    "feature_merge": "d55043434174a50b5d495563cc307d38f2db84c2",
+    "prior_live_deploy": "6ab5392e62dd995771d76b00",
+    "prior_live_commit": "be5ec08e69600acfdba31b28af0d6736c84917d6",
+    "canonical_workflow": ".github/workflows/production-source-snapshot.yml"
+  },
+  "test_evidence": [
+    "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs"
+    ],
+    "shadow": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_PROMOTION_REQUIRED",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
