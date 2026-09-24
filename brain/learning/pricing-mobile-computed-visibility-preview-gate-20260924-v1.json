@@ -35,5 +35,16 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 2,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs"
+    ],
+    "shadow": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  }
 }
