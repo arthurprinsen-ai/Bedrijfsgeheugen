@@ -20,7 +20,9 @@ async function run() {
     // Lifecycle toggle must change the actual visible panel.
     // Keep this a real pointer click: position the control below sticky chrome first.
     const lossButton = page.locator('[data-bg-stage="loss"]');
-    await lossButton.scrollIntoViewIfNeeded();
+    await lossButton.waitFor({ state:'visible', timeout:15_000 });
+    await lossButton.evaluate(el => el.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' }));
+    await page.waitForTimeout(100);
     const lossBox = await lossButton.boundingBox();
     if (!lossBox || lossBox.width < 1 || lossBox.height < 1) throw new Error('loss stage control has no actionable box: ' + JSON.stringify(lossBox));
     await page.evaluate(() => window.scrollBy(0, -120));
