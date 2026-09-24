@@ -1,0 +1,37 @@
+{
+  "fingerprint": "powerhouse-50-outcome-ledger-verified-value-production-refresh-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_PROMOTION_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The Verified Value P0 feature was merged to protected main, but Netlify production still served the prior commit. The canonical Production Source Snapshot only self-triggers on a change to its workflow path, so an explicit same-lineage operational refresh is required to deploy and prove the exact current main source.",
+  "prevention_rule": "When a material feature is merged but production commit_ref remains behind, use the canonical Production Source Snapshot/OIDC-to-Netlify route and carry Brain learning, activity ledger and human documentation in the same promotion lineage. Never claim LIVE_BEWEZEN from merge state alone.",
+  "evidence": {
+    "feature_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2786",
+    "feature_merge": "945febc5cb2d603dfaefcc8b1d12a36b075a7d1d",
+    "promotion_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2789",
+    "workflow": ".github/workflows/production-source-snapshot.yml",
+    "observed_previous_production_commit": "4623d87946758e3e2749a387999c75067b34ac9b",
+    "netlify_site_id": "fd527056-493a-4d8a-8125-d00370104fa3"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "MERGED_FEATURE_PRODUCTION_COMMIT_LAG",
+    "scope": "PRODUCTION_PROMOTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "invariants": [
+      "promotion uses canonical Production Source Snapshot workflow",
+      "exact production commit identity is proven before LIVE_BEWEZEN",
+      "production commit must contain or descend from the feature merge",
+      "material promotion carries learning ledger and human documentation"
+    ]
+  }
+}
