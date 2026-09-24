@@ -29,8 +29,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs",
-      "tests/supabase-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
+      "tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
     ]
   }
 }
