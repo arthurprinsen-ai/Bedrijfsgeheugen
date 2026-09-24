@@ -50,3 +50,15 @@ Nieuwe authority:
 
 ### Truth boundary
 Een LinkedIn-connectie of relatieactivatie op zichzelf is geen kooptrigger. Automatische classificatie vereist expliciet trigger/headline/summary-bewijs of een company-scoped predictive signal. Expected/revenue value blijft 0 totdat echte commerciële waarde-evidence bestaat. Een trigger mag automatisch alleen een interne `research_enrichment`-actie creëren; externe outreach blijft fail-closed onder de bestaande identity, destination, contact-pressure en provider gates.
+
+
+## Production proof — 24 september 2026
+- GitHub main merge: `4e16c5c496241ce516cd13373103c51b4f9fd6dd`.
+- Supabase migration `trigger_based_mkb_acquisition_runtime_v1`: succesvol toegepast op `adhjwmvyoixzjtmiroln`.
+- Readback: `powerhouse_mkb_trigger_intelligence_v1`, refresh-function en scheduler-wrapper bestaan.
+- Scheduler readback: bestaande `powerhouse-commercial-learning-v1`, `27 * * * *`, actief, command `select public.powerhouse_trigger_based_mkb_acquisition_cycle_v1();`.
+- Eerste gecontroleerde refresh: 0 eligible triggers, 0 opportunities, 0 interne research-actions, 0 forecasts, geen externe outreach.
+- Negatieve safety-readback: 0 gewone `connection_activated` events foutief geclassificeerd.
+- Supabase advisor readback: 0 security-lints op de nieuwe trigger-runtime-surface; bestaande projectbrede lints zijn niet als opgelost gemarkeerd.
+
+**Status:** `LIVE_PROVEN_FAIL_CLOSED_RUNTIME`. De runtime is actief, maar genereert bewust niets zolang expliciet company-level kooptriggerbewijs ontbreekt. Externe outreach is niet door deze runtime geactiveerd.
