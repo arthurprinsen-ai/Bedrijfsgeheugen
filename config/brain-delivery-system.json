@@ -303,7 +303,8 @@
         "tools/supabase-",
         "tools/universal-event-",
         "tools/universal-failure-",
-        "tests/saas-"
+        "tests/saas-",
+        "tests/powerhouse-problem-library"
       ],
       "requiredContracts": [
         "BG166",
