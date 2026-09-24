@@ -12,11 +12,16 @@
     "CI must regression-test these backpressure invariants so later workflow changes cannot silently restore fan-out."
   ],
   "evaluation": {
-    "historical_replay": ["tests/delivery-powerhouse-supervisor.test.mjs"],
-    "shadow": ["tests/delivery-powerhouse-supervisor.test.mjs"],
-    "canary": ["tests/delivery-powerhouse-supervisor.test.mjs"]
+    "historical_replay": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ]
   },
-  "test_evidence": ["tests/delivery-powerhouse-supervisor.test.mjs"],
+  "test_evidence": [
+    "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+  ],
   "evidence": {
     "observed_in_progress": 19,
     "observed_queued": 121,
@@ -25,10 +30,12 @@
     "circuit_breaker_active_runs": 20,
     "recovery_pr_budget_per_cycle": 1
   },
-  "skill_targets": ["continuity", "delivery", "github-actions"],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
   "compiler": {
-    "failure_class": "ACTIONS_RECOVERY_FANOUT_AMPLIFICATION",
-    "scope": "DELIVERY_CONTROL_PLANE",
+    "failure_class": "QUEUE_STALL",
+    "scope": "CI",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
