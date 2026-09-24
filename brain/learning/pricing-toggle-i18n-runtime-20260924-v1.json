@@ -5,9 +5,12 @@
   "root_cause": "Production proof asserted HTML marker presence rather than functional interaction state. Pricing visibility relied on semantic hidden state without an explicit runtime display fallback, while the public language selector redirected unprefixed pages to /en/* and therefore coupled switching to localized-route reachability.",
   "prevention": [
     "Interactive production controls require state-change evidence, not marker-presence evidence alone.",
-    "Pricing tab and lifecycle state must drive both ARIA/hidden semantics and explicit visible display state in the delegated runtime.",
-    "Unprefixed public pages must be able to switch locale in place without depending on /en/* route availability.",
-    "Every runtime repair must be cache-busted and locked by regression tests before production promotion."
+    "Pricing lifecycle, plan-group and billing controls must be clicked in a production browser proof and the resulting visible state must be asserted.",
+    "Public-site language selection must use prebuilt static localized routes; runtime translation may be fallback capability but not the primary switching dependency.",
+    "Localized /en/* and /nl/* public routes require explicit routing coverage and production navigation proof.",
+    "A production English-switch proof must verify html lang=en, visible English copy, absence of the Dutch pricing H1, and absence of the runtime translation failure message.",
+    "Runtime/cache version changes require co-changing exact-version regressions in the same candidate.",
+    "No LIVE_BEWEZEN claim is valid for an interaction defect without browser-level production evidence of that exact interaction."
   ],
   "evidence": {
     "reported_symptoms": [
@@ -17,19 +20,27 @@
     "prior_main_sha": "37d09f3ae906470e42cc908029e60e77ba7acba0",
     "repaired_runtime_asset": "assets/js/pricing-interactions-rescue-v1.js?v=20260924-0750",
     "changed_i18n_runtime": "assets/js/i18n.js",
-    "pull_request": 2687
+    "pull_request": 2687,
+    "prior_live_deploy_id": "6ab4be6b9d064a00088a5d24",
+    "prior_live_main_sha": "492fced012acc6e4263550d17281563582a89ceb",
+    "observed_live_failure": "Production /prijzen exposed 'Switching language failed. Try again.' after selecting English.",
+    "production_behavior_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "retrospective": "docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md"
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-pricing-interactions-functional-v1.test.mjs",
       "tests/brain-pricing-toggle-runtime-v3.test.mjs",
-      "tests/brain-i18n-in-place-switch-v1.test.mjs"
+      "tests/brain-i18n-in-place-switch-v1.test.mjs",
+      "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs"
     ]
   },
   "test_evidence": [
     "tests/brain-pricing-interactions-functional-v1.test.mjs",
     "tests/brain-pricing-toggle-runtime-v3.test.mjs",
-    "tests/brain-i18n-in-place-switch-v1.test.mjs"
+    "tests/brain-i18n-in-place-switch-v1.test.mjs",
+    "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
   ],
   "compiler": {
     "failure_class": "INTERACTIVE_RUNTIME_PROOF_GAP",
@@ -37,5 +48,16 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
-  }
+  },
+  "status": "ACTIVE_PREVENTION",
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "failed_approaches": [
+    "Treating presence of data-bg-* markers as proof that clicks changed user-visible state.",
+    "Relying on general route/browser health without an interaction-specific production assertion.",
+    "Using runtime translation as the primary public-site language-switch path, allowing provider failure to leave Dutch copy visible."
+  ],
+  "revision": 2
 }
