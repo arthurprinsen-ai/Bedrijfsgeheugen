@@ -19,3 +19,15 @@ Generic `body.isVisible()` is no longer a prerequisite.
 
 ## Prevention
 Domain-specific readiness beats generic page readiness when the product already exposes an explicit runtime-ready contract.
+
+
+## Regression-scope correction
+
+The first regression accidentally banned every `body.waitFor({state:'visible'})` in the verifier. That was too broad: the body wait after navigating to the static English route is legitimate. The invariant is now phase-scoped: no generic body readiness may block the initial pricing runtime before `ready-v3`; post-navigation visibility checks remain allowed.
+
+## Production promotion
+
+This same obligation now triggers the canonical `Production Source Snapshot`.
+Terminal completion requires Netlify `ready / production / commit_ref == protected main` plus a green production pricing+i18n browser proof.
+Status before promotion: `PROMOTION_PENDING`.
+
