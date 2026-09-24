@@ -1,0 +1,22 @@
+{
+  "fingerprint": "powerhouse-trigger-opportunity-runtime-v1",
+  "date": "2026-09-24",
+  "type": "COMMERCIAL_RUNTIME_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "TRIGGER_INTELLIGENCE_NOT_EXECUTABLE",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Trigger-based acquisition was canonicalized as policy and skill, but company-scoped observed signals did not yet automatically enter the existing opportunity/action lineage.",
+  "prevention_rule": "Every observed company trigger must be provenance-backed, materialize into the existing opportunity lineage with hypothesis labels and zero invented revenue, and start with an internal-only next-best-action until positive commercial evidence exists.",
+  "evidence": {
+    "migration": "supabase/migrations/20260924154000_powerhouse_trigger_opportunity_runtime_v1.sql",
+    "edge_function": "supabase/functions/powerhouse-company-trigger-ingest/index.ts",
+    "regression": "tests/supabase-powerhouse-trigger-opportunity-runtime-v1.test.mjs"
+  },
+  "skill_targets": ["trigger-based-mkb-acquisition"],
+  "live_claim": "Blocked until merge plus Supabase migration/function provider readback and canary proof."
+}
