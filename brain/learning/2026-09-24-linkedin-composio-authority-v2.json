@@ -6,8 +6,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "Buffer 429 could defer linkedin_company even when Composio LinkedIn was available.",
-      "linkedin_personal already proved the direct Composio publish-plus-readback pattern."
+      "tests/brain-linkedin-composio-authority.test.mjs"
     ]
   },
   "prevention": {
