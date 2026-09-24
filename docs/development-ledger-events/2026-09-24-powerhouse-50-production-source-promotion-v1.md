@@ -2,8 +2,11 @@
 
 - Fingerprint: `powerhouse-50-production-source-promotion-v1`
 - Obligation: `powerhouse-50-production-source-promotion-v1`
-- Powerhouse 50 merge: `94fd9cb6f04118ea9da2d318d49114562f8ce2f5`
-- Current production at start: stale Netlify deploy `6ab5131f10d7810008497634`
-- Recovery path: canonical `Production Source Snapshot` workflow
-- Transport: GitHub OIDC → Netlify deploy bridge
-- Promotion claim: pending exact provider + release.json + browser readback
+- Feature merge: `94fd9cb6f04118ea9da2d318d49114562f8ce2f5`
+- Provider/build fix ancestor: `3e7ef0bd633d4249e91e1a1dadaf3513c33f1ce4`
+- Promotion PR: #2767
+- Production mechanism: Production Source Snapshot → GitHub OIDC → Netlify deploy bridge
+- Product behavior change: none
+- Root cause: inherited production-provider lag after a separate pricing build parse failure
+- Prevention: isolate feature health from provider lag and use one canonical promotion lineage
+- Terminal state: pending exact Netlify provider + release.json + browser readback
