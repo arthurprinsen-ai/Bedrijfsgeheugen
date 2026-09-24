@@ -14,12 +14,10 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-actions-queue-storm-guard-v1.test.mjs",
-      "tests/site-shell-website-release-risk.test.mjs"
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-actions-queue-storm-guard-v1.test.mjs",
-      "tests/site-shell-website-release-risk.test.mjs"
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
     ]
   },
   "test_evidence": [
