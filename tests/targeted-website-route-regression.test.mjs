@@ -56,3 +56,11 @@ test('website preview selection probes every affected route before trusting Netl
   assert.match(workflow, /AbortSignal\.timeout\(/);
   assert.match(workflow, /preview_mode=local-exact-candidate/);
 });
+
+
+test('generic targeted-route verifier waits for body attachment, not visual visibility', async () => {
+  const source = await readFile('tools/site-shell/verify-targeted-website-routes.mjs', 'utf8');
+  assert.match(source, /locator\('body'\)\.waitFor\(\{ state:'attached', timeout:15_000 \}\)/);
+  assert.doesNotMatch(source, /locator\('body'\)\.waitFor\(\{ state:'visible', timeout:15_000 \}\)/);
+  assert.match(source, /Specialized browser gates[\s\S]*own visibility and clickability assertions/);
+});
