@@ -246,4 +246,9 @@ Fix:
 - `tests/brain-seo-login-noindex-scope-v1.test.mjs` bewaakt nu ook deze runtime-derivatie.
 
 Preventie: import-aanwezigheid is niet genoeg; de regressie moet de runtime representatie controleren die het productiepad werkelijk gebruikt.
+### 11. Exact-main production recovery na merge #2791
+
+PR #2791 is protected gemerged als `a2a3272e8394a292407b63826b22797f26b5533a`. Direct daarna stond Netlify productie nog op `890d961c2572c213e53a97cab8e6197026e6773c`. Omdat merge geen productie-identiteit bewijst, wordt dezelfde obligation vervolgd via de bestaande `Production Source Snapshot`.
+
+Regel: alleen `ready + production + commit_ref == protected main` sluit de exact-main claim. Deze recovery introduceert geen tweede deploypad.
 
