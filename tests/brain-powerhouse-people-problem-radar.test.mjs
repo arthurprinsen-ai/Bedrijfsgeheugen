@@ -27,3 +27,19 @@ test('people detection contract is privacy safe and canonical',()=>{
   assert.equal(detection.rules.length,10);
   for(const rule of detection.rules) assert.match(rule.problem_id,/^PH-P\d{3}$/);
 });
+
+
+test('cross-domain problem graph connects people signals to the rest of Powerhouse',()=>{
+  const graph=JSON.parse(fs.readFileSync(new URL('../config/powerhouse-cross-domain-problem-graph.json', import.meta.url)));
+  const ids=new Set(library.problems.map(p=>p.problem_id));
+  assert.ok(graph.edges.length>=15);
+  for(const edge of graph.edges){
+    assert.ok(ids.has(edge.from), `unknown from id ${edge.from}`);
+    assert.ok(ids.has(edge.to), `unknown to id ${edge.to}`);
+    assert.ok(edge.relation);
+    assert.ok(edge.mechanism);
+  }
+  for(const required of ['executive_cockpit','finance','operations','sales','knowledge','risk','opportunity_scoring','content_and_sales','outcome_learning']){
+    assert.ok(Array.isArray(graph.projections[required]) && graph.projections[required].length, `missing projection ${required}`);
+  }
+});
