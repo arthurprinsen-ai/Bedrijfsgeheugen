@@ -35,7 +35,32 @@
       "evidence-backed LinkedIn post reply is claimed once, executed through Composio, and written back with provider/outcome evidence",
       "unsupported LinkedIn DM or connection activation stays an explicit capability exception",
       "concurrent publisher runs cannot execute the same suggested action twice"
-    ]
+    ],
+    "protected_merge_sha": "350f90eb9b2c76a715530836a7d9c485c2ccdd42",
+    "production_function": "powerhouse-social-publisher",
+    "production_function_version": 49,
+    "production_runtime_sha256": "d7def61407cf27081a02bc0452c3b506a504e32e0051c86c09c97fc6285d6bf1",
+    "scheduler_job": "powerhouse-content-closed-loop-v1",
+    "scheduler_job_id": 62,
+    "scheduler_cadence": "*/5 * * * *",
+    "production_runtime_readback": {
+      "active": true,
+      "has_autopilot": true,
+      "has_reconciliation_guard": true,
+      "has_republish_forbidden": true,
+      "normal_mode_hook": true
+    },
+    "runtime_invocation_proof": {
+      "observed_at": "2026-09-24T13:12:43Z",
+      "http_status": 200,
+      "function_version": 49,
+      "source": "Supabase function_edge_logs"
+    },
+    "queue_canary": {
+      "eligible_reply_post_count_observed": 0,
+      "autopilot_side_effects_observed": 0,
+      "reason": "Current top suggested queue contained only unsupported LinkedIn DM/news actions, so the live canary correctly produced no external comment side effect."
+    }
   },
   "evaluation": {
     "historical_replay": [
@@ -48,6 +73,14 @@
   "regression_contract": "tests/linkedin-revenue-cockpit.test.mjs",
   "production_readback": {
     "required": true,
-    "rule": "Do not call the autopilot LIVE_PROVEN until the merged main function is deployed and an authenticated runtime invocation returns cockpit_autopilot evidence from production."
-  }
+    "status": "LIVE_PROVEN_RUNTIME",
+    "merge_sha": "350f90eb9b2c76a715530836a7d9c485c2ccdd42",
+    "function_version": 49,
+    "runtime_sha256": "d7def61407cf27081a02bc0452c3b506a504e32e0051c86c09c97fc6285d6bf1",
+    "scheduler": "powerhouse-content-closed-loop-v1",
+    "cadence": "every 5 minutes",
+    "note": "Runtime integration is live and proven. A real LinkedIn comment side effect has not yet been observed because no eligible reply_post action was present during verification; unsupported DM/connection actions remain fail-closed."
+  },
+  "status": "LIVE_PROVEN_RUNTIME",
+  "closed_at": "2026-09-24"
 }
