@@ -14,10 +14,18 @@
     "Deploy previews may run offline, but their untranslated locale artifacts are not production evidence.",
     "Production language proof must verify visible English content, not only route existence or locale metadata."
   ],
-  "skill_targets": ["continuity","delivery"],
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
   "test_evidence": [
     "tests/brain-i18n-production-fail-closed-v1.test.mjs",
     "tools/site-shell/verify-pricing-i18n-production.mjs"
   ],
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-production-fail-closed-v1.test.mjs"
+    ]
+  }
 }
