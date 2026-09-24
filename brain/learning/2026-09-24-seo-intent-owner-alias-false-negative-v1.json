@@ -1,0 +1,32 @@
+{
+  "fingerprint": "seo|intent-owner|commercial-alias|false-negative|v1",
+  "obligation_id": "seo-opportunity:exact-owner-alias:v1",
+  "compiler": {
+    "failure_class": "SEO_INTENT_OWNER_FALSE_NEGATIVE",
+    "scope": "CONTENT",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The first-mover resolver matched canonical owners only against configured keywords. The commercial query 'exact online api' expressed the same job-to-be-done as the existing Exact Online coupling money page but was absent as an explicit alias, so it incorrectly generated CREATE_INTENT_GAP_CONTENT.",
+  "prevention_rule": "Proven shortened brand/product commercial aliases must be added to the canonical intent-owner map and projected to runtime. Do not globally relax semantic thresholds. Any owner false-negative recommendation must be contained before publication, logged, regression-tested and re-resolved.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_canary": "2026-09-24T07:32:37Z",
+    "bad_candidate": {
+      "keyword": "exact online api",
+      "score": 75.61216696873406,
+      "action": "CREATE_INTENT_GAP_CONTENT"
+    },
+    "correct_owner": "https://www.bedrijfsgeheugen.nl/exact-online-koppeling",
+    "containment": "recommendation marked skipped before publication",
+    "runtime_readback": "pending corrected protected merge and resolver rerun"
+  },
+  "outcome": {
+    "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+  }
+}

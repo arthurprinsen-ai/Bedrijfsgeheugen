@@ -74,6 +74,13 @@ Traffic volume alone must never outrank order/revenue evidence.
 - The runtime intent-owner projection must remain test-equal to `site/seo-order-map.json` plus `site/seo-order-expansion.json`.
 - Every new SEO runtime function or RPC surface must be registered in the Powerhouse quality-surface registry with a green evidence contract before it can be treated as structurally closed.
 
+## Commercial aliases and shortened brand/product queries
+
+- Treat shortened branded/product queries (for example `exact online api`) as aliases of the existing canonical money page when they express the same commercial job-to-be-done.
+- Encode proven aliases in the canonical SEO intent-owner maps first; regenerate the runtime projection from those maps. Do not weaken the global owner-match threshold merely to catch one alias.
+- If a production canary creates a `CREATE_INTENT_GAP_CONTENT` recommendation that later proves to have an existing owner, contain it immediately before publication, record the false-negative, repair the canonical map and rerun the resolver.
+- First-mover speed never outranks cannibalization prevention or canonical ownership.
+
 ## Commercial clarity on money pages
 
 - For decide-stage money pages, expose the verified buying path early: start point, current price/range where canonically published, scope boundary, next step and primary CTA.
