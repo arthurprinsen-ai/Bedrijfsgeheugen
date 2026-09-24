@@ -428,3 +428,16 @@ For interaction verifiers:
 
 Reference: pricing production lifecycle control recovery, run `36056415545`.
 
+## Content-addressed runtime cache identity
+
+Fingerprint: `delivery|static-runtime-cache|content-addressed-key|required|v1`.
+
+For static JavaScript/CSS that establishes product runtime readiness or interaction behavior:
+- never rely on a date/time query key that can outlive later asset mutations;
+- derive the public cache-busting key from the exact asset content identity (Git blob SHA prefix is acceptable);
+- regression must calculate that identity from file bytes and assert the HTML reference matches it;
+- production content proof must assert the same key;
+- if exact provider deployment is green but a runtime readiness marker is absent, inspect HTML/asset cache identity before mutating interaction logic or weakening the verifier.
+
+Reference incident: pricing rescue runtime remained referenced as `v=20260924-0750` after later JS mutations, causing exact new HTML to be compatible with a stale cached runtime.
+
