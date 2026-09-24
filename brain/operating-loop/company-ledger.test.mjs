@@ -41,8 +41,8 @@ test('company ledger keeps immutable-looking newest-first audit history and econ
 
 test('ledger is tenant scoped and never mixes economics across tenants',()=>{
   const records=[
-    normalizeBrainRecord({tenantId:'t1',type:'Value',id:'v1',owner:'brain',status:'REALISED',realizedValue:100,currency:'EUR',verified:true,executed:true}),
-    normalizeBrainRecord({tenantId:'t2',type:'Value',id:'v2',owner:'brain',status:'REALISED',realizedValue:999999,currency:'EUR',verified:true,executed:true})
+    normalizeBrainRecord({tenantId:'t1',type:'Value',id:'v1',owner:'brain',status:'REALISED',realizedValue:100,currency:'EUR',verified:true,executed:true,evidenceIds:['ev-t1']}),
+    normalizeBrainRecord({tenantId:'t2',type:'Value',id:'v2',owner:'brain',status:'REALISED',realizedValue:999999,currency:'EUR',verified:true,executed:true,evidenceIds:['ev-t2']})
   ];
   const ledger=buildCompanyLedger(records,{tenantId:'t1'});
   assert.deepEqual(ledger.timeline.map(x=>x.id),['v1']);
