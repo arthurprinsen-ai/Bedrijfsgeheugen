@@ -18,5 +18,14 @@ test('production snapshot validates the same content-addressed pricing rescue ke
   const workflow=await readFile('.github/workflows/production-source-snapshot.yml','utf8');
   const match=html.match(/pricing-interactions-rescue-v1\.js\?v=([0-9a-f]{12})/);
   assert.ok(match);
-  assert.match(workflow,new RegExp(`pricing-interactions-rescue-v1\\\\.js\\\\?v=${match[1]}`));
+  assert.match(workflow,new RegExp(`pricing-interactions-rescue-v1\\.js\\?v=${match[1]}`));
+});
+
+
+test('build integrity preserves the same content-addressed pricing rescue key', async()=>{
+  const html=await readFile('prijzen.html','utf8');
+  const build=await readFile('tools/site-shell/pricing-build-integrity.mjs','utf8');
+  const match=html.match(/pricing-interactions-rescue-v1\.js\?v=([0-9a-f]{12})/);
+  assert.ok(match);
+  assert.match(build,new RegExp(`pricing-interactions-rescue-v1\\.js\\?v=${match[1]}`));
 });

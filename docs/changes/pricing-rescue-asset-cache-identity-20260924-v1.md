@@ -24,3 +24,17 @@ This allowed new HTML to be paired with a stale cached runtime.
 - `tests/brain-pricing-rescue-asset-cache-identity-v1.test.mjs` calculates the Git blob SHA from file bytes and fails when the HTML key does not match.
 
 This makes cache invalidation a machine-enforced source identity contract instead of a manual timestamp convention.
+
+## v2 — build-integrity transform was nog stale
+
+The first recovery correctly changed `prijzen.html` and the production snapshot proof, but `tools/site-shell/pricing-build-integrity.mjs` still contained `v=20260924-0750`. That transform can restore the rescue runtime after other build transforms, so it could overwrite a correct source reference with the stale key.
+
+Skill Projection exposed this through the historical build-preservation replay.
+
+v2:
+- updates `pricing-build-integrity.mjs` to `v=f7d85cb0d7ba`;
+- fixes the dynamic workflow-regex escaping in the cache-identity regression;
+- extends the regression so source HTML, build integrity and Production Source Snapshot must all contain the same key.
+
+The invariant is now end-to-end, not source-only.
+
