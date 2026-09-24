@@ -1,0 +1,36 @@
+{
+  "fingerprint": "pricing-i18n-terminal-readback-refresh-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_PROOF_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Current production already contained the pricing mobile actionability runtime and People/HR descendant lineage, but prior browser proof attempts were either cancelled by newer main commits, classified as non-deployment, or raced an in-flight Netlify deploy. A canonical exact-current-main production proof remained missing.",
+  "prevention_rule": "When product runtime is already merged and current production is ready, terminal closure may use a versioned operational refresh of the canonical Production Release Readback workflow to force exact release identity plus real browser pricing/i18n proof. The refresh must not alter product behavior and must carry learning, human documentation and ledger evidence.",
+  "evidence": {
+    "current_main_at_start": "9a9778d4284d7b1df491e0fffea7c3df3ac30167",
+    "ready_netlify_deploy": "6ab5828b1cfaf1c4b4557f9f",
+    "prior_failed_readback": 36052140393,
+    "verifier": "tools/site-shell/verify-pricing-i18n-production.mjs"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_BROWSER_PROOF_SUPERSEDED_OR_RACED",
+    "scope": "PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-manual-exact-main-v1.test.mjs",
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs"
+    ],
+    "invariants": [
+      "product runtime is not weakened to obtain proof",
+      "exact production commit identity is required",
+      "pricing lifecycle, run group, yearly billing and English route use real browser interactions"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after protected merge, Netlify exact commit readback and successful pricing/i18n browser proof."
+}
