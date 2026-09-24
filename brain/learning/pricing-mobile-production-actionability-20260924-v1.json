@@ -30,6 +30,13 @@
       "real pointer click remains mandatory",
       "force:true is forbidden",
       "DOM click bypass is forbidden"
+    ],
+    "shadow": [
+      "tests/brain-pricing-production-actionability-v1.test.mjs"
     ]
-  }
+  },
+  "failed_approaches": [
+    "Relying on Playwright automatic scrolling for a later lifecycle control on a 390px viewport while sticky site chrome can occupy the resulting pointer actionability region.",
+    "Using synthetic force:true or DOM click bypasses would make the proof green without proving user-realistic actionability and is forbidden."
+  ]
 }
