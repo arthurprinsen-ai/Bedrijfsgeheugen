@@ -19,6 +19,10 @@ on:
       - 'tools/prijzen-uit-de-homepage.mjs'
       - 'tools/controleer-technische-seo.mjs'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
