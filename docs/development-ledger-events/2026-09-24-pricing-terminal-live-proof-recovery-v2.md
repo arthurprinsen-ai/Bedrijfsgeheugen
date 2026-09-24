@@ -10,3 +10,5 @@
 - Terminal success remains: protected merge → exact Netlify production SHA → pricing lifecycle/plan/billing clicks → NL→EN `/en/prijzen` proof → learning status closure.
 
 - Diagnose refinement: excluding `inloggen.html` alone caused 430 valid global login links to fail technical SEO. Added explicit `PUBLIC_UTILITY_ROUTES` and taught the technical SEO validator to accept only those known utility destinations while keeping them out of sitemap/indexable scope.
+
+- Exact-head recovery: Required run 36029650635 and BRAIN run 36029650754 were cancelled without a successor attempt. GitHub rejected direct rerun with 403, so the same PR lineage advances by one documented recovery head; no duplicate PR and no gate bypass.
