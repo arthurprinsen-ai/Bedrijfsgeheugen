@@ -43,3 +43,22 @@ When extending this cockpit:
 6. Add regression coverage.
 7. Deliver through protected merge and verify exact production commit_ref.
 8. Write outcome/learning/prevention back into Powerhouse.
+
+
+## MKB trigger-based acquisition intelligence
+
+Fingerprint: `sales|mkb-trigger-intelligence|problem-led-partner-distribution|v1`.
+
+The Revenue Command Center must treat company-specific buying triggers as first-class context for **why now**. Reuse the existing Revenue & Growth Core; never create a separate MKB sales brain.
+
+Mandatory:
+- derive urgency from company-specific external evidence; no evidence means `INSUFFICIENT_EVIDENCE`;
+- convert the verified trigger into a concrete management problem hypothesis before recommending technology;
+- prefer context-led outreach over generic cold outreach;
+- project the smallest relevant entry offer, normally a matching Frisse Blik route, before larger implementation/SaaS;
+- expose partner-distribution routes where the trigger makes them relevant: accountant, M&A, investor/PE, bank, municipality, trade association, ERP/AFAS partner, MSP/IT partner or business adviser;
+- treat content as pre-sales: concrete CEO/directie/MT problem + evidence/data + diagnosis + action + proof/case;
+- feed replies, meetings, scans, proposals, orders and realized revenue back into trigger/channel learning;
+- never treat a trigger classification as fact about the company beyond the cited evidence; keep hypotheses explicitly inferred and falsifiable.
+
+Canonical detail: `docs/brain/mkb-trigger-sales-intelligence-v1.md`.
