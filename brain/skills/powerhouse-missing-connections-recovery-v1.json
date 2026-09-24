@@ -48,7 +48,12 @@
     "A closed unmerged TERMINAL_DELIVERY PR with no valid successor must be auto-reopened by repository hygiene; one valid successor is reused, multiple successors fail closed.",
     "After every legitimate same-lineage owner commit during TERMINAL_DELIVERY, refresh the exact head and rebind Writer-Lease-Head before trusting admission results.",
     "When a regression test fails after a contract change, compare the assertion to the current canonical contract before changing production code; stale test-oracles are repaired at the oracle.",
-    "Do not retry, bypass or weaken protected promotion when a required status is pending; keep the lineage recoverable and continue until the required check is terminal."
+    "Do not retry, bypass or weaken protected promotion when a required status is pending; keep the lineage recoverable and continue until the required check is terminal.",
+    "For daily social publishing, distinguish pre-provider recoverable failures from post-provider side effects. Pre-provider failures may be repaired and retried on the same canonical lineage; any real provider post/media id makes replacement publication forbidden for that date/channel.",
+    "For LinkedIn company publishing, provision and validate the canonical daily bg_campaign_links key li-company-YYYYMMDD and bind https://www.bedrijfsgeheugen.nl/g/li-company-YYYYMMDD into the exact artifact before the content gate whenever the business CTA requires a measurable link.",
+    "Treat LinkedIn publish readiness and exact readback readiness as separate capabilities. Missing r_member_social or r_organization_social may keep exact reconciliation pending, but must never cause a replacement create after provider_create_success.",
+    "Use the canonical daily kickoff as initial publication owner and the existing hourly recovery watch only for same-lineage repair/reconciliation; do not create parallel publishers or duplicate schedulers.",
+    "A daily publication recovery is terminal only after root cause, safe repair, exact provider/create evidence, dedupe containment, regression coverage, learning writeback and skill projection are all present."
   ],
   "forbidden_patterns": [
     "claiming a missing connector from chat memory without current runtime/schema readback",
@@ -75,7 +80,10 @@
     "promoting before the intended exact-head Required and BRAIN gates are terminal green",
     "changing production behavior merely to satisfy a stale historical test limit",
     "leaving Writer-Lease-Head on the previous same-owner commit after advancing the canonical branch",
-    "bypassing branch protection because Required, BRAIN, CodeQL or provider checks are still pending"
+    "bypassing branch protection because Required, BRAIN, CodeQL or provider checks are still pending",
+    "retrying a LinkedIn create after any real provider URN already exists for the same run_date/channel",
+    "letting a missing /g/ campaign link become a recurring manual repair when canonical bg_campaign_links can be provisioned safely in the same publication lane",
+    "treating missing LinkedIn readback scope as evidence that provider create did not happen"
   ],
   "canonical_evidence": {
     "obligation_id": "powerhouse-structural-gap-closure-v2",
@@ -95,7 +103,9 @@
     "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
     "terminal_lineage_continuity_learning": "brain/learning/2026-09-18-terminal-lineage-continuity-v1.json",
     "pr_2070_learning": "brain/learning/2026-09-18-terminal-lineage-continuity-v1.json",
-    "pr_2070_status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK"
+    "pr_2070_status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+    "linkedin_daily_self_healing_learning": "brain/learning/2026-09-24-linkedin-daily-self-healing-v1.json",
+    "linkedin_daily_self_healing_test": "tests/brain-linkedin-daily-self-healing.test.mjs"
   },
   "consumers": [
     "chat-learning-preflight",

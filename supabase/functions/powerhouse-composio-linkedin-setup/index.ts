@@ -92,9 +92,13 @@ Deno.serve(async(req:Request)=>{
     const orgUrns=[...new Set(rawOrgIds.map(normalizeOrganizationUrn).filter(v=>v&&v.startsWith('urn:li:organization:')))].slice(0,25);
 
     const personalReady=!!personAuthor;
+    const hasMemberReadScope=grantedScopes.includes('r_member_social');
     const hasOrgAdminScope=grantedScopes.includes('r_organization_admin')||grantedScopes.includes('rw_organization_admin');
     const hasOrgWriteScope=grantedScopes.includes('w_organization_social')||grantedScopes.includes('w_organization_social_feed');
+    const hasOrgReadScope=grantedScopes.includes('r_organization_social')||grantedScopes.includes('r_organization_social_feed');
     const companyReady=orgUrns.length===1&&hasOrgAdminScope&&hasOrgWriteScope;
+    const personalReadbackReady=personalReady&&hasMemberReadScope;
+    const companyReadbackReady=companyReady&&hasOrgReadScope;
     const result={
       ready:personalReady,
       state:personalReady?'ACTIVE':'CAPABILITY_UNVERIFIED',
@@ -107,6 +111,8 @@ Deno.serve(async(req:Request)=>{
       granted_scopes:grantedScopes,
       personal_ready:personalReady,
       personal_author_urn:personAuthor||null,
+      personal_readback_ready:personalReadbackReady,
+      personal_readback_scope_required:personalReadbackReady?null:'r_member_social',
       company_ready:companyReady,
       company_author_urns:orgUrns,
       company_count:orgUrns.length,
@@ -116,6 +122,9 @@ Deno.serve(async(req:Request)=>{
       ],
       company_admin_scope_present:hasOrgAdminScope,
       company_write_scope_present:hasOrgWriteScope,
+      company_readback_ready:companyReadbackReady,
+      company_read_scope_present:hasOrgReadScope,
+      company_readback_scope_required:companyReadbackReady?null:'r_organization_social',
       company_capability_error:companyError?companyError.slice(0,220):null,
       toolkit_version_policy:'latest'
     };

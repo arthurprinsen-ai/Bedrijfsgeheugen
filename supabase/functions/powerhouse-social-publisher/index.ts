@@ -133,6 +133,34 @@ async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expecte
   return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
 
+async function ensureLinkedInCompanyMeasuredLink(db:any,runDate:string,art:any){
+  const compact=runDate.replaceAll('-','');
+  const key='li-company-'+compact;
+  const destination='https://www.bedrijfsgeheugen.nl/frisse-blik';
+  const campaignKey='powerhouse-'+runDate+'-linkedin-company';
+  const measuredUrl='https://www.bedrijfsgeheugen.nl/g/'+key;
+  const {error:linkError}=await db.from('bg_campaign_links').upsert({
+    key,destination,campaign_key:campaignKey,status:'active',updated_at:new Date().toISOString()
+  },{onConflict:'key'});
+  if(linkError)throw new Error('LINKEDIN_COMPANY_MEASURED_LINK_UPSERT:'+linkError.message);
+  let body=clean(art?.body);
+  if(!body.includes('/g/')){
+    const cta='Benieuwd waar in jouw organisatie tijd, risico of besluitvorming blijft hangen? Doe de Frisse blik:\n'+measuredUrl;
+    const hashIndex=body.search(/\n#[A-Za-z0-9_]/);
+    body=hashIndex>=0 ? body.slice(0,hashIndex)+'\n\n'+cta+'\n'+body.slice(hashIndex+1) : body+'\n\n'+cta;
+  }
+  const generationEvidence={...(art?.generation_evidence||{}),measurable_link:measuredUrl,campaign_key:campaignKey,link_destination:destination,measurable_link_verified:true};
+  if(body!==clean(art?.body) || clean(art?.generation_evidence?.measurable_link)!==measuredUrl){
+    const {error:updateError}=await db.from('powerhouse_content_artifacts').update({
+      body,generation_evidence:generationEvidence,updated_at:new Date().toISOString()
+    }).eq('run_date',runDate).eq('channel','linkedin_company');
+    if(updateError)throw new Error('LINKEDIN_COMPANY_MEASURED_LINK_ARTIFACT_WRITE:'+updateError.message);
+  }
+  art.body=body;
+  art.generation_evidence=generationEvidence;
+  return {measuredUrl,campaignKey,destination};
+}
+
 async function linkedinCompanyAuthorUrn(db:any):Promise<string>{
   const explicit=clean(await secret(db,'COMPOSIO_LINKEDIN_COMPANY_AUTHOR_URN'));
   if(explicit){
@@ -646,6 +674,10 @@ Deno.serve(async (req) => {
     if (!art?.body) {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
       continue;
+    }
+    if(row.channel==='linkedin_company'){
+      const measured=await ensureLinkedInCompanyMeasuredLink(db,runDate,art);
+      row.delivery_evidence={...(row.delivery_evidence||{}),measurable_link:measured.measuredUrl,measurable_link_verified:true,campaign_key:measured.campaignKey};
     }
     const textHash = await digest(clean(art.body));
     const due = new Date(row.scheduled_for);
