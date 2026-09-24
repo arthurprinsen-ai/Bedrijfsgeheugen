@@ -506,3 +506,19 @@ Mandatory behavior:
 
 Canonical evidence: production snapshot run `36010221414`, readback run `36010220920`.
 Canonical regression: `tests/brain-netlify-vault-proxy-expiry-hard-boundary-v1.test.mjs`.
+
+
+## Public unprefixed i18n must switch in place
+
+Fingerprint: `public-i18n-unprefixed-in-place-20260924-v1`.
+
+For public website language controls:
+- an unprefixed public route such as `/prijzen` must switch locale in place; do not make the click depend on a separate `/en/*` route being reachable;
+- locale-prefixed static routes remain valid direct-entry/SEO routes and may navigate between locale prefixes;
+- source comments and runtime branches must express the same contract; contradictory fallback branches are release blockers;
+- route 200, translated-route existence and control-marker presence are not interaction proof;
+- production closure requires exact production SHA plus browser-level execution of the real language control, visible English copy, `html lang=en`, and no language-failure banner;
+- when the production provider is blocked by deploy auth, preserve the verified source fix and classify delivery separately; never mutate the i18n code to compensate for a provider-auth failure.
+
+Canonical learning: `brain/learning/public-i18n-unprefixed-in-place-20260924-v1.json`.
+Canonical regression: `tests/brain-public-i18n-unprefixed-in-place-v1.test.mjs`.
