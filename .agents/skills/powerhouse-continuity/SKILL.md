@@ -578,3 +578,20 @@ For the public website:
 
 Canonical learning: `brain/learning/public-i18n-static-route-authority-20260924-v1.json`.
 Canonical regression: `tests/brain-public-i18n-static-route-authority-v1.test.mjs`.
+
+
+## Delivery control-plane scale & supersession
+
+Fingerprint: `delivery-control-plane-open-pr-scale-supersession-v1`.
+
+For every GitHub-backed Powerhouse delivery:
+- candidate discovery over open PRs must be complete, paginated and bounded; never assume one `per_page=100` response is the full candidate set;
+- synchronous GitHub CLI/API reads that can grow with repository state must set an explicit safe output buffer and must fail with concise evidence rather than dumping an unbounded payload;
+- an explicit same-obligation successor may move the predecessor to `SUPERSEDED`, but `SUPERSEDED` and `CLOSED` are non-terminal delivery states;
+- never map predecessor closure, successor creation, queued checks, auto-merge or merge alone to `LIVE_BEWEZEN`;
+- terminal truth remains exact lineage → protected merge → production/provider readback → learning/skill projection → terminal evidence;
+- successor recovery must preserve the predecessor's required content, tests, governance and documentation and must declare `Supersedes: <PR>` on the same `Obligation-ID`;
+- when repository scale grows, admission correctness has priority over cheap single-page shortcuts: missing an open conflicting/same-obligation candidate is a control-plane integrity defect.
+
+Canonical regression: `tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs`.
+Canonical learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
