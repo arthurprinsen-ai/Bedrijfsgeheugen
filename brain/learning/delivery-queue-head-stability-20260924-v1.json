@@ -1,0 +1,48 @@
+{
+  "fingerprint": "delivery-queue-head-stability-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "DELIVERY_CONTROL_PLANE_STABILITY",
+  "root_cause": "During terminal pricing recovery, queued/pending GitHub Actions were repeatedly mistaken for evidence that the candidate itself still required modification. Each unnecessary write changed the PR head SHA, cancelled or superseded exact-head checks, and extended the delivery instead of resolving it. Queue state is an infrastructure scheduling state, not a code defect.",
+  "prevention": [
+    "A stable candidate with only queued/pending checks must remain immutable.",
+    "Do not create a new commit, recovery branch or replacement PR solely because GitHub runners are queued or pending.",
+    "Only concrete failed-step evidence, a proven merge conflict, or explicit terminal writer-lease drift may justify candidate mutation.",
+    "For STALE_QUEUE_RECOVERY, the supervisor may cancel stale workflow runs and re-dispatch exact-head Required/BRAIN checks, but must not mutate the candidate branch.",
+    "For LONG_RUNNING_OBSERVE, preserve the exact head unless concrete stalled-job evidence exists.",
+    "Same-lineage branch refresh is restricted to MERGE_CONFLICT_RECOVERY with an active TERMINAL_DELIVERY writer lease.",
+    "After any legitimate head mutation, discard all prior-head workflow evidence and evaluate only the new exact head."
+  ],
+  "evidence": {
+    "obligation_id": "pricing-terminal-live-proof-20260924-v1",
+    "recovery_pr": 2797,
+    "production_pr": 2795,
+    "production_commit": "929146c1aaada8f07235b5712f771e51c3b58f9d",
+    "production_deploy_id": "6ab5519db93e640008d32002",
+    "observed_failure_mode": "Repeated head churn while Required/BRAIN/SEO/CodeQL jobs were only queued or pending.",
+    "terminal_state": "PREVENTION_ENFORCED_PENDING_CURRENT_HEAD_GATES"
+  },
+  "compiler": {
+    "failure_class": "QUEUE_STATE_MISCLASSIFIED_AS_CANDIDATE_DEFECT",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ],
+    "canary": [
+      ".github/workflows/powerhouse-delivery-recovery-supervisor.yml"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-ci-admission-single-flight.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
