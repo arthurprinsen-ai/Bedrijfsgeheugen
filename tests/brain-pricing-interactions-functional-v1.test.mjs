@@ -65,7 +65,7 @@ test('mobile taps have an external delegated rescue controller',async()=>{
     pricing(),
     readFile(new URL('../assets/js/pricing-interactions-rescue-v1.js',import.meta.url),'utf8')
   ]);
-  assert.match(html,/pricing-interactions-rescue-v1\\.js\\?v=20260924-0750/);
+  assert.match(html,/pricing-interactions-rescue-v1\.js\?v=20260924-0750/);
   assert.match(runtime,/document\.addEventListener\('click'/);
   assert.match(runtime,/document\.addEventListener\('touchend'/);
   assert.match(runtime,/passive:false/);
@@ -84,5 +84,5 @@ test('pricing rescue v3 survives DOM replacement and initializes immediately', a
   assert.match(source, /syncFromDom\(\)/);
   assert.match(source, /touchend/);
   assert.match(source, /stopImmediatePropagation/);
-  assert.match(source, /dataset\\.bgPricingInteractions = 'ready-v3'/);
+  assert.match(source, /dataset\.bgPricingInteractions = 'ready-v3'/);
 });
