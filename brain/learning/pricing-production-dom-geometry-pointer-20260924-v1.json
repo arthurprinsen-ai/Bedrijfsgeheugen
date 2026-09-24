@@ -60,5 +60,18 @@
   ],
   "failed_approaches": [
     "Legacy pricing actionability tests encoded retired locator-level primitives after the canonical verifier moved to direct DOM geometry and page.mouse.click, producing false CI failures despite a correct verifier."
-  ]
+  ],
+  "evidence": {
+    "canonical_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "canonical_regression": "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs",
+    "synchronized_legacy_regressions": [
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs",
+      "tests/brain-pricing-production-actionability-v1.test.mjs"
+    ],
+    "production_readback_failures": [
+      "github-run:36054089352",
+      "github-run:36054911943"
+    ],
+    "provider": "Netlify production exact-SHA readback"
+  }
 }
