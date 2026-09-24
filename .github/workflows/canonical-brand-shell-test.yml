@@ -17,6 +17,10 @@ on:
       - 'tests/site-shell-*.test.mjs'
       - '.github/workflows/canonical-brand-shell-test.yml'
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   test:
     runs-on: ubuntu-latest
