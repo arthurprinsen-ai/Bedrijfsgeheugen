@@ -20,3 +20,8 @@ Do not remove semantic assertions to make the gate fast. Preserve visibility, oc
 When a browser gate is in progress materially longer than its normal critical path, inspect the exact current step before retrying or mutating product code. A hanging verifier is delivery-infrastructure failure until a product assertion proves otherwise.
 
 Canonical regression: `tests/brain-standalone-visibility-boundedness-v1.test.mjs`.
+
+
+## System Map registration
+
+Any new material skill introduced by browser-gate recovery must be registered in `platform/system-map/canonical-system-map.mjs` in the same delivery lineage. A skill is not terminally integrated while repository topology and canonical inventory disagree.
