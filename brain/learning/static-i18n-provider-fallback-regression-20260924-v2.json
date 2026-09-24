@@ -1,0 +1,34 @@
+{
+  "fingerprint": "static-i18n-provider-fallback-regression-20260924-v2",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production Netlify builds failed before publish because build-localized-routes.mjs made external Anthropic translation success mandatory when STATIC_I18N_NETWORK=1, despite an existing runtime i18n fallback contract.",
+  "root_cause": "A later fail-closed change reintroduced STATIC_I18N_PRODUCTION_TRANSLATION_FAILED and STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED, contradicting the earlier production fallback learning and turning an external translation-provider 400 into a full website outage.",
+  "prevention": [
+    "Static English enrichment may use Anthropic during build, but provider failure must not block publication when the canonical runtime translation fallback exists.",
+    "Non-transient provider 4xx responses must fail fast; do not spend six retries on a deterministic 400.",
+    "Log only a bounded provider error body and status; never log API keys or request credentials.",
+    "Always emit /en routes and mark untranslated static output with data-bg-static-translated=false so the runtime layer can translate in place.",
+    "LIVE_BEWEZEN still requires production browser proof that the English pricing route visibly renders English; build success alone is insufficient."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"],
+    "shadow": ["tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"],
+    "canary": ["tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"],
+  "evidence": {
+    "failed_main_sha": "92ffad0a568d33679501f3562dfabe5dddd80452",
+    "provider_status": 400,
+    "failing_step": "tools/site-shell/build-localized-routes.mjs",
+    "netlify_stage": "building site"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "STATIC_I18N_EXTERNAL_PROVIDER_BUILD_REGRESSION",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
