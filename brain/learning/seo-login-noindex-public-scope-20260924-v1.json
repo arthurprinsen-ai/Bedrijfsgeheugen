@@ -9,17 +9,22 @@
     "Do not index authentication/login utility pages merely to satisfy internal-link validation.",
     "Technical SEO may exempt only explicitly classified utility destinations; unknown non-indexable targets remain failures.",
     "Keep utility-route classification in the shared route contract and guard it with executable regression.",
-    "Regression must assert the concrete local `const UTILITY_ROUTES = new Set(...)` declaration, not merely the presence of PUBLIC_UTILITY_ROUTES."
+    "Regression must assert the concrete local `const UTILITY_ROUTES = new Set(...)` declaration, not merely the presence of PUBLIC_UTILITY_ROUTES.",
+    "Every material recovery that changes executable or deployment-control paths must include Brain learning, append-only ledger and human-readable docs/changes or docs/learning documentation in the same candidate."
   ],
   "evidence": {
     "predecessor_pr": 2795,
     "recovery_pr": 2797,
     "recovery_successor_branch": "recovery/pricing-terminal-live-proof-20260924-v3",
     "source_gate_run": 36028875604,
-    "terminal_state": "RECOVERY_V4_PENDING_PROTECTED_MERGE_AND_PRODUCTION_PROOF",
+    "terminal_state": "RECOVERY_V5_PENDING_PROTECTED_MERGE_AND_PRODUCTION_PROOF",
     "post_merge_bad_commit": "b68c39c9198d395fea591bc7dcf6c1432457ecec",
     "diagnose_run": 36044757083,
-    "diagnose_failure": "ReferenceError: UTILITY_ROUTES is not defined"
+    "diagnose_failure": "ReferenceError: UTILITY_ROUTES is not defined",
+    "closure_failure_run": 36044944567,
+    "closure_failure": "MATERIAL_WRITEBACK_CLOSURE_MISSING: human_documentation",
+    "human_documentation": "docs/changes/pricing-terminal-live-proof-recovery-v5-20260924.md",
+    "recovery_v5_branch": "recovery/pricing-terminal-live-proof-20260924-v5"
   },
   "compiler": {
     "failure_class": "NOINDEX_UTILITY_MISCLASSIFIED_AS_PUBLIC_SEO",
@@ -44,7 +49,7 @@
   "skill_targets": [
     "powerhouse-continuity"
   ],
-  "revision": 2,
+  "revision": 3,
   "failed_approaches": [
     "Checking for the substring UTILITY_ROUTES before inserting the local declaration; PUBLIC_UTILITY_ROUTES satisfied that check and caused a ReferenceError at runtime."
   ]
