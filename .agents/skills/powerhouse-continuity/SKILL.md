@@ -549,3 +549,5 @@ For the pricing production build:
 Canonical learning: `brain/learning/pricing-interaction-section-build-preservation-20260924-v1.json`.
 Canonical regression: `tests/brain-pricing-runtime-build-preservation-v1.test.mjs`.
 Canonical browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+- For pricing or other primary mobile controls, DOM presence is not evidence of usability: require a 390px Playwright clickability proof on the exact deploy-preview, and keep explicit computed-visibility guards when global/build CSS can override control geometry.
