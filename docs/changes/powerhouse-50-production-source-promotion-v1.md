@@ -14,3 +14,6 @@ Alleen protected merge + succesvolle Production Source Snapshot + provider ready
 
 ## Preventie
 Bij toekomstige production-lag eerst feature regression onderscheiden van inherited provider/build failure. Maak geen tweede productfix als een geïsoleerde featurecandidate al groen is.
+
+## I18n-regressie
+De promotion-gates vonden daarnaast dat unprefixed publieke taalwissels nog in-place vertaalden. Dat botste met het bestaande contract dat publieke routes via static `/nl` en `/en` routes laat lopen. `assets/js/i18n.js` routeert publieke switches nu weer via `localizedHref(...)`; portalgedrag blijft in-place. De bestaande regressietest `tests/brain-pricing-i18n-prevention-skill-v1.test.mjs` bewaakt dit.
