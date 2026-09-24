@@ -1,0 +1,455 @@
+{
+  "version": "2026-09-24-v1",
+  "purpose": "Branche-applicatieregister voor Portal V2 en publieke acquisitiepagina's. Beschikbaarheid is geen readiness: activering vereist echte providerconfiguratie en safe-test evidence.",
+  "sectors": [
+    {
+      "id": "bouw-installatie",
+      "label": "Bouw & installatie",
+      "apps": [
+        {
+          "id": "4ps",
+          "name": "4PS Construct",
+          "category": "ERP/projecten",
+          "integration": "api",
+          "evidenceUrl": "https://www.4ps.nl/4ps-api/"
+        },
+        {
+          "id": "bouw7",
+          "name": "Bouw7",
+          "category": "Project- en bouwadministratie",
+          "integration": "provider-or-api"
+        },
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "ERP/HR/finance",
+          "integration": "api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact Online",
+          "category": "Finance/ERP",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "zorg-welzijn",
+      "label": "Zorg & welzijn",
+      "apps": [
+        {
+          "id": "nedap-ons",
+          "name": "Nedap Ons",
+          "category": "ECD/zorgproces",
+          "integration": "partner-api",
+          "evidenceUrl": "https://support.nedap-ons.nl/support/solutions/articles/103000273959-api-koppelingen"
+        },
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "HR/finance",
+          "integration": "api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact Online",
+          "category": "Finance",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "nmbrs",
+          "name": "Nmbrs",
+          "category": "Salaris/HR",
+          "integration": "rest-api",
+          "evidenceUrl": "https://support.nmbrs.nl/hc/nl/categories/200217016-Integraties-koppelingen"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "horeca-hotels",
+      "label": "Horeca & hotels",
+      "apps": [
+        {
+          "id": "lightspeed",
+          "name": "Lightspeed",
+          "category": "POS/retail/horeca",
+          "integration": "api"
+        },
+        {
+          "id": "mews",
+          "name": "Mews",
+          "category": "Hotel/PMS",
+          "integration": "api"
+        },
+        {
+          "id": "eijsink",
+          "name": "Eijsink",
+          "category": "Kassa/horeca",
+          "integration": "provider-or-api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact Online",
+          "category": "Finance",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "mollie",
+          "name": "Mollie",
+          "category": "Betalingen",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "retail-ecommerce",
+      "label": "Retail & e-commerce",
+      "apps": [
+        {
+          "id": "shopify",
+          "name": "Shopify",
+          "category": "Webshop/commerce",
+          "integration": "graphql-api",
+          "evidenceUrl": "https://shopify.dev/docs/api/admin-graphql/latest"
+        },
+        {
+          "id": "woocommerce",
+          "name": "WooCommerce",
+          "category": "Webshop/commerce",
+          "integration": "rest-api",
+          "evidenceUrl": "https://developer.woocommerce.com/docs/apis/rest-api/"
+        },
+        {
+          "id": "lightspeed",
+          "name": "Lightspeed Retail",
+          "category": "POS/voorraad",
+          "integration": "api"
+        },
+        {
+          "id": "mollie",
+          "name": "Mollie",
+          "category": "Betalingen",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact Online",
+          "category": "Finance/ERP",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "ERP/HR/finance",
+          "integration": "api"
+        }
+      ]
+    },
+    {
+      "id": "logistiek-transport",
+      "label": "Logistiek & transport",
+      "apps": [
+        {
+          "id": "mendrix",
+          "name": "MendriX",
+          "category": "TMS/planning",
+          "integration": "rest-soap-api",
+          "evidenceUrl": "https://developers.mendrix.nl/getting-started/introduction/"
+        },
+        {
+          "id": "transpas",
+          "name": "Transpas",
+          "category": "TMS/transport",
+          "integration": "provider-or-api"
+        },
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "ERP/HR/finance",
+          "integration": "api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact Online",
+          "category": "Finance/ERP",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "zakelijke-dienstverlening",
+      "label": "Zakelijke dienstverlening",
+      "apps": [
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "ERP/HR/finance",
+          "integration": "api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact Online",
+          "category": "Finance/ERP",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "twinfield",
+          "name": "Twinfield",
+          "category": "Boekhouding",
+          "integration": "api"
+        },
+        {
+          "id": "moneybird",
+          "name": "Moneybird",
+          "category": "Boekhouding/facturatie",
+          "integration": "oauth-api",
+          "evidenceUrl": "https://developer.moneybird.com/"
+        },
+        {
+          "id": "nmbrs",
+          "name": "Nmbrs",
+          "category": "Salaris/HR",
+          "integration": "rest-api",
+          "evidenceUrl": "https://support.nmbrs.nl/hc/nl/categories/200217016-Integraties-koppelingen"
+        },
+        {
+          "id": "hubspot",
+          "name": "HubSpot",
+          "category": "CRM/marketing",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "salesforce",
+          "name": "Salesforce",
+          "category": "CRM",
+          "integration": "rest-api",
+          "evidenceUrl": "https://developer.salesforce.com/docs/platform/api-rest/guide/intro-what-is-rest-api.html"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "industrie-productie",
+      "label": "Industrie & productie",
+      "apps": [
+        {
+          "id": "business-central",
+          "name": "Microsoft Dynamics 365 Business Central",
+          "category": "ERP",
+          "integration": "api"
+        },
+        {
+          "id": "ridder-iq",
+          "name": "Ridder iQ",
+          "category": "ERP/productie",
+          "integration": "provider-or-api"
+        },
+        {
+          "id": "odoo",
+          "name": "Odoo",
+          "category": "ERP/MRP",
+          "integration": "api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact",
+          "category": "ERP/finance",
+          "integration": "api"
+        },
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "ERP/HR/finance",
+          "integration": "api"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "vastgoed-makelaardij",
+      "label": "Vastgoed & makelaardij",
+      "apps": [
+        {
+          "id": "realworks",
+          "name": "Realworks",
+          "category": "Makelaars-CRM",
+          "integration": "developer-api",
+          "evidenceUrl": "https://www.realworks.nl/api"
+        },
+        {
+          "id": "bloxs",
+          "name": "Bloxs",
+          "category": "Vastgoedbeheer",
+          "integration": "provider-or-api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact Online",
+          "category": "Finance",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "ERP/HR/finance",
+          "integration": "api"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "automotive",
+      "label": "Automotive",
+      "apps": [
+        {
+          "id": "wincar",
+          "name": "WinCar",
+          "category": "Dealer/garage DMS",
+          "integration": "provider-integrations",
+          "evidenceUrl": "https://www.wincar.nl/dealer-management-systeem/"
+        },
+        {
+          "id": "unameit-sam",
+          "name": "Uname-IT / SAM",
+          "category": "Sales/automotive",
+          "integration": "provider-integration"
+        },
+        {
+          "id": "exact",
+          "name": "Exact",
+          "category": "Finance/ERP",
+          "integration": "api"
+        },
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "ERP/HR/finance",
+          "integration": "api"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "kinderopvang",
+      "label": "Kinderopvang",
+      "apps": [
+        {
+          "id": "kidskonnect",
+          "name": "KidsKonnect",
+          "category": "Planning/oudercommunicatie",
+          "integration": "provider-or-api"
+        },
+        {
+          "id": "afas",
+          "name": "AFAS Profit",
+          "category": "HR/finance",
+          "integration": "api"
+        },
+        {
+          "id": "exact",
+          "name": "Exact Online",
+          "category": "Finance",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "nmbrs",
+          "name": "Nmbrs",
+          "category": "Salaris/HR",
+          "integration": "rest-api"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    },
+    {
+      "id": "ict-software",
+      "label": "ICT & software",
+      "apps": [
+        {
+          "id": "github",
+          "name": "GitHub",
+          "category": "Development",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "azure-devops",
+          "name": "Azure DevOps",
+          "category": "Development/projecten",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "jira",
+          "name": "Jira",
+          "category": "Project/service management",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "hubspot",
+          "name": "HubSpot",
+          "category": "CRM/marketing",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "salesforce",
+          "name": "Salesforce",
+          "category": "CRM",
+          "integration": "rest-api"
+        },
+        {
+          "id": "moneybird",
+          "name": "Moneybird",
+          "category": "Finance",
+          "integration": "oauth-api"
+        },
+        {
+          "id": "microsoft-365",
+          "name": "Microsoft 365",
+          "category": "Documenten/mail/samenwerking",
+          "integration": "oauth-api"
+        }
+      ]
+    }
+  ]
+}
