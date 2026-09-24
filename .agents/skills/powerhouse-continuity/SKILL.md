@@ -549,3 +549,17 @@ For the pricing production build:
 Canonical learning: `brain/learning/pricing-interaction-section-build-preservation-20260924-v1.json`.
 Canonical regression: `tests/brain-pricing-runtime-build-preservation-v1.test.mjs`.
 Canonical browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+## Pricing browser proof must target controls, not generic body visibility
+
+Fingerprint: `pricing-browser-body-visibility-precondition-20260924-v1`.
+
+- The pricing production verifier may wait for DOM attachment and the pricing runtime readiness marker, but not for generic `body visible` as a terminal prerequisite.
+- Visibility and clickability proof must be attached to the actual affected controls and resulting panels/cards.
+- Lifecycle, plan-group and billing checks use normal clicks; never use force-click to make the gate green.
+- English proof requires `html lang=en`, no Dutch pricing H1, no language-failure banner and a genuinely visible English `Pricing` element.
+- If the gate fails before exercising the affected control, repair the proof precondition rather than weakening the control-level assertion.
+
+Canonical learning: `brain/learning/pricing-browser-body-visibility-precondition-20260924-v1.json`.
+Canonical regression: `tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs`.
+Canonical verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
