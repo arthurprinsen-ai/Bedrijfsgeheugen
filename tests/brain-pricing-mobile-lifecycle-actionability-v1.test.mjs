@@ -8,13 +8,16 @@ const verifier=fs.readFileSync(new URL('../tools/site-shell/verify-pricing-i18n-
 test('mobile lifecycle tabs remain directly actionable without horizontal overflow dependency',()=>{
   assert.match(html,/@media\(max-width:760px\)\{\.bg-lifecycle-tabs\{flex-wrap:wrap;overflow-x:visible\}/);
   assert.match(html,/\.bg-lifecycle-tabs button\{flex:1 1 auto;min-width:max-content\}/);
-  assert.match(verifier,/html\[data-bg-pricing-interactions="ready-v3"\]/);
-  assert.doesNotMatch(verifier,/page\.locator\('body'\)\.waitFor\(\{ state:'visible'/);
-  assert.match(verifier,/const lossButton = page\.locator\('\[data-bg-stage="loss"\]'\)/);
-  assert.match(verifier,/lossButton\.evaluate\(el => el\.scrollIntoView/);
+  assert.match(verifier,/ready-v3/);
+  assert.match(verifier,/bgPricingInteractions/);
+  assert.doesNotMatch(verifier,/lossButton\.waitFor\(/);
+  assert.doesNotMatch(verifier,/lossButton\.evaluate\(/);
   assert.doesNotMatch(verifier,/scrollIntoViewIfNeeded\(\)/);
-  assert.match(verifier,/lossButton\.click\(\{ timeout:15_000 \}\)/);
+  assert.match(verifier,/page\.evaluate\(\(\) => \{/);
+  assert.match(verifier,/document\.querySelector\('\[data-bg-stage="loss"\]'\)/);
+  assert.match(verifier,/getComputedStyle\(element\)/);
+  assert.match(verifier,/getBoundingClientRect\(\)/);
+  assert.match(verifier,/page\.mouse\.click\(lossBox\.x \+ lossBox\.width \/ 2, lossBox\.y \+ lossBox\.height \/ 2\)/);
+  assert.match(verifier,/loss stage aria-selected did not become true/);
   assert.doesNotMatch(verifier,/force:\s*true/);
-  assert.doesNotMatch(verifier,/evaluate\([^)]*\.click\(/);
-  assert.match(verifier,/lossButton\.click\(\{ timeout:15_000 \}\)/);
 });

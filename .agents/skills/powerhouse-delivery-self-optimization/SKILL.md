@@ -442,3 +442,13 @@ For static JavaScript/CSS that establishes product runtime readiness or interact
 
 Reference incident: pricing rescue runtime remained referenced as `v=20260924-0750` after later JS mutations, causing exact new HTML to be compatible with a stale cached runtime.
 
+## Regression-contract drift after canonical verifier changes
+
+Fingerprint: `delivery|regression-contract-drift|canonical-verifier|v1`.
+
+When a canonical implementation/verifier is intentionally replaced and a new regression test codifies that replacement:
+- search for older tests that assert the superseded mechanism;
+- treat mutually contradictory assertions as test-contract drift, not as an implementation failure;
+- update stale tests in the same recovery lineage so all tests enforce one canonical mechanism;
+- never weaken semantic postconditions merely to make CI green;
+- preserve fail-closed safety conditions and real production interaction requirements.

@@ -1,0 +1,48 @@
+{
+  "fingerprint": "pricing-regression-contract-drift-20260924-v1",
+  "date": "2026-09-24",
+  "type": "POST_MERGE_REGRESSION_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "PR #2832 intentionally replaced Playwright locator geometry auto-waits with direct DOM geometry plus page.mouse.click, but two older pricing regression tests still asserted mutually incompatible behavior: one prohibited scrollIntoViewIfNeeded while another required it, and both required superseded locator click behavior. A subsequent main update further removed lossButton.evaluate in favor of direct page.evaluate DOM queries, exposing that the stale tests were coupled to an intermediate implementation detail rather than the canonical behavioral contract.",
+  "prevention_rule": "When a canonical verifier mechanism changes, historical tests must assert the stable interaction contract (ready marker, direct DOM visibility/geometry, real page.mouse pointer, semantic postconditions) rather than intermediate locator implementation details. Co-update superseded assertions in the same lineage.",
+  "fix": [
+    "Align brain-pricing-mobile-lifecycle-actionability-v1 with direct DOM geometry and page.mouse.click.",
+    "Align brain-pricing-production-actionability-v1 with the same canonical mechanism.",
+    "Keep force:true and DOM click shortcuts prohibited.",
+    "Project the stale-regression prevention rule into the delivery self-optimization skill."
+  ],
+  "evidence": {
+    "originating_pr": 2832,
+    "current_pr": 2834,
+    "canonical_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "canonical_regression": "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs",
+    "stale_tests": [
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs",
+      "tests/brain-pricing-production-actionability-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "REGRESSION_TEST_CONTRACT_DRIFT",
+    "scope": "PRODUCTION_BROWSER_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs",
+      "tests/brain-pricing-production-actionability-v1.test.mjs",
+      "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs"
+    ],
+    "invariants": [
+      "historical tests do not require Playwright locator geometry auto-waits or lossButton.evaluate",
+      "direct page.evaluate DOM visibility/geometry is accepted as canonical",
+      "real pointer action remains page.mouse.click",
+      "force:true and DOM click shortcuts remain prohibited",
+      "semantic pricing lifecycle postconditions remain covered"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ]
+}

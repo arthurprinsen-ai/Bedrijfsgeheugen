@@ -1,0 +1,211 @@
+{
+  "version": "1.0.0",
+  "purpose": "Canonical external evidence and benchmark registry for Powerhouse people/workforce Problem Radar. External evidence provides context only and never proves a tenant problem.",
+  "as_of": "2026-09-24",
+  "invariants": [
+    "External sources are benchmark/context evidence, never tenant facts.",
+    "Every source must declare applicable canonical PH-Pxxx problem IDs.",
+    "Legal/policy sources must distinguish current rules from proposals or announced changes.",
+    "Source freshness must be checked before publishing current benchmark claims.",
+    "Employee-level sensitive data must never be copied into this registry."
+  ],
+  "sources": [
+    {
+      "id": "CBS-VERZUIM-BEDRIJFSTAK-GROOTTE",
+      "publisher": "CBS",
+      "type": "official_statistics",
+      "url": "https://www.cbs.nl/nl-nl/cijfers/detail/86009NED",
+      "applies_to": [
+        "PH-P031",
+        "PH-P032",
+        "PH-P033",
+        "PH-P037"
+      ],
+      "dimensions": [
+        "bedrijfstak",
+        "vestigingsgrootte",
+        "verzuimfrequentie",
+        "verzuimduur"
+      ],
+      "freshness": "annual",
+      "latest_verified_period": "2025",
+      "evidence_role": "benchmark_context"
+    },
+    {
+      "id": "CBS-VERZUIM-ARBEIDSOMSTANDIGHEDEN",
+      "publisher": "CBS",
+      "type": "official_statistics",
+      "url": "https://www.cbs.nl/nl-nl/cijfers/detail/83415NED",
+      "applies_to": [
+        "PH-P031",
+        "PH-P033",
+        "PH-P039",
+        "PH-P040"
+      ],
+      "dimensions": [
+        "werkdruk",
+        "werktempo",
+        "autonomie",
+        "emotionele belasting",
+        "intimidatie",
+        "psychische vermoeidheid"
+      ],
+      "freshness": "annual",
+      "latest_verified_period": "2025",
+      "evidence_role": "benchmark_context"
+    },
+    {
+      "id": "CBS-VERZUIM-Q1-2026",
+      "publisher": "CBS",
+      "type": "official_news_statistics",
+      "url": "https://www.cbs.nl/nl-nl/nieuws/2026/23/ziekteverzuim-in-eerste-kwartaal-hoger-dan-gemiddeld-in-afgelopen-30-jaar",
+      "applies_to": [
+        "PH-P031"
+      ],
+      "dimensions": [
+        "kwartaalverzuim",
+        "bedrijfsgrootte",
+        "sector"
+      ],
+      "freshness": "quarterly",
+      "latest_verified_period": "2026-Q1",
+      "evidence_role": "benchmark_context"
+    },
+    {
+      "id": "TNO-NEA-2024",
+      "publisher": "TNO",
+      "type": "national_working_conditions_survey",
+      "url": "https://publications.tno.nl/publication/34644230/blkHP7m9/TNO-2025-nea.pdf",
+      "applies_to": [
+        "PH-P031",
+        "PH-P033",
+        "PH-P039",
+        "PH-P040"
+      ],
+      "dimensions": [
+        "stressvol_werk",
+        "burnoutklachten",
+        "werkdrukmaatregelen",
+        "werk_prive_disbalans"
+      ],
+      "freshness": "annual",
+      "latest_verified_period": "2024",
+      "evidence_role": "benchmark_context"
+    },
+    {
+      "id": "NLA-WERKDRUK",
+      "publisher": "Nederlandse Arbeidsinspectie",
+      "type": "regulatory_guidance",
+      "url": "https://www.nlarbeidsinspectie.nl/onderwerpen/arbeidsomstandighedenwet/werkdruk-en-ongewenst-gedrag/werkdruk",
+      "applies_to": [
+        "PH-P033",
+        "PH-P031"
+      ],
+      "dimensions": [
+        "werkdruk",
+        "werkstress",
+        "langdurige_uitval"
+      ],
+      "freshness": "change_driven",
+      "evidence_role": "risk_context"
+    },
+    {
+      "id": "NLA-PSA",
+      "publisher": "Nederlandse Arbeidsinspectie",
+      "type": "regulatory_guidance",
+      "url": "https://www.nlarbeidsinspectie.nl/onderwerpen/arbeidsomstandighedenwet/werkdruk-en-ongewenst-gedrag",
+      "applies_to": [
+        "PH-P033",
+        "PH-P039",
+        "PH-P040",
+        "PH-P031"
+      ],
+      "dimensions": [
+        "werkdruk",
+        "agressie",
+        "geweld",
+        "discriminatie",
+        "pesten",
+        "seksuele_intimidatie"
+      ],
+      "freshness": "change_driven",
+      "evidence_role": "risk_context"
+    },
+    {
+      "id": "NLA-PSA-PROGRAMMA",
+      "publisher": "Nederlandse Arbeidsinspectie",
+      "type": "regulatory_program_context",
+      "url": "https://www.nlarbeidsinspectie.nl/nederlandse-arbeidsinspectie/werkwijze/psa-arbeidsmarktdiscriminatie-en-fysieke-belasting",
+      "applies_to": [
+        "PH-P033",
+        "PH-P039",
+        "PH-P040"
+      ],
+      "dimensions": [
+        "psychosociale_arbeidsbelasting",
+        "arbeidsmarktdiscriminatie",
+        "fysieke_belasting"
+      ],
+      "freshness": "change_driven",
+      "evidence_role": "risk_context"
+    },
+    {
+      "id": "RIJKSOVERHEID-ZIEKTE-REGELS",
+      "publisher": "Rijksoverheid",
+      "type": "legal_guidance",
+      "url": "https://www.rijksoverheid.nl/themas/werk/ziekteverzuim-van-het-werk/regels-en-verplichtingen-bij-ziekte",
+      "applies_to": [
+        "PH-P032",
+        "PH-P038"
+      ],
+      "dimensions": [
+        "reintegratie",
+        "eerste_twee_ziektejaren",
+        "loondoorbetaling",
+        "deskundigenoordeel"
+      ],
+      "freshness": "change_driven",
+      "evidence_role": "legal_context",
+      "status": "current_rules"
+    },
+    {
+      "id": "RIJKSOVERHEID-MKB-TWEEDE-SPOOR-2026",
+      "publisher": "Rijksoverheid",
+      "type": "policy_proposal",
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/04/02/sneller-duidelijkheid-voor-werkgevers-over-re-integratie-zieke-werknemer",
+      "applies_to": [
+        "PH-P032",
+        "PH-P035",
+        "PH-P038"
+      ],
+      "dimensions": [
+        "langdurig_verzuim",
+        "tweede_spoor",
+        "mkb_wendbaarheid",
+        "vervanging"
+      ],
+      "freshness": "event_driven",
+      "evidence_role": "policy_context",
+      "status": "proposal_not_current_rule"
+    },
+    {
+      "id": "RIJKSOVERHEID-BEDRIJFSARTS-RIV-2026",
+      "publisher": "Rijksoverheid",
+      "type": "policy_proposal",
+      "url": "https://www.rijksoverheid.nl/actueel/nieuws/2026/07/10/kabinet-wil-meer-zekerheid-voor-werkgevers-bij-re-integratie",
+      "applies_to": [
+        "PH-P032",
+        "PH-P038"
+      ],
+      "dimensions": [
+        "bedrijfsarts",
+        "RIV_toets",
+        "loonsanctie",
+        "reintegratie"
+      ],
+      "freshness": "event_driven",
+      "evidence_role": "policy_context",
+      "status": "proposal_not_current_rule"
+    }
+  ]
+}

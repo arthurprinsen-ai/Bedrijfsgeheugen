@@ -148,6 +148,7 @@ jobs:
           tests/control-plane-supabase-terminal-readback-v1.test.mjs
           tests/delivery-test-coverage-guard.test.mjs
           tests/brain-ci-admission-single-flight.test.mjs
+          tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/daily-cost-optimizer.test.mjs
           tests/data-ai-passport.test.mjs

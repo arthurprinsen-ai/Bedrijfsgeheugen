@@ -1,0 +1,54 @@
+{
+  "fingerprint": "powerhouse-people-evidence-source-registry-v1",
+  "date": "2026-09-24",
+  "problem": "People detection referenced broad external benchmark families but did not canonically bind source identity, freshness, applicability or policy/legal status.",
+  "root_cause": "External evidence was described in prose rather than modeled as reusable provenance state.",
+  "fix": [
+    "Add machine-readable source registry",
+    "Bind detection contract to registry",
+    "Require freshness/status verification",
+    "Keep proposals distinct from current law",
+    "Add regression test and skill projection"
+  ],
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "type": "PRE_MERGE_REGRESSION_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "prevention_rule": "All future external people evidence must enter through the registry before it can support current cockpit/content/opportunity claims.",
+  "compiler": {
+    "failure_class": "EXTERNAL_EVIDENCE_PROVENANCE_SCHEMA_GAP",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "invariants": [
+      "every external people source has canonical provenance and applicable PH-Pxxx mapping",
+      "external evidence remains benchmark/context only",
+      "policy proposals cannot be surfaced as current law without status verification",
+      "current claims require freshness/status verification before publication"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-people-evidence-source-registry-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ],
+  "evidence": {
+    "pr": 2834,
+    "branch": "powerhouse-people/evidence-source-registry-v1",
+    "registry": "config/powerhouse-people-evidence-sources.json",
+    "detection_contract": "config/powerhouse-people-problem-detection.json",
+    "regression": "tests/brain-powerhouse-people-evidence-source-registry-v1.test.mjs",
+    "documentation": "docs/changes/powerhouse-people-evidence-source-registry-v1.md",
+    "skill": "skills/mkb-voice-of-customer-problem-radar.md",
+    "source_classes": [
+      "official_statistics",
+      "national_working_conditions_survey",
+      "regulatory_guidance",
+      "legal_guidance",
+      "policy_proposal"
+    ]
+  }
+}
