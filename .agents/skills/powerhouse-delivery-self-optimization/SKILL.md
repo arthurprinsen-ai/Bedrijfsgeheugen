@@ -412,3 +412,20 @@ When exact production, route rendering and product-specific readiness are proven
 - retain semantic postconditions after the click.
 Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
 
+## Production browser DOM-query pointer proof
+
+Fingerprint: `delivery|pricing-production-pointer|direct-dom-query-v2`.
+
+When Playwright Locator auto-wait itself is the observed failure mode, replacing one Locator method with another is not a valid recovery.
+
+For production actionability proof of a known static control:
+- after the product-specific readiness marker, query the control inside `page.evaluate` with `document.querySelector`;
+- return explicit `missing`, computed visibility and `getBoundingClientRect` geometry without Locator auto-wait;
+- fail closed if missing, hidden, transparent or zero-sized;
+- scroll and re-read geometry through direct DOM evaluation;
+- preserve a real `page.mouse.click` at the measured center;
+- verify the post-click semantic state from DOM state;
+- forbid `locator.waitFor`, `scrollIntoViewIfNeeded`, `locator.boundingBox`, `locator.evaluate`, `force:true` and DOM `.click()` in this recovery class.
+
+Canonical regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
+
