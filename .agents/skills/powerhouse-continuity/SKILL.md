@@ -475,3 +475,12 @@ Fingerprint: `netlify-terminal-deploy-wait-v1`.
 - Only after provider-terminal completion may exact `release.json` SHA/context/deploy-id proof and production browser interaction proof run.
 - If the deploy fails, surface the provider-terminal failure in the deploy step rather than masking it as a later generic SHA timeout.
 - `LIVE_BEWEZEN` still requires exact production SHA plus the relevant user-visible browser gates.
+
+## Netlify OIDC linked-build fallback
+
+Fingerprint: `netlify-oidc-linked-build-fallback-20260924-v1`.
+
+- Production delivery order is: bounded Git-linked wait → OIDC linked-repository build for `main` → bounded exact-SHA wait → MCP deploy fallback.
+- Netlify credentials remain server-side in the OIDC bridge; workflow logs may expose only non-secret build/deploy identifiers.
+- A green transport command is never equivalent to production success.
+- Closure still requires exact `release.json` SHA/context plus pricing/i18n browser proof.
