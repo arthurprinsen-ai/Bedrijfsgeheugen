@@ -243,3 +243,18 @@ Verplicht:
 - gerealiseerde waarde telt alleen met execution + verification + evidence;
 - merge/preview/deploy-start is geen LIVE_BEWEZEN; provider-readback blijft verplicht.
 
+
+
+## People evidence source registry — 24 september 2026
+
+Fingerprint: `powerhouse-people-evidence-source-registry-v1`.
+
+Voor `PH-P031` t/m `PH-P040` is `config/powerhouse-people-evidence-sources.json` de canonieke externe bronlaag. Iedere benchmark- of juridische contextclaim moet naar een expliciete bron uit dat register verwijzen, de toepasselijke `PH-Pxxx` bewaren en vóór actuele publicatie op freshness/status worden gecontroleerd.
+
+Permanent:
+- externe bronnen zijn nooit tenant-bewijs;
+- CBS/TNO-statistiek is benchmarkcontext;
+- Arbeidsinspectie/Rijksoverheid is risico-, juridische of beleidscontext;
+- wetsvoorstellen/beleidsvoornemens blijven expliciet voorstel en mogen niet als geldend recht worden gepresenteerd;
+- actuele claims falen dicht wanneer freshness/status niet opnieuw is geverifieerd;
+- dezelfde bronprovenance loopt mee naar cockpit, evidence drawer, content en opportunity intelligence.
