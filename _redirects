@@ -1,6 +1,14 @@
 # Persoonlijke meetlinks: bedrijfsgeheugen.nl/g/<sleutel> -> Supabase bg-l (registreert de klik per connectie, stuurt door). 10 sept 2026.
 /g/:sleutel  https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/bg-l?s=:sleutel  302!
 /contact  /contact.html  200
+# Localized public pages are generated during the Netlify build. Keep the
+# language switch independent from runtime translation-provider availability.
+/en  /en/index.html  200
+/en/  /en/index.html  200
+/en/*  /en/:splat.html  200
+/nl  /nl/index.html  200
+/nl/  /nl/index.html  200
+/nl/*  /nl/:splat.html  200
 /intern/koppelingskiezer  /intern/koppelingskiezer.html  200
 /intern/koppelingen-klant  /intern/koppelingen-klant.html  200
 /intern/api/linkedin-revenue  /.netlify/functions/linkedin-revenue-cockpit  200!

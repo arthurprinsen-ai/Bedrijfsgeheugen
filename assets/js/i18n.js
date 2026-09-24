@@ -310,10 +310,14 @@
       return;
     }
     if (normalized !== locale) {
-      locale = normalized;
-      localeEpoch += 1;
       try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
       document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+      if (!isPortal()) {
+        location.assign(localizedHref(normalized));
+        return;
+      }
+      locale = normalized;
+      localeEpoch += 1;
       syncControls();
       closeMenus();
       await apply(document.body);
