@@ -45,10 +45,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-powerhouse-trigger-acquisition-runtime-v1.test.mjs"
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
     ],
     "production_readback": [
       "powerhouse_trigger_acquisition_readiness_v1"
+    ],
+    "runtime_regression": [
+      "tests/supabase-powerhouse-trigger-acquisition-runtime-v1.test.mjs"
     ]
   },
   "evidence": {
