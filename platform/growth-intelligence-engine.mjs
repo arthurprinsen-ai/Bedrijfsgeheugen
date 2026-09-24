@@ -100,6 +100,48 @@ export function companyIntelligenceProfile({company,connection=null,engagementEv
   return {company:name,observed:{role:connection?.rol||null,connectionPriority:Number(connection?.prioriteit)||0,engagementCount:events.length,externalSignalCount:matched.length},inferred:{hiringSignals:hiring,technologySignals:technology,capabilityGapCandidate:Boolean(hiring.length||technology.length)&&events.length>0},sourceRefs:refs,observedAt:now};
 }
 
+const MKB_TRIGGER_RULES=Object.freeze([
+  {type:'rapid_growth',pattern:/\b(groei|groeit|uitbreid|opschal|scale|nieuwe vestiging|extra vestiging)\w*/i,problemHypothesis:'De organisatie, informatievoorziening en verantwoordelijkheden kunnen achterlopen op de groei.',recommendedOffer:'Frisse Blik groei & grip',partnerChannels:['accountant','bank','branchevereniging']},
+  {type:'leadership_change',pattern:/\b(nieuwe|benoemd|aangesteld)\b.{0,40}\b(ceo|cfo|coo|directeur|directie)\b|\b(ceo|cfo|coo|directeur)\b.{0,40}\b(benoemd|aangesteld)\b/i,problemHypothesis:'Nieuwe leiding heeft snel een betrouwbaar beeld nodig van prestaties, risico’s, processen en afhankelijkheden.',recommendedOffer:'Frisse Blik directie-start',partnerChannels:['investeerder','accountant','bank']},
+  {type:'acquisition_integration',pattern:/\b(overname|acquisitie|fusie|merger|acquisition|neemt .{0,30} over|gekocht)\b/i,problemHypothesis:'Na een overname kunnen processen, KPI’s, systemen en verantwoordelijkheden naast elkaar blijven bestaan.',recommendedOffer:'Frisse Blik overname & integratie',partnerChannels:['m&a-adviseur','investeerder','accountant']},
+  {type:'sale_succession',pattern:/\b(verkoopklaar|bedrijfsverkoop|opvolging|succession|familiebedrijf|exit)\b/i,problemHypothesis:'Voor verkoop of opvolging moet bedrijfskennis overdraagbaar, aantoonbaar en minder persoonsafhankelijk worden.',recommendedOffer:'Frisse Blik verkoopklaar',partnerChannels:['m&a-adviseur','accountant','investeerder']},
+  {type:'investor_financing',pattern:/\b(investeerder|private equity|participatie|financiering|funding|kapitaal)\b/i,problemHypothesis:'Nieuwe financiering of aandeelhouders verhogen de behoefte aan transparantie, voortgang en bestuurbare KPI’s.',recommendedOffer:'Frisse Blik investor readiness',partnerChannels:['investeerder','bank','accountant']},
+  {type:'erp_or_system_change',pattern:/\b(afas|sap|dynamics(?: 365)?|erp|systeemmigratie|implementatie|migratie)\b/i,problemHypothesis:'Een systeemverandering legt proces-, datakwaliteits- en eigenaarschapsproblemen bloot.',recommendedOffer:'Frisse Blik processen & data',partnerChannels:['erp-afas-partner','msp-it-partner','accountant']},
+  {type:'margin_or_turnaround',pattern:/\b(marge|kostenbesparing|verlies|winstdruk|turnaround|reorganisatie|herstructur|faillissement)\w*/i,problemHypothesis:'Druk op marge of continuïteit vraagt om snel inzicht in verspilling, oorzaken, cash-impact en uitvoerbare verbeteracties.',recommendedOffer:'Frisse Blik turnaround & rendement',partnerChannels:['accountant','bank','bedrijfsadviseur']},
+  {type:'staffing_pressure',pattern:/\b(personeelstekort|arbeidsmarkt|vacatur|werft|hiring|recruit)\w*/i,problemHypothesis:'Personeelsdruk vergroot de waarde van processtandaardisatie, kennisborging en gerichte automatisering.',recommendedOffer:'Frisse Blik capaciteit & automatisering',partnerChannels:['branchevereniging','accountant','msp-it-partner']},
+  {type:'regulatory_change',pattern:/\b(ai act|csrd|nis2|avg|gdpr|wetgeving|regelgeving|compliance)\b/i,problemHypothesis:'Nieuwe regelgeving vraagt aantoonbare processen, eigenaarschap, data en beheersmaatregelen.',recommendedOffer:'Frisse Blik risico & compliance',partnerChannels:['accountant','branchevereniging','bedrijfsadviseur']},
+  {type:'ai_data_adoption',pattern:/\b(kunstmatige intelligentie|artificial intelligence|\bai\b|power bi|microsoft fabric|analytics|dataplatform|data platform)\b/i,problemHypothesis:'AI- of data-ambitie levert pas waarde wanneer processen, data, eigenaarschap en concrete use-cases voldoende volwassen zijn.',recommendedOffer:'Frisse Blik AI & data',partnerChannels:['msp-it-partner','erp-afas-partner','branchevereniging']}
+]);
+
+export function classifyMkbBuyingTriggers({company,externalSignals=[],connection=null,engagementEvents=[]}={}){
+  if(!company)return {status:'INSUFFICIENT_EVIDENCE',triggers:[],score:0,evidenceRefs:[],problemHypotheses:[],recommendedOffers:[],partnerChannels:[],outreachMode:'context-led'};
+  const needle=String(company).trim().toLowerCase();
+  const matched=(externalSignals||[]).filter(s=>[s?.titel,s?.samenvatting,s?.onderwerp,s?.domein].filter(Boolean).join(' ').toLowerCase().includes(needle));
+  const found=[];
+  for(const rule of MKB_TRIGGER_RULES){
+    const evidence=matched.filter(s=>rule.pattern.test([s?.titel,s?.samenvatting,s?.onderwerp].filter(Boolean).join(' ')));
+    if(!evidence.length)continue;
+    const confidence=evidence.reduce((sum,s)=>sum+clamp((Number(s?.vertrouwen??s?.brontrouw??50)||50)/100),0)/evidence.length;
+    found.push({type:rule.type,confidence,problemHypothesis:rule.problemHypothesis,recommendedOffer:rule.recommendedOffer,partnerChannels:rule.partnerChannels,evidenceRefs:[...new Set(evidence.map(s=>s?.url).filter(Boolean))]});
+  }
+  const refs=[...new Set(found.flatMap(x=>x.evidenceRefs))];
+  if(!found.length)return {status:'INSUFFICIENT_EVIDENCE',triggers:[],score:0,evidenceRefs:[],problemHypotheses:[],recommendedOffers:[],partnerChannels:[],outreachMode:'context-led'};
+  const engagementCount=(engagementEvents||[]).filter(e=>String(e?.company_name||'').trim().toLowerCase()===needle).length;
+  const relationship=connection?Math.min(1,(Number(connection?.prioriteit)||50)/100):0;
+  const base=found.reduce((m,x)=>Math.max(m,x.confidence),0);
+  const score=clamp(base*.75+Math.min(1,engagementCount/5)*.15+relationship*.10);
+  return {
+    status:'EVIDENCE_BACKED',
+    triggers:found.sort((a,b)=>b.confidence-a.confidence),
+    score,
+    evidenceRefs:refs,
+    problemHypotheses:[...new Set(found.map(x=>x.problemHypothesis))],
+    recommendedOffers:[...new Set(found.map(x=>x.recommendedOffer))],
+    partnerChannels:[...new Set(found.flatMap(x=>x.partnerChannels))],
+    outreachMode:'context-led'
+  };
+}
+
 export function whitespaceScore({searchDemand=0,observedSupply=0,evidenceQuality=0,commercialFit=0}={}){
   const demand=pct(searchDemand),supply=pct(observedSupply),quality=clamp(evidenceQuality),fit=clamp(commercialFit);
   const score=clamp(demand*.4+(1-supply)*.3+quality*.15+fit*.15);
