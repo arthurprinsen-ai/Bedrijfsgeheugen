@@ -19,3 +19,18 @@ Employee health, complaints and other sensitive evidence are never promoted as i
 ## Terminal delivery rule
 
 Do not mark this change `LIVE_BEWEZEN` until protected merge to `main`, production deployment and production readback prove the exact lineage.
+
+
+## Production closure
+
+Status: `LIVE_BEWEZEN`.
+
+- Canonical successor/delivery: PR #2796.
+- Protected merge: `f9daba3fcf34dbf5cca81c8b617b33a515ac86d2`.
+- Proven Netlify production commit: `8026d48c02fa0a1daca4e0df5f58f5ae272bae8a`.
+- Proven deploy: `6ab57cde152a34c57f21b165`.
+- Provider state/context: `ready / production`.
+- Git ancestry proves the production commit is five commits ahead of and contains the People/HR merge.
+- Main readback confirms the canonical problem library, people detection contract, cross-domain graph and Problem Radar skill are present.
+
+This closes the original People Problem Radar obligation without creating a parallel HR taxonomy or intelligence island.
