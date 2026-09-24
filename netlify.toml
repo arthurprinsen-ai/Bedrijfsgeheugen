@@ -378,3 +378,63 @@
 
 [context.deploy-preview.environment]
   STATIC_I18N_NETWORK = "0"
+
+[[redirects]]
+  from = "/automotive-software-koppelen.html"
+  to = "/automotive-software-koppelen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/bouw-software-koppelen.html"
+  to = "/bouw-software-koppelen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/horeca-software-koppelen.html"
+  to = "/horeca-software-koppelen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/industrie-productie-software-koppelen.html"
+  to = "/industrie-productie-software-koppelen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/koppelingen-per-branche.html"
+  to = "/koppelingen-per-branche"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/logistiek-software-koppelen.html"
+  to = "/logistiek-software-koppelen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/retail-ecommerce-software-koppelen.html"
+  to = "/retail-ecommerce-software-koppelen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/vastgoed-software-koppelen.html"
+  to = "/vastgoed-software-koppelen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/zakelijke-dienstverlening-software-koppelen.html"
+  to = "/zakelijke-dienstverlening-software-koppelen"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/zorg-software-koppelen.html"
+  to = "/zorg-software-koppelen"
+  status = 301
+  force = true
