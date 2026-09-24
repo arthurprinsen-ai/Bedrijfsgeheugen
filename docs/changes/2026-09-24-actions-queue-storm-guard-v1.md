@@ -15,3 +15,7 @@ Recovery-automatisering moet backlog reduceren en mag nooit zelf nieuwe fan-out 
 
 ## CI-scope preventie
 De recovery-supervisor en zijn regressietest zijn expliciet non-artifact control-plane voor website release-risk. Daardoor start een CI-only herstelwijziging geen volledige publieke websitebrowsercrawl meer. Dit reduceert runnerdruk en voorkomt dat een queue-reparatie zelf opnieuw onnodig veel CI-capaciteit gebruikt.
+
+
+## Skill writeback
+De canonieke `.agents/skills/powerhouse-continuity/SKILL.md` bevat nu dezelfde queue-stormpreventie: circuit breaker, één recovery-PR per cyclus, duplicate-dispatch suppression, één canonieke obligation-kandidaat, control-plane website-scope en exact-head terminal proof.
