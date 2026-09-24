@@ -18,3 +18,11 @@
 - Regression strengthened: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
 - Genuine missing/hidden/zero-sized controls remain fail-closed.
 
+## Terminal closure
+
+- PR #2841 merged as `61a4d0f53ed97ccd5c8614f1941ec490122fd286`.
+- Netlify production deploy `6ab58e147586f20008c9a10f` is `ready` / `production`.
+- Provider `commit_ref` exactly equals the pricing verifier merge SHA.
+- Feature status: `LIVE_BEWEZEN`.
+- Learning status promoted to `LIVE_PROVEN` with canonical top-level evidence.
+

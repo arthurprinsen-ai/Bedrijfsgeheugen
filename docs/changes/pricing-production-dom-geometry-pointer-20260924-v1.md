@@ -41,3 +41,14 @@ Recovery:
 
 This removes the remaining Locator auto-wait from lifecycle target acquisition without weakening the real-pointer proof.
 
+## LIVE_BEWEZEN
+
+- Protected merge: PR #2841 → `61a4d0f53ed97ccd5c8614f1941ec490122fd286`.
+- Netlify deploy: `6ab58e147586f20008c9a10f`.
+- Provider state: `ready`.
+- Context: `production`.
+- Provider `commit_ref`: exact `61a4d0f53ed97ccd5c8614f1941ec490122fd286`.
+- Production URL: `https://www.bedrijfsgeheugen.nl`.
+
+The earlier production readback for this commit was later cancelled by single-flight supersession after it had already proved exact deploy identity, connector readiness and affected routes. Provider readback now independently proves the exact pricing verifier merge is live.
+
