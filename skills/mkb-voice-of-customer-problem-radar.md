@@ -184,3 +184,28 @@ Verplicht per probleemkaart:
 - uitklapbaar antwoord op “Waarom zegt Powerhouse dit?” met bronreferenties en root-cause-status.
 
 Onbekende impactlabels degraderen fail-safe naar `POTENTIAL`. Ongeldige probleem-ID's worden niet in de directieprojectie opgenomen.
+
+## Mens, werk & organisatie — P0 people domain
+
+Fingerprint: `powerhouse-people-problem-radar-p0-v1`.
+
+De MKB Probleemradar behandelt personele problematiek als first-class canonieke probleemlaag en niet als losse HR-widget. De canonieke people-problemen zijn:
+- `PH-P031` ziekteverzuim structureel hoog;
+- `PH-P032` langdurig verzuim en re-integratierisico;
+- `PH-P033` werkdruk en overbelasting;
+- `PH-P034` personeelsverloop te hoog;
+- `PH-P035` werving en vacaturevervulling stagneert;
+- `PH-P036` skills-gap en onvoldoende ontwikkeling;
+- `PH-P037` personeelskosten drukken marge;
+- `PH-P038` HR-compliance en personeelsdossiers niet op orde;
+- `PH-P039` leiderschap en teamdynamiek veroorzaken uitval of vertrek;
+- `PH-P040` sociale of fysieke arbeidsveiligheid onder druk.
+
+Regels:
+- externe CBS/UWV/TNO/branchecijfers zijn context/benchmark en nooit zelfstandig bewijs dat een tenant het probleem heeft;
+- Voice-of-Customer-signalen blijven kwalitatief en niet-representatief;
+- interne HRM/verzuim/payroll/planning/ATS/LMS/finance-evidence krijgt prioriteit;
+- people-problemen mogen causale ketens vormen, bijvoorbeeld vacaturekrapte → werkdruk → verzuim → capaciteitstekort;
+- nooit medische diagnoses, mentale toestand of gevoelige persoonskenmerken afleiden;
+- executive surfaces tonen standaard alleen geaggregeerde/teamniveau signalen en nooit identificeerbare gezondheids- of klachtdata;
+- impactclaims blijven uitsluitend `OBSERVED`, `ESTIMATED` of `POTENTIAL`.
