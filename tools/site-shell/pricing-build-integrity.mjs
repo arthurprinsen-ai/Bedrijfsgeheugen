@@ -61,6 +61,16 @@ function assertCanonical(html) {
   if (missing.length) throw new Error(`pricing integrity: missing canonical tokens: ${missing.join(' | ')}`);
   if (/€\s?(?:99|299|749)\b/.test(html)) throw new Error('pricing integrity: legacy package price returned');
   if (/class=["'][^"']*\bjr\b/i.test(html)) throw new Error('pricing integrity: legacy hidden annual pricing residue returned');
+  const interactionRequired = [
+    'data-bg-stage="grow"',
+    'data-bg-stage="loss"',
+    'data-bg-stage-panel="grow"',
+    'data-bg-stage-panel="loss"',
+    'data-bg-price-tab="start"',
+    'data-bg-price-tab="run"'
+  ];
+  const missingInteractions = interactionRequired.filter(token => !html.includes(token));
+  if (missingInteractions.length) throw new Error(`pricing integrity: missing interaction controls: ${missingInteractions.join(' | ')}`);
   const billingRequired = [
     'data-bg-billing="monthly"',
     'data-bg-billing="yearly"',
@@ -82,10 +92,13 @@ if (mode === 'capture') {
   console.log('Captured canonical pricing source before build transforms');
 } else if (mode === 'restore') {
   const [source, built] = await Promise.all([readFile(SNAPSHOT, 'utf8'), readFile(PAGE, 'utf8')]);
-  const canonical = extractSection(source, 'pakketten');
-  const current = extractSection(built, 'pakketten');
-  const restoredSection = built.replace(current, canonical);
-  const restored = ensurePricingRuntime(restoredSection, source);
+  const canonicalIntro = extractSection(source, 'prijzen-pakketten');
+  const currentIntro = extractSection(built, 'prijzen-pakketten');
+  const canonicalPackages = extractSection(source, 'pakketten');
+  const currentPackages = extractSection(built, 'pakketten');
+  let restoredSections = built.replace(currentIntro, canonicalIntro);
+  restoredSections = restoredSections.replace(currentPackages, canonicalPackages);
+  const restored = ensurePricingRuntime(restoredSections, source);
   assertCanonical(restored);
   extractScriptById(restored, 'bg-pricing-neno-v1-js');
   if (!restored.includes('/assets/js/pricing-interactions-rescue-v1.js?v=20260924-0750')) {
