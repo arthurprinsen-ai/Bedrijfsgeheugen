@@ -27,7 +27,7 @@
     "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
     "machine_enforceable": true,
     "repeat_count": 1,
-    "security_sensitive": true
+    "security_sensitive": false
   },
   "evaluation": {
     "invariants": [
