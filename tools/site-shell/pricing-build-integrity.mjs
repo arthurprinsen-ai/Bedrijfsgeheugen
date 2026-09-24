@@ -18,7 +18,7 @@ function extractSection(html, id) {
 }
 
 function extractScriptById(html, id) {
-  const re = new RegExp('<script\\b[^>]*\\bid=["\\']' + id + '["\\'][^>]*>[\\s\\S]*?<\\/script>', 'i');
+  const re = new RegExp(`<script\\b[^>]*\\bid=["']${id}["'][^>]*>[\\s\\S]*?<\\/script>`, 'i');
   const match = String(html).match(re);
   if (!match) throw new Error(`pricing integrity: missing script #${id}`);
   return match[0];
@@ -27,7 +27,7 @@ function extractScriptById(html, id) {
 function ensurePricingRuntime(html, source) {
   const inlineId = 'bg-pricing-neno-v1-js';
   const inline = extractScriptById(source, inlineId);
-  const inlineRe = new RegExp('<script\\b[^>]*\\bid=["\\']' + inlineId + '["\\'][^>]*>[\\s\\S]*?<\\/script>', 'i');
+  const inlineRe = new RegExp(`<script\\b[^>]*\\bid=["']${inlineId}["'][^>]*>[\\s\\S]*?<\\/script>`, 'i');
   let next = String(html);
   if (inlineRe.test(next)) next = next.replace(inlineRe, inline);
   else next = next.replace(/<\\/body>/i, inline + '\n</body>');

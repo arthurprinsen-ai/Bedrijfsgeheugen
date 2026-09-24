@@ -506,3 +506,17 @@ Mandatory behavior:
 
 Canonical evidence: production snapshot run `36010221414`, readback run `36010220920`.
 Canonical regression: `tests/brain-netlify-vault-proxy-expiry-hard-boundary-v1.test.mjs`.
+
+
+## Netlify build-script syntax gate
+
+Fingerprint: `pricing-build-integrity-regex-syntax-20260924-v1`.
+
+For every Node script referenced by the canonical `netlify.toml` build command:
+- run `node --check` before merge;
+- treat provider build exit code 2 as a parse/build-contract failure until reproduced;
+- reproduce the exact Netlify build command before changing application behavior;
+- use template literals or otherwise safe quoting for regex strings containing both single and double quote characters;
+- retain exact production SHA + provider + browser proof before `LIVE_BEWEZEN`.
+
+Canonical regression: `tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs`.
