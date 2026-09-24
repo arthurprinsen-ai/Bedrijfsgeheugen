@@ -277,3 +277,10 @@ Learning uit Powerhouse 50:
 - skill/learning/change/ledger writeback hoort in dezelfde lineage als de feature en moet vóór terminal completion aanwezig zijn.
 
 Doel: stale-main regressies, unclassified tests en duplicate-obligation thrash niet opnieuw laten leiden tot onnodige rebuilds of foutieve productdiagnoses.
+
+
+## Queue forecast before mutation
+
+Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
+
+The anticipate-before-act forecast includes current queued/in-progress/pending/waiting/requested runs plus projected new runs. Soft thresholds are 12 active / 10 queued; hard thresholds 20 / 20; projected fan-out budget is 6. Under pressure prioritize: exact-head reuse -> dedupe -> batch writes -> skip optional lanes -> reap proven orphaned stale queue -> dispatch only missing critical single-flight work. Never use a fresh PR, fresh commit series or broad retry as a queue escape mechanism.

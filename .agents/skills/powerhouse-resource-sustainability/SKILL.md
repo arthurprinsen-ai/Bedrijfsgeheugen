@@ -51,3 +51,12 @@ Prefer a candidate when it produces an equal-or-better verified outcome with low
 
 ## Learning
 Material resource outcomes are written back into the shared Brain as RESOURCE_SAVING, RESOURCE_REGRESSION, BUDGET_PRESSURE, SUSTAINABILITY_IMPROVEMENT or SUSTAINABILITY_REGRESSION. The learning loop updates relevant skills/policies so future runs inherit the improvement automatically.
+
+
+## GitHub runner/queue budget
+
+Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
+
+GitHub runner minutes and queue slots are governed resources. Before material repository writes or dispatches, record current pressure and projected run fan-out. Soft pressure is 12 active / 10 queued; hard pressure is 20 active / 20 queued; projected fan-out above 6 from one action must be reduced before execution.
+
+Prefer one atomic commit for one borging package, path-scoped gates and existing exact-head work. Under hard pressure, optional and recovery fan-out is forbidden until backlog is reduced. A recovery mechanism that consumes more runner capacity than it releases is a RESOURCE_REGRESSION.

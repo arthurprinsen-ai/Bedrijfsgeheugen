@@ -1,3 +1,17 @@
+export const QUEUE_PRESSURE_DEFAULTS = Object.freeze({ softActive:12, softQueued:10, hardActive:20, hardQueued:20, maxProjectedNewRuns:6 });
+
+export function assessQueuePressure({queued=0,inProgress=0,pending=0,waiting=0,requested=0,projectedNewRuns=0,limits=QUEUE_PRESSURE_DEFAULTS}={}){
+  const counts={queued:Math.max(0,Number(queued)||0),inProgress:Math.max(0,Number(inProgress)||0),pending:Math.max(0,Number(pending)||0),waiting:Math.max(0,Number(waiting)||0),requested:Math.max(0,Number(requested)||0),projectedNewRuns:Math.max(0,Number(projectedNewRuns)||0)};
+  const active=counts.queued+counts.inProgress+counts.pending+counts.waiting+counts.requested;
+  const projectedActive=active+counts.projectedNewRuns;
+  const projectedQueued=counts.queued+counts.projectedNewRuns;
+  let state='HEALTHY',action='ALLOW_BOUNDED_SINGLE_FLIGHT';
+  if(active>=limits.hardActive||counts.queued>=limits.hardQueued){state='CIRCUIT_OPEN';action='NO_NEW_RECOVERY_OR_OPTIONAL_WORK_REUSE_DEDUPE_REAP';}
+  else if(counts.projectedNewRuns>limits.maxProjectedNewRuns||projectedActive>=limits.hardActive||projectedQueued>=limits.hardQueued){state='PROJECTED_OVERLOAD';action='BATCH_NARROW_OR_DEFER_BEFORE_MUTATION';}
+  else if(active>=limits.softActive||counts.queued>=limits.softQueued){state='PRESSURE_HIGH';action='ESSENTIAL_SINGLE_FLIGHT_ONLY_BATCH_WRITES';}
+  return Object.freeze({state,action,active,projectedActive,projectedQueued,allowOptionalDispatch:state==='HEALTHY',allowRecoveryFanout:false,shouldBatchWrites:state!=='HEALTHY'||counts.projectedNewRuns>1,counts,limits});
+}
+
 export const DEFAULT_SLO = Object.freeze({
   firstSignalSeconds: 60,
   queuedStaleSeconds: 240,

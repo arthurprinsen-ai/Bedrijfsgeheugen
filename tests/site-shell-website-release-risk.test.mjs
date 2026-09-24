@@ -111,3 +111,25 @@ test('recovery supervisor changes stay control-plane and never launch full websi
   assert.equal(result.requires_preview, false);
   assert.deepEqual(result.affected_routes, []);
 });
+
+
+test('governance and delivery policy changes stay control-plane without website browser fan-out', () => {
+  const result = classifyWebsiteRelease({
+    changedPaths:[
+      'AGENTS.md',
+      'brain/policies/powerhouse-agent-continuity-v1.json',
+      '.agents/skills/powerhouse-delivery-concurrency/SKILL.md',
+      '.agents/skills/powerhouse-delivery-self-optimization/SKILL.md',
+      '.agents/skills/powerhouse-resource-sustainability/SKILL.md',
+      'tools/delivery/predictive-controller.mjs',
+      'tests/brain-ci-admission-single-flight.test.mjs',
+      'brain/learning/actions-queue-storm-guard-20260924-v1.json',
+      'docs/changes/2026-09-24-actions-queue-storm-guard-v1.md'
+    ],
+    riskConfig,
+    acceptedBaseline
+  });
+  assert.equal(result.lane, 'control-plane');
+  assert.equal(result.requires_preview, false);
+  assert.deepEqual(result.affected_routes, []);
+});

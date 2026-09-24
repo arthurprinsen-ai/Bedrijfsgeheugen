@@ -584,3 +584,10 @@ For Powerhouse delivery recovery:
 Canonical implementation: `.github/workflows/powerhouse-delivery-recovery-supervisor.yml`.
 Canonical learning: `brain/learning/actions-queue-storm-guard-20260924-v1.json`.
 Canonical regressions: `tests/brain-actions-queue-storm-guard-v1.test.mjs` and `tests/delivery-powerhouse-supervisor.test.mjs`.
+
+
+## Predict-before-dispatch queue governor
+
+Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
+
+Every material chat/agent reads current Actions pressure and forecasts run fan-out before a repository mutation, retry, dispatch or recovery. Soft pressure starts at 12 active or 10 queued; hard circuit opens at 20 active or 20 queued; one action may not intentionally create more than 6 new runs. Under pressure: reuse exact-head work, keep one canonical obligation/PR, batch related writes, suppress optional CI and take only backlog-reducing recovery actions. Healthy current-head work is never cancelled for age alone.

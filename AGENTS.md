@@ -105,6 +105,28 @@ Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
 
+
+## GitHub Actions queue-pressure governor — verplicht vóór repositorymutaties
+
+Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
+
+Iedere chat, agent, workflow en recovery-node leest vóór een materiële GitHub-write, commitreeks, workflow-dispatch, retry, reconcile of recoveryactie de actuele Actions-druk én voorspelt hoeveel nieuwe runs de actie kan veroorzaken.
+
+- soft pressure: 12 actieve of 10 queued runs; geen optionele workflows, writes bundelen en exact-head werk hergebruiken;
+- hard circuit: 20 actieve of 20 queued runs; geen nieuw recovery- of optioneel CI-werk;
+- maximaal 6 voorspelde nieuwe runs per actie; boven dat budget eerst scope verkleinen, bundelen of fan-out verwijderen;
+- één obligation = één canonieke executable PR; queue/cancel/main-drift is nooit reden voor een duplicate PR;
+- één PR/head krijgt nooit bewust een tweede actieve Required- of BRAIN-run;
+- borging/documentatie/learning/skill-writes van één obligation worden waar veilig vóór remote CI gebundeld;
+- control-plane-only herstel start geen volledige website/browser/artifact-lanes;
+- healthy current-head queued/in-progress werk wordt niet op leeftijd alleen gecanceld;
+- queue-/runnerdruk is execution-capacity state, geen bewijs van foutieve productcode.
+
+De pre-mutation receipt bevat minimaal queued, in_progress, pending/waiting/requested, projected_new_runs en pressure_state. Als de voorspelling de hard limit overschrijdt, moet de actie vóór de mutatie worden aangepast.
+
+Canonieke authority: `brain/policies/powerhouse-agent-continuity-v1.json#queue_pressure_governor`.
+Machine helper: `tools/delivery/predictive-controller.mjs#assessQueuePressure`.
+
 ### BRAIN chat-learning preflight
 `config/brain-chat-learning-contract.json` (`BRAIN-CHAT-LEARNING-v1`) is verplichte gedeelde voorkennis voor iedere huidige en toekomstige agent, workflow en scenario die materieel werk uitvoert.
 

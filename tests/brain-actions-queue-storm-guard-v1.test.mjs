@@ -11,6 +11,11 @@ test('recovery supervisor is bounded and cannot fan out from main pushes',()=>{
   assert.match(workflow,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'20'/);
   assert.match(workflow,/RECOVERY_PR_BUDGET:\s*'1'/);
   assert.match(workflow,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
+  assert.match(workflow,/STALE_QUEUE_MIN_AGE_SECONDS:\s*'21600'/);
+  assert.match(workflow,/STALE_QUEUE_CANCEL_BUDGET:\s*'20'/);
+  assert.match(workflow,/STALE_QUEUE_ZOMBIE_CANCELLED/);
+  assert.match(workflow,/branches\/\$encoded_branch/);
+  assert.match(workflow,/actions\/runs\/\$run_id\/cancel/);
 });
 
 
