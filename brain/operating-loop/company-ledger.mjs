@@ -50,9 +50,8 @@ export function buildCompanyLedger(records,{tenantId}={}){
   }
   const decisionExpected=scoped.filter(r=>r.kind==='decision').reduce((sum,r)=>sum+num(r.economics?.expectedValue),0);
   const actualCost=scoped.filter(r=>['action','execution','outcome','value'].includes(r.kind)).reduce((sum,r)=>sum+num(r.economics?.cost),0);
-  const realizedValueRecords=scoped.filter(r=>r.kind==='value'&&r.verified===true);
-  const verifiedValueRecords=realizedValueRecords.filter(r=>r.executed===true&&Array.isArray(r.evidenceIds)&&r.evidenceIds.length>0);
-  const realizedValue=realizedValueRecords.reduce((sum,r)=>sum+num(r.economics?.realizedValue??r.payload?.realisedValue),0);
+  const verifiedValueRecords=scoped.filter(r=>r.kind==='value'&&r.verified===true&&r.executed===true&&Array.isArray(r.evidenceIds)&&r.evidenceIds.length>0);
+  const realizedValue=verifiedValueRecords.reduce((sum,r)=>sum+num(r.economics?.realizedValue??r.payload?.realisedValue),0);
   const valueByProblem={};
   for(const record of verifiedValueRecords){
     const problemId=canonicalProblemId(record);
