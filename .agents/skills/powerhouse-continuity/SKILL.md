@@ -520,3 +520,16 @@ For every Node script referenced by the canonical `netlify.toml` build command:
 - retain exact production SHA + provider + browser proof before `LIVE_BEWEZEN`.
 
 Canonical regression: `tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs`.
+
+
+## Pricing interaction single-owner production rule
+
+Fingerprint: `pricing|interaction-owner|mobile-hitbox|v2`.
+
+For pricing and other high-risk interactive public surfaces:
+- one interaction concern has exactly one canonical runtime owner after the full production build;
+- build/restore scripts may not silently reintroduce old inline or rescue runtimes;
+- mobile acceptance must prove a nonzero visible hitbox before click, then prove the resulting visible state;
+- ARIA assertions must follow the control type: tab → `aria-selected`, toggle button → `aria-pressed`;
+- DOM presence or text visibility is not interaction proof;
+- provider-ready is not terminal without exact production browser readback.
