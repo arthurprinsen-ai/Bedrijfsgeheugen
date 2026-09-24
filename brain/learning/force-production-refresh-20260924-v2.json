@@ -1,0 +1,31 @@
+{
+  "fingerprint": "force-production-refresh-20260924-v2",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The canonical production snapshot needed a deliberate retrigger after deploy authentication recovery, but a workflow-only change is itself material and therefore must carry closure artifacts.",
+  "root_cause": "Production refresh work was initially treated as a pure operational trigger. The repository governance correctly classifies changes to the production deployment workflow as material implementation changes that require Brain learning, activity ledger and human documentation in the same lineage.",
+  "failed_approaches": [
+    "Changing the production workflow only to force a deploy without same-lineage closure artifacts.",
+    "Using an invalid Candidate-Type for the delivery contract."
+  ],
+  "prevention": [
+    "Any mutation of the production deployment workflow is material and must carry learning, ledger and human documentation.",
+    "Production refresh candidates use a valid delivery candidate type and remain fail-closed until exact production identity and browser proof pass."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-force-production-refresh-v2.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-force-production-refresh-v2.test.mjs"],
+  "evidence": {
+    "pull_request": 2711,
+    "base_sha": "836d228f45ebebf27d2c62ebf172e04a2c076fd2",
+    "target_workflow": ".github/workflows/production-source-snapshot.yml"
+  },
+  "compiler": {
+    "failure_class": "MATERIAL_DEPLOY_REFRESH_GOVERNANCE",
+    "scope": "NETLIFY_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
