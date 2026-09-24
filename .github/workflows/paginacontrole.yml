@@ -198,7 +198,7 @@ jobs:
       # kruimelpad, één h1. Die zet de build erop. Op de bronbestanden faalde
       # daardoor elke pagina (56 van 56, 10 sept 2026). De build draait in een
       # aparte map, zodat er geen gebouwde HTML in een commit terechtkomt.
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         if: steps.seo_scope.outputs.public == 'true'
         with:
           node-version: '22'
