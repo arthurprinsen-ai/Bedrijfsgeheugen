@@ -1,0 +1,30 @@
+{
+  "fingerprint": "netlify-production-redeploy-heartbeat-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Git-linked Netlify production did not advance from e648f6c8 to the current main f13e524d even though the repository link and production branch were correct.",
+  "root_cause": "The expected Git-to-Netlify production trigger did not produce a new production deploy for the current main SHA. A fresh repository push was required to re-emit the provider event and recover autonomous deployment.",
+  "prevention": [
+    "When exact-SHA production readback waits while Netlify current remains on an older commit, verify repository link, branch, ignore rules and current deploy before changing application code.",
+    "If configuration is correct and no deploy object appears, emit a minimal reviewed deployment heartbeat through the protected main branch rather than asking for repeated manual UI clicks.",
+    "Keep terminal closure fail-closed until Netlify current commit_ref equals main and pricing/i18n browser proof passes."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-netlify-production-redeploy-heartbeat-v1.test.mjs"],
+    "shadow": ["tests/brain-netlify-production-redeploy-heartbeat-v1.test.mjs"],
+    "canary": ["tests/brain-netlify-production-redeploy-heartbeat-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-netlify-production-redeploy-heartbeat-v1.test.mjs"],
+  "evidence": {
+    "stale_production_sha": "e648f6c8e07bc2185daab6c71b0adff26d020d68",
+    "expected_main_sha": "f13e524d55db7fd986eb1b746fe011f95256ffcf",
+    "recovery_pr": 2730
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_GIT_TRIGGER_STALL",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
