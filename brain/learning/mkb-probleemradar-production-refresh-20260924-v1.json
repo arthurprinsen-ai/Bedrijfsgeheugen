@@ -1,0 +1,42 @@
+{
+  "fingerprint": "mkb-probleemradar-production-refresh-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The three MKB Probleemradar blogs were merged to protected main but Netlify production still exposed an older commit, so a canonical Production Source Snapshot refresh is required.",
+  "root_cause": "The production-source workflow only auto-runs on main when its own workflow file changes, while the Git-linked production deployment had not advanced to the current main lineage. An operational refresh must therefore trigger the canonical exact-source deployment path rather than claiming the merged blogs live.",
+  "prevention": [
+    "After merging website content, compare current protected main with Netlify production commit_ref before claiming LIVE_BEWEZEN.",
+    "If Netlify production lags, trigger the canonical Production Source Snapshot through a protected operational refresh rather than bypassing delivery governance.",
+    "Never expose or persist transient Netlify proxy credentials in repository content, PR text, workflow inputs, logs, documentation or user-visible output.",
+    "Require exact production release identity plus public route readback before marking new articles published."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"
+  ],
+  "evidence": {
+    "blogs_merge_sha": "30fb4a546313ee1fc824410b265de9d2e667515c",
+    "main_before_refresh": "350f90eb9b2c76a715530836a7d9c485c2ccdd42",
+    "observed_netlify_production_sha": "e648f6c8e07bc2185daab6c71b0adff26d020d68",
+    "netlify_site_id": "fd527056-493a-4d8a-8125-d00370104fa3",
+    "production_refresh_workflow": ".github/workflows/production-source-snapshot.yml"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRODUCTION_LAG_REQUIRES_CANONICAL_REFRESH",
+    "scope": "NETLIFY_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
