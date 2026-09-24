@@ -25,3 +25,19 @@ The production verifier now:
 No `force:true` and no DOM `.click()`.
 
 Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
+
+## Follow-up: direct DOM readiness
+
+Exact-main production `984f679515fff2d9e4a4f10c0b187e95e96a1561` was provider-proven, but the production browser verifier still timed out in `locator.evaluate()` while waiting for `[data-bg-stage="loss"]`.
+
+Root cause:
+`ready-v3` proved the rescue runtime had started, but not that the concrete lifecycle target was already observable to Playwright's Locator API.
+
+Recovery:
+- wait until both `ready-v3` and `document.querySelector('[data-bg-stage="loss"]')` are true;
+- read computed visibility and geometry through direct `page.evaluate`;
+- use Locator only for semantic assertions after the real pointer interaction;
+- fail immediately with explicit diagnostics if the control disappears between readiness, scroll and pointer geometry.
+
+This removes the remaining Locator auto-wait from lifecycle target acquisition without weakening the real-pointer proof.
+
