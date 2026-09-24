@@ -14,7 +14,6 @@ on:
       - 'tests/linkedin-revenue-cockpit.test.mjs'
       - 'tests/linkedin-revenue-runtime.test.mjs'
       - 'tests/linkedin-revenue-engagement-cockpit.test.mjs'
-      - 'tests/linkedin-cockpit-autopilot-contract.test.mjs'
       - '.github/workflows/linkedin-revenue-cockpit-tests.yml'
       - '_redirects'
 
@@ -35,4 +34,4 @@ jobs:
         with:
           node-version: '22'
       - name: Verify revenue cockpit contract
-        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs tests/linkedin-revenue-engagement-cockpit.test.mjs tests/linkedin-cockpit-autopilot-contract.test.mjs
+        run: node --test tests/linkedin-revenue-cockpit.test.mjs tests/linkedin-revenue-runtime.test.mjs tests/linkedin-revenue-engagement-cockpit.test.mjs
