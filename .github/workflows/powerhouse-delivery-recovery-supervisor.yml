@@ -33,10 +33,44 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ACTIVE_RUN_CIRCUIT_BREAKER: '20'
           RECOVERY_PR_BUDGET: '1'
+          STALE_QUEUE_MIN_AGE_SECONDS: '21600'
+          STALE_QUEUE_CANCEL_BUDGET: '20'
         shell: bash
         run: |
           set -euo pipefail
           repo="$GITHUB_REPOSITORY"
+
+          # Reap zombie queued runs only when they are old and their head branch
+          # no longer exists. Never cancel current/open delivery merely for age.
+          now_epoch="$(date -u +%s)"
+          stale_cancelled=0
+          gh api --paginate "repos/$repo/actions/runs?status=queued&per_page=100" > /tmp/queued-runs.json
+          while read -r queued_run; do
+            [ "$stale_cancelled" -lt "$STALE_QUEUE_CANCEL_BUDGET" ] || {
+              echo "::notice::STALE_QUEUE_CANCEL_BUDGET_EXHAUSTED:$STALE_QUEUE_CANCEL_BUDGET"
+              break
+            }
+            run_id="$(jq -r '.id' <<<"$queued_run")"
+            created_at="$(jq -r '.created_at // ""' <<<"$queued_run")"
+            head_branch="$(jq -r '.head_branch // ""' <<<"$queued_run")"
+            [ -n "$run_id" ] && [ -n "$created_at" ] && [ -n "$head_branch" ] || continue
+            [ "$head_branch" != "main" ] || continue
+            created_epoch="$(date -u -d "$created_at" +%s 2>/dev/null || echo "$now_epoch")"
+            age_seconds=$((now_epoch - created_epoch))
+            [ "$age_seconds" -ge "$STALE_QUEUE_MIN_AGE_SECONDS" ] || continue
+            encoded_branch="$(jq -rn --arg v "$head_branch" '$v|@uri')"
+            if gh api "repos/$repo/branches/$encoded_branch" >/dev/null 2>&1; then
+              continue
+            fi
+            if gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
+              stale_cancelled=$((stale_cancelled + 1))
+              echo "::notice::STALE_QUEUE_ZOMBIE_CANCELLED:$run_id branch:$head_branch age_seconds:$age_seconds"
+            else
+              echo "::warning::STALE_QUEUE_ZOMBIE_CANCEL_FAILED:$run_id branch:$head_branch"
+            fi
+          done < <(jq -c '.workflow_runs[]?' /tmp/queued-runs.json)
+          echo "::notice::STALE_QUEUE_ZOMBIE_CANCEL_TOTAL:$stale_cancelled"
+
           active_runs="$(gh api "repos/$repo/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="waiting" or .status=="requested")] | length')"
           echo "::notice::ACTIONS_ACTIVE_RUNS:$active_runs circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
           if [ "$active_runs" -ge "$ACTIVE_RUN_CIRCUIT_BREAKER" ]; then

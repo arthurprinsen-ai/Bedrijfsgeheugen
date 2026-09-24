@@ -15,3 +15,7 @@ Recovery-automatisering moet backlog reduceren en mag nooit zelf nieuwe fan-out 
 
 ## CI-scope preventie
 De recovery-supervisor en zijn regressietest zijn expliciet non-artifact control-plane voor website release-risk. Daardoor start een CI-only herstelwijziging geen volledige publieke websitebrowsercrawl meer. Dit reduceert runnerdruk en voorkomt dat een queue-reparatie zelf opnieuw onnodig veel CI-capaciteit gebruikt.
+
+
+## Zombie-queue janitor
+Queued Actions-runs ouder dan 6 uur worden alleen geannuleerd wanneer hun niet-`main` head-branch aantoonbaar niet meer bestaat. De cleanup is begrensd op maximaal 20 runs per supervisorcyclus en draait vóór de circuit-breaker. Daarmee worden historische zombies van reeds afgeronde deliveries opgeruimd zonder actuele/open delivery op leeftijd af te schieten.

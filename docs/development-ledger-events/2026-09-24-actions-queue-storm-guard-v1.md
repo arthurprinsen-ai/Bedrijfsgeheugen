@@ -16,3 +16,11 @@
 - PR #2801: closed, SUPERSEDED by #2804.
 - PR #2803: closed, SUPERSEDED by #2804.
 - #2804 is the single canonical current-main recovery candidate for this obligation.
+
+
+## Stale queue cleanup v2
+- Production readback na #2804: 11 queued, waarvan minimaal 9 zombies uit 12 september 2026 op de reeds gemergede PR #1444.
+- De branch `fix/supabase-migration-history-integrity` bestaat niet meer.
+- Nieuwe guard: cancel queued run pas na 21600 seconden én alleen als de non-main head-branch niet meer bestaat.
+- Cleanup budget: maximaal 20 cancellations per supervisorcyclus.
+- Fingerprint revision: 2.
