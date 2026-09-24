@@ -794,3 +794,20 @@ When a production browser proof sees a real control but Playwright `scrollIntoVi
 
 Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
 Learning: `brain/learning/pricing-production-stable-scroll-20260924-v1.json`.
+
+
+## Product-specific production readiness
+
+Fingerprint: `pricing-production-runtime-readiness-v1`.
+
+When a production browser proof has an explicit product/runtime-ready marker, that marker outranks generic page/body visibility as readiness authority.
+
+Mandatory:
+- wait first on the domain-specific runtime-ready contract;
+- then require the concrete target control to become visible/actionable;
+- do not fail a production proof solely because a generic `body` visibility wait times out while the product-specific runtime and content are present;
+- preserve real user interaction proof after readiness: no `force:true`, no DOM `.click()`;
+- keep exact production SHA/provider identity separate from interaction readiness and require both for terminal proof.
+
+Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
+Learning: `brain/learning/pricing-production-runtime-readiness-20260924-v1.json`.

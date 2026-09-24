@@ -1,0 +1,32 @@
+{
+  "fingerprint": "pricing-production-runtime-readiness-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The production pricing page returned HTTP 200 with full HTML, but the verifier waited for generic body visibility before waiting for the pricing runtime ready-v3 marker. Under responsive/runtime initialization that generic visibility gate could time out even though the page and pricing controls were present.",
+  "prevention_rule": "Production interaction proofs must wait on the product-specific readiness contract and target control visibility, not generic body visibility. Generic page readiness must never block a stronger domain-specific ready marker.",
+  "failed_run": 36054911943,
+  "failed_job": 107819333389,
+  "exact_production_sha": "3628225d0ebb834f496678b3d4e3c4414d26e5ee",
+  "evidence": "GET /prijzen?interaction_proof=<sha> returned HTTP 200 with full pricing HTML while body visibility wait timed out.",
+  "compiler": {
+    "failure_class": "GENERIC_BODY_READINESS_FALSE_NEGATIVE",
+    "scope": "PRODUCTION_BROWSER_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs"
+    ],
+    "invariants": [
+      "pricing ready-v3 marker is authoritative readiness",
+      "loss lifecycle control must become visible",
+      "real Playwright pointer click remains mandatory"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ]
+}
