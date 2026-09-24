@@ -16,7 +16,8 @@
     "Only provider capabilities actually available through the connected LinkedIn transport may execute automatically.",
     "Unsupported DM and connection activation actions must remain explicit capability exceptions; never fabricate or bypass transport capabilities.",
     "Provider acknowledgement and canonical outcome writeback are required before an action is marked executed.",
-    "Every new RPC used by material runtime code must be registered in the quality-surface contract."
+    "Every new RPC used by material runtime code must be registered in the quality-surface contract.",
+    "A provider comment id is an irreversible side-effect boundary: outcome/writeback failure must set reconciliation_required and republish_forbidden, never return the action to suggested."
   ],
   "evidence": {
     "tests": [
