@@ -19,3 +19,6 @@
 - Regression strengthened: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
 - Status remains `IMPLEMENTED_CANDIDATE` until protected merge + production readback.
 
+
+- Legacy actionability regression sync: old tests no longer require locator auto-scroll/bounding-box/click primitives.
+- Canonical invariant: `ready-v3` + visible DOM geometry + deterministic positioning + real `page.mouse.click` + observable state transition.
