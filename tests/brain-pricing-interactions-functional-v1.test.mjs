@@ -20,8 +20,8 @@ test('pricing direction tabs change visible plan groups',async()=>{
   assert.match(html,/data-bg-price-tab="start"/);
   assert.match(html,/data-bg-price-tab="run"/);
   assert.match(html,/\.bg-plan-card\[data-bg-group\]/);
-  assert.match(html,/card\.hidden=card\.getAttribute\('data-bg-group'\)!==group/);
-  assert.match(html,/setAttribute\('aria-selected',String\(x\.getAttribute\('data-bg-price-tab'\)===group\)\)/);
+  assert.match(html,/var active=card\.getAttribute\('data-bg-group'\)===group;card\.hidden=!active;card\.style\.display=active\?'':'none'/);
+  assert.match(html,/x\.setAttribute\('aria-selected',String\(active\)\);x\.classList\.toggle\('is-active',active\);x\.tabIndex=active\?0:-1/);
 });
 
 test('billing toggle changes prices and checkout billing parameter',async()=>{
@@ -40,7 +40,7 @@ test('lifecycle tabs hide every non-selected panel',async()=>{
     assert.match(html,new RegExp('data-bg-stage="'+stage+'"'));
     assert.match(html,new RegExp('data-bg-stage-panel="'+stage+'"'));
   }
-  assert.match(html,/p\.hidden=p\.getAttribute\('data-bg-stage-panel'\)!==key/);
+  assert.match(html,/var active=p\.getAttribute\('data-bg-stage-panel'\)===key;p\.hidden=!active;p\.style\.display=active\?'':'none'/);
   assert.match(html,/\.bg-lifecycle-panel\[hidden\],\.bg-plan-card\[hidden\]\{display:none!important\}/);
 });
 
@@ -72,7 +72,8 @@ test('mobile taps have an external delegated rescue controller',async()=>{
   assert.match(runtime,/\[data-bg-stage\]/);
   assert.match(runtime,/\[data-bg-price-tab\]/);
   assert.match(runtime,/\[data-bg-billing\]/);
-  assert.match(runtime,/panel\.hidden = !active/);
+  assert.match(runtime,/panel\.removeAttribute\('hidden'\)/);
+  assert.match(runtime,/panel\.style\.setProperty\('display','block','important'\)/);
   assert.match(runtime,/searchParams\.set\('billing', billing\)/);
 });
 
