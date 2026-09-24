@@ -454,6 +454,18 @@ Fingerprint: `netlify-github-oidc-deploy-bridge-20260924-v1`.
 - Exact Netlify SHA plus pricing/i18n production browser proof remain mandatory for `LIVE_BEWEZEN`.
 
 
+## Netlify provider build fail-fast diagnostics
+
+Fingerprint: `netlify-provider-build-failfast-diagnostics-20260924-v1`.
+
+- Successful deploy submission is not proof that the provider build is healthy.
+- Capture `deployId` and `buildId` from the authorized Netlify transport output.
+- Poll provider deploy state before waiting for public `release.json`.
+- When provider state is `error`, emit only sanitized allowlisted build/deploy metadata and fail immediately.
+- Never log the OIDC deploy proxy or any secret values.
+- Provider `ready` is still not terminal closure: exact SHA and pricing/i18n browser proof remain required.
+
+
 ## Netlify OIDC linked-build fallback
 
 Fingerprint: `netlify-oidc-linked-build-fallback-20260924-v1`.
