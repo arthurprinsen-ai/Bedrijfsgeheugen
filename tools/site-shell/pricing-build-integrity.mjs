@@ -17,27 +17,17 @@ function extractSection(html, id) {
   throw new Error(`pricing integrity: unclosed #${id}`);
 }
 
-function extractScriptById(html, id) {
-  const re = new RegExp(`<script\\b[^>]*\\bid=["']${id}["'][^>]*>[\\s\\S]*?<\\/script>`, 'i');
-  const match = String(html).match(re);
-  if (!match) throw new Error(`pricing integrity: missing script #${id}`);
-  return match[0];
-}
-
-function ensurePricingRuntime(html, source) {
-  const inlineId = 'bg-pricing-neno-v1-js';
-  const inline = extractScriptById(source, inlineId);
-  const inlineRe = new RegExp(`<script\\b[^>]*\\bid=["']${inlineId}["'][^>]*>[\\s\\S]*?<\\/script>`, 'i');
+function ensurePricingRuntime(html) {
+  const canonicalSrc = '/assets/js/pricing-interactions-v4.js?v=20260924-1555';
+  const canonicalTag = `<script src="${canonicalSrc}"></script>`;
   let next = String(html);
-  if (inlineRe.test(next)) next = next.replace(inlineRe, inline);
-  else next = next.replace(new RegExp('</body>', 'i'), inline + '\n</body>');
 
-  const rescueSrc = '/assets/js/pricing-interactions-rescue-v1.js?v=20260924-0750';
-  const rescueTag = `<script src="${rescueSrc}" defer></script>`;
-  const rescueRe = new RegExp(`<script\\b[^>]*src=["']\\/assets\\/js\\/pricing-interactions-rescue-v1\\.js(?:\\?[^"']*)?["'][^>]*><\\/script>`, 'i');
-  if (rescueRe.test(next)) next = next.replace(rescueRe, rescueTag);
-  else next = next.replace(new RegExp('</body>', 'i'), rescueTag + '\n</body>');
-  return next;
+  // Remove every historical owner before installing one delegated controller.
+  next = next.replace(/<script\b[^>]*\bid=["']bg-pricing-neno-v1-js["'][^>]*>[\s\S]*?<\/script>/gi, '');
+  next = next.replace(/<script\b[^>]*src=["']\/assets\/js\/pricing-interactions-rescue-v1\.js(?:\?[^"']*)?["'][^>]*><\/script>/gi, '');
+  next = next.replace(/<script\b[^>]*src=["']\/assets\/js\/pricing-interactions-v4\.js(?:\?[^"']*)?["'][^>]*><\/script>/gi, '');
+
+  return next.replace(/<\/body>/i, canonicalTag + '\n</body>');
 }
 
 function assertCanonical(html) {
@@ -85,11 +75,12 @@ if (mode === 'capture') {
   const canonical = extractSection(source, 'pakketten');
   const current = extractSection(built, 'pakketten');
   const restoredSection = built.replace(current, canonical);
-  const restored = ensurePricingRuntime(restoredSection, source);
+  const restored = ensurePricingRuntime(restoredSection);
   assertCanonical(restored);
-  extractScriptById(restored, 'bg-pricing-neno-v1-js');
-  if (!restored.includes('/assets/js/pricing-interactions-rescue-v1.js?v=20260924-0750')) {
-    throw new Error('pricing integrity: rescue runtime missing after restore');
+  const owners = restored.match(/<script\b[^>]*src=["']\/assets\/js\/pricing-interactions-v4\.js(?:\?[^"']*)?["'][^>]*><\/script>/gi) || [];
+  if (owners.length !== 1) throw new Error(`pricing integrity: pricing runtime must have exactly one owner, found ${owners.length}`);
+  if (/bg-pricing-neno-v1-js|pricing-interactions-rescue-v1\.js/i.test(restored)) {
+    throw new Error('pricing integrity: legacy pricing runtime owner returned');
   }
   await writeFile(PAGE, restored, 'utf8');
   console.log('Restored and verified canonical pricing section after build transforms');
