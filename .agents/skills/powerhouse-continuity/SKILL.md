@@ -386,3 +386,14 @@ For Bedrijfsgeheugen production delivery:
 - write the incident, failed transport routes, evidence IDs and prevention into Brain learning, ledger, documentation and skill projection in the same delivery lineage.
 
 A fresh credential existing only transiently in a connector is not equivalent to durable deployment authority.
+
+
+## Static i18n provider build fallback
+
+Fingerprint: `static-i18n-provider-fallback-regression-20260924-v2`.
+
+- Build-time external translation is enrichment, not website publication authority, while the canonical runtime i18n fallback exists.
+- A deterministic provider 4xx must fail fast; do not waste retries that cannot change the outcome.
+- Provider error diagnostics may include only bounded sanitized response text/status, never credentials.
+- Always emit locale routes; mark untranslated static English with `data-bg-static-translated="false"` so runtime translation can take over.
+- Never claim English fixed merely because Netlify published. Require production browser proof on the actual language switch and `/en/prijzen`.
