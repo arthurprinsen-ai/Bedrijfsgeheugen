@@ -51,3 +51,12 @@ Content is pre-sales. Schrijf vanuit concreet CEO/directie/MT-probleem, data, im
 
 ## Learning
 Meet minimaal trigger->response, response->meeting, meeting->scan, scan->sale, realized value en referral. Promote geen heuristiek tot harde policy zonder voldoende evidence.
+
+## Executable runtime v1
+- Runtime authority: `powerhouse_materialize_trigger_acquisition_v1(uuid)`.
+- Event hook: `powerhouse_trigger_acquisition_signal_hook_v1` on `powerhouse_predictive_signals`.
+- Readback: `powerhouse_trigger_acquisition_readiness_v1`.
+- Alleen company/account/organization/prospect/business-scoped signals met identity + evidence ref + freshness + strength mogen materialiseren.
+- Markt-signalen mogen nooit account-opportunities openen.
+- Nieuwe trigger-opportunities starten op stage `signal`, economische waarde €0 en next-best-action `research_enrichment` via `internal_research`.
+- Deze runtime autoriseert nooit direct outbound; bestaande execution gates blijven authority.
