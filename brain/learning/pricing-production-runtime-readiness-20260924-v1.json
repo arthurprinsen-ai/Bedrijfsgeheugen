@@ -4,7 +4,7 @@
   "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
   "status": "PROMOTION_PENDING",
   "root_cause": "The production pricing page returned HTTP 200 with full HTML, but the verifier waited for generic body visibility before waiting for the pricing runtime ready-v3 marker. Under responsive/runtime initialization that generic visibility gate could time out even though the page and pricing controls were present. The same closure also exposed syntax-coupled actionability replays: safe pointer behavior had evolved to page.mouse.click over checked geometry while regressions still required locator.click and a specific callback variable name.",
-  "prevention_rule": "Production interaction proofs must wait on the product-specific readiness contract and target control visibility, not generic body visibility. Generic page readiness must never block a stronger domain-specific ready marker. Regression assertions about generic readiness must be phase-scoped: forbid body gating before ready-v3, but allow body visibility checks after a deliberate route navigation. Keep production-readiness and actionability replays semantic: assert ready-v3 before interactions, verified control geometry, deterministic positioning and real Playwright pointer input, not incidental source spelling.",
+  "prevention_rule": "Production interaction proofs must wait on the product-specific readiness contract and target control visibility, not generic body visibility. Generic page readiness must never block a stronger domain-specific ready marker. Regression assertions about generic readiness must be phase-scoped: forbid body gating before ready-v3, but allow body visibility checks after a deliberate route navigation. Keep production-readiness and actionability replays semantic: assert ready-v3 before interactions, verified control geometry, deterministic positioning and real Playwright pointer input, not incidental source spelling. Prefer direct structural/semantic assertions for stable contract tokens and behavior; do not encode incidental callback names or regex-sensitive source spelling as production truth.",
   "failed_run": 36054911943,
   "failed_job": 107819333389,
   "exact_production_sha": "3628225d0ebb834f496678b3d4e3c4414d26e5ee",
@@ -33,7 +33,8 @@
   ],
   "failed_approaches": [
     "The first regression forbade every body visibility wait in the verifier, accidentally rejecting the legitimate post-navigation English-route body wait. Readiness invariants must be scoped to the pre-runtime-ready phase.",
-    "Coupling readiness replay to exact callback names and one click API caused a false negative after equivalent safer pointer implementation evolved."
+    "Coupling readiness replay to exact callback names and one click API caused a false negative after equivalent safer pointer implementation evolved.",
+    "Using exact source-code regexes for locator spelling/callback syntax caused false-negative historical replay even though the semantic target, geometry checks and real Playwright pointer action were present."
   ],
   "production_promotion": {
     "source_main_sha": "c0e255d2d003c56d3eeda5f0980dd1ceb7691556",
