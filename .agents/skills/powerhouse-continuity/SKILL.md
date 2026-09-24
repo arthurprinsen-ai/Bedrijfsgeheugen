@@ -551,30 +551,15 @@ Canonical regression: `tests/brain-pricing-runtime-build-preservation-v1.test.mj
 Canonical browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
 
 
-## Pricing terminal live-proof closure
+## Derived metric compatibility
 
-Fingerprint: `pricing-terminal-live-proof-closure-20260924-v1`.
+Fingerprint: `company-ledger-verified-value-semantics-20260924-v1`.
 
-For pricing/i18n incident closure:
-- the canonical production snapshot workflow is the deployment authority; do not substitute an ad-hoc deploy path;
-- branch protection and the required `test` check remain mandatory before merge;
-- after protected merge, require Netlify provider-terminal readiness plus exact `release.json` commit/context/deploy-id readback;
-- execute `tools/site-shell/verify-pricing-i18n-production.mjs` against production and require visible lifecycle, plan-group, monthly/yearly and NL→EN state changes;
-- only after those proofs may Brain learning and ledger move to `LIVE_BEWEZEN`;
-- proof-trigger commits are operational artifacts and must preserve the same canonical obligation lineage rather than spawning a parallel delivery route.
+When introducing a stricter evidence-backed metric on top of an existing Powerhouse aggregate:
+- do not silently tighten or redefine the established aggregate contract;
+- keep legacy economics compatible unless a separately versioned migration explicitly changes it;
+- model the stricter metric with its own eligibility set and field/read-model;
+- prove both old aggregate semantics and new strict semantics in one regression fixture;
+- treat a main-baseline regression discovered by an unrelated delivery lane as inherited baseline evidence, then repair the baseline separately before re-proving the blocked candidate.
 
-
-## Public static-locale authority
-
-Fingerprint: `public-i18n-static-route-authority-20260924-v1`.
-
-For the public website:
-- an unprefixed route such as `/prijzen` initializes as Dutch regardless of stale `bg_locale` storage;
-- persisted locale may control portal runtime translation, but is not initial authority for public pages;
-- explicit public language changes navigate to canonical static `/nl/*` or `/en/*` routes;
-- never reintroduce runtime translation on an unprefixed public route merely to honor stored preference;
-- keep the explicit `data-bg-static-translated=false` English fallback fail-closed and prove it separately;
-- production closure requires absence of the language-switch error plus browser-proven NL→EN navigation and visible English copy.
-
-Canonical learning: `brain/learning/public-i18n-static-route-authority-20260924-v1.json`.
-Canonical regression: `tests/brain-public-i18n-static-route-authority-v1.test.mjs`.
+For Verified Value Created specifically, `verifiedValueByProblem` requires executed + verified + evidence, while `economics.realizedValue` retains verified-value ledger compatibility.
