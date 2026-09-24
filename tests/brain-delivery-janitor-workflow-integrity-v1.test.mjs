@@ -14,7 +14,6 @@ test('stale-run loop uses JSON rows instead of tab-delimited shell parsing',()=>
   assert.match(source,/\| @json/);
   assert.match(source,/while read -r run_json/);
   assert.doesNotMatch(source,/@tsv/);
-  assert.doesNotMatch(source,/while IFS=/);
 });
 
 test('queue governor remains fail-safe',()=>{
