@@ -1,0 +1,44 @@
+{
+  "fingerprint": "pricing-production-bootstrap-retry-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_BROWSER_PROOF_RESILIENCE",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The generic production route verifier proved the route healthy, yet the pricing-specific verifier intermittently timed out during its initial body/runtime-ready bootstrap before testing any control. It used one page and one readiness attempt, so transient CDN/browser readiness races blocked terminal proof.",
+  "prevention_rule": "The pricing production verifier retries only TimeoutError during its initial page/body/runtime-ready bootstrap, using a fresh page per attempt, maximum three attempts with bounded backoff. All product interaction assertions remain unchanged and non-timeout failures remain terminal.",
+  "failed_approaches": [
+    "Retrying the entire failed workflow confirmed the failure class moved between bootstrap and actionability, proving a single unbounded attempt was too fragile.",
+    "Verifier-only stable scrolling fixed the later scroll actionability race but could not address a prior body/runtime bootstrap timeout."
+  ],
+  "evidence": {
+    "failed_run": 36054911943,
+    "failed_job": 107819333389,
+    "exact_production_sha": "3628225d0ebb834f496678b3d4e3c4414d26e5ee",
+    "route": "/prijzen",
+    "observed_failure": "locator.waitFor body visible Timeout 15000ms",
+    "generic_route_gate": "success"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "PRICING_PRODUCTION_BOOTSTRAP_TRANSIENT_TIMEOUT",
+    "scope": "PRODUCTION_BROWSER_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-production-bootstrap-retry-v1.test.mjs",
+      "tests/brain-pricing-production-actionability-v1.test.mjs"
+    ],
+    "invariants": [
+      "fresh page per bootstrap attempt",
+      "maximum three attempts",
+      "retry only TimeoutError",
+      "real interaction assertions unchanged",
+      "force click and DOM click bypass remain forbidden"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after protected merge and exact-production pricing lifecycle, billing and English-route browser proof."
+}

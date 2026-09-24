@@ -4,18 +4,35 @@ async function expectVisible(locator, label) {
   if (!await locator.isVisible().catch(()=>false)) throw new Error(label + ' is not visible');
 }
 
+async function openPricingPage(browser, baseUrl, nonce, errors, { attempts = 3 } = {}) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    const page = await browser.newPage({ viewport:{ width:390, height:844 } });
+    page.on('pageerror', error => errors.push(String(error?.message || error)));
+    try {
+      await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce + '&attempt=' + attempt, { waitUntil:'domcontentloaded', timeout:30_000 });
+      await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+      await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
+      return page;
+    } catch (error) {
+      lastError = error;
+      await page.close().catch(()=>{});
+      if (attempt >= attempts || error?.name !== 'TimeoutError') throw error;
+      await new Promise(resolve => setTimeout(resolve, 1_000 * attempt));
+    }
+  }
+  throw lastError;
+}
+
 async function run() {
   const baseUrl = process.env.BASE_URL || 'https://www.bedrijfsgeheugen.nl';
   const { chromium } = await import('playwright');
   const browser = await chromium.launch({ headless:true });
-  const page = await browser.newPage({ viewport:{ width:390, height:844 } });
   const errors = [];
-  page.on('pageerror', error => errors.push(String(error?.message || error)));
+  let page = null;
   try {
     const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
-    await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
-    await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
+    page = await openPricingPage(browser, baseUrl, nonce, errors);
 
     // Lifecycle toggle must change the actual visible panel.
     // Keep this a real pointer click: position the control below sticky chrome first.
@@ -72,6 +89,7 @@ async function run() {
     if (errors.length) throw new Error('Browser page errors: ' + JSON.stringify(errors));
     console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'en'}));
   } finally {
+    if (page) await page.close().catch(()=>{});
     await browser.close();
   }
 }

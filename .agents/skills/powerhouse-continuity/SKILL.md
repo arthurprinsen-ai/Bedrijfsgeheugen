@@ -794,3 +794,19 @@ When a production browser proof sees a real control but Playwright `scrollIntoVi
 
 Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
 Learning: `brain/learning/pricing-production-stable-scroll-20260924-v1.json`.
+
+
+## Pricing production bootstrap retry
+
+Fingerprint: `pricing-production-bootstrap-retry-v1`.
+
+When the generic production route gate is healthy but the pricing-specific verifier times out before its first interaction:
+- classify body/runtime-ready `TimeoutError` as bounded bootstrap-readiness uncertainty, not product success or product failure;
+- retry on a fresh mobile page, maximum three attempts;
+- retry only `TimeoutError`; all other errors remain immediate failures;
+- keep all lifecycle, plan, billing and language interactions real and unchanged;
+- never use `force:true` or DOM `.click()` to pass the proof;
+- keep regression expectations synchronized with the canonical verifier so test drift cannot resurrect retired actionability methods.
+
+Regression: `tests/brain-pricing-production-bootstrap-retry-v1.test.mjs`.
+Learning: `brain/learning/pricing-production-bootstrap-retry-20260924-v1.json`.
