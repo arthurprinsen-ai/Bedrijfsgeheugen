@@ -72,6 +72,7 @@ Traffic volume alone must never outrank order/revenue evidence.
 - Only a `CREATE_INTENT_GAP_CONTENT` decision may enter `powerhouse_content_recommendations` for the blog channel. Reuse the existing content orchestrator and protected blog publisher; never create a parallel publishing path.
 - Every autonomous first-mover publication must preserve query, source freshness, owner check, forecast lineage, CTA target and later GSC/lead/order/revenue outcome for calibration.
 - The runtime intent-owner projection must remain test-equal to `site/seo-order-map.json` plus `site/seo-order-expansion.json`.
+- Every new SEO runtime function or RPC surface must be registered in the Powerhouse quality-surface registry with a green evidence contract before it can be treated as structurally closed.
 
 ## Commercial clarity on money pages
 

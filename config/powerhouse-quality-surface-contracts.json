@@ -121,6 +121,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-seo-opportunity-resolver",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-seo-opportunity-resolver/index.ts",
+      "evidence_contract": "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-social-publisher",
       "type": "function",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
