@@ -452,3 +452,13 @@ Fingerprint: `netlify-github-oidc-deploy-bridge-20260924-v1`.
 - Store deploy transport encrypted in a backend secret store; the current canonical bridge uses Supabase Vault plus a service-role-only RPC.
 - Mask the returned transport before writing it to `GITHUB_ENV`; never print it, commit it, attach it as an artifact, or expose it to the user.
 - Exact Netlify SHA plus pricing/i18n production browser proof remain mandatory for `LIVE_BEWEZEN`.
+
+
+## Netlify OIDC linked-build fallback
+
+Fingerprint: `netlify-oidc-linked-build-fallback-20260924-v1`.
+
+- Production delivery order is: bounded Git-linked wait → OIDC linked-repository build for `main` → bounded exact-SHA wait → MCP deploy fallback.
+- Netlify credentials remain server-side in the OIDC bridge; workflow logs may expose only non-secret build/deploy identifiers.
+- A green transport command is never equivalent to production success.
+- Closure still requires exact `release.json` SHA/context plus pricing/i18n browser proof.
