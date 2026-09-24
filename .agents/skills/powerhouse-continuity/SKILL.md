@@ -762,3 +762,19 @@ If production runtime is already merged but the canonical functional proof was c
 - terminal proof still requires exact production SHA/provider deploy identity and the real production browser interaction.
 
 Learning: `brain/learning/pricing-i18n-terminal-readback-refresh-20260924-v1.json`.
+
+
+## Production route body-readiness retry
+
+Fingerprint: `production-route-body-readiness-retry-v1`.
+
+When exact production SHA is already proven but the generic browser route verifier hits a transient Playwright `TimeoutError` during navigation/body readiness:
+- retry the complete route observation on a fresh page;
+- maximum three attempts with bounded backoff;
+- retry only `TimeoutError`;
+- all other errors fail immediately;
+- exhaustion remains terminal;
+- never skip the route gate or pricing/i18n proof because deployment identity is already green.
+
+Regression: `tests/brain-production-route-body-readiness-retry-v1.test.mjs`.
+Learning: `brain/learning/production-route-body-readiness-retry-20260924-v1.json`.
