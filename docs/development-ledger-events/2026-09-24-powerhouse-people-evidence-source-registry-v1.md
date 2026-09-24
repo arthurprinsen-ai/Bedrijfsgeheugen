@@ -27,3 +27,6 @@ Only protected merge to `main`, successful production deploy and exact productio
 
 ## Baseline refresh
 Before terminal merge, `main` advanced to `984f679515fff2d9e4a4f10c0b187e95e96a1561` via #2832, which fixes the unrelated pricing production pointer/readback regressions surfaced by the backend lane. This candidate is re-evaluated against that current base; no duplicate pricing implementation is introduced here.
+
+## Integration contract reconciliation
+Fresh lane verification against current main exposed two legacy pricing tests that still required the superseded locator-auto-wait implementation (`scrollIntoViewIfNeeded` / `lossButton.click`). Current main #2832 intentionally replaced that mechanism with direct DOM visibility/geometry plus a real `page.mouse.click` because locator geometry auto-waits produced repeated production false negatives. The two legacy guards were reconciled to assert the same user-safety invariants as the canonical #2832 regression: visible/actionable geometry, real pointer interaction, no `force:true`, and no DOM-click bypass. No pricing runtime/product code was changed by this reconciliation.
