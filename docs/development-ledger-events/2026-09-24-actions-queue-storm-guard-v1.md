@@ -10,3 +10,9 @@
 - Regression: `tests/delivery-powerhouse-supervisor.test.mjs`
 - Delivery PR: #2799
 - Invariant: recovery automation must reduce backlog and must never amplify an already saturated Actions control plane
+
+## Duplicate-obligation cleanup
+
+- PR #2801: closed, SUPERSEDED by #2804.
+- PR #2803: closed, SUPERSEDED by #2804.
+- #2804 is the single canonical current-main recovery candidate for this obligation.
