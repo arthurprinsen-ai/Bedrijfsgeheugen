@@ -33,6 +33,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-provider-credit-deploy-auth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-provider-credit-deploy-auth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-provider-credit-deploy-auth-v1.test.mjs"
     ]
   },
   "test_evidence": [
