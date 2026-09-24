@@ -18,11 +18,13 @@ async function run() {
 
     // Lifecycle toggle must change the actual visible panel.
     // Keep this a real pointer click: position the control below sticky chrome first.
-    const lossButton = page.locator('[data-bg-stage="loss"]');
-    const lossVisibility = await lossButton.evaluate(element => {
+    const lossVisibility = await page.evaluate(() => {
+      const element = document.querySelector('[data-bg-stage="loss"]');
+      if (!(element instanceof HTMLElement)) return { missing:true };
       const rect = element.getBoundingClientRect();
       const style = getComputedStyle(element);
       return {
+        missing:false,
         display: style.display,
         visibility: style.visibility,
         opacity: Number(style.opacity || '1'),
@@ -30,23 +32,31 @@ async function run() {
         height: rect.height,
       };
     });
+    if (lossVisibility.missing) throw new Error('loss stage control is missing from production DOM');
     if (lossVisibility.display === 'none' || lossVisibility.visibility === 'hidden' || lossVisibility.opacity === 0 || lossVisibility.width < 1 || lossVisibility.height < 1) {
       throw new Error('loss stage control is not visibly actionable: ' + JSON.stringify(lossVisibility));
     }
-    await lossButton.evaluate(element => element.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' }));
+    await page.evaluate(() => {
+      const element = document.querySelector('[data-bg-stage="loss"]');
+      if (!(element instanceof HTMLElement)) throw new Error('loss stage control disappeared before scroll');
+      element.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' });
+    });
     await page.waitForTimeout(100);
-    const lossBox = await lossButton.evaluate(element => {
+    const lossBox = await page.evaluate(() => {
+      const element = document.querySelector('[data-bg-stage="loss"]');
+      if (!(element instanceof HTMLElement)) return null;
       const rect = element.getBoundingClientRect();
       return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
     });
-    if (lossBox.width < 1 || lossBox.height < 1) throw new Error('loss stage control has no actionable box: ' + JSON.stringify(lossBox));
+    if (!lossBox || lossBox.width < 1 || lossBox.height < 1) throw new Error('loss stage control has no actionable box: ' + JSON.stringify(lossBox));
     await page.mouse.click(lossBox.x + lossBox.width / 2, lossBox.y + lossBox.height / 2);
     await page.waitForTimeout(150);
     const loss = page.locator('[data-bg-stage-panel="loss"]');
     const grow = page.locator('[data-bg-stage-panel="grow"]');
     await expectVisible(loss, 'loss stage panel after click');
     if (await grow.isVisible().catch(()=>false)) throw new Error('grow stage panel stayed visible after selecting loss');
-    if ((await page.locator('[data-bg-stage="loss"]').getAttribute('aria-selected')) !== 'true') throw new Error('loss stage aria-selected did not become true');
+    const lossSelected = await page.evaluate(() => document.querySelector('[data-bg-stage="loss"]')?.getAttribute('aria-selected') || null);
+    if (lossSelected !== 'true') throw new Error('loss stage aria-selected did not become true');
 
     // Start/run tab must alter visible plan-card group.
     await page.locator('[data-bg-price-tab="run"]').click();
