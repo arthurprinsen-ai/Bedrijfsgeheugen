@@ -83,7 +83,7 @@ jobs:
             const delays = [250, 500, 1000];
             for (let attempt = 0; attempt <= delays.length; attempt += 1) {
               try {
-                return JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8'}));
+                return JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8',maxBuffer:16*1024*1024}));
               } catch (error) {
                 if (!transientApiFailure(error) || attempt === delays.length) throw error;
                 console.warn(`Transient GitHub API failure for ${path}; retry ${attempt + 1}/${delays.length}`);

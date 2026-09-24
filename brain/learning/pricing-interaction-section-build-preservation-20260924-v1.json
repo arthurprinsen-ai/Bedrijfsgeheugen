@@ -9,14 +9,19 @@
     "Restore both section#prijzen-pakketten and section#pakketten from the captured canonical source after V18 transforms.",
     "Fail the build if lifecycle, stage-panel, plan-tab or billing selectors are missing after restore.",
     "Production closure requires the existing browser verifier to click lifecycle, plan and billing controls and then switch to the static English route.",
-    "Section extraction must match id attributes independent of HTML attribute order."
+    "Section extraction must match id attributes independent of HTML attribute order.",
+    "Use the protected Production Source Snapshot workflow as the canonical terminal deploy path; never bypass the required test gate.",
+    "Do not transition this learning to LIVE_BEWEZEN until exact production SHA/context/deploy-id and the pricing/i18n Playwright interaction gate are both green."
   ],
   "evidence": {
     "production_commit": "be5ec08e69600acfdba31b28af0d6736c84917d6",
     "production_deploy_id": "6ab5392e62dd995771d76b00",
     "failed_snapshot_run": 36015748370,
     "failed_readback_run": 36015748460,
-    "failure": "Playwright timed out waiting for [data-bg-stage=\"loss\"] although exact source contained the selector."
+    "failure": "Playwright timed out waiting for [data-bg-stage=\"loss\"] although exact source contained the selector.",
+    "terminal_proof_pr": 2795,
+    "terminal_proof_candidate": "ops/pricing-terminal-live-proof-20260924",
+    "terminal_proof_state": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_BROWSER_PROOF"
   },
   "compiler": {
     "failure_class": "PRICING_INTERACTION_SECTION_NOT_PRESERVED",
@@ -24,7 +29,7 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 2,
+  "revision": 3,
   "evaluation": {
     "historical_replay": [
       "tests/brain-pricing-runtime-build-preservation-v1.test.mjs"

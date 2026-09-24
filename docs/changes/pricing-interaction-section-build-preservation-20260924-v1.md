@@ -8,3 +8,6 @@ De canonical restore behandelt `#prijzen-pakketten` en `#pakketten` voortaan als
 
 ## Bewijscontract
 Bronmarkers alleen zijn onvoldoende. `tools/site-shell/verify-pricing-i18n-production.mjs` blijft de terminale gate en moet in productie werkelijk klikken op lifecycle, plan-tab en jaarbilling en vervolgens de statische Engelse route bewijzen.
+
+## Terminale live-borging
+De closure loopt via de beschermde productie-keten: required test → protected merge → Netlify provider-terminal deploy → exact `release.json` SHA/context/deploy-id → Playwright-interactieproof. De browserproof moet de lifecycle-keuze, pakket-tab, maand/jaar-toggle en NL→EN-route werkelijk bedienen en de zichtbare toestand controleren. Een deploy die alleen `ready` is, of selectors die alleen in HTML aanwezig zijn, is nadrukkelijk geen `LIVE_BEWEZEN`.

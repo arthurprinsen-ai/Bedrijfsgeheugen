@@ -1,0 +1,44 @@
+{
+  "fingerprint": "public-i18n-static-route-authority-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PUBLIC_I18N_RUNTIME_AUTHORITY",
+  "root_cause": "On unprefixed public routes, i18n init reused a persisted bg_locale preference. A stale English preference therefore triggered runtime translation on the Dutch /prijzen page during initial load. When the runtime translation provider was unavailable or incomplete, the visible language control exposed 'Switching language failed. Try again.' even though public language switching was intended to use static /en/* routes.",
+  "prevention": [
+    "For public pages, derive initial locale only from the explicit static route prefix; unprefixed routes initialize as Dutch.",
+    "Persisted bg_locale may drive portal runtime translation, but may not runtime-translate an unprefixed public page.",
+    "Public NL→EN changes navigate to the canonical /en/* route through localizedHref.",
+    "Keep runtime translation only for portal pages and the explicit fallback case where an /en/* artifact is marked data-bg-static-translated=false.",
+    "Production closure requires the pricing/i18n Playwright gate plus absence of the visible language-switch failure message."
+  ],
+  "evidence": {
+    "observed_live_route": "https://www.bedrijfsgeheugen.nl/prijzen",
+    "observed_symptom": "Switching language failed. Try again.",
+    "delivery_pr": 2795,
+    "candidate_branch": "ops/pricing-terminal-live-proof-20260924",
+    "terminal_state": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_BROWSER_PROOF"
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_UNPREFIXED_ROUTE_STALE_LOCALE_RUNTIME_TRANSLATION",
+    "scope": "WEBSITE_PUBLIC_I18N",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-i18n-static-route-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-i18n-static-route-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-public-i18n-static-route-authority-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
