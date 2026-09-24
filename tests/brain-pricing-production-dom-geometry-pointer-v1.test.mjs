@@ -4,10 +4,10 @@ import {readFile} from 'node:fs/promises';
 
 test('pricing production verifier uses DOM geometry and a real pointer without locator geometry auto-waits', async()=>{
   const source=await readFile('tools/site-shell/verify-pricing-i18n-production.mjs','utf8');
-  assert.match(source,/html\[data-bg-pricing-interactions="ready-v3"\]/);
+  assert.match(source,/bgPricingInteractions === 'ready-v3'/);\n  assert.match(source,/document\.querySelector\('\[data-bg-stage="loss"\]'\)/);\n  assert.match(source,/loss stage control is missing after pricing readiness/);
   assert.doesNotMatch(source,/lossButton\.waitFor\(\{ state:'visible'/);
   assert.doesNotMatch(source,/scrollIntoViewIfNeeded\(\)/);
-  assert.doesNotMatch(source,/lossButton\.boundingBox\(\)/);
+  assert.doesNotMatch(source,/lossButton\.boundingBox\(\)/);\n  assert.doesNotMatch(source,/lossButton\.evaluate\(/);
   assert.match(source,/getComputedStyle\(element\)/);
   assert.match(source,/getBoundingClientRect\(\)/);
   assert.match(source,/lossVisibility\.display === 'none'/);
