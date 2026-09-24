@@ -1,0 +1,47 @@
+{
+  "fingerprint": "actions-queue-storm-guard-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "GitHub Actions accumulated 19 in_progress runs and 121 queued runs while repository delivery recovery continued creating recovery work.",
+  "root_cause": "Powerhouse Delivery Recovery Supervisor was triggered both on every push to main and every five minutes. With 55 open pull requests, one repository-wide scan could dispatch Required test and Unified Brain Delivery recovery work for multiple PRs. Recovery traffic therefore amplified control-plane saturation instead of applying backpressure.",
+  "prevention": [
+    "Repository-wide delivery recovery must never run on every main push.",
+    "Recovery scanning is scheduled/manual only and uses a lower cadence.",
+    "Open a repository-wide circuit breaker when active or queued Actions work reaches the configured threshold.",
+    "Allow at most one PR recovery per supervisor cycle.",
+    "Suppress duplicate recovery dispatch when an equivalent active run already exists.",
+    "CI must regression-test these backpressure invariants so later workflow changes cannot silently restore fan-out.",
+    "Website release-risk must classify recovery-supervisor workflow and its regression tests as non-artifact control-plane changes, so CI-only fixes never launch full public-site browser crawls."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-actions-queue-storm-guard-v1.test.mjs",
+    "tests/site-shell-website-release-risk.test.mjs"
+  ],
+  "evidence": {
+    "observed_in_progress": 19,
+    "observed_queued": 121,
+    "open_pull_requests_observed": 55,
+    "recovery_workflow": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "circuit_breaker_active_runs": 20,
+    "recovery_pr_budget_per_cycle": 1,
+    "website_control_plane_browser_fanout_prevented": true
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}

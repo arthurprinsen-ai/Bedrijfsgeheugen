@@ -1,12 +1,12 @@
+# Queue-storm guard v1: bounded recovery, repository backpressure, no main-push fan-out
 name: Powerhouse Delivery Recovery Supervisor
 
 on:
-  # Feature-branch pushes must never spawn a repository-wide recovery scan.
-  push:
-    branches: [main]
+  # Recovery is scheduled/manual only. A main push must never fan out into
+  # another repository-wide recovery scan.
   workflow_dispatch:
   schedule:
-    - cron: '*/5 * * * *'
+    - cron: '*/15 * * * *'
 
 permissions:
   contents: write
@@ -31,12 +31,25 @@ jobs:
       - name: Recover exact-head critical delivery workflows
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          ACTIVE_RUN_CIRCUIT_BREAKER: '20'
+          RECOVERY_PR_BUDGET: '1'
         shell: bash
         run: |
           set -euo pipefail
           repo="$GITHUB_REPOSITORY"
+          active_runs="$(gh api "repos/$repo/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="waiting" or .status=="requested")] | length')"
+          echo "::notice::ACTIONS_ACTIVE_RUNS:$active_runs circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
+          if [ "$active_runs" -ge "$ACTIVE_RUN_CIRCUIT_BREAKER" ]; then
+            echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$active_runs; recovery dispatch suppressed until backlog drains."
+            exit 0
+          fi
           gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
+          recovered_prs=0
           jq -c '.[]' /tmp/open-prs.json | while read -r pr; do
+            if [ "$recovered_prs" -ge "$RECOVERY_PR_BUDGET" ]; then
+              echo "::notice::RECOVERY_PR_BUDGET_EXHAUSTED:$RECOVERY_PR_BUDGET"
+              break
+            fi
             number="$(jq -r '.number' <<<"$pr")"
             head="$(jq -r '.head.sha' <<<"$pr")"
             branch="$(jq -r '.head.ref' <<<"$pr")"
@@ -55,10 +68,24 @@ jobs:
             )"
             state="$(jq -r '.state' <<<"$decision")"
             echo "PR#$number $head $state"
+            active_for_pr(){
+              workflow="$1"
+              gh api "repos/$repo/actions/workflows/$workflow/runs?per_page=100" --jq "[.workflow_runs[] | select((.status==\"queued\" or .status==\"in_progress\" or .status==\"pending\" or .status==\"waiting\" or .status==\"requested\") and ((.display_title // \"\") | contains(\"PR #$number\")))] | length"
+            }
             dispatch_required(){
+              active="$(active_for_pr required-test.yml)"
+              if [ "$active" -gt 0 ]; then
+                echo "::notice::PR#$number Required test already active; duplicate dispatch suppressed."
+                return 0
+              fi
               gh workflow run required-test.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
             }
             dispatch_brain(){
+              active="$(active_for_pr unified-brain-delivery.yml)"
+              if [ "$active" -gt 0 ]; then
+                echo "::notice::PR#$number Unified Brain Delivery already active; duplicate dispatch suppressed."
+                return 0
+              fi
               gh workflow run unified-brain-delivery.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
             }
             case "$state" in
@@ -99,6 +126,12 @@ jobs:
                   echo "::warning::PR#$number could not be refreshed automatically; preserving same lineage fail-closed."
                   cat /tmp/merge-refresh.err || true
                 fi
+                ;;
+            esac
+            case "$state" in
+              ZERO_RUN_RECOVERY|PARTIAL_START_RECOVERY|STALE_QUEUE_RECOVERY)
+                recovered_prs=$((recovered_prs + 1))
+                echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
                 ;;
             esac
           done
