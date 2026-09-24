@@ -7,7 +7,8 @@
   "failed_approaches": [
     "Allowing four concurrent full-site translation workers by default.",
     "Retrying provider failures after short fixed delays without honoring Retry-After.",
-    "Treating provider availability and provider-friendly request pacing as the same thing."
+    "Treating provider availability and provider-friendly request pacing as the same thing.",
+    "Using a document-only main commit as a redeploy trigger even though Production Source Snapshot is path-filtered to changes in its own workflow file."
   ],
   "prevention": [
     "Production static translation defaults to one provider worker; concurrency can only be widened deliberately and remains capped.",
@@ -15,7 +16,8 @@
     "Provider Retry-After guidance is honored when present.",
     "Translation batches are paced between successes instead of sent as a burst.",
     "Production remains fail-closed: resilience may retry, but it may never publish untranslated English as success.",
-    "Every i18n resilience change reruns the exact production pricing/language browser proof."
+    "Every i18n resilience change reruns the exact production pricing/language browser proof.",
+    "When a terminal redeploy depends on Production Source Snapshot, the release lineage must change .github/workflows/production-source-snapshot.yml so the push path filter actually fires."
   ],
   "skill_targets": [
     "continuity",
@@ -34,7 +36,9 @@
     "current_main_before_change": "bb7de130203c84cecdd9fee9437a4a3b73c8de75",
     "blocked_release_main": "2b6ddbd75d4fb7e7b2ef2e8f4b067b6cfbc368d1",
     "production_env_verified": "ANTHROPIC_API_KEY exists with build scope; value intentionally not recorded.",
-    "provider_guidance": "Anthropic documents 429 rate limits, 529 overload and exponential retry for server errors."
+    "provider_guidance": "Anthropic documents 429 rate limits, 529 overload and exponential retry for server errors.",
+    "redeploy_trigger_learning": "Main commit c4df2ef4d1a783f6196231edf1e8e19680a38b3d did not trigger Production Source Snapshot because it changed only documentation.",
+    "production_build_concurrency": "STATIC_I18N_CONCURRENCY=1 is set in Netlify production build scope."
   },
   "compiler": {
     "failure_class": "PROVIDER_THROTTLE_RELEASE_BLOCK",
@@ -43,5 +47,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 2
 }
