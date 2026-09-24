@@ -1,0 +1,33 @@
+{
+  "fingerprint": "production-readback-pricing-i18n-browser-gate-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production Release Readback proved exact deploy identity and generic routes but did not execute the pricing lifecycle toggle, plan tab, billing switch and NL→EN language interaction that had repeatedly regressed.",
+  "root_cause": "The canonical production readback used generic route smoke verification while the pricing/i18n verifier existed only in a separate workflow. That left a gap where deployment could be LIVE_VERIFIED without the incident-specific interaction proof.",
+  "prevention": [
+    "Every website production readback must execute tools/site-shell/verify-pricing-i18n-production.mjs after exact deploy identity is observed.",
+    "The browser proof must click lifecycle, plan and billing controls and navigate through the actual language switch to /en/prijzen.",
+    "A change to the production readback workflow itself must force one /prijzen browser proof so the new gate proves itself immediately.",
+    "LIVE_BEWEZEN requires both exact production SHA and interaction-level browser success."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs"],
+    "shadow": ["tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs"],
+    "canary": ["tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs"],
+  "evidence": {
+    "previous_production_sha": "b42ac10b4d04ba314f6494aee0b6be283a0f8afa",
+    "previous_deploy_id": "6ab50e0e697bbc00085f3f18",
+    "previous_readback_run_id": "35995190305",
+    "gap": "generic route proof without pricing/i18n interaction proof"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRODUCTION_INTERACTION_PROOF_GAP",
+    "scope": "WEBSITE_PRODUCTION_READBACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
