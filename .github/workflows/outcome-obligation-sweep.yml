@@ -44,6 +44,10 @@ permissions:
   actions: read
   pull-requests: read
 
+concurrency:
+  group: outcome-obligation-sweep-${{ inputs.obligation_id || 'global' }}
+  cancel-in-progress: true
+
 env:
   NODE_VERSION: '22'
 
