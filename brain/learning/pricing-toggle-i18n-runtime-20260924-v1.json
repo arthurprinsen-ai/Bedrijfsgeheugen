@@ -11,7 +11,8 @@
     "Localized /en/* and /nl/* public routes require explicit routing coverage and production navigation proof.",
     "A production English-switch proof must verify html lang=en, visible English copy, absence of the Dutch pricing H1, and absence of the runtime translation failure message.",
     "Tests, docs, skills and runtime code must express one i18n switching contract; contradictory in-place vs static-route rules are forbidden.",
-    "No LIVE_BEWEZEN claim is valid for an interaction defect without browser-level production evidence of that exact interaction."
+    "No LIVE_BEWEZEN claim is valid for an interaction defect without browser-level production evidence of that exact interaction.",
+    "Production browser proofs for horizontally scrollable/mobile pricing controls must first prove actionability: scroll into view, visible non-zero bounding box, and successful Playwright trial click before the real click."
   ],
   "evidence": {
     "reported_symptoms": [
@@ -28,14 +29,17 @@
     "production_behavior_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
     "retrospective": "docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md",
     "static_route_contract_regression": "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs",
-    "contradictory_legacy_test": "tests/brain-i18n-in-place-switch-v1.test.mjs"
+    "contradictory_legacy_test": "tests/brain-i18n-in-place-switch-v1.test.mjs",
+    "actionability_failure": "Production deploy be5ec08e69600acfdba31b28af0d6736c84917d6 was exact and ready, but Playwright resolved the loss lifecycle button and timed out while waiting for it to become visible/enabled/stable on a 390px viewport.",
+    "actionability_regression": "tests/brain-pricing-production-actionability-proof-v1.test.mjs"
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-pricing-interactions-functional-v1.test.mjs",
       "tests/brain-pricing-toggle-runtime-v3.test.mjs",
       "tests/brain-i18n-in-place-switch-v1.test.mjs",
-      "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs"
+      "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs",
+      "tests/brain-pricing-production-actionability-proof-v1.test.mjs"
     ]
   },
   "test_evidence": [
@@ -43,7 +47,8 @@
     "tests/brain-pricing-toggle-runtime-v3.test.mjs",
     "tests/brain-i18n-in-place-switch-v1.test.mjs",
     "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs",
-    "tools/site-shell/verify-pricing-i18n-production.mjs"
+    "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "tests/brain-pricing-production-actionability-proof-v1.test.mjs"
   ],
   "compiler": {
     "failure_class": "INTERACTIVE_RUNTIME_PROOF_GAP",
@@ -61,7 +66,8 @@
     "Treating presence of data-bg-* markers as proof that clicks changed user-visible state.",
     "Relying on general route/browser health without an interaction-specific production assertion.",
     "Using runtime translation as the primary public-site language-switch path, allowing provider or runtime failure to leave Dutch copy visible.",
-    "Maintaining contradictory regressions where one test enforced in-place public switching while another enforced static localized routes."
+    "Maintaining contradictory regressions where one test enforced in-place public switching while another enforced static localized routes.",
+    "Calling locator.click() directly on horizontally scrollable mobile controls without first proving their actionable geometry and trial-click state."
   ],
-  "revision": 4
+  "revision": 5
 }
