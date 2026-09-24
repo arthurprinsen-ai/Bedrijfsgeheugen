@@ -32,3 +32,11 @@ The fix is only terminal when the existing canonical `Production Source Snapshot
 
 Status before promotion: `PROMOTION_PENDING`.
 
+## Regression scope correction
+
+A follow-up learning gate exposed an over-broad assertion: it rejected every `body visible` wait in the verifier. The actual production invariant is narrower:
+- before pricing interactions, readiness authority is `html[data-bg-pricing-interactions="ready-v3"]`;
+- after navigating to the static English document, a document/body visibility check is legitimate and independent.
+
+The regression now scopes the negative body-visibility assertion to the pre-interaction verifier section only.
+
