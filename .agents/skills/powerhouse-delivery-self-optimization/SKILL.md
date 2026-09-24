@@ -412,3 +412,15 @@ When exact production, route rendering and product-specific readiness are proven
 - retain semantic postconditions after the click.
 Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
 
+
+
+## Regression-contract drift after canonical verifier changes
+
+Fingerprint: `delivery|regression-contract-drift|canonical-verifier|v1`.
+
+When a canonical implementation/verifier is intentionally replaced and a new regression test codifies that replacement:
+- search for older tests that assert the superseded mechanism;
+- treat mutually contradictory assertions as test-contract drift, not as an implementation failure;
+- update stale tests in the same recovery lineage so all tests enforce one canonical mechanism;
+- never weaken semantic postconditions merely to make CI green;
+- preserve fail-closed safety conditions and real production interaction requirements.
