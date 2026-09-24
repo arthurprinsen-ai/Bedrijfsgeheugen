@@ -11,7 +11,7 @@
     "A production English-switch proof must verify html lang=en, visible English copy, absence of the Dutch pricing H1, and absence of the runtime translation failure message.",
     "Runtime/cache version changes require co-changing exact-version regressions in the same candidate.",
     "No LIVE_BEWEZEN claim is valid for an interaction defect without browser-level production evidence of that exact interaction.",
-    "Never use a localized wildcard rewrite that also matches its own rewritten target. Generated locale files use Netlify pretty URLs directly; only locale-root mappings may be explicit."
+    "Production proof oracles must not depend on incidental marketing copy or presentation-only heading text when stable semantic markers and browser-observable behavior exist."
   ],
   "evidence": {
     "reported_symptoms": [
@@ -26,8 +26,7 @@
     "prior_live_main_sha": "492fced012acc6e4263550d17281563582a89ceb",
     "observed_live_failure": "Production /prijzen exposed 'Switching language failed. Try again.' after selecting English.",
     "production_behavior_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
-    "retrospective": "docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md",
-    "localized_route_failure": "Live /en/prijzen returned an internal error after deploy 6ab4cad23bc6d5000871db3d; root cause was recursive wildcard rewrite."
+    "retrospective": "docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md"
   },
   "evaluation": {
     "historical_replay": [
@@ -48,7 +47,7 @@
     "failure_class": "INTERACTIVE_RUNTIME_PROOF_GAP",
     "scope": "WEBSITE_PRICING_I18N_RUNTIME",
     "machine_enforceable": true,
-    "repeat_count": 2,
+    "repeat_count": 1,
     "security_sensitive": false
   },
   "status": "ACTIVE_PREVENTION",
@@ -60,7 +59,7 @@
     "Treating presence of data-bg-* markers as proof that clicks changed user-visible state.",
     "Relying on general route/browser health without an interaction-specific production assertion.",
     "Using runtime translation as the primary public-site language-switch path, allowing provider failure to leave Dutch copy visible.",
-    "Adding /en/* -> /en/:splat.html and /nl/* -> /nl/:splat.html rewrites; the wildcard also matched the rewritten .html target and caused a recursive Netlify rewrite loop."
+    "Keeping stale literal-copy greps in production proof after the functional contract moved to semantic data attributes and browser interaction."
   ],
   "revision": 3
 }

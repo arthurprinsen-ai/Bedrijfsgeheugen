@@ -1,3 +1,4 @@
+# Operational snapshot refresh: 2026-09-24 pricing-proof-oracle-v1
 # Operational snapshot refresh: 2026-09-24 pricing-i18n-interaction-proof-v1
 # Operational snapshot refresh: 2026-09-24 pricing-toggle-i18n-runtime-v1
 # Operational snapshot refresh: 2026-09-23 i18n-production-build-fallback-v1
@@ -109,9 +110,7 @@ jobs:
           set -euo pipefail
           for attempt in $(seq 1 30); do
             if curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?pricing_proof=${GITHUB_SHA}-${attempt}" -o /tmp/prijzen.html; then
-              if grep -q '<h3>Build</h3>' /tmp/prijzen.html \
-                && grep -q 'Wat moet het opleveren om zichzelf terug te verdienen?' /tmp/prijzen.html \
-                && grep -q 'data-bg-billing="monthly"' /tmp/prijzen.html \
+              if grep -q 'data-bg-billing="monthly"' /tmp/prijzen.html \
                 && grep -q 'data-bg-billing="yearly"' /tmp/prijzen.html \
                 && grep -q 'data-bg-price-tab="start"' /tmp/prijzen.html \
                 && grep -q 'data-bg-price-tab="run"' /tmp/prijzen.html \
