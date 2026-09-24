@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: production-release-readback
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: read

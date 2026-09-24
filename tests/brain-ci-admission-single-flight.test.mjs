@@ -56,3 +56,21 @@ test('queue pressure forecast blocks fan-out before mutation', () => {
   assert.equal(healthy.state,'HEALTHY');
   assert.equal(healthy.allowOptionalDispatch,true);
 });
+
+
+test('main push verification workflows are true single-flight and never key on run_id', async () => {
+  const brand=await readFile('.github/workflows/canonical-brand-shell-live-readback.yml','utf8');
+  assert.match(brand,/concurrency:\n\s+group: canonical-brand-shell-live-readback-/);
+  assert.match(brand,/cancel-in-progress: true/);
+
+  const release=await readFile('.github/workflows/production-release-readback.yml','utf8');
+  assert.match(release,/group: production-release-readback\n\s+cancel-in-progress: true/);
+
+  for (const path of ['.github/workflows/powerhouse-codeql.yml','.github/workflows/codeql.yml']) {
+    const yml=await readFile(path,'utf8');
+    const concurrency=yml.slice(yml.indexOf('concurrency:'),yml.indexOf('\njobs:'));
+    assert.doesNotMatch(concurrency,/github\.run_id/);
+    assert.match(concurrency,/github\.ref_name/);
+    assert.match(concurrency,/cancel-in-progress: true/);
+  }
+});
