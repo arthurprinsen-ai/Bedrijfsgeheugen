@@ -65,6 +65,56 @@ async function composioLinkedInContext(db:any){
   return {apiKey,accountId,userId};
 }
 
+async function runLinkedInCockpitAutopilot(db:any){
+  const {data:actions,error}=await db.from('powerhouse_sales_actions')
+    .select('action_id,action_type,channel,source_url,message_draft,status,person_name,company_name,evidence,priority')
+    .eq('status','suggested')
+    .order('priority',{ascending:false})
+    .limit(15);
+  if(error)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_READ:'+error.message);
+  const results:any[]=[];
+  for(const action of actions||[]){
+    const type=clean(action.action_type);
+    const sourceUrl=clean(action.source_url);
+    const message=clean(action.message_draft);
+    if(type!=='reply_post'){
+      results.push({action_id:action.action_id,status:'exception',reason:['reply_dm','activate_connection'].includes(type)?'LINKEDIN_CAPABILITY_NOT_AVAILABLE':'ACTION_TYPE_NOT_AUTOMATABLE',action_type:type});
+      continue;
+    }
+    if(!/^https:\/\/(?:www\.)?linkedin\.com\/(?:posts\/|feed\/update\/|pulse\/)/i.test(sourceUrl)||!message){
+      results.push({action_id:action.action_id,status:'blocked',reason:'CONCRETE_POST_CONTEXT_REQUIRED'});
+      continue;
+    }
+    const {data:claimed,error:claimError}=await db.from('powerhouse_sales_actions')
+      .update({status:'dispatching',updated_at:new Date().toISOString()})
+      .eq('action_id',action.action_id).eq('status','suggested')
+      .select('action_id').maybeSingle();
+    if(claimError)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_CLAIM:'+claimError.message);
+    if(!claimed){results.push({action_id:action.action_id,status:'skipped',reason:'ALREADY_CLAIMED'});continue;}
+    try{
+      const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
+      const provider=await composioExecute(apiKey,accountId,'LINKEDIN_CREATE_COMMENT_ON_POST',
+        `Create this exact LinkedIn comment on the post at ${sourceUrl}. Comment text: ${message}`);
+      const providerId=deepPickId(provider?.data||provider,['id','comment_id','commentId']);
+      if(!providerId)throw new Error('COMPOSIO_LINKEDIN_COMMENT_ID_MISSING');
+      const evidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',provider:'composio',tool:'LINKEDIN_CREATE_COMMENT_ON_POST',provider_id:providerId,source_url:sourceUrl,provider_ack_verified:true,exact_readback_available:false,executed_at:new Date().toISOString()}};
+      const {error:updateError}=await db.from('powerhouse_sales_actions')
+        .update({status:'executed',evidence,updated_at:new Date().toISOString()})
+        .eq('action_id',action.action_id).eq('status','dispatching');
+      if(updateError)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_COMPLETE:'+updateError.message);
+      const dedupe=await digest('cockpit-autopilot:'+action.action_id+':'+providerId);
+      await db.rpc('powerhouse_record_outcome',{p_action_id:action.action_id,p_dedupe_key:dedupe,p_outcome_type:'executed',p_evidence:evidence.autopilot,p_revenue_eur:0}).catch(()=>null);
+      results.push({action_id:action.action_id,status:'executed',provider:'composio',provider_id:providerId});
+    }catch(error){
+      const messageError=error instanceof Error?error.message:String(error);
+      const evidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',failed_at:new Date().toISOString(),error:messageError,source_url:sourceUrl}};
+      await db.from('powerhouse_sales_actions').update({status:'suggested',evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','dispatching');
+      results.push({action_id:action.action_id,status:'failed',error:messageError});
+    }
+  }
+  return results;
+}
+
 async function composioConnectedAccount(db:any,toolkit:string,secretName:string){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_AUTH_REQUIRED`);
@@ -628,6 +678,7 @@ Deno.serve(async (req) => {
   try { body = await req.json(); } catch { /* default */ }
   const runDate = clean(body.runDate) || today();
   const mode = clean(body.mode) || 'run';
+  if (mode === 'cockpit_autopilot') return json({ ok: true, runDate, cockpit_autopilot: await runLinkedInCockpitAutopilot(db) });
   const { data: integration } = await db.from('bg_integrations').select('token').eq('integration', 'buffer').eq('status', 'actief').maybeSingle();
   const bufferToken = clean(integration?.token) || null;
 
@@ -650,6 +701,7 @@ Deno.serve(async (req) => {
   }
   if (mode === 'audit_only') return json({ ok: true, runDate, containment_sweep, provider_reconciliation, buffer_circuit:bufferCircuit });
 
+  const cockpit_autopilot = await runLinkedInCockpitAutopilot(db);
   const channels = ['linkedin_personal','linkedin_company','instagram_company'];
   const [{ data: rows, error: rowsError }, { data: artifacts, error: artifactsError }] = await Promise.all([
     db.from('powerhouse_channel_decisions')
@@ -900,7 +952,7 @@ Deno.serve(async (req) => {
     await recordObligation(db, runDate, row.channel, providerStatus === 'sent' ? 'PUBLISHED' : 'DISPATCHED', readback.id, evidence, providerStatus === 'sent' ? 'Verify public/outcome proof, then measure and learn.' : 'Await provider send, then reconcile.', null);
     results.push({ channel: row.channel, status: providerStatus, post_id: readback.id, provider_truth_verified: true });
   }
-  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, results, buffer_circuit:bufferCircuit, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
+  return json({ ok: true, runDate, containment_sweep, provider_reconciliation, cockpit_autopilot, results, buffer_circuit:bufferCircuit, provider_truth_verified: true, publication_authority: PUBLICATION_AUTHORITY });
   } catch (error) {
     if (error instanceof BufferHttpError && error.status === 429) {
       return json({ ok: false, error: 'BUFFER_RATE_LIMITED', retryable: true, retry_after: error.retryAfter }, 429);
