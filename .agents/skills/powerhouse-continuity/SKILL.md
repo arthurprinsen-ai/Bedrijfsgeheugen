@@ -369,3 +369,14 @@ For user-visible toggles, tabs, billing switches and language controls:
 
 Canonical verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
 Canonical retrospective: `docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md`.
+
+
+## MKB acquisition / trigger-sales continuity
+
+Fingerprint: `sales|mkb-trigger-intelligence|problem-led-partner-distribution|v1`.
+
+For MKB commercial work, continue the existing Revenue & Growth Core and predictive sales cockpit. Do not create a generic cold-outreach subsystem or parallel lead brain.
+
+Required sequence: company-specific external evidence → buying trigger → explicit problem hypothesis → contextual content/outreach → Frisse Blik → paid scan → implementation → portal/SaaS → measured outcome → case/referral.
+
+No company-specific evidence means `INSUFFICIENT_EVIDENCE`; urgency may never be fabricated. Partner distribution and content-as-pre-sales are first-class commercial routes. Reuse `docs/brain/mkb-trigger-sales-intelligence-v1.md` and `docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md`.
