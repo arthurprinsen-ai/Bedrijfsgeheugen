@@ -354,7 +354,7 @@ jobs:
           repo="$GITHUB_REPOSITORY"
           expected="$(gh api "repos/$repo/commits/main" --jq '.sha')"
           echo "EXPECTED_MAIN_SHA=$expected"
-          gh workflow run production-source-snapshot.yml --ref main -f deploy=true
+          gh workflow run production-source-snapshot.yml --repo "$repo" --ref main -f deploy=true
           run_id=""
           for attempt in $(seq 1 60); do
             payload="$(gh api "repos/$repo/actions/workflows/production-source-snapshot.yml/runs?event=workflow_dispatch&branch=main&per_page=30")"
