@@ -430,3 +430,13 @@ Mandatory:
 - post-transform restore must fail closed if either runtime is absent;
 - production verification waits for the rescue readiness marker and then executes actual pricing clicks;
 - never diagnose a missing readiness marker as a click-handler bug before checking the built-page preservation contract.
+
+
+## Pricing lifecycle browser-visible state
+
+Fingerprint: `pricing-lifecycle-visible-state-20260924-v1`.
+
+- A selected pricing stage is not proven by aria state alone; its panel must be browser-visible.
+- Active lifecycle panels explicitly remove `hidden` and force visible display through the rescue state layer.
+- Inactive panels explicitly remain hidden.
+- Production readback is the terminal oracle: the actual lifecycle click must make the matching panel visible before release closure.

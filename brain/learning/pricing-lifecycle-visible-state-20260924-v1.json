@@ -1,0 +1,31 @@
+{
+  "fingerprint": "pricing-lifecycle-visible-state-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The canonical production browser proof clicked the loss lifecycle tab but the corresponding pricing panel remained not visible.",
+  "root_cause": "Pricing lifecycle visibility depended on the HTML hidden property plus normal display cascade. Production proof exposed that the visible state was not browser-hard enough under the accumulated pricing CSS/runtime layers.",
+  "prevention": [
+    "Active lifecycle panels must explicitly remove the hidden attribute and receive display:block!important through the rescue state layer.",
+    "Inactive lifecycle panels must explicitly carry hidden and display:none!important.",
+    "The selected lifecycle key must be reflected on the document root for observable readback.",
+    "Production closure requires the actual browser click to make the selected panel visible."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-lifecycle-visible-state-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-lifecycle-visible-state-v1.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": ["tests/brain-pricing-lifecycle-visible-state-v1.test.mjs","tools/site-shell/verify-pricing-i18n-production.mjs"],
+  "evidence": {
+    "failed_production_run_id": "35996587112",
+    "failed_assertion": "loss stage panel after click is not visible"
+  },
+  "skill_targets": ["continuity"],
+  "compiler": {
+    "failure_class": "PRICING_INTERACTION_VISIBLE_STATE_REGRESSION",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}

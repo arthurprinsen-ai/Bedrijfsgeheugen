@@ -6,7 +6,16 @@
   const all = (selector) => Array.from(document.querySelectorAll(selector));
   const asElement = (target) => target?.nodeType === 1 ? target : target?.parentElement || null;
 
+  function ensureRescueStyles() {
+    if (document.getElementById('bg-pricing-rescue-state-style')) return;
+    const style = document.createElement('style');
+    style.id = 'bg-pricing-rescue-state-style';
+    style.textContent = '.bg-lifecycle-panel.is-active{display:block!important;visibility:visible!important;opacity:1!important}.bg-lifecycle-panel[hidden]{display:none!important}';
+    document.head.appendChild(style);
+  }
+
   function selectStage(key) {
+    ensureRescueStyles();
     all('[data-bg-stage]').forEach((button) => {
       const active = button.getAttribute('data-bg-stage') === key;
       button.setAttribute('aria-selected', String(active));
@@ -15,11 +24,19 @@
     });
     all('[data-bg-stage-panel]').forEach((panel) => {
       const active = panel.getAttribute('data-bg-stage-panel') === key;
-      panel.hidden = !active;
-      panel.style.display = active ? '' : 'none';
+      if (active) {
+        panel.removeAttribute('hidden');
+        panel.hidden = false;
+        panel.style.setProperty('display','block','important');
+      } else {
+        panel.setAttribute('hidden','');
+        panel.hidden = true;
+        panel.style.setProperty('display','none','important');
+      }
       panel.classList.toggle('is-active', active);
       panel.setAttribute('aria-hidden', String(!active));
     });
+    document.documentElement.dataset.bgPricingSelectedStage = key;
     const situation = document.getElementById('bgSituation');
     const motion = document.getElementById('bgMotion');
     const phases = ['start','validate','grow','scale','professionalize','mature','stagnate','loss','crisis'];
