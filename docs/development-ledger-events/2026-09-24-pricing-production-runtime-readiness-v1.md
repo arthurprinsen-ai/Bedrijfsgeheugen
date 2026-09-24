@@ -9,3 +9,13 @@
 - Fix: runtime `ready-v3` marker + target-control visibility become authoritative readiness.
 - Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`
 - Terminal status: pending protected merge + exact production browser readback.
+
+- Regression scope correction: initial test overreached by banning the legitimate post-English-navigation body visibility check.
+- Correct invariant: body readiness is forbidden only before pricing runtime `ready-v3`; post-navigation body visibility remains valid.
+
+## Production promotion
+
+- Canonical authority: `Production Source Snapshot`.
+- Status before provider proof: `PROMOTION_PENDING`.
+- Terminal proof requires exact Netlify production SHA plus green pricing+i18n production browser verification.
+
