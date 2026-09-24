@@ -49,14 +49,26 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "incident": "PR #2714 branch integration release",
-        "expected_prevention": "classifier and CI coverage gate would block before merge; Portal top-level count remains canonical; expired Netlify proxy yields fail-closed state."
-      }
+      "tests/branche-applicaties-integraties.test.mjs",
+      "tests/portal-v2-navigation-contract.test.mjs",
+      "tests/delivery-test-coverage-guard.test.mjs"
     ]
   },
   "prevention": {
     "status": "active",
     "rule": "branch integrations release requires classifier coverage, executed regression tests, canonical portal navigation, valid Netlify production transport, and exact-SHA readback"
-  }
+  },
+  "test_evidence": [
+    "tests/branche-applicaties-integraties.test.mjs",
+    "tests/portal-v2-navigation-contract.test.mjs",
+    "tests/delivery-test-coverage-guard.test.mjs"
+  ],
+  "failure_class": "PRODUCTION_DELIVERY_AND_CREDENTIAL_EXPIRY",
+  "problem": "Branch integrations were merged but production proof failed because delivery classification, CI coverage, portal navigation and Netlify transport credentials were not all release-ready.",
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 2
 }
