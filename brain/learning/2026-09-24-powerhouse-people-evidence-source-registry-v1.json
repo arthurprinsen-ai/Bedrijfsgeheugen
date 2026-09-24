@@ -10,6 +10,29 @@
     "Keep proposals distinct from current law",
     "Add regression test and skill projection"
   ],
-  "prevention": "All future external people evidence must enter through the registry before it can support current cockpit/content/opportunity claims.",
-  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK"
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "type": "PRE_MERGE_REGRESSION_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "prevention_rule": "All future external people evidence must enter through the registry before it can support current cockpit/content/opportunity claims.",
+  "compiler": {
+    "failure_class": "EXTERNAL_EVIDENCE_PROVENANCE_SCHEMA_GAP",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "invariants": [
+      "every external people source has canonical provenance and applicable PH-Pxxx mapping",
+      "external evidence remains benchmark/context only",
+      "policy proposals cannot be surfaced as current law without status verification",
+      "current claims require freshness/status verification before publication"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-people-evidence-source-registry-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ]
 }
