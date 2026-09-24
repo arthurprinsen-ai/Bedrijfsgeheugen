@@ -14,6 +14,7 @@ export const DESKTOP_NAV_ITEMS = Object.freeze([
   Object.freeze({ id:'processes', target:'profiel' }),
   Object.freeze({ id:'knowledge', target:'documenten' }),
   Object.freeze({ id:'data', target:'koppelingen' }),
+  Object.freeze({ id:'apps', target:'koppelingen' }),
   Object.freeze({ id:'ai', target:'brain-verwerking' }),
   Object.freeze({ id:'actions', target:'actieve-acties' }),
   Object.freeze({ id:'reports', target:'audit' })
