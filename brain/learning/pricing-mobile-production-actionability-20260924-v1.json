@@ -1,0 +1,42 @@
+{
+  "fingerprint": "pricing-mobile-production-actionability-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Production was deployed on the exact main SHA and pricing content/runtime were present, but the 390px Playwright proof timed out clicking the lifecycle tab while sticky site chrome could occupy the actionability region after automatic scrolling.",
+  "prevention_rule": "Production interaction proofs must preserve real user-pointer semantics while explicitly positioning targets outside sticky chrome before click actionability checks. Never use force:true or DOM click() to manufacture green proof.",
+  "evidence": {
+    "failed_run": 36049745098,
+    "failed_job": 107802035445,
+    "target": "[data-bg-stage=\"loss\"]",
+    "viewport": "390x844",
+    "exact_production_sha": "8026d48c02fa0a1daca4e0df5f58f5ae272bae8a"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_MOBILE_STICKY_CHROME_ACTIONABILITY",
+    "scope": "PRODUCTION_BROWSER_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-production-actionability-v1.test.mjs"
+    ],
+    "invariants": [
+      "real pointer click remains mandatory",
+      "force:true is forbidden",
+      "DOM click bypass is forbidden"
+    ],
+    "shadow": [
+      "tests/brain-pricing-production-actionability-v1.test.mjs"
+    ]
+  },
+  "failed_approaches": [
+    "Relying on Playwright automatic scrolling for a later lifecycle control on a 390px viewport while sticky site chrome can occupy the resulting pointer actionability region.",
+    "Using synthetic force:true or DOM click bypasses would make the proof green without proving user-realistic actionability and is forbidden."
+  ]
+}
