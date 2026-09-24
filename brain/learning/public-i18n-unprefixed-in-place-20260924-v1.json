@@ -1,0 +1,32 @@
+{
+  "fingerprint": "public-i18n-unprefixed-in-place-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PUBLIC_I18N_RUNTIME",
+  "root_cause": "The public language switch contained an unintended navigation branch for unprefixed public routes. That made English switching depend on a separate /en/* route even though the runtime contract intended in-place switching, surfacing the user-visible language failure on pricing.",
+  "prevention": [
+    "Unprefixed public routes switch locale in place and must not depend on /en/* route availability.",
+    "Locale-prefixed static routes remain valid direct-entry routes and may navigate between locale prefixes.",
+    "Production proof must execute the actual pricing language control and confirm visible English copy with no language-failure banner.",
+    "A source-code fix is not LIVE_BEWEZEN until the exact production SHA and browser interaction gate both pass."
+  ],
+  "evidence": {
+    "fix_pr": 2759,
+    "fix_commit": "40462534fbd3d7ee44360058a3aa2412663debad",
+    "canonical_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs"
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_I18N_UNPREFIXED_ROUTE_DEPENDENCY",
+    "scope": "WEBSITE_I18N",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1,
+  "test_evidence": [
+    "tests/brain-i18n-in-place-switch-v1.test.mjs",
+    "tests/brain-public-i18n-unprefixed-in-place-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
