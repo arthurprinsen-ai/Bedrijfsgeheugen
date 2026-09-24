@@ -1,0 +1,15 @@
+{
+  "fingerprint": "powerhouse-people-evidence-source-registry-v1",
+  "date": "2026-09-24",
+  "problem": "People detection referenced broad external benchmark families but did not canonically bind source identity, freshness, applicability or policy/legal status.",
+  "root_cause": "External evidence was described in prose rather than modeled as reusable provenance state.",
+  "fix": [
+    "Add machine-readable source registry",
+    "Bind detection contract to registry",
+    "Require freshness/status verification",
+    "Keep proposals distinct from current law",
+    "Add regression test and skill projection"
+  ],
+  "prevention": "All future external people evidence must enter through the registry before it can support current cockpit/content/opportunity claims.",
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK"
+}
