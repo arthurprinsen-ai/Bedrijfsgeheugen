@@ -1,3 +1,4 @@
+# Queue-storm guard v1: bounded recovery, repository backpressure, no main-push fan-out
 name: Powerhouse Delivery Recovery Supervisor
 
 on:
