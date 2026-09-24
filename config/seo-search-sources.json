@@ -1,9 +1,53 @@
 {
-  "version":"seo-search-sources-v1",
-  "sources":[
-    {"id":"google-search-console","kind":"organic-search-performance","priority":1,"paid":false,"required_fields":["query","canonical","impressions","clicks","ctr","position","period"]},
-    {"id":"dataforseo","kind":"serp-market-intelligence","priority":2,"paid":true,"required_fields":["query","canonical","position","period"],"cost_guard":"deterministic opportunity pre-gate + bounded paid canary; no estate-wide polling"}
+  "version": "seo-search-sources-v2",
+  "sources": [
+    {
+      "id": "google-search-console",
+      "kind": "organic-search-performance",
+      "priority": 1,
+      "paid": false,
+      "required_fields": [
+        "query",
+        "canonical",
+        "impressions",
+        "clicks",
+        "ctr",
+        "position",
+        "period"
+      ]
+    },
+    {
+      "id": "dataforseo",
+      "kind": "serp-market-intelligence",
+      "priority": 2,
+      "paid": true,
+      "required_fields": [
+        "query",
+        "canonical",
+        "position",
+        "period"
+      ],
+      "cost_guard": "deterministic opportunity pre-gate + bounded paid canary; no estate-wide polling"
+    }
   ],
-  "unknown_query_policy":"retain as discovery candidate; never auto-create a landing page",
-  "join_key":"canonical + intent_id + period"
+  "unknown_query_policy": "retain as discovery candidate; never auto-create a landing page",
+  "join_key": "canonical + intent_id + period",
+  "resolver": {
+    "contract": "powerhouse-seo-opportunity-resolver-v1",
+    "read_order": [
+      "google-search-console",
+      "dataforseo-cache",
+      "powerhouse-market-forecasts",
+      "bounded-dataforseo-live-if-unresolved"
+    ],
+    "freshness_hours": {
+      "google-search-console": 72,
+      "dataforseo-cache": 336,
+      "powerhouse-market-forecasts": 720
+    },
+    "empty_live_result_policy": "do not erase valid cached evidence; retain heartbeat truth separately from data availability",
+    "first_mover_rule": "only CREATE_INTENT_GAP_CONTENT when no canonical owner matches and commercial+forecast evidence clears threshold; otherwise UPDATE_MONEY_PAGE or fail closed",
+    "publication_path": "powerhouse_content_recommendations -> powerhouse-content-orchestrator -> existing canonical protected blog publisher",
+    "max_daily_opportunities": 5
+  }
 }
