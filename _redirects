@@ -5,8 +5,10 @@
 # language switch independent from runtime translation-provider availability.
 /en  /en/index.html  200
 /en/  /en/index.html  200
+/en/*  /en/:splat.html  200
 /nl  /nl/index.html  200
 /nl/  /nl/index.html  200
+/nl/*  /nl/:splat.html  200
 /intern/koppelingskiezer  /intern/koppelingskiezer.html  200
 /intern/koppelingen-klant  /intern/koppelingen-klant.html  200
 /intern/api/linkedin-revenue  /.netlify/functions/linkedin-revenue-cockpit  200!
