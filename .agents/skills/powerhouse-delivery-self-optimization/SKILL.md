@@ -277,3 +277,15 @@ Learning uit Powerhouse 50:
 - skill/learning/change/ledger writeback hoort in dezelfde lineage als de feature en moet vóór terminal completion aanwezig zijn.
 
 Doel: stale-main regressies, unclassified tests en duplicate-obligation thrash niet opnieuw laten leiden tot onnodige rebuilds of foutieve productdiagnoses.
+
+
+## Stale Netlify production promotion recovery — 24 september 2026
+
+Fingerprint: `delivery|netlify|stale-production|canonical-source-snapshot|v1`.
+
+Wanneer main correct en gated is maar Netlify production nog een oudere deploy serveert:
+- behandel dit als production-promotion drift, niet als feature regression;
+- gebruik de bestaande `Production Source Snapshot` workflow als canonieke GitHub OIDC → Netlify transport;
+- maak geen parallelle deploywaarheid of handmatige providerroute als de canonical transport beschikbaar is;
+- een material workflow-refresh moet in dezelfde lineage learning, change-doc en development-ledger evidence dragen;
+- claim pas `LIVE_BEWEZEN` wanneer `release.json` een production SHA/deploy-id toont die de doel-merge bevat en de production browser/readback groen is.
