@@ -13,7 +13,7 @@ test('inline pricing controller mirrors rescue visible-state semantics',()=>{
 });
 
 test('production verifier waits for pricing rescue runtime before clicking',()=>{
-  assert.match(verifier,/html\[data-bg-pricing-interactions="ready-v3"\]/);
+  assert.match(verifier,/dataset\?\.bgPricingInteractions === 'ready-v3'/);
   assert.match(verifier,/data-bg-stage="loss"/);
   assert.match(verifier,/loss stage panel after click/);
 });
