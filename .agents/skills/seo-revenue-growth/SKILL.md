@@ -62,6 +62,17 @@ Traffic volume alone must never outrank order/revenue evidence.
 - When `UPDATE_MONEY_PAGE` wins, improve the canonical owner instead of creating supporting content with materially overlapping intent.
 - Persist the decision evidence and subsequent search/CTA/lead/order/revenue outcome so the next cycle can learn from actual commercial results.
 
+## Opportunity intelligence and first-mover forecasting
+
+- Before declaring CPC, search volume or ranking evidence unavailable, read the canonical resolver chain in order: fresh GSC, valid DataForSEO cache, active external market forecasts, then only a bounded paid live lookup for unresolved high-value gaps.
+- A healthy zero-item DataForSEO heartbeat proves producer liveness, not absence of market demand. It must never erase still-valid cached keyword evidence.
+- Fuse search evidence with Powerhouse market forecasts and persist a pre-outcome forecast before autonomous action. Forecast/CPC signals prioritize work but never count as realized revenue.
+- Optimize for first-mover capture: detect accelerating Dutch queries early and calculate a bounded first-mover opportunity score from demand, CPC, ranking gap, GSC evidence, whitespace and external forecast evidence.
+- Canonical intent ownership remains the hard gate. Existing owner => `UPDATE_MONEY_PAGE`; distinct evidenced gap => `CREATE_INTENT_GAP_CONTENT`; insufficient evidence => `NO_ACTION_EVIDENCE_INSUFFICIENT`.
+- Only a `CREATE_INTENT_GAP_CONTENT` decision may enter `powerhouse_content_recommendations` for the blog channel. Reuse the existing content orchestrator and protected blog publisher; never create a parallel publishing path.
+- Every autonomous first-mover publication must preserve query, source freshness, owner check, forecast lineage, CTA target and later GSC/lead/order/revenue outcome for calibration.
+- The runtime intent-owner projection must remain test-equal to `site/seo-order-map.json` plus `site/seo-order-expansion.json`.
+
 ## Commercial clarity on money pages
 
 - For decide-stage money pages, expose the verified buying path early: start point, current price/range where canonically published, scope boundary, next step and primary CTA.
