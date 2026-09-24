@@ -2,7 +2,7 @@
   "fingerprint": "pricing-production-runtime-readiness-v1",
   "date": "2026-09-24",
   "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
-  "status": "IMPLEMENTED_CANDIDATE",
+  "status": "PROMOTION_PENDING",
   "root_cause": "The production pricing page returned HTTP 200 with full HTML, but the verifier waited for generic body visibility before waiting for the pricing runtime ready-v3 marker. Under responsive/runtime initialization that generic visibility gate could time out even though the page and pricing controls were present.",
   "prevention_rule": "Production interaction proofs must wait on the product-specific readiness contract and target control visibility, not generic body visibility. Generic page readiness must never block a stronger domain-specific ready marker.",
   "failed_run": 36054911943,
@@ -28,5 +28,10 @@
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md"
-  ]
+  ],
+  "production_promotion": {
+    "source_main_sha": "c0e255d2d003c56d3eeda5f0980dd1ceb7691556",
+    "authority": ".github/workflows/production-source-snapshot.yml",
+    "completion_contract": "Netlify state=ready, context=production, commit_ref=current protected main, production browser pricing/i18n readback=success"
+  }
 }
