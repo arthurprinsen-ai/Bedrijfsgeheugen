@@ -24,5 +24,12 @@
   "evidence": {
     "pr": 2834,
     "script": "tools/site-shell/standalone-visibility-check.mjs"
+  },
+  "compiler": {
+    "failure_class": "UNBOUNDED_BROWSER_ASYNC_WAIT_RUNNER_LEAK",
+    "scope": "POWERHOUSE_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
