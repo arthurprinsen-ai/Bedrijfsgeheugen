@@ -599,3 +599,16 @@ Fingerprint: `github|actions-obsolete-run-identity|sha-bound|v1`.
 Queue/run authority is bound to the exact run SHA, not merely to a branch name. A stale queued or in-progress run may be reaped only when its identity is provably obsolete: closed PR, PR-head mismatch, branch-head mismatch, missing non-main branch, or old main SHA. In-progress cleanup additionally requires at least 1800 seconds without update.
 
 Unexpected candidate-head movement is fail-closed. Before a new head inherits authority, compare it to the last trusted head and verify that the diff is exactly the intended recovery delta. Never silently follow a moved branch.
+
+
+## Noindex utility SEO scope
+
+Fingerprint: `seo-login-noindex-public-scope-20260924-v1`.
+
+- Authentication/login utility routes that are explicitly `noindex` stay outside public SEO and sitemap inventory.
+- Model them explicitly as valid internal utility destinations rather than forcing them into indexable SEO scope.
+- Technical SEO may exempt only explicitly classified utility destinations; unknown non-indexable internal targets remain failures.
+- Fix the shared route classifier and its consumers, never index a utility route just to silence a sitemap/link gate.
+
+Canonical learning: `brain/learning/seo-login-noindex-public-scope-20260924-v1.json`.
+Canonical regression: `tests/brain-seo-login-noindex-scope-v1.test.mjs`.
