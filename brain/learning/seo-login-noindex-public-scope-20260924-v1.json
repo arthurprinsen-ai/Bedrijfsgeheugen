@@ -28,17 +28,17 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/seo-login-noindex-scope-v1.test.mjs"
+      "tests/brain-seo-login-noindex-scope-v1.test.mjs"
     ],
     "shadow": [
-      "tests/seo-login-noindex-scope-v1.test.mjs"
+      "tests/brain-seo-login-noindex-scope-v1.test.mjs"
     ],
     "canary": [
       ".github/workflows/production-source-snapshot.yml"
     ]
   },
   "test_evidence": [
-    "tests/seo-login-noindex-scope-v1.test.mjs"
+    "tests/brain-seo-login-noindex-scope-v1.test.mjs"
   ],
   "skill_targets": [
     "powerhouse-continuity"
