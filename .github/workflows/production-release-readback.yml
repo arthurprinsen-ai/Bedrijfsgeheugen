@@ -46,9 +46,10 @@ jobs:
             'tools/site-shell/verify-production-release.mjs',
           ]);
           const readbackControlPlaneOnly=changedPaths.length>0 && changedPaths.every(path => readbackControlPlanePaths.has(path));
+          const readbackWorkflowChanged=changedPaths.includes('.github/workflows/production-release-readback.yml');
           const websiteRequired=readbackControlPlaneOnly ? false : suites.website === true;
           const portalRequired=readbackControlPlaneOnly ? false : suites.portal === true;
-          const browserRequired=websiteRequired || portalRequired;
+          const browserRequired=websiteRequired || portalRequired || readbackWorkflowChanged;
           const netlifyRuntimePrefixes=[
             'netlify/functions/',
             'platform/api/',
@@ -70,6 +71,7 @@ jobs:
             riskLane=risk.lane;
           }
           if(portalRequired && !routes.includes('/portal-v2/')) routes.push('/portal-v2/');
+          if(readbackWorkflowChanged && !routes.includes('/prijzen')) routes.push('/prijzen');
 
           await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`website_required=${websiteRequired}\n`);
@@ -203,6 +205,12 @@ jobs:
           ROUTES_JSON: ${{ steps.scope.outputs.routes }}
           ALLOW_EXISTING_PAGE_ERRORS: 'true'
         run: node tools/site-shell/verify-targeted-website-routes.mjs --output .artifacts/production-route-verification.json
+      - name: Verify pricing interactions and English route in production
+        if: steps.scope.outputs.browser_required == 'true' && steps.deploy.outcome == 'success'
+        env:
+          BASE_URL: https://www.bedrijfsgeheugen.nl
+          GITHUB_SHA: ${{ github.sha }}
+        run: node tools/site-shell/verify-pricing-i18n-production.mjs
       - name: Evaluate immutable website production truth
         if: steps.scope.outputs.browser_required == 'true' && steps.deploy.outcome == 'success'
         run: >-

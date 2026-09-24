@@ -397,3 +397,14 @@ Fingerprint: `static-i18n-provider-fallback-regression-20260924-v2`.
 - Provider error diagnostics may include only bounded sanitized response text/status, never credentials.
 - Always emit locale routes; mark untranslated static English with `data-bg-static-translated="false"` so runtime translation can take over.
 - Never claim English fixed merely because Netlify published. Require production browser proof on the actual language switch and `/en/prijzen`.
+
+
+## Production pricing/i18n interaction gate
+
+Fingerprint: `production-readback-pricing-i18n-browser-gate-20260924-v1`.
+
+- Generic 200/route smoke is insufficient for pricing or language-switch incidents.
+- Canonical Production Release Readback must execute `tools/site-shell/verify-pricing-i18n-production.mjs` after exact deploy identity is observed.
+- Required visible behavior: lifecycle-stage click, plan-group click, monthly/yearly switch, NL→EN navigation, `/en/prijzen`, `html lang=en`, visible English pricing text and no known Dutch pricing H1.
+- Workflow changes to the readback itself must force one pricing-browser proof on introduction.
+- Only exact SHA + successful interaction proof may close the incident as `LIVE_BEWEZEN`.
