@@ -9,3 +9,7 @@
 - Workflow: `.github/workflows/powerhouse-delivery-hygiene.yml`
 - Canonical successor: PR #2796.
 - Terminal status: pending protected merge and production/main readback.
+- Additional root cause: stale queued Actions-runs without current open-PR authority persisted for days.
+- Prevention: hourly repository janitor; full open-PR pagination; `STALE_QUEUED_NO_OPEN_PR` cleanup after 6h.
+- Safety: TTL cleanup applies only to queued non-main runs with no open PR; current PR heads and in-progress work remain protected.
+- Regression: `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`.
