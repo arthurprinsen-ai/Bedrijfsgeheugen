@@ -188,3 +188,19 @@ Parallel development is encouraged; duplicate execution is forbidden.
 - Serialize only the mutable landing boundary. Keep independent development and gates parallel.
 
 Optimize time-to-terminal-proof per runner/credit/energy unit: reuse, dedupe, cheap admission first, then bounded parallel expensive work.
+
+
+## User-visible interaction production proof
+
+Fingerprint: `pricing-toggle-i18n-runtime-20260924-v1`.
+
+When the defect is an interaction, delivery proof must exercise the interaction. Marker-presence, source inspection, successful build, exact SHA deployment and generic route health are necessary but not sufficient.
+
+Required for pricing/i18n-class defects:
+- state-change assertions for the affected toggle/tab/control;
+- mobile production browser coverage when the defect was reported on mobile;
+- static localized public language navigation rather than provider-dependent runtime switching;
+- English route/content verification and explicit rejection of the known runtime translation failure state;
+- exact interaction proof on the deployed production SHA before `LIVE_BEWEZEN`.
+
+Production browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
