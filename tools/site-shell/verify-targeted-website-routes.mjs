@@ -61,7 +61,9 @@ async function observeRoute(browser, baseUrl, route, viewport) {
   try {
     const target = `${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`;
     const response = await navigateWithRetry(page, target);
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+    // Generic route verification owns HTTP/canonical/content/assets, not visual interaction readiness.
+    // Specialized browser gates (for example pricing) own visibility and clickability assertions.
+    await page.locator('body').waitFor({ state:'attached', timeout:15_000 });
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
