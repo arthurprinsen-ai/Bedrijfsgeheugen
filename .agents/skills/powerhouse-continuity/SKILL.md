@@ -369,3 +369,20 @@ For user-visible toggles, tabs, billing switches and language controls:
 
 Canonical verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
 Canonical retrospective: `docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md`.
+
+
+## Netlify deploy-auth terminal boundary
+
+Fingerprint: `netlify-deploy-auth-hard-boundary-20260924-v2`.
+
+For Bedrijfsgeheugen production delivery:
+- a Netlify MCP `401 Unauthorized` is transport/authentication failure, never evidence that pricing, i18n or application code is wrong;
+- after one authoritative 401 readback, do not repeatedly mutate app code or blindly rerun the same stale credential;
+- first obtain a fresh Netlify deploy authorization through the connected Netlify account;
+- if the canonical environment cannot safely persist that fresh authorization into GitHub Actions and the direct artifact runner cannot reach the provider, classify the state as `BLOCKED_HARD_BOUNDARY`;
+- the only valid next authority in that state is account-level reauthorization/credential rotation; never embed proxy credentials in repository files, PR text, workflow inputs, logs, documentation or chat output;
+- preserve the exact current-main production artifact and SHA so deployment resumes without rebuilding unrelated code;
+- after credential recovery, rerun the canonical Production Source Snapshot and require exact `release.json` SHA plus browser-level pricing/i18n proof before `LIVE_BEWEZEN`;
+- write the incident, failed transport routes, evidence IDs and prevention into Brain learning, ledger, documentation and skill projection in the same delivery lineage.
+
+A fresh credential existing only transiently in a connector is not equivalent to durable deployment authority.
