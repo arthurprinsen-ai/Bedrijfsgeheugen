@@ -19,3 +19,18 @@ De admission-workflow las slechts `per_page=100` zonder volledige paginering en 
 ## Terminale regel
 
 `SUPERSEDED`, `CLOSED`, queued CI, auto-merge of protected merge zijn afzonderlijke delivery states. Alleen protected merge plus production/provider readback plus learning/skill writeback mag `LIVE_BEWEZEN` opleveren.
+
+
+## Stale queue auto-recovery
+
+Een tweede oorzaak was repositorybrede queue-vervuiling: queued Actions-runs van oude branches bleven dagen bestaan. Daardoor konden actuele exact-head gates wachten achter werk zonder actuele PR-authoriteit.
+
+De repository-janitor:
+- draait voortaan ieder uur;
+- leest alle open PR-pagina's;
+- beschermt altijd `main` en de actuele head van iedere open PR;
+- annuleert via de TTL-regel uitsluitend `queued` runs ouder dan 6 uur waarvoor geen open PR meer bestaat;
+- raakt `in_progress` werk niet via deze TTL-regel;
+- behoudt bestaande fail-closed readback en branch-cleanup guards.
+
+Hierdoor wordt queue-capaciteit automatisch teruggewonnen zonder de actuele delivery-authority te verzwakken.
