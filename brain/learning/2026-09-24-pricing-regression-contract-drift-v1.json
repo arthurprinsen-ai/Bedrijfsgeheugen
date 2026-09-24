@@ -3,8 +3,8 @@
   "date": "2026-09-24",
   "type": "POST_MERGE_REGRESSION_PREVENTION",
   "status": "IMPLEMENTED_CANDIDATE",
-  "root_cause": "PR #2832 intentionally replaced Playwright locator geometry auto-waits with direct DOM geometry plus page.mouse.click, but two older pricing regression tests still asserted mutually incompatible behavior: one prohibited scrollIntoViewIfNeeded while another required it, and both required superseded locator click behavior.",
-  "prevention_rule": "Whenever a canonical verifier mechanism changes, search all regression tests for superseded assertions and co-update them so one canonical interaction contract remains. Preserve semantic postconditions and fail-closed behavior.",
+  "root_cause": "PR #2832 intentionally replaced Playwright locator geometry auto-waits with direct DOM geometry plus page.mouse.click, but two older pricing regression tests still asserted mutually incompatible behavior: one prohibited scrollIntoViewIfNeeded while another required it, and both required superseded locator click behavior. A subsequent main update further removed lossButton.evaluate in favor of direct page.evaluate DOM queries, exposing that the stale tests were coupled to an intermediate implementation detail rather than the canonical behavioral contract.",
+  "prevention_rule": "When a canonical verifier mechanism changes, historical tests must assert the stable interaction contract (ready marker, direct DOM visibility/geometry, real page.mouse pointer, semantic postconditions) rather than intermediate locator implementation details. Co-update superseded assertions in the same lineage.",
   "fix": [
     "Align brain-pricing-mobile-lifecycle-actionability-v1 with direct DOM geometry and page.mouse.click.",
     "Align brain-pricing-production-actionability-v1 with the same canonical mechanism.",
@@ -35,7 +35,8 @@
       "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs"
     ],
     "invariants": [
-      "no regression test requires locator geometry auto-waits after canonical DOM geometry migration",
+      "historical tests do not require Playwright locator geometry auto-waits or lossButton.evaluate",
+      "direct page.evaluate DOM visibility/geometry is accepted as canonical",
       "real pointer action remains page.mouse.click",
       "force:true and DOM click shortcuts remain prohibited",
       "semantic pricing lifecycle postconditions remain covered"
