@@ -12,10 +12,24 @@ async function run() {
   const errors = [];
   page.on('pageerror', error => errors.push(String(error?.message || error)));
   try {
-    const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
-    await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
-    await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
+    const pricingUrl = baseUrl.replace(/\/$/,'') + '/prijzen';
+    let ready = false;
+    let lastError = null;
+    for (let attempt = 1; attempt <= 2; attempt += 1) {
+      try {
+        const nonce = encodeURIComponent((process.env.GITHUB_SHA || Date.now()) + '-a' + attempt);
+        await page.goto(pricingUrl + '?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
+        await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+        await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
+        ready = true;
+        break;
+      } catch (error) {
+        lastError = error;
+        if (attempt >= 2) break;
+        await page.waitForTimeout(750);
+      }
+    }
+    if (!ready) throw new Error('pricing production readiness failed after 2 bounded attempts: ' + (lastError?.message || lastError));
 
     // Lifecycle toggle must change the actual visible panel.
     await page.locator('[data-bg-stage="loss"]').click();
