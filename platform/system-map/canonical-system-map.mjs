@@ -33,6 +33,38 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'governance',label:'Trust, security & compliance',purpose:'Auth, RLS, admin boundaries, AI governance, evidence coverage and controls'}),
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
+  runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'trigger-based-mkb-acquisition',
+      label:'Trigger-based MKB Acquisition',
+      authority:'supabase',
+      owner:'commercial-intelligence',
+      status:'LIVE_PROVEN_FAIL_CLOSED_RUNTIME',
+      inputs:Object.freeze(['explicit-company-trigger-evidence','company-scoped-predictive-signals']),
+      outputs:Object.freeze(['powerhouse_opportunities','powerhouse_forecasts','internal-research-actions']),
+      runtime:Object.freeze({
+        view:'public.powerhouse_mkb_trigger_intelligence_v1',
+        refreshFunction:'public.powerhouse_refresh_trigger_based_mkb_acquisition_v1(date)',
+        cycleFunction:'public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)',
+        schedulerJob:'powerhouse-commercial-learning-v1',
+        scheduler:'27 * * * *'
+      }),
+      safety:Object.freeze({
+        relationshipActivationAloneIsTrigger:false,
+        externalSideEffectsAllowed:false,
+        speculativeRevenueValueAllowed:false,
+        hypothesisTruthBoundary:true
+      }),
+      productionEvidence:Object.freeze({
+        githubMainMergeSha:'4e16c5c496241ce516cd13373103c51b4f9fd6dd',
+        migration:'trigger_based_mkb_acquisition_runtime_v1',
+        firstControlledEligibleTriggers:0,
+        firstControlledExternalOutreach:false,
+        ordinaryConnectionFalsePositives:0,
+        newSurfaceSecurityAdvisorLints:0
+      })
+    })
+  ]),
   flow:Object.freeze([
     Object.freeze({from:'external',to:'supabase',label:'signals / provider evidence / outcomes'}),
     Object.freeze({from:'portal',to:'netlify',label:'authenticated requests'}),
