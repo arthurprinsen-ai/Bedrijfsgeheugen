@@ -1,6 +1,6 @@
 {
   "fingerprint": "public-i18n-static-route-authority-20260924-v1",
-  "status": "ACTIVE_PREVENTION",
+  "status": "LIVE_PROVEN",
   "date": "2026-09-24",
   "type": "PUBLIC_I18N_RUNTIME_AUTHORITY",
   "root_cause": "On unprefixed public routes, i18n init reused a persisted bg_locale preference. A stale English preference therefore triggered runtime translation on the Dutch /prijzen page during initial load. When the runtime translation provider was unavailable or incomplete, the visible language control exposed 'Switching language failed. Try again.' even though public language switching was intended to use static /en/* routes.",
@@ -16,7 +16,11 @@
     "observed_symptom": "Switching language failed. Try again.",
     "delivery_pr": 2795,
     "candidate_branch": "ops/pricing-terminal-live-proof-20260924",
-    "terminal_state": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_BROWSER_PROOF"
+    "terminal_state": "LIVE_BEWEZEN",
+    "terminal_pr": 2812,
+    "terminal_feature_merge": "a38f2cbab0d496b7d666ccc132244ba5bb0817c4",
+    "terminal_production_main": "4dacb0b86ad23999cbaa3abc90fa36810fca48b6",
+    "terminal_production_deploy": "6ab57a94c9e953d1209d82ff"
   },
   "compiler": {
     "failure_class": "PUBLIC_UNPREFIXED_ROUTE_STALE_LOCALE_RUNTIME_TRANSLATION",
@@ -40,5 +44,6 @@
   ],
   "skill_targets": [
     "powerhouse-continuity"
-  ]
+  ],
+  "revision": 2
 }
