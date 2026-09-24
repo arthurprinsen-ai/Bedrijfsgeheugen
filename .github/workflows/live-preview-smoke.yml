@@ -27,6 +27,10 @@ permissions:
   contents: read
   statuses: read
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   smoke:
     if: github.event_name == 'pull_request'
