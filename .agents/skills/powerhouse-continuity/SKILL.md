@@ -595,3 +595,21 @@ For every GitHub-backed Powerhouse delivery:
 
 Canonical regression: `tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs`.
 Canonical learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
+
+
+### Stale GitHub queue autorecovery
+
+Fingerprint: `delivery|stale-queued-no-open-pr|autoreap|v1`.
+
+Repository queue health is part of terminal delivery correctness. Old queued runs may not accumulate indefinitely behind current work.
+
+Mandatory:
+- the canonical repository janitor runs hourly and paginates the full open-PR set;
+- never treat repository queue length as code failure without separating current-head jobs from stale/no-owner jobs;
+- preserve `main`, every current head of an open PR, and all `in_progress` work from TTL-based cleanup;
+- a non-main `queued` run with no open PR may be cancelled automatically after 6 hours because it has no current delivery authority; a future reopen/successor must emit fresh exact-head checks;
+- stale-run cleanup must be read back and logged; cancellation is queue hygiene, not obligation completion;
+- queue autorecovery must never weaken Required/BRAIN/CodeQL/production-readback gates for the current canonical successor.
+
+Regression: `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`.
+Learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
