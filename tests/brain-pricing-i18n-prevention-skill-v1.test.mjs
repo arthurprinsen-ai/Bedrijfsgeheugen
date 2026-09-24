@@ -10,8 +10,10 @@ const proof = fs.readFileSync('tools/site-shell/verify-pricing-i18n-production.m
 
 test('public language switches use static localized routes', () => {
   assert.match(i18n,/if \(!isPortal\(\)\) \{[\s\S]*location\.assign\(localizedHref\(normalized\)\)/);
-  assert.match(redirects,/\/en\/\*\s+\/en\/:splat\.html\s+200/);
-  assert.match(redirects,/\/nl\/\*\s+\/nl\/:splat\.html\s+200/);
+  assert.match(redirects,/\/en\s+\/en\/index\.html\s+200/);
+  assert.match(redirects,/\/nl\s+\/nl\/index\.html\s+200/);
+  assert.doesNotMatch(redirects,/\/en\/\*\s+\/en\/:splat\.html\s+200/);
+  assert.doesNotMatch(redirects,/\/nl\/\*\s+\/nl\/:splat\.html\s+200/);
 });
 
 test('production behavior proof covers toggles and English switch', () => {
