@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse-50-problem-library-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCT_INTELLIGENCE_FOUNDATION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Powerhouse had broad intelligence, portal and automation capabilities, but no single canonical problem taxonomy binding trigger, evidence, impact, action, capability and outcome across product, acquisition and learning. Early delivery attempts also exposed two governance hazards: stale-base drift can masquerade as feature failure, and tests outside classified lane namespaces are rejected.",
+  "prevention_rule": "Every new Powerhouse intelligence or execution capability must map to a canonical PH-Pxxx problem ID and preserve fact/signal/hypothesis separation, confidence policy, explicit OBSERVED/ESTIMATED/POTENTIAL impact labels, capability mapping and outcome metrics. Delivery candidates must be projected onto current main with only intended paths, use an existing classified test namespace, include machine metadata and carry learning/ledger/change documentation in the same lineage.",
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/2750",
+    "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2760",
+    "schema": "config/powerhouse-problem-library.schema.json",
+    "library": "config/powerhouse-problem-library.json",
+    "regression": "tests/brain-powerhouse-problem-library.test.mjs",
+    "isolated_green_preview": "Netlify deploy 6ab530378136cf00070428c2",
+    "inherited_main_preview_failure": "Netlify deploy 6ab532bed94900000844a1b1"
+  },
+  "skill_targets": [
+    ".agents/skills/trigger-based-mkb-acquisition/SKILL.md",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ],
+  "compiler": {
+    "failure_class": "PARALLEL_PROBLEM_TRUTH_AND_UNCLASSIFIED_DELIVERY",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-library.test.mjs"
+    ],
+    "invariants": [
+      "unique PH-Pxxx identifiers",
+      "unique problem names",
+      "non-empty signals and triggers",
+      "fact/signal/hypothesis evidence buckets",
+      "confidence policy low/medium/high",
+      "impact labels OBSERVED/ESTIMATED/POTENTIAL",
+      "non-empty actions, capabilities and outcomes"
+    ]
+  }
+}

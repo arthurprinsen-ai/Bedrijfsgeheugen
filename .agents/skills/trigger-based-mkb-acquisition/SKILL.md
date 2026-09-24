@@ -66,3 +66,17 @@ Status: `LIVE_PROVEN_FAIL_CLOSED_RUNTIME`.
 GitHub main bevat merge `4e16c5c496241ce516cd13373103c51b4f9fd6dd`. Supabase migration `trigger_based_mkb_acquisition_runtime_v1` is toegepast op project `adhjwmvyoixzjtmiroln`; view en beide runtimefuncties zijn teruggelezen. De bestaande cron `powerhouse-commercial-learning-v1` is actief op `27 * * * *` en voert `select public.powerhouse_trigger_based_mkb_acquisition_cycle_v1();` uit.
 
 De eerste gecontroleerde refresh gaf 0 eligible triggers, 0 opportunities, 0 interne research-actions, 0 forecasts en `external_outreach_executed=false`. Dit is een geldige fail-closed uitkomst: zonder expliciet company-level triggerbewijs wordt niets verzonnen. Negatieve readback: 0 gewone `connection_activated` events zijn als kooptrigger geclassificeerd. Supabase advisors rapporteren geen lint op de nieuwe trigger-view/functions; bestaande bredere projectwaarschuwingen blijven afzonderlijk bestaan.
+
+
+## Canonical Problem Library integration — 24 september 2026
+
+Fingerprint: `powerhouse-50-problem-library-v1`.
+
+Vanaf nu moet iedere commerciële trigger, problem hypothesis, Frisse Blik-route, contenthoek en capability-fit waar mogelijk verwijzen naar één canonieke `PH-Pxxx` uit `config/powerhouse-problem-library.json`. Maak geen tweede commerciële probleem-taxonomie.
+
+Verplicht:
+- externe trigger/signalering blijft `signal` of `hypothesis` totdat intern bewijs het probleem valideert;
+- koppel economische impact aan `OBSERVED`, `ESTIMATED` of `POTENTIAL`;
+- laat dezelfde Problem ID doorlopen van trigger → content/scan → Frisse Blik → capability → outcome;
+- nieuw commercieel probleem zonder bestaande Problem ID wordt eerst als candidate voor de canonieke library behandeld, niet lokaal in sales/content uitgevonden;
+- learning uit respons, scan, sale en realized value schrijft terug op dezelfde Problem ID.
