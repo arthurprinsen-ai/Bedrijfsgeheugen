@@ -79,11 +79,12 @@ jobs:
 
           const sh = (...args) => execFileSync(args[0], args.slice(1), {encoding:'utf8'}).trim();
           const transientApiFailure = error => /HTTP\s+(?:502|503|504)\b|upstream connect error|connection (?:refused|reset)|ECONNRESET|ETIMEDOUT|socket hang up/i.test(`${error?.message || ''}\n${error?.stderr || ''}\n${error?.stdout || ''}`);
+          const GH_MAX_BUFFER = 64 * 1024 * 1024;
           const gh = async path => {
             const delays = [250, 500, 1000];
             for (let attempt = 0; attempt <= delays.length; attempt += 1) {
               try {
-                return JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8',maxBuffer:16*1024*1024}));
+                return JSON.parse(execFileSync('gh',['api',path],{encoding:'utf8',maxBuffer:GH_MAX_BUFFER}));
               } catch (error) {
                 if (!transientApiFailure(error) || attempt === delays.length) throw error;
                 console.warn(`Transient GitHub API failure for ${path}; retry ${attempt + 1}/${delays.length}`);
@@ -91,6 +92,20 @@ jobs:
               }
             }
             throw new Error(`GITHUB_API_RETRY_EXHAUSTED:${path}`);
+          };
+          const ghAll = async path => {
+            const delays = [250, 500, 1000];
+            for (let attempt = 0; attempt <= delays.length; attempt += 1) {
+              try {
+                const pages = JSON.parse(execFileSync('gh',['api','--paginate','--slurp',path],{encoding:'utf8',maxBuffer:GH_MAX_BUFFER}));
+                return Array.isArray(pages) ? pages.flat() : [];
+              } catch (error) {
+                if (!transientApiFailure(error) || attempt === delays.length) throw error;
+                console.warn(`Transient paginated GitHub API failure for ${path}; retry ${attempt + 1}/${delays.length}`);
+                await sleep(delays[attempt]);
+              }
+            }
+            throw new Error(`GITHUB_API_PAGINATION_RETRY_EXHAUSTED:${path}`);
           };
           const errorSummary = error => String(error?.stderr || error?.stdout || error?.message || error).replace(/\s+/g, ' ').trim().slice(0, 1200);
           const policy = JSON.parse(await readFile('config/powerhouse-delivery-hygiene-v1.json','utf8'));
@@ -130,7 +145,7 @@ jobs:
               throw new Error(`CANDIDATE_HEAD_SHA_MISMATCH:${process.env.EXPECTED_HEAD_SHA}:${headSha}`);
             }
             const pr = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls/${prNumber}`);
-            const open = await gh(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
+            const open = await ghAll(`repos/${process.env.GITHUB_REPOSITORY}/pulls?state=open&per_page=100`);
             if (pr.head?.sha !== headSha) {
               throw new Error(`PR_HEAD_SHA_DRIFT:${headSha}:${pr.head?.sha || ''}`);
             }

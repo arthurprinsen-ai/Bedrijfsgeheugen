@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "purpose": "Canonical Powerhouse problem taxonomy shared by portal, Problem Radar, capabilities, content, sales and outcome learning.",
   "invariants": [
     "No problem may be presented as fact without evidence.",
@@ -1748,6 +1748,803 @@
       ],
       "triggers": [
         "acquisitie gesloten"
+      ]
+    },
+    {
+      "problem_id": "PH-P031",
+      "name": "Ziekteverzuim structureel hoog",
+      "category": "people",
+      "description": "Ziekteverzuim ligt structureel boven de relevante eigen trend of branchebenchmark en beperkt beschikbare capaciteit.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "verzuimpercentage stijgt",
+          "verzuimdagen per FTE stijgen",
+          "frequent verzuim concentreert zich in teams"
+        ],
+        "hypothesis": [
+          "Verzuim veroorzaakt aantoonbaar capaciteits- en kostenverlies."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "capacity",
+          "cost",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "HRM/verzuimregistratie",
+        "salarisadministratie",
+        "rooster/planning",
+        "arbodienst",
+        "CBS branchebenchmark"
+      ],
+      "root_causes": [
+        "werkdruk",
+        "fysieke belasting",
+        "psychosociale belasting",
+        "leiderschap",
+        "privé/gezondheidsfactoren nog niet aantoonbaar"
+      ],
+      "actions": [
+        "verzuimtrend segmenteren",
+        "frequent en langdurig verzuim scheiden",
+        "team- en functiedrivers analyseren",
+        "preventie- en capaciteitsactie bepalen"
+      ],
+      "capabilities": [
+        "Absence Intelligence",
+        "Workforce Capacity Radar",
+        "People Risk Monitor"
+      ],
+      "outcomes": [
+        "verzuimpercentage",
+        "verzuimfrequentie",
+        "verzuimduur",
+        "beschikbare FTE",
+        "verzuimkosten"
+      ],
+      "commercial_routes": [
+        "/ziekteverzuim-mkb"
+      ],
+      "signals": [
+        "verzuimpercentage boven trend/benchmark",
+        "frequent verzuim",
+        "capaciteitsverlies door uitval"
+      ],
+      "triggers": [
+        "verzuim stijgt",
+        "capaciteitsdruk",
+        "arbodienstsignaal"
+      ]
+    },
+    {
+      "problem_id": "PH-P032",
+      "name": "Langdurig verzuim en re-integratierisico",
+      "category": "people",
+      "description": "Langdurige uitval veroorzaakt disproportionele kosten, capaciteitsverlies en dossier- of re-integratierisico.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "ziekmelding > 6 weken",
+          "re-integratiemijlpaal ontbreekt",
+          "vervanging langdurig nodig"
+        ],
+        "hypothesis": [
+          "Langdurig verzuim vergroot financiële, operationele en compliance-impact."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "cost",
+          "capacity",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "HRM/verzuimregistratie",
+        "arbodienst",
+        "casemanagement",
+        "salarisadministratie",
+        "planning"
+      ],
+      "root_causes": [
+        "psychische belasting",
+        "fysieke belasting",
+        "werkhervatting stagneert",
+        "dossierproces onvoldoende"
+      ],
+      "actions": [
+        "langdurige dossiers prioriteren",
+        "Wet verbetering poortwachter-mijlpalen bewaken",
+        "vervangingsscenario maken",
+        "werkhervattingsbelemmeringen analyseren"
+      ],
+      "capabilities": [
+        "Long-term Absence Case Guard",
+        "Reintegration Workflow",
+        "Capacity Scenario Engine"
+      ],
+      "outcomes": [
+        "langdurig verzuimvolume",
+        "dagen tot werkhervatting",
+        "dossiercompleetheid",
+        "vervangingskosten"
+      ],
+      "commercial_routes": [
+        "/langdurig-verzuim"
+      ],
+      "signals": [
+        ">6 weken ziek",
+        "open re-integratieactie",
+        "hoge vervangingskosten"
+      ],
+      "triggers": [
+        "langdurige ziekmelding",
+        "UWV/arbodienst-mijlpaal",
+        "kritieke medewerker valt uit"
+      ]
+    },
+    {
+      "problem_id": "PH-P033",
+      "name": "Werkdruk en overbelasting",
+      "category": "people",
+      "description": "Vraag, bezetting en werkorganisatie veroorzaken structureel hoge werkdruk met risico op fouten, uitval en verloop.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "overuren stijgen",
+          "backlog groeit",
+          "pauzes/verlof worden uitgesteld",
+          "frequent verzuim stijgt"
+        ],
+        "hypothesis": [
+          "Werkdruk ligt structureel boven een houdbaar niveau."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "capacity",
+          "risk",
+          "cost"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "urenregistratie",
+        "planning",
+        "projectmanagement",
+        "HRM",
+        "ticketing/service",
+        "medewerkersonderzoek"
+      ],
+      "root_causes": [
+        "onderbezetting",
+        "slechte planning",
+        "veel uitzonderingen",
+        "te veel handwerk",
+        "onduidelijke prioriteiten"
+      ],
+      "actions": [
+        "vraag-capaciteit vergelijken",
+        "overuren per team analyseren",
+        "werk schrappen/automatiseren/herverdelen",
+        "leidinggevende interventie plannen"
+      ],
+      "capabilities": [
+        "Workload Pressure Radar",
+        "Capacity Forecasting",
+        "Automation Opportunity Finder"
+      ],
+      "outcomes": [
+        "overuren per FTE",
+        "backlog",
+        "doorlooptijd",
+        "verzuim",
+        "foutpercentage"
+      ],
+      "commercial_routes": [
+        "/werkdruk-mkb"
+      ],
+      "signals": [
+        "structurele overuren",
+        "backlog + uitval tegelijk",
+        "dienstroosters moeilijk rond"
+      ],
+      "triggers": [
+        "personeelstekort",
+        "snelle groei",
+        "seizoenspiek",
+        "uitval"
+      ]
+    },
+    {
+      "problem_id": "PH-P034",
+      "name": "Personeelsverloop te hoog",
+      "category": "people",
+      "description": "Ongewenste uitstroom is hoger dan gewenst en veroorzaakt wervingskosten, capaciteitsverlies en kennisverlies.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "vrijwillige uitstroom stijgt",
+          "vertrek binnen 12 maanden",
+          "kritieke functies vertrekken"
+        ],
+        "hypothesis": [
+          "Personeelsverloop tast continuïteit en productiviteit aan."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "cost",
+          "capacity",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "HRM",
+        "salarisadministratie",
+        "ATS",
+        "exitdata",
+        "engagement/medewerkersonderzoek"
+      ],
+      "root_causes": [
+        "beloning",
+        "leidinggeven",
+        "werkdruk",
+        "loopbaanperspectief",
+        "rolmismatch",
+        "onboarding"
+      ],
+      "actions": [
+        "uitstroom segmenteren",
+        "exitredenen structureren",
+        "kritieke rollen prioriteren",
+        "retentieacties per oorzaak bepalen"
+      ],
+      "capabilities": [
+        "Retention Radar",
+        "Exit Pattern Intelligence",
+        "Critical Role Monitor"
+      ],
+      "outcomes": [
+        "vrijwillig verloop",
+        "12-maandsretentie",
+        "kosten per vertrek",
+        "vacaturedruk",
+        "kritieke kennisdekking"
+      ],
+      "commercial_routes": [
+        "/personeelsverloop"
+      ],
+      "signals": [
+        "uitstroom stijgt",
+        "veel vertrek <12 maanden",
+        "vacatures door vervanging"
+      ],
+      "triggers": [
+        "meerdere exits",
+        "nieuwe manager",
+        "arbeidsmarktkrapte"
+      ]
+    },
+    {
+      "problem_id": "PH-P035",
+      "name": "Werving en vacaturevervulling stagneert",
+      "category": "people",
+      "description": "Openstaande functies blijven te lang onvervuld of leveren onvoldoende passende kandidaten op.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "time-to-fill stijgt",
+          "weinig gekwalificeerde reacties",
+          "vacatures >90 dagen open"
+        ],
+        "hypothesis": [
+          "Wervingsfrictie beperkt groei en verhoogt werkdruk."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "capacity",
+          "revenue",
+          "cost"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "ATS",
+        "vacatureplatforms",
+        "HRM",
+        "planning",
+        "CRM/orderboek"
+      ],
+      "root_causes": [
+        "krappe arbeidsmarkt",
+        "te zware functie-eisen",
+        "propositie/beloning",
+        "lang sollicitatieproces",
+        "locatie/rooster"
+      ],
+      "actions": [
+        "vacaturefunnel analyseren",
+        "eisen versus markt benchmarken",
+        "doorlooptijd verkorten",
+        "alternatieven opleiding/automatisering/inhuur vergelijken"
+      ],
+      "capabilities": [
+        "Recruitment Funnel Intelligence",
+        "Skills-based Hiring",
+        "Capacity Scenario Engine"
+      ],
+      "outcomes": [
+        "time-to-fill",
+        "qualified applicants per vacancy",
+        "offer acceptance",
+        "vacaturekosten",
+        "gemiste capaciteit"
+      ],
+      "commercial_routes": [
+        "/personeelstekort"
+      ],
+      "signals": [
+        "vacatures lang open",
+        "lage candidate conversion",
+        "opdrachten door tekort beperkt"
+      ],
+      "triggers": [
+        "groei",
+        "uitstroom",
+        "nieuwe vestiging",
+        "kritieke vacature"
+      ]
+    },
+    {
+      "problem_id": "PH-P036",
+      "name": "Skills-gap en onvoldoende ontwikkeling",
+      "category": "people",
+      "description": "Beschikbare vaardigheden sluiten onvoldoende aan op huidige of toekomstige processen, technologie en klantvraag.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "veel afhankelijkheid van enkele experts",
+          "training achterstand",
+          "functies veranderen door digitalisering/AI"
+        ],
+        "hypothesis": [
+          "Vaardigheidstekorten remmen productiviteit, adoptie en schaalbaarheid."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "capacity",
+          "strategic",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "HRM skills/profielen",
+        "LMS",
+        "projectdata",
+        "applicatiegebruik",
+        "performance reviews",
+        "vacaturedata"
+      ],
+      "root_causes": [
+        "weinig leercultuur",
+        "snelle technologische verandering",
+        "onduidelijke skill-taxonomie",
+        "te weinig opleidingscapaciteit"
+      ],
+      "actions": [
+        "skills matrix bouwen",
+        "kritieke gaps koppelen aan strategie",
+        "leerroute prioriteren",
+        "make/buy/automate-besluit ondersteunen"
+      ],
+      "capabilities": [
+        "Skills Graph",
+        "Learning Path Optimizer",
+        "AI Adoption Readiness"
+      ],
+      "outcomes": [
+        "skill coverage",
+        "training completion",
+        "time-to-proficiency",
+        "expert dependency",
+        "adoptiegraad"
+      ],
+      "commercial_routes": [
+        "/skills-gap-mkb"
+      ],
+      "signals": [
+        "kritieke skills ontbreken",
+        "training blijft liggen",
+        "veel vragen aan experts"
+      ],
+      "triggers": [
+        "AI-adoptie",
+        "nieuw systeem",
+        "groei",
+        "senior vertrekt"
+      ]
+    },
+    {
+      "problem_id": "PH-P037",
+      "name": "Personeelskosten drukken marge",
+      "category": "people",
+      "description": "Loon-, inhuur-, overwerk- en vervangingskosten groeien sneller dan productiviteit of omzet.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "loonkostenratio stijgt",
+          "overwerk/inhuur stijgt",
+          "omzet per FTE daalt"
+        ],
+        "hypothesis": [
+          "Personeelskosten groeien sneller dan economische output."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "cost",
+          "revenue",
+          "capacity"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "salarisadministratie",
+        "finance/ERP",
+        "urenregistratie",
+        "planning",
+        "inhuurcontracten"
+      ],
+      "root_causes": [
+        "overbezetting",
+        "onderproductiviteit",
+        "veel verzuim",
+        "duur extern personeel",
+        "slechte roosters",
+        "lage prijs/marge"
+      ],
+      "actions": [
+        "personeelskosten per output berekenen",
+        "vast/flex/overwerk uitsplitsen",
+        "productiviteit per team/proces analyseren",
+        "scenario's voor capaciteit en automatisering"
+      ],
+      "capabilities": [
+        "Workforce Cost Intelligence",
+        "Productivity Benchmarking",
+        "Capacity Economics"
+      ],
+      "outcomes": [
+        "personeelskosten/omzet",
+        "omzet per FTE",
+        "marge per FTE",
+        "overwerkkosten",
+        "inhuurkosten"
+      ],
+      "commercial_routes": [
+        "/personeelskosten-verlagen"
+      ],
+      "signals": [
+        "loonkosten stijgen sneller dan omzet",
+        "veel dure inhuur",
+        "overwerk structureel"
+      ],
+      "triggers": [
+        "cao/loonstijging",
+        "verzuim",
+        "groei zonder marge",
+        "krapte"
+      ]
+    },
+    {
+      "problem_id": "PH-P038",
+      "name": "HR-compliance en personeelsdossiers niet op orde",
+      "category": "people",
+      "description": "Contract-, verzuim-, dossier- of arbeidsrechtelijke verplichtingen worden niet aantoonbaar tijdig uitgevoerd.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "contracttermijn nadert zonder besluit",
+          "re-integratieactie ontbreekt",
+          "personeelsdossier incompleet"
+        ],
+        "hypothesis": [
+          "HR-processen bevatten compliance- en bewijsrisico."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "cost"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "HRM",
+        "documentmanagement",
+        "arbodienst/casemanagement",
+        "salarisadministratie",
+        "workflow/taken"
+      ],
+      "root_causes": [
+        "handmatige administratie",
+        "geen eigenaar",
+        "versnipperde documenten",
+        "wijzigende regelgeving"
+      ],
+      "actions": [
+        "kritieke termijnen monitoren",
+        "dossiercompleetheid meten",
+        "owners toewijzen",
+        "evidence en workflow automatiseren"
+      ],
+      "capabilities": [
+        "HR Compliance Guard",
+        "Employee File Completeness",
+        "Deadline Monitor"
+      ],
+      "outcomes": [
+        "open compliance gaps",
+        "dossiercompleetheid",
+        "gemiste termijnen",
+        "doorlooptijd HR-acties"
+      ],
+      "commercial_routes": [
+        "/hr-administratie-mkb"
+      ],
+      "signals": [
+        "HR-termijnen gemist",
+        "documenten ontbreken",
+        "veel handmatige HR-lijsten"
+      ],
+      "triggers": [
+        "ziekte",
+        "contractverlenging",
+        "audit",
+        "groei personeelsbestand"
+      ]
+    },
+    {
+      "problem_id": "PH-P039",
+      "name": "Leiderschap en teamdynamiek veroorzaken uitval of vertrek",
+      "category": "people",
+      "description": "Verzuim, verloop, klachten of lage prestaties concentreren zich aantoonbaar rond specifieke teams, rollen of leidinggevende patronen.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "verzuim/verloop concentreert zich in team",
+          "engagement daalt",
+          "veel escalaties of klachten"
+        ],
+        "hypothesis": [
+          "Leiderschaps- of teamdynamiek draagt mogelijk bij aan people-risico."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "capacity",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "HRM",
+        "verzuimdata",
+        "exitdata",
+        "engagementsurvey",
+        "case/klachtregistratie",
+        "performance data"
+      ],
+      "root_causes": [
+        "onduidelijke rollen",
+        "weinig autonomie",
+        "gebrekkige feedback",
+        "conflict",
+        "onveilig klimaat"
+      ],
+      "actions": [
+        "teamverschillen objectief analyseren",
+        "privacy-safe patronen valideren",
+        "rol/werkdruk/leidinggevende factoren scheiden",
+        "interventie en follow-up meten"
+      ],
+      "capabilities": [
+        "Team Health Radar",
+        "Leadership Signal Monitor",
+        "Organizational Network Insight"
+      ],
+      "outcomes": [
+        "teamverzuim",
+        "teamverloop",
+        "engagement",
+        "escalaties",
+        "performance trend"
+      ],
+      "commercial_routes": [
+        "/leiderschap-mkb"
+      ],
+      "signals": [
+        "teamverschil in verzuim/verloop",
+        "veel escalaties",
+        "lage engagement"
+      ],
+      "triggers": [
+        "managementwissel",
+        "reorganisatie",
+        "conflict",
+        "snelle groei"
+      ]
+    },
+    {
+      "problem_id": "PH-P040",
+      "name": "Sociale of fysieke arbeidsveiligheid onder druk",
+      "category": "people",
+      "description": "Incidenten, ongewenst gedrag of fysieke belasting creëren aantoonbaar risico voor medewerkers, continuïteit en werkgeverschap.",
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "incidenten/near misses stijgen",
+          "klachten ongewenst gedrag",
+          "fysieke uitval concentreert zich per functie"
+        ],
+        "hypothesis": [
+          "Arbeidsveiligheid of psychosociale veiligheid vraagt gerichte interventie."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "cost",
+          "capacity"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [
+        "incidentregistratie",
+        "RI&E/arbodata",
+        "HRM",
+        "vertrouwens-/klachtregistratie geaggregeerd",
+        "verzuimdata"
+      ],
+      "root_causes": [
+        "onveilige werkwijze",
+        "fysieke belasting",
+        "ongewenst gedrag",
+        "onvoldoende preventie",
+        "onderbezetting"
+      ],
+      "actions": [
+        "incidentpatronen analyseren",
+        "RI&E-acties koppelen",
+        "functie/locatie-risico prioriteren",
+        "preventiemaatregelen en opvolging meten"
+      ],
+      "capabilities": [
+        "Workplace Safety Radar",
+        "PSA Risk Monitor",
+        "Preventive Action Tracking"
+      ],
+      "outcomes": [
+        "incidentfrequentie",
+        "near misses",
+        "fysiek verzuim",
+        "open RI&E-acties",
+        "sociale veiligheidsindicatoren"
+      ],
+      "commercial_routes": [
+        "/arbeidsveiligheid-mkb"
+      ],
+      "signals": [
+        "incidenten stijgen",
+        "ongewenst gedrag gemeld",
+        "fysieke klachten/verzuim"
+      ],
+      "triggers": [
+        "incident",
+        "arbeidsinspectie",
+        "RI&E-update",
+        "verzuimpiek"
       ]
     }
   ]
