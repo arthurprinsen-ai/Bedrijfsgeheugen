@@ -1,0 +1,26 @@
+{
+  "fingerprint": "linkedin|composio-authority|buffer-decoupling|v2",
+  "compiler": {
+    "failure_class": "SOCIAL_TRANSPORT_AUTHORITY_SPLIT",
+    "root_cause": "LinkedIn personal used Composio direct, while LinkedIn company still fell through to the generic Buffer transport; Buffer rate-limit handling could also write LinkedIn state."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ]
+  },
+  "prevention": {
+    "prevention_rule": "Both LinkedIn channels must terminate in explicit Composio branches before any Buffer fallback. Buffer circuit state must never mutate LinkedIn delivery state.",
+    "regression_contract": [
+      "Require exact LinkedIn provider readback before published state.",
+      "Fail closed on Composio/auth/readback failure; never issue a replacement post through Buffer.",
+      "Preserve single-writer publication capability and daily channel fence."
+    ]
+  },
+  "evidence": {
+    "changed_function": "supabase/functions/powerhouse-social-publisher/index.ts",
+    "expected_transport_contract": "linkedin-composio-direct-v2",
+    "production_readback_required": true,
+    "company_author_gate": "exactly one verified urn:li:organization author"
+  }
+}

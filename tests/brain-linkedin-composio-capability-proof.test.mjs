@@ -50,7 +50,29 @@ test('connected-account user_id is forwarded to every Composio LinkedIn tool cal
 });
 
 test('company capability stays fail-closed when organization scope is absent',()=>{
-  assert.match(setup,/company_scope_required:companyReady\?null:'r_organization_admin'/);
+  assert.match(setup,/company_scope_required:companyReady\?null:\[/);
+  assert.match(setup,/r_organization_admin/);
+  assert.match(setup,/w_organization_social/);
+  assert.match(setup,/company_admin_scope_present:hasOrgAdminScope/);
+  assert.match(setup,/company_write_scope_present:hasOrgWriteScope/);
   assert.match(setup,/granted_scopes:grantedScopes/);
   assert.match(setup,/company_ready:companyReady/);
+});
+
+
+const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+
+test('LinkedIn personal and company publish through Composio, never Buffer',()=>{
+  assert.match(publisher,/publishLinkedInPersonalViaComposio/);
+  assert.match(publisher,/publishLinkedInCompanyViaComposio/);
+  assert.match(publisher,/transport_contract:'linkedin-composio-direct-v2'/);
+  assert.doesNotMatch(publisher,/row\.channel === 'linkedin_company' && bufferCircuit\.active/);
+  assert.doesNotMatch(publisher,/await markLinkedInRateLimited\(db,runDate,bufferCircuit\)/);
+});
+
+test('LinkedIn company Composio publishing is exact-readback and fail-closed',()=>{
+  assert.match(publisher,/COMPOSIO_LINKEDIN_COMPANY_EXACT_READBACK_MISMATCH/);
+  assert.match(publisher,/COMPOSIO_LINKEDIN_COMPANY_AUTHOR_AMBIGUOUS/);
+  assert.match(publisher,/republish_forbidden:true/);
+  assert.match(publisher,/do not fall back to Buffer or issue a replacement post/);
 });

@@ -28,13 +28,13 @@ class BufferHttpError extends Error {
   }
 }
 
-const COMPOSIO_BASE='https://backend.composio.dev/api/v3';
+const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:string,text:string){
   const response=await fetch(`${COMPOSIO_BASE}/tools/execute/${toolSlug}`,{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':apiKey},
-    body:JSON.stringify({connected_account_id:connectedAccountId,text})
+    body:JSON.stringify({connected_account_id:connectedAccountId,version:'latest',text})
   });
   const body:any=await response.json().catch(()=>({}));
   if(!response.ok||body?.successful!==true){
@@ -87,7 +87,7 @@ ${commentary}`
   if(!truth)throw new Error('COMPOSIO_LINKEDIN_EXACT_READBACK_MISMATCH');
   const publishedAtMs=Number(rb?.publishedAt||createdData?.publishedAt||Date.now());
   return {
-    provider:'linkedin_direct',
+    provider:'composio',
     provider_post_id:postUrn,
     provider_truth_verified:true,
     provider_truth_checked_at:new Date().toISOString(),
@@ -112,8 +112,72 @@ async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expecte
   const lifecycleState=clean(rb?.lifecycleState).toUpperCase();
   const truth=rbUrn===ref&&clean(rb?.author)===author&&lifecycleState==='PUBLISHED'&&(!clean(expectedCommentary)||commentary===clean(expectedCommentary));
   if(!truth)throw new Error('COMPOSIO_LINKEDIN_EXACT_RECONCILE_MISMATCH');
-  return {provider:'linkedin_direct',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
+  return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
+
+async function linkedinCompanyAuthorUrn(db:any):Promise<string>{
+  const explicit=clean(await secret(db,'COMPOSIO_LINKEDIN_COMPANY_AUTHOR_URN'));
+  if(explicit){
+    if(!/^urn:li:organization:[A-Za-z0-9_-]+$/.test(explicit))throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTHOR_URN_INVALID');
+    return explicit;
+  }
+  const {data,error}=await db.from('brain_records')
+    .select('result')
+    .eq('tenant_id','canonical')
+    .eq('record_id','linkedin-composio-setup-current-state-v1')
+    .maybeSingle();
+  if(error)throw new Error('COMPOSIO_LINKEDIN_COMPANY_STATE_READ:'+error.message);
+  const urns=Array.isArray(data?.result?.company_author_urns)
+    ? [...new Set(data.result.company_author_urns.map((v:any)=>clean(v)).filter((v:string)=>/^urn:li:organization:[A-Za-z0-9_-]+$/.test(v)))]
+    : [];
+  if(urns.length===0)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTHOR_UNVERIFIED');
+  if(urns.length!==1)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTHOR_AMBIGUOUS');
+  return urns[0];
+}
+async function publishLinkedInCompanyViaComposio(db:any,art:any){
+  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
+  const author=await linkedinCompanyAuthorUrn(db);
+  const commentary=clean(art.body);
+  const created=await composioExecute(
+    apiKey,accountId,'LINKEDIN_CREATE_LINKED_IN_POST',
+    `Create a PUBLIC LinkedIn organization post with lifecycleState PUBLISHED. Use author ${author}. Use this exact commentary, preserving wording and line breaks:
+${commentary}`
+  );
+  const createdData=created?.data||created;
+  const postUrn=clean(createdData?.x_restli_id)||deepPickLinkedInPostUrn(createdData);
+  if(!postUrn)throw new Error('COMPOSIO_LINKEDIN_COMPANY_POST_URN_MISSING');
+  const readback=await composioExecute(apiKey,accountId,'LINKEDIN_GET_POST_CONTENT',`Get LinkedIn post content for post_id ${postUrn}.`);
+  const rb=readback?.data||readback;
+  const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
+  const truth=rbUrn===postUrn&&clean(rb?.author)===author&&clean(rb?.commentary)===commentary&&clean(rb?.lifecycleState).toUpperCase()==='PUBLISHED';
+  if(!truth)throw new Error('COMPOSIO_LINKEDIN_COMPANY_EXACT_READBACK_MISMATCH');
+  const publishedAtMs=Number(rb?.publishedAt||createdData?.publishedAt||Date.now());
+  return {
+    provider:'composio',
+    provider_post_id:postUrn,
+    provider_truth_verified:true,
+    provider_truth_checked_at:new Date().toISOString(),
+    provider_status:'published',
+    published_at:Number.isFinite(publishedAtMs)?new Date(publishedAtMs).toISOString():new Date().toISOString(),
+    author_urn:author,
+    linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
+  };
+}
+async function readLinkedInCompanyPostViaComposio(db:any,postUrn:string,expectedCommentary:string=''){
+  const ref=clean(postUrn);
+  if(!/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))throw new Error('COMPOSIO_LINKEDIN_COMPANY_POST_URN_INVALID');
+  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
+  const author=await linkedinCompanyAuthorUrn(db);
+  const readback=await composioExecute(apiKey,accountId,'LINKEDIN_GET_POST_CONTENT',`Get LinkedIn post content for post_id ${ref}.`);
+  const rb=readback?.data||readback;
+  const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
+  const commentary=clean(rb?.commentary);
+  const lifecycleState=clean(rb?.lifecycleState).toUpperCase();
+  const truth=rbUrn===ref&&clean(rb?.author)===author&&lifecycleState==='PUBLISHED'&&(!clean(expectedCommentary)||commentary===clean(expectedCommentary));
+  if(!truth)throw new Error('COMPOSIO_LINKEDIN_COMPANY_EXACT_RECONCILE_MISMATCH');
+  return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
+}
+
 function deepPickId(value:any,preferred:string[]=[]):string{
   if(!value||typeof value!=='object')return'';
   for(const key of preferred){const v=value?.[key];if(typeof v==='string'&&v.trim())return v.trim();}
@@ -381,16 +445,34 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
         const {data:artifact,error:artifactError}=await db.from('powerhouse_content_artifacts').select('body').eq('run_date',runDate).eq('channel','linkedin_personal').maybeSingle();
         if(artifactError)throw new Error(`LINKEDIN_DIRECT_ARTIFACT_READ:${artifactError.message}`);
         const direct=await readLinkedInPersonalPostViaComposio(db,ref,clean(artifact?.body));
-        const evidence={...(obligation?.evidence||{}),...(row.delivery_evidence||{}),...direct,stale_delivery_ref:false,lineage_recovered_from_obligation:lineageRecovered,transport_contract:'linkedin-composio-direct-v1',buffer_dependency:false};
+        const evidence={...(obligation?.evidence||{}),...(row.delivery_evidence||{}),...direct,stale_delivery_ref:false,lineage_recovered_from_obligation:lineageRecovered,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
         await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'PUBLISHED',ref,evidence,'Collect LinkedIn outcome metrics and feed learning loop.',null);
-        results.push({channel:row.channel,post_id:ref,state:'published',provider:'linkedin_direct',provider_truth_verified:true,lineage_recovered_from_obligation:lineageRecovered});
+        results.push({channel:row.channel,post_id:ref,state:'published',provider:'composio',provider_truth_verified:true,lineage_recovered_from_obligation:lineageRecovered});
       } catch(error) {
         const message=error instanceof Error?error.message:String(error);
-        const evidence={...(obligation?.evidence||{}),...(row.delivery_evidence||{}),provider:'linkedin_direct',provider_post_id:ref,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),error:message,republish_forbidden:true,transport_contract:'linkedin-composio-direct-v1',buffer_dependency:false};
+        const evidence={...(obligation?.evidence||{}),...(row.delivery_evidence||{}),provider:'composio',provider_post_id:ref,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),error:message,republish_forbidden:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'BLOCKED',ref,evidence,'Repair exact LinkedIn direct readback for this URN; never route this claim through Buffer or create a replacement post.',message);
-        results.push({channel:row.channel,post_id:ref,state:'blocked',provider:'linkedin_direct',provider_truth_verified:false,reason:message});
+        results.push({channel:row.channel,post_id:ref,state:'blocked',provider:'composio',provider_truth_verified:false,reason:message});
+      }
+      continue;
+    }
+    if (row.channel === 'linkedin_company' && ((declaredProvider === 'composio' || declaredProvider === 'linkedin_direct') || /^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))) {
+      try {
+        const {data:artifact,error:artifactError}=await db.from('powerhouse_content_artifacts').select('body').eq('run_date',runDate).eq('channel','linkedin_company').maybeSingle();
+        if(artifactError)throw new Error(`LINKEDIN_COMPANY_DIRECT_ARTIFACT_READ:${artifactError.message}`);
+        const direct=await readLinkedInCompanyPostViaComposio(db,ref,clean(artifact?.body));
+        const evidence={...(obligation?.evidence||{}),...(row.delivery_evidence||{}),...direct,stale_delivery_ref:false,lineage_recovered_from_obligation:lineageRecovered,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
+        await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'PUBLISHED',ref,evidence,'Collect LinkedIn company outcome metrics and feed learning loop.',null);
+        results.push({channel:row.channel,post_id:ref,state:'published',provider:'composio',provider_truth_verified:true,lineage_recovered_from_obligation:lineageRecovered});
+      } catch(error) {
+        const message=error instanceof Error?error.message:String(error);
+        const evidence={...(obligation?.evidence||{}),...(row.delivery_evidence||{}),provider:'composio',provider_post_id:ref,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),error:message,republish_forbidden:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
+        await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'BLOCKED',ref,evidence,'Repair exact LinkedIn company Composio readback for this URN; never route this claim through Buffer or create a replacement post.',message);
+        results.push({channel:row.channel,post_id:ref,state:'blocked',provider:'composio',provider_truth_verified:false,reason:message});
       }
       continue;
     }
@@ -500,7 +582,6 @@ Deno.serve(async (req) => {
     } catch (error) {
       if (error instanceof BufferHttpError && error.status === 429) {
         bufferCircuit = await openBufferCircuit(db,error.retryAfter,'provider-audit');
-        await markLinkedInRateLimited(db,runDate,bufferCircuit);
         containment_sweep = { skipped:true, reason:'BUFFER_RATE_LIMITED', retry_at:bufferCircuit.retry_at };
         provider_reconciliation = [];
       } else throw error;
@@ -531,16 +612,6 @@ Deno.serve(async (req) => {
 
   for (const row of rows || []) {
     const art: any = artifactByChannel.get(row.channel) || null;
-    if (row.channel === 'linkedin_company' && bufferCircuit.active) {
-      const evidence={...(row.delivery_evidence||{}),provider:'buffer',buffer_rate_limited:true,buffer_retry_at:bufferCircuit.retry_at,
-        buffer_retry_after_seconds:bufferCircuit.retry_after_seconds,provider_truth_verified:false,error:'BUFFER_RATE_LIMITED'};
-      await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
-        .eq('run_date',runDate).eq('channel',row.channel);
-      await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,
-        `Buffer rate limit open until ${bufferCircuit.retry_at}; canonical closed loop retries automatically after reset.`,'BUFFER_RATE_LIMITED');
-      results.push({channel:row.channel,status:'deferred_rate_limit',retry_at:bufferCircuit.retry_at});
-      continue;
-    }
     if (!art?.body) {
       results.push({ channel: row.channel, status: 'skipped', reason: 'CONTENT_ARTIFACT_MISSING' });
       continue;
@@ -623,18 +694,38 @@ Deno.serve(async (req) => {
       try {
         await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
         const direct=await publishLinkedInPersonalViaComposio(db,art);
-        const evidence={...gatePassedEvidence,...direct,pre_publish_gate:'passed',final_text_hash:textHash,personal_truth_verified:true,transport_contract:'linkedin-composio-direct-v1',buffer_dependency:false,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        const evidence={...gatePassedEvidence,...direct,pre_publish_gate:'passed',final_text_hash:textHash,personal_truth_verified:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
         await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,'Collect LinkedIn outcome metrics and feed learning loop.',null);
-        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,provider:'linkedin_direct',provider_truth_verified:true});
+        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,provider:'composio',provider_truth_verified:true});
         continue;
       } catch(error) {
         const message=error instanceof Error?error.message:String(error);
-        const evidence={...(row.delivery_evidence||{}),provider:'linkedin_direct',provider_truth_verified:false,error:message,transport_contract:'linkedin-composio-direct-v1',buffer_dependency:false};
+        const evidence={...(row.delivery_evidence||{}),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
         await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
         await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Repair the direct LinkedIn connection/readback for this exact claim; do not fall back to Buffer or issue a replacement post.',message);
-        results.push({channel:row.channel,status:'blocked_direct_linkedin',provider:'linkedin_direct',error:message});
+        results.push({channel:row.channel,status:'blocked_direct_linkedin',provider:'composio',error:message});
+        continue;
+      }
+    }
+
+    if (row.channel === 'linkedin_company') {
+      try {
+        await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
+        const direct=await publishLinkedInCompanyViaComposio(db,art);
+        const evidence={...gatePassedEvidence,...direct,pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,'Collect LinkedIn company outcome metrics and feed learning loop.',null);
+        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,provider:'composio',provider_truth_verified:true});
+        continue;
+      } catch(error) {
+        const message=error instanceof Error?error.message:String(error);
+        const evidence={...(row.delivery_evidence||{}),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true};
+        await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+        await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Repair the Composio LinkedIn company connection/readback for this exact claim; do not fall back to Buffer or issue a replacement post.',message);
+        results.push({channel:row.channel,status:'blocked_composio_linkedin_company',provider:'composio',error:message});
         continue;
       }
     }
