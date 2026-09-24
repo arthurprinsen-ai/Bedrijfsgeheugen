@@ -27,5 +27,12 @@
     "historical_replay": [
       "tests/brain-i18n-production-fail-closed-v1.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "SILENT_UNTRANSLATED_LOCALIZED_RELEASE",
+    "scope": "WEBSITE_PUBLIC_I18N_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
