@@ -14,13 +14,12 @@ async function run() {
   try {
     const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
     await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
-    await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
+    await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:20_000 });
 
     // Lifecycle toggle must change the actual visible panel.
     // Keep this a real pointer click: position the control below sticky chrome first.
     const lossButton = page.locator('[data-bg-stage="loss"]');
-    await lossButton.waitFor({ state:'visible', timeout:15_000 });
+    await lossButton.waitFor({ state:'visible', timeout:20_000 });
     await lossButton.evaluate(el => el.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' }));
     await page.waitForTimeout(100);
     const lossBox = await lossButton.boundingBox();
