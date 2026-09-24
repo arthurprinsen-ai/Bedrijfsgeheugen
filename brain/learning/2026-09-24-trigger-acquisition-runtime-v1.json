@@ -10,14 +10,57 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
+  "authority": "Bedrijfsgeheugen Powerhouse commercial intelligence",
   "root_cause": "The commercial closed loop had predictive signals, forecasts, opportunities, actions and learning, but no fail-closed materializer from company-specific buying-trigger evidence to a problem hypothesis and canonical enrichment action.",
   "prevention_rule": "Only company-specific, fresh, referenced evidence may create trigger opportunities. Market signals must never become account opportunities. Trigger opportunities start at zero economic value and internal research only.",
+  "rule": "Observed company-specific trigger evidence may open a signal-stage opportunity; market evidence alone may not.",
+  "canonical_flow": [
+    "powerhouse_predictive_signals",
+    "trigger_classification",
+    "powerhouse_opportunities",
+    "internal_research_enrichment",
+    "powerhouse_sales_actions",
+    "decision_cycle",
+    "outcome",
+    "learning"
+  ],
+  "reuse": [
+    "powerhouse_predictive_signals",
+    "powerhouse_opportunities",
+    "powerhouse_buying_committee_v1",
+    "powerhouse_sales_actions",
+    "powerhouse_runtime_events",
+    "existing decision-cycle materializer"
+  ],
+  "safeguards": [
+    "company_scope_only",
+    "evidence_ref_required",
+    "freshness_guard",
+    "strength_floor",
+    "hypothesis_not_fact",
+    "zero_economic_value_until_evidence",
+    "internal_research_only",
+    "no_parallel_crm",
+    "no_parallel_scheduler"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-powerhouse-trigger-acquisition-runtime-v1.test.mjs"
+    ],
+    "production_readback": [
+      "powerhouse_trigger_acquisition_readiness_v1"
+    ]
+  },
   "evidence": {
     "migration": "supabase/migrations/20260924131500_powerhouse_trigger_based_acquisition_runtime_v1.sql",
     "test": "tests/supabase-powerhouse-trigger-acquisition-runtime-v1.test.mjs",
-    "skill": ".agents/skills/trigger-based-mkb-acquisition/SKILL.md"
+    "skill": ".agents/skills/trigger-based-mkb-acquisition/SKILL.md",
+    "change_doc": "docs/changes/2026-09-24-trigger-acquisition-runtime-v1.md",
+    "ledger": "docs/development-ledger-events/2026-09-24-trigger-acquisition-runtime-v1.md",
+    "delivery_pr": 2741
   },
   "skill_targets": [
     "trigger-based-mkb-acquisition"
-  ]
+  ],
+  "live_claim": "Candidate only until protected merge, Supabase production migration and readiness readback prove unsafe_outbound_actions=0."
 }
