@@ -437,6 +437,7 @@ For static JavaScript/CSS that establishes product runtime readiness or interact
 - derive the public cache-busting key from the exact asset content identity (Git blob SHA prefix is acceptable);
 - regression must calculate that identity from file bytes and assert the HTML reference matches it;
 - production content proof must assert the same key;
+- Every build/transform/restoration path that can inject or restore the runtime tag must use the same key;
 - if exact provider deployment is green but a runtime readiness marker is absent, inspect HTML/asset cache identity before mutating interaction logic or weakening the verifier.
 
 Reference incident: pricing rescue runtime remained referenced as `v=20260924-0750` after later JS mutations, causing exact new HTML to be compatible with a stale cached runtime.
