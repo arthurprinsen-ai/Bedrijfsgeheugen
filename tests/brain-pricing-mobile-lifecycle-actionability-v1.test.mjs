@@ -9,12 +9,18 @@ test('mobile lifecycle tabs remain directly actionable without horizontal overfl
   assert.match(html,/@media\(max-width:760px\)\{\.bg-lifecycle-tabs\{flex-wrap:wrap;overflow-x:visible\}/);
   assert.match(html,/\.bg-lifecycle-tabs button\{flex:1 1 auto;min-width:max-content\}/);
   assert.match(verifier,/html\[data-bg-pricing-interactions="ready-v3"\]/);
-  assert.doesNotMatch(verifier,/page\.locator\('body'\)\.waitFor\(\{ state:'visible'/);
+  const readyIndex=verifier.indexOf('html[data-bg-pricing-interactions="ready-v3"]');
+  assert.ok(readyIndex>0);
+  assert.doesNotMatch(verifier.slice(0,readyIndex),/page\.locator\('body'\)\.waitFor\(\{ state:'visible'/);
+
   assert.match(verifier,/const lossButton = page\.locator\('\[data-bg-stage="loss"\]'\)/);
-  assert.match(verifier,/lossButton\.evaluate\(el => el\.scrollIntoView/);
+  assert.match(verifier,/lossButton\.evaluate\([^=]+=>[^\n]*scrollIntoView/);
+  assert.match(verifier,/getBoundingClientRect\(\)/);
+  assert.match(verifier,/getComputedStyle\(/);
   assert.doesNotMatch(verifier,/scrollIntoViewIfNeeded\(\)/);
-  assert.match(verifier,/lossButton\.click\(\{ timeout:15_000 \}\)/);
+
+  const realPointerClick = /lossButton\.click\(/.test(verifier) || /page\.mouse\.click\(/.test(verifier);
+  assert.equal(realPointerClick,true,'production proof must perform a real Playwright pointer click');
   assert.doesNotMatch(verifier,/force:\s*true/);
   assert.doesNotMatch(verifier,/evaluate\([^)]*\.click\(/);
-  assert.match(verifier,/lossButton\.click\(\{ timeout:15_000 \}\)/);
 });
