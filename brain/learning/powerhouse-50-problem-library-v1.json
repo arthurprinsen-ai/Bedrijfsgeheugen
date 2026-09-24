@@ -14,7 +14,11 @@
     "isolated_green_preview": "Netlify deploy 6ab530378136cf00070428c2",
     "inherited_main_preview_failure": "Netlify deploy 6ab532bed94900000844a1b1"
   },
-  "skill_targets": [],
+  "skill_targets": [
+    ".agents/skills/trigger-based-mkb-acquisition/SKILL.md",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ],
   "compiler": {
     "failure_class": "PARALLEL_PROBLEM_TRUTH_AND_UNCLASSIFIED_DELIVERY",
     "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
