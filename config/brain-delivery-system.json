@@ -305,7 +305,9 @@
         "tools/universal-event-",
         "tools/universal-failure-",
         "tests/saas-",
-        "tests/linkedin-cockpit-"
+        "tests/linkedin-cockpit-",
+        "scripts/opportunity/",
+        "tests/opportunity-"
       ],
       "requiredContracts": [
         "BG166",

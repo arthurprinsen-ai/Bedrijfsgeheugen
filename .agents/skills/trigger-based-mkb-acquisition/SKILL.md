@@ -51,3 +51,10 @@ Content is pre-sales. Schrijf vanuit concreet CEO/directie/MT-probleem, data, im
 
 ## Learning
 Meet minimaal trigger->response, response->meeting, meeting->scan, scan->sale, realized value en referral. Promote geen heuristiek tot harde policy zonder voldoende evidence.
+
+## Runtime projection
+De canonical opportunity authority projecteert commerciële context via `scripts/opportunity/opportunity-scout.mjs`. Voor `commercial_acquisition=true` zijn `trigger_type`, `problem_hypothesis`, `decision_maker_role`, `recommended_next_action`, voldoende `confidence` en minimaal één `evidence_ref` vereist voordat `commercial_execution_class=trigger-led-next-action` mag ontstaan. Ontbrekende velden blijven null en de uitvoering blijft `observe` met een `do_not_contact_reason`; geen inferentie of bulk-outreach als fallback.
+
+
+## Supabase runtime authority
+De production authority is `public.powerhouse_mkb_trigger_intelligence_v1` + `public.powerhouse_refresh_trigger_based_mkb_acquisition_v1(date)`. Alleen expliciete company-trigger evidence/headlines/samenvattingen of company-scoped predictive signals mogen worden geclassificeerd; een gewone connection/relationship activation is geen kooptrigger. De materialisatie hergebruikt `powerhouse_opportunities`, `powerhouse_forecasts` en `powerhouse_sales_actions`. Automatisch wordt uitsluitend `research_enrichment` via kanaal `internal` aangemaakt; direct outbound blijft onder de bestaande execution gates. De bestaande cron `powerhouse-commercial-learning-v1` wordt hergebruikt via `powerhouse_trigger_based_mkb_acquisition_cycle_v1`; nooit een tweede scheduler maken.

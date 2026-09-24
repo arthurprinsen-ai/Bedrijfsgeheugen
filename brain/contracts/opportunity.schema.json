@@ -1,5 +1,20 @@
 {
-  "$id":"brain.v1/opportunity",
-  "allOf":["brain.v1/envelope"],
-  "required":["type","targets","problem","signals","evidence_refs","expected_value","urgency","strategic_fit","learning_value","reusability","cost","time","risk","status"]
+  "$id": "brain.v1/opportunity",
+  "allOf": ["brain.v1/envelope"],
+  "required": ["type","targets","problem","signals","evidence_refs","expected_value","urgency","strategic_fit","learning_value","reusability","cost","time","risk","status"],
+  "properties": {
+    "commercial_acquisition": {"type": "boolean"},
+    "trigger_type": {"type": ["string","null"]},
+    "problem_hypothesis": {"type": ["string","null"]},
+    "economic_impact_hypothesis": {"type": ["string","null"]},
+    "decision_maker_role": {"type": ["string","null"]},
+    "buyer_stage": {"type": ["string","null"]},
+    "recommended_next_action": {"type": ["string","null"]},
+    "recommended_content_angle": {"type": ["string","null"]},
+    "partner_route": {"type": ["string","null"]},
+    "observed_at": {"type": ["string","null"]},
+    "commercial_ready": {"type": "boolean"},
+    "commercial_execution_class": {"enum": ["observe","trigger-led-next-action"]},
+    "do_not_contact_reason": {"type": ["string","null"]}
+  }
 }
