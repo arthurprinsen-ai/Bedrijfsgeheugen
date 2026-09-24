@@ -1,0 +1,42 @@
+{
+  "fingerprint": "production-retry-after-pricing-parse-fix-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_RECOVERY",
+  "root_cause": "The prior production attempt reached Netlify successfully but failed during build because pricing-build-integrity.mjs did not parse. PR #2763 repaired that parse error and added a syntax gate, but a fresh Production Source Snapshot was still required to promote the corrected protected main.",
+  "prevention": [
+    "After a production build fix merges, trigger a fresh canonical production snapshot for the new protected main rather than rerunning an artifact from the failed SHA.",
+    "Keep provider build fail-fast, exact release.json SHA/deploy-id proof and production browser proof mandatory.",
+    "Do not mark LIVE_BEWEZEN from merge success alone."
+  ],
+  "evidence": {
+    "base_sha": "3e7ef0bd633d4249e91e1a1dadaf3513c33f1ce4",
+    "fix_pr": 2763,
+    "failed_deploy": "6ab536114682dc3f3a4f32d7",
+    "regression": "tests/brain-production-retry-after-pricing-parse-fix-v1.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-retry-after-pricing-parse-fix-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-retry-after-pricing-parse-fix-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-retry-after-pricing-parse-fix-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-production-retry-after-pricing-parse-fix-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_RETRY_AFTER_BUILD_FIX",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
