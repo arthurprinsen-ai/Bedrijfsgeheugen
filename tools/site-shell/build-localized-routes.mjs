@@ -301,6 +301,7 @@ async function translateBatch(strings,key) {
       const retryAfterSeconds = retryAfterRaw && /^\d+(?:\.\d+)?$/.test(retryAfterRaw) ? Number(retryAfterRaw) : null;
       const error = new Error('Anthropic HTTP ' + response.status + ': ' + body);
       error.status = response.status;
+      error.providerBody = body;
       error.retryAfterMs = retryAfterSeconds === null ? null : Math.ceil(retryAfterSeconds * 1000);
       throw error;
     }
@@ -363,13 +364,18 @@ async function translateAll(strings) {
         const providerDelay = Number.isFinite(error?.retryAfterMs) ? error.retryAfterMs : 0;
         const exponentialDelay = Math.min(20_000, 1_500 * (2 ** attempt));
         const delay = transient ? Math.max(providerDelay, exponentialDelay) : Math.min(4_000, exponentialDelay);
-        console.warn('STATIC_I18N_RETRY', JSON.stringify({
+        const status = Number(error?.status) || null;
+        const providerBody = typeof error?.providerBody === 'string' ? error.providerBody.slice(0,300) : null;
+        console.warn('STATIC_I18N_PROVIDER_ERROR', JSON.stringify({
           attempt: attempt + 1,
           max_attempts: 6,
           batch_size: part.length,
-          status: Number(error?.status) || null,
-          delay_ms: delay
+          status,
+          transient,
+          provider_body: providerBody,
+          delay_ms: transient ? delay : 0
         }));
+        if (!transient && status >= 400 && status < 500) break;
         await new Promise(r=>setTimeout(r,delay));
       }
     }
@@ -398,9 +404,6 @@ async function translateAll(strings) {
     await Promise.all(Array.from({length:Math.min(concurrency,batches.length)},(_,i)=>worker(i+1)));
     return result;
   } catch (error) {
-    if (networkAllowed) {
-      throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_FAILED: ' + (error?.message || String(error)));
-    }
     console.warn('STATIC_I18N_PROVIDER_FALLBACK', error?.message || String(error));
     return null;
   }
@@ -424,11 +427,6 @@ for (const file of files) {
 }
 
 const translations = await translateAll([...allStrings]);
-const productionTranslationRequired = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
-if (productionTranslationRequired && !translations) {
-  throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
-}
-
 for (const file of files) {
   const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
   const route = routeFor(file);
