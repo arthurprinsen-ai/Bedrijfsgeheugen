@@ -177,10 +177,17 @@
       "required": true
     },
     {
+      "id": "netlify_function:growth-intelligence-daily",
+      "type": "netlify_function",
+      "authority": "netlify/functions/growth-intelligence-daily.mjs",
+      "evidence_contract": "tests/growth-intelligence-daily.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:linkedin-revenue-cockpit",
       "type": "netlify_function",
       "authority": "netlify/functions/linkedin-revenue-cockpit.mjs",
-      "evidence_contract": "contracts/openapi/powerhouse-public-api.yaml",
+      "evidence_contract": "tests/linkedin-revenue-cockpit.test.mjs",
       "required": true
     },
     {
