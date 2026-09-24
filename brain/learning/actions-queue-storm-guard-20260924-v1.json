@@ -28,7 +28,6 @@
     "Workflow YAML repairs must preserve existing structural regression anchors when semantics do not require changing them.",
     "Before inserting a job-level control such as timeout-minutes, run or inspect the tests that assert neighboring YAML key order; prefer a placement that preserves both semantics and established contract.",
     "Main verification/readback concurrency keys must be stable per event/ref or PR; github.run_id is forbidden in a cancel-in-progress main-push key because it prevents supersession.",
-    "Canonical brand shell live readback, Production Release Readback, Powerhouse CodeQL and Python CodeQL use latest-ref/latest-main single-flight semantics.",
     "Agents/chats may arm or execute merge only after exact-head Required, BRAIN, applicable CodeQL and Skill Projection are all terminal success.",
     "Unexpected branch/head movement is fail-closed until the exact diff from the previously trusted head has been inspected.",
     "Queue fan-out forecasts must use the actual workflow trigger graph and distinguish runner-consuming work from skipped/no-op workflow shells.",
@@ -36,7 +35,11 @@
     "When a verification workflow already has a narrow pull-request path scope, its main-push trigger must mirror the relevant path scope unless there is documented evidence that every main commit requires that verification.",
     "Feature-branch pushes must not run broad Brain/control-plane verification when the same candidate is verified by Required/BRAIN after PR admission.",
     "Canonical Brand Shell production readback is both latest-main single-flight and hard-bounded by a fifteen-minute job timeout.",
-    "Main-push fan-out is a forecasted delivery cost: agents must inspect the actual trigger graph before merging and remove unscoped verification triggers that provide no incremental evidence."
+    "Main-push fan-out is a forecasted delivery cost: agents must inspect the actual trigger graph before merging and remove unscoped verification triggers that provide no incremental evidence.",
+    "Latest-main cancellation applies only to verification whose evidence is safely supersedeable; immutable per-release Production Release Readback remains serialized with cancel-in-progress false.",
+    "Fan-out forecasting must include pull_request workflows whose own workflow YAML path is changed; editing a workflow can activate that workflow even when product paths are otherwise irrelevant.",
+    "Before opening or synchronizing a PR, derive expected runs from the exact changed-path-to-trigger graph rather than assuming only Required, BRAIN, CodeQL and Skill Projection.",
+    "When a repair on an open PR would itself create unsafe fan-out, close the same PR unmerged, repair the same branch without PR synchronization, then reopen the same PR only after queue admission is safe."
   ],
   "evaluation": {
     "historical_replay": [
@@ -104,7 +107,19 @@
     "feature_push_suppressed_workflows": [
       ".github/workflows/brain-foundation-verify.yml"
     ],
-    "canonical_brand_production_readback_timeout_minutes": 15
+    "canonical_brand_production_readback_timeout_minutes": 15,
+    "production_release_readback_cancel_in_progress": false,
+    "supersedeable_latest_main_workflows": [
+      ".github/workflows/canonical-brand-shell-live-readback.yml",
+      ".github/workflows/powerhouse-codeql.yml",
+      ".github/workflows/codeql.yml"
+    ],
+    "non_supersedeable_production_proof": [
+      ".github/workflows/production-release-readback.yml"
+    ],
+    "observed_pr_trigger_count_for_2809": 13,
+    "forecast_pr_trigger_count_for_2809": 4,
+    "fanout_forecast_miss_reason": "workflow YAML paths activated their own pull_request workflows"
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -119,7 +134,7 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 8,
+  "revision": 9,
   "failed_approaches": [
     "Repository-wide recovery on every main push plus a five-minute schedule.",
     "Dispatching recovery independently across many open PRs during runner saturation.",
@@ -142,6 +157,8 @@
     "Enabling auto-merge on PR #2807 while Required was still running; the PR merged and Required was cancelled afterward.",
     "Keeping narrow pull-request path filters while leaving the same verification workflow unscoped on every main push.",
     "Allowing Brain foundation verification to run on arbitrary feature-branch pushes before PR admission.",
-    "Leaving Canonical Brand Shell production visual readback without a hard job timeout while browser visibility checks could stall."
+    "Leaving Canonical Brand Shell production visual readback without a hard job timeout while browser visibility checks could stall.",
+    "Treating Production Release Readback as latest-main supersedeable work even though canonical tests require every release proof to finish without mid-flight cancellation.",
+    "Forecasting PR #2809 as four runs while changed workflow YAML files activated their own PR workflows, producing thirteen observed runs."
   ]
 }

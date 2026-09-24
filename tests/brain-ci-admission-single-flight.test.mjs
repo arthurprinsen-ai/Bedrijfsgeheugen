@@ -58,13 +58,13 @@ test('queue pressure forecast blocks fan-out before mutation', () => {
 });
 
 
-test('main push verification workflows are true single-flight and never key on run_id', async () => {
+test('main verification is latest-wins only where proof is safely supersedeable', async () => {
   const brand=await readFile('.github/workflows/canonical-brand-shell-live-readback.yml','utf8');
   assert.match(brand,/concurrency:\n\s+group: canonical-brand-shell-live-readback-/);
   assert.match(brand,/cancel-in-progress: true/);
 
   const release=await readFile('.github/workflows/production-release-readback.yml','utf8');
-  assert.match(release,/group: production-release-readback\n\s+cancel-in-progress: true/);
+  assert.match(release,/group: production-release-readback\n\s+cancel-in-progress: false/);
 
   for (const path of ['.github/workflows/powerhouse-codeql.yml','.github/workflows/codeql.yml']) {
     const yml=await readFile(path,'utf8');
@@ -102,4 +102,12 @@ test('main push verification mirrors relevant path scopes and feature pushes sta
 
   const brand=await readFile('.github/workflows/canonical-brand-shell-live-readback.yml','utf8');
   assert.match(brand,/production-readback:\n[\s\S]*?runs-on:\s*ubuntu-latest\n\s+timeout-minutes:\s*15/);
+});
+
+
+test('production proof is never treated as supersedeable queue work', async () => {
+  const release=await readFile('.github/workflows/production-release-readback.yml','utf8');
+  assert.match(release,/group: production-release-readback\n\s+cancel-in-progress: false/);
+  const composable=await readFile('tests/brain-composable-release-control-plane.test.mjs','utf8');
+  assert.match(composable,/production readback is serialized and never cancelled mid-flight/);
 });

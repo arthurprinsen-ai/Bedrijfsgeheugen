@@ -82,3 +82,11 @@ De volgende resterende fan-outbron is structureel gesloten: verificatieworkflows
 Daarnaast draait Brain Foundation niet meer op iedere feature-branch push; kandidaatbewijs loopt via PR-admission/Required/BRAIN. Daardoor veroorzaakt het voorbereiden van een candidate geen tweede pre-PR verificatielaag.
 
 Canonical Brand Shell production readback heeft nu naast latest-main single-flight ook een harde job-timeout van 15 minuten. Een zichtbaarheid/browsercontrole kan daarmee nooit onbeperkt een runner vasthouden.
+
+
+## Production-proof en fan-out forecast v9
+Niet alle main-workflows mogen dezelfde concurrencystrategie krijgen. Canonical Brand Shell verificatie en CodeQL kunnen safely latest-wins zijn; **Production Release Readback niet**. Dat workflowbewijs hoort bij een specifieke merge/release-epoch en blijft daarom serialized met `cancel-in-progress: false`.
+
+Ook is de fan-outvoorspelling aangescherpt. Voor #2809 werden 4 runs verwacht, maar 13 PR-runs gestart omdat gewijzigde workflow-YAML-bestanden hun eigen `pull_request.paths` matchten. Voortaan wordt vóór PR-open/reopen de volledige changed-path → workflow-trigger graph geëvalueerd, inclusief self-triggering workflowbestanden.
+
+Als een repair op een open PR daardoor te veel nieuwe runs zou veroorzaken, mag dezelfde PR tijdelijk onmerged worden gesloten, de branch zonder PR-synchronize worden gerepareerd, en pas na queue-admission weer worden heropend. Geen duplicate PR.

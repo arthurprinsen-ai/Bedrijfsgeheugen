@@ -136,6 +136,13 @@ Bij de queue-pressure forecast telt een agent niet alleen Required/BRAIN, maar d
 
 Voor merge wordt dus voorspeld: PR-fan-out + post-merge main-fan-out + downstream workflow_run fan-out. Als die projectie de queue-governor overschrijdt, eerst triggers coalescen/path-scopen; niet eerst mergen en daarna opruimen.
 
+
+### Immutable production-proof exception
+
+Production Release Readback is not ordinary latest-main verification. It is immutable evidence for a specific merged release and remains serialized with `cancel-in-progress: false`. Never cancel an in-flight canonical production proof solely because a newer main exists.
+
+Queue forecasting must count self-triggering workflow edits: when `.github/workflows/foo.yml` is included in that workflow's own `pull_request.paths`, changing `foo.yml` predicts an additional PR run. Forecast from the complete changed-path → trigger graph before PR open/reopen/synchronize.
+
 ### BRAIN chat-learning preflight
 `config/brain-chat-learning-contract.json` (`BRAIN-CHAT-LEARNING-v1`) is verplichte gedeelde voorkennis voor iedere huidige en toekomstige agent, workflow en scenario die materieel werk uitvoert.
 

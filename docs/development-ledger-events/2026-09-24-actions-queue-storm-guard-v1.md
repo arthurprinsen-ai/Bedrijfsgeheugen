@@ -83,3 +83,13 @@
 - Fix: Canonical Brand Shell production-readback is latest-main single-flight én `timeout-minutes: 15`.
 - Regression: `tests/brain-ci-admission-single-flight.test.mjs` bewaakt branch scope, push path scope en timeout.
 - Merge authority blijft gate-first: geen auto-merge vóór exact-head Required + BRAIN + toepasselijke CodeQL + Skill Projection terminal groen zijn.
+
+
+## Queue governor v9 — immutable production proof + exact trigger forecast
+- Required #2809 wees terecht af dat Production Release Readback `cancel-in-progress: true` kreeg.
+- Canoniek contract: production readback is per-release bewijs, serialized en nooit mid-flight gecanceld.
+- Repair: `cancel-in-progress: false` hersteld; latest-wins blijft alleen voor supersedeerbare verificatie.
+- Forecast miss: 4 voorspelde PR-runs versus 13 geobserveerde runs.
+- Root cause forecast miss: gewijzigde workflow-YAML-bestanden matchten hun eigen PR path filters.
+- Prevention: changed-path → workflow-trigger graph bevat ook self-triggering workflowbestanden.
+- Recovery pattern: zelfde PR tijdelijk sluiten vóór branchrepair als PR synchronize de hard queue limit zou overschrijden; daarna dezelfde PR heropenen, nooit een duplicate lineage.

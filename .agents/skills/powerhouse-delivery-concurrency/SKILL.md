@@ -233,7 +233,7 @@ Unexpected branch/head movement is fail-closed until the exact diff from the las
 
 Fingerprint: `github|main-verification|latest-ref-single-flight|v1`.
 
-Main verification/readback workflows use stable ref-level concurrency keys with `cancel-in-progress: true`. Never include `github.run_id` in a main-push concurrency identity: it makes every run unique and defeats cancellation. Canonical brand shell readback, production release readback and both CodeQL workflows are latest-ref/latest-main verification surfaces; a newer main contains the older main and supersedes its verification work unless a provider contract explicitly requires per-epoch completion.
+Main verification/readback workflows use stable ref-level concurrency keys with `cancel-in-progress: true`. Never include `github.run_id` in a main-push concurrency identity: it makes every run unique and defeats cancellation. Canonical brand shell readback and both CodeQL workflows are latest-ref/latest-main verification surfaces. Production Release Readback is the explicit exception: it is immutable per-release evidence, remains serialized, and must never be cancelled mid-flight merely because a newer main exists.
 
 
 ## Push-trigger fan-out admission
@@ -247,3 +247,16 @@ Feature-branch pushes must not launch broad Brain/control-plane verification tha
 Long-running production/browser readbacks are both latest-main single-flight and hard timeout bounded. A newer main epoch supersedes older verification unless a provider contract explicitly requires per-epoch completion.
 
 Treat unscoped push triggers, unique run-id concurrency, duplicate pre-PR verification and unbounded readback jobs as queue-amplification defects.
+
+
+## Exact trigger-graph fan-out forecast
+
+Fingerprint: `github|fanout-forecast|changed-path-trigger-graph|v1`.
+
+Before opening, reopening or synchronizing a PR, derive projected GitHub Actions runs from the exact changed paths and every workflow trigger. A workflow file can self-trigger when its own path is listed under `pull_request.paths`; count that run even when no product path changed.
+
+Distinguish two concurrency classes:
+- **supersedeable verification**: latest-main/ref may cancel older work when newer evidence fully dominates it;
+- **immutable delivery proof**: per-release production/readback evidence must finish and may not be cancelled simply because a newer main exists.
+
+If an open-PR repair would exceed the queue governor because synchronize would retrigger many workflows, close the same PR unmerged, repair the same branch, and reopen the same PR only after admission is safe. Never create a replacement PR solely to escape fan-out.
