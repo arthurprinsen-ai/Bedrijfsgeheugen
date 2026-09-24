@@ -211,3 +211,18 @@ Production browser verifier: `tools/site-shell/verify-pricing-i18n-production.mj
 Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
 
 Concurrency includes runner capacity. Before any write/dispatch that can trigger CI, compute current pressure and projected fan-out. At >=12 active or >=10 queued, allow only essential single-flight work and batch related writes. At >=20 active or >=20 queued, open the circuit: no new recovery/optional runs. Never intentionally create >6 new runs from one action. One canonical PR per obligation and one active Required/BRAIN instance per PR/head are hard limits.
+
+
+## Exact-head gate-first merge arming
+
+Fingerprint: `github|merge-arming|exact-head-gates-first|v1`.
+
+Auto-merge is not a waiting mechanism. A chat/agent may enable or execute merge only after the exact current PR head has terminal-success evidence for Required, BRAIN, applicable Powerhouse CodeQL and Skill Projection. Never arm auto-merge while those gates are queued or in progress. If a PR merges before all intended pre-merge gates are terminal, record a governance incident immediately and use terminal closure only as recovery evidence; never reinterpret the early merge as compliant.
+
+Unexpected branch/head movement is fail-closed until the exact diff is read. A mutation that happens to match a known fix may be accepted only after diff validation; author/login alone is not sufficient authority.
+
+## Queue-deadlock recovery escape
+
+Fingerprint: `github|queue-deadlock|net-backlog-reducing-repair|v1`.
+
+If stale queued/running work itself prevents the control-plane repair and the connected toolchain exposes no safe cancellation action, exactly one canonical control-plane recovery may cross projected pressure only when all are true: there is no duplicate obligation, the repair is path-scoped, no optional/artifact fan-out is intentionally added, expected stale-run reduction is greater than the new runner-consuming work, auto-merge remains unarmed until exact-head gates are terminal green, and before/after queue evidence is written back.

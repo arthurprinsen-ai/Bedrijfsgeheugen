@@ -43,3 +43,11 @@ Onder druk is de prioriteit: exact-head werk hergebruiken → dedupliceren → w
 Tijdens de governor-delivery bleek nog een tweede control-plane defect: governancebestanden (`AGENTS.md`, `brain/policies/`, `.agents/skills/`, `tools/delivery/`) werden niet als non-artifact herkend. Daardoor startte een pure policywijziging alsnog page/SEO/browser-CI.
 
 Dit is dichtgezet door die paden expliciet als control-plane te classificeren en met regressie te bewijzen dat `requires_preview=false` blijft. Daarnaast heeft de website-browserjob nu `timeout-minutes: 15`; een browserstall kan dus nooit onbeperkt runnercapaciteit vasthouden.
+
+
+## Main single-flight closure
+A second queue source was found after the predictive governor landed: several main verification workflows were not actually single-flight. `github.run_id` made CodeQL concurrency unique per push, Production Release Readback explicitly used `cancel-in-progress: false`, and Canonical brand shell live readback had no concurrency group. These are changed to latest-ref/latest-main semantics.
+
+The stale-run janitor now covers queued and in-progress work. Closed-PR runs are stale candidates even if the branch still exists; allowlisted verification/readback runs for an older main SHA are stale once a newer main exists and the age threshold is exceeded.
+
+PR #2807 also exposed premature merge arming: it merged before Required became terminal success, after which Required was cancelled. Agents/chats may therefore never arm auto-merge early. Merge arming is an exact-head post-gate action only.

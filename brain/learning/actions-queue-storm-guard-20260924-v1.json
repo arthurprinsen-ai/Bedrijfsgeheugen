@@ -20,7 +20,15 @@
     "Borging, documentation, learning and skill changes for one obligation should be committed atomically when safe.",
     "Agents and chats must treat predicted queue amplification as a pre-mutation blocker, not something to clean up afterward.",
     "Governance, agent policy, skill and delivery-controller changes are non-artifact control-plane and must not trigger website preview/browser lanes unless a real website artifact also changes.",
-    "The website browser lane has a hard 15-minute timeout so a browser stall cannot retain runner capacity indefinitely."
+    "The website browser lane has a hard 15-minute timeout so a browser stall cannot retain runner capacity indefinitely.",
+    "Main-push verification/readback workflows must use stable ref-level concurrency keys with cancel-in-progress true; github.run_id in a push concurrency key defeats deduplication.",
+    "Production Release Readback uses latest-main-wins because Obligation Terminal Closure can prove a current live descendant when an older canonical readback is cancelled.",
+    "Stale Actions janitor covers both queued and in-progress states; a closed PR is terminal even if its branch still exists or was reused.",
+    "Allowlisted verification/readback runs on an older main SHA are safe to cancel after the stale threshold when a newer main exists.",
+    "Agents/chats must never arm auto-merge before Required, BRAIN, applicable CodeQL and Skill Projection are terminal success on the exact head.",
+    "An unexpected PR head mutation is not authoritative until its diff is read and validated against the known recovery cause.",
+    "Fan-out forecasts must be derived from actual workflow trigger applicability; rough gate-count estimates are not sufficient.",
+    "When stale queue pressure itself prevents the repair and no safe direct cancellation capability exists, exactly one net-backlog-reducing control-plane recovery may cross projected pressure only with explicit evidence that expected stale-run reduction exceeds new runner-consuming work."
   ],
   "evaluation": {
     "historical_replay": [
@@ -59,7 +67,19 @@
       "brain/policies/",
       ".agents/skills/",
       "tools/delivery/"
-    ]
+    ],
+    "observed_pr_2807_merge_sha": "946a0d627b7362f45734b5eeb6bf64cae5271e50",
+    "observed_pr_2807_required_conclusion_after_merge": "cancelled",
+    "observed_post_merge_queued": 9,
+    "observed_post_merge_in_progress": 14,
+    "observed_stale_main_readback_shas": [
+      "98837b970628344fb46f8d43e0f52f5adb2c1e76",
+      "6f520a5aa20c3b70043a0f0871bec4ab26a9bebf",
+      "faebb110924d61448d90b243c124387a333010ba"
+    ],
+    "observed_queue_zombie_pr": 1444,
+    "observed_queue_zombie_branch_current_sha": "d70cb432b318ad672793c5eb133f257f3e6e00e4",
+    "observed_queue_zombie_run_sha": "648e9e2bbbb219fad1ffb2907ebc6c2f7fe77a7a"
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -74,7 +94,7 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 4,
+  "revision": 5,
   "failed_approaches": [
     "Repository-wide recovery on every main push plus a five-minute schedule.",
     "Dispatching recovery independently across many open PRs during runner saturation.",
@@ -86,6 +106,10 @@
     "Refreshing a PR through transient branch equality with main, which can auto-close the PR.",
     "Carrying unrelated baseline failures inside queue repair instead of fixing the canonical baseline first.",
     "Leaving the website browser lane without an explicit timeout, allowing a non-artifact governance PR to occupy a runner indefinitely.",
-    "Failing to classify AGENTS.md, brain/policies, .agents/skills and tools/delivery as non-artifact control-plane paths."
+    "Failing to classify AGENTS.md, brain/policies, .agents/skills and tools/delivery as non-artifact control-plane paths.",
+    "Using github.run_id inside a cancel-in-progress concurrency group on main, which makes every run unique and therefore uncancellable by concurrency.",
+    "Leaving Production Release Readback cancel-in-progress false, allowing old main readbacks to overlap.",
+    "Treating branch existence as proof that an old queued PR run is still useful after its PR has already merged.",
+    "Arming auto-merge before Required was terminal green; PR #2807 merged and its Required run was subsequently cancelled."
   ]
 }

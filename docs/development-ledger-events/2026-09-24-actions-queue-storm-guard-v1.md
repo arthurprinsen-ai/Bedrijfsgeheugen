@@ -47,3 +47,13 @@
 - Regression: pure governance/delivery-policy changed-path set must classify as control-plane with requires_preview=false.
 - Browser runner hard timeout: 15 minutes.
 - Invariant: no unbounded browser job may retain a GitHub runner.
+
+
+## Main single-flight / terminal-gate incident
+- PR #2807 merged as `946a0d627b7362f45734b5eeb6bf64cae5271e50`.
+- Exact-head BRAIN, CodeQL and Skill Projection were green; Required was still active and was cancelled after merge.
+- Post-merge readback observed 9 queued + 14 in-progress runs.
+- Three stale Canonical brand shell readbacks were simultaneously running for older main SHAs.
+- Root cause: unstable/absent concurrency keys plus `cancel-in-progress: false` on production readback, and premature auto-merge arming.
+- Recovery: stable ref-level single-flight, latest-main readback semantics, queued+in-progress janitor, closed-PR recognition, old-main verification cancellation, and gate-first merge arming.
+- Classic branch-protection detail/update is not accessible to the active GitHub integration (403), so repository-side branch protection could not be inspected or changed from this execution path.
