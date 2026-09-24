@@ -10,16 +10,20 @@ test('Powerhouse problem library has unique canonical IDs and required decision 
   assert.ok(library.problems.length >= 30);
 
   const ids = new Set();
+  const names = new Set();
   for (const problem of library.problems) {
     assert.match(problem.problem_id, /^PH-P\d{3}$/);
     assert.ok(!ids.has(problem.problem_id), `duplicate problem id: ${problem.problem_id}`);
     ids.add(problem.problem_id);
 
     assert.ok(problem.name);
+    assert.ok(!names.has(problem.name), `duplicate problem name: ${problem.name}`);
+    names.add(problem.name);
+
     assert.ok(problem.category);
     assert.ok(problem.description);
-    assert.ok(Array.isArray(problem.signals));
-    assert.ok(Array.isArray(problem.triggers));
+    assert.ok(Array.isArray(problem.signals) && problem.signals.length > 0);
+    assert.ok(Array.isArray(problem.triggers) && problem.triggers.length > 0);
     assert.ok(problem.evidence && Array.isArray(problem.evidence.fact));
     assert.ok(problem.evidence && Array.isArray(problem.evidence.signal));
     assert.ok(problem.evidence && Array.isArray(problem.evidence.hypothesis));
