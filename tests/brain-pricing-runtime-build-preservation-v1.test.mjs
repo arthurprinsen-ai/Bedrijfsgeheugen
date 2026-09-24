@@ -22,3 +22,9 @@ test('pricing build integrity restores interaction runtimes after transforms',()
     'data-bg-billing="yearly"'
   ]) assert.ok(source.includes(marker), 'missing pricing build preservation marker: ' + marker);
 });
+
+test('section extraction accepts class before id',()=>{
+  assert.match(source,/new RegExp\('\<section\\\\b/);
+  assert.match(source,/missing section#/);
+  assert.doesNotMatch(source,/const startToken = `?<section id=/);
+});
