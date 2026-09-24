@@ -1,0 +1,183 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://bedrijfsgeheugen.nl/schemas/powerhouse-problem-library.schema.json",
+  "title": "Powerhouse Problem Library",
+  "type": "object",
+  "required": [
+    "version",
+    "problems"
+  ],
+  "properties": {
+    "version": {
+      "type": "string"
+    },
+    "problems": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": [
+          "problem_id",
+          "name",
+          "category",
+          "description",
+          "signals",
+          "triggers",
+          "evidence",
+          "confidence_policy",
+          "impact",
+          "actions",
+          "capabilities",
+          "outcomes"
+        ],
+        "properties": {
+          "problem_id": {
+            "type": "string",
+            "pattern": "^PH-P[0-9]{3}$"
+          },
+          "name": {
+            "type": "string",
+            "minLength": 3
+          },
+          "category": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "signals": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "triggers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "data_sources": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "evidence": {
+            "type": "object",
+            "required": [
+              "fact",
+              "signal",
+              "hypothesis"
+            ],
+            "properties": {
+              "fact": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "signal": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "hypothesis": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "confidence_policy": {
+            "type": "object",
+            "required": [
+              "low",
+              "medium",
+              "high"
+            ],
+            "properties": {
+              "low": {
+                "type": "string"
+              },
+              "medium": {
+                "type": "string"
+              },
+              "high": {
+                "type": "string"
+              }
+            },
+            "additionalProperties": false
+          },
+          "impact": {
+            "type": "object",
+            "required": [
+              "types",
+              "labels"
+            ],
+            "properties": {
+              "types": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "revenue",
+                    "cost",
+                    "capacity",
+                    "cash",
+                    "risk",
+                    "strategic"
+                  ]
+                }
+              },
+              "labels": {
+                "type": "array",
+                "items": {
+                  "enum": [
+                    "OBSERVED",
+                    "ESTIMATED",
+                    "POTENTIAL"
+                  ]
+                }
+              }
+            },
+            "additionalProperties": false
+          },
+          "root_causes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "actions": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "capabilities": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "outcomes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "commercial_routes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}
