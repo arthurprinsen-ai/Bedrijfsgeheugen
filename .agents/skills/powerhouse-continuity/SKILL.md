@@ -520,3 +520,17 @@ For every Node script referenced by the canonical `netlify.toml` build command:
 - retain exact production SHA + provider + browser proof before `LIVE_BEWEZEN`.
 
 Canonical regression: `tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs`.
+
+
+## Netlify production build parse errors
+
+Fingerprint: `pricing-build-parse-production-redeploy-20260924-v1`.
+
+When Netlify production fails with build exit code 2:
+- reproduce the exact production-source artifact locally before changing unrelated website, SEO, pricing or i18n behavior;
+- run `node --check` on changed production-critical Node build scripts;
+- treat a parser `SyntaxError` as a build-script failure, not a provider, credential or application-runtime failure;
+- after the parser fix reaches protected `main`, ensure the canonical Production Source Snapshot is actually retriggered if path scoping would otherwise skip it;
+- require provider success + exact `release.json` SHA/context/deploy-id + production browser proof before `LIVE_BEWEZEN`.
+
+Canonical regression: `tests/brain-pricing-build-integrity-regex-syntax-v1.test.mjs`.
