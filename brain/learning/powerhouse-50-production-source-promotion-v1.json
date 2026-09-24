@@ -9,13 +9,15 @@
     "Distinguish feature regression from inherited production-provider lag before changing feature code.",
     "Use the canonical Production Source Snapshot OIDC-to-Netlify path for current-main promotion instead of ad-hoc deploys.",
     "Require exact release.json commit_ref, production context, deploy_id and browser readback before LIVE_BEWEZEN.",
-    "Keep one canonical promotion obligation; close duplicate promotion lanes."
+    "Keep one canonical promotion obligation; close duplicate promotion lanes.",
+    "Regression tests for i18n must assert the current behavioral contract (prefixed routes navigate statically; unprefixed public routes switch in place) rather than obsolete implementation structure."
   ],
   "evidence": {
     "powerhouse_50_merge": "94fd9cb6f04118ea9da2d318d49114562f8ce2f5",
     "production_build_fix": "3e7ef0bd633d4249e91e1a1dadaf3513c33f1ce4",
     "promotion_pr": 2767,
-    "workflow": ".github/workflows/production-source-snapshot.yml"
+    "workflow": ".github/workflows/production-source-snapshot.yml",
+    "inherited_i18n_regression": "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs stale expectation updated to current routed/in-place behavior"
   },
   "test_evidence": [
     "tests/brain-production-release-readback-scope.test.mjs",
@@ -31,7 +33,7 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 1,
+  "revision": 2,
   "evaluation": {
     "historical_replay": [
       "tests/brain-production-release-readback-scope.test.mjs",
