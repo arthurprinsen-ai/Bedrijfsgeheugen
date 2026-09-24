@@ -11,3 +11,6 @@ De route `/inloggen` is bewust `noindex`, maar `inloggen.html` zat nog in de pub
 
 ## Delivery
 Deze recovery blijft onderdeel van obligation `pricing-terminal-live-proof-20260924-v1` en retriggert de canonieke Production Source Snapshot zodat de pricing/i18n-fix op exact dezelfde beschermde delivery-keten naar productie gaat.
+
+## Verfijning na diagnose
+Alleen `inloggen.html` uit de indexeerbare inventory halen bleek onvoldoende: de technische SEO-linkvalidator eiste daarna dat elke interne link naar `/inloggen` alsnog een indexeerbare canonical route was. De structurele fix is daarom een expliciete utility-routeklasse in het gedeelde contract: bereikbaar en geldig als interne bestemming, maar bewust `noindex` en niet in de sitemap. De technische SEO-gate accepteert alleen expliciet geclassificeerde utility-routes; onbekende niet-indexeerbare bestemmingen blijven fouten.
