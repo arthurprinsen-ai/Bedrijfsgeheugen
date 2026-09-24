@@ -9,3 +9,11 @@
 - Fix: runtime `ready-v3` marker + target-control visibility become authoritative readiness.
 - Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`
 - Terminal status: pending protected merge + exact production browser readback.
+
+## Terminal promotion checkpoint
+
+- Source main before promotion: `c0e255d2d003c56d3eeda5f0980dd1ceb7691556`.
+- Canonical authority: `Production Source Snapshot`.
+- Status: `PROMOTION_PENDING`.
+- Completion requires exact Netlify production identity plus successful pricing/i18n production browser readback.
+
