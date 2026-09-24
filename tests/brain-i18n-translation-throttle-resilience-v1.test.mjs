@@ -14,7 +14,7 @@ test('static translation defaults to a single provider stream',()=>{
 test('static translation honors Retry-After and exponential backoff',()=>{
   assert.match(source,/retry-after/);
   assert.match(source,/retryAfterMs/);
-  assert.match(source,/STATIC_I18N_RETRY/);
+  assert.match(source,/STATIC_I18N_PROVIDER_ERROR/);
   assert.match(source,/\[429,500,502,503,504,529\]/);
   assert.match(source,/2 \*\* attempt/);
   assert.match(source,/max_attempts: 6/);
