@@ -46,3 +46,8 @@ v2 gebruikt daarom voor het lifecycle-control helemaal geen Locator meer voor ex
 
 De product-UI wordt niet versoepeld en `force:true` blijft verboden.
 
+
+
+## Legacy regression synchronization
+
+Two older actionability tests were still coupled to the retired locator auto-scroll/click implementation. They now assert the canonical behavior rather than implementation details: pricing runtime readiness, DOM visibility and geometry, deterministic positioning, a real pointer event and resulting UI state.
