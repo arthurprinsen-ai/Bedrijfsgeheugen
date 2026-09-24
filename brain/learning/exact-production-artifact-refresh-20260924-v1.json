@@ -21,5 +21,22 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-exact-production-artifact-refresh-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-exact-production-artifact-refresh-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-exact-production-artifact-refresh-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-exact-production-artifact-refresh-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
 }
