@@ -93,3 +93,21 @@ test('exact-candidate fallback never bypasses full visibility and CLS quality ga
   assert.match(visibilityCheck, /for \(const viewport of viewports\)/);
   assert.match(visibilityCheck, /for \(const route of routes\)/);
 });
+
+
+test('recovery supervisor changes stay control-plane and never launch full website browser verification', () => {
+  const result = classifyWebsiteRelease({
+    changedPaths:[
+      '.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
+      'tests/delivery-powerhouse-supervisor.test.mjs',
+      'tests/brain-actions-queue-storm-guard-v1.test.mjs',
+      'docs/changes/2026-09-24-actions-queue-storm-guard-v1.md',
+      'brain/learning/actions-queue-storm-guard-20260924-v1.json'
+    ],
+    riskConfig,
+    acceptedBaseline
+  });
+  assert.equal(result.lane, 'control-plane');
+  assert.equal(result.requires_preview, false);
+  assert.deepEqual(result.affected_routes, []);
+});
