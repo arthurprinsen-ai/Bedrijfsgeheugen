@@ -25,3 +25,8 @@ The production verifier now:
 No `force:true` and no DOM `.click()`.
 
 Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
+
+
+## Regression contract sync
+
+Two older pricing regressions still encoded the retired locator auto-scroll/click implementation. They now assert the canonical behavior instead: product runtime readiness, DOM visibility/geometry, deterministic positioning and a real pointer click via `page.mouse.click`. This prevents correct production-verifier improvements from being blocked by stale implementation-specific tests.
