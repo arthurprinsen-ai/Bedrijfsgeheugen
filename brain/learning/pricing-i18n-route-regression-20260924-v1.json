@@ -28,5 +28,14 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-i18n-route-regression-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-i18n-route-regression-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ]
 }
