@@ -533,3 +533,16 @@ For pricing lifecycle controls on mobile:
 - if a selector exists in DOM but Playwright cannot visibly click it, treat this as a UI contract failure, not a test flake.
 
 Canonical regression: `tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs`.
+
+## Generic route readback must not preempt specialized UI proof
+
+Fingerprint: `generic-route-readback-visibility-preemption-20260924-v1`.
+
+- Generic targeted-route verification owns HTTP status, canonical identity, content presence, page errors and failed assets.
+- It may wait for the document/body to be attached, but must not require generic visual visibility when a specialized interaction verifier exists.
+- Visibility, clickability and state-change proof belong to the most specific browser gate for the defect class.
+- For pricing, `tools/site-shell/verify-pricing-i18n-production.mjs` remains authoritative and must still perform normal lifecycle, plan-tab, billing and English-route interactions.
+- Never weaken the specialized interaction gate to make a release green; remove only redundant generic preconditions that block the authoritative proof from running.
+
+Canonical learning: `brain/learning/generic-route-readback-visibility-preemption-20260924-v1.json`.
+Canonical regression: `tests/targeted-website-route-regression.test.mjs`.
