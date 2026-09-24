@@ -263,3 +263,17 @@ Mandatory:
 - when multiple applied versions share the same semantic migration name, identify the latest effective applied version whose statements match the current production contract; never stop at the first matching name;
 - reject repository filenames that represent superseded production identities for the same semantic migration;
 - treat version/name/semantic drift as recoverable incomplete state, not `LIVE_BEWEZEN`.
+
+
+## Problem-library delivery prevention — 24 september 2026
+
+Fingerprint: `delivery|problem-library|stale-main-duplicate-obligation|v1`.
+
+Learning uit Powerhouse 50:
+- een mislukte preview op current main bewijst niet dat de feature stuk is wanneer een geïsoleerde exact-delta preview vanaf de laatste bewezen productie-baseline groen is; classificeer eerst inherited main regression versus feature regression;
+- iedere nieuwe executable regression test moet vóór remote CI onder een bestaande delivery-lane namespace vallen; voor Brain/backend tests is `tests/brain-*` de voorkeursroute;
+- nooit parallelle PR's met dezelfde `Obligation-ID` laten bestaan; duplicate obligation is governance-noise en blokkeert admission;
+- wanneer automation een successor PR aanmaakt, behandel de nieuwste canonieke obligation-owner als authority en sluit stale duplicaten pas na containment-check;
+- skill/learning/change/ledger writeback hoort in dezelfde lineage als de feature en moet vóór terminal completion aanwezig zijn.
+
+Doel: stale-main regressies, unclassified tests en duplicate-obligation thrash niet opnieuw laten leiden tot onnodige rebuilds of foutieve productdiagnoses.
