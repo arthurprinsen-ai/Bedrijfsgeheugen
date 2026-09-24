@@ -11,9 +11,11 @@
     "Reduce navigation retries and navigation timeout",
     "Bound sitemap fetch",
     "Add a total fail-closed sweep budget",
-    "Preserve product assertions while preventing runner leaks"
+    "Preserve product assertions while preventing runner leaks",
+    "Make expensive PR workflows single-flight per PR so a new head cancels superseded queued/in-progress work",
+    "Bound expensive specialist jobs with explicit job timeouts"
   ],
-  "prevention_rule": "Every browser/readback loop must bound network navigation, page-side async waits and total sweep runtime; outer job timeout alone is not sufficient.",
+  "prevention_rule": "Every browser/readback or expensive PR specialist workflow must bound async waits and total runtime, and must use per-PR single-flight concurrency so the newest head supersedes older queued/in-progress work.",
   "compiler": {
     "failure_class": "UNBOUNDED_BROWSER_ASYNC_WAIT",
     "scope": "CI_WEBSITE_BROWSER_GATE",
@@ -23,7 +25,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-standalone-visibility-boundedness-v1.test.mjs"
+      "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
     ],
     "invariants": [
       "each navigation attempt has a finite timeout",

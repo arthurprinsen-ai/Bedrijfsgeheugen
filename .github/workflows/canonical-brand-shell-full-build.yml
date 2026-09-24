@@ -30,8 +30,13 @@ on:
       - 'tests/seo-*.test.mjs'
       - '.github/workflows/canonical-brand-shell-full-build.yml'
 
+concurrency:
+  group: canonical-brand-shell-full-build-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   build:
+    timeout-minutes: 15
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

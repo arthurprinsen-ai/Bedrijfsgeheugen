@@ -13,8 +13,13 @@ on:
       - 'tests/technical-seo-gate.test.mjs'
       - '.github/workflows/prijzen-hero-seo-regression.yml'
 
+concurrency:
+  group: prijzen-hero-seo-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   regression:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
