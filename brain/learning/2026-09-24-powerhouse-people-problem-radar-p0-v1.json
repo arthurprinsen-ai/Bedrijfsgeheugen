@@ -18,5 +18,27 @@
     "regression": "tests/brain-powerhouse-people-problem-radar.test.mjs",
     "skill": "skills/mkb-voice-of-customer-problem-radar.md"
   },
-  "terminal_rule": "Do not claim LIVE_BEWEZEN before protected merge, production deployment and production readback."
+  "terminal_rule": "Do not claim LIVE_BEWEZEN before protected merge, production deployment and production readback.",
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ],
+  "compiler": {
+    "failure_class": "CANONICAL_PROBLEM_PEOPLE_DOMAIN_COVERAGE_GAP",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "invariants": [
+      "PH-P031 through PH-P040 exist exactly once in the canonical Problem Library",
+      "people problems keep evidence, action, capability and outcome mappings",
+      "external benchmarks remain context rather than tenant proof",
+      "no medical diagnosis inference is allowed",
+      "executive people evidence defaults to aggregated or team-level signals"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-people-problem-radar.test.mjs"
+    ]
+  }
 }
