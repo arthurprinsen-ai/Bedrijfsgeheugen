@@ -13,3 +13,11 @@ Nieuwe regressietest `tests/brain-pricing-build-integrity-node-syntax-v1.test.mj
 
 ## Terminal delivery
 Na protected merge wordt dezelfde Production Source Snapshot opnieuw uitgevoerd. Alleen provider-success + exacte `release.json` SHA/context/deploy-id + productie-browserreadback levert `LIVE_BEWEZEN`.
+
+
+## Tweede parsefout
+De eerste reparatie maakte de dynamische `RegExp`-strings geldig. De nieuwe verplichte `node --check`-regressie vond daarna nog een tweede parsefout: regex literals zoals `/<\\/body>/i` waren dubbel ge-escaped. Daardoor interpreteerde Node het patroon als ongeldig en meldde `Invalid regular expression flags`.
+
+Deze tweede fout is hersteld door de kwetsbare literals te vervangen door expliciete `RegExp`-constructors. Daarmee wordt slash/quote escaping op één consistente manier afgehandeld.
+
+Dezelfde regression blijft de volledige `netlify.toml` Node-buildketen syntax-checken vóór merge.

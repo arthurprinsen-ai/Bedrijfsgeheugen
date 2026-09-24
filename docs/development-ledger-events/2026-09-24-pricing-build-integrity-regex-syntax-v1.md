@@ -10,3 +10,7 @@
 - Fix: replace invalid single-quoted regex strings with template literals.
 - Prevention: syntax-check all Node scripts referenced by Netlify build command.
 - Terminal state: pending protected merge and production readback.
+
+- Follow-up: CI regression exposed a second parse error in over-escaped regex literals.
+- Follow-up fix: replace the affected literals with explicit RegExp constructors.
+- Learning revision: 2.
