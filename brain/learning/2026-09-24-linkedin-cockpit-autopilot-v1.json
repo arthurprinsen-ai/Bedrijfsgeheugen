@@ -39,6 +39,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-linkedin-cockpit-autopilot.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-cockpit-autopilot.test.mjs"
     ]
   },
   "regression_contract": "tests/linkedin-revenue-cockpit.test.mjs",
