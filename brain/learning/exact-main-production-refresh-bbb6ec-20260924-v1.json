@@ -1,0 +1,30 @@
+{
+  "fingerprint": "exact-main-production-refresh-bbb6ec-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_TERMINAL_REFRESH",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The canonical website behavior was already deployed, but the latest main commit contained only delivery-control-plane/documentation changes. Netlify therefore did not publish that exact main SHA automatically, while terminal production proof requires an exact release identity for the main commit before browser verification can be considered immutable.",
+  "prevention_rule": "When a non-site main commit must become the terminal production authority for an active delivery obligation, use the canonical Production Source Snapshot workflow as the explicit exact-source deployment mechanism. Do not bypass branch protection or invent an ad-hoc deploy path.",
+  "evidence": {
+    "source_main_sha": "bbb6ec5841eca4880d77ce0d09c6da458f7302b1",
+    "prior_netlify_commit": "9df8270dbdc767bbc4a81d220ae1514082a7620b",
+    "production_readback_run": 36052140393,
+    "workflow": ".github/workflows/production-source-snapshot.yml"
+  },
+  "compiler": {
+    "failure_class": "EXACT_MAIN_NOT_PROVIDER_CURRENT",
+    "scope": "DEPLOYMENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [],
+    "invariants": [
+      "protected merge remains mandatory",
+      "canonical Production Source Snapshot is used for exact-source refresh",
+      "final proof requires exact release identity and real pricing/i18n browser verification"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after this recovery is protected-merged, exact current main is live in Netlify production, and production pricing/i18n browser proof is green."
+}
