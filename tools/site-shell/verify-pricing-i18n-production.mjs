@@ -14,7 +14,7 @@ async function run() {
   try {
     const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
     await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+    await page.locator('body').waitFor({ state:'attached', timeout:15_000 });
     await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
 
     // Lifecycle toggle must change the actual visible panel.
@@ -53,13 +53,15 @@ async function run() {
       page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
       english.click(),
     ]);
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+    await page.locator('body').waitFor({ state:'attached', timeout:15_000 });
     await page.waitForTimeout(500);
     if ((await page.locator('html').getAttribute('lang')) !== 'en') throw new Error('English route did not render html lang=en');
     const body = await page.locator('body').innerText();
     if (/Switching language failed\. Try again\./i.test(body)) throw new Error('English switch still exposes runtime translation failure');
     if (/Prijzen voor digitalisering in het mkb/i.test(body)) throw new Error('English route still shows the Dutch pricing H1');
-    if (!/Pricing/i.test(body)) throw new Error('English route has no visible Pricing text');
+    const visiblePricing = page.getByText(/Pricing/i).first();
+    await expectVisible(visiblePricing, 'visible English Pricing text');
+    if (!/Pricing/i.test(body)) throw new Error('English route has no Pricing text');
     if (errors.length) throw new Error('Browser page errors: ' + JSON.stringify(errors));
     console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'en'}));
   } finally {
