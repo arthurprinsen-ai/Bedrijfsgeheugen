@@ -1,0 +1,1754 @@
+{
+  "version": "1.0.0",
+  "purpose": "Canonical Powerhouse problem taxonomy shared by portal, Problem Radar, capabilities, content, sales and outcome learning.",
+  "invariants": [
+    "No problem may be presented as fact without evidence.",
+    "External signals alone remain hypotheses until validated.",
+    "Financial impact must be labelled OBSERVED, ESTIMATED or POTENTIAL.",
+    "Every material recommendation maps to an action or capability and an outcome metric.",
+    "Cross-customer learning may use only approved aggregated/anonymized patterns; tenant data remains isolated."
+  ],
+  "problems": [
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "veel approvals bij directie",
+          "veel escalaties"
+        ],
+        "hypothesis": [
+          "Besluiten, kennis en dagelijkse uitvoering zijn te afhankelijk van de eigenaar/directeur."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "delegatiematrix opstellen",
+        "kennis borgen",
+        "approvals herontwerpen"
+      ],
+      "capabilities": [
+        "Owner Dependency Reduction",
+        "Knowledge Capture",
+        "Approval Automation"
+      ],
+      "outcomes": [
+        "doorlooptijd approvals",
+        "aantal escalaties",
+        "aandeel processen met tweede eigenaar"
+      ],
+      "commercial_routes": [
+        "/eigenaar-bottleneck"
+      ],
+      "problem_id": "PH-P001",
+      "name": "Eigenaar is operationele bottleneck",
+      "category": "organisatie",
+      "description": "Besluiten, kennis en dagelijkse uitvoering zijn te afhankelijk van de eigenaar/directeur.",
+      "signals": [
+        "veel approvals bij directie",
+        "veel escalaties",
+        "sleutelkennis bij één persoon"
+      ],
+      "triggers": [
+        "snelle groei",
+        "eigenaar wil afstand nemen",
+        "exit"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "offertes > X dagen zonder activiteit",
+          "CRM-taak ontbreekt"
+        ],
+        "hypothesis": [
+          "Openstaande offertes krijgen niet tijdig een aantoonbare vervolgactie."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "revenue",
+          "capacity"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "stale opportunities analyseren",
+        "eigenaar toewijzen",
+        "follow-up starten"
+      ],
+      "capabilities": [
+        "Opportunity Recovery"
+      ],
+      "outcomes": [
+        "follow-up tijd",
+        "conversie",
+        "herwonnen omzet"
+      ],
+      "commercial_routes": [
+        "/offertes-blijven-liggen"
+      ],
+      "problem_id": "PH-P002",
+      "name": "Offertes zonder opvolging",
+      "category": "sales",
+      "description": "Openstaande offertes krijgen niet tijdig een aantoonbare vervolgactie.",
+      "signals": [
+        "offertes > X dagen zonder activiteit",
+        "CRM-taak ontbreekt"
+      ],
+      "triggers": [
+        "groeiende pipeline",
+        "saleswissel",
+        "lage conversie"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "omzet stijgt en brutomarge daalt",
+          "indirecte kosten groeien sneller"
+        ],
+        "hypothesis": [
+          "Omzet of volume groeit sneller dan winst of marge."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "cost",
+          "revenue"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "marge-driver analyse",
+        "klant/product/project winstgevendheid"
+      ],
+      "capabilities": [
+        "Margin Intelligence"
+      ],
+      "outcomes": [
+        "brutomarge",
+        "EBITDA-marge",
+        "winst per klant/product"
+      ],
+      "commercial_routes": [
+        "/groei-zonder-winst"
+      ],
+      "problem_id": "PH-P003",
+      "name": "Groei zonder winst",
+      "category": "finance",
+      "description": "Omzet of volume groeit sneller dan winst of marge.",
+      "signals": [
+        "omzet stijgt en brutomarge daalt",
+        "indirecte kosten groeien sneller"
+      ],
+      "triggers": [
+        "snelle groei",
+        "nieuwe vestiging",
+        "personeelsgroei"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "meeruren",
+          "externe kosten"
+        ],
+        "hypothesis": [
+          "Projecten leveren structureel minder marge dan verwacht."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "afwijkende projecten analyseren",
+        "oorzaken classificeren",
+        "prijs/capaciteit corrigeren"
+      ],
+      "capabilities": [
+        "Project Margin Guard"
+      ],
+      "outcomes": [
+        "projectmarge",
+        "budgetoverschrijding",
+        "nacalculatie"
+      ],
+      "commercial_routes": [
+        "/marge-verbeteren",
+        "/projecten-lopen-uit"
+      ],
+      "problem_id": "PH-P004",
+      "name": "Dalende projectmarge",
+      "category": "operations",
+      "description": "Projecten leveren structureel minder marge dan verwacht.",
+      "signals": [
+        "meeruren",
+        "externe kosten",
+        "nacalculatie onder begroting"
+      ],
+      "triggers": [
+        "drukke orderportefeuille",
+        "capaciteitstekort"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "één eigenaar per proces",
+          "weinig documentatie"
+        ],
+        "hypothesis": [
+          "Kritieke bedrijfskennis is onvoldoende overdraagbaar."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "kritieke kennis inventariseren",
+        "SOPs maken",
+        "review-eigenaren aanwijzen"
+      ],
+      "capabilities": [
+        "Knowledge Capture"
+      ],
+      "outcomes": [
+        "kritieke processen gedocumenteerd",
+        "bus factor",
+        "onboardingtijd"
+      ],
+      "commercial_routes": [
+        "/kennis-zit-in-hoofden"
+      ],
+      "problem_id": "PH-P005",
+      "name": "Kennis bij sleutelpersonen",
+      "category": "knowledge",
+      "description": "Kritieke bedrijfskennis is onvoldoende overdraagbaar.",
+      "signals": [
+        "één eigenaar per proces",
+        "weinig documentatie",
+        "veel mondelinge uitzonderingen"
+      ],
+      "triggers": [
+        "personeelsverloop",
+        "groei",
+        "exit"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "veel handmatige exports",
+          "meerdere versies van waarheid"
+        ],
+        "hypothesis": [
+          "Kernprocessen of stuurinformatie draaien op losse spreadsheets."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "spreadsheets classificeren",
+        "brondata koppelen",
+        "single source of truth bouwen"
+      ],
+      "capabilities": [
+        "Spreadsheet Risk Reduction",
+        "Data Integration"
+      ],
+      "outcomes": [
+        "aantal kritieke spreadsheets",
+        "handmatige overdrachten",
+        "dataconflicten"
+      ],
+      "commercial_routes": [
+        "/excel-chaos"
+      ],
+      "problem_id": "PH-P006",
+      "name": "Excel-afhankelijkheid",
+      "category": "technology",
+      "description": "Kernprocessen of stuurinformatie draaien op losse spreadsheets.",
+      "signals": [
+        "veel handmatige exports",
+        "meerdere versies van waarheid",
+        "macro-afhankelijkheid"
+      ],
+      "triggers": [
+        "ERP-wijziging",
+        "groei",
+        "audit"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "copy-paste tussen systemen",
+          "herhaalde invoer"
+        ],
+        "hypothesis": [
+          "Dezelfde gegevens worden handmatig in meerdere systemen ingevoerd."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "datastroom mappen",
+        "bron aanwijzen",
+        "integratie automatiseren"
+      ],
+      "capabilities": [
+        "Data Flow Automation"
+      ],
+      "outcomes": [
+        "uren handwerk",
+        "foutpercentage",
+        "doorlooptijd"
+      ],
+      "commercial_routes": [
+        "/te-veel-handmatig-werk"
+      ],
+      "problem_id": "PH-P007",
+      "name": "Dubbele invoer",
+      "category": "operations",
+      "description": "Dezelfde gegevens worden handmatig in meerdere systemen ingevoerd.",
+      "signals": [
+        "copy-paste tussen systemen",
+        "herhaalde invoer",
+        "correcties door typefouten"
+      ],
+      "triggers": [
+        "nieuw systeem",
+        "ERP/CRM uitbreiding",
+        "groei"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "bezetting > drempel",
+          "backlog groeit"
+        ],
+        "hypothesis": [
+          "Beschikbare capaciteit dreigt de vraag niet te kunnen volgen."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "capacity",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "vraag/capaciteit voorspellen",
+        "werk herverdelen",
+        "automatiseringspotentieel bepalen"
+      ],
+      "capabilities": [
+        "Capacity Forecasting"
+      ],
+      "outcomes": [
+        "bezettingsgraad",
+        "backlog",
+        "doorlooptijd"
+      ],
+      "commercial_routes": [
+        "/personeelstekort"
+      ],
+      "problem_id": "PH-P008",
+      "name": "Capaciteitstekort",
+      "category": "people",
+      "description": "Beschikbare capaciteit dreigt de vraag niet te kunnen volgen.",
+      "signals": [
+        "bezetting > drempel",
+        "backlog groeit",
+        "veel vacatures"
+      ],
+      "triggers": [
+        "snelle groei",
+        "seizoenspiek",
+        "uitval"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "lage bezetting",
+          "dalende pipeline"
+        ],
+        "hypothesis": [
+          "Capaciteit is structureel hoger dan de actuele of verwachte vraag."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "capacity",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "capaciteitsplan herijken",
+        "herplaatsing",
+        "pipeline acties"
+      ],
+      "capabilities": [
+        "Capacity Forecasting"
+      ],
+      "outcomes": [
+        "bezettingsgraad",
+        "kosten per output",
+        "bench utilization"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P009",
+      "name": "Overcapaciteit",
+      "category": "people",
+      "description": "Capaciteit is structureel hoger dan de actuele of verwachte vraag.",
+      "signals": [
+        "lage bezetting",
+        "dalende pipeline",
+        "veel idle time"
+      ],
+      "triggers": [
+        "marktdaling",
+        "verlies grote klant"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "DSO stijgt",
+          "meer posten >45 dagen"
+        ],
+        "hypothesis": [
+          "Openstaande posten worden ouder en drukken op cash."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "cash",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "aging analyseren",
+        "prioriteiten bepalen",
+        "opvolging starten"
+      ],
+      "capabilities": [
+        "Receivables Accelerator"
+      ],
+      "outcomes": [
+        "DSO",
+        "achterstallig saldo",
+        "cash-in"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P010",
+      "name": "Debiteuren lopen op",
+      "category": "cash",
+      "description": "Openstaande posten worden ouder en drukken op cash.",
+      "signals": [
+        "DSO stijgt",
+        "meer posten >45 dagen",
+        "concentratie in enkele klanten"
+      ],
+      "triggers": [
+        "groei",
+        "klantmix verandert",
+        "economische druk"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "lange tijd tussen oplevering en factuur",
+          "WIP groeit"
+        ],
+        "hypothesis": [
+          "Werk wordt te laat of onvolledig gefactureerd."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "cash",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "factureertrigger analyseren",
+        "missende bewijsstukken vinden",
+        "workflow automatiseren"
+      ],
+      "capabilities": [
+        "Billing Acceleration"
+      ],
+      "outcomes": [
+        "dagen tot factuur",
+        "WIP",
+        "cash conversion"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P011",
+      "name": "Late facturering",
+      "category": "cash",
+      "description": "Werk wordt te laat of onvolledig gefactureerd.",
+      "signals": [
+        "lange tijd tussen oplevering en factuur",
+        "WIP groeit"
+      ],
+      "triggers": [
+        "projectgroei",
+        "handmatige administratie"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "top-1/top-5 omzetconcentratie",
+          "één klant groeit disproportioneel"
+        ],
+        "hypothesis": [
+          "Een te groot aandeel omzet of marge hangt af van weinig klanten."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "concentratie meten",
+        "scenarioanalyse",
+        "diversificatieplan"
+      ],
+      "capabilities": [
+        "Customer Concentration Monitor"
+      ],
+      "outcomes": [
+        "top-1/top-5 aandeel",
+        "margeconcentratie",
+        "scenario-impact"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P012",
+      "name": "Klantconcentratie",
+      "category": "risk",
+      "description": "Een te groot aandeel omzet of marge hangt af van weinig klanten.",
+      "signals": [
+        "top-1/top-5 omzetconcentratie",
+        "één klant groeit disproportioneel"
+      ],
+      "triggers": [
+        "snelle groei bij key account",
+        "M&A"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "bestelfrequentie daalt",
+          "omzet per klant daalt"
+        ],
+        "hypothesis": [
+          "Bestaande klanten verminderen of stoppen hun afname."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "revenue",
+          "capacity"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "at-risk klanten detecteren",
+        "oorzaken analyseren",
+        "retentieactie starten"
+      ],
+      "capabilities": [
+        "Churn Radar"
+      ],
+      "outcomes": [
+        "retentie",
+        "omzetverlies",
+        "herwonnen klanten"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P013",
+      "name": "Klantverlies/churn",
+      "category": "sales",
+      "description": "Bestaande klanten verminderen of stoppen hun afname.",
+      "signals": [
+        "bestelfrequentie daalt",
+        "omzet per klant daalt",
+        "contracten niet verlengd"
+      ],
+      "triggers": [
+        "serviceproblemen",
+        "prijswijziging",
+        "concurrentie"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "lage MQL→SQL",
+          "lage offerteconversie"
+        ],
+        "hypothesis": [
+          "Veel leads worden niet omgezet naar gekwalificeerde kansen of klanten."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "revenue",
+          "capacity"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "funnelanalyse",
+        "bronkwaliteit vergelijken",
+        "responseproces verbeteren"
+      ],
+      "capabilities": [
+        "Conversion Intelligence"
+      ],
+      "outcomes": [
+        "leadconversie",
+        "reactietijd",
+        "CAC"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P014",
+      "name": "Lage leadconversie",
+      "category": "sales",
+      "description": "Veel leads worden niet omgezet naar gekwalificeerde kansen of klanten.",
+      "signals": [
+        "lage MQL→SQL",
+        "lage offerteconversie",
+        "lange reactietijd"
+      ],
+      "triggers": [
+        "nieuwe campagne",
+        "marktverschuiving"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "veel uitzonderingskorting",
+          "oude prijslijsten"
+        ],
+        "hypothesis": [
+          "Prijsafwijkingen, kortingen of verouderde tarieven drukken onnodig op marge."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "cost",
+          "revenue"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "prijsafwijkingen detecteren",
+        "contractindexatie controleren",
+        "approval instellen"
+      ],
+      "capabilities": [
+        "Pricing Guard"
+      ],
+      "outcomes": [
+        "gemiddelde korting",
+        "gerealiseerde prijs",
+        "marge"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P015",
+      "name": "Prijslekkage",
+      "category": "margin",
+      "description": "Prijsafwijkingen, kortingen of verouderde tarieven drukken onnodig op marge.",
+      "signals": [
+        "veel uitzonderingskorting",
+        "oude prijslijsten",
+        "verschil offerte/factuur"
+      ],
+      "triggers": [
+        "inflatie",
+        "nieuwe contracten",
+        "groei"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "hoge service-uren",
+          "veel correcties"
+        ],
+        "hypothesis": [
+          "Omzetrijke klanten blijken na uren, service en uitzonderingen onvoldoende winstgevend."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "cost",
+          "revenue"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "cost-to-serve berekenen",
+        "segmenteren",
+        "prijs/service aanpassen"
+      ],
+      "capabilities": [
+        "Customer Profitability"
+      ],
+      "outcomes": [
+        "contributiemarge klant",
+        "cost-to-serve",
+        "winst per klant"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P016",
+      "name": "Slechte klantwinstgevendheid",
+      "category": "margin",
+      "description": "Omzetrijke klanten blijken na uren, service en uitzonderingen onvoldoende winstgevend.",
+      "signals": [
+        "hoge service-uren",
+        "veel correcties",
+        "lage bijdrage"
+      ],
+      "triggers": [
+        "groei",
+        "contractverlenging"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "days inventory stijgt",
+          "slow movers"
+        ],
+        "hypothesis": [
+          "Voorraad bindt onnodig cash of bevat slow movers."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "ABC/XYZ analyse",
+        "slow movers bepalen",
+        "bestelparameters aanpassen"
+      ],
+      "capabilities": [
+        "Inventory Intelligence"
+      ],
+      "outcomes": [
+        "voorraadwaarde",
+        "omloopsnelheid",
+        "slow mover aandeel"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P017",
+      "name": "Voorraad te hoog",
+      "category": "operations",
+      "description": "Voorraad bindt onnodig cash of bevat slow movers.",
+      "signals": [
+        "days inventory stijgt",
+        "slow movers",
+        "lage omloopsnelheid"
+      ],
+      "triggers": [
+        "vraagverschuiving",
+        "inkoopbeleid"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "stockouts",
+          "spoedinkoop"
+        ],
+        "hypothesis": [
+          "Beschikbaarheid is onvoldoende om vraag betrouwbaar te leveren."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "vraagpatroon analyseren",
+        "safety stock herijken",
+        "leveranciersrisico monitoren"
+      ],
+      "capabilities": [
+        "Inventory Intelligence"
+      ],
+      "outcomes": [
+        "stockout rate",
+        "service level",
+        "spoedkosten"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P018",
+      "name": "Voorraadtekorten",
+      "category": "operations",
+      "description": "Beschikbaarheid is onvoldoende om vraag betrouwbaar te leveren.",
+      "signals": [
+        "stockouts",
+        "spoedinkoop",
+        "gemiste orders"
+      ],
+      "triggers": [
+        "groei",
+        "leveranciersproblemen"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "backlog groeit",
+          "wachttijd tussen stappen"
+        ],
+        "hypothesis": [
+          "Proces- of levertijden nemen structureel toe."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "bottleneckanalyse",
+        "wachttijd meten",
+        "flow herontwerpen"
+      ],
+      "capabilities": [
+        "Flow Optimization"
+      ],
+      "outcomes": [
+        "doorlooptijd",
+        "wachttijd",
+        "SLA hit rate"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P019",
+      "name": "Doorlooptijden lopen op",
+      "category": "operations",
+      "description": "Proces- of levertijden nemen structureel toe.",
+      "signals": [
+        "backlog groeit",
+        "wachttijd tussen stappen",
+        "SLA-missers"
+      ],
+      "triggers": [
+        "groei",
+        "onderbezetting",
+        "meer uitzonderingen"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "rework-uren",
+          "creditnota's"
+        ],
+        "hypothesis": [
+          "Een significant deel van capaciteit gaat naar correcties en rework."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "fouttypen clusteren",
+        "root cause analyseren",
+        "preventie automatiseren"
+      ],
+      "capabilities": [
+        "Quality Guard"
+      ],
+      "outcomes": [
+        "first-time-right",
+        "rework uren",
+        "foutkosten"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P020",
+      "name": "Veel herstelwerk/fouten",
+      "category": "quality",
+      "description": "Een significant deel van capaciteit gaat naar correcties en rework.",
+      "signals": [
+        "rework-uren",
+        "creditnota's",
+        "herhaalde tickets"
+      ],
+      "triggers": [
+        "groei",
+        "proceswijziging"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "verschillende KPI-definities",
+          "maandrapportage handmatig"
+        ],
+        "hypothesis": [
+          "Directie krijgt geen tijdig, consistent stuurbeeld."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "KPI-definities harmoniseren",
+        "brondata koppelen",
+        "cockpit activeren"
+      ],
+      "capabilities": [
+        "Executive Intelligence"
+      ],
+      "outcomes": [
+        "rapportagetijd",
+        "KPI-conflicten",
+        "besluitdoorlooptijd"
+      ],
+      "commercial_routes": [
+        "/managementinformatie-mkb"
+      ],
+      "problem_id": "PH-P021",
+      "name": "Versnipperde managementinformatie",
+      "category": "management",
+      "description": "Directie krijgt geen tijdig, consistent stuurbeeld.",
+      "signals": [
+        "verschillende KPI-definities",
+        "maandrapportage handmatig",
+        "data uit meerdere exports"
+      ],
+      "triggers": [
+        "groei",
+        "nieuwe directie",
+        "M&A"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "veel open acties",
+          "geen eigenaar"
+        ],
+        "hypothesis": [
+          "Besluiten en acties uit overleg verdwijnen of missen eigenaarschap."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "actiecontract invoeren",
+        "owners/deadlines afdwingen",
+        "readback automatiseren"
+      ],
+      "capabilities": [
+        "Execution Follow-through"
+      ],
+      "outcomes": [
+        "actieclosure rate",
+        "overdue acties",
+        "besluit→uitvoering tijd"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P022",
+      "name": "Acties worden niet opgevolgd",
+      "category": "management",
+      "description": "Besluiten en acties uit overleg verdwijnen of missen eigenaarschap.",
+      "signals": [
+        "veel open acties",
+        "geen eigenaar",
+        "geen deadline/readback"
+      ],
+      "triggers": [
+        "groei",
+        "nieuw MT"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "doelen zonder eigenaar",
+          "geen leading indicators"
+        ],
+        "hypothesis": [
+          "Strategische doelen zijn onvoldoende verbonden met concrete uitvoering."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "doelen aan capabilities/actions koppelen",
+        "leading indicators definiëren"
+      ],
+      "capabilities": [
+        "Strategy Execution"
+      ],
+      "outcomes": [
+        "strategic objective progress",
+        "initiative completion",
+        "value realization"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P023",
+      "name": "Strategie komt niet in uitvoering",
+      "category": "strategy",
+      "description": "Strategische doelen zijn onvoldoende verbonden met concrete uitvoering.",
+      "signals": [
+        "doelen zonder eigenaar",
+        "geen leading indicators",
+        "projecten niet gekoppeld"
+      ],
+      "triggers": [
+        "nieuwe strategie",
+        "nieuwe directie"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "veel Excel naast ERP",
+          "custom workarounds"
+        ],
+        "hypothesis": [
+          "Een kernsysteem is aanwezig maar processen blijven eromheen handmatig."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "proces-fit analyseren",
+        "unused capabilities bepalen",
+        "workarounds rationaliseren"
+      ],
+      "capabilities": [
+        "ERP Value Recovery"
+      ],
+      "outcomes": [
+        "adoptie",
+        "handmatige stappen",
+        "licentie/feature benutting"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P024",
+      "name": "ERP wordt onvoldoende benut",
+      "category": "technology",
+      "description": "Een kernsysteem is aanwezig maar processen blijven eromheen handmatig.",
+      "signals": [
+        "veel Excel naast ERP",
+        "custom workarounds",
+        "lage feature-adoptie"
+      ],
+      "triggers": [
+        "ERP-implementatie",
+        "migratie"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "handmatige imports",
+          "data mismatch"
+        ],
+        "hypothesis": [
+          "Informatie stroomt niet betrouwbaar tussen kernsystemen."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "integratiematrix maken",
+        "bron-eigenaarschap bepalen",
+        "sync automatiseren"
+      ],
+      "capabilities": [
+        "Integration Fabric"
+      ],
+      "outcomes": [
+        "sync-fouten",
+        "handmatige overdrachten",
+        "data freshness"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P025",
+      "name": "Systemen zijn slecht gekoppeld",
+      "category": "technology",
+      "description": "Informatie stroomt niet betrouwbaar tussen kernsystemen.",
+      "signals": [
+        "handmatige imports",
+        "data mismatch",
+        "dubbele records"
+      ],
+      "triggers": [
+        "nieuw CRM/ERP",
+        "acquisitie"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "missende velden",
+          "duplicaten"
+        ],
+        "hypothesis": [
+          "Besluiten of automatiseringen rusten op onvolledige of inconsistente data."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "quality rules",
+        "owner per data-element",
+        "clean-up workflow"
+      ],
+      "capabilities": [
+        "Data Quality Guard"
+      ],
+      "outcomes": [
+        "completeness",
+        "duplicate rate",
+        "rule violations"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P026",
+      "name": "Datakwaliteit onvoldoende",
+      "category": "data",
+      "description": "Besluiten of automatiseringen rusten op onvolledige of inconsistente data.",
+      "signals": [
+        "missende velden",
+        "duplicaten",
+        "onmogelijke waarden"
+      ],
+      "triggers": [
+        "integratie",
+        "AI-adoptie",
+        "M&A"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "lange inwerktijd",
+          "veel vragen aan seniors"
+        ],
+        "hypothesis": [
+          "Nieuwe medewerkers bereiken te langzaam zelfstandige productiviteit."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "capacity",
+          "risk"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "kennisroute bouwen",
+        "rolspecifieke onboarding",
+        "Q&A koppelen"
+      ],
+      "capabilities": [
+        "Onboarding Accelerator"
+      ],
+      "outcomes": [
+        "time-to-productivity",
+        "mentoruren",
+        "onboarding completion"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P027",
+      "name": "Onboarding duurt te lang",
+      "category": "people",
+      "description": "Nieuwe medewerkers bereiken te langzaam zelfstandige productiviteit.",
+      "signals": [
+        "lange inwerktijd",
+        "veel vragen aan seniors",
+        "geen vaste playbooks"
+      ],
+      "triggers": [
+        "snelle personeelsgroei"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "open compliance-acties",
+          "onbekende owner"
+        ],
+        "hypothesis": [
+          "Nieuwe of gewijzigde regels zijn onvoldoende vertaald naar processen en bewijs."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "impact bepalen",
+        "controls koppelen",
+        "evidence monitoren"
+      ],
+      "capabilities": [
+        "Regulatory Impact Monitor"
+      ],
+      "outcomes": [
+        "open compliance gaps",
+        "evidence coverage",
+        "time-to-compliance"
+      ],
+      "commercial_routes": [],
+      "problem_id": "PH-P028",
+      "name": "Compliance/regulatoir risico",
+      "category": "risk",
+      "description": "Nieuwe of gewijzigde regels zijn onvoldoende vertaald naar processen en bewijs.",
+      "signals": [
+        "open compliance-acties",
+        "onbekende owner",
+        "beleid verouderd"
+      ],
+      "triggers": [
+        "nieuwe wetgeving",
+        "audit"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "eigenaar-afhankelijkheid",
+          "documentatiegaten"
+        ],
+        "hypothesis": [
+          "Bedrijf is operationeel of informatie-technisch onvoldoende verkoopklaar."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "readiness assessment",
+        "gaps prioriteren",
+        "dataroom/evidence structureren"
+      ],
+      "capabilities": [
+        "Exit Readiness"
+      ],
+      "outcomes": [
+        "readiness gaps",
+        "evidence completeness",
+        "owner dependency"
+      ],
+      "commercial_routes": [
+        "/bedrijf-verkoopklaar-maken"
+      ],
+      "problem_id": "PH-P029",
+      "name": "Exit readiness onvoldoende",
+      "category": "m&a",
+      "description": "Bedrijf is operationeel of informatie-technisch onvoldoende verkoopklaar.",
+      "signals": [
+        "eigenaar-afhankelijkheid",
+        "documentatiegaten",
+        "onbetrouwbare KPI's"
+      ],
+      "triggers": [
+        "voorgenomen verkoop",
+        "investeerder"
+      ]
+    },
+    {
+      "evidence": {
+        "fact": [],
+        "signal": [
+          "dubbele systemen",
+          "KPI-definities verschillen"
+        ],
+        "hypothesis": [
+          "Na acquisitie zijn processen, systemen en verantwoordelijkheden onvoldoende geïntegreerd."
+        ]
+      },
+      "confidence_policy": {
+        "low": "Alleen externe of indirecte signalen; toon uitsluitend als hypothese en vraag aanvullend bewijs.",
+        "medium": "Meerdere onafhankelijke signalen of één betrouwbare interne bron; nader valideren vóór uitvoering met materiële impact.",
+        "high": "Direct intern bewijs en/of meerdere consistente bronnen; berekening en bronverwijzing beschikbaar."
+      },
+      "impact": {
+        "types": [
+          "risk",
+          "strategic"
+        ],
+        "labels": [
+          "OBSERVED",
+          "ESTIMATED",
+          "POTENTIAL"
+        ]
+      },
+      "data_sources": [],
+      "root_causes": [],
+      "actions": [
+        "integration map",
+        "synergiehypotheses",
+        "workstream owners"
+      ],
+      "capabilities": [
+        "Post-Merger Integration"
+      ],
+      "outcomes": [
+        "synergie realisatie",
+        "systeemreductie",
+        "integration milestones"
+      ],
+      "commercial_routes": [
+        "/bedrijf-overnemen"
+      ],
+      "problem_id": "PH-P030",
+      "name": "Overname-integratierisico",
+      "category": "m&a",
+      "description": "Na acquisitie zijn processen, systemen en verantwoordelijkheden onvoldoende geïntegreerd.",
+      "signals": [
+        "dubbele systemen",
+        "KPI-definities verschillen",
+        "geen synergie-owner"
+      ],
+      "triggers": [
+        "acquisitie gesloten"
+      ]
+    }
+  ]
+}
