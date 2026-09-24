@@ -3,8 +3,8 @@
   "date": "2026-09-24",
   "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
   "status": "PROMOTION_PENDING",
-  "root_cause": "The production pricing page returned HTTP 200 with full HTML, but the verifier waited for generic body visibility before waiting for the pricing runtime ready-v3 marker. Under responsive/runtime initialization that generic visibility gate could time out even though the page and pricing controls were present.",
-  "prevention_rule": "Production interaction proofs must wait on the product-specific readiness contract and target control visibility, not generic body visibility. Generic page readiness must never block a stronger domain-specific ready marker.",
+  "root_cause": "The production pricing page returned HTTP 200 with full HTML, but the verifier waited for generic body visibility before waiting for the pricing runtime ready-v3 marker. Under responsive/runtime initialization that generic visibility gate could time out even though the page and pricing controls were present. A follow-up Skill Projection failure showed the regression was over-broad: it rejected every body-visible wait in the verifier, including the legitimate post-navigation English-page visibility check. The intended invariant applies only before pricing interactions begin.",
+  "prevention_rule": "Production interaction proofs must wait on the product-specific readiness contract and target control visibility, not generic body visibility. Generic page readiness must never block a stronger domain-specific ready marker. Scope readiness regressions to the pre-interaction phase: generic body visibility must not gate initial pricing runtime readiness, while post-navigation page visibility checks may remain when they validate a new document.",
   "failed_run": 36054911943,
   "failed_job": 107819333389,
   "exact_production_sha": "3628225d0ebb834f496678b3d4e3c4414d26e5ee",
@@ -23,7 +23,9 @@
     "invariants": [
       "pricing ready-v3 marker is authoritative readiness",
       "loss lifecycle control must become visible",
-      "real Playwright pointer click remains mandatory"
+      "real Playwright pointer click remains mandatory",
+      "pre-interaction pricing readiness uses ready-v3 rather than generic body visibility",
+      "post-navigation English document visibility may be verified independently after URL transition"
     ]
   },
   "skill_targets": [
@@ -33,5 +35,8 @@
     "source_main_sha": "c0e255d2d003c56d3eeda5f0980dd1ceb7691556",
     "authority": ".github/workflows/production-source-snapshot.yml",
     "completion_contract": "Netlify state=ready, context=production, commit_ref=current protected main, production browser pricing/i18n readback=success"
-  }
+  },
+  "failed_approaches": [
+    "Using a whole-file negative regex for body visibility instead of scoping the assertion to the pre-interaction readiness phase."
+  ]
 }
