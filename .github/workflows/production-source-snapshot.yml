@@ -1,3 +1,4 @@
+# Operational snapshot refresh: 2026-09-24 netlify-terminal-deploy-wait-v1
 # Operational snapshot refresh: 2026-09-24 branche-integrations-production-v1
 # Operational snapshot retry: 2026-09-24 valid-delivery-metadata
 # Operational snapshot refresh: 2026-09-24 forced-production-refresh-2
@@ -104,7 +105,7 @@ jobs:
             echo "::error::Netlify Git deploy did not reach ${EXPECTED_SHA} and OIDC deploy transport was unavailable"
             exit 78
           fi
-          npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
+          npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH"
 
       - name: Prove exact production identity
         if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
