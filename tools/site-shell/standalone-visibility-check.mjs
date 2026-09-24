@@ -5,6 +5,10 @@ const baseUrl = process.env.UI_VR_BASE_URL || process.argv[2];
 if (!baseUrl) throw new Error('UI_VR_BASE_URL/base URL is required');
 
 const canonicalOrigin = 'https://www.bedrijfsgeheugen.nl';
+const navigationTimeoutMs = Number(process.env.UI_VR_NAVIGATION_TIMEOUT_MS || 8000);
+const fontReadyTimeoutMs = Number(process.env.UI_VR_FONT_READY_TIMEOUT_MS || 1500);
+const totalBudgetMs = Number(process.env.UI_VR_TOTAL_BUDGET_MS || 8 * 60 * 1000);
+const startedAt = Date.now();
 const viewports = [
   { name: 'phone', width: 390, height: 844 },
   { name: 'tablet', width: 768, height: 1024 },
@@ -12,22 +16,39 @@ const viewports = [
 ];
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
+function assertBudget(route, viewport) {
+  const elapsed = Date.now() - startedAt;
+  if (elapsed > totalBudgetMs) {
+    throw new Error(`Visibility sweep exceeded bounded budget ${totalBudgetMs}ms at ${route} ${viewport}; failing closed instead of leaking a runner`);
+  }
+}
+
 async function openReachable(page, url) {
   let last;
-  for (let attempt = 1; attempt <= 4; attempt++) {
+  for (let attempt = 1; attempt <= 2; attempt++) {
     try {
-      const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 20000 });
+      const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: navigationTimeoutMs });
       if (response?.ok()) return response;
       last = new Error(`HTTP ${response?.status() ?? 'no-response'} ${url}`);
     } catch (error) { last = error; }
-    await sleep(Math.min(4000, 500 * attempt));
+    if (attempt < 2) await sleep(500 * attempt);
   }
   throw last || new Error(`Could not load ${url}`);
 }
 
+async function waitForFontsBounded(page) {
+  await page.evaluate(async timeoutMs => {
+    if (!document.fonts?.ready) return;
+    await Promise.race([
+      document.fonts.ready.catch(() => undefined),
+      new Promise(resolve => setTimeout(resolve, timeoutMs)),
+    ]);
+  }, fontReadyTimeoutMs);
+}
+
 async function loadPublicRoutes() {
   const sitemapUrl = new URL('/sitemap.xml', baseUrl).href;
-  const response = await fetch(sitemapUrl, { redirect: 'follow' });
+  const response = await fetch(sitemapUrl, { redirect: 'follow', signal: AbortSignal.timeout(navigationTimeoutMs) });
   if (!response.ok) throw new Error(`Public route inventory unavailable: HTTP ${response.status} ${sitemapUrl}`);
   const routes = routesFromSitemap(await response.text(), canonicalOrigin);
   if (routes.length < 20) throw new Error(`Public route inventory suspiciously small: ${routes.length} routes`);
@@ -56,11 +77,12 @@ try {
     });
     try {
       for (const route of routes) {
+        assertBudget(route, viewport.name);
         const url = new URL(route, baseUrl.endsWith('/') ? baseUrl : `${baseUrl}/`).href;
         try {
           await openReachable(page, url);
-          await page.evaluate(() => document.fonts?.ready);
-          await sleep(300);
+          await waitForFontsBounded(page);
+          await sleep(150);
           const state = await page.evaluate(() => {
             const inspect = selector => {
               const el = document.querySelector(selector);
@@ -117,4 +139,4 @@ try {
 }
 
 if (failures.length) throw new Error(`Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`);
-console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks`);
+console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks within bounded budget ${totalBudgetMs}ms`);
