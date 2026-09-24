@@ -9,12 +9,17 @@ on:
       - '.github/workflows/engineering-supply-chain-trust.yml'
   push:
     branches: [main]
+    paths:
+      - 'package.json'
+      - 'package-lock.json'
+      - 'npm-shrinkwrap.json'
+      - '.github/workflows/engineering-supply-chain-trust.yml'
 
 permissions:
   contents: read
 
 concurrency:
-  group: engineering-supply-chain-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  group: engineering-supply-chain-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
