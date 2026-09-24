@@ -3,7 +3,11 @@
   "date": "2026-09-24",
   "scope": "linkedin-revenue-cockpit",
   "compiler": {
-    "failure_class": "manual_cockpit_execution_required_for_automatable_linkedin_actions"
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   },
   "root_cause": "The LinkedIn revenue cockpit generated and prioritized evidence-backed actions, but the canonical social delivery path did not consume eligible cockpit actions. This left supported LinkedIn post-reply actions dependent on manual cockpit operation.",
   "prevention_rules": [
@@ -29,18 +33,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "scenario": "evidence-backed LinkedIn post reply",
-        "expected": "claimed once, executed through Composio, provider acknowledgement persisted, outcome written back"
-      },
-      {
-        "scenario": "LinkedIn DM or connection activation without supported provider capability",
-        "expected": "no external action; explicit capability exception retained for review"
-      },
-      {
-        "scenario": "concurrent publisher runs",
-        "expected": "only one run can claim a suggested action"
-      }
+      "tests/brain-linkedin-cockpit-autopilot-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-cockpit-autopilot-v1.test.mjs"
     ]
   },
   "regression_contract": "tests/linkedin-revenue-cockpit.test.mjs",
