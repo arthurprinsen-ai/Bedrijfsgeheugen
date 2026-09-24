@@ -4,11 +4,12 @@
   "date": "2026-09-24",
   "type": "PRODUCTION_BUILD_FAILURE",
   "problem": "Netlify production deploy for main SHA 0dc124fc2467641ad4c04f6a8ecbfad515b411e1 failed during stage 'building site' with build script exit code 2.",
-  "root_cause": "tools/site-shell/pricing-build-integrity.mjs contained invalid JavaScript string syntax in two new RegExp constructors. The character class [\"\\\\'] was embedded inside a single-quoted JavaScript string and terminated the string unexpectedly, causing Node to fail before the build pipeline could run.",
+  "root_cause": "tools/site-shell/pricing-build-integrity.mjs contained multiple JavaScript parse hazards: quote handling inside dynamic RegExp strings and over-escaped regex literals such as /<\\\\/body>/i. The first patch fixed the dynamic RegExp quoting, while the CI regression then exposed the remaining invalid regex-literal flags before another production deploy.",
   "prevention": [
     "Every Node script referenced from netlify.toml [build].command must pass node --check in CI before merge.",
-    "Use template literals or double-quoted JavaScript strings for regex patterns that contain both single and double quote characters.",
-    "When Netlify reports build-script exit code 2, reproduce the exact build command locally before changing application logic.",
+    "Prefer RegExp constructors/template literals when a pattern contains nested slash and quote escaping that is easy to misread.",
+    "Do not over-escape forward slashes in JavaScript regex literals; use either a valid regex literal or a RegExp constructor consistently.",
+    "When Netlify reports build-script exit code 2, reproduce the exact build command and run node --check across the full build command before changing application logic.",
     "Do not classify provider-auth success as production success; exact release.json SHA and browser readback remain mandatory."
   ],
   "evidence": {
@@ -16,7 +17,8 @@
     "failed_deploy_id": "6ab534bd62dd9930cdd76bd8",
     "failed_build_id": "6ab534bd62dd9930cdd76bd6",
     "failing_file": "tools/site-shell/pricing-build-integrity.mjs",
-    "regression": "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs"
+    "regression": "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs",
+    "second_parse_failure": "Invalid regular expression flags at body/recovery regex literals"
   },
   "evaluation": {
     "historical_replay": [
@@ -41,5 +43,5 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 2
 }
