@@ -440,3 +440,14 @@ Fingerprint: `pricing-lifecycle-visible-state-20260924-v1`.
 - Active lifecycle panels explicitly remove `hidden` and force visible display through the rescue state layer.
 - Inactive panels explicitly remain hidden.
 - Production readback is the terminal oracle: the actual lifecycle click must make the matching panel visible before release closure.
+
+
+## Netlify token-first production transport
+
+Fingerprint: `netlify-token-first-production-transport-20260924-v1`.
+
+- Git-linked Netlify delivery is preferred when it reaches the expected SHA automatically.
+- If it misses the bounded predeploy window, Production Source Snapshot prefers an existing `NETLIFY_AUTH_TOKEN` and authenticated Netlify CLI production deploy.
+- Only when durable token auth is unavailable may the temporary MCP proxy fallback be used.
+- Credential values never appear in source, PR bodies, logs or user-visible output.
+- Transport success is not terminal proof; exact `release.json` identity and pricing/i18n browser verification remain mandatory.
