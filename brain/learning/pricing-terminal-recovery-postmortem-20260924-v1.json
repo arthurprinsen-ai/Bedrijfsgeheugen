@@ -1,0 +1,64 @@
+{
+  "fingerprint": "pricing-terminal-recovery-postmortem-20260924-v1",
+  "date": "2026-09-24",
+  "type": "TERMINAL_DELIVERY_POSTMORTEM",
+  "status": "LIVE_PROVEN",
+  "root_cause": "The pricing incident was prolonged by interacting failure classes across build preservation, public i18n authority, SEO utility-route semantics, material writeback closure, queue/head stability and production promotion. Several intermediate states were technically green in one layer but nonterminal overall. The durable fix is to treat terminal delivery as a composed contract: exact candidate semantics, machine-enforced regressions, protected merge, provider production identity and user-visible browser behavior.",
+  "prevention": [
+    "Pricing lifecycle, plan and billing controls are a single atomic build-preservation contract across section#prijzen-pakketten and section#pakketten.",
+    "Public locale authority is the static route prefix; stale persisted locale must never runtime-translate an unprefixed public route.",
+    "Noindex authentication routes are explicit public utility destinations, valid for internal links but excluded from sitemap/indexable SEO inventory.",
+    "Queue/pending state is infrastructure scheduling, not a code defect; do not mutate a healthy exact head without concrete failed-step evidence.",
+    "Material recovery closure requires Brain learning, append-only ledger and human-readable documentation in the same lineage.",
+    "A merge or provider-ready state alone is not LIVE_BEWEZEN; require production identity plus user-visible browser interaction proof.",
+    "When production has advanced beyond the feature merge, use ancestry for feature-live proof and exact SHA equality only for exact-current-main claims.",
+    "Do not create parallel recovery authorities. Reuse canonical Production Source Snapshot and authorized Netlify transport."
+  ],
+  "failed_approaches": [
+    "Preserving only section#pakketten while lifecycle and billing controls lived partly in section#prijzen-pakketten.",
+    "Using persisted bg_locale as initial locale authority on unprefixed public pages.",
+    "Treating every valid internal destination as necessarily indexable.",
+    "Checking only for the substring UTILITY_ROUTES, which falsely matched PUBLIC_UTILITY_ROUTES and skipped the runtime declaration.",
+    "Making proof-only candidate changes while exact-head checks were only queued/pending.",
+    "Treating merged or deployed as terminal before exact provider/readback and browser behavior proof.",
+    "Omitting human-readable documentation from a material recovery candidate."
+  ],
+  "evidence": {
+    "terminal_pr": 2812,
+    "feature_merge": "a38f2cbab0d496b7d666ccc132244ba5bb0817c4",
+    "proven_production_sha": "4dacb0b86ad23999cbaa3abc90fa36810fca48b6",
+    "proven_netlify_deploy": "6ab57a94c9e953d1209d82ff",
+    "state": "LIVE_BEWEZEN",
+    "current_main_at_postmortem": "8026d48c02fa0a1daca4e0df5f58f5ae272bae8a",
+    "note": "Current main advanced after pricing proof; no pricing/i18n source change was introduced in the intervening commits."
+  },
+  "compiler": {
+    "failure_class": "MULTI_LAYER_TERMINAL_DELIVERY_DRIFT",
+    "scope": "WEBSITE_PRICING_I18N_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-runtime-build-preservation-v1.test.mjs",
+      "tests/brain-public-i18n-static-route-authority-v1.test.mjs",
+      "tests/brain-seo-login-noindex-scope-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-runtime-build-preservation-v1.test.mjs",
+      "tests/brain-public-i18n-static-route-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-runtime-build-preservation-v1.test.mjs",
+    "tests/brain-public-i18n-static-route-authority-v1.test.mjs",
+    "tests/brain-seo-login-noindex-scope-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-self-optimization"
+  ]
+}
