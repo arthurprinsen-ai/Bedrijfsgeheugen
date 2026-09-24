@@ -1,0 +1,46 @@
+{
+  "fingerprint": "pricing-production-readback-bounded-retry-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_READBACK_RELIABILITY",
+  "problem": "Production Release Readback intermittently timed out waiting for a visible body on /prijzen even though the immediately preceding targeted route verification on the same live deploy succeeded.",
+  "root_cause": "The dedicated pricing verifier had a single 15s readiness attempt. A transient browser/navigation/render delay could fail the readback before any actual pricing interaction was tested.",
+  "prevention": [
+    "Use at most two bounded readiness attempts with a fresh cache-busting nonce.",
+    "Require visible body and attached pricing runtime before interaction assertions begin.",
+    "Do not retry individual business interactions or use force-click; lifecycle, plan, billing and English-route checks remain strict.",
+    "Fail closed after the second readiness failure and preserve exact live SHA/deploy identity."
+  ],
+  "evidence": {
+    "failed_run": 36019820451,
+    "failed_job": 107701643277,
+    "live_sha": "4623d87946758e3e2749a387999c75067b34ac9b",
+    "live_deploy_id": "6ab5406de12f6a0008fdd1f7",
+    "preceding_targeted_route_verification": "success",
+    "pricing_failure": "body visible timeout before interaction proof"
+  },
+  "compiler": {
+    "failure_class": "TRANSIENT_PRICING_READINESS_TIMEOUT",
+    "scope": "PRODUCTION_READBACK",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-production-readback-bounded-retry-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-production-readback-bounded-retry-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-production-readback-bounded-retry-v1.test.mjs"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "revision": 1
+}
