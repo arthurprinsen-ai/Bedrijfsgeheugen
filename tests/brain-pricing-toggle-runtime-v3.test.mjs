@@ -4,7 +4,8 @@ import fs from 'node:fs';
 
 test('pricing rescue forces visible state instead of relying on hidden alone', () => {
   const source = fs.readFileSync('assets/js/pricing-interactions-rescue-v1.js','utf8');
-  assert.match(source,/panel\.style\.display = active \? '' : 'none'/);
+  assert.match(source,/panel\.style\.setProperty\('display','block','important'\)/);
+  assert.match(source,/panel\.style\.setProperty\('display','none','important'\)/);
   assert.match(source,/card\.style\.display = active \? '' : 'none'/);
   assert.match(source,/ready-v3/);
 });
