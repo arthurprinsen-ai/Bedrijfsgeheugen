@@ -10,3 +10,12 @@
 - Fix: content-addressed cache key from current asset Git blob prefix `f7d85cb0d7ba`.
 - Regression: `tests/brain-pricing-rescue-asset-cache-identity-v1.test.mjs`.
 - Status: `IMPLEMENTED_CANDIDATE` pending protected merge and production readback.
+
+## v2 closure defect
+
+- #2842 merged the source/snapshot cache-key recovery, but Skill Projection run `36058322328` failed.
+- Root cause: `tools/site-shell/pricing-build-integrity.mjs` still restored `v=20260924-0750`.
+- Secondary test defect: dynamic workflow regex was over-escaped.
+- Fix: build transform now uses `f7d85cb0d7ba`; regression verifies source HTML + build transform + snapshot share one content key.
+- Product behavior remains unchanged; this is runtime asset identity/build preservation closure.
+
