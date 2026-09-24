@@ -2,7 +2,7 @@
   "fingerprint": "powerhouse-trigger-based-mkb-acquisition-runtime-v1",
   "date": "2026-09-24",
   "type": "COMMERCIAL_RUNTIME_PROJECTION",
-  "status": "IMPLEMENTED_CANDIDATE_WITH_SUPABASE_RUNTIME",
+  "status": "LIVE_PROVEN_FAIL_CLOSED_RUNTIME",
   "compiler": {
     "failure_class": "COMMERCIAL_RUNTIME_MAPPING_GAP",
     "scope": "COMMERCIAL",
@@ -31,5 +31,40 @@
     "historical_replay": [
       "tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
     ]
+  },
+  "production_evidence": {
+    "github_main_merge_sha": "4e16c5c496241ce516cd13373103c51b4f9fd6dd",
+    "supabase_project_id": "adhjwmvyoixzjtmiroln",
+    "migration": "trigger_based_mkb_acquisition_runtime_v1",
+    "migration_applied": true,
+    "runtime_view": "public.powerhouse_mkb_trigger_intelligence_v1",
+    "refresh_function": "public.powerhouse_refresh_trigger_based_mkb_acquisition_v1(date)",
+    "scheduler_wrapper": "public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)",
+    "scheduler_job": {
+      "jobid": 39,
+      "jobname": "powerhouse-commercial-learning-v1",
+      "schedule": "27 * * * *",
+      "command": "select public.powerhouse_trigger_based_mkb_acquisition_cycle_v1();",
+      "active": true
+    },
+    "first_controlled_refresh": {
+      "run_date": "2026-09-24",
+      "eligible_trigger_candidates": 0,
+      "opportunities_touched": 0,
+      "internal_research_actions_touched": 0,
+      "forecasts_touched": 0,
+      "external_outreach_executed": false
+    },
+    "negative_safety_readback": {
+      "ordinary_connection_activated_misclassified": 0
+    },
+    "supabase_advisor_readback": {
+      "new_trigger_surface_security_lints": 0,
+      "broader_project_lints_remain": true
+    },
+    "notion_readback": {
+      "human_handbook": true,
+      "canonical_system_map": true
+    }
   }
 }
