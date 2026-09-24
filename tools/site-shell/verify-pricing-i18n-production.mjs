@@ -18,7 +18,10 @@ async function run() {
     await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
 
     // Lifecycle toggle must change the actual visible panel.
-    await page.locator('[data-bg-stage="loss"]').click();
+    const lossButton = page.locator('[data-bg-stage="loss"]');
+    await lossButton.scrollIntoViewIfNeeded();
+    await expectVisible(lossButton, 'loss stage control before click');
+    await lossButton.click();
     await page.waitForTimeout(150);
     const loss = page.locator('[data-bg-stage-panel="loss"]');
     const grow = page.locator('[data-bg-stage-panel="grow"]');
@@ -42,7 +45,7 @@ async function run() {
     await page.locator('[data-bg-billing="yearly"]').click();
     await page.waitForTimeout(150);
     const after = (await priced.textContent().catch(()=>'')) || '';
-    if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-selected')) !== 'true') throw new Error('yearly billing aria-selected did not become true');
+    if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-pressed')) !== 'true') throw new Error('yearly billing aria-pressed did not become true');
     if (before.trim() === after.trim()) throw new Error('yearly billing click did not change a price');
 
     // Public language switching must use the static English route, not runtime provider translation.
