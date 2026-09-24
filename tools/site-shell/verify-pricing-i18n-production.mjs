@@ -19,14 +19,28 @@ async function run() {
     // Lifecycle toggle must change the actual visible panel.
     // Keep this a real pointer click: position the control below sticky chrome first.
     const lossButton = page.locator('[data-bg-stage="loss"]');
-    await lossButton.waitFor({ state:'visible', timeout:20_000 });
-    await lossButton.evaluate(el => el.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' }));
+    const lossVisibility = await lossButton.evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      const style = getComputedStyle(element);
+      return {
+        display: style.display,
+        visibility: style.visibility,
+        opacity: Number(style.opacity || '1'),
+        width: rect.width,
+        height: rect.height,
+      };
+    });
+    if (lossVisibility.display === 'none' || lossVisibility.visibility === 'hidden' || lossVisibility.opacity === 0 || lossVisibility.width < 1 || lossVisibility.height < 1) {
+      throw new Error('loss stage control is not visibly actionable: ' + JSON.stringify(lossVisibility));
+    }
+    await lossButton.evaluate(element => element.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' }));
     await page.waitForTimeout(100);
-    const lossBox = await lossButton.boundingBox();
-    if (!lossBox || lossBox.width < 1 || lossBox.height < 1) throw new Error('loss stage control has no actionable box: ' + JSON.stringify(lossBox));
-    await page.evaluate(() => window.scrollBy(0, -120));
-    await page.waitForTimeout(100);
-    await lossButton.click({ timeout:15_000 });
+    const lossBox = await lossButton.evaluate(element => {
+      const rect = element.getBoundingClientRect();
+      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
+    });
+    if (lossBox.width < 1 || lossBox.height < 1) throw new Error('loss stage control has no actionable box: ' + JSON.stringify(lossBox));
+    await page.mouse.click(lossBox.x + lossBox.width / 2, lossBox.y + lossBox.height / 2);
     await page.waitForTimeout(150);
     const loss = page.locator('[data-bg-stage-panel="loss"]');
     const grow = page.locator('[data-bg-stage-panel="grow"]');
