@@ -13,3 +13,7 @@
 - Prevention: hourly repository janitor; full open-PR pagination; `STALE_QUEUED_NO_OPEN_PR` cleanup after 6h.
 - Safety: TTL cleanup applies only to queued non-main runs with no open PR; current PR heads and in-progress work remain protected.
 - Regression: `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`.
+
+- Janitor workflow integrity incident: intermediate patching corrupted the workflow tail through tab-delimited shell parsing.
+- Recovery: rebuilt from clean main, switched to JSON-per-run parsing, and added structural workflow regression.
+- Regression: `tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs`.
