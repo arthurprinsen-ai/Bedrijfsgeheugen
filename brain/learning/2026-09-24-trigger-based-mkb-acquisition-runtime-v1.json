@@ -23,7 +23,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/opportunity-scout.test.mjs"
+      "tests/brain-trigger-based-mkb-acquisition-runtime-v1.test.mjs"
     ]
   }
 }
