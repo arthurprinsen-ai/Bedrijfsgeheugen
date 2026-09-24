@@ -312,10 +312,10 @@
     if (normalized !== locale) {
       try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
       document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
-      if (!isPortal()) {
-        location.assign(localizedHref(normalized));
-        return;
-      }
+      // Unprefixed public routes must switch in place. Navigation to /en/*
+      // is only used when the current page is already locale-prefixed.
+      // This keeps pricing and other public pages functional even when a
+      // localized static route is temporarily unavailable.
       locale = normalized;
       localeEpoch += 1;
       syncControls();

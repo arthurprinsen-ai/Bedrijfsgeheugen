@@ -8,5 +8,9 @@ test('unprefixed pages switch locale in place instead of depending on /en routes
   assert.match(source,/localeEpoch \+= 1;/);
   assert.match(source,/await apply\(document\.body\);/);
   assert.match(source,/if \(locale !== 'en'\) return;/);
+  assert.match(source,/Unprefixed public routes must switch in place/);
+  const setLocaleBlock = source.slice(source.indexOf('async function setLocale'), source.indexOf('function closeMenus'));
+  const afterRoutedGuard = setLocaleBlock.slice(setLocaleBlock.indexOf("if (routed)"));
+  assert.doesNotMatch(afterRoutedGuard,/if \(!isPortal\(\)\) \{[\s\S]*?location\.assign/);
   assert.doesNotMatch(source,/if \(!routed && locale === 'en'\) \{\s*location\.replace/);
 });
