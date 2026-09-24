@@ -725,3 +725,18 @@ For pricing/i18n recovery, treat terminal delivery as one composed contract:
 
 Canonical postmortem: `brain/learning/pricing-terminal-recovery-postmortem-20260924-v1.json`.
 Canonical documentation: `docs/changes/pricing-terminal-recovery-postmortem-20260924-v1.md`.
+
+
+## Production mobile actionability proof
+
+Fingerprint: `pricing-mobile-production-actionability-v1`.
+
+Production browser proof must stay user-realistic:
+- use a real Playwright pointer click for critical pricing controls;
+- when sticky site chrome can occupy the auto-scroll actionability region, explicitly position the target below that chrome before clicking;
+- never use `force:true` or DOM `.click()` to manufacture a green production proof;
+- a visible element is not enough: the proof must establish a non-zero actionable box and a successful real interaction that changes visible state;
+- preserve the 390px mobile viewport because that is where the regression occurred.
+
+Regression: `tests/brain-pricing-production-actionability-v1.test.mjs`.
+Learning: `brain/learning/pricing-mobile-production-actionability-20260924-v1.json`.
