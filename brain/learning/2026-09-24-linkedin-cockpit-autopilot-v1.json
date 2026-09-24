@@ -4,7 +4,7 @@
   "scope": "linkedin-revenue-cockpit",
   "compiler": {
     "failure_class": "RUNTIME_INVARIANT",
-    "scope": "RUNTIME",
+    "scope": "GENERAL",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
@@ -29,14 +29,16 @@
       "Required test"
     ],
     "pull_request": 2734,
-    "implementation": "supabase/functions/powerhouse-social-publisher/index.ts"
+    "implementation": "supabase/functions/powerhouse-social-publisher/index.ts",
+    "replay_scenarios": [
+      "evidence-backed LinkedIn post reply is claimed once, executed through Composio, and written back with provider/outcome evidence",
+      "unsupported LinkedIn DM or connection activation stays an explicit capability exception",
+      "concurrent publisher runs cannot execute the same suggested action twice"
+    ]
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-linkedin-cockpit-autopilot-v1.test.mjs"
-    ],
-    "canary": [
-      "tests/brain-linkedin-cockpit-autopilot-v1.test.mjs"
+      "tests/brain-linkedin-cockpit-autopilot.test.mjs"
     ]
   },
   "regression_contract": "tests/linkedin-revenue-cockpit.test.mjs",
