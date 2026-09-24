@@ -45,7 +45,7 @@ async function navigateWithRetry(page, url, { attempts = 3, timeout = 30_000 } =
   throw lastError;
 }
 
-async function observeRoute(browser, baseUrl, route, viewport) {
+async function observeRouteAttempt(browser, baseUrl, route, viewport) {
   const page = await browser.newPage({ viewport });
   const observedPageErrors = [];
   const failedAssets = [];
@@ -83,6 +83,20 @@ async function observeRoute(browser, baseUrl, route, viewport) {
       httpOk:Boolean(response && response.ok()),
     };
   } finally { await page.close(); }
+}
+
+async function observeRoute(browser, baseUrl, route, viewport, { attempts = 3 } = {}) {
+  let lastError;
+  for (let attempt = 1; attempt <= attempts; attempt += 1) {
+    try {
+      return await observeRouteAttempt(browser, baseUrl, route, viewport);
+    } catch (error) {
+      lastError = error;
+      if (attempt >= attempts || error?.name !== 'TimeoutError') throw error;
+      await new Promise(resolve => setTimeout(resolve, 1_000 * attempt));
+    }
+  }
+  throw lastError;
 }
 
 async function verifyRoute(browser, baseUrl, route, viewport, { baselinePageErrors = [], allowExistingPageErrors = false } = {}) {

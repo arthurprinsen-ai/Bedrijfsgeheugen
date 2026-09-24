@@ -1,0 +1,37 @@
+{
+  "fingerprint": "production-route-body-readiness-retry-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_READBACK_RESILIENCE",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Exact production SHA and connector readiness were already proven, but the generic targeted route verifier hit a single Playwright TimeoutError waiting for body visibility on /prijzen. The verifier retried page.goto timeouts but not the subsequent body-ready phase, so a transient edge/page-readiness race prevented the pricing-specific browser proof from running.",
+  "prevention_rule": "Production route verification may retry only transient Playwright TimeoutError failures during navigation/body readiness, using a fresh page each attempt and a small bounded backoff. All non-timeout errors and exhaustion after three attempts remain terminal failures.",
+  "evidence": {
+    "failed_run": 36053461250,
+    "failed_job": 107814533476,
+    "exact_production_sha": "6d428a820443269543378ef42e42e9584503f80b",
+    "route": "/prijzen",
+    "failure": "locator.waitFor body visible Timeout 15000ms"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_ROUTE_BODY_READINESS_TRANSIENT_TIMEOUT",
+    "scope": "PRODUCTION_READBACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-route-body-readiness-retry-v1.test.mjs"
+    ],
+    "invariants": [
+      "retry only TimeoutError",
+      "fresh page per retry",
+      "maximum three attempts",
+      "non-timeout failures remain fail closed"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN only after protected merge and a successful exact-production route plus pricing/i18n browser readback."
+}
