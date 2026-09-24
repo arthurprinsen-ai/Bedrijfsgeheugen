@@ -1,0 +1,74 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-MKB-TRIGGER-SALES-INTELLIGENCE-v1",
+  "status": "ACTIVE_PREVENTION_CANDIDATE",
+  "fingerprint": "sales|mkb-trigger-intelligence|problem-led-partner-distribution|v1",
+  "date": "2026-09-24",
+  "obligation_id": "mkb-trigger-sales-intelligence-v1",
+  "problem": "Generic MKB outreach asks prospects to understand an abstract digitalisation/AI proposition before trust, urgency and fit are established, while current B2B buying behaviour increasingly favours self-directed research and relevant contextual contact.",
+  "root_cause": "The Revenue & Growth Core ranked latent demand but did not explicitly encode company-specific buying triggers, problem hypotheses, entry offers or partner-distribution routes as evidence-backed opportunity context.",
+  "evidence": {
+    "external_research": [
+      "https://www.cbs.nl/nl-nl/longread/rapportages/2026/gebruik-van-ai-technologie-door-nederlandse-microbedrijven?onepage=true",
+      "https://www.gartner.com/en/newsroom/press-releases/2025-06-25-gartner-sales-survey-finds-61-percent-of-b2b-buyers-prefer-a-rep-free-buying-experience",
+      "https://6sense.com/science-of-b2b/2024-buyer-experience-report/",
+      "https://www.kvk.nl/marketing/acquisitie-ga-op-zoek-naar-opdrachten-en-klanten/",
+      "https://hingemarketing.com/blog/story/new-research-report-referral-marketing-for-professional-services-firms",
+      "https://www.linkedin.com/business/marketing/blog/research-and-insights/b2b-thought-leadership-research-impact-linkedin-edelman"
+    ],
+    "runtime": [
+      "platform/growth-intelligence-engine.mjs",
+      "netlify/functions/growth-intelligence-daily.mjs",
+      "netlify/functions/linkedin-revenue-cockpit.mjs"
+    ]
+  },
+  "skill_targets": [
+    "revenue",
+    "growth",
+    "continuity",
+    "linkedin-sales-cockpit-predictive-v2"
+  ],
+  "prevention": [
+    "TRIGGER_BEFORE_OUTREACH: prefer company-specific evidence of a buying moment over generic cold outreach.",
+    "NO_TRIGGER_FABRICATION: when evidence does not support a company-specific trigger, persist INSUFFICIENT_EVIDENCE and do not invent urgency.",
+    "PROBLEM_BEFORE_TECH: translate verified signals into a concrete management problem hypothesis before proposing AI, data or digitalisation.",
+    "ENTRY_OFFER_REDUCES_RISK: use Frisse Blik as the diagnostic bridge into paid scan, implementation and portal/SaaS when the trigger fits.",
+    "PARTNER_DISTRIBUTION_IS_FIRST_CLASS: accountants, M&A advisers, investors/PE, banks, municipalities, trade associations, ERP/AFAS partners, MSP/IT partners and business advisers are explicit distribution routes.",
+    "CONTENT_IS_PRESALES: content should answer concrete CEO/directie/MT problems with data, diagnosis, actions and proof instead of generic transformation messaging.",
+    "OUTREACH_IS_CONTEXT_LED: every suggested outreach action must explain why now, what problem is hypothesised, what evidence supports it and the smallest relevant next step.",
+    "OUTCOMES_CLOSE_THE_LOOP: replies, meetings, scans, proposals, orders and realised revenue must calibrate trigger effectiveness and partner/channel performance."
+  ],
+  "funnel": [
+    "external_data",
+    "company_trigger",
+    "problem_hypothesis",
+    "contextual_content_or_outreach",
+    "frisse_blik",
+    "benchmark_or_conversation",
+    "paid_scan",
+    "implementation",
+    "portal_saas",
+    "measured_outcome",
+    "case_referral"
+  ],
+  "trigger_types": [
+    "rapid_growth",
+    "leadership_change",
+    "acquisition_integration",
+    "sale_succession",
+    "investor_financing",
+    "erp_or_system_change",
+    "margin_or_turnaround",
+    "staffing_pressure",
+    "regulatory_change",
+    "ai_data_adoption"
+  ],
+  "production_proof": {
+    "status": "PENDING_PROTECTED_PROMOTION"
+  },
+  "documentation": [
+    "brain/learning-ledger/2026-09-24-mkb-trigger-sales-intelligence-v1.md",
+    "docs/brain/mkb-trigger-sales-intelligence-v1.md",
+    "docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md"
+  ]
+}
