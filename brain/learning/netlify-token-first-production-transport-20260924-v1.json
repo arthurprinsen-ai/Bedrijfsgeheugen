@@ -1,0 +1,32 @@
+{
+  "fingerprint": "netlify-token-first-production-transport-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Git-linked Netlify production deploys could stall while the MCP proxy fallback depended on an expiring GitHub Actions secret.",
+  "root_cause": "Production delivery had only two paths: Git-linked auto-deploy and a temporary MCP proxy secret. When Git delivery stalled and the proxy credential expired, exact-source promotion had no durable CI transport.",
+  "prevention": [
+    "Production Source Snapshot must prefer an existing NETLIFY_AUTH_TOKEN for authenticated Netlify CLI deployment when Git-linked delivery misses the expected SHA.",
+    "If NETLIFY_AUTH_TOKEN is absent, fall back to the authorized MCP proxy transport.",
+    "Never print token or proxy values in logs.",
+    "After either transport, exact release.json SHA, production context and pricing/i18n browser proof remain mandatory before LIVE_BEWEZEN."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-netlify-token-first-production-transport-v1.test.mjs"],
+    "shadow": ["tests/brain-netlify-token-first-production-transport-v1.test.mjs"],
+    "canary": ["tests/brain-netlify-token-first-production-transport-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-netlify-token-first-production-transport-v1.test.mjs"],
+  "evidence": {
+    "main_sha": "864cb600848135e99bdaf4d7af0f12f56b4f1a6a",
+    "stale_netlify_current": "6ab5131f10d7810008497634",
+    "transport_gap": "git trigger stalled; MCP proxy secret previously expired"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "NETLIFY_PRODUCTION_TRANSPORT_SINGLE_POINT",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
