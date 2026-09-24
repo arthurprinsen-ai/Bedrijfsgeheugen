@@ -3,17 +3,19 @@
   "status": "ACTIVE_PREVENTION",
   "date": "2026-09-24",
   "type": "PRODUCTION_RECOVERY",
-  "root_cause": "The latest protected main had governance-only commits after the last successful Production Source Snapshot artifact, while the normal Netlify production promotion remained blocked by expired deploy authority. A fresh exact source artifact was therefore required for safe temporary deployment recovery.",
+  "root_cause": "After the pricing build parse fix merged to main, Production Release Readback started but Production Source Snapshot did not because the snapshot workflow itself had not changed. A controlled operational refresh marker is required to invoke the canonical snapshot/deploy workflow on the corrected main SHA.",
   "prevention": [
-    "Never reconstruct a production artifact from an older source marker without documenting the exact lineage.",
-    "When main advances after the last source snapshot, regenerate the canonical production-source artifact before any recovery deploy.",
-    "Operational workflow refreshes are material delivery and must include Brain learning, ledger and human documentation in the same lineage.",
-    "LIVE_BEWEZEN still requires provider success, exact release.json SHA/context/deploy-id and browser readback."
+    "After any production-blocking build fix merges, verify that Production Source Snapshot actually ran for that exact merge SHA; readback alone is not sufficient.",
+    "If snapshot did not run, use one controlled operational refresh of the canonical workflow, not an alternate deploy path.",
+    "Keep application code unchanged during snapshot-only recovery.",
+    "LIVE_BEWEZEN still requires provider success, exact release.json SHA/context/deploy-id and production browser readback."
   ],
   "evidence": {
     "base_sha": "5e8ef4b75f08b2d9c918cd97f13594be33ddbfa6",
     "target_workflow": ".github/workflows/production-source-snapshot.yml",
-    "pull_request": 2754
+    "pull_request": 2754,
+    "post_parse_fix_sha": "e223851136669000f1f58b6b1dadfe9e2f2adcc1",
+    "recovery_trigger": "production-snapshot-after-pricing-parse-fix"
   },
   "compiler": {
     "failure_class": "PRODUCTION_ARTIFACT_STALE_AFTER_MAIN_ADVANCE",
@@ -21,7 +23,7 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 1,
+  "revision": 2,
   "evaluation": {
     "historical_replay": [
       "tests/brain-exact-production-artifact-refresh-v1.test.mjs"

@@ -8,3 +8,5 @@
 - Change: operationele marker in canonical Production Source Snapshot om een nieuw exact artifact te genereren.
 - Prevention: nooit recovery deployen vanaf een stale artifact zonder nieuwe canonical snapshot.
 - Terminal state: pending provider deploy + exact SHA + browser readback.
+
+- Follow-up: production snapshot retriggered after pricing parse fix merge `e223851136669000f1f58b6b1dadfe9e2f2adcc1` because readback started without snapshot.

@@ -301,21 +301,20 @@
   async function setLocale(next) {
     const normalized = normalizeLocale(next);
     if (!SUPPORTED.has(normalized)) { closeMenus(); return; }
-    const routed = pathLocale();
-    if (routed) {
+
+    if (!isPortal()) {
+      const routed = pathLocale();
       if (normalized === routed) { closeMenus(); return; }
       try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
       document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+      closeMenus();
       location.assign(localizedHref(normalized));
       return;
     }
+
     if (normalized !== locale) {
       try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
       document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
-      // Unprefixed public routes must switch in place. Navigation to /en/*
-      // is only used when the current page is already locale-prefixed.
-      // This keeps pricing and other public pages functional even when a
-      // localized static route is temporarily unavailable.
       locale = normalized;
       localeEpoch += 1;
       syncControls();
@@ -324,7 +323,6 @@
       return;
     }
     closeMenus();
-    return;
   }
 
   function closeMenus() {

@@ -2,16 +2,22 @@
 
 ## Root cause
 
-Two production checks were too shallow. The pricing proof verified that toggle markers existed in HTML, but did not prove that clicking changed visible state. The language selector on unprefixed public pages navigated to `/en/*`, making a language switch dependent on a separate localized route being reachable.
+Two production checks were too shallow. The pricing proof verified that toggle markers existed in HTML, but did not prove that clicking changed visible state. A later remediation then created a contradictory i18n contract: one regression/document path required unprefixed public pages to translate in place, while the canonical prevention rule required public language selection to use prebuilt static localized routes.
+
+That split authority allowed the English switch to regress.
 
 ## Fix
 
-- Pricing route, plan and billing controls now force both semantic state (`hidden`, ARIA) and visible state (`style.display`) through the delegated rescue runtime.
-- The pricing runtime is cache-busted to `20260924-0750`.
-- Public unprefixed pages switch NL/EN in place using the existing translation runtime and persist the selected locale.
-- Dynamically inserted content is translated whenever runtime locale is English, without requiring an `/en/*` pathname.
-- Production proof now requires the new pricing runtime asset version.
+- Pricing route, plan and billing controls keep explicit semantic state and visible state through the delegated rescue runtime.
+- Public website language selection now navigates to prebuilt `/nl/*` and `/en/*` localized routes.
+- Portal language switching keeps runtime/in-place translation as fallback where public-route navigation is not the contract.
+- The contradictory legacy in-place regression has been rewritten to enforce this split explicitly.
+- Production proof remains browser-level and verifies visible English behavior, not just markers.
 
 ## Prevention
 
-Presence-only HTML checks are not sufficient for interactive controls. Interaction state and language behavior are locked with regression tests and production asset readback.
+Public website i18n has one canonical rule: **static localized routes primary, runtime translation fallback**. Tests, docs, learning and runtime code must agree on that rule. Any contradictory in-place/static-route assertion fails CI.
+
+## Terminal delivery
+
+`LIVE_BEWEZEN` still requires protected merge, exact Netlify production SHA/context/deploy-id and production browser interaction proof.

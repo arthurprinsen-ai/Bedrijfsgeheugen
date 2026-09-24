@@ -11,3 +11,7 @@ Een recovery-deploy gebruikt nooit een oudere artifact als actuele main-bron zon
 
 ## Terminal bewijs
 Ook na deze artifact-refresh blijft `LIVE_BEWEZEN` afhankelijk van provider-success, exacte `release.json` SHA/context/deploy-id en productie-browserreadback.
+
+
+## Post-pricing-parse-fix refresh
+Na merge van de pricing build parsefix op `e223851136669000f1f58b6b1dadfe9e2f2adcc1` startte alleen Production Release Readback. Daarom wordt de canonieke Production Source Snapshot één keer operationeel gerefresht zodat de gecorrigeerde main-SHA daadwerkelijk naar Netlify kan worden gepromoveerd.
