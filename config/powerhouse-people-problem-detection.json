@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "purpose": "Detection contract for canonical people/workforce problems in the Powerhouse Problem Radar.",
   "privacy": [
     "Use aggregated/team-level evidence by default.",
@@ -150,5 +150,17 @@
       ],
       "suggested_confidence": "high_with_safety_records"
     }
-  ]
+  ],
+  "source_registry": "config/powerhouse-people-evidence-sources.json",
+  "external_evidence_policy": {
+    "role": "benchmark_or_context_only",
+    "refresh_before_current_claim": true,
+    "legal_change_guard": "policy proposals must never be represented as current law until verified in force",
+    "provenance_required": [
+      "publisher",
+      "url",
+      "latest_verified_period_or_status",
+      "applicable_problem_ids"
+    ]
+  }
 }
