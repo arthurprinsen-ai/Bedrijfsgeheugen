@@ -20,7 +20,7 @@ test('pricing page keeps mobile controls clickable and exposes monthly/yearly bi
   assert.match(pricing, /data-yearly="€ 24\.950"/);
   assert.match(pricing, /data-yearly="vanaf € 49\.950"/);
   assert.match(pricing, /touch-action:manipulation/);
-  assert.match(pricing, /card\.hidden=card\.getAttribute\('data-bg-group'\)!==group/);
+  assert.match(pricing, /var active=card\.getAttribute\('data-bg-group'\)===group;card\.hidden=!active;card\.style\.display=active\?'':'none'/);
 });
 
 
