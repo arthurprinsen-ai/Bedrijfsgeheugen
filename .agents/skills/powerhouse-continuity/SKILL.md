@@ -440,3 +440,15 @@ Fingerprint: `pricing-lifecycle-visible-state-20260924-v1`.
 - Active lifecycle panels explicitly remove `hidden` and force visible display through the rescue state layer.
 - Inactive panels explicitly remain hidden.
 - Production readback is the terminal oracle: the actual lifecycle click must make the matching panel visible before release closure.
+
+
+## GitHub OIDC Netlify deploy transport
+
+Fingerprint: `netlify-github-oidc-deploy-bridge-20260924-v1`.
+
+- Do not depend on a long-lived GitHub secret for expiring Netlify MCP proxy credentials.
+- Production Source Snapshot acquires deploy transport just-in-time with GitHub Actions OIDC.
+- The bridge must validate exact issuer, audience, repository, `refs/heads/main`, and exact workflow reference before releasing transport.
+- Store deploy transport encrypted in a backend secret store; the current canonical bridge uses Supabase Vault plus a service-role-only RPC.
+- Mask the returned transport before writing it to `GITHUB_ENV`; never print it, commit it, attach it as an artifact, or expose it to the user.
+- Exact Netlify SHA plus pricing/i18n production browser proof remain mandatory for `LIVE_BEWEZEN`.
