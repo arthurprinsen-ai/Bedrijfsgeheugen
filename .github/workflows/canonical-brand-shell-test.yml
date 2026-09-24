@@ -17,8 +17,13 @@ on:
       - 'tests/site-shell-*.test.mjs'
       - '.github/workflows/canonical-brand-shell-test.yml'
 
+concurrency:
+  group: canonical-brand-shell-contract-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 jobs:
   test:
+    timeout-minutes: 10
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4

@@ -452,3 +452,14 @@ When a canonical implementation/verifier is intentionally replaced and a new reg
 - update stale tests in the same recovery lineage so all tests enforce one canonical mechanism;
 - never weaken semantic postconditions merely to make CI green;
 - preserve fail-closed safety conditions and real production interaction requirements.
+
+
+## Expensive PR workflow single-flight
+
+Fingerprint: `github|actions|expensive-pr-single-flight|v1`.
+
+Every expensive PR-scoped workflow must use a stable per-PR concurrency group with `cancel-in-progress: true`. A new head supersedes older queued/in-progress runs for the same PR. Every expensive job also has an explicit `timeout-minutes`.
+
+Do not key PR concurrency by commit SHA or `github.run_id`; those identities prevent supersession and create queue storms. Use the PR number, with a ref fallback only outside PR events.
+
+Canonical regression: `tests/brain-actions-pr-single-flight-v1.test.mjs`.
