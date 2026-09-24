@@ -412,20 +412,19 @@ When exact production, route rendering and product-specific readiness are proven
 - retain semantic postconditions after the click.
 Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
 
-## Production browser DOM-query pointer proof
+## Browser readiness must include the concrete pointer target
 
-Fingerprint: `delivery|pricing-production-pointer|direct-dom-query-v2`.
+Fingerprint: `delivery|browser-readiness|target-presence-before-pointer|v1`.
 
-When Playwright Locator auto-wait itself is the observed failure mode, replacing one Locator method with another is not a valid recovery.
+A product-level readiness marker is necessary but not always sufficient for a real-pointer production proof.
 
-For production actionability proof of a known static control:
-- after the product-specific readiness marker, query the control inside `page.evaluate` with `document.querySelector`;
-- return explicit `missing`, computed visibility and `getBoundingClientRect` geometry without Locator auto-wait;
-- fail closed if missing, hidden, transparent or zero-sized;
-- scroll and re-read geometry through direct DOM evaluation;
-- preserve a real `page.mouse.click` at the measured center;
-- verify the post-click semantic state from DOM state;
-- forbid `locator.waitFor`, `scrollIntoViewIfNeeded`, `locator.boundingBox`, `locator.evaluate`, `force:true` and DOM `.click()` in this recovery class.
+For interaction verifiers:
+- couple readiness to the concrete target element required by the next interaction;
+- prefer a bounded `page.waitForFunction` that proves both runtime readiness and `document.querySelector(target)` presence;
+- once that condition is true, use direct DOM reads for computed visibility, scroll and geometry when Locator auto-wait is the observed failure class;
+- keep a real pointer event for the interaction itself;
+- fail explicitly if the target disappears between readiness and pointer geometry;
+- do not hide genuine missing controls with `force:true`, DOM `.click()`, or indefinite Locator waits.
 
-Canonical regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
+Reference: pricing production lifecycle control recovery, run `36056415545`.
 
