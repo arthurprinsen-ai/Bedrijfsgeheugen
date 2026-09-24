@@ -31,5 +31,17 @@
   ],
   "skill_targets": [
     "powerhouse-continuity"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-in-place-switch-v1.test.mjs",
+      "tests/brain-public-i18n-unprefixed-in-place-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-public-i18n-unprefixed-in-place-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  }
 }
