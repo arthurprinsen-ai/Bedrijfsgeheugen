@@ -549,3 +549,17 @@ For the pricing production build:
 Canonical learning: `brain/learning/pricing-interaction-section-build-preservation-20260924-v1.json`.
 Canonical regression: `tests/brain-pricing-runtime-build-preservation-v1.test.mjs`.
 Canonical browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+
+## Pricing production readback readiness retry
+
+Fingerprint: `pricing-production-readback-bounded-retry-20260924-v1`.
+
+When the generic targeted production route check has succeeded but the dedicated pricing verifier hits a readiness-only timeout before any interaction is tested:
+- allow at most one fresh-page retry (two total readiness attempts);
+- use a fresh cache-busting nonce per attempt;
+- require visible body plus attached pricing runtime before assertions;
+- never force-click or retry lifecycle, plan, billing or language business interactions;
+- after the second readiness failure, fail closed and preserve exact SHA/deploy evidence.
+
+Canonical regression: `tests/brain-pricing-production-readback-bounded-retry-v1.test.mjs`.
