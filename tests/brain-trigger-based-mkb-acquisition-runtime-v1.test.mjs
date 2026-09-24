@@ -35,3 +35,18 @@ test('brain replay: incomplete commercial context fails closed without fabricati
   assert.equal(r.recommended_next_action,null);
   assert.match(r.do_not_contact_reason,/trigger_type/);
 });
+
+
+test('brain replay: scheduler-owned Supabase projection reuses canonical stores and blocks automatic outbound',async()=>{
+  const {readFile}=await import('node:fs/promises');
+  const sql=await readFile(new URL('../supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql',import.meta.url),'utf8');
+  assert.match(sql,/powerhouse_mkb_trigger_intelligence_v1/);
+  assert.match(sql,/powerhouse_opportunities/);
+  assert.match(sql,/powerhouse_sales_actions/);
+  assert.match(sql,/powerhouse_forecasts/);
+  assert.match(sql,/'research_enrichment','internal'/);
+  assert.match(sql,/'external_side_effect_allowed',false/);
+  assert.match(sql,/cron\.alter_job/);
+  assert.doesNotMatch(sql,/cron\.schedule\s*\(/i);
+  assert.doesNotMatch(sql,/create\s+table\s+/i);
+});
