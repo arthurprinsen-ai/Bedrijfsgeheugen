@@ -12,7 +12,7 @@
   "prevention_rule": "All daily SEO opportunity decisions must use the canonical resolver chain: fresh GSC, valid DataForSEO cache, active external market forecasts, then bounded paid live enrichment only for unresolved high-value gaps. Producer liveness and evidence availability remain separate truths. Canonical intent ownership gates autonomous publication.",
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs"
+      "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs"
     ]
   },
   "evidence": {
@@ -39,7 +39,9 @@
       "config/seo-search-sources.json",
       "config/seo-growth-loop.json"
     ],
-    "production_readback": "pending protected merge, Supabase deployment/schedule readback and first resolver run"
+    "production_readback": "pending protected merge, Supabase deployment/schedule readback and first resolver run",
+    "quality_surface": "function:powerhouse-seo-opportunity-resolver",
+    "quality_evidence_contract": "tests/brain-seo-opportunity-first-mover-closure-v1.test.mjs"
   },
   "outcome": {
     "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
