@@ -18,29 +18,29 @@ async function run() {
 
     // Lifecycle toggle must change the actual visible panel.
     // Keep this a real pointer click: position the control below sticky chrome first.
-    const lossButton = page.locator('[data-bg-stage="loss"]');
-    const lossVisibility = await lossButton.evaluate(element => {
-      const rect = element.getBoundingClientRect();
+    const lossControl = await page.evaluate(() => {
+      const element = document.querySelector('[data-bg-stage="loss"]');
+      if (!element) return { found:false };
       const style = getComputedStyle(element);
+      element.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' });
+      const rect = element.getBoundingClientRect();
       return {
-        display: style.display,
-        visibility: style.visibility,
-        opacity: Number(style.opacity || '1'),
-        width: rect.width,
-        height: rect.height,
+        found:true,
+        display:style.display,
+        visibility:style.visibility,
+        opacity:Number(style.opacity || '1'),
+        x:rect.x,
+        y:rect.y,
+        width:rect.width,
+        height:rect.height,
       };
     });
-    if (lossVisibility.display === 'none' || lossVisibility.visibility === 'hidden' || lossVisibility.opacity === 0 || lossVisibility.width < 1 || lossVisibility.height < 1) {
-      throw new Error('loss stage control is not visibly actionable: ' + JSON.stringify(lossVisibility));
+    if (!lossControl.found) throw new Error('loss stage control is missing from DOM');
+    if (lossControl.display === 'none' || lossControl.visibility === 'hidden' || lossControl.opacity === 0 || lossControl.width < 1 || lossControl.height < 1) {
+      throw new Error('loss stage control is not visibly actionable: ' + JSON.stringify(lossControl));
     }
-    await lossButton.evaluate(element => element.scrollIntoView({ block:'center', inline:'nearest', behavior:'instant' }));
     await page.waitForTimeout(100);
-    const lossBox = await lossButton.evaluate(element => {
-      const rect = element.getBoundingClientRect();
-      return { x: rect.x, y: rect.y, width: rect.width, height: rect.height };
-    });
-    if (lossBox.width < 1 || lossBox.height < 1) throw new Error('loss stage control has no actionable box: ' + JSON.stringify(lossBox));
-    await page.mouse.click(lossBox.x + lossBox.width / 2, lossBox.y + lossBox.height / 2);
+    await page.mouse.click(lossControl.x + lossControl.width / 2, lossControl.y + lossControl.height / 2);
     await page.waitForTimeout(150);
     const loss = page.locator('[data-bg-stage-panel="loss"]');
     const grow = page.locator('[data-bg-stage-panel="grow"]');
