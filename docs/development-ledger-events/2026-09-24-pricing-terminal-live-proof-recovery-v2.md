@@ -8,3 +8,5 @@
 - Fix: exclude `inloggen.html` from public SEO inventory.
 - Production action: retrigger exact Production Source Snapshot through the existing workflow.
 - Terminal success remains: protected merge → exact Netlify production SHA → pricing lifecycle/plan/billing clicks → NL→EN `/en/prijzen` proof → learning status closure.
+
+- Diagnose refinement: excluding `inloggen.html` alone caused 430 valid global login links to fail technical SEO. Added explicit `PUBLIC_UTILITY_ROUTES` and taught the technical SEO validator to accept only those known utility destinations while keeping them out of sitemap/indexable scope.
