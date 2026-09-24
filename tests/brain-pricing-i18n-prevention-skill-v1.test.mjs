@@ -8,8 +8,14 @@ const i18n = fs.readFileSync('assets/js/i18n.js','utf8');
 const redirects = fs.readFileSync('_redirects','utf8');
 const proof = fs.readFileSync('tools/site-shell/verify-pricing-i18n-production.mjs','utf8');
 
-test('public language switches use static localized routes', () => {
-  assert.match(i18n,/if \(!isPortal\(\)\) \{[\s\S]*location\.assign\(localizedHref\(normalized\)\)/);
+test('public language switches keep unprefixed routes in place while preserving static localized routes', () => {
+  const start=i18n.indexOf('async function setLocale');
+  const end=i18n.indexOf('function closeMenus',start);
+  const block=i18n.slice(start,end);
+  assert.match(block,/Unprefixed public routes must switch in place/);
+  assert.match(block,/await apply\(document\.body\)/);
+  const afterRouted=block.slice(block.indexOf("if (routed)"));
+  assert.doesNotMatch(afterRouted,/if \(!isPortal\(\)\) \{[\s\S]*location\.assign\(localizedHref\(normalized\)\)/);
   assert.match(redirects,/\/en\s+\/en\/index\.html\s+200/);
   assert.match(redirects,/\/nl\s+\/nl\/index\.html\s+200/);
   assert.doesNotMatch(redirects,/\/en\/\*\s+\/en\/:splat\.html\s+200/);
