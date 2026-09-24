@@ -1,0 +1,48 @@
+{
+  "fingerprint": "pricing-interaction-production-promotion-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_PROMOTION",
+  "problem": "Pricing interaction preservation and mobile lifecycle fixes are merged on main but Netlify production still serves d55043434174a50b5d495563cc307d38f2db84c2.",
+  "root_cause": "Production Source Snapshot is intentionally path-triggered; merging pricing/build-integrity changes does not itself trigger the OIDC production deploy. A canonical snapshot marker update is required.",
+  "prevention": [
+    "Treat protected main merge and production promotion as separate proof states.",
+    "Use only Production Source Snapshot for explicit current-main promotion through GitHub OIDC to Netlify.",
+    "Do not claim LIVE_BEWEZEN until production deploy commit_ref is the target merge or a descendant containing it.",
+    "Require pricing lifecycle, billing and static English route interaction readback after provider-ready."
+  ],
+  "evidence": {
+    "target_main_sha": "4623d87946758e3e2749a387999c75067b34ac9b",
+    "powerhouse_50_merge": "94fd9cb6f04118ea9da2d318d49114562f8ce2f5",
+    "prior_production_sha": "d55043434174a50b5d495563cc307d38f2db84c2",
+    "prior_production_deploy": "6ab53d697712e90008736a73",
+    "canonical_workflow": ".github/workflows/production-source-snapshot.yml"
+  },
+  "test_evidence": [
+    "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs",
+    "tests/brain-pricing-runtime-build-preservation-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs",
+      "tests/brain-pricing-runtime-build-preservation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_SNAPSHOT_NOT_TRIGGERED",
+    "scope": "WEBSITE_PRODUCTION",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
