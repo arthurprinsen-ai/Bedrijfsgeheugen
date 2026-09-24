@@ -16,6 +16,8 @@ on:
       - '.github/workflows/seo-growth-intelligence.yml'
   push:
     branches:
+      - main
+      - feat/seo-to-order-intelligence-loop-final-20260905
     paths:
       - 'tools/seo-growth/**'
       - 'tools/seo-order-engine/**'
@@ -28,8 +30,6 @@ on:
       - 'tests/seo-growth-*.test.mjs'
       - 'tests/seo-order-*.test.mjs'
       - '.github/workflows/seo-growth-intelligence.yml'
-      - main
-      - feat/seo-to-order-intelligence-loop-final-20260905
 
 concurrency:
   group: seo-growth-intelligence-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
