@@ -91,25 +91,35 @@ async function runLinkedInCockpitAutopilot(db:any){
       .select('action_id').maybeSingle();
     if(claimError)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_CLAIM:'+claimError.message);
     if(!claimed){results.push({action_id:action.action_id,status:'skipped',reason:'ALREADY_CLAIMED'});continue;}
+    let providerId='';
+    let providerEvidence:any=null;
     try{
       const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
       const provider=await composioExecute(apiKey,accountId,'LINKEDIN_CREATE_COMMENT_ON_POST',
         `Create this exact LinkedIn comment on the post at ${sourceUrl}. Comment text: ${message}`);
-      const providerId=deepPickId(provider?.data||provider,['id','comment_id','commentId']);
+      providerId=deepPickId(provider?.data||provider,['id','comment_id','commentId']);
       if(!providerId)throw new Error('COMPOSIO_LINKEDIN_COMMENT_ID_MISSING');
-      const evidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',provider:'composio',tool:'LINKEDIN_CREATE_COMMENT_ON_POST',provider_id:providerId,source_url:sourceUrl,provider_ack_verified:true,exact_readback_available:false,executed_at:new Date().toISOString()}};
+      providerEvidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',provider:'composio',tool:'LINKEDIN_CREATE_COMMENT_ON_POST',provider_id:providerId,source_url:sourceUrl,provider_ack_verified:true,exact_readback_available:false,republish_forbidden:true,executed_at:new Date().toISOString()}};
       const {error:updateError}=await db.from('powerhouse_sales_actions')
-        .update({status:'executed',evidence,updated_at:new Date().toISOString()})
+        .update({status:'executed',evidence:providerEvidence,updated_at:new Date().toISOString()})
         .eq('action_id',action.action_id).eq('status','dispatching');
       if(updateError)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_COMPLETE:'+updateError.message);
       const dedupe=await digest('cockpit-autopilot:'+action.action_id+':'+providerId);
-      await db.rpc('powerhouse_record_outcome',{p_action_id:action.action_id,p_dedupe_key:dedupe,p_outcome_type:'executed',p_evidence:evidence.autopilot,p_revenue_eur:0}).catch(()=>null);
-      results.push({action_id:action.action_id,status:'executed',provider:'composio',provider_id:providerId});
+      const {error:outcomeError}=await db.rpc('powerhouse_record_outcome',{p_action_id:action.action_id,p_dedupe_key:dedupe,p_outcome_type:'executed',p_evidence:providerEvidence.autopilot,p_revenue_eur:0});
+      if(outcomeError)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_OUTCOME:'+outcomeError.message);
+      results.push({action_id:action.action_id,status:'executed',provider:'composio',provider_id:providerId,provider_ack_verified:true});
     }catch(error){
       const messageError=error instanceof Error?error.message:String(error);
+      if(providerId){
+        const evidence=providerEvidence||{...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',provider:'composio',provider_id:providerId,source_url:sourceUrl,provider_ack_verified:true,republish_forbidden:true}};
+        evidence.autopilot={...(evidence.autopilot||{}),reconciliation_required:true,writeback_error:messageError,failed_at:new Date().toISOString()};
+        await db.from('powerhouse_sales_actions').update({status:'executed',evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id);
+        results.push({action_id:action.action_id,status:'reconciliation_required',provider:'composio',provider_id:providerId,reason:messageError,republish_forbidden:true});
+        continue;
+      }
       const evidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',failed_at:new Date().toISOString(),error:messageError,source_url:sourceUrl}};
       await db.from('powerhouse_sales_actions').update({status:'suggested',evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','dispatching');
-      results.push({action_id:action.action_id,status:'failed',error:messageError});
+      results.push({action_id:action.action_id,status:'failed_pre_provider',error:messageError});
     }
   }
   return results;
