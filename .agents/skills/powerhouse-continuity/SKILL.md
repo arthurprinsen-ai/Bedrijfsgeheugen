@@ -484,3 +484,25 @@ Fingerprint: `netlify-oidc-linked-build-fallback-20260924-v1`.
 - Netlify credentials remain server-side in the OIDC bridge; workflow logs may expose only non-secret build/deploy identifiers.
 - A green transport command is never equivalent to production success.
 - Closure still requires exact `release.json` SHA/context plus pricing/i18n browser proof.
+
+
+## Netlify Vault proxy expiry hard boundary
+
+Fingerprint: `netlify-vault-proxy-expiry-hard-boundary-20260924-v1`.
+
+When the canonical production flow shows both:
+- linked-build trigger `ok=false`; and
+- Netlify MCP fallback `401 Unauthorized`;
+
+treat this as deploy-authentication failure caused by stale/expired provider authority, not as application, pricing, SEO or i18n failure.
+
+Mandatory behavior:
+- do not mutate website or application code unless separate evidence proves a code defect;
+- do not blindly rerun the same stale credential;
+- credential recovery must happen through an authorized secret-store-native rotation path;
+- never copy transient provider credentials into repository files, PR bodies, workflow inputs, logs, docs or chat;
+- preserve the exact current-main artifact/SHA while delivery authority is unavailable;
+- after credential recovery, rerun canonical Production Source Snapshot and require provider success + exact `release.json` SHA/context/deploy-id + production browser proof before `LIVE_BEWEZEN`.
+
+Canonical evidence: production snapshot run `36010221414`, readback run `36010220920`.
+Canonical regression: `tests/brain-netlify-vault-proxy-expiry-hard-boundary-v1.test.mjs`.
