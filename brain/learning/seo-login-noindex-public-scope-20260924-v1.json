@@ -1,0 +1,43 @@
+{
+  "fingerprint": "seo-login-noindex-public-scope-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "SEO_SCOPE_CLASSIFICATION",
+  "root_cause": "The login route is intentionally noindex and should stay outside sitemap/indexable SEO inventory, but the technical SEO link validator assumed every internal destination must itself be an indexable canonical route. The missing concept was an explicit public utility-route class: valid internal destination, intentionally non-indexable.",
+  "prevention": [
+    "Model public utility routes explicitly as valid internal destinations outside sitemap/indexable SEO inventory.",
+    "Do not index authentication/login utility pages merely to satisfy internal-link validation.",
+    "Technical SEO may exempt only explicitly classified utility destinations; unknown non-indexable targets remain failures.",
+    "Keep utility-route classification in the shared route contract and guard it with executable regression."
+  ],
+  "evidence": {
+    "predecessor_pr": 2795,
+    "recovery_pr": 2797,
+    "recovery_successor_branch": "recovery/pricing-terminal-live-proof-20260924-v3",
+    "source_gate_run": 36028875604,
+    "terminal_state": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_PROOF"
+  },
+  "compiler": {
+    "failure_class": "NOINDEX_UTILITY_MISCLASSIFIED_AS_PUBLIC_SEO",
+    "scope": "WEBSITE_SEO",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-login-noindex-scope-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-seo-login-noindex-scope-v1.test.mjs"
+    ],
+    "canary": [
+      ".github/workflows/production-source-snapshot.yml"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-seo-login-noindex-scope-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
