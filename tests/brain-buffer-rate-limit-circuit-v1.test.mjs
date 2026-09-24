@@ -15,19 +15,21 @@ test('Buffer 429 opens a persistent circuit and preserves LinkedIn content_ready
   assert.match(source,/deferred_rate_limit/);
 });
 
-test('open Buffer circuit never blocks personal LinkedIn direct transport',()=>{
+test('open Buffer circuit never blocks either LinkedIn Composio transport',()=>{
   assert.match(source,/if \(!bufferCircuit\.active && bufferToken\)/);
   assert.match(source,/BUFFER_RATE_LIMIT_CIRCUIT_OPEN/);
-  assert.match(source,/row\.channel === 'linkedin_company' && bufferCircuit\.active/);
-  assert.doesNotMatch(source,/\['linkedin_personal','linkedin_company'\]\.includes\(row\.channel\) && bufferCircuit\.active/);
+  assert.doesNotMatch(source,/row\.channel === 'linkedin_company' && bufferCircuit\.active/);
+  assert.doesNotMatch(source,/await markLinkedInRateLimited\(db,runDate,bufferCircuit\)/);
   assert.match(source,/publishLinkedInPersonalViaComposio/);
+  assert.match(source,/publishLinkedInCompanyViaComposio/);
   assert.match(source,/LINKEDIN_CREATE_LINKED_IN_POST/);
   assert.match(source,/LINKEDIN_GET_POST_CONTENT/);
-  assert.match(source,/transport_contract:'linkedin-composio-direct-v1'/);
+  assert.match(source,/transport_contract:'linkedin-composio-direct-v2'/);
   assert.match(source,/buffer_dependency:false/);
   assert.match(source,/readLinkedInPersonalPostViaComposio/);
-  assert.match(source,/row\.channel === 'linkedin_personal' && \(declaredProvider === 'linkedin_direct' \|\| \/\^urn:li:/);
+  assert.match(source,/readLinkedInCompanyPostViaComposio/);
   assert.match(source,/COMPOSIO_LINKEDIN_EXACT_RECONCILE_MISMATCH/);
+  assert.match(source,/COMPOSIO_LINKEDIN_COMPANY_EXACT_RECONCILE_MISMATCH/);
   assert.match(source,/never route this claim through Buffer or create a replacement post/);
   assert.match(source,/publishInstagramViaComposio/);
 });
