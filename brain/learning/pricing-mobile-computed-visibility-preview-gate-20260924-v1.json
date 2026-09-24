@@ -1,0 +1,39 @@
+{
+  "fingerprint": "pricing-mobile-computed-visibility-preview-gate-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_FUNCTIONAL_FAILURE",
+  "problem": "Production Playwright readback found data-bg-stage=loss in the DOM on a 390px viewport but could not click it because the element was not visible/stable.",
+  "evidence": {
+    "production_sha": "945febc5cb2d603dfaefcc8b1d12a36b075a7d1d",
+    "production_deploy": "6ab5417a7533790008782b04",
+    "github_run": "36020379517",
+    "failed_step": "Verify pricing interactions and English route in production",
+    "observed_error": "locator.click Timeout 30000ms; locator resolved to data-bg-stage=loss but waited for element to be visible, enabled and stable"
+  },
+  "root_cause": "The delivery chain proved DOM presence and route rendering but did not require computed mobile visibility/clickability of pricing controls on deploy-preview. Existing mobile CSS used normal-priority visibility rules, so a later/global computed-style interaction could still collapse or hide the click target without failing pre-merge CI.",
+  "fix": [
+    "Force the lifecycle pricing container, tab grid and tab buttons visible/clickable on <=900px with explicit important visibility/display/geometry guards.",
+    "Run the full pricing interaction and static English-route Playwright proof against the exact Netlify deploy-preview whenever /prijzen is affected."
+  ],
+  "prevention": [
+    "Never accept DOM presence as proof of a primary mobile control; require Playwright clickability on a 390px viewport.",
+    "Pricing deploy-preview must prove lifecycle selection, Run tab selection, yearly billing price mutation and navigation to /en/prijzen before merge.",
+    "Keep production readback fail-closed and record exact browser errors as learning evidence."
+  ],
+  "test_evidence": [
+    "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs",
+    ".github/workflows/lane-website.yml"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "MOBILE_CONTROL_PRESENT_BUT_NOT_CLICKABLE",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
