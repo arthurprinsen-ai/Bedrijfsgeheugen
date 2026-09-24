@@ -38,3 +38,6 @@ test('delivery metadata prevention names only canonical delivery lanes', async()
   assert.ok(!policy.allowedLanes.includes('seo-content'));
   assert.ok(learning.prevention.some(rule=>rule.includes('DELIVERY_METADATA_USES_CANONICAL_LANES')));
 });
+
+
+test('MKB trigger-sales learning is canonical, problem-led and evidence gated',async()=>{const learning=JSON.parse(await read('brain/learning/2026-09-24-mkb-trigger-sales-intelligence-v1.json'));assert.equal(learning.fingerprint,'sales|mkb-trigger-intelligence|problem-led-partner-distribution|v1');assert.equal(learning.compiler.failure_class,'METADATA_DRIFT');assert.ok(learning.prevention.some(x=>x.startsWith('TRIGGER_BEFORE_OUTREACH')));assert.ok(learning.prevention.some(x=>x.startsWith('NO_TRIGGER_FABRICATION')));assert.ok(learning.prevention.some(x=>x.startsWith('PARTNER_DISTRIBUTION_IS_FIRST_CLASS')));assert.deepEqual(learning.evaluation.historical_replay,['tests/brain-seo-revenue-learning-v1.test.mjs']);const skill=await read('docs/superpowers/skills/linkedin-sales-cockpit-predictive-v2.md');assert.match(skill,/MKB trigger-based acquisition intelligence/);assert.match(skill,/context-led outreach/);});
