@@ -1,0 +1,38 @@
+{
+  "fingerprint": "production-readback-manual-exact-main-v1",
+  "date": "2026-09-24",
+  "type": "DELIVERY_CONTROL_PLANE",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Production Release Readback used cancel-in-progress correctly but exposed no workflow_dispatch. When a newer main commit superseded a running browser proof, the older job could finish with cancelled/skipped functional steps and the newer non-deployment commit could skip browser proof entirely. Exact-main functional proof then required another repository mutation.",
+  "prevention_rule": "Terminal production proof must be explicitly re-runnable on current main without product-code mutation. Manual readback always requires deployment identity and /prijzen browser interaction proof.",
+  "failed_approaches": [
+    "Treating a successful job shell with cancelled route verification and skipped pricing/i18n steps as terminal proof.",
+    "Relying on the next main push to re-run the same browser gate even when that push is classified non-deployment."
+  ],
+  "evidence": {
+    "superseded_run": 36050658444,
+    "cancelled_step": "Verify affected production routes",
+    "skipped_step": "Verify pricing interactions and English route in production",
+    "successor_non_deployment_run": 36050933905
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_NOT_RERUNNABLE",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-manual-exact-main-v1.test.mjs"
+    ],
+    "invariants": [
+      "manual exact-main readback forces browser proof",
+      "manual proof includes /prijzen",
+      "skipped browser proof is non-terminal"
+    ]
+  }
+}

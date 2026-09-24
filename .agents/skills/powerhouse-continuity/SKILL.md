@@ -726,17 +726,25 @@ For pricing/i18n recovery, treat terminal delivery as one composed contract:
 Canonical postmortem: `brain/learning/pricing-terminal-recovery-postmortem-20260924-v1.json`.
 Canonical documentation: `docs/changes/pricing-terminal-recovery-postmortem-20260924-v1.md`.
 
+## Mobile primary-control actionability
 
-## Production mobile actionability proof
+Fingerprint: `pricing-mobile-lifecycle-offscreen-click-v1`.
 
-Fingerprint: `pricing-mobile-production-actionability-v1`.
+For mobile public surfaces, a primary decision control must be directly actionable without depending on hidden horizontal overflow. DOM presence, ready markers and synthetic events are not functional proof. Preserve real browser click/tap verification on the actual mobile viewport. If a primary tab strip pushes later choices offscreen, prefer a visible wrap/grid arrangement unless deliberate horizontal navigation has its own explicit discoverability and interaction proof.
 
-Production browser proof must stay user-realistic:
-- use a real Playwright pointer click for critical pricing controls;
-- when sticky site chrome can occupy the auto-scroll actionability region, explicitly position the target below that chrome before clicking;
-- never use `force:true` or DOM `.click()` to manufacture a green production proof;
-- a visible element is not enough: the proof must establish a non-zero actionable box and a successful real interaction that changes visible state;
-- preserve the 390px mobile viewport because that is where the regression occurred.
+Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
 
-Regression: `tests/brain-pricing-production-actionability-v1.test.mjs`.
-Learning: `brain/learning/pricing-mobile-production-actionability-20260924-v1.json`.
+
+## Re-runnable exact-main production proof
+
+Fingerprint: `production-readback-manual-exact-main-v1`.
+
+- Production proof must be re-runnable without mutating product code or creating dummy commits.
+- `Production Release Readback` exposes `workflow_dispatch` and manual dispatch always requires exact deployment identity plus browser verification.
+- Manual exact-main proof always includes `/prijzen`, including the pricing lifecycle and static-English interaction contract.
+- A superseded/cancelled readback is non-terminal even when the job shell ends green; skipped functional proof is not proof.
+- Concurrency may cancel stale readbacks, but the newest canonical main can always be explicitly re-proven.
+- Never manufacture terminal status from a non-deployment readback when the functional browser gate was skipped.
+
+Regression: `tests/brain-production-readback-manual-exact-main-v1.test.mjs`.
+Learning: `brain/learning/production-readback-manual-exact-main-20260924-v1.json`.

@@ -3,6 +3,7 @@ name: Production Release Readback
 on:
   push:
     branches: [main]
+  workflow_dispatch:
 
 concurrency:
   group: production-release-readback
@@ -25,6 +26,8 @@ jobs:
           node-version: '22'
       - id: scope
         name: Derive affected production routes and deployment applicability
+        env:
+          EVENT_NAME: ${{ github.event_name }}
         run: |
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
@@ -48,9 +51,10 @@ jobs:
           ]);
           const readbackControlPlaneOnly=changedPaths.length>0 && changedPaths.every(path => readbackControlPlanePaths.has(path));
           const readbackWorkflowChanged=changedPaths.includes('.github/workflows/production-release-readback.yml');
+          const manualReadback=process.env.EVENT_NAME === 'workflow_dispatch';
           const websiteRequired=readbackControlPlaneOnly ? false : suites.website === true;
           const portalRequired=readbackControlPlaneOnly ? false : suites.portal === true;
-          const browserRequired=websiteRequired || portalRequired || readbackWorkflowChanged;
+          const browserRequired=websiteRequired || portalRequired || readbackWorkflowChanged || manualReadback;
           const netlifyRuntimePrefixes=[
             'netlify/functions/',
             'platform/api/',
@@ -72,14 +76,14 @@ jobs:
             riskLane=risk.lane;
           }
           if(portalRequired && !routes.includes('/portal-v2/')) routes.push('/portal-v2/');
-          if(readbackWorkflowChanged && !routes.includes('/prijzen')) routes.push('/prijzen');
+          if((readbackWorkflowChanged || manualReadback) && !routes.includes('/prijzen')) routes.push('/prijzen');
 
           await appendFile(process.env.GITHUB_OUTPUT,`routes=${JSON.stringify(routes)}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`website_required=${websiteRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`portal_required=${portalRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`browser_required=${browserRequired}\n`);
           await appendFile(process.env.GITHUB_OUTPUT,`deployment_required=${deploymentRequired}\n`);
-          console.log(JSON.stringify({changedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,website_required:websiteRequired,portal_required:portalRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
+          console.log(JSON.stringify({changedPaths,delivery_lanes:plan.lanes.map(lane=>lane.id),required_suites:suites,readbackControlPlaneOnly,readbackWorkflowChanged,manualReadback,website_required:websiteRequired,portal_required:portalRequired,browser_required:browserRequired,netlify_runtime_required:netlifyRuntimeRequired,deployment_required:deploymentRequired,risk_lane:riskLane,routes},null,2));
           NODE
       - name: Persist promotion-required state before waiting
         if: steps.scope.outputs.deployment_required == 'true'
