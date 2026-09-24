@@ -352,3 +352,20 @@ Mandatory:
 - require System Map read-after-write before a structural change may be `LIVE_BEWEZEN`.
 
 A material component that exists in execution but not in the canonical System Map is `SYSTEM_MAP_WRITEBACK_INCOMPLETE`, not done.
+
+
+## Interaction proof and public i18n prevention
+
+Fingerprint: `pricing-toggle-i18n-runtime-20260924-v1`.
+
+For user-visible toggles, tabs, billing switches and language controls:
+- marker-presence is never functional proof; execute the actual click/change and assert the resulting user-visible state;
+- candidate route health and generic browser smoke tests do not replace interaction-specific evidence;
+- public website language switching uses static localized routes as the primary path, not runtime translation-provider availability;
+- localized routes must have explicit routing coverage and be verified in the production browser;
+- an English production proof must confirm `html lang=en`, visible English copy, absence of the known Dutch source heading, and absence of the runtime translation failure message;
+- runtime/cache version changes must update exact-version regressions in the same lineage;
+- never claim `LIVE_BEWEZEN` for an interaction incident until the exact interaction has passed browser-level production proof.
+
+Canonical verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+Canonical retrospective: `docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md`.
