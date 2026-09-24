@@ -28,5 +28,15 @@
     "Composio setup state proves one ACTIVE LinkedIn account with r_organization_admin and w_organization_social.",
     "Company author resolved to urn:li:organization:18234216.",
     "PR #2697 carries the structured v3.1 implementation and post-create containment."
-  ]
+  ],
+  "failure_class": "EXECUTION_CONTRACT_DRIFT",
+  "scope": "GENERAL",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-v31-execution.test.mjs"
+    ]
+  }
 }
