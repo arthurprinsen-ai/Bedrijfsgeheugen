@@ -76,6 +76,9 @@ test('supervisor runs repository-wide recovery only on main push and retains wat
   assert.match(yaml,/queued" -ge 8/);
   assert.match(yaml,/running" -ge 16/);
   assert.match(yaml,/RECOVERY_QUEUE_PRESSURE=true/);
+  assert.match(yaml,/2 hours ago/);
+  assert.match(yaml,/fromdateiso8601/);
+  assert.doesNotMatch(yaml,/status=queued&per_page=1/);
 });
 
 
