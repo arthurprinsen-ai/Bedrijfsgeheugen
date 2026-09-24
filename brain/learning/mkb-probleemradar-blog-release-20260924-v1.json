@@ -1,16 +1,22 @@
 {
-  "id": "mkb-probleemradar-blog-release-20260924-v1",
-  "date": "2026-09-24",
-  "source": "voice-of-customer-probleemradar",
-  "root_cause": "Nieuwe probleemgestuurde content stond als korte Notion-kandidaat klaar, maar was nog geen release-eligible website-artifact. De eerste implementatie miste daarnaast expliciete technische SEO-contractvereisten zoals exacte focuszoekwoordplaatsing, FAQPage structured data en twee functionele figures.",
+  "fingerprint": "mkb-probleemradar-blog-release-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Three high-priority MKB Voice-of-Customer content candidates existed only as short editorial records and the first web implementation failed the technical SEO contract.",
+  "root_cause": "The content candidates were promoted to web artifacts before all release-eligible blog requirements were encoded in the article build: exact focus-keyword placement, FAQPage structured data, functional figures, distribution surfaces and same-lineage learning/documentation closure.",
   "prevention": [
-    "Zet Probleemradar-kandidaten pas op publiceren nadat title, meta description, focuszoekwoord, canonical, FAQPage, minimaal drie interne links en minimaal twee functionele figures contractueel zijn gevalideerd.",
-    "Gebruik de bestaande protected website delivery en productie-readback; omzeil de dagelijkse canonical blog-ledger niet om meerdere redactionele artikelen op dezelfde dag uit te brengen.",
-    "Houd kwalitatieve ondernemerssignalen expliciet gescheiden van representatieve statistiek en link kwantitatieve claims naar een controleerbare bron."
+    "Problemradar blog candidates must pass the full Blog Technical SEO Gate before protected merge.",
+    "Focus keyword must be present in title, meta description, first 100 words and an H2; meta descriptions must stay within the repository contract.",
+    "Every new publishable blog must carry FAQPage structured data, at least three unique internal links and at least two functional figures with captions.",
+    "Qualitative entrepreneur/forum signals must remain labeled qualitative; quantitative claims require a traceable quantitative source.",
+    "Multi-article editorial releases must reuse the protected website delivery path and must not bypass the one-canonical-per-day automated publisher ledger.",
+    "Material content releases must include Brain learning, development ledger and human-readable change documentation in the same lineage."
   ],
-  "evidence": [
-    "PR #2733",
-    "Blog Technical SEO Gate technical-seo-contract-100",
+  "evaluation": {
+    "historical_replay": ["Blog Technical SEO Gate"],
+    "shadow": ["PR #2733 technical-seo-contract-100"],
+    "canary": ["protected main production readback of all three article URLs"]
+  },
+  "test_evidence": [
     "blog/groeipijn-mkb-eigenaar-bottleneck/index.html",
     "blog/cashflow-overzicht-mkb/index.html",
     "blog/dubbele-invoer-voorkomen-systemen-koppelen/index.html",
@@ -18,5 +24,19 @@
     "blog/rss.xml",
     "sitemap.xml"
   ],
-  "outcome": "Drie Voice-of-Customer onderwerpen zijn omgezet naar volledige SEO-artikelen en opgenomen in index, RSS en sitemap. Production-live blijft fail-closed tot protected merge en productie-readback."
+  "evidence": {
+    "pull_request": 2733,
+    "technical_gate": "Blog Technical SEO Gate",
+    "initial_failure": "focus-keyword/FAQPage/figure requirements",
+    "corrected_state": "technical-seo-contract-100 green before merge"
+  },
+  "skill_targets": ["continuity"],
+  "compiler": {
+    "failure_class": "CONTENT_RELEASE_SEO_AND_WRITEBACK_CONTRACT_GAP",
+    "scope": "WEBSITE_CONTENT_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
 }
