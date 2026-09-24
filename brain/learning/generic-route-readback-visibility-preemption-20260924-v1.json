@@ -1,0 +1,44 @@
+{
+  "fingerprint": "generic-route-readback-visibility-preemption-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_READBACK_CONTRACT",
+  "root_cause": "The generic targeted-route verifier required body to be Playwright-visible before collecting HTTP/canonical/content/asset evidence. On /prijzen this generic prerequisite timed out and skipped the specialized pricing interaction verifier, which is the authoritative owner of visual visibility and clickability.",
+  "prevention": [
+    "Generic route verification waits for body attachment and evaluates HTTP status, route identity, content presence, page errors and failed assets.",
+    "Visual visibility and clickability are owned by specialized browser gates for the affected interaction.",
+    "A generic route gate may not preempt a more specific interaction gate with an unrelated visibility prerequisite.",
+    "Pricing remains fail-closed: production closure still requires actual lifecycle, plan-tab, billing and English-route interaction proof."
+  ],
+  "evidence": {
+    "production_sha": "d55043434174a50b5d495563cc307d38f2db84c2",
+    "production_deploy_id": "6ab53d697712e90008736a73",
+    "failed_readback_run": 36018220027,
+    "failed_step": "Verify affected production routes",
+    "failed_location": "tools/site-shell/verify-targeted-website-routes.mjs body visible wait"
+  },
+  "compiler": {
+    "failure_class": "GENERIC_ROUTE_GATE_PREEMPTS_SPECIALIZED_UI_GATE",
+    "scope": "PRODUCTION_READBACK",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/targeted-website-route-regression.test.mjs"
+    ],
+    "shadow": [
+      "tests/targeted-website-route-regression.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/targeted-website-route-regression.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
