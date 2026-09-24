@@ -35,5 +35,15 @@
   "failed_approaches": [
     "A second regression test still required scrollIntoViewIfNeeded(), so changing the production verifier without updating every coupled actionability regression caused BRAIN lane failure. Verifier contract changes require a repository-wide regression dependency check.",
     "Asserting literal `el => el.scrollIntoView` and `lossButton.click()` tied the regression to incidental implementation syntax instead of the real pointer-safety contract."
-  ]
+  ],
+  "evidence": {
+    "failed_run": 36054089352,
+    "failed_job": 107818017368,
+    "original_exact_production_sha": "396b0ca1afbc39ce613ef473c452bf13ac459c59",
+    "semantic_regressions": [
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs",
+      "tests/brain-pricing-production-actionability-v1.test.mjs"
+    ],
+    "current_pointer_contract": "deterministic DOM scroll + computed visibility/geometry + real Playwright pointer input; no force:true or DOM click bypass"
+  }
 }
