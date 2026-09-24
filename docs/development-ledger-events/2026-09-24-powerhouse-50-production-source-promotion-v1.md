@@ -10,3 +10,6 @@
 - Root cause: inherited production-provider lag after a separate pricing build parse failure
 - Prevention: isolate feature health from provider lag and use one canonical promotion lineage
 - Terminal state: pending exact Netlify provider + release.json + browser readback
+- Public i18n regression found by backend gate: unprefixed public switch was in-place instead of static localized route.
+- Fix: public switch now uses `location.assign(localizedHref(normalized))`; portal remains in-place.
+- Regression: `tests/brain-pricing-i18n-prevention-skill-v1.test.mjs`.
