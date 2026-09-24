@@ -591,4 +591,4 @@ Fingerprint: `seo-login-noindex-public-scope-20260924-v1`.
 - Keep executable regressions on the shared route contract so sitemap generation and SEO validation consume the same classification.
 
 Canonical learning: `brain/learning/seo-login-noindex-public-scope-20260924-v1.json`.
-Canonical regression: `tests/seo-login-noindex-scope-v1.test.mjs`.
+Canonical regression: `tests/brain-seo-login-noindex-scope-v1.test.mjs`.
