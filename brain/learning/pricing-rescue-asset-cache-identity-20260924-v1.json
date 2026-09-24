@@ -3,8 +3,8 @@
   "date": "2026-09-24",
   "type": "PRODUCTION_RUNTIME_CACHE_IDENTITY_RECOVERY",
   "status": "IMPLEMENTED_CANDIDATE",
-  "root_cause": "Production deploy 6ab58c611214c700089b7a93 was ready on exact main 4aac008ef0872ab902e5888547bafc991c9eb259 and route checks passed, but the pricing ready-v3 marker never appeared. prijzen.html still referenced pricing-interactions-rescue-v1.js with fixed cache key v=20260924-0750 while the asset had changed later; Git history shows a later asset change at f13e524d and the current asset Git blob is f7d85cb0d7ba7ff8c055895677a906066e702d83. New HTML could therefore load a stale cached rescue runtime.",
-  "prevention_rule": "Static runtime assets that establish product readiness must use a content-addressed cache key derived from the exact asset blob. CI must compute the asset Git blob identity and assert the HTML query key matches it. Production snapshot content proof must assert the same key. Never keep a date/time cache key across later asset mutations.",
+  "root_cause": "Production deploy 6ab58c611214c700089b7a93 was ready on exact main 4aac008ef0872ab902e5888547bafc991c9eb259 and route checks passed, but the pricing ready-v3 marker never appeared. prijzen.html still referenced pricing-interactions-rescue-v1.js with fixed cache key v=20260924-0750 while the asset had changed later; Git history shows a later asset change at f13e524d and the current asset Git blob is f7d85cb0d7ba7ff8c055895677a906066e702d83. New HTML could therefore load a stale cached rescue runtime. The first cache-identity recovery updated source HTML and snapshot proof but missed tools/site-shell/pricing-build-integrity.mjs, which still hard-coded v=20260924-0750 and could restore that stale runtime reference during the build. Skill Projection exposed the drift because the historical replay read the build transform and failed.",
+  "prevention_rule": "Static runtime cache identity must be one invariant across source HTML, every build/transform/restoration path, and production content proof. A regression must derive the exact asset Git blob identity from file bytes and assert the same key in all three surfaces. Never patch only source HTML when a build integrity layer can re-inject runtime tags.",
   "provider_evidence": {
     "deploy_id": "6ab58c611214c700089b7a93",
     "state": "ready",
@@ -29,10 +29,23 @@
     "invariants": [
       "pricing rescue runtime query key equals the current JS Git blob SHA prefix",
       "production snapshot validates the exact same rescue runtime cache key",
-      "pricing ready-v3 remains product-specific runtime readiness authority"
+      "pricing ready-v3 remains product-specific runtime readiness authority",
+      "pricing source HTML build integrity transform and production snapshot share the same content-addressed rescue runtime key"
     ]
   },
   "skill_targets": [
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
-  ]
+  ],
+  "failed_approaches": [
+    "Updating the source HTML and Production Source Snapshot cache key without updating pricing-build-integrity.mjs, allowing the build transform to re-inject the stale timestamp key.",
+    "Using an over-escaped dynamic RegExp in the cache-identity regression, causing a false-negative Skill Projection failure."
+  ],
+  "evidence": {
+    "build_transform_recovery": {
+      "failed_skill_projection_run": 36058322328,
+      "build_file": "tools/site-shell/pricing-build-integrity.mjs",
+      "stale_key": "20260924-0750",
+      "canonical_key": "f7d85cb0d7ba"
+    }
+  }
 }
