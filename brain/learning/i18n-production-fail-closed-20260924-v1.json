@@ -1,0 +1,38 @@
+{
+  "fingerprint": "i18n-production-fail-closed-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "SILENT_UNTRANSLATED_LOCALIZED_RELEASE",
+  "problem": "Production could publish /en/* routes with Dutch content when static translation failed, then defer to a runtime translation provider that could also fail.",
+  "root_cause": "build-localized-routes.mjs converted production provider failure into a null translation map and still emitted English routes marked data-bg-static-translated=false.",
+  "failed_approaches": [
+    "Publishing untranslated English routes and relying on runtime provider fallback.",
+    "Treating route existence and html lang metadata as sufficient English-language proof."
+  ],
+  "prevention": [
+    "When STATIC_I18N_NETWORK=1, any translation-provider failure must fail the production build.",
+    "Production must never emit an /en/* route with untranslated Dutch content.",
+    "Deploy previews may run offline, but their untranslated locale artifacts are not production evidence.",
+    "Production language proof must verify visible English content, not only route existence or locale metadata."
+  ],
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "test_evidence": [
+    "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-production-fail-closed-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SILENT_UNTRANSLATED_LOCALIZED_RELEASE",
+    "scope": "WEBSITE_PUBLIC_I18N_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
