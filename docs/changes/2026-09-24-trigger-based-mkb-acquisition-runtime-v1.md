@@ -38,3 +38,15 @@ Geen beslisser, trigger, partnerroute of volgende actie afleiden wanneer de inpu
 
 ## Compatibiliteit
 De bestaande opportunity-score, security-prioriteit en generieke qualification blijven behouden. De commerciële projectie is optioneel en wordt alleen geactiveerd door `commercial_acquisition=true`.
+
+## Productie-materialisatie
+De runtime wordt ook in Supabase geprojecteerd via migration `20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql`.
+
+Nieuwe authority:
+- `powerhouse_mkb_trigger_intelligence_v1`: service-role-only triggerprojectie uit expliciete company-trigger evidence en company-scoped predictive signals;
+- `powerhouse_refresh_trigger_based_mkb_acquisition_v1(date)`: upsert naar bestaande opportunities en forecasts en uitsluitend interne research-actions;
+- `powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)`: wrapper die daarna de bestaande `powerhouse_commercial_learning_cycle_v1` uitvoert;
+- bestaande cron `powerhouse-commercial-learning-v1` wordt via `cron.alter_job` hergebruikt. Er komt geen tweede scheduler.
+
+### Truth boundary
+Een LinkedIn-connectie of relatieactivatie op zichzelf is geen kooptrigger. Automatische classificatie vereist expliciet trigger/headline/summary-bewijs of een company-scoped predictive signal. Expected/revenue value blijft 0 totdat echte commerciële waarde-evidence bestaat. Een trigger mag automatisch alleen een interne `research_enrichment`-actie creëren; externe outreach blijft fail-closed onder de bestaande identity, destination, contact-pressure en provider gates.
