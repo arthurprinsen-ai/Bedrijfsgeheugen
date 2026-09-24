@@ -452,3 +452,15 @@ Fingerprint: `netlify-github-oidc-deploy-bridge-20260924-v1`.
 - Store deploy transport encrypted in a backend secret store; the current canonical bridge uses Supabase Vault plus a service-role-only RPC.
 - Mask the returned transport before writing it to `GITHUB_ENV`; never print it, commit it, attach it as an artifact, or expose it to the user.
 - Exact Netlify SHA plus pricing/i18n production browser proof remain mandatory for `LIVE_BEWEZEN`.
+
+
+## Netlify provider build fail-fast diagnostics
+
+Fingerprint: `netlify-provider-build-failfast-diagnostics-20260924-v1`.
+
+- Successful deploy submission is not proof that the provider build is healthy.
+- Capture `deployId` and `buildId` from the authorized Netlify transport output.
+- Poll provider deploy state before waiting for public `release.json`.
+- When provider state is `error`, emit only sanitized allowlisted build/deploy metadata and fail immediately.
+- Never log the OIDC deploy proxy or any secret values.
+- Provider `ready` is still not terminal closure: exact SHA and pricing/i18n browser proof remain required.
