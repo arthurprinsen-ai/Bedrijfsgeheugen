@@ -1,0 +1,46 @@
+{
+  "fingerprint": "pricing-interaction-section-build-preservation-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_BUILD_INTEGRITY",
+  "root_cause": "The pricing build-integrity restore preserved only section#pakketten, while lifecycle, plan-group and billing interaction controls live in the preceding section#prijzen-pakketten. V18 transforms could therefore alter or remove interaction attributes before production even though the canonical source still contained them.",
+  "prevention": [
+    "Treat the interactive pricing intro and package section as one atomic build-preservation contract.",
+    "Restore both section#prijzen-pakketten and section#pakketten from the captured canonical source after V18 transforms.",
+    "Fail the build if lifecycle, stage-panel, plan-tab or billing selectors are missing after restore.",
+    "Production closure requires the existing browser verifier to click lifecycle, plan and billing controls and then switch to the static English route.",
+    "Section extraction must match id attributes independent of HTML attribute order."
+  ],
+  "evidence": {
+    "production_commit": "be5ec08e69600acfdba31b28af0d6736c84917d6",
+    "production_deploy_id": "6ab5392e62dd995771d76b00",
+    "failed_snapshot_run": 36015748370,
+    "failed_readback_run": 36015748460,
+    "failure": "Playwright timed out waiting for [data-bg-stage=\"loss\"] although exact source contained the selector."
+  },
+  "compiler": {
+    "failure_class": "PRICING_INTERACTION_SECTION_NOT_PRESERVED",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 2,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-runtime-build-preservation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-runtime-build-preservation-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-runtime-build-preservation-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "secondary_root_cause": "The first preservation implementation assumed the id attribute immediately followed <section. The real pricing intro markup has class before id, so extractSection could not find section#prijzen-pakketten and Netlify exited during the build."
+}
