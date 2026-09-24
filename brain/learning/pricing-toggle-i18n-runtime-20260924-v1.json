@@ -2,16 +2,16 @@
   "fingerprint": "pricing-toggle-i18n-runtime-20260924-v1",
   "failure_class": "INTERACTIVE_RUNTIME_PROOF_GAP",
   "problem": "Production pricing controls appeared present in automated proof but user clicks did not reliably change visible pricing state, and selecting English on an unprefixed public page left the experience Dutch.",
-  "root_cause": "Production proof asserted HTML marker presence rather than functional interaction state. Pricing visibility relied on semantic hidden state without an explicit runtime display fallback, while the public language selector redirected unprefixed pages to /en/* and therefore coupled switching to localized-route reachability.",
+  "root_cause": "Production proof initially checked markers rather than behavior, and later remediation introduced a contradictory policy: one regression/document path required unprefixed public pages to translate in place, while the canonical prevention contract required public language selection to navigate to prebuilt /nl/* and /en/* static routes. That split authority allowed English switching to regress.",
   "prevention": [
     "Interactive production controls require state-change evidence, not marker-presence evidence alone.",
     "Pricing lifecycle, plan-group and billing controls must be clicked in a production browser proof and the resulting visible state must be asserted.",
-    "Public-site language selection must use prebuilt static localized routes; runtime translation may be fallback capability but not the primary switching dependency.",
+    "Public-site language selection must use prebuilt static localized routes as the primary switching path.",
+    "Runtime translation is fallback capability and may remain primary only inside portal contexts where route navigation is not the public-site contract.",
     "Localized /en/* and /nl/* public routes require explicit routing coverage and production navigation proof.",
     "A production English-switch proof must verify html lang=en, visible English copy, absence of the Dutch pricing H1, and absence of the runtime translation failure message.",
-    "Runtime/cache version changes require co-changing exact-version regressions in the same candidate.",
-    "No LIVE_BEWEZEN claim is valid for an interaction defect without browser-level production evidence of that exact interaction.",
-    "Production proof oracles must not depend on incidental marketing copy or presentation-only heading text when stable semantic markers and browser-observable behavior exist."
+    "Tests, docs, skills and runtime code must express one i18n switching contract; contradictory in-place vs static-route rules are forbidden.",
+    "No LIVE_BEWEZEN claim is valid for an interaction defect without browser-level production evidence of that exact interaction."
   ],
   "evidence": {
     "reported_symptoms": [
@@ -26,7 +26,9 @@
     "prior_live_main_sha": "492fced012acc6e4263550d17281563582a89ceb",
     "observed_live_failure": "Production /prijzen exposed 'Switching language failed. Try again.' after selecting English.",
     "production_behavior_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
-    "retrospective": "docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md"
+    "retrospective": "docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md",
+    "static_route_contract_regression": "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs",
+    "contradictory_legacy_test": "tests/brain-i18n-in-place-switch-v1.test.mjs"
   },
   "evaluation": {
     "historical_replay": [
@@ -58,8 +60,8 @@
   "failed_approaches": [
     "Treating presence of data-bg-* markers as proof that clicks changed user-visible state.",
     "Relying on general route/browser health without an interaction-specific production assertion.",
-    "Using runtime translation as the primary public-site language-switch path, allowing provider failure to leave Dutch copy visible.",
-    "Keeping stale literal-copy greps in production proof after the functional contract moved to semantic data attributes and browser interaction."
+    "Using runtime translation as the primary public-site language-switch path, allowing provider or runtime failure to leave Dutch copy visible.",
+    "Maintaining contradictory regressions where one test enforced in-place public switching while another enforced static localized routes."
   ],
-  "revision": 3
+  "revision": 4
 }
