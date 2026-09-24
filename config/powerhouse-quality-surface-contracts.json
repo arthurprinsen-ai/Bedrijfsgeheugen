@@ -443,6 +443,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_record_outcome",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260917135656_close_cockpit_execution_outcome_feedback_loop_v2.sql",
+      "evidence_contract": "tests/powerhouse-runtime-action-learning-api.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_reconcile_action_learning_obligations_v1",
       "type": "rpc",
       "authority": "supabase/functions/revenue-learning-store/index.ts",
