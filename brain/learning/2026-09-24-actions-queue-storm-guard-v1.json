@@ -1,0 +1,20 @@
+{
+  "fingerprint": "actions-queue-storm-guard-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "problem": "GitHub Actions recovery traffic amplified an already saturated queue.",
+  "root_cause": "The repository-wide recovery supervisor ran on every main push and every five minutes, and could dispatch recovery workflows for many open PRs in one pass.",
+  "prevention": [
+    "Never trigger repository-wide recovery scans from main pushes.",
+    "Apply repository-wide backpressure before dispatching recovery work.",
+    "Limit each recovery cycle to one PR.",
+    "Prefer deduplication and bounded scheduled recovery over fan-out."
+  ],
+  "evidence": {
+    "observed_open_prs": 55,
+    "observed_in_progress": 19,
+    "observed_queued": 121,
+    "recovery_pr": 2799
+  },
+  "revision": 1
+}
