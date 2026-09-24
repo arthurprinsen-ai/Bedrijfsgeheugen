@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing-inline-rescue-visible-state-parity-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The production pricing browser gate clicked the loss lifecycle tab but the loss panel remained invisible even though the route loaded cleanly.",
+  "root_cause": "Two pricing controllers owned the same lifecycle and plan state with different DOM semantics. The rescue controller hid inactive panels/cards using both the hidden property and inline style.display='none'. The inline controller only changed hidden. If the inline handler ran after or without the rescue capture handler, an active panel could have hidden=false while retaining inline display:none and therefore remain invisible.",
+  "prevention": [
+    "Every controller that can own pricing visibility must apply the same complete state tuple: hidden, style.display, aria-hidden, active class, aria-selected and tabIndex.",
+    "Lifecycle and plan-group state must be idempotent across inline and rescue controllers.",
+    "Production interaction verification must wait for data-bg-pricing-interactions=ready-v3 before executing clicks.",
+    "A successful HTTP route check is not evidence that a toggle changed visible state.",
+    "LIVE_BEWEZEN requires the actual production browser click to expose the selected panel."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-visible-state-parity-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-visible-state-parity-v1.test.mjs"],
+    "canary": ["tests/brain-pricing-visible-state-parity-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-pricing-visible-state-parity-v1.test.mjs"],
+  "evidence": {
+    "production_sha": "ed982f21e7f903f58a39417a852c9f255d53f372",
+    "netlify_deploy_id": "6ab5115c43b127000874bc90",
+    "production_readback_run_id": "35996587112",
+    "browser_failure": "loss stage panel after click is not visible"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRICING_DUAL_CONTROLLER_VISIBLE_STATE_DRIFT",
+    "scope": "WEBSITE_PRICING_INTERACTIONS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
