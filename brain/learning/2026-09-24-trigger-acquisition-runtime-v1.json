@@ -1,0 +1,23 @@
+{
+  "fingerprint": "powerhouse-trigger-based-acquisition-runtime-v1",
+  "date": "2026-09-24",
+  "type": "COMMERCIAL_RUNTIME_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "compiler": {
+    "failure_class": "TRIGGER_ACQUISITION_RUNTIME_GAP",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The commercial closed loop had predictive signals, forecasts, opportunities, actions and learning, but no fail-closed materializer from company-specific buying-trigger evidence to a problem hypothesis and canonical enrichment action.",
+  "prevention_rule": "Only company-specific, fresh, referenced evidence may create trigger opportunities. Market signals must never become account opportunities. Trigger opportunities start at zero economic value and internal research only.",
+  "evidence": {
+    "migration": "supabase/migrations/20260924131500_powerhouse_trigger_based_acquisition_runtime_v1.sql",
+    "test": "tests/supabase-powerhouse-trigger-acquisition-runtime-v1.test.mjs",
+    "skill": ".agents/skills/trigger-based-mkb-acquisition/SKILL.md"
+  },
+  "skill_targets": [
+    "trigger-based-mkb-acquisition"
+  ]
+}
