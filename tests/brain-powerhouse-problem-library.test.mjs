@@ -5,9 +5,9 @@ import fs from 'node:fs';
 const library = JSON.parse(fs.readFileSync(new URL('../config/powerhouse-problem-library.json', import.meta.url), 'utf8'));
 
 test('Powerhouse problem library has unique canonical IDs and required decision fields', () => {
-  assert.equal(library.version, '1.0.0');
+  assert.equal(library.version, '1.1.0');
   assert.ok(Array.isArray(library.problems));
-  assert.ok(library.problems.length >= 30);
+  assert.ok(library.problems.length >= 40);
 
   const ids = new Set();
   const names = new Set();
