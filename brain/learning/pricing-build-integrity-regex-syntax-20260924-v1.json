@@ -1,0 +1,45 @@
+{
+  "fingerprint": "pricing-build-integrity-regex-syntax-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_BUILD_FAILURE",
+  "problem": "Netlify production deploy for main SHA 0dc124fc2467641ad4c04f6a8ecbfad515b411e1 failed during stage 'building site' with build script exit code 2.",
+  "root_cause": "tools/site-shell/pricing-build-integrity.mjs contained invalid JavaScript string syntax in two new RegExp constructors. The character class [\"\\\\'] was embedded inside a single-quoted JavaScript string and terminated the string unexpectedly, causing Node to fail before the build pipeline could run.",
+  "prevention": [
+    "Every Node script referenced from netlify.toml [build].command must pass node --check in CI before merge.",
+    "Use template literals or double-quoted JavaScript strings for regex patterns that contain both single and double quote characters.",
+    "When Netlify reports build-script exit code 2, reproduce the exact build command locally before changing application logic.",
+    "Do not classify provider-auth success as production success; exact release.json SHA and browser readback remain mandatory."
+  ],
+  "evidence": {
+    "production_sha": "0dc124fc2467641ad4c04f6a8ecbfad515b411e1",
+    "failed_deploy_id": "6ab534bd62dd9930cdd76bd8",
+    "failed_build_id": "6ab534bd62dd9930cdd76bd6",
+    "failing_file": "tools/site-shell/pricing-build-integrity.mjs",
+    "regression": "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "NETLIFY_BUILD_SCRIPT_PARSE_ERROR",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
