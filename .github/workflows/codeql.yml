@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: codeql-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  group: codeql-${{ github.event_name }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:

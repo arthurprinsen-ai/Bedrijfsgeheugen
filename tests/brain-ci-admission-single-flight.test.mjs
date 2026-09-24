@@ -56,3 +56,28 @@ test('queue pressure forecast blocks fan-out before mutation', () => {
   assert.equal(healthy.state,'HEALTHY');
   assert.equal(healthy.allowOptionalDispatch,true);
 });
+
+test('main push verification workflows are true single-flight and never key on run_id', async () => {
+  const brand=await readFile('.github/workflows/canonical-brand-shell-live-readback.yml','utf8');
+  assert.match(brand,/concurrency:\n\s+group: canonical-brand-shell-live-readback-/);
+  assert.match(brand,/cancel-in-progress: true/);
+  const release=await readFile('.github/workflows/production-release-readback.yml','utf8');
+  assert.match(release,/group: production-release-readback\n\s+cancel-in-progress: true/);
+  for (const path of ['.github/workflows/powerhouse-codeql.yml','.github/workflows/codeql.yml']) {
+    const yml=await readFile(path,'utf8');
+    const concurrency=yml.slice(yml.indexOf('concurrency:'),yml.indexOf('\njobs:'));
+    assert.doesNotMatch(concurrency,/github\.run_id/);
+    assert.match(concurrency,/github\.ref_name/);
+    assert.match(concurrency,/cancel-in-progress: true/);
+  }
+});
+test('recovery supervisor reaps terminal-PR and superseded-main stale queued or running work', async () => {
+  const yml=await readFile('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  assert.match(yml,/STALE_IN_PROGRESS_MIN_AGE_SECONDS:\s*'1800'/);
+  assert.match(yml,/for stale_status in queued in_progress/);
+  assert.match(yml,/terminal-pr/);
+  assert.match(yml,/superseded-main-verification/);
+  assert.match(yml,/STALE_ACTION_RUN_CANCELLED/);
+  assert.match(yml,/pull_requests\[\]\?\.number/);
+  assert.match(yml,/current_main_sha/);
+});
