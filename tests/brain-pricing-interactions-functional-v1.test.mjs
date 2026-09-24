@@ -20,8 +20,9 @@ test('pricing direction tabs change visible plan groups',async()=>{
   assert.match(html,/data-bg-price-tab="start"/);
   assert.match(html,/data-bg-price-tab="run"/);
   assert.match(html,/\.bg-plan-card\[data-bg-group\]/);
-  assert.match(html,/card\.hidden=card\.getAttribute\('data-bg-group'\)!==group/);
-  assert.match(html,/setAttribute\('aria-selected',String\(x\.getAttribute\('data-bg-price-tab'\)===group\)\)/);
+  assert.match(html,/card\.hidden=!active;card\.style\.display=active\?'':'none'/);
+  assert.match(html,/x\.setAttribute\('aria-selected',String\(active\)\)/);
+  assert.match(html,/card\.setAttribute\('aria-hidden',String\(!active\)\)/);
 });
 
 test('billing toggle changes prices and checkout billing parameter',async()=>{
@@ -40,7 +41,8 @@ test('lifecycle tabs hide every non-selected panel',async()=>{
     assert.match(html,new RegExp('data-bg-stage="'+stage+'"'));
     assert.match(html,new RegExp('data-bg-stage-panel="'+stage+'"'));
   }
-  assert.match(html,/p\.hidden=p\.getAttribute\('data-bg-stage-panel'\)!==key/);
+  assert.match(html,/p\.hidden=!active;p\.style\.display=active\?'':'none'/);
+  assert.match(html,/p\.setAttribute\('aria-hidden',String\(!active\)\)/);
   assert.match(html,/\.bg-lifecycle-panel\[hidden\],\.bg-plan-card\[hidden\]\{display:none!important\}/);
 });
 
