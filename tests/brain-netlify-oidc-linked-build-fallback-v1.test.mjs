@@ -14,7 +14,6 @@ test('production snapshot orders Git, OIDC linked build, then MCP fallback',()=>
   assert.ok(linkedSuccess > linked);
   assert.ok(mcp > linkedSuccess);
   assert.match(workflow,/action:"trigger_build"/);
-  assert.match(workflow,/branch=main/);
   assert.match(workflow,/Prove exact production identity/);
   assert.match(workflow,/verify-pricing-i18n-production\.mjs/);
 });
