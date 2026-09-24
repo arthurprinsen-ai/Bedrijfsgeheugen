@@ -48,4 +48,10 @@
 - Root cause: canonical `PUBLIC_UTILITY_ROUTES` import existed, but the absolute runtime set was never derived.
 - Fix: derive `UTILITY_ROUTES` from `ORIGIN + PUBLIC_UTILITY_ROUTES`.
 - Regression strengthened: `tests/brain-seo-login-noindex-scope-v1.test.mjs`.
+## Exact-main production recovery successor
+
+- Predecessor PR #2791 merged as `a2a3272e8394a292407b63826b22797f26b5533a`.
+- Netlify provider readback still exposed older production commit `890d961c2572c213e53a97cab8e6197026e6773c`.
+- Recovery uses the existing canonical `Production Source Snapshot` workflow only; no alternate deploy authority.
+- Recovery status at candidate creation: `PROMOTION_PENDING` until provider readback proves `ready / production / commit_ref=current main`.
 
