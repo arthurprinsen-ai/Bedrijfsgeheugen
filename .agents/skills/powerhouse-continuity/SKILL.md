@@ -778,3 +778,19 @@ When exact production SHA is already proven but the generic browser route verifi
 
 Regression: `tests/brain-production-route-body-readiness-retry-v1.test.mjs`.
 Learning: `brain/learning/production-route-body-readiness-retry-20260924-v1.json`.
+
+
+## Production browser stable-scroll before click
+
+Fingerprint: `pricing-production-stable-scroll-before-click-v1`.
+
+When a production browser proof sees a real control but Playwright `scrollIntoViewIfNeeded()` times out waiting for stability:
+- distinguish auto-scroll/actionability instability from product-runtime failure;
+- use deterministic DOM `scrollIntoView({block:'center'})` only for positioning;
+- keep the actual interaction as a real Playwright locator click;
+- assert a non-zero actionable box before clicking;
+- never use `force:true` or DOM `.click()` to manufacture a green proof;
+- preserve exact production SHA/provider identity and rerun the same functional proof after the verifier fix.
+
+Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
+Learning: `brain/learning/pricing-production-stable-scroll-20260924-v1.json`.

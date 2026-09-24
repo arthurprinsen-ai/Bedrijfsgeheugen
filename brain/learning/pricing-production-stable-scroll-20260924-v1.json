@@ -1,0 +1,32 @@
+{
+  "fingerprint": "pricing-production-stable-scroll-before-click-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The mobile pricing control was visible and present, but Playwright scrollIntoViewIfNeeded waited for element stability and timed out before any pointer click. The instability was in Playwright's auto-scroll actionability phase, not in the pricing runtime itself.",
+  "prevention_rule": "For production browser proofs where sticky/responsive layout can keep a visible element moving, use deterministic DOM scrollIntoView to position the target, then preserve a real Playwright pointer click. Never use force:true or DOM click() to manufacture success.",
+  "failed_run": 36054089352,
+  "failed_job": 107818017368,
+  "target": "[data-bg-stage=\"loss\"]",
+  "exact_production_sha": "396b0ca1afbc39ce613ef473c452bf13ac459c59",
+  "compiler": {
+    "failure_class": "PLAYWRIGHT_AUTO_SCROLL_STABILITY_TIMEOUT",
+    "scope": "PRODUCTION_BROWSER_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs"
+    ],
+    "invariants": [
+      "real pointer click remains mandatory",
+      "scrollIntoViewIfNeeded is not used for this mobile proof",
+      "force:true and DOM click bypass remain forbidden"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ]
+}
