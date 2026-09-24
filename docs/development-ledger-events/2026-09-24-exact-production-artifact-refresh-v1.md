@@ -10,3 +10,5 @@
 - Terminal state: pending provider deploy + exact SHA + browser readback.
 
 - Follow-up: production snapshot retriggered after pricing parse fix merge `e223851136669000f1f58b6b1dadfe9e2f2adcc1` because readback started without snapshot.
+
+- Follow-up: Problem Radar executive P0 merged in PR #2779; production was still on `be5ec08e69600acfdba31b28af0d6736c84917d6`, so canonical Production Source Snapshot is retriggered for exact-current-main deployment and readback.
