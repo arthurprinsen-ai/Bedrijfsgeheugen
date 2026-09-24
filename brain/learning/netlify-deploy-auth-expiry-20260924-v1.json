@@ -1,0 +1,50 @@
+{
+  "fingerprint": "netlify-deploy-auth-expiry-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production Source Snapshot waited for the Git-linked deploy and then failed its Netlify MCP fallback with 401 Unauthorized because the stored proxy credential had expired or become invalid.",
+  "root_cause": "NETLIFY_MCP_PROXY_PATH_TEMP is an expiring/rotating credential but the workflow treated its mere presence as deploy authority. The fallback only discovered invalid auth after a long pre-wait.",
+  "failed_approaches": [
+    "Assuming a non-empty Netlify proxy secret is valid.",
+    "Waiting two minutes before exercising fallback authentication.",
+    "Interpreting absence of a new Netlify deploy as a build/i18n failure before reading the production workflow logs."
+  ],
+  "prevention": [
+    "Production deployment failures must be classified from the exact failed workflow step before changing application code.",
+    "Fallback deploy authentication must surface quickly; bounded Git-linked wait is shortened before MCP fallback.",
+    "401 Unauthorized from Netlify transport is an authentication incident, not an application/build incident.",
+    "Never claim LIVE_BEWEZEN until Netlify production identity and functional browser proof pass after deployment."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs"
+  ],
+  "evidence": {
+    "failed_run_id": "35974869594",
+    "failed_job_id": "107552867268",
+    "failed_step": "Deploy exact source through authorized Netlify transport",
+    "provider_error": "401 Unauthorized",
+    "affected_main_sha": "7875686e2073e9d07f29447485c4def597cc60db"
+  },
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "compiler": {
+    "failure_class": "DEPLOY_AUTH_EXPIRED",
+    "scope": "NETLIFY_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
