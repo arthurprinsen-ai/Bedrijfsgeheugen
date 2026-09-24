@@ -7,7 +7,8 @@
   "prevention_rule": "Delivery admission must paginate the complete open-PR candidate set with an explicit bounded large output buffer. Supersession is lineage state only: it requires an explicit same-obligation successor and never constitutes LIVE_BEWEZEN. Terminal completion remains protected merge plus production/provider readback plus learning/skill writeback. Repository hygiene must run hourly and cancel only queued runs older than six hours when no open PR owns that branch head; main, current open-PR heads and in-progress work remain protected.",
   "failed_approaches": [
     "Increasing the GitHub API output buffer alone reduced immediate overflow risk but still left open-PR discovery incomplete above one page.",
-    "Treating a closed predecessor as completion would conflate SUPERSEDED with terminal delivery."
+    "Treating a closed predecessor as completion would conflate SUPERSEDED with terminal delivery.",
+    "An intermediate janitor patch used tab-delimited shell parsing and a text replacement path that corrupted the workflow tail, proving that workflow self-healing also needs structural integrity regression coverage."
   ],
   "fix": [
     "Use gh api --paginate --slurp for the open PR candidate set.",
@@ -16,7 +17,9 @@
     "Preserve successor admission only when predecessor lineage is proven.",
     "Run the repository janitor hourly instead of daily.",
     "Paginate all open PR discovery in the janitor.",
-    "Cancel queued runs older than six hours only when no open PR owns the branch; never use this TTL rule for in-progress runs or main."
+    "Cancel queued runs older than six hours only when no open PR owns the branch; never use this TTL rule for in-progress runs or main.",
+    "Rebuild the repository janitor from clean main source and use JSON-per-run parsing instead of tab-delimited shell parsing.",
+    "Add workflow integrity regression asserting exactly one reconcile/readback/upload section and forbidding @tsv/IFS parsing."
   ],
   "evidence": {
     "workflow": ".github/workflows/powerhouse-delivery-hygiene.yml",
@@ -25,7 +28,9 @@
     "successor": "PR #2796",
     "janitor": ".github/workflows/powerhouse-repository-janitor.yml",
     "stale_queue_regression": "tests/brain-delivery-stale-queue-janitor-v1.test.mjs",
-    "observed_queue": "Repository queue contained queued runs from 2026-09-12 while current delivery ran on 2026-09-24."
+    "observed_queue": "Repository queue contained queued runs from 2026-09-12 while current delivery ran on 2026-09-24.",
+    "janitor_integrity_regression": "tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs",
+    "janitor_rebuild_head": "64e121f35c0e379693b5796826019997760f15e7"
   },
   "skill_targets": [
     "powerhouse-continuity"
@@ -44,11 +49,14 @@
       "SUPERSEDED is not terminal success",
       "successor lineage requires explicit same-obligation Supersedes metadata",
       "stale queued runs without open-PR authority are reaped after a bounded TTL",
-      "main, current open-PR heads and in-progress work are never removed by stale-queue TTL cleanup"
+      "main, current open-PR heads and in-progress work are never removed by stale-queue TTL cleanup",
+      "repository janitor workflow contains exactly one canonical cleanup/readback tail",
+      "stale-run parsing uses JSON rows and cannot be corrupted by tab-delimited shell quoting"
     ],
     "historical_replay": [
       "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs",
-      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs",
+      "tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs"
     ]
   },
   "terminal_rule": "Do not mark this prevention LIVE_BEWEZEN until the successor is protected-merged and production/main readback proves the deployed lineage."
