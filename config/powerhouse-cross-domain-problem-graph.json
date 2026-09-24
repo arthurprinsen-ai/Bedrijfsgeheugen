@@ -1,0 +1,190 @@
+{
+  "version": "1.0.0",
+  "purpose": "Cross-domain intelligence graph connecting people/workforce problems to the rest of Powerhouse.",
+  "invariants": [
+    "People problems are never isolated HR objects; they may affect finance, operations, sales, knowledge, risk and strategy.",
+    "Cross-domain propagation must preserve evidence provenance and confidence.",
+    "External benchmarks can increase context relevance but cannot upgrade a tenant hypothesis to fact.",
+    "Sensitive employee-level evidence is aggregated before executive projection."
+  ],
+  "edges": [
+    {
+      "from": "PH-P035",
+      "to": "PH-P033",
+      "relation": "can_cause",
+      "mechanism": "vacancy friction reduces available capacity and raises workload"
+    },
+    {
+      "from": "PH-P033",
+      "to": "PH-P031",
+      "relation": "can_cause",
+      "mechanism": "sustained overload can increase sickness absence risk"
+    },
+    {
+      "from": "PH-P031",
+      "to": "PH-P008",
+      "relation": "can_cause",
+      "mechanism": "absence reduces available workforce capacity"
+    },
+    {
+      "from": "PH-P032",
+      "to": "PH-P037",
+      "relation": "can_cause",
+      "mechanism": "long-term absence increases replacement and wage costs"
+    },
+    {
+      "from": "PH-P034",
+      "to": "PH-P005",
+      "relation": "can_cause",
+      "mechanism": "employee exits can remove tacit knowledge"
+    },
+    {
+      "from": "PH-P034",
+      "to": "PH-P035",
+      "relation": "can_cause",
+      "mechanism": "attrition creates replacement vacancies"
+    },
+    {
+      "from": "PH-P036",
+      "to": "PH-P027",
+      "relation": "can_cause",
+      "mechanism": "skills gaps extend onboarding and time-to-productivity"
+    },
+    {
+      "from": "PH-P036",
+      "to": "PH-P007",
+      "relation": "can_cause",
+      "mechanism": "insufficient digital skills sustain manual duplicate work"
+    },
+    {
+      "from": "PH-P037",
+      "to": "PH-P003",
+      "relation": "can_cause",
+      "mechanism": "people costs rising faster than output compress margins"
+    },
+    {
+      "from": "PH-P033",
+      "to": "PH-P004",
+      "relation": "can_cause",
+      "mechanism": "overload and rework can erode project margin"
+    },
+    {
+      "from": "PH-P033",
+      "to": "PH-P022",
+      "relation": "can_cause",
+      "mechanism": "overload increases overdue actions and execution failure"
+    },
+    {
+      "from": "PH-P039",
+      "to": "PH-P034",
+      "relation": "can_cause",
+      "mechanism": "team or leadership issues can increase unwanted attrition"
+    },
+    {
+      "from": "PH-P039",
+      "to": "PH-P031",
+      "relation": "can_cause",
+      "mechanism": "team or leadership issues can correlate with absence"
+    },
+    {
+      "from": "PH-P040",
+      "to": "PH-P031",
+      "relation": "can_cause",
+      "mechanism": "unsafe work can increase absence"
+    },
+    {
+      "from": "PH-P040",
+      "to": "PH-P028",
+      "relation": "can_cause",
+      "mechanism": "safety gaps can create regulatory or compliance exposure"
+    },
+    {
+      "from": "PH-P008",
+      "to": "PH-P002",
+      "relation": "can_cause",
+      "mechanism": "capacity shortages can delay sales follow-up"
+    },
+    {
+      "from": "PH-P008",
+      "to": "PH-P013",
+      "relation": "can_cause",
+      "mechanism": "capacity constraints can degrade service and retention"
+    },
+    {
+      "from": "PH-P008",
+      "to": "PH-P003",
+      "relation": "can_cause",
+      "mechanism": "expensive capacity responses can reduce profit growth"
+    },
+    {
+      "from": "PH-P005",
+      "to": "PH-P001",
+      "relation": "can_cause",
+      "mechanism": "knowledge concentration can increase owner dependency"
+    }
+  ],
+  "projections": {
+    "executive_cockpit": [
+      "priority",
+      "impact",
+      "first_action",
+      "capability",
+      "outcome",
+      "evidence_health"
+    ],
+    "finance": [
+      "people_cost_ratio",
+      "absence_cost",
+      "replacement_cost",
+      "revenue_per_fte",
+      "margin_per_fte"
+    ],
+    "operations": [
+      "available_fte",
+      "overtime",
+      "backlog",
+      "schedule_fill",
+      "throughput",
+      "service_level"
+    ],
+    "sales": [
+      "capacity_constrained_revenue",
+      "response_time",
+      "missed_opportunity_risk",
+      "customer_retention_risk"
+    ],
+    "knowledge": [
+      "critical_role_dependency",
+      "bus_factor",
+      "onboarding_time",
+      "expert_dependency"
+    ],
+    "risk": [
+      "reintegration_deadlines",
+      "hr_compliance_gaps",
+      "workplace_safety",
+      "continuity_risk"
+    ],
+    "opportunity_scoring": [
+      "trigger_strength",
+      "estimated_business_impact",
+      "evidence_confidence",
+      "time_urgency"
+    ],
+    "content_and_sales": [
+      "problem_id",
+      "trigger",
+      "sector_context",
+      "decision_maker",
+      "recommended_content_route"
+    ],
+    "outcome_learning": [
+      "baseline",
+      "intervention",
+      "expected_outcome",
+      "observed_outcome",
+      "variance",
+      "learning"
+    ]
+  }
+}
