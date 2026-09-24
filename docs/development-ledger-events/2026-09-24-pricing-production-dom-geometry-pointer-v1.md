@@ -9,3 +9,6 @@
 - No `force:true`; no DOM `.click()`.
 - Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
 - Status: `IMPLEMENTED_CANDIDATE` pending protected gates, merge and production readback.
+
+- Coupled regression sync: retired locator auto-scroll/click expectations removed from the two older pricing actionability regressions.
+- Semantic authority: DOM geometry + visible-state checks + real `page.mouse.click`; no `force:true` and no DOM `.click()`.
