@@ -1,0 +1,47 @@
+{
+  "fingerprint": "netlify-linked-build-skip-fallback-v1",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "date": "2026-09-24",
+  "type": "DEPLOYMENT_RECOVERY",
+  "problem": "Production Source Snapshot accepted a Git-linked Netlify build, but Netlify later marked the deploy Skipped. The workflow then exited before reaching its already-authorized direct MCP deploy fallback, leaving current main merged but not production-proven.",
+  "root_cause": "The canonical production workflow treated acceptance of the preferred linked-build transport as exclusive ownership of the deployment attempt. Both linked-deploy error and bounded-readback timeout terminated with exit 78, so the direct MCP fallback below those branches was unreachable precisely when it was needed.",
+  "failed_approaches": [
+    "Rotating the Netlify MCP proxy fixed the 401 authentication failure but did not address a later provider-side Skipped linked deploy.",
+    "Waiting longer could not make the skipped deploy publish because Netlify had already terminalized it as Skipped."
+  ],
+  "prevention": [
+    "Transport acceptance is not production success; only exact production identity/readback is terminal proof.",
+    "When the preferred linked-build transport errors, is skipped, or fails bounded exact-SHA readback, continue automatically to the existing authorized direct MCP fallback.",
+    "Keep exact release.json SHA/context/deploy-id and production browser verification after any failover.",
+    "Keep authentication failures distinct from provider skip/build failures."
+  ],
+  "evidence": {
+    "failed_run": 36046438385,
+    "linked_build_id": "6ab5778870bdf4ced1a53687",
+    "linked_deploy_id": "6ab5778870bdf4ced1a53689",
+    "linked_trigger": "ok=true",
+    "provider_state": "error",
+    "provider_error_message": "Skipped",
+    "target_main_sha": "a38f2cbab0d496b7d666ccc132244ba5bb0817c4",
+    "workflow": ".github/workflows/production-source-snapshot.yml"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "NETLIFY_LINKED_BUILD_SKIP_DEAD_END",
+    "scope": "DEPLOYMENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-linked-build-fallback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-linked-build-fallback-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Do not mark LIVE_BEWEZEN until the recovery is protected-merged, current main is deployed, and exact production/provider/browser readback is green."
+}

@@ -696,3 +696,19 @@ Fingerprint: `github|same-pr|zero-diff-autoclose-recovery|v1`.
 
 Preserve the obligation delta before moving a branch ref; after replay verify branch head and PR state, reopen the same canonical PR when GitHub auto-closes a transient zero-diff state, and re-prove exact-head gates.
 
+
+
+## Netlify linked-build fallback continuity
+
+Fingerprint: `netlify-linked-build-skip-fallback-v1`.
+
+For canonical Bedrijfsgeheugen production delivery:
+- a successful linked-build trigger is not terminal deployment proof;
+- Netlify may accept a linked build and later mark its deploy `Skipped` or fail to expose the expected SHA within the bounded readback;
+- in that case, preserve the evidence and automatically continue to the existing authorized direct MCP deploy fallback;
+- never `exit 78` merely because the first transport was accepted but did not publish the exact SHA when an already-authorized fallback exists;
+- transport failover does not weaken production proof: exact `release.json` SHA/context/deploy-id and browser interaction verification remain mandatory;
+- a Netlify proxy 401 is still an authentication failure and must be rotated before fallback; `Skipped` after an accepted trigger is a different failure class and must not be misdiagnosed as auth failure.
+
+Regression: `tests/brain-netlify-linked-build-fallback-v1.test.mjs`.
+Learning: `brain/learning/netlify-linked-build-skip-fallback-20260924-v1.json`.
