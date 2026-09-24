@@ -3,8 +3,8 @@
   "date": "2026-09-24",
   "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
   "status": "IMPLEMENTED_CANDIDATE",
-  "root_cause": "Exact production and affected-route readback were healthy, but the pricing browser proof produced sequential Playwright locator false negatives: scrollIntoViewIfNeeded timed out, then locator waitFor visible timed out, and after readiness recovery locator.boundingBox timed out for 30 seconds. The canonical HTML/CSS contains exactly one loss-stage control and mobile lifecycle tabs are rendered as a visible grid. The failure class is locator auto-wait/geometry instability, not missing production content.",
-  "prevention_rule": "After the product-specific ready-v3 marker, prove actionability from direct DOM computed visibility and getBoundingClientRect geometry. Fail closed for display:none, visibility:hidden, opacity 0 or zero-sized controls. Use page.mouse.click at the measured center to preserve a real pointer interaction. Do not use locator visibility/geometry auto-waits, force:true, or DOM click shortcuts when those auto-waits are the observed failure mode.",
+  "root_cause": "Exact production and affected-route readback were healthy, but the pricing browser proof produced sequential Playwright locator false negatives: scrollIntoViewIfNeeded timed out, then locator waitFor visible timed out, and after readiness recovery locator.boundingBox timed out for 30 seconds. The canonical HTML/CSS contains exactly one loss-stage control and mobile lifecycle tabs are rendered as a visible grid. The failure class is locator auto-wait/geometry instability, not missing production content. A fourth production readback on exact main 984f679515fff2d9e4a4f10c0b187e95e96a1561 showed locator.evaluate can still auto-wait for 30 seconds even after ready-v3 when the concrete lifecycle control is not yet observable to the locator. The readiness marker alone therefore did not prove that the pointer target itself was present.",
+  "prevention_rule": "After the product-specific ready-v3 marker, prove actionability from direct DOM computed visibility and getBoundingClientRect geometry. Fail closed for display:none, visibility:hidden, opacity 0 or zero-sized controls. Use page.mouse.click at the measured center to preserve a real pointer interaction. Do not use locator visibility/geometry auto-waits, force:true, or DOM click shortcuts when those auto-waits are the observed failure mode. Couple product readiness to the concrete target: wait until ready-v3 AND document.querySelector('[data-bg-stage=\"loss\"]') are both true, then use page.evaluate with direct DOM lookup for visibility, scrolling and geometry. Never use locator.evaluate for the observed failure class.",
   "failed_runs": [
     {
       "run_id": 36054089352,
@@ -20,6 +20,11 @@
       "run_id": 36055589449,
       "main_sha": "c0e255d2d003c56d3eeda5f0980dd1ceb7691556",
       "failure": "locator.boundingBox TimeoutError"
+    },
+    {
+      "run_id": 36056415545,
+      "main_sha": "984f679515fff2d9e4a4f10c0b187e95e96a1561",
+      "failure": "locator.evaluate TimeoutError waiting for [data-bg-stage=\"loss\"] after ready-v3"
     }
   ],
   "provider_evidence": {
@@ -32,7 +37,7 @@
     "failure_class": "PLAYWRIGHT_LOCATOR_GEOMETRY_FALSE_NEGATIVE",
     "scope": "PRODUCTION_BROWSER_PROOF",
     "machine_enforceable": true,
-    "repeat_count": 3,
+    "repeat_count": 4,
     "security_sensitive": false
   },
   "evaluation": {
@@ -43,7 +48,9 @@
       "pricing ready-v3 marker remains the domain-specific readiness authority",
       "genuinely hidden or zero-sized lifecycle controls fail closed",
       "production interaction proof uses direct DOM geometry plus a real page.mouse pointer event",
-      "lifecycle selection billing mutation and English-route semantic assertions remain mandatory"
+      "lifecycle selection billing mutation and English-route semantic assertions remain mandatory",
+      "ready-v3 is not sufficient alone; the concrete loss lifecycle control must also exist before pointer proof",
+      "pricing production verifier does not use locator.evaluate for lifecycle target geometry"
     ]
   },
   "skill_targets": [
