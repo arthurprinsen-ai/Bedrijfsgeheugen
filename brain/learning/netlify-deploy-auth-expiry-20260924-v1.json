@@ -17,6 +17,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs"
     ]
   },
   "test_evidence": [
