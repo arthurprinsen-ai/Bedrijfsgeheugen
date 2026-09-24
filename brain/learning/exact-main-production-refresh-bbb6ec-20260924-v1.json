@@ -19,7 +19,10 @@
     "security_sensitive": false
   },
   "evaluation": {
-    "historical_replay": [],
+    "historical_replay": [
+      "tests/brain-production-readback-manual-exact-main-v1.test.mjs",
+      "tests/brain-netlify-linked-skipped-fallback-v1.test.mjs"
+    ],
     "invariants": [
       "protected merge remains mandatory",
       "canonical Production Source Snapshot is used for exact-source refresh",
