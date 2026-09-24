@@ -8,5 +8,9 @@ const verifier=fs.readFileSync(new URL('../tools/site-shell/verify-pricing-i18n-
 test('mobile lifecycle tabs remain directly actionable without horizontal overflow dependency',()=>{
   assert.match(html,/@media\(max-width:760px\)\{\.bg-lifecycle-tabs\{flex-wrap:wrap;overflow-x:visible\}/);
   assert.match(html,/\.bg-lifecycle-tabs button\{flex:1 1 auto;min-width:max-content\}/);
-  assert.ok(verifier.includes("page.locator('[data-bg-stage=\"loss\"]').click()"));
+  assert.match(verifier,/const lossButton = page\.locator\('\[data-bg-stage="loss"\]'\)/);
+  assert.match(verifier,/lossButton\.scrollIntoViewIfNeeded\(\)/);
+  assert.match(verifier,/lossButton\.click\(\{ timeout:15_000 \}\)/);
+  assert.doesNotMatch(verifier,/force:\s*true/);
+  assert.doesNotMatch(verifier,/evaluate\([^)]*\.click\(/);
 });
