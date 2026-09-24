@@ -8,7 +8,8 @@
     "Treat the interactive pricing intro and package section as one atomic build-preservation contract.",
     "Restore both section#prijzen-pakketten and section#pakketten from the captured canonical source after V18 transforms.",
     "Fail the build if lifecycle, stage-panel, plan-tab or billing selectors are missing after restore.",
-    "Production closure requires the existing browser verifier to click lifecycle, plan and billing controls and then switch to the static English route."
+    "Production closure requires the existing browser verifier to click lifecycle, plan and billing controls and then switch to the static English route.",
+    "Section extraction must match id attributes independent of HTML attribute order."
   ],
   "evidence": {
     "production_commit": "be5ec08e69600acfdba31b28af0d6736c84917d6",
@@ -23,7 +24,7 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 1,
+  "revision": 2,
   "evaluation": {
     "historical_replay": [
       "tests/brain-pricing-runtime-build-preservation-v1.test.mjs"
@@ -40,5 +41,6 @@
   ],
   "skill_targets": [
     "powerhouse-continuity"
-  ]
+  ],
+  "secondary_root_cause": "The first preservation implementation assumed the id attribute immediately followed <section. The real pricing intro markup has class before id, so extractSection could not find section#prijzen-pakketten and Netlify exited during the build."
 }
