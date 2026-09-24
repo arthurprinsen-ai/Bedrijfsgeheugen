@@ -1,0 +1,48 @@
+{
+  "fingerprint": "seo|opportunity-intelligence|first-mover|external-data|v1",
+  "obligation_id": "seo-opportunity:first-mover:v1",
+  "compiler": {
+    "failure_class": "SEO_EXTERNAL_EVIDENCE_CONSUMPTION_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Daily SEO analysis treated an empty current DataForSEO ranked-keywords producer result as if commercial keyword evidence was unavailable and did not consistently consume fresh GSC rows plus valid cached DataForSEO keyword intelligence before making opportunity decisions.",
+  "prevention_rule": "All daily SEO opportunity decisions must use the canonical resolver chain: fresh GSC, valid DataForSEO cache, active external market forecasts, then bounded paid live enrichment only for unresolved high-value gaps. Producer liveness and evidence availability remain separate truths. Canonical intent ownership gates autonomous publication.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-powerhouse-seo-opportunity-resolver-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_2026_09_24": {
+      "dataforseo_daily_heartbeat": "ok; items=0",
+      "dataforseo_cached_rows": 179,
+      "latest_gsc_sync": "2026-09-24T05:15:01.91Z",
+      "examples": [
+        {
+          "keyword": "bedrijfsprocessen automatiseren",
+          "search_volume": 480,
+          "cpc_eur": 18.79
+        },
+        {
+          "keyword": "api koppeling laten maken",
+          "search_volume": 140,
+          "cpc_eur": 12.04
+        }
+      ]
+    },
+    "implementation": [
+      "supabase/functions/powerhouse-seo-opportunity-resolver/index.ts",
+      "supabase/migrations/20260924072500_powerhouse_seo_opportunity_resolver_v1.sql",
+      "config/seo-search-sources.json",
+      "config/seo-growth-loop.json"
+    ],
+    "production_readback": "pending protected merge, Supabase deployment/schedule readback and first resolver run"
+  },
+  "outcome": {
+    "status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
+    "target": "GSC + DataForSEO + external forecasts -> top opportunities -> owner decision -> forecast -> existing autonomous protected content delivery -> measured lead/order/revenue outcome"
+  }
+}
