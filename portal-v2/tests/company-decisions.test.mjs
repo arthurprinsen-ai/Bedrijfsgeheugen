@@ -35,9 +35,9 @@ test('selectors expose priority approval blocker and value leakage clearly',()=>
   assert.equal(selectValueLeakage(runtime),36000);
 });
 
-test('cockpit has six simple executive sections from the same runtime truth',()=>{
+test('cockpit has seven simple executive sections including verified value from the same runtime truth',()=>{
   const cockpit=buildCompanyCockpit(mapRuntimeProjection(projection));
-  assert.deepEqual(cockpit.sections.map(x=>x.key),['company-now','priorities','approvals','economics','blocked','audit']);
+  assert.deepEqual(cockpit.sections.map(x=>x.key),['company-now','priorities','approvals','economics','verified-value','blocked','audit']);
   assert.equal(cockpit.sections.find(x=>x.key==='economics').data.realizedProfit,3000);
   assert.equal(cockpit.sections.find(x=>x.key==='audit').items[0].actor,'user:piet');
 });
