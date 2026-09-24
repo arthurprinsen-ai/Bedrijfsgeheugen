@@ -18,9 +18,8 @@
     "workflow": ".github/workflows/production-source-snapshot.yml"
   },
   "test_evidence": [
-    "Production Source Snapshot provider fail-fast",
-    "release.json exact identity",
-    "production browser readback"
+    "tests/brain-production-release-readback-scope.test.mjs",
+    "tests/brain-production-promotion-observability.test.mjs"
   ],
   "skill_targets": [
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
@@ -31,5 +30,19 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs",
+      "tests/brain-production-promotion-observability.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-release-readback-scope.test.mjs",
+      "tests/brain-production-promotion-observability.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-release-readback-scope.test.mjs",
+      "tests/brain-production-promotion-observability.test.mjs"
+    ]
+  }
 }
