@@ -19,7 +19,8 @@
   },
   "test_evidence": [
     "tests/brain-production-release-readback-scope.test.mjs",
-    "tests/brain-production-promotion-observability.test.mjs"
+    "tests/brain-production-promotion-observability.test.mjs",
+    "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs"
   ],
   "skill_targets": [
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
@@ -34,7 +35,8 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-production-release-readback-scope.test.mjs",
-      "tests/brain-production-promotion-observability.test.mjs"
+      "tests/brain-production-promotion-observability.test.mjs",
+      "tests/brain-pricing-i18n-prevention-skill-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-production-release-readback-scope.test.mjs"
@@ -42,5 +44,7 @@
     "canary": [
       "tests/brain-production-promotion-observability.test.mjs"
     ]
-  }
+  },
+  "secondary_root_cause": "The promotion lane exposed an existing public-i18n regression: unprefixed public routes translated in place instead of navigating to canonical static localized routes. This violated the established pricing-i18n prevention contract.",
+  "prevention_rule": "undefined Public language switches outside the portal must navigate via localizedHref to static localized routes; only portal flows may use in-place translation."
 }
