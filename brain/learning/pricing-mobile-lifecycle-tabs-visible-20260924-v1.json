@@ -1,0 +1,45 @@
+{
+  "fingerprint": "pricing-mobile-lifecycle-tabs-visible-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_UI_READBACK_FAILURE",
+  "problem": "Production pricing interaction proof timed out when attempting to click data-bg-stage=loss at 390px viewport.",
+  "root_cause": "The six lifecycle choices were rendered in a horizontally scrollable single row on mobile. The second and later choices could be outside the initial visible interaction area, making the production contract non-deterministic even though the DOM nodes existed.",
+  "prevention": [
+    "Primary pricing lifecycle choices must all be directly visible at mobile width without horizontal scrolling.",
+    "Use a two-column mobile grid with wrapped labels and minimum 48px touch targets.",
+    "Keep interaction verification on a 390x844 viewport and fail closed when a primary lifecycle option is not directly clickable.",
+    "Do not weaken the production verifier with force-click; fix the UI contract instead."
+  ],
+  "evidence": {
+    "failed_run": 36015748460,
+    "failed_job": 107687710493,
+    "failed_selector": "[data-bg-stage=\"loss\"]",
+    "production_sha": "be5ec08e69600acfdba31b28af0d6736c84917d6",
+    "provider_deploy_id": "6ab5392e62dd995771d76b00"
+  },
+  "test_evidence": [
+    "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "MOBILE_PRIMARY_CONTROL_OFFSCREEN",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs"
+    ]
+  }
+}

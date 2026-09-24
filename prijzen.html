@@ -83,8 +83,8 @@
   .bg-stage-matrix tbody,.tabelwrap tbody{display:table-row-group}
   .bg-stage-matrix tr,.tabelwrap tr{display:table-row}
   .bg-stage-matrix th,.bg-stage-matrix td,.tabelwrap th,.tabelwrap td{display:table-cell;width:auto}
-  .bg-lifecycle-tabs{display:flex;overflow-x:auto;overscroll-behavior-inline:contain;scroll-snap-type:x proximity;padding-bottom:10px}
-  .bg-lifecycle-tabs button{min-height:44px;scroll-snap-align:start}
+  .bg-lifecycle-tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;overflow:visible;padding:2px 0 10px}
+  .bg-lifecycle-tabs button{width:100%;min-height:48px;white-space:normal;line-height:1.2;text-align:center}
 }
 @media(max-width:760px){
   .bg-lifecycle-pricing{margin-left:0;margin-right:0;padding:18px 14px}
