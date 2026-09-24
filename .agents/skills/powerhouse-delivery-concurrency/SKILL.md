@@ -204,3 +204,8 @@ Required for pricing/i18n-class defects:
 - exact interaction proof on the deployed production SHA before `LIVE_BEWEZEN`.
 
 Production browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+
+### Actionability before production click
+
+For `pricing-toggle-i18n-runtime-20260924-v1` production proofs, mobile controls must pass scroll-into-view, visible geometry and Playwright trial-click checks before the real interaction. A forced/programmatic click is not acceptable terminal proof because it can hide a real mobile usability defect.
