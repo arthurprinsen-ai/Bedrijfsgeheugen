@@ -520,3 +520,16 @@ For every Node script referenced by the canonical `netlify.toml` build command:
 - retain exact production SHA + provider + browser proof before `LIVE_BEWEZEN`.
 
 Canonical regression: `tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs`.
+
+
+## Pricing mobile primary-control visibility gate
+
+Fingerprint: `pricing-mobile-lifecycle-tabs-visible-20260924-v1`.
+
+For pricing lifecycle controls on mobile:
+- every primary lifecycle option must be directly visible without horizontal scrolling;
+- use wrapped labels and at least 48px touch height;
+- production browser proof must use normal clicks at 390px width; never force-click around an offscreen/hidden control;
+- if a selector exists in DOM but Playwright cannot visibly click it, treat this as a UI contract failure, not a test flake.
+
+Canonical regression: `tests/brain-pricing-mobile-lifecycle-tabs-visible-v1.test.mjs`.
