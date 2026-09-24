@@ -23,3 +23,12 @@ test('unsupported LinkedIn DM and connection actions remain capability exception
   assert.match(source,/activate_connection/);
   assert.match(source,/LINKEDIN_CAPABILITY_NOT_AVAILABLE/);
 });
+
+
+test('provider side effect is never requeued when outcome writeback needs reconciliation',()=>{
+  assert.match(source,/republish_forbidden:true/);
+  assert.match(source,/reconciliation_required:true/);
+  assert.match(source,/LINKEDIN_COCKPIT_AUTOPILOT_OUTCOME/);
+  assert.match(source,/status:'reconciliation_required'/);
+  assert.match(source,/status:'failed_pre_provider'/);
+});
