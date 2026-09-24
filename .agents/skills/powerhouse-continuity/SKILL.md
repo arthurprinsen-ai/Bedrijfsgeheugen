@@ -725,3 +725,11 @@ For pricing/i18n recovery, treat terminal delivery as one composed contract:
 
 Canonical postmortem: `brain/learning/pricing-terminal-recovery-postmortem-20260924-v1.json`.
 Canonical documentation: `docs/changes/pricing-terminal-recovery-postmortem-20260924-v1.md`.
+
+## Mobile primary-control actionability
+
+Fingerprint: `pricing-mobile-lifecycle-offscreen-click-v1`.
+
+For mobile public surfaces, a primary decision control must be directly actionable without depending on hidden horizontal overflow. DOM presence, ready markers and synthetic events are not functional proof. Preserve real browser click/tap verification on the actual mobile viewport. If a primary tab strip pushes later choices offscreen, prefer a visible wrap/grid arrangement unless deliberate horizontal navigation has its own explicit discoverability and interaction proof.
+
+Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
