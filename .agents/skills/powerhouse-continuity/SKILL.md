@@ -520,3 +520,19 @@ For every Node script referenced by the canonical `netlify.toml` build command:
 - retain exact production SHA + provider + browser proof before `LIVE_BEWEZEN`.
 
 Canonical regression: `tests/brain-pricing-build-integrity-node-syntax-v1.test.mjs`.
+
+## Pricing interaction section build preservation
+
+Fingerprint: `pricing-interaction-section-build-preservation-20260924-v1`.
+
+For the pricing production build:
+- treat `section#prijzen-pakketten` and `section#pakketten` as one atomic preservation boundary;
+- V18/full-page transforms may not be trusted to preserve pricing interaction attributes outside `#pakketten`;
+- after transforms, restore both canonical sections from the captured pre-build source;
+- fail the build if lifecycle selectors, lifecycle panels, plan-group tabs or monthly/yearly billing selectors are missing;
+- source presence is not terminal proof: the production browser must click the actual lifecycle, plan and billing controls and prove visible-state changes;
+- keep static localized public routes as the canonical public i18n path and verify the English pricing route in the same browser gate.
+
+Canonical learning: `brain/learning/pricing-interaction-section-build-preservation-20260924-v1.json`.
+Canonical regression: `tests/brain-pricing-runtime-build-preservation-v1.test.mjs`.
+Canonical browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
