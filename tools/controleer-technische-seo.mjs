@@ -1,5 +1,5 @@
 import { readFile, glob } from 'node:fs/promises';
-import { PUBLIC_PAGE_EXCLUDES } from './site-shell/contracts.mjs';
+import { PUBLIC_PAGE_EXCLUDES, PUBLIC_UTILITY_ROUTES } from './site-shell/contracts.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const SEO_EXCLUDES = new Set([...PUBLIC_PAGE_EXCLUDES, '404.html']);
@@ -9,6 +9,7 @@ const CANONICAL_OVERRIDES = new Map([
 const FUNCTIONELE_ROUTES = new Set([
   `${ORIGIN}/klantportaal`,
 ]);
+const UTILITY_ROUTES = new Set([...PUBLIC_UTILITY_ROUTES].map(route => `${ORIGIN}${route}`));
 
 function isSeoExclude(pad) {
   return SEO_EXCLUDES.has(pad) || /^shell-gate-.*\.html$/i.test(pad);
@@ -120,7 +121,7 @@ export async function controleerTechnischeSeo() {
       const href = anchor[1] ?? anchor[2] ?? '';
       if (!href.startsWith(`${ORIGIN}/`)) continue;
       const schoon = href.split('#')[0].split('?')[0];
-      if (!schoon || schoon === ORIGIN || FUNCTIONELE_ROUTES.has(schoon)) continue;
+      if (!schoon || schoon === ORIGIN || FUNCTIONELE_ROUTES.has(schoon) || UTILITY_ROUTES.has(schoon)) continue;
       if (/\.(?:pdf|png|jpe?g|webp|svg|zip|xml|txt)$/i.test(schoon)) continue;
       if (!routes.has(schoon)) fouten.push(`${pad}: interne link wijst niet rechtstreeks naar een indexeerbare canonical route: ${href}`);
     }
