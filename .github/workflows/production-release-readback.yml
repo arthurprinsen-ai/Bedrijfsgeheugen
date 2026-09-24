@@ -6,7 +6,7 @@ on:
 
 concurrency:
   group: production-release-readback
-  cancel-in-progress: false
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -15,6 +15,7 @@ permissions:
 jobs:
   production-readback:
     runs-on: ubuntu-latest
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v5
         with:

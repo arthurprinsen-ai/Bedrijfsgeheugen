@@ -663,3 +663,36 @@ Mandatory:
 
 Regression: `tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs`.
 Learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
+## Feature-live versus exact-main proof
+
+Fingerprint: `powerhouse|production-descendant-proof|v1`.
+
+- A feature may be LIVE_PROVEN when the provider production commit is a verified descendant of the feature merge and the deployed source readback contains the feature.
+- “Current main is live” is stricter: provider `commit_ref` must equal the current protected `main` SHA.
+- Never reject a valid feature-live proof only because production has advanced beyond the feature merge; verify ancestry instead.
+- Never claim exact-main parity from ancestry alone.
+- Provider state must be `ready` and context must be `production`; preview state is not production proof.
+
+## Material writeback and learning closure
+
+Fingerprint: `powerhouse|material-writeback-complete-lineage|v1`.
+
+Every material candidate must carry in the same lineage:
+- Brain learning;
+- activity/development ledger event;
+- human-readable documentation;
+- reusable prevention semantics;
+- regression/historical replay evidence when learning canonicalization requires it.
+
+## Canonical stale-production recovery
+
+Fingerprint: `powerhouse|stale-production-canonical-snapshot|v1`.
+
+When protected main has the intended feature but Netlify production is stale, reuse the canonical Production Source Snapshot; never create a second deploy authority.
+
+## Canonical PR continuity during zero-diff reconciliation
+
+Fingerprint: `github|same-pr|zero-diff-autoclose-recovery|v1`.
+
+Preserve the obligation delta before moving a branch ref; after replay verify branch head and PR state, reopen the same canonical PR when GitHub auto-closes a transient zero-diff state, and re-prove exact-head gates.
+

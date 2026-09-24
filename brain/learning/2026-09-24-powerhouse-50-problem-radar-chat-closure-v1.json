@@ -1,0 +1,97 @@
+{
+  "fingerprint": "powerhouse-50-problem-radar-chat-closure-20260924-v1",
+  "date": "2026-09-24",
+  "type": "CHAT_DELIVERY_CLOSURE",
+  "status": "LIVE_PROVEN",
+  "root_cause": "The Problem Radar executive feature required more than implementation: delivery metadata, material writeback, learning replay evidence and production identity all had to be closed in one canonical lineage. Merge state alone repeatedly proved insufficient as a completion signal. A repeated CONTROL_PLANE_ADMISSION_ERROR was traced to GitHub CLI output exceeding Node execFileSync's default maxBuffer when enumerating many open pull requests; current main fixes this with maxBuffer=16*1024*1024. Reconciliation also exposed a GitHub PR auto-close race when the head branch was temporarily reset exactly to base before the obligation delta was replayed. Runner saturation was amplified by long-lived website/browser and production-readback jobs without job-level timeouts, allowing hung verification to retain hosted runners far beyond the bounded retry logic inside individual steps. Production readback workflows also accumulated obsolete main-commit verification because canonical-brand-shell readback had no concurrency guard and production-release-readback explicitly used cancel-in-progress:false. A later Required page-SEO build exposed a runtime ReferenceError because PUBLIC_UTILITY_ROUTES was imported but the absolute UTILITY_ROUTES set used by technical SEO link validation was never derived.",
+  "prevention_rule": "For Problem Radar and comparable material Powerhouse work, validate delivery metadata before CI, carry Brain learning + ledger + human documentation in the same lineage, bind learning to historical replay, and prove production with provider state/context/commit_ref. Use ancestry for feature inclusion and SHA equality for exact-current-main claims. When a value/evidence invariant is tightened, migrate every historical fixture that encoded the old contract in the same lineage; do not weaken the production guard to satisfy stale tests. Learning canonicalization only accepts replay paths in the sanctioned regression namespace; source-local test files may be supporting evidence but not historical_replay entries. GitHub control-plane collectors that may return large JSON must set an explicit bounded maxBuffer and summarize errors instead of dumping full API payloads. During same-PR reconciliation, never leave the PR head equal to base as an intermediate externally visible state; if unavoidable, immediately verify/reopen the same PR after replaying the delta. Long-running browser/readback jobs must have job-level timeout-minutes in addition to bounded internal retries, so a stuck child process cannot leak runner capacity indefinitely. Do not use reopen/close churn as a primary runner-capacity recovery strategy; prevention belongs in bounded job timeouts and workflow-level supersession before jobs get stuck. Production readback is current-state verification, so newer main pushes supersede older unfinished readbacks: use single-flight concurrency with cancel-in-progress:true. When a concurrency invariant intentionally changes, migrate every regression that encodes the old value in the same lineage; never leave stale tests to veto the new canonical contract. Imported canonical route contracts must be transformed into the exact runtime representation before use, and a regression must exercise/inspect that derivation rather than only asserting the import exists.",
+  "evidence": {
+    "feature_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2779",
+    "feature_merge_sha": "53c1c5db7a6e499f3afa4a5d9b470e6196460579",
+    "closure_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2781",
+    "closure_merge_sha": "b9e129ee972b990681d7e426f023cd25f75036cd",
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/2750",
+    "current_main_sha": "945febc5cb2d603dfaefcc8b1d12a36b075a7d1d",
+    "netlify_deploy_id": "6ab5417a7533790008782b04",
+    "production_state": "ready",
+    "production_context": "production",
+    "production_commit_ref": "945febc5cb2d603dfaefcc8b1d12a36b075a7d1d",
+    "production_url": "https://www.bedrijfsgeheugen.nl",
+    "documentation": "docs/brain/powerhouse-50-problem-radar-chat-closure-20260924.md",
+    "admission_buffer_fix_file": ".github/workflows/powerhouse-delivery-hygiene.yml",
+    "admission_buffer_fix_main_sha": "929146c1aaada8f07235b5712f771e51c3b58f9d",
+    "admission_buffer_fix": "execFileSync gh api maxBuffer=16*1024*1024",
+    "reconciled_pr": 2791,
+    "reconciled_head": "86b9e3907a0749007593fd12189f2fb0d2d2f857",
+    "runner_leak_timeout_test": "tests/brain-delivery-runner-leak-timeout-v1.test.mjs",
+    "readback_single_flight_files": [
+      ".github/workflows/canonical-brand-shell-live-readback.yml",
+      ".github/workflows/production-release-readback.yml"
+    ]
+  },
+  "failed_approaches": [
+    "Treating product implementation as sufficient without the required Base-SHA delivery envelope.",
+    "Treating human documentation alone as sufficient material writeback without Brain learning and activity ledger.",
+    "Creating learning invariants without the required historical replay reference.",
+    "Treating merge or preview evidence as proof of production.",
+    "Assuming a production commit had to equal the feature merge instead of proving ancestry when production had legitimately advanced.",
+    "Leaving legacy company-ledger and company-decision fixtures on the pre-Verified-Value semantics after #2786 tightened realized-value eligibility.",
+    "Using the default execFileSync maxBuffer for GitHub API responses whose open-PR payload can grow beyond the buffer.",
+    "Resetting the canonical PR branch to current main before replaying the obligation delta, allowing GitHub to auto-close the PR during the transient zero-diff state.",
+    "Relying only on step-internal retry loops while leaving the enclosing GitHub Actions job unbounded.",
+    "Reopening and re-closing an already closed PR to rely on PR-scoped concurrency cancellation did not terminate already in-progress reusable-workflow jobs; do not treat that as a reliable capacity-recovery mechanism.",
+    "Allowing multiple obsolete main-commit production readbacks to remain in progress concurrently.",
+    "A historical regression still encoded cancel-in-progress:false for production readback after the runtime contract intentionally moved to single-flight supersession.",
+    "Importing PUBLIC_UTILITY_ROUTES and asserting its presence without defining the absolute UTILITY_ROUTES runtime set consumed by technical SEO validation."
+  ],
+  "compiler": {
+    "failure_class": "TERMINAL_DELIVERY_CLOSURE_INCOMPLETE",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-radar-executive.test.mjs",
+      "tests/brain-powerhouse-outcome-ledger-problem-value.test.mjs",
+      "tests/brain-delivery-runner-leak-timeout-v1.test.mjs",
+      "tests/brain-composable-release-control-plane.test.mjs",
+      "tests/brain-seo-login-noindex-scope-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-problem-radar-executive.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-problem-radar-executive.test.mjs"
+    ],
+    "invariants": [
+      "Problem Radar executive projection accepts only PH-Pxxx",
+      "executive projection caps prioritized problems at five",
+      "impact certainty is OBSERVED ESTIMATED or POTENTIAL",
+      "problem cards preserve evidence action capability and outcome",
+      "verified value preserves canonical problem lineage only with execution verification and evidence",
+      "feature live proof uses production ancestry; exact-main proof uses SHA equality",
+      "legacy economics fixtures explicitly satisfy executed verified evidence requirements when they expect realized value",
+      "GitHub control-plane API collectors use an explicit bounded buffer for potentially large JSON responses",
+      "same-lineage reconciliation preserves PR continuity and verifies/reopens the canonical PR after any transient zero-diff state",
+      "website browser and production readback jobs have explicit job-level timeout bounds",
+      "runner-capacity recovery does not depend on reopen/close churn of closed pull requests",
+      "production readback workflows supersede obsolete main-commit runs via cancel-in-progress:true"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-powerhouse-problem-radar-executive.test.mjs",
+    "tests/brain-powerhouse-outcome-ledger-problem-value.test.mjs",
+    "brain/operating-loop/company-ledger.test.mjs",
+    "brain/operating-loop/company-decision-projection.test.mjs",
+    "tests/brain-delivery-runner-leak-timeout-v1.test.mjs",
+    "tests/brain-composable-release-control-plane.test.mjs",
+    "tests/brain-seo-login-noindex-scope-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ]
+}

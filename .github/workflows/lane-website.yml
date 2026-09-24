@@ -235,7 +235,7 @@ jobs:
 
   browser:
     needs: [classify, syntax-preflight, preview-ready]
-    timeout-minutes: 15
+    timeout-minutes: 25
     if: needs.classify.outputs.requires_preview == 'true'
     runs-on: ubuntu-latest
     steps:

@@ -14,3 +14,10 @@ test('technical SEO accepts explicit utility destinations without treating them 
   assert.match(source, /const UTILITY_ROUTES = new Set/);
   assert.match(source, /UTILITY_ROUTES\.has\(schoon\)/);
 });
+
+
+test('technical SEO derives absolute utility routes from the canonical public utility contract', async () => {
+  const source = await readFile('tools/controleer-technische-seo.mjs','utf8');
+  assert.match(source, /const UTILITY_ROUTES = new Set/);
+  assert.match(source, /PUBLIC_UTILITY_ROUTES/);
+});

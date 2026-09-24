@@ -115,10 +115,10 @@ test('Netlify preview failure falls through to exact local candidate verificatio
   assert.match(previewReady, /preview_mode=local-exact-candidate/);
 });
 
-test('production readback is serialized and never cancelled mid-flight', () => {
+test('production readback is single-flight and supersedes obsolete main readbacks', () => {
   const production = readFileSync('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(production, /group:\s*production-release-readback\s*$/m);
-  assert.match(production, /cancel-in-progress:\s*false/);
+  assert.match(production, /cancel-in-progress:\s*true/);
   const concurrencyStart = required.indexOf('\nconcurrency:');
   const jobsStart = required.indexOf('\njobs:', concurrencyStart);
   assert.notEqual(concurrencyStart, -1, 'Required test concurrency block must exist');

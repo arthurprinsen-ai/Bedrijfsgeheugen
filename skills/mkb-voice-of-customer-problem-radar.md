@@ -227,3 +227,19 @@ Verplichte projecties voor relevante people-signalen:
 - outcome learning: baseline → interventie → verwacht resultaat → gemeten resultaat → learning.
 
 Preventieregel: nooit een nieuw people-dashboard, probleem-ID of causaliteitsmodel bouwen als parallelle waarheid. Nieuwe detectie, content, cockpitkaarten en commerciële routes projecteren altijd vanuit dezelfde canonieke Problem Library en cross-domain graph.
+## LIVE_PROVEN executive problem projection — 24 september 2026
+
+Fingerprint: `powerhouse-50-problem-radar-chat-closure-20260924-v1`.
+
+De Problem Radar gebruikt één canonieke keten:
+`TRIGGER → PH-Pxxx → EVIDENCE → IMPACT → ACTION → CAPABILITY → OUTCOME → VERIFIED VALUE → LEARNING`.
+
+Verplicht:
+- executive start toont maximaal vijf problemen;
+- alleen canonieke `PH-Pxxx` IDs;
+- evidence health/confidence en “Waarom zegt Powerhouse dit?”;
+- impact uitsluitend `OBSERVED`, `ESTIMATED` of `POTENTIAL`;
+- actie, capability en outcome blijven gekoppeld;
+- gerealiseerde waarde telt alleen met execution + verification + evidence;
+- merge/preview/deploy-start is geen LIVE_BEWEZEN; provider-readback blijft verplicht.
+
