@@ -563,3 +563,24 @@ When introducing a stricter evidence-backed metric on top of an existing Powerho
 - treat a main-baseline regression discovered by an unrelated delivery lane as inherited baseline evidence, then repair the baseline separately before re-proving the blocked candidate.
 
 For Verified Value Created specifically, `verifiedValueByProblem` requires executed + verified + evidence, while `economics.realizedValue` retains verified-value ledger compatibility.
+
+
+## GitHub Actions queue-storm prevention
+
+Fingerprint: `actions-queue-storm-guard-20260924-v1`.
+
+For Powerhouse delivery recovery:
+- repository-wide recovery must never run on every push to `main`;
+- recovery scanning is scheduled/manual only, currently every 15 minutes;
+- open the repository circuit breaker when active/queued/pending/waiting/requested Actions work reaches 20;
+- recover at most one PR per supervisor cycle;
+- suppress duplicate Required/BRAIN dispatch while equivalent work is already active;
+- enforce one canonical open PR per `Obligation-ID`; close superseded duplicates before retriggering admission;
+- never mutate the active candidate while exact-head checks are running unless a concrete failing gate requires a corrective commit;
+- classify recovery-supervisor workflow changes and their regression tests as website control-plane changes so CI-only recovery fixes do not launch public-site browser crawls;
+- keep the prevention in Brain learning, regression tests, development ledger and this skill together;
+- only claim terminal completion after exact-head Required, BRAIN, CodeQL and Skill Projection succeed, protected merge completes, and `main` readback confirms the guard.
+
+Canonical implementation: `.github/workflows/powerhouse-delivery-recovery-supervisor.yml`.
+Canonical learning: `brain/learning/actions-queue-storm-guard-20260924-v1.json`.
+Canonical regressions: `tests/brain-actions-queue-storm-guard-v1.test.mjs` and `tests/delivery-powerhouse-supervisor.test.mjs`.

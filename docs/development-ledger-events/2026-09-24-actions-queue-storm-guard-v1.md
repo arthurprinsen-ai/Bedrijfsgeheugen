@@ -16,3 +16,10 @@
 - PR #2801: closed, SUPERSEDED by #2804.
 - PR #2803: closed, SUPERSEDED by #2804.
 - #2804 is the single canonical current-main recovery candidate for this obligation.
+
+
+## Continuity skill writeback
+- Canonical skill: `.agents/skills/powerhouse-continuity/SKILL.md`
+- Writeback PR: #2805
+- Purpose: make the prevention directly reusable by future Powerhouse delivery work.
+- Closure rule: skill, Brain learning, human documentation and activity ledger remain in one lineage.

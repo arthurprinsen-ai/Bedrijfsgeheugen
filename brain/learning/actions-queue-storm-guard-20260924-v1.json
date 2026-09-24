@@ -10,7 +10,8 @@
     "Allow at most one PR recovery per supervisor cycle.",
     "Suppress duplicate recovery dispatch when an equivalent active run already exists.",
     "CI must regression-test these backpressure invariants so later workflow changes cannot silently restore fan-out.",
-    "Website release-risk must classify recovery-supervisor workflow and its regression tests as non-artifact control-plane changes, so CI-only fixes never launch full public-site browser crawls."
+    "Website release-risk must classify recovery-supervisor workflow and its regression tests as non-artifact control-plane changes, so CI-only fixes never launch full public-site browser crawls.",
+    "Canonical continuity skill must carry the same queue-storm prevention rules as the Brain learning and delivery ledger."
   ],
   "evaluation": {
     "historical_replay": [
@@ -31,7 +32,8 @@
     "recovery_workflow": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
     "circuit_breaker_active_runs": 20,
     "recovery_pr_budget_per_cycle": 1,
-    "website_control_plane_browser_fanout_prevented": true
+    "website_control_plane_browser_fanout_prevented": true,
+    "continuity_skill_writeback": ".agents/skills/powerhouse-continuity/SKILL.md"
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md"
