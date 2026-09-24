@@ -7,10 +7,21 @@
       "role": "pillar",
       "primary_intent": "digitalisering mkb",
       "primary_keyword": "digitalisering mkb",
-      "secondary_keywords": ["mkb digitaliseren", "digitalisering voor mkb", "mkb digitalisering aanpak"],
+      "secondary_keywords": [
+        "mkb digitaliseren",
+        "digitalisering voor mkb",
+        "mkb digitalisering aanpak"
+      ],
       "funnel_stage": "discover",
-      "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/prijzen", "https://www.bedrijfsgeheugen.nl/product", "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen"],
+      "primary_cta": {
+        "action": "zelfscan",
+        "url": "https://www.bedrijfsgeheugen.nl/zelfscan"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/prijzen",
+        "https://www.bedrijfsgeheugen.nl/product",
+        "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen"
+      ],
       "schema_type": "WebPage"
     },
     {
@@ -19,10 +30,20 @@
       "presentation": "native",
       "primary_intent": "kosten digitalisering mkb",
       "primary_keyword": "kosten digitalisering mkb",
-      "secondary_keywords": ["prijzen digitalisering mkb", "digitalisering mkb kosten", "kosten automatisering mkb"],
+      "secondary_keywords": [
+        "prijzen digitalisering mkb",
+        "digitalisering mkb kosten",
+        "kosten automatisering mkb"
+      ],
       "funnel_stage": "decide",
-      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/", "https://www.bedrijfsgeheugen.nl/product"],
+      "primary_cta": {
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/",
+        "https://www.bedrijfsgeheugen.nl/product"
+      ],
       "schema_type": "Service"
     },
     {
@@ -31,10 +52,20 @@
       "presentation": "native",
       "primary_intent": "bedrijfsgeheugen platform",
       "primary_keyword": "bedrijfsgeheugen platform",
-      "secondary_keywords": ["bedrijfskennis platform", "bedrijfsinformatie platform", "business operating intelligence"],
+      "secondary_keywords": [
+        "bedrijfskennis platform",
+        "bedrijfsinformatie platform",
+        "business operating intelligence"
+      ],
       "funnel_stage": "consider",
-      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen", "https://www.bedrijfsgeheugen.nl/prijzen"],
+      "primary_cta": {
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen",
+        "https://www.bedrijfsgeheugen.nl/prijzen"
+      ],
       "schema_type": "Service"
     },
     {
@@ -42,10 +73,21 @@
       "role": "money",
       "primary_intent": "afas koppeling",
       "primary_keyword": "afas koppeling",
-      "secondary_keywords": ["afas api koppeling", "afas koppelen", "afas integratie"],
+      "secondary_keywords": [
+        "afas api koppeling",
+        "afas koppelen",
+        "afas integratie"
+      ],
       "funnel_stage": "decide",
-      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/afas-pocket-koppelen", "https://www.bedrijfsgeheugen.nl/blog/afas-api/", "https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/"],
+      "primary_cta": {
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/afas-pocket-koppelen",
+        "https://www.bedrijfsgeheugen.nl/blog/afas-api/",
+        "https://www.bedrijfsgeheugen.nl/blog/wat-kost-een-afas-koppeling/"
+      ],
       "schema_type": "Service"
     },
     {
@@ -53,10 +95,20 @@
       "role": "support",
       "primary_intent": "afas pocket koppelen",
       "primary_keyword": "afas pocket koppelen",
-      "secondary_keywords": ["afas pocket koppeling", "afas pocket activeren", "afas pocket app koppelen"],
+      "secondary_keywords": [
+        "afas pocket koppeling",
+        "afas pocket activeren",
+        "afas pocket app koppelen"
+      ],
       "funnel_stage": "consider",
-      "primary_cta": { "action": "afas-koppeling", "url": "https://www.bedrijfsgeheugen.nl/afas-koppeling" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/afas-koppeling", "https://www.bedrijfsgeheugen.nl/blog/afas-api/"],
+      "primary_cta": {
+        "action": "afas-koppeling",
+        "url": "https://www.bedrijfsgeheugen.nl/afas-koppeling"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/afas-koppeling",
+        "https://www.bedrijfsgeheugen.nl/blog/afas-api/"
+      ],
       "schema_type": "WebPage"
     },
     {
@@ -64,10 +116,20 @@
       "role": "money",
       "primary_intent": "exact online koppeling",
       "primary_keyword": "exact online koppeling",
-      "secondary_keywords": ["exact online api koppeling", "exact online koppelen", "exact integratie"],
+      "secondary_keywords": [
+        "exact online api koppeling",
+        "exact online koppelen",
+        "exact integratie",
+        "exact online api"
+      ],
       "funnel_stage": "decide",
-      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"],
+      "primary_cta": {
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"
+      ],
       "schema_type": "Service"
     },
     {
@@ -75,10 +137,19 @@
       "role": "money",
       "primary_intent": "bedrijfsprocessen automatiseren",
       "primary_keyword": "bedrijfsprocessen automatiseren",
-      "secondary_keywords": ["processen automatiseren mkb", "bedrijfsprocessen digitaliseren", "werkprocessen automatiseren"],
+      "secondary_keywords": [
+        "processen automatiseren mkb",
+        "bedrijfsprocessen digitaliseren",
+        "werkprocessen automatiseren"
+      ],
       "funnel_stage": "decide",
-      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"],
+      "primary_cta": {
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"
+      ],
       "schema_type": "Service"
     },
     {
@@ -86,10 +157,21 @@
       "role": "money",
       "primary_intent": "api koppeling laten maken",
       "primary_keyword": "api koppeling laten maken",
-      "secondary_keywords": ["api koppeling bouwen", "software koppelen api", "koppeling laten bouwen"],
+      "secondary_keywords": [
+        "api koppeling bouwen",
+        "software koppelen api",
+        "koppeling laten bouwen"
+      ],
       "funnel_stage": "decide",
-      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/exact-online-koppeling", "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren", "https://www.bedrijfsgeheugen.nl/twinfield-koppeling"],
+      "primary_cta": {
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/exact-online-koppeling",
+        "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren",
+        "https://www.bedrijfsgeheugen.nl/twinfield-koppeling"
+      ],
       "schema_type": "Service"
     },
     {
@@ -97,10 +179,19 @@
       "role": "money",
       "primary_intent": "twinfield koppeling",
       "primary_keyword": "twinfield koppeling",
-      "secondary_keywords": ["twinfield api koppeling", "twinfield koppelen", "twinfield integratie"],
+      "secondary_keywords": [
+        "twinfield api koppeling",
+        "twinfield koppelen",
+        "twinfield integratie"
+      ],
       "funnel_stage": "decide",
-      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"],
+      "primary_cta": {
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken"
+      ],
       "schema_type": "Service"
     },
     {
@@ -108,10 +199,20 @@
       "role": "money",
       "primary_intent": "ai adoptie mkb",
       "primary_keyword": "ai adoptie mkb",
-      "secondary_keywords": ["ai implementeren mkb", "ai invoeren bedrijf", "ai adoptie organisatie"],
+      "secondary_keywords": [
+        "ai implementeren mkb",
+        "ai invoeren bedrijf",
+        "ai adoptie organisatie"
+      ],
       "funnel_stage": "consider",
-      "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-act", "https://www.bedrijfsgeheugen.nl/"],
+      "primary_cta": {
+        "action": "zelfscan",
+        "url": "https://www.bedrijfsgeheugen.nl/zelfscan"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/ai-act",
+        "https://www.bedrijfsgeheugen.nl/"
+      ],
       "schema_type": "Service"
     },
     {
@@ -119,10 +220,19 @@
       "role": "support",
       "primary_intent": "eu ai act mkb",
       "primary_keyword": "eu ai act mkb",
-      "secondary_keywords": ["ai act nederland mkb", "eu ai act bedrijf", "ai regelgeving mkb"],
+      "secondary_keywords": [
+        "ai act nederland mkb",
+        "eu ai act bedrijf",
+        "ai regelgeving mkb"
+      ],
       "funnel_stage": "discover",
-      "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/ai-adoptie"],
+      "primary_cta": {
+        "action": "zelfscan",
+        "url": "https://www.bedrijfsgeheugen.nl/zelfscan"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/ai-adoptie"
+      ],
       "schema_type": "WebPage"
     },
     {
@@ -130,10 +240,20 @@
       "role": "money",
       "primary_intent": "bedrijfskennis borgen",
       "primary_keyword": "bedrijfskennis borgen",
-      "secondary_keywords": ["kennis borgen bedrijf", "bedrijfskennis vastleggen", "kennisborging mkb"],
+      "secondary_keywords": [
+        "kennis borgen bedrijf",
+        "bedrijfskennis vastleggen",
+        "kennisborging mkb"
+      ],
       "funnel_stage": "consider",
-      "primary_cta": { "action": "frisse-blik", "url": "https://www.bedrijfsgeheugen.nl/frisse-blik" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/", "https://www.bedrijfsgeheugen.nl/product"],
+      "primary_cta": {
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/",
+        "https://www.bedrijfsgeheugen.nl/product"
+      ],
       "schema_type": "Service"
     },
     {
@@ -141,10 +261,19 @@
       "role": "blog-index",
       "primary_intent": "digitalisering mkb kennisbank",
       "primary_keyword": "digitalisering mkb kennisbank",
-      "secondary_keywords": ["kennisbank digitalisering", "mkb automatisering kennis"],
+      "secondary_keywords": [
+        "kennisbank digitalisering",
+        "mkb automatisering kennis"
+      ],
       "funnel_stage": "discover",
-      "primary_cta": { "action": "zelfscan", "url": "https://www.bedrijfsgeheugen.nl/zelfscan" },
-      "supporting_routes": ["https://www.bedrijfsgeheugen.nl/", "https://www.bedrijfsgeheugen.nl/prijzen"],
+      "primary_cta": {
+        "action": "zelfscan",
+        "url": "https://www.bedrijfsgeheugen.nl/zelfscan"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/",
+        "https://www.bedrijfsgeheugen.nl/prijzen"
+      ],
       "schema_type": "CollectionPage"
     }
   ]
