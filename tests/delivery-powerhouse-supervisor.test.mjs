@@ -63,11 +63,17 @@ test('supervisor reuses Required and BRAIN, cancels only stale queued work and n
 });
 
 
-test('supervisor runs repository-wide recovery only on main push and retains watchdog schedule',()=>{
+test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
-  assert.match(yaml,/on:\s*\n(?:\s*#.*\n)*\s*push:\s*\n\s*branches:\s*\[main\]\s*\n\s*workflow_dispatch:/);
-  assert.doesNotMatch(yaml,/branches-ignore:\s*\[main\]/);
-  assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
+  assert.doesNotMatch(yaml,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
+  assert.match(yaml,/workflow_dispatch:/);
+  assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/15 \* \* \* \*'/);
+  assert.match(yaml,/ACTIVE_RUN_CIRCUIT_BREAKER: '20'/);
+  assert.match(yaml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
+  assert.match(yaml,/RECOVERY_PR_BUDGET: '1'/);
+  assert.match(yaml,/RECOVERY_PR_BUDGET_EXHAUSTED/);
+  assert.match(yaml,/active_for_pr/);
+  assert.match(yaml,/duplicate dispatch suppressed/);
   assert.match(yaml,/pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);
 });
 
