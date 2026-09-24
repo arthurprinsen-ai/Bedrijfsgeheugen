@@ -1,0 +1,42 @@
+{
+  "fingerprint": "seo-login-noindex-public-scope-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-24",
+  "type": "SEO_SCOPE_CLASSIFICATION",
+  "root_cause": "The login route is explicitly noindex, but inloggen.html was still included in PUBLIC_PAGE_EXCLUDES-derived public SEO inventory. The SEO gate therefore demanded sitemap presence for a route that must not be indexed.",
+  "prevention": [
+    "Keep authentication/login utility pages excluded from the public SEO and sitemap inventory when they are explicitly noindex.",
+    "Do not resolve a noindex utility-page sitemap warning by indexing the utility route.",
+    "Guard the public SEO scope contract with an executable regression."
+  ],
+  "evidence": {
+    "source_gate_run": 36023946954,
+    "observed_failure": "/inloggen — staat niet in sitemap.xml",
+    "recovery_branch": "recovery/pricing-terminal-live-proof-20260924-v2",
+    "predecessor_pr": 2795,
+    "terminal_state": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_PROOF"
+  },
+  "compiler": {
+    "failure_class": "NOINDEX_UTILITY_MISCLASSIFIED_AS_PUBLIC_SEO",
+    "scope": "WEBSITE_SEO",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/seo-login-noindex-scope-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/seo-login-noindex-scope-v1.test.mjs"
+    ],
+    "canary": [
+      ".github/workflows/production-source-snapshot.yml"
+    ]
+  },
+  "test_evidence": [
+    "tests/seo-login-noindex-scope-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
