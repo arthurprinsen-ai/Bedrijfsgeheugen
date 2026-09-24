@@ -74,3 +74,11 @@ The four verification surfaces now use stable latest-ref/latest-main single-flig
 - Python CodeQL.
 
 A second governance rule is now explicit: auto-merge may only be armed after exact-head Required, BRAIN, applicable CodeQL and Skill Projection are terminal success. PR #2807 proved why: it merged while Required was still active, and Required was cancelled afterward.
+
+
+## Main- en branch-trigger fan-out v8
+De volgende resterende fan-outbron is structureel gesloten: verificatieworkflows met een bestaande smalle PR-scope mogen niet alsnog op iedere `main`-push starten. De main-push scopes van Python CodeQL, Powerhouse CodeQL, Canonical Brand Shell readback, Quality Intelligence, Powerhouse Assurance en SEO Order Engine spiegelen nu hun relevante wijzigingspaden.
+
+Daarnaast draait Brain Foundation niet meer op iedere feature-branch push; kandidaatbewijs loopt via PR-admission/Required/BRAIN. Daardoor veroorzaakt het voorbereiden van een candidate geen tweede pre-PR verificatielaag.
+
+Canonical Brand Shell production readback heeft nu naast latest-main single-flight ook een harde job-timeout van 15 minuten. Een zichtbaarheid/browsercontrole kan daarmee nooit onbeperkt een runner vasthouden.

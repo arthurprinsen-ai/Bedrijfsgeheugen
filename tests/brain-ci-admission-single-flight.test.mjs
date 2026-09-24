@@ -74,3 +74,32 @@ test('main push verification workflows are true single-flight and never key on r
     assert.match(concurrency,/cancel-in-progress: true/);
   }
 });
+
+
+test('main push verification mirrors relevant path scopes and feature pushes stay quiet', async () => {
+  const scoped=[
+    ['.github/workflows/codeql.yml', '**/*.py'],
+    ['.github/workflows/powerhouse-codeql.yml', '**/*.mjs'],
+    ['.github/workflows/canonical-brand-shell-live-readback.yml', 'tools/site-shell/**'],
+    ['.github/workflows/powerhouse-quality-intelligence.yml', 'scripts/brain/quality/**'],
+    ['.github/workflows/powerhouse-assurance.yml', 'powerhouse/assurance/**'],
+    ['.github/workflows/seo-order-engine.yml', 'tools/seo-order-engine/**'],
+  ];
+  for (const [path, marker] of scoped) {
+    const yml=await readFile(path,'utf8');
+    const pushStart=yml.indexOf('  push:');
+    assert.notEqual(pushStart,-1,`missing push trigger: ${path}`);
+    const nextTriggerCandidates=['\n  pull_request:','\n  workflow_dispatch:','\n  schedule:']
+      .map(token=>yml.indexOf(token,pushStart+1)).filter(index=>index>pushStart);
+    const push=yml.slice(pushStart,nextTriggerCandidates.length?Math.min(...nextTriggerCandidates):yml.indexOf('\npermissions:',pushStart));
+    assert.match(push,/branches:/,`push must be branch bounded: ${path}`);
+    assert.match(push,/paths:/,`push must be path bounded: ${path}`);
+    assert.ok(push.includes(marker),`push scope missing marker ${marker}: ${path}`);
+  }
+
+  const brain=await readFile('.github/workflows/brain-foundation-verify.yml','utf8');
+  assert.match(brain,/push:\n\s+branches:\s*\[main\]\n\s+paths:/);
+
+  const brand=await readFile('.github/workflows/canonical-brand-shell-live-readback.yml','utf8');
+  assert.match(brand,/production-readback:\n[\s\S]*?runs-on:\s*ubuntu-latest\n\s+timeout-minutes:\s*15/);
+});

@@ -234,3 +234,16 @@ Unexpected branch/head movement is fail-closed until the exact diff from the las
 Fingerprint: `github|main-verification|latest-ref-single-flight|v1`.
 
 Main verification/readback workflows use stable ref-level concurrency keys with `cancel-in-progress: true`. Never include `github.run_id` in a main-push concurrency identity: it makes every run unique and defeats cancellation. Canonical brand shell readback, production release readback and both CodeQL workflows are latest-ref/latest-main verification surfaces; a newer main contains the older main and supersedes its verification work unless a provider contract explicitly requires per-epoch completion.
+
+
+## Push-trigger fan-out admission
+
+Fingerprint: `github|actions-trigger-graph|path-scoped-main-and-pr-admission|v1`.
+
+Before a GitHub mutation or merge, inspect the actual workflow trigger graph, not only the candidate's Required/BRAIN lanes. If a verification workflow already has a narrow pull-request path scope, its main-push trigger must mirror the relevant path scope unless a documented per-main invariant truly requires every commit.
+
+Feature-branch pushes must not launch broad Brain/control-plane verification that is already owned by PR admission and Required/BRAIN. Keep candidate development cheap; move expensive evidence behind canonical PR admission.
+
+Long-running production/browser readbacks are both latest-main single-flight and hard timeout bounded. A newer main epoch supersedes older verification unless a provider contract explicitly requires per-epoch completion.
+
+Treat unscoped push triggers, unique run-id concurrency, duplicate pre-PR verification and unbounded readback jobs as queue-amplification defects.

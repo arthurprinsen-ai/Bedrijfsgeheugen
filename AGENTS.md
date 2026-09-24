@@ -127,6 +127,15 @@ De pre-mutation receipt bevat minimaal queued, in_progress, pending/waiting/requ
 Canonieke authority: `brain/policies/powerhouse-agent-continuity-v1.json#queue_pressure_governor`.
 Machine helper: `tools/delivery/predictive-controller.mjs#assessQueuePressure`.
 
+
+### Push-trigger fan-out is part of queue preflight
+
+Fingerprint: `github|actions-trigger-graph|path-scoped-main-and-pr-admission|v1`.
+
+Bij de queue-pressure forecast telt een agent niet alleen Required/BRAIN, maar de volledige GitHub Actions trigger graph van de gewijzigde paden. Een workflow die voor pull requests al path-scoped is, mag op `main` niet onbegrensd voor iedere commit starten tenzij een expliciete per-main invariant dit vereist. Feature-branch pushes starten geen brede Brain/control-plane verificatie die na PR-admission al door Required/BRAIN wordt bewezen. Langlopende productie/browser-readbacks zijn latest-main single-flight én hebben een harde timeout.
+
+Voor merge wordt dus voorspeld: PR-fan-out + post-merge main-fan-out + downstream workflow_run fan-out. Als die projectie de queue-governor overschrijdt, eerst triggers coalescen/path-scopen; niet eerst mergen en daarna opruimen.
+
 ### BRAIN chat-learning preflight
 `config/brain-chat-learning-contract.json` (`BRAIN-CHAT-LEARNING-v1`) is verplichte gedeelde voorkennis voor iedere huidige en toekomstige agent, workflow en scenario die materieel werk uitvoert.
 

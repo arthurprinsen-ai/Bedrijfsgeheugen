@@ -32,7 +32,11 @@
     "Agents/chats may arm or execute merge only after exact-head Required, BRAIN, applicable CodeQL and Skill Projection are all terminal success.",
     "Unexpected branch/head movement is fail-closed until the exact diff from the previously trusted head has been inspected.",
     "Queue fan-out forecasts must use the actual workflow trigger graph and distinguish runner-consuming work from skipped/no-op workflow shells.",
-    "When stale work itself blocks the repair and no safe direct cancellation action is available, at most one net-backlog-reducing control-plane recovery may proceed with explicit before/after evidence and no early auto-merge."
+    "When stale work itself blocks the repair and no safe direct cancellation action is available, at most one net-backlog-reducing control-plane recovery may proceed with explicit before/after evidence and no early auto-merge.",
+    "When a verification workflow already has a narrow pull-request path scope, its main-push trigger must mirror the relevant path scope unless there is documented evidence that every main commit requires that verification.",
+    "Feature-branch pushes must not run broad Brain/control-plane verification when the same candidate is verified by Required/BRAIN after PR admission.",
+    "Canonical Brand Shell production readback is both latest-main single-flight and hard-bounded by a fifteen-minute job timeout.",
+    "Main-push fan-out is a forecasted delivery cost: agents must inspect the actual trigger graph before merging and remove unscoped verification triggers that provide no incremental evidence."
   ],
   "evaluation": {
     "historical_replay": [
@@ -88,7 +92,19 @@
       ".github/workflows/powerhouse-codeql.yml",
       ".github/workflows/codeql.yml"
     ],
-    "gate_first_merge_fingerprint": "github|merge-arming|exact-head-gates-first|v1"
+    "gate_first_merge_fingerprint": "github|merge-arming|exact-head-gates-first|v1",
+    "main_push_path_scoped_workflows": [
+      ".github/workflows/codeql.yml",
+      ".github/workflows/powerhouse-codeql.yml",
+      ".github/workflows/canonical-brand-shell-live-readback.yml",
+      ".github/workflows/powerhouse-quality-intelligence.yml",
+      ".github/workflows/powerhouse-assurance.yml",
+      ".github/workflows/seo-order-engine.yml"
+    ],
+    "feature_push_suppressed_workflows": [
+      ".github/workflows/brain-foundation-verify.yml"
+    ],
+    "canonical_brand_production_readback_timeout_minutes": 15
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -103,7 +119,7 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 7,
+  "revision": 8,
   "failed_approaches": [
     "Repository-wide recovery on every main push plus a five-minute schedule.",
     "Dispatching recovery independently across many open PRs during runner saturation.",
@@ -123,6 +139,9 @@
     "Using github.run_id in CodeQL concurrency keys on push, making every main run unique despite cancel-in-progress true.",
     "Leaving Production Release Readback cancel-in-progress false, allowing obsolete main epochs to overlap.",
     "Leaving Canonical brand shell live readback without a concurrency group, allowing several old main epochs to occupy runners simultaneously.",
-    "Enabling auto-merge on PR #2807 while Required was still running; the PR merged and Required was cancelled afterward."
+    "Enabling auto-merge on PR #2807 while Required was still running; the PR merged and Required was cancelled afterward.",
+    "Keeping narrow pull-request path filters while leaving the same verification workflow unscoped on every main push.",
+    "Allowing Brain foundation verification to run on arbitrary feature-branch pushes before PR admission.",
+    "Leaving Canonical Brand Shell production visual readback without a hard job timeout while browser visibility checks could stall."
   ]
 }

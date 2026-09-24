@@ -73,3 +73,13 @@
 - Fix prepared: stable event/ref or PR concurrency with `cancel-in-progress: true`.
 - Merge sequencing prevention: no auto-merge before exact-head Required + BRAIN + applicable CodeQL + Skill Projection are terminal success.
 - Unexpected head movement remains fail-closed until exact diff validation.
+
+
+## Queue governor v8 — trigger graph fan-out closure
+- Geobserveerd: één control-plane merge naar main startte tegelijk CodeQL x2, Brand Shell readback, Quality Intelligence, Assurance, SEO Order Engine, Brain Foundation en andere workflows.
+- Root cause: meerdere workflows hadden wel PR path filters maar geen equivalente main-push path filters.
+- Geobserveerd: commit `0dfe399...` op feature branch startte Brain Foundation vóórdat er een PR bestond.
+- Fix: relevante main-push triggers spiegelen hun PR pathscope; Brain Foundation push is main-only.
+- Fix: Canonical Brand Shell production-readback is latest-main single-flight én `timeout-minutes: 15`.
+- Regression: `tests/brain-ci-admission-single-flight.test.mjs` bewaakt branch scope, push path scope en timeout.
+- Merge authority blijft gate-first: geen auto-merge vóór exact-head Required + BRAIN + toepasselijke CodeQL + Skill Projection terminal groen zijn.
