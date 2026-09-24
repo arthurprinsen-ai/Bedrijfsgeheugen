@@ -209,3 +209,21 @@ Regels:
 - nooit medische diagnoses, mentale toestand of gevoelige persoonskenmerken afleiden;
 - executive surfaces tonen standaard alleen geaggregeerde/teamniveau signalen en nooit identificeerbare gezondheids- of klachtdata;
 - impactclaims blijven uitsluitend `OBSERVED`, `ESTIMATED` of `POTENTIAL`.
+
+
+## Cross-domain intelligence — alles werkt met alles
+
+People-problemen zijn geen apart HR-eiland. Elke canonieke `PH-Pxxx` wordt als node in dezelfde Powerhouse problem graph behandeld en kan evidence-gedreven relaties hebben naar andere domeinen.
+
+Verplichte projecties voor relevante people-signalen:
+- executive cockpit: prioriteit, impact, bewijs, eerstvolgende actie, capability en outcome;
+- finance: personeelskosten, verzuimkosten, vervangingskosten, omzet/marge per FTE;
+- operations: beschikbare capaciteit, overuren, backlog, planning en throughput;
+- sales: capaciteitsgebonden omzetrisico, responstijd, churn/service-impact;
+- knowledge: sleutelpersoonafhankelijkheid, bus factor, onboarding en expert dependency;
+- risk/compliance: re-integratietermijnen, HR-dossiers, arbeidsveiligheid en continuïteit;
+- opportunity scoring: triggersterkte × impact × confidence × urgentie;
+- content/acquisitie: dezelfde Problem ID, trigger, sectorcontext en beslisser;
+- outcome learning: baseline → interventie → verwacht resultaat → gemeten resultaat → learning.
+
+Preventieregel: nooit een nieuw people-dashboard, probleem-ID of causaliteitsmodel bouwen als parallelle waarheid. Nieuwe detectie, content, cockpitkaarten en commerciële routes projecteren altijd vanuit dezelfde canonieke Problem Library en cross-domain graph.
