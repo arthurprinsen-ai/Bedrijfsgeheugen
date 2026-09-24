@@ -17,3 +17,9 @@
 - Status: `PROMOTION_PENDING`.
 - Completion requires exact Netlify production identity plus successful pricing/i18n production browser readback.
 
+## Regression scope correction
+
+- Skill Projection exposed an over-broad whole-file negative regex for `body visible`.
+- Canonical invariant: only initial pricing readiness must use `ready-v3`; post-NL→EN document visibility remains valid.
+- Regression updated in `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
+
