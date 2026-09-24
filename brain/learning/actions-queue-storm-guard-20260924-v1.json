@@ -11,7 +11,14 @@
     "Suppress duplicate recovery dispatch when an equivalent active run already exists.",
     "CI must regression-test these backpressure invariants so later workflow changes cannot silently restore fan-out.",
     "Website release-risk must classify recovery-supervisor workflow and its regression tests as non-artifact control-plane changes, so CI-only fixes never launch full public-site browser crawls.",
-    "Canonical continuity skill must carry the same queue-storm prevention rules as the Brain learning and delivery ledger."
+    "Queued runs older than six hours are eligible for janitor cancellation only when their non-main head branch no longer exists.",
+    "Stale queue cleanup is bounded to twenty cancellations per supervisor cycle and runs before the active-run circuit breaker is evaluated.",
+    "Every material GitHub mutation must forecast queue pressure and projected fan-out before execution.",
+    "Soft pressure begins at 12 active or 10 queued runs; hard circuit opens at 20 active or 20 queued runs.",
+    "A single action may not intentionally create more than six new runs; batch or narrow before mutation.",
+    "One obligation has one executable PR and one active Required/BRAIN instance per PR/head.",
+    "Borging, documentation, learning and skill changes for one obligation should be committed atomically when safe.",
+    "Agents and chats must treat predicted queue amplification as a pre-mutation blocker, not something to clean up afterward."
   ],
   "evaluation": {
     "historical_replay": [
@@ -33,10 +40,23 @@
     "circuit_breaker_active_runs": 20,
     "recovery_pr_budget_per_cycle": 1,
     "website_control_plane_browser_fanout_prevented": true,
-    "continuity_skill_writeback": ".agents/skills/powerhouse-continuity/SKILL.md"
+    "stale_queue_min_age_seconds": 21600,
+    "stale_queue_cancel_budget": 20,
+    "stale_zombie_example_pr": 1444,
+    "stale_zombie_branch": "fix/supabase-migration-history-integrity",
+    "queue_pressure_policy": "brain/policies/powerhouse-agent-continuity-v1.json#queue_pressure_governor",
+    "predictive_helper": "tools/delivery/predictive-controller.mjs#assessQueuePressure",
+    "soft_active": 12,
+    "soft_queued": 10,
+    "hard_active": 20,
+    "hard_queued": 20,
+    "max_projected_new_runs_per_action": 6
   },
   "skill_targets": [
-    ".agents/skills/powerhouse-continuity/SKILL.md"
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    ".agents/skills/powerhouse-resource-sustainability/SKILL.md"
   ],
   "compiler": {
     "failure_class": "QUEUE_STALL",
@@ -45,5 +65,16 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 3,
+  "failed_approaches": [
+    "Repository-wide recovery on every main push plus a five-minute schedule.",
+    "Dispatching recovery independently across many open PRs during runner saturation.",
+    "Treating each borging/documentation/learning edit as a separate CI-triggering commit.",
+    "Creating successor recovery PRs before eliminating duplicate-obligation conflicts.",
+    "Following superseded workflow runs after the PR head had moved.",
+    "Allowing control-plane-only fixes to trigger full website/browser/artifact verification.",
+    "Letting queued runs survive after their PR was merged and their branch no longer existed.",
+    "Refreshing a PR through transient branch equality with main, which can auto-close the PR.",
+    "Carrying unrelated baseline failures inside queue repair instead of fixing the canonical baseline first."
+  ]
 }

@@ -18,8 +18,23 @@
 - #2804 is the single canonical current-main recovery candidate for this obligation.
 
 
-## Continuity skill writeback
-- Canonical skill: `.agents/skills/powerhouse-continuity/SKILL.md`
-- Writeback PR: #2805
-- Purpose: make the prevention directly reusable by future Powerhouse delivery work.
-- Closure rule: skill, Brain learning, human documentation and activity ledger remain in one lineage.
+## Stale queue cleanup v2
+- Production readback na #2804: 11 queued, waarvan minimaal 9 zombies uit 12 september 2026 op de reeds gemergede PR #1444.
+- De branch `fix/supabase-migration-history-integrity` bestaat niet meer.
+- Nieuwe guard: cancel queued run pas na 21600 seconden én alleen als de non-main head-branch niet meer bestaat.
+- Cleanup budget: maximaal 20 cancellations per supervisorcyclus.
+- Fingerprint revision: 2.
+
+
+## Queue governor v3 — canonical incident closure
+- Policy: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
+- Soft pressure: active >= 12 of queued >= 10.
+- Hard circuit: active >= 20 of queued >= 20.
+- Per-action projected fan-out budget: 6.
+- Chat/agent preflight requires queue counts + projected fan-out before material GitHub mutation.
+- Related writes are batched before CI when safe.
+- One obligation / one executable PR / one active Required+BRAIN single-flight identity.
+- Control-plane recovery stays out of website/browser artifact lanes.
+- Stale orphaned queue janitor is carried forward from PR #2806.
+- Predictive helper: `tools/delivery/predictive-controller.mjs#assessQueuePressure`.
+- Skills: continuity, delivery-concurrency, delivery-self-optimization, resource-sustainability.
