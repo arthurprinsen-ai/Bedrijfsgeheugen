@@ -562,3 +562,19 @@ For pricing/i18n incident closure:
 - execute `tools/site-shell/verify-pricing-i18n-production.mjs` against production and require visible lifecycle, plan-group, monthly/yearly and NL→EN state changes;
 - only after those proofs may Brain learning and ledger move to `LIVE_BEWEZEN`;
 - proof-trigger commits are operational artifacts and must preserve the same canonical obligation lineage rather than spawning a parallel delivery route.
+
+
+## Public static-locale authority
+
+Fingerprint: `public-i18n-static-route-authority-20260924-v1`.
+
+For the public website:
+- an unprefixed route such as `/prijzen` initializes as Dutch regardless of stale `bg_locale` storage;
+- persisted locale may control portal runtime translation, but is not initial authority for public pages;
+- explicit public language changes navigate to canonical static `/nl/*` or `/en/*` routes;
+- never reintroduce runtime translation on an unprefixed public route merely to honor stored preference;
+- keep the explicit `data-bg-static-translated=false` English fallback fail-closed and prove it separately;
+- production closure requires absence of the language-switch error plus browser-proven NL→EN navigation and visible English copy.
+
+Canonical learning: `brain/learning/public-i18n-static-route-authority-20260924-v1.json`.
+Canonical regression: `tests/brain-public-i18n-static-route-authority-v1.test.mjs`.
