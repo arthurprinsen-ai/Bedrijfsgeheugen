@@ -1,0 +1,41 @@
+{
+  "fingerprint": "netlify-deploy-auth-hard-boundary-20260924-v2",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Current main production promotion repeatedly failed at Netlify transport with 401 Unauthorized. A fresh connector authorization could be issued transiently, but the GitHub Actions secret remained stale and the local exact-artifact fallback could not reach the provider from the execution environment.",
+  "root_cause": "Production authority was split between an expiring GitHub Actions Netlify proxy credential and transient connector-issued authorization. The repository workflow had no safe autonomous credential-rotation path, while the local runner lacked a reliable provider network path.",
+  "failed_approaches": [
+    "Blindly rerunning Production Source Snapshot with the same stale NETLIFY_MCP_PROXY_PATH_TEMP.",
+    "Treating the incident as pricing or i18n application failure.",
+    "Trying to complete the exact-artifact Netlify CLI fallback from a runtime that could not reliably reach the provider.",
+    "Persisting or exposing transient proxy credentials outside a protected secret store."
+  ],
+  "prevention": [
+    "Classify Netlify 401 as deploy-auth failure before changing application code.",
+    "Retry stale credentials at most once after authoritative classification; then require credential rotation rather than retry loops.",
+    "Never put Netlify proxy credentials in repository content, PR bodies, workflow-dispatch inputs, logs, docs or user-visible output.",
+    "Preserve the exact current-main production artifact so delivery can resume without rebuilding unrelated code.",
+    "If no safe credential-write path and no working direct provider path exist, use BLOCKED_HARD_BOUNDARY rather than claiming live.",
+    "After account-level credential recovery, rerun canonical Production Source Snapshot and require exact production SHA plus pricing/i18n browser proof before LIVE_BEWEZEN."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"],
+    "shadow": ["tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs"],
+  "evidence": {
+    "current_main_sha": "1b49aa2b9c5acbb1d10138b4c07e92585193d0d1",
+    "failed_snapshot_run_id": "35991169738",
+    "failed_snapshot_artifact_id": "10803924073",
+    "provider_error": "401 Unauthorized",
+    "prior_failed_snapshot_run_id": "35990391702"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "DEPLOY_AUTH_HARD_BOUNDARY",
+    "scope": "NETLIFY_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": true
+  },
+  "revision": 1
+}
