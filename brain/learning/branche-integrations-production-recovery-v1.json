@@ -49,9 +49,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/branche-applicaties-integraties.test.mjs",
-      "tests/portal-v2-navigation-contract.test.mjs",
-      "tests/delivery-test-coverage-guard.test.mjs"
+      "tests/brain-delivery-root-page-classification.test.mjs",
+      "tests/brain-delivery-website-regression-family.test.mjs",
+      "tests/brain-customer-portal-identity-delivery.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
     ]
   },
   "prevention": {
@@ -70,5 +71,5 @@
     "delivery"
   ],
   "status": "ACTIVE_PREVENTION",
-  "revision": 2
+  "revision": 3
 }
