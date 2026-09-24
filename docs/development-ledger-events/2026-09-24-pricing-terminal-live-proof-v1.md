@@ -7,3 +7,4 @@
 - Required terminal sequence: required test → protected merge → Netlify terminal ready → exact production SHA/context/deploy-id → pricing/i18n browser interaction proof.
 - Required interactions: lifecycle stage, plan-group tab, monthly/yearly billing, NL→EN and `/en/prijzen` visible English state.
 - Closure rule: do not record `LIVE_BEWEZEN` until the exact production/browser evidence exists.
+- Admission metadata repaired on PR #2795 before re-running protected CI: Obligation-ID, Delivery-Lane, Candidate-Type and Base-SHA are explicit.
