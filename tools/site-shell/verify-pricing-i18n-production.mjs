@@ -4,6 +4,15 @@ async function expectVisible(locator, label) {
   if (!await locator.isVisible().catch(()=>false)) throw new Error(label + ' is not visible');
 }
 
+async function clickActionable(locator, label) {
+  await locator.scrollIntoViewIfNeeded({ timeout:15_000 });
+  await expectVisible(locator, label);
+  const box = await locator.boundingBox();
+  if (!box || box.width < 1 || box.height < 1) throw new Error(label + ' has no clickable bounding box');
+  await locator.click({ trial:true, timeout:15_000 });
+  await locator.click({ timeout:15_000 });
+}
+
 async function run() {
   const baseUrl = process.env.BASE_URL || 'https://www.bedrijfsgeheugen.nl';
   const { chromium } = await import('playwright');
@@ -17,8 +26,10 @@ async function run() {
     await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
     await page.locator('html[data-bg-pricing-interactions="ready-v3"]').waitFor({ state:'attached', timeout:15_000 });
 
-    // Lifecycle toggle must change the actual visible panel.
-    await page.locator('[data-bg-stage="loss"]').click();
+    // Lifecycle toggle must be genuinely actionable on the mobile viewport
+    // before proving that it changes the actual visible panel.
+    await page.locator('#situatie').scrollIntoViewIfNeeded({ timeout:15_000 });
+    await clickActionable(page.locator('[data-bg-stage="loss"]'), 'loss lifecycle tab');
     await page.waitForTimeout(150);
     const loss = page.locator('[data-bg-stage-panel="loss"]');
     const grow = page.locator('[data-bg-stage-panel="grow"]');
@@ -27,7 +38,7 @@ async function run() {
     if ((await page.locator('[data-bg-stage="loss"]').getAttribute('aria-selected')) !== 'true') throw new Error('loss stage aria-selected did not become true');
 
     // Start/run tab must alter visible plan-card group.
-    await page.locator('[data-bg-price-tab="run"]').click();
+    await clickActionable(page.locator('[data-bg-price-tab="run"]'), 'run pricing tab');
     await page.waitForTimeout(150);
     if ((await page.locator('[data-bg-price-tab="run"]').getAttribute('aria-selected')) !== 'true') throw new Error('run tab aria-selected did not become true');
     const runCards = page.locator('.bg-plan-card[data-bg-group="run"]');
@@ -39,7 +50,7 @@ async function run() {
     // Billing switch must update both selected state and at least one price.
     const priced = page.locator('[data-monthly][data-yearly]').first();
     const before = (await priced.textContent().catch(()=>'')) || '';
-    await page.locator('[data-bg-billing="yearly"]').click();
+    await clickActionable(page.locator('[data-bg-billing="yearly"]'), 'yearly billing toggle');
     await page.waitForTimeout(150);
     const after = (await priced.textContent().catch(()=>'')) || '';
     if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-selected')) !== 'true') throw new Error('yearly billing aria-selected did not become true');
@@ -47,11 +58,11 @@ async function run() {
 
     // Public language switching must use the static English route, not runtime provider translation.
     const current = page.locator('button[data-bg-language-current]').first();
-    await current.click();
+    await clickActionable(current, 'desktop language switch');
     const english = page.locator('[data-bg-language-option="en"]').first();
     await Promise.all([
       page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      english.click(),
+      clickActionable(english, 'English language option'),
     ]);
     await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
     await page.waitForTimeout(500);
