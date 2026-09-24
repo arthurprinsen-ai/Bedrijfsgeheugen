@@ -24,6 +24,25 @@ on:
       - '.github/workflows/canonical-brand-shell-live-readback.yml'
   push:
     branches: [main]
+    paths:
+      - 'components/**'
+      - 'assets/**'
+      - 'pages/**'
+      - 'site/**'
+      - 'blog/**'
+      - 'kennis/**'
+      - '*.html'
+      - 'styles.css'
+      - 'script.js'
+      - 'seo-status.json'
+      - 'sitemap.xml'
+      - 'netlify.toml'
+      - 'tools/site-shell/**'
+      - 'tools/seo-order-engine/**'
+      - 'netlify/functions/growth-event.mjs'
+      - 'tests/site-shell-*.test.mjs'
+      - 'tests/seo-*.test.mjs'
+      - '.github/workflows/canonical-brand-shell-live-readback.yml'
   workflow_dispatch:
 
 concurrency:
@@ -47,6 +66,7 @@ jobs:
     if: github.event_name != 'pull_request'
     needs: contract
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
