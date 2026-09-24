@@ -430,3 +430,10 @@ Mandatory:
 - post-transform restore must fail closed if either runtime is absent;
 - production verification waits for the rescue readiness marker and then executes actual pricing clicks;
 - never diagnose a missing readiness marker as a click-handler bug before checking the built-page preservation contract.
+
+
+## Pricing regression tests follow behavior, not obsolete syntax
+
+Fingerprint: `pricing-visible-state-regression-contract-20260924-v1`.
+
+When pricing interaction code is strengthened, regression tests must assert the behavioral state tuple rather than an old source-code spelling. Require synchronized `hidden`, inline display and `aria-hidden` for lifecycle panels and plan cards. Never force code back to a weaker implementation merely to satisfy a historical regex. Production browser click proof remains terminal authority.
