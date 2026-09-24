@@ -295,7 +295,15 @@ async function translateBatch(strings,key) {
       }),
       signal:controller.signal
     });
-    if (!response.ok) throw new Error('Anthropic HTTP ' + response.status + ': ' + (await response.text()).slice(0,300));
+    if (!response.ok) {
+      const body = (await response.text()).slice(0,300);
+      const retryAfterRaw = response.headers.get('retry-after');
+      const retryAfterSeconds = retryAfterRaw && /^\d+(?:\.\d+)?$/.test(retryAfterRaw) ? Number(retryAfterRaw) : null;
+      const error = new Error('Anthropic HTTP ' + response.status + ': ' + body);
+      error.status = response.status;
+      error.retryAfterMs = retryAfterSeconds === null ? null : Math.ceil(retryAfterSeconds * 1000);
+      throw error;
+    }
     const payload = await response.json();
     const raw = payload?.content?.map(x=>x?.type==='text'?x.text:'').join('') || '';
     const out = parseTranslations(raw);
@@ -340,7 +348,7 @@ async function translateAll(strings) {
 
   async function translateResilient(part, depth=0) {
     let lastError;
-    for (let attempt=0;attempt<4;attempt++) {
+    for (let attempt=0;attempt<6;attempt++) {
       try {
         const translated = await translateBatch(part,key);
         part.forEach((source,index)=>{
@@ -351,7 +359,18 @@ async function translateAll(strings) {
         return;
       } catch (error) {
         lastError = error;
-        await new Promise(r=>setTimeout(r,900*(attempt+1)));
+        const transient = [429,500,502,503,504,529].includes(Number(error?.status));
+        const providerDelay = Number.isFinite(error?.retryAfterMs) ? error.retryAfterMs : 0;
+        const exponentialDelay = Math.min(20_000, 1_500 * (2 ** attempt));
+        const delay = transient ? Math.max(providerDelay, exponentialDelay) : Math.min(4_000, exponentialDelay);
+        console.warn('STATIC_I18N_RETRY', JSON.stringify({
+          attempt: attempt + 1,
+          max_attempts: 6,
+          batch_size: part.length,
+          status: Number(error?.status) || null,
+          delay_ms: delay
+        }));
+        await new Promise(r=>setTimeout(r,delay));
       }
     }
     if (part.length > 1) {
@@ -363,7 +382,7 @@ async function translateAll(strings) {
     throw new Error('Static English translation failed for "' + part[0].slice(0,120) + '": ' + (lastError?.message || 'unknown error'));
   }
 
-  const concurrency = Math.max(1, Math.min(4, Number(process.env.STATIC_I18N_CONCURRENCY || 4)));
+  const concurrency = Math.max(1, Math.min(2, Number(process.env.STATIC_I18N_CONCURRENCY || 1)));
   let cursor = 0;
   async function worker(workerId) {
     while (true) {
@@ -372,7 +391,7 @@ async function translateAll(strings) {
       const part = batches[index];
       await translateResilient(part);
       console.log('STATIC_I18N_BATCH',index+1,'of',batches.length,'strings',part.length,'worker',workerId);
-      await new Promise(r=>setTimeout(r,120));
+      await new Promise(r=>setTimeout(r,750));
     }
   }
   try {

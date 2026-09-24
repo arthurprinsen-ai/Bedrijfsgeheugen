@@ -1,0 +1,47 @@
+{
+  "fingerprint": "i18n-translation-throttle-resilience-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "PROVIDER_THROTTLE_RELEASE_BLOCK",
+  "problem": "The fail-closed public English build correctly prevented untranslated /en/* content, but the full-site static translation path could overload the provider by running multiple large batches concurrently with short fixed retries.",
+  "root_cause": "The static translator defaulted to four concurrent batches, only four short linear retry delays, and ignored provider Retry-After guidance. A full production build therefore created avoidable burst load and made a valid configured provider less reliable.",
+  "failed_approaches": [
+    "Allowing four concurrent full-site translation workers by default.",
+    "Retrying provider failures after short fixed delays without honoring Retry-After.",
+    "Treating provider availability and provider-friendly request pacing as the same thing."
+  ],
+  "prevention": [
+    "Production static translation defaults to one provider worker; concurrency can only be widened deliberately and remains capped.",
+    "Rate-limit, overload, timeout and server failures use bounded exponential backoff.",
+    "Provider Retry-After guidance is honored when present.",
+    "Translation batches are paced between successes instead of sent as a burst.",
+    "Production remains fail-closed: resilience may retry, but it may never publish untranslated English as success.",
+    "Every i18n resilience change reruns the exact production pricing/language browser proof."
+  ],
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-translation-throttle-resilience-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-translation-throttle-resilience-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "current_main_before_change": "bb7de130203c84cecdd9fee9437a4a3b73c8de75",
+    "blocked_release_main": "2b6ddbd75d4fb7e7b2ef2e8f4b067b6cfbc368d1",
+    "production_env_verified": "ANTHROPIC_API_KEY exists with build scope; value intentionally not recorded.",
+    "provider_guidance": "Anthropic documents 429 rate limits, 529 overload and exponential retry for server errors."
+  },
+  "compiler": {
+    "failure_class": "PROVIDER_THROTTLE_RELEASE_BLOCK",
+    "scope": "WEBSITE_PUBLIC_I18N_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
