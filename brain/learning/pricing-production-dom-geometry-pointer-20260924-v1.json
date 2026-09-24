@@ -3,8 +3,8 @@
   "date": "2026-09-24",
   "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
   "status": "IMPLEMENTED_CANDIDATE",
-  "root_cause": "Exact production and affected-route readback were healthy, but the pricing browser proof produced sequential Playwright locator false negatives: scrollIntoViewIfNeeded timed out, then locator waitFor visible timed out, and after readiness recovery locator.boundingBox timed out for 30 seconds. The canonical HTML/CSS contains exactly one loss-stage control and mobile lifecycle tabs are rendered as a visible grid. The failure class is locator auto-wait/geometry instability, not missing production content. A fourth production replay proved that locator.evaluate also participates in Playwright locator auto-wait: exact production 984f6795 was ready, routes were healthy, but lossButton.evaluate timed out waiting for [data-bg-stage=\"loss\"].",
-  "prevention_rule": "After the product-specific ready-v3 marker, do not use a Playwright Locator for lifecycle geometry/actionability at all. Query the element directly inside page.evaluate with document.querySelector, return explicit missing/visibility/geometry state, scroll and re-read geometry through page.evaluate, then preserve a real page.mouse.click. Genuine missing, hidden, transparent or zero-sized controls remain fail-closed. Do not use locator waitFor, boundingBox, scrollIntoViewIfNeeded, locator.evaluate, force:true or DOM click shortcuts for this proof.",
+  "root_cause": "Exact production and affected-route readback were healthy, but the pricing browser proof produced sequential Playwright locator false negatives: scrollIntoViewIfNeeded timed out, then locator waitFor visible timed out, and after readiness recovery locator.boundingBox timed out for 30 seconds. The canonical HTML/CSS contains exactly one loss-stage control and mobile lifecycle tabs are rendered as a visible grid. The failure class is locator auto-wait/geometry instability, not missing production content. A fourth production readback on exact main 984f679515fff2d9e4a4f10c0b187e95e96a1561 showed locator.evaluate can still auto-wait for 30 seconds even after ready-v3 when the concrete lifecycle control is not yet observable to the locator. The readiness marker alone therefore did not prove that the pointer target itself was present.",
+  "prevention_rule": "After the product-specific ready-v3 marker, prove actionability from direct DOM computed visibility and getBoundingClientRect geometry. Fail closed for display:none, visibility:hidden, opacity 0 or zero-sized controls. Use page.mouse.click at the measured center to preserve a real pointer interaction. Do not use locator visibility/geometry auto-waits, force:true, or DOM click shortcuts when those auto-waits are the observed failure mode. Couple product readiness to the concrete target: wait until ready-v3 AND document.querySelector('[data-bg-stage=\"loss\"]') are both true, then use page.evaluate with direct DOM lookup for visibility, scrolling and geometry. Never use locator.evaluate for the observed failure class.",
   "failed_runs": [
     {
       "run_id": 36054089352,
@@ -24,15 +24,14 @@
     {
       "run_id": 36056415545,
       "main_sha": "984f679515fff2d9e4a4f10c0b187e95e96a1561",
-      "deploy_id": "6ab58aa6affd510008595b0f",
-      "failure": "locator.evaluate TimeoutError waiting for [data-bg-stage=\"loss\"] after exact production identity was proven"
+      "failure": "locator.evaluate TimeoutError waiting for [data-bg-stage=\"loss\"] after ready-v3"
     }
   ],
   "provider_evidence": {
-    "deploy_id": "6ab58aa6affd510008595b0f",
+    "deploy_id": "6ab587bb252bef45dc3b20d5",
     "state": "ready",
     "context": "production",
-    "commit_ref": "984f679515fff2d9e4a4f10c0b187e95e96a1561"
+    "commit_ref": "3628225d0ebb834f496678b3d4e3c4414d26e5ee"
   },
   "compiler": {
     "failure_class": "PLAYWRIGHT_LOCATOR_GEOMETRY_FALSE_NEGATIVE",
@@ -50,7 +49,8 @@
       "genuinely hidden or zero-sized lifecycle controls fail closed",
       "production interaction proof uses direct DOM geometry plus a real page.mouse pointer event",
       "lifecycle selection billing mutation and English-route semantic assertions remain mandatory",
-      "pricing lifecycle actionability proof does not use Playwright Locator evaluation for the loss control"
+      "ready-v3 is not sufficient alone; the concrete loss lifecycle control must also exist before pointer proof",
+      "pricing production verifier does not use locator.evaluate for lifecycle target geometry"
     ]
   },
   "skill_targets": [

@@ -10,12 +10,11 @@
 - Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
 - Status: `IMPLEMENTED_CANDIDATE` pending protected gates, merge and production readback.
 
-## v2 recovery
+## Follow-up direct DOM readiness
 
-- Exact deploy: `6ab58aa6affd510008595b0f`, commit `984f679515fff2d9e4a4f10c0b187e95e96a1561`, state `ready`, context `production`.
-- Failed readback run: `36056415545`.
-- New failure mechanism: `locator.evaluate` auto-wait on `[data-bg-stage="loss"]`.
-- Fix: direct `page.evaluate + document.querySelector` for lifecycle existence, visibility, scrolling, geometry and selected-state readback; real `page.mouse.click` retained.
+- Production release readback run `36056415545` proved exact deploy `984f679515fff2d9e4a4f10c0b187e95e96a1561` before failing in the pricing verifier.
+- Failure: `locator.evaluate` timed out waiting for `[data-bg-stage="loss"]`.
+- Fix: readiness now requires both `ready-v3` and concrete DOM target presence; geometry/scroll use direct `page.evaluate` DOM lookup.
 - Regression strengthened: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
-- Status remains `IMPLEMENTED_CANDIDATE` until protected merge + production readback.
+- Genuine missing/hidden/zero-sized controls remain fail-closed.
 
