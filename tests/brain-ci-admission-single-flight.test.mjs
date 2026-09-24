@@ -2,9 +2,14 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('recovery supervisor never scans the repository on feature-branch push', async () => {
+test('recovery supervisor is scheduled/manual only and applies repository backpressure', async () => {
   const yml = await readFile('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
-  assert.match(yml,/push:\n\s+branches: \[main\]/);
+  assert.doesNotMatch(yml,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
+  assert.match(yml,/workflow_dispatch:/);
+  assert.match(yml,/cron:\s*'\*\/15 \* \* \* \*'/);
+  assert.match(yml,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'20'/);
+  assert.match(yml,/RECOVERY_PR_BUDGET:\s*'1'/);
+  assert.match(yml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
   assert.match(yml,/concurrency:\n\s+group: powerhouse-delivery-recovery-supervisor\n\s+cancel-in-progress: true/);
 });
 
