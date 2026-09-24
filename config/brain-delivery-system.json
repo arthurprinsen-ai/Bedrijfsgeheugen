@@ -303,7 +303,9 @@
         "tools/supabase-",
         "tools/universal-event-",
         "tools/universal-failure-",
-        "tests/saas-"
+        "tests/saas-",
+        "scripts/opportunity/",
+        "tests/opportunity-"
       ],
       "requiredContracts": [
         "BG166",
