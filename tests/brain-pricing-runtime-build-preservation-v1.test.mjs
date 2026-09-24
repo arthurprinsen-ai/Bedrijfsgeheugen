@@ -8,7 +8,7 @@ test('pricing build integrity restores interaction runtimes after transforms',()
   assert.match(source,/extractScriptById/);
   assert.match(source,/ensurePricingRuntime/);
   assert.match(source,/bg-pricing-neno-v1-js/);
-  assert.match(source,/pricing-interactions-rescue-v1\.js\?v=20260924-0750/);
+  assert.match(source,/pricing-interactions-rescue-v1\.js\?v=[0-9a-f]{12}/);
   assert.match(source,/rescue runtime missing after restore/);
   assert.match(source,/extractSection\(source, 'prijzen-pakketten'\)/);
   assert.match(source,/extractSection\(built, 'prijzen-pakketten'\)/);

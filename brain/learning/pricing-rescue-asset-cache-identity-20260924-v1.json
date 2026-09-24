@@ -1,0 +1,38 @@
+{
+  "fingerprint": "pricing-rescue-asset-cache-identity-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_RUNTIME_CACHE_IDENTITY_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Production deploy 6ab58c611214c700089b7a93 was ready on exact main 4aac008ef0872ab902e5888547bafc991c9eb259 and route checks passed, but the pricing ready-v3 marker never appeared. prijzen.html still referenced pricing-interactions-rescue-v1.js with fixed cache key v=20260924-0750 while the asset had changed later; Git history shows a later asset change at f13e524d and the current asset Git blob is f7d85cb0d7ba7ff8c055895677a906066e702d83. New HTML could therefore load a stale cached rescue runtime.",
+  "prevention_rule": "Static runtime assets that establish product readiness must use a content-addressed cache key derived from the exact asset blob. CI must compute the asset Git blob identity and assert the HTML query key matches it. Production snapshot content proof must assert the same key. Never keep a date/time cache key across later asset mutations.",
+  "provider_evidence": {
+    "deploy_id": "6ab58c611214c700089b7a93",
+    "state": "ready",
+    "context": "production",
+    "commit_ref": "4aac008ef0872ab902e5888547bafc991c9eb259",
+    "failed_readback_run": 36057243646,
+    "failed_step": "Verify pricing interactions and English route in production",
+    "failure": "ready-v3 marker timeout"
+  },
+  "compiler": {
+    "failure_class": "STALE_STATIC_RUNTIME_CACHE_KEY",
+    "scope": "PRICING_PRODUCTION_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-rescue-asset-cache-identity-v1.test.mjs",
+      "tests/brain-pricing-runtime-build-preservation-v1.test.mjs"
+    ],
+    "invariants": [
+      "pricing rescue runtime query key equals the current JS Git blob SHA prefix",
+      "production snapshot validates the exact same rescue runtime cache key",
+      "pricing ready-v3 remains product-specific runtime readiness authority"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ]
+}
