@@ -2,7 +2,7 @@ name: Powerhouse Repository Janitor
 
 on:
   schedule:
-    - cron: '17 3 * * *'
+    - cron: '17 * * * *'
   workflow_dispatch:
     inputs:
       mode:
@@ -43,7 +43,7 @@ jobs:
           mkdir -p .artifacts
           mode="${REQUESTED_MODE:-dry-run}"
           if [ "$EVENT_NAME" = schedule ]; then mode=apply-safe; fi
-          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs.json
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs.json
           MODE="$mode" node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
           import { readFile, writeFile } from 'node:fs/promises';
@@ -117,7 +117,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           set -euo pipefail
-          gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" > .artifacts/open-prs-after.json
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs-after.json
           gh api "repos/${GITHUB_REPOSITORY}/pulls?state=closed&sort=updated&direction=desc&per_page=100" > .artifacts/closed-prs-recent.json
           : > .artifacts/janitor-runtime-actions.ndjson
 
@@ -146,7 +146,12 @@ jobs:
 
           # Cancel only stale candidate executions. Never touch main and never cancel the current head of an open PR.
           for status in queued in_progress; do
-            gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=100" --jq '.workflow_runs[] | [.id,.head_branch,.head_sha,.status] | @tsv' | while IFS=$'\t' read -r run_id branch run_sha run_status; do
+            gh api --paginate "repos/${GITHUB_REPOSITORY}/actions/runs?status=${status}&per_page=100" --jq '.workflow_runs[] | {id,head_branch,head_sha,status,created_at} | @json' | while read -r run_json; do
+              run_id="$(jq -r '.id' <<<"$run_json")"
+              branch="$(jq -r '.head_branch // ""' <<<"$run_json")"
+              run_sha="$(jq -r '.head_sha // ""' <<<"$run_json")"
+              run_status="$(jq -r '.status // ""' <<<"$run_json")"
+              created_at="$(jq -r '.created_at // ""' <<<"$run_json")"
               [ -n "$branch" ] || continue
               [ "$branch" != main ] || continue
               current_pr_head="$(jq -r --arg branch "$branch" '[.[] | select(.head.ref == $branch and .state == "open") | .head.sha][0] // empty' .artifacts/open-prs-after.json)"
@@ -156,13 +161,26 @@ jobs:
                 safe_cancel=true
                 reason=STALE_PR_HEAD
               elif [ -z "$current_pr_head" ]; then
-                encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
-                branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
-                if [ -n "$branch_json" ] && [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ]; then
-                  ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${encoded_branch}" --jq '.ahead_by' 2>/dev/null || echo UNPROVEN)"
-                  if [ "$ahead" = 0 ]; then
+                # Queued runs without an open PR have no current delivery authority.
+                # TTL cleanup never applies to in-progress runs.
+                if [ "$run_status" = queued ] && [ -n "$created_at" ]; then
+                  created_epoch="$(date -u -d "$created_at" +%s 2>/dev/null || echo 0)"
+                  now_epoch="$(date -u +%s)"
+                  stale_after_seconds=21600
+                  if [ "$created_epoch" -gt 0 ] && [ $((now_epoch-created_epoch)) -ge "$stale_after_seconds" ]; then
                     safe_cancel=true
-                    reason=MERGED_OR_CONTAINED_BRANCH
+                    reason=STALE_QUEUED_NO_OPEN_PR
+                  fi
+                fi
+                if [ "$safe_cancel" != true ]; then
+                  encoded_branch="$(jq -rn --arg v "$branch" '$v|@uri')"
+                  branch_json="$(gh api "repos/${GITHUB_REPOSITORY}/branches/${encoded_branch}" 2>/dev/null || true)"
+                  if [ -n "$branch_json" ] && [ "$(jq -r '.protected // true' <<<"$branch_json")" = false ]; then
+                    ahead="$(gh api "repos/${GITHUB_REPOSITORY}/compare/main...${encoded_branch}" --jq '.ahead_by' 2>/dev/null || echo UNPROVEN)"
+                    if [ "$ahead" = 0 ]; then
+                      safe_cancel=true
+                      reason=MERGED_OR_CONTAINED_BRANCH
+                    fi
                   fi
                 fi
               fi

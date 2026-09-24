@@ -612,3 +612,54 @@ Fingerprint: `seo-login-noindex-public-scope-20260924-v1`.
 
 Canonical learning: `brain/learning/seo-login-noindex-public-scope-20260924-v1.json`.
 Canonical regression: `tests/brain-seo-login-noindex-scope-v1.test.mjs`.
+
+## Delivery control-plane scale & supersession
+
+Fingerprint: `delivery-control-plane-open-pr-scale-supersession-v1`.
+
+For every GitHub-backed Powerhouse delivery:
+- candidate discovery over open PRs must be complete, paginated and bounded; never assume one `per_page=100` response is the full candidate set;
+- synchronous GitHub CLI/API reads that can grow with repository state must set an explicit safe output buffer and must fail with concise evidence rather than dumping an unbounded payload;
+- an explicit same-obligation successor may move the predecessor to `SUPERSEDED`, but `SUPERSEDED` and `CLOSED` are non-terminal delivery states;
+- never map predecessor closure, successor creation, queued checks, auto-merge or merge alone to `LIVE_BEWEZEN`;
+- terminal truth remains exact lineage → protected merge → production/provider readback → learning/skill projection → terminal evidence;
+- successor recovery must preserve the predecessor's required content, tests, governance and documentation and must declare `Supersedes: <PR>` on the same `Obligation-ID`;
+- when repository scale grows, admission correctness has priority over cheap single-page shortcuts: missing an open conflicting/same-obligation candidate is a control-plane integrity defect.
+
+Canonical regression: `tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs`.
+Canonical learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
+
+
+### Stale GitHub queue autorecovery
+
+Fingerprint: `delivery|stale-queued-no-open-pr|autoreap|v1`.
+
+Repository queue health is part of terminal delivery correctness. Old queued runs may not accumulate indefinitely behind current work.
+
+Mandatory:
+- the canonical repository janitor runs hourly and paginates the full open-PR set;
+- never treat repository queue length as code failure without separating current-head jobs from stale/no-owner jobs;
+- preserve `main`, every current head of an open PR, and all `in_progress` work from TTL-based cleanup;
+- a non-main `queued` run with no open PR may be cancelled automatically after 6 hours because it has no current delivery authority; a future reopen/successor must emit fresh exact-head checks;
+- stale-run cleanup must be read back and logged; cancellation is queue hygiene, not obligation completion;
+- queue autorecovery must never weaken Required/BRAIN/CodeQL/production-readback gates for the current canonical successor.
+
+Regression: `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`.
+Learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
+
+
+### Prevention-fix integrity
+
+Fingerprint: `delivery|prevention-fix|workflow-integrity|v1`.
+
+A fix to the delivery/control-plane is itself production-critical code and must be protected against self-corruption.
+
+Mandatory:
+- rebuild complex workflow recovery from a known-clean canonical source when structural text has become suspect;
+- prefer JSON-per-record transport between GitHub CLI and shell over delimiter-based parsing;
+- do not trust a prevention patch merely because the intended logic is present; also assert structural uniqueness and syntax-safe composition;
+- every self-healing or janitor change requires a regression that checks the integrity of the workflow that performs the healing;
+- when a fix introduces a second defect, record both the original root cause and the fix-induced defect in the same canonical learning lineage, including failed approach and prevention.
+
+Regression: `tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs`.
+Learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
