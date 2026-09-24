@@ -30,6 +30,9 @@
       "unknown impact certainty fails safe to POTENTIAL",
       "evidence drawer is rendered",
       "action capability and outcome remain visible on the same problem card"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-radar-executive.test.mjs"
     ]
   }
 }
