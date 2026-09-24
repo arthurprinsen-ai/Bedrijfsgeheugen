@@ -3,18 +3,22 @@
   "status": "ACTIVE_PREVENTION",
   "date": "2026-09-24",
   "type": "SEO_SCOPE_CLASSIFICATION",
-  "root_cause": "The login route is explicitly noindex, but inloggen.html was still included in PUBLIC_PAGE_EXCLUDES-derived public SEO inventory. The SEO gate therefore demanded sitemap presence for a route that must not be indexed.",
+  "root_cause": "The login route is intentionally noindex and should stay outside sitemap/indexable SEO inventory, but the technical SEO link validator assumed every internal destination must itself be an indexable canonical route. Simply excluding inloggen.html therefore made every global login link fail. The missing concept was an explicit public utility-route class: valid internal destination, intentionally non-indexable.",
   "prevention": [
-    "Keep authentication/login utility pages excluded from the public SEO and sitemap inventory when they are explicitly noindex.",
-    "Do not resolve a noindex utility-page sitemap warning by indexing the utility route.",
-    "Guard the public SEO scope contract with an executable regression."
+    "Model public utility routes explicitly: valid internal destinations that remain outside sitemap/indexable SEO inventory.",
+    "Authentication/login utility pages that are noindex must not be forced into the sitemap merely to satisfy internal-link validation.",
+    "Technical SEO must allow links to explicitly classified utility routes while continuing to fail on unknown or accidental non-indexable destinations.",
+    "Keep utility-route classification in the shared route contract so sitemap generation and technical SEO consume the same authority.",
+    "Guard both exclusion from indexable scope and acceptance as a utility link target with executable regressions."
   ],
   "evidence": {
     "source_gate_run": 36023946954,
     "observed_failure": "/inloggen — staat niet in sitemap.xml",
     "recovery_branch": "recovery/pricing-terminal-live-proof-20260924-v2",
     "predecessor_pr": 2795,
-    "terminal_state": "PENDING_PROTECTED_MERGE_AND_PRODUCTION_PROOF"
+    "terminal_state": "PENDING_REPROOF_AFTER_UTILITY_ROUTE_FIX",
+    "diagnose_run": 36028875604,
+    "diagnose_failure": "430 internal links to /inloggen were rejected after the route was removed from indexable SEO scope"
   },
   "compiler": {
     "failure_class": "NOINDEX_UTILITY_MISCLASSIFIED_AS_PUBLIC_SEO",
@@ -38,5 +42,6 @@
   ],
   "skill_targets": [
     "powerhouse-continuity"
-  ]
+  ],
+  "revision": 2
 }
