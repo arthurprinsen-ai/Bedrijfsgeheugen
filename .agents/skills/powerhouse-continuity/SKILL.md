@@ -585,8 +585,10 @@ Canonical regression: `tests/brain-public-i18n-static-route-authority-v1.test.mj
 Fingerprint: `seo-login-noindex-public-scope-20260924-v1`.
 
 - Authentication/login utility routes that are explicitly `noindex` stay outside public SEO and sitemap inventory.
-- Never fix a noindex sitemap warning by indexing the utility route; correct the scope classifier instead.
-- Keep an executable regression on the shared public-route contract so sitemap generation and SEO validation consume the same classification.
+- Model them explicitly as public utility routes: valid internal link destinations, intentionally non-indexable.
+- Never fix a noindex sitemap warning by indexing the utility route; correct the shared route classifier and the consumer that conflated link validity with indexability.
+- Technical SEO may exempt only explicitly classified utility destinations; unknown non-indexable internal targets remain failures.
+- Keep executable regressions on the shared route contract so sitemap generation and SEO validation consume the same classification.
 
 Canonical learning: `brain/learning/seo-login-noindex-public-scope-20260924-v1.json`.
 Canonical regression: `tests/seo-login-noindex-scope-v1.test.mjs`.
