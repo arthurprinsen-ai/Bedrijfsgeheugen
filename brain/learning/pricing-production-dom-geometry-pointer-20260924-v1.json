@@ -1,0 +1,52 @@
+{
+  "fingerprint": "pricing-production-dom-geometry-pointer-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Exact production and affected-route readback were healthy, but the pricing browser proof produced sequential Playwright locator false negatives: scrollIntoViewIfNeeded timed out, then locator waitFor visible timed out, and after readiness recovery locator.boundingBox timed out for 30 seconds. The canonical HTML/CSS contains exactly one loss-stage control and mobile lifecycle tabs are rendered as a visible grid. The failure class is locator auto-wait/geometry instability, not missing production content.",
+  "prevention_rule": "After the product-specific ready-v3 marker, prove actionability from direct DOM computed visibility and getBoundingClientRect geometry. Fail closed for display:none, visibility:hidden, opacity 0 or zero-sized controls. Use page.mouse.click at the measured center to preserve a real pointer interaction. Do not use locator visibility/geometry auto-waits, force:true, or DOM click shortcuts when those auto-waits are the observed failure mode.",
+  "failed_runs": [
+    {
+      "run_id": 36054089352,
+      "main_sha": "396b0ca1afbc39ce613ef473c452bf13ac459c59",
+      "failure": "locator.scrollIntoViewIfNeeded TimeoutError"
+    },
+    {
+      "run_id": 36054911943,
+      "main_sha": "3628225d0ebb834f496678b3d4e3c4414d26e5ee",
+      "failure": "locator.waitFor({state:'visible'}) TimeoutError"
+    },
+    {
+      "run_id": 36055589449,
+      "main_sha": "c0e255d2d003c56d3eeda5f0980dd1ceb7691556",
+      "failure": "locator.boundingBox TimeoutError"
+    }
+  ],
+  "provider_evidence": {
+    "deploy_id": "6ab587bb252bef45dc3b20d5",
+    "state": "ready",
+    "context": "production",
+    "commit_ref": "3628225d0ebb834f496678b3d4e3c4414d26e5ee"
+  },
+  "compiler": {
+    "failure_class": "PLAYWRIGHT_LOCATOR_GEOMETRY_FALSE_NEGATIVE",
+    "scope": "PRODUCTION_BROWSER_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs"
+    ],
+    "invariants": [
+      "pricing ready-v3 marker remains the domain-specific readiness authority",
+      "genuinely hidden or zero-sized lifecycle controls fail closed",
+      "production interaction proof uses direct DOM geometry plus a real page.mouse pointer event",
+      "lifecycle selection billing mutation and English-route semantic assertions remain mandatory"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ]
+}

@@ -396,3 +396,19 @@ Mandatory order:
 9. persist terminal evidence and release the writer lease.
 
 A green result at any intermediate layer is not permission to skip later layers. Do not create parallel recovery PRs or deploy authorities unless the canonical lineage is provably unrecoverable.
+
+## Production browser DOM geometry + real pointer
+
+Fingerprint: `delivery|browser-readback|dom-geometry-real-pointer|v3`.
+
+When exact production, route rendering and product-specific readiness are proven but Playwright locator auto-waits fail on `waitFor(visible)`, `scrollIntoViewIfNeeded` or `boundingBox()`:
+- do not classify the application as broken from locator auto-wait alone;
+- prove control visibility with computed `display`, `visibility`, `opacity` and non-zero `getBoundingClientRect()`;
+- use DOM `scrollIntoView({block:'center', behavior:'instant'})` only for positioning;
+- derive click geometry from `getBoundingClientRect()` inside page evaluation;
+- perform the interaction with `page.mouse.click` at the measured center so it remains a real pointer event;
+- genuine hidden/zero-size controls stay fail-closed;
+- never substitute `force:true` or DOM `.click()`;
+- retain semantic postconditions after the click.
+Regression: `tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs`.
+
