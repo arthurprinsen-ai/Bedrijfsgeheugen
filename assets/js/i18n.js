@@ -310,9 +310,13 @@
       return;
     }
     if (normalized !== locale) {
+      locale = normalized;
+      localeEpoch += 1;
       try { localStorage.setItem(STORAGE_KEY, normalized); } catch {}
       document.cookie = 'bg_locale=' + encodeURIComponent(normalized) + '; Path=/; Max-Age=31536000; SameSite=Lax';
-      location.assign(localizedHref(normalized));
+      syncControls();
+      closeMenus();
+      await apply(document.body);
       return;
     }
     closeMenus();
@@ -419,7 +423,7 @@
       }
       if (!roots.size) return;
       mountControl();
-      if (locale !== 'en' || pathLocale() !== 'en') return;
+      if (locale !== 'en') return;
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(()=>{
         for (const root of roots) apply(root).catch(()=>{});
@@ -437,12 +441,9 @@
     document.documentElement.dataset.bgLocale = locale;
     syncControls();
 
-    if (!routed && locale === 'en') {
-      location.replace(localizedHref('en'));
-      return;
-    }
-
-    // Fully translated static /en routes need no initial runtime pass.
+    // Unprefixed public routes switch language in place. This avoids making
+    // language selection depend on a separate /en/* route being reachable.
+    // Fully translated static /en routes still remain valid when visited directly.
     // Offline release builds still emit /en routes, marked data-bg-static-translated="false";
     // those routes translate in place at runtime instead of failing navigation.
     const staticTranslated = document.documentElement.dataset.bgStaticTranslated !== 'false';

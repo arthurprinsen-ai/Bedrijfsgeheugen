@@ -16,6 +16,7 @@
     all('[data-bg-stage-panel]').forEach((panel) => {
       const active = panel.getAttribute('data-bg-stage-panel') === key;
       panel.hidden = !active;
+      panel.style.display = active ? '' : 'none';
       panel.classList.toggle('is-active', active);
       panel.setAttribute('aria-hidden', String(!active));
     });
@@ -36,6 +37,7 @@
     all('.bg-plan-card[data-bg-group]').forEach((card) => {
       const active = card.getAttribute('data-bg-group') === key;
       card.hidden = !active;
+      card.style.display = active ? '' : 'none';
       card.classList.toggle('is-active', active);
       card.setAttribute('aria-hidden', String(!active));
     });
@@ -86,7 +88,10 @@
     if (group) selectGroup(group.getAttribute('data-bg-price-tab'));
     const billing = document.querySelector('[data-bg-billing][aria-pressed="true"]') || document.querySelector('[data-bg-billing]');
     if (billing) setBilling(billing.getAttribute('data-bg-billing'));
-    document.documentElement.dataset.bgPricingInteractions = 'ready-v2';
+    document.documentElement.dataset.bgPricingInteractions = 'ready-v3';
+    document.documentElement.dataset.bgPricingSelectedStage = stage?.getAttribute('data-bg-stage') || '';
+    document.documentElement.dataset.bgPricingSelectedGroup = group?.getAttribute('data-bg-price-tab') || '';
+    document.documentElement.dataset.bgPricingBilling = billing?.getAttribute('data-bg-billing') || '';
   }
 
   document.addEventListener('click', (event) => {

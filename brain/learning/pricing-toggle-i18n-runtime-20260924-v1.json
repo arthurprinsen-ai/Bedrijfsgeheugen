@@ -1,0 +1,41 @@
+{
+  "fingerprint": "pricing-toggle-i18n-runtime-20260924-v1",
+  "failure_class": "INTERACTIVE_RUNTIME_PROOF_GAP",
+  "problem": "Production pricing controls appeared present in automated proof but user clicks did not reliably change visible pricing state, and selecting English on an unprefixed public page left the experience Dutch.",
+  "root_cause": "Production proof asserted HTML marker presence rather than functional interaction state. Pricing visibility relied on semantic hidden state without an explicit runtime display fallback, while the public language selector redirected unprefixed pages to /en/* and therefore coupled switching to localized-route reachability.",
+  "prevention": [
+    "Interactive production controls require state-change evidence, not marker-presence evidence alone.",
+    "Pricing tab and lifecycle state must drive both ARIA/hidden semantics and explicit visible display state in the delegated runtime.",
+    "Unprefixed public pages must be able to switch locale in place without depending on /en/* route availability.",
+    "Every runtime repair must be cache-busted and locked by regression tests before production promotion."
+  ],
+  "evidence": {
+    "reported_symptoms": [
+      "pricing toggles do not respond",
+      "English selection remains Dutch"
+    ],
+    "prior_main_sha": "37d09f3ae906470e42cc908029e60e77ba7acba0",
+    "repaired_runtime_asset": "assets/js/pricing-interactions-rescue-v1.js?v=20260924-0750",
+    "changed_i18n_runtime": "assets/js/i18n.js",
+    "pull_request": 2687
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs",
+      "tests/brain-pricing-toggle-runtime-v3.test.mjs",
+      "tests/brain-i18n-in-place-switch-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-interactions-functional-v1.test.mjs",
+    "tests/brain-pricing-toggle-runtime-v3.test.mjs",
+    "tests/brain-i18n-in-place-switch-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "INTERACTIVE_RUNTIME_PROOF_GAP",
+    "scope": "WEBSITE_PRICING_I18N_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
