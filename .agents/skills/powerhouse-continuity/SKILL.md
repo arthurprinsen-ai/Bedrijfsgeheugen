@@ -613,3 +613,20 @@ Mandatory:
 
 Regression: `tests/brain-delivery-stale-queue-janitor-v1.test.mjs`.
 Learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
+
+
+### Prevention-fix integrity
+
+Fingerprint: `delivery|prevention-fix|workflow-integrity|v1`.
+
+A fix to the delivery/control-plane is itself production-critical code and must be protected against self-corruption.
+
+Mandatory:
+- rebuild complex workflow recovery from a known-clean canonical source when structural text has become suspect;
+- prefer JSON-per-record transport between GitHub CLI and shell over delimiter-based parsing;
+- do not trust a prevention patch merely because the intended logic is present; also assert structural uniqueness and syntax-safe composition;
+- every self-healing or janitor change requires a regression that checks the integrity of the workflow that performs the healing;
+- when a fix introduces a second defect, record both the original root cause and the fix-induced defect in the same canonical learning lineage, including failed approach and prevention.
+
+Regression: `tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs`.
+Learning: `brain/learning/2026-09-24-delivery-control-plane-open-pr-scale-supersession-v1.json`.
