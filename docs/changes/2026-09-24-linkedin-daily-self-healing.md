@@ -26,3 +26,12 @@ De bestaande dagelijkse kickoff blijft de eerste uitvoerder. De bestaande Linked
 
 ## Bewijs
 Op 2026-09-24 gaf LinkedIn voor Bedrijfsgeheugen `urn:li:share:7508804000113131521` terug voor `urn:li:organization:18234216`. De dagclaim staat daardoor fail-closed tegen duplicatie. Exacte readback blijft een afzonderlijke verificatiestap.
+
+
+## Terminal productie-evidence
+- Protected merge: PR #2705 → main `d3b19097970fa190674738a26c905ca62d7ac5a6`.
+- `powerhouse-social-publisher`: productie v46 ACTIVE, runtime SHA-256 `a958df9388fdaff31efa3f8fcd30c686ebdadae7f1e209d0a78cb20c45bb3790`.
+- `powerhouse-composio-linkedin-setup`: productie v9 ACTIVE, runtime SHA-256 `694c1f6e889830ea1d9519163e7b85cdb2d6e4f02c10ac3d938b8170c6a21469`.
+- Canonieke runtime-state: `linkedin-daily-self-healing-current-state-v1`.
+- Dagelijkse kickoff blijft de initiële uitvoerder; de bestaande LinkedIn-taak is een uurlijkse condition-watch voor autonome same-lineage recovery.
+- Publish readiness is actief. Exacte provider-readback blijft apart begrensd door ontbrekende externe LinkedIn scopes `r_member_social` en `r_organization_social`; dit mag nooit tot een vervangende create leiden.

@@ -45,7 +45,23 @@
     "automation": "LinkedIn herstelwacht hourly condition_watch",
     "tests": [
       "tests/brain-linkedin-daily-self-healing.test.mjs"
-    ]
+    ],
+    "source_pr": 2705,
+    "merge_sha": "d3b19097970fa190674738a26c905ca62d7ac5a6",
+    "main_readback_sha": "d3b19097970fa190674738a26c905ca62d7ac5a6",
+    "publisher_production_version": 46,
+    "publisher_runtime_sha256": "a958df9388fdaff31efa3f8fcd30c686ebdadae7f1e209d0a78cb20c45bb3790",
+    "linkedin_setup_production_version": 9,
+    "linkedin_setup_runtime_sha256": "694c1f6e889830ea1d9519163e7b85cdb2d6e4f02c10ac3d938b8170c6a21469",
+    "runtime_current_state_record": "linkedin-daily-self-healing-current-state-v1",
+    "company_publish_ready": true,
+    "company_readback_ready": false,
+    "company_readback_scope_required": "r_organization_social",
+    "personal_publish_ready": true,
+    "personal_readback_ready": false,
+    "personal_readback_scope_required": "r_member_social"
   },
-  "status": "CANDIDATE_PENDING_PROTECTED_DELIVERY"
+  "status": "LIVE_AND_PROVEN",
+  "closedAt": "2026-09-24",
+  "definitionOfDone": "regression gates -> protected merge -> exact main readback -> exact Supabase production deploy/readback -> canonical runtime state -> learning/skill terminal writeback"
 }

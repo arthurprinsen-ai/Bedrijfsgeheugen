@@ -105,7 +105,12 @@
     "pr_2070_learning": "brain/learning/2026-09-18-terminal-lineage-continuity-v1.json",
     "pr_2070_status": "RECORDED_PENDING_FINAL_DELIVERY_READBACK",
     "linkedin_daily_self_healing_learning": "brain/learning/2026-09-24-linkedin-daily-self-healing-v1.json",
-    "linkedin_daily_self_healing_test": "tests/brain-linkedin-daily-self-healing.test.mjs"
+    "linkedin_daily_self_healing_test": "tests/brain-linkedin-daily-self-healing.test.mjs",
+    "linkedin_daily_self_healing_status": "LIVE_AND_PROVEN",
+    "linkedin_daily_self_healing_merge_sha": "d3b19097970fa190674738a26c905ca62d7ac5a6",
+    "linkedin_daily_self_healing_publisher_version": 46,
+    "linkedin_daily_self_healing_setup_version": 9,
+    "linkedin_daily_self_healing_runtime_record": "linkedin-daily-self-healing-current-state-v1"
   },
   "consumers": [
     "chat-learning-preflight",
