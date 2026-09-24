@@ -369,7 +369,7 @@ test('predictive LinkedIn sales cockpit learning is discoverable through continu
 
 
 test('pending delivery state can never be the final chat or agent handoff', () => {
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.4');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.5');
   assert.ok(continuityPolicy.invariants.includes('NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT'));
   const rule=continuityPolicy.loop_node_contract.non_terminal_output_rule;
   assert.equal(rule.required, true);
