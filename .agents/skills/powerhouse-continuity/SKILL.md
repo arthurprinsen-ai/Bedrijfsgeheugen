@@ -748,3 +748,17 @@ Fingerprint: `production-readback-manual-exact-main-v1`.
 
 Regression: `tests/brain-production-readback-manual-exact-main-v1.test.mjs`.
 Learning: `brain/learning/production-readback-manual-exact-main-20260924-v1.json`.
+
+
+## Terminal browser-proof refresh
+
+Fingerprint: `pricing-i18n-terminal-readback-refresh-v1`.
+
+If production runtime is already merged but the canonical functional proof was cancelled, skipped or raced a provider deployment:
+- do not weaken the verifier and do not use force-clicks or DOM-click bypasses;
+- prefer manual exact-main readback when dispatch is available;
+- when the active connector cannot dispatch workflows, a versioned operational refresh of the canonical readback workflow is permitted only as a documented recovery candidate with no product behavior change;
+- the recovery must carry Brain learning, human docs, ledger evidence and protected CI;
+- terminal proof still requires exact production SHA/provider deploy identity and the real production browser interaction.
+
+Learning: `brain/learning/pricing-i18n-terminal-readback-refresh-20260924-v1.json`.
