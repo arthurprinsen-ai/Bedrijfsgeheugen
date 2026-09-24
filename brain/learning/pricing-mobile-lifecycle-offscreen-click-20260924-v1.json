@@ -1,0 +1,43 @@
+{
+  "fingerprint": "pricing-mobile-lifecycle-offscreen-click-v1",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_INTERACTION",
+  "root_cause": "On the 390px production browser proof, lifecycle tabs used a single horizontally scrollable flex row. The later 'Verlies & herstel' tab existed and the interaction runtime was ready, but the real Playwright click could not action the offscreen tab within 30 seconds. This made the mobile lifecycle control unreliable for both automated proof and users.",
+  "prevention_rule": "On mobile, primary lifecycle navigation must not depend on hidden horizontal overflow for actionability. Wrap lifecycle buttons into visible rows while preserving real click-based production verification; never replace the functional proof with dispatchEvent or marker-only assertions.",
+  "failed_approaches": [
+    "Relying on browser auto-scroll inside an overflow-x lifecycle strip for a production-critical mobile tab.",
+    "Treating DOM presence or ready markers as sufficient interaction proof."
+  ],
+  "fix": [
+    "At <=760px, lifecycle tabs wrap and overflow-x becomes visible.",
+    "Buttons flex into visible rows while retaining adequate intrinsic width.",
+    "Production verifier continues to use a real locator.click on the loss stage."
+  ],
+  "evidence": {
+    "production_run": 36049745098,
+    "production_job": 107802035445,
+    "production_commit": "8026d48c02fa0a1daca4e0df5f58f5ae272bae8a",
+    "failure": "locator.click timeout for [data-bg-stage=loss] on 390x844 viewport",
+    "regression": "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "MOBILE_LIFECYCLE_OFFSCREEN_INTERACTION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "LIVE_BEWEZEN requires protected merge, exact production SHA readback and successful real mobile pricing/i18n browser interaction."
+}

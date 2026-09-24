@@ -707,3 +707,12 @@ If the canonical Git-linked production trigger is skipped by Netlify:
 - retain exact source identity and provider readback requirements;
 - never fork to an ad-hoc manual deploy path merely because the linked build was skipped.
 
+
+
+## Mobile primary-control actionability
+
+Fingerprint: `pricing-mobile-lifecycle-offscreen-click-v1`.
+
+For mobile public surfaces, a primary decision control must be directly actionable without depending on hidden horizontal overflow. DOM presence, ready markers and synthetic events are not functional proof. Preserve real browser click/tap verification on the actual mobile viewport. If a primary tab strip pushes later choices offscreen, prefer a visible wrap/grid arrangement unless deliberate horizontal navigation has its own explicit discoverability and interaction proof.
+
+Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
