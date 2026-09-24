@@ -25,7 +25,7 @@ test('company ledger keeps immutable-looking newest-first audit history and econ
     normalizeBrainRecord({tenantId:'t1',type:'Decision',id:'d1',owner:'brain',status:'PROPOSED',actor:'agent:brain',actorType:'agent',observedAt:'2026-09-11T06:00:00Z',expectedValue:10000,costAmount:1500,currency:'EUR',evidenceIds:['ev-1']}),
     normalizeBrainRecord({tenantId:'t1',type:'Approval',id:'ap1',subjectId:'decision:d1',decisionId:'d1',owner:'arthur',status:'APPROVED',actor:'user:arthur',actorType:'human',observedAt:'2026-09-11T06:30:00Z',approvalState:'APPROVED',approvedBy:'user:arthur',approvedAt:'2026-09-11T06:30:00Z',evidenceIds:['ev-1']}),
     normalizeBrainRecord({tenantId:'t1',type:'Action',id:'a1',subjectId:'decision:d1',decisionId:'d1',owner:'team-finance',status:'DONE',actor:'user:piet',actorType:'human',observedAt:'2026-09-11T07:00:00Z',costAmount:1800,currency:'EUR',evidenceIds:['ev-2']}),
-    normalizeBrainRecord({tenantId:'t1',type:'Value',id:'v1',subjectId:'decision:d1',decisionId:'d1',actionId:'a1',owner:'brain',status:'REALISED',actor:'agent:brain',actorType:'agent',observedAt:'2026-09-11T08:00:00Z',realizedValue:12000,currency:'EUR',verified:true,evidenceIds:['ev-3']})
+    normalizeBrainRecord({tenantId:'t1',type:'Value',id:'v1',subjectId:'decision:d1',decisionId:'d1',actionId:'a1',owner:'brain',status:'REALISED',actor:'agent:brain',actorType:'agent',observedAt:'2026-09-11T08:00:00Z',realizedValue:12000,currency:'EUR',verified:true,executed:true,evidenceIds:['ev-3']})
   ];
   const ledger=buildCompanyLedger(records,{tenantId:'t1'});
   assert.deepEqual(ledger.timeline.map(x=>x.id),['v1','a1','ap1','d1']);
@@ -41,8 +41,8 @@ test('company ledger keeps immutable-looking newest-first audit history and econ
 
 test('ledger is tenant scoped and never mixes economics across tenants',()=>{
   const records=[
-    normalizeBrainRecord({tenantId:'t1',type:'Value',id:'v1',owner:'brain',status:'REALISED',realizedValue:100,currency:'EUR',verified:true}),
-    normalizeBrainRecord({tenantId:'t2',type:'Value',id:'v2',owner:'brain',status:'REALISED',realizedValue:999999,currency:'EUR',verified:true})
+    normalizeBrainRecord({tenantId:'t1',type:'Value',id:'v1',owner:'brain',status:'REALISED',realizedValue:100,currency:'EUR',verified:true,executed:true,evidenceIds:['ev-t1']}),
+    normalizeBrainRecord({tenantId:'t2',type:'Value',id:'v2',owner:'brain',status:'REALISED',realizedValue:999999,currency:'EUR',verified:true,executed:true,evidenceIds:['ev-t2']})
   ];
   const ledger=buildCompanyLedger(records,{tenantId:'t1'});
   assert.deepEqual(ledger.timeline.map(x=>x.id),['v1']);

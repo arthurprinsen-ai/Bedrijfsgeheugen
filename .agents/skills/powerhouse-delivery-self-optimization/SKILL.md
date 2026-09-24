@@ -290,3 +290,78 @@ The anticipate-before-act forecast includes current queued/in-progress/pending/w
 Fingerprint: `github|workflow-structural-anchor|preserve-tested-order|v1`.
 
 A syntactically valid GitHub Actions edit can still be a regression when canonical tests intentionally assert neighboring job keys or structural anchors. Before inserting controls such as `timeout-minutes`, concurrency, permissions or conditions, inspect the contract tests for that workflow. If semantics allow, place the new key without disturbing an already-tested anchor. Never dismiss a structural test as cosmetic when it protects release-control composition.
+## Problem Radar delivery learnings — 24 september 2026
+
+Fingerprint: `delivery|problem-radar-first-time-right|v1`.
+
+Observed avoidable retries and permanent prevention:
+- missing `Base-SHA` in the PR envelope blocked admission: validate all required delivery metadata before first remote CI;
+- material implementation without Brain learning + activity ledger blocked closure: create learning, ledger and human docs in the same candidate before opening/refreshing the PR;
+- learning without `evaluation.historical_replay` failed canonicalization: bind every material learning to an executable regression/historical replay before projection;
+- a green merge did not imply current production: compare provider `commit_ref` with feature merge/current main before making a live claim;
+- when production commit is newer than the feature merge, use ancestry to prove feature inclusion;
+- when exact-current-main promotion is required, use the canonical Production Source Snapshot rather than a second deploy mechanism.
+
+Preflight these conditions before consuming a full CI/browser cycle.
+
+## GitHub control-plane payload and reconcile-race prevention
+
+Fingerprint: `delivery|github-api-buffer-pr-reconcile-race|v1`.
+
+- GitHub API collectors that enumerate many PRs/files must use an explicit bounded process-output buffer; Node `execFileSync` defaults are not safe for a growing repository control plane.
+- A buffer overflow that includes valid JSON in stdout is an execution-envelope failure, not evidence that the returned PR is malformed.
+- Persist only a sanitized bounded error summary; never dump an entire open-PR payload as the diagnostic.
+- During full-main-union reconciliation, avoid exposing an intermediate branch state that is byte-identical to base. GitHub may auto-close the PR as zero-diff.
+- If a canonical PR is auto-closed during such a transient state, replay the preserved obligation delta, verify the branch head, reopen the same PR, refresh Base-SHA, and re-enable auto-merge. Never create a duplicate obligation PR solely because of this race.
+
+## Runner leak prevention
+
+Fingerprint: `delivery|runner-leak|job-timeout|required|v1`.
+
+- Internal retry loops are insufficient protection against a hung browser, child process, package install or provider readback.
+- Every long-running browser verification and production readback job must also define a job-level `timeout-minutes`.
+- Timeout expiry is fail-closed evidence, not success; preserve logs/artifacts and route it into recovery learning.
+- Prefer bounded jobs that release hosted runners predictably over indefinite verification that starves unrelated protected delivery.
+- Current guard: `tests/brain-delivery-runner-leak-timeout-v1.test.mjs`.
+
+### Do not use PR reopen/close as runner cancellation
+
+Fingerprint: `delivery|runner-recovery|no-pr-churn-cancellation|v1`.
+
+Reopening a closed PR can enqueue a new PR-scoped workflow run, but it is not a reliable way to terminate an already running reusable-workflow child job. Therefore:
+- never use PR reopen/close churn as the primary mechanism to reclaim runner capacity;
+- keep superseded PRs closed;
+- prevent leaks with job-level timeouts and workflow concurrency before execution gets stuck;
+- when cancellation APIs are unavailable, classify remaining stuck historical jobs as external runtime debt and keep current delivery fail-closed rather than mutating unrelated PR state.
+
+## Production readback single-flight
+
+Fingerprint: `delivery|production-readback|single-flight-supersession|v1`.
+
+Production readback verifies current deployment truth. Therefore a newer `main` push supersedes an unfinished readback for an older main commit unless a specific historical audit contract explicitly requires both.
+
+Mandatory:
+- canonical production readback workflows use a stable concurrency group for the production target;
+- `cancel-in-progress: true` for obsolete current-state readbacks;
+- retain immutable artifacts from completed runs, but do not let stale in-progress readbacks consume runner capacity;
+- combine single-flight concurrency with job-level timeouts;
+- regression coverage must assert both the timeout and concurrency contract.
+
+### Concurrency contract migrations must migrate regressions
+
+Fingerprint: `delivery|concurrency-contract|regression-migration|required|v1`.
+
+When a workflow concurrency invariant changes intentionally, every regression that asserts the old value must be migrated in the same candidate. A stale regression is not evidence that the new runtime contract is wrong.
+
+Required:
+- change runtime contract and its historical assertion together;
+- preserve the intent of the test while updating the expected invariant;
+- never weaken the runtime fix merely to satisfy stale test text;
+- include the migrated regression in canonical learning evidence.
+
+### Imported contract must match runtime representation
+
+Fingerprint: `delivery|imported-contract|runtime-derivation-required|v1`.
+
+When a canonical contract exports relative route/state identifiers but a runtime consumer works with absolute URLs or another transformed representation, the consumer must derive that representation explicitly before use. An import-presence test alone is insufficient; regressions must verify the runtime derivation used by the failing path.
+

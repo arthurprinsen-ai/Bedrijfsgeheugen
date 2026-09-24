@@ -2,16 +2,25 @@
   "fingerprint": "powerhouse-50-problem-radar-executive-p0-v1",
   "date": "2026-09-24",
   "type": "PORTAL_PRODUCT_INTELLIGENCE_PROJECTION",
-  "status": "IMPLEMENTED_CANDIDATE",
+  "status": "LIVE_PROVEN",
   "root_cause": "The canonical PH-Pxxx Problem Library existed in production, but the executive cockpit still projected generic risks, actions and forecasts without a first-class canonical problem object, evidence explanation, explicit impact certainty label, capability mapping and outcome metric. That allowed the portal experience to drift from Problem Radar and commercial intelligence even while the backend taxonomy was canonical.",
-  "prevention_rule": "Every executive problem surface must project a canonical PH-Pxxx identifier from the shared Problem Library, show evidence health/confidence, use only OBSERVED/ESTIMATED/POTENTIAL impact labels, map to an action/capability/outcome, expose why Powerhouse says it, reject local problem identifiers, and cap the executive start view at five priorities.",
+  "prevention_rule": "Every executive problem surface must project a canonical PH-Pxxx identifier from the shared Problem Library, show evidence health/confidence, use only OBSERVED/ESTIMATED/POTENTIAL impact labels, map to an action/capability/outcome, expose why Powerhouse says it, reject local problem identifiers, and cap the executive start view at five priorities. LIVE_PROVEN requires provider production readback; when production has advanced beyond the feature merge, prove ancestry, and reserve exact-main claims for commit_ref equality with protected main.",
   "evidence": {
     "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/2750",
     "candidate_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2779",
     "projection": "portal-v2/operating-system/executive-projection.js",
     "cockpit": "portal-v2/operating-system/executive-cockpit.js",
     "regression": "tests/brain-powerhouse-problem-radar-executive.test.mjs",
-    "preview": "https://deploy-preview-2779--bedrijfsgeheugen.netlify.app"
+    "preview": "https://deploy-preview-2779--bedrijfsgeheugen.netlify.app",
+    "feature_merge_sha": "53c1c5db7a6e499f3afa4a5d9b470e6196460579",
+    "closure_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2781",
+    "closure_merge_sha": "b9e129ee972b990681d7e426f023cd25f75036cd",
+    "current_production_deploy_id": "6ab5417a7533790008782b04",
+    "current_production_commit_ref": "945febc5cb2d603dfaefcc8b1d12a36b075a7d1d",
+    "current_production_state": "ready",
+    "current_production_context": "production",
+    "production_url": "https://www.bedrijfsgeheugen.nl",
+    "production_lineage_proof": "current production commit is the protected main SHA and descends from the Problem Radar feature merge"
   },
   "skill_targets": [
     "skills/mkb-voice-of-customer-problem-radar.md"
