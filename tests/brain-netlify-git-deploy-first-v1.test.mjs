@@ -6,7 +6,7 @@ test('production transport prefers bounded Git-linked deploy, then token auth, t
   const workflow=fs.readFileSync('.github/workflows/production-source-snapshot.yml','utf8');
   const wait=workflow.indexOf('for attempt in $(seq 1 3)');
   const alreadyLive=workflow.indexOf('Exact SHA is already live via Git-linked Netlify deploy');
-  const token=workflow.indexOf('NETLIFY_AUTH_TOKEN');
+  const token=workflow.indexOf('if [ -n "${NETLIFY_AUTH_TOKEN:-}" ]');
   const cli=workflow.indexOf('netlify-cli@latest deploy --build --prod');
   const proxy=workflow.indexOf('npx -y @netlify/mcp@latest');
   const noTransport=workflow.indexOf('No authorized Netlify production transport is available');
