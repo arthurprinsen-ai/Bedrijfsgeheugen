@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing-runtime-build-preservation-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production Release Readback on exact deploy e648f6c8... timed out waiting for data-bg-pricing-interactions=ready-v3 although the pricing runtime script exists in repository source.",
+  "root_cause": "The production build runs multiple V18/normalization transforms before pricing-build-integrity restore. The restore only replaced the #pakketten section from the pre-build snapshot. The canonical inline pricing controller and external rescue runtime live outside that section, so a full-page transform could remove them and the restore did not put them back.",
+  "prevention": [
+    "Pricing build integrity must preserve both canonical pricing content and its interaction runtimes.",
+    "After build transforms, restore the canonical #pakketten section, the inline bg-pricing-neno-v1-js controller, and the versioned pricing rescue runtime.",
+    "Fail the build if either required pricing runtime is absent after restore.",
+    "Production readback must still wait for ready-v3 and execute actual lifecycle, group, billing and language clicks.",
+    "Do not treat repository source presence as proof that a build transform preserved runtime assets."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-runtime-build-preservation-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-runtime-build-preservation-v1.test.mjs"],
+    "canary": ["tests/brain-pricing-runtime-build-preservation-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-pricing-runtime-build-preservation-v1.test.mjs"],
+  "evidence": {
+    "production_sha": "e648f6c8e07bc2185daab6c71b0adff26d020d68",
+    "netlify_deploy_id": "6ab5131f10d7810008497634",
+    "production_readback_run_id": "35997359336",
+    "browser_failure": "timeout waiting for html[data-bg-pricing-interactions=ready-v3]"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRICING_RUNTIME_STRIPPED_BY_BUILD_TRANSFORM",
+    "scope": "WEBSITE_PRICING_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
