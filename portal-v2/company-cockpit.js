@@ -9,6 +9,7 @@ export function buildCompanyCockpit(runtime = {}) {
   const timeline = items(runtime.timeline);
   const economics = runtime.economics || {expectedValue:0, actualCost:0, realizedValue:0, realizedProfit:0, currency:'EUR'};
   const now = Array.isArray(runtime?.portfolio?.NOW) ? runtime.portfolio.NOW : [];
+  const verifiedValueByProblem = Array.isArray(runtime?.verifiedValueByProblem) ? runtime.verifiedValueByProblem : [];
 
   return {
     sections: [
@@ -26,6 +27,7 @@ export function buildCompanyCockpit(runtime = {}) {
       { key: 'priorities', title: 'Wat moet eerst', items: priorities },
       { key: 'approvals', title: 'Goedkeuring nodig', items: approvals },
       { key: 'economics', title: 'Kosten en opbrengst', data: economics, items: [] },
+      { key: 'verified-value', title: 'Verified Value Created', items: verifiedValueByProblem },
       { key: 'blocked', title: 'Geblokkeerd', items: blocked },
       { key: 'audit', title: 'Wie deed wat', items: timeline }
     ]
