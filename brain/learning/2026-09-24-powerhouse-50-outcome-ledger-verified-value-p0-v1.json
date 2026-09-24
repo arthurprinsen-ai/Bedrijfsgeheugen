@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse-50-outcome-ledger-verified-value-p0-v1",
+  "date": "2026-09-24",
+  "type": "OUTCOME_VALUE_PROJECTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Powerhouse could calculate verified value and company economics, but realized value was not canonically attributable to the PH-Pxxx problem that triggered the work. This prevented problem precision, solved-problem measurement and realized-value learning from sharing one lineage.",
+  "prevention_rule": "Material realized value may only appear as Verified Value Created when execution, verification and evidence are present; it must preserve a canonical PH-Pxxx when one exists. Local/non-canonical problem identifiers must not create a second value taxonomy.",
+  "evidence": {
+    "issue": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/issues/2750",
+    "ledger": "brain/operating-loop/company-ledger.mjs",
+    "verified_value": "brain/operating-loop/verified-value.mjs",
+    "portal": "portal-v2/company-cockpit-ui.js",
+    "regression": "tests/brain-powerhouse-outcome-ledger-problem-value.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "REALIZED_VALUE_WITHOUT_CANONICAL_PROBLEM_LINEAGE",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-outcome-ledger-problem-value.test.mjs"
+    ],
+    "invariants": [
+      "only executed verified value with evidence is counted",
+      "verified value preserves canonical PH-Pxxx problem lineage when available",
+      "local problem ids do not create parallel verified-value groups",
+      "company cockpit exposes Verified Value Created from runtime truth"
+    ]
+  },
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ]
+}

@@ -37,6 +37,7 @@ export function renderCompanyCockpitHtml(runtime={}){
   const priorities=cockpit.sections.find(x=>x.key==='priorities')?.items||[];
   const approvals=cockpit.sections.find(x=>x.key==='approvals')?.items||[];
   const economics=cockpit.sections.find(x=>x.key==='economics')?.data||{};
+  const verifiedValue=cockpit.sections.find(x=>x.key==='verified-value')?.items||[];
   const blocked=cockpit.sections.find(x=>x.key==='blocked')?.items||[];
   const audit=cockpit.sections.find(x=>x.key==='audit')?.items||[];
   return `<div class="company-cockpit-head"><div><h2>Wat moet eerst</h2><p>Één prioriteitenlijst uit Brein & Powerhouse — met bewijs, goedkeuring, kosten en gerealiseerde waarde.</p></div><span class="company-live">Brain runtime</span></div>
@@ -46,6 +47,13 @@ export function renderCompanyCockpitHtml(runtime={}){
       <span><small>Gerealiseerde waarde</small><b>${eur(economics.realizedValue)}</b></span>
       <span><small>Gerealiseerde winst</small><b>${eur(economics.realizedProfit)}</b></span>
     </div>
+    <section class="company-verified-value" aria-label="Verified Value Created">
+      <div class="company-cockpit-head"><div><h3>Verified Value Created</h3><p>Alleen gerealiseerde waarde met uitvoering én bewijs, gekoppeld aan dezelfde PH-Pxxx-problemen.</p></div></div>
+      ${verifiedValue.length?verifiedValue.map(item=>`<article class="company-decision-card" data-problem-id="${esc(item.problemId)}">
+        <div class="company-decision-head"><span class="company-bucket">${safeText(item.problemId)}</span><strong>${eur(item.realizedValue)}</strong><span>${esc(item.outcomes||0)} outcomes</span></div>
+        <p>${esc((item.evidenceIds||[]).length)} bewijsreferenties · gerealiseerde waarde telt alleen mee na verificatie.</p>
+      </article>`).join(''):'<p class="company-empty">Nog geen geverifieerde gerealiseerde waarde per probleem.</p>'}
+    </section>
     <div class="company-priorities">${priorities.length?priorities.map(priorityCard).join(''):'<p class="company-empty">Nog geen bewezen bedrijfsprioriteiten. Vul bedrijfsdata aan of wacht op Brain-evidence.</p>'}</div>
     <details class="company-details"><summary>Goedkeuring nodig (${approvals.length})</summary>${approvals.length?approvals.map(a=>`<p><b>${safeText(a.decisionId)}</b> · ${safeText(a.approval?.state||a.status)} · ${safeText(a.actor)}</p>`).join(''):'<p>Geen open goedkeuringen.</p>'}</details>
     <details class="company-details"><summary>Geblokkeerd (${blocked.length})</summary>${blocked.length?blocked.map(b=>`<p><b>${safeText(b.title)}</b> · ${safeText(b.blockedBy||b.dependencyState)}</p>`).join(''):'<p>Geen geblokkeerde prioriteiten.</p>'}</details>
