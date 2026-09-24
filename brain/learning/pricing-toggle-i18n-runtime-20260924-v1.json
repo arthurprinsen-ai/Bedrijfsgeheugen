@@ -11,7 +11,8 @@
     "A production English-switch proof must verify html lang=en, visible English copy, absence of the Dutch pricing H1, and absence of the runtime translation failure message.",
     "Runtime/cache version changes require co-changing exact-version regressions in the same candidate.",
     "No LIVE_BEWEZEN claim is valid for an interaction defect without browser-level production evidence of that exact interaction.",
-    "Production proof oracles must not depend on incidental marketing copy or presentation-only heading text when stable semantic markers and browser-observable behavior exist."
+    "Production proof oracles must not depend on incidental marketing copy or presentation-only heading text when stable semantic markers and browser-observable behavior exist.",
+    "For pricing/i18n interaction incidents, the production Playwright behavior verifier is authoritative; pre-browser HTML grep gates are forbidden because they can false-negative before observable behavior is tested."
   ],
   "evidence": {
     "reported_symptoms": [
@@ -26,7 +27,10 @@
     "prior_live_main_sha": "492fced012acc6e4263550d17281563582a89ceb",
     "observed_live_failure": "Production /prijzen exposed 'Switching language failed. Try again.' after selecting English.",
     "production_behavior_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
-    "retrospective": "docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md"
+    "retrospective": "docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md",
+    "exact_production_sha_before_oracle_cleanup": "0c372634337ea90322fefdf04df6a2220f2e9dd3",
+    "exact_production_deploy_before_oracle_cleanup": "6ab4d0fd2930df0008637e2b",
+    "repeated_content_oracle_false_negative": true
   },
   "evaluation": {
     "historical_replay": [
@@ -59,7 +63,8 @@
     "Treating presence of data-bg-* markers as proof that clicks changed user-visible state.",
     "Relying on general route/browser health without an interaction-specific production assertion.",
     "Using runtime translation as the primary public-site language-switch path, allowing provider failure to leave Dutch copy visible.",
-    "Keeping stale literal-copy greps in production proof after the functional contract moved to semantic data attributes and browser interaction."
+    "Keeping stale literal-copy greps in production proof after the functional contract moved to semantic data attributes and browser interaction.",
+    "Using semantic HTML grep gates as a prerequisite to browser interaction proof; live rendering can be correct while raw-response marker shape differs, causing the stronger proof to be skipped."
   ],
-  "revision": 3
+  "revision": 4
 }
