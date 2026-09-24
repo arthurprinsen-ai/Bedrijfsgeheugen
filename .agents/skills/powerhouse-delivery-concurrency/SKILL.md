@@ -204,3 +204,17 @@ Required for pricing/i18n-class defects:
 - exact interaction proof on the deployed production SHA before `LIVE_BEWEZEN`.
 
 Production browser verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+
+## External-provider and deploy-auth hard boundaries
+
+Fingerprint: `provider-credit-deploy-auth-preflight-20260924-v1`.
+
+Terminal delivery must classify two external boundaries before declaring a release path healthy:
+- **provider readiness:** credit/auth failures are non-transient; retry budgets apply only to rate-limit/5xx classes;
+- **deploy credential lifetime:** an ephemeral MCP proxy must never be stored or treated as a durable production secret. Prefer a durable credential; otherwise mint the ephemeral credential inside the same run that consumes it.
+
+If Netlify returns 401 from a stored MCP proxy, classify `NETLIFY_EPHEMERAL_PROXY_EXPIRED`; do not blind-retry it.
+If the translation provider reports insufficient credit, classify `STATIC_I18N_PROVIDER_CREDIT_EXHAUSTED`; do not retry the full build.
+API-upload recovery must normalize the archive root and stamp exact source identity before any side effect.
+A rollback is terminal only when the clean known-good site/functions are read back; then the original obligation remains open until its external hard boundary is cleared and production behavior is reproven.
