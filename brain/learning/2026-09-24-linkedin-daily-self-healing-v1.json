@@ -1,0 +1,51 @@
+{
+  "version": "linkedin-daily-self-healing-v1",
+  "date": "2026-09-24",
+  "obligationId": "linkedin-daily-self-healing-20260924",
+  "fingerprint": "linkedin|daily-publish|measured-link|provider-side-effect-dedupe|self-healing|v1",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "incident": {
+    "symptom": "LinkedIn company publication could be blocked before provider dispatch because the content gate required a measurable /g/ link that the publisher itself did not create; provider create could also succeed while exact readback remained forbidden.",
+    "root_cause": "The publication path split responsibility across generation, measurement-link provisioning, provider dispatch and readback. A required precondition was enforced but not autonomously provisioned, and publish capability was not explicitly separated from readback capability.",
+    "consequence": "Daily publication could require manual repair even though all required data and mutation authority were already inside the canonical Powerhouse runtime."
+  },
+  "root_cause": [
+    "A mandatory /g/ CTA was validated by the content gate but had no same-lane self-healing producer.",
+    "LinkedIn write scopes and readback scopes were represented as one coarse readiness state.",
+    "Provider create success and provider truth verification require separate states to prevent duplicate recovery."
+  ],
+  "prevention": [
+    "LINKEDIN_COMPANY_MEASURED_LINK_SELF_HEAL: before review, ensure bg_campaign_links contains one active li-company-YYYYMMDD key and bind the matching /g/ URL into the exact artifact.",
+    "LINKEDIN_PROVIDER_SIDE_EFFECT_IS_IRREVERSIBLE_FOR_DAILY_DEDUPE: any real post URN forces republish_forbidden=true for that run_date/channel.",
+    "PUBLISH_READY_AND_READBACK_READY_ARE_SEPARATE: missing r_member_social or r_organization_social may leave exact readback pending but must never trigger a replacement create.",
+    "DAILY_RECOVERY_REUSES_CANONICAL_LINEAGE: recover pre-provider failures on the same artifact, decision, capability authority and channel/date; no Buffer fallback for LinkedIn.",
+    "HOURLY_RECOVERY_WATCH_RECONCILES_WITHOUT_DUPLICATION: autonomous checks may repair only recoverable pre-side-effect failures or reconcile an existing external id."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-daily-self-healing.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-daily-self-healing.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_create_urn": "urn:li:share:7508804000113131521",
+    "company_author_urn": "urn:li:organization:18234216",
+    "measured_link": "https://www.bedrijfsgeheugen.nl/g/li-company-20260924",
+    "campaign_key": "powerhouse-2026-09-24-linkedin-company",
+    "production_function_version": 44,
+    "current_state": "DISPATCHED_VERIFICATION_PENDING",
+    "automation": "LinkedIn herstelwacht hourly condition_watch",
+    "tests": [
+      "tests/brain-linkedin-daily-self-healing.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE_PENDING_PROTECTED_DELIVERY"
+}
