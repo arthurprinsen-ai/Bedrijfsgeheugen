@@ -707,3 +707,21 @@ If the canonical Git-linked production trigger is skipped by Netlify:
 - retain exact source identity and provider readback requirements;
 - never fork to an ad-hoc manual deploy path merely because the linked build was skipped.
 
+
+
+## Pricing terminal recovery integrated closure
+
+Fingerprint: `pricing-terminal-recovery-postmortem-20260924-v1`.
+
+For pricing/i18n recovery, treat terminal delivery as one composed contract:
+- preserve `section#prijzen-pakketten` and `section#pakketten` atomically;
+- public locale authority is the static route prefix, never stale persisted public state;
+- noindex authentication pages are explicit utility destinations, not indexable SEO routes;
+- queued/pending CI is not evidence of a code defect and must not trigger proof-only candidate mutation;
+- material recovery must include Brain learning, append-only ledger and human-readable documentation in the same lineage;
+- terminal success requires protected merge + provider production identity + user-visible browser behavior;
+- use ancestry for feature-live when production advanced beyond the feature merge; reserve SHA equality for exact-current-main claims;
+- keep one canonical deploy authority and one canonical obligation lineage.
+
+Canonical postmortem: `brain/learning/pricing-terminal-recovery-postmortem-20260924-v1.json`.
+Canonical documentation: `docs/changes/pricing-terminal-recovery-postmortem-20260924-v1.md`.
