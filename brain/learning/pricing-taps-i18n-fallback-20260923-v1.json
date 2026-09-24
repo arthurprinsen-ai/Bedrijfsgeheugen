@@ -2,43 +2,51 @@
   "fingerprint": "pricing-taps-i18n-fallback-20260923-v1",
   "failure_class": "CLIENT_INTERACTION_AND_LOCALE_ROUTE_GAP",
   "problem": "On iPhone the pricing lifecycle/package/billing controls rendered but taps produced no visible state change, while the language selector could navigate to an English route that an offline production build had not emitted.",
-  "root_cause": "Pricing interaction depended on one inline initialization path. The locale build intentionally disabled translation network access and returned null when its translation cache was incomplete, then skipped writing /en routes even though the runtime language switcher still navigated to them.",
+  "root_cause": "Pricing interaction ownership had regressed to two competing runtimes after build restore: an inline bg-pricing-neno-v1-js owner plus pricing-interactions-rescue-v1.js. The build-integrity step reinstalled both owners on every Netlify build. On the 390px production proof the lifecycle control existed but had no actionable visible hitbox. The billing proof also checked aria-selected although the control contract is aria-pressed.",
   "prevention": [
-    "Critical pricing controls have an external delegated click/pointerup controller in addition to source-level interaction logic.",
-    "Offline localized builds always emit both /nl and /en route trees.",
-    "English fallback routes are explicitly marked data-bg-static-translated=false and translated in place by the runtime.",
-    "Regression tests assert touch delegation, English route emission and runtime fallback behavior.",
-    "Do not claim closure until preview browser interaction and production /prijzen plus /en/prijzen readback succeed."
+    "Exactly one canonical delegated pricing controller may exist after source build and build-integrity restore.",
+    "Build integrity must remove inline/rescue legacy owners before injecting assets/js/pricing-interactions-v4.js.",
+    "Lifecycle controls must retain explicit mobile hitboxes: visible, nonzero min-height, pointer-events enabled and horizontally scrollable.",
+    "Production proof scrolls the lifecycle control into view, proves visibility before click, verifies visible panel state, and checks billing with aria-pressed.",
+    "Public language switching must navigate to the static localized /en route and production proof must reject a visible runtime failure message.",
+    "Do not claim closure until exact provider SHA/deploy identity and production browser interaction proof succeed."
   ],
   "evidence": {
     "source": [
       "prijzen.html",
-      "assets/js/pricing-interactions-rescue-v1.js",
-      "assets/js/i18n.js",
-      "tools/site-shell/build-localized-routes.mjs"
+      "assets/js/pricing-interactions-v4.js",
+      "tools/site-shell/pricing-build-integrity.mjs",
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
     ],
     "tests": [
       "tests/brain-pricing-interactions-functional-v1.test.mjs",
-      "tests/site-shell-static-locales.test.mjs",
-      "tests/site-shell-global-i18n.test.mjs"
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
     ],
-    "production_readback": "PENDING"
+    "production_readback": "FAILED_ON_be5ec08e_lifecycle_control_not_actionable; recovery in canonical PR #2676"
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-pricing-interactions-functional-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-interactions-functional-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
     ]
   },
   "test_evidence": [
     "tests/brain-pricing-interactions-functional-v1.test.mjs",
-    "tests/site-shell-static-locales.test.mjs",
-    "tests/site-shell-global-i18n.test.mjs"
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
   ],
   "compiler": {
-    "failure_class": "CLIENT_INTERACTION_AND_LOCALE_ROUTE_GAP",
+    "failure_class": "PRICING_MULTI_OWNER_MOBILE_HITBOX_REGRESSION",
     "scope": "WEBSITE_PRICING_I18N",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
-  }
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ]
 }
