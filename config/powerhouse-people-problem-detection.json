@@ -1,0 +1,154 @@
+{
+  "version": "1.0.0",
+  "purpose": "Detection contract for canonical people/workforce problems in the Powerhouse Problem Radar.",
+  "privacy": [
+    "Use aggregated/team-level evidence by default.",
+    "Do not infer medical diagnoses or sensitive traits.",
+    "Do not expose identifiable employee health or complaint data in executive surfaces.",
+    "External benchmarks are context, not proof of a tenant problem."
+  ],
+  "causal_chains": [
+    [
+      "PH-P035",
+      "PH-P033",
+      "PH-P031",
+      "PH-P032",
+      "PH-P008"
+    ],
+    [
+      "PH-P034",
+      "PH-P005",
+      "PH-P027",
+      "PH-P035"
+    ],
+    [
+      "PH-P037",
+      "PH-P003"
+    ],
+    [
+      "PH-P036",
+      "PH-P007"
+    ],
+    [
+      "PH-P039",
+      "PH-P033",
+      "PH-P031",
+      "PH-P034"
+    ]
+  ],
+  "source_priority": [
+    "tenant HRM/verzuim data",
+    "tenant payroll/time/planning data",
+    "tenant finance/ERP",
+    "tenant ATS/LMS/engagement data",
+    "arbodienst/RI&E evidence where lawfully available",
+    "CBS/UWV/TNO/sector benchmarks",
+    "public Voice-of-Customer signals"
+  ],
+  "rules": [
+    {
+      "problem_id": "PH-P031",
+      "requires_any": [
+        "absence_rate",
+        "absence_days_per_fte",
+        "absence_frequency"
+      ],
+      "benchmark_context": [
+        "own_12m_trend",
+        "sector_absence_rate"
+      ],
+      "suggested_confidence": "medium_with_internal_metric"
+    },
+    {
+      "problem_id": "PH-P032",
+      "requires_any": [
+        "long_term_absence_cases",
+        "reintegration_deadline_gap"
+      ],
+      "suggested_confidence": "high_with_case_evidence"
+    },
+    {
+      "problem_id": "PH-P033",
+      "requires_any": [
+        "overtime_hours",
+        "backlog",
+        "capacity_utilization"
+      ],
+      "corroborate_any": [
+        "absence_frequency",
+        "schedule_fill_rate",
+        "service_level"
+      ],
+      "suggested_confidence": "medium_with_two_independent_signals"
+    },
+    {
+      "problem_id": "PH-P034",
+      "requires_any": [
+        "voluntary_turnover",
+        "early_attrition",
+        "critical_role_exits"
+      ],
+      "suggested_confidence": "high_with_hrm_exit_data"
+    },
+    {
+      "problem_id": "PH-P035",
+      "requires_any": [
+        "time_to_fill",
+        "open_vacancy_age",
+        "qualified_applicant_rate"
+      ],
+      "suggested_confidence": "high_with_ats_data"
+    },
+    {
+      "problem_id": "PH-P036",
+      "requires_any": [
+        "skill_coverage",
+        "training_completion",
+        "expert_dependency"
+      ],
+      "suggested_confidence": "medium_until_skill_taxonomy_validated"
+    },
+    {
+      "problem_id": "PH-P037",
+      "requires_any": [
+        "personnel_cost_ratio",
+        "revenue_per_fte",
+        "overtime_cost",
+        "external_hire_cost"
+      ],
+      "suggested_confidence": "high_with_finance_payroll_join"
+    },
+    {
+      "problem_id": "PH-P038",
+      "requires_any": [
+        "hr_deadline_gap",
+        "employee_file_completeness",
+        "reintegration_deadline_gap"
+      ],
+      "suggested_confidence": "high_with_workflow_evidence"
+    },
+    {
+      "problem_id": "PH-P039",
+      "requires_any": [
+        "team_turnover_delta",
+        "team_absence_delta",
+        "engagement_delta"
+      ],
+      "corroborate_any": [
+        "complaint_count_aggregated",
+        "escalation_count"
+      ],
+      "suggested_confidence": "potential_until_multi-source_validated"
+    },
+    {
+      "problem_id": "PH-P040",
+      "requires_any": [
+        "incident_rate",
+        "near_miss_rate",
+        "rie_open_actions",
+        "physical_absence_rate"
+      ],
+      "suggested_confidence": "high_with_safety_records"
+    }
+  ]
+}
