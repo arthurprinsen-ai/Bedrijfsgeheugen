@@ -376,3 +376,23 @@ Fingerprint: `delivery|netlify-skipped|fallback-authority|v1`.
 - Production completion still requires provider `ready`, `production`, and exact `commit_ref`.
 - Regression: `tests/brain-netlify-linked-skipped-fallback-v1.test.mjs`.
 
+
+
+## Pricing/i18n terminal recovery composition
+
+Fingerprint: `delivery|pricing-i18n|terminal-composed-contract|v1`.
+
+When pricing or public-i18n delivery fails, optimize for the first proven failing layer instead of repeatedly mutating the candidate.
+
+Mandatory order:
+1. classify source/build/runtime/provider/control-plane failure;
+2. repair only the concrete failing layer;
+3. bind the repair to an executable historical regression;
+4. keep the exact candidate head immutable while checks are merely queued/pending;
+5. require material writeback completeness before expensive terminal proof;
+6. merge through protected gates;
+7. prove provider production identity;
+8. prove the actual pricing lifecycle/plan/billing and locale interaction in a browser;
+9. persist terminal evidence and release the writer lease.
+
+A green result at any intermediate layer is not permission to skip later layers. Do not create parallel recovery PRs or deploy authorities unless the canonical lineage is provably unrecoverable.
