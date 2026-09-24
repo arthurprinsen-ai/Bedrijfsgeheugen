@@ -168,3 +168,24 @@ Tijdens de integratie van de unified content calendar werden drie aparte failure
 3. nadat clean-URL fallback en routechecks groen waren, vond de volledige visibility-gate negen echte CLS-overschrijdingen op phone/tablet (`0.111–0.154`, limiet `0.100`).
 
 De structurele learning is daarom: **fix nooit alleen de eerst zichtbare blocker; behoud alle downstream kwaliteitsgates en laat de volledige keten opnieuw beslissen op de nieuwste SHA.**
+
+
+## 22. SEO Opportunity Intelligence
+**Contract-ID:** `powerhouse-seo-opportunity-resolver-v1`.
+
+SEO is part of the canonical Powerhouse opportunity/prediction system, not a standalone content calendar. The daily evidence chain is:
+
+`GSC → DataForSEO cache → external market forecasts → bounded live enrichment → intent-owner decision → forecast → recommendation/action → existing protected delivery → outcome/calibration`.
+
+The resolver runs after the daily DataForSEO and Search Console syncs and before the canonical morning blog delivery window. It ranks at most five Dutch search opportunities using search demand, CPC, ranking gap, current GSC evidence, whitespace and external forecast evidence.
+
+A zero-item live DataForSEO producer run proves connectivity only. It never invalidates still-fresh cached keyword intelligence. This distinction is mandatory because producer liveness and market-data availability are separate truths.
+
+The decision gate is deterministic:
+- existing canonical owner: `UPDATE_MONEY_PAGE`;
+- no owner + commercially material and externally supported distinct gap: `CREATE_INTENT_GAP_CONTENT`;
+- otherwise: `NO_ACTION_EVIDENCE_INSUFFICIENT`.
+
+Only the second state can create a blog recommendation. It enters `powerhouse_content_recommendations`, after which the existing Powerhouse content orchestrator, blog queue, GitHub candidate PR, protected merge and public readback remain authoritative. There is no second publisher.
+
+Every material search opportunity is first written as a forecast in `powerhouse_forecasts`. CPC, volume, first-mover score and modeled probability are prioritization evidence, never booked or attributable revenue. Subsequent GSC, CTA, lead, order and revenue outcomes calibrate whether the first-mover thesis was correct.
