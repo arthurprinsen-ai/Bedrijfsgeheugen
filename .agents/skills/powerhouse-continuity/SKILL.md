@@ -417,3 +417,16 @@ Fingerprint: `pricing-inline-rescue-visible-state-parity-20260924-v1`.
 When multiple pricing interaction controllers can touch the same lifecycle or plan-group state, they must apply one identical visible-state tuple: `hidden`, inline `style.display`, `aria-hidden`, active class, `aria-selected` and keyboard `tabIndex`. Never let one controller clear only `hidden` while another has left inline `display:none`.
 
 Production proof must wait for the canonical pricing runtime readiness marker and then execute the actual click. Route 200, marker presence or DOM mutation alone are not completion.
+
+
+## Pricing runtime build preservation
+
+Fingerprint: `pricing-runtime-build-preservation-20260924-v1`.
+
+A pricing runtime present in repository source is not proof that production contains it. Full-page/V18 build transforms may replace markup outside the canonically restored pricing section.
+
+Mandatory:
+- pricing build integrity restores `#pakketten` plus the canonical inline pricing controller and versioned rescue runtime;
+- post-transform restore must fail closed if either runtime is absent;
+- production verification waits for the rescue readiness marker and then executes actual pricing clicks;
+- never diagnose a missing readiness marker as a click-handler bug before checking the built-page preservation contract.
