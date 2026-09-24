@@ -51,3 +51,6 @@ Content is pre-sales. Schrijf vanuit concreet CEO/directie/MT-probleem, data, im
 
 ## Learning
 Meet minimaal trigger->response, response->meeting, meeting->scan, scan->sale, realized value en referral. Promote geen heuristiek tot harde policy zonder voldoende evidence.
+
+## Runtime projection
+De canonical opportunity authority projecteert commerciële context via `scripts/opportunity/opportunity-scout.mjs`. Voor `commercial_acquisition=true` zijn `trigger_type`, `problem_hypothesis`, `decision_maker_role`, `recommended_next_action`, voldoende `confidence` en minimaal één `evidence_ref` vereist voordat `commercial_execution_class=trigger-led-next-action` mag ontstaan. Ontbrekende velden blijven null en de uitvoering blijft `observe` met een `do_not_contact_reason`; geen inferentie of bulk-outreach als fallback.
