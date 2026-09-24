@@ -1,0 +1,46 @@
+{
+  "fingerprint": "delivery-control-plane-open-pr-scale-supersession-v1",
+  "date": "2026-09-24",
+  "type": "DELIVERY_CONTROL_PLANE_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Powerhouse Delivery Hygiene loaded only one open-PR page and used a small synchronous child-process output buffer. With many open PRs, GitHub CLI output could exceed the buffer and admission failed before candidate evaluation. The resulting recovery also exposed a governance risk: a predecessor may be closed as SUPERSEDED while its successor is still pending, which must never be interpreted as terminal success.",
+  "prevention_rule": "Delivery admission must paginate the complete open-PR candidate set with an explicit bounded large output buffer. Supersession is lineage state only: it requires an explicit same-obligation successor and never constitutes LIVE_BEWEZEN. Terminal completion remains protected merge plus production/provider readback plus learning/skill writeback.",
+  "failed_approaches": [
+    "Increasing the GitHub API output buffer alone reduced immediate overflow risk but still left open-PR discovery incomplete above one page.",
+    "Treating a closed predecessor as completion would conflate SUPERSEDED with terminal delivery."
+  ],
+  "fix": [
+    "Use gh api --paginate --slurp for the open PR candidate set.",
+    "Raise the explicit bounded GitHub CLI buffer to 64 MiB for admission reads.",
+    "Keep explicit same-obligation Supersedes lineage and regression-test that predecessor blocking does not create terminal evidence.",
+    "Preserve successor admission only when predecessor lineage is proven."
+  ],
+  "evidence": {
+    "workflow": ".github/workflows/powerhouse-delivery-hygiene.yml",
+    "regression": "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs",
+    "original_failure": "PR #2790 / PR #2795 delivery admission during high open-PR volume",
+    "successor": "PR #2796"
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "CONTROL_PLANE_OPEN_PR_PAGINATION_OVERFLOW",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "invariants": [
+      "all open PR pages participate in admission candidate discovery",
+      "large open-PR response volume does not overflow the default child-process buffer",
+      "SUPERSEDED is not terminal success",
+      "successor lineage requires explicit same-obligation Supersedes metadata"
+    ],
+    "historical_replay": [
+      "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs"
+    ]
+  },
+  "terminal_rule": "Do not mark this prevention LIVE_BEWEZEN until the successor is protected-merged and production/main readback proves the deployed lineage."
+}
