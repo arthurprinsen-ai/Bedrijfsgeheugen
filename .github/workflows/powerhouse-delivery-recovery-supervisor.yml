@@ -35,9 +35,10 @@ jobs:
         run: |
           set -euo pipefail
           repo="$GITHUB_REPOSITORY"
-          queued="$(gh api "repos/$repo/actions/runs?status=queued&per_page=1" --jq '.total_count')"
-          running="$(gh api "repos/$repo/actions/runs?status=in_progress&per_page=1" --jq '.total_count')"
-          echo "Observed Actions pressure: queued=$queued in_progress=$running"
+          cutoff="$(date -u -d '2 hours ago' +%s)"
+          queued="$(gh api "repos/$repo/actions/runs?status=queued&per_page=100" --jq --argjson cutoff "$cutoff" '[.workflow_runs[] | select((.created_at | fromdateiso8601) >= $cutoff)] | length')"
+          running="$(gh api "repos/$repo/actions/runs?status=in_progress&per_page=100" --jq --argjson cutoff "$cutoff" '[.workflow_runs[] | select((.created_at | fromdateiso8601) >= $cutoff)] | length')"
+          echo "Observed recent Actions pressure (2h window): queued=$queued in_progress=$running"
           if [ "$queued" -ge 8 ] || [ "$running" -ge 16 ]; then
             echo "RECOVERY_QUEUE_PRESSURE=true" >> "$GITHUB_ENV"
             echo "::warning::Recovery dispatch suspended: Actions queue pressure is above the safe threshold."
