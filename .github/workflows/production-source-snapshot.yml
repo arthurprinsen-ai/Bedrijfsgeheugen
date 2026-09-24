@@ -110,19 +110,44 @@ jobs:
               --data "$(node -e 'process.stdout.write(JSON.stringify({action:"trigger_build",expected_sha:process.env.EXPECTED_SHA}))')" \
               "https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge" || true)"
             build_ok="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.ok===true))}catch{process.stdout.write("false")}' "$trigger_json")"
-            build_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.build_id||""))}catch{}' "$trigger_json")"
-            deploy_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.deploy_id||""))}catch{}' "$trigger_json")"
-            echo "NETLIFY_LINKED_BUILD_TRIGGER ok=$build_ok build=${build_id:-none} deploy=${deploy_id:-none}"
-            if [ "$build_ok" = "true" ]; then
-              for attempt in $(seq 1 24); do
+            linked_build_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.build_id||""))}catch{}' "$trigger_json")"
+            linked_deploy_id="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.deploy_id||""))}catch{}' "$trigger_json")"
+            echo "NETLIFY_LINKED_BUILD_TRIGGER ok=$build_ok build=${linked_build_id:-none} deploy=${linked_deploy_id:-none}"
+            if [ "$build_ok" = "true" ] && [ -n "$linked_deploy_id" ]; then
+              for attempt in $(seq 1 120); do
+                deploy_json="$(curl -fsSL "$NETLIFY_MCP_PROXY_PATH/api/v1/deploys/$linked_deploy_id" || true)"
+                state="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.state||""))}catch{}' "$deploy_json")"
+                if [ "$state" = "error" ]; then
+                  build_json=""
+                  if [ -n "$linked_build_id" ]; then
+                    build_json="$(curl -fsSL "$NETLIFY_MCP_PROXY_PATH/api/v1/builds/$linked_build_id" || true)"
+                  fi
+                  node -e '
+                    const safe=(raw,kind)=>{try{const x=JSON.parse(raw||"{}");return {
+                      kind,id:x.id||null,state:x.state||null,done:x.done??null,error:x.error||null,
+                      error_message:x.error_message||null,deploy_id:x.deploy_id||null,
+                      created_at:x.created_at||null,updated_at:x.updated_at||null
+                    }}catch{return {kind,parse_error:true}}};
+                    console.error("NETLIFY_LINKED_DEPLOY_ERROR",JSON.stringify(safe(process.argv[1],"deploy")));
+                    console.error("NETLIFY_LINKED_BUILD_ERROR",JSON.stringify(safe(process.argv[2],"build")));
+                  ' "$deploy_json" "$build_json"
+                  echo "::error::Netlify linked production build failed for deploy $linked_deploy_id"
+                  exit 78
+                fi
                 current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?linked_build=${EXPECTED_SHA}-${attempt}" || true)"
                 observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
                 if [ "$observed" = "$EXPECTED_SHA" ]; then
                   echo "Exact SHA reached production through linked-repository Netlify build."
                   exit 0
                 fi
-                sleep 10
+                if [ "$state" = "ready" ]; then
+                  sleep 5
+                else
+                  sleep 5
+                fi
               done
+              echo "::error::Linked Netlify build did not expose exact SHA ${EXPECTED_SHA} within bounded readback"
+              exit 78
             fi
           fi
 
@@ -130,7 +155,55 @@ jobs:
             echo "::error::Netlify Git/linked build did not reach ${EXPECTED_SHA} and OIDC deploy transport was unavailable"
             exit 78
           fi
-          npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
+          deploy_log="$(mktemp)"
+          npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH" 2>&1 | tee "$deploy_log"
+          deploy_id="$(node -e 'const fs=require("fs");const s=fs.readFileSync(process.argv[1],"utf8");const m=s.match(/"deployId":"([^"]+)"/);process.stdout.write(m?m[1]:"")' "$deploy_log")"
+          build_id="$(node -e 'const fs=require("fs");const s=fs.readFileSync(process.argv[1],"utf8");const m=s.match(/"buildId":"([^"]+)"/);process.stdout.write(m?m[1]:"")' "$deploy_log")"
+          if [ -n "$deploy_id" ]; then printf 'NETLIFY_DEPLOY_ID=%s\n' "$deploy_id" >> "$GITHUB_ENV"; fi
+          if [ -n "$build_id" ]; then printf 'NETLIFY_BUILD_ID=%s\n' "$build_id" >> "$GITHUB_ENV"; fi
+
+      - name: Fail fast on Netlify provider build error
+        if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
+        run: |
+          set -euo pipefail
+          if [ -z "${NETLIFY_DEPLOY_ID:-}" ]; then
+            echo "No explicit Netlify deploy id: Git-linked production may already be current."
+            exit 0
+          fi
+          for attempt in $(seq 1 120); do
+            deploy_json="$(curl -fsSL "$NETLIFY_MCP_PROXY_PATH/api/v1/deploys/$NETLIFY_DEPLOY_ID" || true)"
+            state="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.state||""))}catch{}' "$deploy_json")"
+            if [ "$state" = "ready" ]; then
+              echo "NETLIFY_PROVIDER_BUILD_READY deploy=$NETLIFY_DEPLOY_ID build=${NETLIFY_BUILD_ID:-unknown}"
+              exit 0
+            fi
+            if [ "$state" = "error" ]; then
+              build_json=""
+              if [ -n "${NETLIFY_BUILD_ID:-}" ]; then
+                build_json="$(curl -fsSL "$NETLIFY_MCP_PROXY_PATH/api/v1/builds/$NETLIFY_BUILD_ID" || true)"
+              fi
+              node -e '
+                const safe=(raw,kind)=>{try{const x=JSON.parse(raw||"{}");return {
+                  kind,
+                  id:x.id||null,
+                  state:x.state||null,
+                  done:x.done??null,
+                  error:x.error||null,
+                  error_message:x.error_message||null,
+                  deploy_id:x.deploy_id||null,
+                  created_at:x.created_at||null,
+                  updated_at:x.updated_at||null
+                }}catch{return {kind,parse_error:true}}};
+                console.error("NETLIFY_PROVIDER_DEPLOY_ERROR",JSON.stringify(safe(process.argv[1],"deploy")));
+                console.error("NETLIFY_PROVIDER_BUILD_ERROR",JSON.stringify(safe(process.argv[2],"build")));
+              ' "$deploy_json" "$build_json"
+              echo "::error::Netlify provider build failed for deploy $NETLIFY_DEPLOY_ID"
+              exit 78
+            fi
+            sleep 5
+          done
+          echo "::error::Netlify provider deploy did not reach ready/error within bounded provider watch"
+          exit 78
 
       - name: Prove exact production identity
         if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
