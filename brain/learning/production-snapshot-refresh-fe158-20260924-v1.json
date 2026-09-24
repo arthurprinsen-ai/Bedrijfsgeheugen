@@ -9,7 +9,9 @@
     "target_main_sha": "fe158b794b10cdea5c45c281f9669dc642854467",
     "prior_netlify_commit_ref": "cebee65aef529cc61ace6b43e1f05ee8c499286e",
     "canonical_workflow": ".github/workflows/production-source-snapshot.yml",
-    "promotion_pr": 2846
+    "promotion_pr": 2846,
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "system_map_regression": "tests/brain-powerhouse-live-system-map-v1.test.mjs"
   },
   "compiler": {
     "failure_class": "PRODUCTION_DEPLOY_LAG_NO_SNAPSHOT_TRIGGER",
@@ -29,5 +31,8 @@
       "pricing/i18n browser proof remains mandatory"
     ]
   },
-  "terminal_rule": "LIVE_BEWEZEN only after protected merge, Production Source Snapshot exact-SHA promotion and Production Release Readback with pricing/i18n browser proof."
+  "terminal_rule": "LIVE_BEWEZEN only after protected merge, Production Source Snapshot exact-SHA promotion and Production Release Readback with pricing/i18n browser proof.",
+  "integration_learning": [
+    "When a new Powerhouse skill lands on main, the canonical System Map inventory must be updated in the same or immediately reconciled lineage; otherwise full Brain topology verification correctly fails closed."
+  ]
 }
