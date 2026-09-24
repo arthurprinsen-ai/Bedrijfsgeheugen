@@ -211,3 +211,11 @@ Production browser verifier: `tools/site-shell/verify-pricing-i18n-production.mj
 Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
 
 Concurrency includes runner capacity. Before any write/dispatch that can trigger CI, compute current pressure and projected fan-out. At >=12 active or >=10 queued, allow only essential single-flight work and batch related writes. At >=20 active or >=20 queued, open the circuit: no new recovery/optional runs. Never intentionally create >6 new runs from one action. One canonical PR per obligation and one active Required/BRAIN instance per PR/head are hard limits.
+
+## Obsolete Actions-run identity
+
+Fingerprint: `github|actions-obsolete-run-identity|sha-bound|v1`.
+
+Queue/run authority is bound to the exact run SHA, not merely to a branch name. A stale queued or in-progress run may be reaped only when its identity is provably obsolete: closed PR, PR-head mismatch, branch-head mismatch, missing non-main branch, or old main SHA. In-progress cleanup additionally requires at least 1800 seconds without update.
+
+Unexpected candidate-head movement is fail-closed. Before a new head inherits authority, compare it to the last trusted head and verify that the diff is exactly the intended recovery delta. Never silently follow a moved branch.

@@ -47,3 +47,12 @@
 - Regression: pure governance/delivery-policy changed-path set must classify as control-plane with requires_preview=false.
 - Browser runner hard timeout: 15 minutes.
 - Invariant: no unbounded browser job may retain a GitHub runner.
+
+
+## Queue governor v5 — obsolete-run identity
+- Geobserveerd: queued PR #1444-runs bleven bestaan terwijl PR reeds merged was; branch bestond later opnieuw maar op SHA `d70cb432...`, niet op de queued run-SHA's.
+- Geobserveerd: stale `in_progress` runs bleven runnercapaciteit vasthouden na supersession/main movement.
+- Fix: janitor verwerkt `queued` en `in_progress`.
+- In-progress stale threshold: 1800 seconden sinds laatste update.
+- Safe obsolete criteria: closed PR, PR head mismatch, branch head mismatch, missing non-main branch, old main SHA.
+- Governance: unexpected candidate-head movement is never silently trusted; validate exact diff before rebinding authority.
