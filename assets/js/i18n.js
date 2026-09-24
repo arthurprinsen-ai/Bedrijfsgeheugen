@@ -436,20 +436,20 @@
 
   async function init() {
     const routed = pathLocale();
-    locale = preferredLocale();
+    const portal = isPortal();
+
+    // Public pages use static locale routes as the only initial locale authority.
+    // A stale bg_locale preference must never runtime-translate an unprefixed
+    // Dutch route; switching to English explicitly navigates to /en/*.
+    locale = portal ? preferredLocale() : (routed || 'nl');
     bindControlEvents();
     mountControl();
     document.documentElement.lang = locale;
     document.documentElement.dataset.bgLocale = locale;
     syncControls();
 
-    // Unprefixed public routes switch language in place. This avoids making
-    // language selection depend on a separate /en/* route being reachable.
-    // Fully translated static /en routes still remain valid when visited directly.
-    // Offline release builds still emit /en routes, marked data-bg-static-translated="false";
-    // those routes translate in place at runtime instead of failing navigation.
     const staticTranslated = document.documentElement.dataset.bgStaticTranslated !== 'false';
-    if (!routed || (routed === 'en' && !staticTranslated)) {
+    if (portal || (routed === 'en' && !staticTranslated)) {
       await apply(document.body).catch(()=>{ syncControls(); showLocaleError(); });
     }
     startObserver();
