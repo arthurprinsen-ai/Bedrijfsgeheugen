@@ -592,3 +592,19 @@ Fingerprint: `seo-login-noindex-public-scope-20260924-v1`.
 
 Canonical learning: `brain/learning/seo-login-noindex-public-scope-20260924-v1.json`.
 Canonical regression: `tests/brain-seo-login-noindex-scope-v1.test.mjs`.
+
+
+## Queue-only exact-head stability
+
+Fingerprint: `delivery-queue-head-stability-20260924-v1`.
+
+- `queued` and `pending` are infrastructure scheduling states, never sufficient evidence of a code defect.
+- While a PR head has only queued/pending gates, keep that exact head immutable; do not add a proof-only commit, create a duplicate recovery PR, or refresh from main.
+- `STALE_QUEUE_RECOVERY` may cancel stale workflow runs and re-dispatch exact-head Required/BRAIN checks, but must never mutate the candidate branch.
+- `LONG_RUNNING_OBSERVE` preserves the candidate unless concrete stalled-job evidence exists.
+- Candidate mutation requires a concrete failed-step diagnosis, or `MERGE_CONFLICT_RECOVERY` under an active `TERMINAL_DELIVERY` writer lease.
+- After any legitimate head mutation, invalidate all prior-head CI evidence and follow only the newest exact head.
+- Do not call a deployment terminal merely because an older predecessor commit is live; terminal closure belongs to the current obligation head and its exact production/browser proof.
+
+Canonical learning: `brain/learning/delivery-queue-head-stability-20260924-v1.json`.
+Canonical regression: `tests/brain-ci-admission-single-flight.test.mjs`.
