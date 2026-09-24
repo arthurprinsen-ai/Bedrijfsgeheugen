@@ -4,7 +4,7 @@
   "type": "PRODUCTION_BROWSER_PROOF_RECOVERY",
   "status": "IMPLEMENTED_CANDIDATE",
   "root_cause": "The mobile pricing control was visible and present, but Playwright scrollIntoViewIfNeeded waited for element stability and timed out before any pointer click. The instability was in Playwright's auto-scroll actionability phase, not in the pricing runtime itself. A later verifier hardening changed the safe Playwright pointer primitive from locator.click() to page.mouse.click() over explicitly validated element geometry. Historical regressions over-specified callback variable names and locator.click(), causing false failures despite preserving the real-pointer invariant.",
-  "prevention_rule": "For production browser proofs where sticky/responsive layout can keep a visible element moving, use deterministic DOM scrollIntoView to position the target, then preserve a real Playwright pointer click. Never use force:true or DOM click() to manufacture success. When an interaction primitive changes, update every regression asserting that primitive in the same candidate; search for the old primitive before protected CI. Regression tests must assert semantic interaction invariants rather than callback variable names or one Playwright API: deterministic scroll, computed visibility/geometry, real Playwright pointer input, and explicit prohibition of force:true and DOM click bypass.",
+  "prevention_rule": "For production browser proofs where sticky/responsive layout can keep a visible element moving, use deterministic DOM scrollIntoView to position the target, then preserve a real Playwright pointer click. Never use force:true or DOM click() to manufacture success. When an interaction primitive changes, update every regression asserting that primitive in the same candidate; search for the old primitive before protected CI. Regression tests must assert semantic interaction invariants rather than callback variable names or one Playwright API: deterministic scroll, computed visibility/geometry, real Playwright pointer input, and explicit prohibition of force:true and DOM click bypass. Prefer direct structural/semantic assertions for stable contract tokens and behavior; do not encode incidental callback names or regex-sensitive source spelling as production truth.",
   "failed_run": 36054089352,
   "failed_job": 107818017368,
   "target": "[data-bg-stage=\"loss\"]",
@@ -34,7 +34,8 @@
   ],
   "failed_approaches": [
     "A second regression test still required scrollIntoViewIfNeeded(), so changing the production verifier without updating every coupled actionability regression caused BRAIN lane failure. Verifier contract changes require a repository-wide regression dependency check.",
-    "Asserting literal `el => el.scrollIntoView` and `lossButton.click()` tied the regression to incidental implementation syntax instead of the real pointer-safety contract."
+    "Asserting literal `el => el.scrollIntoView` and `lossButton.click()` tied the regression to incidental implementation syntax instead of the real pointer-safety contract.",
+    "Using exact source-code regexes for locator spelling/callback syntax caused false-negative historical replay even though the semantic target, geometry checks and real Playwright pointer action were present."
   ],
   "evidence": {
     "failed_run": 36054089352,
