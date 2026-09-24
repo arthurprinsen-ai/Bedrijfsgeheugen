@@ -327,15 +327,15 @@ jobs:
       - name: Archive exact production target
         run: |
           set -euo pipefail
-          target="a38f2cbab0d496b7d666ccc132244ba5bb0817c4"
+          target="a2a3272e8394a292407b63826b22797f26b5533a"
           git cat-file -e "${target}^{commit}"
-          git archive --format=zip --output=production-source-a38f.zip "$target"
+          git archive --format=zip --output=production-source-a2a3272.zip "$target"
           printf '%s\n' "$target" > .bg-source-commit
       - uses: actions/upload-artifact@v4
         with:
-          name: production-source-a38f2cbab0d496b7d666ccc132244ba5bb0817c4
+          name: production-source-a2a3272e8394a292407b63826b22797f26b5533a
           path: |
-            production-source-a38f.zip
+            production-source-a2a3272.zip
             .bg-source-commit
           if-no-files-found: error
           retention-days: 1
