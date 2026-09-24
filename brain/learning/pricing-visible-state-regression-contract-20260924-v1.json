@@ -1,0 +1,27 @@
+{
+  "fingerprint": "pricing-visible-state-regression-contract-20260924-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "BRAIN failed after the pricing visibility fix because three legacy tests matched the old one-line hidden-property implementation instead of the stronger visible-state contract.",
+  "root_cause": "The regression suite encoded incidental source syntax rather than the behavioral invariant. The implementation correctly evolved to an active-state tuple including hidden, style.display, aria-hidden, class and tabIndex, but stale regexes treated that improvement as a failure.",
+  "prevention": [
+    "Pricing interaction tests assert the complete visible-state semantics, not an obsolete source-code spelling.",
+    "Lifecycle and plan-group regressions must require hidden plus inline display plus aria-hidden state.",
+    "Test contracts must evolve in the same lineage when implementation semantics are intentionally strengthened.",
+    "Production browser proof remains authoritative over source regex markers."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-interactions-functional-v1.test.mjs","tests/brain-pricing-content-normal-production-readback-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-interactions-functional-v1.test.mjs"],
+    "canary": ["tests/brain-pricing-content-normal-production-readback-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-pricing-interactions-functional-v1.test.mjs","tests/brain-pricing-content-normal-production-readback-v1.test.mjs"],
+  "skill_targets": ["continuity","delivery"],
+  "compiler": {
+    "failure_class": "REGRESSION_TEST_IMPLEMENTATION_SYNTAX_DRIFT",
+    "scope": "WEBSITE_PRICING_INTERACTIONS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
