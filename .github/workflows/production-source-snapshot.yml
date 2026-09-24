@@ -70,6 +70,7 @@ jobs:
       - name: Deploy exact source through authorized Netlify transport
         if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
         env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_MCP_PROXY_PATH: ${{ secrets.NETLIFY_MCP_PROXY_PATH_TEMP }}
           EXPECTED_SHA: ${{ github.sha }}
         run: |
@@ -83,11 +84,18 @@ jobs:
             fi
             sleep 10
           done
-          if [ -z "${NETLIFY_MCP_PROXY_PATH:-}" ]; then
-            echo "::error::Netlify Git deploy did not reach ${EXPECTED_SHA} and NETLIFY_MCP_PROXY_PATH_TEMP is missing"
-            exit 78
+          if [ -n "${NETLIFY_AUTH_TOKEN:-}" ]; then
+            echo "Git-linked deploy did not reach ${EXPECTED_SHA}; using authenticated Netlify CLI transport."
+            npx -y netlify-cli@latest deploy --build --prod --site fd527056-493a-4d8a-8125-d00370104fa3 --auth "$NETLIFY_AUTH_TOKEN"
+            exit 0
           fi
-          npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
+          if [ -n "${NETLIFY_MCP_PROXY_PATH:-}" ]; then
+            echo "Git-linked deploy did not reach ${EXPECTED_SHA}; using authorized Netlify MCP transport."
+            npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --no-wait --proxy-path "$NETLIFY_MCP_PROXY_PATH"
+            exit 0
+          fi
+          echo "::error::No authorized Netlify production transport is available after Git-linked deploy missed ${EXPECTED_SHA}"
+          exit 78
 
       - name: Prove exact production identity
         if: (github.event_name == 'workflow_dispatch' && inputs.deploy == true) || github.event_name == 'push'
