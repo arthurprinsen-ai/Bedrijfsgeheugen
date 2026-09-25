@@ -14,5 +14,15 @@
     "portal-v2",
     "powerhouse-brain",
     "commercial-ui"
-  ]
+  ],
+  "fingerprint": "pricing-multicontext-calculator-parity-v1",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ]
+  }
 }
