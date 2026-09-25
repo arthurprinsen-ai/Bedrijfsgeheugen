@@ -16,8 +16,10 @@ on:
 permissions:
   contents: read
 
+# Stable single-flight identity: newer work for the same PR/ref supersedes stale work.
+# Never key concurrency by github.run_id; that defeats cancellation.
 concurrency:
-  group: codeql-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  group: codeql-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
