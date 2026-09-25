@@ -1,0 +1,43 @@
+name: Exact Main Emergency Deploy 0c1cbba
+on:
+  push:
+    branches:
+      - recovery/exact-main-deploy-0c1cbba
+permissions:
+  contents: read
+  id-token: write
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: 0c1cbba5f9b4966f8270c8138ea5a9e82140d554
+          fetch-depth: 1
+      - name: Verify exact protected main source
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "0c1cbba5f9b4966f8270c8138ea5a9e82140d554"
+      - name: Acquire authorized Netlify transport
+        env:
+          OIDC_AUDIENCE: bedrijfsgeheugen-netlify-deploy-bridge
+          BRIDGE_URL: https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/netlify-deploy-bridge
+        run: |
+          set -euo pipefail
+          request_url="${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=${OIDC_AUDIENCE}"
+          token_json="$(curl -fsSL -H "Authorization: Bearer ${ACTIONS_ID_TOKEN_REQUEST_TOKEN}" "$request_url")"
+          oidc_token="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.value||""))' "$token_json")"
+          test -n "$oidc_token"
+          bridge_json="$(curl -fsSL --max-time 20 -X POST -H "Authorization: Bearer $oidc_token" -H 'Content-Type: application/json' "$BRIDGE_URL")"
+          proxy="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.proxy||""))' "$bridge_json")"
+          test -n "$proxy"
+          echo "::add-mask::$proxy"
+          printf 'NETLIFY_MCP_PROXY_PATH=%s\n' "$proxy" >> "$GITHUB_ENV"
+      - name: Deploy exact protected main
+        env:
+          COMMIT_REF: 0c1cbba5f9b4966f8270c8138ea5a9e82140d554
+          BRANCH: main
+        run: |
+          set -euo pipefail
+          npx -y @netlify/mcp@latest --site-id fd527056-493a-4d8a-8125-d00370104fa3 --proxy-path "$NETLIFY_MCP_PROXY_PATH"
