@@ -1035,3 +1035,16 @@ Fingerprint: `ai-ecosystem-static-i18n-cache-coupling-20260925-v1`.
 - If cache validation reports missing strings, add the English cache delta in the same candidate and keep production fail-closed.
 - Regression: `tests/brain-ai-ecosystem-static-i18n-cache-v1.test.mjs`.
 - Learning: `brain/learning/ai-ecosystem-static-i18n-cache-coupling-20260925-v1.json`.
+
+
+## Regression syntax before learning projection
+
+Fingerprint: `delivery|regression-syntax|preflight-before-projection|v1`.
+
+A new regression is executable production-governance code. Before a learning references it as `historical_replay`:
+- syntax-check and execute the test on the same Node/runtime family used by Required/BRAIN;
+- for multiline workflow contracts, prefer explicit fragment/string assertions or a safely constructed `RegExp`; never embed a literal newline inside a JavaScript regex literal;
+- learning canonicalization may only project a regression after that regression itself parses and runs;
+- if the prevention test is broken, repair the same canonical lineage and write the failed approach back into Brain before continuing.
+
+A malformed regression must never be dismissed as “only a test failure”: it blocks BRAIN, Skill Projection and Required by design.
