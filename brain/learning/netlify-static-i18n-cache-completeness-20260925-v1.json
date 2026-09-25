@@ -1,0 +1,33 @@
+{
+  "fingerprint": "netlify-static-i18n-cache-completeness-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Netlify production uses STATIC_I18N_REQUIRE_CACHE=1, but pre-merge gates did not execute the exact static locale cache completeness validator. A linked production build could therefore fail only after merge.",
+  "root_cause": "The production build contract and the pre-merge test contract diverged: build-localized-routes.mjs can fail closed on any uncached public string, while Required/BRAIN could still be green without running --validate-cache against the complete current public route set.",
+  "prevention": [
+    "Run tools/site-shell/build-localized-routes.mjs --validate-cache in regression coverage before merge.",
+    "Any new or changed public copy must carry its English cache entry in the same lineage.",
+    "Do not weaken STATIC_I18N_REQUIRE_CACHE=1 to make production green; repair the cache authority instead.",
+    "Only after cache validation passes may Netlify production promotion proceed to exact-SHA and pricing/i18n browser proof."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"],
+    "shadow": ["tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"],
+    "canary": ["tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"],
+  "evidence": {
+    "failed_production_sha": "66f5051ea8bc299acdd4bef89183bc48f665aeb0",
+    "failed_netlify_deploy": "6ab686e9c00410eee26a8e5c",
+    "netlify_error": "Build script returned non-zero exit code: 2",
+    "production_contract": "STATIC_I18N_REQUIRE_CACHE=1"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRODUCTION_I18N_CACHE_PREMERGE_GAP",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
