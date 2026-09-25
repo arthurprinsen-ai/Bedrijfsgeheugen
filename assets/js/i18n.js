@@ -365,6 +365,7 @@
 
     const mobileHosts = [
       ...document.querySelectorAll('[data-bg-mobile-view="root"], [data-bg-shared-mobile-view="root"]'),
+      document.getElementById('v18MobileDrawer'),
       document.getElementById('bgkopMob')
     ].filter((host, index, all) => host && all.indexOf(host) === index);
 
