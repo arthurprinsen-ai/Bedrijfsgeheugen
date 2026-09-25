@@ -13,7 +13,8 @@
     "Treat provider exact-SHA proof and functional browser proof as separate gates.",
     "Resume only missing functional gates on the newest canonical lineage after cancellation.",
     "Never claim LIVE_BEWEZEN from deploy success alone when browser behavior is part of the obligation.",
-    "Persist the reusable rule in Powerhouse skill, Brain learning, human documentation and development ledger."
+    "Persist the reusable rule in Powerhouse skill, Brain learning, human documentation and development ledger.",
+    "Every new .agents/skills directory must update platform/system-map/canonical-system-map.mjs inventories.skills in the same candidate and prove tests/brain-powerhouse-live-system-map-v1.test.mjs."
   ],
   "evidence": {
     "original_failed_snapshot_run": 35991169738,
@@ -34,6 +35,12 @@
         "live connector readiness"
       ],
       "unfinished_step": "affected production route browser verification"
+    },
+    "system_map_registration": {
+      "skill": "powerhouse-netlify-production-truth",
+      "manifest": "platform/system-map/canonical-system-map.mjs",
+      "regression": "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "failure_observed_on_head": "7ef1fef861f4d097b9a09435c8bbafa861ac65ac"
     }
   },
   "evaluation": {
@@ -66,5 +73,5 @@
     "toolchain-authority"
   ],
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 2
 }

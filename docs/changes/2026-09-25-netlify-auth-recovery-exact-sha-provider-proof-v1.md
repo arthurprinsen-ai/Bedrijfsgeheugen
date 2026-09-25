@@ -14,3 +14,7 @@ Canonical references:
 - `brain/learning/netlify-auth-recovery-exact-sha-provider-proof-20260925-v1.json`
 - `brain/learning/branche-integrations-production-recovery-v1.json`
 - `.agents/skills/powerhouse-netlify-production-truth/SKILL.md`
+
+## System Map registration
+
+The dedicated `powerhouse-netlify-production-truth` skill is registered in `platform/system-map/canonical-system-map.mjs`. New skills must update the canonical System Map inventory in the same candidate; otherwise `tests/brain-powerhouse-live-system-map-v1.test.mjs` fails closed.

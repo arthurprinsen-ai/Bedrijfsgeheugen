@@ -7,3 +7,4 @@
 - Durable rule: provider identity evidence and functional browser evidence are separate; preserve immutable provider proof and resume only missing functional proof.
 - Powerhouse projection: dedicated skill `.agents/skills/powerhouse-netlify-production-truth/SKILL.md`.
 - Delivery reconciliation: predecessor PR #2976 carried the same Obligation-ID and was closed as superseded; PR #2997 is the canonical successor owner.
+- System Map inventory updated for `powerhouse-netlify-production-truth`; regression `tests/brain-powerhouse-live-system-map-v1.test.mjs` is the permanent topology guard.
