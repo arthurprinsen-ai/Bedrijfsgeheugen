@@ -577,3 +577,12 @@ A Playwright `requestfailed` event for the same top-level document path is not b
 Therefore the targeted route verifier may suppress only `document:<final-path>` after a successful final HTTP response. Script and stylesheet failures always remain hard failures. Any document failure without a successful final response remains fail-closed.
 
 Never broaden this into generic request-failure suppression. Preserve route identity, visible-content, page-error and asset integrity checks.
+
+
+## Production readback safe supersession
+
+Fingerprint: `delivery|production-readback-safe-supersession|v1`.
+
+A production readback may accept a release marker newer than its triggering merge SHA only when the observed SHA is a Git descendant of the expected SHA and every path changed between them is explicitly non-production-affecting: `docs/**`, `.agents/**`, `tests/**`, `.github/**`, `brain/learning/**`, or `config/delivery-prevention-rules.json`.
+
+Any runtime/website/backend/tool/source change between expected and observed keeps the readback fail-closed. A non-descendant SHA is always rejected. Apply the same rule to Source Snapshot, Production Release Readback and Canonical brand shell live readback.
