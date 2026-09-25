@@ -1,0 +1,32 @@
+{
+  "fingerprint": "production-snapshot-cancel-thrash-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production Source Snapshot runs were repeatedly cancelled whenever main advanced, preventing exact-main deployment from reaching Netlify under concurrent agent delivery.",
+  "root_cause": "The workflow concurrency group used cancel-in-progress=true. With frequent protected-main writes, a healthy in-flight production deploy was killed before exact-SHA and browser readback could complete.",
+  "prevention": [
+    "Production Source Snapshot must never cancel a healthy in-flight deploy merely because main advanced.",
+    "Use one serialized running production snapshot and allow GitHub concurrency to coalesce waiting work to the newest pending run.",
+    "Current-main terminal proof must come from the newest completed snapshot after the active deploy finishes.",
+    "Do not create duplicate deploy recovery PRs to escape concurrency cancellation."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-production-snapshot-cancel-thrash-v1.test.mjs"],
+    "shadow": ["tests/brain-production-snapshot-cancel-thrash-v1.test.mjs"],
+    "canary": ["tests/brain-production-snapshot-cancel-thrash-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-production-snapshot-cancel-thrash-v1.test.mjs"],
+  "evidence": {
+    "cancelled_runs": [36153925428, 36155131599],
+    "workflow": ".github/workflows/production-source-snapshot.yml",
+    "observed_pattern": "healthy exact-main deploy cancelled after main movement"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRODUCTION_DEPLOY_CONCURRENCY_CANCEL_THRASH",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
