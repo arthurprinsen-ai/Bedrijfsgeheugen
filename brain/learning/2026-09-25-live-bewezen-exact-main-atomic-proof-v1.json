@@ -1,0 +1,63 @@
+{
+  "id": "live-bewezen-exact-main-atomic-proof-v1",
+  "fingerprint": "delivery|live-bewezen|exact-main-netlify-browser-atomic-proof|v1",
+  "date": "2026-09-25",
+  "type": "incident_prevention",
+  "source": "chat+github+netlify-production+browser-readback",
+  "failure_class": "DELIVERY_TERMINALIZATION",
+  "symptom": [
+    "A Netlify deploy could be exact-main when first observed while protected main advanced again during the same terminal verification window.",
+    "A hidden fallback error string remained present in deployed HTML/DOM and could be mistaken by text-only diagnostics for a user-visible language-switch failure.",
+    "Tool/orchestration timeouts could tempt duplicate deploy attempts even when provider state had already advanced successfully."
+  ],
+  "root_cause": [
+    "Terminal proof was sampled across moving authorities instead of rejoining current protected main, current provider commit identity and current-SHA functional evidence at closure time.",
+    "Text-source diagnostics and user-visible interaction evidence were not explicitly separated in the terminal truth model.",
+    "Execution transport timeout and application/provider failure were not explicitly separated in recovery policy."
+  ],
+  "prevention": [
+    "Re-read protected main immediately before terminal closure.",
+    "Require Netlify current production state=ready and commit_ref equal to the freshly read main SHA.",
+    "Require Production Release Readback and Production Source Snapshot for that same SHA plus the applicable functional/browser verifier.",
+    "If main advances follow the same canonical lineage and re-establish current-head proof; never create a competing deployment lineage merely to chase the pointer.",
+    "After orchestration or tool timeouts re-read provider truth before retrying; timeout alone is not application failure.",
+    "For interaction defects distinguish hidden DOM/source fallback copy from visible browser state. A string match is diagnostic only; visible failure in the canonical browser verifier remains fail-closed."
+  ],
+  "failed_approaches": [
+    "Treating an earlier exact-main deploy as terminal after main advanced again.",
+    "Treating a hidden DOM fallback string as equivalent to visible runtime failure.",
+    "Retrying deployment immediately after orchestration timeout without first re-reading Netlify current state."
+  ],
+  "evidence": {
+    "verified_production_sha": "ccb64428be9ce5bb05b4e38801475d48e2ea6f28",
+    "netlify_deploy_id": "6ab6b1b1e1aeb600082e5a0b",
+    "production_release_readback_run": 36168441714,
+    "production_source_snapshot_run": 36168441792,
+    "canonical_brand_shell_readback_run": 36168441700,
+    "browser_status": "PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN",
+    "browser_contract": "pricing lifecycle + plan group + yearly billing + NL→EN→NL on mandatory public routes"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-live-bewezen-exact-main-atomic-proof-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-live-bewezen-exact-main-atomic-proof-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY_TERMINALIZATION",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-netlify-production-truth",
+    "powerhouse-delivery-self-optimization"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}

@@ -520,3 +520,17 @@ When a reusable website component has regression tests under `tests/components/`
 - never leave a component regression family outside the delivery classifier;
 - add a delivery-plan regression whenever a new component-test root is introduced;
 - treat an `unclassified delivery path` for an owned component regression as a classifier gap to repair, not as a reason to bypass the gate.
+
+## Prefer authoritative proof composition over repeated redeploys
+
+Fingerprint: delivery|proof-composition|avoid-redeploy-chasing|v1.
+
+When source is already protected and production pointers are advancing:
+- inspect current GitHub main, current provider identity and existing same-SHA readback runs before triggering any deployment;
+- use successful same-SHA Production Release Readback, Production Source Snapshot and canonical browser evidence as first-class terminal evidence;
+- a tool/orchestration timeout is not an application failure unless authoritative provider or browser evidence reports a failure;
+- after a timeout, re-read provider state before retrying;
+- only deploy when current production is genuinely behind current main and the canonical deployment lineage is not already progressing;
+- never turn a text crawler's match of hidden fallback/error copy into a product regression without a user-visible behavioral oracle.
+
+This reduces duplicate builds, queue pressure and false repair work while preserving fail-closed terminal proof.

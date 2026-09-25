@@ -1160,3 +1160,23 @@ Mandatory closure:
 - never report `LIVE_BEWEZEN` merely because a PR merged or because an older superseded readback was cancelled.
 
 Reusable lesson: **borging is complete only when the rule is canonical, discoverable by the next agent, protected on main, and its applicable readback is proven.**
+
+## Exact-main live proof must be sampled atomically
+
+Fingerprint: delivery|live-bewezen|exact-main-netlify-browser-atomic-proof|v1.
+
+A production claim is a three-authority join, not a deploy-status observation.
+
+Mandatory:
+- read protected GitHub main SHA immediately before terminal proof;
+- read Netlify current production deploy and require state=ready, context=production and commit_ref === current main SHA;
+- require the canonical Production Release Readback, Production Source Snapshot and applicable browser/readback gates to be green for that same SHA;
+- if main advances during verification, the previous proof becomes historical containment evidence only: follow the new canonical main lineage and re-establish exact-main proof;
+- never start a second competing production lineage merely because the pointer is moving; reuse the canonical main-linked deployment authority;
+- a hidden fallback/error string present in source HTML or the DOM is not by itself a user-visible production defect. For interaction defects, visibility and behavior are decided by the canonical browser verifier. A crawler/string match is diagnostic evidence, not a substitute for interaction proof;
+- conversely, a green HTTP route or English static marker never substitutes for the real NL→EN→NL interaction gate.
+
+Terminal state: only LIVE_BEWEZEN after the latest protected-main SHA, current Netlify commit_ref, and functional browser/readback evidence agree on one lineage.
+
+Canonical learning: brain/learning/2026-09-25-live-bewezen-exact-main-atomic-proof-v1.json.
+Regression: tests/brain-live-bewezen-exact-main-atomic-proof-v1.test.mjs.
