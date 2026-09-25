@@ -41,5 +41,14 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "evidence": {
+    "regression_test": "tests/brain-connector-response-shape-normalization-v1.test.mjs",
+    "canonical_skill": ".agents/skills/powerhouse-connector-response-normalization/SKILL.md",
+    "continuity_projection": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "human_documentation": "docs/changes/connector-response-shape-resilience-v1.md",
+    "activity_ledger": "docs/development-ledger-events/connector-response-shape-normalization-v1.md",
+    "recovery_write_mode": "GitHub Contents API create_file/update_file on the same branch",
+    "failed_fast_before_branch_mutation": true
   }
 }
