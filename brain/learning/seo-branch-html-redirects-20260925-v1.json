@@ -1,0 +1,24 @@
+{
+  "fingerprint": "seo-branch-html-redirects-v1",
+  "date": "2026-09-25",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "New branch landing pages had extensionless canonical URLs but no explicit redirects from legacy .html variants.",
+  "prevention_rule": "Every canonical root-level branch landing page must carry a permanent .html-to-extensionless redirect when the legacy form can be requested.",
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-branch-html-redirects-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": 2715,
+    "recovery_pr": 2869,
+    "changed_file": "netlify.toml"
+  }
+}
