@@ -938,3 +938,13 @@ Fingerprint: `pricing-rescue-observer-self-loop-20260925-v1`.
 - Whole-body `childList` observation must be filtered to newly added relevant pricing controls/panels before scheduling `syncFromDom()`.
 - `ready-v3` must be observable by a real browser before pricing is considered interactive.
 - Terminal production proof remains lifecycle click + plan tab + billing switch + NL/EN round trip.
+
+
+## Pricing-shell build resource isolation
+
+Fingerprint: `pricing-shell-build-memory-segmentation-20260925-v1`.
+
+- Heavy production build phases must not share one long-lived Node heap when no cross-stage in-memory state is required.
+- The canonical pricing shell order remains `rewrite → normalize → verify`, but `all` mode executes each phase in a fresh child Node process.
+- Resource isolation must never turn stage failure into success; any child exit code or signal fails the parent.
+- A green repository build is not terminal proof. Netlify production must still expose exact source identity and pass the live pricing/i18n browser verifier.
