@@ -1,0 +1,61 @@
+{
+  "fingerprint": "i18n-partial-asset-marker-production-20260925-v1",
+  "failure_class": "I18N_PARTIAL_ASSET_MARKER_FALSE_COMPLETENESS",
+  "status": "ACTIVE_PREVENTION",
+  "scope": "WEBSITE_I18N_PRODUCTION_RUNTIME",
+  "problem": "Exact-main Netlify production and pricing content were green, but the production browser had zero mobile language selects. Direct live HTML inspection proved that /prijzen contained the i18n stylesheet marker while the required /assets/js/i18n.js runtime script was absent.",
+  "root_cause": "tools/site-shell/apply-i18n.mjs used one generic data-bg-i18n-asset marker as a completeness test. Because pricing already contained the CSS asset marker, the transformer returned early and skipped both the missing runtime script injection and the mobile language-control injection. The browser therefore had no runtime capable of mounting any language selector.",
+  "refinement_of": [
+    "i18n-v18-mobile-host-production-20260925-v1",
+    "i18n-mobile-injection-existing-assets-20260925-v1"
+  ],
+  "prevention": [
+    "Treat each mandatory i18n asset independently: stylesheet, runtime script, static locale routes and active mobile language control.",
+    "Never use one shared marker as proof that a multi-asset runtime contract is complete.",
+    "Build transforms must be idempotent and inject only missing assets without early-returning on partial state.",
+    "Validate final served production HTML for both i18n.css and i18n.js.",
+    "Validate the active production mobile navigation contains exactly one visible language selector.",
+    "Require NL->EN /en/prijzen -> NL /prijzen browser roundtrip with correct html lang and no visible switching error before LIVE_BEWEZEN.",
+    "Persist refined root causes as new canonical learning instead of deleting earlier incident evidence."
+  ],
+  "evidence": {
+    "exact_main_production_sha": "fd7265ad7bdb02e35f0a07cd1f0e750b106c4123",
+    "netlify_deploy_id": "6ab6a1900b42c4000828d105",
+    "production_snapshot_run": 36161161127,
+    "browser_failure": "visible mobile language select is missing after opening mobile navigation",
+    "diagnostics": {
+      "v18Selects": 0,
+      "legacySelects": 0,
+      "sharedSelects": 0,
+      "allSelects": 0
+    },
+    "direct_live_html": {
+      "route": "/prijzen",
+      "i18n_css_present": true,
+      "i18n_js_present": false
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "expected_invariant": "final production HTML contains both i18n.css and i18n.js, the active mobile host exposes one visible language select, and NL->EN->NL roundtrip succeeds"
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth"
+  ],
+  "compiler": {
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
