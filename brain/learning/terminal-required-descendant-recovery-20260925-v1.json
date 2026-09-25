@@ -1,0 +1,57 @@
+{
+  "fingerprint": "github|terminal-required-descendant-recovery|website-baseline|v1",
+  "date": "2026-09-25",
+  "status": "VERIFIED_DESIGN",
+  "symptom": "Merged website obligations can remain nonterminal when their historical Required run failed only because an inherited baseline test asserted an implementation detail that was intentionally replaced by bounded concurrency.",
+  "root_cause": "Terminal closure treated historical Required failure as permanently authoritative even after the merge was contained in newer main, the stale test was corrected, and live production was verified.",
+  "fix": "Allow website-only descendant regression recovery when merge containment in current main is proven, the current-main website baseline plus bounded visibility regression is green, original BRAIN and applicable CodeQL remain green, and production readback remains mandatory.",
+  "prevention": [
+    "Do not equate a stale verifier assertion with a live product defect.",
+    "Never rewrite historical Required failure as exact-head success.",
+    "Recover only through contained current-main regression evidence.",
+    "Keep original exact-head BRAIN and CodeQL evidence mandatory.",
+    "Keep production/provider readback mandatory."
+  ],
+  "regression": [
+    "tests/brain-terminal-required-descendant-recovery-v1.test.mjs"
+  ],
+  "dashboard_fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-required-descendant-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-required-descendant-recovery-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "failed_approaches": [
+    "Treating a historical Required failure as permanently terminal even after the merged change is contained in current main and the stale verifier assertion has been repaired.",
+    "Rewriting historical failed evidence as if the exact candidate had passed.",
+    "Opening duplicate recovery PRs instead of using contained descendant regression evidence."
+  ],
+  "revision": 3,
+  "evidence": {
+    "historical_required_failures": [
+      "PR#2880 Required run 36106926597",
+      "PR#2883 Required run 36107171731"
+    ],
+    "stale_assertion": "tests/site-shell-website-release-risk.test.mjs previously required literal sequential `for (const route of routes)` after bounded route concurrency replaced that implementation detail.",
+    "current_contract": [
+      "tools/site-shell/standalone-visibility-check.mjs uses bounded route workers",
+      "tests/site-shell-website-release-risk.test.mjs now asserts bounded concurrency",
+      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs protects full route coverage and concurrency bounds"
+    ],
+    "terminal_guard": ".github/workflows/obligation-terminal-closure.yml",
+    "dashboard_contract": "delivery|terminal-user-handoff|dashboard-writeback|v1"
+  }
+}
