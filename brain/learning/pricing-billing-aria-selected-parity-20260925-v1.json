@@ -1,0 +1,36 @@
+{
+  "fingerprint": "pricing-billing-aria-selected-parity-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production pricing browser proof failed after clicking yearly billing because the control never exposed aria-selected=true.",
+  "root_cause": "Both billing controllers synchronized aria-pressed and visual state but omitted aria-selected, while the canonical pricing interaction contract requires selected-state parity across click behavior, accessibility state and production verification.",
+  "prevention": [
+    "Every billing state transition must update aria-pressed and aria-selected to the same boolean.",
+    "Billing controls must also synchronize is-active and document.documentElement.dataset.bgPricingBilling.",
+    "Inline pricing controller and rescue controller must implement the same billing state contract.",
+    "Production closure requires the real yearly click to produce aria-selected=true and a changed visible price before NL/EN proof continues."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-billing-aria-selected-parity-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-billing-aria-selected-parity-v1.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-billing-aria-selected-parity-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "failed_production_sha": "c1bde3d41551724f7eaa9e2756d817e8c5e9f236",
+    "failed_snapshot_run_id": "36155298640",
+    "failed_assertion": "yearly billing aria-selected did not become true",
+    "deploy_id": "6ab69567bb1545a834e39a45"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRICING_BILLING_STATE_PARITY_REGRESSION",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
