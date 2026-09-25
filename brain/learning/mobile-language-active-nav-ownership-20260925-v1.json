@@ -1,0 +1,33 @@
+{
+  "fingerprint": "mobile-language-active-nav-ownership-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The public NL/EN selector could exist in the legacy mobile navigation while the visible shared mobile navigation replaced and hid that legacy DOM.",
+  "root_cause": "The i18n layer and shared mobile navigation had split ownership. The selector was mounted into #bgkopMob before menu.js promoted a separate #bgSharedMobileNav, so the active visible navigation was not guaranteed to contain the language control.",
+  "prevention": [
+    "The shared mobile navigation must preserve an existing mobile language control when it promotes the legacy navigation.",
+    "The i18n runtime must remount controls when the shared mobile navigation announces readiness.",
+    "Static i18n reconciliation must still run mobile-language injection even when i18n assets were already injected.",
+    "Production browser proof must exercise the visible mobile NL to EN to NL control."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-mobile-language-active-nav-ownership-v1.test.mjs"],
+    "shadow": ["tests/brain-mobile-language-active-nav-ownership-v1.test.mjs"],
+    "canary": ["tests/brain-mobile-language-active-nav-ownership-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-mobile-language-active-nav-ownership-v1.test.mjs"],
+  "evidence": {
+    "failed_production_runs": [36157013092, 36157269860],
+    "failure": "visible mobile language select is missing",
+    "active_nav": "#bgSharedMobileNav",
+    "legacy_nav": "#bgkopMob"
+  },
+  "skill_targets": ["continuity", "delivery", "website"],
+  "compiler": {
+    "failure_class": "MOBILE_NAV_CONTROL_OWNERSHIP_SPLIT",
+    "scope": "WEBSITE_I18N_NAVIGATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
