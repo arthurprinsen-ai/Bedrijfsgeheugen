@@ -10,7 +10,8 @@
     "A later resilience change reintroduced console.warn + return null in the production translation catch, silently undoing the earlier fail-closed invariant.",
     "Making every production deploy depend on live Anthropic translation calls even when the source corpus is unchanged; provider/build failures then block unrelated production delivery.",
     "Using a dot-cache directory as canonical production translation authority; build systems may treat cache paths as mutable/ephemeral and they are not appropriate durable release inputs.",
-    "Allowing normal production deploys to depend on a live translation-provider call even when the full English corpus is already known."
+    "Allowing normal production deploys to depend on a live translation-provider call even when the full English corpus is already known.",
+    "Migrating the base translation cache from .cache to config without atomically migrating every incremental patch fragment; the builder then ignored valid money-page translations and failed closed in Netlify."
   ],
   "prevention": [
     "When STATIC_I18N_NETWORK=1, any translation-provider failure must fail the production build.",
@@ -24,7 +25,9 @@
     "The canonical static English translation authority lives under config/bg-static-i18n-en.json, never under .cache.",
     "Netlify production and preview builds are cache-only: STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
     "Any missing translation fails closed with STATIC_I18N_CACHE_INCOMPLETE before localized output is published.",
-    "External translation providers are enrichment tooling only, not a production deploy dependency."
+    "External translation providers are enrichment tooling only, not a production deploy dependency.",
+    "Any translation-cache authority migration must move the base cache and every patch fragment atomically, then run --validate-cache with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "Incremental translation patches are canonical only under config/bg-static-i18n-en.d; .cache/bg-static-i18n-en.d is forbidden as release authority."
   ],
   "skill_targets": [
     "continuity",
@@ -34,9 +37,10 @@
     "tests/brain-i18n-production-fail-closed-v1.test.mjs",
     "tools/site-shell/verify-pricing-i18n-production.mjs",
     "tests/brain-static-i18n-versioned-cache-v1.test.mjs",
-    "netlify.toml STATIC_I18N_REQUIRE_CACHE=1"
+    "netlify.toml STATIC_I18N_REQUIRE_CACHE=1",
+    "config/bg-static-i18n-en.d/2026-09-25-money-pages.json"
   ],
-  "revision": 4,
+  "revision": 5,
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-production-fail-closed-v1.test.mjs"
@@ -55,6 +59,9 @@
     "restored_guard": "STATIC_I18N_PRODUCTION_TRANSLATION_FAILED + STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED",
     "production_build_incident": "Netlify linked production build reached authorized transport but exited during site build while production was still on f45ad02f8f719958c00b7ff8e39e3ca2104353b1.",
     "deterministic_authority": "config/bg-static-i18n-en.json",
-    "authority_blob_sha": "63d4e10854c4ddbfa1300fbb5186d8392ec7abfd"
+    "authority_blob_sha": "63d4e10854c4ddbfa1300fbb5186d8392ec7abfd",
+    "patch_authority_incident": "The 7-entry money-page translation fragment remained under .cache after the base cache moved to config, causing fail-closed Netlify builds.",
+    "canonical_patch": "config/bg-static-i18n-en.d/2026-09-25-money-pages.json",
+    "canonical_patch_blob": "f26c933c4a8dec4f00798ac38c8d0c91963373a2"
   }
 }
