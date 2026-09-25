@@ -13,4 +13,12 @@ test('website Netlify build parity uses production static i18n cache policy',()=
   assert.match(block,/pricing-build-integrity\.mjs capture/);
   assert.match(block,/build-localized-routes\.mjs/);
   assert.match(block,/bouw-release-evidence\.mjs/);
+  assert.match(block,/STATIC_I18N_REQUIRE_CACHE:\\s*'1'/);
+});
+
+test('website lane self-tests workflow changes as high risk preview work',()=>{
+  assert.match(workflow,/changedPaths\.includes\('\.github\/workflows\/lane-website\.yml'\)/);
+  assert.match(workflow,/lane:'high-risk'/);
+  assert.match(workflow,/requires_preview:true/);
+  assert.match(workflow,/\/en\/prijzen/);
 });
