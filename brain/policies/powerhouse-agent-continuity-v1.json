@@ -35,7 +35,8 @@
     "NO_UNVALIDATED_UNEXPECTED_CANDIDATE_HEAD_AUTHORITY",
     "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION",
     "TERMINAL_USER_OUTPUT_REQUIRES_DASHBOARD_SKILL_AND_LEARNING_WRITEBACK",
-    "NO_AUTONOMOUS_TODO_LIST_AS_FINAL_HANDOFF"
+    "NO_AUTONOMOUS_TODO_LIST_AS_FINAL_HANDOFF",
+    "GENERATED_PUBLIC_SURFACE_REQUIRES_BUILD_AUTHORITY"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -207,7 +208,8 @@
     ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
     "brain/learning/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.json",
-    "brain/learning/2026-09-25-browser-concurrency-test-contract-drift-v1.json"
+    "brain/learning/2026-09-25-browser-concurrency-test-contract-drift-v1.json",
+    "brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -338,5 +340,23 @@
     "interruption_rule": "The next capable node resumes automatically from canonical checkpoint without requiring the user to say ga door.",
     "descendant_gate_recovery_rule": "A merged website lineage whose historical Required run is terminal non-success may recover only when the merge SHA is an ancestor of current main, the current-main website baseline and bounded-visibility regression suite passes, the original exact-head BRAIN and applicable CodeQL gates are still green, and production/provider readback remains mandatory. This is descendant regression evidence, never retroactive exact-head success.",
     "descendant_gate_recovery_fingerprint": "github|terminal-required-descendant-recovery|website-baseline|v1"
+  },
+  "generated_surface_projection_rule": {
+    "required": true,
+    "fingerprint": "website|generated-canonical-surface|post-build-projection|v1",
+    "scope": "all generated, restored, composed or rewritten public website surfaces",
+    "canonical_learning": "brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json",
+    "regression": "tests/brain-ai-ecosysteem-production-projection-v1.test.mjs",
+    "rules": [
+      "Identify the production-authoritative build step before changing a generated public page.",
+      "A direct source edit is not durable authority when a later production builder rewrites that file.",
+      "Durable additions must live in the canonical builder input or be projected idempotently after the overwrite point.",
+      "The real production build wiring and projection idempotency must be covered by regression evidence.",
+      "A source-level internal link that disappears from the built artifact is projection loss, not an SEO-policy reason to weaken orphan-page checks.",
+      "Public translatable copy must remain compatible with the canonical static English cache and fail-closed i18n contract.",
+      "Delivery metadata must be refreshed against current main before protected delivery; stale base metadata must not expand candidate scope.",
+      "Terminal website truth requires exact production identity and functional production readback of the affected route."
+    ],
+    "terminal_state": "LIVE_BEWEZEN"
   }
 }
