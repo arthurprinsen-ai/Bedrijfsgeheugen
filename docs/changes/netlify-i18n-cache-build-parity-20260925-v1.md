@@ -11,3 +11,5 @@ Repair:
 - repair missing strings only through canonical static i18n cache patches.
 
 Terminal release proof remains exact Netlify production SHA plus pricing/i18n browser verification.
+
+The website lane also self-tests changes to its own workflow file by forcing high-risk preview/build parity for `.github/workflows/lane-website.yml`.
