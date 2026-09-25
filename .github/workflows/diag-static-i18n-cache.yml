@@ -13,8 +13,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-          cache: npm
-      - run: npm ci --ignore-scripts
+      - run: npm install --ignore-scripts
       - name: Validate static English cache
         env:
           STATIC_I18N_NETWORK: "0"
