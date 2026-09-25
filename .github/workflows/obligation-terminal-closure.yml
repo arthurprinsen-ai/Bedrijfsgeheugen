@@ -88,6 +88,8 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           HEAD_SHA: ${{ steps.context.outputs.candidate_sha }}
           PR_NUMBER: ${{ steps.context.outputs.pr_number }}
+          MERGE_SHA: ${{ steps.context.outputs.merge_sha }}
+          DELIVERY_LANE: ${{ steps.identity.outputs.delivery_lane }}
         shell: bash
         run: |
           set -euo pipefail
@@ -113,7 +115,47 @@ jobs:
             exit 78
           }
 
-          require_workflow "required-test.yml" "Required"
+          require_required_or_descendant() {
+            payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/required-test.yml/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=50")"
+            run_id="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$payload")"
+            status="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$payload")"
+            conclusion="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$payload")"
+            if [ -n "$run_id" ] && [ "$status" = "completed" ] && [ "$conclusion" = "success" ]; then
+              echo "TERMINAL_CRITICAL_GATE_PROVEN:Required:run=$run_id:head=$HEAD_SHA"
+              return 0
+            fi
+            if [ -n "$run_id" ] && [ "$status" = "completed" ] && [ "$conclusion" != "success" ] && [ "$DELIVERY_LANE" = "website" ]; then
+              git fetch origin main --no-tags
+              current_main="$(git rev-parse origin/main)"
+              git merge-base --is-ancestor "$MERGE_SHA" "$current_main" || {
+                echo "::error::TERMINAL_REQUIRED_DESCENDANT_CONTAINMENT_FAILED:$MERGE_SHA:$current_main"
+                exit 78
+              }
+              recovery_dir="$(mktemp -d)"
+              git worktree add --detach "$recovery_dir" "$current_main" >/dev/null
+              if (
+                cd "$recovery_dir"
+                node --test \
+                  tests/site-baseline-guardian.test.mjs \
+                  tests/site-shell-public-route-inventory.test.mjs \
+                  tests/site-shell-website-release-risk.test.mjs \
+                  tests/targeted-website-route-regression.test.mjs \
+                  tests/website-static-syntax-preflight.test.mjs \
+                  tests/branche-applicaties-integraties.test.mjs \
+                  tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs
+              ); then
+                git worktree remove --force "$recovery_dir"
+                echo "TERMINAL_REQUIRED_DESCENDANT_RECOVERY_PROVEN:historical_run=$run_id historical_conclusion=$conclusion merge=$MERGE_SHA current_main=$current_main"
+                return 0
+              fi
+              git worktree remove --force "$recovery_dir" || true
+              echo "::error::TERMINAL_REQUIRED_DESCENDANT_REGRESSION_FAILED:historical_run=$run_id merge=$MERGE_SHA current_main=$current_main"
+              exit 78
+            fi
+            require_workflow "required-test.yml" "Required"
+          }
+
+          require_required_or_descendant
           require_workflow "unified-brain-delivery.yml" "BRAIN"
 
           changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
