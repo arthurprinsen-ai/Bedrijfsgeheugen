@@ -7,7 +7,7 @@ test('pricing billing rescue publishes both pressed and selected semantics', () 
   assert.match(source, /data-bg-billing/);
   assert.match(source, /setAttribute\('aria-pressed', String\(active\)\)/);
   assert.match(source, /setAttribute\('aria-selected', String\(active\)\)/);
-  const selectedIndex = source.indexOf("setAttribute('aria-selected', String(active))");
   const billingIndex = source.indexOf("function setBilling");
-  assert.ok(selectedIndex > billingIndex, 'billing state must publish aria-selected inside setBilling');
+  const selectedIndex = source.indexOf("setAttribute('aria-selected', String(active))", billingIndex);
+  assert.ok(billingIndex >= 0 && selectedIndex > billingIndex, 'billing state must publish aria-selected inside setBilling');
 });
