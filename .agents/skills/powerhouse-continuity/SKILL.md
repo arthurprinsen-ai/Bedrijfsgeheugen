@@ -1252,3 +1252,20 @@ For GitHub tree-based writes specifically, never advance from `create_tree` to c
 
 Canonical skill: `.agents/skills/powerhouse-connector-response-normalization/SKILL.md`.
 Canonical learning: `brain/learning/2026-09-25-connector-response-shape-normalization-v1.json`.
+
+
+## Attainable terminal gate evidence
+
+Fingerprint: `delivery|terminal-gate|trigger-aware-impossible-event|v1`.
+
+A terminal closure workflow must not wait only on an evidence path that cannot exist for the candidate.
+
+Mandatory:
+- prefer the strongest exact-head gate evidence when it exists;
+- if the primary workflow run is unavailable for that event/candidate, use an explicitly defined equivalent canonical evidence source;
+- for Brain closure, prefer Unified Brain exact-head evidence, otherwise require successful Brain foundation verification on the merged commit SHA;
+- fallback evidence is not a bypass: failed or non-terminal equivalent evidence remains blocking;
+- Required, CodeQL, learning/skill projection and provider/readback gates remain independently fail-closed;
+- persist which evidence path proved closure.
+
+Canonical learning: `brain/learning/2026-09-25-terminal-gate-trigger-awareness-v1.json`.
