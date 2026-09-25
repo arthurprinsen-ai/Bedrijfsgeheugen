@@ -28,3 +28,14 @@ test('delivery classifier owns versioned i18n data as website shell', async () =
   assert.ok(website?.paths.includes('data/i18n/'));
   assert.ok(shell?.paths.includes('data/i18n/'));
 });
+
+test('canonical cache patches are merged before offline coverage validation', async () => {
+  const source = await readFile('tools/site-shell/build-localized-routes.mjs', 'utf8');
+  assert.match(source, /data','i18n','bg-static-i18n-en\.d/);
+  assert.match(source, /STATIC_I18N_CACHE_PATCH_INVALID/);
+  const output = execFileSync(process.execPath, ['tools/site-shell/build-localized-routes.mjs', '--validate-cache'], {
+    encoding: 'utf8',
+    env: { ...process.env, STATIC_I18N_NETWORK: '0' },
+  });
+  assert.match(output, /STATIC_I18N_CACHE_COMPLETE/);
+});
