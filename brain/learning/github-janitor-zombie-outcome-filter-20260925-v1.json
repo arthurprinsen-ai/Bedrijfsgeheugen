@@ -1,0 +1,42 @@
+{
+  "fingerprint": "github-janitor-zombie-outcome-filter-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Repository cleanup stayed red because nine historical GitHub Actions runs remained queued even after cancel, force-cancel and delete were rejected, while Outcome Obligation Sweep also failed on cancelled Production Release Readback sources that could not have trusted completion artifacts.",
+  "root_cause": "The janitor coupled provider cleanup success to repository cleanup success: one uncancellable legacy run aborted the whole sweep before stale branch cleanup. Separately, the completion-evidence resolver did not gate workflow_run sources on conclusion=success before requiring source artifacts.",
+  "prevention": [
+    "Uncancellable legacy Actions runs are quarantined as explicit CANCEL_RUN_BLOCKED evidence and may not abort deterministic cleanup of other repository debris.",
+    "The janitor must continue to stale-branch reconciliation after provider cancellation refusal and re-read blocked run state on later sweeps.",
+    "A workflow_run can become trusted completion evidence only when its source conclusion is success.",
+    "Cancelled, failed, skipped, action_required or otherwise non-success source runs are non-applicable completion evidence and must not cause artifact-missing failures.",
+    "Current main and the current head of an open PR remain protected from cleanup escalation."
+  ],
+  "evidence": {
+    "blocked_run": 34714400623,
+    "blocked_branch": "fix/supabase-migration-history-integrity",
+    "blocked_since": "2026-09-12T19:31:10Z",
+    "janitor_failure_run": 36096472079,
+    "outcome_failure_run": 36096432154,
+    "outcome_source_run": 36096042698,
+    "outcome_source_conclusion": "cancelled"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ]
+  },
+  "failed_approaches": [
+    "Failing the complete janitor when GitHub refuses all mutation endpoints for a legacy queued run.",
+    "Assuming every Production Release Readback workflow_run has a downloadable trusted artifact regardless of source conclusion."
+  ],
+  "revision": 1,
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

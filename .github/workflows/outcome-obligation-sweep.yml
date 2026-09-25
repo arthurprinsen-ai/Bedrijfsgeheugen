@@ -74,9 +74,15 @@ jobs:
           SOURCE_WORKFLOW: ${{ github.event.workflow_run.name }}
           SOURCE_WORKFLOW_PATH: ${{ github.event.workflow_run.path }}
           SOURCE_HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+          SOURCE_CONCLUSION: ${{ github.event.workflow_run.conclusion }}
         run: |
           set -euo pipefail
           mkdir -p .artifacts/source
+          if [ "${SOURCE_CONCLUSION:-}" != "success" ]; then
+            echo "Non-success source run (${SOURCE_CONCLUSION:-unknown}); completion evidence is not applicable."
+            echo "COMPLETION_EVIDENCE_APPLICABLE=false" >> "$GITHUB_ENV"
+            exit 0
+          fi
           candidate_identity="$SOURCE_HEAD_SHA"
           production_identity=""
           source_path="${SOURCE_WORKFLOW_PATH%@*}"
