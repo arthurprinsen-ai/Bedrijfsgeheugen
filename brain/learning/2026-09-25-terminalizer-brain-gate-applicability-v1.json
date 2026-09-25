@@ -1,0 +1,16 @@
+{
+  "type":"POWERHOUSE_LEARNING",
+  "version":"v1",
+  "status":"ACTIVE",
+  "fingerprint":"delivery|terminalizer-brain-gate-applicability|v1",
+  "obligation_id":"terminalizer-brain-gate-applicability-v1",
+  "problem":"Obligation Terminal Closure waited on a BRAIN pull_request run that cannot exist because Unified Brain Delivery is workflow_dispatch-only; docs-only closures deadlocked despite Required, Skill Projection and CodeQL being green.",
+  "root_cause":"The terminalizer hard-coded BRAIN as always applicable and filtered Unified Brain Delivery by event=pull_request, which is incompatible with the workflow's actual trigger contract.",
+  "fix":"Skip BRAIN only for Delivery-Lane docs; for other lanes keep BRAIN mandatory but query exact-head Unified Brain runs independent of event so workflow_dispatch authority is recognized.",
+  "prevention":["Bind terminal gate applicability to delivery lane.","Never hard-code an event filter that the authoritative workflow cannot emit.","Keep Required and CodeQL exact-head rules unchanged.","Regression-test the trigger/gate contract together."],
+  "compiler":{"failure_class":"TERMINALIZER_IMPOSSIBLE_BRAIN_EVENT_FILTER","scope":"DELIVERY_CONTROL_PLANE","machine_enforceable":true,"repeat_count":1,"security_sensitive":false},
+  "evaluation":{"historical_replay":["tests/brain-terminalizer-brain-gate-applicability-v1.test.mjs"],"canary":[".github/workflows/obligation-terminal-closure.yml"]},
+  "skill_targets":["powerhouse-delivery-self-optimization"],
+  "evidence":[".github/workflows/obligation-terminal-closure.yml","tests/brain-terminalizer-brain-gate-applicability-v1.test.mjs"],
+  "outcome":"DOCS_CLOSURE_NO_LONGER_WAITS_ON_IMPOSSIBLE_BRAIN_EVENT"
+}
