@@ -343,6 +343,7 @@ async function translateAll(strings) {
 
   const cacheRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1';
   if (cacheRequired) {
+    console.error('STATIC_I18N_CACHE_MISSING', JSON.stringify(missing));
     throw new Error('STATIC_I18N_CACHE_INCOMPLETE: ' + missing.length + ' missing translation(s); first=' + missing[0].slice(0,120));
   }
 
@@ -454,6 +455,7 @@ if (cacheValidationOnly) {
   const cache = loadCache();
   const missing = [...allStrings].filter(source => typeof cache[source] !== 'string' || !cache[source].trim());
   if (missing.length) {
+    console.error('STATIC_I18N_CACHE_MISSING', JSON.stringify(missing));
     throw new Error('STATIC_I18N_CACHE_INCOMPLETE: ' + missing.length + ' missing translation(s); first=' + missing[0].slice(0,120));
   }
   console.log('STATIC_I18N_CACHE_COMPLETE', JSON.stringify({ files: files.length, strings: allStrings.size }));
