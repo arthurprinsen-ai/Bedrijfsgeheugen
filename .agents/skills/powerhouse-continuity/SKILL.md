@@ -900,17 +900,31 @@ Recovery is permitted only when all of these are true:
 This rule exists to close stale verifier debt without weakening product gates or spawning duplicate recovery PRs.
 
 
-## Bounded parallel production route readback
+## Production i18n fail-closed invariant
 
-Fingerprint: `production-route-readback-bounded-parallel-v1`.
+Fingerprint: `i18n-production-fail-closed-20260924-v1`.
 
-Production route proof must minimize wall-clock latency without weakening evidence:
-- verify independent route × viewport combinations concurrently with bounded concurrency;
-- retain both desktop (1440px) and mobile (390px) browser evidence;
-- keep navigation/body visibility retries bounded and fail closed on terminal timeout;
-- wrap the canonical route-verifier step in an explicit workflow wall-clock timeout;
-- never replace browser proof with HTTP-only checks merely to make delivery faster;
-- a route verifier that serializes independent viewports and can consume most of the workflow budget is a control-plane latency defect.
+For public localized production builds:
+- resilience/backoff may retry provider failures but may never convert a production translation failure into `null` and continue;
+- with `STATIC_I18N_NETWORK=1`, missing/incomplete translations are a build failure;
+- an `/en/*` route is not production proof unless visible content is English;
+- the known Dutch pricing H1 and `Switching language failed. Try again.` are hard negative oracles for the English pricing route;
+- every i18n release must rerun the production browser verifier before `LIVE_BEWEZEN`.
 
-Regression: `tests/brain-production-route-readback-bounded-parallel-v1.test.mjs`.
-Learning: `brain/learning/production-route-readback-bounded-parallel-20260925-v1.json`.
+
+## Public i18n canonical route symmetry
+
+Fingerprint: `public-i18n-dutch-canonical-roundtrip-20260925-v1`.
+
+For public website localization:
+- Dutch is the canonical unprefixed route authority: `/`, `/prijzen`, `/over-ons`, etc.;
+- English is the prefixed authority under `/en/*`;
+- never generate or navigate to `/nl/*` as a canonical public destination;
+- language switching must preserve the current logical path, query and hash in both directions;
+- static build canonical, hreflang, og:url and internal-link rewriting must use the same locale mapper as the runtime switcher;
+- legacy `/nl` URLs must 301 to the matching unprefixed Dutch route;
+- terminal production proof for material i18n changes must exercise a real NL → EN → NL browser roundtrip and reject any Dutch `/nl/*` result.
+
+Regression: `tests/brain-public-i18n-static-route-authority-v1.test.mjs`.
+Canary: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+Learning: `brain/learning/public-i18n-dutch-canonical-roundtrip-20260925-v1.json`.

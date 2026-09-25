@@ -33,6 +33,21 @@
   external_node_modules = ["ffmpeg-static"]
   included_files = ["node_modules/ffmpeg-static/ffmpeg"]
 
+# Legacy /nl/* locale URLs zijn niet canoniek. Nederlands leeft op de
+# on-geprefixte publieke route; Engels op /en/*. Houd oude links bruikbaar,
+# maar stuur ze permanent terug naar de Nederlandse canonical.
+[[redirects]]
+  from = "/nl"
+  to = "/"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/nl/*"
+  to = "/:splat"
+  status = 301
+  force = true
+
 # .html-varianten netjes doorsturen naar de schone URL (voorkomt duplicate content)
 [[redirects]]
   from = "/excel-als-crm.html"

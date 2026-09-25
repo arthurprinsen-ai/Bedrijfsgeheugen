@@ -97,8 +97,22 @@ async function run() {
     if (/Switching language failed\. Try again\./i.test(body)) throw new Error('English switch still exposes runtime translation failure');
     if (/Prijzen voor digitalisering in het mkb/i.test(body)) throw new Error('English route still shows the Dutch pricing H1');
     if (!/Pricing/i.test(body)) throw new Error('English route has no visible Pricing text');
+
+    // English -> Dutch must return to the unprefixed canonical Dutch route.
+    const englishCurrent = page.locator('button[data-bg-language-current]').first();
+    await englishCurrent.click();
+    const dutch = page.locator('[data-bg-language-option="nl"]').first();
+    await Promise.all([
+      page.waitForURL(url => /^\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
+      dutch.click(),
+    ]);
+    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+    await page.waitForTimeout(300);
+    if ((await page.locator('html').getAttribute('lang')) !== 'nl') throw new Error('Dutch route did not render html lang=nl');
+    if (/^\/nl(?:\/|$)/.test(new URL(page.url()).pathname)) throw new Error('Dutch switch leaked to deprecated /nl/* route');
+
     if (errors.length) throw new Error('Browser page errors: ' + JSON.stringify(errors));
-    console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'en'}));
+    console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'nl',roundtrip:'nl-en-nl'}));
   } finally {
     await browser.close();
   }

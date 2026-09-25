@@ -1,0 +1,33 @@
+{
+  "fingerprint": "public-i18n-dutch-canonical-roundtrip-20260925-v1",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "date": "2026-09-25",
+  "type": "PUBLIC_I18N_CANONICAL_ROUTE_SYMMETRY",
+  "root_cause": "The public language switcher and static localized-route builder treated both locales as prefixed. That made English to Dutch navigate to /nl/* and caused Dutch canonical, hreflang and internal-link generation to diverge from the agreed public authority where Dutch is unprefixed and English lives under /en/*.",
+  "prevention": [
+    "Dutch public routes are always canonical and unprefixed.",
+    "English public routes are always canonical under /en/*.",
+    "Runtime language switching must preserve path, query and hash while mapping NL→EN to /en/* and EN→NL to the unprefixed route.",
+    "Static localized-route generation must use the same canonical mapping for internal links, canonical URLs, hreflang and og:url.",
+    "Legacy /nl and /nl/* URLs permanently redirect to the matching unprefixed Dutch route.",
+    "Production browser proof must execute a real NL→EN→NL roundtrip and fail if the Dutch return path contains /nl."
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_I18N_DUTCH_PREFIX_CANONICAL_DRIFT",
+    "scope": "WEBSITE_PUBLIC_I18N",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-i18n-static-route-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "revision": 1
+}
