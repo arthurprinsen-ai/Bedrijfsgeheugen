@@ -14,7 +14,7 @@ on:
       - '.github/workflows/daily-blog-live-watchdog.yml'
       - '.github/workflows/content-growth-ci.yml'
   push:
-    branches:
+    branches: [main]
     paths:
       - 'tools/content-growth/**'
       - 'config/content-growth-policy.json'
@@ -26,7 +26,6 @@ on:
       - '.github/workflows/content-growth-learning.yml'
       - '.github/workflows/daily-blog-live-watchdog.yml'
       - '.github/workflows/content-growth-ci.yml'
-      - main
 
 permissions:
   contents: read

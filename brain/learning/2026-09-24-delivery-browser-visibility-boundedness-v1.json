@@ -15,7 +15,10 @@
     "Make expensive PR workflows single-flight per PR so a new head cancels superseded queued/in-progress work",
     "Bound expensive specialist jobs with explicit job timeouts",
     "Mirror specialist PR path scopes onto main push triggers so unrelated merges do not fan out specialist CI",
-    "Replace run-id concurrency keys with stable ref/PR keys where supersession is intended"
+    "Replace run-id concurrency keys with stable ref/PR keys where supersession is intended",
+    "Register newly introduced delivery skills in the canonical System Map in the same lineage",
+    "Migrate stale pricing regressions to semantic content-addressed cache and dataset-readiness invariants",
+    "Restore content-growth-ci push.branches=[main] and keep main out of paths"
   ],
   "prevention_rule": "Every browser/readback or expensive CI workflow must bound async waits and total runtime, use stable supersession keys, scope specialist main triggers to owned paths, and validate YAML semantics after automated workflow rewrites rather than assuming branch-list formatting.",
   "compiler": {
@@ -29,7 +32,11 @@
     "historical_replay": [
       "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
       "tests/brain-actions-pr-single-flight-v1.test.mjs",
-      "tests/brain-actions-main-push-fanout-v1.test.mjs"
+      "tests/brain-actions-main-push-fanout-v1.test.mjs",
+      "tests/brain-pricing-interactions-functional-v1.test.mjs",
+      "tests/brain-pricing-toggle-runtime-v3.test.mjs",
+      "tests/brain-pricing-visible-state-parity-v1.test.mjs",
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs"
     ],
     "invariants": [
       "each navigation attempt has a finite timeout",
@@ -49,6 +56,8 @@
     "skill": ".agents/skills/powerhouse-browser-gate-boundedness/SKILL.md"
   },
   "failed_approaches": [
-    "A generic text transformation assumed push.branches was a one-line YAML scalar and inserted paths before a multi-line branch list, producing an invalid semantic structure even though the file remained textually plausible."
+    "A generic text transformation assumed push.branches was a one-line YAML scalar and inserted paths before a multi-line branch list, producing an invalid semantic structure even though the file remained textually plausible.",
+    "A regression migration attempt changed the runtime contract but left older tests hard-coded to a timestamp cache key, literal selector spelling, and a stale System Map inventory.",
+    "A workflow rewrite left content-growth-ci.yml with an empty push.branches key and moved main into paths, creating semantic YAML drift that only the multiline branch-scope regression exposed."
   ]
 }
