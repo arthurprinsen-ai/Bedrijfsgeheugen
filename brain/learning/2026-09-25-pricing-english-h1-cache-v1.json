@@ -1,0 +1,26 @@
+{
+  "fingerprint": "website-i18n-pricing-h1-cache-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "STATIC_I18N_IDENTITY_TRANSLATION_ON_CRITICAL_H1",
+  "problem": "Production /en/prijzen rendered the Dutch H1 'Prijzen voor digitalisering in het mkb' although exact-main production deployment and other route checks were green.",
+  "root_cause": "The canonical static i18n cache resolved the critical pricing H1 to Dutch/identity text instead of English.",
+  "prevention": [
+    "Critical public English H1 strings must have explicit canonical English translations in config/bg-static-i18n-en.d.",
+    "Production browser verification must fail if the Dutch pricing H1 remains visible on /en/prijzen.",
+    "Do not weaken the verifier; repair the translation source."
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_IDENTITY_TRANSLATION_ON_CRITICAL_H1",
+    "scope": "PUBLIC_I18N_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-english-h1-cache-v1.test.mjs",
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  }
+}
