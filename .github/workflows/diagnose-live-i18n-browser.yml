@@ -1,0 +1,29 @@
+name: Diagnose Live NL EN Browser
+on:
+  push:
+    branches:
+      - diag/live-i18n-browser-89cc01b
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify public English routes
+        run: |
+          set -euo pipefail
+          for p in /en/ /en/prijzen /en/systemen-koppelen; do
+            code="$(curl -sS -L -o /tmp/page.html -w '%{http_code}' -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl${p}?diag=${GITHUB_SHA}")"
+            echo "$p HTTP $code"
+            test "$code" = "200"
+            grep -qi '<html[^>]*lang="en"' /tmp/page.html
+          done
+      - name: Install browser
+        run: PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
+      - name: Prove pricing NL EN roundtrip
+        env:
+          BASE_URL: https://www.bedrijfsgeheugen.nl
+        run: node tools/site-shell/verify-pricing-i18n-production.mjs
