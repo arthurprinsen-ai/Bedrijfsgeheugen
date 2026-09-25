@@ -1160,3 +1160,18 @@ Mandatory closure:
 - never report `LIVE_BEWEZEN` merely because a PR merged or because an older superseded readback was cancelled.
 
 Reusable lesson: **borging is complete only when the rule is canonical, discoverable by the next agent, protected on main, and its applicable readback is proven.**
+
+
+## Closed/force-pushed PR recovery without stale rollback
+
+Fingerprint: `delivery|pr-recovery|closed-force-pushed-head|v1`.
+
+When GitHub refuses to reopen a closed PR because its head branch was force-pushed or recreated:
+- first compare the surviving head branch with current `main`; do not assume the closed PR is still the canonical delivery path;
+- if the intended fix is already present on current `main`, do not resurrect or merge the stale branch; close any temporary recovery PR with evidence and continue from current main;
+- if the fix is absent, reconstruct only the minimal proven delta on a fresh branch from current `main`; never merge a heavily behind/diverged recovery branch merely to preserve PR identity;
+- preserve one remediation owner per root cause and avoid duplicate CI/deploy fan-out;
+- terminal completion still requires exact-main production identity plus functional browser/readback evidence where applicable;
+- record the incident, root cause, recovery decision and prevention rule in Brain/ledger/skills before declaring the delivery closed.
+
+This prevents a stale recovery PR from rolling back newer mainline work while retaining fail-closed delivery governance.
