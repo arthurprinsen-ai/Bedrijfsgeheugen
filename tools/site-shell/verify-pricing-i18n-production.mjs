@@ -90,7 +90,9 @@ async function run() {
     if (await mobileMenu.count() && await mobileMenu.isHidden().catch(()=>false)) await mobileMenuButton.click();
     const sharedMobileNav = page.locator('#bgSharedMobileNav').first();
     if (await sharedMobileNav.count()) await sharedMobileNav.waitFor({ state:'visible', timeout:5_000 });
-    const mobileLanguage = page.locator('#bgSharedMobileNav [data-bg-language-select], #bgkopMob [data-bg-language-select]').filter({ visible:true }).first();
+    const sharedLanguage = page.locator('#bgSharedMobileNav [data-bg-language-select]').first();
+    const legacyLanguage = page.locator('#bgkopMob [data-bg-language-select]').first();
+    const mobileLanguage = await sharedLanguage.count() ? sharedLanguage : legacyLanguage;
     await mobileLanguage.waitFor({ state:'visible', timeout:5_000 }).catch(() => {});
     if (!await mobileLanguage.isVisible().catch(()=>false)) throw new Error('visible mobile language select is missing after opening mobile navigation');
     await Promise.all([
@@ -108,7 +110,9 @@ async function run() {
     // English -> Dutch must return through the same visible mobile control.
     const englishMobileMenu = page.locator('#bgkopMob').first();
     if (await englishMobileMenu.count() && await englishMobileMenu.isHidden().catch(()=>false)) await page.locator('#bgkopKnop').first().click();
-    const dutchSelect = page.locator('#bgSharedMobileNav [data-bg-language-select], #bgkopMob [data-bg-language-select]').filter({ visible:true }).first();
+    const englishSharedLanguage = page.locator('#bgSharedMobileNav [data-bg-language-select]').first();
+    const englishLegacyLanguage = page.locator('#bgkopMob [data-bg-language-select]').first();
+    const dutchSelect = await englishSharedLanguage.count() ? englishSharedLanguage : englishLegacyLanguage;
     await dutchSelect.waitFor({ state:'visible', timeout:5_000 }).catch(() => {});
     if (!await dutchSelect.isVisible().catch(()=>false)) throw new Error('visible Dutch language select is missing after opening mobile navigation');
     await Promise.all([
