@@ -1,0 +1,37 @@
+{
+  "version": "post-merge-codeql-single-flight-20260925-v1",
+  "date": "2026-09-25",
+  "obligation_id": "post-merge-codeql-terminality-20260925",
+  "failure_class": "GITHUB_DELIVERY",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "fingerprint": "delivery|post-merge-codeql|single-flight-terminality|v1",
+  "root_cause": "Python CodeQL used github.run_id for push-event concurrency so newer same-ref pushes could not supersede stale work; terminal guidance also allowed an active exact-SHA security run to leak into user-facing handoff.",
+  "prevention": [
+    "Use stable PR/ref CodeQL concurrency, never github.run_id.",
+    "Newest exact-SHA security run is authoritative.",
+    "Never hand active post-merge security work back to the user."
+  ],
+  "evidence": [
+    ".github/workflows/codeql.yml used github.run_id fallback.",
+    "PR #3101 was closed and its branch reset before merge; recovery reconstructs only the missing delta from current main.",
+    "Required merge-candidate testing also exposed the missing isHardAssetFailure import on current main, fixed without reverting newer main behavior."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-post-merge-codeql-single-flight.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-post-merge-codeql/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
