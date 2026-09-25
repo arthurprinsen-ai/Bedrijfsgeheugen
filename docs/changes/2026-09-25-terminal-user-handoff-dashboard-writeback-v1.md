@@ -16,3 +16,6 @@ The same closure is projected into the existing Dashboard Hub, Canonical System 
 
 ## Regression
 `tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs` fails closed if policy, AGENTS or the continuity skill lose this contract.
+
+## Supabase migration-ledger identity
+The governed Composio content fallback migration is active in production as `20260925074007_composio_content_fallback_governance_v1`. The repository filename is reconciled to that exact provider ledger identity. Terminal closure must compare the canonical migration name/version rather than leaving a repository/provider mismatch.

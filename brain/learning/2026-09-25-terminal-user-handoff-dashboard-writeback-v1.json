@@ -24,7 +24,10 @@
     "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
     "regression": "tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs",
     "notion_dashboard_hub": "3e4da36a-ac8a-81fb-b340-daccce80dec8",
-    "notion_system_map": "3dcda36a-ac8a-8152-be3d-edbb32b06239"
+    "notion_system_map": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+    "supabase_migration_provider_ledger": "composio_content_fallback_governance_v1@20260925074007",
+    "supabase_migration_repository_path": "supabase/migrations/20260925074007_composio_content_fallback_governance_v1.sql",
+    "migration_identity_rule": "Repository migration identity must match the exact production Supabase migration ledger identity before terminal closure."
   },
   "evaluation": {
     "historical_replay": [
