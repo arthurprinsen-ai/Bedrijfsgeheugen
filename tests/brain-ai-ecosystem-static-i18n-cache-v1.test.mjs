@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('AI ecosystem public copy remains covered by canonical English cache while production can fall back at runtime', async () => {
+test('AI ecosystem public copy remains covered by canonical English cache and production stays fail-closed', async () => {
   const [patchRaw,builder,netlify,runtime] = await Promise.all([
     readFile('config/bg-static-i18n-en.d/2026-09-25-ai-ecosystem.json','utf8'),
     readFile('tools/site-shell/build-localized-routes.mjs','utf8'),
@@ -23,6 +23,6 @@ test('AI ecosystem public copy remains covered by canonical English cache while 
   assert.match(builder,/bg-static-i18n-en\.d/);
   assert.match(builder,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"0"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
   assert.match(runtime,/\/api\/i18n-translate/);
 });

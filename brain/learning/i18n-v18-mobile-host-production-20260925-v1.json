@@ -1,60 +1,62 @@
 {
   "fingerprint": "i18n-v18-mobile-host-production-20260925-v1",
-  "failure_class": "I18N_RUNTIME_ASSET_INCOMPLETE_AND_ACTIVE_MOBILE_HOST",
+  "failure_class": "I18N_RUNTIME_ASSET_INCOMPLETE_AND_ACTIVE_MOBILE_HOST_UNPROVEN",
   "status": "ACTIVE_PREVENTION",
-  "problem": "Exact-main production served the pricing page with the i18n stylesheet marker but without /assets/js/i18n.js. The runtime therefore never mounted any language selector; browser diagnostics showed allSelects=0 even after opening the active mobile navigation.",
-  "root_cause": "The primary defect was tools/site-shell/apply-i18n.mjs treating any shared data-bg-i18n-asset marker as proof that the full i18n bundle already existed. Because pricing already contained assets/i18n.css, the transformer returned before injecting assets/js/i18n.js and before mobile-control injection. A secondary compatibility requirement is that assets/js/i18n.js must include the active #v18MobileDrawer among its mobile hosts.",
+  "problem": "Exact-main production rendered pricing with the i18n stylesheet marker present but without assets/js/i18n.js in the final HTML. The browser therefore had zero language selects and could not start the NL/EN roundtrip.",
+  "root_cause": "tools/site-shell/apply-i18n.mjs treated any data-bg-i18n-asset marker as proof that all i18n assets were already installed. Pricing already contained the CSS marker, so the transform returned before injecting assets/js/i18n.js and before completing mobile-control injection. Without the runtime script, no active host (#v18MobileDrawer, generic shared mobile root, or legacy #bgkopMob) could mount a selector.",
   "prevention": [
-    "Detect and inject assets/i18n.css and assets/js/i18n.js independently; one existing asset must never suppress the other.",
-    "Always run idempotent mobile language-control injection after asset reconciliation.",
-    "Treat #v18MobileDrawer as a first-class runtime mobile host while preserving generic and legacy hosts.",
-    "Prove final production HTML contains both i18n assets, then execute a visible NL->EN->NL browser roundtrip.",
-    "Exact Netlify commit_ref proves deployment identity only; LIVE_BEWEZEN still requires functional language-switch proof and no visible switching-failed error."
+    "Detect i18n CSS and i18n runtime script independently; never use one shared marker as completeness proof.",
+    "Always run idempotent mobile-language-control injection after asset reconciliation.",
+    "Treat #v18MobileDrawer as a first-class active mobile host while preserving generic and legacy hosts.",
+    "Inspect final production HTML for both assets before diagnosing host-selection logic.",
+    "Require exact-main Netlify commit equality plus visible mobile NL->EN->NL browser roundtrip before LIVE_BEWEZEN."
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
-      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
-      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
-      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
-    "expected_invariant": "final production HTML independently contains i18n CSS and JS; the active mobile navigation exposes exactly one usable language selector and production completes NL->EN->NL"
+    "expected_invariant": "every public built page that uses i18n has both stylesheet and runtime script present independently, and the active mobile navigation exposes exactly one usable locale selector"
   },
   "evidence": {
     "production_snapshot_run": 36161161127,
-    "exact_production_sha": "fd7265ad7bdb02e35f0a07cd1f0e750b106c4123",
-    "direct_html_probe": {
-      "route": "/prijzen",
-      "css_present": true,
-      "runtime_script_present": false,
-      "browser_diagnostics": {
-        "v18Drawer": "false",
-        "v18Selects": 0,
-        "legacySelects": 0,
-        "sharedSelects": 0,
-        "allSelects": 0
-      }
+    "browser_diagnostics": {
+      "v18Drawer": "false",
+      "v18Selects": 0,
+      "legacySelects": 0,
+      "sharedSelects": 0,
+      "allSelects": 0
     },
-    "production_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs"
+    "production_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "final_html_observation": {
+      "route": "/prijzen",
+      "i18n_css_present": true,
+      "i18n_js_present": false,
+      "language_select_count": 0
+    },
+    "human_documentation": "docs/changes/i18n-v18-mobile-host-production-20260925-v1.md",
+    "activity_ledger": "docs/development-ledger-events/2026-09-25-i18n-v18-mobile-host-production-v1.md"
   },
   "test_evidence": [
-    "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
-    "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
+    "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
   ],
   "skill_targets": [
     "powerhouse-continuity",
     "powerhouse-netlify-production-truth"
   ],
-  "revision": 2,
+  "revision": 3,
   "compiler": {
-    "failure_class": "I18N_RUNTIME_ASSET_INCOMPLETE_AND_ACTIVE_MOBILE_HOST",
-    "scope": "WEBSITE_I18N_PRODUCTION_RUNTIME",
+    "failure_class": "I18N_RUNTIME_ASSET_INCOMPLETE_AND_ACTIVE_MOBILE_HOST_UNPROVEN",
+    "scope": "WEBSITE_I18N_BUILD_AND_PRODUCTION_RUNTIME",
     "machine_enforceable": true,
     "repeat_count": 2,
     "security_sensitive": false

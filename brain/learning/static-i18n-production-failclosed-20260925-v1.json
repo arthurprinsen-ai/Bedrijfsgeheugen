@@ -1,0 +1,47 @@
+{
+  "fingerprint": "static-i18n-production-failclosed-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production could publish /en/* routes with lang=en but Dutch body copy, including the pricing H1.",
+  "root_cause": "netlify.toml had STATIC_I18N_REQUIRE_CACHE=0 while STATIC_I18N_NETWORK=0. When any current build string was missing from the immutable cache, translateAll returned null and the localized route builder emitted the whole English route without translations instead of failing the build.",
+  "prevention": [
+    "Production must keep STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "An incomplete immutable cache must fail the production build; it must never silently emit untranslated /en/* routes.",
+    "Pre-merge regression coverage must assert the Netlify fail-closed environment contract.",
+    "Terminal production proof must include semantic English-content checks, not only URL and html lang markers."
+  ],
+  "evidence": {
+    "observed_main_before_fix": "bf3a099fd95fbd0bd46378706a1ada43b84232bc",
+    "production_readback_failure": "English route still shows the Dutch pricing H1",
+    "failed_readback_run": 36164496878,
+    "misconfiguration": "STATIC_I18N_REQUIRE_CACHE=0"
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "website",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "failure_class": "STATIC_I18N_FAILOPEN_UNTRANSLATED_ENGLISH_ROUTE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ],
+    "expected_invariant": "production keeps STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1; incomplete cache blocks the build and no Dutch body copy is published under /en/*"
+  },
+  "compiler": {
+    "failure_class": "STATIC_I18N_FAILOPEN_UNTRANSLATED_ENGLISH_ROUTE",
+    "scope": "WEBSITE_I18N_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
