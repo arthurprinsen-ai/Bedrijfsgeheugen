@@ -938,3 +938,17 @@ Fingerprint: `pricing-rescue-observer-self-loop-20260925-v1`.
 - Whole-body `childList` observation must be filtered to newly added relevant pricing controls/panels before scheduling `syncFromDom()`.
 - `ready-v3` must be observable by a real browser before pricing is considered interactive.
 - Terminal production proof remains lifecycle click + plan tab + billing switch + NL/EN round trip.
+
+## Netlify auth recovery + immutable provider proof
+
+Fingerprint: `netlify-auth-recovery-exact-sha-provider-proof-20260925-v1`.
+
+For Netlify production delivery:
+- classify `401 Unauthorized` at the deploy transport as an authentication/credential incident before changing application code;
+- once Netlify returns a deploy with `state=ready`, `context=production` and an observed `commit_ref`, persist that provider identity as immutable evidence for that checkpoint;
+- keep provider deployment identity and functional browser verification as separate gates;
+- a cancelled or superseded readback run does not invalidate provider identity already observed, but cancelled/skipped functional checks remain unproven and must resume on the newest canonical lineage;
+- never turn a successful deploy alone into `LIVE_BEWEZEN` when the obligation also requires route or interaction proof;
+- when production advances again, keep older exact-SHA deploy evidence as historical containment proof rather than claiming it remains the current production head.
+
+Canonical learning: `brain/learning/netlify-auth-recovery-exact-sha-provider-proof-20260925-v1.json`.
