@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-PRICING-HERO-SINGLE-FLIGHT-RECOVERY-v1",
+  "status": "ACTIVE_PREVENTION_CANDIDATE",
+  "fingerprint": "github|pricing-hero-seo|run-id-concurrency-breaks-single-flight|v1",
+  "date": "2026-09-25",
+  "obligation_id": "pricing-hero-single-flight-recovery-20260925-v1",
+  "problem": "The pricing hero SEO regression workflow used github.run_id as its concurrency key, so every invocation created a unique concurrency group and could not deduplicate superseded PR/ref work.",
+  "root_cause": "The workflow implemented cancel-in-progress=true but paired it with a unique run identifier. This defeated the repository single-flight invariant and caused the canonical BRAIN backend regression test to fail.",
+  "evidence": {
+    "brain_run_id": 36166975203,
+    "brain_job_id": 108177210186,
+    "failing_test": "tests/brain-actions-pr-single-flight-v1.test.mjs",
+    "observed_workflow": ".github/workflows/prijzen-hero-seo-regression.yml",
+    "observed_group": "prijzen-hero-seo-${{ github.run_id }}"
+  },
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ],
+  "prevention": [
+    "Use stable PR identity for PR-triggered concurrency and stable ref identity for manual/ref execution.",
+    "Never use github.run_id in supersedable workflow concurrency groups.",
+    "Keep cancel-in-progress=true only with a reusable logical-flight key.",
+    "Retain tests/brain-actions-pr-single-flight-v1.test.mjs as the fail-closed regression."
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-actions-pr-single-flight-v1.test.mjs"
+    ]
+  }
+}
