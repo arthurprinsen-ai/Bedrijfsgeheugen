@@ -35,6 +35,15 @@ Before terminal completion:
 
 `LIVE & BEWEZEN` requires evidence. Code, commit, PR, deploy-start, queued CI, timeout or chat/model stop are not completion.
 
+## System Map + menselijke documentatie zijn één closure
+
+Voor iedere structurele wijziging aan skills, agents, workflows, intelligence-lagen, Netlify/Supabase-functies of authority-relaties:
+- update `platform/system-map/canonical-system-map.mjs` in dezelfde candidate-lineage;
+- houd provider/inventory-aantallen gelijk aan de echte repository-topologie;
+- update tegelijk de menselijke repository-documentatie (`docs/changes/**` of equivalente canonieke handboekdocumentatie);
+- laat de volgende agent dit via preflight/System Map kunnen ontdekken;
+- behandel een stale System Map, ontbrekende menselijke documentatie of mismatch tussen snapshot en repository als `SYSTEM_MAP_WRITEBACK_INCOMPLETE` / `WRITEBACK_INCOMPLETE`, nooit als `LIVE_BEWEZEN`.
+
 ## Recovery
 
 Unexpected interruption means recovery, not restart. Resume from the last verified checkpoint and reconcile already-proven side effects before mutating again.
