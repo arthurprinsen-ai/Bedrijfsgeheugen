@@ -8,7 +8,7 @@ const review=fs.readFileSync('supabase/functions/bg-pre-publish-review/index.ts'
 
 test('Mira Instagram publication remains fail-closed on real continuous video proof',()=>{
   assert.match(migration,/MIRA_CONTINUOUS_HUMAN_VIDEO_REQUIRED/);
-  assert.match(migration,/revoke all on function public\.enforce_mira_continuous_video_capability_v1\(\) from public/);
+  assert.match(migration,/revoke execute on function public\.enforce_mira_continuous_video_capability_v1\(\) from public, anon, authenticated/);
   assert.match(router,/temporal/i);
   assert.match(review,/temporal/i);
 });
