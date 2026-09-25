@@ -463,3 +463,28 @@ Every expensive PR-scoped workflow must use a stable per-PR concurrency group wi
 Do not key PR concurrency by commit SHA or `github.run_id`; those identities prevent supersession and create queue storms. Use the PR number, with a ref fallback only outside PR events.
 
 Canonical regression: `tests/brain-actions-pr-single-flight-v1.test.mjs`.
+
+
+## Main push fan-out governor
+
+Fingerprint: `github|actions|main-push-fanout-governor|v1`.
+
+A specialist workflow that is path-scoped on pull requests must normally use the same semantic path scope on `push: main`. Do not run specialist suites for unrelated merges merely because they reached main.
+
+Where newer current-state work supersedes older work, concurrency keys must be stable by PR/ref. Never use `github.run_id` as a concurrency identity when cancellation of stale runs is intended.
+
+Keep repository-wide invariants such as Main Write Integrity and canonical security/production authorities global when they genuinely must observe every main write.
+
+
+## Readiness marker authority
+
+Fingerprint: `delivery|runtime-readiness|same-authority|v1`.
+
+When production verification waits for a readiness marker:
+- the runtime that establishes the verified behavior must publish the marker itself;
+- do not make a rescue, fallback, analytics, or secondary asset the sole readiness authority;
+- publish readiness only after the initial semantic state is established;
+- keep fallback assets additive and independently safe;
+- if exact deploy + routes are healthy but readiness times out, inspect authority and asset execution before weakening the verifier.
+
+Reference regression: `tests/brain-pricing-inline-readiness-authority-v1.test.mjs`.

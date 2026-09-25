@@ -25,6 +25,26 @@ on:
       - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-*.md'
   push:
     branches: [main]
+    paths:
+      - 'powerhouse/assurance/**'
+      - 'scripts/brain/powerhouse-quality-intelligence.mjs'
+      - 'scripts/brain/quality/**'
+      - 'tests/brain-quality-intelligence*.test.mjs'
+      - 'tests/brain-quality-*.test.mjs'
+      - 'tests/brain-quality/**'
+      - 'tests/brain-quality-performance/**'
+      - 'config/powerhouse-quality-*.json'
+      - 'config/powerhouse-vulnerability-baseline.json'
+      - 'config/stryker.quality.conf.json'
+      - 'contracts/openapi/**'
+      - 'site/**'
+      - 'portal-v2/**'
+      - 'netlify/functions/**'
+      - 'supabase/**'
+      - '.github/workflows/powerhouse-quality-intelligence.yml'
+      - 'docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md'
+      - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence*.md'
+      - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-*.md'
   workflow_dispatch:
   schedule:
     - cron: '23 3 * * *'
