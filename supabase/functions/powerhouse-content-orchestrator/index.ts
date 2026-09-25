@@ -59,6 +59,48 @@ async function callAI(key: string, model: string, system: string, user: unknown,
   return result.input;
 }
 
+
+const COMPOSIO_BASE='https://backend.composio.dev/api/v3.1';
+const ARTIFACT_KEYS=['title','body','cta','hook_type','focus_keyword','meta_description'];
+function validArtifactObject(value:any){
+  if(!value||typeof value!=='object'||Array.isArray(value))return false;
+  const keys=Object.keys(value).sort();
+  if(keys.join('|')!==[...ARTIFACT_KEYS].sort().join('|'))return false;
+  return ARTIFACT_KEYS.every((key)=>typeof value[key]==='string');
+}
+function parseArtifactJson(raw:string){
+  const cleaned=clean(raw).replace(/^```(?:json)?\s*/i,'').replace(/\s*```$/,'').trim();
+  const parsed=JSON.parse(cleaned);
+  if(!validArtifactObject(parsed))throw new Error('COMPOSIO_ARTIFACT_SCHEMA_INVALID');
+  return parsed;
+}
+async function callComposioArtifact(db:any,model:string,system:string,user:unknown,maxTokens=3200){
+  const key=clean((await db.rpc('bg_geheim',{p_naam:'COMPOSIO_API_KEY'})).data);
+  if(!key)throw new Error('COMPOSIO_GENERATION_KEY_UNAVAILABLE');
+  const strictSystem=system+' Return ONLY one valid JSON object with exactly these string keys: title, body, cta, hook_type, focus_keyword, meta_description. No markdown or extra prose. Every factual statement and metadata value must be supported by the supplied user data; do not infer unspecified facts.';
+  const response=await fetch(COMPOSIO_BASE+'/tools/execute/COMPOSIO_SEARCH_GROQ_CHAT',{
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':key},
+    body:JSON.stringify({version:'latest',arguments:{model,temperature:0.2,max_tokens:maxTokens,messages:[
+      {role:'system',content:strictSystem},
+      {role:'user',content:JSON.stringify(user)}
+    ]}}),
+    signal:AbortSignal.timeout(45000),
+  });
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok||body?.successful!==true)throw new Error('COMPOSIO_GENERATION_FAILED:'+response.status+':'+clean(body?.error||body?.message||body?.data?.message).slice(0,200));
+  const raw=clean(body?.data?.choices?.[0]?.message?.content);
+  if(!raw)throw new Error('COMPOSIO_GENERATION_EMPTY');
+  return parseArtifactJson(raw);
+}
+function composioFallbackEligible(error:any){
+  if(error instanceof AIProviderHttpError){
+    const detail=clean(error.providerDetail).toLowerCase();
+    return detail.includes('credit balance is too low')||[401,403,429].includes(error.status)||error.status>=500;
+  }
+  return clean(error?.message)==='AI_KEY_UNAVAILABLE';
+}
+
 function validPersonalSource(row:any) {
   const e = row?.evidence || {};
   const lineage = Array.isArray(e.source_lineage) ? e.source_lineage.length > 0 : !!e.source_lineage;
@@ -181,7 +223,7 @@ Deno.serve(async (req) => {
     if (!run) throw new Error('DAILY_RUN_MISSING');
     if (!gov || gov.approved !== true || gov.lifecycle_status !== 'ACTIVE' || gov.provider !== 'Anthropic') throw new Error('AI_GOVERNANCE_UNAVAILABLE');
     const apiKey = clean((await db.rpc('bg_geheim',{p_naam:'ANTHROPIC_API_KEY'})).data);
-    if (!apiKey) throw new Error('AI_KEY_UNAVAILABLE');
+
 
     const personalSource = recs.filter(validPersonalSource)[0] || null;
     const instagramObligation = obligations.find((o:any) => o.channel === 'instagram') || null;
@@ -272,8 +314,26 @@ Deno.serve(async (req) => {
       : pending.channel==='instagram_company' ? 'Schrijf Mira daily-life caption passend bij de reeds bewezen finale media. Geen interne kantoorproblemen of geforceerde businessmoraal.'
       : 'Schrijf feitelijke kanaaleigen content. Verzin geen cases, cijfers, quotes of ervaringen.';
     stage = 'artifact-ai';
-    const artifact = await callAI(apiKey,gov.model_id,system,{channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,
-      tracking_url:companyTrackingUrl,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules},artifactTool,pending.channel==='blog'?4800:2600);
+    const artifactInput={channel:pending.channel,brief:pending.delivery_evidence?.content_brief||pending.rationale,recommendation,
+      tracking_url:companyTrackingUrl,verified_personal_source:pending.channel==='linkedin_personal'?personalSource:null,instagram_media_proof:pending.channel==='instagram_company'?instagramProof:null,active_rules:rules};
+    let artifact:any;
+    let generationProvider='Anthropic';
+    let generationModel=gov.model_id;
+    let fallbackReason:string|null=null;
+    try {
+      if(!apiKey)throw new Error('AI_KEY_UNAVAILABLE');
+      artifact=await callAI(apiKey,gov.model_id,system,artifactInput,artifactTool,pending.channel==='blog'?4800:2600);
+    } catch(error) {
+      if(!composioFallbackEligible(error))throw error;
+      const {data:fallbackGov,error:fallbackGovError}=await db.from('brain_ai_governance_registry')
+        .select('model_id,provider,approved,lifecycle_status')
+        .eq('tenant_id','canonical').eq('use_case_id','supabase-bg-composio-content-fallback-v1').maybeSingle();
+      if(fallbackGovError||!fallbackGov||fallbackGov.approved!==true||fallbackGov.lifecycle_status!=='ACTIVE'||fallbackGov.provider!=='Composio/Groq')throw error;
+      generationProvider='Composio/Groq';
+      generationModel=clean(fallbackGov.model_id);
+      fallbackReason=clean((error as Error)?.message).slice(0,240);
+      artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:2600);
+    }
     let bodyText = clean(artifact.body);
     if (pending.channel==='linkedin_personal' && !personalFinalCopyValid(bodyText,clean(personalSource?.evidence?.source_text))) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     if (pending.channel==='linkedin_company') {
@@ -290,7 +350,7 @@ Deno.serve(async (req) => {
 
     stage = 'write-artifact';
     const {error:artifactError} = await db.from('powerhouse_content_artifacts').upsert({run_date:runDate,channel:pending.channel,artifact_type:artifactType,title:clean(artifact.title),body:bodyText,cta:clean(artifact.cta),
-      content_brief:pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:gov.model_id,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
+      content_brief:pending.delivery_evidence?.content_brief||pending.rationale,generation_evidence:{model:generationModel,provider:generationProvider,primary_model:gov.model_id,fallback_reason:fallbackReason,orchestrator:VERSION,hook_type:clean(artifact.hook_type),focus_keyword:clean(artifact.focus_keyword),meta_description:clean(artifact.meta_description),
       recommendation_id:recommendation?.recommendation_id||null,
       daily_winner_recommendation_id:pending.channel==='instagram_company'?instagramWinner?.recommendation_id||null:null,
       daily_winner_score_version:pending.channel==='instagram_company'?instagramWinner?.score_version||null:null,
