@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - 'automation/**'
-      - main
   workflow_dispatch:
 
 permissions:

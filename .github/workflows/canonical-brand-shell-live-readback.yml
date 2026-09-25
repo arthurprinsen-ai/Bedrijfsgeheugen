@@ -1,7 +1,7 @@
 name: Canonical brand shell live readback
 
 on:
-  pull_request:
+  push:
     branches: [main]
     paths:
       - 'components/**'
@@ -22,12 +22,10 @@ on:
       - 'tests/site-shell-*.test.mjs'
       - 'tests/seo-*.test.mjs'
       - '.github/workflows/canonical-brand-shell-live-readback.yml'
-  push:
-    branches: [main]
   workflow_dispatch:
 
 concurrency:
-  group: canonical-brand-shell-live-readback-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
+  group: canonical-brand-shell-live-readback-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:

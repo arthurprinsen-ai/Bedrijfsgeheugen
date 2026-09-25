@@ -1,37 +1,10 @@
 name: Canonical brand shell full build
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'components/**'
-      - 'assets/**'
-      - 'pages/**'
-      - 'site/**'
-      - 'blog/**'
-      - 'kennis/**'
-      - '*.html'
-      - 'styles.css'
-      - 'script.js'
-      - 'seo-status.json'
-      - 'sitemap.xml'
-      - 'netlify.toml'
-      - 'tools/site-shell/**'
-      - 'tools/bouw-v18-*.mjs'
-      - 'tools/v18-*.mjs'
-      - 'tools/bouw-powerhouse-auth.mjs'
-      - 'tools/bouw-kennisindex.mjs'
-      - 'tools/apply-tabbladen.mjs'
-      - 'tools/prijzen-uit-de-homepage.mjs'
-      - 'tools/bouw-release-evidence.mjs'
-      - 'tools/seo-order-engine/**'
-      - 'tests/site-shell-*.test.mjs'
-      - 'tests/v18-*.test.mjs'
-      - 'tests/seo-*.test.mjs'
-      - '.github/workflows/canonical-brand-shell-full-build.yml'
+  workflow_dispatch:
 
 concurrency:
-  group: canonical-brand-shell-full-build-${{ github.event.pull_request.number || github.ref_name }}
+  group: canonical-brand-shell-full-build-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:
@@ -80,6 +53,6 @@ jobs:
           if-no-files-found: ignore
       - name: 8 Release evidence contract
         env:
-          COMMIT_REF: ${{ github.event.pull_request.head.sha }}
-          CONTEXT: github-pull-request
+          COMMIT_REF: ${{ github.sha }}
+          CONTEXT: explicit-diagnostic
         run: node tools/bouw-release-evidence.mjs
