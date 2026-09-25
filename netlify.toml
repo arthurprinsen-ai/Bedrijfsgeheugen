@@ -25,7 +25,7 @@
   NODE_VERSION = "22.12.0"
   NODE_OPTIONS = "--max-old-space-size=2048"
   STATIC_I18N_NETWORK = "1"
-  SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml,.cache/*"
+  SECRETS_SCAN_OMIT_PATHS = ".github/workflows/*,netlify/functions/*,netlify.toml,.cache/*,data/i18n/*"
 
 [functions]
   directory = "netlify/functions"
