@@ -12,7 +12,8 @@
     "Require dedupe with recurrence preservation",
     "Require portal projection to distinguish external context from tenant evidence",
     "Make blog and LinkedIn-company reuse an explicit governed projection",
-    "Bind outcome learning to Verified Value"
+    "Bind outcome learning to Verified Value",
+    "Reconcile inherited website release-risk regression with the current bounded route-concurrency verifier without weakening full-route, viewport, CLS or visibility checks"
   ],
   "prevention_rule": "Every future Dutch MKB signal must enter through the canonical intake contract; accepted evidence cannot terminate as a content-only note, a portal-only fact, or a parallel problem taxonomy.",
   "compiler": {
@@ -31,7 +32,8 @@
       "external evidence is never tenant fact by itself",
       "accepted evidence is eligible for portal, opportunity and content reuse",
       "content angles are deduplicated",
-      "publication and realized value remain readback/evidence gated"
+      "publication and realized value remain readback/evidence gated",
+      "stale website regression asserts the current bounded concurrent full-route sweep instead of requiring the superseded serial loop"
     ]
   },
   "skill_targets": [
@@ -41,6 +43,7 @@
   "evidence": {
     "contract": "config/powerhouse-problem-radar-intake-contract.json",
     "regression": "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
-    "documentation": "docs/changes/powerhouse-problem-radar-canonical-intake-v1.md"
+    "documentation": "docs/changes/powerhouse-problem-radar-canonical-intake-v1.md",
+    "inherited_regression_repair": "tests/site-shell-website-release-risk.test.mjs"
   }
 }
