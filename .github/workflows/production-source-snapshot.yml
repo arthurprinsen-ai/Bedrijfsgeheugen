@@ -266,7 +266,7 @@ jobs:
                 && grep -q 'data-bg-stage="buy"' /tmp/prijzen.html \
                 && grep -q 'data-bg-stage="sell"' /tmp/prijzen.html \
                 && grep -q 'data-bg-stage="portfolio"' /tmp/prijzen.html \
-                && grep -q 'pricing-interactions-rescue-v1.js?v=f7d85cb0d7ba' /tmp/prijzen.html; then
+                && grep -q 'pricing-interactions-rescue-v1.js?v=600965d2d30f' /tmp/prijzen.html; then
                 echo "PRICING_PRODUCTION_CONTENT_PROVEN sha=${GITHUB_SHA}"
                 exit 0
               fi
