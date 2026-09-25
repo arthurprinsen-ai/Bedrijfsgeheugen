@@ -16,3 +16,7 @@ Python CodeQL used `github.run_id` in push concurrency, making each run unique. 
 
 ## Recovery
 PR #3101 was closed without merge and its branch reset to main. This candidate reconstructs only the still-missing delta from current main.
+
+## Client transport continuation
+
+A response transport interruption is not a delivery terminal state. Recovery resumes the canonical branch/PR and newest exact head, re-reads current main and workflow truth, and continues without creating a replacement lineage solely because the response channel ended.

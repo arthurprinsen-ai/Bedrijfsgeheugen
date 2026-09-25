@@ -15,7 +15,9 @@ test('CodeQL is stable single-flight per PR/ref and terminal delivery rule is du
   const ids = new Set(rules.rules.filter(r => r.active).map(r => r.id));
   assert.ok(ids.has('SINGLE_FLIGHT_POST_MERGE_CODEQL_PER_REF'));
   assert.ok(ids.has('NO_FINAL_HANDOFF_WHILE_AUTHORITATIVE_SECURITY_RUN_ACTIVE'));
+  assert.ok(ids.has('RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION'));
 
   const skill = fs.readFileSync('.agents/skills/powerhouse-post-merge-codeql/SKILL.md', 'utf8');
   assert.match(skill, /internal execution state, never a user handoff/);
+  assert.match(skill, /Client transport continuation/);
 });
