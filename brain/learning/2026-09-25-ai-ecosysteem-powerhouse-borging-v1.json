@@ -1,0 +1,43 @@
+{
+  "fingerprint": "website|generated-canonical-surface|post-build-projection|powerhouse-borging|v1",
+  "date": "2026-09-25",
+  "type": "POWERHOUSE_GOVERNANCE_LEARNING",
+  "status": "ACTIVE",
+  "obligation_id": "ai-ecosysteem-powerhouse-borging-v1",
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "website"
+  ],
+  "root_cause": [
+    "Generated public surfaces can lose valid source edits when a downstream production builder rewrites the artifact from a canonical payload.",
+    "A governance-only follow-up is still a material Powerhouse change and therefore must carry Brain learning, an append-only activity ledger event and human-readable documentation in the same candidate lineage."
+  ],
+  "prevention": [
+    "Determine the production-authoritative build point before editing any generated public surface.",
+    "Use the canonical builder input or an idempotent post-build projection and regress the real production builder wiring.",
+    "Treat borging/logging/documentation/skill updates as material closure work and include all required writeback artifacts in the same candidate before Required CI.",
+    "Require exact production identity and functional readback before LIVE_BEWEZEN for website changes."
+  ],
+  "evidence": {
+    "canonical_learning": "brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json",
+    "regression": "tests/brain-ai-ecosysteem-production-projection-v1.test.mjs",
+    "policy": "brain/policies/powerhouse-agent-continuity-v1.json#generated_surface_projection_rule",
+    "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "dashboard_hub": "3e4da36a-ac8a-81fb-b340-daccce80dec8",
+    "canonical_system_map": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+    "dashboard_read_after_write": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-ecosysteem-production-projection-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
