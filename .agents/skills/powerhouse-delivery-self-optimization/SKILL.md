@@ -498,3 +498,21 @@ For a run whose delivery identity is already proven obsolete, cleanup is bounded
 Recovery-budget loops must not pipe a producer such as `jq` into a consumer that intentionally `break`s. Use process substitution or another bounded iterator so budget exhaustion cannot create SIGPIPE and turn a safe cycle red.
 
 Terminal closure should distinguish a failed gate from a gate that is merely still running. Keep a bounded wait long enough for the normal protected Required duration and keep the job itself time-bounded.
+
+
+## Live proof must bind current main to provider production
+
+Fingerprint: `delivery|live-proof|current-main-provider-descendant|v1`.
+
+A successful merge, green CI or a ready provider deploy is not by itself sufficient for `LIVE_BEWEZEN`.
+
+Mandatory terminal proof:
+- read the current GitHub `main` SHA immediately before the live claim;
+- read the provider's current production deploy and its exact `commit_ref`;
+- accept exact equality when `provider.commit_ref === main_sha`;
+- when provider production is newer than the feature/cleanup merge, prove the feature merge is an ancestor of the provider production commit;
+- when current `main` is newer than provider production, do **not** claim the newest main state is live until the canonical deploy/readback reaches it or an explicitly authorized exact-source production transport proves that state;
+- never reuse an earlier production readback after `main` or the provider deploy identity has changed;
+- distinguish `MERGED`, `DEPLOYED`, and `LIVE_BEWEZEN` as separate states in logs and user-facing status.
+
+Reference incident: the Problem Radar/System Map cleanup required re-reading current `main`, Netlify's current production deploy, and GitHub ancestry after newer commits had landed. Terminal proof was valid only after the live Netlify commit was shown to contain PR #2846 and PR #2848 lineage.
