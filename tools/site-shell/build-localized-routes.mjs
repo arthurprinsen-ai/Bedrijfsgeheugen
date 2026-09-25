@@ -409,7 +409,7 @@ async function translateAll(strings) {
     throw new Error('Static English translation failed for "' + part[0].slice(0,120) + '": ' + (lastError?.message || 'unknown error'));
   }
 
-  const concurrency = Math.max(1, Math.min(2, Number(process.env.STATIC_I18N_CONCURRENCY || 1)));
+  const concurrency = Math.max(1, Math.min(8, Number(process.env.STATIC_I18N_CONCURRENCY || 1)));
   let cursor = 0;
   async function worker(workerId) {
     while (true) {
