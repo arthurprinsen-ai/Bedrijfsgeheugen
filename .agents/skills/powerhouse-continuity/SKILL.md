@@ -840,3 +840,14 @@ When a required website gate verifies every public route across multiple viewpor
 - treat many PRs stuck on the same long browser step as shared CI queue amplification, not independent product defects.
 
 Regression: `tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs`.
+
+
+## Terminal user handoff + Powerhouse dashboard writeback
+
+Fingerprint: `delivery|terminal-user-handoff|dashboard-writeback|v1`.
+
+A material task does **not** hand back at PR-open, queued/running gates, auto-merge, merge, deploy-start, provider-readback pending, documentation pending or skill pending. The originating or recovering node keeps delivery ownership until the same lineage has protected promotion, production/provider readback, outcome, root-cause/fix/regression/prevention, canonical learning, relevant skill projection, current-state/activity writeback **and** registration in the existing Powerhouse Dashboard Hub/System Map where applicable.
+
+Normal user-facing terminal output reports only what is already proven and borged. It does not end with autonomous follow-up work framed as “wat nu”, “nog te doen” or an instruction for the user to continue. Only a proven `BLOCKED_HARD_BOUNDARY` may return one smallest necessary human action; the prepared autonomous continuation remains owned by the same canonical lineage.
+
+Interruptions do not create a handoff. The next capable chat/agent resumes from canonical state automatically; a user should not need to type “ga door” to restart non-terminal delivery.
