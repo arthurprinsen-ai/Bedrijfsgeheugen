@@ -1,0 +1,36 @@
+{
+  "fingerprint": "pricing-component-canonical-parity-v1",
+  "failure_class": "REUSABLE_PRICING_COMPONENT_DRIFT",
+  "problem": "The reusable pricing component still advertised the old Bedrijfsgeheugen Scan price €2.900 and an unsupported remote-price variant while the canonical pricing page, SaaS pricing contract and commercial offer use €2.950.",
+  "root_cause": "Pricing parity controls covered /prijzen, Portal V2 entitlements and checkout, but did not include the reusable pricing component as part of the same commercial truth boundary.",
+  "prevention": [
+    "Every reusable pricing component must use the same canonical commercial price as /prijzen.",
+    "Unsupported alternative prices may not survive in reusable components unless backed by an explicit canonical offer contract.",
+    "A regression test must compare the reusable component with the canonical pricing page."
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-component-canonical-parity-v1.test.mjs"
+    ],
+    "source": [
+      "components/pricing/pricing.html",
+      "prijzen.html"
+    ],
+    "outcome": "Reusable pricing copy now uses €2.950 and no longer exposes the stale €2.400 remote variant."
+  },
+  "compiler": {
+    "failure_class": "REUSABLE_PRICING_COMPONENT_DRIFT",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-component-canonical-parity-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ]
+}
