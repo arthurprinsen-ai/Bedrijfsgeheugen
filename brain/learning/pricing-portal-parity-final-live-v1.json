@@ -23,5 +23,25 @@
     "historical_replay": [
       "tests/brain-pricing-portal-parity-final-live-v1.test.mjs"
     ]
-  }
+  },
+  "problem": "Pricing and Portal parity can be merged to main without the exact current source being promoted because Production Source Snapshot is intentionally path-gated.",
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-portal-parity-final-live-v1.test.mjs"
+    ],
+    "source": [
+      ".github/workflows/production-source-snapshot.yml"
+    ],
+    "outcome": "The canonical exact-source production promotion is triggered and must prove current-main deployment plus production pricing/readback before terminal LIVE."
+  },
+  "compiler": {
+    "failure_class": "MERGED_PRICING_PARITY_NOT_EXACTLY_DEPLOYED",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ]
 }
