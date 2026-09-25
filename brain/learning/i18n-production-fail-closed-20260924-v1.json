@@ -8,7 +8,8 @@
     "Publishing untranslated English routes and relying on runtime provider fallback.",
     "Treating route existence and html lang metadata as sufficient English-language proof.",
     "A later resilience change reintroduced console.warn + return null in the production translation catch, silently undoing the earlier fail-closed invariant.",
-    "Making every production deploy depend on live Anthropic translation calls even when the source corpus is unchanged; provider/build failures then block unrelated production delivery."
+    "Making every production deploy depend on live Anthropic translation calls even when the source corpus is unchanged; provider/build failures then block unrelated production delivery.",
+    "Keeping the versioned translation artifact under .cache created duplicate state and left the canonical data path unclassified by delivery governance."
   ],
   "prevention": [
     "When STATIC_I18N_NETWORK=1, any translation-provider failure must fail the production build.",
@@ -18,7 +19,8 @@
     "Any future resilience/backoff change around static translation must preserve the explicit production throw path and the regression test must reject production fallback-to-null.",
     "Production snapshot/browser proof must fail if /en/prijzen contains the Dutch pricing H1 or the language-switch failure message.",
     "Version the complete English translation cache in-repository and validate it offline against every current public source string before merge.",
-    "Production may use the provider only to fill genuinely new uncached strings; unchanged deployments must not require a live translation-provider call."
+    "Production may use the provider only to fill genuinely new uncached strings; unchanged deployments must not require a live translation-provider call.",
+    "Canonical translation state lives only under data/i18n/; delivery classification and cache-integrity regression must be updated in the same lineage."
   ],
   "skill_targets": [
     "continuity",
