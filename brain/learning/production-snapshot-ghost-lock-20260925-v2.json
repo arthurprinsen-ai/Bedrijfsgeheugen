@@ -1,0 +1,48 @@
+{
+  "fingerprint": "production-snapshot-ghost-lock-20260925-v2",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The recovered v2 production snapshot concurrency group developed another stale in-progress scheduler lock, leaving newer exact-main snapshot runs pending.",
+  "root_cause": "GitHub Actions retained an orphaned active state for run 36162423347 on concurrency group production-source-snapshot-main-v2. Because cancel-in-progress remains false by design, all newer production snapshots correctly waited behind that stale lock.",
+  "prevention": [
+    "Keep production promotion serialized with cancel-in-progress=false.",
+    "Detect ghost locks as stale in-progress or pending state that blocks a newer exact-main snapshot beyond the normal run lifecycle.",
+    "Rotate the stable concurrency-group identity only after the ghost-lock fingerprint is proven; never enable parallel production writers.",
+    "Require Netlify commit_ref == latest protected main plus browser NL/EN readback before LIVE_BEWEZEN."
+  ],
+  "evidence": {
+    "orphaned_run": 36162423347,
+    "orphaned_sha": "0e6a879c505e96a99b7b5544ac91fd469695fae2",
+    "blocked_latest_sha": "89cc01bf96104a4436205567e7ff71850911d858",
+    "blocked_run": 36162844641,
+    "previous_group": "production-source-snapshot-main-v2",
+    "recovery_group": "production-source-snapshot-main-v3"
+  },
+  "test_evidence": [
+    "tests/brain-production-snapshot-ghost-lock-v2.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-continuity"
+  ],
+  "revision": 2,
+  "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
+  "compiler": {
+    "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-snapshot-ghost-lock-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-snapshot-ghost-lock-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-snapshot-ghost-lock-v2.test.mjs"
+    ],
+    "expected_invariant": "latest protected main starts in the recovered v3 serialized snapshot group and reaches exact-main production proof"
+  }
+}
