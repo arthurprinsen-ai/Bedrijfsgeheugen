@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v1',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-24T11:25:00Z',
+  observedAt:'2026-09-25T04:25:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -86,7 +86,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   }),
   providerSnapshot:Object.freeze({
     supabase:Object.freeze({tables:255,views:116,functions:204,activeCronJobs:50,projectId:'adhjwmvyoixzjtmiroln'}),
-    github:Object.freeze({workflows:114,skills:9,agentFabricModules:8}),
+    github:Object.freeze({workflows:114,skills:10,agentFabricModules:8}),
     netlify:Object.freeze({functions:68}),
     notion:Object.freeze({canonicalSystemMap:true,humanHandbook:true,latestVerifiedState:true,agentActivityLog:true})
   }),
