@@ -49,7 +49,7 @@ permissions:
   id-token: write
 
 concurrency:
-  group: production-source-snapshot-main
+  group: production-source-snapshot-main-v2
   cancel-in-progress: false
 
 jobs:
