@@ -128,3 +128,11 @@ test('supervisor resumes recent merged obligations without terminal truth and de
   assert.match(yaml,/terminal closure already active; duplicate recovery dispatch suppressed/);
   assert.match(yaml,/workflow run obligation-terminal-closure\.yml --ref main -f pr_number=/);
 });
+
+test('supervisor force-cancels unresponsive obsolete runs and avoids jq broken-pipe budget exits',()=>{
+  const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  assert.match(yaml,/actions\/runs\/\$run_id\/force-cancel/);
+  assert.match(yaml,/--method DELETE "repos\/\$repo\/actions\/runs\/\$run_id"/);
+  assert.match(yaml,/done < <\(jq -c '\.\[\]' \/tmp\/open-prs\.json\)/);
+  assert.doesNotMatch(yaml,/jq -c '\.\[\]' \/tmp\/open-prs\.json \| while read -r pr/);
+});

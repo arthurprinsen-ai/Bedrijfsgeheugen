@@ -81,6 +81,26 @@ jobs:
             return 1
           }
 
+          cancel_obsolete_run() {
+            local run_id="$1"
+            if gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
+              echo "normal-cancel"
+              return 0
+            fi
+            if gh api --method POST "repos/$repo/actions/runs/$run_id/force-cancel" >/dev/null 2>&1; then
+              echo "force-cancel"
+              return 0
+            fi
+            latest_status="$(gh api "repos/$repo/actions/runs/$run_id" --jq '.status' 2>/dev/null || echo unknown)"
+            case "$latest_status" in completed|cancelled) echo "already-terminal"; return 0 ;; esac
+            if gh api --method DELETE "repos/$repo/actions/runs/$run_id" >/dev/null 2>&1; then
+              echo "delete-fallback"
+              return 0
+            fi
+            latest_status="$(gh api "repos/$repo/actions/runs/$run_id" --jq '.status' 2>/dev/null || echo unknown)"
+            case "$latest_status" in queued|in_progress|pending|waiting|requested) return 1 ;; *) echo "not-active"; return 0 ;; esac
+          }
+
           cancel_stale_runs() {
             local status="$1"
             local min_age="$2"
@@ -101,9 +121,9 @@ jobs:
               age_seconds=$((now_epoch - run_epoch))
               [ "$age_seconds" -ge "$min_age" ] || continue
               is_run_obsolete "$run_json" || continue
-              if gh api --method POST "repos/$repo/actions/runs/$run_id/cancel" >/dev/null 2>&1; then
+              if cancel_mode="$(cancel_obsolete_run "$run_id")"; then
                 stale_cancelled=$((stale_cancelled + 1))
-                echo "::notice::STALE_ACTIONS_RUN_CANCELLED:$run_id status:$status branch:$head_branch age_seconds:$age_seconds"
+                echo "::notice::STALE_ACTIONS_RUN_CANCELLED:$run_id status:$status branch:$head_branch age_seconds:$age_seconds mode:$cancel_mode"
               else
                 echo "::warning::STALE_ACTIONS_RUN_CANCEL_FAILED:$run_id status:$status branch:$head_branch"
               fi
@@ -122,7 +142,7 @@ jobs:
           fi
           gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json
           recovered_prs=0
-          jq -c '.[]' /tmp/open-prs.json | while read -r pr; do
+          while read -r pr; do
             if [ "$recovered_prs" -ge "$RECOVERY_PR_BUDGET" ]; then
               echo "::notice::RECOVERY_PR_BUDGET_EXHAUSTED:$RECOVERY_PR_BUDGET"
               break
@@ -211,7 +231,7 @@ jobs:
                 echo "::notice::RECOVERY_PR_BUDGET_USED:$recovered_prs/$RECOVERY_PR_BUDGET"
                 ;;
             esac
-          done
+          done < <(jq -c '.[]' /tmp/open-prs.json)
 
       - name: Recover merged obligations missing terminal closure
         env:

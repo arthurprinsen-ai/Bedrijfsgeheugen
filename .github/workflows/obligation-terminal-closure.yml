@@ -27,6 +27,7 @@ jobs:
   close-obligation:
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     steps:
       - name: Resolve canonical merged PR context
         id: context
@@ -93,7 +94,7 @@ jobs:
           require_workflow() {
             workflow="$1"
             label="$2"
-            for attempt in $(seq 1 60); do
+            for attempt in $(seq 1 180); do
               payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${HEAD_SHA}&event=pull_request&per_page=50")"
               run_id="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$payload")"
               status="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$payload")"
