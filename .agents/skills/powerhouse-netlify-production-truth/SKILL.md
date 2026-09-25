@@ -43,3 +43,14 @@ Required pattern:
 - broad/full-site browser proof always uses the exact local candidate;
 - provider access failures remain provider evidence and cannot be converted into page-regression evidence;
 - regression test: `tests/delivery-website-browser-runtime-single-install.test.mjs`.
+
+## Executable build-transformer gate
+
+Fingerprint: `delivery-terminal-release-marker-mobile-i18n-v1` revision 2.
+
+When a recovery changes a build-time JavaScript transformer:
+- source-token/regex tests are not sufficient;
+- run `node --check` on the transformer;
+- execute it against a minimal representative fixture;
+- assert the intended DOM/string mutation and idempotence;
+- if OIDC succeeds but both linked and exact-source Netlify deploys fail during `building site`, classify the incident as a build-content failure before changing deploy credentials or transport.
