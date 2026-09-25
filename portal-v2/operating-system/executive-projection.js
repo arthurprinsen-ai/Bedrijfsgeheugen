@@ -36,7 +36,21 @@ function normalizeProblem(item={},tenantId,now){
   capabilities:arr(item.capabilities),
   outcome_metrics:arr(item.outcome_metrics||item.outcomes),
   source_refs:arr(item.source_refs||item.evidence_refs||item.evidenceIds),
-  confidence:num(item.confidence??item.evidence_health?.confidence)??0
+  confidence:num(item.confidence??item.evidence_health?.confidence)??0,
+  symptoms:arr(item.symptoms),
+  buying_trigger:txt(item.buying_trigger||item.buyingTrigger),
+  sector_or_segment:txt(item.sector_or_segment||item.segment||item.sector),
+  source_class:txt(item.source_class||item.sourceClass),
+  freshness_status:txt(item.freshness_status||item.freshnessStatus),
+  benchmark_context:txt(item.benchmark_context||item.benchmarkContext),
+  context_relevance:txt(item.context_relevance||item.relevance_reason||item.relevanceReason),
+  priority_dimensions:Object.freeze({
+   recency:num(item.priority_dimensions?.recency??item.recency_score),
+   scale:num(item.priority_dimensions?.scale??item.scale_score),
+   urgency:num(item.priority_dimensions?.urgency??item.urgency_score),
+   buying_intent:num(item.priority_dimensions?.buying_intent??item.buying_intent_score),
+   powerhouse_relevance:num(item.priority_dimensions?.powerhouse_relevance??item.powerhouse_relevance_score)
+  })
  });
 }
 function needsDecision(item={}){

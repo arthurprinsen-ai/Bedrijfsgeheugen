@@ -1,5 +1,5 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "fingerprint": "powerhouse-problem-radar-canonical-intake-v1",
   "purpose": "One canonical intake and routing contract for new or changed Dutch MKB problem evidence. Every accepted signal must be stored once, mapped or queued for PH-Pxxx governance, projected to customer intelligence when relevant, and made eligible for governed content/opportunity reuse.",
   "source_classes": [
@@ -41,7 +41,11 @@
   },
   "truth_model": {
     "external_evidence_is_tenant_fact": false,
-    "allowed_impact_labels": ["OBSERVED", "ESTIMATED", "POTENTIAL"],
+    "allowed_impact_labels": [
+      "OBSERVED",
+      "ESTIMATED",
+      "POTENTIAL"
+    ],
     "voice_of_customer_is_representative_statistic": false,
     "policy_proposal_may_be_presented_as_current_law": false,
     "current_claim_requires_freshness_check": true
@@ -60,7 +64,10 @@
     },
     "content_pipeline": {
       "eligible": true,
-      "channels": ["blog", "linkedin_company"],
+      "channels": [
+        "blog",
+        "linkedin_company"
+      ],
       "structure": [
         "problem",
         "symptoms",
@@ -77,6 +84,39 @@
     "outcome_learning": {
       "eligible": true,
       "verified_value_required_before_realized_value_claim": true
+    },
+    "contextual_portal_projection": {
+      "eligible": true,
+      "rule": "Show canonical PH-Pxxx context only where it materially helps the current portal surface; never as a detached dashboard or parallel truth.",
+      "surfaces": [
+        "executive-cockpit",
+        "impact-engine",
+        "next-best-actions",
+        "monitoring-learning",
+        "evidence-health"
+      ],
+      "visual_fields": [
+        "impact_label",
+        "confidence",
+        "sector_or_segment",
+        "buying_trigger",
+        "source_class",
+        "freshness_status",
+        "symptoms",
+        "priority_dimensions",
+        "context_relevance",
+        "benchmark_context"
+      ],
+      "priority_dimensions": [
+        "recency",
+        "scale",
+        "urgency",
+        "buying_intent",
+        "powerhouse_relevance"
+      ],
+      "external_context_requires_tenant_relevance": true,
+      "preserve_evidence_drawer": true,
+      "mobile_compact": true
     }
   },
   "priority_dimensions": [
