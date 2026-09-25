@@ -2,10 +2,12 @@
   "fingerprint": "mobile-i18n-visible-control-wait-20260925-v2",
   "status": "ACTIVE_PREVENTION",
   "problem": "Production was on the exact protected main SHA, but the NL/EN browser gate failed with 'visible mobile language select is missing'.",
-  "root_cause": "The language select is mounted dynamically by assets/js/i18n.js into the mobile drawer. The production verifier clicked the drawer and immediately checked locator count, creating a race between dynamic control mount/visibility and the assertion.",
+  "root_cause": "The language select is mounted dynamically into multiple possible mobile hosts. The production verifier first raced visibility, then still selected the shared host by DOM presence via count(), so a hidden shared select could win over a visible legacy/compact select.",
   "prevention": [
     "Treat dynamically mounted UI controls as asynchronous browser state.",
-    "Wait for the mobile language select to become visible before interacting with it.",
+    "Select mobile language controls by actual :visible state inside approved mobile hosts, never by DOM presence or locator count.",
+    "Wait for the chosen visible mobile language select before interacting with it.",
+    "Apply the same visibility-first selection on the English-to-Dutch return path.",
     "Keep the functional NL→EN→NL navigation proof after the visibility wait.",
     "Do not downgrade the gate to presence-only or remove the mobile proof."
   ],
@@ -27,14 +29,19 @@
     "production_sha": "6417fa291ac08345369e1e143abf974fac54f0e4",
     "netlify_deploy": "6ab698be9627e6c36975bed1",
     "provider_commit_ref_matches_main": true,
-    "failed_assertion": "visible mobile language select is missing"
+    "failed_assertion": "visible mobile language select is missing",
+    "latest_production_sha": "c2bf6d4f059307579686f1b61d66f195b0ee2af7",
+    "latest_netlify_deploy": "6ab69d42a66ec50008a2947c",
+    "latest_snapshot_run": 36159192559,
+    "latest_failed_assertion": "visible mobile language select is missing after opening mobile navigation",
+    "failure_mechanism": "hidden shared selector was preferred by count() over visible mobile selector"
   },
   "compiler": {
     "failure_class": "ASYNC_UI_MOUNT_READBACK_RACE",
     "scope": "WEBSITE_I18N_PRODUCTION_BROWSER_READBACK",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
   },
-  "revision": 2
+  "revision": 3
 }
