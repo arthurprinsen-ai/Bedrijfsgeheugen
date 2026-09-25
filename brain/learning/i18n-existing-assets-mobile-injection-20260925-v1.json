@@ -13,9 +13,41 @@
     "main_sha_before_fix": "fd7265ad7bdb02e35f0a07cd1f0e750b106c4123",
     "failed_snapshot_run": 36161161127,
     "failure": "visible mobile language select is missing after opening mobile navigation",
-    "diagnostics": {"v18Drawer":"false","v18Selects":0,"legacySelects":0,"sharedSelects":0,"allSelects":0}
+    "diagnostics": {
+      "v18Drawer": "false",
+      "v18Selects": 0,
+      "legacySelects": 0,
+      "sharedSelects": 0,
+      "allSelects": 0
+    }
   },
-  "test_evidence": ["tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs"],
-  "skill_targets": ["powerhouse-continuity", "website", "powerhouse-netlify-production-truth"],
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "website",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "failure_class": "I18N_ASSET_PRESENCE_SUPPRESSED_MOBILE_CONTROL_INJECTION",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs"
+    ],
+    "expected_invariant": "existing i18n assets suppress only duplicate asset writes; mobile language-control injection still runs and production completes the mobile NL->EN->NL roundtrip"
+  },
+  "compiler": {
+    "failure_class": "I18N_ASSET_PRESENCE_SUPPRESSED_MOBILE_CONTROL_INJECTION",
+    "scope": "WEBSITE_I18N_BUILD_PROJECTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }

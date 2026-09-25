@@ -1,0 +1,51 @@
+{
+  "fingerprint": "i18n-v18-mobile-host-production-20260925-v1",
+  "failure_class": "I18N_ACTIVE_V18_MOBILE_HOST_OMITTED",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Exact-main production opened the active v18 mobile drawer successfully but contained zero language selects, so the NL/EN roundtrip could not start.",
+  "root_cause": "assets/js/i18n.js mounted mobile language controls only into generic data-bg mobile roots and #bgkopMob. The production navigation uses #v18MobileDrawer, which was omitted from mountControl().",
+  "prevention": [
+    "Treat #v18MobileDrawer as a first-class mobile language host in the runtime.",
+    "Keep generic mobile hosts and legacy #bgkopMob support for compatibility.",
+    "Guard the runtime host list with a regression test tied to the production verifier.",
+    "Require exact-main Netlify commit equality plus the visible mobile NL->EN->NL browser roundtrip before LIVE_BEWEZEN."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    ],
+    "expected_invariant": "when #v18MobileDrawer exists, mountControl installs exactly one mobile language control and the production verifier can complete NL->EN->NL"
+  },
+  "evidence": {
+    "production_snapshot_run": 36160448237,
+    "browser_diagnostics": {
+      "v18Drawer": "false",
+      "v18Selects": 0,
+      "legacySelects": 0,
+      "sharedSelects": 0,
+      "allSelects": 0
+    },
+    "production_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs"
+  },
+  "test_evidence": [
+    "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "compiler": {
+    "failure_class": "I18N_ACTIVE_V18_MOBILE_HOST_OMITTED",
+    "scope": "WEBSITE_I18N_PRODUCTION_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
