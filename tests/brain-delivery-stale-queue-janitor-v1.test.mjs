@@ -28,3 +28,11 @@ test('janitor escalates proven obsolete runs through force-cancel and delete fal
   assert.match(source,/cancel_mode=force-cancel/);
   assert.match(source,/cancel_mode=delete-fallback/);
 });
+
+test('provider-refused historical zombie runs are quarantined without blocking repository cleanup',()=>{
+  assert.match(source,/JANITOR_LEGACY_RUN_QUARANTINED/);
+  assert.match(source,/type QUARANTINE_RUN/);
+  assert.match(source,/provider_state:"GITHUB_CANCEL_AND_DELETE_REJECTED"/);
+  assert.match(source,/JANITOR_QUARANTINE_READBACK/);
+  assert.doesNotMatch(source,/JANITOR_CANCEL_FAILED:\$\{run_id\}:\$\{latest_status\}"; exit 78/);
+});

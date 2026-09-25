@@ -62,3 +62,11 @@ test('production readback resolves candidate from the protected merge parent and
   assert.match(productionCase[0], /git rev-parse "\$\{SOURCE_HEAD_SHA\}\^2"/);
   assert.doesNotMatch(productionCase[0], /candidate_sha=.*git show|sed -nE/);
 });
+
+test('cancelled or failed source workflows never become trusted completion evidence', async () => {
+  const workflow = await readFile('.github/workflows/outcome-obligation-sweep.yml', 'utf8');
+  assert.match(workflow,/Mark non-success workflow runs as non-applicable completion evidence/);
+  assert.match(workflow,/github\.event\.workflow_run\.conclusion != 'success'/);
+  assert.match(workflow,/COMPLETION_EVIDENCE_APPLICABLE=false/);
+  assert.match(workflow,/Resolve immutable completion lineage and trusted source artifacts[\s\S]*?github\.event\.workflow_run\.conclusion == 'success'/);
+});

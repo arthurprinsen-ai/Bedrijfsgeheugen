@@ -65,8 +65,14 @@ jobs:
       - name: Run focused obligation contract tests
         run: node --test tests/brain-outcome-obligation-executor.test.mjs tests/brain-outcome-obligation-runtime.test.mjs tests/brain-outcome-obligation-resume-trigger.test.mjs tests/completion-supervisor.test.mjs tests/completion-supervisor-evidence.test.mjs tests/completion-supervisor-backfill.test.mjs tests/brain-outcome-obligation-supabase-store.test.mjs tests/brain-outcome-obligation-durable-runtime.test.mjs
 
+      - name: Mark non-success workflow runs as non-applicable completion evidence
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion != 'success'
+        run: |
+          echo "COMPLETION_EVIDENCE_APPLICABLE=false" >> "$GITHUB_ENV"
+          echo "::notice::COMPLETION_SOURCE_NON_SUCCESS:${{ github.event.workflow_run.name }}:${{ github.event.workflow_run.conclusion }}:${{ github.event.workflow_run.id }}"
+
       - name: Resolve immutable completion lineage and trusted source artifacts
-        if: github.event_name == 'workflow_run'
+        if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
         shell: bash
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}

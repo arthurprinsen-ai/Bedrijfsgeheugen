@@ -199,7 +199,15 @@ jobs:
                   cancel_mode=delete-fallback
                 else
                   latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
-                  case "$latest_status" in queued|in_progress|pending|waiting|requested) echo "::error::JANITOR_CANCEL_FAILED:${run_id}:${latest_status}"; exit 78 ;; *) continue ;; esac
+                  case "$latest_status" in
+                    queued|in_progress|pending|waiting|requested)
+                      cancel_mode=legacy-quarantine
+                      echo "::warning::JANITOR_LEGACY_RUN_QUARANTINED:${run_id}:${latest_status}:branch=${branch}:sha=${run_sha}"
+                      jq -cn --arg type QUARANTINE_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" --arg status "$latest_status" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason,status:$status,provider_state:"GITHUB_CANCEL_AND_DELETE_REJECTED"}' >> .artifacts/janitor-runtime-actions.ndjson
+                      continue
+                      ;;
+                    *) continue ;;
+                  esac
                 fi
               fi
               jq -cn --arg type CANCEL_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" --arg mode "$cancel_mode" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason,mode:$mode}' >> .artifacts/janitor-runtime-actions.ndjson
@@ -245,6 +253,11 @@ jobs:
               state="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.state')"
               merged="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/${pr}" --jq '.merged')"
               [ "$state" = open ] && [ "$merged" = false ] || { echo "::error::JANITOR_TERMINAL_LEASE_REOPEN_READBACK_FAILED:#${pr}:${state}:${merged}"; exit 78; }
+            done
+            jq -c '.[] | select(.type == "QUARANTINE_RUN")' .artifacts/janitor-runtime-actions.json | while read -r action; do
+              run_id="$(jq -r '.run_id' <<<"$action")"
+              branch="$(jq -r '.branch' <<<"$action")"
+              echo "::notice::JANITOR_QUARANTINE_READBACK:${run_id}:branch=${branch}:provider-refused-mutation"
             done
             jq -c '.[] | select(.type == "DELETE_BRANCH")' .artifacts/janitor-runtime-actions.json | while read -r action; do
               branch="$(jq -r '.branch' <<<"$action")"
