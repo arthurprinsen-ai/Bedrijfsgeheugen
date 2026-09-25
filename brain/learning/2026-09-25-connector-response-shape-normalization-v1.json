@@ -17,7 +17,9 @@
     "USE_BOUNDED_BRANCH_SAFE_FALLBACK_WHEN_SCHEMA_DRIFTS",
     "NO_BLIND_RETRY_OF_INCOMPATIBLE_RESPONSE_SHAPE",
     "NO_DUPLICATE_BRANCH_OR_PR_FOR_TRANSPORT_SCHEMA_DRIFT",
-    "READ_BACK_COMMIT_AND_BRANCH_AFTER_WRITE"
+    "READ_BACK_COMMIT_AND_BRANCH_AFTER_WRITE",
+    "CONTINUE_SAME_LINEAGE_TO_APPLICABLE_TERMINAL_PROOF",
+    "DO_NOT_HAND_OFF_HEALTHY_QUEUED_OR_RUNNING_GATES"
   ],
   "fallback": "Prefer serial create_file/update_file Contents API writes on the same branch when a bundled tree response cannot be safely normalized.",
   "skill_targets": [
@@ -49,6 +51,12 @@
     "human_documentation": "docs/changes/connector-response-shape-resilience-v1.md",
     "activity_ledger": "docs/development-ledger-events/connector-response-shape-normalization-v1.md",
     "recovery_write_mode": "GitHub Contents API create_file/update_file on the same branch",
-    "failed_fast_before_branch_mutation": true
+    "failed_fast_before_branch_mutation": true,
+    "source_pr": 3100,
+    "protected_main_merge_sha": "bc47d636675f9fea41044667797dade0962b03ef",
+    "protected_main_readback": true,
+    "required_test_green": true,
+    "skill_projection_green": true,
+    "runtime_deploy_applicability": "NOT_APPLICABLE_GOVERNANCE_DOCS_SKILLS"
   }
 }
