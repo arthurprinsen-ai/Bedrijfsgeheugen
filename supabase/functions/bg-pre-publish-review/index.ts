@@ -102,6 +102,20 @@ function instagramProofViolations(body: any) {
     const complete = ['start','middle','end'].every((position) => frames.some((frame: any) => frame?.position === position && isVisibleMiraProof(frame)));
     if (!complete) out.push({ code: 'INSTAGRAM_VIDEO_FRAME_EVIDENCE_REQUIRED', message: 'Start-, midden- en eindframe moeten elk vision-geverifieerd zichtbaar Mira-bewijs hebben.' });
     if (frames.some((frame: any) => frame?.placeholder_detected === true)) out.push({ code: 'INSTAGRAM_VIDEO_PLACEHOLDER_BLOCKED', message: 'Video bevat placeholder/broken frame.' });
+    const temporal = visual?.temporal_proof || body?.temporal_proof || {};
+    const temporalRefs = evidenceRefs(temporal);
+    const temporalPass = temporal?.verified === true
+      && temporal?.single_continuous_take === true
+      && temporal?.continuous_motion_verified === true
+      && temporal?.scene_continuity_verified === true
+      && temporal?.identity_continuity_verified === true
+      && temporal?.human_motion_verified === true
+      && temporal?.realistic_camera_motion === true
+      && temporal?.slideshow_detected === false
+      && temporal?.still_image_animation_detected === false
+      && ['vision','manual_vision'].includes(clean(temporal?.evidence_method).toLowerCase())
+      && temporalRefs.some((ref: string) => /^temporal:/i.test(ref));
+    if (!temporalPass) out.push({ code: 'INSTAGRAM_CONTINUOUS_HUMAN_VIDEO_REQUIRED', message: 'Mira Reel moet één doorlopende, menselijk bewegende video zijn; slideshow/still-image-animation of montageachtig beeld is geblokkeerd.' });
   } else {
     if (width !== 1080 || height !== 1350) out.push({ code: 'INSTAGRAM_STATIC_DIMENSIONS_INVALID', message: 'Mira feed-afbeelding moet exact 1080x1350 zijn.' });
   }
