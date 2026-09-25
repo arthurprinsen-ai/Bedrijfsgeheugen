@@ -1046,3 +1046,14 @@ Fingerprint: `netlify-static-i18n-cache-completeness-20260925-v1`.
 - New or changed public copy must add its English cache authority in the same lineage.
 - A green PR without cache completeness is not production-ready.
 - Terminal closure remains exact production SHA + pricing/i18n browser proof.
+
+
+## Netlify production build parity
+
+Fingerprint: `netlify-production-build-parity-20260925-v1`.
+
+- A GitHub website candidate is not production-buildable until CI executes the same build stages as `netlify.toml`.
+- The website lane must include a `netlify-build-parity` job with pricing capture/restore, i18n application, static locale generation, sitemap and release evidence.
+- Reduced local/browser composers are useful for UI verification but are never substitutes for production build parity.
+- Any parity failure blocks merge and must be repaired before Netlify deployment.
+- Terminal closure remains exact production SHA plus production browser proof.
