@@ -1109,6 +1109,20 @@ Fingerprint: `pricing-canonical-i18n-assets-20260925-v1`.
 - `apply-i18n.mjs` must remain idempotent and must not duplicate those assets.
 - Production closure requires the visible mobile language selector plus NL→EN→NL browser roundtrip on `/prijzen`.
 
+
+## Frontend capability completeness is per required asset
+
+Fingerprint: `i18n-runtime-asset-independent-presence-v1`.
+
+For public frontend capabilities such as NL/EN:
+- never treat one shared marker, stylesheet, source token or successful build step as proof that the entire capability is installed;
+- verify each required runtime asset independently and inject missing assets idempotently;
+- continue build-time control injection even when another related asset already exists;
+- bind runtime controls to the active production navigation host, not only legacy/template hosts;
+- require the real visible user interaction path in production readback before terminal completion.
+
+For NL/EN specifically, stylesheet presence and `/assets/js/i18n.js` presence are separate invariants, and mobile proof must exercise the active visible selector through NL → EN → NL.
+
 ## Generated public surfaces: build authority before source edits
 
 Fingerprint: `website|generated-canonical-surface|post-build-projection|v1`.
@@ -1127,4 +1141,3 @@ For every website surface that is generated, restored, composed or rewritten dur
 Canonical learning: `brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json`.
 Regression: `tests/brain-ai-ecosysteem-production-projection-v1.test.mjs`.
 Powerhouse policy: `brain/policies/powerhouse-agent-continuity-v1.json#generated_surface_projection_rule`.
-
