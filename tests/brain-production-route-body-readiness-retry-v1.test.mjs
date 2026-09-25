@@ -6,7 +6,7 @@ const source=fs.readFileSync('tools/site-shell/verify-targeted-website-routes.mj
 
 test('production route verifier retries transient navigation/body readiness timeouts with a fresh page',()=>{
   assert.match(source,/async function observeRouteAttempt/);
-  assert.match(source,/async function observeRoute\(browser, baseUrl, route, viewport, \{ attempts = 3 \} = \{\}\)/);
+  assert.match(source,/async function observeRoute\(browser, baseUrl, route, viewport, \{ attempts = 2 \} = \{\}\)/);
   assert.match(source,/error\?\.name !== 'TimeoutError'/);
   assert.match(source,/setTimeout\(resolve, 1_000 \* attempt\)/);
 });
