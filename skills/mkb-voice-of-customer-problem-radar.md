@@ -258,3 +258,24 @@ Permanent:
 - wetsvoorstellen/beleidsvoornemens blijven expliciet voorstel en mogen niet als geldend recht worden gepresenteerd;
 - actuele claims falen dicht wanneer freshness/status niet opnieuw is geverifieerd;
 - dezelfde bronprovenance loopt mee naar cockpit, evidence drawer, content en opportunity intelligence.
+
+
+## Canonical intake, opslag en projectie — 25 september 2026
+
+Fingerprint: `powerhouse-problem-radar-canonical-intake-v1`.
+
+Iedere nieuwe of veranderde Nederlandse MKB-bron of ondernemerssignaal loopt verplicht via `config/powerhouse-problem-radar-intake-contract.json`.
+
+Standaardketen:
+`bron -> evidence-opslag -> deduplicatie -> bestaande PH-Pxxx -> Probleemradar -> portal/customer intelligence -> opportunity/content -> outcome -> learning`.
+
+Permanent:
+- een geaccepteerd signaal mag niet als losse research- of contentnotitie eindigen;
+- opslag bewaart provenance, bron-/waarnemingsdatum, freshness, confidence, sector/segment, probleem, symptomen, impact en kooptrigger;
+- map eerst naar een bestaande `PH-Pxxx`; anders `PROBLEM_LIBRARY_CANDIDATE`;
+- dedupe voorkomt dubbele canonical evidence, maar behoudt recurrence;
+- externe evidence blijft context/benchmark totdat tenant-evidence relevantie aantoont;
+- portalprojectie gebruikt uitsluitend `OBSERVED`, `ESTIMATED` of `POTENTIAL` en behoudt “Waarom zegt Powerhouse dit?”;
+- dezelfde evidence mag blog- en LinkedIn-bedrijfskandidaten voeden volgens probleem -> symptomen -> impact -> oorzaak/data -> aanpak -> capability -> meetbaar resultaat -> CTA;
+- duplicate content angles en onbewezen publicatie/readback falen dicht;
+- gerealiseerde waarde vereist Verified Value-evidence en schrijft terug naar dezelfde Problem ID.
