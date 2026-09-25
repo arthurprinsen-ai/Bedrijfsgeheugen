@@ -14,8 +14,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.12.0'
-          cache: npm
-      - run: npm ci
+      - run: npm install --no-audit --no-fund
       - name: Run exact Netlify build command
         env:
           STATIC_I18N_NETWORK: '0'
