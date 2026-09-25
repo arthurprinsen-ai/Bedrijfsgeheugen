@@ -363,17 +363,17 @@
       desktopHost.appendChild(languageControl('desktop'));
     }
 
-    const mobileRoot = document.querySelector('[data-bg-mobile-view="root"], [data-bg-shared-mobile-view="root"]');
-    if (mobileRoot && !mobileRoot.querySelector('[data-bg-language-switcher="mobile"]')) {
-      const control = languageControl('mobile');
-      const auth = mobileRoot.querySelector('a[href="/inloggen"], a[href="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
-      const cta = mobileRoot.querySelector('.bg-mobile-cta, .bg-shared-mobile-cta');
-      mobileRoot.insertBefore(control, auth || cta || null);
-    }
+    const mobileHosts = [
+      ...document.querySelectorAll('[data-bg-mobile-view="root"], [data-bg-shared-mobile-view="root"]'),
+      document.getElementById('bgkopMob')
+    ].filter((host, index, all) => host && all.indexOf(host) === index);
 
-    const legacyMobile = document.getElementById('bgkopMob');
-    if (!mobileRoot && legacyMobile && !legacyMobile.querySelector('[data-bg-language-switcher="mobile"]')) {
-      legacyMobile.appendChild(languageControl('mobile'));
+    for (const mobileHost of mobileHosts) {
+      if (mobileHost.querySelector('[data-bg-language-switcher="mobile"]')) continue;
+      const control = languageControl('mobile');
+      const auth = mobileHost.querySelector('a[href="/inloggen"], a[href="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
+      const cta = mobileHost.querySelector('.bg-mobile-cta, .bg-shared-mobile-cta, .bgkop-mcta');
+      mobileHost.insertBefore(control, auth || cta || null);
     }
 
     syncControls();
