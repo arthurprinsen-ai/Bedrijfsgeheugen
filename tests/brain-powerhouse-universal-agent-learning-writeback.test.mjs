@@ -58,7 +58,7 @@ test('universal learning/writeback contract remains active and fail-closed', () 
 test('chats and agents are intrinsic execution nodes in one canonical Powerhouse loop', () => {
   const contract = continuityPolicy.loop_node_contract;
   assert.equal(continuityPolicy.status, 'ACTIVE');
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.5');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.6');
   assert.match(continuityPolicy.fingerprint, /intrinsic-loop-nodes/);
   assert.equal(contract.required, true);
   assert.deepEqual(contract.actor_kinds, ['chat', 'agent']);
@@ -369,7 +369,7 @@ test('predictive LinkedIn sales cockpit learning is discoverable through continu
 
 
 test('pending delivery state can never be the final chat or agent handoff', () => {
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.5');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.6');
   assert.ok(continuityPolicy.invariants.includes('NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT'));
   const rule=continuityPolicy.loop_node_contract.non_terminal_output_rule;
   assert.equal(rule.required, true);

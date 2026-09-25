@@ -30,3 +30,21 @@ Any new material skill introduced by browser-gate recovery must be registered in
 ## Process-level circuit breaker
 
 Internal Playwright/navigation budgets are not sufficient to terminate a wedged browser or protocol operation. Every production browser verifier command must also run behind an OS-level process timeout that expires materially before the enclosing job timeout. The process timeout is fail-closed and must never remove semantic browser assertions.
+
+
+## Regression-oracle parity
+
+Fingerprint: `browser-concurrency-test-contract-drift-v1`.
+
+When the visibility implementation changes from sequential route iteration to bounded worker concurrency, every older release-risk regression that asserts the implementation shape must be updated in the same lineage. A product-safe concurrency improvement is not complete while a stale test still requires `for (const route of routes)`.
+
+Prevention: the canonical brain regression validates both the runtime boundedness contract and the release-risk oracle, so implementation and test cannot drift independently.
+
+
+## Bounded Playwright teardown
+
+Fingerprint: `browser|playwright-cleanup|bounded-teardown|v1`.
+
+A completed semantic sweep must not become a false-negative because Playwright hangs in `page.close()`, `context.close()` or `browser.close()`. Teardown is therefore bounded separately from navigation and assertion budgets. If teardown exceeds its cleanup budget after assertions have completed, record the cleanup anomaly, terminate residual browser handles at process level, and preserve the already-proven semantic result. If semantic failures exist, exit non-zero even when cleanup also times out.
+
+Regression: `tests/brain-standalone-visibility-boundedness-v1.test.mjs` must assert bounded cleanup and fail/non-fail exit preservation.
