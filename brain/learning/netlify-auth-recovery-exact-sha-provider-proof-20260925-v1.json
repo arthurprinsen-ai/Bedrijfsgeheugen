@@ -1,18 +1,18 @@
 {
   "fingerprint": "netlify-auth-recovery-exact-sha-provider-proof-20260925-v1",
   "failure_class": "PRODUCTION_READBACK",
-  "problem": "A production release lineage was blocked by an expired Netlify MCP proxy credential (401). After credential recovery, Netlify exposed an exact production deploy for protected main. A later GitHub Production Release Readback run was cancelled while browser verification was still executing, so provider deployment truth and functional terminal proof must remain distinct.",
+  "problem": "A production release lineage was blocked by an expired Netlify MCP proxy credential (401). After credential recovery, Netlify later exposed an exact production deploy for protected main. A subsequent GitHub Production Release Readback run was cancelled by concurrency while browser verification was still executing, so provider deployment truth and functional terminal proof must remain distinct.",
   "root_cause": [
     "Temporary Netlify MCP proxy credentials can expire independently of application code and must not be treated as durable deploy authority.",
     "Production provider identity can become proven before a broader GitHub browser-readback workflow reaches a terminal conclusion.",
     "Cancelling or superseding a readback workflow must not erase already observed immutable provider deploy evidence, but it also must not manufacture functional browser proof."
   ],
   "prevention": [
-    "Classify Netlify 401 at deploy transport as an auth incident before changing product code.",
+    "Classify Netlify 401 at the deploy transport as an auth incident before changing product code.",
     "Persist immutable Netlify deploy evidence when state=ready, context=production and commit_ref is observed.",
-    "Treat provider exact-SHA proof and functional browser proof as separate gates; both are required when browser behavior is in scope.",
-    "A cancelled or superseded readback may reuse proven immutable provider identity, but missing functional checks must resume on the newest canonical lineage.",
-    "Never downgrade proven provider deployment because a later verifier is cancelled; never upgrade a cancelled verifier into LIVE_BEWEZEN without required functional evidence.",
+    "Treat provider exact-SHA proof and functional browser proof as separate gates; both are required when the obligation requires browser behavior.",
+    "A cancelled or superseded readback run may reuse already proven immutable provider identity, but skipped or cancelled functional checks must be resumed on the newest canonical lineage.",
+    "Never downgrade an already proven provider deployment merely because a later verifier is cancelled; never upgrade a cancelled verifier into LIVE_BEWEZEN without its required functional evidence.",
     "Store root cause, prevention, provider evidence and recovery outcome in Brain before terminal closure."
   ],
   "evidence": {
@@ -34,13 +34,6 @@
         "Verify live connector readiness contract"
       ],
       "unfinished_step": "Verify affected production routes"
-    },
-    "later_provider_observation": {
-      "deploy_id": "6ab66b7bb3dd8b0008d0c2a1",
-      "state": "ready",
-      "context": "production",
-      "commit_ref": "f45ad02f8f719958c00b7ff8e39e3ca2104353b1",
-      "note": "Production subsequently advanced again; earlier exact-SHA evidence remains an immutable recovery checkpoint."
     }
   },
   "evaluation": {
