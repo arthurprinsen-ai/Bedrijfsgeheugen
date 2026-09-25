@@ -26,5 +26,18 @@
     "brain/policies/powerhouse-agent-continuity-v1.json",
     ".agents/skills/powerhouse-continuity/SKILL.md",
     "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PROCESS_DRIFT",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1,
+  "failed_approaches": [
+    "Ending a user-facing technical delivery while autonomous merge, readback, documentation, skill or dashboard work remained.",
+    "Treating documentation or skill projection as optional follow-up rather than Definition-of-Done.",
+    "Requiring the user to say 'ga door' to resume non-terminal delivery."
   ]
 }
