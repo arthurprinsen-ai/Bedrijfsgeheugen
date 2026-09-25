@@ -1,0 +1,96 @@
+{
+  "version": "1.0.0",
+  "fingerprint": "powerhouse-problem-radar-canonical-intake-v1",
+  "purpose": "One canonical intake and routing contract for new or changed Dutch MKB problem evidence. Every accepted signal must be stored once, mapped or queued for PH-Pxxx governance, projected to customer intelligence when relevant, and made eligible for governed content/opportunity reuse.",
+  "source_classes": [
+    "official_statistics",
+    "government_policy_or_guidance",
+    "regulatory_guidance",
+    "bank_or_financial_research",
+    "industry_association",
+    "entrepreneur_voice_of_customer"
+  ],
+  "required_evidence_fields": [
+    "source_id",
+    "publisher",
+    "source_url",
+    "source_date",
+    "observed_at",
+    "source_class",
+    "sector_or_segment",
+    "problem_summary",
+    "symptoms",
+    "business_impact",
+    "buying_trigger",
+    "evidence_status",
+    "freshness_status",
+    "confidence"
+  ],
+  "canonicalization": {
+    "problem_library": "config/powerhouse-problem-library.json",
+    "map_to_existing_ph_problem_first": true,
+    "unmapped_state": "PROBLEM_LIBRARY_CANDIDATE",
+    "parallel_problem_taxonomies_forbidden": true,
+    "dedupe_identity": [
+      "normalized_source_url",
+      "source_date",
+      "canonical_problem_id",
+      "normalized_problem_summary"
+    ],
+    "recurrence_preserved_without_duplicate_rows": true
+  },
+  "truth_model": {
+    "external_evidence_is_tenant_fact": false,
+    "allowed_impact_labels": ["OBSERVED", "ESTIMATED", "POTENTIAL"],
+    "voice_of_customer_is_representative_statistic": false,
+    "policy_proposal_may_be_presented_as_current_law": false,
+    "current_claim_requires_freshness_check": true
+  },
+  "routing": {
+    "canonical_problem_radar": true,
+    "executive_cockpit": {
+      "eligible": true,
+      "max_prioritized_problems": 5,
+      "requires_tenant_relevance_or_tenant_evidence": true,
+      "why_powerhouse_says_this_evidence_drawer": true
+    },
+    "opportunity_intelligence": {
+      "eligible": true,
+      "requires_problem_hypothesis_for_external_only_signal": true
+    },
+    "content_pipeline": {
+      "eligible": true,
+      "channels": ["blog", "linkedin_company"],
+      "structure": [
+        "problem",
+        "symptoms",
+        "business_impact",
+        "cause_or_data",
+        "practical_approach",
+        "powerhouse_capability",
+        "measurable_result",
+        "cta"
+      ],
+      "duplicate_angle_gate": true,
+      "publication_readback_required": true
+    },
+    "outcome_learning": {
+      "eligible": true,
+      "verified_value_required_before_realized_value_claim": true
+    }
+  },
+  "priority_dimensions": [
+    "recency",
+    "scale",
+    "urgency",
+    "buying_intent",
+    "powerhouse_relevance"
+  ],
+  "fail_closed": [
+    "No fabricated numbers.",
+    "No current claim from stale or unverified evidence.",
+    "No external benchmark upgraded to a tenant fact without tenant evidence.",
+    "No publication or LIVE claim without exact provider/readback evidence.",
+    "No duplicate PH problem or duplicate content angle when an existing canonical lineage can be reused."
+  ]
+}

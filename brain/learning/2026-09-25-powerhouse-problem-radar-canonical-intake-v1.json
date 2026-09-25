@@ -1,0 +1,58 @@
+{
+  "fingerprint": "powerhouse-problem-radar-canonical-intake-v1",
+  "date": "2026-09-25",
+  "type": "PRODUCT_INTELLIGENCE_ROUTING_STANDARD",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "problem": "Problem Radar research, portal intelligence and content reuse had the right components but no single general machine-readable contract guaranteed that every accepted MKB signal was stored once and routed through all applicable canonical projections.",
+  "root_cause": "People evidence had a dedicated source registry and the broader Voice-of-Customer skill described the loop in prose, but cross-domain intake/storage/dedupe/portal/content obligations were not expressed as one reusable contract.",
+  "fix": [
+    "Add canonical Problem Radar intake and routing contract",
+    "Require provenance, freshness, confidence and PH-Pxxx-first mapping",
+    "Require dedupe with recurrence preservation",
+    "Require portal projection to distinguish external context from tenant evidence",
+    "Make blog and LinkedIn-company reuse an explicit governed projection",
+    "Bind outcome learning to Verified Value",
+    "Reconcile inherited website release-risk regression with the current bounded route-concurrency verifier without weakening full-route, viewport, CLS or visibility checks"
+  ],
+  "prevention_rule": "Every future Dutch MKB signal must enter through the canonical intake contract; accepted evidence cannot terminate as a content-only note, a portal-only fact, or a parallel problem taxonomy.",
+  "compiler": {
+    "failure_class": "PROBLEM_RADAR_CROSS_DOMAIN_ROUTING_GAP",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
+      "tests/site-shell-website-release-risk.test.mjs"
+    ],
+    "invariants": [
+      "one canonical PH-Pxxx problem language",
+      "external evidence is never tenant fact by itself",
+      "accepted evidence is eligible for portal, opportunity and content reuse",
+      "content angles are deduplicated",
+      "publication and realized value remain readback/evidence gated",
+      "stale website regression asserts the current bounded concurrent full-route sweep instead of requiring the superseded serial loop"
+    ]
+  },
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md",
+    ".agents/skills/trigger-based-mkb-acquisition/SKILL.md"
+  ],
+  "evidence": {
+    "contract": "config/powerhouse-problem-radar-intake-contract.json",
+    "regression": "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
+    "documentation": "docs/changes/powerhouse-problem-radar-canonical-intake-v1.md",
+    "inherited_regression_repair": "tests/site-shell-website-release-risk.test.mjs"
+  },
+  "integration_recovery": {
+    "failure_class": "INHERITED_STALE_REGRESSION_CONTRACT",
+    "observed_gate": "website / baseline",
+    "root_cause": "Current main had already changed standalone visibility verification from serial route iteration to bounded worker concurrency, while tests/site-shell-website-release-risk.test.mjs still asserted the superseded serial `for (const route of routes)` mechanism.",
+    "repair": "Migrate the stale baseline assertion to the canonical bounded-concurrency semantics without weakening full-route, viewport, CLS or fail-closed guarantees.",
+    "prevention": "When a canonical verifier changes execution strategy, co-migrate all tests that assert the old mechanism; preserve semantic safety invariants rather than implementation shape.",
+    "repaired_test": "tests/site-shell-website-release-risk.test.mjs"
+  }
+}
