@@ -1,0 +1,32 @@
+{
+  "fingerprint": "netlify-i18n-cache-build-parity-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "GitHub website build parity was green while Netlify production failed because the GitHub parity build used STATIC_I18N_REQUIRE_CACHE=0 and production used STATIC_I18N_REQUIRE_CACHE=1.",
+  "root_cause": "The pre-merge build oracle did not execute the same fail-closed static i18n cache requirement as production. Build transforms could introduce new translatable strings after the standalone source cache test had already passed.",
+  "prevention": [
+    "The website Netlify build-parity job must run the complete production build chain with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "Standalone cache validation remains useful but is not sufficient because build transforms may add translatable strings.",
+    "Any missing post-transform translation must fail before merge and be repaired through the versioned static i18n cache patches.",
+    "Netlify production may only be called LIVE_BEWEZEN after exact-main deploy plus pricing/i18n browser proof."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"],
+    "shadow": ["tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"],
+    "canary": ["tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"],
+  "evidence": {
+    "failed_main_sha": "e6b9369587ed0b7f31a68a50f2cfd360b8800a18",
+    "failed_netlify_deploy_id": "6ab68cc1620347dff3081d39",
+    "provider_error": "Build script returned non-zero exit code: 2"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "NETLIFY_I18N_BUILD_ORACLE_DRIFT",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
