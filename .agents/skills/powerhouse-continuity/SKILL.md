@@ -1180,3 +1180,18 @@ Terminal state: only LIVE_BEWEZEN after the latest protected-main SHA, current N
 
 Canonical learning: brain/learning/2026-09-25-live-bewezen-exact-main-atomic-proof-v1.json.
 Regression: tests/brain-live-bewezen-exact-main-atomic-proof-v1.test.mjs.
+
+
+## Closed/force-pushed PR recovery without stale rollback
+
+Fingerprint: `delivery|pr-recovery|closed-force-pushed-head|v1`.
+
+When GitHub refuses to reopen a closed PR because its head branch was force-pushed or recreated:
+- first compare the surviving head branch with current `main`; do not assume the closed PR is still the canonical delivery path;
+- if the intended fix is already present on current `main`, do not resurrect or merge the stale branch; close any temporary recovery PR with evidence and continue from current main;
+- if the fix is absent, reconstruct only the minimal proven delta on a fresh branch from current `main`; never merge a heavily behind/diverged recovery branch merely to preserve PR identity;
+- preserve one remediation owner per root cause and avoid duplicate CI/deploy fan-out;
+- terminal completion still requires exact-main production identity plus functional browser/readback evidence where applicable;
+- record the incident, root cause, recovery decision and prevention rule in Brain/ledger/skills before declaring the delivery closed.
+
+This prevents a stale recovery PR from rolling back newer mainline work while retaining fail-closed delivery governance.
