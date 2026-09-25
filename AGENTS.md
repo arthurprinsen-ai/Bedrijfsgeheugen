@@ -412,6 +412,6 @@ Canonical fingerprints: `delivery|fast-terminal|critical-path|v2`, `delivery|pre
 
 ## Powerhouse closed-loop delivery — canonical
 
-All agents and chats MUST apply the canonical skill `skills/powerhouse-closed-loop-delivery.md` to sales, content, social, growth, portal intelligence and autonomous improvement work.
+All agents and chats MUST apply the canonical skill `.agents/skills/powerhouse-continuity/SKILL.md` to sales, content, social, growth, portal intelligence and autonomous improvement work.
 
 Terminal delivery is evidence-backed progression through `signal → analysis → prediction → decision → execution → provider_readback → outcome → realized_value → calibration → next_decision`. Merge, deploy, dispatch and publication are intermediate states. Never claim LIVE/DONE from those states alone. Missing external evidence remains explicitly open/blocked/outcome_pending. Never fabricate outcomes or realized value. Replays must be idempotent and stages must remain contiguous. Prevention fingerprint: `powerhouse-closed-loop-evidence-first-v1`.

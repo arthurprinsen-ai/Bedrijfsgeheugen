@@ -1,4 +1,4 @@
-# Powerhouse Closed-Loop Standard
+# Powerhouse Closed-Loop Standard — canonical change record
 
 **Canonical since:** 2026-09-25  
 **Fingerprint:** `powerhouse-closed-loop-evidence-first-v1`
