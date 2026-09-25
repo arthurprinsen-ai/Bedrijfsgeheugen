@@ -949,3 +949,19 @@ Production English localization must not require a live translation-provider cal
 Before delivery, run `node tools/site-shell/build-localized-routes.mjs --validate-cache`. It must prove every currently selected public source string has a non-empty cached English translation.
 
 If source copy introduces new strings, update the cache in the same candidate lineage. Production remains fail-closed: never publish untranslated `/en/*` pages and never convert provider/cache failure into silent fallback.
+
+
+## Production i18n cache authority
+
+Fingerprint: `website|i18n|config-cache-authority|v2`.
+
+The durable English translation artifact is `config/bg-static-i18n-en.json`. Never use `.cache/`, CI cache directories, Netlify cache storage, temporary folders or provider responses as production truth.
+
+All deploy contexts are deterministic:
+- `STATIC_I18N_NETWORK=0`;
+- `STATIC_I18N_REQUIRE_CACHE=1`;
+- missing source-string coverage throws `STATIC_I18N_CACHE_INCOMPLETE`;
+- untranslated `/en/*` output is forbidden;
+- translation providers may only be used in an explicit cache-generation/update workflow, never on the production critical path.
+
+Before merge, run the canonical cache validator and preserve the existing NL→EN→NL production browser proof.
