@@ -23,7 +23,8 @@ test('mobile language injector supports v18 and compact bgkop mobile drawers', a
   assert.match(source,/bgkop-mob/);
   assert.match(source,/bgkop-mcta/);
   assert.match(source,/data-bg-language-select/);
-  assert.match(source,/html\.replace\(cta, MOBILE_LANGUAGE \+ '\\  assert.match(source,/html\.replace\(cta, match => MOBILE_LANGUAGE \+ match\)/);'\)/);
+  assert.ok(source.includes("html.replace(cta, MOBILE_LANGUAGE + '  assert.match(source,/html\.replace\(cta, MOBILE_LANGUAGE \+ '\\  assert.match(source,/html\.replace\(cta, match => MOBILE_LANGUAGE \+ match\)/);'\)/);
+});')"));
 });
 
 test('mobile language injector is executable and injects the compact drawer safely', async () => {
