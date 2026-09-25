@@ -19,17 +19,13 @@ function injectMobileLanguage(html) {
     return html.slice(0, drawer.index) + block + html.slice(drawer.index + drawer[0].length);
   }
 
-  // Pricing and a small set of public pages use the compact bgkop mobile drawer.
-  // Insert before its CTA so the visible language control participates in the same drawer.
-  const compactHost = /id=(["'])bgkopMob\1/i.test(html) || /class=(["'])[^"']*\bbgkop-mob\b[^"']*\1/i.test(html);
-  if (compactHost) {
+  if (/id=(["'])bgkopMob\1/i.test(html) || /class=(["'])[^"']*\bbgkop-mob\b[^"']*\1/i.test(html)) {
     const cta = /<a\b[^>]*class=(["'])[^"']*\bbgkop-mcta\b[^"']*\1/i;
-    if (cta.test(html)) return html.replace(cta, match => MOBILE_LANGUAGE + match);
+    if (cta.test(html)) return html.replace(cta, MOBILE_LANGUAGE + '$&');
   }
 
   return html;
 }
-
 function walk(dir) {
   for (const entry of fs.readdirSync(dir,{withFileTypes:true})) {
     if (SKIP.has(entry.name)) continue;
@@ -40,11 +36,9 @@ function walk(dir) {
 }
 function patch(file) {
   let html = fs.readFileSync(file,'utf8');
-  if (!/<html\b/i.test(html)) return;
-  if (!/data-bg-i18n-asset/.test(html)) {
-    if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, LINK + '\n' + SCRIPT + '\n</head>');
-    else return;
-  }
+  if (!/<html\b/i.test(html) || /data-bg-i18n-asset/.test(html)) return;
+  if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, LINK + '\n' + SCRIPT + '\n</head>');
+  else return;
   html = injectMobileLanguage(html);
   fs.writeFileSync(file,html);
 }
