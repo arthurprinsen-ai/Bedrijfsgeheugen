@@ -55,3 +55,7 @@ Regression: `tests/brain-standalone-visibility-boundedness-v1.test.mjs` must ass
 When the same route inventory is verified across phone, tablet and desktop, do not spend the global budget sequentially by viewport. Run independent viewport sweeps in bounded parallel batches, while keeping route-level concurrency and the global fail-closed budget.
 
 The concurrency product (viewport workers × route workers) must remain explicit and bounded. Do not remove semantic assertions or enlarge timeouts merely to make the gate green.
+
+## Workload-scaled route concurrency
+
+A fixed low route-worker count can still violate the same bounded wall-clock budget when the public sitemap grows. Size route concurrency from the current route inventory and keep an explicit upper cap. Current production visibility policy defaults to at least four workers, scales by roughly one worker per twelve routes, and caps at eight workers per viewport unless an explicit environment override is supplied. Keep the semantic assertions unchanged.
