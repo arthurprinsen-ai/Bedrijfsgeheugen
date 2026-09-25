@@ -303,3 +303,12 @@ Permanent:
 - evidence drawer “Waarom zegt Powerhouse dit?” blijft beschikbaar;
 - mobiel compact tonen en detail niet boven de dagstart plaatsen;
 - visualisatie mag nooit confidence, impact of urgentie sterker suggereren dan de onderliggende evidence toestaat.
+
+
+## LIVE_PROVEN contextuele portal-intelligentie — 25 september 2026
+
+Fingerprint: `powerhouse-problem-radar-contextual-visual-v1`.
+
+Status: `LIVE_PROVEN`. Netlify provider-readback bewijst production deploy `6ab62a6bdb43de00090ce33d` met `state=ready`, `context=production` en exact `commit_ref=5814f26d8c6855d30983a8b0572c3ee683242928` (feature merge #2899).
+
+Daarmee is de vaste Powerhouse-regel productiebewezen: Probleemradar-intelligentie wordt vanuit dezelfde canonieke `PH-Pxxx`- en evidence-lineage contextueel en visueel geprojecteerd in de bestaande cockpit, Impact Engine, Next Best Actions, Monitoring & Learning en Evidence Health. Geen apart probleemdashboard of parallelle waarheid.

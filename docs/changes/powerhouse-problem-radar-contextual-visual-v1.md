@@ -30,3 +30,12 @@ Problem context is embedded where it supports the current task. It is not a new 
 Feature PR #2899 is protected merged as `5814f26d8c6855d30983a8b0572c3ee683242928`. The first Netlify provider readback after that merge still exposed the preceding production commit `5b49ad9ebe9ee280da1c1725458d2fcd910e79ad`.
 
 The recovery therefore uses the existing canonical `Production Source Snapshot` workflow. No alternate deploy authority is introduced. The recovery is terminal only when provider readback proves a ready production deployment whose commit contains the contextual visual Problem Radar feature, with production/browser verification green.
+
+
+## Terminale productiebevestiging
+
+Status: `LIVE_PROVEN`.
+
+Netlify provider-readback op 25 september 2026 bewijst deploy `6ab62a6bdb43de00090ce33d` met `state=ready`, `context=production` en exact `commit_ref=5814f26d8c6855d30983a8b0572c3ee683242928`. Dat is dezelfde protected feature merge als PR #2899. De voorafgaande portal- en browsergates waren groen, inclusief desktop/mobile, all-public-page visibility, header readability en brede high-risk browsercontracten.
+
+Hiermee is de contextuele visuele Probleemradar geen kandidaat meer maar productiebewezen onderdeel van Powerhouse.
