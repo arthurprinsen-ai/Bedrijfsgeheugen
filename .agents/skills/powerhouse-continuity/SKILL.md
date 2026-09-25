@@ -972,3 +972,17 @@ Before merge, run the canonical cache validator and preserve the existing NL→E
 Fingerprint: `pricing-build-oracle-context-parity-20260925-v1`.
 
 Production build oracles are executable product contracts. When pricing/Portal context semantics change, update source, regressions and pre-build integrity tokens atomically. Never restore retired copy merely to satisfy a stale oracle. After a Netlify build failure, isolate the first failing build command before changing runtime behavior.
+
+## Netlify auth recovery + immutable provider proof
+
+Fingerprint: `netlify-auth-recovery-exact-sha-provider-proof-20260925-v1`.
+
+For Netlify production delivery:
+- classify `401 Unauthorized` at the deploy transport as an authentication/credential incident before changing application code;
+- once Netlify returns `state=ready`, `context=production` and an observed `commit_ref`, persist that provider identity as immutable evidence for that checkpoint;
+- keep provider deployment identity and functional browser verification as separate gates;
+- a cancelled/superseded readback does not invalidate already observed provider identity, but unfinished functional checks remain unproven and resume on the newest canonical lineage;
+- never promote deploy success alone to `LIVE_BEWEZEN` when route/interaction proof is required;
+- if production advances, preserve earlier exact-SHA deploy evidence as historical containment proof.
+
+Canonical learning: `brain/learning/netlify-auth-recovery-exact-sha-provider-proof-20260925-v1.json`.
