@@ -335,6 +335,8 @@
     },
     "final_user_output_rule": "Report only terminal status, production/provider proof and completed borging. Do not return a what-next list for autonomous work that the node can execute itself.",
     "hard_boundary_rule": "Only BLOCKED_HARD_BOUNDARY may transfer ownership to the user; include the exact boundary, one smallest necessary human action, and the already-prepared next safe action.",
-    "interruption_rule": "The next capable node resumes automatically from canonical checkpoint without requiring the user to say ga door."
+    "interruption_rule": "The next capable node resumes automatically from canonical checkpoint without requiring the user to say ga door.",
+    "descendant_gate_recovery_rule": "A merged website lineage whose historical Required run is terminal non-success may recover only when the merge SHA is an ancestor of current main, the current-main website baseline and bounded-visibility regression suite passes, the original exact-head BRAIN and applicable CodeQL gates are still green, and production/provider readback remains mandatory. This is descendant regression evidence, never retroactive exact-head success.",
+    "descendant_gate_recovery_fingerprint": "github|terminal-required-descendant-recovery|website-baseline|v1"
   }
 }
