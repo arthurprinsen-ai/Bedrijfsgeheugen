@@ -8,6 +8,7 @@ test('production pricing i18n verifier follows active v18 mobile drawer', () => 
   assert.match(source,/page\.locator\('#mobileToggle'\)/);
   assert.match(source,/v18Drawer\.locator\('\[data-bg-language-select\]'\)/);
   assert.match(source,/await getVisibleMobileLanguage\(page\)/);
-  assert.match(source,/selectOption\('en'\)/);
-  assert.match(source,/selectOption\('nl'\)/);
+  assert.match(source,/selectOption\(locale\)/);
+  assert.match(source,/switchPublicLocale\(page, 'en'/);
+  assert.match(source,/switchPublicLocale\(page, 'nl'/);
 });

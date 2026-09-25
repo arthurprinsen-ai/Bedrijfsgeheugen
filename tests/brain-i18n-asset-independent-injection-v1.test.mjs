@@ -4,10 +4,10 @@ import fs from 'node:fs';
 
 test('apply-i18n injects runtime script independently from existing CSS', () => {
   const source = fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
-  assert.match(source,/const hasLink =/);
-  assert.match(source,/const hasScript =/);
-  assert.match(source,/if \(!hasLink\) assets\.push\(LINK\)/);
-  assert.match(source,/if \(!hasScript\) assets\.push\(SCRIPT\)/);
+  assert.match(source,/const hasI18nCss =/);
+  assert.match(source,/const hasI18nScript =/);
+  assert.ok(source.includes("!hasI18nCss ? LINK : ''"), 'missing independent CSS asset insertion');
+  assert.ok(source.includes("!hasI18nScript ? SCRIPT : ''"), 'missing independent runtime asset insertion');
   assert.doesNotMatch(source,/\|\| \/data-bg-i18n-asset\/\.test\(html\)\) return/);
   assert.match(source,/html = injectMobileLanguage\(html\)/);
 });

@@ -1,0 +1,47 @@
+{
+  "fingerprint": "netlify-fallback-proxy-refresh-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The exact-source Netlify fallback upload returned 401 Unauthorized even though OIDC proxy acquisition had succeeded earlier in the same production snapshot job.",
+  "root_cause": "The short-lived Netlify MCP proxy was acquired before the linked-build attempt and reused after provider polling and fallback preparation. By the time npx @netlify/mcp executed, the earlier proxy could be stale.",
+  "prevention": [
+    "Refresh the OIDC-backed Netlify MCP proxy immediately before every exact-source fallback upload.",
+    "Do not reuse a proxy across a potentially long linked-build/provider-watch phase.",
+    "Keep exact-main commit_ref proof and browser NL/EN readback as terminal gates.",
+    "Classify 401 from fallback transport separately from site build failures."
+  ],
+  "evidence": {
+    "failed_snapshot_run": 36162171454,
+    "expected_sha": "764e1db0b034a2b424916016b134d566b2267514",
+    "failure": "Failed to deploy site: 401 Unauthorized",
+    "linked_build_trigger": "ok=false"
+  },
+  "test_evidence": [
+    "tests/brain-netlify-fallback-proxy-refresh-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth",
+    "delivery"
+  ],
+  "revision": 1,
+  "failure_class": "NETLIFY_FALLBACK_PROXY_EXPIRED",
+  "compiler": {
+    "failure_class": "NETLIFY_FALLBACK_PROXY_EXPIRED",
+    "scope": "PRODUCTION_DEPLOY_TRANSPORT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-fallback-proxy-refresh-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-fallback-proxy-refresh-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-fallback-proxy-refresh-v1.test.mjs"
+    ],
+    "expected_invariant": "a fresh OIDC-backed Netlify MCP proxy is acquired immediately before exact-source fallback upload"
+  }
+}
