@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-CONNECTOR-RESPONSE-SHAPE-NORMALIZATION-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "connector|response-shape|normalize-before-use|v1",
+  "date": "2026-09-25",
+  "incident": {
+    "observed": "A bundled GitHub write aborted before branch mutation because the connector returned the created tree SHA in a payload shape different from the field the caller expected.",
+    "classification": "CONNECTOR_RESPONSE_SHAPE_MISMATCH",
+    "safety_property": "No branch mutation occurred before the mismatch was detected."
+  },
+  "root_cause": "The caller treated a connector wrapper response envelope as a stable schema and directly addressed one expected tree-SHA field instead of normalizing the semantic identifier.",
+  "prevention": [
+    "NORMALIZE_CONNECTOR_RESPONSES_BEFORE_CHAINED_MUTATION",
+    "VALIDATE_REQUIRED_SEMANTIC_IDENTIFIERS_BEFORE_SIDE_EFFECTS",
+    "FAIL_BEFORE_REF_MUTATION_ON_MISSING_SHA_OR_ID",
+    "USE_BOUNDED_BRANCH_SAFE_FALLBACK_WHEN_SCHEMA_DRIFTS",
+    "NO_BLIND_RETRY_OF_INCOMPATIBLE_RESPONSE_SHAPE",
+    "NO_DUPLICATE_BRANCH_OR_PR_FOR_TRANSPORT_SCHEMA_DRIFT",
+    "READ_BACK_COMMIT_AND_BRANCH_AFTER_WRITE"
+  ],
+  "fallback": "Prefer serial create_file/update_file Contents API writes on the same branch when a bundled tree response cannot be safely normalized.",
+  "skill_targets": [
+    ".agents/skills/powerhouse-connector-response-normalization/SKILL.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "documentation_targets": [
+    "docs/connector-response-shape-resilience.md",
+    "docs/development-ledger-events/connector-response-shape-normalization-v1.md"
+  ],
+  "regression": "tests/powerhouse-connector-response-normalization.test.mjs"
+}
