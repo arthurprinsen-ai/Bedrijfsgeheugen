@@ -14,3 +14,5 @@
 - Prevention: versioned cache + offline cache coverage validator + existing fail-closed English-production guards.
 - Production authority: Production Source Snapshot is explicitly refreshed in this lineage.
 - Terminal state: pending protected exact-head gates, merge, exact Netlify production identity and browser readback.
+
+- Artifact path lesson: canonical versioned translation data lives under `data/i18n/`, never under ephemeral `.cache/`; delivery classification is updated in the same lineage.
