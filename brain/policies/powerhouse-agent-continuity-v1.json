@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.7",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|terminal-borging-closure|v1.7",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.8",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|terminal-borging-closure|same-repo-reviewable-writeback|v1.8",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -37,7 +37,8 @@
     "TERMINAL_USER_OUTPUT_REQUIRES_DASHBOARD_SKILL_AND_LEARNING_WRITEBACK",
     "NO_AUTONOMOUS_TODO_LIST_AS_FINAL_HANDOFF",
     "GENERATED_PUBLIC_SURFACE_REQUIRES_BUILD_AUTHORITY",
-    "BORGING_REQUIRES_CANONICAL_SKILL_LEARNING_LEDGER_AND_READBACK"
+    "BORGING_REQUIRES_CANONICAL_SKILL_LEARNING_LEDGER_AND_READBACK",
+    "MATERIAL_WRITEBACK_MUST_BE_SAME_REPOSITORY_REVIEWABLE_LINEAGE"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -210,7 +211,8 @@
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
     "brain/learning/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.json",
     "brain/learning/2026-09-25-browser-concurrency-test-contract-drift-v1.json",
-    "brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json"
+    "brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json",
+    "brain/learning/2026-09-25-same-repo-reviewable-writeback-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -380,5 +382,28 @@
       "LEARNING_WRITTEN_WITHOUT_PROTECTED_MAIN",
       "OLD_CANCELLED_READBACK_TREATED_AS_SUCCESS"
     ]
+  },
+  "repository_writeback_rule": {
+    "required": true,
+    "fingerprint": "powerhouse|same-repo-material-writeback|reviewable-lineage|v1",
+    "applies_to": [
+      "chat",
+      "agent",
+      "workflow",
+      "autonomous-worker",
+      "skill"
+    ],
+    "canonical_repository": "arthurprinsen-ai/Bedrijfsgeheugen",
+    "same_obligation_lineage_required": true,
+    "reviewable_repository_artifacts_required": [
+      "relevant_skill_execution_rule_or_projection",
+      "brain_powerhouse_machine_readable_learning",
+      "append_only_development_ledger_event",
+      "human_readable_repository_documentation"
+    ],
+    "external_or_chat_only_note_is_closure": false,
+    "batch_before_ci_when_safe": true,
+    "fail_closed_state": "WRITEBACK_INCOMPLETE",
+    "terminal_rule": "No material run may claim LIVE_BEWEZEN while any required same-repository writeback artifact or its skill projection/readback is absent."
   }
 }

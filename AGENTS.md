@@ -441,3 +441,20 @@ Iedere agent/chat die productie als LIVE/DONE wil afsluiten, moet de terminale s
 - verborgen fallback/error-copy in HTML/DOM is diagnostische tekst, geen user-visible failure. Interactiedefecten worden beslist door de echte browsergate; zichtbare fouttekst blijft fail-closed.
 
 Canonieke learning: brain/learning/2026-09-25-live-bewezen-exact-main-atomic-proof-v1.json.
+
+
+## Same-repository reviewable writeback — verplicht voor alle agents en chats
+
+Fingerprint: `powerhouse|same-repo-material-writeback|reviewable-lineage|v1`.
+
+Iedere materiële ontwikkeling, recovery, borging of contractwijziging wordt in **dezelfde repository en dezelfde canonieke delivery-lineage** vastgelegd. Een losse chatnotitie, lokaal bestand, extern document of niet-reviewbare side note geldt nooit als closure-bewijs.
+
+Verplicht vóór terminale afronding:
+- relevante duurzame uitvoeringsregel in de skill-laag;
+- machineleesbare Brain/Powerhouse learning met fingerprint, root cause, evidence, prevention en skill targets;
+- append-only development-ledger event;
+- menselijke documentatie in de repository;
+- waar van toepassing regressie-/contractbewijs dat deze standaard fail-closed bewaakt;
+- protected merge/main-readback en skill-projection/readback volgens de bestaande terminale delivery-contracten.
+
+Deze artifacts horen bij één obligation/candidate-lineage en worden waar veilig gebundeld vóór CI. Geen agent of chat mag één van deze artifacts buiten de codebase parkeren om de repository-gate te omzeilen. Ontbreekt één verplicht onderdeel, dan is de status `WRITEBACK_INCOMPLETE` en niet `LIVE_BEWEZEN`.

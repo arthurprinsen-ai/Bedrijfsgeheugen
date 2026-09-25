@@ -1,0 +1,50 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|same-repo-material-writeback|reviewable-lineage|v1",
+  "obligation_id": "same-repo-material-writeback-standard-v1",
+  "problem": "Material agent/chat work could be described as borged while one or more closure artifacts lived only in chat text, an external note, or another non-reviewable location.",
+  "root_cause": "The existing material-writeback guard enforced Brain learning, ledger and human documentation, but the canonical continuity contract did not explicitly require those artifacts and the relevant skill rule to remain in the same repository-backed obligation lineage.",
+  "failed_approaches": [
+    "Treating a chat statement that something was documented as equivalent to repository evidence.",
+    "Allowing durable operating rules to live outside the repository-backed review path.",
+    "Splitting skill, learning, ledger and human documentation across unrelated lineages."
+  ],
+  "fix": "Make same-repository reviewable writeback an explicit continuity invariant for every current and future chat, agent, workflow, autonomous worker and skill; bind the four closure artifact classes to one obligation/candidate lineage and reuse the existing fail-closed material-writeback and skill-projection gates.",
+  "prevention": [
+    "All material closure artifacts remain in the canonical Bedrijfsgeheugen repository.",
+    "Skill rule/projection, Brain learning, development ledger and human documentation are produced in the same obligation/candidate lineage.",
+    "Chat-only, local-only or external-only notes never count as closure evidence.",
+    "Missing repository writeback remains WRITEBACK_INCOMPLETE and cannot become LIVE_BEWEZEN."
+  ],
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "SAME_REPOSITORY_WRITEBACK_GAP",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ]
+  },
+  "evidence": [
+    "AGENTS.md",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs",
+    "scripts/brain/material-writeback-closure-guard.mjs"
+  ],
+  "outcome": {
+    "status": "CONTRACT_ADDED_TO_CANONICAL_LINEAGE",
+    "verified_at": "2026-09-25T20:08:00+02:00"
+  }
+}

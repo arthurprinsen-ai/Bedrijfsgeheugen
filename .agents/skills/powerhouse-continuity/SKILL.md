@@ -1195,3 +1195,19 @@ When GitHub refuses to reopen a closed PR because its head branch was force-push
 - record the incident, root cause, recovery decision and prevention rule in Brain/ledger/skills before declaring the delivery closed.
 
 This prevents a stale recovery PR from rolling back newer mainline work while retaining fail-closed delivery governance.
+
+
+## Same-repository reviewable writeback
+
+Fingerprint: `powerhouse|same-repo-material-writeback|reviewable-lineage|v1`.
+
+For every material chat/agent/workflow change, closure artifacts stay in the canonical Bedrijfsgeheugen repository and in the same obligation/candidate lineage. A chat-only note, local side file, external memo or unreviewed record is never closure.
+
+Required repository-backed closure:
+- durable execution rule in the relevant skill layer or deterministic skill projection;
+- machine-readable `brain/learning/**/*.json`;
+- append-only `docs/development-ledger-events/**`;
+- human-readable `docs/changes/**` or equivalent canonical repository documentation;
+- existing protected delivery, production/provider readback and learning-to-skill readback.
+
+Batch these writebacks before CI when safe. If one required artifact is missing, return internal state `WRITEBACK_INCOMPLETE`; do not claim `LIVE_BEWEZEN`.
