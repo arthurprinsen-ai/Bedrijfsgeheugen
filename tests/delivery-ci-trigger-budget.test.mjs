@@ -43,3 +43,16 @@ test('component foundation no longer treats every config file as component work'
   assert.match(block, /config\/component-ownership\.json/);
   assert.match(block, /config\/change-classes\.json/);
 });
+
+
+test('governance-only prevention registry does not trigger production deploy/readback workflows', async () => {
+  for (const workflow of [
+    '.github/workflows/production-source-snapshot.yml',
+    '.github/workflows/production-release-readback.yml',
+  ]) {
+    const text = await readFile(workflow, 'utf8');
+    const triggerBlock = text.split(/\npermissions:/, 1)[0];
+    assert.match(triggerBlock, /paths-ignore:/);
+    assert.match(triggerBlock, /config\/delivery-prevention-rules\.json/);
+  }
+});
