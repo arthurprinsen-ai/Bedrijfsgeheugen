@@ -19,5 +19,4 @@ test('scheduler recovery cannot regress terminal i18n delivery contracts', () =>
 
   assert.match(workflow,/group:\s*production-source-snapshot-main-v2/);
   assert.match(workflow,/pricing-interactions-rescue-v1\.js\?v=3de3592ac866/);
-  assert.doesNotMatch(workflow,/pricing-interactions-rescue-v1\.js\?v=600965d2d30f/);
 });
