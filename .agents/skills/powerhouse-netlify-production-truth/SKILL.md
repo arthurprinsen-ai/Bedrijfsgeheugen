@@ -54,3 +54,19 @@ When a recovery changes a build-time JavaScript transformer:
 - execute it against a minimal representative fixture;
 - assert the intended DOM/string mutation and idempotence;
 - if OIDC succeeds but both linked and exact-source Netlify deploys fail during `building site`, classify the incident as a build-content failure before changing deploy credentials or transport.
+
+## I18n production asset completeness
+
+Fingerprint: `netlify-production|i18n-asset-completeness|v1`.
+
+A Netlify deploy being `ready` and exact-main is necessary but not sufficient for NL/EN production truth.
+
+For public i18n:
+- inspect final served HTML, not only source HTML;
+- CSS and JS are separate required assets and must be proven independently;
+- a shared data marker cannot stand in for asset completeness;
+- the active mobile navigation host must contain a visible language selector after runtime initialization;
+- terminal proof must include NL → EN route switch and EN → NL canonical return;
+- the browser verifier must fail closed on missing runtime assets, missing controls, hidden-only controls, wrong route, wrong `html[lang]`, or visible runtime translation errors.
+
+Canonical learning: `brain/learning/i18n-partial-asset-marker-production-20260925-v1.json`.
