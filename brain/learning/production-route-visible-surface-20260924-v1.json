@@ -37,3 +37,42 @@
   },
   "terminal_rule": "Protected merge plus exact Netlify SHA and green route + pricing/i18n browser proof required."
 }
+{
+  "fingerprint": "production-route-visible-surface-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_BROWSER_PROOF",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The generic production route verifier used Playwright body visibility as a prerequisite. On /prijzen the document, exact release identity and real page content were present, but Playwright repeatedly timed out classifying the body element itself as visible. This blocked the more specific pricing/i18n interaction proof even though body visibility is not the route contract.",
+  "prevention_rule": "Generic route proof must verify an attached body, non-empty rendered text and at least one genuinely visible top-level content surface. It must not depend on the body element's own actionability box. Functional interaction gates remain separate and mandatory.",
+  "evidence": {
+    "failed_runs": [
+      36052140393,
+      36053461250
+    ],
+    "exact_production_sha": "6d428a820443269543378ef42e42e9584503f80b",
+    "failed_step": "Verify affected production routes",
+    "failure": "locator('body') visible timeout"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_ROUTE_BODY_VISIBILITY_FALSE_NEGATIVE",
+    "scope": "PRODUCTION_BROWSER_PROOF",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-route-visible-surface-v1.test.mjs"
+    ],
+    "invariants": [
+      "body must be attached",
+      "visible text must exist",
+      "at least one top-level content surface must be genuinely visible",
+      "pricing/i18n interaction proof remains mandatory"
+    ]
+  },
+  "terminal_rule": "Protected merge plus exact Netlify SHA and green route + pricing/i18n browser proof required."
+}
