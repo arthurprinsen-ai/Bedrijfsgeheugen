@@ -7,5 +7,23 @@
   "regression": [
     "tests/brain-static-i18n-provider-nontransient-failfast-v2.test.mjs"
   ],
-  "supersedes_pr": 2707
+  "supersedes_pr": 2707,
+  "compiler": {
+    "failure_class": "CONNECTOR_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-provider-nontransient-failfast-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-provider-nontransient-failfast-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-static-i18n-provider-nontransient-failfast-v2.test.mjs"
+    ]
+  }
 }
