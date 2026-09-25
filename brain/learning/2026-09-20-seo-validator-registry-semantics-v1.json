@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "seo-validator-registry-semantics-v1",
+  "compiler": {
+    "failure_class": "SEO",
+    "scope": "website",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "After switching the legacy audit to the canonical registry, it incorrectly promoted every secondary keyword to a mandatory literal title/H1 claim and ignored the canonical bg-keyword-cluster metadata as sufficient proof. This amplified false positives from 26 to 90.",
+  "prevention": [
+    "Only primary_keyword is an exclusive literal ownership claim in the legacy validator.",
+    "When canonical bg-keyword-cluster metadata exists, exact metadata ownership is authoritative; title/H1 heuristics are legacy fallback only.",
+    "Secondary keywords remain semantic coverage targets, not mandatory title/H1 synonyms."
+  ],
+  "evidence": [
+    ".github/scripts/seocontrole.py",
+    "site/seo-order-map.json",
+    "site/seo-order-expansion.json",
+    "tests/brain-seo-validator-registry-semantics.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-validator-registry-semantics.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "seo-growth",
+    "website-release"
+  ],
+  "skill_projection_required": true
+}
