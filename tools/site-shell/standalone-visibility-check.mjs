@@ -9,13 +9,35 @@ const navigationTimeoutMs = Number(process.env.UI_VR_NAVIGATION_TIMEOUT_MS || 80
 const fontReadyTimeoutMs = Number(process.env.UI_VR_FONT_READY_TIMEOUT_MS || 1500);
 const totalBudgetMs = Number(process.env.UI_VR_TOTAL_BUDGET_MS || 8 * 60 * 1000);
 const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || 4));
+const cleanupTimeoutMs = Number(process.env.UI_VR_CLEANUP_TIMEOUT_MS || 5000);
 const startedAt = Date.now();
+let cleanupTimedOut = false;
 const viewports = [
   { name: 'phone', width: 390, height: 844 },
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 },
 ];
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+async function closeBounded(label, closeFn) {
+  let finished = false;
+  const closePromise = Promise.resolve()
+    .then(closeFn)
+    .then(() => { finished = true; })
+    .catch(error => {
+      finished = true;
+      console.warn(`${label} cleanup failed after assertions: ${error?.message || error}`);
+    });
+  await Promise.race([
+    closePromise,
+    sleep(cleanupTimeoutMs).then(() => {
+      if (!finished) {
+        cleanupTimedOut = true;
+        console.warn(`${label} cleanup exceeded ${cleanupTimeoutMs}ms; process-level cleanup will terminate remaining browser handles`);
+      }
+    }),
+  ]);
+}
 
 function assertBudget(route, viewport) {
   const elapsed = Date.now() - startedAt;
@@ -136,16 +158,24 @@ try {
             }
           }
         } finally {
-          await page.close();
+          await closeBounded(`page ${viewport.name} worker ${workerIndex}`, () => page.close());
         }
       }));
     } finally {
-      await context.close();
+      await closeBounded(`context ${viewport.name}`, () => context.close());
     }
   }
 } finally {
-  await browser.close();
+  await closeBounded('browser', () => browser.close());
 }
 
-if (failures.length) throw new Error(`Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`);
+if (failures.length) {
+  const message = `Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`;
+  if (cleanupTimedOut) {
+    console.error(message);
+    process.exit(1);
+  }
+  throw new Error(message);
+}
 console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks with concurrency ${routeConcurrency} within bounded budget ${totalBudgetMs}ms`);
+if (cleanupTimedOut) process.exit(0);

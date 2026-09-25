@@ -30,3 +30,15 @@ test('website lane wraps the full visibility sweep in an OS-level hard timeout',
   const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
   assert.match(workflow, /timeout --signal=TERM --kill-after=15s 9m node tools\/site-shell\/standalone-visibility-check\.mjs/);
 });
+
+
+test('Playwright teardown is separately bounded and preserves semantic exit state', async () => {
+  const source = await readFile('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
+  assert.match(source, /UI_VR_CLEANUP_TIMEOUT_MS/);
+  assert.match(source, /async function closeBounded/);
+  assert.match(source, /cleanupTimedOut = true/);
+  assert.match(source, /closeBounded\(\`context \$\{viewport\.name\}\`/);
+  assert.match(source, /closeBounded\('browser'/);
+  assert.match(source, /if \(cleanupTimedOut\) process\.exit\(0\)/);
+  assert.match(source, /if \(cleanupTimedOut\)[\s\S]*process\.exit\(1\)/);
+});
