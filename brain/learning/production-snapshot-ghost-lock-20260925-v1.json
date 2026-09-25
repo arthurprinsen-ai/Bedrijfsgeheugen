@@ -28,13 +28,13 @@
   "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
   "evaluation": {
     "historical_replay": [
-      "run:36160448237"
+      "tests/brain-production-snapshot-ghost-lock-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-production-snapshot-ghost-lock-v1.test.mjs"
     ],
     "canary": [
-      "PR:3043"
+      "tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"
     ],
     "expected_invariant": "latest main production snapshot starts a job in the recovered stable concurrency group and production remains serialized"
   },
