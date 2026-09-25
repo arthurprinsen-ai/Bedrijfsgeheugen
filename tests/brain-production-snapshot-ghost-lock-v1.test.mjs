@@ -8,3 +8,11 @@ test('production snapshot uses the recovered stable concurrency group', () => {
   assert.match(source,/cancel-in-progress:\s*false/);
   assert.doesNotMatch(source,/group:\s*production-source-snapshot-main\s*$/m);
 });
+
+
+test('ghost-lock learning uses executable evaluation test paths', () => {
+  const learning = JSON.parse(fs.readFileSync('brain/learning/production-snapshot-ghost-lock-20260925-v1.json','utf8'));
+  for (const lane of ['historical_replay','shadow','canary']) {
+    assert.deepEqual(learning.evaluation[lane], ['tests/brain-production-snapshot-ghost-lock-v1.test.mjs']);
+  }
+});
