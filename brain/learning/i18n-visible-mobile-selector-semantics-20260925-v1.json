@@ -1,0 +1,20 @@
+{
+  "fingerprint": "i18n-visible-mobile-selector-semantics-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production contained a mobile language selector, but the verifier preferred a hidden shared-nav selector whenever it merely existed in the DOM.",
+  "root_cause": "DOM existence was used as a proxy for user-visible actionability.",
+  "prevention": [
+    "Production interaction proofs must select :visible controls, not the first DOM match.",
+    "Hidden duplicate navigation hosts may exist and must never outrank visible controls.",
+    "Failure diagnostics must record counts and visibility state for all candidate hosts."
+  ],
+  "evidence": {
+    "failed_run": 36159192559,
+    "production_sha": "c2bf6d4f059307579686f1b61d66f195b0ee2af7",
+    "production_deploy": "6ab69d70fe4e3eff0396b892",
+    "failure": "visible mobile language select is missing after opening mobile navigation"
+  },
+  "test_evidence": ["tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs"],
+  "skill_targets": ["powerhouse-netlify-production-truth","continuity","website"],
+  "revision": 1
+}
