@@ -1,0 +1,38 @@
+{
+  "fingerprint": "final-i18n-live-proof-20260925-v1",
+  "status": "PROMOTION_CANDIDATE",
+  "date": "2026-09-25",
+  "type": "TERMINAL_PRODUCTION_PROOF",
+  "problem": "The immutable English cache recovery and cache-completeness enforcement were protected-merged, but the newest main SHA had no registered Production Source Snapshot run and Netlify production remained on an older deploy.",
+  "root_cause": "A terminal production-proof trigger was required after the last cache-completeness merge. The first pure workflow-marker candidate correctly failed the material-writeback closure guard because it lacked Brain learning, ledger evidence and human documentation in the same lineage.",
+  "prevention": [
+    "Every material production-promotion candidate carries Brain learning, activity ledger and human documentation in the same lineage.",
+    "Latest-main Production Source Snapshot remains the only production writer.",
+    "LIVE_BEWEZEN requires exact Netlify production SHA and production browser proof, never only protected merge.",
+    "A pure deploy-trigger change is still material delivery and must satisfy semantic closure."
+  ],
+  "evidence": {
+    "recovered_main_sha": "05a9489effda4ca1fc988fe2c532cfc2581b341c",
+    "immutable_cache_recovery_pr": 2988,
+    "cache_completeness_pr": 2995,
+    "promotion_pr": 2999,
+    "prior_netlify_deploy": "6ab66b7bb3dd8b0008d0c2a1",
+    "production_workflow": ".github/workflows/production-source-snapshot.yml"
+  },
+  "evaluation": {
+    "canary": [
+      "Production Source Snapshot exact-SHA proof",
+      "pricing/NL→EN→NL production browser readback"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "compiler": {
+    "failure_class": "TERMINAL_PROMOTION_CLOSURE_MISSING",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
