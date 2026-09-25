@@ -12,8 +12,10 @@ test('mobile locale control mounts into every distinct navigation host',()=>{
   assert.doesNotMatch(runtime,/if \(!mobileRoot && legacyMobile/);
 });
 
-test('production locale proof uses visible mobile control on all mandatory routes',()=>{
-  assert.match(proof,/#bgkopMob \[data-bg-language-select\]:visible/);
+test('production locale proof uses active visible mobile control on all mandatory routes',()=>{
+  assert.match(proof,/async function getVisibleMobileLanguage/);
+  assert.match(proof,/#v18MobileDrawer/);
+  assert.match(proof,/async function switchPublicLocale/);
   for (const route of ["'/'","'/prijzen'","'/systemen-koppelen'"]) assert.ok(proof.includes(route), 'missing route '+route);
   assert.match(proof,/switchPublicLocale\(page, 'en'/);
   assert.match(proof,/switchPublicLocale\(page, 'nl'/);
