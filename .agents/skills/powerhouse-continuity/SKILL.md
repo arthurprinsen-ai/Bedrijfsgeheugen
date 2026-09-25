@@ -898,3 +898,19 @@ Recovery is permitted only when all of these are true:
 - the terminal evidence records this as descendant regression recovery, never as retroactive exact-head success.
 
 This rule exists to close stale verifier debt without weakening product gates or spawning duplicate recovery PRs.
+
+
+## Bounded parallel production route readback
+
+Fingerprint: `production-route-readback-bounded-parallel-v1`.
+
+Production route proof must minimize wall-clock latency without weakening evidence:
+- verify independent route × viewport combinations concurrently with bounded concurrency;
+- retain both desktop (1440px) and mobile (390px) browser evidence;
+- keep navigation/body visibility retries bounded and fail closed on terminal timeout;
+- wrap the canonical route-verifier step in an explicit workflow wall-clock timeout;
+- never replace browser proof with HTTP-only checks merely to make delivery faster;
+- a route verifier that serializes independent viewports and can consume most of the workflow budget is a control-plane latency defect.
+
+Regression: `tests/brain-production-route-readback-bounded-parallel-v1.test.mjs`.
+Learning: `brain/learning/production-route-readback-bounded-parallel-20260925-v1.json`.

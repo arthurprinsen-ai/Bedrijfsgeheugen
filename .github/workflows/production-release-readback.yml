@@ -211,7 +211,7 @@ jobs:
           BASE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ steps.scope.outputs.routes }}
           ALLOW_EXISTING_PAGE_ERRORS: 'true'
-        run: node tools/site-shell/verify-targeted-website-routes.mjs --output .artifacts/production-route-verification.json
+        run: timeout --signal=TERM --kill-after=30s 8m node tools/site-shell/verify-targeted-website-routes.mjs --output .artifacts/production-route-verification.json
       - name: Verify pricing interactions and English route in production
         if: steps.scope.outputs.browser_required == 'true' && steps.deploy.outcome == 'success'
         env:
