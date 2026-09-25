@@ -1,33 +1,12 @@
 name: Canonical brand shell live readback
 
 on:
-  pull_request:
-    branches: [main]
-    paths:
-      - 'components/**'
-      - 'assets/**'
-      - 'pages/**'
-      - 'site/**'
-      - 'blog/**'
-      - 'kennis/**'
-      - '*.html'
-      - 'styles.css'
-      - 'script.js'
-      - 'seo-status.json'
-      - 'sitemap.xml'
-      - 'netlify.toml'
-      - 'tools/site-shell/**'
-      - 'tools/seo-order-engine/**'
-      - 'netlify/functions/growth-event.mjs'
-      - 'tests/site-shell-*.test.mjs'
-      - 'tests/seo-*.test.mjs'
-      - '.github/workflows/canonical-brand-shell-live-readback.yml'
   push:
     branches: [main]
   workflow_dispatch:
 
 concurrency:
-  group: canonical-brand-shell-live-readback-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
+  group: canonical-brand-shell-live-readback-${{ github.event_name }}-${{ github.ref_name }}
   cancel-in-progress: true
 
 jobs:

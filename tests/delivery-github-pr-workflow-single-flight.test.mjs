@@ -7,7 +7,6 @@ const workflows = [
   '.github/workflows/powerhouse-assurance.yml',
   '.github/workflows/powerhouse-closure-a-f.yml',
   '.github/workflows/business-os-foundation.yml',
-  '.github/workflows/v18-production-promotion.yml',
   '.github/workflows/powerhouse-quality-surface-gate.yml',
   '.github/workflows/portal-parity.yml',
   '.github/workflows/portal-v2-tests.yml',
@@ -31,4 +30,10 @@ test('single-flight guard does not remove workflow jobs', () => {
     const yaml = fs.readFileSync(workflow, 'utf8');
     assert.match(yaml, /\njobs:\n/);
   }
+});
+
+test('legacy V18 promotion is explicit recovery only, not a PR entrypoint', () => {
+  const yaml = fs.readFileSync('.github/workflows/v18-production-promotion.yml', 'utf8');
+  assert.doesNotMatch(yaml, /^\s*pull_request\s*:/m);
+  assert.match(yaml, /workflow_dispatch:/);
 });

@@ -131,6 +131,19 @@ For parallel chats and agents, runner capacity is protected by a single canonica
 
 Canonical learning: `brain/learning/agent-factory-single-flight-ci-20260925-v1.json`.
 
+## Independent stale Actions drainage
+
+Fingerprint: `github|agent-factory|stale-queue-independent-drain|v1`.
+
+- Stale Actions cleanup is an independent control-plane responsibility; PR hygiene or terminal-lease failures may not block it.
+- Run the canonical stale drainer at least every ten minutes and after changes to its own main control plane.
+- Never cancel `main`, the exact current head of an open PR, `Obligation Terminal Closure`, or merged-branch cleanup.
+- Cancel only identity-proven obsolete work. Missing/contained non-main queued runs receive a short grace period; stale in-progress work requires a longer grace period.
+- Heavy website PR verification belongs to `lane-website.yml`; do not add independent V18/canonical-shell PR entrypoints for build, preview, SEO or browser contracts.
+- Main-only production readback remains separate from PR CI.
+
+Canonical learning: `brain/learning/agent-factory-stale-queue-drain-20260925-v1.json`.
+
 ## Mandatory material-run closure gate
 
 Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.

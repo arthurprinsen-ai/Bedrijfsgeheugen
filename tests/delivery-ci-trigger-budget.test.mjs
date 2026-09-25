@@ -3,30 +3,35 @@ import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
 const root = new URL('../.github/workflows/', import.meta.url);
-const files = [
-  'canonical-brand-shell-full-build.yml',
-  'canonical-brand-shell-live-readback.yml',
-  'canonical-brand-shell-test.yml',
-  'v18-production-promotion.yml',
-  'chat-learning-preflight-pr.yml',
-  'component-foundation-tdd.yml',
-];
-
-async function workflow(name) {
-  return readFile(new URL(name, root), 'utf8');
-}
+async function workflow(name) { return readFile(new URL(name, root), 'utf8'); }
 
 function pullRequestBlock(source) {
   const start = source.indexOf('  pull_request:');
-  assert.ok(start >= 0, 'workflow must have pull_request trigger');
+  if (start < 0) return '';
   const tail = source.slice(start + 2);
   const nextEvent = tail.search(/^  (?:push|workflow_dispatch|schedule|workflow_call):/m);
   return nextEvent >= 0 ? tail.slice(0, nextEvent) : tail;
 }
 
-test('domain workflows use pull-request path budgets instead of repo-wide fan-out', async () => {
-  for (const name of files.slice(0, 5)) {
+test('heavy website verification is owned by the canonical website lane, not duplicate PR entrypoints', async () => {
+  for (const name of [
+    'canonical-brand-shell-full-build.yml',
+    'canonical-brand-shell-live-readback.yml',
+    'v18-production-promotion.yml',
+  ]) {
+    const source = await workflow(name);
+    assert.doesNotMatch(source, /^\s*pull_request\s*:/m, `${name} must not auto-fan-out on pull requests`);
+  }
+  const lane = await workflow('lane-website.yml');
+  assert.match(lane, /Run exact Netlify production build command/);
+  assert.match(lane, /Verify all public pages are visibly rendered/);
+  assert.match(lane, /Verify broad high-risk browser contracts/);
+});
+
+test('remaining specialist PR workflows keep bounded path admission', async () => {
+  for (const name of ['canonical-brand-shell-test.yml','chat-learning-preflight-pr.yml']) {
     const block = pullRequestBlock(await workflow(name));
+    assert.ok(block, `${name} must retain a PR trigger`);
     assert.match(block, /\n\s+paths:\s*\n/, `${name} must filter pull_request paths`);
   }
 });

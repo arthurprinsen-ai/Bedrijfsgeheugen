@@ -1,0 +1,54 @@
+name: Powerhouse Stale Actions Drain
+
+on:
+  schedule:
+    - cron: '*/10 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - 'tools/delivery/stale-actions-drain.sh'
+      - '.github/workflows/powerhouse-stale-actions-drain.yml'
+  workflow_dispatch:
+
+permissions:
+  actions: write
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: powerhouse-stale-actions-drain
+  cancel-in-progress: true
+
+jobs:
+  drain:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - name: Snapshot current open PR heads
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts
+          gh api --paginate --slurp "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" | jq 'add' > .artifacts/open-prs.json
+          : > .artifacts/stale-actions-drain.ndjson
+      - name: Drain proven obsolete Actions runs
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: bash tools/delivery/stale-actions-drain.sh
+      - name: Build drain evidence
+        if: always()
+        run: |
+          mkdir -p .artifacts
+          touch .artifacts/stale-actions-drain.ndjson
+          jq -s '.' .artifacts/stale-actions-drain.ndjson > .artifacts/stale-actions-drain.json
+          cat .artifacts/stale-actions-drain.json
+      - name: Upload drain evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-stale-actions-drain-${{ github.run_id }}
+          path: .artifacts/stale-actions-drain.json
+          if-no-files-found: error
+          retention-days: 14

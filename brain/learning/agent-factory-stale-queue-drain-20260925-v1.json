@@ -1,0 +1,39 @@
+{
+  "fingerprint": "github|agent-factory|stale-queue-independent-drain|v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Stale queued Actions and duplicate website PR workflows continued consuming runner capacity after the first single-flight consolidation.",
+  "root_cause": "Stale Actions cleanup depended on the full hourly repository janitor and heavy V18/canonical-shell verification still existed as independent pull_request entrypoints although lane-website already covered exact build, preview, SEO and browser verification.",
+  "prevention": [
+    "Run identity-safe stale Actions drainage independently every ten minutes and after changes to its own control plane land on main.",
+    "Never cancel main, the exact current head of an open PR, Obligation Terminal Closure, or merged-branch cleanup.",
+    "Require exact obsolete identity before cancellation and use a longer grace period for in-progress work.",
+    "Make lane-website the automatic PR owner for heavy V18/canonical-shell build, preview and browser verification.",
+    "Keep canonical live shell readback main-only and legacy full build/V18 promotion explicit diagnostics or recovery."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-delivery-janitor-workflow-integrity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-stale-queue-janitor-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-delivery-stale-queue-janitor-v1.test.mjs",
+    "tests/delivery-ci-trigger-budget.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ],
+  "compiler": {
+    "failure_class": "STALE_ACTIONS_DRAIN_STARVATION",
+    "scope": "GITHUB_ACTIONS_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
