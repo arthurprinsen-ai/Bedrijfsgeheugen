@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 
-test('pricing production verifier uses DOM geometry and a real pointer without locator geometry auto-waits', async()=>{
+test('pricing production verifier uses DOM geometry, real pointer actions, and explicit locale proof', async()=>{
   const source=await readFile('tools/site-shell/verify-pricing-i18n-production.mjs','utf8');
   assert.match(source,/bgPricingInteractions === 'ready-v3'/);
   assert.match(source,/document\.querySelector\('\[data-bg-stage="loss"\]'\)/);
@@ -19,6 +19,7 @@ test('pricing production verifier uses DOM geometry and a real pointer without l
   assert.match(source,/page\.mouse\.click\(lossBox\.x \+ lossBox\.width \/ 2, lossBox\.y \+ lossBox\.height \/ 2\)/);
   assert.match(source,/loss stage aria-selected did not become true/);
   assert.match(source,/yearly billing click did not change a price/);
-  assert.match(source,/English route did not render html lang=en/);
+  assert.match(source,/locale switch did not render html lang=/);
+  assert.match(source,/English route still shows the Dutch pricing H1/);
   assert.doesNotMatch(source,/force:\s*true/);
 });
