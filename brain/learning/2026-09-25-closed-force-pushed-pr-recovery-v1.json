@@ -11,7 +11,8 @@
     "If the fix is absent, rebuild only the minimal proven delta from current main.",
     "Never force a heavily diverged stale branch into main merely to preserve historical PR identity.",
     "Keep one remediation lineage and require exact-main production plus functional readback before terminal closure.",
-    "After correcting PR-body machine metadata, do not expect rerun-failed-jobs to refresh the event payload; trigger a fresh same-lineage synchronize event and keep only that head authoritative."
+    "After correcting PR-body machine metadata, do not expect rerun-failed-jobs to refresh the event payload; trigger a fresh same-lineage synchronize event and keep only that head authoritative.",
+    "Treat config/delivery-prevention-rules.json as governance-only for production workflow trigger ownership: Production Source Snapshot and Production Release Readback must ignore this path at GitHub trigger level; PR validation still verifies the governance change."
   ],
   "evidence": {
     "original_pr": 2954,
@@ -19,7 +20,9 @@
     "current_main": "ccb64428be9ce5bb05b4e38801475d48e2ea6f28",
     "production_source_snapshot_run": 36168441792,
     "production_deploy_id": "6ab6b1b1e1aeb600082e5a0b",
-    "production_behavior": "PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN"
+    "production_behavior": "PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN",
+    "governance_only_false_positive_run": 36171271926,
+    "governance_only_false_positive_error": "Netlify fallback 401 Unauthorized after an unnecessary production trigger"
   },
   "prevention_rule": "RECONCILE_CLOSED_FORCE_PUSHED_PR_AGAINST_CURRENT_MAIN",
   "skill_targets": [
@@ -34,11 +37,12 @@
   "test_evidence": [
     "tests/brain-closed-force-pushed-pr-recovery-v1.test.mjs"
   ],
-  "revision": 4,
+  "revision": 5,
   "failed_approaches": [
     "Initial learning omitted evaluation.historical_replay, so Powerhouse Skill Projection correctly failed closed with LEARNING_EVALUATION_TESTS_REQUIRED.",
     "The first semantic-learning record kept failure_class only at top level; material writeback closure requires compiler.failure_class as the machine-semantic authority.",
-    "Re-running a failed GitHub Actions run reuses the original pull_request event payload, including stale PR_BODY metadata; after correcting machine metadata, a meaningful same-lineage commit is required to generate a fresh pull_request synchronize event instead of relying on rerun."
+    "Re-running a failed GitHub Actions run reuses the original pull_request event payload, including stale PR_BODY metadata; after correcting machine metadata, a meaningful same-lineage commit is required to generate a fresh pull_request synchronize event instead of relying on rerun.",
+    "Governance-only change to config/delivery-prevention-rules.json triggered Production Source Snapshot and Production Release Readback because the workflow-level paths-ignore contract did not exclude the prevention registry; Source Snapshot then attempted a Netlify deploy and hit 401 Unauthorized even though no website runtime change required promotion."
   ],
   "compiler": {
     "failure_class": "CLOSED_PR_FORCE_PUSH_RECOVERY_CAN_REINTRODUCE_STALE_MAIN",
