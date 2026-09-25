@@ -11,3 +11,7 @@
 ## Integration recovery
 
 Required exposed an inherited current-main regression-contract drift: the visibility runner had already moved to bounded route concurrency, while an older baseline test still required serial `for (const route of routes)`. The same lineage updates that stale assertion to the canonical worker-concurrency contract without weakening full-route, viewport, CLS or fail-closed verification. This is not a rollback of the queue-amplification fix.
+
+## Post-merge skill canonicalization recovery
+
+After #2888 merged, Powerhouse Skill Projection correctly rejected a non-canonical `historical_replay` entry pointing to `tests/site-shell-website-release-risk.test.mjs`. The recovery keeps that file as ordinary repair evidence but binds canonical learning replay to `tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs`. LIVE_BEWEZEN remains blocked until this recovery is protected-merged and terminal readback is green.
