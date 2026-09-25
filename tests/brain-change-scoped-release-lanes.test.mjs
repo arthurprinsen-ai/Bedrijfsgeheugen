@@ -20,6 +20,10 @@ test('Netlify routing config is classified as website delivery', () => {
   assert.deepEqual(suitesFor(['netlify.toml']), { shared:true, backend:false, portal:false, website:true, automation:false });
 });
 
+test('versioned static i18n cache is classified as website delivery', () => {
+  assert.deepEqual(suitesFor(['.cache/bg-static-i18n-en.json']), { shared:true, backend:false, portal:false, website:true, automation:false });
+});
+
 test('backend-only work blocks only shared and backend required suites', () => {
   assert.deepEqual(suitesFor(['platform/api/brain-gateway.mjs']), { shared:true, backend:true, portal:false, website:false, automation:false });
 });
