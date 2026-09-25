@@ -79,7 +79,7 @@ async function run() {
     await page.locator('[data-bg-billing="yearly"]').click();
     await page.waitForTimeout(150);
     const after = (await priced.textContent().catch(()=>'')) || '';
-    if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-selected')) !== 'true') throw new Error('yearly billing aria-selected did not become true');
+    if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-pressed')) !== 'true') throw new Error('yearly billing aria-pressed did not become true');
     if (before.trim() === after.trim()) throw new Error('yearly billing click did not change a price');
 
     // Public language switching must use the static English route, not runtime provider translation.
