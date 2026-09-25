@@ -135,8 +135,28 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
     if(!response.ok)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_ACCOUNT_DISCOVERY_${response.status}`);
     const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
     const active=items.filter((item:any)=>clean(item?.status).toUpperCase()==='ACTIVE'||!clean(item?.status));
-    if(active.length!==1)throw new Error(active.length===0?`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`:`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
-    accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+    if(active.length===0)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`);
+    if(active.length===1){
+      accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+    } else if(toolkit==='instagram'){
+      const matches:any[]=[];
+      for(const item of active){
+        const id=clean(item?.id||item?.connected_account_id);
+        if(!id)continue;
+        const proxy=await fetch(`${COMPOSIO_BASE.replace('/api/v3','')}/api/v3.1/tools/execute/proxy`,{
+          method:'POST',
+          headers:{'content-type':'application/json','x-api-key':apiKey},
+          body:JSON.stringify({endpoint:'/me?fields=id,username',method:'GET',connected_account_id:id,parameters:[]})
+        });
+        const pb:any=await proxy.json().catch(()=>({}));
+        const username=clean(pb?.data?.username||pb?.body?.data?.username).toLowerCase();
+        if(proxy.ok&&username==='bedrijfsgeheugen.nl')matches.push({id,username});
+      }
+      if(matches.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
+      accountId=matches[0].id;
+    } else {
+      throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
+    }
   }
   if(!accountId)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`);
   return {apiKey,accountId};
