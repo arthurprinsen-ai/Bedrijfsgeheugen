@@ -31,5 +31,12 @@
       "tests/brain-rocket-delivery-v1.test.mjs"
     ]
   },
-  "fingerprint": "rocket-delivery-v1-trigger-fanout"
+  "fingerprint": "rocket-delivery-v1-trigger-fanout",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
