@@ -949,3 +949,6 @@ Production English localization must not require a live translation-provider cal
 Before delivery, run `node tools/site-shell/build-localized-routes.mjs --validate-cache`. It must prove every currently selected public source string has a non-empty cached English translation.
 
 If source copy introduces new strings, update the cache in the same candidate lineage. Production remains fail-closed: never publish untranslated `/en/*` pages and never convert provider/cache failure into silent fallback.
+
+- Static i18n cache completeness is proven on the post-transform build corpus immediately before localized route generation; source-tree-only validation is not terminal evidence.
+- If Netlify reaches the provider but fails during site build, diagnose the build-stage invariant before treating it as a deploy/readback failure.
