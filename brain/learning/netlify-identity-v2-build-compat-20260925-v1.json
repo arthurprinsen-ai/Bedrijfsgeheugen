@@ -1,0 +1,43 @@
+{
+  "fingerprint": "netlify-identity-v2-build-compat-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Exact-main NL/EN production delivery was blocked by an obsolete Netlify Identity internal-path dependency plus stale release-contract regressions.",
+  "root_cause": "The auth builder depended on undocumented node_modules/@netlify/identity/dist/main.js internals. Downstream release gates also carried a stale billing assertion, stale pricing rescue cache identity, and incomplete three-route locale browser proof.",
+  "prevention": [
+    "Never make undocumented node_modules internal paths a production build prerequisite.",
+    "Keep customer portal auth race and recovery-token guards mandatory even when legacy vendoring is absent.",
+    "Scope repeated-statement regression assertions to the target function.",
+    "Keep pricing rescue query keys content-addressed to the current Git blob identity across source, build and production gates.",
+    "Require visible mobile NL→EN→NL browser proof on homepage, pricing and systems/koppelingen before LIVE."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs",
+    "tests/brain-i18n-active-mobile-host-production-v1.test.mjs",
+    "tests/brain-pricing-billing-aria-selected-production-v1.test.mjs",
+    "tests/brain-pricing-rescue-asset-cache-identity-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "website",
+    "auth"
+  ],
+  "compiler": {
+    "failure_class": "I18N_BUILD_RELEASE_CONTRACT_DRIFT",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 3
+}
