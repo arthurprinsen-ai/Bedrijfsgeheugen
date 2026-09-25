@@ -24,3 +24,9 @@ test('website release-risk regression follows bounded route concurrency instead 
   assert.match(regression, /workerCount/);
   assert.match(regression, /routeIndex/);
 });
+
+
+test('website lane wraps the full visibility sweep in an OS-level hard timeout', async () => {
+  const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
+  assert.match(workflow, /timeout --signal=TERM --kill-after=15s 9m node tools\/site-shell\/standalone-visibility-check\.mjs/);
+});
