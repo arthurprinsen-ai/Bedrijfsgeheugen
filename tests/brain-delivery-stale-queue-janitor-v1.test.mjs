@@ -21,8 +21,8 @@ test('drainer preserves main current PR heads and terminal post-merge workflows'
 
 test('proven obsolete queued runs drain fast while in-progress runs get a grace window',()=>{
   assert.match(script,/MISSING_NON_MAIN_BRANCH/);
-  assert.match(script,/age_seconds "\$created_at"\) -ge 60/);
-  assert.match(script,/age_seconds "\$updated_at"\) -ge 300/);
+  assert.match(script,/age_seconds "\$created_at"\)" -ge 60/);
+  assert.match(script,/age_seconds "\$updated_at"\)" -ge 300/);
   assert.match(script,/STALE_PR_HEAD/);
   assert.match(script,/MERGED_OR_CONTAINED_BRANCH/);
 });
