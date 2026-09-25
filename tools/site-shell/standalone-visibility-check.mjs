@@ -8,7 +8,7 @@ const canonicalOrigin = 'https://www.bedrijfsgeheugen.nl';
 const navigationTimeoutMs = Number(process.env.UI_VR_NAVIGATION_TIMEOUT_MS || 8000);
 const fontReadyTimeoutMs = Number(process.env.UI_VR_FONT_READY_TIMEOUT_MS || 1500);
 const totalBudgetMs = Number(process.env.UI_VR_TOTAL_BUDGET_MS || 8 * 60 * 1000);
-const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || 4));
+const configuredRouteConcurrency = Number(process.env.UI_VR_ROUTE_CONCURRENCY || 0);
 const cleanupTimeoutMs = Number(process.env.UI_VR_CLEANUP_TIMEOUT_MS || 5000);
 const startedAt = Date.now();
 let cleanupTimedOut = false;
@@ -83,6 +83,7 @@ async function loadPublicRoutes() {
 }
 
 const routes = await loadPublicRoutes();
+const routeConcurrency = Math.max(1, Math.min(routes.length, configuredRouteConcurrency > 0 ? configuredRouteConcurrency : Math.min(8, Math.max(4, Math.ceil(routes.length / 12)))));
 const browser = await chromium.launch({ headless: true });
 const failures = [];
 try {
