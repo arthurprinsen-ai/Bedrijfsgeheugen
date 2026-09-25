@@ -25,5 +25,18 @@
     "powerhouse-continuity",
     "powerhouse-netlify-production-truth"
   ],
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "expected_invariant": "i18n CSS and runtime JS are independently present, the active mobile host exposes one visible language selector, and production completes NL->EN->NL"
+  }
 }
