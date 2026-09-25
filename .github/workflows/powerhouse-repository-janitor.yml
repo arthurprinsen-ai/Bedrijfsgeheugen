@@ -199,7 +199,16 @@ jobs:
                   cancel_mode=delete-fallback
                 else
                   latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
-                  case "$latest_status" in queued|in_progress|pending|waiting|requested) echo "::error::JANITOR_CANCEL_FAILED:${run_id}:${latest_status}"; exit 78 ;; *) continue ;; esac
+                  case "$latest_status" in
+                    queued|in_progress|pending|waiting|requested)
+                      # GitHub can retain legacy/zombie runs that reject cancel, force-cancel and delete.
+                      # Do not abort the janitor: record the blocked run and continue so stale merged refs
+                      # can still be deleted below. The next sweep will re-read the run state.
+                      jq -cn --arg type CANCEL_RUN_BLOCKED --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" --arg status "$latest_status" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason,status:$status,blocker:"GITHUB_API_UNCANCELLABLE"}' >> .artifacts/janitor-runtime-actions.ndjson
+                      continue
+                      ;;
+                    *) continue ;;
+                  esac
                 fi
               fi
               jq -cn --arg type CANCEL_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" --arg mode "$cancel_mode" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason,mode:$mode}' >> .artifacts/janitor-runtime-actions.ndjson
