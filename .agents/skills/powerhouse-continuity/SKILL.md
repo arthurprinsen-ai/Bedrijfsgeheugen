@@ -1240,3 +1240,15 @@ PR metadata is a machine contract, not free-form prose. Agents/chats must emit o
 Legacy `Candidate-Type: closure` is normalized to `docs` only when the same PR declares `Delivery-Lane: docs`, before admission. The alias remains invalid for non-docs lanes; unknown candidate types stay fail-closed.
 
 After metadata correction continue on the same obligation/PR lineage. Never bypass the gate or create a replacement PR solely to escape metadata validation.
+
+
+## Connector response-shape normalization
+
+Fingerprint: `connector|response-shape|normalize-before-use|v1`.
+
+Before any chained connector mutation, normalize returned semantic identifiers (SHA, commit SHA, ref, id, URL, status) from the actual connector response instead of assuming one transport envelope. Missing required identity must fail before the next side effect.
+
+For GitHub tree-based writes specifically, never advance from `create_tree` to commit/ref mutation until the created tree SHA has been validated. If the connector response shape cannot be normalized safely, stay on the same canonical obligation and branch and fall back to serial `create_file` / `update_file` writes. Do not guess a SHA, blindly retry the incompatible call, or create a duplicate recovery PR.
+
+Canonical skill: `.agents/skills/powerhouse-connector-response-normalization/SKILL.md`.
+Canonical learning: `brain/learning/2026-09-25-connector-response-shape-normalization-v1.json`.
