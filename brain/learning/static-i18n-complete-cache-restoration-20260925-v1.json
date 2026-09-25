@@ -16,7 +16,40 @@
     "missing_translation_count": 1926,
     "production_browser_failure": "English route still shows the Dutch pricing H1"
   },
-  "test_evidence": ["tests/brain-static-i18n-complete-cache-restoration-v1.test.mjs"],
-  "skill_targets": ["powerhouse-continuity", "powerhouse-netlify-production-truth", "website"],
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-static-i18n-complete-cache-restoration-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth",
+    "website"
+  ],
+  "revision": 1,
+  "date": "2026-09-25",
+  "failure_class": "STATIC_I18N_CACHE_AUTHORITY_DRIFT",
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_AUTHORITY_DRIFT",
+    "scope": "WEBSITE_I18N_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-complete-cache-restoration-v1.test.mjs",
+      "tests/brain-pricing-en-h1-canonical-v1.test.mjs",
+      "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-complete-cache-restoration-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "semantic_learning": {
+    "root_cause": "The exact production SHA can still serve incomplete static English output when the committed base translation authority is partial; SHA parity and cache completeness are independent invariants.",
+    "prevention": "Require the proven complete base cache plus canonical patch fragments to validate offline against the exact candidate before production promotion.",
+    "proof": "Protected candidate must pass cache regression and production visible-English NL→EN→NL browser proof."
+  }
 }
