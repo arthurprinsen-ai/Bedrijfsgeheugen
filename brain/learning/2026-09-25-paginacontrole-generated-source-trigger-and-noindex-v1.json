@@ -30,8 +30,7 @@
     ],
     "historical_replay": [
       "tests/brain-paginacontrole-workflow-integrity.test.mjs",
-      "tests/brain-paginacontrole-self-validation.test.mjs",
-      "tests/paginacontrole-concurrency.test.mjs"
+      "tests/brain-paginacontrole-self-validation.test.mjs"
     ]
   },
   "evidence": {
