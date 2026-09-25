@@ -15,7 +15,14 @@
     "failed_readback_run": 36164496878,
     "misconfiguration": "STATIC_I18N_REQUIRE_CACHE=0"
   },
-  "test_evidence": ["tests/brain-static-i18n-production-failclosed-v1.test.mjs"],
-  "skill_targets": ["powerhouse-continuity", "website", "powerhouse-netlify-production-truth"],
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "website",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "failure_class": "STATIC_I18N_FAILOPEN_UNTRANSLATED_ENGLISH_ROUTE"
 }
