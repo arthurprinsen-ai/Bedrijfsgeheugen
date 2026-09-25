@@ -1,0 +1,31 @@
+name: Diagnose Live Pricing Raw
+on:
+  push:
+    branches:
+      - diag/live-pricing-raw-0e6a879
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch raw live pricing
+        run: |
+          set -euo pipefail
+          curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/prijzen?diag=${GITHUB_SHA}" -o /tmp/prijzen.html
+          node - <<'NODE'
+          const fs=require('fs');
+          const s=fs.readFileSync('/tmp/prijzen.html','utf8');
+          const tokens=[
+            'data-bg-billing="monthly"',
+            'data-bg-billing="yearly"',
+            'data-bg-price-tab="start"',
+            'data-bg-price-tab="run"',
+            'data-bg-stage="grow"',
+            'data-bg-stage="loss"',
+            'data-bg-stage="crisis"',
+            'data-bg-stage="buy"',
+            'data-bg-stage="sell"',
+            'data-bg-stage="portfolio"',
+            'pricing-interactions-rescue-v1.js?v=3de3592ac866'
+          ];
+          console.log(JSON.stringify({length:s.length,tokens:Object.fromEntries(tokens.map(t=>[t,s.includes(t)]))},null,2));
+          NODE
