@@ -1,0 +1,20 @@
+{
+  "fingerprint": "i18n-mobile-injection-existing-assets-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production pricing rendered the i18n runtime assets but the mobile language selector was missing, causing browser readback to fail after opening the mobile navigation.",
+  "root_cause": "tools/site-shell/apply-i18n.mjs returned early when data-bg-i18n-asset already existed. Asset installation and mobile control installation were incorrectly coupled, so pre-instrumented pages never reached injectMobileLanguage().",
+  "prevention": [
+    "Treat i18n asset injection and mobile language-control injection as independent idempotent operations.",
+    "Never return early solely because i18n assets are already present.",
+    "Keep data-bg-language-switcher=mobile as the idempotence marker for the UI control.",
+    "Require the production Playwright roundtrip NL->EN->NL on the visible mobile selector before LIVE_BEWEZEN."
+  ],
+  "evidence": {
+    "production_main_sha": "c2bf6d4f059307579686f1b61d66f195b0ee2af7",
+    "production_snapshot_run": 36159192559,
+    "browser_failure": "visible mobile language select is missing after opening mobile navigation"
+  },
+  "test_evidence": ["tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs"],
+  "skill_targets": ["powerhouse-continuity", "powerhouse-netlify-production-truth"],
+  "revision": 1
+}
