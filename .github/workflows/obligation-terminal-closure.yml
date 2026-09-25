@@ -156,7 +156,42 @@ jobs:
           }
 
           require_required_or_descendant
-          require_workflow "unified-brain-delivery.yml" "BRAIN"
+          require_brain_evidence() {
+            brain_payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?head_sha=${HEAD_SHA}&per_page=50")"
+            brain_id="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$brain_payload")"
+            brain_status="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$brain_payload")"
+            brain_conclusion="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$brain_payload")"
+            if [ -n "$brain_id" ]; then
+              if [ "$brain_status" = "completed" ] && [ "$brain_conclusion" = "success" ]; then
+                echo "TERMINAL_CRITICAL_GATE_PROVEN:BRAIN:run=$brain_id:head=$HEAD_SHA"
+                return 0
+              fi
+              if [ "$brain_status" = "completed" ]; then
+                echo "::error::TERMINAL_CRITICAL_GATE_FAILED:BRAIN:run=$brain_id:conclusion=$brain_conclusion:head=$HEAD_SHA"
+                exit 78
+              fi
+            fi
+
+            for attempt in $(seq 1 180); do
+              foundation_payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/brain-foundation-verify.yml/runs?head_sha=${MERGE_SHA}&event=push&per_page=50")"
+              foundation_id="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$foundation_payload")"
+              foundation_status="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$foundation_payload")"
+              foundation_conclusion="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$foundation_payload")"
+              if [ -n "$foundation_id" ] && [ "$foundation_status" = "completed" ]; then
+                [ "$foundation_conclusion" = "success" ] || {
+                  echo "::error::TERMINAL_BRAIN_FOUNDATION_FAILED:run=$foundation_id:conclusion=$foundation_conclusion:merge=$MERGE_SHA"
+                  exit 78
+                }
+                echo "TERMINAL_BRAIN_FOUNDATION_PROVEN:run=$foundation_id:merge=$MERGE_SHA"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "::error::TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL:head=$HEAD_SHA:merge=$MERGE_SHA"
+            exit 78
+          }
+
+          require_brain_evidence
 
           changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
           if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/powerhouse-codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then

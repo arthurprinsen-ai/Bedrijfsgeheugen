@@ -69,3 +69,14 @@ test('terminal closure waits long enough for protected exact-head gates without 
   assert.match(workflow,/for attempt in \$\(seq 1 180\); do/);
   assert.match(workflow,/TERMINAL_CRITICAL_GATE_NOT_TERMINAL/);
 });
+
+
+test('terminal closure uses trigger-compatible Brain evidence', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/require_brain_evidence/);
+  assert.match(workflow,/unified-brain-delivery\.yml\/runs\?head_sha=\$\{HEAD_SHA\}&per_page=50/);
+  assert.doesNotMatch(workflow,/unified-brain-delivery\.yml\/runs\?head_sha=\$\{HEAD_SHA\}&event=pull_request/);
+  assert.match(workflow,/brain-foundation-verify\.yml\/runs\?head_sha=\$\{MERGE_SHA\}&event=push/);
+  assert.match(workflow,/TERMINAL_BRAIN_FOUNDATION_PROVEN/);
+  assert.match(workflow,/TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL/);
+});

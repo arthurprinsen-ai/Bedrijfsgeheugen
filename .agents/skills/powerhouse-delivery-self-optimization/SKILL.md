@@ -595,3 +595,13 @@ Fingerprint: `delivery|learning-replay-path|brain-prefixed|v1`.
 Before a material learning change reaches Skill Projection, validate every `evaluation.historical_replay` path against the learning-canonicalization contract. Historical replay must point to an accepted Brain-prefixed regression path rather than a general test file.
 
 If a general regression already exists, add a narrow Brain replay wrapper that proves the same invariant and reference that wrapper from the learning. Do not wait for Skill Projection to discover the path-shape defect after merge.
+
+
+## Terminal Brain gate trigger parity — 2026-09-25
+
+Fingerprint: `terminal-brain-gate-trigger-parity-v1`
+
+- Terminal closure MUST NOT require an event type that the referenced workflow cannot emit.
+- Prefer successful exact-head Unified Brain Delivery evidence when present, regardless of whether it was dispatched manually or by an authorized automation.
+- If no exact-head Unified Brain Delivery run exists, require successful exact-merge `Brain foundation verify` push evidence before terminal closure.
+- Failed Brain evidence remains fail-closed; absence of both evidence paths is `TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL`.
