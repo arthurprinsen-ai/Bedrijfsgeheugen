@@ -9,8 +9,31 @@
     "Keep customer portal auth race and recovery-token guards mandatory.",
     "Verify production through exact-main deploy and browser readback."
   ],
-  "test_evidence": ["tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"],
-  "skill_targets": ["delivery","website","auth"],
-  "compiler": {"failure_class":"UNDOCUMENTED_DEPENDENCY_INTERNAL_PATH","scope":"NETLIFY_PRODUCTION_BUILD","machine_enforceable":true,"repeat_count":1,"security_sensitive":true},
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "website",
+    "auth"
+  ],
+  "compiler": {
+    "failure_class": "UNDOCUMENTED_DEPENDENCY_INTERNAL_PATH",
+    "scope": "NETLIFY_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+    ]
+  }
 }
