@@ -2,13 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-test('apply-i18n injects runtime script independently from existing CSS', () => {
+test('apply-i18n injects CSS and runtime script independently', () => {
   const source = fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
-  assert.match(source,/const hasLink =/);
-  assert.match(source,/const hasScript =/);
-  assert.match(source,/if \(!hasLink\) assets\.push\(LINK\)/);
-  assert.match(source,/if \(!hasScript\) assets\.push\(SCRIPT\)/);
-  assert.doesNotMatch(source,/\|\| \/data-bg-i18n-asset\/\.test\(html\)\) return/);
+  assert.match(source,/const hasI18nCss =/);
+  assert.match(source,/const hasI18nScript =/);
+  assert.match(source,/!hasI18nCss \? LINK/);
+  assert.match(source,/!hasI18nScript \? SCRIPT/);
+  assert.doesNotMatch(source,/data-bg-i18n-asset\/\.test\(html\)\) return/);
   assert.match(source,/html = injectMobileLanguage\(html\)/);
 });
 
