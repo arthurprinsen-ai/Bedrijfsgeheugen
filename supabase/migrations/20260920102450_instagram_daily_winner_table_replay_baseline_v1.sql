@@ -14,3 +14,8 @@ create table if not exists public.powerhouse_instagram_daily_winners_v1 (
   outcome_evidence jsonb not null default '{}'::jsonb,
   updated_at timestamptz not null default now()
 );
+
+
+alter table public.powerhouse_instagram_daily_winners_v1 enable row level security;
+revoke all on table public.powerhouse_instagram_daily_winners_v1 from public, anon, authenticated;
+grant select, insert, update on table public.powerhouse_instagram_daily_winners_v1 to service_role;
