@@ -12,3 +12,7 @@ The targeted route verifier filters that exact settled document failure only aft
 
 ## Verification
 Two regression cases prove the safe boundary: successful final document navigation filters the duplicate document failure while preserving script failure; absent HTTP success preserves the document failure.
+
+
+## Skill Projection recovery
+Post-merge Skill Projection run 36173570658 failed with `LEARNING_EVALUATION_TEST_PATH_INVALID` because the historical replay path was not in the Brain test namespace. Recovery keeps the same obligation and fixes only the replay path plus a Brain-prefixed regression test.

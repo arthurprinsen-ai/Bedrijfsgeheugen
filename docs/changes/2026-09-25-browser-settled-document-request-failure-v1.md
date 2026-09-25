@@ -15,3 +15,7 @@ Hard-failure behavior remains unchanged for:
 - page errors.
 
 Regression coverage is in `tests/targeted-website-route-regression.test.mjs`.
+
+
+## Skill Projection canonicalization repair
+The first merged learning pointed `historical_replay` at a valid regression test outside the Brain test namespace. The canonicalization gate requires a Brain-prefixed replay path. The learning now points to `tests/brain-browser-settled-document-request-failure-v1.test.mjs`, which replays the same safety boundary without weakening the browser contract.
