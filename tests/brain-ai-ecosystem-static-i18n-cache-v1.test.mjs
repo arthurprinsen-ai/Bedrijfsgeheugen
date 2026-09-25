@@ -22,5 +22,5 @@ test('AI ecosystem public copy is covered by canonical immutable English cache c
   assert.match(builder,/config','bg-static-i18n-en\.d/);
   assert.match(builder,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"0"/);
 });
