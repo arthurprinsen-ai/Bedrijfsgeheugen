@@ -2,9 +2,9 @@
   "fingerprint": "pricing-static-english-h1-20260925-v1",
   "status": "ACTIVE_PREVENTION",
   "problem": "Production /en/prijzen rendered the Dutch pricing H1 even though the route, locale metadata and exact-main deployment were correct.",
-  "root_cause": "The immutable static translation authority contained an ineffective English mapping for the pricing H1. The route generator correctly consumed the cache, so transport and routing were healthy while localized content remained wrong.",
+  "root_cause": "The pricing H1 is split by markup into separate DOM text nodes. Static i18n resolves those exact text-node sources, so a cache entry for only the visually concatenated H1 cannot translate the rendered heading.",
   "prevention": [
-    "Use versioned cache patches for targeted translation corrections; patch files override the base cache deterministically.",
+    "Versioned cache patches for styled headings must cover the exact parser text-node sources, not only the visually concatenated sentence.",
     "Keep the production browser gate asserting that /en/prijzen does not contain the Dutch H1 and does contain visible English Pricing copy.",
     "Treat exact-main deployment proof and localized-content proof as separate terminal requirements.",
     "Never report LIVE_BEWEZEN while an English route still contains a mandatory Dutch heading."
@@ -12,7 +12,13 @@
   "evidence": {
     "main_sha_before_fix": "89cc01bf96104a4436205567e7ff71850911d858",
     "production_snapshot_run": 36164078579,
-    "failure": "English route still shows the Dutch pricing H1"
+    "failure": "English route still shows the Dutch pricing H1",
+    "parser_text_nodes": [
+      "Prijzen voor",
+      "digitalisering",
+      "in het mkb"
+    ],
+    "browser_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs"
   },
   "test_evidence": [
     "tests/brain-pricing-static-english-h1-v1.test.mjs"
@@ -35,5 +41,10 @@
       "tests/brain-pricing-static-english-h1-v1.test.mjs"
     ],
     "expected_invariant": "the English pricing route never renders the Dutch pricing H1 and the versioned cache patch remains authoritative"
+  },
+  "semantic_learning": {
+    "root_cause": "Styled headings are translated node-by-node; sentence-level cache keys are insufficient when inline markup splits the text.",
+    "prevention": "Bind cache patches to the parser-level source strings and verify the visible composed result in a real browser.",
+    "evidence": "Production /en/prijzen reached the English route but visibly retained the Dutch composed H1."
   }
 }
