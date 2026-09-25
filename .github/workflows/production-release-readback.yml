@@ -216,7 +216,7 @@ jobs:
         env:
           BASE_URL: https://www.bedrijfsgeheugen.nl
           GITHUB_SHA: ${{ github.sha }}
-        run: node tools/site-shell/verify-pricing-i18n-production.mjs
+        run: timeout --signal=TERM --kill-after=30s 10m node tools/site-shell/verify-pricing-i18n-production.mjs
       - name: Evaluate immutable website production truth
         if: steps.scope.outputs.browser_required == 'true' && steps.deploy.outcome == 'success'
         run: >-
