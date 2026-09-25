@@ -16,3 +16,4 @@
 - Terminal state: pending protected exact-head gates, merge, exact Netlify production identity and browser readback.
 
 - Successor cleanup: remove duplicate `.cache` artifact, use only `data/i18n/`, and classify it as a website-shell contract in delivery governance.
+- Follow-up: SEO money-page changes introduced 7 new translatable strings; added as canonical `data/i18n/bg-static-i18n-en.d/2026-09-25-money-pages.json`, merged deterministically and covered by offline cache validation. Public copy changes must carry translation coverage in the same candidate.
