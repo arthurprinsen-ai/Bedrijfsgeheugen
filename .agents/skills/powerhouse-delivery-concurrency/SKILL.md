@@ -226,3 +226,10 @@ Unexpected candidate-head movement is fail-closed. Before a new head inherits au
 Fingerprint: `github|actions-obsolete-run-fast-drain|v1`.
 
 Runner capacity is a development resource and stale queue occupancy is a delivery defect. Once a GitHub Actions run is proven obsolete by exact identity (closed PR, PR-head mismatch, branch-head mismatch, missing non-main branch, or old main SHA), queued work is eligible for cancellation after a short 60-second grace period and obsolete in-progress work after 300 seconds without authoritative identity. The recovery supervisor runs every five minutes, may reap up to 100 proven-obsolete runs per cycle, and opens its recovery circuit at 12 total non-terminal runs so recovery cannot amplify saturation. Never cancel healthy current-head work merely to reduce the count.
+
+
+## Queue census identity invariant
+
+Fingerprint: `github|actions-pressure-census|same-universe-pagination|v1`.
+
+Raw active pressure and the obsolete/provider-zombie deductions must be computed from the same fully paginated status universe. Never subtract a paginated stale/zombie count from an unpaginated recent-run sample. Count `queued`, `in_progress`, `pending`, `waiting` and `requested` with pagination before deriving effective pressure. Clamp-to-zero is only a safety guard, never a substitute for census correctness.
