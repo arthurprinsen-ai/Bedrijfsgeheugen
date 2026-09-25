@@ -223,7 +223,7 @@ jobs:
           CONTEXT: production
           DEPLOY_ID: required-netlify-build-parity
           STATIC_I18N_NETWORK: '0'
-          STATIC_I18N_REQUIRE_CACHE: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
           STATIC_I18N_CONCURRENCY: '1'
         run: |
           set -euo pipefail
