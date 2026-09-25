@@ -131,6 +131,20 @@ For parallel chats and agents, runner capacity is protected by a single canonica
 
 Canonical learning: `brain/learning/agent-factory-single-flight-ci-20260925-v1.json`.
 
+## Supabase + Notion external fast path
+
+Fingerprint: `delivery|agent-factory|supabase-notion-fast-path|v1`.
+
+- Supabase preview environments are database-specific capacity. Repository preview checks trigger only for `supabase/**` changes (plus the workflow definition itself).
+- The Supabase GitHub integration must use Automatic branching with **Supabase changes only** before its hosted preview check is treated as a required PR signal.
+- Never infer schema truth from migration-history rows alone. If Git migration files and `supabase_migrations.schema_migrations` diverge, first reconcile actual schema semantics; never bulk-apply missing files or bulk-run `migration repair` from counts alone.
+- Production migrations are serialized from `main`. Independent agents may test database changes in isolated preview branches.
+- Notion is a projection/documentation sink, never merge authority, deploy authority or production-readback authority.
+- A Notion outage, rate limit or write failure may create a retryable projection obligation but must not block the canonical code-to-production critical path.
+- Explicit user-initiated Notion sync endpoints may remain synchronous for truthful request feedback; background projection needs a separate authenticated enqueue/outbox boundary rather than weakening endpoint authorization.
+
+Canonical learning: `brain/learning/agent-factory-supabase-notion-fast-path-20260925-v1.json`.
+
 ## Mandatory material-run closure gate
 
 Fingerprint: `powerhouse|material-run|closure-artifacts|required|v1`.

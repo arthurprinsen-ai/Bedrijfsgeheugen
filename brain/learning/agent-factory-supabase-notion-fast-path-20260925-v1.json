@@ -1,0 +1,50 @@
+{
+  "fingerprint": "agent-factory-supabase-notion-fast-path-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Unrelated portal, website and Netlify-function changes could trigger Supabase preview work, while external projection systems such as Notion could become accidental synchronous dependencies as the agent fabric grows.",
+  "root_cause": "Environment-specific verification was not narrow enough: the repository Supabase preview workflow watched non-Supabase paths, and there was no machine-enforced invariant keeping Notion out of merge/deploy/readback workflows.",
+  "prevention": [
+    "Trigger the repository Supabase preview contract only when supabase/** or the preview workflow itself changes.",
+    "Configure the Supabase GitHub integration with Automatic branching plus Supabase changes only before treating hosted preview branches as a required signal.",
+    "Never use the current divergent Supabase migration history as authority for automatic bulk repair; reconcile actual schema and history before migration repair.",
+    "Keep Notion as an explicit projection/synchronization surface and outside Required test, production deploy, and production readback.",
+    "Serialize production database migration application from main; parallel agents use isolated preview environments only for database-relevant changes."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-supabase-preview-fast-path-v1.test.mjs",
+      "tests/brain-notion-off-critical-path-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-supabase-preview-fast-path-v1.test.mjs",
+      "tests/brain-notion-off-critical-path-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "supabase_project_status": "ACTIVE_HEALTHY",
+    "supabase_branch_status": "MIGRATIONS_FAILED",
+    "repository_migration_files": 357,
+    "production_migration_history_rows": 421,
+    "repository_versions_missing_from_db": 100,
+    "db_versions_missing_from_repository": 164,
+    "docs_authority": "Supabase GitHub integration supports Automatic branching with Supabase changes only"
+  },
+  "test_evidence": [
+    "tests/brain-supabase-preview-fast-path-v1.test.mjs",
+    "tests/brain-notion-off-critical-path-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ],
+  "compiler": {
+    "failure_class": "EXTERNAL_ENVIRONMENT_FANOUT_AND_MIGRATION_HISTORY_DIVERGENCE",
+    "scope": "AGENT_FACTORY_SUPABASE_NOTION_FAST_PATH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
