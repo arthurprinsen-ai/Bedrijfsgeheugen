@@ -858,3 +858,20 @@ Before the terminal answer:
 The normal terminal user answer reports the terminal state and proof already completed. It does not return a "what now" list for work the node can perform itself.
 
 Only an evidenced `BLOCKED_HARD_BOUNDARY` may return ownership to the user; it must name the exact external boundary, the smallest required human action, and the next safe action already prepared.
+
+
+## Historical Required failure — safe descendant terminal recovery
+
+Fingerprint: `github|terminal-required-descendant-recovery|website-baseline|v1`.
+
+A merged website obligation may not remain permanently nonterminal only because its historical `Required` run failed on a baseline assertion that has since been repaired in canonical `main`.
+
+Recovery is permitted only when all of these are true:
+- the original PR is merged and its merge SHA is an ancestor of current `main`;
+- the original exact-head BRAIN gate remains green;
+- applicable exact-head CodeQL remains green;
+- the current-main website baseline suite passes, including the bounded full-route visibility regression;
+- production/provider readback still proves the merged change is contained in live production;
+- the terminal evidence records this as descendant regression recovery, never as retroactive exact-head success.
+
+This rule exists to close stale verifier debt without weakening product gates or spawning duplicate recovery PRs.
