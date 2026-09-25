@@ -9,5 +9,20 @@
   "evidence": [
     ".github/workflows/codeql.yml",
     "tests/brain-ci-admission-single-flight.test.mjs"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "CI_FANOUT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ]
+  }
 }
