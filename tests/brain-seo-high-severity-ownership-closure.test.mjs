@@ -26,7 +26,8 @@ test('high-severity SEO owners claim their primary intent in source titles',()=>
 });
 
 test('legacy audit treats explicit keyword ownership as exact',()=>{
-  assert.ok(audit.includes("if expliciet and expliciet != norm(zoekwoord):"));
+  assert.ok(audit.includes("if expliciet:"));
+  assert.ok(audit.includes("return expliciet == norm(zoekwoord)"));
 });
 
 test('canonical aliases are not required as independent sitemap URLs',()=>{
