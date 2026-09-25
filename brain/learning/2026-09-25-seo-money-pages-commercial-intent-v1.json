@@ -42,8 +42,7 @@
   "failure_class": "SEO_COMMERCIAL_INTENT_OWNERSHIP_DRIFT",
   "evaluation": {
     "historical_replay": [
-      "Existing canonical owners retained for Exact Online, generic API-koppeling and Twinfield queries",
-      "No competing landing page or blog created for plural Twinfield variant"
+      "tests/seo-money-pages-commercial-intent-v1.test.mjs"
     ],
     "expected": "Each validated commercial query resolves to one canonical money-page owner with a measurable Frisse-blik conversion path and no new cannibalising page.",
     "invariants": [
