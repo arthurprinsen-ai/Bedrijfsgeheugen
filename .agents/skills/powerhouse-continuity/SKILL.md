@@ -910,3 +910,21 @@ For public localized production builds:
 - an `/en/*` route is not production proof unless visible content is English;
 - the known Dutch pricing H1 and `Switching language failed. Try again.` are hard negative oracles for the English pricing route;
 - every i18n release must rerun the production browser verifier before `LIVE_BEWEZEN`.
+
+
+## Public i18n canonical route symmetry
+
+Fingerprint: `public-i18n-dutch-canonical-roundtrip-20260925-v1`.
+
+For public website localization:
+- Dutch is the canonical unprefixed route authority: `/`, `/prijzen`, `/over-ons`, etc.;
+- English is the prefixed authority under `/en/*`;
+- never generate or navigate to `/nl/*` as a canonical public destination;
+- language switching must preserve the current logical path, query and hash in both directions;
+- static build canonical, hreflang, og:url and internal-link rewriting must use the same locale mapper as the runtime switcher;
+- legacy `/nl` URLs must 301 to the matching unprefixed Dutch route;
+- terminal production proof for material i18n changes must exercise a real NL → EN → NL browser roundtrip and reject any Dutch `/nl/*` result.
+
+Regression: `tests/brain-public-i18n-static-route-authority-v1.test.mjs`.
+Canary: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+Learning: `brain/learning/public-i18n-dutch-canonical-roundtrip-20260925-v1.json`.
