@@ -1,0 +1,21 @@
+{
+  "fingerprint": "i18n-existing-assets-mobile-injection-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production pricing had the i18n stylesheet/script already present before final shell projection, causing apply-i18n.mjs to return early and skip injecting the mobile language control into the final mobile navigation.",
+  "root_cause": "Asset presence and mobile-control presence were incorrectly coupled in one early-return condition. Asset idempotence suppressed a separate structural injection responsibility.",
+  "prevention": [
+    "Treat asset injection and mobile language-control injection as independent idempotent responsibilities.",
+    "If i18n assets already exist, skip only the asset write; always evaluate injectMobileLanguage on the final built HTML.",
+    "Keep Playwright NL→EN→NL proof on /, /prijzen and /systemen-koppelen at mobile viewport as the production gate.",
+    "Do not report LIVE until Netlify commit_ref equals main and the visible mobile language selector is proven on production."
+  ],
+  "evidence": {
+    "main_sha_before_fix": "fd7265ad7bdb02e35f0a07cd1f0e750b106c4123",
+    "failed_snapshot_run": 36161161127,
+    "failure": "visible mobile language select is missing after opening mobile navigation",
+    "diagnostics": {"v18Drawer":"false","v18Selects":0,"legacySelects":0,"sharedSelects":0,"allSelects":0}
+  },
+  "test_evidence": ["tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs"],
+  "skill_targets": ["powerhouse-continuity", "website", "powerhouse-netlify-production-truth"],
+  "revision": 1
+}
