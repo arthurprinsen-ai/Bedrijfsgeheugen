@@ -58,7 +58,7 @@ test('universal learning/writeback contract remains active and fail-closed', () 
 test('chats and agents are intrinsic execution nodes in one canonical Powerhouse loop', () => {
   const contract = continuityPolicy.loop_node_contract;
   assert.equal(continuityPolicy.status, 'ACTIVE');
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.6');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.7');
   assert.match(continuityPolicy.fingerprint, /intrinsic-loop-nodes/);
   assert.equal(contract.required, true);
   assert.deepEqual(contract.actor_kinds, ['chat', 'agent']);
@@ -84,6 +84,10 @@ test('chats and agents are intrinsic execution nodes in one canonical Powerhouse
   assert.ok(contract.forbidden_terminal_states.includes('AGENT_ENDED_WITHOUT_CANONICAL_WRITEBACK'));
   assert.ok(contract.forbidden_patterns.includes('isolated_chat_memory_as_authority'));
   assert.ok(contract.forbidden_patterns.includes('parallel_agent_brain_as_authority'));
+  assert.ok(continuityPolicy.invariants.includes('BORGING_REQUIRES_CANONICAL_SKILL_LEARNING_LEDGER_AND_READBACK'));
+  assert.equal(continuityPolicy.terminal_borging_closure_rule.required, true);
+  assert.equal(continuityPolicy.terminal_borging_closure_rule.fingerprint, 'powerhouse|terminal-borging-closure|protected-main-readback|v1');
+  assert.match(continuityPolicy.terminal_borging_closure_rule.delivery_rule, /protected PR\/gates/);
 });
 
 test('already-authorized Powerhouse work proceeds without redundant confirmation loops', () => {
@@ -369,7 +373,7 @@ test('predictive LinkedIn sales cockpit learning is discoverable through continu
 
 
 test('pending delivery state can never be the final chat or agent handoff', () => {
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.6');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.7');
   assert.ok(continuityPolicy.invariants.includes('NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT'));
   const rule=continuityPolicy.loop_node_contract.non_terminal_output_rule;
   assert.equal(rule.required, true);
