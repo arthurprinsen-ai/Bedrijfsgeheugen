@@ -443,13 +443,6 @@
       "required": true
     },
     {
-      "id": "rpc:powerhouse_record_outcome",
-      "type": "rpc",
-      "authority": "supabase/migrations/20260917135656_close_cockpit_execution_outcome_feedback_loop_v2.sql",
-      "evidence_contract": "tests/powerhouse-runtime-action-learning-api.test.mjs",
-      "required": true
-    },
-    {
       "id": "rpc:powerhouse_reconcile_action_learning_obligations_v1",
       "type": "rpc",
       "authority": "supabase/functions/revenue-learning-store/index.ts",
@@ -461,6 +454,13 @@
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-content-loop/index.ts",
       "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_record_outcome",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260917135656_close_cockpit_execution_outcome_feedback_loop_v2.sql",
+      "evidence_contract": "tests/powerhouse-runtime-action-learning-api.test.mjs",
       "required": true
     },
     {
@@ -622,6 +622,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260918111500_instagram_media_provider_router_v1.sql",
       "evidence_contract": "tests/social-learning-instagram-media-provider-routing-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_instagram_media_reserve_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260925080500_instagram_media_reserve_replay_baseline_v1.sql",
+      "evidence_contract": "tests/brain-instagram-media-reserve-replay-baseline-v1.test.mjs",
       "required": true
     },
     {
