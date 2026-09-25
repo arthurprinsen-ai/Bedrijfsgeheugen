@@ -16,10 +16,14 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "PR #2846 merge 899b659674019be19858e65a1f2f715987c4503d contained in production descendant",
-      "PR #2848 merge b417e1f45155f59b16e6aabbc3b2eed168409915 contained in production descendant"
+      "tests/brain-live-proof-current-main-provider-descendant-v1.test.mjs"
     ],
-    "expected": "LIVE_BEWEZEN is emitted only when current provider production is cryptographically linked by exact SHA or Git ancestry to the delivered lineage."
+    "expected": "LIVE_BEWEZEN is emitted only when current provider production is cryptographically linked by exact SHA or Git ancestry to the delivered lineage.",
+    "invariants": [
+      "LIVE_BEWEZEN requires fresh current-main and provider-production identity readback",
+      "exact provider/main equality is accepted; newer provider production must contain the delivered merge lineage",
+      "main ahead of provider production is non-terminal"
+    ]
   },
   "evidence": {
     "main_at_final_readback": "63ab5bff7780bfb3ff6d5fa1f1d96eada7ae2cea",
