@@ -19,3 +19,5 @@ The previous topology spent runner capacity on duplicate or non-applicable check
 ## Safety
 
 This change does not bypass protected main, the required test, exact production identity, or production readback. It changes admission and trigger scope, not the definition of production truth.
+
+The PR event itself is also part of the proof: metadata changes require a fresh head event rather than rerunning a stale event payload.
