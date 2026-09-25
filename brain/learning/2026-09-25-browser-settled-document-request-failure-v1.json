@@ -25,14 +25,21 @@
     "security_sensitive": false
   },
   "evaluation": {
-    "historical_replay": ["tests/targeted-website-route-regression.test.mjs"],
-    "canary": [".github/workflows/lane-website.yml"]
+    "historical_replay": [
+      "tests/brain-browser-settled-document-request-failure-v1.test.mjs"
+    ],
+    "canary": [
+      ".github/workflows/lane-website.yml"
+    ]
   },
-  "skill_targets": ["powerhouse-delivery-self-optimization"],
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization"
+  ],
   "evidence": [
     "tools/site-shell/verify-targeted-website-routes.mjs",
     "tests/targeted-website-route-regression.test.mjs",
-    "Required run 36172823328 / browser job 108197088155"
+    "Required run 36172823328 / browser job 108197088155",
+    "tests/brain-browser-settled-document-request-failure-v1.test.mjs"
   ],
-  "outcome": "FALSE_NEGATIVE_REMOVED_WITH_ASSET_AND_HTTP_FAIL_CLOSED_INTACT"
+  "outcome": "FALSE_NEGATIVE_REMOVED_AND_LEARNING_REPLAY_CANONICALIZED"
 }
