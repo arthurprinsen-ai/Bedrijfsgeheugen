@@ -66,3 +66,18 @@ A Netlify deploy with `state=ready` and exact `commit_ref` proves provider ident
 - prove the active mobile navigation contains a visible language selector;
 - execute NL → EN → NL in a real production browser;
 - any missing runtime asset or missing visible control keeps the release non-terminal even when deploy identity is exact.
+
+
+## Partial static i18n cache authority
+
+Fingerprint: `i18n-partial-cache-production-fallback-20260925-v1`.
+
+For provider-independent production builds:
+- never treat the English translation cache as all-or-nothing;
+- apply every known versioned cache entry even when unrelated source strings are uncached;
+- leave only uncached strings to the runtime translation fallback;
+- keep partial routes marked as not fully statically translated so runtime completion remains active;
+- a missing translation on one route must never regress already-cached English on another route;
+- production NL/EN proof must include a semantic assertion that `/en/prijzen` does not render the Dutch pricing H1.
+
+Canonical learning: `brain/learning/i18n-partial-cache-production-fallback-20260925-v1.json`.

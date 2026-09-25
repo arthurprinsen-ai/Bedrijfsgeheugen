@@ -131,10 +131,13 @@ function collectTranslatables(doc) {
   return refs;
 }
 
-function applyTranslations(refs,map) {
+function applyTranslations(refs,map,{allowMissing=false}={}) {
   for (const ref of refs) {
     const value = map.get(ref.source);
-    if (typeof value !== 'string' || !value.trim()) throw new Error('Missing static English translation for: ' + ref.source.slice(0,120));
+    if (typeof value !== 'string' || !value.trim()) {
+      if (allowMissing) continue;
+      throw new Error('Missing static English translation for: ' + ref.source.slice(0,120));
+    }
     if (ref.kind === 'text') {
       const leading = ref.original.match(/^\s*/)?.[0] || '';
       const trailing = ref.original.match(/\s*$/)?.[0] || '';
@@ -339,7 +342,7 @@ async function translateAll(strings) {
     if (typeof hit === 'string' && hit.trim()) result.set(source,hit);
     else missing.push(source);
   }
-  if (!missing.length) return result;
+  if (!missing.length) return { map:result, complete:true, missing:[] };
 
   const cacheRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1';
   if (cacheRequired) {
@@ -349,8 +352,8 @@ async function translateAll(strings) {
 
   const networkAllowed = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
   if (!networkAllowed) {
-    console.warn('STATIC_I18N_OFFLINE_RELEASE English generation skipped: release builds never call external translation providers');
-    return null;
+    console.warn('STATIC_I18N_OFFLINE_RELEASE applying cached English with runtime fallback for ' + missing.length + ' uncached string(s)');
+    return { map:result, complete:false, missing:[...missing] };
   }
 
   const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
@@ -423,13 +426,13 @@ async function translateAll(strings) {
   }
   try {
     await Promise.all(Array.from({length:Math.min(concurrency,batches.length)},(_,i)=>worker(i+1)));
-    return result;
+    return { map:result, complete:true, missing:[] };
   } catch (error) {
     if (networkAllowed) {
       throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_FAILED: ' + (error?.message || String(error)));
     }
     console.warn('STATIC_I18N_PROVIDER_FALLBACK', error?.message || String(error));
-    return null;
+    return { map:result, complete:false, missing:missing.filter(source=>!result.has(source)) };
   }
 }
 
@@ -462,11 +465,12 @@ if (cacheValidationOnly) {
   process.exit(0);
 }
 
-const translations = await translateAll([...allStrings]);
+const translationState = await translateAll([...allStrings]);
 const productionTranslationRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1' || String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
-if (productionTranslationRequired && !translations) {
+if (productionTranslationRequired && translationState?.complete !== true) {
   throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
 }
+const translations = translationState?.map || new Map();
 for (const file of files) {
   const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
   const route = routeFor(file);
@@ -479,15 +483,15 @@ for (const file of files) {
   fs.writeFileSync(nlOut,serialize(nlDoc));
 
   const enDoc = parse(sourceHtml);
-  if (translations) {
+  if (translations.size) {
     const enRefs = collectTranslatables(enDoc);
-    applyTranslations(enRefs,translations);
+    applyTranslations(enRefs,translations,{allowMissing:translationState?.complete !== true});
   }
   rewriteLinks(enDoc,file,'en',aliases);
-  setLocaleMetadata(enDoc,'en',route,Boolean(translations));
+  setLocaleMetadata(enDoc,'en',route,translationState?.complete === true);
   const enOut = outputPath('en',file);
   ensureDir(enOut);
   fs.writeFileSync(enOut,serialize(enDoc));
 }
 
-console.log('STATIC_I18N_ROUTES',JSON.stringify({files:files.length,strings:allStrings.size,nl:true,en:true,staticEnglish:Boolean(translations),runtimeFallback:!translations}));
+console.log('STATIC_I18N_ROUTES',JSON.stringify({files:files.length,strings:allStrings.size,nl:true,en:true,staticEnglishComplete:translationState?.complete === true,cachedEnglishApplied:translations.size,runtimeFallback:translationState?.complete !== true,missing:translationState?.missing?.length || 0}));

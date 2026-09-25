@@ -12,6 +12,7 @@ test('normal production no longer depends on the external translation provider o
   assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(source,/STATIC_I18N_PROVIDER_ERROR/);
   assert.match(source,/if \(!transient && status >= 400 && status < 500\) break/);
-  assert.match(source,/setLocaleMetadata\(enDoc,'en',route,Boolean\(translations\)\)/);
+  assert.match(source,/setLocaleMetadata\(enDoc,'en',route,translationState\?\.complete === true\)/);
+  assert.match(source,/cachedEnglishApplied:translations\.size/);
   assert.match(runtime,/\/api\/i18n-translate/);
 });

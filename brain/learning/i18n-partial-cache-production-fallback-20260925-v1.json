@@ -1,0 +1,44 @@
+{
+  "fingerprint": "i18n-partial-cache-production-fallback-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "An uncached string anywhere in the public corpus caused offline production builds to discard every cached English translation, so /en/prijzen rendered the Dutch H1 even though its exact English translation was present in the versioned cache.",
+  "root_cause": "translateAll returned null whenever STATIC_I18N_NETWORK=0 and at least one string was missing. The route builder treated null as an all-or-nothing translation state and generated the entire English estate from Dutch source, relying on runtime translation for all content.",
+  "prevention": [
+    "Offline releases must apply every available versioned English cache entry.",
+    "Only uncached strings may fall back to runtime translation.",
+    "Partial static routes must remain marked data-bg-static-translated=false so runtime completes missing strings.",
+    "One uncached string on one route must never invalidate cached English on unrelated routes.",
+    "Production pricing readback must reject a Dutch pricing H1 on /en/prijzen."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-production-fallback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-static-i18n-partial-cache-fallback-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-partial-cache-fallback-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "production_sha": "9e630bd6360698a829751b9ba8ba4daf2273b595",
+    "failed_job": "Production Source Snapshot / Prove pricing toggles and English switch in production browser",
+    "failure": "English route still shows the Dutch pricing H1",
+    "cached_translation": "Pricing for digitalization in SMEs"
+  },
+  "skill_targets": [
+    "powerhouse-netlify-production-truth"
+  ],
+  "compiler": {
+    "failure_class": "I18N_ALL_OR_NOTHING_STATIC_FALLBACK",
+    "scope": "PUBLIC_STATIC_I18N_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
