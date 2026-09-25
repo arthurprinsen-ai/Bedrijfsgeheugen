@@ -131,10 +131,16 @@ function collectTranslatables(doc) {
   return refs;
 }
 
-function applyTranslations(refs,map) {
+function applyTranslations(refs,map,{allowMissing=false}={}) {
+  const missing = [];
+  let applied = 0;
   for (const ref of refs) {
     const value = map.get(ref.source);
-    if (typeof value !== 'string' || !value.trim()) throw new Error('Missing static English translation for: ' + ref.source.slice(0,120));
+    if (typeof value !== 'string' || !value.trim()) {
+      missing.push(ref.source);
+      if (allowMissing) continue;
+      throw new Error('Missing static English translation for: ' + ref.source.slice(0,120));
+    }
     if (ref.kind === 'text') {
       const leading = ref.original.match(/^\s*/)?.[0] || '';
       const trailing = ref.original.match(/\s*$/)?.[0] || '';
@@ -143,7 +149,9 @@ function applyTranslations(refs,map) {
       const a = ref.node.attrs.find(x=>x.name===ref.attr);
       if (a) a.value = value;
     }
+    applied++;
   }
+  return { applied, missing:[...new Set(missing)] };
 }
 
 function findFirst(node, predicate) {
@@ -349,8 +357,12 @@ async function translateAll(strings) {
 
   const networkAllowed = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
   if (!networkAllowed) {
-    console.warn('STATIC_I18N_OFFLINE_RELEASE English generation skipped: release builds never call external translation providers');
-    return null;
+    console.warn('STATIC_I18N_OFFLINE_PARTIAL_CACHE', JSON.stringify({
+      cached: result.size,
+      missing: missing.length,
+      first_missing: missing[0]?.slice(0,120) || null
+    }));
+    return result;
   }
 
   const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
@@ -467,6 +479,7 @@ const productionTranslationRequired = String(process.env.STATIC_I18N_REQUIRE_CAC
 if (productionTranslationRequired && !translations) {
   throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
 }
+const routeDiagnostics = [];
 for (const file of files) {
   const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
   const route = routeFor(file);
@@ -479,15 +492,29 @@ for (const file of files) {
   fs.writeFileSync(nlOut,serialize(nlDoc));
 
   const enDoc = parse(sourceHtml);
-  if (translations) {
-    const enRefs = collectTranslatables(enDoc);
-    applyTranslations(enRefs,translations);
+  const enRefs = collectTranslatables(enDoc);
+  const translationResult = translations
+    ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})
+    : {applied:0,missing:[...new Set(enRefs.map(ref=>ref.source))]};
+  const routeComplete = translationResult.missing.length === 0;
+  if (!routeComplete) {
+    routeDiagnostics.push({route,missing:translationResult.missing.length,first:translationResult.missing[0]?.slice(0,120) || null});
   }
   rewriteLinks(enDoc,file,'en',aliases);
-  setLocaleMetadata(enDoc,'en',route,Boolean(translations));
+  setLocaleMetadata(enDoc,'en',route,routeComplete);
   const enOut = outputPath('en',file);
   ensureDir(enOut);
   fs.writeFileSync(enOut,serialize(enDoc));
 }
 
-console.log('STATIC_I18N_ROUTES',JSON.stringify({files:files.length,strings:allStrings.size,nl:true,en:true,staticEnglish:Boolean(translations),runtimeFallback:!translations}));
+console.log('STATIC_I18N_ROUTE_GAPS',JSON.stringify(routeDiagnostics.slice(0,100)));
+console.log('STATIC_I18N_ROUTES',JSON.stringify({
+  files:files.length,
+  strings:allStrings.size,
+  nl:true,
+  en:true,
+  staticEnglish:true,
+  fullyTranslatedRoutes:files.length-routeDiagnostics.length,
+  partialRoutes:routeDiagnostics.length,
+  runtimeFallback:false
+}));
