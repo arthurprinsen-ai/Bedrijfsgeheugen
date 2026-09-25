@@ -1,0 +1,39 @@
+{
+  "fingerprint": "static-i18n-cache-gap-ai-ecosystem-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production English routes existed but could fall back to the runtime translation endpoint because the deterministic static cache was incomplete after new AI-ecosystem copy was added. The runtime translator was simultaneously returning 502 translation_failed.",
+  "root_cause": "119 newly introduced public source strings were not added to the canonical config/bg-static-i18n-en.d cache lineage. The fail-closed validator correctly detected the gap, but the deployed production commit predated the completed cache and therefore emitted English routes with data-bg-static-translated=false.",
+  "prevention": [
+    "Every public copy change must update the canonical config/bg-static-i18n-en.json or config/bg-static-i18n-en.d fragment in the same candidate lineage.",
+    "Never restore .cache as production translation authority.",
+    "STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 node tools/site-shell/build-localized-routes.mjs --validate-cache must pass before protected delivery.",
+    "All public /en routes must be statically translated so a runtime provider outage cannot break initial public language switching.",
+    "Production browser proof must still exercise NL to EN to NL and verify visible English state."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-static-i18n-current-cache-complete-v1.test.mjs"],
+    "shadow": ["tests/brain-static-i18n-current-cache-complete-v1.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-current-cache-complete-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "base_main_sha": "533dfca921111e42954657fd42f71806364f0b05",
+    "missing_before": 119,
+    "public_routes": 95,
+    "source_strings_after": 7508,
+    "pricing_static_h1": "Prices for digitalization in SMEs",
+    "runtime_endpoint_observed": "502 translation_failed"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CANONICAL_CACHE_GAP",
+    "scope": "PUBLIC_WEBSITE_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
