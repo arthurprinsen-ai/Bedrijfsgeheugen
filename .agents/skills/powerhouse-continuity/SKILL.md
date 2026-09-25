@@ -1254,17 +1254,18 @@ Canonical skill: `.agents/skills/powerhouse-connector-response-normalization/SKI
 Canonical learning: `brain/learning/2026-09-25-connector-response-shape-normalization-v1.json`.
 
 
-## Trigger-aware terminal gate applicability
+## Attainable terminal gate evidence
 
 Fingerprint: `delivery|terminal-gate|trigger-aware-impossible-event|v1`.
 
-A terminal closure workflow must never wait for an event that the referenced workflow cannot emit.
+A terminal closure workflow must not wait only on an evidence path that cannot exist for the candidate.
 
 Mandatory:
-- before waiting for an exact-head workflow run, verify that the referenced workflow is configured for the expected event;
-- if the workflow has no matching trigger, record the gate explicitly as `NOT_APPLICABLE` with the reason and continue with the remaining active gates;
-- do not synthesize a green run, bypass an applicable gate, or poll an impossible event until timeout;
-- Required, CodeQL, learning/skill projection and provider/readback gates remain fail-closed whenever their applicability conditions are met;
-- persist this applicability decision as terminal evidence.
+- prefer the strongest exact-head gate evidence when it exists;
+- if the primary workflow run is unavailable for that event/candidate, use an explicitly defined equivalent canonical evidence source;
+- for Brain closure, prefer Unified Brain exact-head evidence, otherwise require successful Brain foundation verification on the merged commit SHA;
+- fallback evidence is not a bypass: failed or non-terminal equivalent evidence remains blocking;
+- Required, CodeQL, learning/skill projection and provider/readback gates remain independently fail-closed;
+- persist which evidence path proved closure.
 
 Canonical learning: `brain/learning/2026-09-25-terminal-gate-trigger-awareness-v1.json`.

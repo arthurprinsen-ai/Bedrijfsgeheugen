@@ -1,17 +1,20 @@
-# Development ledger — trigger-aware terminal gate applicability
+# Development ledger — attainable Brain evidence for terminal closure
 
 Date: 2026-09-25
 Obligation: `governance-production-trigger-ownership-v1`
 Supersedes: PR #3108 terminal-closure deadlock
 
-## Failure
-Terminal closure run `36175492847` was stuck waiting for Unified Brain Delivery with `event=pull_request`.
+## Failure evidence
+Terminal closure run `36175492847` remained in `Verify exact-head critical delivery gates before terminal claim` although Required, Skill Projection and CodeQL had completed successfully.
 
 ## Root cause
-`unified-brain-delivery.yml` is workflow_dispatch-only; the terminalizer was polling an event that can never be emitted.
+The terminalizer depended on a Unified Brain exact-head run that was not available for the merged candidate.
 
 ## Repair
-The terminalizer derives event applicability from the workflow trigger definition. A workflow without a PR trigger is explicitly `NOT_APPLICABLE`; all actual gates remain fail-closed.
+The closure workflow now:
+- accepts a successful existing Unified Brain exact-head run when present;
+- otherwise requires successful Brain foundation verification on the merge SHA;
+- fails closed on failed or non-terminal Brain evidence.
 
 ## Prevention
-Brain regression coverage enforces `TERMINAL_GATE_MUST_VALIDATE_EVENT_APPLICABILITY_BEFORE_POLLING`.
+Brain regression coverage enforces `TERMINAL_GATE_MUST_USE_ATTAINABLE_EQUIVALENT_EVIDENCE_PATH`.

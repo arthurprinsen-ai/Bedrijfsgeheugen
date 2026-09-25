@@ -12,13 +12,14 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "root_cause": "Obligation Terminal Closure unconditionally polled Unified Brain Delivery for an exact-head pull_request run, while unified-brain-delivery.yml is workflow_dispatch-only. The requested event can never exist, so terminal closure waits until timeout despite Required, Skill Projection and CodeQL being green.",
-  "fix": "Make terminal critical-gate evaluation trigger-aware. Before polling Unified Brain Delivery for a pull_request run, inspect its workflow definition; when no pull_request trigger exists, emit explicit NOT_APPLICABLE evidence instead of polling an impossible event.",
-  "prevention_rule": "TERMINAL_GATE_MUST_VALIDATE_EVENT_APPLICABILITY_BEFORE_POLLING",
+  "root_cause": "Obligation Terminal Closure required exact-head Brain evidence through Unified Brain Delivery even when no exact-head Unified Brain run existed for that candidate. Waiting only on that unavailable evidence path could deadlock terminal closure despite Required, Skill Projection and CodeQL already being green.",
+  "fix": "Use an attainable evidence hierarchy: prefer an existing exact-head Unified Brain run; when none exists, wait for Brain foundation verify on the merged commit SHA and require that run to complete successfully. Keep failure and timeout states fail-closed.",
+  "prevention_rule": "TERMINAL_GATE_MUST_USE_ATTAINABLE_EQUIVALENT_EVIDENCE_PATH",
   "prevention": [
-    "Never poll a workflow event that its trigger definition cannot emit.",
-    "Mark structurally impossible gates NOT_APPLICABLE with explicit evidence; never synthesize success.",
-    "All genuinely applicable Required, CodeQL, learning/skill and provider/readback gates remain fail-closed."
+    "Prefer the strongest exact-head gate evidence when it exists.",
+    "When a workflow run cannot exist for that candidate/event, use an explicitly defined equivalent canonical evidence source rather than polling an impossible run.",
+    "Equivalent fallback evidence must remain fail-closed: failed or non-terminal Brain foundation evidence blocks closure.",
+    "Required, CodeQL, learning/skill and provider/readback gates remain independently enforced."
   ],
   "evaluation": {
     "historical_replay": [
@@ -31,8 +32,8 @@
   "evidence": {
     "stuck_run": 36175492847,
     "stuck_step": "Verify exact-head critical delivery gates before terminal claim",
-    "impossible_requirement": "unified-brain-delivery.yml event=pull_request",
-    "workflow_trigger": "workflow_dispatch only"
+    "unavailable_evidence_path": "Unified Brain Delivery exact-head PR run",
+    "fallback_evidence_path": "Brain foundation verify on merge SHA"
   },
-  "outcome": "TERMINAL_GATE_EVENT_APPLICABILITY_ENFORCED"
+  "outcome": "TERMINAL_BRAIN_EVIDENCE_PATH_MADE_ATTAINABLE"
 }
