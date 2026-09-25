@@ -2,29 +2,33 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const source=fs.readFileSync(new URL('../.github/workflows/powerhouse-repository-janitor.yml', import.meta.url),'utf8');
+const workflow=fs.readFileSync(new URL('../.github/workflows/powerhouse-stale-actions-drain.yml', import.meta.url),'utf8');
+const script=fs.readFileSync(new URL('../tools/delivery/stale-actions-drain.sh', import.meta.url),'utf8');
 
-test('repository janitor runs hourly and paginates the complete open PR set',()=>{
-  assert.match(source,/cron: '17 \* \* \* \*'/);
-  assert.match(source,/gh api --paginate --slurp "repos\/\$\{GITHUB_REPOSITORY\}\/pulls\?state=open&per_page=100" \| jq 'add'/);
+test('stale Actions drain runs independently every ten minutes and after its own control-plane merge',()=>{
+  assert.match(workflow,/cron: '\*\/10 \* \* \* \*'/);
+  assert.match(workflow,/push:\s*\n\s+branches: \[main\]/);
+  assert.match(workflow,/bash tools\/delivery\/stale-actions-drain\.sh/);
+  assert.match(workflow,/cancel-in-progress:\s*true/);
 });
 
-test('stale no-open-PR cleanup only adds TTL auto-cancel for queued runs',()=>{
-  assert.match(source,/\[ "\$run_status" = queued \]/);
-  assert.match(source,/stale_after_seconds=21600/);
-  assert.match(source,/reason=STALE_QUEUED_NO_OPEN_PR/);
-  assert.doesNotMatch(source,/\[ "\$run_status" = in_progress \].*STALE_QUEUED_NO_OPEN_PR/s);
+test('drainer preserves main current PR heads and terminal post-merge workflows',()=>{
+  assert.match(script,/\[ "\$branch" != main \] \|\| continue/);
+  assert.match(script,/current_pr_head/);
+  assert.match(script,/obligation-terminal-closure\.yml/);
+  assert.match(script,/powerhouse-merged-branch-cleanup\.yml/);
 });
 
-test('janitor preserves main and current open-PR head before any cancellation',()=>{
-  assert.match(source,/\[ "\$branch" != main \] \|\| continue/);
-  assert.match(source,/if \[ -n "\$current_pr_head" \] && \[ "\$current_pr_head" != "\$run_sha" \]/);
-  assert.match(source,/elif \[ -z "\$current_pr_head" \]/);
+test('proven obsolete queued runs drain fast while in-progress runs get a grace window',()=>{
+  assert.match(script,/MISSING_NON_MAIN_BRANCH/);
+  assert.match(script,/age_seconds "\$created_at"\) -ge 60/);
+  assert.match(script,/age_seconds "\$updated_at"\) -ge 300/);
+  assert.match(script,/STALE_PR_HEAD/);
+  assert.match(script,/MERGED_OR_CONTAINED_BRANCH/);
 });
 
-test('janitor escalates proven obsolete runs through force-cancel and delete fallback',()=>{
-  assert.match(source,/actions\/runs\/\$\{run_id\}\/force-cancel/);
-  assert.match(source,/-X DELETE "repos\/\$\{GITHUB_REPOSITORY\}\/actions\/runs\/\$\{run_id\}"/);
-  assert.match(source,/cancel_mode=force-cancel/);
-  assert.match(source,/cancel_mode=delete-fallback/);
+test('cancel escalation remains cancel force-cancel then delete fallback',()=>{
+  assert.match(script,/actions\/runs\/\$\{run_id\}\/cancel/);
+  assert.match(script,/actions\/runs\/\$\{run_id\}\/force-cancel/);
+  assert.match(script,/-X DELETE "repos\/\$\{GITHUB_REPOSITORY\}\/actions\/runs\/\$\{run_id\}"/);
 });
