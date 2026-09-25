@@ -51,3 +51,11 @@ test('visibility sweep parallelizes bounded viewport batches', async () => {
   assert.match(source, /viewports\.slice\(viewportIndex, viewportIndex \+ viewportConcurrency\)\.map\(runViewport\)/);
   assert.match(source, /Promise\.all\(viewports\.slice/);
 });
+
+
+test('production readback explicitly bounds route and viewport worker budgets', async () => {
+  const workflow = await readFile('.github/workflows/canonical-brand-shell-live-readback.yml', 'utf8');
+  assert.match(workflow, /UI_VR_ROUTE_CONCURRENCY:\s*'8'/);
+  assert.match(workflow, /UI_VR_VIEWPORT_CONCURRENCY:\s*'3'/);
+  assert.match(workflow, /timeout --signal=TERM --kill-after=30s 10m node tools\/site-shell\/standalone-visibility-check\.mjs/);
+});
