@@ -80,3 +80,12 @@ test('terminal closure uses trigger-compatible Brain evidence', async()=>{
   assert.match(workflow,/TERMINAL_BRAIN_FOUNDATION_PROVEN/);
   assert.match(workflow,/TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL/);
 });
+
+
+test('terminal closure does not wait for impossible PR workflow events', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/require_pr_triggered_workflow/);
+  assert.match(workflow,/no_pull_request_trigger/);
+  assert.match(workflow,/require_pr_triggered_workflow "unified-brain-delivery\.yml" "BRAIN"/);
+  assert.doesNotMatch(workflow,/require_workflow "unified-brain-delivery\.yml" "BRAIN"/);
+});

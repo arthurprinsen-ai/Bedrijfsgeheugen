@@ -1,0 +1,38 @@
+{
+  "fingerprint": "terminal-gate-trigger-awareness-v1",
+  "obligation_id": "governance-production-trigger-ownership-v1",
+  "supersedes_pr": 3108,
+  "skill_targets": [
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "IMPOSSIBLE_WORKFLOW_EVENT_WAIT",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Obligation Terminal Closure unconditionally polled Unified Brain Delivery for an exact-head pull_request run, while unified-brain-delivery.yml is workflow_dispatch-only. The requested event can never exist, so terminal closure waits until timeout despite Required, Skill Projection and CodeQL being green.",
+  "fix": "Make terminal critical-gate evaluation trigger-aware. Before polling Unified Brain Delivery for a pull_request run, inspect its workflow definition; when no pull_request trigger exists, emit explicit NOT_APPLICABLE evidence instead of polling an impossible event.",
+  "prevention_rule": "TERMINAL_GATE_MUST_VALIDATE_EVENT_APPLICABILITY_BEFORE_POLLING",
+  "prevention": [
+    "Never poll a workflow event that its trigger definition cannot emit.",
+    "Mark structurally impossible gates NOT_APPLICABLE with explicit evidence; never synthesize success.",
+    "All genuinely applicable Required, CodeQL, learning/skill and provider/readback gates remain fail-closed."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-gate-trigger-awareness-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "stuck_run": 36175492847,
+    "stuck_step": "Verify exact-head critical delivery gates before terminal claim",
+    "impossible_requirement": "unified-brain-delivery.yml event=pull_request",
+    "workflow_trigger": "workflow_dispatch only"
+  },
+  "outcome": "TERMINAL_GATE_EVENT_APPLICABILITY_ENFORCED"
+}

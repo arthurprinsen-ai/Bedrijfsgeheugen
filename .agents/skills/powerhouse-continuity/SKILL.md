@@ -1252,3 +1252,19 @@ For GitHub tree-based writes specifically, never advance from `create_tree` to c
 
 Canonical skill: `.agents/skills/powerhouse-connector-response-normalization/SKILL.md`.
 Canonical learning: `brain/learning/2026-09-25-connector-response-shape-normalization-v1.json`.
+
+
+## Trigger-aware terminal gate applicability
+
+Fingerprint: `delivery|terminal-gate|trigger-aware-impossible-event|v1`.
+
+A terminal closure workflow must never wait for an event that the referenced workflow cannot emit.
+
+Mandatory:
+- before waiting for an exact-head workflow run, verify that the referenced workflow is configured for the expected event;
+- if the workflow has no matching trigger, record the gate explicitly as `NOT_APPLICABLE` with the reason and continue with the remaining active gates;
+- do not synthesize a green run, bypass an applicable gate, or poll an impossible event until timeout;
+- Required, CodeQL, learning/skill projection and provider/readback gates remain fail-closed whenever their applicability conditions are met;
+- persist this applicability decision as terminal evidence.
+
+Canonical learning: `brain/learning/2026-09-25-terminal-gate-trigger-awareness-v1.json`.
