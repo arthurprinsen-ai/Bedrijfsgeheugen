@@ -5,6 +5,12 @@ name: Production Release Readback
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '.agents/**'
+      - 'tests/**'
+      - '.github/**'
+      - 'brain/learning/**'
   workflow_dispatch:
 
 concurrency:

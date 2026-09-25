@@ -36,6 +36,12 @@ name: Production Source Snapshot
 on:
   push:
     branches: [main]
+    paths-ignore:
+      - 'docs/**'
+      - '.agents/**'
+      - 'tests/**'
+      - '.github/**'
+      - 'brain/learning/**'
   workflow_dispatch:
     inputs:
       deploy:
