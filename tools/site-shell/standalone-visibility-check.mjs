@@ -17,6 +17,7 @@ const viewports = [
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 },
 ];
+const viewportConcurrency = Math.max(1, Math.min(viewports.length, Number(process.env.UI_VR_VIEWPORT_CONCURRENCY || viewports.length)));
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function closeBounded(label, closeFn) {
@@ -85,7 +86,7 @@ const routes = await loadPublicRoutes();
 const browser = await chromium.launch({ headless: true });
 const failures = [];
 try {
-  for (const viewport of viewports) {
+  const runViewport = async viewport => {
     const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
     const workerCount = Math.min(routeConcurrency, routes.length);
     try {
@@ -164,6 +165,11 @@ try {
     } finally {
       await closeBounded(`context ${viewport.name}`, () => context.close());
     }
+  };
+
+  for (let viewportIndex = 0; viewportIndex < viewports.length; viewportIndex += viewportConcurrency) {
+    assertBudget('viewport-batch', viewports[viewportIndex]?.name || 'unknown');
+    await Promise.all(viewports.slice(viewportIndex, viewportIndex + viewportConcurrency).map(runViewport));
   }
 } finally {
   await closeBounded('browser', () => browser.close());
@@ -177,5 +183,5 @@ if (failures.length) {
   }
   throw new Error(message);
 }
-console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks with concurrency ${routeConcurrency} within bounded budget ${totalBudgetMs}ms`);
+console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks with route concurrency ${routeConcurrency} and viewport concurrency ${viewportConcurrency} within bounded budget ${totalBudgetMs}ms`);
 if (cleanupTimedOut) process.exit(0);
