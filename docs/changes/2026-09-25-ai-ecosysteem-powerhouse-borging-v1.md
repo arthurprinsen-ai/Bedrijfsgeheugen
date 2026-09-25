@@ -14,3 +14,7 @@ Vastgelegd zijn:
 - de projectie naar Dashboard Hub en Canonical System Map.
 
 De terminale regel blijft: generated public surfaces zijn pas klaar na authoritative build projection, protected delivery, exact production identity en functionele route-readback.
+
+## Closure-artifacts
+Brain learning, activity ledger, human documentation, skill/policy projection en Dashboard/System Map writeback maken deel uit van dezelfde canonieke lineage.
+
