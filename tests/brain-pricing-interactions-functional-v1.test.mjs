@@ -65,7 +65,7 @@ test('mobile taps have an external delegated rescue controller',async()=>{
     pricing(),
     readFile(new URL('../assets/js/pricing-interactions-rescue-v1.js',import.meta.url),'utf8')
   ]);
-  assert.match(html,/pricing-interactions-rescue-v1\\.js\\?v=[0-9a-f]{12}/);
+  assert.match(html,/pricing-interactions-rescue-v1\.js\?v=[a-f0-9]{12}/);
   assert.match(runtime,/document\.addEventListener\('click'/);
   assert.match(runtime,/document\.addEventListener\('touchend'/);
   assert.match(runtime,/passive:false/);

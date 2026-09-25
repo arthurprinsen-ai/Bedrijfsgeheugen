@@ -12,5 +12,5 @@ test('pricing rescue forces visible state instead of relying on hidden alone', (
 
 test('pricing page cache-busts the repaired runtime', () => {
   const html = fs.readFileSync('prijzen.html','utf8');
-  assert.match(html,/pricing-interactions-rescue-v1\\.js\\?v=[0-9a-f]{12}/);
+  assert.match(html,/pricing-interactions-rescue-v1\.js\?v=[a-f0-9]{12}/);
 });

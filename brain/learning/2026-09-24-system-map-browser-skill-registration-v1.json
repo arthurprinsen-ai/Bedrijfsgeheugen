@@ -1,0 +1,34 @@
+{
+  "fingerprint": "system-map-browser-skill-registration-v1",
+  "date": "2026-09-24",
+  "type": "POST_MERGE_TOPOLOGY_REGRESSION_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The new powerhouse-browser-gate-boundedness skill was added during CI recovery but the canonical System Map skills inventory and provider snapshot count were not updated in the same lineage, causing the live System Map topology regression to fail.",
+  "prevention_rule": "Any added or removed material skill must update the canonical System Map inventory and provider snapshot count in the same delivery lineage before terminal status.",
+  "compiler": {
+    "failure_class": "SYSTEM_MAP_TOPOLOGY_INVENTORY_DRIFT",
+    "scope": "POWERHOUSE_SYSTEM_MAP",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs"
+    ],
+    "invariants": [
+      "canonical System Map skills inventory equals the .agents/skills repository topology",
+      "provider snapshot skill count matches the canonical inventory",
+      "new material skills carry a System Map registration rule"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-browser-gate-boundedness/SKILL.md"
+  ],
+  "evidence": {
+    "originating_pr": 2834,
+    "failing_test": "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "added_skill": "powerhouse-browser-gate-boundedness"
+  }
+}
