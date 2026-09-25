@@ -1,0 +1,46 @@
+{
+  "fingerprint": "powerhouse-problem-radar-canonical-intake-v1",
+  "date": "2026-09-25",
+  "type": "PRODUCT_INTELLIGENCE_ROUTING_STANDARD",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "problem": "Problem Radar research, portal intelligence and content reuse had the right components but no single general machine-readable contract guaranteed that every accepted MKB signal was stored once and routed through all applicable canonical projections.",
+  "root_cause": "People evidence had a dedicated source registry and the broader Voice-of-Customer skill described the loop in prose, but cross-domain intake/storage/dedupe/portal/content obligations were not expressed as one reusable contract.",
+  "fix": [
+    "Add canonical Problem Radar intake and routing contract",
+    "Require provenance, freshness, confidence and PH-Pxxx-first mapping",
+    "Require dedupe with recurrence preservation",
+    "Require portal projection to distinguish external context from tenant evidence",
+    "Make blog and LinkedIn-company reuse an explicit governed projection",
+    "Bind outcome learning to Verified Value"
+  ],
+  "prevention_rule": "Every future Dutch MKB signal must enter through the canonical intake contract; accepted evidence cannot terminate as a content-only note, a portal-only fact, or a parallel problem taxonomy.",
+  "compiler": {
+    "failure_class": "PROBLEM_RADAR_CROSS_DOMAIN_ROUTING_GAP",
+    "scope": "POWERHOUSE_PRODUCT_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs"
+    ],
+    "invariants": [
+      "one canonical PH-Pxxx problem language",
+      "external evidence is never tenant fact by itself",
+      "accepted evidence is eligible for portal, opportunity and content reuse",
+      "content angles are deduplicated",
+      "publication and realized value remain readback/evidence gated"
+    ]
+  },
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md",
+    ".agents/skills/trigger-based-mkb-acquisition/SKILL.md"
+  ],
+  "evidence": {
+    "contract": "config/powerhouse-problem-radar-intake-contract.json",
+    "regression": "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
+    "documentation": "docs/changes/powerhouse-problem-radar-canonical-intake-v1.md"
+  }
+}
