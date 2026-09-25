@@ -1,0 +1,42 @@
+{
+  "fingerprint": "static-i18n-provider-fallback-regression-20260925-v3",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The production Netlify build again contained contradictory i18n contracts: an older test and build guard required provider success, while the canonical fallback architecture required provider failure to degrade to runtime translation.",
+  "root_cause": "Two mutually exclusive prevention rules coexisted. The older fail-closed rule treated build-time translation provider success as production authority; the newer rule correctly treats visible browser-level English output as production authority.",
+  "prevention": [
+    "Build-time static English translation is enrichment, not the terminal production authority.",
+    "A deterministic or transient provider failure must return the runtime fallback path and must not abort the whole website build.",
+    "Production remains fail-closed at observable browser proof: the actual NL to EN switch must reach /en/prijzen and visibly render English.",
+    "Tests may not require STATIC_I18N_PRODUCTION_TRANSLATION_FAILED or STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED while runtime fallback is canonical.",
+    "When prevention rules conflict, reconcile the older test and learning contract instead of reintroducing a previously fixed production blocker."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+      "tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"
+    ],
+    "shadow": ["tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+    "tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "failed_main_sha": "abdfd8d7dd9bf08dbf95a9fb76a8d5266ef853c1",
+    "failed_netlify_deploy_id": "6ab6744ae51cac6be3a28a20",
+    "failed_netlify_build_id": "6ab6744ae51cac6be3a28a1e",
+    "symptom": "linked main production build failed during build before publication",
+    "conflict": "older provider-fatal test contradicted newer runtime-fallback regression test"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "CONFLICTING_I18N_PREVENTION_CONTRACTS",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
