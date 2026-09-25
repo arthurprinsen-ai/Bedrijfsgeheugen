@@ -1098,3 +1098,13 @@ Fingerprint: `pricing-billing-aria-selected-parity-20260925-v1`.
 - Inline pricing code and the external rescue controller must implement identical billing semantics.
 - A visual price change without `aria-selected=true` is not accepted as a successful billing interaction.
 - Production closure requires the real yearly click to pass the canonical pricing/i18n browser verifier before language switching is evaluated.
+
+
+## Pricing canonical i18n assets
+
+Fingerprint: `pricing-canonical-i18n-assets-20260925-v1`.
+
+- Critical language controls may not depend solely on build-time enrichment when an exact-source recovery deploy exists.
+- Canonical `prijzen.html` must itself include `/assets/i18n.css` and `/assets/js/i18n.js` with `data-bg-i18n-asset`.
+- `apply-i18n.mjs` must remain idempotent and must not duplicate those assets.
+- Production closure requires the visible mobile language selector plus NL→EN→NL browser roundtrip on `/prijzen`.
