@@ -949,3 +949,17 @@ Production English localization must not require a live translation-provider cal
 Before delivery, run `node tools/site-shell/build-localized-routes.mjs --validate-cache`. It must prove every currently selected public source string has a non-empty cached English translation.
 
 If source copy introduces new strings, update the cache in the same candidate lineage. Production remains fail-closed: never publish untranslated `/en/*` pages and never convert provider/cache failure into silent fallback.
+
+
+## Production build-oracle semantic parity
+
+Fingerprint: `pricing-build-oracle-context-parity-20260925-v1`.
+
+- Production build oracles are executable product contracts, not passive documentation.
+- When website/Portal business-context semantics change, update source, reusable components, entitlement regressions and pre-build integrity tokens atomically.
+- Never restore retired copy or semantics merely to satisfy a stale test/oracle.
+- After a Netlify build failure, reproduce the exact packaged production source locally before changing runtime behavior.
+- For NL/EN delivery, the build chain must pass completely before exact-source deployment and the NL → EN → NL browser canary can establish LIVE_BEWEZEN.
+
+Regression: `tests/brain-pricing-build-integrity-context-parity-v1.test.mjs`.
+Learning: `brain/learning/pricing-build-oracle-context-parity-20260925-v1.json`.
