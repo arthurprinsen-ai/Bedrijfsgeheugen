@@ -1,0 +1,39 @@
+{
+  "fingerprint": "apply-i18n-existing-assets-mobile-selector-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production pricing loaded i18n assets but the active v18 mobile drawer contained zero language selectors.",
+  "root_cause": "tools/site-shell/apply-i18n.mjs returned for the entire page when data-bg-i18n-asset was already present. Pricing intentionally carries those assets in source, so the later build never executed injectMobileLanguage against the generated v18 drawer.",
+  "prevention": [
+    "Separate asset injection idempotency from mobile-control injection idempotency.",
+    "Existing i18n assets must never short-circuit structural language-control repair.",
+    "Write the HTML only when output actually changes.",
+    "Production browser proof must observe at least one visible language select in the active v18 drawer and complete NL→EN→NL."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-apply-i18n-existing-assets-mobile-selector-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-apply-i18n-existing-assets-mobile-selector-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-apply-i18n-existing-assets-mobile-selector-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-apply-i18n-existing-assets-mobile-selector-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "delivery",
+    "website",
+    "i18n"
+  ],
+  "compiler": {
+    "failure_class": "I18N_EXISTING_ASSETS_STRUCTURAL_SHORT_CIRCUIT",
+    "scope": "WEBSITE_I18N_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
