@@ -14,7 +14,14 @@
     "production_snapshot_run": 36164078579,
     "failure": "English route still shows the Dutch pricing H1"
   },
-  "test_evidence": ["tests/brain-pricing-static-english-h1-v1.test.mjs"],
-  "skill_targets": ["website", "powerhouse-netlify-production-truth", "powerhouse-continuity"],
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-pricing-static-english-h1-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "powerhouse-netlify-production-truth",
+    "powerhouse-continuity"
+  ],
+  "revision": 1,
+  "failure_class": "STATIC_I18N_TRANSLATION_CONTENT_DRIFT"
 }
