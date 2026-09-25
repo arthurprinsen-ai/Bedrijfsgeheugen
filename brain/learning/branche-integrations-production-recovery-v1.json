@@ -14,7 +14,8 @@
     "New public root-level pages must be registered in the delivery classifier in the same candidate.",
     "Reuse the existing Data/Koppelingen Portal route unless a deliberate navigation contract change is required.",
     "Treat temporary Netlify MCP proxy paths as expiring credentials; a 401 is a fail-closed production blocker and never production proof.",
-    "Do not claim LIVE_BEWEZEN without exact protected-main SHA readback from production."
+    "Do not claim LIVE_BEWEZEN without exact protected-main SHA readback from production.",
+    "Persist exact Netlify provider identity as immutable checkpoint evidence, while keeping required functional browser proof as a separate gate that must be resumed if cancelled."
   ],
   "evidence": {
     "prs": [
@@ -34,6 +35,12 @@
         "id": 35990915438,
         "name": "BRAIN delivery PR #2717",
         "outcome": "identified CI coverage and portal navigation regressions"
+      },
+      {
+        "id": 36134150890,
+        "name": "Production Release Readback",
+        "outcome": "cancelled after exact production identity and connector readiness passed",
+        "reason": "affected-route browser verification was still in progress when concurrency cancelled the run"
       }
     ],
     "tests": [
@@ -43,8 +50,16 @@
     ],
     "production_readback": {
       "required": true,
-      "status": "blocked",
-      "blocker": "expired NETLIFY_MCP_PROXY_PATH_TEMP returned 401 Unauthorized"
+      "status": "provider_checkpoint_recovered",
+      "recovered_at": "2026-09-25",
+      "observed_main_sha": "390e058e581874cb08f5b2d4608d886a5c9a7dcf",
+      "netlify_deploy_id": "6ab66640d19f130007c97fcb",
+      "netlify_state": "ready",
+      "netlify_context": "production",
+      "netlify_commit_ref": "390e058e581874cb08f5b2d4608d886a5c9a7dcf",
+      "functional_readback_run": 36134150890,
+      "functional_readback_conclusion": "cancelled_after_exact_identity_and_connector_readiness; route-browser verification remained incomplete",
+      "note": "Provider checkpoint recovered the earlier 401 blocker. Immutable historical evidence; later production deploys are read separately."
     }
   },
   "evaluation": {
@@ -71,5 +86,5 @@
     "delivery"
   ],
   "status": "ACTIVE_PREVENTION",
-  "revision": 3
+  "revision": 4
 }
