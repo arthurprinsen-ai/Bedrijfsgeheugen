@@ -605,3 +605,16 @@ Fingerprint: `terminal-brain-gate-trigger-parity-v1`
 - Prefer successful exact-head Unified Brain Delivery evidence when present, regardless of whether it was dispatched manually or by an authorized automation.
 - If no exact-head Unified Brain Delivery run exists, require successful exact-merge `Brain foundation verify` push evidence before terminal closure.
 - Failed Brain evidence remains fail-closed; absence of both evidence paths is `TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL`.
+
+
+## Production trigger ownership for control-plane paths
+
+Fingerprint: `delivery|production-trigger|control-plane-path-ownership|v1`.
+
+Production Source Snapshot and Production Release Readback must not start for changes that only alter delivery/governance control-plane surfaces. At minimum these paths are non-runtime for production-trigger ownership:
+- `AGENTS.md`;
+- `brain/policies/**`;
+- `tools/delivery/**`;
+- `tools/site-shell/verify-targeted-website-routes.mjs`.
+
+These paths remain fully validated in PR Required/automation/browser suites. Excluding them from production push triggers prevents unnecessary Netlify promotions, stale-release wait loops, and CI fan-out. Never generalize this rule to deployable site, portal, API, Netlify function, connector runtime, or other production-bearing paths.
