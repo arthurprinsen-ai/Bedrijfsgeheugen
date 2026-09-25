@@ -265,7 +265,7 @@ async function allePaginas() {
 {
   const nu = new Date();
   const stempel = nu.toLocaleString('nl-NL', { timeZone: 'Europe/Amsterdam', day: 'numeric', month: 'short', hour: '2-digit', minute: '2-digit' });
-  const merk = `<p class="bgx-stempel">versie ${stempel}</p>`;
+  const merk = `<p class="bgx-stempel" data-bg-no-translate translate="no">versie ${stempel}</p>`;
   const wachter = `<script id="v18-versiewachter">
 (function(){
   var mijn = ${JSON.stringify(nu.toISOString())};

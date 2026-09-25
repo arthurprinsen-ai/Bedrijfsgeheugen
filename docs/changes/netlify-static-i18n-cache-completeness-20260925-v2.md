@@ -22,3 +22,7 @@ Every website production candidate must prove cache completeness against its exa
 - Failed Netlify deploy: 6ab68cc1620347dff3081d39
 - Proven failure: 1,926 missing translations
 - Generated authority: `config/bg-static-i18n-en.json`
+
+## Volatile build marker follow-up
+
+A second preview failure isolated one remaining cache miss: `versie 25 sep, 17:45`. This text is generated from the current build timestamp, so caching its translation would fail again on the next build. The visible version stamp is now explicitly marked `data-bg-no-translate translate="no"`, keeping operational build metadata outside the translation corpus.
