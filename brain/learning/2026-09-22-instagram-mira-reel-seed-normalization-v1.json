@@ -1,0 +1,29 @@
+{
+  "fingerprint":"instagram-mira-reel-seed-normalization-v1",
+  "date":"2026-09-22",
+  "type":"INSTAGRAM_POLICY_DRIFT_PREVENTION",
+  "failure_class":"LEGACY_MIRA_CALENDAR_SEED_CONTRADICTS_REEL_ONLY_POLICY",
+  "scope":"POWERHOUSE_INSTAGRAM_RECOMMENDATION_BOUNDARY",
+  "machine_enforceable":true,
+  "repeat_count":29,
+  "security_sensitive":false,
+  "root_cause":"The Instagram growth calendar was created before Mira Reel-only v3 and still contained legacy carousel/Placid recommendations. The daily-winner selector correctly rejected those rows, producing NO_ELIGIBLE_MIRA_DAILY_WINNER even though a Mira daily-life seed existed.",
+  "prevention_rule":"Normalize every Mira daily-life Instagram recommendation at the database boundary to format=reel, production_route=openart_video and reel_generator=OpenArt before winner selection; remove legacy visual_generator routing and clean already-planned stale seeds. Preserve the same immutable winner/job through provider recovery.",
+  "evidence":[
+    "The 2026-09-22 Mira calendar seed was suggested but had format=carousel and production_route=placid_visual while 2026-09-21 and 2026-09-23 were already Reel/OpenArt.",
+    "The canonical materializer returned NO_ELIGIBLE_MIRA_DAILY_WINNER before normalization.",
+    "After normalization, the same recommendation became the immutable Reel winner and one OpenArt media job was materialized.",
+    "Twenty-eight future Mira daily-life recommendations through December still used carousel/Placid before the migration.",
+    "Production migration readback returned stale_count=0 after cleanup."
+  ],
+  "enforcement":[
+    "supabase/migrations/20260922082500_instagram_mira_reel_recommendation_normalization_v1.sql",
+    "tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs",
+    ".agents/skills/instagram-composio-publisher/SKILL.md",
+    "docs/changes/2026-09-22-instagram-mira-reel-seed-normalization-v1.md",
+    "docs/development-ledger-events/2026-09-22-instagram-mira-reel-seed-normalization-v1.md"
+  ],
+  "evaluation":{"historical_replay":["tests/brain-instagram-mira-reel-seed-normalization-v1.test.mjs"]},
+  "terminal_rule":"Complete only after protected merge, exact main readback, and production readback proving zero stale Mira Reel-policy recommendations.",
+  "compiler":{"failure_class":"DATA_INTEGRITY","scope":"DATABASE","machine_enforceable":true,"repeat_count":29,"security_sensitive":false}
+}
