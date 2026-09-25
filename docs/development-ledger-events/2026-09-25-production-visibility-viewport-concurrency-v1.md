@@ -6,3 +6,5 @@
 - Fix: bounded viewport-level parallelism with existing fail-closed total budget.
 - Assertions preserved: HTTP reachability, visible header/main/H1, occlusion, main text, CLS.
 - Terminal state: pending protected merge and production readback.
+
+- Lineage metadata lesson: do not declare a closed non-authoritative predecessor in `Supersedes` merely to narrate history; that intentionally re-enters the predecessor into admission conflict evaluation and can yield `BLOCKED_LINEAGE_AMBIGUOUS`. Historical context belongs in prose, while machine supersession is only for an actually superseded candidate lineage.
