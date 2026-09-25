@@ -1,5 +1,18 @@
 # Development Ledger
 
+
+## 2026-09-24 — IMPROVEMENT — MKB trigger-based sales intelligence
+- **Fingerprint:** `sales|mkb-trigger-intelligence|problem-led-partner-distribution|v1`.
+- **Signal:** MKB opdrachten zijn moeilijk wanneer Bedrijfsgeheugen een abstracte AI/data/digitaliseringspropositie generiek outbound aanbiedt; bestaande revenue intelligence had nog geen expliciete kooptrigger→probleem→entry-offer→partner-route context.
+- **Root cause:** latent-demand scoring combineerde engagement, search en externe signalen, maar maakte het bedrijfsspecifieke koopmoment niet expliciet en kon daardoor onvoldoende uitleggen waarom nu en welke kleine commerciële stap past.
+- **Fix:** evidence-backed MKB trigger classifier toegevoegd en geïntegreerd in dagelijkse opportunity scoring en Revenue Command Center. Zonder bedrijfsspecifieke bron blijft de status `INSUFFICIENT_EVIDENCE`. Triggercontext projecteert probleemhypothese, Frisse Blik-route, partnerkanalen en `context-led` outreach.
+- **Business model:** externe data → trigger → probleemhypothese → content/outreach → Frisse Blik → scan → implementatie → portal/SaaS → outcome → case/referral. Partnerdistributie en content-as-pre-sales zijn first-class.
+- **Regression:** bestaande `growth-intelligence-engine.test.mjs`, `growth-intelligence-daily.test.mjs` en `linkedin-revenue-cockpit.test.mjs` uitgebreid.
+- **Owner:** Revenue/Growth + Knowledge/Governance.
+- **Terminal proof:** candidate/promotion evidence wordt na protected merge en production readback toegevoegd aan de learning.
+- **Reusable lesson:** detecteer en bewijs het koopmoment vóór outreach; verkoop eerst het concrete managementprobleem en reduceer risico met een passende kleine instap.
+
+
 This ledger is append-only operational memory for material engineering outcomes. New entries must include date/time, type, fingerprint, symptom/signal, impact, root cause or rationale, evidence, attempted approaches, final fix/experiment, owner, regression gate, verification, production SHA/deploy, rollback/last-known-good and reusable lesson.
 
 Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` and `CONTRACT_CHANGE`.
