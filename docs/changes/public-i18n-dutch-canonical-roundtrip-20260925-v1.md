@@ -15,3 +15,9 @@ De publieke taalarchitectuur was niet volledig symmetrisch. Nederlands hoort op 
 ## Preventie
 
 De invariant staat machineleesbaar in `tests/brain-public-i18n-static-route-authority-v1.test.mjs` en in de productiecanary `tools/site-shell/verify-pricing-i18n-production.mjs`.
+
+## Production promotion
+
+De production-promotion heeft twee soorten verouderde regressietests blootgelegd: browser-retrytests die nog drie pogingen verwachtten terwijl de geoptimaliseerde verifier bewust twee begrensde pogingen gebruikt, en een oude i18n-test die productie-fallback naar onvertaalde Engelse pagina's eiste. Die laatste verwachting is expliciet onveilig en strijdig met de herstelde fail-closed regel.
+
+De regressies zijn daarom aangepast aan de actuele canonieke contracten. Productie mag nooit groen worden door Nederlands als Engels te publiceren, en tests mogen een eerder vervangen operationele constante niet terug afdwingen.
