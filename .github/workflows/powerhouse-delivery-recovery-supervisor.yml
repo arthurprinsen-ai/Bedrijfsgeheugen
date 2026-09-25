@@ -136,7 +136,11 @@ jobs:
           cancel_stale_runs in_progress "$STALE_IN_PROGRESS_MIN_AGE_SECONDS"
           echo "::notice::STALE_ACTIONS_RUN_CANCEL_TOTAL:$stale_cancelled"
 
-          active_runs="$(gh api "repos/$repo/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="waiting" or .status=="requested")] | length')"
+          active_runs=0
+          for active_status in queued in_progress pending waiting requested; do
+            status_count="$(gh api --paginate "repos/$repo/actions/runs?status=$active_status&per_page=100" --jq '.workflow_runs[] | .id' | wc -l | tr -d ' ')"
+            active_runs=$((active_runs + status_count))
+          done
           effective_active_runs=$((active_runs - obsolete_uncancellable))
           [ "$effective_active_runs" -ge 0 ] || effective_active_runs=0
           echo "::notice::ACTIONS_ACTIVE_RUNS_RAW:$active_runs effective:$effective_active_runs provider_zombies:$obsolete_uncancellable circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
