@@ -10,7 +10,7 @@ test('production and deploy previews use deterministic offline English cache', (
   const previewEnvironment=netlify.match(/\[context\.deploy-preview\.environment\]([\s\S]*?)(?=\n\[|$)/)?.[1] || '';
 
   assert.match(buildEnvironment,/STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(buildEnvironment,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
+  assert.match(buildEnvironment,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"0"/);
   assert.match(previewEnvironment,/STATIC_I18N_NETWORK\s*=\s*"0"/);
   assert.match(localized,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(localized,/STATIC_I18N_REQUIRE_CACHE/);
