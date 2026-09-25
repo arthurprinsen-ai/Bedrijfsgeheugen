@@ -1,0 +1,31 @@
+{
+  "id": "2026-09-25-live-proof-current-main-provider-descendant-v1",
+  "fingerprint": "delivery|live-proof|current-main-provider-descendant|v1",
+  "scope": "POWERHOUSE_DELIVERY",
+  "compiler": {
+    "failure_class": "STALE_OR_UNBOUND_PRODUCTION_READBACK"
+  },
+  "problem": "A prior green deploy or earlier production proof can become stale when main or provider production advances. LIVE_BEWEZEN must bind the latest relevant repository lineage to the current provider production identity.",
+  "root_cause": "Delivery status was historically easy to infer from merge state or an earlier deploy snapshot instead of re-reading current main and provider production at claim time.",
+  "prevention": [
+    "Read current main SHA immediately before live claim.",
+    "Read current provider production commit_ref immediately before live claim.",
+    "Require equality or prove ancestry/containment from the delivered merge into the provider production commit.",
+    "If main is ahead of provider production, keep status non-terminal until canonical production catches up.",
+    "Do not reuse stale readback after either repository or provider identity moves."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "PR #2846 merge 899b659674019be19858e65a1f2f715987c4503d contained in production descendant",
+      "PR #2848 merge b417e1f45155f59b16e6aabbc3b2eed168409915 contained in production descendant"
+    ],
+    "expected": "LIVE_BEWEZEN is emitted only when current provider production is cryptographically linked by exact SHA or Git ancestry to the delivered lineage."
+  },
+  "evidence": {
+    "main_at_final_readback": "63ab5bff7780bfb3ff6d5fa1f1d96eada7ae2cea",
+    "netlify_deploy_id": "6ab65252fc750c000816160b",
+    "netlify_commit_ref": "63ab5bff7780bfb3ff6d5fa1f1d96eada7ae2cea",
+    "netlify_state": "ready",
+    "netlify_context": "production"
+  }
+}
