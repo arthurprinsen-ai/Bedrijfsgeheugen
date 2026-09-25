@@ -26,5 +26,17 @@
   "skill_targets": [
     "powerhouse-continuity",
     "powerhouse-delivery-concurrency"
-  ]
+  ],
+  "evidence": {
+    "exact_main_sha": "66f5051ea8bc299acdd4bef89183bc48f665aeb0",
+    "production_snapshot_run_id": 36148519362,
+    "linked_build_id": "6ab686e9c00410eee26a8e5a",
+    "linked_deploy_id": "6ab686e9c00410eee26a8e5c",
+    "linked_deploy_state": "error",
+    "linked_error_message": "Failed during stage 'building site': Build script returned non-zero exit code: 2",
+    "prior_terminal_behavior": "workflow exited 78 before authenticated exact-source transport",
+    "required_recovery_behavior": "log linked failure evidence, set linked_fallback=true, break linked loop, then continue canonical exact-source transport for the same expected SHA",
+    "terminal_proof": "Netlify ready on exact production SHA plus pricing-content checks and NL→EN→NL browser readback"
+  },
+  "revision": 2
 }
