@@ -15,3 +15,6 @@ Root cause: the workflow-level `paths-ignore` contract was incomplete. The follo
 These paths remain subject to protected PR validation, Required lanes, browser regression and Brain/skill closure. They no longer start Netlify promotion/readback solely by changing those files.
 
 This exclusion is intentionally narrow. Deployable website, portal, API, Netlify function, connector runtime and production-bearing paths remain fail-closed and continue to trigger production proof.
+
+## Baseline contract drift found during validation
+The protected website baseline exposed an independent test-contract defect: `tests/targeted-website-route-regression.test.mjs` called the exported `isHardAssetFailure` helper without importing it. The production verifier itself was correct; the regression harness failed with `ReferenceError`. The test now imports the helper explicitly. This keeps the baseline executable rather than weakening or skipping the browser rule.
