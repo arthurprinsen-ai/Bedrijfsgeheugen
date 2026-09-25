@@ -1,0 +1,48 @@
+{
+  "fingerprint": "powerhouse-problem-radar-contextual-visual-v1",
+  "date": "2026-09-25",
+  "type": "PRODUCT_INTELLIGENCE_PORTAL_PROJECTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "problem": "Canonical MKB problem intelligence existed in the portal executive problem cards, but context was not systematically projected into the other Powerhouse surfaces where impact, decisions, monitoring and evidence are interpreted.",
+  "root_cause": "The canonical intake contract defined routing to customer intelligence but did not define contextual visual projection surfaces or a reusable visual context schema.",
+  "fix": [
+    "Extend problem projection with symptoms, trigger, segment, source/freshness, benchmark context and five priority dimensions",
+    "Render visual signal meters and context chips on executive problem cards",
+    "Embed the same PH-Pxxx context into Impact, Next Best Actions, Monitoring & Learning and Evidence Health",
+    "Keep external signals as context until tenant evidence supports relevance",
+    "Codify contextual visual projection in the canonical intake contract and skill"
+  ],
+  "prevention_rule": "Future Problem Radar portal work must reuse the same PH-Pxxx/evidence lineage and project it only where decision context is materially useful; never create a separate dashboard or parallel problem truth.",
+  "compiler": {
+    "failure_class": "PROBLEM_RADAR_CONTEXTUAL_PROJECTION_GAP",
+    "scope": "POWERHOUSE_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-radar-contextual-visual-v1.test.mjs",
+      "tests/brain-powerhouse-problem-radar-executive.test.mjs"
+    ],
+    "invariants": [
+      "same PH-Pxxx truth across portal surfaces",
+      "external evidence never becomes tenant fact by display alone",
+      "visual priority dimensions are evidence context, not fabricated market statistics",
+      "evidence drawer remains available",
+      "mobile executive day-start remains primary"
+    ]
+  },
+  "skill_targets": [
+    "skills/mkb-voice-of-customer-problem-radar.md"
+  ],
+  "evidence": {
+    "contract": "config/powerhouse-problem-radar-intake-contract.json",
+    "projection": "portal-v2/operating-system/executive-projection.js",
+    "cockpit": "portal-v2/operating-system/executive-cockpit.js",
+    "contextual_surfaces": "portal-v2/operating-system/operating-system-ui.js",
+    "styles": "portal-v2/operating-system/styles.js",
+    "documentation": "docs/changes/powerhouse-problem-radar-contextual-visual-v1.md"
+  }
+}
