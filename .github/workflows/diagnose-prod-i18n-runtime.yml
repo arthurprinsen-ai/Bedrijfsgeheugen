@@ -1,0 +1,43 @@
+name: Diagnose production i18n runtime
+on:
+  push:
+    branches: [diag/prod-i18n-runtime]
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund && npx playwright install --with-deps chromium
+      - name: Inspect production pricing runtime
+        run: |
+          node --input-type=module <<'NODE'
+          import { chromium } from 'playwright';
+          const browser=await chromium.launch({headless:true});
+          const page=await browser.newPage({viewport:{width:390,height:844}});
+          const errors=[];
+          page.on('pageerror',e=>errors.push(String(e.message||e)));
+          const response=await page.goto('https://www.bedrijfsgeheugen.nl/prijzen?diag='+Date.now(),{waitUntil:'networkidle',timeout:30000});
+          const data=await page.evaluate(()=>({
+            status: document.readyState,
+            lang: document.documentElement.lang,
+            bgLocale: document.documentElement.dataset.bgLocale||null,
+            bgStaticLocale: document.documentElement.dataset.bgStaticLocale||null,
+            BGI18N: Boolean(window.BGI18N),
+            scripts:[...document.scripts].map(s=>s.src||'[inline]').filter(x=>/i18n|assets\/js/.test(x)),
+            i18nAssetMarkers:document.querySelectorAll('[data-bg-i18n-asset]').length,
+            v18Drawer:Boolean(document.getElementById('v18MobileDrawer')),
+            bgkopMob:Boolean(document.getElementById('bgkopMob')),
+            genericHosts:document.querySelectorAll('[data-bg-mobile-view="root"], [data-bg-shared-mobile-view="root"]').length,
+            allSelects:document.querySelectorAll('[data-bg-language-select]').length,
+            allSwitchers:document.querySelectorAll('[data-bg-language-switcher]').length,
+            bodyClass:document.body.className
+          }));
+          console.log(JSON.stringify({http:response?.status(),data,errors},null,2));
+          await browser.close();
+          NODE
