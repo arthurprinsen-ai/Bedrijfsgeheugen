@@ -37,5 +37,12 @@
       "PR:3043"
     ],
     "expected_invariant": "latest main production snapshot starts a job in the recovered stable concurrency group and production remains serialized"
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
