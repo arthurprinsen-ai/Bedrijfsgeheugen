@@ -1,0 +1,34 @@
+{
+  "fingerprint": "apply-i18n-mobile-control-idempotency-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "MOBILE_LANGUAGE_CONTROL_SKIPPED_BY_ASSET_GUARD",
+  "problem": "Production pricing had valid i18n assets but no visible mobile language selector, so the exact-main browser proof failed after opening the mobile navigation.",
+  "root_cause": "tools/site-shell/apply-i18n.mjs treated an existing data-bg-i18n-asset marker as a reason to return from the whole page patch. Pages that already carried the CSS/runtime therefore skipped the separate idempotent mobile-control injection.",
+  "prevention": [
+    "Asset injection and mobile-control injection are separate idempotent responsibilities and must never share an early-return guard.",
+    "Pages with pre-existing i18n assets must still be evaluated for missing mobile language controls.",
+    "Production browser proof must open the real mobile drawer and require a visible native language select before NL to EN to NL routing is accepted."
+  ],
+  "evidence": {
+    "failed_run": 36159192559,
+    "failed_job": 108151226159,
+    "production_sha": "c2bf6d4f059307579686f1b61d66f195b0ee2af7",
+    "error": "visible mobile language select is missing after opening mobile navigation",
+    "exact_netlify_identity_proven": true,
+    "pricing_content_proven": true
+  },
+  "test_evidence": [
+    "tests/brain-apply-i18n-mobile-control-idempotency-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "skill_targets": ["continuity","delivery","website"],
+  "compiler": {
+    "failure_class": "MOBILE_LANGUAGE_CONTROL_SKIPPED_BY_ASSET_GUARD",
+    "scope": "PUBLIC_I18N_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
