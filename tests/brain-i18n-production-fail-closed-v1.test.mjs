@@ -5,19 +5,18 @@ import fs from 'node:fs';
 const source=fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
 const netlify=fs.readFileSync('netlify.toml','utf8');
 
-test('production localized build fails closed when translation provider fails',()=>{
-  assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"1"/);
-  assert.match(source,/STATIC_I18N_PRODUCTION_TRANSLATION_FAILED/);
+test('production localized build is provider-independent and fails closed on incomplete cache',()=>{
+  assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
+  assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(source,/STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED/);
-  assert.match(source,/if \(networkAllowed\) \{\s*throw new Error/);
-  assert.match(source,/if \(networkAllowed\) \{\s*throw new Error\('STATIC_I18N_PRODUCTION_TRANSLATION_FAILED:/);
-  const productionThrow=source.indexOf('STATIC_I18N_PRODUCTION_TRANSLATION_FAILED');
-  const previewFallback=source.indexOf('STATIC_I18N_PROVIDER_FALLBACK');
-  assert.ok(productionThrow >= 0 && previewFallback > productionThrow, 'preview fallback must exist only after the production throw path');
+  assert.match(source,/const cacheRequired = String\(process\.env\.STATIC_I18N_REQUIRE_CACHE/);
+  assert.match(source,/if \(cacheRequired\) \{\s*throw new Error\('STATIC_I18N_CACHE_INCOMPLETE:/);
 });
 
-test('deploy previews may remain offline without pretending to be translated',()=>{
+test('deploy previews use the same deterministic cache-only contract',()=>{
   assert.match(netlify,/\[context\.deploy-preview\.environment\][\s\S]*STATIC_I18N_NETWORK\s*=\s*"0"/);
+  assert.match(netlify,/\[context\.deploy-preview\.environment\][\s\S]*STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
   assert.match(source,/data-bg-static-translated/);
 });
 
