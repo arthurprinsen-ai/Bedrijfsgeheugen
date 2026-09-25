@@ -13,3 +13,7 @@ Repair:
 Terminal release proof remains exact Netlify production SHA plus pricing/i18n browser verification.
 
 The website lane also self-tests changes to its own workflow file by forcing high-risk preview/build parity for `.github/workflows/lane-website.yml`.
+
+## One-time cache generation
+
+A deploy-preview-only enrichment run generated 1926 previously missing post-transform English cache entries using the existing Netlify-held provider credential. The generated delta is committed as 9 versioned files under `config/bg-static-i18n-en.d/`. Preview and production are restored to cache-only mode afterward.
