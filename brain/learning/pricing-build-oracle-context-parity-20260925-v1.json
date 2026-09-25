@@ -1,0 +1,26 @@
+{
+  "fingerprint": "pricing-build-oracle-context-parity-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "type": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
+  "problem": "The exact production build for deterministic i18n failed before localization because pricing-build-integrity still required the retired single-goal label 'Belangrijkste doel nu'.",
+  "root_cause": "Pricing/Portal context evolved to multi-goal semantics ('Wat wil je bereiken?' plus the Ondernemersdoelen group), but the pre-build canonical-token oracle was not updated atomically.",
+  "prevention": [
+    "Pricing source, component tests, entitlement tests and pricing build-integrity tokens must share the same canonical business-context vocabulary.",
+    "A change from single-select to multi-select context semantics must update all build oracles in the same lineage.",
+    "Production build reproduction must use the exact production artifact after provider build failure before changing runtime code.",
+    "NL/EN production promotion is incomplete until the full pre-i18n build chain and browser roundtrip pass."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-build-integrity-context-parity-v1.test.mjs"],
+    "canary": ["tools/site-shell/pricing-build-integrity.mjs","tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
+    "scope": "WEBSITE_PRICING_BUILD_INTEGRITY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "skill_targets": ["powerhouse-continuity"],
+  "revision": 1
+}
