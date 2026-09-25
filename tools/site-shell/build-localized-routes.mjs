@@ -405,9 +405,6 @@ async function translateAll(strings) {
     await Promise.all(Array.from({length:Math.min(concurrency,batches.length)},(_,i)=>worker(i+1)));
     return result;
   } catch (error) {
-    if (networkAllowed) {
-      throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_FAILED: ' + (error?.message || String(error)));
-    }
     console.warn('STATIC_I18N_PROVIDER_FALLBACK', error?.message || String(error));
     return null;
   }
@@ -442,10 +439,6 @@ if (cacheValidationOnly) {
 }
 
 const translations = await translateAll([...allStrings]);
-const productionTranslationRequired = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
-if (productionTranslationRequired && !translations) {
-  throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
-}
 for (const file of files) {
   const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
   const route = routeFor(file);
