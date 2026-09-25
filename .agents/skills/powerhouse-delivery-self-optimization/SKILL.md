@@ -577,3 +577,16 @@ A Playwright `requestfailed` event for the same top-level document path is not b
 Therefore the targeted route verifier may suppress only `document:<final-path>` after a successful final HTTP response. Script and stylesheet failures always remain hard failures. Any document failure without a successful final response remains fail-closed.
 
 Never broaden this into generic request-failure suppression. Preserve route identity, visible-content, page-error and asset integrity checks.
+
+
+## Production trigger ownership for control-plane paths
+
+Fingerprint: `delivery|production-trigger|control-plane-path-ownership|v1`.
+
+Production Source Snapshot and Production Release Readback must not start for changes that only alter delivery/governance control-plane surfaces. At minimum these paths are non-runtime for production-trigger ownership:
+- `AGENTS.md`;
+- `brain/policies/**`;
+- `tools/delivery/**`;
+- `tools/site-shell/verify-targeted-website-routes.mjs`.
+
+These paths remain fully validated in PR Required/automation/browser suites. Excluding them from production push triggers prevents unnecessary Netlify promotions, stale-release wait loops, and CI fan-out. Never generalize this rule to deployable site, portal, API, Netlify function, connector runtime, or other production-bearing paths.
