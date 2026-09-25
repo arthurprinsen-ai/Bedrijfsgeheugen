@@ -1,0 +1,29 @@
+{
+  "fingerprint": "pricing-build-oracle-context-parity-20260925-v2",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "type": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
+  "problem": "Exact Netlify production build fails before localization because pricing-build-integrity still requires retired copy 'Belangrijkste doel nu'.",
+  "root_cause": "Pricing/Portal semantics moved to multi-goal context ('Wat wil je bereiken?' + 'Ondernemersdoelen'), but the pre-build oracle did not move atomically.",
+  "prevention": [
+    "Pricing source and production build oracle must share the same canonical business-context vocabulary.",
+    "Never restore retired product copy merely to satisfy a stale build oracle.",
+    "After provider build exit code 2, reproduce or isolate the first failing build command before changing runtime behavior."
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
+    "scope": "WEBSITE_PRICING_BUILD_INTEGRITY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-build-integrity-context-parity-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "revision": 2
+}

@@ -965,3 +965,10 @@ All deploy contexts are deterministic:
 - translation providers may only be used in an explicit cache-generation/update workflow, never on the production critical path.
 
 Before merge, run the canonical cache validator and preserve the existing NL→EN→NL production browser proof.
+
+
+## Production build-oracle semantic parity
+
+Fingerprint: `pricing-build-oracle-context-parity-20260925-v1`.
+
+Production build oracles are executable product contracts. When pricing/Portal context semantics change, update source, regressions and pre-build integrity tokens atomically. Never restore retired copy merely to satisfy a stale oracle. After a Netlify build failure, isolate the first failing build command before changing runtime behavior.
