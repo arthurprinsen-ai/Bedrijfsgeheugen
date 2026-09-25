@@ -4,6 +4,7 @@ import { verifyCustomerLoginContract } from './verify-customer-login-contract.mj
 import { applyHomepageProcessProgress } from './bouw-v18-homepage-process-progress.mjs';
 import { runDocumentExtractorProductionCanary } from '../platform/connectors/document-extractor-production-canary.mjs';
 import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './site-shell/ensure-knowledge-nav.mjs';
+import { applyAiEcosystemProposition } from './bouw-v18-ai-ecosysteem.mjs';
 
 await import('./bouw-v18-production-core.mjs');
 await import('./apply-v18-seo.mjs');
@@ -32,6 +33,7 @@ await writeFile(wijzigingenPath, wijzigingenStable, 'utf8');
 // historical V18 builder so later page transformers cannot restore the old
 // dimmed 02/03/04 behavior.
 await applyHomepageProcessProgress();
+console.log(await applyAiEcosystemProposition('index.html'));
 
 // `bouw-v18-chrome-alles.mjs` reads its real site-wide shell from index.html.
 // Normalize that exact source before the later V18 chrome pass copies it to
