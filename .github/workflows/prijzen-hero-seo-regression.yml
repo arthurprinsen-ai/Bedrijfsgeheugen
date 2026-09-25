@@ -1,20 +1,11 @@
 name: Prijzen hero SEO regression
 
 on:
-  push:
-    branches:
-      - fix/prijzen-hero-seo-gate-20260905
-  pull_request:
-    paths:
-      - 'tools/site-shell/**'
-      - 'tools/*seo*.mjs'
-      - 'tools/prijzen-uit-de-homepage.mjs'
-      - 'tests/prijzen-hero-seo.test.mjs'
-      - 'tests/technical-seo-gate.test.mjs'
-      - '.github/workflows/prijzen-hero-seo-regression.yml'
+  workflow_call:
+  workflow_dispatch:
 
 concurrency:
-  group: prijzen-hero-seo-${{ github.event.pull_request.number || github.ref_name }}
+  group: prijzen-hero-seo-${{ github.run_id }}
   cancel-in-progress: true
 
 jobs:
