@@ -520,3 +520,14 @@ When a reusable website component has regression tests under `tests/components/`
 - never leave a component regression family outside the delivery classifier;
 - add a delivery-plan regression whenever a new component-test root is introduced;
 - treat an `unclassified delivery path` for an owned component regression as a classifier gap to repair, not as a reason to bypass the gate.
+
+
+## Surface-specific browser proof
+
+Fingerprint: `delivery|browser-proof|visible-surface-control|v1`.
+
+A browser gate must exercise the control that is actually visible and actionable on the viewport under test. Do not target a hidden desktop duplicate while running a mobile viewport, or a hidden mobile control while running desktop.
+
+For public mobile NL/EN proof, follow the real user path: open `#bgkopKnop`, operate `[data-bg-language-select]`, prove the static English route, then roundtrip to the unprefixed Dutch canonical route.
+
+Preserve semantic assertions across the route transition: URL, `html[lang]`, translated visible content, absence of runtime translation error, and canonical Dutch return path.
