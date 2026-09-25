@@ -11,6 +11,7 @@ const INCLUDED_DIRS = new Set(['blog','kennis']);
 const SKIP_TAGS = new Set(['script','style','code','pre','noscript','svg','textarea']);
 const ATTRS = new Set(['placeholder','title','aria-label','alt']);
 const TRANSLATION_CACHE_FILE = path.join(ROOT,'.cache','bg-static-i18n-en.json');
+const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'.cache','bg-static-i18n-en.d');
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
@@ -250,10 +251,23 @@ function setLocaleMetadata(doc,locale,route,translated=true) {
 }
 
 function loadCache() {
+  let cache = {};
   try {
     const json = JSON.parse(fs.readFileSync(TRANSLATION_CACHE_FILE,'utf8'));
-    return json && typeof json === 'object' ? json : {};
-  } catch { return {}; }
+    if (json && typeof json === 'object') cache = { ...json };
+  } catch {}
+  try {
+    if (fs.existsSync(TRANSLATION_CACHE_PATCH_DIR)) {
+      for (const name of fs.readdirSync(TRANSLATION_CACHE_PATCH_DIR).filter(x=>x.endsWith('.json')).sort()) {
+        const patch = JSON.parse(fs.readFileSync(path.join(TRANSLATION_CACHE_PATCH_DIR,name),'utf8'));
+        if (!patch || typeof patch !== 'object' || Array.isArray(patch)) throw new Error('Invalid static i18n cache patch: ' + name);
+        cache = { ...cache, ...patch };
+      }
+    }
+  } catch (error) {
+    throw new Error('STATIC_I18N_CACHE_PATCH_INVALID: ' + (error?.message || String(error)));
+  }
+  return cache;
 }
 
 function saveCache(cache) {
