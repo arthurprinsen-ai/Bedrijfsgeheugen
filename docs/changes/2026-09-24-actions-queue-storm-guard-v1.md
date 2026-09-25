@@ -72,3 +72,19 @@ De cleanup-escalatie is nu: normale cancel → officiële Actions `force-cancel`
 Daarnaast is een tweede schedulerbug gesloten: de supervisor gebruikte `jq ... | while ...; break`. Bij recovery-budget 1 beëindigde de consumer bewust, waarna `jq` SIGPIPE kreeg en de hele workflow rood werd. De iterator gebruikt nu process substitution.
 
 Tot slot wacht Obligation Terminal Closure niet meer slechts vijf minuten op Required. De exact-head gate wait is vijftien minuten en de closure-job heeft een harde timeout van dertig minuten. Daarmee wordt normaal lange Required-uitvoering niet meer als terminale fout gemarkeerd.
+
+
+## Fail-fast queue governor v8 — 25 september 2026
+
+De nieuwe incidentstand (19 actief + 11 queued) liet zien dat de vorige drempels nog te laat ingrepen. De governor telt daarom nu alle non-terminale states als één capaciteitsbudget.
+
+Nieuwe defaults:
+- soft: 8 totaal actief of 5 queued;
+- hard circuit: 12 totaal actief of 8 queued;
+- maximaal 3 voorspelde nieuwe runs per mutatie;
+- supervisor iedere 5 minuten;
+- bewezen obsolete queued runs na 60 seconden opruimbaar;
+- bewezen obsolete in-progress runs na 300 seconden opruimbaar;
+- cleanup-budget 100 per cyclus zodat oude rommel niet dagen blijft staan.
+
+GitHub community-incidenten in juli–september 2026 tonen daarnaast een provider failure mode waarbij runs zichtbaar `queued` blijven met 0 jobs en cancel/force-cancel kan falen met 409/500. Daarom classificeert Powerhouse een bewezen obsolete maar technisch niet verwijderbare run als `PROVIDER_CONTROL_PLANE_ZOMBIE`. Die blijft in raw telemetry zichtbaar, maar telt niet eeuwig mee als effectieve admission pressure. Nieuwe dispatches stapelen nooit blind achter zo'n zombie.
