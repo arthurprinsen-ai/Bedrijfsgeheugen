@@ -972,3 +972,23 @@ Before merge, run the canonical cache validator and preserve the existing NL→E
 Fingerprint: `pricing-build-oracle-context-parity-20260925-v1`.
 
 Production build oracles are executable product contracts. When pricing/Portal context semantics change, update source, regressions and pre-build integrity tokens atomically. Never restore retired copy merely to satisfy a stale oracle. After a Netlify build failure, isolate the first failing build command before changing runtime behavior.
+
+
+## Atomic i18n cache authority migration
+
+Fingerprint: `website|i18n|cache-authority-migration|atomic-fragments|v1`.
+
+When moving static translation authority, migrate the base artifact **and every incremental patch fragment in the same candidate**. A path migration is incomplete if any fragment remains under the retired authority.
+
+Canonical paths:
+- base: `config/bg-static-i18n-en.json`
+- patches: `config/bg-static-i18n-en.d/*.json`
+
+Forbidden release authority:
+- `.cache/bg-static-i18n-en.json`
+- `.cache/bg-static-i18n-en.d/*.json`
+
+Before protected delivery, prove coverage with:
+`STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 node tools/site-shell/build-localized-routes.mjs --validate-cache`.
+
+A missing fragment is a production build defect and must fail closed; never re-enable provider fallback to mask it.
