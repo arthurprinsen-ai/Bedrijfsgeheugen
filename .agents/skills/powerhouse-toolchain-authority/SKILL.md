@@ -62,3 +62,18 @@ The 2026-09-18 production closure proved three additional invariants:
 3. **Evidence paths must already be classified.** Before writing a new log/proof/document path, resolve it against Brain delivery membership. Prefer an existing classified canonical learning/ledger path; otherwise add classification deliberately in the same governed change. Fingerprint: `delivery|brain-classification|resync-proof-unclassified-path-v1`.
 
 Canonical machine-readable learning: `brain/learning/2026-09-18-toolchain-authority-release-learning-v1.json`.
+
+## Netlify production truth authority
+
+Fingerprint: `netlify-auth-recovery-exact-sha-provider-proof-20260925-v1`.
+
+Netlify is the authoritative provider for web-runtime deployment identity. GitHub remains source/delivery authority, but workflow status alone may not overwrite immutable provider evidence.
+
+Rules:
+1. A Netlify `401 Unauthorized` is transport/auth failure; do not diagnose it as product-code or content failure without independent evidence.
+2. A ready production deploy with observed `commit_ref` is durable provider evidence for that checkpoint.
+3. Provider deploy truth does not substitute for required functional browser proof.
+4. If a GitHub readback is cancelled after provider identity has already been proven, preserve the provider proof and rerun only the missing functional/readback gates on the canonical current lineage.
+5. If production subsequently advances to a descendant/newer commit, keep earlier deploy identity as historical proof and read back the new current production state separately.
+
+Canonical learning: `brain/learning/netlify-auth-recovery-exact-sha-provider-proof-20260925-v1.json`.
