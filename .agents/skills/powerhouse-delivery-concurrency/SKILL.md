@@ -240,3 +240,4 @@ Raw active pressure and the obsolete/provider-zombie deductions must be computed
 Fingerprint: `i18n-production-fail-closed-20260924-v1`.
 
 An i18n candidate may land only if the exact head preserves production fail-closed semantics: `STATIC_I18N_NETWORK=1` cannot fall back to untranslated `/en/*` output. Provider resilience is allowed only around retries/backoff, never around the success criterion. Terminal proof must include exact production SHA plus visible-English browser evidence.
+- Netlify linked-build failure is not terminal when the canonical authorized exact-source transport remains available; record linked evidence, fall through once, and keep exact-SHA/readback gates authoritative.
