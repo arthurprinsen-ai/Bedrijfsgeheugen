@@ -1022,3 +1022,16 @@ Fingerprint: `skill-projection-replay-dependency-bootstrap-20260925-v1`.
 - A missing module/package before the replay assertion is a workflow-bootstrap defect, not evidence that canonical learning is invalid.
 - Never weaken or remove historical replay to avoid installing dependencies; repair the execution environment and keep fail-closed evaluation.
 - Guard dependency-before-replay ordering with `tests/brain-skill-projection-dependency-bootstrap-v1.test.mjs`.
+
+## Public copy must ship with deterministic English cache
+
+Fingerprint: `static-i18n-cache-gap-ai-ecosystem-20260925-v1`.
+
+- Any public translatable copy change must include its English cache delta in the same canonical delivery lineage.
+- Production remains `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1`; never restore provider-dependent translation to make release builds pass.
+- Canonical authority is `config/bg-static-i18n-en.json` plus `config/bg-static-i18n-en.d/*.json`.
+- Run `node tools/site-shell/build-localized-routes.mjs --validate-cache` before terminal merge of public-copy changes.
+- A missing-cache failure is a content/cache coupling defect and must be repaired by adding the deterministic English delta, not by weakening fail-closed behavior.
+- Regression: `tests/brain-static-i18n-current-cache-complete-v1.test.mjs`.
+- Learning: `brain/learning/static-i18n-cache-gap-ai-ecosystem-20260925-v1.json`.
+
