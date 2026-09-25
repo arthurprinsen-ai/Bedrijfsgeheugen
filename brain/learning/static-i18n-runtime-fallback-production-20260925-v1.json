@@ -1,0 +1,33 @@
+{
+  "fingerprint": "static-i18n-runtime-fallback-production-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Netlify production builds failed before publish when the offline static English cache was incomplete, even though the public runtime i18n fallback was present and production browser proof could verify English behavior.",
+  "root_cause": "STATIC_I18N_REQUIRE_CACHE=1 made static translation completeness a hard publication dependency while STATIC_I18N_NETWORK=0 intentionally disabled build-time provider calls.",
+  "prevention": [
+    "Production keeps STATIC_I18N_NETWORK=0 so release builds do not depend on an external translation provider.",
+    "Production must not require a complete static translation cache when the canonical runtime i18n fallback is available.",
+    "Untranslated static English routes must remain marked for runtime translation.",
+    "LIVE_BEWEZEN still requires the real production browser verifier to prove /en/prijzen visibly renders English."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-static-i18n-runtime-fallback-production-v1.test.mjs"],
+    "shadow": ["tests/brain-static-i18n-runtime-fallback-production-v1.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": ["tests/brain-static-i18n-runtime-fallback-production-v1.test.mjs","tools/site-shell/verify-pricing-i18n-production.mjs"],
+  "evidence": {
+    "failed_main_sha": "66f5051ea8bc299acdd4bef89183bc48f665aeb0",
+    "failed_netlify_deploy": "6ab686e9c00410eee26a8e5c",
+    "failure": "Build script returned non-zero exit code: 2",
+    "production_i18n_mode": "STATIC_I18N_NETWORK=0 with runtime fallback"
+  },
+  "skill_targets": ["continuity","delivery"],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_HARD_DEPENDENCY",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
