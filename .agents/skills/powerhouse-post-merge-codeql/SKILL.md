@@ -45,3 +45,14 @@ Valid terminal states are:
 - `BLOCKED_HARD_BOUNDARY` with concrete external evidence.
 
 Queued/running is not terminal.
+
+## Client-stream interruption recovery
+
+A ChatGPT/client transport interruption such as “Streaming onderbroken” is not a delivery terminal state and must never be interpreted as permission to abandon the obligation.
+
+On the next executable turn:
+- resume from the canonical PR/branch and newest exact head SHA;
+- read current main and current workflow state before mutating anything;
+- do not create a replacement PR merely because the previous response stream was interrupted;
+- do not repeat a pending-status handoff; continue execution until the normal terminal contract is reached;
+- distinguish UI/transport interruption from repository, CI, or production failure in the ledger and user-facing explanation.
