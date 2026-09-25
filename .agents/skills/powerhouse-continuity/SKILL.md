@@ -1108,3 +1108,21 @@ Fingerprint: `pricing-canonical-i18n-assets-20260925-v1`.
 - Canonical `prijzen.html` must itself include `/assets/i18n.css` and `/assets/js/i18n.js` with `data-bg-i18n-asset`.
 - `apply-i18n.mjs` must remain idempotent and must not duplicate those assets.
 - Production closure requires the visible mobile language selector plus NL→EN→NL browser roundtrip on `/prijzen`.
+
+
+## Website i18n asset completeness
+
+Fingerprint: `website-i18n|asset-completeness|runtime-host-proof|v1`.
+
+For public NL/EN delivery, the presence of one i18n marker or stylesheet is never evidence that the complete i18n runtime is installed.
+
+Mandatory:
+- validate stylesheet and runtime script independently;
+- never short-circuit build transforms merely because any `data-bg-i18n-asset` marker exists;
+- keep mobile language mounting idempotent across the active v18 drawer, generic shared mobile roots and legacy compact navigation;
+- production proof must inspect the final public HTML/runtime, not only canonical source;
+- require a real mobile NL → EN → NL roundtrip on the active visible navigation before `LIVE_BEWEZEN`;
+- if production reports zero language selects, first prove that `assets/js/i18n.js` is actually present and executed before diagnosing host-selection logic.
+
+Canonical learning: `brain/learning/i18n-v18-mobile-host-production-20260925-v1.json`.
+Regression: `tests/brain-i18n-asset-independent-injection-v1.test.mjs`.
