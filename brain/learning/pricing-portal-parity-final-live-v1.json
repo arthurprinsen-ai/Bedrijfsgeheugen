@@ -1,0 +1,47 @@
+{
+  "id": "pricing-portal-parity-final-live-v1",
+  "failure_class": "MERGED_PRICING_PARITY_NOT_EXACTLY_DEPLOYED",
+  "symptom": "Pricing and Portal parity were present on main while production still served an older commit.",
+  "root_cause": "The canonical Production Source Snapshot only triggers when its workflow file changes; the parity/i18n repair moved main without an exact-source production trigger.",
+  "prevention": [
+    "After material pricing or Portal parity changes, trigger the canonical exact-source production snapshot in the same delivery lineage.",
+    "Require exact main SHA, ready Netlify production deploy, pricing production content proof, interaction proof and Production Release Readback before terminal LIVE.",
+    "Do not treat a ready older production deploy as proof for current main."
+  ],
+  "applies_to": [
+    "pricing",
+    "portal-v2",
+    "production-deploy",
+    "powerhouse-delivery"
+  ],
+  "fingerprint": "pricing-portal-parity-final-live-v1",
+  "scope": "AUTOMATION",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-portal-parity-final-live-v1.test.mjs"
+    ]
+  },
+  "problem": "Pricing and Portal parity can be merged to main without the exact current source being promoted because Production Source Snapshot is intentionally path-gated.",
+  "evidence": {
+    "tests": [
+      "tests/brain-pricing-portal-parity-final-live-v1.test.mjs"
+    ],
+    "source": [
+      ".github/workflows/production-source-snapshot.yml"
+    ],
+    "outcome": "The canonical exact-source production promotion is triggered and must prove current-main deployment plus production pricing/readback before terminal LIVE."
+  },
+  "compiler": {
+    "failure_class": "MERGED_PRICING_PARITY_NOT_EXACTLY_DEPLOYED",
+    "scope": "WEBSITE_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ]
+}
