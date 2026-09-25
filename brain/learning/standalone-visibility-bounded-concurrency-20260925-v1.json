@@ -1,0 +1,29 @@
+{
+  "fingerprint": "standalone-visibility-bounded-concurrency-v1",
+  "date": "2026-09-25",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The Required website lane swept every sitemap route at three viewports sequentially. With 92 public routes this meant 276 serial browser navigations, causing otherwise-green PRs to spend minutes in the same visibility step and accumulate concurrent GitHub runners.",
+  "prevention_rule": "Keep full public-route and three-viewport coverage, but execute route checks with bounded concurrency and retain the global fail-closed time budget.",
+  "compiler": {
+    "failure_class": "CI_QUEUE_AMPLIFICATION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 7,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_parallel_jobs": 7,
+    "route_count": 92,
+    "viewport_count": 3,
+    "checks_per_run": 276,
+    "blocked_step": "Verify all public pages are visibly rendered"
+  }
+}
