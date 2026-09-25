@@ -42,7 +42,8 @@
     "ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE",
     "DOCS_CLOSURE_ALIAS_CANONICALIZES_BEFORE_ADMISSION",
     "SETTLED_SUCCESSFUL_DOCUMENT_REQUEST_ABORT_IS_NOT_AN_ASSET_FAILURE",
-    "PRODUCTION_READBACK_ACCEPTS_ONLY_SAFE_NON_RUNTIME_DESCENDANT_SUPERSESSION"
+    "PRODUCTION_READBACK_ACCEPTS_ONLY_SAFE_NON_RUNTIME_DESCENDANT_SUPERSESSION",
+    "TERMINAL_GATES_MUST_MATCH_REAL_TRIGGER_AND_LANE_APPLICABILITY"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -220,7 +221,8 @@
     "brain/learning/2026-09-25-repository-native-borging-all-agents-v1.json",
     "brain/learning/2026-09-25-candidate-type-closure-canonicalization-v1.json",
     "brain/learning/2026-09-25-browser-settled-document-request-failure-v1.json",
-    "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json"
+    "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json",
+    "brain/learning/2026-09-25-terminalizer-brain-gate-applicability-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -493,5 +495,14 @@
     ],
     "runtime_affecting_descendant_behavior": "FAIL_CLOSED",
     "non_descendant_behavior": "FAIL_CLOSED"
+  },
+  "terminal_brain_gate_applicability_rule": {
+    "required": true,
+    "fingerprint": "delivery|terminalizer-brain-gate-applicability|v1",
+    "docs_lane_brain_required": false,
+    "non_docs_brain_required": true,
+    "non_docs_identity": "exact candidate head",
+    "trigger_contract": "use authoritative Unified Brain Delivery run regardless of event name; do not require an event the workflow cannot emit",
+    "required_and_codeql_rules_unchanged": true
   }
 }
