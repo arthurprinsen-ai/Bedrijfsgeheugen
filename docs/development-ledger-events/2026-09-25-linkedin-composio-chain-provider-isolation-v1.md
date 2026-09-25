@@ -11,3 +11,6 @@
 - Production status: pending protected merge, Edge Function deployment, current-day artifact recovery, and provider readback.
 
 - Post-deploy diagnostic narrowed the generation failure to Anthropic HTTP 400. Added bounded, sanitized provider type/message logging so the request-shape error can be repaired without exposing prompts, source data or secrets.
+
+- Root cause proven: Anthropic returned `invalid_request_error` because the account credit balance was too low.
+- Added a separately governed Composio/Groq artifact fallback using `openai/gpt-oss-120b`, limited to provider-availability failure classes. It generates artifacts only; LinkedIn publication still passes through canonical publication authority and Composio exact-URN readback.
