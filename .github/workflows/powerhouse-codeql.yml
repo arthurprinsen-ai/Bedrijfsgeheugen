@@ -14,6 +14,15 @@ on:
       - '.github/workflows/powerhouse-codeql.yml'
   push:
     branches: [main]
+    paths:
+      - '**/*.js'
+      - '**/*.mjs'
+      - '**/*.cjs'
+      - '**/*.ts'
+      - '**/*.tsx'
+      - 'package.json'
+      - 'package-lock.json'
+      - '.github/workflows/powerhouse-codeql.yml'
   schedule:
     - cron: '41 4 * * 2,5'
   workflow_dispatch:
@@ -24,7 +33,7 @@ permissions:
   packages: read
 
 concurrency:
-  group: powerhouse-codeql-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  group: powerhouse-codeql-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
