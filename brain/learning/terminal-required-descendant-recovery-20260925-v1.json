@@ -15,5 +15,29 @@
   "regression": [
     "tests/brain-terminal-required-descendant-recovery-v1.test.mjs"
   ],
-  "dashboard_fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1"
+  "dashboard_fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-required-descendant-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-required-descendant-recovery-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "failed_approaches": [
+    "Treating a historical Required failure as permanently terminal even after the merged change is contained in current main and the stale verifier assertion has been repaired.",
+    "Rewriting historical failed evidence as if the exact candidate had passed.",
+    "Opening duplicate recovery PRs instead of using contained descendant regression evidence."
+  ],
+  "revision": 2
 }
