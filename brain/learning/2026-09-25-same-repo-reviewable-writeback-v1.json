@@ -19,7 +19,7 @@
     "Missing repository writeback remains WRITEBACK_INCOMPLETE and cannot become LIVE_BEWEZEN."
   ],
   "skill_targets": [
-    "powerhouse-continuity"
+    "continuity"
   ],
   "compiler": {
     "failure_class": "SAME_REPOSITORY_WRITEBACK_GAP",
