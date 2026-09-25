@@ -25,7 +25,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs"
+      "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
+      "tests/site-shell-website-release-risk.test.mjs"
     ],
     "invariants": [
       "one canonical PH-Pxxx problem language",
@@ -45,5 +46,13 @@
     "regression": "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
     "documentation": "docs/changes/powerhouse-problem-radar-canonical-intake-v1.md",
     "inherited_regression_repair": "tests/site-shell-website-release-risk.test.mjs"
+  },
+  "integration_recovery": {
+    "failure_class": "INHERITED_STALE_REGRESSION_CONTRACT",
+    "observed_gate": "website / baseline",
+    "root_cause": "Current main had already changed standalone visibility verification from serial route iteration to bounded worker concurrency, while tests/site-shell-website-release-risk.test.mjs still asserted the superseded serial `for (const route of routes)` mechanism.",
+    "repair": "Migrate the stale baseline assertion to the canonical bounded-concurrency semantics without weakening full-route, viewport, CLS or fail-closed guarantees.",
+    "prevention": "When a canonical verifier changes execution strategy, co-migrate all tests that assert the old mechanism; preserve semantic safety invariants rather than implementation shape.",
+    "repaired_test": "tests/site-shell-website-release-risk.test.mjs"
   }
 }
