@@ -1,6 +1,6 @@
 {
   "fingerprint": "public-i18n-dutch-canonical-roundtrip-20260925-v1",
-  "status": "IMPLEMENTED_CANDIDATE",
+  "status": "PROMOTION_CANDIDATE",
   "date": "2026-09-25",
   "type": "PUBLIC_I18N_CANONICAL_ROUTE_SYMMETRY",
   "root_cause": "The public language switcher and static localized-route builder treated both locales as prefixed. That made English to Dutch navigate to /nl/* and caused Dutch canonical, hreflang and internal-link generation to diverge from the agreed public authority where Dutch is unprefixed and English lives under /en/*.",
@@ -10,7 +10,8 @@
     "Runtime language switching must preserve path, query and hash while mapping NL→EN to /en/* and EN→NL to the unprefixed route.",
     "Static localized-route generation must use the same canonical mapping for internal links, canonical URLs, hreflang and og:url.",
     "Legacy /nl and /nl/* URLs permanently redirect to the matching unprefixed Dutch route.",
-    "Production browser proof must execute a real NL→EN→NL roundtrip and fail if the Dutch return path contains /nl."
+    "Production browser proof must execute a real NL→EN→NL roundtrip and fail if the Dutch return path contains /nl.",
+    "Regression tests that encode superseded operational constants or superseded safety policy must be updated in the same lineage when the canonical implementation changes; stale tests may not force rollback to unsafe behavior."
   ],
   "compiler": {
     "failure_class": "PUBLIC_I18N_DUTCH_PREFIX_CANONICAL_DRIFT",
@@ -29,5 +30,32 @@
   "skill_targets": [
     "powerhouse-continuity"
   ],
-  "revision": 1
+  "revision": 2,
+  "promotion": {
+    "pr": 2930,
+    "predecessor_pr": 2924,
+    "purpose": "Canonical Production Source Snapshot promotion and NL→EN→NL production proof.",
+    "observed_regressions": [
+      "Two stale route retry tests still asserted attempts=3 after the bounded production verifier moved to attempts=2.",
+      "One stale i18n test still asserted production provider failure should degrade to runtime fallback, contradicting the restored fail-closed invariant."
+    ],
+    "recovery": "Aligned stale regression tests with the current canonical contracts; no weakening of runtime or production proof."
+  },
+  "evidence": {
+    "observed_defect": "Public English-to-Dutch switching and static Dutch locale metadata could resolve to /nl/* even though Dutch public canonical authority is unprefixed.",
+    "implementation_pr": 2918,
+    "implementation_main_sha": "817f0bfb504b6206ad72a8ca8878fb26dc913279",
+    "promotion_pr": 2930,
+    "predecessor_promotion_pr": 2924,
+    "reconciled_base_sha": "8775882c959272ac7c11c6d710672d5f8d9e64b1",
+    "regression_tests": [
+      "tests/brain-public-i18n-static-route-authority-v1.test.mjs",
+      "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+      "tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs",
+      "tests/brain-production-route-body-readiness-retry-v1.test.mjs",
+      "tests/brain-targeted-route-preview-timeout-retry-v1.test.mjs"
+    ],
+    "production_canary": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "terminal_requirement": "Netlify production must be ready on the protected promotion main SHA and the browser canary must prove NL→EN→NL without any /nl/* Dutch route."
+  }
 }
