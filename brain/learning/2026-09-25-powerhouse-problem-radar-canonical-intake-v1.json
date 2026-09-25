@@ -25,8 +25,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
-      "tests/site-shell-website-release-risk.test.mjs"
+      "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs"
     ],
     "invariants": [
       "one canonical PH-Pxxx problem language",
