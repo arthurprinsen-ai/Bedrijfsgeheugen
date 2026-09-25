@@ -1,0 +1,34 @@
+{
+  "fingerprint": "component-test-delivery-classification-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Component implementation paths were classified as website work, but tests/components/ was absent from the delivery classifier, so a legitimate component regression fix was rejected as an unclassified delivery path.",
+  "prevention": [
+    "Classify tests/components/ as website delivery work.",
+    "Whenever a new owned component test family is introduced, classify its test path in the same change.",
+    "Protect the classification with a direct delivery-plan regression."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-component-test-delivery-classification-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-component-test-delivery-classification-v1.test.mjs"
+    ],
+    "source": [
+      "config/brain-delivery-system.json",
+      "tests/components/pricing.test.mjs"
+    ],
+    "outcome": "Component test changes now enter the website lane instead of failing admission as unclassified."
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ]
+}

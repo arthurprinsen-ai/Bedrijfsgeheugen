@@ -478,7 +478,8 @@
         "industrie-productie-software-koppelen.html",
         "vastgoed-software-koppelen.html",
         "automotive-software-koppelen.html",
-        "tests/branche-applicaties-integraties.test.mjs"
+        "tests/branche-applicaties-integraties.test.mjs",
+        "tests/components/"
       ],
       "requiredContracts": [
         "BG166",

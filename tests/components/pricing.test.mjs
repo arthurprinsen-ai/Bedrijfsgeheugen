@@ -9,8 +9,8 @@ const contract = JSON.parse(await readFile('components/pricing/contract.json', '
 test('pricing preserves the current Frisse Blik Scan offer and prices', () => {
   assert.match(html, /data-bg-component="pricing"/);
   assert.match(html, /Start met de Frisse Blik Scan/);
-  assert.match(html, /€ 2\.900/);
-  assert.match(html, /op afstand € 2\.400/);
+  assert.match(html, /€ 2\.950/);
+  assert.doesNotMatch(html, /op afstand € 2\.400/);
   assert.match(html, /Excl\. btw/);
   assert.match(html, /inclusief rapport en advies/);
 });
