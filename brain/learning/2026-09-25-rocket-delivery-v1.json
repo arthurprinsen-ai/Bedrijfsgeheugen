@@ -1,0 +1,23 @@
+{
+  "version": "rocket-delivery-v1",
+  "date": "2026-09-25",
+  "obligation_id": "rocket-delivery-v1-20260925",
+  "root_cause": "CI latency and queue pressure were amplified by duplicate GitHub Actions entrypoints, broad main-push triggers and concurrency identities that did not consistently collapse obsolete work.",
+  "evidence": [
+    "The repository contains many independent workflows while Required test is the protected PR authority.",
+    "Historical recovery PRs #3086 and #3091 independently reduced PR and main-push fan-out but were stale against current main.",
+    "Current Required test already aggregates selected lanes without sibling-workflow polling."
+  ],
+  "prevention": [
+    "Keep Required test as the single protected PR authority.",
+    "Do not attach duplicate heavy website/portal verification entrypoints to pull_request when the canonical lane already covers them.",
+    "Path-scope main-push work to affected domains.",
+    "Use stable PR/ref concurrency identities with cancel-in-progress for obsolete validation work.",
+    "Reconcile stale recovery work onto current main rather than merging stale branches."
+  ],
+  "verification": [
+    "tests/delivery-ci-trigger-budget.test.mjs",
+    "tests/delivery-github-pr-workflow-single-flight.test.mjs",
+    "tests/delivery-main-push-fanout-budget-v1.test.mjs"
+  ]
+}
