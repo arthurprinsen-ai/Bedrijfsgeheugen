@@ -1,0 +1,26 @@
+{
+  "fingerprint": "daily-blog-versiebeheer-recovery-v1",
+  "date": "2026-09-25",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "A valid daily blog remained stranded on an outdated branch and contained an obsolete internal /scan link.",
+  "prevention_rule": "Daily blog recovery must replay the article onto current main, preserve newer publication state, use canonical internal routes and prove index/RSS/sitemap registration.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-daily-blog-versiebeheer-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-daily-blog-versiebeheer-recovery-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": 2511,
+    "recovery_pr": 2871
+  }
+}
