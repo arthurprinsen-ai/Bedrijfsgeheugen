@@ -4,6 +4,22 @@ async function expectVisible(locator, label) {
   if (!await locator.isVisible().catch(()=>false)) throw new Error(label + ' is not visible');
 }
 
+async function selectMobileLanguage(page, target, expectedPath) {
+  const menuButton = page.locator('#bgkopKnop').first();
+  await expectVisible(menuButton, 'mobile menu button');
+  if ((await menuButton.getAttribute('aria-expanded')) !== 'true') {
+    await menuButton.click();
+    await page.waitForFunction(() => document.querySelector('#bgkopKnop')?.getAttribute('aria-expanded') === 'true', null, { timeout:5_000 });
+  }
+
+  const selector = page.locator('[data-bg-language-switcher="mobile"] [data-bg-language-select], [data-bg-language-select]').first();
+  await selector.waitFor({ state:'visible', timeout:5_000 });
+  await Promise.all([
+    page.waitForURL(url => expectedPath.test(new URL(url).pathname), { timeout:20_000 }),
+    selector.selectOption(target),
+  ]);
+}
+
 async function run() {
   const baseUrl = process.env.BASE_URL || 'https://www.bedrijfsgeheugen.nl';
   const { chromium } = await import('playwright');
@@ -82,14 +98,9 @@ async function run() {
     if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-pressed')) !== 'true') throw new Error('yearly billing aria-pressed did not become true');
     if (before.trim() === after.trim()) throw new Error('yearly billing click did not change a price');
 
-    // Public language switching must use the static English route, not runtime provider translation.
-    const current = page.locator('button[data-bg-language-current]').first();
-    await current.click();
-    const english = page.locator('[data-bg-language-option="en"]').first();
-    await Promise.all([
-      page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      english.click(),
-    ]);
+    // Mobile public language switching must follow the visible user path:
+    // open the mobile menu, then use the injected mobile language select.
+    await selectMobileLanguage(page, 'en', /^\/en\/prijzen\/?$/);
     await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
     await page.waitForTimeout(500);
     if ((await page.locator('html').getAttribute('lang')) !== 'en') throw new Error('English route did not render html lang=en');
@@ -98,14 +109,9 @@ async function run() {
     if (/Prijzen voor digitalisering in het mkb/i.test(body)) throw new Error('English route still shows the Dutch pricing H1');
     if (!/Pricing/i.test(body)) throw new Error('English route has no visible Pricing text');
 
-    // English -> Dutch must return to the unprefixed canonical Dutch route.
-    const englishCurrent = page.locator('button[data-bg-language-current]').first();
-    await englishCurrent.click();
-    const dutch = page.locator('[data-bg-language-option="nl"]').first();
-    await Promise.all([
-      page.waitForURL(url => /^\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      dutch.click(),
-    ]);
+    // English -> Dutch follows the same visible mobile path and must
+    // return to the unprefixed canonical Dutch route.
+    await selectMobileLanguage(page, 'nl', /^\/prijzen\/?$/);
     await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
     await page.waitForTimeout(300);
     if ((await page.locator('html').getAttribute('lang')) !== 'nl') throw new Error('Dutch route did not render html lang=nl');
