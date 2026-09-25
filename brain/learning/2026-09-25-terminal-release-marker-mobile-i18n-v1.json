@@ -2,26 +2,50 @@
   "fingerprint": "delivery-terminal-release-marker-mobile-i18n-v1",
   "status": "ACTIVE_PREVENTION",
   "date": "2026-09-25",
-  "failure_class": "FINAL_HTML_RELEASE_MARKER_AND_MOBILE_I18N_DRIFT",
+  "failure_class": "FINAL_HTML_RELEASE_MARKER_MOBILE_I18N_AND_BUILD_SYNTAX_DRIFT",
   "root_cause": [
     "release.json used the exact deployment SHA but the final built HTML was not re-stamped after all page transformers, so live-contract readback saw an older bg-release-commit marker.",
-    "The mobile i18n injector only supported aside.v18-mobile-drawer, while pricing can use the compact #bgkopMob/.bgkop-mob drawer, leaving no visible mobile language select."
+    "The mobile i18n injector only supported aside.v18-mobile-drawer, while pricing can use the compact #bgkopMob/.bgkop-mob drawer, leaving no visible mobile language select.",
+    "The compact-drawer repair accidentally embedded a second function body inside a single-quoted HTML replacement string in tools/site-shell/apply-i18n.mjs, producing a JavaScript syntax error. Existing source-regex tests verified tokens but did not execute or syntax-check the build script, so Netlify failed with build exit code 2."
   ],
   "prevention": [
     "Stamp every final built HTML document with ensureReleaseMarker(html, commitRef) in the last release-evidence boundary.",
     "Mobile language injection must support every canonical public mobile drawer variant and remain data-bg-no-translate.",
-    "Terminal production truth requires release.json exact SHA, HTML release marker exact SHA, pricing interaction proof, and NL→EN→NL browser roundtrip."
+    "Build-time JavaScript transformers changed by recovery work must pass node --check and an executable fixture test; source-token regex assertions alone are insufficient.",
+    "Compact mobile injection must prepend MOBILE_LANGUAGE with a replacement callback, never concatenate generated JavaScript source into HTML replacement text.",
+    "Terminal production truth requires release.json exact SHA, HTML release marker exact SHA, successful provider build, pricing interaction proof, and NL→EN→NL browser roundtrip."
   ],
+  "evidence": {
+    "failed_main_sha": "6200b6cf13aa09d058c92f02f061368e21013e03",
+    "linked_deploy_id": "6ab69bce0feb69f4c4e7499e",
+    "exact_source_deploy_id": "6ab69c0ba6e5f541bdceaee8",
+    "failed_snapshot_run": 36158367139,
+    "failed_step": "Deploy exact source through authorized Netlify transport",
+    "provider_error": "Failed during stage 'building site': Build script returned non-zero exit code: 2",
+    "corrupt_file": "tools/site-shell/apply-i18n.mjs"
+  },
   "compiler": {
-    "failure_class": "FINAL_HTML_RELEASE_MARKER_AND_MOBILE_I18N_DRIFT",
-    "scope": "WEBSITE_PRODUCTION_READBACK",
+    "failure_class": "FINAL_HTML_RELEASE_MARKER_MOBILE_I18N_AND_BUILD_SYNTAX_DRIFT",
+    "scope": "WEBSITE_PRODUCTION_BUILD_AND_READBACK",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-terminal-release-marker-mobile-i18n-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-release-marker-mobile-i18n-v1.test.mjs"
     ]
-  }
+  },
+  "test_evidence": [
+    "tests/brain-terminal-release-marker-mobile-i18n-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "continuity",
+    "website"
+  ],
+  "revision": 2
 }
