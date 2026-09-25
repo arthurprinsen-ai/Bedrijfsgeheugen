@@ -34,7 +34,7 @@ function ensurePricingRuntime(html, source) {
   if (inlineRe.test(next)) next = next.replace(inlineRe, inline);
   else next = next.replace(new RegExp('</body>', 'i'), inline + '\n</body>');
 
-  const rescueSrc = '/assets/js/pricing-interactions-rescue-v1.js?v=600965d2d30f';
+  const rescueSrc = '/assets/js/pricing-interactions-rescue-v1.js?v=3de3592ac866';
   const rescueTag = `<script src="${rescueSrc}" defer></script>`;
   const rescueRe = new RegExp(`<script\\b[^>]*src=["']\\/assets\\/js\\/pricing-interactions-rescue-v1\\.js(?:\\?[^"']*)?["'][^>]*><\\/script>`, 'i');
   if (rescueRe.test(next)) next = next.replace(rescueRe, rescueTag);
@@ -104,7 +104,7 @@ if (mode === 'capture') {
   const restored = ensurePricingRuntime(restoredSections, source);
   assertCanonical(restored);
   extractScriptById(restored, 'bg-pricing-neno-v1-js');
-  if (!restored.includes('/assets/js/pricing-interactions-rescue-v1.js?v=600965d2d30f')) {
+  if (!restored.includes('/assets/js/pricing-interactions-rescue-v1.js?v=3de3592ac866')) {
     throw new Error('pricing integrity: rescue runtime missing after restore');
   }
   await writeFile(PAGE, restored, 'utf8');
