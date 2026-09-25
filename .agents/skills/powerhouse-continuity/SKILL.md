@@ -1012,3 +1012,13 @@ Fingerprint: `static-i18n-cache-authority-delta-20260925-v1`.
 - Production uses `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1`; missing translations are a hard build failure.
 - Mutable `.cache/` data is never release authority.
 - Provider translation may fill cache explicitly, but normal production must not depend on provider availability.
+
+## Skill projection replay bootstrap
+
+Fingerprint: `skill-projection-replay-dependency-bootstrap-20260925-v1`.
+
+- Learning canonicalization may execute classified regressions that import normal repository package dependencies.
+- Bootstrap repository dependencies before historical replay/canonicalization on a clean runner.
+- A missing module/package before the replay assertion is a workflow-bootstrap defect, not evidence that canonical learning is invalid.
+- Never weaken or remove historical replay to avoid installing dependencies; repair the execution environment and keep fail-closed evaluation.
+- Guard dependency-before-replay ordering with `tests/brain-skill-projection-dependency-bootstrap-v1.test.mjs`.
