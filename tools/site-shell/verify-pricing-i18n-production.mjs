@@ -4,6 +4,22 @@ async function expectVisible(locator, label) {
   if (!await locator.isVisible().catch(()=>false)) throw new Error(label + ' is not visible');
 }
 
+async function getVisibleMobileLanguage(page) {
+  const selector = page.locator('[data-bg-language-select]:visible').first();
+  await selector.waitFor({ state:'visible', timeout:5_000 }).catch(()=>{});
+  if (!await selector.isVisible().catch(()=>false)) {
+    const diagnostics = await page.evaluate(() => ({
+      all: document.querySelectorAll('[data-bg-language-select]').length,
+      shared: document.querySelectorAll('#bgSharedMobileNav [data-bg-language-select]').length,
+      legacy: document.querySelectorAll('#bgkopMob [data-bg-language-select]').length,
+      sharedAriaHidden: document.getElementById('bgSharedMobileNav')?.getAttribute('aria-hidden') ?? null,
+      legacyHidden: document.getElementById('bgkopMob')?.hidden ?? null,
+    }));
+    throw new Error('visible mobile language select is missing after opening mobile navigation: ' + JSON.stringify(diagnostics));
+  }
+  return selector;
+}
+
 async function run() {
   const baseUrl = process.env.BASE_URL || 'https://www.bedrijfsgeheugen.nl';
   const { chromium } = await import('playwright');
@@ -88,13 +104,7 @@ async function run() {
     const mobileMenu = page.locator('#bgkopMob').first();
     const mobileMenuButton = page.locator('#bgkopKnop').first();
     if (await mobileMenu.count() && await mobileMenu.isHidden().catch(()=>false)) await mobileMenuButton.click();
-    const sharedMobileNav = page.locator('#bgSharedMobileNav').first();
-    if (await sharedMobileNav.count()) await sharedMobileNav.waitFor({ state:'visible', timeout:5_000 });
-    const sharedLanguage = page.locator('#bgSharedMobileNav [data-bg-language-select]').first();
-    const legacyLanguage = page.locator('#bgkopMob [data-bg-language-select]').first();
-    const mobileLanguage = await sharedLanguage.count() ? sharedLanguage : legacyLanguage;
-    await mobileLanguage.waitFor({ state:'visible', timeout:5_000 }).catch(() => {});
-    if (!await mobileLanguage.isVisible().catch(()=>false)) throw new Error('visible mobile language select is missing after opening mobile navigation');
+    const mobileLanguage = await getVisibleMobileLanguage(page);
     await Promise.all([
       page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
       mobileLanguage.selectOption('en'),
@@ -110,11 +120,7 @@ async function run() {
     // English -> Dutch must return through the same visible mobile control.
     const englishMobileMenu = page.locator('#bgkopMob').first();
     if (await englishMobileMenu.count() && await englishMobileMenu.isHidden().catch(()=>false)) await page.locator('#bgkopKnop').first().click();
-    const englishSharedLanguage = page.locator('#bgSharedMobileNav [data-bg-language-select]').first();
-    const englishLegacyLanguage = page.locator('#bgkopMob [data-bg-language-select]').first();
-    const dutchSelect = await englishSharedLanguage.count() ? englishSharedLanguage : englishLegacyLanguage;
-    await dutchSelect.waitFor({ state:'visible', timeout:5_000 }).catch(() => {});
-    if (!await dutchSelect.isVisible().catch(()=>false)) throw new Error('visible Dutch language select is missing after opening mobile navigation');
+    const dutchSelect = await getVisibleMobileLanguage(page);
     await Promise.all([
       page.waitForURL(url => /^\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
       dutchSelect.selectOption('nl'),
