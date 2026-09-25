@@ -2,8 +2,8 @@
   "fingerprint": "powerhouse-problem-radar-canonical-intake-v1",
   "date": "2026-09-25",
   "type": "PRODUCT_INTELLIGENCE_ROUTING_STANDARD",
-  "status": "IMPLEMENTED_CANDIDATE",
-  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "status": "LIVE_PROVEN",
+  "terminal_state": "LIVE_PROVEN",
   "problem": "Problem Radar research, portal intelligence and content reuse had the right components but no single general machine-readable contract guaranteed that every accepted MKB signal was stored once and routed through all applicable canonical projections.",
   "root_cause": "People evidence had a dedicated source registry and the broader Voice-of-Customer skill described the loop in prose, but cross-domain intake/storage/dedupe/portal/content obligations were not expressed as one reusable contract.",
   "fix": [
@@ -53,5 +53,15 @@
     "repair": "Migrate the stale baseline assertion to the canonical bounded-concurrency semantics without weakening full-route, viewport, CLS or fail-closed guarantees.",
     "prevention": "When a canonical verifier changes execution strategy, co-migrate all tests that assert the old mechanism; preserve semantic safety invariants rather than implementation shape.",
     "repaired_test": "tests/site-shell-website-release-risk.test.mjs"
+  },
+  "production_proof": {
+    "feature_merge_sha": "2d2f33393064da9cfb86730fb0d08238c985d8d5",
+    "governance_recovery_merge_sha": "288fb63a2255198e9125a3328316a624e62beb20",
+    "netlify_site_id": "fd527056-493a-4d8a-8125-d00370104fa3",
+    "production_deploy_id": "6ab626a11214c7000808a8fb",
+    "production_commit_ref": "c0e79c704cc7597b71764e14f67754e9c8f60195",
+    "production_state": "ready",
+    "feature_containment": "production commit is 2 commits ahead of feature merge with feature merge as merge base",
+    "note": "The later governance-recovery merge changes learning metadata only and does not change the portal/runtime behavior proven by the production descendant."
   }
 }
