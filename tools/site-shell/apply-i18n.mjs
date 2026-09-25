@@ -19,25 +19,13 @@ function injectMobileLanguage(html) {
     return html.slice(0, drawer.index) + block + html.slice(drawer.index + drawer[0].length);
   }
 
-  // Pricing and a small set of public pages use the compact bgkop mobile drawer.
-  // Insert before its CTA so the visible language control participates in the same drawer.
   if (/id=(["'])bgkopMob\1/i.test(html) || /class=(["'])[^"']*\bbgkop-mob\b[^"']*\1/i.test(html)) {
     const cta = /<a\b[^>]*class=(["'])[^"']*\bbgkop-mcta\b[^"']*\1/i;
-    if (cta.test(html)) return html.replace(cta, MOBILE_LANGUAGE + '    if (cta.test(html)) return html.replace(cta, MOBILE_LANGUAGE + 'function injectMobileLanguage(html) {
-  if (/data-bg-language-switcher="mobile"/.test(html)) return html;
-  const drawer = html.match(/<aside\b[^>]*class="[^"]*\bv18-mobile-drawer\b[^"]*"[^>]*>[\s\S]*?<\/aside>/i);
-  if (!drawer || drawer.index === undefined) return html;
-  let block = drawer[0];
-  const login = block.search(/<a\b[^>]*href=(["'])\/inloggen\1/i);
-  if (login >= 0) block = block.slice(0, login) + MOBILE_LANGUAGE + block.slice(login);
-  else block = block.replace(/<\/aside>$/i, MOBILE_LANGUAGE + '</aside>');
-  return html.slice(0, drawer.index) + block + html.slice(drawer.index + drawer[0].length);
-}');');
+    if (cta.test(html)) return html.replace(cta, MOBILE_LANGUAGE + '$&');
   }
 
   return html;
 }
-
 function walk(dir) {
   for (const entry of fs.readdirSync(dir,{withFileTypes:true})) {
     if (SKIP.has(entry.name)) continue;
