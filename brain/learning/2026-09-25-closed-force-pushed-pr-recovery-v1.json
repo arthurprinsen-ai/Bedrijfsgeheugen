@@ -1,0 +1,28 @@
+{
+  "fingerprint": "delivery-pr-recovery-closed-force-pushed-head-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "CLOSED_PR_FORCE_PUSH_RECOVERY_CAN_REINTRODUCE_STALE_MAIN",
+  "problem": "A closed delivery PR could not be reopened because its head branch had been force-pushed or recreated. Reusing that stale branch without reconciling against current main could roll back newer work or create duplicate delivery fan-out.",
+  "root_cause": "PR identity was treated as more canonical than current-main state. The surviving branch was substantially behind main while the intended Netlify fallback had already landed independently on current main.",
+  "prevention": [
+    "Compare the surviving head against current main before any recovery mutation.",
+    "If the intended fix is already on main, close the stale recovery path with evidence instead of merging it.",
+    "If the fix is absent, rebuild only the minimal proven delta from current main.",
+    "Never force a heavily diverged stale branch into main merely to preserve historical PR identity.",
+    "Keep one remediation lineage and require exact-main production plus functional readback before terminal closure."
+  ],
+  "evidence": {
+    "original_pr": 2954,
+    "recovery_pr": 3093,
+    "current_main": "ccb64428be9ce5bb05b4e38801475d48e2ea6f28",
+    "production_source_snapshot_run": 36168441792,
+    "production_deploy_id": "6ab6b1b1e1aeb600082e5a0b",
+    "production_behavior": "PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN"
+  },
+  "prevention_rule": "RECONCILE_CLOSED_FORCE_PUSHED_PR_AGAINST_CURRENT_MAIN",
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ]
+}
