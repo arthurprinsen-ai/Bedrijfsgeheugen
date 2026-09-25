@@ -185,9 +185,16 @@
     return view;
   }
 
-  shell.appendChild(maakRoot());
+  var rootView = maakRoot();
+  var existingLanguage = bron.querySelector('[data-bg-language-switcher="mobile"]');
+  if (existingLanguage) {
+    var rootCta = rootView.querySelector('.bg-shared-mobile-cta');
+    rootView.insertBefore(existingLanguage, rootCta || null);
+  }
+  shell.appendChild(rootView);
   volgorde.forEach(function (key) { if (groepen[key]) shell.appendChild(maakGroep(key)); });
   document.body.appendChild(nav);
+  document.dispatchEvent(new CustomEvent('bg:shared-mobile-nav-ready'));
 
   bron.setAttribute('hidden', '');
   bron.setAttribute('aria-hidden', 'true');
