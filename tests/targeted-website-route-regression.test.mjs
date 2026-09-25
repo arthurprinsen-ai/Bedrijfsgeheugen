@@ -71,3 +71,11 @@ test('document failures remain hard failures without a successful final response
     { httpOk: false, finalUrl: 'https://deploy-preview.example/' },
   ), ['document:/']);
 });
+
+
+test('benign aborted document request is not treated as a hard asset failure', () => {
+  assert.equal(isHardAssetFailure({ type:'document', errorText:'net::ERR_ABORTED' }), false);
+  assert.equal(isHardAssetFailure({ type:'document', errorText:'net::ERR_CONNECTION_RESET' }), true);
+  assert.equal(isHardAssetFailure({ type:'script', errorText:'net::ERR_ABORTED' }), true);
+  assert.equal(isHardAssetFailure({ type:'stylesheet', errorText:'net::ERR_ABORTED' }), true);
+});
