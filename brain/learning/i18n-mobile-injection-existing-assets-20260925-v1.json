@@ -14,7 +14,25 @@
     "production_snapshot_run": 36159192559,
     "browser_failure": "visible mobile language select is missing after opening mobile navigation"
   },
-  "test_evidence": ["tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs"],
-  "skill_targets": ["powerhouse-continuity", "powerhouse-netlify-production-truth"],
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "failure_class": "I18N_MOBILE_CONTROL_INJECTION_SKIPPED",
+  "evaluation": {
+    "historical_replay": [
+      "Production Source Snapshot run 36159192559"
+    ],
+    "shadow": [
+      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs"
+    ],
+    "canary": [
+      "PR #3034 Netlify deploy preview and production browser readback"
+    ],
+    "expected_invariant": "pages with pre-existing i18n assets still receive exactly one visible mobile language selector and pass the NL->EN->NL pricing roundtrip"
+  }
 }
