@@ -1,0 +1,55 @@
+{
+  "version": "post-merge-codeql-single-flight-20260925-v1",
+  "date": "2026-09-25",
+  "obligation_id": "post-merge-codeql-terminality-20260925",
+  "failure_class": "GITHUB_DELIVERY",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "fingerprint": "delivery|post-merge-codeql|single-flight-terminality|v1",
+  "problem": "Post-merge CodeQL could remain running while all borging/skill-projection checks were green, and agents could hand that pending status back to the user.",
+  "root_cause": "The Python CodeQL workflow used github.run_id for push-event concurrency, so newer main pushes could not supersede stale same-ref work. Separately, terminal-delivery guidance did not explicitly forbid handing back an active authoritative post-merge security run.",
+  "fix": "Use stable CodeQL concurrency keyed by workflow plus PR number/ref with cancel-in-progress=true; retain the existing stable Powerhouse CodeQL same-ref policy; make the newest exact-SHA run authoritative; forbid final user handoff while that authoritative security run is active.",
+  "prevention": [
+    "Use stable PR/ref identity for CodeQL concurrency; never github.run_id.",
+    "Treat only the newest relevant exact-SHA security run as authoritative.",
+    "Do not return queued/running post-merge security state as a final user handoff.",
+    "Record NOT_APPLICABLE only from explicit path-filter evidence."
+  ],
+  "evidence": [
+    ".github/workflows/codeql.yml previously used github.event.pull_request.number || github.run_id while cancel-in-progress was true.",
+    ".github/workflows/powerhouse-codeql.yml already uses stable PR/ref latest-wins concurrency and remains the reference pattern.",
+    "PR #3101 regression tests/brain-post-merge-codeql-single-flight.test.mjs locks both workflow concurrency contracts and the terminal handoff rule.",
+    "Powerhouse Skill Projection became green on head effb8f367bf87076f839004e40bb6195c7b4a3e4 after canonical learning metadata was added.",
+    "Required preflight then isolated the remaining semantic-learning gap to the evidence field, proving the material writeback guard is active.",
+    "During recovery, current main advanced with a targeted website-route regression that referenced isHardAssetFailure without importing it; the merge-candidate Required lane exposed it before merge.",
+    "The recovery branch reused current-main test content and added only the missing isHardAssetFailure import, preserving newer main behavior instead of overwriting it with stale branch content."
+  ],
+  "prevention_rules": [
+    "SINGLE_FLIGHT_POST_MERGE_CODEQL_PER_REF",
+    "NO_FINAL_HANDOFF_WHILE_AUTHORITATIVE_SECURITY_RUN_ACTIVE"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-post-merge-codeql/SKILL.md"
+  ],
+  "evidence_paths": [
+    ".github/workflows/codeql.yml",
+    ".github/workflows/powerhouse-codeql.yml",
+    "tests/brain-post-merge-codeql-single-flight.test.mjs",
+    "docs/changes/2026-09-25-post-merge-codeql-single-flight.md",
+    "tests/targeted-website-route-regression.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-post-merge-codeql-single-flight.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
