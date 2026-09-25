@@ -10,18 +10,37 @@
     "Exact production SHA plus pricing/i18n browser proof remain mandatory before LIVE_BEWEZEN."
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"],
-    "shadow": ["tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"],
-    "canary": ["tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"
+    ]
   },
-  "test_evidence": ["tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"],
+  "test_evidence": [
+    "tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"
+  ],
   "evidence": {
     "observed_main_sha": "2edfe3dfafbf52751379e049f6018883c6ad0c16",
     "observed_production_sha": "f45ad02f8f719958c00b7ff8e39e3ca2104353b1",
     "gap_commits": 9,
-    "workflow_path_gate": ".github/workflows/production-source-snapshot.yml"
+    "workflow_path_gate": ".github/workflows/production-source-snapshot.yml",
+    "successor_reconcile": {
+      "observed_current_main_sha": "66f5051ea8bc299acdd4bef89183bc48f665aeb0",
+      "original_pr": 2968,
+      "original_head_sha": "ff70bb785d54c97b7822c93f7ae5f6952d9eb309",
+      "already_on_main": "13 added files plus 6 of 7 modified files are blob-identical to the preserved PR head",
+      "missing_projection": ".agents/skills/powerhouse-continuity/SKILL.md",
+      "action": "replay canonical learning-to-skill projection on a clean current-main successor"
+    }
   },
-  "skill_targets": ["continuity", "delivery"],
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
   "compiler": {
     "failure_class": "PRODUCTION_RECONCILE_TRIGGER_RACE",
     "scope": "WEBSITE_PRODUCTION_DELIVERY",
@@ -29,5 +48,6 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 1
+  "projection_replay_requested": true,
+  "revision": 2
 }
