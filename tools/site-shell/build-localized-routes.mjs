@@ -343,7 +343,7 @@ async function translateAll(strings) {
 
   const cacheRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1';
   if (cacheRequired) {
-    throw new Error('STATIC_I18N_CACHE_INCOMPLETE: ' + missing.length + ' missing translation(s); first=' + missing[0].slice(0,120));
+    throw new Error('STATIC_I18N_CACHE_INCOMPLETE: ' + missing.length + ' missing translation(s); missing=' + JSON.stringify(missing));
   }
 
   const networkAllowed = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
