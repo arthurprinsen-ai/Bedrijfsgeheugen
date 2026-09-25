@@ -38,5 +38,28 @@
       "tools/site-shell/verify-pricing-i18n-production.mjs"
     ],
     "expected_invariant": "i18n CSS and runtime JS are independently present, the active mobile host exposes one visible language selector, and production completes NL->EN->NL"
+  },
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "title": "Independent i18n runtime asset completeness",
+  "impact": "A production page could look partially internationalized while the runtime language capability was absent, causing the user-visible mobile NL/EN switch and terminal browser proof to fail.",
+  "failed_approaches": [
+    "Using one shared data-bg-i18n-asset marker as a completeness sentinel for both stylesheet and JavaScript runtime.",
+    "Treating exact provider deployment as sufficient proof that the frontend language capability was operational."
+  ],
+  "fix": "Detect i18n CSS and i18n runtime JavaScript independently, inject only missing assets idempotently, then prove the visible active mobile language control in production.",
+  "prevention_rule": "Frontend capabilities with multiple required assets must prove each required asset independently. For public NL/EN, CSS and /assets/js/i18n.js are separate invariants, mobile mounting must target the active production host, and terminal proof requires a visible NL->EN->NL browser roundtrip.",
+  "regression_contract": "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+  "tests": [
+    "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+    "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+  ],
+  "outcome": "The Powerhouse operating canon and relevant skills now require per-asset frontend completeness plus visible production browser proof.",
+  "compiler": {
+    "failure_class": "WEBSITE_RUNTIME",
+    "scope": "PUBLIC_I18N_ASSET_COMPLETENESS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
