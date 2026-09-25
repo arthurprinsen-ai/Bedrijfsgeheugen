@@ -1,4 +1,4 @@
-import { writeFile } from 'node:fs/promises';
+import { writeFile, readFile, glob } from 'node:fs/promises';
 import { isolateStandalonePages } from './standalone-page-router.mjs';
 import { finalizeSiteContracts } from './site-shell/finalize-site-contracts.mjs';
 import { applyConversionCta } from './site-shell/cta-conversie.mjs';
@@ -6,8 +6,8 @@ import { applySitewideAnalytics } from './site-shell/analytics-sitebreed.mjs';
 import { applyMoneyPrerender } from './site-shell/money-prerender.mjs';
 import { applyLettertypeTerugval } from './site-shell/lettertype-terugval.mjs';
 import { repairWijzigingenEncoding } from './site-shell/repair-wijzigingen-encoding.mjs';
-import { readFile } from 'node:fs/promises';
 import { resolveReleaseCommitRef } from './site-shell/release-source-identity.mjs';
+import { ensureReleaseMarker } from './site-shell/release-marker.mjs';
 
 // Standalone URLs are real documents. They may inherit the historical homepage
 // one-page router through the canonical shell; that router can remove the active
@@ -48,6 +48,20 @@ try {
   if (error?.code !== 'ENOENT') throw error;
 }
 const commitRef = resolveReleaseCommitRef({ env: process.env, markerText: sourceMarker });
+let releaseStamped = 0;
+for await (const bestand of glob('**/*.html')) {
+  if (bestand.startsWith('node_modules/') || bestand.startsWith('.git/') || bestand.startsWith('dist/') || bestand.startsWith('.netlify/')) continue;
+  let html;
+  try { html = await readFile(bestand, 'utf8'); } catch { continue; }
+  if (!/<html\b/i.test(html) || !/<\/head>/i.test(html)) continue;
+  const next = ensureReleaseMarker(html, commitRef);
+  if (next !== html) {
+    await writeFile(bestand, next, 'utf8');
+    releaseStamped++;
+  }
+}
+console.log('RELEASE_HTML_MARKERS', JSON.stringify({ commit_ref: commitRef, files: releaseStamped }));
+
 const evidence = {
   contract: 'BRAIN-DELIVERY-v2',
   production_authority: 'BG169',
