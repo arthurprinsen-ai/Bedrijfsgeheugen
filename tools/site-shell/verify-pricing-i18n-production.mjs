@@ -29,7 +29,7 @@ async function getVisibleMobileLanguage(page) {
 
   const candidates = [
     page.locator('#bgSharedMobileNav [data-bg-language-select]').first(),
-    page.locator('#bgkopMob [data-bg-language-select]').first(),
+    page.locator('#bgkopMob [data-bg-language-select]:visible').first(),
     page.locator('[data-bg-language-select]:visible').first(),
   ];
   for (const candidate of candidates) {
