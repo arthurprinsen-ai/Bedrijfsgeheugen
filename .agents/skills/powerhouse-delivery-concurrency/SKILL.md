@@ -257,3 +257,13 @@ Raw active pressure and the obsolete/provider-zombie deductions must be computed
 Fingerprint: `i18n-production-fail-closed-20260924-v1`.
 
 An i18n candidate may land only if the exact head preserves production fail-closed semantics: `STATIC_I18N_NETWORK=1` cannot fall back to untranslated `/en/*` output. Provider resilience is allowed only around retries/backoff, never around the success criterion. Terminal proof must include exact production SHA plus visible-English browser evidence.
+
+
+## Stable auxiliary-workflow concurrency identity
+
+Fingerprint: `github|auxiliary-pr-workflow|stable-logical-flight-key|v1`.
+
+For every supersedable PR/ref workflow, `cancel-in-progress: true` only works when the concurrency group represents a reusable logical flight. Never use `github.run_id`, timestamps, random IDs or other per-run values in that group. Prefer `github.event.pull_request.number` for PR context with `github.ref_name` as the stable manual/ref fallback.
+
+Canonical regression: `tests/brain-actions-pr-single-flight-v1.test.mjs`.
+Canonical incident learning: `brain/learning/2026-09-25-pricing-hero-single-flight-recovery-v1.json`.
