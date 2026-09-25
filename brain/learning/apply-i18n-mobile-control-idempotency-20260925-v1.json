@@ -22,7 +22,11 @@
     "tests/brain-apply-i18n-mobile-control-idempotency-v1.test.mjs",
     "tools/site-shell/verify-pricing-i18n-production.mjs"
   ],
-  "skill_targets": ["continuity","delivery","website"],
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "website"
+  ],
   "compiler": {
     "failure_class": "MOBILE_LANGUAGE_CONTROL_SKIPPED_BY_ASSET_GUARD",
     "scope": "PUBLIC_I18N_PRODUCTION",
@@ -30,5 +34,16 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-apply-i18n-mobile-control-idempotency-v1.test.mjs"
+    ],
+    "shadow": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  }
 }
