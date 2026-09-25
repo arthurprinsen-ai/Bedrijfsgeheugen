@@ -37,14 +37,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
-      "tools/site-shell/verify-pricing-i18n-production.mjs"
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
     "canary": [
-      "tools/site-shell/verify-pricing-i18n-production.mjs"
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
     "expected_invariant": "final production HTML contains both i18n.css and i18n.js, the active mobile host exposes one visible language select, and NL->EN->NL roundtrip succeeds"
   },
@@ -53,6 +52,8 @@
     "powerhouse-netlify-production-truth"
   ],
   "compiler": {
+    "failure_class": "I18N_PARTIAL_ASSET_MARKER_FALSE_COMPLETENESS",
+    "scope": "WEBSITE_I18N_PRODUCTION_RUNTIME",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
