@@ -858,3 +858,26 @@ Before the terminal answer:
 The normal terminal user answer reports the terminal state and proof already completed. It does not return a "what now" list for work the node can perform itself.
 
 Only an evidenced `BLOCKED_HARD_BOUNDARY` may return ownership to the user; it must name the exact external boundary, the smallest required human action, and the next safe action already prepared.
+
+
+## Evidence-first closed-loop delivery
+
+Fingerprint: `powerhouse-closed-loop-evidence-first-v1`.
+
+For sales, content, social, growth, portal intelligence and autonomous improvement, Powerhouse uses one evidence-first lifecycle:
+
+`signal → analysis → prediction → decision → execution → provider_readback → outcome → realized_value → calibration → next_decision`.
+
+Mandatory truth gates:
+- merge, deploy, dispatch, publication and provider acceptance are intermediate states, not terminal outcomes;
+- every material stage carries an evidence reference;
+- predicted/expected value is never stored as realized value;
+- realized value requires observed external or business evidence;
+- missing evidence remains open, blocked, outcome_pending or calibration_pending;
+- replays are idempotent and stage progression remains contiguous;
+- learning may change future policy only after outcome/calibration evidence exists;
+- machine truth remains in Supabase; GitHub is the reproducible contract; Portal/Notion are human projections, not alternate truth authorities;
+- LinkedIn direct publication/readback remains Composio-authoritative; Buffer cannot satisfy direct-publication truth gates;
+- Instagram provider evidence must come from the governed direct provider path and Mira-only media rules remain mandatory.
+
+Runtime health authority: `powerhouse_closed_loop_health_v1`.
