@@ -6,3 +6,4 @@
 - GitHub readback run `36134150890`: exact release identity and connector readiness passed; route-browser verification was cancelled before terminal completion.
 - Durable rule: provider identity evidence and functional browser evidence are separate; preserve immutable provider proof and resume only missing functional proof.
 - Powerhouse projection: dedicated skill `.agents/skills/powerhouse-netlify-production-truth/SKILL.md`.
+- Delivery reconciliation: predecessor PR #2976 carried the same Obligation-ID and was closed as superseded; PR #2997 is the canonical successor owner.
