@@ -48,3 +48,10 @@ Fingerprint: `browser|playwright-cleanup|bounded-teardown|v1`.
 A completed semantic sweep must not become a false-negative because Playwright hangs in `page.close()`, `context.close()` or `browser.close()`. Teardown is therefore bounded separately from navigation and assertion budgets. If teardown exceeds its cleanup budget after assertions have completed, record the cleanup anomaly, terminate residual browser handles at process level, and preserve the already-proven semantic result. If semantic failures exist, exit non-zero even when cleanup also times out.
 
 Regression: `tests/brain-standalone-visibility-boundedness-v1.test.mjs` must assert bounded cleanup and fail/non-fail exit preservation.
+
+
+## Independent viewport parallelism
+
+When the same route inventory is verified across phone, tablet and desktop, do not spend the global budget sequentially by viewport. Run independent viewport sweeps in bounded parallel batches, while keeping route-level concurrency and the global fail-closed budget.
+
+The concurrency product (viewport workers × route workers) must remain explicit and bounded. Do not remove semantic assertions or enlarge timeouts merely to make the gate green.
