@@ -178,22 +178,39 @@ async function publishLinkedInPersonalViaComposio(db:any,art:any){
   const createdData=created?.data||created;
   const postUrn=clean(createdData?.x_restli_id)||deepPickLinkedInPostUrn(createdData);
   if(!postUrn)throw new Error('COMPOSIO_LINKEDIN_POST_URN_MISSING');
-  const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:postUrn});
-  const rb=readback?.data||readback;
-  const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
-  const truth=rbUrn===postUrn&&clean(rb?.author)===author&&clean(rb?.commentary)===commentary&&clean(rb?.lifecycleState).toUpperCase()==='PUBLISHED';
-  if(!truth)throw new Error('COMPOSIO_LINKEDIN_EXACT_READBACK_MISMATCH');
-  const publishedAtMs=Number(rb?.publishedAt||createdData?.publishedAt||Date.now());
-  return {
-    provider:'composio',
-    provider_post_id:postUrn,
-    provider_truth_verified:true,
-    provider_truth_checked_at:new Date().toISOString(),
-    provider_status:'published',
-    published_at:Number.isFinite(publishedAtMs)?new Date(publishedAtMs).toISOString():new Date().toISOString(),
-    author_urn:author,
-    linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
-  };
+  try{
+    const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:postUrn});
+    const rb=readback?.data||readback;
+    const rbUrn=clean(rb?.id)||deepPickLinkedInPostUrn(rb);
+    const truth=rbUrn===postUrn&&clean(rb?.author)===author&&clean(rb?.commentary)===commentary&&clean(rb?.lifecycleState).toUpperCase()==='PUBLISHED';
+    if(!truth)throw new Error('COMPOSIO_LINKEDIN_EXACT_READBACK_MISMATCH');
+    const publishedAtMs=Number(rb?.publishedAt||createdData?.publishedAt||Date.now());
+    return {
+      provider:'composio',
+      provider_post_id:postUrn,
+      provider_create_success:true,
+      provider_truth_verified:true,
+      provider_truth_checked_at:new Date().toISOString(),
+      provider_status:'published',
+      republish_forbidden:true,
+      published_at:Number.isFinite(publishedAtMs)?new Date(publishedAtMs).toISOString():new Date().toISOString(),
+      author_urn:author,
+      linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
+    };
+  }catch(error){
+    return {
+      provider:'composio',
+      provider_post_id:postUrn,
+      provider_create_success:true,
+      provider_truth_verified:false,
+      provider_truth_checked_at:new Date().toISOString(),
+      provider_status:'dispatched',
+      republish_forbidden:true,
+      verification_pending:true,
+      readback_error:error instanceof Error?error.message:String(error),
+      author_urn:author
+    };
+  }
 }
 async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expectedCommentary:string=''){
   const ref=clean(postUrn);
