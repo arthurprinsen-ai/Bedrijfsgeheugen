@@ -61,6 +61,8 @@ When a recovery changes a build-time JavaScript transformer:
 Fingerprint: `i18n-runtime-asset-independent-presence-v1`.
 
 A Netlify deploy with `state=ready` and exact `commit_ref` proves provider identity, not frontend capability completeness. For NL/EN production truth:
+- A shared `data-bg-i18n-asset` marker is never completeness proof. Check the stylesheet and runtime script independently in the final served HTML.
+- The canonical failure fingerprint for CSS-present/JS-missing is `I18N_RUNTIME_ASSET_INCOMPLETE`; do not misclassify it as a translation-provider or mobile-host defect.
 - inspect CSS and JavaScript runtime assets independently;
 - do not accept a shared marker as completeness evidence;
 - prove the active mobile navigation contains a visible language selector;
