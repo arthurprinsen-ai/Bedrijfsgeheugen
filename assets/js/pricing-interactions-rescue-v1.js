@@ -131,9 +131,18 @@
   }, true);
 
   let repairQueued = false;
+  function nodeContainsPricingControl(node) {
+    if (!node || node.nodeType !== 1) return false;
+    const el = /** @type {Element} */ (node);
+    if (el.matches?.('[data-bg-stage],[data-bg-stage-panel],[data-bg-price-tab],[data-bg-group],[data-bg-billing]')) return true;
+    return Boolean(el.querySelector?.('[data-bg-stage],[data-bg-stage-panel],[data-bg-price-tab],[data-bg-group],[data-bg-billing]'));
+  }
   const observer = new MutationObserver((mutations) => {
-    if (!mutations.some((m) => m.type === 'childList' && m.addedNodes.length)) return;
-    if (repairQueued) return;
+    const relevant = mutations.some((m) =>
+      m.type === 'childList'
+      && Array.from(m.addedNodes || []).some(nodeContainsPricingControl)
+    );
+    if (!relevant || repairQueued) return;
     repairQueued = true;
     queueMicrotask(() => {
       repairQueued = false;
