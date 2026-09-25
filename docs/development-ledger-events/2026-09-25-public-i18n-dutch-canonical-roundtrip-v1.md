@@ -8,3 +8,8 @@
 - Regression: static authority test controleert runtime + builder + redirects.
 - Production proof: echte browserroundtrip NL → EN → NL; `/nl/*` is expliciet verboden.
 - Terminal state: pas LIVE_BEWEZEN na protected merge, Netlify production identity en groene production readback.
+- Promotion PR: #2924 via de bestaande Production Source Snapshot authority.
+- Promotion gate finding: stale tests voor 3 retries en productie-runtime-fallback conflicteerden met actuele bounded-retry en fail-closed contracten.
+- Recovery: alleen de verouderde testverwachtingen zijn aangepast; productcode en veiligheidsinvariant zijn niet verzwakt.
+- Prevention: regressietests volgen de canonieke semantiek, niet een verouderde literal of eerder teruggedraaide policy.
+- Delivery control-plane recovery: dezelfde canonical PR is op de nieuwste main gereconciled; geen duplicate PR of alternatief deploypad.
