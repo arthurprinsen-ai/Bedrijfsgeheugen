@@ -20,7 +20,9 @@
     "Production snapshot/browser proof must fail if /en/prijzen contains the Dutch pricing H1 or the language-switch failure message.",
     "Version the complete English translation cache in-repository and validate it offline against every current public source string before merge.",
     "Production may use the provider only to fill genuinely new uncached strings; unchanged deployments must not require a live translation-provider call.",
-    "Canonical translation state lives only under data/i18n/; delivery classification and cache-integrity regression must be updated in the same lineage."
+    "Canonical translation state lives only under data/i18n/; delivery classification and cache-integrity regression must be updated in the same lineage.",
+    "Any public copy or SEO change that introduces translatable source strings must update canonical data/i18n cache coverage in the same candidate and pass offline --validate-cache before merge.",
+    "Incremental translation additions live under data/i18n/bg-static-i18n-en.d and are merged deterministically in sorted order before production translation validation."
   ],
   "skill_targets": [
     "continuity",
@@ -31,7 +33,7 @@
     "tools/site-shell/verify-pricing-i18n-production.mjs",
     "tests/brain-static-i18n-versioned-cache-v1.test.mjs"
   ],
-  "revision": 3,
+  "revision": 4,
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-production-fail-closed-v1.test.mjs"
