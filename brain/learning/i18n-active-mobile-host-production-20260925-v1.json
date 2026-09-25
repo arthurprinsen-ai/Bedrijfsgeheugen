@@ -1,0 +1,32 @@
+{
+  "fingerprint": "i18n-active-mobile-host-production-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The production NL/EN browser proof could find language controls in the DOM but no visible mobile select in the active navigation drawer.",
+  "root_cause": "The i18n runtime mounted a mobile language control into only one discovered mobile root. Pages can contain both a shared/hidden mobile root and the active legacy #bgkopMob drawer, so the control could be mounted exclusively into a hidden host.",
+  "prevention": [
+    "Mount the mobile language control idempotently into every real mobile navigation host, deduplicated by DOM identity.",
+    "Never assume the first mobile root is the active visible navigation surface.",
+    "Production locale proof must use a visible control and verify NL to EN to NL state changes.",
+    "The central locale runtime must be proven on homepage, pricing and systems-koppelingen before LIVE."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-i18n-active-mobile-host-production-v1.test.mjs"],
+    "shadow": ["tests/brain-i18n-active-mobile-host-production-v1.test.mjs"],
+    "canary": ["tests/brain-i18n-active-mobile-host-production-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-i18n-active-mobile-host-production-v1.test.mjs"],
+  "evidence": {
+    "failed_production_run": 36157269860,
+    "failure": "visible mobile language select is missing",
+    "mandatory_routes": ["/", "/prijzen", "/systemen-koppelen"]
+  },
+  "skill_targets": ["continuity", "delivery", "website"],
+  "compiler": {
+    "failure_class": "I18N_ACTIVE_MOBILE_HOST_MISMATCH",
+    "scope": "WEBSITE_I18N_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
