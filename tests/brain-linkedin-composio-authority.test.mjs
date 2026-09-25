@@ -31,3 +31,13 @@ test('Composio execution uses v3.1 latest tool semantics', () => {
   assert.match(source,/version:'latest'/);
   assert.doesNotMatch(source,/backend\.composio\.dev\/api\/v3'/);
 });
+
+test('LinkedIn personal preserves created URN when exact readback is unavailable', () => {
+  assert.match(source, /provider_create_success:true/);
+  assert.match(source, /verification_pending:true/);
+  assert.match(source, /readback_error:error instanceof Error\?error\.message:String\(error\)/);
+  assert.match(source, /LINKEDIN_PERSONAL_READBACK_PENDING/);
+  assert.match(source, /Reconcile this exact LinkedIn personal post URN; never issue another post for this daily claim/);
+  assert.match(source, /state:verified\?'published':'dispatching'/);
+  assert.match(source, /republish_forbidden:true/);
+});
