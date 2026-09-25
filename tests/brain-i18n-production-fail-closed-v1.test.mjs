@@ -7,9 +7,9 @@ const netlify=fs.readFileSync('netlify.toml','utf8');
 const runtime=fs.readFileSync('assets/js/i18n.js','utf8');
 const verifier=fs.readFileSync('tools/site-shell/verify-pricing-i18n-production.mjs','utf8');
 
-test('production localized build is provider-independent and degrades to runtime translation when cache is incomplete',()=>{
+test('production localized build is provider-independent and fails closed when cache is incomplete',()=>{
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"0"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
   assert.match(source,/const cacheRequired = String\(process\.env\.STATIC_I18N_REQUIRE_CACHE/);
   assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(source,/runtimeFallback:!translations/);
@@ -17,13 +17,14 @@ test('production localized build is provider-independent and degrades to runtime
   assert.match(runtime,/\/api\/i18n-translate/);
 });
 
-test('deploy previews inherit the provider-independent fallback contract',()=>{
+test('deploy previews inherit the provider-independent fail-closed contract',()=>{
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
   assert.match(netlify,/\[context\.deploy-preview\][\s\S]*command\s*=/);
   assert.match(source,/data-bg-static-translated/);
 });
 
-test('English production success is still fail-closed at the browser proof layer',()=>{
+test('English production success is fail-closed at the browser proof layer',()=>{
   assert.match(verifier,/async function switchPublicLocale/);
   assert.match(verifier,/expectedPath/);
   assert.match(verifier,/page\.locator\('html'\)\.getAttribute\('lang'\)/);

@@ -1,0 +1,49 @@
+{
+  "fingerprint": "static-i18n-terminal-failclosed-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production could publish Dutch content under /en/* because STATIC_I18N_REQUIRE_CACHE=0 and STATIC_I18N_NETWORK=0 allowed localized route generation to fall back to untranslated source when the immutable English cache was incomplete.",
+  "root_cause": "The fail-closed production cache requirement had been relaxed while network translation remained disabled. A volatile version timestamp also entered the translation corpus, making a fully deterministic cache impossible without excluding build metadata.",
+  "prevention": [
+    "Production uses STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1 together.",
+    "The immutable English cache must be complete against the exact post-build public source before merge.",
+    "Volatile build metadata such as the visible version timestamp is marked data-bg-no-translate and translate=no.",
+    "English route correctness is proven by mobile NL→EN→NL browser readback, including the pricing H1.",
+    "Do not publish a Dutch /en/* fallback; incomplete cache must fail the build instead."
+  ],
+  "evidence": {
+    "main_before_fix": "89cc01bf96104a4436205567e7ff71850911d858",
+    "failed_snapshot_run": 36162844641,
+    "failure": "English route still shows the Dutch pricing H1",
+    "restored_cache_validation_run": 36164288707,
+    "remaining_cache_gap": "versie 25 sep, 19:00"
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "website",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "failure_class": "STATIC_I18N_UNTRANSLATED_ENGLISH_ROUTE_FALLBACK",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "expected_invariant": "production English routes are generated only from a complete immutable cache, volatile build metadata is excluded, and /en/prijzen never renders the Dutch pricing H1"
+  },
+  "compiler": {
+    "failure_class": "STATIC_I18N_UNTRANSLATED_ENGLISH_ROUTE_FALLBACK",
+    "scope": "WEBSITE_I18N_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  }
+}
