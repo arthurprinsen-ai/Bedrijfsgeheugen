@@ -1,4 +1,5 @@
 import { readFile, writeFile, glob } from 'node:fs/promises';
+import { spawn } from 'node:child_process';
 import { normaliseerAllePaginas } from './normaliseer-site-ui.mjs';
 import { controleerSiteUi } from './controleer-site-ui.mjs';
 import { genereerSitemap } from './genereer-sitemap.mjs';
@@ -148,6 +149,27 @@ export async function voerPricingShellPipelineUit(stage = 'all') {
 }
 
 const stage = process.env.BG_PRICING_STAGE || 'all';
+
+async function runStageInFreshProcess(nextStage) {
+  await new Promise((resolve, reject) => {
+    const child = spawn(process.execPath, [process.argv[1]], {
+      stdio: 'inherit',
+      env: { ...process.env, BG_PRICING_STAGE: nextStage },
+    });
+    child.once('error', reject);
+    child.once('exit', (code, signal) => {
+      if (code === 0) return resolve();
+      reject(new Error(`pricing shell stage ${nextStage} failed (code=${code ?? 'null'}, signal=${signal ?? 'none'})`));
+    });
+  });
+}
+
 if (process.argv[1] && import.meta.url.endsWith(process.argv[1].replace(/\\/g, '/'))) {
-  await voerPricingShellPipelineUit(stage);
+  if (stage === 'all') {
+    for (const nextStage of ['rewrite', 'normalize', 'verify']) {
+      await runStageInFreshProcess(nextStage);
+    }
+  } else {
+    await voerPricingShellPipelineUit(stage);
+  }
 }
