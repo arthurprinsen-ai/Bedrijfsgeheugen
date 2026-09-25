@@ -21,3 +21,7 @@ Provider truth for LinkedIn is the exact LinkedIn post URN returned by Composio 
 - regression tests enforce both invariants.
 
 The LinkedIn company connection still requires valid LinkedIn organization permissions. Missing organization scope is a Composio/LinkedIn hard boundary, not a reason to fall back to Buffer.
+
+## Anthropic 400 diagnostic follow-up
+
+Production after the first fix proved HTTP 400 from Anthropic for the governed content request. The runtime now records only the provider error type/message, capped at 240 characters. Request bodies, source content, prompts and credentials are never logged.

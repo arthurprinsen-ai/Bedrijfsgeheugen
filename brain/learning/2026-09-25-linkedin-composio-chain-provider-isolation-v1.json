@@ -18,7 +18,8 @@
     "LinkedIn personal and company publication authority remains Composio-only with exact provider URN readback and no Buffer fallback.",
     "Legacy Buffer sync is compatibility telemetry only, is explicitly non-blocking, and records degraded state instead of failing the LinkedIn loop.",
     "AI provider failures retain only sanitized HTTP status and model identity; provider payloads and secrets are never logged.",
-    "The content AI call has a bounded 45-second timeout so a hung provider cannot stall a scheduler run."
+    "The content AI call has a bounded 45-second timeout so a hung provider cannot stall a scheduler run.",
+    "For provider HTTP 400 validation failures, retain only sanitized provider error type/message so request-shape defects can be repaired deterministically without logging prompts, source data, or credentials."
   ],
   "evidence": {
     "production_observation": "84 powerhouse-content-orchestrator health rows on 2026-09-25 reported artifact-ai:AI_PROVIDER_REQUEST_FAILED before remediation.",
@@ -27,11 +28,18 @@
       "tests/brain-content-loop-channel-isolation-v1.test.mjs",
       "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs",
       "tests/brain-linkedin-composio-authority.test.mjs"
-    ]
+    ],
+    "anthropic_400": "Post-deploy production readback on 2026-09-25 proved HTTP 400 for claude-sonnet-4-6; the diagnostic now retains only provider error type/message capped at 240 characters, never request payloads or credentials."
   },
   "evaluation": {
-    "historical_replay": ["tests/brain-content-loop-channel-isolation-v1.test.mjs"],
-    "canary": ["tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"],
-    "shadow": ["tests/brain-linkedin-composio-authority.test.mjs"]
+    "historical_replay": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ]
   }
 }
