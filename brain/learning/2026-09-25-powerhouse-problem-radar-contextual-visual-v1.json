@@ -44,5 +44,11 @@
     "contextual_surfaces": "portal-v2/operating-system/operating-system-ui.js",
     "styles": "portal-v2/operating-system/styles.js",
     "documentation": "docs/changes/powerhouse-problem-radar-contextual-visual-v1.md"
+  },
+  "production_recovery": {
+    "reason": "Protected merge 5814f26d8c6855d30983a8b0572c3ee683242928 landed while first Netlify provider readback still reported production commit 5b49ad9ebe9ee280da1c1725458d2fcd910e79ad.",
+    "authority": ".github/workflows/production-source-snapshot.yml",
+    "rule": "Use the existing exact-main Production Source Snapshot; do not create a second deploy authority.",
+    "expected_terminal_proof": "Netlify ready + production + commit_ref equal to the protected snapshot merge SHA or a verified current-main descendant containing the contextual visual feature."
   }
 }
