@@ -1,0 +1,20 @@
+{
+  "fingerprint": "pricing-static-english-h1-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production /en/prijzen rendered the Dutch pricing H1 even though the route, locale metadata and exact-main deployment were correct.",
+  "root_cause": "The immutable static translation authority contained an ineffective English mapping for the pricing H1. The route generator correctly consumed the cache, so transport and routing were healthy while localized content remained wrong.",
+  "prevention": [
+    "Use versioned cache patches for targeted translation corrections; patch files override the base cache deterministically.",
+    "Keep the production browser gate asserting that /en/prijzen does not contain the Dutch H1 and does contain visible English Pricing copy.",
+    "Treat exact-main deployment proof and localized-content proof as separate terminal requirements.",
+    "Never report LIVE_BEWEZEN while an English route still contains a mandatory Dutch heading."
+  ],
+  "evidence": {
+    "main_sha_before_fix": "89cc01bf96104a4436205567e7ff71850911d858",
+    "production_snapshot_run": 36164078579,
+    "failure": "English route still shows the Dutch pricing H1"
+  },
+  "test_evidence": ["tests/brain-pricing-static-english-h1-v1.test.mjs"],
+  "skill_targets": ["website", "powerhouse-netlify-production-truth", "powerhouse-continuity"],
+  "revision": 1
+}
