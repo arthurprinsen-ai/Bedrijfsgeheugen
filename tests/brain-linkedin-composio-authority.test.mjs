@@ -48,7 +48,7 @@ test('all social provider side effects require global historical uniqueness rese
   assert.match(source, /GLOBAL_POST_DUPLICATE_BLOCKED/);
   assert.match(source, /global_uniqueness_gate:'blocked'/);
   assert.match(source, /republish_forbidden:true/);
-  const uniqueness = source.indexOf('reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body))');
+  const uniqueness = source.indexOf('reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body),storyFingerprint)');
   const personalCreate = source.indexOf('publishLinkedInPersonalViaComposio(db,art)');
   const companyCreate = source.indexOf('publishLinkedInCompanyViaComposio(db,art)');
   const instagramCreate = source.indexOf('publishInstagramViaComposio(db, art, runDate)');
@@ -56,4 +56,11 @@ test('all social provider side effects require global historical uniqueness rese
   assert.ok(personalCreate > uniqueness);
   assert.ok(companyCreate > uniqueness);
   assert.ok(instagramCreate > uniqueness);
+});
+
+test('personal LinkedIn story fingerprint and keyword-level duplicate protection are mandatory', () => {
+  assert.match(source, /publicationStoryFingerprint/);
+  assert.match(source, /personal-story-v1:/);
+  assert.match(source, /p_story_fingerprint:storyFingerprint/);
+  assert.match(source, /powerhouse-global-post-story-uniqueness-v2/);
 });

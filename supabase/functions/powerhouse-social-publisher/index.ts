@@ -230,12 +230,20 @@ async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expecte
   return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
 
-async function reserveGlobalUniquePublication(db:any,runDate:string,channel:string,body:string){
+async function publicationStoryFingerprint(row:any,art:any){
+  if(row?.channel!=='linkedin_personal')return null;
+  const evidence=row?.delivery_evidence?.identity_gate_evidence||art?.generation_evidence?.identity_gate_evidence||{};
+  const source=clean(evidence?.source_text)||clean(evidence?.content_id);
+  if(!source)return null;
+  return await digest('personal-story-v1:'+source.toLowerCase().replace(/\s+/g,' ').trim());
+}
+async function reserveGlobalUniquePublication(db:any,runDate:string,channel:string,body:string,storyFingerprint:string|null){
   const {data,error}=await db.rpc('powerhouse_reserve_unique_publication_v1',{
     p_publication_date:runDate,
     p_channel:channel,
     p_body:body,
     p_similarity_threshold:0.62,
+    p_story_fingerprint:storyFingerprint,
   });
   if(error)throw new Error('GLOBAL_POST_UNIQUENESS_RPC:'+error.message);
   const result=data||{};
@@ -876,12 +884,13 @@ Deno.serve(async (req) => {
 
     let uniqueness:any;
     try{
-      uniqueness=await reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body));
-      const uniquenessEvidence={...gatePassedEvidence,global_uniqueness_gate:'passed',global_uniqueness_fingerprint:'powerhouse-global-post-uniqueness-v1',global_uniqueness:uniqueness,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
+      const storyFingerprint=await publicationStoryFingerprint(row,art);
+      uniqueness=await reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body),storyFingerprint);
+      const uniquenessEvidence={...gatePassedEvidence,global_uniqueness_gate:'passed',global_uniqueness_fingerprint:'powerhouse-global-post-story-uniqueness-v2',global_uniqueness:uniqueness,story_fingerprint:storyFingerprint,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
       await db.from('powerhouse_channel_decisions').update({delivery_evidence:uniquenessEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
     }catch(error){
       const message=error instanceof Error?error.message:String(error);
-      const evidence={...gatePassedEvidence,error:message,global_uniqueness_gate:'blocked',global_uniqueness_fingerprint:'powerhouse-global-post-uniqueness-v1',provider_truth_verified:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
+      const evidence={...gatePassedEvidence,error:message,global_uniqueness_gate:'blocked',global_uniqueness_fingerprint:'powerhouse-global-post-story-uniqueness-v2',provider_truth_verified:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
       await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
       await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Generate genuinely new content from a different angle/source. Never publish exact or near-duplicate historical content.',message);
       results.push({channel:row.channel,status:'blocked_duplicate',reason:message});

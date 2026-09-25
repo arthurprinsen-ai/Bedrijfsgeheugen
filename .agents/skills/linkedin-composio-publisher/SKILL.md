@@ -80,3 +80,18 @@ Before any external social-provider create call:
 A same-day same-channel claim may reuse its own exact database reservation for idempotent recovery, but no different daily/channel claim may reuse that content.
 
 Never solve a duplicate by changing only the hook, CTA, punctuation, hashtags, URL, sentence order or a few synonyms. The underlying story and wording must be genuinely new.
+
+## Story uniqueness v2
+
+Fingerprint: `powerhouse-global-post-story-uniqueness-v2`.
+
+Textual paraphrasing is not sufficient uniqueness. A post is a duplicate when the same underlying story, incident or content source is reused with different sentences.
+
+Additional hard gates:
+- personal LinkedIn derives a stable story fingerprint from verified `source_text` (or `content_id` when source text is unavailable);
+- reusing an already-used personal story fingerprint is forbidden;
+- all social copy also undergoes stopword-filtered keyword overlap;
+- at least 8 shared meaningful keywords with Jaccard overlap >= 0.30 is a story-level duplicate;
+- this runs in addition to exact raw hash, normalized hash and 3-word-shingle checks.
+
+The same anecdote may not be posted again merely because wording, hook, CTA, hashtags, punctuation or sentence order changed.
