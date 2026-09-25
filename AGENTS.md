@@ -50,6 +50,7 @@ Voor iedere materiële wijziging, foutfix, recovery, nieuwe capability, governan
 - geen agent/chat mag `LIVE_BEWEZEN`, `PRODUCTION_GREEN` of equivalent claimen wanneer één van deze repository-native writebacks ontbreekt of alleen buiten de codebase bestaat;
 - borging is onderdeel van Definition of Done en van de protected merge/readback-keten;
 - na merge moet de volgende agent via de normale preflight de nieuwe regel/learning kunnen ontdekken zonder afhankelijk te zijn van de oorspronkelijke chat.
+- iedere structurele wijziging aan skills, agents, intelligence-lagen, workflows, functies of authority-relaties actualiseert in **dezelfde lineage** zowel de machineleesbare `platform/system-map/canonical-system-map.mjs` als de menselijke architectuur-/change-documentatie; een stale System Map of ontbrekende menselijke documentatie is `SYSTEM_MAP_WRITEBACK_INCOMPLETE` / `WRITEBACK_INCOMPLETE`, nooit terminal groen.
 
 Losse notities buiten de codebase mogen hooguit aanvullend zijn; zij tellen nooit als canonieke borging.
 
