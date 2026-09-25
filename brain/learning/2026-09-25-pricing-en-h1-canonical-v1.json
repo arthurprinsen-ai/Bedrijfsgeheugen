@@ -36,5 +36,17 @@
   },
   "failed_approaches": [
     "Regression tests hard-coded obsolete implementation syntax (two-script allowlist, literal selectOption calls, old injection variable names) instead of the preserved consent/i18n/browser behavior."
-  ]
+  ],
+  "evidence": {
+    "production_route": "https://www.bedrijfsgeheugen.nl/en/prijzen",
+    "observed_marker": "data-bg-static-translated=\"false\"",
+    "observed_visible_failure": "Dutch pricing H1 remained visible on the English route",
+    "browser_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "parser_shape": "H1 contains separate text nodes around the highlighted span, so cache coverage must include the node-level fragments."
+  },
+  "semantic_learning": {
+    "root_cause": "Static i18n resolves DOM text nodes, not the visually concatenated H1 string; a sentence-level cache key alone cannot translate a heading split by markup.",
+    "prevention": "Canonical translation patches for styled headings must cover the exact parser text-node sources and remain protected by visible browser assertions.",
+    "proof": "The production verifier must observe English visible copy on /en/prijzen and reject the Dutch H1."
+  }
 }
