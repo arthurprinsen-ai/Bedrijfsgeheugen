@@ -39,7 +39,6 @@
     ]
   },
   "expected_outcome": "Higher commercial relevance and clearer conversion routing without adding cannibalising pages.",
-  "failure_class": "SEO_COMMERCIAL_INTENT_OWNERSHIP_DRIFT",
   "evaluation": {
     "historical_replay": [
       "tests/brain-seo-money-pages-commercial-intent-v1.test.mjs"
@@ -51,5 +50,10 @@
       "commercial SEO page exposes a direct conversion path to Frisse blik and/or contact",
       "SEO success is measured downstream through qualified leads, orders and attributable revenue"
     ]
+  },
+  "compiler": {
+    "failure_class": "SEO_COMMERCIAL_INTENT_OWNERSHIP_DRIFT",
+    "scope": "SEO_REVENUE",
+    "machine_enforceable": true
   }
 }
