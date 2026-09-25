@@ -45,3 +45,12 @@ test('queue-recovery control-plane changes never launch full website browser ver
   assert.equal(result.requires_preview,false);
   assert.deepEqual(result.affected_routes,[]);
 });
+
+
+test('effective Actions pressure uses a fully paginated status census',()=>{
+  const workflow=readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
+  assert.match(workflow,/for active_status in queued in_progress pending waiting requested/);
+  assert.match(workflow,/gh api --paginate "repos\/\$repo\/actions\/runs\?status=\$active_status&per_page=100"/);
+  assert.match(workflow,/active_runs=\$\(\(active_runs \+ status_count\)\)/);
+  assert.match(workflow,/effective_active_runs=\$\(\(active_runs - obsolete_uncancellable\)\)/);
+});

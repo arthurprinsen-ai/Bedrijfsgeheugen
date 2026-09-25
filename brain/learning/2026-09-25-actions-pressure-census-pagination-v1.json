@@ -1,0 +1,29 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "github|actions-pressure-census|same-universe-pagination|v1",
+  "date": "2026-09-25",
+  "symptom": "Production supervisor reported raw active=6, provider zombies=9 and effective active=0 even though live Actions still had executable work.",
+  "root_cause": "Provider-zombie discovery used paginated status-specific scans while raw active pressure used only the first unpaginated 100 recent runs. The deduction and raw census therefore described different universes.",
+  "fix": "Count queued, in_progress, pending, waiting and requested with fully paginated status-specific queries before subtracting only provider zombies observed in that same active universe.",
+  "prevention": "Any capacity metric that subtracts exclusions must derive numerator and exclusions from the same paginated population; regression tests enforce the workflow implementation.",
+  "evidence": [
+    "production supervisor run 36114119449",
+    "tests/brain-actions-queue-storm-guard-v1.test.mjs",
+    ".github/workflows/powerhouse-delivery-recovery-supervisor.yml"
+  ],
+  "compiler": {
+    "failure_class": "QUEUE_PRESSURE_UNDERCOUNT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ]
+  }
+}

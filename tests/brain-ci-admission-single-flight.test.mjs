@@ -56,3 +56,13 @@ test('queue pressure forecast blocks fan-out before mutation', () => {
   assert.equal(healthy.state,'HEALTHY');
   assert.equal(healthy.allowOptionalDispatch,true);
 });
+
+
+test('generic CodeQL main pushes are path-scoped to Python', async () => {
+  const yml = await readFile('.github/workflows/codeql.yml','utf8');
+  const push = yml.slice(yml.indexOf('  push:'), yml.indexOf('  schedule:'));
+  assert.match(push,/branches:\s*\[main\]/);
+  assert.match(push,/paths:/);
+  assert.match(push,/\*\*\/\*\.py/);
+  assert.match(push,/\.github\/workflows\/codeql\.yml/);
+});
