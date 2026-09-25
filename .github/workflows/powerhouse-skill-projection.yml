@@ -45,6 +45,9 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+      - name: Install projection-test dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+
       - name: Evaluate changed learning before canonicalization
         env:
           POWERHOUSE_BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
