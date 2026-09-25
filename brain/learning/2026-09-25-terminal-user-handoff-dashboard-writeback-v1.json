@@ -28,13 +28,14 @@
   },
   "evaluation": {
     "historical_replay": [
-      "User-facing recovery ended with pending Required gates and an implicit next-action handoff."
-    ],
-    "canary": [
       "tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs"
-    ],
-    "shadow": [
-      "Powerhouse dashboard/current-state and activity writeback readback"
     ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
