@@ -10,7 +10,8 @@
   "failed_approaches": [
     "Letting the admission gate discover the invalid alias after CI already started.",
     "Treating Candidate-Type as free-form descriptive text instead of a machine enum.",
-    "Opening a replacement PR or bypassing validation instead of correcting the same lineage."
+    "Opening a replacement PR or bypassing validation instead of correcting the same lineage.",
+    "Initial historical_replay referenced tests/delivery-hygiene-policy.test.mjs, but the canonical learning evaluator only accepts tests/brain-*.test.mjs paths."
   ],
   "prevention": [
     "Use Candidate-Type: docs for documentation, borging, learning and ledger-only changes.",
@@ -27,10 +28,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-delivery-candidate-type-canonicalization.test.mjs"
+      "tests/brain-delivery-hygiene-candidate-type-closure.test.mjs"
     ],
     "canary": [
-      ".github/workflows/powerhouse-delivery-hygiene.yml"
+      "tests/brain-delivery-hygiene-candidate-type-closure.test.mjs"
     ]
   },
   "skill_targets": [
@@ -41,7 +42,8 @@
     "tests/delivery-hygiene-policy.test.mjs",
     ".agents/skills/powerhouse-continuity/SKILL.md",
     "brain/policies/powerhouse-agent-continuity-v1.json",
-    "tests/brain-delivery-candidate-type-canonicalization.test.mjs"
+    "tests/brain-delivery-candidate-type-canonicalization.test.mjs",
+    "tests/brain-delivery-hygiene-candidate-type-closure.test.mjs"
   ],
   "outcome": "DOCS_CLOSURE_ALIAS_CANONICALIZED_BEFORE_ADMISSION_WITH_NON_DOCS_FAIL_CLOSED"
 }
