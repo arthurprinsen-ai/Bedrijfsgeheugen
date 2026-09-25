@@ -88,8 +88,11 @@ async function run() {
     const mobileMenu = page.locator('#bgkopMob').first();
     const mobileMenuButton = page.locator('#bgkopKnop').first();
     if (await mobileMenu.count() && await mobileMenu.isHidden().catch(()=>false)) await mobileMenuButton.click();
-    const mobileLanguage = page.locator('[data-bg-language-select]:visible').first();
-    if (!await mobileLanguage.count()) throw new Error('visible mobile language select is missing');
+    const sharedMobileNav = page.locator('#bgSharedMobileNav').first();
+    if (await sharedMobileNav.count()) await sharedMobileNav.waitFor({ state:'visible', timeout:5_000 });
+    const mobileLanguage = page.locator('#bgSharedMobileNav [data-bg-language-select], #bgkopMob [data-bg-language-select]').filter({ visible:true }).first();
+    await mobileLanguage.waitFor({ state:'visible', timeout:5_000 }).catch(() => {});
+    if (!await mobileLanguage.isVisible().catch(()=>false)) throw new Error('visible mobile language select is missing after opening mobile navigation');
     await Promise.all([
       page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
       mobileLanguage.selectOption('en'),
@@ -105,8 +108,9 @@ async function run() {
     // English -> Dutch must return through the same visible mobile control.
     const englishMobileMenu = page.locator('#bgkopMob').first();
     if (await englishMobileMenu.count() && await englishMobileMenu.isHidden().catch(()=>false)) await page.locator('#bgkopKnop').first().click();
-    const dutchSelect = page.locator('[data-bg-language-select]:visible').first();
-    if (!await dutchSelect.count()) throw new Error('visible Dutch language select is missing');
+    const dutchSelect = page.locator('#bgSharedMobileNav [data-bg-language-select], #bgkopMob [data-bg-language-select]').filter({ visible:true }).first();
+    await dutchSelect.waitFor({ state:'visible', timeout:5_000 }).catch(() => {});
+    if (!await dutchSelect.isVisible().catch(()=>false)) throw new Error('visible Dutch language select is missing after opening mobile navigation');
     await Promise.all([
       page.waitForURL(url => /^\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
       dutchSelect.selectOption('nl'),
