@@ -1,0 +1,31 @@
+{
+  "fingerprint": "website-i18n-static-cache-artifact-drift-v1",
+  "date": "2026-09-25",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The canonical static i18n builder, cache validator and fail-closed learning remained on main while the versioned English cache artifact itself was removed by later repository churn.",
+  "root_cause": "Generated-but-authoritative website artifacts were not protected by a same-lineage existence/coverage invariant strongly enough to prevent later merges from deleting the cache while leaving dependent code and tests behind.",
+  "evidence": [
+    "Current main contained tools/site-shell/build-localized-routes.mjs with --validate-cache support.",
+    "Current main contained tests/brain-static-i18n-versioned-cache-v1.test.mjs.",
+    "Current main did not contain .cache/bg-static-i18n-en.json.",
+    "The proven cache blob from merged PR #2944 was restored unchanged in content, then compacted from 1,049,339 bytes to 1,018,510 bytes with 7,707 entries preserved so delivery admission can process the diff."
+  ],
+  "prevention": [
+    "Treat .cache/bg-static-i18n-en.json as an authoritative generated website artifact whenever the canonical builder references it.",
+    "Any deletion or replacement of the cache must update the validator, learning and delivery documentation in the same lineage.",
+    "Keep the serialized cache compact enough for delivery control-plane diff processing; whitespace changes must not alter key/value content.",
+    "Before merge, require --validate-cache coverage against the current public source corpus."
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_ARTIFACT_DRIFT",
+    "scope": "POWERHOUSE_WEBSITE_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-versioned-cache-v1.test.mjs"
+    ]
+  }
+}
