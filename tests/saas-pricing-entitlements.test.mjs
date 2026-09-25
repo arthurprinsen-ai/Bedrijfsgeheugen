@@ -27,7 +27,8 @@ test('pricing mirrors the Portal business-context model instead of treating Scal
   assert.match(html,/Je bedrijfsfase is niet je abonnement/i);
   assert.match(html,/Primaire bedrijfsfase/i);
   assert.match(html,/Wat speelt daarnaast/i);
-  assert.match(html,/Belangrijkste doel nu/i);
+  assert.match(html,/Wat wil je bereiken\?/i);
+  assert.match(html,/Ondernemersdoelen/i);
 });
 
 test('pricing tier copy matches canonical entitlement semantics',async()=>{
