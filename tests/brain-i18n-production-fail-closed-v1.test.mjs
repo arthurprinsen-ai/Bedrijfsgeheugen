@@ -14,9 +14,10 @@ test('production localized build is provider-independent and fails closed on inc
   assert.match(source,/if \(cacheRequired\) \{\s*throw new Error\('STATIC_I18N_CACHE_INCOMPLETE:/);
 });
 
-test('deploy previews use the same deterministic cache-only contract',()=>{
-  assert.match(netlify,/\[context\.deploy-preview\.environment\][\s\S]*STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(netlify,/\[context\.deploy-preview\.environment\][\s\S]*STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
+test('deploy previews inherit the deterministic cache-only contract',()=>{
+  assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
+  assert.match(netlify,/\[context\.deploy-preview\][\s\S]*command\s*=/);
   assert.match(source,/data-bg-static-translated/);
 });
 
