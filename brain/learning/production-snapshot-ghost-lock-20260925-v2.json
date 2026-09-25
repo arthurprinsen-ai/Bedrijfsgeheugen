@@ -17,7 +17,32 @@
     "previous_group": "production-source-snapshot-main-v2",
     "recovery_group": "production-source-snapshot-main-v3"
   },
-  "test_evidence": ["tests/brain-production-snapshot-ghost-lock-v2.test.mjs"],
-  "skill_targets": ["powerhouse-delivery-concurrency", "powerhouse-continuity"],
-  "revision": 2
+  "test_evidence": [
+    "tests/brain-production-snapshot-ghost-lock-v2.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-continuity"
+  ],
+  "revision": 2,
+  "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
+  "compiler": {
+    "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-snapshot-ghost-lock-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-snapshot-ghost-lock-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-snapshot-ghost-lock-v2.test.mjs"
+    ],
+    "expected_invariant": "latest protected main starts in the recovered v3 serialized snapshot group and reaches exact-main production proof"
+  }
 }
