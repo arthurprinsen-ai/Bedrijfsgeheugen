@@ -605,3 +605,24 @@ Fingerprint: `terminal-brain-gate-trigger-parity-v1`
 - Prefer successful exact-head Unified Brain Delivery evidence when present, regardless of whether it was dispatched manually or by an authorized automation.
 - If no exact-head Unified Brain Delivery run exists, require successful exact-merge `Brain foundation verify` push evidence before terminal closure.
 - Failed Brain evidence remains fail-closed; absence of both evidence paths is `TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL`.
+
+## Terminal live proof must be written back in the same delivery lineage
+
+Fingerprint: `delivery|terminal-live-proof-writeback|v1`.
+
+When a chat or agent establishes that a change is live, the proof is not considered fully closed until the result is written back to the canonical repository in the same obligation lineage.
+
+Mandatory:
+- capture the authoritative production identity used for the live claim (provider deploy id and commit SHA where available);
+- distinguish exact-current-main proof from safe non-runtime descendant proof; never present ancestry alone as runtime equivalence;
+- require browser/function readback for the affected functional surface before a user-facing LIVE claim;
+- after LIVE is proven, persist the learning in four repository surfaces: skill projection, machine-readable Brain learning, append-only development ledger, and human-readable change documentation;
+- bind the writeback to the production evidence and source lineage that was actually verified;
+- if `main` advances after proof only through explicitly non-production paths, reuse the existing functional proof under the safe-supersession rule instead of redeploying purely for documentation/learning;
+- if runtime-affecting paths advance, obtain new production proof before repeating a LIVE claim;
+- do not leave this writeback as chat-only state.
+
+Reference closure: 25 September 2026 production deployment and NL/EN/pricing browser proof followed by repository learning/skill/documentation writeback.
+Regression: `tests/brain-terminal-live-proof-writeback-v1.test.mjs`.
+Learning: `brain/learning/2026-09-25-terminal-live-proof-writeback-v1.json`.
+
