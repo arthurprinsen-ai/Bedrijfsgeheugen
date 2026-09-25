@@ -6,7 +6,8 @@
   "prevention": [
     "After material pricing or Portal parity changes, trigger the canonical exact-source production snapshot in the same delivery lineage.",
     "Require exact main SHA, ready Netlify production deploy, pricing production content proof, interaction proof and Production Release Readback before terminal LIVE.",
-    "Do not treat a ready older production deploy as proof for current main."
+    "Do not treat a ready older production deploy as proof for current main.",
+    "Promotion regressions must assert canonical multi-goal Portal context ('Wat wil je bereiken?' + 'Ondernemersdoelen') and must not reintroduce the retired single-goal label 'Belangrijkste doel nu'."
   ],
   "applies_to": [
     "pricing",
@@ -32,7 +33,8 @@
     "source": [
       ".github/workflows/production-source-snapshot.yml"
     ],
-    "outcome": "The canonical exact-source production promotion is triggered and must prove current-main deployment plus production pricing/readback before terminal LIVE."
+    "outcome": "The canonical exact-source production promotion is triggered and must prove current-main deployment plus production pricing/readback before terminal LIVE.",
+    "stale_regression_repaired": "tests/saas-pricing-entitlements.test.mjs"
   },
   "compiler": {
     "failure_class": "MERGED_PRICING_PARITY_NOT_EXACTLY_DEPLOYED",
@@ -43,5 +45,6 @@
   },
   "skill_targets": [
     ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
-  ]
+  ],
+  "revision": 2
 }
