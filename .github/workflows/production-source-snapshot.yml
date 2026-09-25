@@ -155,8 +155,9 @@ jobs:
                     console.error("NETLIFY_LINKED_DEPLOY_ERROR",JSON.stringify(safe(process.argv[1],"deploy")));
                     console.error("NETLIFY_LINKED_BUILD_ERROR",JSON.stringify(safe(process.argv[2],"build")));
                   ' "$deploy_json" "$build_json"
-                  echo "::error::Netlify linked production build failed for deploy $linked_deploy_id"
-                  exit 78
+                  echo "NETLIFY_LINKED_DEPLOY_FAILED deploy=$linked_deploy_id; continuing with canonical exact-source upload fallback."
+                  linked_fallback="true"
+                  break
                 fi
                 current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?linked_build=${EXPECTED_SHA}-${attempt}" || true)"
                 observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
