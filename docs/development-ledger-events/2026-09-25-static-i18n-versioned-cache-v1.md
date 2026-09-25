@@ -14,3 +14,5 @@
 - Prevention: versioned cache + offline cache coverage validator + existing fail-closed English-production guards.
 - Production authority: Production Source Snapshot is explicitly refreshed in this lineage.
 - Terminal state: pending protected exact-head gates, merge, exact Netlify production identity and browser readback.
+
+- Successor cleanup: remove duplicate `.cache` artifact, use only `data/i18n/`, and classify it as a website-shell contract in delivery governance.
