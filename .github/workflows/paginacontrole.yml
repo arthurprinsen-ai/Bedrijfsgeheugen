@@ -84,7 +84,15 @@ jobs:
               if { [[ "$file" != */* ]] && [[ "$file" == *.html ]]; } \
                 || [[ "$file" =~ ^blog/[^/]+/index\.html$ ]] \
                 || [[ "$file" == assets/* ]] \
-                || [[ "$file" == "_redirects" ]]; then
+                || [[ "$file" == "_redirects" ]] \
+                || [[ "$file" == "sitemap.xml" ]] \
+                || [[ "$file" == site/seo-order-*.json ]] \
+                || [[ "$file" == "tools/bouw-v18-views.mjs" ]] \
+                || [[ "$file" == "tools/v18-views-lijst.mjs" ]] \
+                || [[ "$file" == "tools/zoekwoorden.mjs" ]] \
+                || [[ "$file" == "tools/bouw-sitemap.mjs" ]] \
+                || [[ "$file" == ".github/scripts/seocontrole.py" ]] \
+                || [[ "$file" == ".github/workflows/paginacontrole.yml" ]]; then
                 public=true
               fi
               if [[ "$file" != */* && "$file" == *.html ]]; then
