@@ -38,10 +38,17 @@ Deno.serve(async (req) => {
     const winner = await db.rpc('powerhouse_select_instagram_daily_winner_v1', { p_date: runDate });
     if (winner.error) throw new Error('INSTAGRAM_DAILY_WINNER_SELECTION_FAILED');
     stepResults.push({ name: 'instagram_daily_winner', ok: winner.data?.selected === true, body: winner.data });
-    if (winner.data?.selected !== true) throw new Error('INSTAGRAM_DAILY_WINNER_REQUIRED');
+    // Channel isolation: Instagram readiness may degrade Instagram, but must never block
+    // blog/LinkedIn generation and delivery. Blog has its own no-gap obligation.
+    if (winner.data?.selected !== true) {
+      stepResults.push({ name: 'instagram_daily_winner_gate', ok: false, degraded: true, error: 'INSTAGRAM_DAILY_WINNER_REQUIRED' });
+    }
     const mediaJob = await db.rpc('powerhouse_ensure_instagram_media_job_v1', { p_date: runDate });
-    if (mediaJob.error || mediaJob.data?.ok !== true) throw new Error('INSTAGRAM_WINNER_MEDIA_JOB_FAILED');
-    stepResults.push({ name: 'instagram_winner_media_job', ok: true, body: mediaJob.data });
+    if (mediaJob.error || mediaJob.data?.ok !== true) {
+      stepResults.push({ name: 'instagram_winner_media_job', ok: false, degraded: true, error: 'INSTAGRAM_WINNER_MEDIA_JOB_FAILED', body: mediaJob.data || null });
+    } else {
+      stepResults.push({ name: 'instagram_winner_media_job', ok: true, body: mediaJob.data });
+    }
 
     // Instagram media must be provider-routed and proven before orchestration or dispatch.
     stepResults.push(await invoke(url, expected, 'powerhouse-instagram-media-router', { runDate }));

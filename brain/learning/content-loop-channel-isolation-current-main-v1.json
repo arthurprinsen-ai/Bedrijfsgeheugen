@@ -1,0 +1,30 @@
+{
+  "fingerprint": "content-loop-channel-isolation-current-main-v1",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "The content loop treated Instagram daily-winner and media-job readiness as global fatal prerequisites, so an Instagram-only provider/readiness issue could stop blog and LinkedIn work that has separate delivery obligations.",
+  "prevention": [
+    "Instagram winner/media readiness may degrade the Instagram channel but must not abort unrelated blog or LinkedIn generation/publication.",
+    "Degraded Instagram state must stay explicit in stepResults; it may never be silently ignored.",
+    "Selection RPC failures remain fatal because they indicate control-plane failure, while a valid no-winner/media-not-ready outcome is channel-scoped degradation."
+  ],
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "superseded_pr": 2656,
+    "current_main": "15b95eb3482db1f409fff2b0f6f015dbb4ee0ac1"
+  },
+  "revision": 1
+}
