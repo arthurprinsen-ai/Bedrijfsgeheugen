@@ -1,17 +1,24 @@
 {
   "fingerprint": "linkedin-personal-source-dedupe-current-main-v1",
   "status": "ACTIVE_PREVENTION",
-  "problem": "Personal LinkedIn fallback source-level dedupe was active in production but absent from canonical Git and migration history, leaving replay/new environments vulnerable to reusing the same personal source.",
-  "root_cause": "A production recovery modified powerhouse_prepare_daily_content_fallbacks_v1 directly while stale PR #2569 never reached main.",
+  "problem": "Personal LinkedIn fallback source-level dedupe was active in production inside powerhouse_prepare_daily_content_fallbacks_v1, but the complete function definition was absent from canonical migration history. Clean Supabase replay therefore had no function to patch.",
+  "root_cause": "A direct production recovery created/modified powerhouse_prepare_daily_content_fallbacks_v1 outside replayable Git history, while stale PR #2569 captured only a delta against that hidden runtime baseline.",
   "prevention": [
+    "Canonical Git must contain the full runtime function definition, not only a patch that assumes hidden production state.",
     "Fallback selection must exclude any content_id already used by an earlier linkedin_personal recommendation.",
-    "Production hotfixes must be reconciled into canonical Git with an idempotent migration.",
-    "Recovery migrations must no-op when the exact invariant is already present and fail closed on unknown function drift."
+    "Security-definer runtime functions must preserve explicit search_path and revoke anon/authenticated EXECUTE while granting service_role only.",
+    "Hosted Supabase Preview must replay from zero before runtime parity is considered restored."
   ],
   "evidence": {
     "source_pr": 2569,
-    "production_readback": "fallback function contains prior content_id exclusion",
-    "canonical_git_before_recovery": "missing"
+    "production_function": "powerhouse_prepare_daily_content_fallbacks_v1(date)",
+    "production_dedupe": "prior linkedin_personal content_id exclusion present",
+    "production_privileges": {
+      "anon_execute": false,
+      "authenticated_execute": false,
+      "service_role_execute": true
+    },
+    "clean_preview_before_recovery": "function did not exist"
   },
   "evaluation": {
     "historical_replay": [
@@ -19,9 +26,10 @@
     ]
   },
   "failed_approaches": [
-    "Leaving a direct production function patch outside canonical Git."
+    "Leaving a direct production function hotfix outside canonical Git.",
+    "Applying a text patch to a function that did not exist on clean replay."
   ],
-  "revision": 1,
+  "revision": 2,
   "compiler": {
     "failure_class": "DATABASE_INTEGRITY",
     "scope": "DATABASE",
