@@ -1,0 +1,40 @@
+{
+  "fingerprint": "mobile-i18n-visible-control-wait-20260925-v2",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production was on the exact protected main SHA, but the NL/EN browser gate failed with 'visible mobile language select is missing'.",
+  "root_cause": "The language select is mounted dynamically by assets/js/i18n.js into the mobile drawer. The production verifier clicked the drawer and immediately checked locator count, creating a race between dynamic control mount/visibility and the assertion.",
+  "prevention": [
+    "Treat dynamically mounted UI controls as asynchronous browser state.",
+    "Wait for the mobile language select to become visible before interacting with it.",
+    "Keep the functional NL→EN→NL navigation proof after the visibility wait.",
+    "Do not downgrade the gate to presence-only or remove the mobile proof."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs"
+  ],
+  "evidence": {
+    "production_sha": "6417fa291ac08345369e1e143abf974fac54f0e4",
+    "netlify_deploy": "6ab698be9627e6c36975bed1",
+    "provider_commit_ref_matches_main": true,
+    "failed_assertion": "visible mobile language select is missing"
+  },
+  "compiler": {
+    "failure_class": "ASYNC_UI_MOUNT_READBACK_RACE",
+    "scope": "WEBSITE_I18N_PRODUCTION_BROWSER_READBACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 2
+}
