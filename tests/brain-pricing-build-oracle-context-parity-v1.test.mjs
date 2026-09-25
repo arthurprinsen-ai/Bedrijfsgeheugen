@@ -9,10 +9,15 @@ test('pricing build oracle and entitlement regression use canonical multi-goal c
     readFile('tests/saas-pricing-entitlements.test.mjs','utf8'),
   ]);
 
-  for (const source of [pricing, build, entitlement]) {
-    assert.match(source, /Wat wil je bereiken\?/);
-    assert.match(source, /Ondernemersdoelen/);
-  }
+  assert.match(pricing, /Wat wil je bereiken\?/);
+  assert.match(pricing, /Ondernemersdoelen/);
+
+  assert.match(build, /Wat wil je bereiken\?/);
+  assert.match(build, /Ondernemersdoelen/);
+
+  // Test source may escape punctuation inside its own regex literal; bind semantics, not source-code escaping.
+  assert.match(entitlement, /Wat wil je bereiken/);
+  assert.match(entitlement, /Ondernemersdoelen/);
 
   assert.doesNotMatch(build, /Belangrijkste doel nu/);
   assert.doesNotMatch(entitlement, /Belangrijkste doel nu/);
