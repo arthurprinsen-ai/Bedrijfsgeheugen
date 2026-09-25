@@ -54,3 +54,19 @@ When a recovery changes a build-time JavaScript transformer:
 - execute it against a minimal representative fixture;
 - assert the intended DOM/string mutation and idempotence;
 - if OIDC succeeds but both linked and exact-source Netlify deploys fail during `building site`, classify the incident as a build-content failure before changing deploy credentials or transport.
+
+
+## NL/EN runtime asset completeness
+
+Fingerprint: `netlify|public-i18n|asset-completeness|v1`.
+
+Netlify production readback for public NL/EN must distinguish build-source intent from final deployed HTML.
+
+Required:
+- verify `assets/i18n.css` and `assets/js/i18n.js` independently in the final deployed page;
+- a single shared marker such as `data-bg-i18n-asset` cannot prove both assets exist;
+- if CSS is present but the runtime script is missing, classify this as build-transform incompleteness, not a navigation-host defect and not a Netlify authentication defect;
+- after runtime presence is proven, verify the active mobile host and visible language selector;
+- terminal proof is exact Netlify `commit_ref === main` plus successful pricing/browser NL → EN → NL roundtrip.
+
+Canonical learning: `brain/learning/i18n-v18-mobile-host-production-20260925-v1.json`.
