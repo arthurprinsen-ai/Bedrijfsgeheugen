@@ -160,7 +160,8 @@ function removeChildrenBy(node,predicate) {
 }
 
 function canonicalRoute(locale,route) {
-  return '/' + locale + (route === '/' ? '/' : route);
+  if (locale === 'nl') return route === '/' ? '/' : route;
+  return '/en' + (route === '/' ? '/' : route);
 }
 
 function routeAliases(files) {
