@@ -928,3 +928,13 @@ For public website localization:
 Regression: `tests/brain-public-i18n-static-route-authority-v1.test.mjs`.
 Canary: `tools/site-shell/verify-pricing-i18n-production.mjs`.
 Learning: `brain/learning/public-i18n-dutch-canonical-roundtrip-20260925-v1.json`.
+
+
+## Pricing rescue mutation-observer safety
+
+Fingerprint: `pricing-rescue-observer-self-loop-20260925-v1`.
+
+- A pricing recovery observer may not react to the runtime's own textContent updates.
+- Whole-body `childList` observation must be filtered to newly added relevant pricing controls/panels before scheduling `syncFromDom()`.
+- `ready-v3` must be observable by a real browser before pricing is considered interactive.
+- Terminal production proof remains lifecycle click + plan tab + billing switch + NL/EN round trip.
