@@ -498,3 +498,14 @@ For a run whose delivery identity is already proven obsolete, cleanup is bounded
 Recovery-budget loops must not pipe a producer such as `jq` into a consumer that intentionally `break`s. Use process substitution or another bounded iterator so budget exhaustion cannot create SIGPIPE and turn a safe cycle red.
 
 Terminal closure should distinguish a failed gate from a gate that is merely still running. Keep a bounded wait long enough for the normal protected Required duration and keep the job itself time-bounded.
+
+
+## Reusable pricing surfaces share one commercial truth
+
+Fingerprint: `pricing|component-drift|canonical-commercial-truth|v1`.
+
+When a canonical public price changes or pricing↔Portal parity is reviewed:
+- include reusable pricing components, embeds and fragments in the audit boundary, not only `/prijzen`;
+- compare price amount, cadence and commercial variants against the canonical public pricing source;
+- remove stale or unsupported alternative prices instead of preserving them as hidden legacy copy;
+- bind the comparison to an executable regression so an old component cannot later reintroduce commercial drift.
