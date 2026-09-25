@@ -1,0 +1,30 @@
+{
+  "fingerprint": "instagram-composio-account-selection-current-main-v1",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "The shared Composio account discovery path failed closed whenever more than one ACTIVE Instagram connection existed, even when exactly one connection represented the canonical bedrijfsgeheugen.nl account.",
+  "prevention": [
+    "For Instagram only, ambiguous ACTIVE connections must be resolved by provider identity readback against the canonical bedrijfsgeheugen.nl username.",
+    "Exactly one canonical identity match is required; zero or multiple matches remain fail-closed.",
+    "Non-Instagram toolkits retain strict single-active-account semantics."
+  ],
+  "compiler": {
+    "failure_class": "CONNECTOR_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-account-selection-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-composio-account-selection-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "superseded_pr": 2674,
+    "current_main": "bb729213a6c45577f6a32e6e98939a5eeb4b6a75"
+  },
+  "revision": 1
+}
