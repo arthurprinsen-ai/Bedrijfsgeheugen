@@ -24,5 +24,17 @@
   "skill_targets": [
     "continuity",
     "delivery"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-closed-force-pushed-pr-recovery-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-closed-force-pushed-pr-recovery-v1.test.mjs"
+  ],
+  "revision": 2,
+  "failed_approaches": [
+    "Initial learning omitted evaluation.historical_replay, so Powerhouse Skill Projection correctly failed closed with LEARNING_EVALUATION_TESTS_REQUIRED."
   ]
 }
