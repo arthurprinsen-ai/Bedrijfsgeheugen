@@ -17,40 +17,202 @@
     "ogImage": "https://www.bedrijfsgeheugen.nl/og-image.png"
   },
   "keywordOwners": [
-    {"keyword":"digitalisering mkb","route":"/"},
-    {"keyword":"prijzen digitalisering mkb","route":"/prijzen"},
-    {"keyword":"afas koppeling kosten","route":"/blog/wat-kost-een-afas-koppeling/"},
-    {"keyword":"afas pocket app koppelen","route":"/afas-pocket-koppelen"},
-    {"keyword":"afmaakindex","route":"/afmaakindex"},
-    {"keyword":"ai act compliance mkb","route":"/ai-act"},
-    {"keyword":"ai adoptie mkb","route":"/ai-adoptie"},
-    {"keyword":"ai capability model","route":"/ai-capability-model"},
-    {"keyword":"ai governance mkb","route":"/ai-governance"},
-    {"keyword":"ai implementeren mkb","route":"/ai-implementeren"},
-    {"keyword":"ai marketing mkb","route":"/ai-marketing-mkb"},
-    {"keyword":"ai pilot opzetten mkb","route":"/ai-poc"},
-    {"keyword":"ai scan mkb","route":"/ai-scan"},
-    {"keyword":"ai strategie directie","route":"/ai-voor-bestuurders"},
-    {"keyword":"ai workshop mkb","route":"/workshops"},
-    {"keyword":"api koppeling laten maken","route":"/api-koppeling-laten-maken"},
-    {"keyword":"bedrijfsgeheugen","route":"/bedrijfsgeheugen"},
-    {"keyword":"bedrijfsopvolging familiebedrijf kennis","route":"/blog/bedrijfsopvolging-begin-bij-het-geheugen/"},
-    {"keyword":"bedrijfsprocessen automatiseren","route":"/bedrijfsprocessen-automatiseren"},
-    {"keyword":"begrippenlijst mkb","route":"/begrippen"},
-    {"keyword":"benchmark mkb digitalisering","route":"/benchmark"},
-    {"keyword":"business case ai mkb","route":"/business-case-ai"},
-    {"keyword":"chatgpt bedrijfsgegevens beleid","route":"/data-soevereiniteit"},
-    {"keyword":"data soevereiniteit","route":"/data-soevereiniteit"},
-    {"keyword":"erp implementatie mislukt","route":"/blog/automatiseren-zonder-traject/"},
-    {"keyword":"eu ai act mkb","route":"/blog/eu-ai-act-mkb/"},
-    {"keyword":"exact online koppeling","route":"/exact-online-koppeling"},
-    {"keyword":"kennisborging mkb","route":"/product"},
-    {"keyword":"kennisverlies mkb","route":"/blog/wat-is-een-bedrijfsgeheugen/"},
-    {"keyword":"systemen koppelen mkb","route":"/blog/systemen-koppelen-mkb/"},
-    {"keyword":"twinfield koppeling","route":"/twinfield-koppeling"},
-    {"keyword":"wat kost digitalisering mkb","route":"/blog/wat-kost-digitalisering-mkb/"},
-    {"keyword":"webshop koppelen boekhouding","route":"/webshop-koppeling"},
-    {"keyword":"werkinstructie voorbeeld","route":"/blog/werkinstructie-voorbeeld/"}
+    {
+      "keyword": "afas koppeling",
+      "route": "/afas-koppeling"
+    },
+    {
+      "keyword": "afas koppeling kosten",
+      "route": "/blog/wat-kost-een-afas-koppeling/"
+    },
+    {
+      "keyword": "afas pocket app koppelen",
+      "route": "/afas-pocket-koppelen"
+    },
+    {
+      "keyword": "afas pocket koppelen",
+      "route": "/afas-pocket-koppelen"
+    },
+    {
+      "keyword": "afmaakindex",
+      "route": "/afmaakindex"
+    },
+    {
+      "keyword": "ai act compliance mkb",
+      "route": "/ai-act"
+    },
+    {
+      "keyword": "ai adoptie mkb",
+      "route": "/ai-adoptie"
+    },
+    {
+      "keyword": "ai automatisering mkb",
+      "route": "/ai-automatisering-mkb"
+    },
+    {
+      "keyword": "ai capability model",
+      "route": "/ai-capability-model"
+    },
+    {
+      "keyword": "ai governance mkb",
+      "route": "/ai-governance"
+    },
+    {
+      "keyword": "ai implementatie mkb",
+      "route": "/ai-implementeren"
+    },
+    {
+      "keyword": "ai implementeren mkb",
+      "route": "/ai-implementeren"
+    },
+    {
+      "keyword": "ai marketing mkb",
+      "route": "/ai-marketing-mkb"
+    },
+    {
+      "keyword": "ai pilot opzetten mkb",
+      "route": "/ai-poc"
+    },
+    {
+      "keyword": "ai poc mkb",
+      "route": "/ai-poc"
+    },
+    {
+      "keyword": "ai scan mkb",
+      "route": "/ai-scan"
+    },
+    {
+      "keyword": "ai strategie directie",
+      "route": "/ai-voor-bestuurders"
+    },
+    {
+      "keyword": "ai workshop mkb",
+      "route": "/workshops"
+    },
+    {
+      "keyword": "api koppeling laten maken",
+      "route": "/api-koppeling-laten-maken"
+    },
+    {
+      "keyword": "bedrijf overdraagbaar maken",
+      "route": "/bedrijf-overdraagbaar-maken"
+    },
+    {
+      "keyword": "bedrijfsgeheugen",
+      "route": "/bedrijfsgeheugen"
+    },
+    {
+      "keyword": "bedrijfsgeheugen platform",
+      "route": "/product"
+    },
+    {
+      "keyword": "bedrijfskennis bij overname",
+      "route": "/investeerders-ma"
+    },
+    {
+      "keyword": "bedrijfskennis borgen",
+      "route": "/bedrijfsgeheugen"
+    },
+    {
+      "keyword": "bedrijfsopvolging familiebedrijf kennis",
+      "route": "/blog/bedrijfsopvolging-begin-bij-het-geheugen/"
+    },
+    {
+      "keyword": "bedrijfsprocessen automatiseren",
+      "route": "/bedrijfsprocessen-automatiseren"
+    },
+    {
+      "keyword": "begrippenlijst mkb",
+      "route": "/begrippen"
+    },
+    {
+      "keyword": "benchmark mkb digitalisering",
+      "route": "/benchmark"
+    },
+    {
+      "keyword": "business case ai mkb",
+      "route": "/business-case-ai"
+    },
+    {
+      "keyword": "chatgpt bedrijfsgegevens beleid",
+      "route": "/data-soevereiniteit"
+    },
+    {
+      "keyword": "data soevereiniteit",
+      "route": "/data-soevereiniteit"
+    },
+    {
+      "keyword": "digitalisering mkb",
+      "route": "/"
+    },
+    {
+      "keyword": "digitalisering mkb kennisbank",
+      "route": "/blog/"
+    },
+    {
+      "keyword": "due diligence bedrijfskennis",
+      "route": "/due-diligence"
+    },
+    {
+      "keyword": "erp implementatie mislukt",
+      "route": "/blog/automatiseren-zonder-traject/"
+    },
+    {
+      "keyword": "eu ai act mkb",
+      "route": "/ai-act"
+    },
+    {
+      "keyword": "exact online koppeling",
+      "route": "/exact-online-koppeling"
+    },
+    {
+      "keyword": "kennisborging mkb",
+      "route": "/product"
+    },
+    {
+      "keyword": "kennisverlies mkb",
+      "route": "/blog/wat-is-een-bedrijfsgeheugen/"
+    },
+    {
+      "keyword": "kosten digitalisering mkb",
+      "route": "/prijzen"
+    },
+    {
+      "keyword": "microsoft 365 koppeling",
+      "route": "/microsoft-365-koppeling"
+    },
+    {
+      "keyword": "power bi implementatie mkb",
+      "route": "/power-bi-implementatie"
+    },
+    {
+      "keyword": "prijzen digitalisering mkb",
+      "route": "/prijzen"
+    },
+    {
+      "keyword": "systemen koppelen mkb",
+      "route": "/systemen-koppelen"
+    },
+    {
+      "keyword": "twinfield koppeling",
+      "route": "/twinfield-koppeling"
+    },
+    {
+      "keyword": "wat kost digitalisering mkb",
+      "route": "/blog/wat-kost-digitalisering-mkb/"
+    },
+    {
+      "keyword": "webshop koppelen boekhouding",
+      "route": "/webshop-koppeling"
+    },
+    {
+      "keyword": "webshop koppeling mkb",
+      "route": "/webshop-koppeling"
+    },
+    {
+      "keyword": "werkinstructie voorbeeld",
+      "route": "/blog/werkinstructie-voorbeeld/"
+    }
   ],
   "schema": {
     "organizationName": "Bedrijfsgeheugen",
