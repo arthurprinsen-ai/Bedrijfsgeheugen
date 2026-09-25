@@ -1,0 +1,42 @@
+{
+  "fingerprint": "paginacontrole-generated-source-trigger-and-noindex-v1",
+  "date": "2026-09-25",
+  "type": "SEO_CONTROL_PLANE_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "problem": "Issue #2681 remained open even though /inloggen was generated as noindex because generated-page source changes did not reliably trigger and execute the full public page/SEO audit.",
+  "root_cause": "The paginacontrole workflow watched rendered HTML and a small asset set, but not the generator, SEO registry and sitemap sources that determine rendered output. Its PR scope classifier also treated those generator/config changes as non-public, so a triggered run could skip the real production build and SEO/browser checks. The generated robots meta matcher additionally used an escaped word-boundary and could fail to replace an existing robots tag deterministically.",
+  "fix": [
+    "Add sitemap, SEO registry, V18 view generator, view inventory, keyword source and SEO checker paths to paginacontrole triggers",
+    "Classify those generator/config paths as public SEO scope so the full production build, browser check and SEO audit run",
+    "Fix the generated robots meta regular expression so existing robots tags are replaced deterministically",
+    "Keep /inloggen noindex and therefore excluded from the sitemap by policy"
+  ],
+  "prevention_rule": "Any source file that materially determines public rendered HTML, canonical metadata, robots state, sitemap membership or SEO ownership must both trigger paginacontrole and be classified as public scope. Generated noindex routes must be validated from the built artifact, not inferred from a stale source snapshot.",
+  "compiler": {
+    "failure_class": "STALE_GENERATED_SEO_AUDIT_SCOPE",
+    "scope": "PUBLIC_WEBSITE_SEO_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "invariants": [
+      "generator/config changes execute the full public production build",
+      "browser and SEO checks run on the generated artifact",
+      "noindex routes are not required in sitemap.xml",
+      "robots metadata is unique and deterministic",
+      "issue closure requires a green post-merge production/readback path"
+    ]
+  },
+  "evidence": {
+    "issue": 2681,
+    "pr": 2919,
+    "workflow": ".github/workflows/paginacontrole.yml",
+    "generator": "tools/bouw-v18-views.mjs"
+  },
+  "failed_approaches": [
+    "Rerunning the original failed workflow after only editing PR metadata reused the original pull_request event payload, so Required preflight still saw the stale PR body.",
+    "Triggering paginacontrole without updating its public-scope classifier produced a misleading green run that skipped the real production build and SEO/browser checks."
+  ]
+}
