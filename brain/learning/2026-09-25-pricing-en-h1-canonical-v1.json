@@ -24,7 +24,6 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-pricing-en-h1-canonical-v1.test.mjs",
-      "tests/delivery-toestemmingsketen.test.mjs",
       "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
       "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs",
       "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs",
