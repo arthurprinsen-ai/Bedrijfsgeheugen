@@ -41,7 +41,9 @@
       "i18n_css_present": true,
       "i18n_js_present": false,
       "language_select_count": 0
-    }
+    },
+    "human_documentation": "docs/changes/i18n-v18-mobile-host-production-20260925-v1.md",
+    "activity_ledger": "docs/development-ledger-events/2026-09-25-i18n-v18-mobile-host-production-v1.md"
   },
   "test_evidence": [
     "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
@@ -51,7 +53,7 @@
     "powerhouse-continuity",
     "powerhouse-netlify-production-truth"
   ],
-  "revision": 2,
+  "revision": 3,
   "compiler": {
     "failure_class": "I18N_RUNTIME_ASSET_INCOMPLETE_AND_ACTIVE_MOBILE_HOST_UNPROVEN",
     "scope": "WEBSITE_I18N_BUILD_AND_PRODUCTION_RUNTIME",
