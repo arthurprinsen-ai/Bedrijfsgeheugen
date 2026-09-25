@@ -48,3 +48,15 @@ It may never publish directly. All downstream personal-truth, company-tracking, 
 
 Do not report LIVE or DONE until the chain has:
 root cause → protected tests → merge to main → production deployment → production source readback → canonical run → provider-side publication evidence/readback → learning/writeback.
+
+## Personal create/readback split
+
+A successful personal LinkedIn create response is a provider side effect even when the subsequent LinkedIn readback endpoint is forbidden or unavailable. Once Composio returns a post URN:
+- persist that exact URN immediately in the canonical claim and obligation lineage;
+- record create success separately from readback truth;
+- use verification-pending/dispatched state when exact readback is unavailable;
+- set republish_forbidden=true;
+- reconcile only that exact URN later;
+- never erase the URN and never create a replacement post for the same daily claim.
+
+Fingerprint: linkedin-personal-created-urn-preservation-v1.
