@@ -39,12 +39,19 @@
     "Rewriting historical failed evidence as if the exact candidate had passed.",
     "Opening duplicate recovery PRs instead of using contained descendant regression evidence."
   ],
-  "revision": 2,
-  "evidence": [
-    ".github/workflows/obligation-terminal-closure.yml",
-    "tests/brain-terminal-required-descendant-recovery-v1.test.mjs",
-    "docs/changes/terminal-required-descendant-recovery-20260925-v1.md",
-    "docs/development-ledger-events/2026-09-25-terminal-required-descendant-recovery-v1.md",
-    "delivery|terminal-user-handoff|dashboard-writeback|v1"
-  ]
+  "revision": 3,
+  "evidence": {
+    "historical_required_failures": [
+      "PR#2880 Required run 36106926597",
+      "PR#2883 Required run 36107171731"
+    ],
+    "stale_assertion": "tests/site-shell-website-release-risk.test.mjs previously required literal sequential `for (const route of routes)` after bounded route concurrency replaced that implementation detail.",
+    "current_contract": [
+      "tools/site-shell/standalone-visibility-check.mjs uses bounded route workers",
+      "tests/site-shell-website-release-risk.test.mjs now asserts bounded concurrency",
+      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs protects full route coverage and concurrency bounds"
+    ],
+    "terminal_guard": ".github/workflows/obligation-terminal-closure.yml",
+    "dashboard_contract": "delivery|terminal-user-handoff|dashboard-writeback|v1"
+  }
 }
