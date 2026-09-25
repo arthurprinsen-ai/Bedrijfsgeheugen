@@ -230,6 +230,28 @@ async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expecte
   return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
 
+async function reserveGlobalUniquePublication(db:any,runDate:string,channel:string,body:string){
+  const {data,error}=await db.rpc('powerhouse_reserve_unique_publication_v1',{
+    p_publication_date:runDate,
+    p_channel:channel,
+    p_body:body,
+    p_similarity_threshold:0.62,
+  });
+  if(error)throw new Error('GLOBAL_POST_UNIQUENESS_RPC:'+error.message);
+  const result=data||{};
+  if(result.allowed!==true){
+    const reason=clean(result.reason)||'GLOBAL_POST_DUPLICATE_BLOCKED';
+    throw new Error('GLOBAL_POST_DUPLICATE_BLOCKED:'+reason+':'+JSON.stringify({
+      matched_reservation_key:result.matched_reservation_key||null,
+      matched_channel:result.matched_channel||null,
+      matched_publication_date:result.matched_publication_date||null,
+      similarity:result.similarity||null,
+      threshold:result.threshold||null
+    }));
+  }
+  return result;
+}
+
 async function ensureLinkedInCompanyMeasuredLink(db:any,runDate:string,art:any){
   const compact=runDate.replaceAll('-','');
   const key='li-company-'+compact;
@@ -850,6 +872,20 @@ Deno.serve(async (req) => {
       await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
       await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Repair central publication authority proof; external provider calls are forbidden without a capability.',message);
       results.push({channel:row.channel,status:'blocked',reason:message});continue;
+    }
+
+    let uniqueness:any;
+    try{
+      uniqueness=await reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body));
+      const uniquenessEvidence={...gatePassedEvidence,global_uniqueness_gate:'passed',global_uniqueness_fingerprint:'powerhouse-global-post-uniqueness-v1',global_uniqueness:uniqueness,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
+      await db.from('powerhouse_channel_decisions').update({delivery_evidence:uniquenessEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+    }catch(error){
+      const message=error instanceof Error?error.message:String(error);
+      const evidence={...gatePassedEvidence,error:message,global_uniqueness_gate:'blocked',global_uniqueness_fingerprint:'powerhouse-global-post-uniqueness-v1',provider_truth_verified:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
+      await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+      await recordObligation(db,runDate,row.channel,'BLOCKED',null,evidence,'Generate genuinely new content from a different angle/source. Never publish exact or near-duplicate historical content.',message);
+      results.push({channel:row.channel,status:'blocked_duplicate',reason:message});
+      continue;
     }
 
     if (row.channel === 'linkedin_personal') {
