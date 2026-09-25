@@ -203,6 +203,44 @@ jobs:
           console.log(`Netlify preview was absent, failed, or was not route-ready for ${process.env.HEAD_SHA}; browser verification will use the exact checked-out candidate locally.`);
           NODE
 
+  netlify-build-parity:
+    needs: [classify, syntax-preflight]
+    if: needs.classify.outputs.requires_preview == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          ref: ${{ inputs.candidate_sha }}
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22.12.0'
+      - name: Install exact Netlify build dependencies
+        run: npm install --no-audit --no-fund --silent
+      - name: Run exact Netlify production build command
+        env:
+          COMMIT_REF: ${{ inputs.candidate_sha }}
+          CONTEXT: production
+          DEPLOY_ID: required-netlify-build-parity
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '0'
+          STATIC_I18N_CONCURRENCY: '1'
+        run: |
+          set -euo pipefail
+          node tools/site-shell/pricing-build-integrity.mjs capture
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          node tools/prijzen-uit-de-homepage.mjs
+          node tools/site-shell/pricing-build-integrity.mjs restore
+          node tools/site-shell/apply-i18n.mjs
+          node tools/site-shell/build-localized-routes.mjs
+          node tools/genereer-sitemap.mjs
+          node tools/bouw-release-evidence.mjs
+
   page-seo:
     needs: [classify, syntax-preflight]
     if: needs.classify.outputs.requires_preview == 'true' && needs.classify.outputs.risk_lane != 'fast-fix'
