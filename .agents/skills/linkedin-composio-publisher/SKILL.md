@@ -60,3 +60,23 @@ A successful personal LinkedIn create response is a provider side effect even wh
 - never erase the URN and never create a replacement post for the same daily claim.
 
 Fingerprint: linkedin-personal-created-urn-preservation-v1.
+
+## Global historical uniqueness — hard gate
+
+Fingerprint: `powerhouse-global-post-uniqueness-v1`.
+
+Every social post must be genuinely unique across the complete retained Powerhouse publication history. This applies across dates, channels and providers.
+
+Before any external social-provider create call:
+- reserve the final post text through `powerhouse_reserve_unique_publication_v1`;
+- reject an exact raw-content hash already seen;
+- reject an exact normalized-content hash already seen;
+- reject a near-duplicate whose normalized 3-word-shingle Jaccard similarity is at or above the governed threshold (currently 0.62);
+- strip URLs/punctuation/whitespace effects during normalized comparison so changing a tracking link, spacing, hashtags or superficial formatting cannot make old copy “new”;
+- treat scheduled, dispatched, possible-provider-side-effect and published content as already used;
+- block the claim with `republish_forbidden=true` before any provider side effect when uniqueness fails;
+- generate a materially different angle/source/story instead of paraphrasing the old post.
+
+A same-day same-channel claim may reuse its own exact database reservation for idempotent recovery, but no different daily/channel claim may reuse that content.
+
+Never solve a duplicate by changing only the hook, CTA, punctuation, hashtags, URL, sentence order or a few synonyms. The underlying story and wording must be genuinely new.
