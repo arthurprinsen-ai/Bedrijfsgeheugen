@@ -1,13 +1,14 @@
 {
   "fingerprint": "supabase-preview-historical-replay-baselines-20260925-v1",
   "status": "ACTIVE_PREVENTION",
-  "problem": "A clean Supabase PR Preview could not replay canonical migrations from zero. First, terminal_health_lifecycle_v2 assumed a historical P0 desired-state row that existed only in production. After fixing that baseline, publication_authority_pgcrypto_qualification referenced the Instagram daily-winner rowtype before the table was created.",
+  "problem": "A clean Supabase PR Preview could not replay canonical migrations from zero. First, terminal_health_lifecycle_v2 assumed a historical P0 desired-state row that existed only in production. After fixing that baseline, publication_authority_pgcrypto_qualification referenced the Instagram daily-winner rowtype before the table was created. A third clean-replay failure proved powerhouse_instagram_media_reserve_v1 existed only in production and was required by the canonical fallback function rowtype.",
   "root_cause": "Production contained historically pre-existing state/schema that was never captured at the point where later migrations depended on it. Incremental production migration succeeded, but deterministic clean replay was not guaranteed.",
   "prevention": [
     "Every migration dependency must be present in migration history before first use, even if production already has the object or row.",
     "Historical data baselines must be reconstructed only from production evidence and inserted idempotently.",
     "Schema replay baselines may create exact canonical object shapes early with IF NOT EXISTS; later canonical migrations retain RLS, grants and behavior authority.",
-    "Supabase Preview failures must be reproduced on a clean recreated preview branch before declaring migration history healthy."
+    "Supabase Preview failures must be reproduced on a clean recreated preview branch before declaring migration history healthy.",
+    "Production-only tables referenced by PL/pgSQL rowtypes must be captured as exact secured replay baselines before the first function definition that depends on them."
   ],
   "evidence": {
     "p0_preview_failure": "STATE_VERSION_CONFLICT at 20260920101200",
@@ -19,19 +20,22 @@
       "artifact_version": "artifact-v1"
     },
     "winner_preview_failure": "relation public.powerhouse_instagram_daily_winners_v1 does not exist at 20260920102500",
-    "winner_canonical_creation": "20260920110000_instagram_daily_winner_lineage_v1"
+    "winner_canonical_creation": "20260920110000_instagram_daily_winner_lineage_v1",
+    "media_reserve_preview_failure": "relation public.powerhouse_instagram_media_reserve_v1 does not exist while creating powerhouse_prepare_daily_content_fallbacks_v1",
+    "media_reserve_production_schema": "exact columns, CHECK constraints, RLS=true, browser roles revoked, service_role full table privileges"
   },
   "evaluation": {
     "historical_replay": [
       "tests/brain-p0-proof-replay-baseline-v1.test.mjs",
-      "tests/brain-instagram-daily-winner-replay-baseline-v1.test.mjs"
+      "tests/brain-instagram-daily-winner-replay-baseline-v1.test.mjs",
+      "tests/brain-instagram-media-reserve-replay-baseline-v1.test.mjs"
     ]
   },
   "failed_approaches": [
     "Rebasing a failed preview branch without recreating it from a clean migration replay.",
     "Assuming incremental production success proves migrations replay from zero."
   ],
-  "revision": 1,
+  "revision": 2,
   "compiler": {
     "failure_class": "DATABASE_INTEGRITY",
     "scope": "DATABASE",
