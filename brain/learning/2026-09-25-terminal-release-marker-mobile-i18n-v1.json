@@ -1,0 +1,27 @@
+{
+  "fingerprint": "delivery-terminal-release-marker-mobile-i18n-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "FINAL_HTML_RELEASE_MARKER_AND_MOBILE_I18N_DRIFT",
+  "root_cause": [
+    "release.json used the exact deployment SHA but the final built HTML was not re-stamped after all page transformers, so live-contract readback saw an older bg-release-commit marker.",
+    "The mobile i18n injector only supported aside.v18-mobile-drawer, while pricing can use the compact #bgkopMob/.bgkop-mob drawer, leaving no visible mobile language select."
+  ],
+  "prevention": [
+    "Stamp every final built HTML document with ensureReleaseMarker(html, commitRef) in the last release-evidence boundary.",
+    "Mobile language injection must support every canonical public mobile drawer variant and remain data-bg-no-translate.",
+    "Terminal production truth requires release.json exact SHA, HTML release marker exact SHA, pricing interaction proof, and NL→EN→NL browser roundtrip."
+  ],
+  "compiler": {
+    "failure_class": "FINAL_HTML_RELEASE_MARKER_AND_MOBILE_I18N_DRIFT",
+    "scope": "WEBSITE_PRODUCTION_READBACK",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-release-marker-mobile-i18n-v1.test.mjs"
+    ]
+  }
+}
