@@ -8,7 +8,8 @@
   "prevention": [
     "Pricing source and production build oracle must share the same canonical business-context vocabulary.",
     "Never restore retired product copy merely to satisfy a stale build oracle.",
-    "After provider build exit code 2, reproduce or isolate the first failing build command before changing runtime behavior."
+    "After provider build exit code 2, reproduce or isolate the first failing build command before changing runtime behavior.",
+    "Stale regressions may not force rollback to retired single-goal pricing copy or unsafe production i18n fallback; entitlement and fallback tests must track the canonical executable contracts."
   ],
   "compiler": {
     "failure_class": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
@@ -25,5 +26,11 @@
   "skill_targets": [
     "powerhouse-continuity"
   ],
-  "revision": 2
+  "revision": 2,
+  "evidence": {
+    "stale_regressions_closed": [
+      "tests/saas-pricing-entitlements.test.mjs",
+      "tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"
+    ]
+  }
 }
