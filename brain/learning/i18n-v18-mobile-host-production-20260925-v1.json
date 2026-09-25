@@ -11,9 +11,15 @@
     "Require exact-main Netlify commit equality plus the visible mobile NL->EN->NL browser roundtrip before LIVE_BEWEZEN."
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-i18n-v18-mobile-host-v1.test.mjs"],
-    "shadow": ["tests/brain-i18n-v18-mobile-host-v1.test.mjs"],
-    "canary": ["tests/brain-i18n-v18-mobile-host-v1.test.mjs"],
+    "historical_replay": [
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    ],
     "expected_invariant": "when #v18MobileDrawer exists, mountControl installs exactly one mobile language control and the production verifier can complete NL->EN->NL"
   },
   "evidence": {
@@ -27,7 +33,19 @@
     },
     "production_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs"
   },
-  "test_evidence": ["tests/brain-i18n-v18-mobile-host-v1.test.mjs"],
-  "skill_targets": ["powerhouse-continuity", "powerhouse-netlify-production-truth"],
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "compiler": {
+    "failure_class": "I18N_ACTIVE_V18_MOBILE_HOST_OMITTED",
+    "scope": "WEBSITE_I18N_PRODUCTION_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
