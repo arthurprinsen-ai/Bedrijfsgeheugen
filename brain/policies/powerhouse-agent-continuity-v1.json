@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.5",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|queue-pressure-governor|v1.5",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.6",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|v1.6",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -33,7 +33,9 @@
     "STALE_ORPHANED_QUEUE_MUST_BE_REAPED",
     "CONTROL_PLANE_CHANGES_MUST_NOT_TRIGGER_ARTIFACT_LANES",
     "NO_UNVALIDATED_UNEXPECTED_CANDIDATE_HEAD_AUTHORITY",
-    "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION"
+    "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION",
+    "TERMINAL_USER_OUTPUT_REQUIRES_DASHBOARD_SKILL_AND_LEARNING_WRITEBACK",
+    "NO_AUTONOMOUS_TODO_LIST_AS_FINAL_HANDOFF"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -203,7 +205,9 @@
     "brain/learning/2026-09-18-no-pending-terminal-output-v1.json",
     "brain/learning/actions-queue-storm-guard-20260924-v1.json",
     ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
-    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "brain/learning/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.json",
+    "brain/learning/2026-09-25-browser-concurrency-test-contract-drift-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -305,5 +309,30 @@
       "branch_existence_alone_is_authority": false,
       "unexpected_head_requires_diff_validation": true
     }
+  },
+  "terminal_handoff_contract": {
+    "required": true,
+    "fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+    "owner_retention_until_terminal": true,
+    "autonomous_pending_states_are_internal": true,
+    "mandatory_before_terminal": [
+      "protected_merge_or_promotion_when_applicable",
+      "production_or_provider_readback",
+      "outcome_and_value_writeback",
+      "root_cause_fix_regression_prevention_writeback",
+      "relevant_skill_projection_readback",
+      "powerhouse_dashboard_current_state_registration",
+      "powerhouse_agent_activity_registration"
+    ],
+    "dashboard_authorities": {
+      "dashboard_hub_page_id": "3e4da36a-ac8a-81fb-b340-daccce80dec8",
+      "canonical_system_map_page_id": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+      "master_register_page_id": "3c3da36a-ac8a-81dd-a3fe-c4fc12bba5df",
+      "latest_verified_state": "Powerhouse Latest Verified State",
+      "agent_activity_log": "Powerhouse Agent Activity Log"
+    },
+    "final_user_output_rule": "Report only terminal status, production/provider proof and completed borging. Do not return a what-next list for autonomous work that the node can execute itself.",
+    "hard_boundary_rule": "Only BLOCKED_HARD_BOUNDARY may transfer ownership to the user; include the exact boundary, one smallest necessary human action, and the already-prepared next safe action.",
+    "interruption_rule": "The next capable node resumes automatically from canonical checkpoint without requiring the user to say ga door."
   }
 }
