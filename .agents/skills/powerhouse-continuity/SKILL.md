@@ -1126,3 +1126,18 @@ Mandatory:
 
 Canonical learning: `brain/learning/i18n-v18-mobile-host-production-20260925-v1.json`.
 Regression: `tests/brain-i18n-asset-independent-injection-v1.test.mjs`.
+
+
+## Static i18n partial-cache invariant
+
+Fingerprint: `website|i18n|partial-static-cache-fallback|v1`.
+
+For offline production builds, a missing translation is local to that string or route:
+
+- cached English translations that exist must always be applied;
+- one missing translation must never disable static English for every `/en/*` route;
+- runtime fallback may fill only the remaining untranslated refs;
+- explicit `STATIC_I18N_REQUIRE_CACHE=1` validation remains fail-closed;
+- production closure for pricing requires the browser readback to prove that `/en/prijzen` no longer shows the Dutch pricing H1.
+
+Canonical learning: `brain/learning/i18n-partial-static-cache-fallback-20260925-v1.json`.

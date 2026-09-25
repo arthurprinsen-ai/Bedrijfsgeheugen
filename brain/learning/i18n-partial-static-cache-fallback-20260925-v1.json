@@ -1,0 +1,35 @@
+{
+  "fingerprint": "i18n-partial-static-cache-fallback-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production /en/prijzen rendered the Dutch pricing H1 even though the canonical English pricing translation existed in the static cache.",
+  "root_cause": "The offline localized-route builder returned null for the entire translation map when any translatable string anywhere on the public site was missing from cache. That converted a local cache miss into a site-wide static-English disablement.",
+  "prevention": [
+    "Offline release builds must always preserve and apply cached translations that are available.",
+    "Missing translations are route/string-local runtime fallback, never a global switch back to Dutch.",
+    "STATIC_I18N_REQUIRE_CACHE=1 remains fail-closed for explicit cache-completeness verification.",
+    "Production browser readback must continue proving /en/prijzen does not contain the Dutch pricing H1."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-runtime-fallback-production-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-production-fallback-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "compiler": {
+    "failure_class": "I18N_GLOBAL_FALLBACK_AMPLIFICATION",
+    "scope": "STATIC_LOCALIZED_ROUTE_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
