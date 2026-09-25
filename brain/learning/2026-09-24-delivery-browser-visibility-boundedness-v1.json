@@ -18,9 +18,10 @@
     "Replace run-id concurrency keys with stable ref/PR keys where supersession is intended",
     "Register newly introduced delivery skills in the canonical System Map in the same lineage",
     "Migrate stale pricing regressions to semantic content-addressed cache and dataset-readiness invariants",
-    "Restore content-growth-ci push.branches=[main] and keep main out of paths"
+    "Restore content-growth-ci push.branches=[main] and keep main out of paths",
+    "Run independent viewport sweeps in bounded parallel batches so the full production sitemap readback can complete inside its fail-closed budget"
   ],
-  "prevention_rule": "Every browser/readback or expensive CI workflow must bound async waits and total runtime, use stable supersession keys, scope specialist main triggers to owned paths, and validate YAML semantics after automated workflow rewrites rather than assuming branch-list formatting.",
+  "prevention_rule": "Every browser/readback or expensive CI workflow must bound async waits and total runtime, use stable supersession keys, scope specialist main triggers to owned paths, validate YAML semantics after automated rewrites, and parallelize independent viewport sweeps within a bounded worker budget.",
   "compiler": {
     "failure_class": "UNBOUNDED_BROWSER_ASYNC_WAIT",
     "scope": "CI_WEBSITE_BROWSER_GATE",
@@ -58,6 +59,7 @@
   "failed_approaches": [
     "A generic text transformation assumed push.branches was a one-line YAML scalar and inserted paths before a multi-line branch list, producing an invalid semantic structure even though the file remained textually plausible.",
     "A regression migration attempt changed the runtime contract but left older tests hard-coded to a timestamp cache key, literal selector spelling, and a stale System Map inventory.",
-    "A workflow rewrite left content-growth-ci.yml with an empty push.branches key and moved main into paths, creating semantic YAML drift that only the multiline branch-scope regression exposed."
+    "A workflow rewrite left content-growth-ci.yml with an empty push.branches key and moved main into paths, creating semantic YAML drift that only the multiline branch-scope regression exposed.",
+    "Route-level concurrency alone was insufficient because phone, tablet and desktop sweeps still executed sequentially; the phone sweep could consume the entire 8-minute global budget before tablet/desktop started."
   ]
 }
