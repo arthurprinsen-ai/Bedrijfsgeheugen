@@ -1,0 +1,59 @@
+{
+  "id": "2026-09-25-seo-money-pages-commercial-intent-v1",
+  "fingerprint": "seo|money-page|commercial-intent-before-new-page|v1",
+  "scope": "SEO_REVENUE",
+  "problem": "Commercial search demand can be diluted when a new page is created for an intent already owned by an existing money page.",
+  "root_cause": "SEO opportunity detection can overvalue keyword volume without first binding the query to an existing canonical intent owner and downstream conversion path.",
+  "prevention": [
+    "Prefer the existing canonical money page when the search intent is already owned.",
+    "Create a new landing page or blog only when SERP evidence proves a distinct intent gap.",
+    "Route commercial money pages toward the canonical Frisse blik conversion step and preserve a secondary direct-contact route.",
+    "Treat singular/plural query variants as one intent owner unless evidence proves otherwise.",
+    "Measure SEO success through qualified traffic, Frisse blik starts, leads, orders and attributable revenue."
+  ],
+  "evidence": {
+    "observed_at": "2026-09-25",
+    "market": "Netherlands",
+    "source": "DataForSEO Google Ads search volume",
+    "keywords": [
+      {
+        "keyword": "exact online api",
+        "search_volume": 590,
+        "cpc_eur": 6.44
+      },
+      {
+        "keyword": "api koppeling laten maken",
+        "search_volume": 140,
+        "cpc_eur": 12.04
+      },
+      {
+        "keyword": "twinfield koppeling",
+        "search_volume": 90,
+        "cpc_eur": 11.75
+      }
+    ],
+    "canonical_pages": [
+      "/exact-online-koppeling",
+      "/api-koppeling-laten-maken",
+      "/twinfield-koppeling"
+    ]
+  },
+  "expected_outcome": "Higher commercial relevance and clearer conversion routing without adding cannibalising pages.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-money-pages-commercial-intent-v1.test.mjs"
+    ],
+    "expected": "Each validated commercial query resolves to one canonical money-page owner with a measurable Frisse-blik conversion path and no new cannibalising page.",
+    "invariants": [
+      "one canonical money-page owner per commercial intent cluster",
+      "new page only when SERP evidence proves a distinct intent gap",
+      "commercial SEO page exposes a direct conversion path to Frisse blik and/or contact",
+      "SEO success is measured downstream through qualified leads, orders and attributable revenue"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SEO_COMMERCIAL_INTENT_OWNERSHIP_DRIFT",
+    "scope": "SEO_REVENUE",
+    "machine_enforceable": true
+  }
+}

@@ -98,7 +98,7 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
   } finally { await page.close(); }
 }
 
-async function observeRoute(browser, baseUrl, route, viewport, { attempts = 2 } = {}) {
+async function observeRoute(browser, baseUrl, route, viewport, { attempts = 3 } = {}) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
