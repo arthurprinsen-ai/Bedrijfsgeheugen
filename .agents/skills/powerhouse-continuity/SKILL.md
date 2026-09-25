@@ -1088,3 +1088,13 @@ Fingerprint: `static-i18n-runtime-fallback-production-20260925-v1`.
 - Static English cache completeness is enrichment, not publication authority, while the canonical runtime i18n fallback is available.
 - Do not block all production on a missing static cache entry.
 - Terminal truth is the production browser proof: real NL→EN interaction, `/en/prijzen`, visible English and no known Dutch pricing heading.
+
+
+## Pricing billing selected-state parity
+
+Fingerprint: `pricing-billing-aria-selected-parity-20260925-v1`.
+
+- Monthly/yearly controls must expose one coherent state tuple: `aria-pressed`, `aria-selected`, `is-active`, root `data-bg-pricing-billing`, and visible price/period.
+- Inline pricing code and the external rescue controller must implement identical billing semantics.
+- A visual price change without `aria-selected=true` is not accepted as a successful billing interaction.
+- Production closure requires the real yearly click to pass the canonical pricing/i18n browser verifier before language switching is evaluated.
