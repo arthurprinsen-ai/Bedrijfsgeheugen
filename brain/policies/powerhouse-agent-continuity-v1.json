@@ -38,7 +38,8 @@
     "NO_AUTONOMOUS_TODO_LIST_AS_FINAL_HANDOFF",
     "GENERATED_PUBLIC_SURFACE_REQUIRES_BUILD_AUTHORITY",
     "BORGING_REQUIRES_CANONICAL_SKILL_LEARNING_LEDGER_AND_READBACK",
-    "MATERIAL_WRITEBACK_MUST_BE_SAME_REPOSITORY_REVIEWABLE_LINEAGE"
+    "MATERIAL_WRITEBACK_MUST_BE_SAME_REPOSITORY_REVIEWABLE_LINEAGE",
+    "ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -212,7 +213,8 @@
     "brain/learning/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.json",
     "brain/learning/2026-09-25-browser-concurrency-test-contract-drift-v1.json",
     "brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json",
-    "brain/learning/2026-09-25-same-repo-reviewable-writeback-v1.json"
+    "brain/learning/2026-09-25-same-repo-reviewable-writeback-v1.json",
+    "brain/learning/2026-09-25-repository-native-borging-all-agents-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -405,5 +407,40 @@
     "batch_before_ci_when_safe": true,
     "fail_closed_state": "WRITEBACK_INCOMPLETE",
     "terminal_rule": "No material run may claim LIVE_BEWEZEN while any required same-repository writeback artifact or its skill projection/readback is absent."
+  },
+  "repository_native_borging_rule": {
+    "required": true,
+    "fingerprint": "powerhouse|repository-native-borging|same-lineage-reviewable|v1",
+    "applies_to": [
+      "chat",
+      "agent",
+      "workflow",
+      "recovery-supervisor",
+      "repository-writer"
+    ],
+    "canonical_location": "same repository and same canonical delivery lineage as the material change",
+    "minimum_closure_artifacts": [
+      "canonical skill or deterministic skill projection",
+      "Brain/Powerhouse learning",
+      "append-only development ledger",
+      "human-readable documentation"
+    ],
+    "machine_requirements": [
+      "machine-readable where applicable",
+      "diffable",
+      "reviewable",
+      "discoverable by shared preflight",
+      "protected by repository validation"
+    ],
+    "forbidden_substitutes": [
+      "chat-only note",
+      "external-only document",
+      "memory-only instruction",
+      "unreviewed side note outside repository",
+      "post-hoc promise to document later"
+    ],
+    "terminal_rule": "Missing repository-native closure artifact means WRITEBACK_INCOMPLETE and forbids LIVE_BEWEZEN/PRODUCTION_GREEN.",
+    "same_lineage_rule": "The closure artifacts must travel with the canonical obligation/candidate lineage; do not open a separate documentation-only recovery lineage unless an evidenced hard boundary prevented same-lineage inclusion.",
+    "external_note_rule": "External notes may mirror canonical state but never replace repository-native authority."
   }
 }

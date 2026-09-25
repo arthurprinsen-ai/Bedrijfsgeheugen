@@ -1211,3 +1211,21 @@ Required repository-backed closure:
 - existing protected delivery, production/provider readback and learning-to-skill readback.
 
 Batch these writebacks before CI when safe. If one required artifact is missing, return internal state `WRITEBACK_INCOMPLETE`; do not claim `LIVE_BEWEZEN`.
+
+
+## Repository-native borging — mandatory for every material run
+
+Fingerprint: `powerhouse|repository-native-borging|same-lineage-reviewable|v1`.
+
+Every material agent/chat change must close in the **same repository-backed lineage** with all four durable artifacts:
+
+1. canonical Brain/Powerhouse learning;
+2. append-only development ledger evidence;
+3. human-readable change/learning documentation;
+4. relevant skill projection or durable SKILL.md operating-principle update.
+
+A chat-only note, external-only document, memory instruction, or promise to document later is never canonical closure. The artifacts must be machine-readable where applicable, diffable, reviewable, and discoverable by the shared preflight.
+
+Do not split borging into a separate PR merely for convenience. Keep it with the canonical obligation/candidate whenever technically possible. If any required repository-native artifact is missing, classify the run as `WRITEBACK_INCOMPLETE`; it is not `LIVE_BEWEZEN` or `PRODUCTION_GREEN`.
+
+External systems such as Notion may mirror the canonical state, but they never replace the repository-native authority.

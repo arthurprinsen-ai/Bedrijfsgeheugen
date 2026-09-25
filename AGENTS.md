@@ -37,6 +37,22 @@ Voor iedere materiële Powerhouse-taak geldt voortaan aanvullend:
 - alleen `BLOCKED_HARD_BOUNDARY` mag eigenaarschap teruggeven aan de gebruiker, met exact één kleinste noodzakelijke menselijke actie en de reeds voorbereide vervolgstap;
 - na een interruption hervat de volgende capabele node automatisch vanaf het canonieke checkpoint; de gebruiker hoeft niet opnieuw "ga door" te zeggen.
 
+
+## Repository-native borging is verplicht voor alle agents en chats
+
+Fingerprint: `powerhouse|repository-native-borging|same-lineage-reviewable|v1`.
+
+Voor iedere materiële wijziging, foutfix, recovery, nieuwe capability, governance-aanpassing of andere Powerhouse-ontwikkeling geldt voor **alle huidige en toekomstige agents en chats**:
+
+- borging gebeurt in dezelfde repository en dezelfde canonieke delivery-lineage als de wijziging zelf; een losse chatnotitie, extern document of mondelinge afspraak is nooit voldoende;
+- de minimale closure-set bestaat uit: **canonieke skill/projectie + Brain/Powerhouse learning + append-only development ledger + menselijke documentatie**;
+- deze artifacts worden machineleesbaar, diffbaar en reviewbaar vastgelegd vóór terminale afronding;
+- geen agent/chat mag `LIVE_BEWEZEN`, `PRODUCTION_GREEN` of equivalent claimen wanneer één van deze repository-native writebacks ontbreekt of alleen buiten de codebase bestaat;
+- borging is onderdeel van Definition of Done en van de protected merge/readback-keten;
+- na merge moet de volgende agent via de normale preflight de nieuwe regel/learning kunnen ontdekken zonder afhankelijk te zijn van de oorspronkelijke chat.
+
+Losse notities buiten de codebase mogen hooguit aanvullend zijn; zij tellen nooit als canonieke borging.
+
 ## Accepted website baseline — protected invariant
 De **accepted website baseline** in `site/accepted-baseline.json` en `site/navigation-baseline.json` is bindend voor iedere huidige en toekomstige agent. Een route die nog bestaat en technisch/SEO-groen is, kan toch rood zijn wanneer de betekenis, propositie, het verhaal, verplichte inhoudsankers of de navigatiepositie onverwacht zijn gewijzigd.
 

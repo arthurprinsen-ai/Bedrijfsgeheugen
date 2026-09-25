@@ -458,3 +458,22 @@ test('same-repository reviewable writeback contract is mandatory for all executi
   assert.match(continuitySkillSource, /same-repo-material-writeback\|reviewable-lineage\|v1/);
   assert.match(agentsSource, /same-repo-material-writeback\|reviewable-lineage\|v1/);
 });
+
+
+test('repository-native borging is mandatory for every material chat and agent', () => {
+  const rule = continuityPolicy.repository_native_borging_rule;
+  assert.equal(rule.required, true);
+  assert.equal(rule.fingerprint, 'powerhouse|repository-native-borging|same-lineage-reviewable|v1');
+  assert.deepEqual(rule.minimum_closure_artifacts, [
+    'canonical skill or deterministic skill projection',
+    'Brain/Powerhouse learning',
+    'append-only development ledger',
+    'human-readable documentation'
+  ]);
+  assert.ok(rule.forbidden_substitutes.includes('chat-only note'));
+  assert.ok(rule.forbidden_substitutes.includes('external-only document'));
+  assert.match(rule.terminal_rule, /WRITEBACK_INCOMPLETE/);
+  assert.ok(continuityPolicy.invariants.includes('ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE'));
+  assert.match(agentsSource, /Repository-native borging is verplicht voor alle agents en chats/);
+  assert.match(continuitySkillSource, /Repository-native borging — mandatory for every material run/);
+});
