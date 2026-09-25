@@ -7,12 +7,22 @@ const pct=value=>value==null?'—':`${Math.round(value)}%`;
 const list=(title,items)=>`<section class="os-card"><h3>${esc(title)}</h3>${items.length?`<ol>${items.map(item=>`<li><strong>${esc(item.title||item.label||item.id)}</strong><small>${esc(item.explanation||item.summary||item.next_action||'')}</small><span class="os-evidence">${esc(item.evidence_health?.status||'unavailable')} · ${Math.round((item.evidence_health?.confidence||0)*100)}%</span></li>`).join('')}</ol>`:'<p class="os-empty">Nog geen bewezen gegevens.</p>'}</section>`;
 const LABELS=Object.freeze({'impact-engine':'€ Impact','scenario-simulator':'Scenario’s','next-best-actions':'Besluiten & acties','monitoring-learning':'Monitoring & leren','evidence-health':'Data & bewijs','capability-graph':'Capability graph'});
 const attentionCard=item=>`<article class="os-attention-card"><div class="os-attention-top"><span>${esc(item.attention_reason||'Aandacht')}</span><span>${esc(item.owner||item.accountable_owner||'')}</span></div><h3>${esc(item.title||item.label||item.id||'Aandachtspunt')}</h3><p>${esc(item.explanation||item.summary||item.reason||item.next_action||'')}</p>${item.deadline||item.due_at?`<small>Uiterlijk: ${esc(item.deadline||item.due_at)}</small>`:''}</article>`;
+const visualScore=(label,value)=>Number.isFinite(Number(value))?`<div class="os-signal-meter"><span>${esc(label)}</span><i><b style="width:${Math.max(0,Math.min(100,Number(value)))}%"></b></i><em>${Math.round(Number(value))}</em></div>`:'';
+const contextualVisual=item=>{
+ const dims=item.priority_dimensions||{};
+ const meters=[['Actueel',dims.recency],['Omvang',dims.scale],['Urgentie',dims.urgency],['Koopintentie',dims.buying_intent],['Powerhouse-fit',dims.powerhouse_relevance]].map(([l,v])=>visualScore(l,v)).join('');
+ const chips=[item.sector_or_segment,item.buying_trigger,item.source_class,item.freshness_status].filter(Boolean).map(v=>`<span>${esc(v)}</span>`).join('');
+ const symptoms=item.symptoms?.length?`<div class="os-problem-symptoms">${item.symptoms.slice(0,3).map(v=>`<span>${esc(v)}</span>`).join('')}</div>`:'';
+ const context=item.context_relevance||item.benchmark_context;
+ return `<div class="os-problem-context" aria-label="Contextuele probleemvisualisatie">${chips?`<div class="os-context-chips">${chips}</div>`:''}${meters?`<div class="os-signal-grid">${meters}</div>`:''}${symptoms}${context?`<p class="os-context-note">${esc(context)}</p>`:''}</div>`;
+};
 const problemCard=item=>`<article class="os-attention-card os-problem-card" data-problem-id="${esc(item.problem_id)}">
  <div class="os-attention-top"><span>${esc(item.problem_id)}</span><span>${esc(item.impact_label)}</span></div>
  <h3>${esc(item.title||item.problem_id)}</h3>
  <p>${esc(item.explanation||item.summary||item.description||'')}</p>
  <p><strong>Impact:</strong> ${item.impact_value==null?'nog te valideren':esc(item.impact_value)}</p>
  <p><strong>Eerst doen:</strong> ${esc(item.actions?.[0]||item.next_action||'bewijs verzamelen en valideren')}</p>
+ ${contextualVisual(item)}
  <details class="os-evidence-drawer"><summary>Waarom zegt Powerhouse dit?</summary>
   <p><strong>Bewijsstatus:</strong> ${esc(item.evidence_health?.status||'unavailable')} · ${Math.round((item.confidence||item.evidence_health?.confidence||0)*100)}%</p>
   <p><strong>Bronnen:</strong> ${item.source_refs?.length?item.source_refs.map(esc).join(' · '):'nog geen bronreferenties beschikbaar'}</p>
