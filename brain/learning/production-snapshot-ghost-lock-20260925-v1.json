@@ -1,0 +1,48 @@
+{
+  "fingerprint": "production-snapshot-ghost-lock-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The newest production-source-snapshot run remained pending with zero jobs even though no other active snapshot run existed.",
+  "root_cause": "The previous stable concurrency-group identity remained stuck at the GitHub Actions scheduler/control-plane layer after repeated cancel/coalesce cycles. New pushes inherited that stale lock and could not start the deploy job.",
+  "prevention": [
+    "Keep a single stable production deploy concurrency group with cancel-in-progress=false.",
+    "When a proven orphaned scheduler lock exists, rotate the group identity once instead of bypassing protected delivery or allowing concurrent production deploys.",
+    "Do not report LIVE until Netlify commit_ref equals the latest protected main SHA and browser readback is green.",
+    "Treat pending-with-zero-jobs and no competing active group member as a scheduler-lock fingerprint."
+  ],
+  "evidence": {
+    "blocked_main_sha": "933198c36121cae1f04723d5b69a53f3863f1936",
+    "blocked_snapshot_run": 36160448237,
+    "blocked_state": "pending",
+    "jobs": 0,
+    "competing_active_snapshot_runs": 0,
+    "recovery_group": "production-source-snapshot-main-v2"
+  },
+  "test_evidence": [
+    "tests/brain-production-snapshot-ghost-lock-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-continuity"
+  ],
+  "revision": 1,
+  "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
+  "evaluation": {
+    "historical_replay": [
+      "run:36160448237"
+    ],
+    "shadow": [
+      "tests/brain-production-snapshot-ghost-lock-v1.test.mjs"
+    ],
+    "canary": [
+      "PR:3043"
+    ],
+    "expected_invariant": "latest main production snapshot starts a job in the recovered stable concurrency group and production remains serialized"
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
