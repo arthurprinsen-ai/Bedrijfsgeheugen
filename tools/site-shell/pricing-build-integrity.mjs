@@ -54,7 +54,8 @@ function assertCanonical(html) {
     'Je bedrijfsfase is niet je abonnement.',
     'Primaire bedrijfsfase',
     'Wat speelt daarnaast?',
-    'Belangrijkste doel nu',
+    'Wat wil je bereiken?',
+    'aria-label="Ondernemersdoelen"',
     'Dit is wat er daadwerkelijk in het portaal zit.',
     'Trusted Advisor assurance',
     'Resource & Sustainability Intelligence'
