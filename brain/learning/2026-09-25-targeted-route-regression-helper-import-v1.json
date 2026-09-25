@@ -1,0 +1,32 @@
+{
+  "fingerprint": "targeted-route-regression-helper-import-v1",
+  "obligation_id": "governance-production-trigger-ownership-v1",
+  "supersedes_pr": 3098,
+  "skill_targets": [
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "TEST_ORACLE_REFERENCE_ERROR",
+    "scope": "WEBSITE_RELEASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "A concurrently added regression test invoked isHardAssetFailure without importing the exported helper from verify-targeted-website-routes.mjs, causing website/baseline to fail with ReferenceError while the implementation itself was valid.",
+  "fix": "Import isHardAssetFailure in the targeted website regression test.",
+  "prevention_rule": "TEST_HELPER_REFERENCES_MUST_BE_EXPLICITLY_IMPORTED",
+  "evaluation": {
+    "historical_replay": [
+      "tests/targeted-website-route-regression.test.mjs"
+    ],
+    "canary": [
+      "tests/targeted-website-route-regression.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failing_run": 36173570951,
+    "failing_job": 108199396839,
+    "error": "ReferenceError: isHardAssetFailure is not defined"
+  },
+  "outcome": "REGRESSION_ORACLE_REFERENCE_FIXED"
+}

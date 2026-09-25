@@ -1,0 +1,16 @@
+{
+  "type":"POWERHOUSE_LEARNING",
+  "version":"v1",
+  "status":"ACTIVE",
+  "fingerprint":"delivery|production-readback-safe-supersession|v1",
+  "obligation_id":"governance-production-trigger-ownership-v1",
+  "problem":"Production readbacks for an earlier runtime-affecting merge stayed red after later non-runtime main commits advanced the live release marker.",
+  "root_cause":"Production verification equated release-marker identity with exact triggering SHA and had no bounded Git-lineage rule for safe non-production descendant supersession.",
+  "fix":"Accept exact SHA or a descendant whose entire diff is limited to explicit non-production paths; reject non-descendants and runtime-affecting descendants.",
+  "prevention":["Use Git ancestry plus changed-path proof before accepting a newer live SHA.","Keep the non-production allowlist narrow and aligned with deployment paths-ignore.","Never accept runtime-affecting descendant supersession as equivalent production proof.","Apply the same rule to source snapshot, production release readback and canonical brand live readback."],
+  "compiler":{"failure_class":"PRODUCTION_READBACK_SUPERSESSION_BLINDNESS","scope":"DELIVERY_CONTROL_PLANE","machine_enforceable":true,"repeat_count":1,"security_sensitive":false},
+  "evaluation":{"historical_replay":["tests/brain-production-readback-safe-supersession-v1.test.mjs"],"canary":[".github/workflows/production-release-readback.yml",".github/workflows/production-source-snapshot.yml",".github/workflows/canonical-brand-shell-live-readback.yml"]},
+  "skill_targets":["powerhouse-delivery-self-optimization"],
+  "evidence":["tools/site-shell/production-supersession.mjs","tools/site-shell/verify-production-release.mjs","tests/brain-production-readback-safe-supersession-v1.test.mjs"],
+  "outcome":"SAFE_NON_RUNTIME_DESCENDANT_SUPERSESSION_ACCEPTED_WITH_RUNTIME_FAIL_CLOSED"
+}
