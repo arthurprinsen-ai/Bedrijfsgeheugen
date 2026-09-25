@@ -7,20 +7,32 @@
     "The website Netlify build-parity job must run the complete production build chain with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
     "Standalone cache validation remains useful but is not sufficient because build transforms may add translatable strings.",
     "Any missing post-transform translation must fail before merge and be repaired through the versioned static i18n cache patches.",
-    "Netlify production may only be called LIVE_BEWEZEN after exact-main deploy plus pricing/i18n browser proof."
+    "Netlify production may only be called LIVE_BEWEZEN after exact-main deploy plus pricing/i18n browser proof.",
+    "Changes to lane-website.yml must self-classify as high-risk preview work so the production-parity guard proves itself."
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"],
-    "shadow": ["tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"],
-    "canary": ["tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"
+    ]
   },
-  "test_evidence": ["tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"],
+  "test_evidence": [
+    "tests/brain-netlify-i18n-cache-build-parity-v1.test.mjs"
+  ],
   "evidence": {
     "failed_main_sha": "e6b9369587ed0b7f31a68a50f2cfd360b8800a18",
     "failed_netlify_deploy_id": "6ab68cc1620347dff3081d39",
     "provider_error": "Build script returned non-zero exit code: 2"
   },
-  "skill_targets": ["continuity", "delivery"],
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
   "compiler": {
     "failure_class": "NETLIFY_I18N_BUILD_ORACLE_DRIFT",
     "scope": "WEBSITE_PRODUCTION_BUILD",
