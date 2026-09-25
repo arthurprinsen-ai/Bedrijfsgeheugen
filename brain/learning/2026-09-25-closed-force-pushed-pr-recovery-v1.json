@@ -33,8 +33,16 @@
   "test_evidence": [
     "tests/brain-closed-force-pushed-pr-recovery-v1.test.mjs"
   ],
-  "revision": 2,
+  "revision": 3,
   "failed_approaches": [
-    "Initial learning omitted evaluation.historical_replay, so Powerhouse Skill Projection correctly failed closed with LEARNING_EVALUATION_TESTS_REQUIRED."
-  ]
+    "Initial learning omitted evaluation.historical_replay, so Powerhouse Skill Projection correctly failed closed with LEARNING_EVALUATION_TESTS_REQUIRED.",
+    "The first semantic-learning record kept failure_class only at top level; material writeback closure requires compiler.failure_class as the machine-semantic authority."
+  ],
+  "compiler": {
+    "failure_class": "CLOSED_PR_FORCE_PUSH_RECOVERY_CAN_REINTRODUCE_STALE_MAIN",
+    "scope": "POWERHOUSE_DELIVERY_GOVERNANCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
