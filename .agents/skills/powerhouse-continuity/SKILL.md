@@ -992,3 +992,23 @@ Before protected delivery, prove coverage with:
 `STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 node tools/site-shell/build-localized-routes.mjs --validate-cache`.
 
 A missing fragment is a production build defect and must fail closed; never re-enable provider fallback to mask it.
+
+## Production snapshot latest-main-wins
+
+Fingerprint: `production-snapshot-latest-main-wins-20260925-v1`.
+
+- Every push to `main` must schedule production reconciliation.
+- Production reconciliation uses one main-scoped concurrency group with `cancel-in-progress: true`.
+- A superseded snapshot is cancelled rather than allowed to publish or verify a stale SHA.
+- Never treat cancellation of an older SHA as a failure when a newer `main` SHA has replaced it.
+- Terminal success still requires exact production SHA/context plus pricing/i18n browser proof.
+
+## Static i18n cache authority delta
+
+Fingerprint: `static-i18n-cache-authority-delta-20260925-v1`.
+
+- The production English authority is `config/bg-static-i18n-en.json` plus versioned patches under `config/bg-static-i18n-en.d/`.
+- New public copy and its English cache delta must land in the same protected lineage.
+- Production uses `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1`; missing translations are a hard build failure.
+- Mutable `.cache/` data is never release authority.
+- Provider translation may fill cache explicitly, but normal production must not depend on provider availability.

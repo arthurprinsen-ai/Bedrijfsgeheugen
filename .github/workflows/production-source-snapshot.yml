@@ -36,8 +36,6 @@ name: Production Source Snapshot
 on:
   push:
     branches: [main]
-    paths:
-      - '.github/workflows/production-source-snapshot.yml'
   workflow_dispatch:
     inputs:
       deploy:
@@ -49,6 +47,10 @@ on:
 permissions:
   contents: read
   id-token: write
+
+concurrency:
+  group: production-source-snapshot-main
+  cancel-in-progress: true
 
 jobs:
   snapshot:

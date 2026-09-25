@@ -1,0 +1,33 @@
+{
+  "fingerprint": "production-snapshot-latest-main-wins-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production could remain multiple commits behind main because Production Source Snapshot only triggered when its own workflow file changed and older snapshot runs were not cancelled when newer main commits arrived.",
+  "root_cause": "The production reconciler was path-gated to .github/workflows/production-source-snapshot.yml and lacked workflow-level concurrency. Parallel merges therefore advanced main without scheduling a corresponding production reconcile, while obsolete exact-SHA runs could continue consuming capacity.",
+  "prevention": [
+    "Every push to main must trigger Production Source Snapshot.",
+    "Production Source Snapshot must use one main-scoped concurrency group with cancel-in-progress=true so only the newest main SHA is authoritative.",
+    "An older snapshot cancellation is expected and healthy when a newer main commit supersedes it.",
+    "Exact production SHA plus pricing/i18n browser proof remain mandatory before LIVE_BEWEZEN."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"],
+    "shadow": ["tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"],
+    "canary": ["tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-production-snapshot-latest-main-wins-v1.test.mjs"],
+  "evidence": {
+    "observed_main_sha": "2edfe3dfafbf52751379e049f6018883c6ad0c16",
+    "observed_production_sha": "f45ad02f8f719958c00b7ff8e39e3ca2104353b1",
+    "gap_commits": 9,
+    "workflow_path_gate": ".github/workflows/production-source-snapshot.yml"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRODUCTION_RECONCILE_TRIGGER_RACE",
+    "scope": "WEBSITE_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
