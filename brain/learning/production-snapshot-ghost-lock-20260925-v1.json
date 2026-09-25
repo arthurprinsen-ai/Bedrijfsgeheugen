@@ -17,7 +17,25 @@
     "competing_active_snapshot_runs": 0,
     "recovery_group": "production-source-snapshot-main-v2"
   },
-  "test_evidence": ["tests/brain-production-snapshot-ghost-lock-v1.test.mjs"],
-  "skill_targets": ["powerhouse-delivery-concurrency", "powerhouse-continuity"],
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-production-snapshot-ghost-lock-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-continuity"
+  ],
+  "revision": 1,
+  "failure_class": "PRODUCTION_SNAPSHOT_SCHEDULER_GHOST_LOCK",
+  "evaluation": {
+    "historical_replay": [
+      "run:36160448237"
+    ],
+    "shadow": [
+      "tests/brain-production-snapshot-ghost-lock-v1.test.mjs"
+    ],
+    "canary": [
+      "PR:3043"
+    ],
+    "expected_invariant": "latest main production snapshot starts a job in the recovered stable concurrency group and production remains serialized"
+  }
 }
