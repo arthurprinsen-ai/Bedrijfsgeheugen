@@ -279,3 +279,10 @@ Permanent:
 - dezelfde evidence mag blog- en LinkedIn-bedrijfskandidaten voeden volgens probleem -> symptomen -> impact -> oorzaak/data -> aanpak -> capability -> meetbaar resultaat -> CTA;
 - duplicate content angles en onbewezen publicatie/readback falen dicht;
 - gerealiseerde waarde vereist Verified Value-evidence en schrijft terug naar dezelfde Problem ID.
+
+
+## Productionstatus canonical intake — 25 september 2026
+
+Status: `LIVE_PROVEN`.
+
+Feature merge `2d2f33393064da9cfb86730fb0d08238c985d8d5` is aantoonbaar opgenomen in Netlify productiecommit `c0e79c704cc7597b71764e14f67754e9c8f60195` (deploy `6ab626a11214c7000808a8fb`, `ready`). De learning-canonicalization recovery is beschermd gemerged als `288fb63a2255198e9125a3328316a624e62beb20` en wijzigt geen runtimegedrag.
