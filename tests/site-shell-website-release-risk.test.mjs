@@ -73,7 +73,8 @@ test('website browser verification stays exact-candidate and preserves scoped cl
   assert.match(websiteLane, /python3 tools\/ci\/serve-clean-urls\.py --port 4173 --bind 127\.0\.0\.1/);
   assert.match(websiteLane, /http:\/\/127\.0\.0\.1:4173/);
   assert.match(websiteLane, /BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
-  assert.match(websiteLane, /UI_VR_BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.match(websiteLane, /name: Build and serve exact local candidate for broad browser checks/);
+  assert.match(websiteLane, /UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
   assert.match(websiteLane, /ref:\s*\$\{\{ inputs\.candidate_sha \}\}/);
 });
 

@@ -1079,3 +1079,12 @@ Fingerprint: `netlify-oidc-proxy-401-git-source-fallback-20260925-v1`.
 - If linked Git delivery is available, a bounded real website-source trigger may be used to activate the Git-linked build without the failed upload proxy.
 - Fallback does not weaken closure: production `commit_ref` must equal protected `main`, then homepage, pricing, systems/koppelingen and NL/EN browser state change must be proven.
 - Keep the 401 incident recorded in Brain and the development ledger until the deploy bridge itself is independently repaired.
+
+## Static i18n runtime fallback in production
+
+Fingerprint: `static-i18n-runtime-fallback-production-20260925-v1`.
+
+- Production release builds keep external translation network calls disabled.
+- Static English cache completeness is enrichment, not publication authority, while the canonical runtime i18n fallback is available.
+- Do not block all production on a missing static cache entry.
+- Terminal truth is the production browser proof: real NL→EN interaction, `/en/prijzen`, visible English and no known Dutch pricing heading.
