@@ -1035,3 +1035,13 @@ Fingerprint: `ai-ecosystem-static-i18n-cache-coupling-20260925-v1`.
 - If cache validation reports missing strings, add the English cache delta in the same candidate and keep production fail-closed.
 - Regression: `tests/brain-ai-ecosystem-static-i18n-cache-v1.test.mjs`.
 - Learning: `brain/learning/ai-ecosystem-static-i18n-cache-coupling-20260925-v1.json`.
+
+
+## Post-build static-i18n cache drift
+
+Fingerprint: `i18n-postbuild-cache-runtime-fallback-20260925-v1`.
+
+- Do not treat pre-build static translation cache completeness as equivalent to post-build completeness when generators mutate public HTML before localized-route generation.
+- Production stays provider-independent (`STATIC_I18N_NETWORK=0`), but post-build cache misses fall through to the canonical runtime i18n layer.
+- Cache misses must not take the entire website offline.
+- Terminal proof remains fail-closed in the browser: actual NL→EN navigation to `/en/prijzen`, `html lang=en`, visible English pricing text, and no known Dutch pricing heading.
