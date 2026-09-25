@@ -56,9 +56,7 @@ begin
 end
 $;
 
-revoke all on function public.enforce_mira_continuous_video_capability_v1() from public;
-revoke all on function public.enforce_mira_continuous_video_capability_v1() from anon;
-revoke all on function public.enforce_mira_continuous_video_capability_v1() from authenticated;
+revoke execute on function public.enforce_mira_continuous_video_capability_v1() from public, anon, authenticated;
 
 drop trigger if exists enforce_mira_continuous_video_capability_v1
   on public.powerhouse_social_publish_capabilities_v1;
