@@ -16,7 +16,10 @@ test('Rocket Delivery v1 keeps one PR authority and collapses obsolete work', as
   assert.doesNotMatch(fullBuild, /pull_request:/);
   assert.doesNotMatch(v18, /pull_request:/);
   assert.doesNotMatch(liveReadback, /pull_request:/);
-  assert.match(codeql, /group: powerhouse-codeql-${{ github\.event_name }}-${{ github\.event\.pull_request\.number \|\| github\.ref_name }}/);
+  assert.ok(
+    codeql.includes('group: powerhouse-codeql-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}'),
+    'CodeQL concurrency must collapse obsolete same-ref work',
+  );
   assert.doesNotMatch(codeql, /github\.run_id/);
   assert.match(codeql, /cancel-in-progress: true/);
   assert.match(productionReadback, /paths-ignore:/);
