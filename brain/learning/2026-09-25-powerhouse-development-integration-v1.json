@@ -26,5 +26,25 @@
     "historical_replay": [
       "tests/brain-powerhouse-development-integration-contract.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "regression": [
+      "tests/brain-powerhouse-development-integration-contract.test.mjs"
+    ],
+    "policy": "brain/policies/powerhouse-development-integration-v1.json",
+    "skill": ".agents/skills/powerhouse-development-integration/SKILL.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "required_terminal_readback": [
+      "protected merge",
+      "main readback",
+      "production/provider readback where applicable"
+    ]
   }
 }
