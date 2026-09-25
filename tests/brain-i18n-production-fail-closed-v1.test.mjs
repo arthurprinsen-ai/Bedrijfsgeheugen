@@ -24,7 +24,7 @@ test('deploy previews inherit the provider-independent fallback contract',()=>{
 });
 
 test('English production success is still fail-closed at the browser proof layer',()=>{
-  assert.match(verifier,/\/en\/prijzen/);
+  assert.match(verifier,/\^\\\/en\\\/prijzen\\\/\?\$/);
   assert.match(verifier,/document\.documentElement\.lang/);
   assert.match(verifier,/Pricing/);
 });
