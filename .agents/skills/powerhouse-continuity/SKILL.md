@@ -1022,3 +1022,16 @@ Fingerprint: `skill-projection-replay-dependency-bootstrap-20260925-v1`.
 - A missing module/package before the replay assertion is a workflow-bootstrap defect, not evidence that canonical learning is invalid.
 - Never weaken or remove historical replay to avoid installing dependencies; repair the execution environment and keep fail-closed evaluation.
 - Guard dependency-before-replay ordering with `tests/brain-skill-projection-dependency-bootstrap-v1.test.mjs`.
+
+## Public-copy / static-English cache atomicity
+
+Fingerprint: `ai-ecosystem-static-i18n-cache-coupling-20260925-v1`.
+
+- New or changed public translatable copy and its immutable English cache delta are one atomic delivery contract.
+- Production keeps `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1`; never re-enable live translation-provider dependency to make a build pass.
+- Canonical translation authority is `config/bg-static-i18n-en.json` plus sorted `config/bg-static-i18n-en.d/*.json` patches.
+- Never restore `.cache` as translation authority.
+- Before protected merge for public-copy changes, run the offline canonical validator: `node tools/site-shell/build-localized-routes.mjs --validate-cache`.
+- If cache validation reports missing strings, add the English cache delta in the same candidate and keep production fail-closed.
+- Regression: `tests/brain-ai-ecosystem-static-i18n-cache-v1.test.mjs`.
+- Learning: `brain/learning/ai-ecosystem-static-i18n-cache-coupling-20260925-v1.json`.
