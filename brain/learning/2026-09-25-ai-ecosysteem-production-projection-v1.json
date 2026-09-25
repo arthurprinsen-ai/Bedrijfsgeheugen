@@ -1,0 +1,55 @@
+{
+  "fingerprint": "website|generated-canonical-surface|post-build-projection|v1",
+  "date": "2026-09-25",
+  "type": "WEBSITE_PRODUCTION_PROJECTION_AND_DELIVERY_LEARNING",
+  "status": "ACTIVE",
+  "obligation_id": "website-ai-ecosysteem-production-v2",
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "data"
+  ],
+  "root_cause": [
+    "The canonical V18 production builder rewrites index.html from a pinned homepage payload before downstream transforms. A direct source edit to index.html can therefore exist in GitHub while disappearing from the built production artifact unless it is projected after the pinned restore or incorporated into the canonical payload.",
+    "The first recovery candidate omitted canonical Brain learning, append-only activity ledger evidence and human-readable documentation, so Required correctly failed the material-writeback closure gate.",
+    "The first rebased recovery head compared against a stale PR Base-SHA, which caused branch hygiene to classify unrelated current-main files as scope contamination.",
+    "The first Netlify preview for the AI-ecosystem recovery failed while the repository still had an independent linked-build/i18n delivery defect. Product-code truth and delivery-provider truth must remain separate."
+  ],
+  "prevention": [
+    "Before changing a generated public surface, inspect the production build chain and identify the authoritative source plus every post-build transformer.",
+    "For the V18 homepage, durable homepage modules must be applied after tools/bouw-v18-production-core.mjs restores the pinned payload, or be incorporated into the canonical payload itself.",
+    "Make generated-surface projections idempotent and regression-test that the real production builder invokes them.",
+    "Refresh Base-SHA metadata to the actual current main before protected delivery; never use a stale comparison base after main has moved.",
+    "Treat an SEO orphan-page finding after a source-level link addition as possible projection loss before changing SEO policy.",
+    "Every material candidate carries Brain learning, activity ledger and human documentation in the same lineage before Required CI.",
+    "Never claim LIVE from merge, provider build start or Netlify state alone; require exact production identity plus functional route/readback evidence."
+  ],
+  "evidence": {
+    "regression_test": "tests/brain-ai-ecosysteem-production-projection-v1.test.mjs",
+    "projection_helper": "tools/bouw-v18-ai-ecosysteem.mjs",
+    "production_builder": "tools/bouw-v18-production.mjs",
+    "public_page": "ai-ecosysteem.html",
+    "recovery_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/2981",
+    "prior_required_failure": "MATERIAL_WRITEBACK_CLOSURE_MISSING",
+    "prior_hygiene_failure_run": "36151999891",
+    "dashboard_hub": "3e4da36a-ac8a-81fb-b340-daccce80dec8",
+    "canonical_system_map": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+    "dashboard_read_after_write": true
+  },
+  "powerhouse_projection": {
+    "state": "RECOVERY_ACTIVE_UNTIL_EXACT_PRODUCTION_READBACK",
+    "rule": "Dashboard Hub and Canonical System Map are human-readable projections; GitHub/Netlify exact identity and functional production readback remain authority."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-ecosysteem-production-projection-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "WEBSITE_DELIVERY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
