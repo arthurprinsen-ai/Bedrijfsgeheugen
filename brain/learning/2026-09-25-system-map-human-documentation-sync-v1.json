@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|system-map-human-doc-topology-sync|v1",
+  "obligation_id": "system-map-human-doc-topology-sync-v1",
+  "problem": "The canonical Powerhouse System Map drifted behind the actual repository skill topology: 14 skill directories existed while the machine map listed 12 and the provider snapshot reported 11.",
+  "root_cause": "The repository already required same-lineage System Map registration and human documentation, but snapshot-count parity and explicit human-documentation assertions were not enforced strongly enough in the System Map regression itself.",
+  "fix": "Reconcile the canonical skill inventory and provider snapshot, make System Map plus human documentation an explicit universal closure rule in AGENTS.md and powerhouse-continuity, and extend regression coverage so snapshot counts and human-documentation obligations fail closed.",
+  "prevention": [
+    "Any structural skill, agent, workflow, function, intelligence-layer or authority change updates the canonical System Map in the same lineage.",
+    "Repository human documentation is updated in the same lineage as the structural change.",
+    "Provider snapshot counts must equal canonical repository inventory lengths.",
+    "SYSTEM_MAP_WRITEBACK_INCOMPLETE and WRITEBACK_INCOMPLETE are non-terminal states."
+  ],
+  "compiler": {
+    "failure_class": "SYSTEM_MAP_TOPOLOGY_INVENTORY_DRIFT",
+    "scope": "POWERHOUSE_SYSTEM_MAP",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-powerhouse-live-system-map-v1.test.mjs"],
+    "canary": [".github/workflows/required-test.yml"]
+  },
+  "skill_targets": ["continuity"],
+  "evidence": [
+    "platform/system-map/canonical-system-map.mjs",
+    "AGENTS.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+    "docs/changes/2026-09-25-system-map-human-documentation-sync-v1.md",
+    "docs/development-ledger-events/2026-09-25-system-map-human-documentation-sync-v1.md"
+  ],
+  "outcome": "SYSTEM_MAP_AND_HUMAN_DOCUMENTATION_SYNC_FAIL_CLOSED"
+}
