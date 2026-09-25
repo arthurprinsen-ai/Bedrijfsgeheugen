@@ -1,0 +1,47 @@
+{
+  "fingerprint": "pricing-inline-readiness-authority-v1",
+  "date": "2026-09-24",
+  "type": "PRODUCTION_READBACK_RECOVERY",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "problem": "Production pricing interaction readback timed out before any click because the page never exposed the ready-v3 readiness contract within 20 seconds.",
+  "root_cause": "The canonical pricing handlers were initialized inline in prijzen.html, but the ready-v3 marker was owned only by the deferred pricing-interactions-rescue-v1.js asset. Production correctness therefore depended on a secondary rescue asset executing even though the primary inline runtime had already initialized the controls.",
+  "fix": [
+    "Make the primary inline pricing runtime publish ready-v3 after billing/group/stage initialization.",
+    "Publish initial stage, group and billing state from the same authority.",
+    "Keep the rescue asset as a resilience layer rather than the sole readiness authority.",
+    "Add a regression test proving the inline source owns the readiness contract."
+  ],
+  "prevention_rule": "A production readiness marker must be emitted by the same canonical runtime that establishes the behavior being verified. Rescue/fallback assets may reinforce state but must not be the sole authority for readiness.",
+  "compiler": {
+    "failure_class": "READINESS_AUTHORITY_SPLIT_BRAIN",
+    "scope": "PRODUCTION_PRICING_INTERACTIONS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-inline-readiness-authority-v1.test.mjs",
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "invariants": [
+      "the primary pricing runtime emits ready-v3 only after initial stage/group/billing state is established",
+      "loss-stage control remains present and fail-closed when absent",
+      "rescue runtime remains additive rather than authoritative",
+      "production verifier continues to require real interaction postconditions"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "evidence": {
+    "failed_run": 36061517298,
+    "failed_job": 107841420092,
+    "failure": "page.waitForFunction Timeout 20000ms at pricing readiness",
+    "source": "prijzen.html",
+    "rescue": "assets/js/pricing-interactions-rescue-v1.js",
+    "verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "regression": "tests/brain-pricing-inline-readiness-authority-v1.test.mjs"
+  }
+}

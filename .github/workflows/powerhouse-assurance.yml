@@ -23,6 +23,24 @@ on:
       - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence*.md'
   push:
     branches: [main]
+    paths:
+      - 'powerhouse/assurance/**'
+      - 'scripts/powerhouse-assurance-check.mjs'
+      - 'scripts/brain/powerhouse-quality-intelligence.mjs'
+      - 'scripts/brain/quality/**'
+      - 'tests/powerhouse-assurance*.test.mjs'
+      - 'tests/brain-quality-intelligence*.test.mjs'
+      - 'tests/brain-quality-*.test.mjs'
+      - 'tools/brain-delivery-system.mjs'
+      - 'portal-v2/**'
+      - '.github/scripts/portal_parity.py'
+      - '.github/workflows/powerhouse-assurance.yml'
+      - 'docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md'
+      - 'docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md'
+      - 'docs/superpowers/specs/2026-09-15-powerhouse-assurance-layer-design.md'
+      - 'docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence*.md'
+      - 'docs/superpowers/plans/2026-09-15-powerhouse-assurance-layer.md'
+      - 'docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence*.md'
   workflow_dispatch:
 
 concurrency:

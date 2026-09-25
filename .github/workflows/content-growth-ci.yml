@@ -15,10 +15,25 @@ on:
       - '.github/workflows/content-growth-ci.yml'
   push:
     branches:
+    paths:
+      - 'tools/content-growth/**'
+      - 'config/content-growth-policy.json'
+      - 'data/content-publication-ledger.json'
+      - 'data/content-growth-learning.json'
+      - 'data/content-growth-events.json'
+      - 'tests/content-growth-*.test.mjs'
+      - '.github/workflows/daily-blog-publisher.yml'
+      - '.github/workflows/content-growth-learning.yml'
+      - '.github/workflows/daily-blog-live-watchdog.yml'
+      - '.github/workflows/content-growth-ci.yml'
       - main
 
 permissions:
   contents: read
+
+concurrency:
+  group: content-growth-ci-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
 
 jobs:
   test:
