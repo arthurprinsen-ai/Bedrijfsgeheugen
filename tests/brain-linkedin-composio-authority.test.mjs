@@ -25,7 +25,6 @@ test('LinkedIn company fails closed unless exact Composio readback is proven', (
   assert.match(source, /do not fall back to Buffer or issue a replacement post/);
 });
 
-
 test('Composio execution uses v3.1 latest tool semantics', () => {
   assert.match(source,/https:\/\/backend\.composio\.dev\/api\/v3\.1/);
   assert.match(source,/version:'latest'/);
@@ -60,7 +59,13 @@ test('all social provider side effects require global historical uniqueness rese
 
 test('personal LinkedIn story fingerprint and keyword-level duplicate protection are mandatory', () => {
   assert.match(source, /publicationStoryFingerprint/);
-  assert.match(source, /personal-story-v1:/);
   assert.match(source, /p_story_fingerprint:storyFingerprint/);
   assert.match(source, /powerhouse-global-post-story-uniqueness-v2/);
+});
+
+test('story fingerprint normalization has one database authority', () => {
+  assert.match(source, /db\.rpc\('powerhouse_story_fingerprint_v1',\{p_source:source\}\)/);
+  assert.match(source, /STORY_FINGERPRINT_RPC/);
+  assert.match(source, /publicationStoryFingerprint\(db,row,art\)/);
+  assert.doesNotMatch(source, /digest\('personal-story-v1:'\+source\.toLowerCase/);
 });

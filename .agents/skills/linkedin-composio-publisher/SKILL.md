@@ -95,3 +95,11 @@ Additional hard gates:
 - this runs in addition to exact raw hash, normalized hash and 3-word-shingle checks.
 
 The same anecdote may not be posted again merely because wording, hook, CTA, hashtags, punctuation or sentence order changed.
+
+## Canonical story fingerprint authority v3
+
+Fingerprint: `powerhouse-story-fingerprint-authority-v3`.
+
+Do not independently normalize/hash personal story sources in application code. Both historical backfill and live publishing must use the database function `powerhouse_story_fingerprint_v1`. This prevents punctuation, URL, whitespace or content-id formatting differences from producing different fingerprints for the same source lineage.
+
+If the canonical fingerprint function cannot be called or returns empty, publication fails closed before any provider write.

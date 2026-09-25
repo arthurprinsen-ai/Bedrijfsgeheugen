@@ -230,12 +230,16 @@ async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expecte
   return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
 
-async function publicationStoryFingerprint(row:any,art:any){
+async function publicationStoryFingerprint(db:any,row:any,art:any){
   if(row?.channel!=='linkedin_personal')return null;
   const evidence=row?.delivery_evidence?.identity_gate_evidence||art?.generation_evidence?.identity_gate_evidence||{};
   const source=clean(evidence?.source_text)||clean(evidence?.content_id);
   if(!source)return null;
-  return await digest('personal-story-v1:'+source.toLowerCase().replace(/\s+/g,' ').trim());
+  const {data,error}=await db.rpc('powerhouse_story_fingerprint_v1',{p_source:source});
+  if(error)throw new Error('STORY_FINGERPRINT_RPC:'+error.message);
+  const fingerprint=clean(data);
+  if(!fingerprint)throw new Error('STORY_FINGERPRINT_EMPTY');
+  return fingerprint;
 }
 async function reserveGlobalUniquePublication(db:any,runDate:string,channel:string,body:string,storyFingerprint:string|null){
   const {data,error}=await db.rpc('powerhouse_reserve_unique_publication_v1',{
@@ -884,7 +888,7 @@ Deno.serve(async (req) => {
 
     let uniqueness:any;
     try{
-      const storyFingerprint=await publicationStoryFingerprint(row,art);
+      const storyFingerprint=await publicationStoryFingerprint(db,row,art);
       uniqueness=await reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body),storyFingerprint);
       const uniquenessEvidence={...gatePassedEvidence,global_uniqueness_gate:'passed',global_uniqueness_fingerprint:'powerhouse-global-post-story-uniqueness-v2',global_uniqueness:uniqueness,story_fingerprint:storyFingerprint,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:false}};
       await db.from('powerhouse_channel_decisions').update({delivery_evidence:uniquenessEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
