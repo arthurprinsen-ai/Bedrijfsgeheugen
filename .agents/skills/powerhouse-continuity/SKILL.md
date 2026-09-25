@@ -1057,3 +1057,14 @@ Fingerprint: `netlify-production-build-parity-20260925-v1`.
 - Reduced local/browser composers are useful for UI verification but are never substitutes for production build parity.
 - Any parity failure blocks merge and must be repaired before Netlify deployment.
 - Terminal closure remains exact production SHA plus production browser proof.
+
+
+## Exact-main production drift prevention
+
+Fingerprint: `website-i18n-production-main-drift-20260925-v1`.
+
+- A Netlify deploy in state `ready` is not terminal evidence when its `commit_ref` differs from current protected `main`.
+- If canonical i18n/cache/build-authority fixes already exist on newer main, never reintroduce an older runtime patch; promote the current authority instead.
+- Any production-affecting i18n environment change requires a fresh exact-main production build before closure.
+- Mandatory NL/EN terminal browser readback routes are homepage `/`, pricing `/prijzen` and systems/koppelingen `/systemen-koppelen`, including visible language state change.
+- Terminal LIVE requires: protected merge → production `commit_ref === main SHA` → browser state-change proof → Brain/ledger/skill writeback.

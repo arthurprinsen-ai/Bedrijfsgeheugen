@@ -1,0 +1,34 @@
+{
+  "fingerprint": "website-i18n-production-main-drift-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Public NL/EN behavior was still defective in production while protected main already contained the canonical deterministic i18n recovery chain.",
+  "root_cause": "Netlify production served an older commit_ref than protected main after i18n and build-authority fixes had already landed. Production readiness was therefore inferred from deploy state instead of exact-source parity plus functional browser state change.",
+  "prevention": [
+    "Production closure requires Netlify production commit_ref to equal the current protected-main SHA.",
+    "Every production-affecting i18n build-environment change requires a new exact-main production build before closure.",
+    "Homepage, pricing and systems/koppelingen are mandatory NL/EN browser readback routes.",
+    "A ready Netlify deployment is not terminal evidence without functional NL/EN state-change proof.",
+    "Do not reintroduce older runtime patches when current main already contains the canonical i18n authority."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-i18n-exact-main-production-recovery-v1.test.mjs"],
+    "shadow": ["tests/brain-i18n-exact-main-production-recovery-v1.test.mjs"],
+    "canary": ["tests/brain-i18n-exact-main-production-recovery-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-i18n-exact-main-production-recovery-v1.test.mjs"],
+  "evidence": {
+    "observed_production_deploy": "6ab66b7bb3dd8b0008d0c2a1",
+    "observed_production_commit_ref": "f45ad02f8f719958c00b7ff8e39e3ca2104353b1",
+    "canonical_main_at_recovery_start": "e6b9369587ed0b7f31a68a50f2cfd360b8800a18",
+    "mandatory_routes": ["/", "/prijzen", "/systemen-koppelen"]
+  },
+  "skill_targets": ["continuity", "delivery", "website"],
+  "compiler": {
+    "failure_class": "PRODUCTION_SOURCE_DRIFT",
+    "scope": "WEBSITE_I18N_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
