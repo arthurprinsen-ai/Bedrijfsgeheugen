@@ -19,3 +19,6 @@ Production build tooling must not depend on undocumented paths inside `node_modu
 - Canonical full-build PR gate proved `npm install`, `1 Powerhouse auth`, V18 production generation, shell gates and release evidence all successful on the repaired candidate.
 - Brain fingerprint: `netlify-identity-v2-build-compat-20260925-v1`.
 - Terminal closure still requires protected merge, exact-main Netlify production identity and live NL/EN browser proof on homepage, pricing and systems/koppelingen.
+
+## Downstream release-contract repairs
+The full BRAIN lane exposed three additional stale release contracts on the same delivery path. The production verifier now selects only a visible mobile language control and proves NL→EN→NL on `/`, `/prijzen`, and `/systemen-koppelen`. The billing ARIA regression now scopes its assertion to `setBilling` rather than matching an earlier unrelated `aria-selected`. The pricing rescue asset cache key is synchronized to the current Git blob identity across the HTML, build-integrity oracle and production snapshot.
