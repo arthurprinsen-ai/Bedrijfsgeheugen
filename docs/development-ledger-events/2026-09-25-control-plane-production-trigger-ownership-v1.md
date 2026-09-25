@@ -7,3 +7,6 @@
 - Validation remains in protected PR Required/automation/browser suites.
 - Regression: `tests/delivery-ci-trigger-budget.test.mjs` and `tests/brain-control-plane-production-trigger-ownership-v1.test.mjs`.
 - Runtime-bearing paths remain production-triggering and fail-closed.
+
+- Validation follow-up: website baseline failed because `isHardAssetFailure` was used without an import in `tests/targeted-website-route-regression.test.mjs`.
+- Recovery: explicit import added; verifier semantics unchanged; no gate bypass or test deletion.
