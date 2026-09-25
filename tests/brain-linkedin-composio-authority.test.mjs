@@ -41,3 +41,19 @@ test('LinkedIn personal preserves created URN when exact readback is unavailable
   assert.match(source, /state:verified\?'published':'dispatching'/);
   assert.match(source, /republish_forbidden:true/);
 });
+
+test('all social provider side effects require global historical uniqueness reservation', () => {
+  assert.match(source, /powerhouse_reserve_unique_publication_v1/);
+  assert.match(source, /p_similarity_threshold:0\.62/);
+  assert.match(source, /GLOBAL_POST_DUPLICATE_BLOCKED/);
+  assert.match(source, /global_uniqueness_gate:'blocked'/);
+  assert.match(source, /republish_forbidden:true/);
+  const uniqueness = source.indexOf('reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body))');
+  const personalCreate = source.indexOf('publishLinkedInPersonalViaComposio(db,art)');
+  const companyCreate = source.indexOf('publishLinkedInCompanyViaComposio(db,art)');
+  const instagramCreate = source.indexOf('publishInstagramViaComposio(db, art, runDate)');
+  assert.ok(uniqueness > 0);
+  assert.ok(personalCreate > uniqueness);
+  assert.ok(companyCreate > uniqueness);
+  assert.ok(instagramCreate > uniqueness);
+});
