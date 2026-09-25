@@ -595,3 +595,16 @@ Fingerprint: `delivery|learning-replay-path|brain-prefixed|v1`.
 Before a material learning change reaches Skill Projection, validate every `evaluation.historical_replay` path against the learning-canonicalization contract. Historical replay must point to an accepted Brain-prefixed regression path rather than a general test file.
 
 If a general regression already exists, add a narrow Brain replay wrapper that proves the same invariant and reference that wrapper from the learning. Do not wait for Skill Projection to discover the path-shape defect after merge.
+
+
+## Production trigger ownership for control-plane paths
+
+Fingerprint: `delivery|production-trigger|control-plane-path-ownership|v1`.
+
+Production Source Snapshot and Production Release Readback must not start for changes that only alter delivery/governance control-plane surfaces. At minimum these paths are non-runtime for production-trigger ownership:
+- `AGENTS.md`;
+- `brain/policies/**`;
+- `tools/delivery/**`;
+- `tools/site-shell/verify-targeted-website-routes.mjs`.
+
+These paths remain fully validated in PR Required/automation/browser suites. Excluding them from production push triggers prevents unnecessary Netlify promotions, stale-release wait loops, and CI fan-out. Never generalize this rule to deployable site, portal, API, Netlify function, connector runtime, or other production-bearing paths.
