@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.5",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|queue-pressure-governor|v1.5",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.6",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|queue-pressure-governor|terminal-user-handoff-dashboard-writeback|v1.6",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -33,7 +33,10 @@
     "STALE_ORPHANED_QUEUE_MUST_BE_REAPED",
     "CONTROL_PLANE_CHANGES_MUST_NOT_TRIGGER_ARTIFACT_LANES",
     "NO_UNVALIDATED_UNEXPECTED_CANDIDATE_HEAD_AUTHORITY",
-    "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION"
+    "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION",
+    "TERMINAL_USER_HANDOFF_REQUIRES_DASHBOARD_AND_ACTIVITY_WRITEBACK",
+    "NO_AUTONOMOUS_NEXT_STEPS_AS_USER_HANDOFF",
+    "DASHBOARD_WRITEBACK_IS_PART_OF_TERMINAL_DELIVERY"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -190,7 +193,8 @@
     "learning_writeback_completed",
     "shared_preflight_can_discover_the_new_state",
     "no_unreconciled_interrupted_non_terminal_run",
-    "no_critical_unrecorded_gap"
+    "no_critical_unrecorded_gap",
+    "powerhouse_dashboard_or_system_map_writeback_completed_and_read_back"
   ],
   "failure_behavior": "If any mandatory handoff, registration, evidence, recovery or learning step cannot be completed, preserve an explicit canonical open obligation and downgrade status from LIVE_BEWEZEN to DEELS_LIVE or GEBLOKKEERD. Never hide the missing continuity step behind a successful deploy or a stopped chat/model run.",
   "prevention": "Do not let autonomous work end as undocumented implementation knowledge inside one chat or one agent. Treat every chat and agent as an intrinsic execution node in the single canonical Powerhouse loop. Persist how it works, its last verified checkpoint, already-proven side effects and verified operating state in the existing Powerhouse truth, evidence, architecture and learning paths so the next agent continues immediately from canonical state, executes only the necessary delta and reaches verified production through the shortest safe route.",
@@ -203,7 +207,8 @@
     "brain/learning/2026-09-18-no-pending-terminal-output-v1.json",
     "brain/learning/actions-queue-storm-guard-20260924-v1.json",
     ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
-    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "brain/learning/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -305,5 +310,26 @@
       "branch_existence_alone_is_authority": false,
       "unexpected_head_requires_diff_validation": true
     }
+  },
+  "terminal_user_handoff_contract": {
+    "required": true,
+    "fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+    "applies_to": [
+      "chat",
+      "agent",
+      "workflow",
+      "recovery-supervisor"
+    ],
+    "rule": "A material delivery remains owned by the originating or recovering node until merge/promotion, production/provider readback, outcome, learning/prevention, skill projection, canonical current-state/activity writeback and Powerhouse dashboard/System Map registration are complete and read back where supported.",
+    "required_terminal_writebacks": [
+      "canonical_current_state",
+      "activity_or_delivery_ledger",
+      "learning_and_prevention",
+      "relevant_skill_projection",
+      "powerhouse_dashboard_or_system_map_registration"
+    ],
+    "normal_user_handoff": "Report only terminally proven and already-borged results. Do not hand autonomous next steps back to the user as 'what remains' or 'what to do next'.",
+    "blocked_user_handoff": "Only BLOCKED_HARD_BOUNDARY may transfer a smallest required human action; the autonomous continuation must already be prepared and remain the same canonical lineage.",
+    "interruption_rule": "A network, streaming, model, tool or worker interruption never transfers ownership; the next capable node resumes from canonical state without requiring the user to say 'ga door'."
   }
 }
