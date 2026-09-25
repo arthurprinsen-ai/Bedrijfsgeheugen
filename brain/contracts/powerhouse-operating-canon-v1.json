@@ -142,7 +142,9 @@
       "main_protection_certification",
       "production_readback",
       "rollback_identity",
-      "fail_closed_on_merge_rejection"
+      "fail_closed_on_merge_rejection",
+      "frontend_required_assets_verified_independently",
+      "active_mobile_navigation_runtime_control_proven"
     ]
   },
   "proof_of_completion": {
@@ -151,7 +153,8 @@
       "tests_green",
       "required_gates_green",
       "exact_candidate_identity_verified",
-      "production_or_persistence_readback_where_applicable"
+      "production_or_persistence_readback_where_applicable",
+      "functional_browser_path_proven_for_user_visible_frontend_controls"
     ]
   },
   "anti_patterns": [

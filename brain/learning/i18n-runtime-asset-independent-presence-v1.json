@@ -1,0 +1,65 @@
+{
+  "fingerprint": "i18n-runtime-asset-independent-presence-v1",
+  "failure_class": "I18N_PARTIAL_ASSET_MARKER_FALSE_COMPLETENESS",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production /prijzen exposed the i18n stylesheet marker but not the i18n runtime script. The build treated presence of any shared i18n marker as proof that the full i18n asset set existed, so no mobile language selector was mounted and NL/EN browser readback failed.",
+  "root_cause": "The build transformer used one generic data-bg-i18n-asset marker as a completeness sentinel. CSS and JavaScript are independent required assets, so a shared marker cannot prove both are present.",
+  "prevention": [
+    "Check required i18n assets independently: stylesheet presence and runtime-script presence are separate invariants.",
+    "Build-time injectors must be idempotent per asset and must still execute mobile-control injection when one asset already exists.",
+    "Runtime language mounting must include the active production mobile navigation host, currently #v18MobileDrawer, while retaining legacy hosts for compatibility.",
+    "Production browser proof must exercise the visible mobile control and complete NL->EN->NL on the public route before LIVE_BEWEZEN.",
+    "A marker, source token or successful deploy is not functional proof; exact provider SHA plus browser behavior remains authoritative."
+  ],
+  "evidence": {
+    "production_symptom": "/prijzen contained assets/i18n.css but no assets/js/i18n.js; browser diagnostics returned allSelects=0.",
+    "production_route": "https://www.bedrijfsgeheugen.nl/prijzen",
+    "affected_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "relevant_transformer": "tools/site-shell/apply-i18n.mjs"
+  },
+  "test_evidence": [
+    "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+    "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "expected_invariant": "i18n CSS and runtime JS are independently present, the active mobile host exposes one visible language selector, and production completes NL->EN->NL"
+  },
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "title": "Independent i18n runtime asset completeness",
+  "impact": "A production page could look partially internationalized while the runtime language capability was absent, causing the user-visible mobile NL/EN switch and terminal browser proof to fail.",
+  "failed_approaches": [
+    "Using one shared data-bg-i18n-asset marker as a completeness sentinel for both stylesheet and JavaScript runtime.",
+    "Treating exact provider deployment as sufficient proof that the frontend language capability was operational."
+  ],
+  "fix": "Detect i18n CSS and i18n runtime JavaScript independently, inject only missing assets idempotently, then prove the visible active mobile language control in production.",
+  "prevention_rule": "Frontend capabilities with multiple required assets must prove each required asset independently. For public NL/EN, CSS and /assets/js/i18n.js are separate invariants, mobile mounting must target the active production host, and terminal proof requires a visible NL->EN->NL browser roundtrip.",
+  "regression_contract": "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+  "tests": [
+    "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+    "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+  ],
+  "outcome": "The Powerhouse operating canon and relevant skills now require per-asset frontend completeness plus visible production browser proof.",
+  "compiler": {
+    "failure_class": "WEBSITE_RUNTIME",
+    "scope": "PUBLIC_I18N_ASSET_COMPLETENESS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

@@ -9,8 +9,8 @@ test('pricing production i18n proof waits for the visible shared mobile language
   assert.match(source,/#bgSharedMobileNav/);
   assert.match(source,/\[data-bg-language-select\]/);
   assert.match(source,/waitFor\(\{ state:'visible', timeout:5_000 \}\)/);
-  assert.match(source,/selectOption\('en'\)/);
-  assert.match(source,/selectOption\('nl'\)/);
+  assert.match(source,/selector\.selectOption\(locale\)/);
+  assert.match(source,/switchPublicLocale\(page, 'en'/);
+  assert.match(source,/switchPublicLocale\(page, 'nl'/);
   assert.match(source,/visible mobile language select is missing after opening mobile navigation/);
-  assert.doesNotMatch(source,/button\[data-bg-language-current\]'\)\.first\(\);\n\s*await current\.click/);
 });

@@ -7,7 +7,7 @@ const workflow=fs.readFileSync('.github/workflows/production-source-snapshot.yml
 test('production snapshot is latest-main driven without cancelling active deploys',()=>{
   assert.match(workflow,/push:\n\s+branches:\s*\[main\]/);
   assert.doesNotMatch(workflow,/paths:\s*\n\s+- '\.github\/workflows\/production-source-snapshot\.yml'/);
-  assert.match(workflow,/concurrency:\s*\n\s+group:\s*production-source-snapshot-main-v2\s*\n\s+cancel-in-progress:\s*false/);
+  assert.match(workflow,/concurrency:\s*\n\s+group:\s*production-source-snapshot-main-v3\s*\n\s+cancel-in-progress:\s*false/);
   assert.match(workflow,/verify-pricing-i18n-production\.mjs/);
   assert.match(workflow,/Prove exact production identity/);
 });
