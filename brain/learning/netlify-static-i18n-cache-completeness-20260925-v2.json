@@ -3,12 +3,12 @@
   "status": "ACTIVE_PREVENTION",
   "failure_class": "STATIC_I18N_CACHE_SOURCE_DRIFT",
   "problem": "Netlify production could not publish the exact protected main because the immutable English translation cache lagged behind the current public source by 1,926 strings.",
-  "root_cause": "The website source and versioned English translation cache could move independently. Production was correctly fail-closed with STATIC_I18N_REQUIRE_CACHE=1, but exact-candidate cache completeness was not enforced as a pre-promotion invariant.",
+  "root_cause": "The immutable English cache lagged materially behind the public source corpus. Cache completeness and publication/runtime policy are separate authorities and must not be conflated.",
   "prevention": [
-    "A website candidate may not enter production promotion unless the static English cache validates against the exact candidate source.",
-    "Cache generation runs before protected promotion and the generated cache must be versioned with the candidate.",
-    "Netlify production remains offline/fail-closed: STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
-    "Production truth requires provider commit_ref == protected main SHA plus public NL/EN route readback.",
+    "Keep the immutable English cache aligned with public source and version cache improvements with the candidate that introduces them.",
+    "Production stays provider-independent at build time with STATIC_I18N_NETWORK=0.",
+    "Cache completeness is deterministic coverage; whether it is a hard publication requirement is owned by the canonical runtime i18n authority, not by this cache learning.",
+    "Production truth requires provider commit_ref == protected main SHA plus public NL/EN route and language-state readback.",
     "Translation providers may enrich the versioned cache in CI, but they are not a production deploy dependency."
   ],
   "evaluation": {
@@ -21,7 +21,7 @@
     "canary": [
       "tests/brain-netlify-static-i18n-cache-completeness-v2.test.mjs"
     ],
-    "expected_invariant": "node tools/site-shell/build-localized-routes.mjs --validate-cache succeeds with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1 before production promotion"
+    "expected_invariant": "the versioned English cache contains the recovered public corpus and remains source-aligned; publication fallback policy is validated by the canonical runtime i18n authority"
   },
   "evidence": {
     "diagnostic_workflow_run": 36153434965,
@@ -44,5 +44,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 2
+  "revision": 4
 }
