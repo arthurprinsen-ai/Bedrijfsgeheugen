@@ -1,0 +1,35 @@
+{
+  "fingerprint": "pricing-rescue-observer-self-loop-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The live pricing browser verifier could not observe ready-v3 and the page renderer became unresponsive after DOMContentLoaded.",
+  "root_cause": "pricing-interactions-rescue-v1 observed all body childList mutations while syncFromDom itself rewrote price and period textContent. Those self-generated childList mutations re-triggered syncFromDom through queueMicrotask, creating a self-sustaining microtask loop that starved browser automation and interaction readiness.",
+  "prevention": [
+    "MutationObserver recovery may only react when newly added DOM nodes contain pricing controls or panels.",
+    "Text-content changes made by the pricing runtime must never schedule another repair cycle.",
+    "Browser proof must observe ready-v3 and complete lifecycle, plan, billing and NL/EN round-trip interactions.",
+    "Do not treat static markup presence as interaction readiness."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-rescue-observer-self-loop-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-rescue-observer-self-loop-v1.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-rescue-observer-self-loop-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "live_symptom": "ready-v3 not observable in headless browser despite marker existing in production HTML",
+    "live_source_sha_before_fix": "78b82c7ac1cde0862771ca18bfdc63d69aa3ef3c",
+    "root_component": "assets/js/pricing-interactions-rescue-v1.js"
+  },
+  "skill_targets": ["continuity"],
+  "compiler": {
+    "failure_class": "PRICING_RUNTIME_OBSERVER_SELF_LOOP",
+    "scope": "WEBSITE_PRICING_RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
