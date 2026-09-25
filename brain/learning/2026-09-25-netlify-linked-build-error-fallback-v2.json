@@ -1,0 +1,28 @@
+{
+  "fingerprint": "delivery-netlify-linked-build-error-fallback-v2",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "LINKED_NETLIFY_BUILD_ERROR_PREMATURE_TERMINAL_FAILURE",
+  "problem": "Production Source Snapshot stopped on linked Netlify build state=error before trying the existing authorized exact-source fallback.",
+  "root_cause": "Fallback was limited to error_message=Skipped instead of any linked-build error.",
+  "prevention": [
+    "Log linked deploy/build error evidence, then continue to canonical exact-source transport.",
+    "Provider-ready, exact production SHA, pricing content and NL/EN browser readback remain mandatory.",
+    "Never mark LIVE from trigger_build success alone."
+  ],
+  "compiler": {
+    "failure_class": "LINKED_NETLIFY_BUILD_ERROR_PREMATURE_TERMINAL_FAILURE",
+    "scope": "POWERHOUSE_DELIVERY_NETLIFY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-linked-build-error-fallback-v2.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
