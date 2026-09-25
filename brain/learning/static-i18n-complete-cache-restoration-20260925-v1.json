@@ -1,0 +1,22 @@
+{
+  "fingerprint": "static-i18n-complete-cache-restoration-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production could carry the exact main SHA while the versioned immutable English cache remained incomplete, causing fail-closed local builds to report 1,926 missing translations and leaving /en/prijzen with Dutch visible copy.",
+  "root_cause": "A previously generated and offline-validated complete cache blob existed but never became the canonical main cache authority. Later exact-source promotions therefore reproduced the incomplete committed cache while provider metadata still matched main.",
+  "prevention": [
+    "The canonical committed bg-static-i18n-en.json must be the proven complete cache blob, not a partial historical cache.",
+    "Static cache completeness must be verified offline against the exact protected candidate before production promotion.",
+    "Canonical small patch fragments may override or extend the complete base cache but must never substitute for base-cache completeness.",
+    "LIVE_BEWEZEN requires exact Netlify commit_ref plus visible English browser proof, not SHA identity alone."
+  ],
+  "evidence": {
+    "incomplete_main_sha": "760d23c1d0369c0b21b574083daf3354d1a0ae20",
+    "incomplete_cache_blob": "63d4e10854c4ddbfa1300fbb5186d8392ec7abfd",
+    "proven_complete_cache_blob": "0be053e028cc3d8a78c1e3391397e35072a7050c",
+    "missing_translation_count": 1926,
+    "production_browser_failure": "English route still shows the Dutch pricing H1"
+  },
+  "test_evidence": ["tests/brain-static-i18n-complete-cache-restoration-v1.test.mjs"],
+  "skill_targets": ["powerhouse-continuity", "powerhouse-netlify-production-truth", "website"],
+  "revision": 1
+}
