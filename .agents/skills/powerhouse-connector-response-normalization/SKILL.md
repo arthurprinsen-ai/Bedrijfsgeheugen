@@ -65,6 +65,21 @@ Required recovery:
 - verify each returned commit/ref identity before continuing;
 - write learning, ledger and skill projection in the same lineage.
 
+## Terminal continuation rule
+
+A successful fallback write is not terminal completion. The same agent/chat lineage remains owner until the repository obligation reaches its applicable terminal state.
+
+Mandatory continuation:
+- continue through required CI on the exact candidate head;
+- repair metadata, canonicalization or projection defects in the same PR lineage;
+- use protected merge only; never bypass required checks;
+- read back protected `main` and prove the expected artifacts are present;
+- require production/provider readback only when the change affects a deployable runtime;
+- for governance/docs/skill-only changes, protected-main containment plus relevant governance/readback checks is the applicable terminal proof;
+- do not return a healthy queued/running gate to the user as a manual next action.
+
+A connector fallback that stops at “branch written”, “PR open” or “merge pending” is `WRITEBACK_INCOMPLETE`, not completion.
+
 ## Forbidden patterns
 
 - hard-coding one connector envelope without validation;
@@ -72,7 +87,8 @@ Required recovery:
 - continuing with undefined or guessed SHA/ref values;
 - retrying the same incompatible write blindly;
 - creating a parallel branch/PR solely because the connector shape changed;
-- reporting success without readback of the written branch/commit.
+- reporting success without readback of the written branch/commit;
+- stopping after fallback write, PR creation or merge eligibility while the same lineage can continue.
 
 ## Terminal proof
 
@@ -81,4 +97,6 @@ This incident class is prevented only when:
 - a regression test enforces the contract;
 - the learning and ledger entry are present;
 - repository writes are read back;
-- the delivery lineage reaches the normal protected merge and production/readback contract where applicable.
+- the delivery lineage reaches protected merge and the applicable production/provider or protected-main readback contract.
+
+Reference closure: PR #3100 merged to protected `main` as `bc47d636675f9fea41044667797dade0962b03ef` on 2026-09-25.
