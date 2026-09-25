@@ -17,3 +17,6 @@ Permanent prevention:
 - read back commit and branch identity after every recovery write.
 
 This event is represented in Brain learning and projected into the connector-response normalization skill.
+
+
+Delivery-control-plane observation: rerunning a failed GitHub Actions run reuses the original pull-request event payload, including its original PR body. When canonical file paths in `Change-Scope` are corrected after that event was created, a rerun alone cannot refresh that metadata snapshot. The same branch must emit one legitimate synchronize event, after which the new run reads the current PR metadata. This is not grounds for a duplicate PR or a protection bypass.
