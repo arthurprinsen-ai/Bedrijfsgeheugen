@@ -1,0 +1,42 @@
+{
+  "fingerprint": "pricing-build-oracle-context-parity-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "type": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
+  "problem": "The exact production build for deterministic i18n failed before localization because pricing-build-integrity still required the retired single-goal label 'Belangrijkste doel nu'.",
+  "root_cause": "Pricing/Portal context evolved to multi-goal semantics ('Wat wil je bereiken?' plus the Ondernemersdoelen group), but the pre-build canonical-token oracle was not updated atomically. This allowed source and tests to advance while the production build oracle remained stale.",
+  "prevention": [
+    "Pricing source, reusable component tests, entitlement tests and pricing build-integrity tokens must share the same canonical business-context vocabulary.",
+    "A change from single-select to multi-select context semantics must update all build oracles in the same lineage.",
+    "Production build reproduction must be performed from the exact packaged production artifact after a provider build failure before changing runtime code.",
+    "NL/EN production promotion cannot be considered complete until the entire pre-i18n build chain passes before the localization/browser proof."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-build-integrity-context-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/pricing-build-integrity.mjs",
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_production_sha": "abdfd8d7dd9bf08dbf95a9fb76a8d5266ef853c1",
+    "netlify_deploy": "6ab6744ae51cac6be3a28a20",
+    "reproduced_failure": "pricing integrity: missing canonical tokens: Belangrijkste doel nu",
+    "canonical_source_tokens": [
+      "Wat wil je bereiken?",
+      "aria-label=\"Ondernemersdoelen\""
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
+    "scope": "WEBSITE_PRICING_BUILD_INTEGRITY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "revision": 1
+}
