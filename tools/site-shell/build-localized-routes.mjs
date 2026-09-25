@@ -296,12 +296,24 @@ async function translateBatch(strings,key) {
       signal:controller.signal
     });
     if (!response.ok) {
-      const body = (await response.text()).slice(0,300);
+      const rawBody = (await response.text()).slice(0,600);
+      let providerType = '';
+      let providerMessage = '';
+      try {
+        const parsed = JSON.parse(rawBody);
+        providerType = String(parsed?.error?.type || '');
+        providerMessage = String(parsed?.error?.message || '');
+      } catch {}
       const retryAfterRaw = response.headers.get('retry-after');
       const retryAfterSeconds = retryAfterRaw && /^\d+(?:\.\d+)?$/.test(retryAfterRaw) ? Number(retryAfterRaw) : null;
-      const error = new Error('Anthropic HTTP ' + response.status + ': ' + body);
+      let code = 'STATIC_I18N_PROVIDER_HTTP_' + response.status;
+      if (/credit balance is too low/i.test(providerMessage)) code = 'STATIC_I18N_PROVIDER_CREDIT_EXHAUSTED';
+      else if (response.status === 401) code = 'STATIC_I18N_PROVIDER_AUTH_INVALID';
+      else if (response.status === 429) code = 'STATIC_I18N_PROVIDER_RATE_LIMITED';
+      const error = new Error(code + (providerType ? ':' + providerType : ''));
+      error.code = code;
       error.status = response.status;
-      error.providerBody = body;
+      error.providerBody = rawBody;
       error.retryAfterMs = retryAfterSeconds === null ? null : Math.ceil(retryAfterSeconds * 1000);
       throw error;
     }
@@ -361,11 +373,20 @@ async function translateAll(strings) {
       } catch (error) {
         lastError = error;
         const transient = [429,500,502,503,504,529].includes(Number(error?.status));
-        const providerDelay = Number.isFinite(error?.retryAfterMs) ? error.retryAfterMs : 0;
-        const exponentialDelay = Math.min(20_000, 1_500 * (2 ** attempt));
-        const delay = transient ? Math.max(providerDelay, exponentialDelay) : Math.min(4_000, exponentialDelay);
         const status = Number(error?.status) || null;
         const providerBody = typeof error?.providerBody === 'string' ? error.providerBody.slice(0,300) : null;
+        if (!transient) {
+          console.error('STATIC_I18N_NON_TRANSIENT_PROVIDER_FAILURE', JSON.stringify({
+            code: error?.code || null,
+            status,
+            batch_size: part.length,
+            provider_body: providerBody
+          }));
+          throw error;
+        }
+        const providerDelay = Number.isFinite(error?.retryAfterMs) ? error.retryAfterMs : 0;
+        const exponentialDelay = Math.min(20_000, 1_500 * (2 ** attempt));
+        const delay = Math.max(providerDelay, exponentialDelay);
         console.warn('STATIC_I18N_PROVIDER_ERROR', JSON.stringify({
           attempt: attempt + 1,
           max_attempts: 6,
@@ -373,9 +394,8 @@ async function translateAll(strings) {
           status,
           transient,
           provider_body: providerBody,
-          delay_ms: transient ? delay : 0
+          delay_ms: delay
         }));
-        if (!transient && status >= 400 && status < 500) break;
         await new Promise(r=>setTimeout(r,delay));
       }
     }
