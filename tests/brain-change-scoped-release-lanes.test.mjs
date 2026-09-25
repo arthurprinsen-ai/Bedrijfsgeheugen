@@ -197,3 +197,8 @@ test('terminal writer lease regression is automation-classified', () => {
   assert.equal(suites.automation, true);
   assert.equal(suites.shared, true);
 });
+
+
+test('incremental static i18n cache patches are classified as website delivery', () => {
+  assert.deepEqual(suitesFor(['.cache/bg-static-i18n-en.d/2026-09-25-money-pages.json']), { shared:true, backend:false, portal:false, website:true, automation:false });
+});
