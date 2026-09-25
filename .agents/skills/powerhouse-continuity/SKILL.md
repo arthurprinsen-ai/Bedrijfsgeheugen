@@ -811,3 +811,15 @@ Mandatory:
 
 Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
 Learning: `brain/learning/pricing-production-runtime-readiness-20260924-v1.json`.
+
+
+## Static i18n provider fail-fast
+
+Fingerprint: `static-i18n-provider-nontransient-failfast-v2`.
+
+- Classify provider credit exhaustion and invalid authentication explicitly.
+- Retry only transient rate-limit / 5xx classes.
+- Never split a batch and retry after a non-transient 4xx provider failure; fail immediately with the stable error code.
+- Netlify deployment transport is governed separately by the current GitHub OIDC deploy-bridge contract; do not reintroduce retired temporary proxy secrets.
+
+Regression: `tests/brain-static-i18n-provider-nontransient-failfast-v2.test.mjs`.
