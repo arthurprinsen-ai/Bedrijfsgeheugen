@@ -1,0 +1,38 @@
+{
+  "version": "github-expression-literal-assertion-20260925-v1",
+  "date": "2026-09-25",
+  "obligation_id": "rocket-delivery-borging-20260925",
+  "failure_class": "GITHUB_DELIVERY_TEST_ORACLE",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "A regression test used a regular expression to verify a fixed GitHub Actions expression containing ${{ ... }} syntax. Regex metacharacters in the literal made the assertion fail although the workflow contained the intended concurrency expression exactly.",
+  "symptom": "Powerhouse Skill Projection failed on PR #3096 while the logged workflow text visibly contained the expected CodeQL concurrency group.",
+  "fix": "Replace the regex assertion with literal string containment for the exact GitHub Actions expression and preserve the existing workflow behavior.",
+  "prevention": [
+    "Prefer exact string containment or equality when asserting fixed GitHub Actions expressions.",
+    "Use regex only when semantic pattern matching is required and all metacharacters are deliberately escaped.",
+    "When mismatch output visibly contains the expected literal, validate the test oracle before changing working workflow logic.",
+    "Measure fan-out changes after protected merge by enumerating runs on the exact resulting main SHA."
+  ],
+  "evidence": [
+    "PR #3096 head d51682668d1551a4ffb55449154dd15ce022c070 failed Skill Projection on the regex assertion.",
+    "The emitted workflow contained group: powerhouse-codeql-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }} exactly.",
+    "The corrected literal assertion landed on head aa969daa38649049abafd61b2e4344859005655a and PR #3096 protected-merged as e8054fc35dc2d824afa87a417790a2c3e073062f.",
+    "Post-merge exact-main observation showed seven runs and no broad production fan-out for the workflow/tests/docs/Brain-only change."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-github-expression-literal-assertion-v1.test.mjs"
+    ]
+  },
+  "fingerprint": "github|actions-test|literal-expression-assertion|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY_TEST_ORACLE",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
