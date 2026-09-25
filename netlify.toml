@@ -395,4 +395,4 @@
 [context.deploy-preview.environment]
   STATIC_I18N_NETWORK = "0"
 
-# production redeploy heartbeat: pricing-i18n-live-20260924-v1
+# production redeploy heartbeat: exact-main-i18n-pricing-readback-20260925-v2
