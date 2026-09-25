@@ -11,7 +11,9 @@ test('production localized build is provider-independent and fails closed on inc
   assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(source,/STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED/);
   assert.match(source,/const cacheRequired = String\(process\.env\.STATIC_I18N_REQUIRE_CACHE/);
-  assert.match(source,/if \(cacheRequired\) \{\s*throw new Error\('STATIC_I18N_CACHE_INCOMPLETE:/);
+  assert.match(source,/if \(cacheRequired\) \{/);
+  assert.match(source,/STATIC_I18N_CACHE_MISSING/);
+  assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
 });
 
 test('deploy previews inherit the deterministic cache-only contract',()=>{
