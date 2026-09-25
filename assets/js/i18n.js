@@ -29,7 +29,9 @@
   const localizedHref = target => {
     const normalized = normalizeLocale(target);
     const stripped = location.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
-    const pathname = '/' + normalized + (stripped === '/' ? '/' : stripped);
+    const pathname = normalized === 'en'
+      ? '/en' + (stripped === '/' ? '/' : stripped)
+      : (stripped === '/' ? '/' : stripped);
     return pathname.replace(/\/+/g,'/') + location.search + location.hash;
   };
 
