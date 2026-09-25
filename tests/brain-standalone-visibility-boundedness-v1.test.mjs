@@ -42,3 +42,12 @@ test('Playwright teardown is separately bounded and preserves semantic exit stat
   assert.match(source, /if \(cleanupTimedOut\) process\.exit\(0\)/);
   assert.match(source, /if \(cleanupTimedOut\)[\s\S]*process\.exit\(1\)/);
 });
+
+
+test('visibility sweep parallelizes bounded viewport batches', async () => {
+  const source = await readFile('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
+  assert.match(source, /UI_VR_VIEWPORT_CONCURRENCY/);
+  assert.match(source, /const runViewport = async viewport =>/);
+  assert.match(source, /viewports\.slice\(viewportIndex, viewportIndex \+ viewportConcurrency\)\.map\(runViewport\)/);
+  assert.match(source, /Promise\.all\(viewports\.slice/);
+});
