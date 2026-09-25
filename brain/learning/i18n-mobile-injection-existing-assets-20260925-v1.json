@@ -21,7 +21,7 @@
     "powerhouse-continuity",
     "powerhouse-netlify-production-truth"
   ],
-  "revision": 1,
+  "revision": 2,
   "failure_class": "I18N_MOBILE_CONTROL_INJECTION_SKIPPED",
   "evaluation": {
     "historical_replay": [
@@ -34,5 +34,19 @@
       "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs"
     ],
     "expected_invariant": "pages with pre-existing i18n assets still receive exactly one visible mobile language selector and pass the NL->EN->NL pricing roundtrip"
+  },
+  "recurrence": {
+    "observed_at": "2026-09-25",
+    "regression_main_sha": "fd7265ad7bdb02e35f0a07cd1f0e750b106c4123",
+    "production_browser_failure": "visible mobile language select is missing after opening mobile navigation",
+    "diagnosis": "The early return on data-bg-i18n-asset was reintroduced after the original prevention landed, so pricing again skipped injectMobileLanguage().",
+    "reinforced_prevention": "The regression test and production browser proof are both required; existing i18n assets must never short-circuit mobile control injection."
+  },
+  "compiler": {
+    "failure_class": "I18N_MOBILE_CONTROL_INJECTION_SKIPPED",
+    "scope": "WEBSITE_I18N_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
   }
 }
