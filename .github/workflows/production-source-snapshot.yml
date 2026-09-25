@@ -137,11 +137,6 @@ jobs:
                 state="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.state||""))}catch{}' "$deploy_json")"
                 if [ "$state" = "error" ]; then
                   error_message="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.error_message||""))}catch{}' "$deploy_json")"
-                  if [ "$error_message" = "Skipped" ]; then
-                    echo "NETLIFY_LINKED_DEPLOY_SKIPPED deploy=$linked_deploy_id; falling back to canonical exact-source transport."
-                    linked_fallback="true"
-                    break
-                  fi
                   build_json=""
                   if [ -n "$linked_build_id" ]; then
                     build_json="$(curl -fsSL "$NETLIFY_MCP_PROXY_PATH/api/v1/builds/$linked_build_id" || true)"
@@ -155,8 +150,9 @@ jobs:
                     console.error("NETLIFY_LINKED_DEPLOY_ERROR",JSON.stringify(safe(process.argv[1],"deploy")));
                     console.error("NETLIFY_LINKED_BUILD_ERROR",JSON.stringify(safe(process.argv[2],"build")));
                   ' "$deploy_json" "$build_json"
-                  echo "::error::Netlify linked production build failed for deploy $linked_deploy_id"
-                  exit 78
+                  echo "NETLIFY_LINKED_DEPLOY_FALLBACK deploy=$linked_deploy_id error_message=${error_message:-unknown}; continuing with canonical exact-source transport."
+                  linked_fallback="true"
+                  break
                 fi
                 current="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?linked_build=${EXPECTED_SHA}-${attempt}" || true)"
                 observed="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$current")"
@@ -174,7 +170,7 @@ jobs:
                 echo "::error::Linked Netlify build did not expose exact SHA ${EXPECTED_SHA} within bounded readback"
                 exit 78
               fi
-              echo "Linked Netlify deploy was skipped; continuing with canonical exact-source upload fallback."
+              echo "Linked Netlify deploy did not reach production; continuing with canonical exact-source upload fallback."
             fi
           fi
 
