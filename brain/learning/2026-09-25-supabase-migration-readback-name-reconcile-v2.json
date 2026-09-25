@@ -1,0 +1,32 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": 1,
+  "fingerprint": "supabase|migration-readback|unique-name-reconcile|v2",
+  "status": "VERIFIED",
+  "date": "2026-09-25",
+  "symptom": "Terminal closure returned MIGRATION_LEDGER_IDENTITY_MISMATCH after the exact migration SQL was applied in production under a Supabase-assigned timestamp that differed from the Git filename timestamp.",
+  "root_cause": "The terminal migration verifier required byte-identical version+name identity even when the controlled production migration had the same unique stable name and identical intended schema effect but received a new provider timestamp during direct application.",
+  "fix": "Migration readback v2 keeps exact version+name as first authority and permits reconciliation only when exactly one applied migration has the same stable name. Duplicate same-name candidates remain fail-closed as AMBIGUOUS_NAME.",
+  "prevention": [
+    "Never mark an expected migration green from name alone when multiple applied migrations share that name.",
+    "Preserve expected_version and applied_version in readback evidence.",
+    "Treat provider-assigned timestamp drift as identity reconciliation, not as missing production application, only when unique-name evidence is unambiguous.",
+    "Terminal user handoff remains blocked until migration/provider readback, learning, skill and dashboard writeback are complete."
+  ],
+  "production_evidence": {
+    "expected": {
+      "version": "20260925073300",
+      "name": "composio_content_fallback_governance_v1"
+    },
+    "applied": {
+      "version": "20260925074007",
+      "name": "composio_content_fallback_governance_v1"
+    },
+    "readback_contract": "powerhouse-supabase-migration-readback-v2",
+    "match_mode": "UNIQUE_NAME_RECONCILED",
+    "all_matched": true
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ]
+}
