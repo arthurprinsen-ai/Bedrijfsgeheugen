@@ -2,37 +2,53 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('native required context cannot turn green before exact-head BRAIN and CodeQL', async()=>{
-  const workflow=await readFile('.github/workflows/required-test.yml','utf8');
-  assert.match(workflow,/actions:\s*read/);
-  assert.match(workflow,/Require exact-head BRAIN and CodeQL sibling workflows/);
-  assert.match(workflow,/head_sha=\$\{EXACT_HEAD_SHA\}&event=pull_request/);
-  assert.match(workflow,/unified-brain-delivery\.yml/);
-  assert.match(workflow,/powerhouse-codeql\.yml/);
-  assert.match(workflow,/CRITICAL_EXACT_HEAD_GATE_FAILED/);
-  assert.match(workflow,/CRITICAL_EXACT_HEAD_GATE_NOT_TERMINAL/);
+const required = await readFile('.github/workflows/required-test.yml','utf8');
+const brain = await readFile('.github/workflows/unified-brain-delivery.yml','utf8');
+const preview = await readFile('.github/workflows/live-preview-smoke.yml','utf8');
+const pricing = await readFile('.github/workflows/prijzen-hero-seo-regression.yml','utf8');
+const website = await readFile('.github/workflows/lane-website.yml','utf8');
+
+test('Required test is the single-flight PR aggregate gate', () => {
+  assert.match(required,/pull_request:[\s\S]*branches:\s*\[main\]/);
+  assert.match(required,/merge_group:/);
+  assert.match(required,/group:\s*required-test-/);
+  assert.match(required,/cancel-in-progress:\s*true/);
+  assert.match(required,/Confirm canonical single-flight aggregate gate/);
+  assert.match(required,/Aggregate admission and selected lane results/);
 });
 
-test('critical gate aggregation reuses existing workflow runs instead of duplicating heavy CI', async()=>{
-  const workflow=await readFile('.github/workflows/required-test.yml','utf8');
-  const block=workflow.slice(workflow.indexOf('Require exact-head BRAIN and CodeQL sibling workflows'),workflow.indexOf('Aggregate admission and selected lane results'));
-  assert.match(block,/gh api/);
-  assert.doesNotMatch(block,/workflow dispatch|gh workflow run|node --test|npm test/i);
-  assert.match(block,/sort_by\(\.created_at\) \| last/);
+test('Required test does not poll or wait for duplicate sibling delivery workflows', () => {
+  const aggregateBlock = required.slice(required.indexOf('test:\n    name: test'));
+  assert.doesNotMatch(aggregateBlock,/require_workflow\s*\(/);
+  assert.doesNotMatch(aggregateBlock,/unified-brain-delivery\.yml/);
+  assert.doesNotMatch(aggregateBlock,/for attempt in \$\(seq 1 80\)/);
+  assert.doesNotMatch(aggregateBlock,/sleep 10/);
+  assert.doesNotMatch(aggregateBlock,/actions\/workflows\/.*\/runs\?head_sha=/);
 });
 
+test('heavy legacy verification workflows are reusable or manual, not automatic PR fanout', () => {
+  assert.doesNotMatch(brain,/^\s*pull_request\s*:/m);
+  assert.match(brain,/workflow_dispatch:/);
 
-test('CodeQL exact-head evidence is required only for paths that trigger the CodeQL workflow', async()=>{
-  const workflow=await readFile('.github/workflows/required-test.yml','utf8');
-  const block=workflow.slice(workflow.indexOf('Require exact-head BRAIN and CodeQL sibling workflows'),workflow.indexOf('Aggregate admission and selected lane results'));
-  assert.match(block,/PR_NUMBER:/);
-  assert.match(block,/pulls\/\$\{PR_NUMBER\}\/files\?per_page=100/);
-  assert.match(block,/\\\.\(js\|mjs\|cjs\|ts\|tsx\)\$/);
-  assert.match(block,/package\(-lock\)\?/);
-  assert.match(block,/powerhouse-codeql\\\.yml/);
-  assert.match(block,/CRITICAL_EXACT_HEAD_GATE_NOT_APPLICABLE:Powerhouse-CodeQL/);
-  const brainIndex=block.indexOf('require_workflow "unified-brain-delivery.yml" "BRAIN"');
-  const codeqlGuardIndex=block.indexOf('if grep -Eq');
-  const codeqlIndex=block.indexOf('require_workflow "powerhouse-codeql.yml" "Powerhouse-CodeQL"');
-  assert.ok(brainIndex>=0 && codeqlGuardIndex>brainIndex && codeqlIndex>codeqlGuardIndex);
+  assert.doesNotMatch(preview,/^\s*pull_request\s*:/m);
+  assert.match(preview,/workflow_call:/);
+  assert.match(preview,/workflow_dispatch:/);
+
+  assert.doesNotMatch(pricing,/^\s*pull_request\s*:/m);
+  assert.match(pricing,/workflow_call:/);
+  assert.match(pricing,/workflow_dispatch:/);
+});
+
+test('pricing SEO coverage remains inside the canonical website lane', () => {
+  assert.match(website,/tests\/prijzen-hero-seo\.test\.mjs/);
+  assert.match(website,/tests\/technical-seo-gate\.test\.mjs/);
+});
+
+test('selected lanes remain exact-head and change-scoped', () => {
+  for (const lane of ['backend','portal','automation','website']) {
+    assert.match(required,new RegExp(`\\n  ${lane}:\\n`));
+  }
+  assert.match(required,/deriveRequiredTestSuites/);
+  assert.match(required,/candidate_sha/);
+  assert.match(required,/change_head_sha/);
 });
