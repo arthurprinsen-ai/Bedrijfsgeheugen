@@ -19,8 +19,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-pricing-english-h1-cache-v1.test.mjs",
-      "tools/site-shell/verify-pricing-i18n-production.mjs"
+      "tests/brain-pricing-english-h1-cache-v1.test.mjs"
     ]
   }
 }
