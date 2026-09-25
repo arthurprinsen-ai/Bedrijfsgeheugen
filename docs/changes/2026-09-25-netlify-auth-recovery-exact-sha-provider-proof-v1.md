@@ -2,12 +2,12 @@
 
 Fingerprint: `netlify-auth-recovery-exact-sha-provider-proof-20260925-v1`
 
-The canonical production transport failed with `401 Unauthorized` because the temporary Netlify MCP proxy credential was invalid. This is an authentication/transport incident, not application-code evidence.
+## Permanent operating rule
 
-On 2026-09-25 Netlify reported deploy `6ab66640d19f130007c97fcb` as `ready`, `context=production`, with `commit_ref=390e058e581874cb08f5b2d4608d886a5c9a7dcf`, equal to protected main at that checkpoint.
+Powerhouse separates source/merge truth, provider deployment identity, functional production proof, and learning/skill/ledger closure.
 
-GitHub Production Release Readback `36134150890` completed exact live release-marker waiting and connector-readiness, then was cancelled while affected-route browser verification was still running. Therefore provider identity was proven, while full functional browser closure for that run was not.
+A Netlify `401 Unauthorized` is classified as credential/auth failure before product-code changes. A ready production deploy with an observed `commit_ref` is immutable provider evidence for that checkpoint. A cancelled or superseded browser-readback never manufactures functional proof; the missing browser gate resumes on the newest canonical lineage.
 
-Permanent rule: Powerhouse separates source/merge truth, provider deployment identity, functional production proof, and learning/skill/ledger closure. A proven immutable provider deploy survives a superseded verifier as evidence. A cancelled/skipped functional verifier never becomes functional proof. Recovery resumes only the missing gate on the newest canonical lineage.
+Recovered checkpoint: deploy `6ab66640d19f130007c97fcb` with `commit_ref=390e058e581874cb08f5b2d4608d886a5c9a7dcf`. Readback run `36134150890` proved exact identity and connector readiness before being cancelled during affected-route verification.
 
-A Netlify `401` is classified as credential/auth failure before product-code changes. LIVE_BEWEZEN requires every gate applicable to the obligation.
+Canonical learning: `brain/learning/netlify-auth-recovery-exact-sha-provider-proof-20260925-v1.json`.
