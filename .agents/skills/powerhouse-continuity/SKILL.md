@@ -1035,3 +1035,14 @@ Fingerprint: `ai-ecosystem-static-i18n-cache-coupling-20260925-v1`.
 - If cache validation reports missing strings, add the English cache delta in the same candidate and keep production fail-closed.
 - Regression: `tests/brain-ai-ecosystem-static-i18n-cache-v1.test.mjs`.
 - Learning: `brain/learning/ai-ecosystem-static-i18n-cache-coupling-20260925-v1.json`.
+
+
+## Production static i18n cache completeness
+
+Fingerprint: `netlify-static-i18n-cache-completeness-20260925-v1`.
+
+- Netlify production's `STATIC_I18N_REQUIRE_CACHE=1` is a deliberate fail-closed contract and must not be weakened to unblock a deploy.
+- Pre-merge validation must execute `tools/site-shell/build-localized-routes.mjs --validate-cache` against the complete current public route set.
+- New or changed public copy must add its English cache authority in the same lineage.
+- A green PR without cache completeness is not production-ready.
+- Terminal closure remains exact production SHA + pricing/i18n browser proof.
