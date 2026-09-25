@@ -311,6 +311,15 @@ Fingerprint: `composio-runtime-secret-reload-v1`.
 After rotating a Netlify Functions runtime credential, do not treat the control-plane update itself as runtime proof. Require a fresh production Functions deployment followed by provider and canonical Supabase readback before declaring the integration ready.
 
 
+## Mira Reel recommendation-boundary normalization (2026-09-22)
+
+Fingerprint: `instagram-mira-reel-seed-normalization-v1`.
+
+The Reel-only v3 rule is enforced before daily-winner selection, not only at media verification. Every current or future `powerhouse_content_recommendations` row targeting `instagram` or `instagram_company` with `character=mira` and `character_mode=daily_life` must normalize to `format=reel`, `production_route=openart_video` and `reel_generator=OpenArt`. Legacy calendar seeds such as `carousel + placid_visual` are policy drift and must be normalized at the database boundary; they are never a valid reason to skip the day or fall back to a static image.
+
+After normalization, reuse `powerhouse_select_instagram_daily_winner_v1(date)` / `powerhouse_ensure_instagram_media_job_v1(date)`. Exactly one immutable winner and one canonical media job remain authoritative. If the job reaches `WAITING_PROVIDER_CONNECTION` / `MEDIA_PROVIDER_UNAVAILABLE`, preserve the same winner/job and resume when OpenArt execution becomes available. Never create a second winner, substitute Placid, reuse an old MP4, or bypass exact-final-media proof.
+
+
 ## Post-rotation deployment ordering
 
 Fingerprint: `composio-post-rotation-runtime-rebuild-v2`.
