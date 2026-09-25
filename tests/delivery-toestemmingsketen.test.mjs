@@ -45,13 +45,14 @@ test('de money-page laag verrijkt een bestaande hero en injecteert er geen tweed
   assert.match(CONSENT_JS, /function hydrateExistingHero/, 'hydrateren bestaat niet meer');
 });
 
-test('de schil neemt alleen de twee toegestane scripts over', () => {
+test('de schil neemt alleen de drie expliciet toegestane scripts over', () => {
   assert.match(SHELL_JS, /TOEGESTANE_SCRIPTS = Object\.freeze\(\[/, 'er is geen allowlist voor scripts');
   const start = SHELL_JS.indexOf('TOEGESTANE_SCRIPTS = Object.freeze([');
   const lijst = SHELL_JS.slice(start, SHELL_JS.indexOf(']', start));
   assert.match(lijst, /\/assets\/stijl\.js/, 'de toestemmingslaag staat niet op de allowlist');
+  assert.match(lijst, /\/assets\/js\/i18n\.js/, 'de centrale NL/EN-runtime staat niet op de allowlist');
   assert.match(lijst, /googletagmanager\.com\/gtag\/js/, 'de analytics-tag staat niet op de allowlist');
-  assert.equal((lijst.match(/'/g) || []).length / 2, 2, 'de allowlist bevat meer dan die twee scripts');
+  assert.equal((lijst.match(/'/g) || []).length / 2, 3, 'de allowlist bevat meer of minder dan de drie expliciet toegestane scripts');
   assert.match(SHELL_JS, /TOEGESTANE_SCRIPTS\.some/, 'scripts worden overgenomen zonder tegen de allowlist te toetsen');
 });
 
