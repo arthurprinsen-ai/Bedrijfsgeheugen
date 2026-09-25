@@ -12,12 +12,14 @@
   "prevention": [
     "Use stable PR/ref CodeQL concurrency, never github.run_id.",
     "Newest exact-SHA security run is authoritative.",
-    "Never hand active post-merge security work back to the user."
+    "Never hand active post-merge security work back to the user.",
+    "Treat a client response transport interruption as non-terminal and resume the canonical delivery lineage on the next executable turn."
   ],
   "evidence": [
     ".github/workflows/codeql.yml used github.run_id fallback.",
     "PR #3101 was closed and its branch reset before merge; recovery reconstructs only the missing delta from current main.",
-    "Required merge-candidate testing also exposed the missing isHardAssetFailure import on current main, fixed without reverting newer main behavior."
+    "Required merge-candidate testing also exposed the missing isHardAssetFailure import on current main, fixed without reverting newer main behavior.",
+    "Client response transport can end while repository delivery remains active; recovery must resume canonical repository state rather than report completion."
   ],
   "evaluation": {
     "historical_replay": [
