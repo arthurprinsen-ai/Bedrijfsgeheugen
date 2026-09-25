@@ -1,0 +1,26 @@
+{
+  "fingerprint": "approved-blog-onprijsd-probleem-recovery-v1",
+  "date": "2026-09-25",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "An approved blog article and its site registrations were stranded on an outdated branch; directly merging it would have overwritten newer daily publication state.",
+  "prevention_rule": "Recover stale approved-blog candidates by replaying the article and semantically inserting index, RSS and sitemap registrations onto current main; never replace current publication surfaces wholesale.",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-approved-blog-onprijsd-probleem-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-approved-blog-onprijsd-probleem-recovery-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source_pr": 2731,
+    "recovery_pr": 2870
+  }
+}
