@@ -840,3 +840,21 @@ When a required website gate verifies every public route across multiple viewpor
 - treat many PRs stuck on the same long browser step as shared CI queue amplification, not independent product defects.
 
 Regression: `tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs`.
+
+
+## Default terminal user answer + Dashboard writeback
+
+Fingerprint: `delivery|terminal-user-handoff|dashboard-writeback|v1`.
+
+A material Powerhouse delivery may not end with a user-facing list of remaining autonomous steps. Pending CI, auto-merge, deploy, readback, documentation, skill projection or dashboard registration are internal execution states.
+
+Before the terminal answer:
+- continue the same canonical lineage through protected merge/promotion and production/provider readback;
+- write root cause, fix, regression, prevention and outcome to canonical Brain learning and ledger/docs;
+- update/reconcile the relevant Powerhouse skill projection;
+- register the terminal state and evidence in the existing Powerhouse current-state/dashboard and agent activity surfaces;
+- read back those writebacks where the connector/runtime supports it.
+
+The normal terminal user answer reports the terminal state and proof already completed. It does not return a "what now" list for work the node can perform itself.
+
+Only an evidenced `BLOCKED_HARD_BOUNDARY` may return ownership to the user; it must name the exact external boundary, the smallest required human action, and the next safe action already prepared.
