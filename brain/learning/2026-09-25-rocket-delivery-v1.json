@@ -21,7 +21,6 @@
     "tests/delivery-main-push-fanout-budget-v1.test.mjs",
     "tests/brain-rocket-delivery-v1.test.mjs"
   ],
-  "failure_class": "GITHUB_DELIVERY",
   "scope": "CI",
   "machine_enforceable": true,
   "repeat_count": 1,
