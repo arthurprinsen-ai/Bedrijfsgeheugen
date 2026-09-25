@@ -1,0 +1,53 @@
+{
+  "fingerprint": "canonical-shell-preserve-i18n-runtime-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "CANONICAL_SHELL_STRIPPED_I18N_RUNTIME",
+  "problem": "Exact-main production contained the i18n stylesheet and V18 mobile drawer but zero language controls because the canonical shell rebuild stripped /assets/js/i18n.js.",
+  "root_cause": "tools/site-shell/apply-shell.mjs reconstructs page scripts through TOEGESTANE_SCRIPTS. The central i18n runtime was not allowlisted, so shell projection removed it after earlier build stages had injected it.",
+  "prevention": [
+    "Canonical shell script allowlist must preserve /assets/js/i18n.js on public pages.",
+    "Static i18n asset presence must prove both CSS and runtime script survive final shell projection.",
+    "Terminal production proof must require a visible language selector in the real V18 drawer and NL→EN→NL routing."
+  ],
+  "evidence": {
+    "failed_snapshot_run": 36161161127,
+    "failed_snapshot_job": 108158031834,
+    "production_sha": "fd7265ad7bdb02e35f0a07cd1f0e750b106c4123",
+    "production_diagnostics": {
+      "v18Drawer": "false",
+      "v18Selects": 0,
+      "allSelects": 0
+    },
+    "public_html_i18n_script_count": 0,
+    "public_asset_i18n_script_status": 200
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-canonical-shell-preserve-i18n-runtime-v1.test.mjs"
+    ],
+    "shadow": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-canonical-shell-preserve-i18n-runtime-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "website"
+  ],
+  "compiler": {
+    "failure_class": "CANONICAL_SHELL_STRIPPED_I18N_RUNTIME",
+    "scope": "PUBLIC_I18N_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
