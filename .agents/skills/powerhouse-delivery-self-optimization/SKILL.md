@@ -509,3 +509,14 @@ When a canonical public price changes or pricing↔Portal parity is reviewed:
 - compare price amount, cadence and commercial variants against the canonical public pricing source;
 - remove stale or unsupported alternative prices instead of preserving them as hidden legacy copy;
 - bind the comparison to an executable regression so an old component cannot later reintroduce commercial drift.
+
+
+## Component tests inherit component delivery ownership
+
+Fingerprint: `delivery|component-tests|same-lane-as-component|v1`.
+
+When a reusable website component has regression tests under `tests/components/`:
+- classify those tests as website delivery work, just like the component source under `components/`;
+- never leave a component regression family outside the delivery classifier;
+- add a delivery-plan regression whenever a new component-test root is introduced;
+- treat an `unclassified delivery path` for an owned component regression as a classifier gap to repair, not as a reason to bypass the gate.
