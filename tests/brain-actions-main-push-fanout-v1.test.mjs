@@ -14,7 +14,7 @@ const scoped = [
 test('specialist main workflows are path scoped', async () => {
   for (const path of scoped) {
     const source = await readFile(path, 'utf8');
-    assert.match(source, /push:\s*\n[\s\S]*?branches:[^\n]*main[^\n]*\n\s+paths:/, path);
+    assert.match(source, /push:\s*\n[\s\S]*?branches:[\s\S]*?\bmain\b[\s\S]*?\n\s+paths:/, path);
   }
 });
 
