@@ -14,3 +14,15 @@
 - First provider readback after merge still exposed Netlify production commit `5b49ad9ebe9ee280da1c1725458d2fcd910e79ad`.
 - Recovery authority: existing `Production Source Snapshot` only.
 - Completion remains fail-closed until Netlify readback proves a ready production commit containing the contextual visual feature.
+
+## Terminal production proof
+
+Status: `LIVE_PROVEN`.
+
+- Feature merge: `5814f26d8c6855d30983a8b0572c3ee683242928` (#2899).
+- Exact-main promotion/recovery merge: `18723fd6ade2459c8c0773c4536dffeff6e291b9` (#2900).
+- Netlify production deploy: `6ab62a6bdb43de00090ce33d`.
+- Provider state: `ready`.
+- Provider context: `production`.
+- Provider `commit_ref`: `5814f26d8c6855d30983a8b0572c3ee683242928` — exact match with the contextual visual feature merge.
+- Browser gates before promotion: desktop/mobile affected routes, all-public-page visibility, header readability and broad high-risk browser contracts all green.
