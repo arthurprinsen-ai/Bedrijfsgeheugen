@@ -1108,3 +1108,20 @@ Fingerprint: `pricing-canonical-i18n-assets-20260925-v1`.
 - Canonical `prijzen.html` must itself include `/assets/i18n.css` and `/assets/js/i18n.js` with `data-bg-i18n-asset`.
 - `apply-i18n.mjs` must remain idempotent and must not duplicate those assets.
 - Production closure requires the visible mobile language selector plus NL→EN→NL browser roundtrip on `/prijzen`.
+
+## Partial asset markers are never completeness proof
+
+Fingerprint: `website-i18n|partial-asset-marker|completeness-forbidden|v1`.
+
+For website/i18n build transforms, the presence of one shared marker, one stylesheet, one script, one DOM host or one generated artifact is never proof that the complete runtime contract exists.
+
+Mandatory:
+- check every required asset independently (for example CSS and JS separately);
+- inject only the missing asset(s), idempotently;
+- never return early merely because a generic marker such as `data-bg-i18n-asset` exists somewhere on the page;
+- after build transforms, verify the final production HTML contains all mandatory runtime assets;
+- verify the active mobile navigation host actually contains one visible language control;
+- require a real browser roundtrip on the active production UI before terminal completion;
+- when production evidence refines an earlier root cause, add a new canonical learning that supersedes/refines the old diagnosis rather than erasing history.
+
+Canonical learning: `brain/learning/i18n-partial-asset-marker-production-20260925-v1.json`.
