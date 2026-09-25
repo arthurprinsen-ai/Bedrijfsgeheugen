@@ -187,12 +187,22 @@ jobs:
               [ "$safe_cancel" = true ] || continue
               latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
               case "$latest_status" in queued|in_progress) ;; *) continue ;; esac
+              cancel_mode=""
               if gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/cancel" >/dev/null 2>&1; then
-                jq -cn --arg type CANCEL_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason}' >> .artifacts/janitor-runtime-actions.ndjson
+                cancel_mode=normal-cancel
+              elif gh api -X POST "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}/force-cancel" >/dev/null 2>&1; then
+                cancel_mode=force-cancel
               else
                 latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
-                case "$latest_status" in completed) continue ;; *) echo "::error::JANITOR_CANCEL_FAILED:${run_id}:${latest_status}"; exit 78 ;; esac
+                case "$latest_status" in completed|cancelled) continue ;; esac
+                if gh api -X DELETE "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" >/dev/null 2>&1; then
+                  cancel_mode=delete-fallback
+                else
+                  latest_status="$(gh api "repos/${GITHUB_REPOSITORY}/actions/runs/${run_id}" --jq '.status' 2>/dev/null || echo unknown)"
+                  case "$latest_status" in queued|in_progress|pending|waiting|requested) echo "::error::JANITOR_CANCEL_FAILED:${run_id}:${latest_status}"; exit 78 ;; *) continue ;; esac
+                fi
               fi
+              jq -cn --arg type CANCEL_RUN --argjson id "$run_id" --arg branch "$branch" --arg sha "$run_sha" --arg reason "$reason" --arg mode "$cancel_mode" '{type:$type,run_id:$id,branch:$branch,head_sha:$sha,reason:$reason,mode:$mode}' >> .artifacts/janitor-runtime-actions.ndjson
             done
           done
 

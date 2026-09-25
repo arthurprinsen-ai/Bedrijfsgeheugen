@@ -62,3 +62,10 @@ test('github_main readback records the obligation merge SHA while using current 
   const githubMainBlock=workflow.slice(start,end);
   assert.doesNotMatch(githubMainBlock,/echo "observed_sha=\$\{observed_sha\}"/);
 });
+
+test('terminal closure waits long enough for protected exact-head gates without racing normal Required duration', async()=>{
+  const workflow=await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow,/timeout-minutes: 30/);
+  assert.match(workflow,/for attempt in \$\(seq 1 180\); do/);
+  assert.match(workflow,/TERMINAL_CRITICAL_GATE_NOT_TERMINAL/);
+});

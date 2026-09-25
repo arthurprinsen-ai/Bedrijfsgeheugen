@@ -488,3 +488,13 @@ When production verification waits for a readiness marker:
 - if exact deploy + routes are healthy but readiness times out, inspect authority and asset execution before weakening the verifier.
 
 Reference regression: `tests/brain-pricing-inline-readiness-authority-v1.test.mjs`.
+
+## Unresponsive Actions-run escalation
+
+Fingerprint: `github|actions-zombie-escalation|cancel-force-delete|v1`.
+
+For a run whose delivery identity is already proven obsolete, cleanup is bounded and deterministic: first normal cancel, then GitHub Actions force-cancel, then delete only as a last fallback if the run is still active. Never apply force/delete escalation to current-main or the current head of an open PR.
+
+Recovery-budget loops must not pipe a producer such as `jq` into a consumer that intentionally `break`s. Use process substitution or another bounded iterator so budget exhaustion cannot create SIGPIPE and turn a safe cycle red.
+
+Terminal closure should distinguish a failed gate from a gate that is merely still running. Keep a bounded wait long enough for the normal protected Required duration and keep the job itself time-bounded.

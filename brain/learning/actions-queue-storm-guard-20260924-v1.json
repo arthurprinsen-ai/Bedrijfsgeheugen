@@ -26,7 +26,11 @@
     "Branch existence alone is never proof that an old queued run is still authoritative.",
     "Unexpected candidate-head movement must be diff-validated against the previously trusted head before the new head can inherit delivery authority.",
     "Workflow YAML repairs must preserve existing structural regression anchors when semantics do not require changing them.",
-    "Before inserting a job-level control such as timeout-minutes, run or inspect the tests that assert neighboring YAML key order; prefer a placement that preserves both semantics and established contract."
+    "Before inserting a job-level control such as timeout-minutes, run or inspect the tests that assert neighboring YAML key order; prefer a placement that preserves both semantics and established contract.",
+    "Proven obsolete GitHub Actions runs use bounded escalation: normal cancel, then force-cancel, then delete fallback only when identity is already proven obsolete.",
+    "A recovery budget loop must use process substitution or another non-piped iterator so breaking after the budget cannot SIGPIPE jq and falsely fail the supervisor.",
+    "Terminal closure must allow normal protected Required duration; the bounded exact-head gate wait is fifteen minutes inside a thirty-minute job timeout.",
+    "Historical one-off Outcome Obligation Sweep failures are not current-main failures when later same-main sweeps succeed; use latest-current-main evidence."
   ],
   "evaluation": {
     "historical_replay": [
@@ -75,7 +79,15 @@
       "old_main_sha"
     ],
     "unexpected_head_rule": "diff_validate_before_authority",
-    "website_timeout_structural_contract": "browser job keeps needs immediately after job label; timeout follows needs"
+    "website_timeout_structural_contract": "browser job keeps needs immediately after job label; timeout follows needs",
+    "force_cancel_endpoint": "POST /repos/{owner}/{repo}/actions/runs/{run_id}/force-cancel",
+    "observed_uncancellable_queued_runs": 9,
+    "observed_zombie_pr": 1444,
+    "supervisor_broken_pipe_run": 36089606582,
+    "janitor_cancel_failure_run": 36082394292,
+    "terminal_closure_race_run": 36094845170,
+    "terminal_gate_wait_attempts": 180,
+    "terminal_job_timeout_minutes": 30
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -90,7 +102,7 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 6,
+  "revision": 7,
   "failed_approaches": [
     "Repository-wide recovery on every main push plus a five-minute schedule.",
     "Dispatching recovery independently across many open PRs during runner saturation.",
@@ -106,6 +118,9 @@
     "Treating branch existence as sufficient evidence that a queued run was still live; PR #1444 remained merged while its branch later pointed at a different SHA.",
     "Allowing stale in-progress runs from superseded PR heads and old main epochs to retain runner slots indefinitely.",
     "Silently accepting an unexpected candidate head without first validating the exact diff from the previously trusted head.",
-    "Inserting timeout-minutes between the browser job label and its required needs anchor; YAML remained valid but broke the established composable-release structural regression."
+    "Inserting timeout-minutes between the browser job label and its required needs anchor; YAML remained valid but broke the established composable-release structural regression.",
+    "Using only the normal workflow cancel endpoint for corrupted historical queued runs; GitHub kept the runs queued and both janitors failed every schedule.",
+    "Piping jq into a while loop and breaking when the one-PR recovery budget was consumed; jq received SIGPIPE and the supervisor ended red despite respecting its budget.",
+    "Allowing only five minutes for terminal closure to observe Required; normal long Required runs caused false terminal failures after the PR had already merged."
   ]
 }

@@ -63,3 +63,13 @@
 - YAML was geldig, maar `tests/brain-composable-release-control-plane.test.mjs` bewaakt die structurele anchor.
 - Repair: timeout blijft 15 minuten maar wordt na `needs:` geplaatst.
 - Prevention: semantische no-op workflow edits mogen bestaande structural-regression anchors niet breken.
+
+
+## 2026-09-25 — GitHub control-plane health v7
+- 9 queued zombies bleven bestaan op PR #1444 ondanks correcte obsolete-run classificatie.
+- Recovery Supervisor run 36089606582: normale cancel faalde op alle 9 runs; budget-break veroorzaakte daarna `jq: writing output failed: Broken pipe`.
+- Repository Janitor run 36082394292: faalde direct op `JANITOR_CANCEL_FAILED:34714400623:queued`.
+- Nieuwe obsolete-run escalatie: cancel → force-cancel → delete fallback, nooit voor current-authority runs.
+- Supervisor open-PR scan gebruikt process substitution zodat budget-exhaustion geen SIGPIPE-failure meer kan maken.
+- Obligation Terminal Closure run 36094845170 faalde doordat Required na 5 minuten nog niet terminal was; wait is uitgebreid naar 180×5s met 30-minuten job timeout.
+- Same-main Outcome Obligation Sweep had na een historische failure al twee latere success-runs; actuele evidence wint.

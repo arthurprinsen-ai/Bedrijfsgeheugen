@@ -21,3 +21,10 @@ test('janitor preserves main and current open-PR head before any cancellation',(
   assert.match(source,/if \[ -n "\$current_pr_head" \] && \[ "\$current_pr_head" != "\$run_sha" \]/);
   assert.match(source,/elif \[ -z "\$current_pr_head" \]/);
 });
+
+test('janitor escalates proven obsolete runs through force-cancel and delete fallback',()=>{
+  assert.match(source,/actions\/runs\/\$\{run_id\}\/force-cancel/);
+  assert.match(source,/-X DELETE "repos\/\$\{GITHUB_REPOSITORY\}\/actions\/runs\/\$\{run_id\}"/);
+  assert.match(source,/cancel_mode=force-cancel/);
+  assert.match(source,/cancel_mode=delete-fallback/);
+});
