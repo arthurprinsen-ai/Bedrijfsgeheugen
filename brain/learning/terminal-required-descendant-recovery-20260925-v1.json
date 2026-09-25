@@ -1,0 +1,19 @@
+{
+  "fingerprint": "github|terminal-required-descendant-recovery|website-baseline|v1",
+  "date": "2026-09-25",
+  "status": "VERIFIED_DESIGN",
+  "symptom": "Merged website obligations can remain nonterminal when their historical Required run failed only because an inherited baseline test asserted an implementation detail that was intentionally replaced by bounded concurrency.",
+  "root_cause": "Terminal closure treated historical Required failure as permanently authoritative even after the merge was contained in newer main, the stale test was corrected, and live production was verified.",
+  "fix": "Allow website-only descendant regression recovery when merge containment in current main is proven, the current-main website baseline plus bounded visibility regression is green, original BRAIN and applicable CodeQL remain green, and production readback remains mandatory.",
+  "prevention": [
+    "Do not equate a stale verifier assertion with a live product defect.",
+    "Never rewrite historical Required failure as exact-head success.",
+    "Recover only through contained current-main regression evidence.",
+    "Keep original exact-head BRAIN and CodeQL evidence mandatory.",
+    "Keep production/provider readback mandatory."
+  ],
+  "regression": [
+    "tests/brain-terminal-required-descendant-recovery-v1.test.mjs"
+  ],
+  "dashboard_fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1"
+}
