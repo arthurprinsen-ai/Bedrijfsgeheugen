@@ -9,9 +9,12 @@ test('unprefixed public pages ignore stale stored locale and stay on Dutch stati
   assert.doesNotMatch(source, /if \(!routed \|\| \(routed === 'en'/);
 });
 
-test('public language selection still navigates to canonical localized route', () => {
+test('public language selection navigates symmetrically between canonical Dutch and English routes', () => {
   assert.match(source, /location\.assign\(localizedHref\(normalized\)\);/);
-  assert.match(source, /const pathname = '\/' \+ normalized/);
+  assert.match(source, /normalized === 'en'/);
+  assert.match(source, /\? '\/en' \+ \(stripped === '\/' \? '\/' : stripped\)/);
+  assert.match(source, /: \(stripped === '\/' \? '\/' : stripped\)/);
+  assert.doesNotMatch(source, /const pathname = '\/' \+ normalized/);
 });
 
 test('runtime translation remains portal-only except explicit untranslated English fallback', () => {
