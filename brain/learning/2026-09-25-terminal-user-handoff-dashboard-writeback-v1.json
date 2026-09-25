@@ -1,0 +1,41 @@
+{
+  "fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+  "date": "2026-09-25",
+  "type": "DELIVERY_COMMUNICATION_AND_WRITEBACK_GOVERNANCE",
+  "status": "ACTIVE",
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "root_cause": [
+    "A material GitHub recovery was reported to the user while Required gates were still running, leaving the user unsure whether more action was expected.",
+    "The existing no-pending-final-output rule prohibited pending terminal status but did not explicitly make Powerhouse dashboard/current-state registration and the terminal user-answer shape part of the same closure gate."
+  ],
+  "prevention": [
+    "Pending CI, auto-merge, deploy, readback, documentation, skill projection and dashboard registration remain internal execution states.",
+    "The owner node retains the obligation through protected merge/promotion, production/provider readback, outcome, learning/prevention, relevant skill projection and Powerhouse dashboard/current-state registration.",
+    "The standard terminal response reports what is already live/proven and what was durably registered; it does not return an autonomous what-next list.",
+    "Only an evidenced BLOCKED_HARD_BOUNDARY may return ownership to the user, with one smallest necessary human action.",
+    "After interruption the next capable node resumes automatically from canonical state; no user 'ga door' is required."
+  ],
+  "evidence": {
+    "policy": "brain/policies/powerhouse-agent-continuity-v1.json",
+    "agents": "AGENTS.md",
+    "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "regression": "tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs",
+    "notion_dashboard_hub": "3e4da36a-ac8a-81fb-b340-daccce80dec8",
+    "notion_system_map": "3dcda36a-ac8a-8152-be3d-edbb32b06239"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
