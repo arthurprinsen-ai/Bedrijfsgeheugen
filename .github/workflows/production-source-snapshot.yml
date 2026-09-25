@@ -43,6 +43,10 @@ on:
       - '.github/**'
       - 'brain/learning/**'
       - 'config/delivery-prevention-rules.json'
+      - 'tools/site-shell/verify-targeted-website-routes.mjs'
+      - 'tools/delivery/**'
+      - 'brain/policies/**'
+      - 'AGENTS.md'
   workflow_dispatch:
     inputs:
       deploy:
