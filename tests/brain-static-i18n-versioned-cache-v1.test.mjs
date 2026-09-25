@@ -19,3 +19,15 @@ test('production remains fail closed if a future source string is not cached and
   assert.match(source, /STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED/);
   assert.match(source, /STATIC_I18N_CACHE_INCOMPLETE/);
 });
+
+
+test('incremental cache patches are merged before offline coverage validation', async () => {
+  const source = await readFile('tools/site-shell/build-localized-routes.mjs', 'utf8');
+  assert.match(source, /TRANSLATION_CACHE_PATCH_DIR/);
+  assert.match(source, /STATIC_I18N_CACHE_PATCH_INVALID/);
+  const output = execFileSync(process.execPath, ['tools/site-shell/build-localized-routes.mjs', '--validate-cache'], {
+    encoding: 'utf8',
+    env: { ...process.env, STATIC_I18N_NETWORK: '0' },
+  });
+  assert.match(output, /STATIC_I18N_CACHE_COMPLETE/);
+});
