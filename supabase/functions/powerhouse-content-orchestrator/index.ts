@@ -192,7 +192,12 @@ function plannedDecision(channel:string, recs:any[], personalSource:any, instagr
 }
 function shouldPreserveExisting(row:any) {
   if (!row) return false;
-  return COVERED_STATES.has(clean(row.state)) || (row.delivery_evidence?.provider_truth_verified === true && !!clean(row.delivery_ref));
+  const evidence=row.delivery_evidence||{};
+  return COVERED_STATES.has(clean(row.state))
+    || evidence.republish_forbidden === true
+    || evidence.possible_provider_side_effect === true
+    || (evidence.provider_create_success === true && !!clean(row.delivery_ref))
+    || (evidence.provider_truth_verified === true && !!clean(row.delivery_ref));
 }
 
 Deno.serve(async (req) => {
