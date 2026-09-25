@@ -24,3 +24,7 @@ Fan-out optimization is also verified after protected merge by enumerating runs 
 - Skill: `.agents/skills/powerhouse-delivery-self-optimization/SKILL.md`
 - Regression: `tests/brain-github-expression-literal-assertion-v1.test.mjs`
 - Ledger: `docs/development-ledger-events/2026-09-25-rocket-delivery-borging.md`
+
+## Delivery metadata correction
+
+This borging-only lineage is classified as `Candidate-Type: docs`, matching the canonical delivery contract. The rejected `closure` value was corrected before protected merge; no gate was bypassed.
