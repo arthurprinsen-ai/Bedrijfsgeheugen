@@ -24,5 +24,16 @@
     "powerhouse-netlify-production-truth"
   ],
   "revision": 1,
-  "failure_class": "STATIC_I18N_FAILOPEN_UNTRANSLATED_ENGLISH_ROUTE"
+  "failure_class": "STATIC_I18N_FAILOPEN_UNTRANSLATED_ENGLISH_ROUTE",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ]
+  }
 }
