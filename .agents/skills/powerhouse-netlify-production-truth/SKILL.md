@@ -54,3 +54,15 @@ When a recovery changes a build-time JavaScript transformer:
 - execute it against a minimal representative fixture;
 - assert the intended DOM/string mutation and idempotence;
 - if OIDC succeeds but both linked and exact-source Netlify deploys fail during `building site`, classify the incident as a build-content failure before changing deploy credentials or transport.
+
+
+## Runtime asset completeness after provider-ready
+
+Fingerprint: `i18n-runtime-asset-independent-presence-v1`.
+
+A Netlify deploy with `state=ready` and exact `commit_ref` proves provider identity, not frontend capability completeness. For NL/EN production truth:
+- inspect CSS and JavaScript runtime assets independently;
+- do not accept a shared marker as completeness evidence;
+- prove the active mobile navigation contains a visible language selector;
+- execute NL → EN → NL in a real production browser;
+- any missing runtime asset or missing visible control keeps the release non-terminal even when deploy identity is exact.
