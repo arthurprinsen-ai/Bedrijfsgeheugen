@@ -310,3 +310,12 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - Powerhouse-borging: opgenomen in `brain/policies/powerhouse-agent-continuity-v1.json#generated_surface_projection_rule` en `.agents/skills/powerhouse-continuity/SKILL.md`.
 - Productiebewijs: exact productiecommit/deploy en functionele readback blijven vereist voordat `LIVE_BEWEZEN` mag worden gebruikt.
 
+
+
+## 2026-09-25 — CONTRACT_CHANGE — Terminal borging closure
+- **Fingerprint:** `powerhouse|terminal-borging-closure|protected-main-readback|v1`.
+- **Signal:** borging, documentatie en skill-updates konden nog als losse follow-up worden behandeld.
+- **Final fix:** iedere borgingsvraag is nu material writeback: Brain learning + relevant skill + Powerhouse docs/ledger + policy attachment waar herbruikbaar + protected promotion + current-main ancestry proof + toepasselijke production/non-deployment readback.
+- **Verification rule:** main advancement is toegestaan wanneer de borging-commit aantoonbaar ancestor is en de actuele lineage terminal groen is; cancelled superseded readbacks zijn geen functioneel bewijs.
+- **Owner:** Powerhouse continuity / Knowledge & Governance.
+- **Reusable lesson:** institutionalisering is een delivery-resultaat, geen documentatie-bijzaak.

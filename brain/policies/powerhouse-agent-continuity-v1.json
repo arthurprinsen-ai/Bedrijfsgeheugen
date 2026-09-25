@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.6",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|v1.6",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.7",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|terminal-borging-closure|v1.7",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -36,7 +36,8 @@
     "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION",
     "TERMINAL_USER_OUTPUT_REQUIRES_DASHBOARD_SKILL_AND_LEARNING_WRITEBACK",
     "NO_AUTONOMOUS_TODO_LIST_AS_FINAL_HANDOFF",
-    "GENERATED_PUBLIC_SURFACE_REQUIRES_BUILD_AUTHORITY"
+    "GENERATED_PUBLIC_SURFACE_REQUIRES_BUILD_AUTHORITY",
+    "BORGING_REQUIRES_CANONICAL_SKILL_LEARNING_LEDGER_AND_READBACK"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -358,5 +359,26 @@
       "Terminal website truth requires exact production identity and functional production readback of the affected route."
     ],
     "terminal_state": "LIVE_BEWEZEN"
+  },
+  "terminal_borging_closure_rule": {
+    "required": true,
+    "fingerprint": "powerhouse|terminal-borging-closure|protected-main-readback|v1",
+    "trigger": "user asks to borg, log, document, update skills, or make a material change part of Powerhouse",
+    "mandatory_outputs": [
+      "brain_learning",
+      "relevant_skill_projection",
+      "human_readable_powerhouse_documentation",
+      "development_ledger_entry",
+      "canonical_policy_attachment_when_globally_reusable"
+    ],
+    "delivery_rule": "candidate_branch -> protected PR/gates -> merge -> current-main ancestry readback -> applicable production/non-deployment readback",
+    "supersession_rule": "If main advances, a newer main head may close the obligation only when ancestry proves it contains the borging commit and its applicable terminal readback is green.",
+    "deployment_applicability_rule": "Docs/governance-only changes may close with a successful production readback that explicitly records deployment not applicable; website/runtime changes still require exact provider identity and functional production readback.",
+    "forbidden_states": [
+      "MERGED_BUT_NOT_DISCOVERABLE",
+      "SKILL_UPDATED_WITHOUT_CANONICAL_LEARNING",
+      "LEARNING_WRITTEN_WITHOUT_PROTECTED_MAIN",
+      "OLD_CANCELLED_READBACK_TREATED_AS_SUCCESS"
+    ]
   }
 }

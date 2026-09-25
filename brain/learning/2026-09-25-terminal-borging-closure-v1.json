@@ -1,0 +1,40 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "id": "2026-09-25-terminal-borging-closure-v1",
+  "fingerprint": "powerhouse|terminal-borging-closure|protected-main-readback|v1",
+  "status": "ACTIVE",
+  "date": "2026-09-25",
+  "scope": "all Bedrijfsgeheugen/Powerhouse material delivery and governance work",
+  "problem": "A material change can be merged yet remain incompletely institutionalized if its learning, skills, documentation, ledger and applicable post-merge readback are not all closed in the same canonical lineage.",
+  "root_cause": "Borging was sometimes treated as a follow-up documentation action rather than a first-class delivery obligation with its own protected-main and readback closure.",
+  "rule": "A request to borg/log/document/update skills becomes material writeback. Close it through canonical learning + relevant skill + Powerhouse docs/ledger + policy attachment when reusable + protected merge + current-main ancestry proof + applicable production or non-deployment readback.",
+  "supersession_behavior": "When main moves, do not chase stale heads or treat cancellation as failure/success by itself. Prove the borging commit is an ancestor of the newer current main and require terminal readback on that current lineage.",
+  "deployment_applicability": "For docs/governance-only changes, Production Release Readback may explicitly mark deployment not applicable. For runtime/public-surface changes, exact provider identity and functional browser/readback remain mandatory.",
+  "prevention": [
+    "never write material borging directly to main",
+    "never stop at PR or merge",
+    "never treat a cancelled superseded verifier as functional proof",
+    "make the reusable rule discoverable to the next chat/agent through skill projection and canonical policy"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": false,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "production_readback": "Protected merge + current-main ancestry + applicable Production Release Readback are required before terminal closure."
+  }
+}

@@ -1141,3 +1141,22 @@ For offline production builds, a missing translation is local to that string or 
 - production closure for pricing requires the browser readback to prove that `/en/prijzen` no longer shows the Dutch pricing H1.
 
 Canonical learning: `brain/learning/i18n-partial-static-cache-fallback-20260925-v1.json`.
+## Terminal borging closure after protected merge
+
+Fingerprint: `powerhouse|terminal-borging-closure|protected-main-readback|v1`.
+
+When a user asks to **borg, log, document, update skills or make the change part of Powerhouse**, treat that request as a material delivery obligation, not as commentary.
+
+Mandatory closure:
+- preserve the same canonical lineage and current-main ancestry;
+- write the durable lesson into `brain/learning/`;
+- project the reusable operating rule into the relevant `.agents/skills/` skill;
+- record the change in human-readable Powerhouse documentation and the development ledger;
+- when the behavior is globally reusable, attach it to the canonical Powerhouse policy contract;
+- require protected PR/gates before merge; never use a branchless/default-main connector write;
+- after merge, re-read the exact current `main` ancestry and the applicable production/non-deployment readback;
+- if `main` advances, accept the newer head only when ancestry proves the borging commit is contained and the newer lineage has valid terminal readback;
+- distinguish deployment-required from non-deployment documentation/governance changes. A successful `Production Release Readback` with explicit deployment-not-applicable is valid terminal production truth for a docs/governance-only change;
+- never report `LIVE_BEWEZEN` merely because a PR merged or because an older superseded readback was cancelled.
+
+Reusable lesson: **borging is complete only when the rule is canonical, discoverable by the next agent, protected on main, and its applicable readback is proven.**
