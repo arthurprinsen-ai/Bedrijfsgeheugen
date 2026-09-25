@@ -1,0 +1,25 @@
+{
+  "fingerprint": "mobile-language-production-proof-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "MOBILE_LANGUAGE_PROOF_TARGETED_HIDDEN_DESKTOP_CONTROL",
+  "problem": "The production browser gate used a 390px mobile viewport but tried to click the hidden desktop language button. The real mobile UX exposes a language select inside the opened mobile menu.",
+  "root_cause": "The verifier asserted the desktop control implementation instead of following the surface-specific visible user path.",
+  "prevention": [
+    "Mobile browser gates must operate controls that are visible and actionable in the mobile UI.",
+    "For public language switching on mobile: open #bgkopKnop, use [data-bg-language-select], prove /en/*, then roundtrip to the unprefixed Dutch route.",
+    "Do not weaken locale assertions: html lang, visible English content, absence of runtime translation error, and Dutch canonical roundtrip remain mandatory."
+  ],
+  "compiler": {
+    "failure_class": "MOBILE_LANGUAGE_PROOF_TARGETED_HIDDEN_DESKTOP_CONTROL",
+    "scope": "POWERHOUSE_DELIVERY_WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mobile-language-production-proof-v1.test.mjs"
+    ]
+  }
+}
