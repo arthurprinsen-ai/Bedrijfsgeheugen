@@ -1,0 +1,38 @@
+{
+  "fingerprint": "i18n-postbuild-cache-runtime-fallback-20260925-v2",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "A source-level cache validation passed, but the production build generated additional HTML before localized-route generation and introduced 1926 strings that were absent from the pre-build cache. With STATIC_I18N_REQUIRE_CACHE=1 every Netlify production build failed.",
+  "root_cause": "Cache completeness was measured against pre-build source while release enforcement was applied to post-build generated markup. The two string universes are not identical.",
+  "prevention": [
+    "Keep production provider-independent with STATIC_I18N_NETWORK=0.",
+    "Do not make post-build cache completeness a publication prerequisite when generators can introduce new strings after cache validation.",
+    "Mark untranslated static English with data-bg-static-translated=false and hand it to the canonical runtime i18n fallback.",
+    "Keep LIVE_BEWEZEN fail-closed at the production browser verifier for /en/prijzen and visible English state."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-i18n-production-fail-closed-v1.test.mjs"],
+    "shadow": ["tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+    "tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs",
+    "tests/brain-ai-ecosystem-static-i18n-cache-v1.test.mjs",
+    "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "diagnostic_run_id": "36148697004",
+    "missing_postbuild_strings": 1926,
+    "first_missing": "Aanmelden — begin met inzicht | Bedrijfsgeheugen"
+  },
+  "skill_targets": ["continuity","delivery"],
+  "compiler": {
+    "failure_class": "STATIC_I18N_POSTBUILD_CACHE_DRIFT",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 2
+}
