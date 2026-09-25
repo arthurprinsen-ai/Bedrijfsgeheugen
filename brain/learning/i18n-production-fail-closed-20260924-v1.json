@@ -8,7 +8,9 @@
     "Publishing untranslated English routes and relying on runtime provider fallback.",
     "Treating route existence and html lang metadata as sufficient English-language proof.",
     "A later resilience change reintroduced console.warn + return null in the production translation catch, silently undoing the earlier fail-closed invariant.",
-    "Making every production deploy depend on live Anthropic translation calls even when the source corpus is unchanged; provider/build failures then block unrelated production delivery."
+    "Making every production deploy depend on live Anthropic translation calls even when the source corpus is unchanged; provider/build failures then block unrelated production delivery.",
+    "Using a dot-cache directory as canonical production translation authority; build systems may treat cache paths as mutable/ephemeral and they are not appropriate durable release inputs.",
+    "Allowing normal production deploys to depend on a live translation-provider call even when the full English corpus is already known."
   ],
   "prevention": [
     "When STATIC_I18N_NETWORK=1, any translation-provider failure must fail the production build.",
@@ -18,7 +20,11 @@
     "Any future resilience/backoff change around static translation must preserve the explicit production throw path and the regression test must reject production fallback-to-null.",
     "Production snapshot/browser proof must fail if /en/prijzen contains the Dutch pricing H1 or the language-switch failure message.",
     "Version the complete English translation cache in-repository and validate it offline against every current public source string before merge.",
-    "Production may use the provider only to fill genuinely new uncached strings; unchanged deployments must not require a live translation-provider call."
+    "Production may use the provider only to fill genuinely new uncached strings; unchanged deployments must not require a live translation-provider call.",
+    "The canonical static English translation authority lives under config/bg-static-i18n-en.json, never under .cache.",
+    "Netlify production and preview builds are cache-only: STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "Any missing translation fails closed with STATIC_I18N_CACHE_INCOMPLETE before localized output is published.",
+    "External translation providers are enrichment tooling only, not a production deploy dependency."
   ],
   "skill_targets": [
     "continuity",
@@ -27,9 +33,10 @@
   "test_evidence": [
     "tests/brain-i18n-production-fail-closed-v1.test.mjs",
     "tools/site-shell/verify-pricing-i18n-production.mjs",
-    "tests/brain-static-i18n-versioned-cache-v1.test.mjs"
+    "tests/brain-static-i18n-versioned-cache-v1.test.mjs",
+    "netlify.toml STATIC_I18N_REQUIRE_CACHE=1"
   ],
-  "revision": 3,
+  "revision": 4,
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-production-fail-closed-v1.test.mjs"
@@ -45,6 +52,9 @@
   "evidence": {
     "regression_observed_on_main": "390e058e581874cb08f5b2d4608d886a5c9a7dcf",
     "live_symptom": "/en/prijzen still rendered Dutch pricing copy while production was ready.",
-    "restored_guard": "STATIC_I18N_PRODUCTION_TRANSLATION_FAILED + STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED"
+    "restored_guard": "STATIC_I18N_PRODUCTION_TRANSLATION_FAILED + STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED",
+    "production_build_incident": "Netlify linked production build reached authorized transport but exited during site build while production was still on f45ad02f8f719958c00b7ff8e39e3ca2104353b1.",
+    "deterministic_authority": "config/bg-static-i18n-en.json",
+    "authority_blob_sha": "63d4e10854c4ddbfa1300fbb5186d8392ec7abfd"
   }
 }
