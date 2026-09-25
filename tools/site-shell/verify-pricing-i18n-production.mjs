@@ -4,6 +4,48 @@ async function expectVisible(locator, label) {
   if (!await locator.isVisible().catch(()=>false)) throw new Error(label + ' is not visible');
 }
 
+async function getVisibleMobileLanguage(page) {
+  const v18Drawer = page.locator('#v18MobileDrawer').first();
+  if (await v18Drawer.count()) {
+    const expanded = await v18Drawer.getAttribute('aria-hidden');
+    if (expanded !== 'false' || !await v18Drawer.isVisible().catch(()=>false)) {
+      const v18Toggle = page.locator('#mobileToggle').first();
+      if (!await v18Toggle.count()) throw new Error('v18 mobile drawer exists but #mobileToggle is missing');
+      await v18Toggle.click();
+      await v18Drawer.waitFor({ state:'visible', timeout:5_000 });
+    }
+    const select = v18Drawer.locator('[data-bg-language-select]').first();
+    if (await select.isVisible().catch(()=>false)) return select;
+  }
+
+  const legacyMenu = page.locator('#bgkopMob').first();
+  if (await legacyMenu.count() && await legacyMenu.isHidden().catch(()=>false)) {
+    await page.locator('#bgkopKnop').first().click();
+    await legacyMenu.waitFor({ state:'visible', timeout:5_000 });
+  }
+
+  const sharedMobileNav = page.locator('#bgSharedMobileNav').first();
+  if (await sharedMobileNav.count()) await sharedMobileNav.waitFor({ state:'visible', timeout:5_000 }).catch(()=>{});
+
+  const candidates = [
+    page.locator('#bgSharedMobileNav [data-bg-language-select]').first(),
+    page.locator('#bgkopMob [data-bg-language-select]').first(),
+    page.locator('[data-bg-language-select]:visible').first(),
+  ];
+  for (const candidate of candidates) {
+    if (await candidate.isVisible().catch(()=>false)) return candidate;
+  }
+
+  const diagnostics = await page.evaluate(() => ({
+    v18Drawer: document.getElementById('v18MobileDrawer')?.getAttribute('aria-hidden') ?? null,
+    v18Selects: document.querySelectorAll('#v18MobileDrawer [data-bg-language-select]').length,
+    legacySelects: document.querySelectorAll('#bgkopMob [data-bg-language-select]').length,
+    sharedSelects: document.querySelectorAll('#bgSharedMobileNav [data-bg-language-select]').length,
+    allSelects: document.querySelectorAll('[data-bg-language-select]').length,
+  }));
+  throw new Error('visible mobile language select is missing after opening mobile navigation: ' + JSON.stringify(diagnostics));
+}
+
 async function run() {
   const baseUrl = process.env.BASE_URL || 'https://www.bedrijfsgeheugen.nl';
   const { chromium } = await import('playwright');
@@ -83,18 +125,7 @@ async function run() {
     if (before.trim() === after.trim()) throw new Error('yearly billing click did not change a price');
 
     // Public language switching must use the actually visible control for this viewport.
-    // At the mobile proof viewport the desktop language button exists in the DOM but is hidden;
-    // open the mobile drawer and use its native select instead of clicking a hidden desktop control.
-    const mobileMenu = page.locator('#bgkopMob').first();
-    const mobileMenuButton = page.locator('#bgkopKnop').first();
-    if (await mobileMenu.count() && await mobileMenu.isHidden().catch(()=>false)) await mobileMenuButton.click();
-    const sharedMobileNav = page.locator('#bgSharedMobileNav').first();
-    if (await sharedMobileNav.count()) await sharedMobileNav.waitFor({ state:'visible', timeout:5_000 });
-    const sharedLanguage = page.locator('#bgSharedMobileNav [data-bg-language-select]').first();
-    const legacyLanguage = page.locator('#bgkopMob [data-bg-language-select]').first();
-    const mobileLanguage = await sharedLanguage.count() ? sharedLanguage : legacyLanguage;
-    await mobileLanguage.waitFor({ state:'visible', timeout:5_000 }).catch(() => {});
-    if (!await mobileLanguage.isVisible().catch(()=>false)) throw new Error('visible mobile language select is missing after opening mobile navigation');
+    const mobileLanguage = await getVisibleMobileLanguage(page);
     await Promise.all([
       page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
       mobileLanguage.selectOption('en'),
@@ -107,14 +138,7 @@ async function run() {
     if (/Prijzen voor digitalisering in het mkb/i.test(body)) throw new Error('English route still shows the Dutch pricing H1');
     if (!/Pricing/i.test(body)) throw new Error('English route has no visible Pricing text');
 
-    // English -> Dutch must return through the same visible mobile control.
-    const englishMobileMenu = page.locator('#bgkopMob').first();
-    if (await englishMobileMenu.count() && await englishMobileMenu.isHidden().catch(()=>false)) await page.locator('#bgkopKnop').first().click();
-    const englishSharedLanguage = page.locator('#bgSharedMobileNav [data-bg-language-select]').first();
-    const englishLegacyLanguage = page.locator('#bgkopMob [data-bg-language-select]').first();
-    const dutchSelect = await englishSharedLanguage.count() ? englishSharedLanguage : englishLegacyLanguage;
-    await dutchSelect.waitFor({ state:'visible', timeout:5_000 }).catch(() => {});
-    if (!await dutchSelect.isVisible().catch(()=>false)) throw new Error('visible Dutch language select is missing after opening mobile navigation');
+    const dutchSelect = await getVisibleMobileLanguage(page);
     await Promise.all([
       page.waitForURL(url => /^\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
       dutchSelect.selectOption('nl'),
