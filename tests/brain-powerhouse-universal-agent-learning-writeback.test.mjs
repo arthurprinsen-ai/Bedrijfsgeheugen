@@ -434,3 +434,21 @@ test('queue-pressure governor is inherited by every chat and agent', () => {
   assert.match(agentsSource,/github\|actions-queue-pressure-governor\|predict-before-dispatch\|v1/);
   assert.match(continuitySkillSource,/Predict-before-dispatch queue governor/);
 });
+
+
+test('terminal user handoff requires Powerhouse dashboard and skill writeback', () => {
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.6');
+  const handoff=continuityPolicy.terminal_user_handoff_contract;
+  assert.equal(handoff.required,true);
+  assert.equal(handoff.fingerprint,'delivery|terminal-user-handoff|dashboard-writeback|v1');
+  for(const required of ['canonical_current_state','activity_or_delivery_ledger','learning_and_prevention','relevant_skill_projection','powerhouse_dashboard_or_system_map_registration']) {
+    assert.ok(handoff.required_terminal_writebacks.includes(required), 'missing terminal writeback: '+required);
+  }
+  for(const invariant of ['TERMINAL_USER_HANDOFF_REQUIRES_DASHBOARD_AND_ACTIVITY_WRITEBACK','NO_AUTONOMOUS_NEXT_STEPS_AS_USER_HANDOFF','DASHBOARD_WRITEBACK_IS_PART_OF_TERMINAL_DELIVERY']) {
+    assert.ok(continuityPolicy.invariants.includes(invariant), 'missing invariant: '+invariant);
+  }
+  assert.ok(continuityPolicy.terminal_green_requires.includes('powerhouse_dashboard_or_system_map_writeback_completed_and_read_back'));
+  for(const marker of ['Terminal user handoff + Powerhouse dashboard writeback','wat nu','BLOCKED_HARD_BOUNDARY','user should not need to type “ga door”']) {
+    assert.ok(continuitySkillSource.includes(marker), 'missing continuity marker: '+marker);
+  }
+});
