@@ -27,7 +27,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-hygiene-policy.test.mjs"
+      "tests/brain-delivery-candidate-type-canonicalization.test.mjs"
     ],
     "canary": [
       ".github/workflows/powerhouse-delivery-hygiene.yml"
@@ -40,7 +40,8 @@
     "tools/delivery/delivery-hygiene.mjs",
     "tests/delivery-hygiene-policy.test.mjs",
     ".agents/skills/powerhouse-continuity/SKILL.md",
-    "brain/policies/powerhouse-agent-continuity-v1.json"
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    "tests/brain-delivery-candidate-type-canonicalization.test.mjs"
   ],
   "outcome": "DOCS_CLOSURE_ALIAS_CANONICALIZED_BEFORE_ADMISSION_WITH_NON_DOCS_FAIL_CLOSED"
 }
