@@ -1,0 +1,13 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "github|codeql-main-push|path-scope-python|v1",
+  "date": "2026-09-25",
+  "symptom": "Generic CodeQL started on every main merge although the workflow analyzes Python and PR admission was already Python-path scoped.",
+  "root_cause": "push.main had no paths filter, so unrelated control-plane merges consumed a runner.",
+  "fix": "Mirror the existing Python + workflow-file path scope onto main push.",
+  "prevention": "Generic specialist security workflows must use the same semantic path scope on PR and main push; a regression test rejects unscoped generic CodeQL main fan-out.",
+  "evidence": [
+    ".github/workflows/codeql.yml",
+    "tests/brain-ci-admission-single-flight.test.mjs"
+  ]
+}
