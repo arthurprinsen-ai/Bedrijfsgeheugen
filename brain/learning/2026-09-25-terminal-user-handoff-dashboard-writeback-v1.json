@@ -1,0 +1,30 @@
+{
+  "fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+  "status": "ACTIVE",
+  "date": "2026-09-25",
+  "symptom": "A material delivery could end user-facing at a pending state such as gates running, auto-merge armed or remaining borging steps, leaving the user unsure what had to happen next.",
+  "root_cause": "The existing no-pending terminal rule prohibited several pending statuses but did not make Dashboard/System Map registration and a fixed no-open-end user handoff explicit terminal writebacks.",
+  "fix": [
+    "Keep delivery ownership with the originating/recovering node until terminal proof.",
+    "Require canonical current-state/activity, learning/prevention, skill projection and Powerhouse Dashboard/System Map writeback before terminal green.",
+    "Normal user handoff reports only proven/borged results; autonomous follow-up is not delegated back to the user.",
+    "Only BLOCKED_HARD_BOUNDARY may return one smallest human action while preserving the prepared continuation."
+  ],
+  "prevention": [
+    "Every future material chat/agent inherits the terminal user handoff contract through powerhouse-continuity.",
+    "A user should not need to say 'ga door' after a non-terminal interruption.",
+    "Dashboard/System Map registration is a Definition-of-Done gate, not optional documentation."
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-delivery-self-optimization"
+  ],
+  "evidence": [
+    "Notion Dashboard Hub callout 2026-09-25",
+    "Notion Canonical System Map callout 2026-09-25",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+  ]
+}
