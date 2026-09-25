@@ -23,5 +23,17 @@
     "powerhouse-continuity"
   ],
   "revision": 1,
-  "failure_class": "STATIC_I18N_TRANSLATION_CONTENT_DRIFT"
+  "failure_class": "STATIC_I18N_TRANSLATION_CONTENT_DRIFT",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-static-english-h1-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-pricing-static-english-h1-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-static-english-h1-v1.test.mjs"
+    ],
+    "expected_invariant": "the English pricing route never renders the Dutch pricing H1 and the versioned cache patch remains authoritative"
+  }
 }
