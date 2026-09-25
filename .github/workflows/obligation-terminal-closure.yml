@@ -156,7 +156,33 @@ jobs:
           }
 
           require_required_or_descendant
-          require_workflow "unified-brain-delivery.yml" "BRAIN"
+
+          require_brain_if_applicable() {
+            if [ "$DELIVERY_LANE" = "docs" ]; then
+              echo "TERMINAL_CRITICAL_GATE_NOT_APPLICABLE:BRAIN:delivery_lane=docs:head=${HEAD_SHA}"
+              return 0
+            fi
+            for attempt in $(seq 1 180); do
+              payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?head_sha=${HEAD_SHA}&per_page=50")"
+              run_id="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$payload")"
+              status="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$payload")"
+              conclusion="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$payload")"
+              event="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .event // empty' <<<"$payload")"
+              if [ -n "$run_id" ] && [ "$status" = "completed" ]; then
+                [ "$conclusion" = "success" ] || {
+                  echo "::error::TERMINAL_CRITICAL_GATE_FAILED:BRAIN:run=${run_id}:event=${event}:conclusion=${conclusion}:head=${HEAD_SHA}"
+                  exit 78
+                }
+                echo "TERMINAL_CRITICAL_GATE_PROVEN:BRAIN:run=${run_id}:event=${event}:head=${HEAD_SHA}"
+                return 0
+              fi
+              sleep 5
+            done
+            echo "::error::TERMINAL_CRITICAL_GATE_NOT_TERMINAL:BRAIN:head=${HEAD_SHA}"
+            exit 78
+          }
+
+          require_brain_if_applicable
 
           changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
           if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/powerhouse-codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then
