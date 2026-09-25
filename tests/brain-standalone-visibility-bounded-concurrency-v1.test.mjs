@@ -10,6 +10,9 @@ test('full public visibility sweep keeps complete route and viewport coverage wi
   assert.match(source,/Promise\.all\(Array\.from\(\{ length: workerCount \}/);
   assert.match(source,/routeIndex \+= workerCount/);
   assert.match(source,/assertBudget\(route, viewport\.name\)/);
-  assert.match(source,/for \(const viewport of viewports\)/);
+  assert.match(source,/UI_VR_VIEWPORT_CONCURRENCY/);
+  assert.match(source,/const runViewport = async viewport =>/);
+  assert.match(source,/viewports\.slice\(viewportIndex, viewportIndex \+ viewportConcurrency\)\.map\(runViewport\)/);
+  assert.match(source,/Promise\.all\(viewports\.slice/);
   assert.match(source,/routes\.length \* viewports\.length/);
 });
