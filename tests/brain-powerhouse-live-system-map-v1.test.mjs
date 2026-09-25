@@ -15,6 +15,10 @@ test('canonical System Map inventory matches repository topology',async()=>{
   assert.deepEqual([...expected.netlifyFunctions].sort(),await names('netlify/functions'));
   assert.deepEqual([...expected.supabaseFunctions].sort(),await names('supabase/functions'));
   assert.deepEqual([...expected.githubWorkflows].sort(),await names('.github/workflows'));
+  assert.equal(POWERHOUSE_SYSTEM_MAP.providerSnapshot.github.skills,expected.skills.length,'provider snapshot skill count must match canonical skill inventory');
+  assert.equal(POWERHOUSE_SYSTEM_MAP.providerSnapshot.github.workflows,expected.githubWorkflows.length,'provider snapshot workflow count must match canonical workflow inventory');
+  assert.equal(POWERHOUSE_SYSTEM_MAP.providerSnapshot.github.agentFabricModules,expected.agentFabricModules.length,'provider snapshot agent-module count must match canonical inventory');
+  assert.equal(POWERHOUSE_SYSTEM_MAP.providerSnapshot.netlify.functions,expected.netlifyFunctions.length,'provider snapshot Netlify count must match canonical inventory');
 });
 
 test('System Map contains the four canonical authorities and complete intelligence chain',()=>{
@@ -34,6 +38,15 @@ test('all future agents are contractually required to register in the live Syste
   assert.equal(policy.system_map_registration?.fail_closed_state,'SYSTEM_MAP_WRITEBACK_INCOMPLETE');
   assert.match(policy.system_map_registration?.runtime_actor_rule||'',/actor identity/i);
   assert.match(policy.system_map_registration?.terminal_rule||'',/LIVE_BEWEZEN/);
+  assert.match(policy.system_map_registration?.structural_change_rule||'',/human System Map/i);
+  const [agentsContract,continuitySkill]=await Promise.all([
+    readFile('AGENTS.md','utf8'),
+    readFile('.agents/skills/powerhouse-continuity/SKILL.md','utf8')
+  ]);
+  assert.match(agentsContract,/machineleesbare `platform\/system-map\/canonical-system-map\.mjs`/);
+  assert.match(agentsContract,/menselijke architectuur-\/change-documentatie/);
+  assert.match(continuitySkill,/System Map \+ menselijke documentatie zijn één closure/);
+  assert.match(continuitySkill,/SYSTEM_MAP_WRITEBACK_INCOMPLETE/);
 });
 
 test('admin observability endpoint projects System Map and portal renders it first',async()=>{
