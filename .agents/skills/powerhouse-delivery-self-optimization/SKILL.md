@@ -586,3 +586,12 @@ Fingerprint: `delivery|production-readback-safe-supersession|v1`.
 A production readback may accept a release marker newer than its triggering merge SHA only when the observed SHA is a Git descendant of the expected SHA and every path changed between them is explicitly non-production-affecting: `docs/**`, `.agents/**`, `tests/**`, `.github/**`, `brain/learning/**`, or `config/delivery-prevention-rules.json`.
 
 Any runtime/website/backend/tool/source change between expected and observed keeps the readback fail-closed. A non-descendant SHA is always rejected. Apply the same rule to Source Snapshot, Production Release Readback and Canonical brand shell live readback.
+
+
+## Learning replay paths must be canonical before CI
+
+Fingerprint: `delivery|learning-replay-path|brain-prefixed|v1`.
+
+Before a material learning change reaches Skill Projection, validate every `evaluation.historical_replay` path against the learning-canonicalization contract. Historical replay must point to an accepted Brain-prefixed regression path rather than a general test file.
+
+If a general regression already exists, add a narrow Brain replay wrapper that proves the same invariant and reference that wrapper from the learning. Do not wait for Skill Projection to discover the path-shape defect after merge.
