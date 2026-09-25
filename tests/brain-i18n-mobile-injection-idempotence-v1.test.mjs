@@ -13,5 +13,6 @@ test('apply-i18n injects mobile language control even when i18n assets already e
 test('compact mobile host keeps selector injection idempotent', () => {
   const source = fs.readFileSync('tools/site-shell/apply-i18n.mjs','utf8');
   assert.match(source,/if \(\/data-bg-language-switcher="mobile"\/\.test\(html\)\) return html/);
-  assert.match(source,/html\.replace\(cta, MOBILE_LANGUAGE \+ '\\  assert.match(source,/MOBILE_LANGUAGE \+ match/);'\)/);
+  assert.ok(source.includes("html.replace(cta, MOBILE_LANGUAGE + '  assert.match(source,/html\.replace\(cta, MOBILE_LANGUAGE \+ '\\  assert.match(source,/MOBILE_LANGUAGE \+ match/);'\)/);
+});')"));
 });
