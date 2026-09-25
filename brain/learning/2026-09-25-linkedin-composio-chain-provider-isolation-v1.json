@@ -13,7 +13,8 @@
     "LinkedIn dispatch is Composio-only, but the supervisor still executed a legacy Buffer sync without containment, so a Buffer network/provider failure could abort the broader content loop.",
     "The content orchestrator collapsed every non-2xx Anthropic response into AI_PROVIDER_REQUEST_FAILED, hiding the HTTP status and model needed for autonomous diagnosis.",
     "On 2026-09-25 the artifact-ai stage failed repeatedly, leaving both LinkedIn decisions at decided with no content artifacts.",
-    "The production Anthropic account returned invalid_request_error because its credit balance was too low, proving the generator had a financial/provider single point of failure."
+    "The production Anthropic account returned invalid_request_error because its credit balance was too low, proving the generator had a financial/provider single point of failure.",
+    "Personal LinkedIn create and readback were coupled in one throwing function. If create succeeded but LINKEDIN_GET_POST_CONTENT was forbidden, the created post URN was discarded before persistence, creating duplicate ambiguity."
   ],
   "prevention": [
     "LinkedIn personal and company publication authority remains Composio-only with exact provider URN readback and no Buffer fallback.",
@@ -22,7 +23,8 @@
     "The content AI call has a bounded 45-second timeout so a hung provider cannot stall a scheduler run.",
     "For provider HTTP 400 validation failures, retain only sanitized provider error type/message so request-shape defects can be repaired deterministically without logging prompts, source data, or credentials.",
     "Use the separately approved supabase-bg-composio-content-fallback-v1 route only for explicit provider-availability failures (credit exhaustion, missing key, 401/403/429, or 5xx), never for ordinary validation/programming defects.",
-    "Composio fallback generation must return exactly the existing six-string artifact schema and remains subject to all downstream personal-truth, company-tracking, identity, publication-authority, dedupe and exact-URN readback gates."
+    "Composio fallback generation must return exactly the existing six-string artifact schema and remains subject to all downstream personal-truth, company-tracking, identity, publication-authority, dedupe and exact-URN readback gates.",
+    "After any successful personal LinkedIn create, persist the returned URN and create-success evidence even when exact readback fails; mark verification pending and republish forbidden, then reconcile only that exact URN."
   ],
   "evidence": {
     "production_observation": "84 powerhouse-content-orchestrator health rows on 2026-09-25 reported artifact-ai:AI_PROVIDER_REQUEST_FAILED before remediation.",
@@ -34,7 +36,9 @@
     ],
     "anthropic_400": "Post-deploy production readback on 2026-09-25 proved HTTP 400 for claude-sonnet-4-6; the diagnostic now retains only provider error type/message capped at 240 characters, never request payloads or credentials.",
     "anthropic_credit_exhaustion": "Production health on 2026-09-25: invalid_request_error: credit balance too low.",
-    "composio_fallback_dry_run": "COMPOSIO_SEARCH_GROQ_CHAT with openai/gpt-oss-120b returned a valid six-key JSON artifact; legacy llama-3.3-70b-versatile returned model_not_found and is not used."
+    "composio_fallback_dry_run": "COMPOSIO_SEARCH_GROQ_CHAT with openai/gpt-oss-120b returned a valid six-key JSON artifact; legacy llama-3.3-70b-versatile returned model_not_found and is not used.",
+    "personal_urn_loss_incident": "On 2026-09-25 the personal lane reached LINKEDIN_GET_POST_CONTENT after create and received Forbidden, but the old catch path recorded no delivery_ref/external_id. The claim is treated as possibly written and is not retried.",
+    "personal_urn_preservation_fingerprint": "linkedin-personal-created-urn-preservation-v1"
   },
   "evaluation": {
     "historical_replay": [
