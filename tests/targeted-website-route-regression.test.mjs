@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { newPageErrors, summarizeRouteResult, productionPageErrors, filterSettledNavigationFailures } from '../tools/site-shell/verify-targeted-website-routes.mjs';
+import { newPageErrors, summarizeRouteResult, productionPageErrors, filterSettledNavigationFailures, isHardAssetFailure } from '../tools/site-shell/verify-targeted-website-routes.mjs';
 
 test('existing baseline page errors do not become a release regression', () => {
   const baseline = ['Unexpected end of input', 'missing ) after argument list'];
