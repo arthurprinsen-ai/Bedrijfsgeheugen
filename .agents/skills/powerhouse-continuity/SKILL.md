@@ -371,6 +371,23 @@ Canonical verifier: `tools/site-shell/verify-pricing-i18n-production.mjs`.
 Canonical retrospective: `docs/changes/pricing-i18n-incident-retrospective-20260924-v1.md`.
 
 
+## Provider credit + deploy authentication preflight
+
+Fingerprint: `provider-credit-deploy-auth-preflight-20260924-v1`.
+
+For public i18n and other provider-backed production capabilities:
+- distinguish transient provider failures from hard boundaries before retrying;
+- API credit exhaustion and invalid credentials are non-transient and must fail fast with an explicit classified error;
+- never spend a full production build repeatedly retrying a known credit/auth failure;
+- a short-lived/ephemeral MCP proxy URL is never a durable CI/CD credential;
+- production deployment must prefer durable authentication or mint a fresh per-run ephemeral credential;
+- archive-based deployment must prove repository-root layout plus exact source identity before publication;
+- if an emergency recovery changes the active production build, restore a clean known-good release before continuing diagnosis;
+- `LIVE_BEWEZEN` remains forbidden until exact production identity and user-visible browser proof both pass.
+
+Canonical learning: `brain/learning/provider-credit-deploy-auth-preflight-20260924-v1.json`.
+
+
 ## Netlify deploy-auth terminal boundary
 
 Fingerprint: `netlify-deploy-auth-hard-boundary-20260924-v2`.
