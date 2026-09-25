@@ -1,0 +1,22 @@
+name: Diagnostic static i18n cache
+on:
+  push:
+    branches:
+      - diag/i18n-cache-20260925
+permissions:
+  contents: read
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+      - run: npm ci --ignore-scripts
+      - name: Validate static English cache
+        env:
+          STATIC_I18N_NETWORK: "0"
+          STATIC_I18N_REQUIRE_CACHE: "1"
+        run: node tools/site-shell/build-localized-routes.mjs --validate-cache
