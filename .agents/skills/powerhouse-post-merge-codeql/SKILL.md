@@ -19,3 +19,7 @@ A post-merge CodeQL status is internal execution state, never a user handoff.
 - LIVE_BEWEZEN still requires exact-main production/provider readback.
 
 Valid terminal security states: `SECURITY_GREEN`, `SECURITY_NOT_APPLICABLE`, or evidenced `BLOCKED_HARD_BOUNDARY`.
+
+## Client transport continuation
+
+A client-side response transport interruption is non-terminal delivery state. On the next executable turn, resume the existing canonical branch/PR, re-read current main and exact workflow state, and continue to the normal terminal contract. Do not create a replacement lineage solely because the response channel ended.

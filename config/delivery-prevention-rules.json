@@ -393,6 +393,12 @@
       "active": true,
       "enforcedBy": "post-merge-codeql-skill-plus-terminal-delivery-contract",
       "scope": "shared"
+    },
+    {
+      "id": "RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION",
+      "active": true,
+      "enforcedBy": "powerhouse-post-merge-codeql-skill",
+      "scope": "shared"
     }
   ]
 }

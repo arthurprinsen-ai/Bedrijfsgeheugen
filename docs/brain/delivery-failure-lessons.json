@@ -470,6 +470,16 @@
       "fix": "retain delivery ownership until the newest relevant exact-SHA security run is terminal or an evidenced hard boundary exists",
       "preventionRule": "NO_FINAL_HANDOFF_WHILE_AUTHORITATIVE_SECURITY_RUN_ACTIVE",
       "status": "PROVEN"
+    },
+    {
+      "fingerprint": "delivery-failure|handoff|shared|client-transport-interruption-treated-as-terminal",
+      "stage": "HANDOFF",
+      "component": "shared",
+      "reason": "a client response transport interruption can make an active delivery appear abandoned",
+      "rootCause": "chat transport state was not explicitly separated from repository and delivery terminal state",
+      "fix": "resume the canonical branch or PR and newest exact head on the next executable turn and continue to the normal terminal contract",
+      "preventionRule": "RESUME_CANONICAL_DELIVERY_AFTER_CLIENT_TRANSPORT_INTERRUPTION",
+      "status": "PROVEN"
     }
   ]
 }
