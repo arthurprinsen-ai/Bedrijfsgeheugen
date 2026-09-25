@@ -144,6 +144,7 @@ export function extractPageMain(input, pad = '') {
 /* Alleen deze scripts overleven de canonieke schil. */
 const TOEGESTANE_SCRIPTS = Object.freeze([
   '/assets/stijl.js',                 // toestemmingslaag
+  '/assets/js/i18n.js',               // centrale NL/EN runtime, ook nodig voor V18 mobile drawer
   'googletagmanager.com/gtag/js'      // analytics, pas actief na toestemming
 ]);
 
