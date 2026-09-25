@@ -1,0 +1,28 @@
+{
+  "id": "pricing-multicontext-calculator-parity-v1",
+  "failure_class": "PUBLIC_CONTEXT_CARDINALITY_DRIFT",
+  "symptom": "Pricing described multi-context Powerhouse behavior but the route calculator allowed only one event and one goal.",
+  "root_cause": "Commercial UI cardinality drifted from the canonical business-context engine.",
+  "prevention": [
+    "Public context controls must match canonical context cardinality.",
+    "Business phase is singular; strategic events and entrepreneur goals are multi-select.",
+    "Regression tests must bind pricing controls to the Powerhouse context contract.",
+    "Do not mark live until exact production deploy and readback are proven."
+  ],
+  "applies_to": [
+    "pricing",
+    "portal-v2",
+    "powerhouse-brain",
+    "commercial-ui"
+  ],
+  "fingerprint": "pricing-multicontext-calculator-parity-v1",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-portal-context-parity-v1.test.mjs"
+    ]
+  }
+}

@@ -55,3 +55,20 @@ test('pricing route examples are not mislabeled as the complete business-context
   assert.doesNotMatch(html,/<p class="eyebrow">Kies je bedrijfssituatie<\/p>/i);
   assert.match(html,/aria-label="Veelvoorkomende commerciële routes"/i);
 });
+
+
+test('pricing route calculator supports the same multi-context overlays as Portal V2',async()=>{
+  const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
+  assert.match(html,/id="bgMotion" class="bg-context-multi"/);
+  assert.match(html,/id="bgGoal" class="bg-context-multi"/);
+  assert.match(html,/input type="checkbox" value="buy"/);
+  assert.match(html,/input type="checkbox" value="funding"/);
+  assert.match(html,/input type="checkbox" value="automate"/);
+  assert.match(html,/input type="checkbox" value="valuation"/);
+  assert.match(html,/function checkedValues\(root\)/);
+  assert.match(html,/motionValues\.includes\('buy'\)/);
+  assert.match(html,/motionLabels\.join\(' \+ '\)/);
+  assert.match(html,/goalLabels\.join\(' \+ '\)/);
+  assert.doesNotMatch(html,/<select id="bgMotion">/);
+  assert.doesNotMatch(html,/<select id="bgGoal">/);
+});
