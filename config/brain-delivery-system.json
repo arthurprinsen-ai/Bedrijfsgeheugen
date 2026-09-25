@@ -159,7 +159,8 @@
         ".github/workflows/canonical-brand-shell-contract.yml",
         ".github/workflows/canonical-brand-shell-full-build.yml",
         ".github/workflows/live-preview-smoke.yml",
-        "data/i18n/"
+        "data/i18n/",
+        ".cache/bg-static-i18n-en.json"
       ]
     },
     {
@@ -480,7 +481,8 @@
         "vastgoed-software-koppelen.html",
         "automotive-software-koppelen.html",
         "tests/branche-applicaties-integraties.test.mjs",
-        "data/i18n/"
+        "data/i18n/",
+        ".cache/bg-static-i18n-en.json"
       ],
       "requiredContracts": [
         "BG166",
