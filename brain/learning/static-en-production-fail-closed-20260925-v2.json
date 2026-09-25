@@ -1,0 +1,32 @@
+{
+  "fingerprint": "static-en-production-fail-closed-20260925-v2",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production language switching reached /en/prijzen but the English route still rendered the Dutch pricing H1.",
+  "root_cause": "Production had STATIC_I18N_NETWORK=0 while the versioned English cache was incomplete. build-localized-routes.mjs therefore emitted /en routes from Dutch source with translations=null instead of failing the release.",
+  "prevention": [
+    "Production static English generation must use the configured translation provider whenever the versioned cache is incomplete.",
+    "Provider failure must fail the production build; /en routes may never silently publish Dutch source text.",
+    "Deploy previews remain provider-independent and offline.",
+    "Terminal release proof requires NL to EN to NL browser roundtrip on homepage, pricing and systems/koppelingen."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-static-en-production-fail-closed-v1.test.mjs", "tests/brain-i18n-production-fail-closed-v1.test.mjs"],
+    "shadow": ["tests/brain-static-en-production-fail-closed-v1.test.mjs"],
+    "canary": ["tests/brain-i18n-production-fail-closed-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-static-en-production-fail-closed-v1.test.mjs", "tests/brain-i18n-production-fail-closed-v1.test.mjs"],
+  "evidence": {
+    "browser_failure": "English route still shows the Dutch pricing H1",
+    "required_routes": ["/", "/prijzen", "/systemen-koppelen"],
+    "production_provider_secret_present": true
+  },
+  "skill_targets": ["website", "delivery", "i18n"],
+  "compiler": {
+    "failure_class": "STATIC_ENGLISH_SILENT_DUTCH_FALLBACK",
+    "scope": "WEBSITE_I18N_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "revision": 2
+}
