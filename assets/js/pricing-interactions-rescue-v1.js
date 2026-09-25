@@ -41,7 +41,10 @@
     const motion = document.getElementById('bgMotion');
     const phases = ['start','validate','grow','scale','professionalize','mature','stagnate','loss','crisis'];
     if (situation && phases.includes(key)) situation.value = key;
-    if (motion && !phases.includes(key)) motion.value = key;
+    if (motion && !phases.includes(key)) {
+      const checkbox = motion.querySelector('input[value="'+key+'"]');
+      if (checkbox) checkbox.checked = true;
+    }
   }
 
   function selectGroup(key) {
