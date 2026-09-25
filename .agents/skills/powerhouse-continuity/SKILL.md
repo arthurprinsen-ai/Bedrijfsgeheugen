@@ -1057,3 +1057,12 @@ Fingerprint: `netlify-production-build-parity-20260925-v1`.
 - Reduced local/browser composers are useful for UI verification but are never substitutes for production build parity.
 - Any parity failure blocks merge and must be repaired before Netlify deployment.
 - Terminal closure remains exact production SHA plus production browser proof.
+
+## Static i18n runtime fallback in production
+
+Fingerprint: `static-i18n-runtime-fallback-production-20260925-v1`.
+
+- Production release builds keep external translation network calls disabled.
+- Static English cache completeness is enrichment, not publication authority, while the canonical runtime i18n fallback is available.
+- Do not block all production on a missing static cache entry.
+- Terminal truth is the production browser proof: real NL→EN interaction, `/en/prijzen`, visible English and no known Dutch pricing heading.
