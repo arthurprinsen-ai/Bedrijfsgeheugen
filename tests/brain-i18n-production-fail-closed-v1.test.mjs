@@ -21,7 +21,8 @@ test('deploy previews may remain offline without pretending to be translated',()
 });
 
 test('production remains fail-closed at observable English browser proof',()=>{
-  assert.match(productionVerifier,/\/en\/prijzen/);
-  assert.match(productionVerifier,/html.*lang|documentElement\.lang|lang=/i);
-  assert.match(productionVerifier,/Pricing|pricing/);
+  assert.match(productionVerifier,/waitForURL/);
+  assert.match(productionVerifier,/data-bg-language-option="en"/);
+  assert.match(productionVerifier,/English route did not render html lang=en/);
+  assert.match(productionVerifier,/English route has no visible Pricing text/);
 });
