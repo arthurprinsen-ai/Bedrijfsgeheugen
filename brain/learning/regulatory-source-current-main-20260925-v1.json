@@ -1,0 +1,33 @@
+{
+  "fingerprint": "regulatory-source-current-main-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "A fresh regulatory source observation snapshot was stranded on a stale branch and the first successor used an unregistered writer identity, causing delivery verification to fail before the source state could reach current main.",
+  "root_cause": "The recovery branch was named as a writer candidate even though no matching bounded writer policy existed for that writer identity. The content itself was valid source observation state and required a normal recovery lane.",
+  "prevention": [
+    "Carry stale regulatory observation state through a normal fix/ automation recovery branch when no registered writer contract applies.",
+    "Preserve the predecessor obligation id across direct supersession.",
+    "Keep interpretation candidates separate from raw source observation state and invalidate interpretations when source hashes advance."
+  ],
+  "evidence": {
+    "predecessor_pr": 2860,
+    "source_pr": 2704,
+    "recovery_pr": 2863,
+    "source_file": "data/regulatory-source-state.json"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-regulation-writer-candidate-mode.test.mjs"
+    ]
+  },
+  "failed_approaches": [
+    "Using an unregistered writer identity for a regulatory source-state recovery."
+  ],
+  "revision": 1,
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
