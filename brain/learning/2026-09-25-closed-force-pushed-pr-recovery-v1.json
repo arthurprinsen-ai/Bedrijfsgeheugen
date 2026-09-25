@@ -10,7 +10,8 @@
     "If the intended fix is already on main, close the stale recovery path with evidence instead of merging it.",
     "If the fix is absent, rebuild only the minimal proven delta from current main.",
     "Never force a heavily diverged stale branch into main merely to preserve historical PR identity.",
-    "Keep one remediation lineage and require exact-main production plus functional readback before terminal closure."
+    "Keep one remediation lineage and require exact-main production plus functional readback before terminal closure.",
+    "After correcting PR-body machine metadata, do not expect rerun-failed-jobs to refresh the event payload; trigger a fresh same-lineage synchronize event and keep only that head authoritative."
   ],
   "evidence": {
     "original_pr": 2954,
@@ -33,10 +34,11 @@
   "test_evidence": [
     "tests/brain-closed-force-pushed-pr-recovery-v1.test.mjs"
   ],
-  "revision": 3,
+  "revision": 4,
   "failed_approaches": [
     "Initial learning omitted evaluation.historical_replay, so Powerhouse Skill Projection correctly failed closed with LEARNING_EVALUATION_TESTS_REQUIRED.",
-    "The first semantic-learning record kept failure_class only at top level; material writeback closure requires compiler.failure_class as the machine-semantic authority."
+    "The first semantic-learning record kept failure_class only at top level; material writeback closure requires compiler.failure_class as the machine-semantic authority.",
+    "Re-running a failed GitHub Actions run reuses the original pull_request event payload, including stale PR_BODY metadata; after correcting machine metadata, a meaningful same-lineage commit is required to generate a fresh pull_request synchronize event instead of relying on rerun."
   ],
   "compiler": {
     "failure_class": "CLOSED_PR_FORCE_PUSH_RECOVERY_CAN_REINTRODUCE_STALE_MAIN",
