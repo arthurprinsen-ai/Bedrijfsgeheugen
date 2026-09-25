@@ -88,7 +88,7 @@ GitHub is an executable delivery state machine, not a chat archive, parking lot 
 - Every product PR carries exactly one `Obligation-ID`, `Delivery-Lane`, `Candidate-Type` and `Base-SHA`; `Supersedes` is absent/none or exactly one direct predecessor.
 - Candidate identity is obligation + exact head SHA + main epoch. Branch names are secondary labels and may be rebuilt without creating a new obligation.
 - Cheap gates run before expensive CI: metadata/schema, branch hygiene, classifier completeness, test-to-workflow coverage, static security and writer lease.
-- Product WIP is capped at three active executable PRs; docs/dependency maintenance stays outside the product WIP queue.
+- Product WIP is conflict-aware: the WIP budget applies to candidates sharing an explicit conflict contract, while unrelated agents and branches do not consume each other's integration budget; docs/dependency maintenance stays outside product WIP.
 - Exactly one terminal writer may exist for an obligation. Its lease binds owner, obligation, exact head and exact main epoch.
 - Landing is allowed only when `behind_by=0`, the tested head is unchanged, required checks are green, the lease still matches, no newer canonical successor exists and the main epoch has not moved.
 - A merge is non-terminal. The lineage must still prove main containment, deploy/promotion readback, runtime behavior, outcome evidence, learning projection and skill projection.
@@ -113,6 +113,23 @@ Admission and landing are different safety phases.
 - Repeated sync → full rerun → sync loops caused only by unrelated main movement are delivery starvation and must be prevented, not normalized.
 
 This refines `github|delivery-state-machine|parallel-build-serialized-landing|v1`: parallel build and CI remain useful while only the short landing boundary is serialized on current main.
+
+## Canonical single-flight PR CI
+
+Fingerprint: `delivery|agent-factory|single-flight-pr-gate|v1`.
+
+For parallel chats and agents, runner capacity is protected by a single canonical PR orchestration rule:
+
+- `Required test` is the canonical aggregate PR gate.
+- Heavy verification belongs in reusable, change-scoped lanes and must not be duplicated as independent automatic PR entrypoints.
+- The aggregate gate must never poll a sibling workflow that repeats coverage already available in its selected lanes.
+- Specialist workflows may remain manual/reusable for diagnostics, recovery, or explicit deep verification.
+- Pricing/SEO/browser/database checks are selected by affected scope; unrelated contracts are skipped.
+- `cancel-in-progress: true` remains latest-head-wins for PR work.
+- Independent conflict contracts may build/test in parallel; only overlapping integration pressure and terminal landing are serialized.
+- Never solve CI fan-out by adding more runners before redundant workflow entrypoints are removed.
+
+Canonical learning: `brain/learning/agent-factory-single-flight-ci-20260925-v1.json`.
 
 ## Mandatory material-run closure gate
 

@@ -1,0 +1,52 @@
+{
+  "fingerprint": "agent-factory-single-flight-ci-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Parallel agents were amplified into redundant GitHub Actions work because Required test waited on a second BRAIN workflow while additional preview and pricing workflows also auto-triggered on the same pull request.",
+  "root_cause": "CI orchestration was distributed across multiple independent pull-request entrypoints. Required test already classified and executed release lanes but then polled duplicate sibling workflows, so one code change created multiple heavy verification flights and consumed runner capacity while waiting.",
+  "prevention": [
+    "Required test is the canonical pull-request aggregate gate.",
+    "Heavy BRAIN, preview and specialist regressions are reusable/manual unless their coverage is explicitly selected by the canonical lane.",
+    "Never poll a sibling workflow from the aggregate gate when the same contract can be executed inside a selected reusable lane.",
+    "Latest-head-wins concurrency remains PR-scoped with cancel-in-progress enabled.",
+    "Development WIP is limited by overlapping conflict contracts, not by unrelated agents or branches.",
+    "Production landing remains serialized even when development and CI run in parallel."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/delivery-required-exact-head-critical-gates-v1.test.mjs",
+    ".github/workflows/lane-website.yml"
+  ],
+  "evidence": {
+    "observed_repository_workflows": 114,
+    "observed_actions_total_approx": 40000,
+    "observed_queue_before_recovery": 28,
+    "observed_in_progress_before_recovery": 17,
+    "first_recovery_admission": "WAITING_CAPACITY",
+    "recovery_admission_after_candidate_reclassification": "ADMITTED",
+    "canonical_gate": "Required test",
+    "automation_lane_failure_observability": "lane-automation uploads automation-delivery-contracts log artifact on failure",
+    "canonical_i18n_allowlist_scripts": 3,
+    "stale_test_corrected": "tests/delivery-toestemmingsketen.test.mjs now includes consent, i18n and analytics"
+  },
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ],
+  "compiler": {
+    "failure_class": "CI_FANOUT_AMPLIFICATION",
+    "scope": "AGENT_FACTORY_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 2
+}

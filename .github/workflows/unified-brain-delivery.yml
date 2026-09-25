@@ -2,8 +2,6 @@ name: Unified Brain Delivery
 run-name: "BRAIN delivery PR #${{ inputs.pr_number || github.event.pull_request.number }} ${{ inputs.head_sha || github.event.pull_request.head.sha || github.sha }}"
 
 on:
-  pull_request:
-    branches: [main]
   workflow_dispatch:
     inputs:
       pr_number:

@@ -296,3 +296,17 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Terminalregel:** `DEPLOY_PENDING` en `PRODUCTION_READBACK_PENDING` zijn nooit gebruikershandoff; alleen terminal readback sluit de recovery.
 
 - **BRAIN recovery extension (same lineage):** BRAIN exposed inherited System Map drift from the immediately preceding i18n release: `netlify/functions/i18n-translate.mjs` was not registered in `platform/system-map/canonical-system-map.mjs`. The inventory and observed provider count are updated; `tests/brain-powerhouse-live-system-map-v1.test.mjs` is added to historical replay. New runtime topology without System Map writeback remains `WRITEBACK_INCOMPLETE`.
+
+## 2026-09-25 — AI-ecosysteem production-authority borging
+- Type: `IMPROVEMENT / CONTRACT_CHANGE`
+- Fingerprint: `website|generated-canonical-surface|post-build-projection|v1`
+- Signaal: de AI-ecosysteempropositie kon in broncode correct staan en toch verdwijnen uit de uiteindelijke homepage doordat de V18-productiebuilder `index.html` opnieuw uit een pinned payload opbouwt.
+- Impact: risico op false-green delivery, SEO-weespagina's en verlies van nieuwe commerciële propositie tijdens productiebuild.
+- Root cause: bronbestand en production-authoritative buildpunt waren niet hetzelfde.
+- Definitieve fix: idempotente post-build projectie via `tools/bouw-v18-ai-ecosysteem.mjs`, expliciet aangeroepen vanuit `tools/bouw-v18-production.mjs`.
+- Regressie: `tests/brain-ai-ecosysteem-production-projection-v1.test.mjs`.
+- Learning: `brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json`.
+- Preventie: iedere generated public surface wordt voortaan eerst gekoppeld aan zijn build-authority; directe source-edits tellen niet als duurzame productieauthority wanneer downstream buildstappen het bestand herschrijven.
+- Powerhouse-borging: opgenomen in `brain/policies/powerhouse-agent-continuity-v1.json#generated_surface_projection_rule` en `.agents/skills/powerhouse-continuity/SKILL.md`.
+- Productiebewijs: exact productiecommit/deploy en functionele readback blijven vereist voordat `LIVE_BEWEZEN` mag worden gebruikt.
+
