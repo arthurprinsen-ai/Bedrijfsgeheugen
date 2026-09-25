@@ -90,8 +90,11 @@ test('exact-candidate fallback never bypasses full visibility and CLS quality ga
   assert.match(websiteLane, /needs\.preview-ready\.outputs\.base_url/);
   assert.match(visibilityCheck, /if \(state\.cls > 0\.1\)/);
   assert.match(visibilityCheck, /CLS \$\{state\.cls\.toFixed\(3\)\} exceeds 0\.100/);
+  assert.match(visibilityCheck, /UI_VR_ROUTE_CONCURRENCY/);
+  assert.match(visibilityCheck, /const workerCount = Math\.min\(routeConcurrency, routes\.length\)/);
+  assert.match(visibilityCheck, /Promise\.all\(Array\.from\(\{ length: workerCount \}/);
+  assert.match(visibilityCheck, /for \(let routeIndex = workerIndex; routeIndex < routes\.length; routeIndex \+= workerCount\)/);
   assert.match(visibilityCheck, /for \(const viewport of viewports\)/);
-  assert.match(visibilityCheck, /for \(const route of routes\)/);
 });
 
 
