@@ -4,7 +4,7 @@ import fs from 'node:fs';
 
 const source = fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
 
-test('production static i18n provider failure degrades to runtime fallback', () => {
+test('production static i18n keeps runtime fallback for recoverable failures but fails non-transient provider errors immediately', () => {
   assert.match(source,/STATIC_I18N_PROVIDER_FALLBACK/);
   assert.doesNotMatch(source,/STATIC_I18N_PRODUCTION_TRANSLATION_FAILED/);
   assert.doesNotMatch(source,/STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED/);
