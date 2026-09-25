@@ -1,0 +1,33 @@
+{
+  "fingerprint": "static-i18n-terminal-failclosed-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "STATIC_I18N_UNTRANSLATED_ENGLISH_ROUTE_FALLBACK",
+  "problem": "Production could publish Dutch content under /en/* because an incomplete immutable English cache combined with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=0 made the localized builder return an untranslated English estate.",
+  "root_cause": "The production cache requirement was relaxed while network translation remained disabled. Build transforms also introduced a volatile version timestamp into the translation corpus.",
+  "prevention": [
+    "Production uses STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "The complete immutable English cache is versioned and must validate against the post-build public corpus.",
+    "Volatile build metadata such as the visible version timestamp is excluded from translation.",
+    "Production browser readback must reject Dutch pricing H1 on /en/prijzen."
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_UNTRANSLATED_ENGLISH_ROUTE_FALLBACK",
+    "scope": "WEBSITE_I18N_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"
+  ],
+  "revision": 2
+}
