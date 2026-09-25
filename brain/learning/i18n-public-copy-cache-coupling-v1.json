@@ -1,0 +1,19 @@
+{
+  "id": "i18n-public-copy-cache-coupling-v1",
+  "date": "2026-09-25",
+  "failure_class": "PUBLIC_COPY_CHANGED_WITHOUT_STATIC_I18N_CACHE_UPDATE",
+  "symptom": "Exact-main production build failed after Dutch money-page copy changed while the versioned English cache still represented the previous source corpus.",
+  "root_cause": "Public HTML copy and the production static-English cache were changed in separate delivery lineages; preview builds run offline and did not require provider fill, while production remained fail-closed.",
+  "prevention": [
+    "Every public HTML copy change must update a versioned English cache or overlay in the same PR.",
+    "A targeted regression must prove the changed Dutch source strings have non-empty English translations.",
+    "Production remains fail-closed; do not weaken translation requirements to make deploys pass."
+  ],
+  "applies_to": [
+    "public website",
+    "pricing",
+    "SEO money pages",
+    "static i18n",
+    "production deploy"
+  ]
+}
