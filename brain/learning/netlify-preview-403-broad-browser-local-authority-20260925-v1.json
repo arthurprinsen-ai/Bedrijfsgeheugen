@@ -1,0 +1,48 @@
+{
+  "fingerprint": "netlify-preview-403-broad-browser-local-authority-20260925-v1",
+  "failure_class": "PREVIEW_PROVIDER_ACCESS_FALSE_REGRESSION",
+  "problem": "The website browser lane accepted a Netlify deploy-preview after targeted route readiness, then reused that preview for a full sitemap visibility sweep. Unrelated preview routes returned HTTP 403 and were misclassified as public-page visibility regressions.",
+  "root_cause": [
+    "Preview readiness proved only targeted affected routes, not public reachability of every sitemap route.",
+    "Broad visibility/header/browser checks reused the preview base URL instead of the exact local candidate.",
+    "Provider access status and visual regression evidence were conflated."
+  ],
+  "prevention": [
+    "Use Netlify deploy-preview only for targeted routes that were positively proven route-ready.",
+    "Always build and serve the exact local candidate for broad/full-site browser checks.",
+    "Run full sitemap visibility, header/menu and broad high-risk browser checks against http://127.0.0.1:4173.",
+    "Treat preview HTTP 403 as provider/access evidence, never as a UI/layout failure."
+  ],
+  "evidence": {
+    "pr": 2992,
+    "required_run": 36153195016,
+    "browser_job": 108131890454,
+    "observed_failure": "27 visibility issues, all HTTP 403 from deploy-preview-2992--bedrijfsgeheugen.netlify.app",
+    "affected_gate": "website / browser"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-website-browser-runtime-single-install.test.mjs"
+    ],
+    "canary": [
+      "tests/delivery-website-browser-runtime-single-install.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/delivery-website-browser-runtime-single-install.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PREVIEW_PROVIDER_ACCESS_FALSE_REGRESSION",
+    "scope": "CI_BROWSER_AUTHORITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "continuity",
+    "delivery"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
