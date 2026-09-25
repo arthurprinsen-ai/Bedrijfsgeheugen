@@ -19,6 +19,13 @@ export function productionPageErrors(observedErrors = [], allowExisting = false)
   return allowExisting ? [] : [...new Set(observedErrors.map(value => String(value)))];
 }
 
+export function filterSettledNavigationFailures(failedAssets = [], { httpOk = false, finalUrl = '' } = {}) {
+  if (!httpOk) return [...failedAssets];
+  let finalPath = '';
+  try { finalPath = new URL(String(finalUrl)).pathname || '/'; } catch {}
+  return failedAssets.filter(value => String(value) !== `document:${finalPath}`);
+}
+
 export function summarizeRouteResult({ visibleText = '', html = '', pageErrors = [], failedAssets = [], httpOk = true, identityOk = true } = {}) {
   const hasVisibleContent = String(visibleText).trim().length > 0 && String(html).trim().length > 0;
   const ok = Boolean(httpOk && identityOk && hasVisibleContent && pageErrors.length === 0 && failedAssets.length === 0);
@@ -92,7 +99,10 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
       visibleText,
       html,
       observedPageErrors:[...new Set(observedPageErrors)],
-      failedAssets:[...new Set(failedAssets)],
+      failedAssets:filterSettledNavigationFailures([...new Set(failedAssets)], {
+        httpOk:Boolean(response && response.ok()),
+        finalUrl:page.url(),
+      }),
       httpOk:Boolean(response && response.ok()),
     };
   } finally { await page.close(); }

@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
-import { newPageErrors, summarizeRouteResult, productionPageErrors } from '../tools/site-shell/verify-targeted-website-routes.mjs';
+import { newPageErrors, summarizeRouteResult, productionPageErrors, filterSettledNavigationFailures } from '../tools/site-shell/verify-targeted-website-routes.mjs';
 
 test('existing baseline page errors do not become a release regression', () => {
   const baseline = ['Unexpected end of input', 'missing ) after argument list'];
@@ -55,4 +55,19 @@ test('website preview selection probes every affected route before trusting Netl
   assert.match(workflow, /readiness\.every\(Boolean\)/);
   assert.match(workflow, /AbortSignal\.timeout\(/);
   assert.match(workflow, /preview_mode=local-exact-candidate/);
+});
+
+
+test('settled successful document navigation does not fail on an aborted duplicate document request', () => {
+  assert.deepEqual(filterSettledNavigationFailures(
+    ['document:/', 'script:/assets/app.js'],
+    { httpOk: true, finalUrl: 'https://deploy-preview.example/' },
+  ), ['script:/assets/app.js']);
+});
+
+test('document failures remain hard failures without a successful final response', () => {
+  assert.deepEqual(filterSettledNavigationFailures(
+    ['document:/'],
+    { httpOk: false, finalUrl: 'https://deploy-preview.example/' },
+  ), ['document:/']);
 });
