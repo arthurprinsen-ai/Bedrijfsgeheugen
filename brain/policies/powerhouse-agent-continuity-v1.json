@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.5",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|queue-pressure-governor|v1.5",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.6",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|queue-pressure-governor|terminal-user-handoff-dashboard-writeback|v1.6",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -33,7 +33,8 @@
     "STALE_ORPHANED_QUEUE_MUST_BE_REAPED",
     "CONTROL_PLANE_CHANGES_MUST_NOT_TRIGGER_ARTIFACT_LANES",
     "NO_UNVALIDATED_UNEXPECTED_CANDIDATE_HEAD_AUTHORITY",
-    "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION"
+    "STALE_IN_PROGRESS_RUNS_MUST_NOT_HOLD_RUNNERS_AFTER_SUPERSESSION",
+    "NO_TERMINAL_USER_HANDOFF_WITHOUT_DASHBOARD_WRITEBACK"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -305,5 +306,37 @@
       "branch_existence_alone_is_authority": false,
       "unexpected_head_requires_diff_validation": true
     }
+  },
+  "terminal_user_handoff_rule": {
+    "required": true,
+    "fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+    "owner_retains_execution_until_terminal": true,
+    "internal_non_terminal_states": [
+      "CI_QUEUED",
+      "CI_RUNNING",
+      "OPEN_PR",
+      "AUTO_MERGE_ARMED",
+      "MERGE_PENDING",
+      "DEPLOY_PENDING",
+      "PRODUCTION_READBACK_PENDING",
+      "LEARNING_WRITEBACK_PENDING",
+      "DOCUMENTATION_PENDING",
+      "SKILL_PROJECTION_PENDING",
+      "DASHBOARD_WRITEBACK_PENDING"
+    ],
+    "required_terminal_closure": [
+      "protected_merge_or_promotion_when_applicable",
+      "production_or_provider_readback",
+      "outcome_and_value_writeback",
+      "root_cause_fix_regression_prevention",
+      "relevant_skill_projection_and_readback",
+      "existing_powerhouse_dashboard_current_state_registration",
+      "activity_lineage_writeback_and_readback"
+    ],
+    "user_response_rule": "Do not hand autonomous next steps back to the user. A normal final response reports only terminally proven and durably registered outcomes.",
+    "dashboard_rule": "Every material incident, recovery, capability change or release is projected into the existing Powerhouse dashboard/current-state and activity lineage. Never create a parallel dashboard or truth store.",
+    "only_early_terminal": "BLOCKED_HARD_BOUNDARY",
+    "blocked_hard_boundary_response": "State exactly one smallest necessary human action and preserve the prepared next autonomous action in canonical state.",
+    "interruption_rule": "The next capable node resumes automatically from the last canonical checkpoint; user prompt 'ga door' is never required for continuity."
   }
 }

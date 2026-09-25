@@ -408,3 +408,17 @@ All repository-backed agents optimize for **time-to-terminal-proof**. Use the ca
 
 Canonical fingerprints: `delivery|fast-terminal|critical-path|v2`, `delivery|predictive-landing-coalescing|v1`.
 
+## Terminal user handoff + dashboard writeback — verplicht
+
+Fingerprint: `delivery|terminal-user-handoff|dashboard-writeback|v1`.
+
+Materiële Powerhouse-delivery mag nooit eindigen met een open vervolgstap die autonoom uitvoerbaar is. De owner-node houdt eigenaarschap door protected merge/promotion, productie/provider-readback, outcome, root-cause/fix/regressie/preventie, skill-projectie én registratie/readback in de bestaande Powerhouse current-state/dashboard- en activitylagen.
+
+Verplicht:
+- pending CI, open PR, auto-merge, deploy-start, provider-readback-pending, documentatie-pending, skill-pending en dashboard-writeback-pending zijn interne states;
+- de gebruiker krijgt geen “wat nu” of “ga door” als normale terminale handoff voor autonoom uitvoerbaar werk;
+- ieder materieel incident of herstel wordt zichtbaar gemaakt in de bestaande Powerhouse dashboard/current-state en activity lineage; geen parallel dashboard;
+- standaard terminale gebruikersuitkomst rapporteert alleen aantoonbaar live/gecontroleerd/geborgeerd werk plus relevante evidence;
+- alleen een bewezen `BLOCKED_HARD_BOUNDARY` mag de uitvoering vóór terminal proof stoppen; dan wordt exact de kleinste noodzakelijke menselijke actie benoemd en blijft de vervolgactie voorbereid;
+- na interruption hervat de volgende capabele node automatisch vanaf het laatste canonieke checkpoint.
+

@@ -1,0 +1,30 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-TERMINAL-USER-HANDOFF-DASHBOARD-WRITEBACK-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+  "date": "2026-09-25",
+  "problem": "A material GitHub recovery was reported with pending gates and implied follow-up actions, leaving the user unsure what would happen next even though the remaining work was autonomously executable.",
+  "root_cause": "The existing no-pending-output rule prevented false completion but did not make the standard user-facing handoff format and existing Powerhouse dashboard/current-state registration explicit terminal gates.",
+  "prevention": [
+    "Owner persists through protected merge/promotion, production/provider readback, outcome, learning/prevention, skill projection and dashboard/current-state writeback.",
+    "Autonomously executable next steps are internal execution state, not user handoff.",
+    "Every material incident/recovery/change is registered in the existing Powerhouse dashboard/current-state and activity lineage and read back.",
+    "Only a proven BLOCKED_HARD_BOUNDARY can return ownership before terminal proof, with one smallest required human action.",
+    "Interrupted work resumes automatically from canonical state without requiring the user to say ga door."
+  ],
+  "evidence": {
+    "notion_dashboard_hub_page_id": "3e4da36a-ac8a-81fb-b340-daccce80dec8",
+    "notion_system_map_page_id": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+    "notion_rule_readback": "Fingerprint present in both existing Powerhouse Dashboard Hub and Canonical System Map on 2026-09-25.",
+    "supabase_migration_identity_reconciliation": "Production migration ledger registered composio_content_fallback_governance_v1 as 20260925074007; repository filename is reconciled to the exact provider ledger identity."
+  },
+  "regression": "tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs",
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "documentation_targets": [
+    "docs/changes/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.md",
+    "docs/development-ledger-events/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.md"
+  ]
+}

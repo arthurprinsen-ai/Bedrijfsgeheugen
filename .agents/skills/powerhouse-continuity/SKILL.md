@@ -825,3 +825,20 @@ When a required website gate verifies every public route across multiple viewpor
 - treat many PRs stuck on the same long browser step as shared CI queue amplification, not independent product defects.
 
 Regression: `tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs`.
+
+## Terminal user handoff + dashboard writeback
+
+Fingerprint: `delivery|terminal-user-handoff|dashboard-writeback|v1`.
+
+A material Powerhouse run is not terminal while any safely autonomous delivery, readback, learning, documentation, skill projection, or dashboard/current-state registration remains open.
+
+Required closure:
+- protected merge/promotion where applicable;
+- exact production/provider readback;
+- outcome/value and root-cause/prevention writeback;
+- relevant skill projection/readback;
+- durable registration in the existing Powerhouse dashboard/current-state and activity lineage;
+- final user response states only terminal proof, not an autonomous next-step handoff.
+
+Queued/running CI, an open PR, auto-merge, deploy-start, readback pending, documentation pending, skill pending, or dashboard writeback pending are internal execution states. Only an evidenced `BLOCKED_HARD_BOUNDARY` may return ownership to the user, with one smallest required human action. Interruption resumes automatically from canonical state.
+
