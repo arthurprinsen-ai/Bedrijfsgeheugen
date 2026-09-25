@@ -31,7 +31,7 @@ function parseArgs(argv) {
   return out;
 }
 
-async function navigateWithRetry(page, url, { attempts = 3, timeout = 30_000 } = {}) {
+async function navigateWithRetry(page, url, { attempts = 2, timeout = 20_000 } = {}) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
@@ -61,7 +61,7 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
   try {
     const target = `${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`;
     const response = await navigateWithRetry(page, target);
-    await page.locator('body').waitFor({ state:'attached', timeout:15_000 });
+    await page.locator('body').waitFor({ state:'attached', timeout:10_000 });
     await page.waitForFunction(() => {
       const body=document.body;
       if(!body || !String(body.innerText||'').trim()) return false;
@@ -74,7 +74,7 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
           && rect.width>0
           && rect.height>0;
       });
-    }, { timeout:15_000 });
+    }, { timeout:10_000 });
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
@@ -98,7 +98,7 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
   } finally { await page.close(); }
 }
 
-async function observeRoute(browser, baseUrl, route, viewport, { attempts = 3 } = {}) {
+async function observeRoute(browser, baseUrl, route, viewport, { attempts = 2 } = {}) {
   let lastError;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     try {
@@ -129,6 +129,20 @@ async function verifyRoute(browser, baseUrl, route, viewport, { baselinePageErro
   return { ...evidence, baselinePageErrors:[...baselinePageErrors], allowExistingPageErrors, ...summary };
 }
 
+async function mapWithConcurrency(items, limit, worker) {
+  const safeLimit=Math.max(1,Math.min(Number.isFinite(limit)?Math.floor(limit):1,items.length||1));
+  const output=new Array(items.length);
+  let cursor=0;
+  await Promise.all(Array.from({length:safeLimit}, async()=>{
+    while(true){
+      const index=cursor++;
+      if(index>=items.length) return;
+      output[index]=await worker(items[index],index);
+    }
+  }));
+  return output;
+}
+
 export async function runCli(argv = process.argv.slice(2)) {
   const args = parseArgs(argv);
   const baseUrl = args['base-url'] || process.env.BASE_URL;
@@ -138,30 +152,34 @@ export async function runCli(argv = process.argv.slice(2)) {
   if (!baseUrl || !Array.isArray(routes) || routes.length === 0) throw new TypeError('BASE_URL and a non-empty routes JSON array are required');
   const { chromium } = await import('playwright');
   const browser = await chromium.launch({ headless:true });
-  const results = [];
-  const baseline = [];
   const viewports = [{ width:1440, height:1200 }, { width:390, height:844 }];
+  const uniqueRoutes=[...new Set(routes)].sort();
+  const tasks=uniqueRoutes.flatMap(route=>viewports.map(viewport=>({route,viewport})));
+  const concurrency=Math.max(1,Math.min(Number(args.concurrency || process.env.ROUTE_VERIFY_CONCURRENCY || 4) || 4,8));
+  let observations=[];
   try {
-    for (const route of [...new Set(routes)].sort()) {
-      for (const viewport of viewports) {
-        let baselinePageErrors = [];
-        if (baselineUrl) {
-          const baselineObservation = await observeRoute(browser, baselineUrl, route, viewport);
-          baselinePageErrors = baselineObservation.observedPageErrors;
-          baseline.push({
-            route,
-            viewport,
-            status:baselineObservation.status,
-            finalUrl:baselineObservation.finalUrl,
-            pageErrors:baselineObservation.observedPageErrors,
-            failedAssets:baselineObservation.failedAssets,
-          });
-        }
-        results.push(await verifyRoute(browser, baseUrl, route, viewport, { baselinePageErrors, allowExistingPageErrors }));
+    observations=await mapWithConcurrency(tasks,concurrency,async({route,viewport})=>{
+      let baselinePageErrors=[];
+      let baselineEntry=null;
+      if(baselineUrl){
+        const baselineObservation=await observeRoute(browser,baselineUrl,route,viewport);
+        baselinePageErrors=baselineObservation.observedPageErrors;
+        baselineEntry={
+          route,
+          viewport,
+          status:baselineObservation.status,
+          finalUrl:baselineObservation.finalUrl,
+          pageErrors:baselineObservation.observedPageErrors,
+          failedAssets:baselineObservation.failedAssets,
+        };
       }
-    }
+      const result=await verifyRoute(browser,baseUrl,route,viewport,{baselinePageErrors,allowExistingPageErrors});
+      return {result,baselineEntry};
+    });
   } finally { await browser.close(); }
-  const evidence = { baseUrl, baselineUrl, allowExistingPageErrors, routes:[...new Set(routes)].sort(), ok:results.every(item => item.ok), baseline, results };
+  const results=observations.map(item=>item.result).sort((a,b)=>a.route.localeCompare(b.route)||a.viewport.width-b.viewport.width);
+  const baseline=observations.map(item=>item.baselineEntry).filter(Boolean).sort((a,b)=>a.route.localeCompare(b.route)||a.viewport.width-b.viewport.width);
+  const evidence = { baseUrl, baselineUrl, allowExistingPageErrors, routes:uniqueRoutes, concurrency, ok:results.every(item => item.ok), baseline, results };
   const output = args.output || '.artifacts/targeted-route-verification.json';
   await mkdir(dirname(output), { recursive:true });
   await writeFile(output, `${JSON.stringify(evidence, null, 2)}\n`);

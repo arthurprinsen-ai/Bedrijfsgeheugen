@@ -1,0 +1,34 @@
+{
+  "fingerprint": "production-route-readback-bounded-parallel-v1",
+  "date": "2026-09-25",
+  "type": "DELIVERY_CONTROL_PLANE_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The manual exact-main Production Release Readback reached exact Netlify SHA and connector readiness but spent most of its terminal budget in Verify affected production routes. The targeted route verifier serialized every independent route×viewport observation and nested multiple navigation/visibility retry windows, so even one route at desktop+mobile could block the subsequent pricing/i18n proof for many minutes.",
+  "prevention_rule": "Independent production route×viewport browser proofs must run with bounded concurrency, bounded navigation retries and an explicit workflow wall-clock timeout. Both 1440px and 390px evidence remain mandatory; speed must come from safe parallelism, not deleting browser proof.",
+  "evidence": {
+    "run_id": 36134150890,
+    "job_id": 108068183321,
+    "main_sha": "390e058e581874cb08f5b2d4608d886a5c9a7dcf",
+    "blocked_step": "Verify affected production routes"
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_ROUTE_READBACK_SERIAL_WALLCLOCK_EXHAUSTION",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-route-readback-bounded-parallel-v1.test.mjs"
+    ],
+    "invariants": [
+      "desktop and mobile browser proof remain present",
+      "concurrency is bounded",
+      "workflow route verification has an explicit timeout"
+    ]
+  }
+}
