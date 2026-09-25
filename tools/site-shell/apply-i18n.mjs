@@ -36,9 +36,11 @@ function walk(dir) {
 }
 function patch(file) {
   let html = fs.readFileSync(file,'utf8');
-  if (!/<html\b/i.test(html) || /data-bg-i18n-asset/.test(html)) return;
-  if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, LINK + '\n' + SCRIPT + '\n</head>');
-  else return;
+  if (!/<html\b/i.test(html)) return;
+  if (!/data-bg-i18n-asset/.test(html)) {
+    if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, LINK + '\n' + SCRIPT + '\n</head>');
+    else return;
+  }
   html = injectMobileLanguage(html);
   fs.writeFileSync(file,html);
 }
