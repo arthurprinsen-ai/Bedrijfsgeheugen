@@ -19,7 +19,8 @@
     "Register newly introduced delivery skills in the canonical System Map in the same lineage",
     "Migrate stale pricing regressions to semantic content-addressed cache and dataset-readiness invariants",
     "Restore content-growth-ci push.branches=[main] and keep main out of paths",
-    "Run independent viewport sweeps in bounded parallel batches so the full production sitemap readback can complete inside its fail-closed budget"
+    "Run independent viewport sweeps in bounded parallel batches so the full production sitemap readback can complete inside its fail-closed budget",
+    "Make visibility concurrency regressions assert semantic coverage and bounded worker structure rather than one obsolete loop implementation"
   ],
   "prevention_rule": "Every browser/readback or expensive CI workflow must bound async waits and total runtime, use stable supersession keys, scope specialist main triggers to owned paths, validate YAML semantics after automated rewrites, and parallelize independent viewport sweeps within a bounded worker budget.",
   "compiler": {
@@ -37,7 +38,8 @@
       "tests/brain-pricing-interactions-functional-v1.test.mjs",
       "tests/brain-pricing-toggle-runtime-v3.test.mjs",
       "tests/brain-pricing-visible-state-parity-v1.test.mjs",
-      "tests/brain-powerhouse-live-system-map-v1.test.mjs"
+      "tests/brain-powerhouse-live-system-map-v1.test.mjs",
+      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs"
     ],
     "invariants": [
       "each navigation attempt has a finite timeout",
@@ -60,6 +62,7 @@
     "A generic text transformation assumed push.branches was a one-line YAML scalar and inserted paths before a multi-line branch list, producing an invalid semantic structure even though the file remained textually plausible.",
     "A regression migration attempt changed the runtime contract but left older tests hard-coded to a timestamp cache key, literal selector spelling, and a stale System Map inventory.",
     "A workflow rewrite left content-growth-ci.yml with an empty push.branches key and moved main into paths, creating semantic YAML drift that only the multiline branch-scope regression exposed.",
-    "Route-level concurrency alone was insufficient because phone, tablet and desktop sweeps still executed sequentially; the phone sweep could consume the entire 8-minute global budget before tablet/desktop started."
+    "Route-level concurrency alone was insufficient because phone, tablet and desktop sweeps still executed sequentially; the phone sweep could consume the entire 8-minute global budget before tablet/desktop started.",
+    "A stale regression asserted the exact sequential viewport loop syntax instead of the intended invariant of complete route × viewport coverage under bounded concurrency."
   ]
 }
