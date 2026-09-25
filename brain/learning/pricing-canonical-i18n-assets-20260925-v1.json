@@ -1,0 +1,35 @@
+{
+  "fingerprint": "pricing-canonical-i18n-assets-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production pricing browser proof failed because no visible mobile language select existed on /prijzen.",
+  "root_cause": "The canonical source file prijzen.html did not contain the i18n CSS/runtime assets itself. Normal builds could inject them through apply-i18n.mjs, but exact-source recovery delivery could expose the canonical source without that enrichment, so the mobile language control was never mounted.",
+  "prevention": [
+    "Canonical pricing source must include /assets/i18n.css and /assets/js/i18n.js with data-bg-i18n-asset markers.",
+    "The site-wide apply-i18n step remains idempotent and must not duplicate those assets.",
+    "Production pricing browser proof must require a visible mobile language select and a successful NL→EN→NL roundtrip.",
+    "Exact-source production recovery must not depend on build-only injection for critical navigation controls."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-canonical-i18n-assets-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-canonical-i18n-assets-v1.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-canonical-i18n-assets-v1.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "failed_production_sha": "6417fa291ac08345369e1e143abf974fac54f0e4",
+    "failed_readback_run_id": "36157095751",
+    "failed_assertion": "visible mobile language select is missing"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRICING_CANONICAL_I18N_ASSET_GAP",
+    "scope": "WEBSITE_PRICING_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
