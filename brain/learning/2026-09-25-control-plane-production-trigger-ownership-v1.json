@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "delivery|production-trigger|control-plane-path-ownership|v1",
+  "obligation_id": "control-plane-production-trigger-ownership-v1",
+  "problem": "A governance/control-plane-only merge started Production Source Snapshot, Production Release Readback and canonical production readback because several non-runtime paths were outside workflow-level paths-ignore.",
+  "root_cause": "Production trigger ownership was based on an incomplete ignore list. AGENTS.md, brain/policies/**, tools/delivery/** and the targeted-route verifier are control-plane/test surfaces, but they were treated as production-bearing at the GitHub push trigger boundary.",
+  "fix": "Exclude those control-plane-only paths from both production workflow push triggers while retaining PR Required validation and browser/automation regression coverage.",
+  "failed_approaches": [
+    "Relying on downstream scope classification after a production workflow had already started.",
+    "Treating every tools/** or governance metadata change as potentially deployable without path ownership.",
+    "A merged browser regression invoked isHardAssetFailure without importing the exported helper, so the baseline suite failed with ReferenceError even though the production verifier implementation was correct."
+  ],
+  "prevention": [
+    "KEEP_CONTROL_PLANE_ONLY_PATHS_OUT_OF_PRODUCTION_PUSH_TRIGGERS",
+    "VALIDATE_CONTROL_PLANE_CHANGES_IN_REQUIRED_PR_LANES",
+    "DO_NOT_SUPPRESS_DEPLOYABLE_SITE_PORTAL_API_OR_NETLIFY_RUNTIME_PATHS",
+    "USE_TRIGGER_BUDGET_REGRESSION_TO_ENFORCE_PATH_OWNERSHIP",
+    "KEEP_REGRESSION_HELPER_IMPORTS_EXPLICIT_AND_EXECUTABLE_IN_BASELINE_SUITE"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_TRIGGER_SCOPE_FALSE_POSITIVE",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-control-plane-production-trigger-ownership-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "delivery-self-optimization"
+  ],
+  "evidence": {
+    "false_positive_source_snapshot_run": 36173599723,
+    "false_positive_release_readback_run": 36173599820,
+    "false_positive_canonical_shell_run": 36173599678,
+    "canonical_regression": "tests/delivery-ci-trigger-budget.test.mjs",
+    "browser_regression_contract": "tests/targeted-website-route-regression.test.mjs"
+  }
+}

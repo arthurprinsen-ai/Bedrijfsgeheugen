@@ -606,23 +606,15 @@ Fingerprint: `terminal-brain-gate-trigger-parity-v1`
 - If no exact-head Unified Brain Delivery run exists, require successful exact-merge `Brain foundation verify` push evidence before terminal closure.
 - Failed Brain evidence remains fail-closed; absence of both evidence paths is `TERMINAL_BRAIN_EVIDENCE_NOT_TERMINAL`.
 
-## Terminal live proof must be written back in the same delivery lineage
 
-Fingerprint: `delivery|terminal-live-proof-writeback|v1`.
+## Production trigger ownership for control-plane paths
 
-When a chat or agent establishes that a change is live, the proof is not considered fully closed until the result is written back to the canonical repository in the same obligation lineage.
+Fingerprint: `delivery|production-trigger|control-plane-path-ownership|v1`.
 
-Mandatory:
-- capture the authoritative production identity used for the live claim (provider deploy id and commit SHA where available);
-- distinguish exact-current-main proof from safe non-runtime descendant proof; never present ancestry alone as runtime equivalence;
-- require browser/function readback for the affected functional surface before a user-facing LIVE claim;
-- after LIVE is proven, persist the learning in four repository surfaces: skill projection, machine-readable Brain learning, append-only development ledger, and human-readable change documentation;
-- bind the writeback to the production evidence and source lineage that was actually verified;
-- if `main` advances after proof only through explicitly non-production paths, reuse the existing functional proof under the safe-supersession rule instead of redeploying purely for documentation/learning;
-- if runtime-affecting paths advance, obtain new production proof before repeating a LIVE claim;
-- do not leave this writeback as chat-only state.
+Production Source Snapshot and Production Release Readback must not start for changes that only alter delivery/governance control-plane surfaces. At minimum these paths are non-runtime for production-trigger ownership:
+- `AGENTS.md`;
+- `brain/policies/**`;
+- `tools/delivery/**`;
+- `tools/site-shell/verify-targeted-website-routes.mjs`.
 
-Reference closure: 25 September 2026 production deployment and NL/EN/pricing browser proof followed by repository learning/skill/documentation writeback.
-Regression: `tests/brain-terminal-live-proof-writeback-v1.test.mjs`.
-Learning: `brain/learning/2026-09-25-terminal-live-proof-writeback-v1.json`.
-
+These paths remain fully validated in PR Required/automation/browser suites. Excluding them from production push triggers prevents unnecessary Netlify promotions, stale-release wait loops, and CI fan-out. Never generalize this rule to deployable site, portal, API, Netlify function, connector runtime, or other production-bearing paths.
