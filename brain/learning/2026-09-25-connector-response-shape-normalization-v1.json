@@ -25,9 +25,21 @@
     ".agents/skills/powerhouse-continuity/SKILL.md"
   ],
   "documentation_targets": [
-    "docs/connector-response-shape-resilience.md",
+    "docs/changes/connector-response-shape-resilience-v1.md",
     "docs/development-ledger-events/connector-response-shape-normalization-v1.md"
   ],
-  "regression": "tests/powerhouse-connector-response-normalization.test.mjs",
-  "failure_class": "CONNECTOR_RESPONSE_SHAPE_MISMATCH"
+  "regression": "tests/brain-connector-response-shape-normalization-v1.test.mjs",
+  "failure_class": "CONNECTOR_RESPONSE_SHAPE_MISMATCH",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-connector-response-shape-normalization-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CONNECTOR_RESPONSE_SHAPE_MISMATCH",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
