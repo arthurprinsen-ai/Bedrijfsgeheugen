@@ -1,0 +1,55 @@
+{
+  "fingerprint": "static-i18n-cache-complete-20260925-v1",
+  "failure_class": "PRODUCTION_BUILD",
+  "problem": "Netlify production could not advance from the old commit because the deterministic English localization build failed closed with 1,926 untranslated post-build strings.",
+  "root_cause": [
+    "The production build mutates and generates public HTML before static English localization runs.",
+    "The immutable English cache covered the earlier source set but not all strings present after the full production build composition.",
+    "STATIC_I18N_REQUIRE_CACHE=1 correctly blocked deployment instead of publishing partially translated English pages."
+  ],
+  "prevention": [
+    "Run the exact pre-i18n production composition before validating static English cache completeness.",
+    "Require build-localized-routes.mjs --validate-cache against the post-composition public route set before production promotion.",
+    "Keep production STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1 so Netlify never depends on an online translation provider.",
+    "Generate missing cache entries in an authorized CI recovery lane, commit the resulting immutable cache, then prove offline completeness.",
+    "Never mark production live from a green non-deployment readback when release.json commit_ref differs from protected main."
+  ],
+  "evidence": {
+    "failed_netlify_deploy": "6ab68cc1620347dff3081d39",
+    "failed_expected_sha": "e6b9369587ed0b7f31a68a50f2cfd360b8800a18",
+    "failure": "STATIC_I18N_CACHE_INCOMPLETE: 1926 missing translation(s)",
+    "recovery_run": 36153434965,
+    "offline_cache_validation": "success",
+    "recovery_pr": 3008
+  },
+  "status": "ACTIVE_PREVENTION",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs",
+    "netlify.toml STATIC_I18N_NETWORK=0",
+    "netlify.toml STATIC_I18N_REQUIRE_CACHE=1"
+  ],
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "continuity",
+    "delivery"
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE",
+    "scope": "WEBSITE_PUBLIC_I18N_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}

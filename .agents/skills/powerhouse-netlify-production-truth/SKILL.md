@@ -29,3 +29,11 @@ If production advances, keep earlier exact-SHA evidence as historical containmen
 Only claim `LIVE_BEWEZEN` when all applicable gates are green: protected merge, exact provider identity, required functional readback, and canonical learning/writeback.
 
 Canonical learning: `brain/learning/netlify-auth-recovery-exact-sha-provider-proof-20260925-v1.json`.
+
+
+## Static NL/EN cache completeness
+- Netlify production builds stay offline for translation: `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1`.
+- Validate the immutable English cache against the exact **post-composition** public HTML surface, not only raw source pages.
+- A `STATIC_I18N_CACHE_INCOMPLETE` failure is a source/cache parity defect; do not weaken fail-closed behavior and do not add a production translation-provider dependency.
+- Repair missing entries in an authorized CI lane, persist the cache, prove `build-localized-routes.mjs --validate-cache` offline, then promote.
+- Fingerprint: `static-i18n-cache-complete-20260925-v1`.
