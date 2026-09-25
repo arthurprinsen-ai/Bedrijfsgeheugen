@@ -452,6 +452,7 @@
         "tools/bouw-release-evidence.mjs",
         ".github/scripts/",
         "tests/final-site-navigation-contract.test.mjs",
+        "tests/components/",
         "tests/compliance-status-",
         "tests/seo-",
         "tests/content-growth-",
