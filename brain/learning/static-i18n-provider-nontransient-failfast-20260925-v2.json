@@ -1,0 +1,11 @@
+{
+  "fingerprint": "static-i18n-provider-nontransient-failfast-v2",
+  "date": "2026-09-25",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Static English generation treated non-transient provider failures as splittable batch failures, causing repeated calls after credit/auth errors.",
+  "prevention_rule": "Retry only transient 429/5xx classes. Non-transient provider failures must throw immediately with a stable classification. Deployment auth remains under the current GitHub OIDC Netlify deploy-bridge contract.",
+  "regression": [
+    "tests/brain-static-i18n-provider-nontransient-failfast-v2.test.mjs"
+  ],
+  "supersedes_pr": 2707
+}
