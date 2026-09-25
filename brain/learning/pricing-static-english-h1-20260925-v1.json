@@ -46,5 +46,12 @@
     "root_cause": "Styled headings are translated node-by-node; sentence-level cache keys are insufficient when inline markup splits the text.",
     "prevention": "Bind cache patches to the parser-level source strings and verify the visible composed result in a real browser.",
     "evidence": "Production /en/prijzen reached the English route but visibly retained the Dutch composed H1."
+  },
+  "compiler": {
+    "failure_class": "STATIC_I18N_TRANSLATION_CONTENT_DRIFT",
+    "scope": "WEBSITE_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
