@@ -50,3 +50,23 @@ test('cockpit renders problem-first framing and evidence drawer',()=>{
  assert.match(html,/Owner Dependency Reduction/);
  assert.match(html,/doorlooptijd approvals/);
 });
+
+
+test('problem radar context is visually projected without creating a second truth',()=>{
+ const state={powerhouse:{tenant_id:'tenant-1',executive:{problems:[{
+   problem_id:'PH-P031',name:'Ziekteverzuim structureel hoog',impact_label:'POTENTIAL',
+   symptoms:['capaciteit valt uit','planning schuift'],buying_trigger:'verzuim stijgt',sector_or_segment:'mkb diensten',source_class:'official_statistics',freshness_status:'current',
+   priority_dimensions:{recency:92,scale:71,urgency:84,buying_intent:66,powerhouse_relevance:95},
+   context_relevance:'Relevant doordat interne capaciteitsdata dezelfde richting op wijst.',
+   source_refs:['cbs:verzuim'],evidence
+ }]}}};
+ const model=buildExecutiveProjection(state,{tenantId:'tenant-1'});
+ assert.equal(model.problems[0].buying_trigger,'verzuim stijgt');
+ assert.equal(model.problems[0].priority_dimensions.urgency,84);
+ const html=executiveCockpitMarkup(model);
+ assert.match(html,/Contextuele probleemvisualisatie/);
+ assert.match(html,/Koopintentie/);
+ assert.match(html,/mkb diensten/);
+ assert.match(html,/capaciteit valt uit/);
+ assert.match(html,/Relevant doordat interne capaciteitsdata/);
+});
