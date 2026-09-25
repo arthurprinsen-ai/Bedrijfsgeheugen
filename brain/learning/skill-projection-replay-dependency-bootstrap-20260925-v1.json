@@ -1,0 +1,37 @@
+{
+  "fingerprint": "skill-projection-replay-dependency-bootstrap-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Powerhouse Skill Projection canonicalization failed before evaluating learning semantics because historical replay imported parse5 while the workflow had not installed repository dependencies.",
+  "root_cause": "The skill-projection workflow ran setup-node and immediately executed learning-canonicalization-gate.mjs. Classified historical replay tests can import repository modules with package dependencies, so a clean runner failed with ERR_MODULE_NOT_FOUND before the replay assertion could run.",
+  "prevention": [
+    "Install repository dependencies before executing canonicalization or classified historical replay tests.",
+    "Classify missing package/module during replay bootstrap as a workflow bootstrap defect, not as evidence that the learning is invalid.",
+    "Keep replay fail-closed and repair its execution environment instead of weakening or deleting regression evidence.",
+    "Guard dependency bootstrap ordering with an executable Brain regression."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-skill-projection-dependency-bootstrap-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-skill-projection-dependency-bootstrap-v1.test.mjs"
+  ],
+  "evidence": {
+    "failed_job": 108106029566,
+    "symptom": "ERR_MODULE_NOT_FOUND: parse5 before historical replay assertion",
+    "workflow": ".github/workflows/powerhouse-skill-projection.yml"
+  },
+  "skill_targets": [
+    "continuity",
+    "delivery"
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
