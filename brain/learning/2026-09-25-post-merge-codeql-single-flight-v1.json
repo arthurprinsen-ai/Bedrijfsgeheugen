@@ -15,7 +15,8 @@
     "Use stable PR/ref identity for CodeQL concurrency; never github.run_id.",
     "Treat only the newest relevant exact-SHA security run as authoritative.",
     "Do not return queued/running post-merge security state as a final user handoff.",
-    "Record NOT_APPLICABLE only from explicit path-filter evidence."
+    "Record NOT_APPLICABLE only from explicit path-filter evidence.",
+    "Treat a client transport interruption as non-terminal execution state and resume the canonical delivery lineage on the next executable turn."
   ],
   "evidence": [
     ".github/workflows/codeql.yml previously used github.event.pull_request.number || github.run_id while cancel-in-progress was true.",
@@ -24,7 +25,8 @@
     "Powerhouse Skill Projection became green on head effb8f367bf87076f839004e40bb6195c7b4a3e4 after canonical learning metadata was added.",
     "Required preflight then isolated the remaining semantic-learning gap to the evidence field, proving the material writeback guard is active.",
     "During recovery, current main advanced with a targeted website-route regression that referenced isHardAssetFailure without importing it; the merge-candidate Required lane exposed it before merge.",
-    "The recovery branch reused current-main test content and added only the missing isHardAssetFailure import, preserving newer main behavior instead of overwriting it with stale branch content."
+    "The recovery branch reused current-main test content and added only the missing isHardAssetFailure import, preserving newer main behavior instead of overwriting it with stale branch content.",
+    "Client transport interruption recovery was resumed on the existing canonical branch without treating the interrupted response as delivery completion."
   ],
   "prevention_rules": [
     "SINGLE_FLIGHT_POST_MERGE_CODEQL_PER_REF",
