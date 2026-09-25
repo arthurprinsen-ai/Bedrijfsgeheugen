@@ -445,6 +445,7 @@
     // Dutch route; switching to English explicitly navigates to /en/*.
     locale = portal ? preferredLocale() : (routed || 'nl');
     bindControlEvents();
+    document.addEventListener('bg:shared-mobile-nav-ready', mountControl);
     mountControl();
     document.documentElement.lang = locale;
     document.documentElement.dataset.bgLocale = locale;
