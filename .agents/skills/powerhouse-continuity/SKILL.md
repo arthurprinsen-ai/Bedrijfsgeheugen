@@ -1068,3 +1068,14 @@ Fingerprint: `website-i18n-production-main-drift-20260925-v1`.
 - Any production-affecting i18n environment change requires a fresh exact-main production build before closure.
 - Mandatory NL/EN terminal browser readback routes are homepage `/`, pricing `/prijzen` and systems/koppelingen `/systemen-koppelen`, including visible language state change.
 - Terminal LIVE requires: protected merge → production `commit_ref === main SHA` → browser state-change proof → Brain/ledger/skill writeback.
+
+
+## Netlify OIDC proxy 401 recovery
+
+Fingerprint: `netlify-oidc-proxy-401-git-source-fallback-20260925-v1`.
+
+- Successful OIDC bridge acquisition is not proof that the returned Netlify proxy is authorized for upload.
+- Classify an upload `401 Unauthorized` as deploy-transport authentication failure, not application/i18n failure.
+- If linked Git delivery is available, a bounded real website-source trigger may be used to activate the Git-linked build without the failed upload proxy.
+- Fallback does not weaken closure: production `commit_ref` must equal protected `main`, then homepage, pricing, systems/koppelingen and NL/EN browser state change must be proven.
+- Keep the 401 incident recorded in Brain and the development ledger until the deploy bridge itself is independently repaired.
