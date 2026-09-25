@@ -10,7 +10,7 @@ const EXCLUDED_TOP = new Set(['.git','.github','node_modules','assets','componen
 const INCLUDED_DIRS = new Set(['blog','kennis']);
 const SKIP_TAGS = new Set(['script','style','code','pre','noscript','svg','textarea']);
 const ATTRS = new Set(['placeholder','title','aria-label','alt']);
-const TRANSLATION_CACHE_FILE = path.join(ROOT,'.cache','bg-static-i18n-en.json');
+const TRANSLATION_CACHE_FILE = path.join(ROOT,'data','i18n','bg-static-i18n-en.json');
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
