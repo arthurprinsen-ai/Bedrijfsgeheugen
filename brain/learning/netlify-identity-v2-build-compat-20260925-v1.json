@@ -7,10 +7,16 @@
     "Never couple production builds to undocumented node_modules internal file paths.",
     "Treat legacy identity vendoring as optional compatibility output.",
     "Keep customer portal auth race and recovery-token guards mandatory.",
-    "Verify production through exact-main deploy and browser readback."
+    "Verify production through exact-main deploy and browser readback.",
+    "Production locale proof must choose an actually visible mobile language control and roundtrip homepage, pricing and systems/koppelingen.",
+    "Regression tests that search repeated runtime statements must scope assertions to the target function, not the first file-wide occurrence.",
+    "Pricing rescue asset query keys must equal the current Git blob identity everywhere they are asserted or emitted."
   ],
   "test_evidence": [
-    "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+    "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs",
+    "tests/brain-i18n-active-mobile-host-production-v1.test.mjs",
+    "tests/brain-pricing-billing-aria-selected-production-v1.test.mjs",
+    "tests/brain-pricing-rescue-asset-cache-identity-v1.test.mjs"
   ],
   "skill_targets": [
     "delivery",
@@ -24,7 +30,7 @@
     "repeat_count": 1,
     "security_sensitive": true
   },
-  "revision": 1,
+  "revision": 2,
   "evaluation": {
     "historical_replay": [
       "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
@@ -34,6 +40,13 @@
     ],
     "canary": [
       "tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "downstream_regressions": [
+      "visible mobile language selector production oracle",
+      "setBilling aria-selected scoped regression oracle",
+      "pricing rescue content-addressed cache identity"
     ]
   }
 }
