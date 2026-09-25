@@ -944,8 +944,22 @@ Fingerprint: `pricing-rescue-observer-self-loop-20260925-v1`.
 
 Fingerprint: `website|i18n|versioned-static-cache|v1`.
 
-Production English localization must not require a live translation-provider call when the public source corpus is unchanged. The complete English translation map is a versioned repository artifact at `.cache/bg-static-i18n-en.json`.
+Production English localization must not require a live translation-provider call when the public source corpus is unchanged. The complete English translation map is a versioned repository artifact at `data/i18n/bg-static-i18n-en.json`.
 
 Before delivery, run `node tools/site-shell/build-localized-routes.mjs --validate-cache`. It must prove every currently selected public source string has a non-empty cached English translation.
 
 If source copy introduces new strings, update the cache in the same candidate lineage. Production remains fail-closed: never publish untranslated `/en/*` pages and never convert provider/cache failure into silent fallback.
+
+
+## Production build-oracle semantic parity
+
+Fingerprint: `pricing-build-oracle-context-parity-20260925-v1`.
+
+- Production build oracles are executable product contracts, not passive documentation.
+- When website/Portal business-context semantics change, update source, reusable components, entitlement regressions and pre-build integrity tokens atomically.
+- Never restore retired copy or semantics merely to satisfy a stale test/oracle.
+- After a Netlify build failure, reproduce the exact packaged production source before changing runtime behavior.
+- For NL/EN delivery, the build chain must pass completely before exact-source deployment and the NL → EN → NL browser canary can establish LIVE_BEWEZEN.
+
+Regression: `tests/brain-pricing-build-integrity-context-parity-v1.test.mjs`.
+Learning: `brain/learning/pricing-build-oracle-context-parity-20260925-v1.json`.
