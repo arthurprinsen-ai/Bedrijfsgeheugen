@@ -963,3 +963,4 @@ Fingerprint: `pricing-build-oracle-context-parity-20260925-v1`.
 
 Regression: `tests/brain-pricing-build-integrity-context-parity-v1.test.mjs`.
 Learning: `brain/learning/pricing-build-oracle-context-parity-20260925-v1.json`.
+- Any public-copy/SEO change that introduces translatable strings must update canonical `data/i18n` English cache coverage in the same candidate and pass offline `--validate-cache`; provider fill is recovery, never the normal unchanged-deploy path.
