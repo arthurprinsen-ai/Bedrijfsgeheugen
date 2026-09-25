@@ -1046,3 +1046,14 @@ Fingerprint: `netlify-static-i18n-cache-completeness-20260925-v1`.
 - New or changed public copy must add its English cache authority in the same lineage.
 - A green PR without cache completeness is not production-ready.
 - Terminal closure remains exact production SHA + pricing/i18n browser proof.
+
+## Netlify linked-build error exact-source fallback
+
+Fingerprint: `netlify-linked-build-error-fallback-v5`.
+
+- A Git-linked Netlify build with `state=error` is logged as provider evidence and must not terminate delivery when the authenticated canonical exact-source transport is available.
+- Continue with exact-source upload for the same expected current-main SHA after logging linked deploy/build metadata.
+- Provider-ready state, exact production SHA, production content checks and browser readback remain mandatory; fallback never weakens proof.
+- Keep one production writer per obligation and close/defer competing snapshot writers.
+- Regression: `tests/brain-netlify-linked-build-error-fallback-v5.test.mjs`.
+- Learning: `brain/learning/2026-09-25-netlify-linked-build-error-fallback-v5.json`.
