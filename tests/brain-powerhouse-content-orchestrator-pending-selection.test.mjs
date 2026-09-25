@@ -45,3 +45,9 @@ test('orchestrator falls back through governed Composio only for provider availa
   assert.match(source,/Every factual statement and metadata value must be supported by the supplied user data/);
   assert.match(source,/generation_evidence:\{model:generationModel,provider:generationProvider,primary_model:gov\.model_id,fallback_reason:fallbackReason/);
 });
+
+test('orchestrator never re-decides ambiguous or republish-forbidden provider claims',()=>{
+  assert.match(source,/evidence\.republish_forbidden === true/);
+  assert.match(source,/evidence\.possible_provider_side_effect === true/);
+  assert.match(source,/evidence\.provider_create_success === true && !!clean\(row\.delivery_ref\)/);
+});
