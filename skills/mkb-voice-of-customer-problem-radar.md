@@ -279,3 +279,27 @@ Permanent:
 - dezelfde evidence mag blog- en LinkedIn-bedrijfskandidaten voeden volgens probleem -> symptomen -> impact -> oorzaak/data -> aanpak -> capability -> meetbaar resultaat -> CTA;
 - duplicate content angles en onbewezen publicatie/readback falen dicht;
 - gerealiseerde waarde vereist Verified Value-evidence en schrijft terug naar dezelfde Problem ID.
+
+
+## Contextuele visuele portalprojectie — 25 september 2026
+
+Fingerprint: `powerhouse-problem-radar-contextual-visual-v1`.
+
+De Probleemradar is geen los dashboard. Canonieke `PH-Pxxx`-intelligentie wordt contextueel zichtbaar op de Powerhouse-oppervlakken waar die het besluit ondersteunt: directiecockpit, Impact Engine, Next Best Actions, Monitoring & Learning en Evidence Health.
+
+Per relevante projectie mogen visueel worden getoond:
+- impactlabel en confidence;
+- sector/segment en kooptrigger;
+- bronklasse en freshness;
+- maximaal drie concrete symptomen;
+- prioriteitsdimensies actualiteit, omvang, urgentie, koopintentie en Powerhouse-relevantie;
+- korte context-/benchmarkverklaring.
+
+Permanent:
+- geen tweede probleemdashboard of lokale taxonomie bouwen;
+- dezelfde `PH-Pxxx` en evidence-lineage hergebruiken;
+- externe signalen blijven context/benchmark totdat tenant-evidence relevantie ondersteunt;
+- context alleen tonen waar deze materieel helpt; niet overal decoratief injecteren;
+- evidence drawer “Waarom zegt Powerhouse dit?” blijft beschikbaar;
+- mobiel compact tonen en detail niet boven de dagstart plaatsen;
+- visualisatie mag nooit confidence, impact of urgentie sterker suggereren dan de onderliggende evidence toestaat.
