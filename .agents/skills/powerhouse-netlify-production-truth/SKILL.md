@@ -54,3 +54,15 @@ When a recovery changes a build-time JavaScript transformer:
 - execute it against a minimal representative fixture;
 - assert the intended DOM/string mutation and idempotence;
 - if OIDC succeeds but both linked and exact-source Netlify deploys fail during `building site`, classify the incident as a build-content failure before changing deploy credentials or transport.
+
+## Visibility-first mobile browser proof
+
+Fingerprint: `mobile-i18n-visible-control-wait-20260925-v2` revision 3.
+
+For mobile production browser proof:
+- never choose a language control by locator count or DOM presence;
+- after opening the active mobile navigation, resolve only `:visible` selectors inside approved mobile hosts;
+- if multiple hosts coexist, hidden shared/legacy controls are not evidence;
+- apply the same visibility-first rule in both NL→EN and EN→NL directions;
+- exact provider identity and successful build do not close delivery until this functional roundtrip is green.
+
