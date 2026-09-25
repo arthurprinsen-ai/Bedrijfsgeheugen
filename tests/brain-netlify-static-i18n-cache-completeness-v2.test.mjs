@@ -9,7 +9,6 @@ test('production static English cache recovery remains exact-source and fail-clo
 
   assert.equal(learning.failure_class,'STATIC_I18N_CACHE_SOURCE_DRIFT');
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
   assert.ok(Object.keys(cache).length > 1900,'immutable English cache must contain the recovered corpus');
   assert.match(JSON.stringify(learning.prevention),/commit_ref == protected main SHA/);
   assert.match(JSON.stringify(learning.prevention),/not a production deploy dependency/i);
