@@ -949,3 +949,6 @@ Production English localization must not require a live translation-provider cal
 Before delivery, run `node tools/site-shell/build-localized-routes.mjs --validate-cache`. It must prove every currently selected public source string has a non-empty cached English translation.
 
 If source copy introduces new strings, update the cache in the same candidate lineage. Production remains fail-closed: never publish untranslated `/en/*` pages and never convert provider/cache failure into silent fallback.
+- Pricing/Portal context vocabulary and every production build oracle must change atomically; stale literal copy may never block or roll back the canonical product model.
+- A failed Git-linked Netlify build must preserve its error evidence and continue to the already-authorized exact-source transport; LIVE still requires provider-ready exact SHA plus browser proof.
+- Public copy changes must carry complete versioned English cache coverage in the same candidate; provider translation is recovery-only, not the normal deploy dependency.
