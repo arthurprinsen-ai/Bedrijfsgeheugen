@@ -928,6 +928,7 @@ For public website localization:
 Regression: `tests/brain-public-i18n-static-route-authority-v1.test.mjs`.
 Canary: `tools/site-shell/verify-pricing-i18n-production.mjs`.
 Learning: `brain/learning/public-i18n-dutch-canonical-roundtrip-20260925-v1.json`.
+- Any production-promotion recovery for this invariant must carry fresh semantic evidence in Brain learning plus ledger/docs in the same candidate; stale regression tests must be reconciled to the current canonical safety contract rather than forcing unsafe fallback behavior.
 
 
 ## Pricing rescue mutation-observer safety
