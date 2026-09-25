@@ -11,12 +11,26 @@ on:
       - '**.html'
       - 'assets/**'
       - '_redirects'
+      - 'sitemap.xml'
+      - 'site/seo-order-*.json'
+      - 'tools/bouw-v18-views.mjs'
+      - 'tools/v18-views-lijst.mjs'
+      - 'tools/zoekwoorden.mjs'
+      - 'tools/bouw-sitemap.mjs'
+      - '.github/scripts/seocontrole.py'
       - '.github/workflows/paginacontrole.yml'
   pull_request:
     paths:
       - '**.html'
       - 'assets/**'
       - '_redirects'
+      - 'sitemap.xml'
+      - 'site/seo-order-*.json'
+      - 'tools/bouw-v18-views.mjs'
+      - 'tools/v18-views-lijst.mjs'
+      - 'tools/zoekwoorden.mjs'
+      - 'tools/bouw-sitemap.mjs'
+      - '.github/scripts/seocontrole.py'
       - '.github/workflows/paginacontrole.yml'
   workflow_dispatch:
     inputs:
