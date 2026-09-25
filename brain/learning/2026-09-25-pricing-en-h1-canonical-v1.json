@@ -1,0 +1,28 @@
+{
+  "fingerprint": "i18n|pricing|english-h1-canonical-patch|v1",
+  "date": "2026-09-25",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "STATIC_I18N_CANONICAL_TRANSLATION_GAP",
+  "problem": "Production /en/prijzen rendered the Dutch H1 although exact-SHA deployment, pricing structure and release identity were green.",
+  "root_cause": "The static English cache did not contain an authoritative translation for the exact source H1 'Prijzen voor digitalisering in het mkb'.",
+  "fix": [
+    "Add a small canonical cache patch for the exact source H1.",
+    "Keep the production browser proof that rejects the Dutch H1 on /en/prijzen."
+  ],
+  "prevention": [
+    "Treat mandatory route hero headings as explicit canonical translation contracts.",
+    "Do not consider i18n live based only on html lang or route switching; visible translated copy must also be proven."
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CANONICAL_TRANSLATION_GAP",
+    "scope": "WEBSITE_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-en-h1-canonical-v1.test.mjs"
+    ]
+  }
+}
