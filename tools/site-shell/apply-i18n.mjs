@@ -21,7 +21,7 @@ function injectMobileLanguage(html) {
 
   if (/id=(["'])bgkopMob\1/i.test(html) || /class=(["'])[^"']*\bbgkop-mob\b[^"']*\1/i.test(html)) {
     const cta = /<a\b[^>]*class=(["'])[^"']*\bbgkop-mcta\b[^"']*\1/i;
-    if (cta.test(html)) return html.replace(cta, match => MOBILE_LANGUAGE + match);
+    if (cta.test(html)) return html.replace(cta, MOBILE_LANGUAGE + '$&');
   }
 
   return html;
@@ -37,12 +37,18 @@ function walk(dir) {
 function patch(file) {
   let html = fs.readFileSync(file,'utf8');
   if (!/<html\b/i.test(html)) return;
-  if (!/data-bg-i18n-asset/.test(html)) {
-    if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, LINK + '\n' + SCRIPT + '\n</head>');
+  const before = html;
+  const hasLink = /<link\b[^>]*href=(["'])\/assets\/i18n\.css\1[^>]*>/i.test(html);
+  const hasScript = /<script\b[^>]*src=(["'])\/assets\/js\/i18n\.js\1[^>]*><\/script>/i.test(html);
+  const assets = [];
+  if (!hasLink) assets.push(LINK);
+  if (!hasScript) assets.push(SCRIPT);
+  if (assets.length) {
+    if (/<\/head>/i.test(html)) html = html.replace(/<\/head>/i, assets.join('\n') + '\n</head>');
     else return;
   }
   html = injectMobileLanguage(html);
-  fs.writeFileSync(file,html);
+  if (html !== before) fs.writeFileSync(file,html);
 }
 walk(ROOT);
 console.log('BG i18n assets injected site-wide');
