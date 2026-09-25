@@ -267,3 +267,18 @@ For every supersedable PR/ref workflow, `cancel-in-progress: true` only works wh
 
 Canonical regression: `tests/brain-actions-pr-single-flight-v1.test.mjs`.
 Canonical incident learning: `brain/learning/2026-09-25-pricing-hero-single-flight-recovery-v1.json`.
+
+
+## Main-push fan-out budget
+
+Fingerprint: `main-push-fanout-budget-20260925-v1`.
+
+Post-merge automation is affected-scope aware:
+- closure-only changes (docs, tests, workflow governance, agent skills, Brain learning) do not trigger a fresh Netlify production deployment/readback by themselves;
+- mixed commits still deploy whenever any runtime/site path is present;
+- domain post-merge checks use path-scoped push admission;
+- duplicate post-merge test suites already proven by Required are removed from every-main execution;
+- stale same-ref security/SEO work uses stable concurrency identity with `cancel-in-progress: true`;
+- Main Write Integrity is the intentional exception and observes every main write.
+
+Canonical learning: `brain/learning/main-push-fanout-budget-20260925-v1.json`.

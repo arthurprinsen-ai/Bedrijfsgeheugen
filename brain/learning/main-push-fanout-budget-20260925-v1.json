@@ -1,0 +1,38 @@
+{
+  "fingerprint": "main-push-fanout-budget-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Every merge to main launched deployment, browser readback, memory, SEO and security workflows even when the commit only changed documentation, learning, tests or agent skills.",
+  "root_cause": "Several post-merge workflows used unscoped push:main triggers, and CodeQL used run_id as its push concurrency identity. This converted harmless governance/writeback merges into new production deployments and non-coalescing runner demand.",
+  "prevention": [
+    "Production deploy/readback skips commits whose entire delta is docs, tests, GitHub workflow governance, agent skills or Brain learning.",
+    "Canonical shell and SEO post-merge workflows use domain path scopes.",
+    "Shared Agent Memory remains a pre-merge/change-scoped authority and does not rerun on every main push.",
+    "CodeQL main pushes are code-scoped and stale same-ref scans use cancel-in-progress with stable ref identity.",
+    "Main Write Integrity remains intentionally unscoped because every main write requires provenance observation.",
+    "Any commit containing both ignored governance files and runtime files still triggers production delivery."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/delivery-main-push-fanout-budget-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-concurrency"
+  ],
+  "compiler": {
+    "failure_class": "MAIN_PUSH_FANOUT_AMPLIFICATION",
+    "scope": "GITHUB_ACTIONS_MAIN_PUSH",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
