@@ -2,7 +2,9 @@
   "id": "2026-09-25-live-proof-current-main-provider-descendant-v2",
   "fingerprint": "delivery|live-proof|current-main-provider-descendant|v1",
   "scope": "POWERHOUSE_DELIVERY",
-  "compiler": {"failure_class": "STALE_OR_UNBOUND_PRODUCTION_READBACK"},
+  "compiler": {
+    "failure_class": "STALE_OR_UNBOUND_PRODUCTION_READBACK"
+  },
   "problem": "Merge, CI or stale provider evidence can be mistaken for current production truth when main and provider identities move independently.",
   "root_cause": "Terminal status did not always force a fresh current-main plus provider-production identity binding at claim time.",
   "prevention": [
@@ -13,7 +15,18 @@
     "Keep autonomous follow-up owned by the delivery node through learning, skill and dashboard writeback."
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-live-proof-current-main-provider-descendant-v2.test.mjs"],
+    "historical_replay": [
+      "tests/brain-live-proof-current-main-provider-descendant-v2.test.mjs"
+    ],
     "expected": "LIVE_BEWEZEN is possible only with fresh repository/provider binding and terminal writeback."
+  },
+  "evidence": {
+    "stale_pr": "#2914 failed on shared tests already inconsistent with current main",
+    "current_main_base": "817f0bfb504b6206ad72a8ca8878fb26dc913279",
+    "successor_pr": "#2926",
+    "regressions": [
+      "production route retry contract uses bounded two-attempt observation plus internal navigation retry",
+      "STATIC_I18N_NETWORK=1 is fail-closed; offline release may retain runtime fallback"
+    ]
   }
 }
