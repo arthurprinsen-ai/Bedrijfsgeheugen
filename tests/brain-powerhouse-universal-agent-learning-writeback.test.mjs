@@ -58,7 +58,7 @@ test('universal learning/writeback contract remains active and fail-closed', () 
 test('chats and agents are intrinsic execution nodes in one canonical Powerhouse loop', () => {
   const contract = continuityPolicy.loop_node_contract;
   assert.equal(continuityPolicy.status, 'ACTIVE');
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.7');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.8');
   assert.match(continuityPolicy.fingerprint, /intrinsic-loop-nodes/);
   assert.equal(contract.required, true);
   assert.deepEqual(contract.actor_kinds, ['chat', 'agent']);
@@ -373,7 +373,7 @@ test('predictive LinkedIn sales cockpit learning is discoverable through continu
 
 
 test('pending delivery state can never be the final chat or agent handoff', () => {
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.7');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.8');
   assert.ok(continuityPolicy.invariants.includes('NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT'));
   const rule=continuityPolicy.loop_node_contract.non_terminal_output_rule;
   assert.equal(rule.required, true);
@@ -437,4 +437,43 @@ test('queue-pressure governor is inherited by every chat and agent', () => {
   for(const invariant of ['NO_MATERIAL_GITHUB_MUTATION_WITHOUT_QUEUE_PRESSURE_FORECAST','NO_RECOVERY_ACTION_THAT_INCREASES_SATURATED_BACKLOG','NO_UNBOUNDED_WORKFLOW_FANOUT','NO_DUPLICATE_ACTIVE_RUN_FOR_SAME_PR_AND_WORKFLOW','BATCH_REPOSITORY_WRITES_BEFORE_CI','STALE_ORPHANED_QUEUE_MUST_BE_REAPED','CONTROL_PLANE_CHANGES_MUST_NOT_TRIGGER_ARTIFACT_LANES']) assert.ok(continuityPolicy.invariants.includes(invariant),`missing queue invariant: ${invariant}`);
   assert.match(agentsSource,/github\|actions-queue-pressure-governor\|predict-before-dispatch\|v1/);
   assert.match(continuitySkillSource,/Predict-before-dispatch queue governor/);
+});
+
+
+test('same-repository reviewable writeback contract is mandatory for all execution nodes', () => {
+  const rule = continuityPolicy.repository_writeback_rule;
+  assert.equal(rule.required, true);
+  assert.equal(rule.fingerprint, 'powerhouse|same-repo-material-writeback|reviewable-lineage|v1');
+  assert.deepEqual(rule.applies_to, ['chat', 'agent', 'workflow', 'autonomous-worker', 'skill']);
+  assert.equal(rule.same_obligation_lineage_required, true);
+  assert.equal(rule.external_or_chat_only_note_is_closure, false);
+  for (const artifact of [
+    'relevant_skill_execution_rule_or_projection',
+    'brain_powerhouse_machine_readable_learning',
+    'append_only_development_ledger_event',
+    'human_readable_repository_documentation'
+  ]) assert.ok(rule.reviewable_repository_artifacts_required.includes(artifact), `missing writeback artifact: ${artifact}`);
+  assert.equal(rule.fail_closed_state, 'WRITEBACK_INCOMPLETE');
+  assert.ok(continuityPolicy.invariants.includes('MATERIAL_WRITEBACK_MUST_BE_SAME_REPOSITORY_REVIEWABLE_LINEAGE'));
+  assert.match(continuitySkillSource, /same-repo-material-writeback\|reviewable-lineage\|v1/);
+  assert.match(agentsSource, /same-repo-material-writeback\|reviewable-lineage\|v1/);
+});
+
+
+test('repository-native borging is mandatory for every material chat and agent', () => {
+  const rule = continuityPolicy.repository_native_borging_rule;
+  assert.equal(rule.required, true);
+  assert.equal(rule.fingerprint, 'powerhouse|repository-native-borging|same-lineage-reviewable|v1');
+  assert.deepEqual(rule.minimum_closure_artifacts, [
+    'canonical skill or deterministic skill projection',
+    'Brain/Powerhouse learning',
+    'append-only development ledger',
+    'human-readable documentation'
+  ]);
+  assert.ok(rule.forbidden_substitutes.includes('chat-only note'));
+  assert.ok(rule.forbidden_substitutes.includes('external-only document'));
+  assert.match(rule.terminal_rule, /WRITEBACK_INCOMPLETE/);
+  assert.ok(continuityPolicy.invariants.includes('ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE'));
+  assert.match(agentsSource, /Repository-native borging is verplicht voor alle agents en chats/);
+  assert.match(continuitySkillSource, /Repository-native borging — mandatory for every material run/);
 });

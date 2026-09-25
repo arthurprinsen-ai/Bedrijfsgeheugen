@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "powerhouse|repository-native-borging|same-lineage-reviewable|v1",
+  "obligation_id": "repository-native-borging-all-agents-v1",
+  "problem": "Durable closure could be fragmented, external-only, or separated from the canonical delivery lineage.",
+  "root_cause": "The repository enforced material writeback artifacts, but did not yet state one explicit universal invariant that all four closure artifacts must be repository-native, same-lineage, reviewable and discoverable for every current and future agent/chat.",
+  "fix": "Promote repository-native same-lineage borging to the canonical continuity policy, AGENTS.md and continuity skill, backed by regression coverage and the existing closure guard.",
+  "prevention": [
+    "Keep skill projection, Brain learning, development ledger and human documentation in the same repository-backed lineage.",
+    "Chat-only, memory-only and external-only notes never satisfy canonical closure.",
+    "Missing repository-native closure remains WRITEBACK_INCOMPLETE.",
+    "Shared preflight must discover the new learning and skill projection."
+  ],
+  "compiler": {
+    "failure_class": "GOVERNANCE_ASSURANCE",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ],
+    "canary": [
+      ".github/workflows/required-test.yml"
+    ]
+  },
+  "skill_targets": [
+    "continuity"
+  ],
+  "evidence": [
+    "AGENTS.md",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+  ],
+  "outcome": "REPOSITORY_NATIVE_BORGING_STANDARDIZED_FOR_ALL_AGENTS_AND_CHATS"
+}

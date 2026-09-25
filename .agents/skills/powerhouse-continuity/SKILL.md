@@ -1197,6 +1197,51 @@ When GitHub refuses to reopen a closed PR because its head branch was force-push
 This prevents a stale recovery PR from rolling back newer mainline work while retaining fail-closed delivery governance.
 
 
+## Same-repository reviewable writeback
+
+Fingerprint: `powerhouse|same-repo-material-writeback|reviewable-lineage|v1`.
+
+For every material chat/agent/workflow change, closure artifacts stay in the canonical Bedrijfsgeheugen repository and in the same obligation/candidate lineage. A chat-only note, local side file, external memo or unreviewed record is never closure.
+
+Required repository-backed closure:
+- durable execution rule in the relevant skill layer or deterministic skill projection;
+- machine-readable `brain/learning/**/*.json`;
+- append-only `docs/development-ledger-events/**`;
+- human-readable `docs/changes/**` or equivalent canonical repository documentation;
+- existing protected delivery, production/provider readback and learning-to-skill readback.
+
+Batch these writebacks before CI when safe. If one required artifact is missing, return internal state `WRITEBACK_INCOMPLETE`; do not claim `LIVE_BEWEZEN`.
+
+
+## Repository-native borging — mandatory for every material run
+
+Fingerprint: `powerhouse|repository-native-borging|same-lineage-reviewable|v1`.
+
+Every material agent/chat change must close in the **same repository-backed lineage** with all four durable artifacts:
+
+1. canonical Brain/Powerhouse learning;
+2. append-only development ledger evidence;
+3. human-readable change/learning documentation;
+4. relevant skill projection or durable SKILL.md operating-principle update.
+
+A chat-only note, external-only document, memory instruction, or promise to document later is never canonical closure. The artifacts must be machine-readable where applicable, diffable, reviewable, and discoverable by the shared preflight.
+
+Do not split borging into a separate PR merely for convenience. Keep it with the canonical obligation/candidate whenever technically possible. If any required repository-native artifact is missing, classify the run as `WRITEBACK_INCOMPLETE`; it is not `LIVE_BEWEZEN` or `PRODUCTION_GREEN`.
+
+External systems such as Notion may mirror the canonical state, but they never replace the repository-native authority.
+
+
+## Canonical PR metadata before admission
+
+Fingerprint: `delivery|candidate-type-docs-closure-canonicalization|v1`.
+
+PR metadata is a machine contract, not free-form prose. Agents/chats must emit only values from the canonical `allowedCandidateTypes` set. Documentation, learning, ledger or borging-only candidates use `Delivery-Lane: docs` and `Candidate-Type: docs`.
+
+Legacy `Candidate-Type: closure` is normalized to `docs` only when the same PR declares `Delivery-Lane: docs`, before admission. The alias remains invalid for non-docs lanes; unknown candidate types stay fail-closed.
+
+After metadata correction continue on the same obligation/PR lineage. Never bypass the gate or create a replacement PR solely to escape metadata validation.
+
+
 ## Connector response-shape normalization
 
 Fingerprint: `connector|response-shape|normalize-before-use|v1`.

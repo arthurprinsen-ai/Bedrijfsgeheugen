@@ -1,0 +1,38 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "delivery|browser-verifier|settled-document-request-failure|v1",
+  "obligation_id": "governance-production-trigger-ownership-v1",
+  "problem": "Required browser verification failed although the preview homepage returned HTTP 200 with correct identity, visible content and no page errors, because Playwright emitted requestfailed for document:/.",
+  "root_cause": "The verifier treated every same-origin document requestfailed event as an asset failure even when the settled top-level navigation succeeded. Preview/browser infrastructure can abort a superseded duplicate document request.",
+  "fix": "Suppress only document:<final-path> when the final navigation response is successful. Keep script, stylesheet and unsuccessful document failures fail-closed.",
+  "failed_approaches": [
+    "Treating every requestfailed document event as equivalent to a failed final page load.",
+    "Rerunning the identical browser job without changing the false-negative predicate."
+  ],
+  "prevention": [
+    "Bind document request-failure severity to the settled navigation result.",
+    "Never suppress script or stylesheet failures.",
+    "Never suppress a document failure when final HTTP success is absent.",
+    "Keep route identity, visible content and page-error checks mandatory."
+  ],
+  "compiler": {
+    "failure_class": "BROWSER_VERIFIER_FALSE_NEGATIVE_SETTLED_DOCUMENT_ABORT",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/targeted-website-route-regression.test.mjs"],
+    "canary": [".github/workflows/lane-website.yml"]
+  },
+  "skill_targets": ["powerhouse-delivery-self-optimization"],
+  "evidence": [
+    "tools/site-shell/verify-targeted-website-routes.mjs",
+    "tests/targeted-website-route-regression.test.mjs",
+    "Required run 36172823328 / browser job 108197088155"
+  ],
+  "outcome": "FALSE_NEGATIVE_REMOVED_WITH_ASSET_AND_HTTP_FAIL_CLOSED_INTACT"
+}

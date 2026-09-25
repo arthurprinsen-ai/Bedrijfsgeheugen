@@ -566,3 +566,14 @@ A fan-out optimization is not proven by workflow YAML inspection alone. After pr
 - treat the observed exact-main run count and names as closure evidence for the optimization.
 
 Reference proof: the Rocket Delivery v1 merge `e8054fc35dc2d824afa87a417790a2c3e073062f` produced seven main-bound runs and avoided the prior broad production fan-out for a workflow/tests/docs/Brain-only change.
+
+
+## Browser verifier: settled document request failure
+
+Fingerprint: `delivery|browser-verifier|settled-document-request-failure|v1`.
+
+A Playwright `requestfailed` event for the same top-level document path is not by itself a release defect when the final navigation response is successful, route identity/canonical is correct, visible content is present and page errors are empty. Browsers/preview infrastructure can abort a duplicate or superseded document request while the settled navigation succeeds.
+
+Therefore the targeted route verifier may suppress only `document:<final-path>` after a successful final HTTP response. Script and stylesheet failures always remain hard failures. Any document failure without a successful final response remains fail-closed.
+
+Never broaden this into generic request-failure suppression. Preserve route identity, visible-content, page-error and asset integrity checks.

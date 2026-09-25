@@ -37,6 +37,22 @@ Voor iedere materiële Powerhouse-taak geldt voortaan aanvullend:
 - alleen `BLOCKED_HARD_BOUNDARY` mag eigenaarschap teruggeven aan de gebruiker, met exact één kleinste noodzakelijke menselijke actie en de reeds voorbereide vervolgstap;
 - na een interruption hervat de volgende capabele node automatisch vanaf het canonieke checkpoint; de gebruiker hoeft niet opnieuw "ga door" te zeggen.
 
+
+## Repository-native borging is verplicht voor alle agents en chats
+
+Fingerprint: `powerhouse|repository-native-borging|same-lineage-reviewable|v1`.
+
+Voor iedere materiële wijziging, foutfix, recovery, nieuwe capability, governance-aanpassing of andere Powerhouse-ontwikkeling geldt voor **alle huidige en toekomstige agents en chats**:
+
+- borging gebeurt in dezelfde repository en dezelfde canonieke delivery-lineage als de wijziging zelf; een losse chatnotitie, extern document of mondelinge afspraak is nooit voldoende;
+- de minimale closure-set bestaat uit: **canonieke skill/projectie + Brain/Powerhouse learning + append-only development ledger + menselijke documentatie**;
+- deze artifacts worden machineleesbaar, diffbaar en reviewbaar vastgelegd vóór terminale afronding;
+- geen agent/chat mag `LIVE_BEWEZEN`, `PRODUCTION_GREEN` of equivalent claimen wanneer één van deze repository-native writebacks ontbreekt of alleen buiten de codebase bestaat;
+- borging is onderdeel van Definition of Done en van de protected merge/readback-keten;
+- na merge moet de volgende agent via de normale preflight de nieuwe regel/learning kunnen ontdekken zonder afhankelijk te zijn van de oorspronkelijke chat.
+
+Losse notities buiten de codebase mogen hooguit aanvullend zijn; zij tellen nooit als canonieke borging.
+
 ## Accepted website baseline — protected invariant
 De **accepted website baseline** in `site/accepted-baseline.json` en `site/navigation-baseline.json` is bindend voor iedere huidige en toekomstige agent. Een route die nog bestaat en technisch/SEO-groen is, kan toch rood zijn wanneer de betekenis, propositie, het verhaal, verplichte inhoudsankers of de navigatiepositie onverwacht zijn gewijzigd.
 
@@ -441,3 +457,20 @@ Iedere agent/chat die productie als LIVE/DONE wil afsluiten, moet de terminale s
 - verborgen fallback/error-copy in HTML/DOM is diagnostische tekst, geen user-visible failure. Interactiedefecten worden beslist door de echte browsergate; zichtbare fouttekst blijft fail-closed.
 
 Canonieke learning: brain/learning/2026-09-25-live-bewezen-exact-main-atomic-proof-v1.json.
+
+
+## Same-repository reviewable writeback — verplicht voor alle agents en chats
+
+Fingerprint: `powerhouse|same-repo-material-writeback|reviewable-lineage|v1`.
+
+Iedere materiële ontwikkeling, recovery, borging of contractwijziging wordt in **dezelfde repository en dezelfde canonieke delivery-lineage** vastgelegd. Een losse chatnotitie, lokaal bestand, extern document of niet-reviewbare side note geldt nooit als closure-bewijs.
+
+Verplicht vóór terminale afronding:
+- relevante duurzame uitvoeringsregel in de skill-laag;
+- machineleesbare Brain/Powerhouse learning met fingerprint, root cause, evidence, prevention en skill targets;
+- append-only development-ledger event;
+- menselijke documentatie in de repository;
+- waar van toepassing regressie-/contractbewijs dat deze standaard fail-closed bewaakt;
+- protected merge/main-readback en skill-projection/readback volgens de bestaande terminale delivery-contracten.
+
+Deze artifacts horen bij één obligation/candidate-lineage en worden waar veilig gebundeld vóór CI. Geen agent of chat mag één van deze artifacts buiten de codebase parkeren om de repository-gate te omzeilen. Ontbreekt één verplicht onderdeel, dan is de status `WRITEBACK_INCOMPLETE` en niet `LIVE_BEWEZEN`.

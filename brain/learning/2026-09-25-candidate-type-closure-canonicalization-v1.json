@@ -1,0 +1,49 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "delivery|candidate-type-docs-closure-canonicalization|v1",
+  "obligation_id": "candidate-type-closure-canonicalization-v1",
+  "problem": "A documentation/borging PR could reach delivery admission with Candidate-Type: closure even though closure is not part of the machine delivery contract, causing a preventable metadata block and another CI cycle.",
+  "root_cause": "PR metadata creation allowed semantic prose to leak into a closed machine enum; parseDeliveryMetadata lowercased values but did not canonicalize the known docs-only closure alias before validation.",
+  "fix": "Canonicalize Candidate-Type closure to docs only when Delivery-Lane is docs, keep closure invalid for every other lane, and require agents/chats to emit the canonical docs value at PR creation.",
+  "failed_approaches": [
+    "Letting the admission gate discover the invalid alias after CI already started.",
+    "Treating Candidate-Type as free-form descriptive text instead of a machine enum.",
+    "Opening a replacement PR or bypassing validation instead of correcting the same lineage.",
+    "Initial historical_replay referenced tests/delivery-hygiene-policy.test.mjs, but the canonical learning evaluator only accepts tests/brain-*.test.mjs paths."
+  ],
+  "prevention": [
+    "Use Candidate-Type: docs for documentation, borging, learning and ledger-only changes.",
+    "Normalize the legacy closure alias before admission only for Delivery-Lane: docs.",
+    "Keep all unknown or cross-lane aliases fail-closed.",
+    "After metadata correction, continue on the same PR/obligation lineage."
+  ],
+  "compiler": {
+    "failure_class": "PR_METADATA_ENUM_ALIAS_DRIFT",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-hygiene-candidate-type-closure.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-hygiene-candidate-type-closure.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "continuity"
+  ],
+  "evidence": [
+    "tools/delivery/delivery-hygiene.mjs",
+    "tests/delivery-hygiene-policy.test.mjs",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    "tests/brain-delivery-candidate-type-canonicalization.test.mjs",
+    "tests/brain-delivery-hygiene-candidate-type-closure.test.mjs"
+  ],
+  "outcome": "DOCS_CLOSURE_ALIAS_CANONICALIZED_BEFORE_ADMISSION_WITH_NON_DOCS_FAIL_CLOSED"
+}

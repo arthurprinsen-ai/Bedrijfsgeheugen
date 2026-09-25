@@ -19,6 +19,20 @@ export function productionPageErrors(observedErrors = [], allowExisting = false)
   return allowExisting ? [] : [...new Set(observedErrors.map(value => String(value)))];
 }
 
+export function filterSettledNavigationFailures(failedAssets = [], { httpOk = false, finalUrl = '' } = {}) {
+  if (!httpOk) return [...failedAssets];
+  let finalPath = '';
+  try { finalPath = new URL(String(finalUrl)).pathname || '/'; } catch {}
+  return failedAssets.filter(value => String(value) !== `document:${finalPath}`);
+}
+
+export function isHardAssetFailure({ type = '', errorText = '' } = {}) {
+  const resourceType = String(type || '');
+  const failure = String(errorText || '');
+  if (resourceType === 'document' && failure === 'net::ERR_ABORTED') return false;
+  return ['document','stylesheet','script'].includes(resourceType);
+}
+
 export function summarizeRouteResult({ visibleText = '', html = '', pageErrors = [], failedAssets = [], httpOk = true, identityOk = true } = {}) {
   const hasVisibleContent = String(visibleText).trim().length > 0 && String(html).trim().length > 0;
   const ok = Boolean(httpOk && identityOk && hasVisibleContent && pageErrors.length === 0 && failedAssets.length === 0);
@@ -55,7 +69,8 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
       const url = new URL(request.url());
       const base = new URL(baseUrl);
       const type = request.resourceType();
-      if (url.origin === base.origin && ['document','stylesheet','script'].includes(type)) failedAssets.push(`${type}:${url.pathname}`);
+      const errorText = request.failure()?.errorText || '';
+      if (url.origin === base.origin && isHardAssetFailure({ type, errorText })) failedAssets.push(`${type}:${url.pathname}`);
     } catch {}
   });
   try {
@@ -92,7 +107,10 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
       visibleText,
       html,
       observedPageErrors:[...new Set(observedPageErrors)],
-      failedAssets:[...new Set(failedAssets)],
+      failedAssets:filterSettledNavigationFailures([...new Set(failedAssets)], {
+        httpOk:Boolean(response && response.ok()),
+        finalUrl:page.url(),
+      }),
       httpOk:Boolean(response && response.ok()),
     };
   } finally { await page.close(); }

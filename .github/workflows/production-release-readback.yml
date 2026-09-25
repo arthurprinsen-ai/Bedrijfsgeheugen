@@ -11,6 +11,7 @@ on:
       - 'tests/**'
       - '.github/**'
       - 'brain/learning/**'
+      - 'config/delivery-prevention-rules.json'
   workflow_dispatch:
 
 concurrency:

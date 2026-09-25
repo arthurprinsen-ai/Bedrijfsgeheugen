@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { parseDeliveryMetadata, evaluateAdmission, evaluateSupersession, evaluatePromotionSerialization, parseWriterLease, evaluateWriterLease } from '../tools/delivery/delivery-hygiene.mjs';
+import { parseDeliveryMetadata, validateDeliveryMetadata, evaluateAdmission, evaluateSupersession, evaluatePromotionSerialization, parseWriterLease, evaluateWriterLease } from '../tools/delivery/delivery-hygiene.mjs';
 
 const SHA_A = 'a'.repeat(40);
 const SHA_B = 'b'.repeat(40);
@@ -32,6 +32,19 @@ test('parses canonical delivery metadata', () => {
   assert.equal(metadata.candidateType, 'implementation');
   assert.equal(metadata.baseSha, SHA_A);
   assert.equal(metadata.supersedes, null);
+});
+
+test('canonicalizes docs closure alias before metadata admission', () => {
+  const metadata = parseDeliveryMetadata(`Obligation-ID: docs-closure-v1\nDelivery-Lane: docs\nCandidate-Type: closure\nBase-SHA: ${SHA_A}\nSupersedes: none`);
+  assert.equal(metadata.deliveryLane, 'docs');
+  assert.equal(metadata.candidateType, 'docs');
+  assert.equal(validateDeliveryMetadata(metadata, policy).ok, true);
+});
+
+test('keeps closure invalid outside the docs lane', () => {
+  const metadata = parseDeliveryMetadata(`Obligation-ID: unsafe-closure-v1\nDelivery-Lane: automation\nCandidate-Type: closure\nBase-SHA: ${SHA_A}\nSupersedes: none`);
+  assert.equal(metadata.candidateType, 'closure');
+  assert.deepEqual(validateDeliveryMetadata(metadata, policy).errors, ['CANDIDATE_TYPE_INVALID']);
 });
 
 test('admits one executable candidate', () => {

@@ -19,3 +19,8 @@ Production Source Snapshot run `36168441792` proved:
 
 ## Permanent rule
 When a closed PR cannot be reopened after a force-push/recreation, current main is the source of truth. Compare first. If the fix is already present, retire the stale lineage. If absent, reconstruct only the minimal proven delta from current main. Never merge a substantially stale branch merely to preserve PR identity.
+
+## Follow-up: governance-only production trigger ownership
+A later main push proved that `config/delivery-prevention-rules.json` was still treated as production-relevant at the GitHub trigger boundary. That caused Production Source Snapshot and Production Release Readback to start for a governance-only change, and the snapshot attempted an unnecessary Netlify transport.
+
+The permanent correction is to exclude `config/delivery-prevention-rules.json` in both production workflow `paths-ignore` lists. PR-level Required validation remains authoritative for this governance file; production deployment/readback workflows now remain owned by production-affecting paths only.
