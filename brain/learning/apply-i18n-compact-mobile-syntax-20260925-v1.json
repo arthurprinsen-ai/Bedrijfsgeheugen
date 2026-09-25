@@ -1,0 +1,21 @@
+{
+  "fingerprint": "apply-i18n-compact-mobile-syntax-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The current production candidate could not build because tools/site-shell/apply-i18n.mjs contained an accidental pasted function body inside a JavaScript string expression.",
+  "root_cause": "A compact-mobile drawer injection edit replaced the CTA regex match with a malformed concatenation instead of prefixing the matched anchor with MOBILE_LANGUAGE.",
+  "prevention": [
+    "Use MOBILE_LANGUAGE + '$&' when prefixing the matched compact mobile CTA.",
+    "Run node --check tools/site-shell/apply-i18n.mjs in regression coverage for every i18n source edit.",
+    "Reproduce the exact Netlify build command before declaring a production transport failure.",
+    "Require exact-main Netlify commit_ref equality and public NL/EN readback before LIVE_BEWEZEN."
+  ],
+  "evidence": {
+    "blocked_main_sha": "6200b6cf13aa09d058c92f02f061368e21013e03",
+    "failed_snapshot_run": 36158654177,
+    "diagnostic_run": 36158943900,
+    "syntax_error": "Invalid or unexpected token in tools/site-shell/apply-i18n.mjs"
+  },
+  "test_evidence": ["tests/brain-apply-i18n-compact-mobile-syntax-v1.test.mjs"],
+  "skill_targets": ["powerhouse-continuity", "powerhouse-netlify-production-truth"],
+  "revision": 1
+}
