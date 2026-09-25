@@ -131,10 +131,17 @@ function collectTranslatables(doc) {
   return refs;
 }
 
-function applyTranslations(refs,map) {
+function applyTranslations(refs,map,{allowMissing=false}={}) {
+  const missing = [];
   for (const ref of refs) {
     const value = map.get(ref.source);
-    if (typeof value !== 'string' || !value.trim()) throw new Error('Missing static English translation for: ' + ref.source.slice(0,120));
+    if (typeof value !== 'string' || !value.trim()) {
+      if (allowMissing) {
+        missing.push(ref.source);
+        continue;
+      }
+      throw new Error('Missing static English translation for: ' + ref.source.slice(0,120));
+    }
     if (ref.kind === 'text') {
       const leading = ref.original.match(/^\s*/)?.[0] || '';
       const trailing = ref.original.match(/\s*$/)?.[0] || '';
@@ -144,6 +151,7 @@ function applyTranslations(refs,map) {
       if (a) a.value = value;
     }
   }
+  return [...new Set(missing)];
 }
 
 function findFirst(node, predicate) {
@@ -349,8 +357,12 @@ async function translateAll(strings) {
 
   const networkAllowed = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
   if (!networkAllowed) {
-    console.warn('STATIC_I18N_OFFLINE_RELEASE English generation skipped: release builds never call external translation providers');
-    return null;
+    console.warn('STATIC_I18N_PARTIAL_CACHE_FALLBACK', JSON.stringify({
+      cached: result.size,
+      missing: missing.length,
+      first_missing: missing[0]?.slice(0,120) || null
+    }));
+    return result;
   }
 
   const key = String(process.env.ANTHROPIC_API_KEY || '').trim();
@@ -429,7 +441,7 @@ async function translateAll(strings) {
       throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_FAILED: ' + (error?.message || String(error)));
     }
     console.warn('STATIC_I18N_PROVIDER_FALLBACK', error?.message || String(error));
-    return null;
+    return result;
   }
 }
 
@@ -467,6 +479,9 @@ const productionTranslationRequired = String(process.env.STATIC_I18N_REQUIRE_CAC
 if (productionTranslationRequired && !translations) {
   throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
 }
+let translatedRoutes = 0;
+let partialRoutes = 0;
+let untranslatedRefs = 0;
 for (const file of files) {
   const sourceHtml = fs.readFileSync(path.join(ROOT,file),'utf8');
   const route = routeFor(file);
@@ -479,15 +494,28 @@ for (const file of files) {
   fs.writeFileSync(nlOut,serialize(nlDoc));
 
   const enDoc = parse(sourceHtml);
-  if (translations) {
-    const enRefs = collectTranslatables(enDoc);
-    applyTranslations(enRefs,translations);
-  }
+  const enRefs = collectTranslatables(enDoc);
+  const missingForRoute = translations
+    ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})
+    : enRefs.map(ref=>ref.source);
+  untranslatedRefs += missingForRoute.length;
+  if (missingForRoute.length) partialRoutes++;
+  else translatedRoutes++;
   rewriteLinks(enDoc,file,'en',aliases);
-  setLocaleMetadata(enDoc,'en',route,Boolean(translations));
+  setLocaleMetadata(enDoc,'en',route,missingForRoute.length === 0);
   const enOut = outputPath('en',file);
   ensureDir(enOut);
   fs.writeFileSync(enOut,serialize(enDoc));
 }
 
-console.log('STATIC_I18N_ROUTES',JSON.stringify({files:files.length,strings:allStrings.size,nl:true,en:true,staticEnglish:Boolean(translations),runtimeFallback:!translations}));
+console.log('STATIC_I18N_ROUTES',JSON.stringify({
+  files:files.length,
+  strings:allStrings.size,
+  nl:true,
+  en:true,
+  staticEnglish:Boolean(translations?.size),
+  translatedRoutes,
+  partialRoutes,
+  untranslatedRefs,
+  runtimeFallback:untranslatedRefs > 0
+}));
