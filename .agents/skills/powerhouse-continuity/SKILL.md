@@ -992,3 +992,13 @@ Before protected delivery, prove coverage with:
 `STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 node tools/site-shell/build-localized-routes.mjs --validate-cache`.
 
 A missing fragment is a production build defect and must fail closed; never re-enable provider fallback to mask it.
+
+## Public copy to static English cache coupling
+
+Fingerprint: i18n-public-copy-cache-coupling-20260925-v1.
+
+- Every material public-copy addition or change must ship the matching versioned English cache patch in the same delivery lineage.
+- Production remains provider-independent: STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.
+- Offline cache coverage must be green before protected merge; a newly added route may never rely on a later provider fill.
+- Tests that still expect production network translation or Dutch-as-English runtime fallback are stale and must be reconciled to cache-only fail-closed authority.
+- Terminal proof remains exact Netlify SHA plus real NL to EN to NL browser behavior.

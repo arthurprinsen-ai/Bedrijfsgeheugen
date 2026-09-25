@@ -1,0 +1,28 @@
+{
+  "fingerprint": "i18n-public-copy-cache-coupling-20260925-v1",
+  "date": "2026-09-25",
+  "status": "RECOVERY_CANDIDATE",
+  "type": "PUBLIC_COPY_STATIC_I18N_CACHE_COUPLING",
+  "root_cause": "Public copy changed after the versioned English cache was proven. The new homepage and AI ecosystem copy introduced 126 translatable strings while production was intentionally cache-only, so the fail-closed build correctly rejected the incomplete cache. Historical regressions still expected network-backed production translation or runtime fallback.",
+  "prevention": [
+    "Every public-copy change must include its versioned English translation patch in the same lineage.",
+    "Keep production translation authority cache-only with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "Run offline cache completeness before protected merge.",
+    "Do not reintroduce provider-backed production translation or Dutch-as-English fallback to make builds green."
+  ],
+  "evidence": {
+    "base_main_sha": "533dfca921111e42954657fd42f71806364f0b05",
+    "missing_translation_count": 126,
+    "first_observed_missing": "AI-ecosysteem voor het mkb | Data, systemen, processen en AI-agents | Bedrijfsgeheugen",
+    "patch": "config/bg-static-i18n-en.d/2026-09-25-current-main-public-copy.json",
+    "regressions": [
+      "tests/brain-deterministic-netlify-i18n-release-v1.test.mjs",
+      "tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs",
+      "tests/brain-static-i18n-versioned-cache-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "revision": 1
+}
