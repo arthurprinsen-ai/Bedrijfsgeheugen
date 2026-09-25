@@ -4,11 +4,11 @@ import { readFile } from 'node:fs/promises';
 import { execFileSync } from 'node:child_process';
 
 test('versioned English cache covers the current public static i18n corpus', async () => {
-  const cache = JSON.parse(await readFile('.cache/bg-static-i18n-en.json', 'utf8'));
+  const cache = JSON.parse(await readFile('config/bg-static-i18n-en.json', 'utf8'));
   assert.ok(Object.keys(cache).length >= 7000, 'translation cache unexpectedly small');
   const output = execFileSync(process.execPath, ['tools/site-shell/build-localized-routes.mjs', '--validate-cache'], {
     encoding: 'utf8',
-    env: { ...process.env, STATIC_I18N_NETWORK: '0' },
+    env: { ...process.env, STATIC_I18N_NETWORK: '0', STATIC_I18N_REQUIRE_CACHE: '1' },
   });
   assert.match(output, /STATIC_I18N_CACHE_COMPLETE/);
 });
