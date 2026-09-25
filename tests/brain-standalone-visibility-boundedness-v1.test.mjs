@@ -51,3 +51,12 @@ test('visibility sweep parallelizes bounded viewport batches', async () => {
   assert.match(source, /viewports\.slice\(viewportIndex, viewportIndex \+ viewportConcurrency\)\.map\(runViewport\)/);
   assert.match(source, /Promise\.all\(viewports\.slice/);
 });
+
+
+test('visibility route concurrency scales with sitemap size while remaining capped', async () => {
+  const source = await readFile('tools/site-shell/standalone-visibility-check.mjs', 'utf8');
+  assert.match(source, /configuredRouteConcurrency/);
+  assert.match(source, /Math\.ceil\(routes\.length \/ 12\)/);
+  assert.match(source, /Math\.min\(8,/);
+  assert.match(source, /configuredRouteConcurrency > 0 \? configuredRouteConcurrency/);
+});
