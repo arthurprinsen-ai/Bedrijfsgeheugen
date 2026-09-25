@@ -8,6 +8,6 @@ test('i18n exact-main recovery contract covers all mandatory public routes', () 
     assert.ok(doc.includes(route), `missing mandatory production readback route: ${route}`);
   }
   assert.match(doc, /commit_ref === protected main SHA/);
-  assert.match(doc, /production\/source drift/i);
+  assert.match(doc, /deployment\/source drift/i);
   assert.match(doc, /Do not mark LIVE until all are proven/);
 });
