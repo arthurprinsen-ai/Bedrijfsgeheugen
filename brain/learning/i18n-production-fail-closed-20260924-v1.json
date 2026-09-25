@@ -7,7 +7,8 @@
   "failed_approaches": [
     "Publishing untranslated English routes and relying on runtime provider fallback.",
     "Treating route existence and html lang metadata as sufficient English-language proof.",
-    "A later resilience change reintroduced console.warn + return null in the production translation catch, silently undoing the earlier fail-closed invariant."
+    "A later resilience change reintroduced console.warn + return null in the production translation catch, silently undoing the earlier fail-closed invariant.",
+    "Making every production deploy depend on live Anthropic translation calls even when the source corpus is unchanged; provider/build failures then block unrelated production delivery."
   ],
   "prevention": [
     "When STATIC_I18N_NETWORK=1, any translation-provider failure must fail the production build.",
@@ -15,7 +16,9 @@
     "Deploy previews may run offline, but their untranslated locale artifacts are not production evidence.",
     "Production language proof must verify visible English content, not only route existence or locale metadata.",
     "Any future resilience/backoff change around static translation must preserve the explicit production throw path and the regression test must reject production fallback-to-null.",
-    "Production snapshot/browser proof must fail if /en/prijzen contains the Dutch pricing H1 or the language-switch failure message."
+    "Production snapshot/browser proof must fail if /en/prijzen contains the Dutch pricing H1 or the language-switch failure message.",
+    "Version the complete English translation cache in-repository and validate it offline against every current public source string before merge.",
+    "Production may use the provider only to fill genuinely new uncached strings; unchanged deployments must not require a live translation-provider call."
   ],
   "skill_targets": [
     "continuity",
@@ -23,9 +26,10 @@
   ],
   "test_evidence": [
     "tests/brain-i18n-production-fail-closed-v1.test.mjs",
-    "tools/site-shell/verify-pricing-i18n-production.mjs"
+    "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "tests/brain-static-i18n-versioned-cache-v1.test.mjs"
   ],
-  "revision": 2,
+  "revision": 3,
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-production-fail-closed-v1.test.mjs"

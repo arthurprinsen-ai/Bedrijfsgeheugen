@@ -938,3 +938,14 @@ Fingerprint: `pricing-rescue-observer-self-loop-20260925-v1`.
 - Whole-body `childList` observation must be filtered to newly added relevant pricing controls/panels before scheduling `syncFromDom()`.
 - `ready-v3` must be observable by a real browser before pricing is considered interactive.
 - Terminal production proof remains lifecycle click + plan tab + billing switch + NL/EN round trip.
+
+
+## Deterministic production i18n cache
+
+Fingerprint: `website|i18n|versioned-static-cache|v1`.
+
+Production English localization must not require a live translation-provider call when the public source corpus is unchanged. The complete English translation map is a versioned repository artifact at `.cache/bg-static-i18n-en.json`.
+
+Before delivery, run `node tools/site-shell/build-localized-routes.mjs --validate-cache`. It must prove every currently selected public source string has a non-empty cached English translation.
+
+If source copy introduces new strings, update the cache in the same candidate lineage. Production remains fail-closed: never publish untranslated `/en/*` pages and never convert provider/cache failure into silent fallback.

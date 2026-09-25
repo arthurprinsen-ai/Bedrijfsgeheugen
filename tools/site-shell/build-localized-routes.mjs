@@ -430,6 +430,17 @@ for (const file of files) {
   refs.forEach(ref=>allStrings.add(ref.source));
 }
 
+const cacheValidationOnly = process.argv.includes('--validate-cache');
+if (cacheValidationOnly) {
+  const cache = loadCache();
+  const missing = [...allStrings].filter(source => typeof cache[source] !== 'string' || !cache[source].trim());
+  if (missing.length) {
+    throw new Error('STATIC_I18N_CACHE_INCOMPLETE: ' + missing.length + ' missing translation(s); first=' + missing[0].slice(0,120));
+  }
+  console.log('STATIC_I18N_CACHE_COMPLETE', JSON.stringify({ files: files.length, strings: allStrings.size }));
+  process.exit(0);
+}
+
 const translations = await translateAll([...allStrings]);
 const productionTranslationRequired = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
 if (productionTranslationRequired && !translations) {
