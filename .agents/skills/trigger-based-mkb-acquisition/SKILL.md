@@ -80,3 +80,10 @@ Verplicht:
 - laat dezelfde Problem ID doorlopen van trigger → content/scan → Frisse Blik → capability → outcome;
 - nieuw commercieel probleem zonder bestaande Problem ID wordt eerst als candidate voor de canonieke library behandeld, niet lokaal in sales/content uitgevonden;
 - learning uit respons, scan, sale en realized value schrijft terug op dezelfde Problem ID.
+
+
+## Problem Radar intake authority — 25 september 2026
+
+Fingerprint: `powerhouse-problem-radar-canonical-intake-v1`.
+
+Commerciële triggers en contentkansen die ontstaan uit nieuwe MKB-bronnen mogen niet rechtstreeks een losse sales/content-waarheid vormen. Lees en hergebruik de canonieke evidence lineage uit `config/powerhouse-problem-radar-intake-contract.json`: dedupe -> bestaande `PH-Pxxx` -> problem hypothesis -> relevante capability -> next-best-action/content -> outcome learning. Externe signalen blijven hypothese/context totdat tenant- of company-evidence het probleem ondersteunt. Dezelfde bron/probleemlineage wordt hergebruikt voor portal, Frisse Blik, content en commerciële learning.
