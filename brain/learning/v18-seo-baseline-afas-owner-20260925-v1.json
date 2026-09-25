@@ -1,0 +1,26 @@
+{
+  "fingerprint": "v18-seo-baseline-afas-owner-v1",
+  "date": "2026-09-25",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The canonical SEO order registry owned 'afas koppeling' at /afas-koppeling, but the legacy V18 production SEO baseline omitted that owner, making unrelated website delivery candidates fail the shared V18 promotion gate.",
+  "prevention_rule": "The V18 SEO baseline and canonical SEO order registry must agree for all persistent primary keyword owners that are asserted by seo-status.json.",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-v18-seo-baseline-afas-owner-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_runs": [
+      36103814650,
+      36104857648
+    ],
+    "affected_keyword": "afas koppeling"
+  }
+}
