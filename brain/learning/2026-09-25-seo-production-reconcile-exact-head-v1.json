@@ -1,0 +1,78 @@
+{
+  "id": "seo-production-reconcile-exact-head-sibling-proof-v1",
+  "fingerprint": "seo|production-reconcile|exact-head-sibling-proof|v1",
+  "date": "2026-09-25",
+  "type": "incident_prevention",
+  "source": "chat+github+netlify-production-evidence",
+  "failure_class": "DELIVERY_TERMINALIZATION",
+  "symptom": [
+    "SEO money-page changes were already present on main while Netlify production lagged behind.",
+    "In the delivery version active during the incident, Required selected an older cancelled BRAIN run for the same exact head.",
+    "A green workflow_dispatch BRAIN run did not satisfy that historical gate because it filtered event=pull_request.",
+    "During later closure the control plane evolved: Required became the canonical single-flight PR aggregate gate and stopped polling sibling workflows."
+  ],
+  "root_cause": [
+    "Production drift can exist independently of code correctness and must be reconciled against current main rather than rebuilt.",
+    "Recovery logic was initially applied from historical gate semantics without first re-reading the newer producer/consumer workflow contract.",
+    "Delivery topology can evolve while an obligation remains open; replaying an obsolete trigger pattern can recreate duplicate CI and queue pressure."
+  ],
+  "prevention": [
+    "For SEO/content changes already contained in current main, reconcile production drift on the same obligation instead of creating duplicate product changes.",
+    "Before rerunning or restoring delivery workflows, inspect the current Required and Unified Brain workflow definitions together.",
+    "Preserve historical event=pull_request sibling evidence as audit context only; do not assume the current gate still polls siblings.",
+    "Under the current single-flight architecture, Required is the canonical PR aggregate gate and Unified Brain Delivery remains explicit recovery/dispatch authority.",
+    "Do not reintroduce native PR-triggered BRAIN fan-out solely to reproduce an obsolete recovery path.",
+    "After protected merge, compare current main SHA with Netlify production commit_ref and deploy exact current main when they differ.",
+    "Keep provider exact-SHA proof separate from functional browser proof and scope functional acceptance to the obligation under recovery."
+  ],
+  "failed_approaches": [
+    "Blindly rerunning Required while a historical consumer still selected the older cancelled sibling run.",
+    "Treating a green workflow_dispatch BRAIN run as equivalent to an event=pull_request sibling under the historical gate.",
+    "Attempting to restore the old BRAIN pull_request trigger after the control plane had already moved to a single-flight Required architecture."
+  ],
+  "evidence": {
+    "obligation": "seo-money-pages-commercial-intent-20260925-v1",
+    "reconcile_pr": 3007,
+    "historical_reconcile_head": "55afeef3e68b0b619ebc053415fdc831e4b8341d",
+    "historical_brain_run": 36154098583,
+    "historical_required_run": 36154098536,
+    "reconcile_merge_sha": "584311610b65ab1170c9f956965af26620c8b07b",
+    "observed_production_sha": "6417fa291ac08345369e1e143abf974fac54f0e4",
+    "netlify_deploy_id": "6ab698be9627e6c36975bed1",
+    "current_authority": {
+      "required_workflow": ".github/workflows/required-test.yml",
+      "required_contract": "canonical single-flight aggregate gate; selected lanes evaluated directly without polling sibling workflows",
+      "brain_workflow": ".github/workflows/unified-brain-delivery.yml",
+      "brain_trigger": "workflow_dispatch",
+      "queue_rule": "do not recreate duplicate PR fan-out"
+    },
+    "seo_pages": [
+      "exact-online-koppeling.html",
+      "api-koppeling-laten-maken.html",
+      "twinfield-koppeling.html"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-production-reconcile-learning-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-production-reconcile-learning-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY_TERMINALIZATION",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-netlify-production-truth"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 2
+}
