@@ -1046,3 +1046,13 @@ Fingerprint: `netlify-static-i18n-cache-completeness-20260925-v1`.
 - New or changed public copy must add its English cache authority in the same lineage.
 - A green PR without cache completeness is not production-ready.
 - Terminal closure remains exact production SHA + pricing/i18n browser proof.
+
+
+## Post-build static-i18n cache drift v2
+
+Fingerprint: `i18n-postbuild-cache-runtime-fallback-20260925-v2`.
+
+- Pre-build cache completeness is not a valid terminal invariant when build generators mutate public HTML before localized-route generation.
+- Production stays provider-independent (`STATIC_I18N_NETWORK=0`); post-build cache misses use the canonical runtime i18n fallback.
+- Cache drift must not take the website offline.
+- Terminal proof remains browser-level: NL→EN navigation to `/en/prijzen`, `html lang=en`, visible English pricing copy, and no known Dutch pricing heading.
