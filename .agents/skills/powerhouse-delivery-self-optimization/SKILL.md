@@ -595,3 +595,12 @@ Fingerprint: `delivery|learning-replay-path|brain-prefixed|v1`.
 Before a material learning change reaches Skill Projection, validate every `evaluation.historical_replay` path against the learning-canonicalization contract. Historical replay must point to an accepted Brain-prefixed regression path rather than a general test file.
 
 If a general regression already exists, add a narrow Brain replay wrapper that proves the same invariant and reference that wrapper from the learning. Do not wait for Skill Projection to discover the path-shape defect after merge.
+
+
+## Terminal BRAIN gate applicability
+
+Fingerprint: `delivery|terminalizer-brain-gate-applicability|v1`.
+
+Terminal closure must validate a gate only when that gate can actually exist for the candidate's lane and trigger contract. `Delivery-Lane: docs` does not require Unified Brain Delivery. For non-docs lanes, BRAIN remains mandatory on the exact candidate head, but the terminalizer must recognize the workflow's real authoritative trigger instead of filtering for an impossible event.
+
+Never weaken Required or applicable CodeQL exact-head proof while repairing gate applicability.
