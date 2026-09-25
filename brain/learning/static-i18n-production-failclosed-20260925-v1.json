@@ -34,6 +34,14 @@
     ],
     "canary": [
       "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
-    ]
+    ],
+    "expected_invariant": "production keeps STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1; incomplete cache blocks the build and no Dutch body copy is published under /en/*"
+  },
+  "compiler": {
+    "failure_class": "STATIC_I18N_FAILOPEN_UNTRANSLATED_ENGLISH_ROUTE",
+    "scope": "WEBSITE_I18N_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
