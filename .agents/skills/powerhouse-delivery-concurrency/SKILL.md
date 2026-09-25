@@ -233,3 +233,10 @@ Runner capacity is a development resource and stale queue occupancy is a deliver
 Fingerprint: `github|actions-pressure-census|same-universe-pagination|v1`.
 
 Raw active pressure and the obsolete/provider-zombie deductions must be computed from the same fully paginated status universe. Never subtract a paginated stale/zombie count from an unpaginated recent-run sample. Count `queued`, `in_progress`, `pending`, `waiting` and `requested` with pagination before deriving effective pressure. Clamp-to-zero is only a safety guard, never a substitute for census correctness.
+
+
+## Production i18n fail-closed landing rule
+
+Fingerprint: `i18n-production-fail-closed-20260924-v1`.
+
+An i18n candidate may land only if the exact head preserves production fail-closed semantics: `STATIC_I18N_NETWORK=1` cannot fall back to untranslated `/en/*` output. Provider resilience is allowed only around retries/backoff, never around the success criterion. Terminal proof must include exact production SHA plus visible-English browser evidence.

@@ -6,13 +6,16 @@
   "root_cause": "build-localized-routes.mjs converted production provider failure into a null translation map and still emitted English routes marked data-bg-static-translated=false.",
   "failed_approaches": [
     "Publishing untranslated English routes and relying on runtime provider fallback.",
-    "Treating route existence and html lang metadata as sufficient English-language proof."
+    "Treating route existence and html lang metadata as sufficient English-language proof.",
+    "A later resilience change reintroduced console.warn + return null in the production translation catch, silently undoing the earlier fail-closed invariant."
   ],
   "prevention": [
     "When STATIC_I18N_NETWORK=1, any translation-provider failure must fail the production build.",
     "Production must never emit an /en/* route with untranslated Dutch content.",
     "Deploy previews may run offline, but their untranslated locale artifacts are not production evidence.",
-    "Production language proof must verify visible English content, not only route existence or locale metadata."
+    "Production language proof must verify visible English content, not only route existence or locale metadata.",
+    "Any future resilience/backoff change around static translation must preserve the explicit production throw path and the regression test must reject production fallback-to-null.",
+    "Production snapshot/browser proof must fail if /en/prijzen contains the Dutch pricing H1 or the language-switch failure message."
   ],
   "skill_targets": [
     "continuity",
@@ -22,7 +25,7 @@
     "tests/brain-i18n-production-fail-closed-v1.test.mjs",
     "tools/site-shell/verify-pricing-i18n-production.mjs"
   ],
-  "revision": 1,
+  "revision": 2,
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-production-fail-closed-v1.test.mjs"
@@ -32,7 +35,12 @@
     "failure_class": "SILENT_UNTRANSLATED_LOCALIZED_RELEASE",
     "scope": "WEBSITE_PUBLIC_I18N_BUILD",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
+  },
+  "evidence": {
+    "regression_observed_on_main": "390e058e581874cb08f5b2d4608d886a5c9a7dcf",
+    "live_symptom": "/en/prijzen still rendered Dutch pricing copy while production was ready.",
+    "restored_guard": "STATIC_I18N_PRODUCTION_TRANSLATION_FAILED + STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED"
   }
 }
