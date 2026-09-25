@@ -26,3 +26,11 @@ test('orchestrator preserves sanitized AI provider status and model for autonomo
   assert.match(source,/ORCHESTRATOR_AI_PROVIDER_ERROR/);
   assert.match(source,/AbortSignal\.timeout\(45000\)/);
 });
+
+test('orchestrator records only sanitized Anthropic validation detail',()=>{
+  assert.match(source,/providerType=clean\(body\?\.error\?\.type/);
+  assert.match(source,/providerMessage=clean\(body\?\.error\?\.message/);
+  assert.match(source,/providerDetail=\[providerType,providerMessage\]/);
+  assert.match(source,/slice\(0,240\)/);
+  assert.doesNotMatch(source,/x-api-key.*console\.error/);
+});
