@@ -1110,34 +1110,19 @@ Fingerprint: `pricing-canonical-i18n-assets-20260925-v1`.
 - Production closure requires the visible mobile language selector plus NL→EN→NL browser roundtrip on `/prijzen`.
 
 
-## Frontend capability completeness is per required asset
+## Website i18n asset completeness
 
-Fingerprint: `i18n-runtime-asset-independent-presence-v1`.
+Fingerprint: `website-i18n|asset-completeness|runtime-host-proof|v1`.
 
-For public frontend capabilities such as NL/EN:
-- never treat one shared marker, stylesheet, source token or successful build step as proof that the entire capability is installed;
-- verify each required runtime asset independently and inject missing assets idempotently;
-- continue build-time control injection even when another related asset already exists;
-- bind runtime controls to the active production navigation host, not only legacy/template hosts;
-- require the real visible user interaction path in production readback before terminal completion.
+For public NL/EN delivery, the presence of one i18n marker or stylesheet is never evidence that the complete i18n runtime is installed.
 
-For NL/EN specifically, stylesheet presence and `/assets/js/i18n.js` presence are separate invariants, and mobile proof must exercise the active visible selector through NL → EN → NL.
+Mandatory:
+- validate stylesheet and runtime script independently;
+- never short-circuit build transforms merely because any `data-bg-i18n-asset` marker exists;
+- keep mobile language mounting idempotent across the active v18 drawer, generic shared mobile roots and legacy compact navigation;
+- production proof must inspect the final public HTML/runtime, not only canonical source;
+- require a real mobile NL → EN → NL roundtrip on the active visible navigation before `LIVE_BEWEZEN`;
+- if production reports zero language selects, first prove that `assets/js/i18n.js` is actually present and executed before diagnosing host-selection logic.
 
-## Generated public surfaces: build authority before source edits
-
-Fingerprint: `website|generated-canonical-surface|post-build-projection|v1`.
-
-For every website surface that is generated, restored, composed or rewritten during the production build:
-
-- identify the production-authoritative build step before changing the public page;
-- treat direct edits to a file such as `index.html` as non-terminal when a later builder can overwrite them;
-- place durable features at the canonical build authority or re-project them idempotently after the overwrite point;
-- add a regression that proves the real production builder invokes the projection and that repeated execution does not duplicate content;
-- treat a new orphan-page/SEO symptom after a source-level link change as possible build-projection loss before changing SEO policy;
-- keep public-copy changes coupled to the canonical static-English cache when production is fail-closed on cached translations;
-- refresh delivery metadata against current `main` before protected delivery; stale Base-SHA metadata is not allowed to contaminate scope classification;
-- `LIVE_BEWEZEN` requires exact production identity plus functional production readback of the affected route, not only source/PR/merge/deploy state.
-
-Canonical learning: `brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json`.
-Regression: `tests/brain-ai-ecosysteem-production-projection-v1.test.mjs`.
-Powerhouse policy: `brain/policies/powerhouse-agent-continuity-v1.json#generated_surface_projection_rule`.
+Canonical learning: `brain/learning/i18n-v18-mobile-host-production-20260925-v1.json`.
+Regression: `tests/brain-i18n-asset-independent-injection-v1.test.mjs`.

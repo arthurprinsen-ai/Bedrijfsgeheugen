@@ -1,29 +1,33 @@
 {
   "fingerprint": "i18n-v18-mobile-host-production-20260925-v1",
-  "failure_class": "I18N_ACTIVE_V18_MOBILE_HOST_OMITTED",
+  "failure_class": "I18N_RUNTIME_ASSET_INCOMPLETE_AND_ACTIVE_MOBILE_HOST_UNPROVEN",
   "status": "ACTIVE_PREVENTION",
-  "problem": "Exact-main production opened the active v18 mobile drawer successfully but contained zero language selects, so the NL/EN roundtrip could not start.",
-  "root_cause": "assets/js/i18n.js mounted mobile language controls only into generic data-bg mobile roots and #bgkopMob. The production navigation uses #v18MobileDrawer, which was omitted from mountControl().",
+  "problem": "Exact-main production rendered pricing with the i18n stylesheet marker present but without assets/js/i18n.js in the final HTML. The browser therefore had zero language selects and could not start the NL/EN roundtrip.",
+  "root_cause": "tools/site-shell/apply-i18n.mjs treated any data-bg-i18n-asset marker as proof that all i18n assets were already installed. Pricing already contained the CSS marker, so the transform returned before injecting assets/js/i18n.js and before completing mobile-control injection. Without the runtime script, no active host (#v18MobileDrawer, generic shared mobile root, or legacy #bgkopMob) could mount a selector.",
   "prevention": [
-    "Treat #v18MobileDrawer as a first-class mobile language host in the runtime.",
-    "Keep generic mobile hosts and legacy #bgkopMob support for compatibility.",
-    "Guard the runtime host list with a regression test tied to the production verifier.",
-    "Require exact-main Netlify commit equality plus the visible mobile NL->EN->NL browser roundtrip before LIVE_BEWEZEN."
+    "Detect i18n CSS and i18n runtime script independently; never use one shared marker as completeness proof.",
+    "Always run idempotent mobile-language-control injection after asset reconciliation.",
+    "Treat #v18MobileDrawer as a first-class active mobile host while preserving generic and legacy hosts.",
+    "Inspect final production HTML for both assets before diagnosing host-selection logic.",
+    "Require exact-main Netlify commit equality plus visible mobile NL->EN->NL browser roundtrip before LIVE_BEWEZEN."
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+      "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
     ],
-    "expected_invariant": "when #v18MobileDrawer exists, mountControl installs exactly one mobile language control and the production verifier can complete NL->EN->NL"
+    "expected_invariant": "every public built page that uses i18n has both stylesheet and runtime script present independently, and the active mobile navigation exposes exactly one usable locale selector"
   },
   "evidence": {
-    "production_snapshot_run": 36160448237,
+    "production_snapshot_run": 36161161127,
     "browser_diagnostics": {
       "v18Drawer": "false",
       "v18Selects": 0,
@@ -31,21 +35,30 @@
       "sharedSelects": 0,
       "allSelects": 0
     },
-    "production_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs"
+    "production_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "final_html_observation": {
+      "route": "/prijzen",
+      "i18n_css_present": true,
+      "i18n_js_present": false,
+      "language_select_count": 0
+    },
+    "human_documentation": "docs/changes/i18n-v18-mobile-host-production-20260925-v1.md",
+    "activity_ledger": "docs/development-ledger-events/2026-09-25-i18n-v18-mobile-host-production-v1.md"
   },
   "test_evidence": [
-    "tests/brain-i18n-v18-mobile-host-v1.test.mjs"
+    "tests/brain-i18n-v18-mobile-host-v1.test.mjs",
+    "tests/brain-i18n-asset-independent-injection-v1.test.mjs"
   ],
   "skill_targets": [
     "powerhouse-continuity",
     "powerhouse-netlify-production-truth"
   ],
-  "revision": 1,
+  "revision": 3,
   "compiler": {
-    "failure_class": "I18N_ACTIVE_V18_MOBILE_HOST_OMITTED",
-    "scope": "WEBSITE_I18N_PRODUCTION_RUNTIME",
+    "failure_class": "I18N_RUNTIME_ASSET_INCOMPLETE_AND_ACTIVE_MOBILE_HOST_UNPROVEN",
+    "scope": "WEBSITE_I18N_BUILD_AND_PRODUCTION_RUNTIME",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
   }
 }
