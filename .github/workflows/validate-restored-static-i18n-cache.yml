@@ -4,6 +4,9 @@ on:
     branches: [fix/terminal-static-i18n-cache-v2]
 permissions:
   contents: read
+concurrency:
+  group: validate-restored-static-i18n-cache-v2
+  cancel-in-progress: true
 jobs:
   validate:
     runs-on: ubuntu-latest
