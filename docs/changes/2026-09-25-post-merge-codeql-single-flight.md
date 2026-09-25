@@ -30,3 +30,7 @@ There were two separate conditions:
 ## Central lesson ledger
 
 The two active prevention rules are also registered as PROVEN lessons in `docs/brain/delivery-failure-lessons.json`, so prevention-rule completeness remains machine-verifiable. This file is part of the declared PR scope; a fresh head is required so Required test evaluates the corrected metadata snapshot.
+
+## Client transport continuation
+
+A client-side response transport interruption is not a repository, CI, or delivery terminal state. Recovery resumes the existing canonical branch and newest exact head, re-reads current main and current workflow truth, and continues without creating a replacement lineage solely because the response transport ended.
