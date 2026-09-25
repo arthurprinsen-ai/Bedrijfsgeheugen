@@ -1229,3 +1229,14 @@ A chat-only note, external-only document, memory instruction, or promise to docu
 Do not split borging into a separate PR merely for convenience. Keep it with the canonical obligation/candidate whenever technically possible. If any required repository-native artifact is missing, classify the run as `WRITEBACK_INCOMPLETE`; it is not `LIVE_BEWEZEN` or `PRODUCTION_GREEN`.
 
 External systems such as Notion may mirror the canonical state, but they never replace the repository-native authority.
+
+
+## Canonical PR metadata before admission
+
+Fingerprint: `delivery|candidate-type-docs-closure-canonicalization|v1`.
+
+PR metadata is a machine contract, not free-form prose. Agents/chats must emit only values from the canonical `allowedCandidateTypes` set. Documentation, learning, ledger or borging-only candidates use `Delivery-Lane: docs` and `Candidate-Type: docs`.
+
+Legacy `Candidate-Type: closure` is normalized to `docs` only when the same PR declares `Delivery-Lane: docs`, before admission. The alias remains invalid for non-docs lanes; unknown candidate types stay fail-closed.
+
+After metadata correction continue on the same obligation/PR lineage. Never bypass the gate or create a replacement PR solely to escape metadata validation.

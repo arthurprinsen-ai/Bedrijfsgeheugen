@@ -19,6 +19,13 @@ function normalizeSupersedes(value) {
   return Number(raw);
 }
 
+export function canonicalizeCandidateType(value, deliveryLane = '') {
+  const raw = normalize(value).toLowerCase();
+  const lane = normalize(deliveryLane).toLowerCase();
+  if (raw === 'closure' && lane === 'docs') return 'docs';
+  return raw;
+}
+
 function pathMatches(path, pattern) {
   const cleanPath = normalize(path).replace(/^\.\//, '');
   const cleanPattern = normalize(pattern).replace(/^\.\//, '');
@@ -43,10 +50,11 @@ export function deriveHygieneConflictContracts(changedPaths = [], brainPolicy = 
 }
 
 export function parseDeliveryMetadata(body = '') {
+  const deliveryLane = readField(body, 'Delivery-Lane').toLowerCase();
   return Object.freeze({
     obligationId: readField(body, 'Obligation-ID'),
-    deliveryLane: readField(body, 'Delivery-Lane').toLowerCase(),
-    candidateType: readField(body, 'Candidate-Type').toLowerCase(),
+    deliveryLane,
+    candidateType: canonicalizeCandidateType(readField(body, 'Candidate-Type'), deliveryLane),
     baseSha: readField(body, 'Base-SHA').toLowerCase(),
     supersedes: normalizeSupersedes(readField(body, 'Supersedes')),
   });

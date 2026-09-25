@@ -39,7 +39,8 @@
     "GENERATED_PUBLIC_SURFACE_REQUIRES_BUILD_AUTHORITY",
     "BORGING_REQUIRES_CANONICAL_SKILL_LEARNING_LEDGER_AND_READBACK",
     "MATERIAL_WRITEBACK_MUST_BE_SAME_REPOSITORY_REVIEWABLE_LINEAGE",
-    "ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE"
+    "ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE",
+    "DOCS_CLOSURE_ALIAS_CANONICALIZES_BEFORE_ADMISSION"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -214,7 +215,8 @@
     "brain/learning/2026-09-25-browser-concurrency-test-contract-drift-v1.json",
     "brain/learning/2026-09-25-ai-ecosysteem-production-projection-v1.json",
     "brain/learning/2026-09-25-same-repo-reviewable-writeback-v1.json",
-    "brain/learning/2026-09-25-repository-native-borging-all-agents-v1.json"
+    "brain/learning/2026-09-25-repository-native-borging-all-agents-v1.json",
+    "brain/learning/2026-09-25-candidate-type-closure-canonicalization-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -442,5 +444,28 @@
     "terminal_rule": "Missing repository-native closure artifact means WRITEBACK_INCOMPLETE and forbids LIVE_BEWEZEN/PRODUCTION_GREEN.",
     "same_lineage_rule": "The closure artifacts must travel with the canonical obligation/candidate lineage; do not open a separate documentation-only recovery lineage unless an evidenced hard boundary prevented same-lineage inclusion.",
     "external_note_rule": "External notes may mirror canonical state but never replace repository-native authority."
+  },
+  "pr_metadata_canonicalization_rule": {
+    "required": true,
+    "fingerprint": "delivery|candidate-type-docs-closure-canonicalization|v1",
+    "canonical_candidate_types": [
+      "implementation",
+      "recovery",
+      "security",
+      "dependency",
+      "docs",
+      "promotion"
+    ],
+    "docs_rule": "Documentation, borging, learning and ledger-only candidates use Delivery-Lane: docs and Candidate-Type: docs.",
+    "compatibility_aliases": [
+      {
+        "raw": "closure",
+        "canonical": "docs",
+        "only_when_delivery_lane": "docs"
+      }
+    ],
+    "unknown_alias_behavior": "FAIL_CLOSED",
+    "same_lineage_recovery": true,
+    "bypass_allowed": false
   }
 }
