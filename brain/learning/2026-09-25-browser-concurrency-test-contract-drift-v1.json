@@ -1,0 +1,43 @@
+{
+  "fingerprint": "browser-concurrency-test-contract-drift-v1",
+  "date": "2026-09-25",
+  "type": "CI_REGRESSION_ORACLE_DRIFT",
+  "status": "ACTIVE",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": [
+    "The bounded full-site visibility fix replaced sequential route iteration with worker-based route concurrency, but an older website release-risk regression still required the removed sequential loop shape.",
+    "The implementation regression and the older release-risk oracle were not cochanged, so unrelated website PRs inherited a deterministic baseline failure after the concurrency fix reached main."
+  ],
+  "prevention": [
+    "Any implementation-shape change in the visibility verifier must cochange every regression that asserts that shape.",
+    "The canonical brain boundedness regression now verifies the runtime concurrency contract and the website release-risk oracle together.",
+    "Do not rerun or rebuild multiple affected PRs until the shared main regression is fixed once."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-standalone-visibility-boundedness-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-browser-gate-boundedness/SKILL.md"
+  ],
+  "evidence": {
+    "runtime": "tools/site-shell/standalone-visibility-check.mjs",
+    "stale_oracle": "tests/site-shell-website-release-risk.test.mjs",
+    "canonical_regression": "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
+    "affected_prs": [
+      2880,
+      2881,
+      2882,
+      2883,
+      2884,
+      2885
+    ]
+  }
+}
