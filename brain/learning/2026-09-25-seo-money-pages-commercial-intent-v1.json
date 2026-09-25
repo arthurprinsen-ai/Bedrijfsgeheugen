@@ -16,9 +16,21 @@
     "market": "Netherlands",
     "source": "DataForSEO Google Ads search volume",
     "keywords": [
-      {"keyword":"exact online api","search_volume":590,"cpc_eur":6.44},
-      {"keyword":"api koppeling laten maken","search_volume":140,"cpc_eur":12.04},
-      {"keyword":"twinfield koppeling","search_volume":90,"cpc_eur":11.75}
+      {
+        "keyword": "exact online api",
+        "search_volume": 590,
+        "cpc_eur": 6.44
+      },
+      {
+        "keyword": "api koppeling laten maken",
+        "search_volume": 140,
+        "cpc_eur": 12.04
+      },
+      {
+        "keyword": "twinfield koppeling",
+        "search_volume": 90,
+        "cpc_eur": 11.75
+      }
     ],
     "canonical_pages": [
       "/exact-online-koppeling",
@@ -26,5 +38,19 @@
       "/twinfield-koppeling"
     ]
   },
-  "expected_outcome": "Higher commercial relevance and clearer conversion routing without adding cannibalising pages."
+  "expected_outcome": "Higher commercial relevance and clearer conversion routing without adding cannibalising pages.",
+  "failure_class": "SEO_COMMERCIAL_INTENT_OWNERSHIP_DRIFT",
+  "evaluation": {
+    "historical_replay": [
+      "Existing canonical owners retained for Exact Online, generic API-koppeling and Twinfield queries",
+      "No competing landing page or blog created for plural Twinfield variant"
+    ],
+    "expected": "Each validated commercial query resolves to one canonical money-page owner with a measurable Frisse-blik conversion path and no new cannibalising page.",
+    "invariants": [
+      "one canonical money-page owner per commercial intent cluster",
+      "new page only when SERP evidence proves a distinct intent gap",
+      "commercial SEO page exposes a direct conversion path to Frisse blik and/or contact",
+      "SEO success is measured downstream through qualified leads, orders and attributable revenue"
+    ]
+  }
 }
