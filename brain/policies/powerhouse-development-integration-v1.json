@@ -1,0 +1,81 @@
+{
+  "type": "POWERHOUSE_POLICY",
+  "version": "POWERHOUSE-DEVELOPMENT-INTEGRATION-v1",
+  "status": "ACTIVE",
+  "fingerprint": "development|whole-brain-portal-skill-integration|v1",
+  "scope": [
+    "chat",
+    "agent",
+    "skill",
+    "workflow",
+    "feature",
+    "fix",
+    "integration",
+    "data-source",
+    "website",
+    "portal",
+    "model",
+    "experiment",
+    "governance"
+  ],
+  "invariant": "Every material development change is a Powerhouse Brain change and must inherit canonical memory, intelligence, relations, delivery, portal, learning and skill projection.",
+  "beforeWork": [
+    "READ_CURRENT_STATE",
+    "READ_SYSTEM_MAP",
+    "READ_OPEN_OBLIGATIONS",
+    "REUSE_EXISTING_CAPABILITIES",
+    "BRAIN_IMPACT_ANALYSIS",
+    "PORTAL_IMPACT_CLASSIFICATION",
+    "SKILL_LEARNING_IMPACT_CLASSIFICATION"
+  ],
+  "brainImpactLayers": [
+    "evidence",
+    "knowledge",
+    "graph",
+    "semantics",
+    "signals",
+    "prediction",
+    "impact",
+    "decision",
+    "agents",
+    "delivery",
+    "learning",
+    "governance",
+    "resource"
+  ],
+  "portal": {
+    "default": "PROJECT_CONTEXTUALLY_WHEN_USER_OR_OPERATOR_RELEVANT",
+    "authority": false,
+    "noSurfaceStatus": "NO_PORTAL_SURFACE",
+    "noSurfaceRequiresReason": true
+  },
+  "systemMap": {
+    "registrationRequiredOnStructuralChange": true,
+    "readAfterWriteRequired": true
+  },
+  "learning": {
+    "canonicalWritebackRequired": true,
+    "deterministicSkillProjectionRequired": true,
+    "nextAgentDiscoverabilityRequired": true
+  },
+  "prohibited": [
+    "PARALLEL_TRUTH_STORE",
+    "PARALLEL_BRAIN",
+    "PARALLEL_LEARNING_LOOP",
+    "DASHBOARD_SILO_AS_AUTHORITY",
+    "UNREGISTERED_MATERIAL_CAPABILITY",
+    "TERMINAL_WITHOUT_PORTAL_CLASSIFICATION",
+    "TERMINAL_WITHOUT_SKILL_PROJECTION"
+  ],
+  "terminalRequires": [
+    "LOCAL_REGRESSION_GREEN",
+    "CROSS_POWERHOUSE_INTEGRATION_GREEN",
+    "SYSTEM_MAP_CURRENT",
+    "PORTAL_READBACK_OR_NO_PORTAL_SURFACE",
+    "PROTECTED_DELIVERY",
+    "PRODUCTION_OR_PROVIDER_READBACK",
+    "OUTCOME_VALUE_WRITEBACK",
+    "LEARNING_PREVENTION_WRITEBACK",
+    "SKILL_PROJECTION_READBACK"
+  ]
+}

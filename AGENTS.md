@@ -102,6 +102,38 @@ Niet-onderhandelbare regels:
 
 Een agent, chat, skill of workflow die dit contract niet kan aantonen is **niet production-ready** en moet fail-closed blijven totdat shared-state read, canonical authority mapping, outcome/writeback en delivery-inheritance zijn hersteld.
 
+
+## Development → Whole Brain / Portal / Skill integration — verplichte standaard
+
+Fingerprint: `development|whole-brain-portal-skill-integration|v1`.
+
+Iedere materiële ontwikkeling — feature, fix, integratie, databron, model, workflow, agent, skill, portalwijziging, websitefunctie, analyse, experiment of governancewijziging — is standaard een **Powerhouse Brain change**. Niets mag als geïsoleerde code of los kanaal worden opgeleverd.
+
+Voor iedere wijziging geldt vóór implementatie:
+1. lees de actuele System Map, current state, open obligations en relevante learnings/skills;
+2. hergebruik bestaande capabilities, stores, evidence-routes en authorities vóór iets nieuws wordt gemaakt;
+3. voer een Brain impact analysis uit over minimaal: evidence/provenance, knowledge/memory, graph/relations, semantics, signals, prediction, impact/value, decisioning, agents/execution, delivery, learning/prevention, governance en resource/sustainability;
+4. bepaal welke bestaande Powerhouse-objecten, capabilities en domeinen met de wijziging samenhangen — `alles heeft met alles te maken` betekent expliciete relaties modelleren, niet data blind aan elkaar koppelen;
+5. bepaal de portal-impact: nieuwe of gewijzigde intelligence die voor klant, directie, MT of operator relevant is, wordt contextueel zichtbaar of bruikbaar in het bestaande Portal V2/cockpit. `NO_PORTAL_SURFACE` is alleen geldig met machineleesbare reden;
+6. bepaal de skill-impact: nieuwe herbruikbare werkwijze, foutpreventie of capability moet via canonical learning → deterministic skill projection naar alle relevante agents/chats/skills gaan.
+
+Tijdens implementatie:
+- voeg geen parallelle truth store, intelligence-loop, dashboard-silo, queue of learningroute toe;
+- registreer create/rename/retire/rewire van capabilities in de canonieke System Map;
+- verbind data en outcomes via bestaande provenance-, evidence-, decision- en learningcontracten;
+- houd klant-/portalprojecties afgeleid van canonieke runtimewaarheid; UI is nooit authority;
+- voeg regressiebewijs toe dat zowel de lokale wijziging als de cross-Powerhouse integratie controleert.
+
+Een wijziging is niet terminal zolang één van deze onderdelen ontbreekt:
+- canonical Brain impact/writeback;
+- System Map registration/read-after-write;
+- relevante Portal V2-projectie plus functionele readback, of bewezen `NO_PORTAL_SURFACE`;
+- learning/prevention writeback;
+- actuele skill projection en discoverability voor volgende chats/agents;
+- protected delivery + productie/provider readback + outcome/value evidence.
+
+Nieuwe agents, chats en skills erven dit contract automatisch via `AGENTS.md`, `powerhouse-continuity`, de development-integration skill en de canonical skill projection. Een specialistische skill mag deze standaard aanscherpen maar nooit omzeilen.
+
 ## Eén team, één geheugen
 Alle agents opereren als één team met specialistische rollen. Geen agent mag een eigen geïsoleerde waarheid aanhouden.
 

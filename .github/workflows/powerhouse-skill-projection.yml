@@ -6,6 +6,8 @@ on:
       - "brain/learning/**"
       - "brain/skills/**"
       - "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json"
+      - "brain/policies/powerhouse-development-integration-v1.json"
+      - "tests/brain-powerhouse-development-integration-contract.test.mjs"
       - ".agents/skills/**"
       - "scripts/brain/powerhouse-skill-projection.mjs"
       - "scripts/brain/learning-canonicalization-gate.mjs"
@@ -19,6 +21,8 @@ on:
       - "brain/learning/**"
       - "brain/skills/**"
       - "brain/policies/powerhouse-universal-agent-learning-writeback-v1.json"
+      - "brain/policies/powerhouse-development-integration-v1.json"
+      - "tests/brain-powerhouse-development-integration-contract.test.mjs"
       - ".agents/skills/**"
       - "scripts/brain/powerhouse-skill-projection.mjs"
       - "scripts/brain/learning-canonicalization-gate.mjs"
@@ -67,3 +71,5 @@ jobs:
         run: node scripts/brain/powerhouse-skill-projection.mjs
       - name: Verify learning to skill projection contract
         run: node --test tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs
+      - name: Verify Whole Brain development integration contract
+        run: node --test tests/brain-powerhouse-development-integration-contract.test.mjs

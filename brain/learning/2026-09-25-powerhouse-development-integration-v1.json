@@ -1,0 +1,20 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "POWERHOUSE-DEVELOPMENT-INTEGRATION-v1",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "development|whole-brain-portal-skill-integration|v1",
+  "date": "2026-09-25",
+  "problem": "Material development could be technically correct yet remain insufficiently connected to Powerhouse Brain intelligence, Portal V2 context, System Map relations or the reusable skill layer.",
+  "rootCause": "The existing One Brain, continuity and skill-projection contracts did not make Brain-impact, portal-impact and skill-impact an explicit mandatory development checklist for every material change.",
+  "prevention": [
+    "EVERY_MATERIAL_DEVELOPMENT_IS_A_BRAIN_CHANGE",
+    "BRAIN_IMPACT_ANALYSIS_BEFORE_BUILD",
+    "SYSTEM_MAP_RELATION_WRITEBACK_ON_STRUCTURAL_CHANGE",
+    "PORTAL_PROJECTION_BY_DEFAULT_WHEN_CONTEXTUALLY_RELEVANT",
+    "NO_PORTAL_SURFACE_REQUIRES_EXPLICIT_REASON",
+    "CANONICAL_LEARNING_TO_DETERMINISTIC_SKILL_PROJECTION",
+    "CROSS_POWERHOUSE_REGRESSION_BEFORE_TERMINAL_COMPLETION"
+  ],
+  "canonicalPolicy": "brain/policies/powerhouse-development-integration-v1.json",
+  "skill": ".agents/skills/powerhouse-development-integration/SKILL.md"
+}

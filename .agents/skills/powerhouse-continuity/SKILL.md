@@ -35,6 +35,22 @@ Before terminal completion:
 
 `LIVE & BEWEZEN` requires evidence. Code, commit, PR, deploy-start, queued CI, timeout or chat/model stop are not completion.
 
+
+## Development integration inheritance
+
+Every material development change is also a Whole Brain change.
+
+Required before terminal completion:
+- perform a cross-layer Brain impact analysis;
+- register changed capabilities and relations in the canonical System Map;
+- project customer/operator-relevant intelligence into the existing Portal V2 context, or record a machine-readable `NO_PORTAL_SURFACE` rationale;
+- write reusable learning/prevention canonically;
+- verify deterministic skill projection so the next chat/agent consumes the change automatically;
+- prove the integration path in addition to the local feature/fix.
+
+Canonical skill: `.agents/skills/powerhouse-development-integration/SKILL.md`.
+Canonical policy: `brain/policies/powerhouse-development-integration-v1.json`.
+
 ## Recovery
 
 Unexpected interruption means recovery, not restart. Resume from the last verified checkpoint and reconcile already-proven side effects before mutating again.
