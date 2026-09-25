@@ -99,6 +99,9 @@ test('cockpit adapter projects predictive sales intelligence without inventing i
 });
 
 
+test('cockpit exposes contextual MKB trigger intelligence without fabricating it',()=>{const code=fs.readFileSync(functionPath,'utf8');for(const field of ['buyingTriggerStatus','buyingTriggers','problemHypotheses','recommendedOffers','partnerChannels','outreachMode'])assert.ok(code.includes(field),`missing MKB trigger field ${field}`);assert.match(code,/context-led/);});
+
+
 test('LinkedIn cockpit autopilot is part of the canonical social publisher', () => {
   const source = fs.readFileSync(new URL('../supabase/functions/powerhouse-social-publisher/index.ts', import.meta.url), 'utf8');
   assert.match(source, /async function runLinkedInCockpitAutopilot\(db:any\)/);
