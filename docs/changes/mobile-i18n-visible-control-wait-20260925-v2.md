@@ -19,3 +19,18 @@ The actual functional proof remains unchanged: the gate still requires `/prijzen
 ## Prevention
 
 Dynamic UI is verified as asynchronous state. Presence-only checks and hidden desktop fallbacks are not accepted as proof for the mobile viewport.
+
+## Revision 3 — visibility-first host selection
+
+Exact production on `c2bf6d4f059307579686f1b61d66f195b0ee2af7` proved the provider build, exact identity and pricing content, but the terminal browser gate still failed with:
+
+`visible mobile language select is missing after opening mobile navigation`
+
+The wait itself was no longer the problem. The verifier chose the shared selector with:
+
+`sharedLanguage.count() ? sharedLanguage : legacyLanguage`
+
+That tests DOM presence rather than active visibility. A hidden shared control could therefore be selected while a visible compact/legacy control existed.
+
+The verifier now resolves only `:visible` language selects inside approved mobile hosts and applies the same rule on the EN→NL return path. Presence-only host selection is explicitly prohibited by regression.
+
