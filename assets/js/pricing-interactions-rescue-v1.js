@@ -68,6 +68,7 @@
     all('[data-bg-billing]').forEach((button) => {
       const active = button.getAttribute('data-bg-billing') === billing;
       button.setAttribute('aria-pressed', String(active));
+      button.setAttribute('aria-selected', String(active));
       button.classList.toggle('is-active', active);
     });
     all('.bg-billing-price').forEach((el) => {
@@ -80,6 +81,7 @@
         ? (el.tagName === 'SMALL' ? (english ? '/year' : '/jaar') : (english ? 'per year' : 'per jaar'))
         : (el.tagName === 'SMALL' ? (english ? '/month' : '/maand') : (english ? 'per month' : 'per maand'));
     });
+    document.documentElement.dataset.bgPricingBilling = billing;
     all('a[href*="/afsluiten?plan="]').forEach((a) => {
       try {
         const url = new URL(a.href, location.origin);
