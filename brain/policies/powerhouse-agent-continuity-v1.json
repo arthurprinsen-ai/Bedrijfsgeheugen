@@ -41,7 +41,8 @@
     "MATERIAL_WRITEBACK_MUST_BE_SAME_REPOSITORY_REVIEWABLE_LINEAGE",
     "ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE",
     "DOCS_CLOSURE_ALIAS_CANONICALIZES_BEFORE_ADMISSION",
-    "SETTLED_SUCCESSFUL_DOCUMENT_REQUEST_ABORT_IS_NOT_AN_ASSET_FAILURE"
+    "SETTLED_SUCCESSFUL_DOCUMENT_REQUEST_ABORT_IS_NOT_AN_ASSET_FAILURE",
+    "PRODUCTION_READBACK_ACCEPTS_ONLY_SAFE_NON_RUNTIME_DESCENDANT_SUPERSESSION"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -218,7 +219,8 @@
     "brain/learning/2026-09-25-same-repo-reviewable-writeback-v1.json",
     "brain/learning/2026-09-25-repository-native-borging-all-agents-v1.json",
     "brain/learning/2026-09-25-candidate-type-closure-canonicalization-v1.json",
-    "brain/learning/2026-09-25-browser-settled-document-request-failure-v1.json"
+    "brain/learning/2026-09-25-browser-settled-document-request-failure-v1.json",
+    "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -469,5 +471,27 @@
     "unknown_alias_behavior": "FAIL_CLOSED",
     "same_lineage_recovery": true,
     "bypass_allowed": false
+  },
+  "production_readback_supersession_rule": {
+    "required": true,
+    "fingerprint": "delivery|production-readback-safe-supersession|v1",
+    "exact_sha_allowed": true,
+    "safe_descendant_allowed": true,
+    "safe_descendant_requires": [
+      "observed SHA is descendant of expected SHA",
+      "all intervening changed paths are explicitly non-production-affecting"
+    ],
+    "allowed_non_production_prefixes": [
+      "docs/",
+      ".agents/",
+      "tests/",
+      ".github/",
+      "brain/learning/"
+    ],
+    "allowed_non_production_exact": [
+      "config/delivery-prevention-rules.json"
+    ],
+    "runtime_affecting_descendant_behavior": "FAIL_CLOSED",
+    "non_descendant_behavior": "FAIL_CLOSED"
   }
 }
