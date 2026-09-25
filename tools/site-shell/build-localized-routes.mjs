@@ -10,8 +10,8 @@ const EXCLUDED_TOP = new Set(['.git','.github','node_modules','assets','componen
 const INCLUDED_DIRS = new Set(['blog','kennis']);
 const SKIP_TAGS = new Set(['script','style','code','pre','noscript','svg','textarea']);
 const ATTRS = new Set(['placeholder','title','aria-label','alt']);
-const TRANSLATION_CACHE_FILE = path.join(ROOT,'.cache','bg-static-i18n-en.json');
-const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'.cache','bg-static-i18n-en.d');
+const TRANSLATION_CACHE_FILE = path.join(ROOT,'config','bg-static-i18n-en.json');
+const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'config','bg-static-i18n-en.d');
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
@@ -341,6 +341,11 @@ async function translateAll(strings) {
   }
   if (!missing.length) return result;
 
+  const cacheRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1';
+  if (cacheRequired) {
+    throw new Error('STATIC_I18N_CACHE_INCOMPLETE: ' + missing.length + ' missing translation(s); first=' + missing[0].slice(0,120));
+  }
+
   const networkAllowed = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
   if (!networkAllowed) {
     console.warn('STATIC_I18N_OFFLINE_RELEASE English generation skipped: release builds never call external translation providers');
@@ -456,7 +461,7 @@ if (cacheValidationOnly) {
 }
 
 const translations = await translateAll([...allStrings]);
-const productionTranslationRequired = String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
+const productionTranslationRequired = String(process.env.STATIC_I18N_REQUIRE_CACHE || '').trim() === '1' || String(process.env.STATIC_I18N_NETWORK || '').trim() === '1';
 if (productionTranslationRequired && !translations) {
   throw new Error('STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED');
 }
