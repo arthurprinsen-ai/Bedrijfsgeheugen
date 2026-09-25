@@ -1035,3 +1035,15 @@ Fingerprint: `ai-ecosystem-static-i18n-cache-coupling-20260925-v1`.
 - If cache validation reports missing strings, add the English cache delta in the same candidate and keep production fail-closed.
 - Regression: `tests/brain-ai-ecosystem-static-i18n-cache-v1.test.mjs`.
 - Learning: `brain/learning/ai-ecosystem-static-i18n-cache-coupling-20260925-v1.json`.
+
+## Netlify linked-build fallback
+
+Fingerprint: `delivery-netlify-linked-build-error-fallback-v2`.
+
+- A Git-linked Netlify build is an opportunistic transport, not the terminal delivery authority.
+- If the linked deploy reaches `state=error`, log deploy/build evidence, set `linked_fallback=true`, and continue to the authenticated canonical exact-source upload already present in Production Source Snapshot.
+- Do not weaken terminal proof: provider ready, exact production SHA in `release.json`, production content checks, and production browser verification remain mandatory.
+- Never mark LIVE from `trigger_build ok=true` alone.
+- Regression: `tests/brain-netlify-linked-build-error-fallback-v2.test.mjs`.
+- Learning: `brain/learning/2026-09-25-netlify-linked-build-error-fallback-v2.json`.
+
