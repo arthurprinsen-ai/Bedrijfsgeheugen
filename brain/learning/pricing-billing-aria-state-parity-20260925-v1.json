@@ -1,0 +1,41 @@
+{
+  "fingerprint": "pricing-billing-aria-state-parity-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "PRICING_BILLING_ACCESSIBILITY_STATE_DRIFT",
+  "problem": "Production billing click changed pricing data but the yearly billing control never exposed aria-selected=true, causing the canonical production browser gate to fail.",
+  "root_cause": "The rescue runtime updated aria-pressed only, while the pricing control contract and production browser oracle use aria-selected for the selected tab state.",
+  "prevention": [
+    "Billing controls must synchronize aria-pressed and aria-selected from the same active boolean.",
+    "Production pricing proof must verify both selected state and price mutation.",
+    "The fix must preserve static NL/EN route switching after billing interaction."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-toggle-runtime-v3.test.mjs"
+    ],
+    "shadow": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-toggle-runtime-v3.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "website"
+  ],
+  "compiler": {
+    "failure_class": "PRICING_BILLING_ACCESSIBILITY_STATE_DRIFT",
+    "scope": "PRICING_I18N_PRODUCTION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
