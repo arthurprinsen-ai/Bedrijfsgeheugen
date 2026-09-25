@@ -1,0 +1,52 @@
+{
+  "fingerprint": "i18n|pricing|english-h1-canonical-patch|v1",
+  "date": "2026-09-25",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "STATIC_I18N_CANONICAL_TRANSLATION_GAP",
+  "problem": "Production /en/prijzen rendered the Dutch H1 although exact-SHA deployment, pricing structure and release identity were green.",
+  "root_cause": "The static English cache did not contain an authoritative translation for the exact source H1 'Prijzen voor digitalisering in het mkb'.",
+  "fix": [
+    "Add a small canonical cache patch for the exact source H1.",
+    "Keep the production browser proof that rejects the Dutch H1 on /en/prijzen.",
+    "Migrate stale i18n and consent regressions to current semantic invariants while retaining exact allowlist membership and fail-closed visible-English browser proof."
+  ],
+  "prevention": [
+    "Treat mandatory route hero headings as explicit canonical translation contracts.",
+    "Do not consider i18n live based only on html lang or route switching; visible translated copy must also be proven."
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CANONICAL_TRANSLATION_GAP",
+    "scope": "WEBSITE_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-en-h1-canonical-v1.test.mjs",
+      "tests/brain-i18n-asset-independent-injection-v1.test.mjs",
+      "tests/brain-i18n-existing-assets-mobile-injection-v1.test.mjs",
+      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs",
+      "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+      "tests/brain-pricing-i18n-mobile-language-readback-v1.test.mjs",
+      "tests/brain-pricing-production-dom-geometry-pointer-v1.test.mjs",
+      "tests/brain-production-verifier-v18-mobile-language-v1.test.mjs",
+      "tests/brain-terminal-release-marker-mobile-i18n-v1.test.mjs"
+    ]
+  },
+  "failed_approaches": [
+    "Regression tests hard-coded obsolete implementation syntax (two-script allowlist, literal selectOption calls, old injection variable names) instead of the preserved consent/i18n/browser behavior."
+  ],
+  "evidence": {
+    "production_route": "https://www.bedrijfsgeheugen.nl/en/prijzen",
+    "observed_marker": "data-bg-static-translated=\"false\"",
+    "observed_visible_failure": "Dutch pricing H1 remained visible on the English route",
+    "browser_verifier": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "parser_shape": "H1 contains separate text nodes around the highlighted span, so cache coverage must include the node-level fragments."
+  },
+  "semantic_learning": {
+    "root_cause": "Static i18n resolves DOM text nodes, not the visually concatenated H1 string; a sentence-level cache key alone cannot translate a heading split by markup.",
+    "prevention": "Canonical translation patches for styled headings must cover the exact parser text-node sources and remain protected by visible browser assertions.",
+    "proof": "The production verifier must observe English visible copy on /en/prijzen and reject the Dutch H1."
+  }
+}
