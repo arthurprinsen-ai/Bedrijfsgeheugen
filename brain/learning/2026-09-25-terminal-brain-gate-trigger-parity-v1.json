@@ -1,0 +1,40 @@
+{
+  "fingerprint": "terminal-brain-gate-trigger-parity-v1",
+  "obligation_id": "governance-production-trigger-ownership-v1",
+  "supersedes_pr": 3108,
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "TERMINAL_GATE_TRIGGER_MISMATCH",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Obligation Terminal Closure queried Unified Brain Delivery with event=pull_request even though unified-brain-delivery.yml is workflow_dispatch-only, making terminal closure wait for evidence that could never exist.",
+  "fix": "Accept successful exact-head Unified Brain Delivery evidence independent of event type when present; otherwise require successful exact-merge Brain foundation verify push evidence.",
+  "prevention_rule": "TERMINAL_GATES_MUST_MATCH_EXECUTABLE_WORKFLOW_TRIGGERS",
+  "prevention": [
+    "Never bind terminal proof to an event type absent from the referenced workflow.",
+    "Prefer exact-head Brain delivery evidence when it exists.",
+    "Fallback only to exact-merge Brain foundation verification, never to an unrelated or stale SHA.",
+    "Failed or absent Brain evidence remains fail-closed."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "blocked_terminal_run": 36175492847,
+    "blocked_pr": 3108,
+    "exact_head": "4845b94e70655775d1b5ace017407cc2c30e3a28",
+    "merge_sha": "c47d5728b99ecc90b6644c6add57a8a590cea970",
+    "proven_main_brain_run": 36175492186
+  },
+  "outcome": "TERMINAL_BRAIN_GATE_TRIGGER_PARITY_RESTORED"
+}
