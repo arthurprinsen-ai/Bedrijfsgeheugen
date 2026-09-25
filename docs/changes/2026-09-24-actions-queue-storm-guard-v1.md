@@ -62,3 +62,13 @@ Dit voorkomt zowel eeuwige queue-zombies als runner-slots die door superseded de
 De browser-timeout uit v4 was semantisch geldig, maar werd vóór `needs:` geplaatst. Een bestaande composable-release regressietest gebruikt die key-volgorde bewust als structurele contractanchor en blokkeerde daardoor Required/BRAIN.
 
 Herstel: `browser:` wordt weer direct gevolgd door `needs:`; `timeout-minutes: 15` blijft actief maar staat erna. Nieuwe regel: bij workflow-control wijzigingen eerst bestaande structurele contracttests respecteren; verander geen bewezen anchor als de semantiek dat niet vereist.
+
+
+## GitHub control-plane health v7
+Op 25 september bleven negen historische #1444-runs uit 12 september in `queued` staan. Zowel de Delivery Recovery Supervisor als Repository Janitor identificeerden ze correct als obsolete, maar GitHub weigerde de normale cancel-call. Daardoor faalden beide schedules opnieuw.
+
+De cleanup-escalatie is nu: normale cancel → officiële Actions `force-cancel` → delete-fallback, uitsluitend voor runs die al door de SHA/PR/branch-governor als obsolete zijn bewezen.
+
+Daarnaast is een tweede schedulerbug gesloten: de supervisor gebruikte `jq ... | while ...; break`. Bij recovery-budget 1 beëindigde de consumer bewust, waarna `jq` SIGPIPE kreeg en de hele workflow rood werd. De iterator gebruikt nu process substitution.
+
+Tot slot wacht Obligation Terminal Closure niet meer slechts vijf minuten op Required. De exact-head gate wait is vijftien minuten en de closure-job heeft een harde timeout van dertig minuten. Daarmee wordt normaal lange Required-uitvoering niet meer als terminale fout gemarkeerd.
