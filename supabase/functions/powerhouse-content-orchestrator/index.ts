@@ -29,11 +29,14 @@ async function digest(value: string) {
 class AIProviderHttpError extends Error {
   status:number;
   model:string;
-  constructor(status:number,model:string){
-    super('AI_PROVIDER_REQUEST_FAILED:'+status+':'+model);
+  providerDetail:string;
+  constructor(status:number,model:string,providerDetail:string=''){
+    const safe=String(providerDetail||'').replace(/[\r\n]+/g,' ').slice(0,240);
+    super('AI_PROVIDER_REQUEST_FAILED:'+status+':'+model+(safe?':'+safe:''));
     this.name='AIProviderHttpError';
     this.status=status;
     this.model=model;
+    this.providerDetail=safe;
   }
 }
 async function callAI(key: string, model: string, system: string, user: unknown, tool: any, maxTokens = 3200) {
@@ -45,8 +48,11 @@ async function callAI(key: string, model: string, system: string, user: unknown,
   });
   const body = await response.json().catch(() => ({}));
   if (!response.ok) {
-    console.error('ORCHESTRATOR_AI_PROVIDER_ERROR', response.status, model);
-    throw new AIProviderHttpError(response.status,model);
+    const providerType=clean(body?.error?.type||body?.type||'');
+    const providerMessage=clean(body?.error?.message||body?.message||'');
+    const providerDetail=[providerType,providerMessage].filter(Boolean).join(':').slice(0,240);
+    console.error('ORCHESTRATOR_AI_PROVIDER_ERROR', response.status, model, providerDetail);
+    throw new AIProviderHttpError(response.status,model,providerDetail);
   }
   const result = (body.content || []).find((x:any) => x.type==='tool_use' && x.name===tool.name);
   if (!result?.input) throw new Error('AI_TOOL_OUTPUT_MISSING:'+model);
