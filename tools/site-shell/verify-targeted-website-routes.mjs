@@ -61,7 +61,20 @@ async function observeRouteAttempt(browser, baseUrl, route, viewport) {
   try {
     const target = `${baseUrl.replace(/\/$/, '')}${route === '/' ? '/' : route}`;
     const response = await navigateWithRetry(page, target);
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+    await page.locator('body').waitFor({ state:'attached', timeout:15_000 });
+    await page.waitForFunction(() => {
+      const body=document.body;
+      if(!body || !String(body.innerText||'').trim()) return false;
+      return [...body.children].some(el => {
+        const style=getComputedStyle(el);
+        const rect=el.getBoundingClientRect();
+        return style.display!=='none'
+          && style.visibility!=='hidden'
+          && Number.parseFloat(style.opacity||'1')>0
+          && rect.width>0
+          && rect.height>0;
+      });
+    }, { timeout:15_000 });
     await page.waitForTimeout(750);
     const canonical = await page.locator('link[rel="canonical"]').first().getAttribute('href').catch(() => null);
     const title = await page.title();
