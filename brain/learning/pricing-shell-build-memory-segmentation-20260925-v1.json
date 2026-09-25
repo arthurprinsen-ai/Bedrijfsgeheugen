@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing-shell-build-memory-segmentation-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The Netlify production build for the pricing runtime fix failed with build exit code 2. Reproduction reached tools/prijzen-uit-de-homepage.mjs after the heavy V18 build and the process was killed before the remaining production build stages completed.",
+  "root_cause": "The CLI path of tools/prijzen-uit-de-homepage.mjs executed rewrite, full site normalization/SEO work and final verification in one long-lived Node process. After preceding V18 build transforms, the process retained enough heap and module state to make the pricing-shell stage vulnerable to provider memory limits.",
+  "prevention": [
+    "When invoked with BG_PRICING_STAGE=all, run rewrite, normalize and verify as separate child Node processes so memory is released between phases.",
+    "Keep the exported stage implementation unchanged so focused callers and tests can still execute a single stage in-process.",
+    "A child stage failure must fail the parent command with the failing stage, exit code and signal.",
+    "Production closure still requires the complete Netlify build plus exact production SHA and pricing/i18n browser proof."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-pricing-shell-build-memory-segmentation-v1.test.mjs"],
+    "shadow": ["tests/brain-pricing-shell-build-memory-segmentation-v1.test.mjs"],
+    "canary": ["tests/brain-pricing-shell-build-memory-segmentation-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-pricing-shell-build-memory-segmentation-v1.test.mjs"],
+  "evidence": {
+    "failed_netlify_deploy_id": "6ab66fd0fe4e3e3df396b891",
+    "failed_netlify_build_id": "6ab66fd0fe4e3e3df396b88f",
+    "failed_main_sha": "40c6d34495f3725e6ebfc7282e8b8778841839aa",
+    "reproduced_stage": "tools/prijzen-uit-de-homepage.mjs",
+    "reproduced_signal": "process killed after V18 production transforms"
+  },
+  "skill_targets": ["continuity", "delivery"],
+  "compiler": {
+    "failure_class": "PRICING_BUILD_MEMORY_PRESSURE",
+    "scope": "NETLIFY_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
