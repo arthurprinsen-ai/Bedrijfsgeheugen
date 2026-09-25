@@ -56,3 +56,22 @@ test('governance-only prevention registry does not trigger production deploy/rea
     assert.match(triggerBlock, /config\/delivery-prevention-rules\.json/);
   }
 });
+
+
+test('production workflows ignore control-plane-only paths', async () => {
+  for (const workflow of [
+    '.github/workflows/production-source-snapshot.yml',
+    '.github/workflows/production-release-readback.yml',
+  ]) {
+    const source = await readFile(workflow, 'utf8');
+    const triggerBlock = source.split(/\npermissions:/, 1)[0];
+    for (const expected of [
+      "AGENTS.md",
+      "brain/policies/**",
+      "tools/delivery/**",
+      "tools/site-shell/verify-targeted-website-routes.mjs",
+    ]) {
+      assert.ok(triggerBlock.includes(expected), `${workflow} must ignore ${expected}`);
+    }
+  }
+});
