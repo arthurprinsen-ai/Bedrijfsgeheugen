@@ -37,12 +37,13 @@
   "test_evidence": [
     "tests/brain-closed-force-pushed-pr-recovery-v1.test.mjs"
   ],
-  "revision": 5,
+  "revision": 6,
   "failed_approaches": [
     "Initial learning omitted evaluation.historical_replay, so Powerhouse Skill Projection correctly failed closed with LEARNING_EVALUATION_TESTS_REQUIRED.",
     "The first semantic-learning record kept failure_class only at top level; material writeback closure requires compiler.failure_class as the machine-semantic authority.",
     "Re-running a failed GitHub Actions run reuses the original pull_request event payload, including stale PR_BODY metadata; after correcting machine metadata, a meaningful same-lineage commit is required to generate a fresh pull_request synchronize event instead of relying on rerun.",
-    "Governance-only change to config/delivery-prevention-rules.json triggered Production Source Snapshot and Production Release Readback because the workflow-level paths-ignore contract did not exclude the prevention registry; Source Snapshot then attempted a Netlify deploy and hit 401 Unauthorized even though no website runtime change required promotion."
+    "Governance-only change to config/delivery-prevention-rules.json triggered Production Source Snapshot and Production Release Readback because the workflow-level paths-ignore contract did not exclude the prevention registry; Source Snapshot then attempted a Netlify deploy and hit 401 Unauthorized even though no website runtime change required promotion.",
+    "A new regression test was first placed at tests/production-governance-trigger-ownership.test.mjs, which the delivery hygiene classifier rejected as an unclassified delivery path. The regression was moved into canonical tests/delivery-ci-trigger-budget.test.mjs."
   ],
   "compiler": {
     "failure_class": "CLOSED_PR_FORCE_PUSH_RECOVERY_CAN_REINTRODUCE_STALE_MAIN",
