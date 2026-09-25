@@ -18,3 +18,11 @@ test('orchestrator logs pending read diagnostics without leaking provider data',
   assert.match(source,/pendingError\.code/);
   assert.match(source,/pendingError\.message/);
 });
+
+
+test('orchestrator preserves sanitized AI provider status and model for autonomous recovery',()=>{
+  assert.match(source,/class AIProviderHttpError extends Error/);
+  assert.match(source,/AI_PROVIDER_REQUEST_FAILED:/);
+  assert.match(source,/ORCHESTRATOR_AI_PROVIDER_ERROR/);
+  assert.match(source,/AbortSignal\.timeout\(45000\)/);
+});

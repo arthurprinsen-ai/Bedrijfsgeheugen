@@ -12,3 +12,11 @@ test('Instagram winner/media readiness degrades Instagram without blocking other
   assert.match(loop,/powerhouse-social-publisher/);
   assert.match(loop,/powerhouse-blog-queue/);
 });
+
+
+test('legacy Buffer sync is non-blocking and cannot own LinkedIn authority',()=>{
+  assert.match(loop,/Legacy Buffer sync is telemetry\/compatibility only/);
+  assert.match(loop,/non_blocking: true/);
+  assert.match(loop,/linkedin_authority: 'composio'/);
+  assert.match(loop,/LEGACY_BUFFER_SYNC_UNAVAILABLE/);
+});

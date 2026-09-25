@@ -68,9 +68,16 @@ Deno.serve(async (req) => {
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate }));
     stepResults.push(await invoke(url, expected, 'powerhouse-blog-queue', { runDate }));
 
+    // Legacy Buffer sync is telemetry/compatibility only. LinkedIn transport authority is Composio.
+    // A Buffer outage/rate-limit must never fail or delay the canonical LinkedIn content loop.
+    try {
     const sync = await fetch(`${url}/functions/v1/bg-buffer-sync`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: '{}' });
     const syncBody = await sync.json().catch(() => ({}));
-    stepResults.push({ name: 'bg-buffer-sync', http: sync.status, ok: sync.ok && syncBody?.ok !== false, body: syncBody });
+      const syncOk = sync.ok && syncBody?.ok !== false;
+      stepResults.push({ name: 'bg-buffer-sync', http: sync.status, ok: true, degraded: !syncOk, non_blocking: true, linkedin_authority: 'composio', body: syncBody });
+    } catch (error) {
+      stepResults.push({ name: 'bg-buffer-sync', http: 0, ok: true, degraded: true, non_blocking: true, linkedin_authority: 'composio', error: 'LEGACY_BUFFER_SYNC_UNAVAILABLE' });
+    }
 
     stepResults.push(await invoke(url, expected, 'powerhouse-social-publisher', { runDate, mode: 'audit_only' }));
 

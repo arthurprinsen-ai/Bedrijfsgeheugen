@@ -26,16 +26,30 @@ async function digest(value: string) {
   const data = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(value));
   return [...new Uint8Array(data)].map((b) => b.toString(16).padStart(2, '0')).join('');
 }
+class AIProviderHttpError extends Error {
+  status:number;
+  model:string;
+  constructor(status:number,model:string){
+    super('AI_PROVIDER_REQUEST_FAILED:'+status+':'+model);
+    this.name='AIProviderHttpError';
+    this.status=status;
+    this.model=model;
+  }
+}
 async function callAI(key: string, model: string, system: string, user: unknown, tool: any, maxTokens = 3200) {
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: { 'x-api-key': key, 'anthropic-version':'2023-06-01','content-type':'application/json' },
     body: JSON.stringify({ model, max_tokens:maxTokens, system, messages:[{role:'user',content:JSON.stringify(user)}], tools:[tool], tool_choice:{type:'tool',name:tool.name} }),
+    signal: AbortSignal.timeout(45000),
   });
   const body = await response.json().catch(() => ({}));
-  if (!response.ok) { console.error('ORCHESTRATOR_AI_PROVIDER_ERROR', response.status); throw new Error('AI_PROVIDER_REQUEST_FAILED'); }
+  if (!response.ok) {
+    console.error('ORCHESTRATOR_AI_PROVIDER_ERROR', response.status, model);
+    throw new AIProviderHttpError(response.status,model);
+  }
   const result = (body.content || []).find((x:any) => x.type==='tool_use' && x.name===tool.name);
-  if (!result?.input) throw new Error('AI_TOOL_OUTPUT_MISSING');
+  if (!result?.input) throw new Error('AI_TOOL_OUTPUT_MISSING:'+model);
   return result.input;
 }
 
