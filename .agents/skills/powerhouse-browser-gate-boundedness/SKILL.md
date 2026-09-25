@@ -25,3 +25,8 @@ Canonical regression: `tests/brain-standalone-visibility-boundedness-v1.test.mjs
 ## System Map registration
 
 Any new material skill introduced by browser-gate recovery must be registered in `platform/system-map/canonical-system-map.mjs` in the same delivery lineage. A skill is not terminally integrated while repository topology and canonical inventory disagree.
+
+
+## Process-level circuit breaker
+
+Internal Playwright/navigation budgets are not sufficient to terminate a wedged browser or protocol operation. Every production browser verifier command must also run behind an OS-level process timeout that expires materially before the enclosing job timeout. The process timeout is fail-closed and must never remove semantic browser assertions.

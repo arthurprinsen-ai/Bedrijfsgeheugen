@@ -87,7 +87,7 @@ jobs:
       - name: Verify every public production page is visibly rendered
         env:
           UI_VR_BASE_URL: https://www.bedrijfsgeheugen.nl
-        run: node tools/site-shell/standalone-visibility-check.mjs
+        run: timeout --signal=TERM --kill-after=30s 10m node tools/site-shell/standalone-visibility-check.mjs
       - name: Production UI visual regression readback
         env:
           EXPECTED_COMMIT: ${{ github.sha }}
