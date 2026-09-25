@@ -20,12 +20,23 @@
     "outcome_source_conclusion": "cancelled"
   },
   "evaluation": {
-    "expected_janitor_behavior": "record blocker and continue cleanup",
-    "expected_outcome_behavior": "non-success workflow_run exits as COMPLETION_EVIDENCE_APPLICABLE=false"
+    "historical_replay": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ]
   },
   "failed_approaches": [
     "Failing the complete janitor when GitHub refuses all mutation endpoints for a legacy queued run.",
     "Assuming every Production Release Readback workflow_run has a downloadable trusted artifact regardless of source conclusion."
   ],
-  "revision": 1
+  "revision": 1,
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
