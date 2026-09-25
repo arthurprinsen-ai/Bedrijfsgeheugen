@@ -26,7 +26,7 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
-      "tests/site-shell-website-release-risk.test.mjs"
+      "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs"
     ],
     "invariants": [
       "one canonical PH-Pxxx problem language",
@@ -45,7 +45,8 @@
     "contract": "config/powerhouse-problem-radar-intake-contract.json",
     "regression": "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
     "documentation": "docs/changes/powerhouse-problem-radar-canonical-intake-v1.md",
-    "inherited_regression_repair": "tests/site-shell-website-release-risk.test.mjs"
+    "inherited_regression_repair": "tests/site-shell-website-release-risk.test.mjs",
+    "canonical_bounded_concurrency_evaluation": "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs"
   },
   "integration_recovery": {
     "failure_class": "INHERITED_STALE_REGRESSION_CONTRACT",
@@ -53,6 +54,7 @@
     "root_cause": "Current main had already changed standalone visibility verification from serial route iteration to bounded worker concurrency, while tests/site-shell-website-release-risk.test.mjs still asserted the superseded serial `for (const route of routes)` mechanism.",
     "repair": "Migrate the stale baseline assertion to the canonical bounded-concurrency semantics without weakening full-route, viewport, CLS or fail-closed guarantees.",
     "prevention": "When a canonical verifier changes execution strategy, co-migrate all tests that assert the old mechanism; preserve semantic safety invariants rather than implementation shape.",
-    "repaired_test": "tests/site-shell-website-release-risk.test.mjs"
+    "repaired_test": "tests/site-shell-website-release-risk.test.mjs",
+    "learning_canonicalization_repair": "Learning evaluation references must use classified tests/brain-*.test.mjs paths; website oracle evidence remains in evidence.inherited_regression_repair."
   }
 }

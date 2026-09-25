@@ -17,7 +17,8 @@
   "prevention": [
     "Any implementation-shape change in the visibility verifier must cochange every regression that asserts that shape.",
     "The canonical brain boundedness regression now verifies the runtime concurrency contract and the website release-risk oracle together.",
-    "Do not rerun or rebuild multiple affected PRs until the shared main regression is fixed once."
+    "Do not rerun or rebuild multiple affected PRs until the shared main regression is fixed once.",
+    "Learning canonicalization accepts only classified tests/brain-*.test.mjs evaluation paths; non-Brain implementation tests remain supporting evidence, never canonical evaluation references."
   ],
   "evaluation": {
     "historical_replay": [
@@ -38,6 +39,8 @@
       2883,
       2884,
       2885
-    ]
+    ],
+    "problem_radar_learning_repair": "brain/learning/2026-09-25-powerhouse-problem-radar-canonical-intake-v1.json",
+    "problem_radar_evaluation_wrapper": "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs"
   }
 }
