@@ -29,7 +29,7 @@ async function getVisibleMobileLanguage(page) {
 
   const candidates = [
     page.locator('#bgSharedMobileNav [data-bg-language-select]').first(),
-    page.locator('#bgkopMob [data-bg-language-select]:visible').first(),
+    page.locator('#bgkopMob [data-bg-language-select]').first(),
     page.locator('[data-bg-language-select]:visible').first(),
   ];
   for (const candidate of candidates) {
@@ -44,6 +44,25 @@ async function getVisibleMobileLanguage(page) {
     allSelects: document.querySelectorAll('[data-bg-language-select]').length,
   }));
   throw new Error('visible mobile language select is missing after opening mobile navigation: ' + JSON.stringify(diagnostics));
+}
+
+async function switchPublicLocale(page, locale, expectedPath) {
+  const selector = await getVisibleMobileLanguage(page);
+  await Promise.all([
+    page.waitForURL(url => {
+      const path = new URL(url).pathname.replace(/\/$/, '') || '/';
+      const expected = expectedPath.replace(/\/$/, '') || '/';
+      return path === expected;
+    }, { timeout:20_000 }),
+    selector.selectOption(locale),
+  ]);
+  await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+  await page.waitForTimeout(300);
+  if ((await page.locator('html').getAttribute('lang')) !== locale) {
+    throw new Error('locale switch did not render html lang=' + locale + ' for ' + expectedPath);
+  }
+  const body = await page.locator('body').innerText();
+  if (/Switching language failed\. Try again\./i.test(body)) throw new Error('language switch exposed runtime translation failure on ' + expectedPath);
 }
 
 async function run() {
@@ -124,29 +143,24 @@ async function run() {
     if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-pressed')) !== 'true') throw new Error('yearly billing aria-pressed did not become true');
     if (before.trim() === after.trim()) throw new Error('yearly billing click did not change a price');
 
-    // Public language switching must use the actually visible control for this viewport.
-    const mobileLanguage = await getVisibleMobileLanguage(page);
-    await Promise.all([
-      page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      mobileLanguage.selectOption('en'),
-    ]);
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
-    await page.waitForTimeout(500);
-    if ((await page.locator('html').getAttribute('lang')) !== 'en') throw new Error('English route did not render html lang=en');
-    const body = await page.locator('body').innerText();
-    if (/Switching language failed\. Try again\./i.test(body)) throw new Error('English switch still exposes runtime translation failure');
-    if (/Prijzen voor digitalisering in het mkb/i.test(body)) throw new Error('English route still shows the Dutch pricing H1');
-    if (!/Pricing/i.test(body)) throw new Error('English route has no visible Pricing text');
+    // Public language switching must prove NL→EN→NL on every mandatory public route.
+    await switchPublicLocale(page, 'en', '/en/prijzen');
+    const pricingEnglish = await page.locator('body').innerText();
+    if (/Prijzen voor digitalisering in het mkb/i.test(pricingEnglish)) throw new Error('English route still shows the Dutch pricing H1');
+    if (!/Pricing/i.test(pricingEnglish)) throw new Error('English route has no visible Pricing text');
+    await switchPublicLocale(page, 'nl', '/prijzen');
 
-    const dutchSelect = await getVisibleMobileLanguage(page);
-    await Promise.all([
-      page.waitForURL(url => /^\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      dutchSelect.selectOption('nl'),
-    ]);
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
-    await page.waitForTimeout(300);
-    if ((await page.locator('html').getAttribute('lang')) !== 'nl') throw new Error('Dutch route did not render html lang=nl');
-    if (/^\/nl(?:\/|$)/.test(new URL(page.url()).pathname)) throw new Error('Dutch switch leaked to deprecated /nl/* route');
+    const mandatoryRoutes = [
+      { nl:'/', en:'/en' },
+      { nl:'/prijzen', en:'/en/prijzen' },
+      { nl:'/systemen-koppelen', en:'/en/systemen-koppelen' },
+    ];
+    for (const route of mandatoryRoutes) {
+      await page.goto(baseUrl.replace(/\/$/,'') + route.nl + '?locale_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
+      await switchPublicLocale(page, 'en', route.en);
+      await switchPublicLocale(page, 'nl', route.nl);
+      if (/^\/nl(?:\/|$)/.test(new URL(page.url()).pathname)) throw new Error('Dutch switch leaked to deprecated /nl/* route');
+    }
 
     if (errors.length) throw new Error('Browser page errors: ' + JSON.stringify(errors));
     console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'nl',roundtrip:'nl-en-nl'}));
