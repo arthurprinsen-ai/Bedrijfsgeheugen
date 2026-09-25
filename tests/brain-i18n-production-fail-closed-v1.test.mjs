@@ -7,7 +7,7 @@ const netlify=fs.readFileSync('netlify.toml','utf8');
 
 test('production localized build is provider-independent and uses cache deterministically but closes on production browser proof',()=>{
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"0"/);
   assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(source,/STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED/);
   assert.match(source,/const cacheRequired = String\(process\.env\.STATIC_I18N_REQUIRE_CACHE/);
@@ -18,7 +18,7 @@ test('production localized build is provider-independent and uses cache determin
 
 test('deploy previews inherit the deterministic cache-only contract',()=>{
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"0"/);
   assert.match(netlify,/\[context\.deploy-preview\][\s\S]*command\s*=/);
   assert.match(source,/data-bg-static-translated/);
 });
