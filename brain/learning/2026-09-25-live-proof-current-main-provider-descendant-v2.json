@@ -1,0 +1,19 @@
+{
+  "id": "2026-09-25-live-proof-current-main-provider-descendant-v2",
+  "fingerprint": "delivery|live-proof|current-main-provider-descendant|v1",
+  "scope": "POWERHOUSE_DELIVERY",
+  "compiler": {"failure_class": "STALE_OR_UNBOUND_PRODUCTION_READBACK"},
+  "problem": "Merge, CI or stale provider evidence can be mistaken for current production truth when main and provider identities move independently.",
+  "root_cause": "Terminal status did not always force a fresh current-main plus provider-production identity binding at claim time.",
+  "prevention": [
+    "Read current main immediately before LIVE_BEWEZEN.",
+    "Read current provider production commit_ref immediately before LIVE_BEWEZEN.",
+    "Require exact equality or Git ancestry containment for the delivered merge.",
+    "When main is ahead of provider production, remain non-terminal.",
+    "Keep autonomous follow-up owned by the delivery node through learning, skill and dashboard writeback."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-live-proof-current-main-provider-descendant-v2.test.mjs"],
+    "expected": "LIVE_BEWEZEN is possible only with fresh repository/provider binding and terminal writeback."
+  }
+}
