@@ -1,0 +1,37 @@
+{
+  "fingerprint": "linkedin-composio-chain-provider-isolation-v1",
+  "date": "2026-09-25",
+  "type": "SOCIAL_PUBLISHING_CHAIN_RESILIENCE",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "CONTENT_LINKEDIN",
+    "machine_enforceable": true,
+    "repeat_count": 84,
+    "security_sensitive": false
+  },
+  "root_cause": [
+    "LinkedIn dispatch is Composio-only, but the supervisor still executed a legacy Buffer sync without containment, so a Buffer network/provider failure could abort the broader content loop.",
+    "The content orchestrator collapsed every non-2xx Anthropic response into AI_PROVIDER_REQUEST_FAILED, hiding the HTTP status and model needed for autonomous diagnosis.",
+    "On 2026-09-25 the artifact-ai stage failed repeatedly, leaving both LinkedIn decisions at decided with no content artifacts."
+  ],
+  "prevention": [
+    "LinkedIn personal and company publication authority remains Composio-only with exact provider URN readback and no Buffer fallback.",
+    "Legacy Buffer sync is compatibility telemetry only, is explicitly non-blocking, and records degraded state instead of failing the LinkedIn loop.",
+    "AI provider failures retain only sanitized HTTP status and model identity; provider payloads and secrets are never logged.",
+    "The content AI call has a bounded 45-second timeout so a hung provider cannot stall a scheduler run."
+  ],
+  "evidence": {
+    "production_observation": "84 powerhouse-content-orchestrator health rows on 2026-09-25 reported artifact-ai:AI_PROVIDER_REQUEST_FAILED before remediation.",
+    "linkedin_transport": "powerhouse-social-publisher has dedicated Composio branches for linkedin_personal and linkedin_company, exact LINKEDIN_GET_POST_CONTENT readback, buffer_dependency:false and republish_forbidden fail-closed handling.",
+    "regression_tests": [
+      "tests/brain-content-loop-channel-isolation-v1.test.mjs",
+      "tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs",
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ]
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-content-loop-channel-isolation-v1.test.mjs"],
+    "canary": ["tests/brain-powerhouse-content-orchestrator-pending-selection.test.mjs"],
+    "shadow": ["tests/brain-linkedin-composio-authority.test.mjs"]
+  }
+}
