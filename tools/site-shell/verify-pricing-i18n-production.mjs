@@ -4,6 +4,52 @@ async function expectVisible(locator, label) {
   if (!await locator.isVisible().catch(()=>false)) throw new Error(label + ' is not visible');
 }
 
+function normalizedPath(pathname) {
+  if (pathname === '/') return '/';
+  return pathname.replace(/\/+$/, '') || '/';
+}
+
+async function getVisibleMobileLanguage(page) {
+  const legacyMenu = page.locator('#bgkopMob').first();
+  const legacyButton = page.locator('#bgkopKnop').first();
+  if (await legacyMenu.count() && await legacyMenu.isHidden().catch(()=>false)) {
+    await legacyButton.click();
+    await page.waitForTimeout(100);
+  }
+
+  let select = page.locator('#bgkopMob [data-bg-language-select]:visible').first();
+  if (await select.isVisible().catch(()=>false)) return select;
+
+  select = page.locator('[data-bg-language-select]:visible').first();
+  if (await select.isVisible().catch(()=>false)) return select;
+
+  const diagnostics = await page.evaluate(() => ({
+    allSelects: document.querySelectorAll('[data-bg-language-select]').length,
+    legacySelects: document.querySelectorAll('#bgkopMob [data-bg-language-select]').length,
+    legacyHidden: document.getElementById('bgkopMob')?.hidden ?? null,
+    mobileHosts: document.querySelectorAll('[data-bg-mobile-view="root"], [data-bg-shared-mobile-view="root"], #bgkopMob').length,
+  }));
+  throw new Error('visible mobile language select is missing: ' + JSON.stringify(diagnostics));
+}
+
+async function switchPublicLocale(page, target, expectedPath) {
+  const select = await getVisibleMobileLanguage(page);
+  await Promise.all([
+    page.waitForURL(url => normalizedPath(new URL(url).pathname) === normalizedPath(expectedPath), { timeout:20_000 }),
+    select.selectOption(target),
+  ]);
+  await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+  await page.waitForTimeout(350);
+  const expectedLang = target === 'en' ? 'en' : 'nl';
+  if ((await page.locator('html').getAttribute('lang')) !== expectedLang) {
+    throw new Error(expectedLang + ' route did not render html lang=' + expectedLang);
+  }
+  const body = await page.locator('body').innerText();
+  if (/Switching language failed\. Try again\.|Wisselen mislukt\. Probeer opnieuw\./i.test(body)) {
+    throw new Error('language switch exposes runtime translation failure on ' + expectedPath);
+  }
+}
+
 async function run() {
   const baseUrl = process.env.BASE_URL || 'https://www.bedrijfsgeheugen.nl';
   const { chromium } = await import('playwright');
@@ -82,42 +128,28 @@ async function run() {
     if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-pressed')) !== 'true') throw new Error('yearly billing aria-pressed did not become true');
     if (before.trim() === after.trim()) throw new Error('yearly billing click did not change a price');
 
-    // Public language switching must use the actually visible control for this viewport.
-    // At the mobile proof viewport the desktop language button exists in the DOM but is hidden;
-    // open the mobile drawer and use its native select instead of clicking a hidden desktop control.
-    const mobileMenu = page.locator('#bgkopMob').first();
-    const mobileMenuButton = page.locator('#bgkopKnop').first();
-    if (await mobileMenu.count() && await mobileMenu.isHidden().catch(()=>false)) await mobileMenuButton.click();
-    const mobileLanguage = page.locator('[data-bg-language-select]:visible').first();
-    if (!await mobileLanguage.count()) throw new Error('visible mobile language select is missing');
-    await Promise.all([
-      page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      mobileLanguage.selectOption('en'),
-    ]);
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
-    await page.waitForTimeout(500);
-    if ((await page.locator('html').getAttribute('lang')) !== 'en') throw new Error('English route did not render html lang=en');
-    const body = await page.locator('body').innerText();
-    if (/Switching language failed\. Try again\./i.test(body)) throw new Error('English switch still exposes runtime translation failure');
-    if (/Prijzen voor digitalisering in het mkb/i.test(body)) throw new Error('English route still shows the Dutch pricing H1');
-    if (!/Pricing/i.test(body)) throw new Error('English route has no visible Pricing text');
-
-    // English -> Dutch must return through the same visible mobile control.
-    const englishMobileMenu = page.locator('#bgkopMob').first();
-    if (await englishMobileMenu.count() && await englishMobileMenu.isHidden().catch(()=>false)) await page.locator('#bgkopKnop').first().click();
-    const dutchSelect = page.locator('[data-bg-language-select]:visible').first();
-    if (!await dutchSelect.count()) throw new Error('visible Dutch language select is missing');
-    await Promise.all([
-      page.waitForURL(url => /^\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      dutchSelect.selectOption('nl'),
-    ]);
-    await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
-    await page.waitForTimeout(300);
-    if ((await page.locator('html').getAttribute('lang')) !== 'nl') throw new Error('Dutch route did not render html lang=nl');
+    // Public language switching must use the actually visible active mobile control.
+    await switchPublicLocale(page, 'en', '/en/prijzen');
+    const pricingEnglishBody = await page.locator('body').innerText();
+    if (/Prijzen voor digitalisering in het mkb/i.test(pricingEnglishBody)) throw new Error('English route still shows the Dutch pricing H1');
+    if (!/Pricing/i.test(pricingEnglishBody)) throw new Error('English route has no visible Pricing text');
+    await switchPublicLocale(page, 'nl', '/prijzen');
     if (/^\/nl(?:\/|$)/.test(new URL(page.url()).pathname)) throw new Error('Dutch switch leaked to deprecated /nl/* route');
 
+    // The same central locale runtime must work on the homepage and integrations route.
+    for (const route of [
+      { nl:'/', en:'/en/' },
+      { nl:'/systemen-koppelen', en:'/en/systemen-koppelen' },
+    ]) {
+      await page.goto(baseUrl.replace(/\/$/,'') + route.nl + (route.nl.includes('?') ? '&' : '?') + 'i18n_route_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
+      await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
+      if ((await page.locator('html').getAttribute('lang')) !== 'nl') throw new Error('Dutch source route did not render html lang=nl: ' + route.nl);
+      await switchPublicLocale(page, 'en', route.en);
+      await switchPublicLocale(page, 'nl', route.nl);
+    }
+
     if (errors.length) throw new Error('Browser page errors: ' + JSON.stringify(errors));
-    console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'nl',roundtrip:'nl-en-nl'}));
+    console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'nl',roundtrip:'nl-en-nl',routes:['/','/prijzen','/systemen-koppelen']}));
   } finally {
     await browser.close();
   }
