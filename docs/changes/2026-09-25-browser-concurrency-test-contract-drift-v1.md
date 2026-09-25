@@ -7,4 +7,6 @@ The full-site visibility verifier was correctly changed to bounded route-worker 
 
 The fix updates the stale oracle to require bounded worker concurrency and extends the canonical Brain boundedness test so runtime and oracle must move together. One shared main fix replaces per-PR workarounds or blind reruns.
 
+A second recovery finding exposed a runner-leak gap: the browser step executed `standalone-visibility-check.mjs` directly. Its internal 8-minute budget is necessary but not sufficient if Playwright or the browser protocol itself wedges. The workflow now wraps the command in an OS-level circuit breaker: `timeout --signal=TERM --kill-after=15s 9m ...`, materially below the 25-minute job timeout. The Brain regression asserts this wrapper so a future workflow edit cannot silently remove it.
+
 The same recovery also fixes the Problem Radar learning evaluation path: canonical learning evaluation may reference only `tests/brain-*.test.mjs`. The website release-risk test remains supporting evidence, while the existing Brain bounded-concurrency regression is the executable evaluation wrapper.
