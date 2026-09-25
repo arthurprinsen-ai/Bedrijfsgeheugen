@@ -1110,33 +1110,19 @@ Fingerprint: `pricing-canonical-i18n-assets-20260925-v1`.
 - Production closure requires the visible mobile language selector plus NL→EN→NL browser roundtrip on `/prijzen`.
 
 
-## Frontend capability completeness is per required asset
+## Website i18n asset completeness
 
-Fingerprint: `i18n-runtime-asset-independent-presence-v1`.
+Fingerprint: `website-i18n|asset-completeness|runtime-host-proof|v1`.
 
-For public frontend capabilities such as NL/EN:
-- never treat one shared marker, stylesheet, source token or successful build step as proof that the entire capability is installed;
-- verify each required runtime asset independently and inject missing assets idempotently;
-- continue build-time control injection even when another related asset already exists;
-- bind runtime controls to the active production navigation host, not only legacy/template hosts;
-- require the real visible user interaction path in production readback before terminal completion.
+For public NL/EN delivery, the presence of one i18n marker or stylesheet is never evidence that the complete i18n runtime is installed.
 
-For NL/EN specifically, stylesheet presence and `/assets/js/i18n.js` presence are separate invariants, and mobile proof must exercise the active visible selector through NL → EN → NL.
+Mandatory:
+- validate stylesheet and runtime script independently;
+- never short-circuit build transforms merely because any `data-bg-i18n-asset` marker exists;
+- keep mobile language mounting idempotent across the active v18 drawer, generic shared mobile roots and legacy compact navigation;
+- production proof must inspect the final public HTML/runtime, not only canonical source;
+- require a real mobile NL → EN → NL roundtrip on the active visible navigation before `LIVE_BEWEZEN`;
+- if production reports zero language selects, first prove that `assets/js/i18n.js` is actually present and executed before diagnosing host-selection logic.
 
-## NL/EN runtime asset completeness
-
-Fingerprint: `i18n-runtime-asset-independent-presence-v1`.
-
-For every public NL/EN website delivery:
-- never treat one shared i18n marker as proof that all locale assets are present;
-- prove `assets/i18n.css` and `assets/js/i18n.js` independently in the final production HTML;
-- build-time injection must be idempotent per asset: existing CSS may never suppress a missing runtime script, and existing JS may never suppress missing CSS;
-- always run mobile-control mounting after asset reconciliation;
-- verify the active navigation host used at the tested viewport, including `#v18MobileDrawer` where present;
-- exact Netlify `commit_ref` is necessary but not sufficient: terminal proof also requires a real browser NL → EN → NL roundtrip and absence of the user-visible “Switching language failed. Try again.” error;
-- if production HTML contains CSS but not the runtime script, classify it as `I18N_RUNTIME_ASSET_INCOMPLETE`, not as a navigation-host or translation-provider failure.
-
-Canonical regression evidence:
-- `tests/brain-i18n-asset-independent-injection-v1.test.mjs`
-- `tests/brain-i18n-v18-mobile-host-v1.test.mjs`
-- `tools/site-shell/verify-pricing-i18n-production.mjs`
+Canonical learning: `brain/learning/i18n-v18-mobile-host-production-20260925-v1.json`.
+Regression: `tests/brain-i18n-asset-independent-injection-v1.test.mjs`.
