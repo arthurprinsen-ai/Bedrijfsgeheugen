@@ -2,11 +2,12 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-test('canonical English pricing H1 patch is present and non-Dutch', async () => {
+test('canonical English pricing H1 patch covers parser text-node fragments', async () => {
   const patch = JSON.parse(await readFile('config/bg-static-i18n-en.d/2026-09-25-pricing-h1.json','utf8'));
-  const source = 'Prijzen voor digitalisering in het mkb';
-  assert.equal(patch[source], 'Pricing for digitalization in SMEs');
-  assert.notEqual(patch[source], source);
+  assert.equal(patch['Prijzen voor'], 'Pricing for');
+  assert.equal(patch['digitalisering'], 'digitalization');
+  assert.equal(patch['in het mkb'], 'in SMEs');
+  assert.equal(patch['Prijzen voor digitalisering in het mkb'], 'Pricing for digitalization in SMEs');
 });
 
 test('production browser proof still rejects the Dutch pricing H1 on English route', async () => {
