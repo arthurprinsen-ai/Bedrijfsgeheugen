@@ -1,0 +1,43 @@
+name: Diagnostic English Pricing H1
+on:
+  push:
+    branches:
+      - diag/en-pricing-h1-760d23c
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Build exact production localized routes
+        env:
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+          NODE_OPTIONS: '--max-old-space-size=2048'
+        run: |
+          set -euxo pipefail
+          node tools/site-shell/pricing-build-integrity.mjs capture
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          node tools/prijzen-uit-de-homepage.mjs
+          node tools/site-shell/pricing-build-integrity.mjs restore
+          node tools/site-shell/apply-i18n.mjs
+          node tools/site-shell/build-localized-routes.mjs
+          node - <<'NODE'
+          const fs=require('fs');
+          const s=fs.readFileSync('en/prijzen.html','utf8');
+          const h1=[...s.matchAll(/<h1[^>]*>([\s\S]*?)<\/h1>/gi)].map(m=>m[1].replace(/<[^>]+>/g,' ').replace(/&[^;]+;/g,' ').replace(/\s+/g,' ').trim());
+          const hits=[...s.matchAll(/Prijzen voor|digitalisering|in het mkb|Pricing for|digitalization|in SMEs/gi)].map(m=>({i:m.index,v:m[0],ctx:s.slice(Math.max(0,m.index-120),m.index+220)}));
+          console.log('EN_PRICING_H1',JSON.stringify(h1));
+          console.log('EN_PRICING_HITS',JSON.stringify(hits));
+          NODE
