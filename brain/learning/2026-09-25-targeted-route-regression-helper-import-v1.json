@@ -17,16 +17,17 @@
   "prevention_rule": "TEST_HELPER_REFERENCES_MUST_BE_EXPLICITLY_IMPORTED",
   "evaluation": {
     "historical_replay": [
-      "tests/targeted-website-route-regression.test.mjs"
+      "tests/brain-targeted-route-regression-helper-import-v1.test.mjs"
     ],
     "canary": [
-      "tests/targeted-website-route-regression.test.mjs"
+      "tests/brain-targeted-route-regression-helper-import-v1.test.mjs"
     ]
   },
   "evidence": {
     "failing_run": 36173570951,
     "failing_job": 108199396839,
-    "error": "ReferenceError: isHardAssetFailure is not defined"
+    "error": "ReferenceError: isHardAssetFailure is not defined",
+    "brain_replay": "tests/brain-targeted-route-regression-helper-import-v1.test.mjs"
   },
   "outcome": "REGRESSION_ORACLE_REFERENCE_FIXED"
 }
