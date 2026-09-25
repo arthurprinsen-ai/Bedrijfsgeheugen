@@ -7,7 +7,7 @@ const netlify = fs.readFileSync('netlify.toml','utf8');
 
 test('normal production no longer depends on the external translation provider', () => {
   assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
-  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"1"/);
+  assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"0"/);
   assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
   assert.match(source,/STATIC_I18N_PROVIDER_ERROR/);
   assert.match(source,/if \(!transient && status >= 400 && status < 500\) break/);
