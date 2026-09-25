@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "website|browser-evidence|benign-aborted-document-navigation|v1",
+  "obligation_id": "targeted-route-benign-document-abort-v1",
+  "problem": "Targeted route verification marked a desktop preview route red with failedAssets document:/ even though the page returned 200, rendered visible content, and had correct canonical identity.",
+  "root_cause": "The requestfailed listener treated every same-origin document failure as a hard asset failure and discarded Playwright's failure reason, so a browser-cancelled superseded navigation (net::ERR_ABORTED) was indistinguishable from a genuine document network failure.",
+  "fix": "Preserve fail-closed asset checking but classify only document net::ERR_ABORTED as benign; every other document, script and stylesheet request failure remains hard.",
+  "failed_approaches": [
+    "Treating all requestfailed document events as equivalent hard network failures without inspecting failure.errorText."
+  ],
+  "prevention": [
+    "Record the failure reason when classifying browser asset failures.",
+    "Ignore only document + net::ERR_ABORTED as a benign superseded navigation.",
+    "Keep all scripts, stylesheets and non-aborted document failures fail-closed."
+  ],
+  "compiler": {
+    "failure_class": "BROWSER_EVIDENCE_ABORTED_DOCUMENT_FALSE_POSITIVE",
+    "scope": "WEBSITE_VALIDATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-targeted-route-benign-document-abort-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-targeted-route-benign-document-abort-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "continuity"
+  ],
+  "evidence": [
+    "tools/site-shell/verify-targeted-website-routes.mjs",
+    "tests/targeted-website-route-regression.test.mjs",
+    "tests/brain-targeted-route-benign-document-abort-v1.test.mjs"
+  ],
+  "outcome": "ABORTED_DOCUMENT_NAVIGATION_CLASSIFIED_WITHOUT_WEAKENING_HARD_ASSET_FAILURES"
+}
