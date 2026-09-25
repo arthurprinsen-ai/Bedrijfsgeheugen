@@ -283,8 +283,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Build and serve exact local candidate when Netlify preview is unavailable
-        if: needs.preview-ready.outputs.preview_mode == 'local-exact-candidate'
+      - name: Build and serve exact local candidate for broad browser checks
         env:
           COMMIT_REF: ${{ inputs.candidate_sha }}
           CONTEXT: deploy-preview
@@ -328,17 +327,17 @@ jobs:
         run: node tools/site-shell/verify-targeted-website-routes.mjs
       - name: Verify all public pages are visibly rendered
         env:
-          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
+          UI_VR_BASE_URL: http://127.0.0.1:4173
         run: timeout --signal=TERM --kill-after=15s 9m node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify every header menu panel is readable
         if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
-          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
+          UI_VR_BASE_URL: http://127.0.0.1:4173
         run: node tools/site-shell/v18-header-menu-contrast-check.mjs
       - name: Verify broad high-risk browser contracts
         if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
-          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
+          UI_VR_BASE_URL: http://127.0.0.1:4173
           EXPECTED_COMMIT: ${{ inputs.change_head_sha }}
         run: |
           node tools/site-shell/v18-megamenu-browser-check.mjs
