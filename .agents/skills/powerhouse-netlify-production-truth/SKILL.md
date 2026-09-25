@@ -29,3 +29,17 @@ If production advances, keep earlier exact-SHA evidence as historical containmen
 Only claim `LIVE_BEWEZEN` when all applicable gates are green: protected merge, exact provider identity, required functional readback, and canonical learning/writeback.
 
 Canonical learning: `brain/learning/netlify-auth-recovery-exact-sha-provider-proof-20260925-v1.json`.
+
+## Deploy-preview 403 isolation
+
+Fingerprint: `netlify-preview-403-broad-browser-local-authority-20260925-v1`.
+
+Netlify deploy-preview is authority only for targeted routes that the preview-readiness gate has positively proven reachable.
+
+Full-site visibility sweeps, broad header/menu checks and broad high-risk browser contracts must run against the exact locally built candidate for the same candidate SHA. A provider-side preview `403` on an unrelated route is never a UI/layout regression.
+
+Required pattern:
+- targeted affected-route proof may use the route-ready Netlify preview;
+- broad/full-site browser proof always uses the exact local candidate;
+- provider access failures remain provider evidence and cannot be converted into page-regression evidence;
+- regression test: `tests/delivery-website-browser-runtime-single-install.test.mjs`.

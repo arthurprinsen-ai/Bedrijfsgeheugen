@@ -57,8 +57,11 @@ test('single browser job retains targeted, visibility, and high-risk broad exact
   assert.match(browser, /name: Verify all public pages are visibly rendered/);
   assert.match(browser, /Verify broad high-risk browser contracts/);
   assert.match(browser, /BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
-  assert.match(browser, /UI_VR_BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
-  assert.match(browser, /needs\.preview-ready\.outputs\.preview_mode == 'local-exact-candidate'/);
+  assert.match(browser, /name: Build and serve exact local candidate for broad browser checks/);
+  assert.match(browser, /name: Verify all public pages are visibly rendered[\s\S]*UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
+  assert.match(browser, /name: Verify every header menu panel is readable[\s\S]*UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
+  assert.match(browser, /name: Verify broad high-risk browser contracts[\s\S]*UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
+  assert.doesNotMatch(browser, /Build and serve exact local candidate for broad browser checks[\s\S]{0,160}preview_mode == 'local-exact-candidate'/);
   assert.match(browser, /needs\.classify\.outputs\.risk_lane/);
   assert.doesNotMatch(browser, /https:\/\/deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
 });
