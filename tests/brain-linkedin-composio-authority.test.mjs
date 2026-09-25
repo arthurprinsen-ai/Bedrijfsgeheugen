@@ -64,3 +64,10 @@ test('personal LinkedIn story fingerprint and keyword-level duplicate protection
   assert.match(source, /p_story_fingerprint:storyFingerprint/);
   assert.match(source, /powerhouse-global-post-story-uniqueness-v2/);
 });
+
+test('story fingerprint normalization has one database authority', () => {
+  assert.match(source, /db\.rpc\('powerhouse_story_fingerprint_v1',\{p_source:source\}\)/);
+  assert.match(source, /STORY_FINGERPRINT_RPC/);
+  assert.match(source, /publicationStoryFingerprint\(db,row,art\)/);
+  assert.doesNotMatch(source, /digest\('personal-story-v1:'\+source\.toLowerCase/);
+});
