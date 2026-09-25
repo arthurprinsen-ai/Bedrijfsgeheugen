@@ -1,0 +1,52 @@
+name: Diagnose Pricing English H1
+on:
+  push:
+    branches: [diag/pricing-english-h1-89cc01b]
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+      - run: npm install --no-audit --no-fund
+      - name: Build through i18n source stage
+        env:
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+        run: |
+          set -euxo pipefail
+          node tools/site-shell/pricing-build-integrity.mjs capture
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          node tools/prijzen-uit-de-homepage.mjs
+          node tools/site-shell/pricing-build-integrity.mjs restore
+          node tools/site-shell/apply-i18n.mjs
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          const s=fs.readFileSync('prijzen.html','utf8');
+          const phrases=['Prijzen voor digitalisering in het mkb','Prijzen voor','digitalisering in het mkb'];
+          for(const p of phrases){
+            const i=s.indexOf(p);
+            console.log('BEFORE',p,i,i>=0?s.slice(Math.max(0,i-500),i+900):'NOT_FOUND');
+          }
+          NODE
+          node tools/site-shell/build-localized-routes.mjs
+          node --input-type=module - <<'NODE'
+          import fs from 'node:fs';
+          for(const f of ['en/prijzen.html','en/prijzen/index.html']){
+            if(!fs.existsSync(f)) { console.log('MISSING_FILE',f); continue; }
+            const s=fs.readFileSync(f,'utf8');
+            for(const p of ['Prijzen voor digitalisering in het mkb','Prijzen voor','Pricing']){
+              const i=s.indexOf(p);
+              console.log('AFTER',f,p,i,i>=0?s.slice(Math.max(0,i-500),i+900):'NOT_FOUND');
+            }
+          }
+          NODE
