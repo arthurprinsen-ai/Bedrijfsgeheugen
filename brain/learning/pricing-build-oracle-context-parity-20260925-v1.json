@@ -1,0 +1,43 @@
+{
+  "fingerprint": "pricing-build-oracle-context-parity-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "type": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
+  "problem": "Production Netlify builds were blocked by stale pricing business-context assertions after the product moved from a single-goal label to the canonical multi-goal model.",
+  "root_cause": "The pricing page evolved to 'Wat wil je bereiken?' with the 'Ondernemersdoelen' group, while pricing-build-integrity and one entitlement regression still asserted retired copy 'Belangrijkste doel nu'.",
+  "prevention": [
+    "Pricing source, pre-build integrity oracle and entitlement regressions must use one canonical business-context vocabulary.",
+    "When business-context semantics change, update all build oracles and regressions atomically in the same lineage.",
+    "After a provider build failure, reproduce the exact packaged production source and repair the first failing build assertion before changing runtime behavior.",
+    "Never restore retired product copy merely to satisfy a stale regression."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/saas-pricing-entitlements.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/pricing-build-integrity.mjs",
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_production_sha": "2ec0209c9a2d247ea39c8abba6785ebd7ab77672",
+    "failed_netlify_deploy_id": "6ab6781fb57c8d7f5af4b2ca",
+    "reproduced_failure": "pricing integrity / entitlement regression required retired 'Belangrijkste doel nu'",
+    "canonical_source_tokens": [
+      "Wat wil je bereiken?",
+      "aria-label=\"Ondernemersdoelen\""
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_BUILD_ORACLE_SEMANTIC_DRIFT",
+    "scope": "WEBSITE_PRICING_BUILD_INTEGRITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "revision": 1
+}
