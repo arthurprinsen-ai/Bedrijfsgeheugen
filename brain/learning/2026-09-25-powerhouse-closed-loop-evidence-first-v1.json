@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "fingerprint": "powerhouse-closed-loop-evidence-first-v1",
+  "date": "2026-09-25",
+  "status": "ACTIVE",
+  "symptom": "Material Powerhouse work could be described as complete at merge, deploy, dispatch, publication or provider acceptance while business outcome, realized value, calibration or the next decision still lacked observed evidence.",
+  "root_cause": "Technical delivery state and closed-loop business outcome state were not explicitly enforced as one canonical evidence progression across agents, chats, content, sales, growth and portal intelligence.",
+  "fix": "Make the existing Powerhouse continuity contract require the evidence-backed lifecycle signal → analysis → prediction → decision → execution → provider_readback → outcome → realized_value → calibration → next_decision, while keeping missing evidence explicitly open instead of inferring success.",
+  "prevention": [
+    "Merge, deploy, dispatch, publication and provider acceptance are intermediate states.",
+    "Every material stage requires evidence and stage progression remains contiguous and idempotent.",
+    "Predicted or expected value is never promoted to realized value without observed evidence.",
+    "Missing evidence remains open, blocked, outcome_pending or calibration_pending.",
+    "Machine truth remains Supabase; GitHub carries reproducible contract; Portal and Notion remain projections."
+  ],
+  "evidence": [
+    "AGENTS.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "docs/changes/2026-09-25-powerhouse-closed-loop-standard.md",
+    "tests/brain-powerhouse-closed-loop-evidence-first-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-closed-loop-evidence-first-v1.test.mjs"
+    ]
+  }
+}
