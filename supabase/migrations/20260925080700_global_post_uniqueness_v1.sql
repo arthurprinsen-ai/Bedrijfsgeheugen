@@ -32,6 +32,10 @@ CREATE INDEX IF NOT EXISTS powerhouse_publication_uniqueness_v1_date_idx
   ON public.powerhouse_publication_uniqueness_v1(tenant_id,publication_date DESC);
 
 ALTER TABLE public.powerhouse_publication_uniqueness_v1 ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.powerhouse_publication_uniqueness_v1 FROM PUBLIC, anon, authenticated;
+GRANT SELECT, INSERT, UPDATE, DELETE ON TABLE public.powerhouse_publication_uniqueness_v1 TO service_role;
+REVOKE ALL ON SEQUENCE public.powerhouse_publication_uniqueness_v1_id_seq FROM PUBLIC, anon, authenticated;
+GRANT USAGE, SELECT ON SEQUENCE public.powerhouse_publication_uniqueness_v1_id_seq TO service_role;
 
 CREATE OR REPLACE FUNCTION public.powerhouse_normalize_publication_text_v1(p_text text)
 RETURNS text
@@ -222,7 +226,7 @@ BEGIN
 END;
 $$;
 
-REVOKE ALL ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric) FROM PUBLIC;
+REVOKE EXECUTE ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric) TO service_role;
 
 -- Backfill known published/scheduled artifacts with text for near-duplicate protection.
