@@ -14,3 +14,5 @@ Action:
 - retain generic mobile roots and legacy `#bgkopMob`;
 - add regression coverage binding runtime host selection to the production verifier;
 - require exact-main deployment plus mobile NL/EN roundtrip before terminal closure.
+
+Reconciled protected-main base: `0c1cbba5f9b4966f8270c8138ea5a9e82140d554`. The recovery remains limited to independent i18n asset injection plus the mobile runtime proof.
