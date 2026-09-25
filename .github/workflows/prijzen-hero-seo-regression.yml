@@ -5,7 +5,7 @@ on:
   workflow_dispatch:
 
 concurrency:
-  group: prijzen-hero-seo-${{ github.run_id }}
+  group: prijzen-hero-seo-${{ github.event.pull_request.number || github.ref_name }}
   cancel-in-progress: true
 
 jobs:
