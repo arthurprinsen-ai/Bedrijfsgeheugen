@@ -1,0 +1,31 @@
+name: Diagnose Pricing H1 Translation Cache
+on:
+  push:
+    branches:
+      - diag/i18n-h1-cache-89cc01b
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm install --no-audit --no-fund
+      - name: Inspect cache and generated H1
+        env:
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const c=JSON.parse(fs.readFileSync('config/bg-static-i18n-en.json','utf8'));
+          for(const k of ['Prijzen voor','digitalisering','in het mkb']) console.log(JSON.stringify({key:k,value:c[k]??null,has:Object.prototype.hasOwnProperty.call(c,k)}));
+          NODE
+          node tools/site-shell/build-localized-routes.mjs
+          node - <<'NODE'
+          const fs=require('fs');
+          const s=fs.readFileSync('en/prijzen.html','utf8');
+          const h=(s.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)||[])[1]||'';
+          console.log(JSON.stringify({h1:h,text:h.replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim()}));
+          NODE
