@@ -117,13 +117,14 @@ test('Powerhouse chat learning checkpoint preserves cross-platform failure preve
   assert.match(checkpoint, /Current truth precedence/);
 });
 
-test('shared memory contracts protect main directly and PRs through the consolidated Required lane', async () => {
+test('shared memory contracts use scoped branch execution and PRs use the consolidated Required lane', async () => {
   const [sharedMemory, automationLane, requiredWorkflow] = await Promise.all([
     readFile('.github/workflows/shared-agent-memory-tests.yml', 'utf8'),
     readFile('.github/workflows/lane-automation.yml', 'utf8'),
     readFile('.github/workflows/required-test.yml', 'utf8')
   ]);
-  assert.match(sharedMemory, /push:\s*\n\s*branches:\s*\n(?:\s*- .*\n)*\s*- main\b/m);
+  assert.match(sharedMemory, /push:\s*\n\s*branches:\s*\n(?:\s*- .*\n)*\s*- ['"]automation\/\*\*['"]/m);
+  assert.doesNotMatch(sharedMemory, /\s- ['"]?main['"]?\s*$/m);
   assert.doesNotMatch(sharedMemory, /\bpull_request\s*:/m);
   assert.match(automationLane, /tests\/development-doc-contract\.test\.mjs/);
   assert.match(requiredWorkflow, /lane-automation\.yml/);
