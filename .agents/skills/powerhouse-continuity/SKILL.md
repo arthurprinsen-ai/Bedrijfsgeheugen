@@ -811,3 +811,17 @@ Mandatory:
 
 Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
 Learning: `brain/learning/pricing-production-runtime-readiness-20260924-v1.json`.
+
+
+## Full-site browser sweep without queue amplification
+
+Fingerprint: `standalone-visibility-bounded-concurrency-v1`.
+
+When a required website gate verifies every public route across multiple viewports:
+- preserve full route and viewport coverage;
+- do not run hundreds of browser navigations serially when bounded concurrency can keep the same assertions;
+- cap worker concurrency explicitly;
+- retain a global fail-closed time budget;
+- treat many PRs stuck on the same long browser step as shared CI queue amplification, not independent product defects.
+
+Regression: `tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs`.
