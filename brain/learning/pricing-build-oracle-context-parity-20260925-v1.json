@@ -13,7 +13,7 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/saas-pricing-entitlements.test.mjs"
+      "tests/brain-pricing-build-oracle-context-parity-v1.test.mjs"
     ],
     "canary": [
       "tools/site-shell/pricing-build-integrity.mjs",
