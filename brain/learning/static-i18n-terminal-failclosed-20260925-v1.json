@@ -17,7 +17,33 @@
     "restored_cache_validation_run": 36164288707,
     "remaining_cache_gap": "versie 25 sep, 19:00"
   },
-  "test_evidence": ["tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"],
-  "skill_targets": ["powerhouse-continuity", "website", "powerhouse-netlify-production-truth"],
-  "revision": 1
+  "test_evidence": [
+    "tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "website",
+    "powerhouse-netlify-production-truth"
+  ],
+  "revision": 1,
+  "failure_class": "STATIC_I18N_UNTRANSLATED_ENGLISH_ROUTE_FALLBACK",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-terminal-failclosed-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "expected_invariant": "production English routes are generated only from a complete immutable cache, volatile build metadata is excluded, and /en/prijzen never renders the Dutch pricing H1"
+  },
+  "compiler": {
+    "failure_class": "STATIC_I18N_UNTRANSLATED_ENGLISH_ROUTE_FALLBACK",
+    "scope": "WEBSITE_I18N_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  }
 }
