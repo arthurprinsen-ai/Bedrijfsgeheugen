@@ -27,6 +27,11 @@
       "noindex routes are not required in sitemap.xml",
       "robots metadata is unique and deterministic",
       "issue closure requires a green post-merge production/readback path"
+    ],
+    "historical_replay": [
+      "tests/brain-paginacontrole-workflow-integrity.test.mjs",
+      "tests/brain-paginacontrole-self-validation.test.mjs",
+      "tests/paginacontrole-concurrency.test.mjs"
     ]
   },
   "evidence": {
