@@ -1,0 +1,35 @@
+{
+  "fingerprint": "production-browser-step-timeout-v1",
+  "date": "2026-09-25",
+  "type": "PRODUCTION_READBACK_RUNNER_LEAK_PREVENTION",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Production browser readback jobs remained in the same Playwright step beyond the verifier's intended internal budget. Internal JavaScript budgets cannot terminate a wedged browser/protocol/process operation; the enclosing job-level 25 minute timeout was still the only guaranteed process circuit breaker.",
+  "prevention_rule": "Every production browser verifier must be wrapped in a process-level timeout materially below the job timeout, in addition to internal navigation/page budgets.",
+  "compiler": {
+    "failure_class": "UNBOUNDED_BROWSER_PROCESS_STEP",
+    "scope": "PRODUCTION_READBACK_CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-browser-step-timeout-v1.test.mjs"
+    ],
+    "invariants": [
+      "pricing production browser step has an OS-level timeout",
+      "public-page visibility browser step has an OS-level timeout",
+      "process timeout is shorter than the 25-minute job cap",
+      "timeout is fail-closed and does not weaken browser assertions"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-browser-gate-boundedness/SKILL.md"
+  ],
+  "evidence": {
+    "production_release_run": 36094845048,
+    "canonical_shell_run": 36094845055,
+    "exact_main_sha": "bcd732bdbab2efdf00185bbd8348ba76c775a44e",
+    "netlify_deploy": "6ab5f94fd3e1230008c80231"
+  }
+}
