@@ -68,6 +68,7 @@
     all('[data-bg-billing]').forEach((button) => {
       const active = button.getAttribute('data-bg-billing') === billing;
       button.setAttribute('aria-pressed', String(active));
+      button.setAttribute('aria-selected', String(active));
       button.classList.toggle('is-active', active);
     });
     all('.bg-billing-price').forEach((el) => {
