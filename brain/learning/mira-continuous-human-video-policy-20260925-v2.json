@@ -1,0 +1,29 @@
+{
+  "fingerprint": "mira-continuous-human-video-policy-v2",
+  "date": "2026-09-25",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "Mira publication quality could be falsely satisfied by slideshow/still-image animation output and the recovered SECURITY DEFINER trigger initially lacked explicit direct-execute revocation.",
+  "prevention_rule": "Instagram publication capability requires temporal continuity evidence for one continuous human video; direct client EXECUTE on the security-definer trigger function stays revoked.",
+  "compiler": {
+    "failure_class": "SECURITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-mira-continuous-human-video-policy-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-mira-continuous-human-video-policy-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-mira-continuous-human-video-policy-v2.test.mjs"
+    ]
+  },
+  "evidence": {
+    "supersedes_pr": 2677,
+    "recovery_pr": 2866
+  }
+}
