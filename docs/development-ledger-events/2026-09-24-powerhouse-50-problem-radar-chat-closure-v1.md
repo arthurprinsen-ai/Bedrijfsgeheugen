@@ -71,3 +71,10 @@
 - The regression now asserts that semantic actionability sequence instead of requiring the obsolete literal `page.locator(...).click()` expression.
 - Runtime verifier was not weakened.
 
+## 2026-09-25 exact-main refresh
+
+- Protected main: `390e058e581874cb08f5b2d4608d886a5c9a7dcf`.
+- Netlify provider was `ready / production` but still on `63ab5bff7780bfb3ff6d5fa1f1d96eada7ae2cea`.
+- Exact-main parity therefore remained open.
+- Recovery uses the canonical Production Source Snapshot only.
+
