@@ -27,6 +27,6 @@ test('SEO money-page source strings are covered by the versioned English overlay
 test('localized-route builder merges the versioned overlay before validation',async()=>{
   const source=await readFile('tools/site-shell/build-localized-routes.mjs','utf8');
   assert.match(source,/TRANSLATION_CACHE_OVERLAYS/);
-  assert.match(source,/bg-static-i18n-en-seo-20260925\\.json/);
-  assert.match(source,/cache=\\{\\.\\.\\.cache,\\.\\.\\.json\\}/);
+  assert.ok(source.includes("bg-static-i18n-en-seo-20260925.json"));
+  assert.ok(source.includes("cache={...cache,...json}"));
 });
