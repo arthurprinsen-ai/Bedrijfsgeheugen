@@ -32,6 +32,7 @@
     {"id":"REVERIFY_PR_IDENTITY_AFTER_READY_RECREATION","active":true,"enforcedBy":"unified-brain-delivery-candidate-identity","scope":"shared"},
     {"id":"SCOPE_EXPENSIVE_WORKFLOWS_TO_OWNED_PATHS","active":true,"enforcedBy":"ci-trigger-ownership-preflight-plus-live-preview-regression","scope":"shared"},
     {"id":"PRESERVE_EXECUTABLE_KNOWN_FIX_IN_CONTEXT","active":true,"enforcedBy":"delivery-context-learning-current-main-regression-plus-delivery-preflight","scope":"shared"},
-    {"id":"LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK","active":true,"enforcedBy":"delivery-context-learning-current-main-regression-plus-delivery-preflight","scope":"shared"}
+    {"id":"LEARNING_WRITEBACK_FAIL_OPEN_TO_PRIMARY_WORK","active":true,"enforcedBy":"delivery-context-learning-current-main-regression-plus-delivery-preflight","scope":"shared"},
+    {"id":"RECONCILE_CLOSED_FORCE_PUSHED_PR_AGAINST_CURRENT_MAIN","active":true,"enforcedBy":"powerhouse-continuity-stale-pr-recovery-contract","scope":"shared"}
   ]
 }
