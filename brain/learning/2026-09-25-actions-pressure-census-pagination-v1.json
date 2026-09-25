@@ -10,5 +10,20 @@
     "production supervisor run 36114119449",
     "tests/brain-actions-queue-storm-guard-v1.test.mjs",
     ".github/workflows/powerhouse-delivery-recovery-supervisor.yml"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "QUEUE_PRESSURE_UNDERCOUNT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ]
+  }
 }
