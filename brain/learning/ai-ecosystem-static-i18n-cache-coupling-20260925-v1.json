@@ -1,0 +1,42 @@
+{
+  "fingerprint": "ai-ecosystem-static-i18n-cache-coupling-20260925-v1",
+  "status": "RECOVERY_CANDIDATE",
+  "date": "2026-09-25",
+  "type": "PUBLIC_COPY_STATIC_I18N_CACHE_DRIFT",
+  "problem": "A new public AI ecosystem page added 126 translatable strings after the immutable English cache snapshot, causing fail-closed production validation to block deployment.",
+  "root_cause": "Public-copy delivery and immutable static-English cache ownership were not atomic. The production policy correctly disabled provider networking, so new public copy must carry its English cache delta in the same delivery lineage.",
+  "prevention": [
+    "Any new or changed public translatable copy must update config/bg-static-i18n-en.json or config/bg-static-i18n-en.d in the same candidate.",
+    "STATIC_I18N_NETWORK remains 0 and STATIC_I18N_REQUIRE_CACHE remains 1 for production.",
+    "Retired .cache translation authority must never be restored.",
+    "Offline --validate-cache is required before protected merge for public-copy changes.",
+    "Provider-dependent regressions must follow the immutable offline cache contract and may not force networking back into production.",
+    "Promotion and cache-recovery candidates must also reconcile stale cross-domain regressions that still assert retired public copy; tests may not force canonical pricing context backward.",
+    "Pricing context regression must assert 'Wat wil je bereiken?' and 'Ondernemersdoelen', never the retired single-goal label 'Belangrijkste doel nu'."
+  ],
+  "evidence": {
+    "first_missing": "AI-ecosysteem voor het mkb | Data, systemen, processen en AI-agents | Bedrijfsgeheugen",
+    "prior_missing_count": 126,
+    "patch": "config/bg-static-i18n-en.d/2026-09-25-ai-ecosystem.json",
+    "regression": "tests/brain-ai-ecosystem-static-i18n-cache-v1.test.mjs",
+    "stale_pricing_regression_repaired": "tests/saas-pricing-entitlements.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "PUBLIC_COPY_STATIC_I18N_CACHE_DRIFT",
+    "scope": "WEBSITE_PUBLIC_I18N",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "revision": 3,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-ecosystem-static-i18n-cache-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  }
+}
