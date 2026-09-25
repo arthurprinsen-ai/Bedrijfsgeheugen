@@ -427,3 +427,17 @@ Canonical fingerprints: `delivery|fast-terminal|critical-path|v2`, `delivery|pre
 All agents and chats MUST apply the existing canonical skill `.agents/skills/powerhouse-continuity/SKILL.md` to sales, content, social, growth, portal intelligence and autonomous improvement work.
 
 Terminal delivery is evidence-backed progression through `signal → analysis → prediction → decision → execution → provider_readback → outcome → realized_value → calibration → next_decision`. Merge, deploy, dispatch and publication are intermediate states. Never claim LIVE/DONE from those states alone. Missing external evidence remains explicitly open/blocked/outcome_pending. Never fabricate outcomes or realized value. Replays must be idempotent and stages must remain contiguous. Prevention fingerprint: `powerhouse-closed-loop-evidence-first-v1`.
+
+## Atomic LIVE_BEWEZEN production truth — mandatory
+
+Fingerprint: delivery|live-bewezen|exact-main-netlify-browser-atomic-proof|v1.
+
+Iedere agent/chat die productie als LIVE/DONE wil afsluiten, moet de terminale status uit één actuele lineage bewijzen:
+- beschermde GitHub main opnieuw lezen vlak voor closure;
+- Netlify current production moet ready zijn en commit_ref exact gelijk aan die actuele main SHA;
+- Production Release Readback en Production Source Snapshot voor dezelfde SHA moeten groen zijn, plus de toepasselijke functionele/browsergate;
+- als main tijdens de verificatie opschuift, wordt ouder bewijs historische containment evidence en volgt de agent dezelfde canonical lineage naar de nieuwe head; start geen concurrerende deployment-lineage;
+- orchestration/tool-timeout is geen applicatiefout zonder provider/browser failure evidence;
+- verborgen fallback/error-copy in HTML/DOM is diagnostische tekst, geen user-visible failure. Interactiedefecten worden beslist door de echte browsergate; zichtbare fouttekst blijft fail-closed.
+
+Canonieke learning: brain/learning/2026-09-25-live-bewezen-exact-main-atomic-proof-v1.json.

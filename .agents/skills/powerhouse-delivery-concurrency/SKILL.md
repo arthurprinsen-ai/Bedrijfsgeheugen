@@ -281,3 +281,17 @@ For every supersedable PR/ref workflow, `cancel-in-progress: true` only works wh
 
 Canonical regression: `tests/brain-actions-pr-single-flight-v1.test.mjs`.
 Canonical incident learning: `brain/learning/2026-09-25-pricing-hero-single-flight-recovery-v1.json`.
+
+## Moving-main terminal proof is descendant-aware, single-lineage
+
+Fingerprint: delivery|terminal-proof|moving-main-single-lineage|v1.
+
+During terminal verification, another protected merge may advance main. Treat that as a lineage update, not as permission to create parallel deployment work.
+
+- Keep exactly one canonical production lineage.
+- Re-read main before final closure and require Netlify current commit_ref to equal that current SHA.
+- Proof for an earlier ancestor remains useful historical evidence but cannot authorize LIVE_BEWEZEN after main has advanced.
+- Reuse already-green functional proof only when the newer main is proven to contain the verified behavior and the canonical current-SHA Production Release Readback/Source Snapshot confirms the descendant; otherwise rerun the affected browser gate.
+- Do not increase CI/deploy fan-out just to chase a moving pointer.
+
+Regression: tests/brain-live-bewezen-exact-main-atomic-proof-v1.test.mjs.

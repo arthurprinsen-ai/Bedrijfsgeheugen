@@ -70,3 +70,20 @@ Required:
 - terminal proof is exact Netlify `commit_ref === main` plus successful pricing/browser NL → EN → NL roundtrip.
 
 Canonical learning: `brain/learning/i18n-v18-mobile-host-production-20260925-v1.json`.
+
+## Current-pointer truth versus hidden DOM diagnostics
+
+Fingerprint: netlify|terminal-truth|current-pointer-browser-visibility|v1.
+
+Netlify terminal production truth is sampled from the current production pointer, never from the deploy that happened to be current at the start of a recovery.
+
+Required closure tuple:
+1. protected GitHub main SHA;
+2. Netlify current deploy is ready in production;
+3. Netlify current commit_ref equals that exact current-main SHA;
+4. canonical current-SHA Production Release Readback + Production Source Snapshot are green;
+5. user-visible interaction proof is green for interaction-class changes.
+
+For NL/EN incidents, the literal string Switching language failed. Try again. may exist as hidden fallback copy in the deployed DOM. Do not classify a mere source/DOM string hit as an active production failure. The failure oracle is that the canonical browser verifier exposes the message in visible body text during real locale switching. Keep the verifier fail-closed: if the message becomes visible, English content remains Dutch, the route fails, or roundtrip navigation fails, production is not proven.
+
+Canonical learning: brain/learning/2026-09-25-live-bewezen-exact-main-atomic-proof-v1.json.
