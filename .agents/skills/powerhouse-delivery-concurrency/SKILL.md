@@ -210,7 +210,7 @@ Production browser verifier: `tools/site-shell/verify-pricing-i18n-production.mj
 
 Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
 
-Concurrency includes runner capacity. Before any write/dispatch that can trigger CI, compute current pressure and projected fan-out. At >=12 active or >=10 queued, allow only essential single-flight work and batch related writes. At >=20 active or >=20 queued, open the circuit: no new recovery/optional runs. Never intentionally create >6 new runs from one action. One canonical PR per obligation and one active Required/BRAIN instance per PR/head are hard limits.
+Concurrency includes runner capacity. Before any write/dispatch that can trigger CI, compute total non-terminal pressure (`queued + in_progress + pending + waiting + requested`) and projected fan-out. At >=8 total active or >=5 queued, allow only essential single-flight work and batch related writes. At >=12 total active or >=8 queued, open the circuit: no new recovery/optional runs. Never intentionally create >3 new runs from one action. One canonical PR per obligation and one active Required/BRAIN instance per PR/head are hard limits. Proven obsolete queued runs may be reaped after 60 seconds; proven obsolete in-progress runs after 300 seconds. Age alone never authorizes cancellation.
 
 ## Obsolete Actions-run identity
 
@@ -219,3 +219,10 @@ Fingerprint: `github|actions-obsolete-run-identity|sha-bound|v1`.
 Queue/run authority is bound to the exact run SHA, not merely to a branch name. A stale queued or in-progress run may be reaped only when its identity is provably obsolete: closed PR, PR-head mismatch, branch-head mismatch, missing non-main branch, or old main SHA. In-progress cleanup additionally requires at least 1800 seconds without update.
 
 Unexpected candidate-head movement is fail-closed. Before a new head inherits authority, compare it to the last trusted head and verify that the diff is exactly the intended recovery delta. Never silently follow a moved branch.
+
+
+## Fast obsolete-run drainage invariant
+
+Fingerprint: `github|actions-obsolete-run-fast-drain|v1`.
+
+Runner capacity is a development resource and stale queue occupancy is a delivery defect. Once a GitHub Actions run is proven obsolete by exact identity (closed PR, PR-head mismatch, branch-head mismatch, missing non-main branch, or old main SHA), queued work is eligible for cancellation after a short 60-second grace period and obsolete in-progress work after 300 seconds without authoritative identity. The recovery supervisor runs every five minutes, may reap up to 100 proven-obsolete runs per cycle, and opens its recovery circuit at 12 total non-terminal runs so recovery cannot amplify saturation. Never cancel healthy current-head work merely to reduce the count.

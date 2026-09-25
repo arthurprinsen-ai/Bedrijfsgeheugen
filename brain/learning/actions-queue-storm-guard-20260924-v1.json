@@ -30,7 +30,10 @@
     "Proven obsolete GitHub Actions runs use bounded escalation: normal cancel, then force-cancel, then delete fallback only when identity is already proven obsolete.",
     "A recovery budget loop must use process substitution or another non-piped iterator so breaking after the budget cannot SIGPIPE jq and falsely fail the supervisor.",
     "Terminal closure must allow normal protected Required duration; the bounded exact-head gate wait is fifteen minutes inside a thirty-minute job timeout.",
-    "Historical one-off Outcome Obligation Sweep failures are not current-main failures when later same-main sweeps succeed; use latest-current-main evidence."
+    "Historical one-off Outcome Obligation Sweep failures are not current-main failures when later same-main sweeps succeed; use latest-current-main evidence.",
+    "Provider-control-plane zombies are runs whose delivery identity is obsolete but GitHub rejects normal cancel, force-cancel and delete; record them explicitly and subtract them from effective admission pressure while retaining raw telemetry.",
+    "Recovery supervisor cadence is five minutes, proven obsolete queued identity can be reaped after 60 seconds and proven obsolete in-progress identity after 300 seconds.",
+    "Queue governor defaults are soft 8 total active / 5 queued and hard 12 total active / 8 queued, with projected fan-out capped at 3."
   ],
   "evaluation": {
     "historical_replay": [
@@ -52,17 +55,17 @@
     "circuit_breaker_active_runs": 20,
     "recovery_pr_budget_per_cycle": 1,
     "website_control_plane_browser_fanout_prevented": true,
-    "stale_queue_min_age_seconds": 21600,
-    "stale_queue_cancel_budget": 20,
+    "stale_queue_min_age_seconds": 60,
+    "stale_queue_cancel_budget": 100,
     "stale_zombie_example_pr": 1444,
     "stale_zombie_branch": "fix/supabase-migration-history-integrity",
     "queue_pressure_policy": "brain/policies/powerhouse-agent-continuity-v1.json#queue_pressure_governor",
     "predictive_helper": "tools/delivery/predictive-controller.mjs#assessQueuePressure",
-    "soft_active": 12,
-    "soft_queued": 10,
-    "hard_active": 20,
-    "hard_queued": 20,
-    "max_projected_new_runs_per_action": 6,
+    "soft_active": 8,
+    "soft_queued": 5,
+    "hard_active": 12,
+    "hard_queued": 8,
+    "max_projected_new_runs_per_action": 3,
     "website_browser_timeout_minutes": 15,
     "control_plane_non_artifact_paths": [
       "AGENTS.md",
@@ -70,7 +73,7 @@
       ".agents/skills/",
       "tools/delivery/"
     ],
-    "stale_in_progress_min_age_seconds": 1800,
+    "stale_in_progress_min_age_seconds": 300,
     "obsolete_run_identity_rules": [
       "closed_pr",
       "pr_head_sha_mismatch",
@@ -87,7 +90,9 @@
     "janitor_cancel_failure_run": 36082394292,
     "terminal_closure_race_run": 36094845170,
     "terminal_gate_wait_attempts": 180,
-    "terminal_job_timeout_minutes": 30
+    "terminal_job_timeout_minutes": 30,
+    "provider_zombie_quarantine": true,
+    "supervisor_schedule_minutes": 5
   },
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -102,7 +107,7 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 7,
+  "revision": 8,
   "failed_approaches": [
     "Repository-wide recovery on every main push plus a five-minute schedule.",
     "Dispatching recovery independently across many open PRs during runner saturation.",
@@ -121,6 +126,7 @@
     "Inserting timeout-minutes between the browser job label and its required needs anchor; YAML remained valid but broke the established composable-release structural regression.",
     "Using only the normal workflow cancel endpoint for corrupted historical queued runs; GitHub kept the runs queued and both janitors failed every schedule.",
     "Piping jq into a while loop and breaking when the one-PR recovery budget was consumed; jq received SIGPIPE and the supervisor ended red despite respecting its budget.",
-    "Allowing only five minutes for terminal closure to observe Required; normal long Required runs caused false terminal failures after the PR had already merged."
+    "Allowing only five minutes for terminal closure to observe Required; normal long Required runs caused false terminal failures after the PR had already merged.",
+    "Counting proven uncancellable GitHub control-plane zombies as authoritative delivery pressure forever, which can deadlock admission even when those records have zero executable jobs."
   ]
 }

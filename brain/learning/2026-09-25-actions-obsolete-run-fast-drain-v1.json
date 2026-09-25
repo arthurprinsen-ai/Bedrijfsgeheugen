@@ -1,0 +1,60 @@
+{
+  "fingerprint": "github|actions-obsolete-run-fast-drain|v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Development was slowed again by 19 active/in-progress and 11 queued GitHub Actions runs despite prior queue-storm controls.",
+  "root_cause": "Obsolete-run identity detection existed, but queued obsolete runs waited six hours, obsolete in-progress runs waited thirty minutes, the supervisor ran every fifteen minutes, and recovery dispatch stayed enabled until twenty non-terminal runs. Proven-obsolete work therefore retained scarce runner capacity far longer than necessary.",
+  "prevention": [
+    "Cancel only runs whose exact SHA/PR/branch identity proves they are obsolete; never cancel healthy current-head work merely to reduce counts.",
+    "Once queued work is proven obsolete, make it cancellation-eligible after 60 seconds rather than hours.",
+    "Once in-progress work is proven obsolete, make it cancellation-eligible after 300 seconds.",
+    "Run the single-flight recovery supervisor every five minutes so stale capacity is drained promptly.",
+    "Allow up to 100 proven-obsolete cancellations per cycle so a large stale backlog can be reduced in one bounded pass.",
+    "Open the recovery dispatch circuit at 12 total non-terminal runs so recovery never amplifies saturation.",
+    "Regression-test the exact cadence, thresholds and identity-driven cancellation controls.",
+    "Persist the same invariant in the canonical delivery-concurrency skill."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+  ],
+  "evidence": {
+    "observed_in_progress": 19,
+    "observed_queued": 11,
+    "recovery_workflow": ".github/workflows/powerhouse-delivery-recovery-supervisor.yml",
+    "supervisor_cron_minutes": 5,
+    "stale_queue_min_age_seconds": 60,
+    "stale_in_progress_min_age_seconds": 300,
+    "stale_cancel_budget": 100,
+    "recovery_circuit_breaker_nonterminal": 12,
+    "obsolete_run_identity_rules": [
+      "closed_pr",
+      "pr_head_sha_mismatch",
+      "branch_head_sha_mismatch",
+      "missing_non_main_branch",
+      "old_main_sha"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "revision": 1,
+  "failed_approaches": [
+    "Treating stale capacity as an age-only cleanup problem with six-hour queued and thirty-minute in-progress grace periods.",
+    "Letting the recovery supervisor wait fifteen minutes between cleanup opportunities while development is saturated.",
+    "Allowing recovery dispatch until twenty non-terminal runs even though lower pressure already delays protected delivery."
+  ]
+}

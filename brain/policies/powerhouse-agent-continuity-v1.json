@@ -249,11 +249,11 @@
     ],
     "authoritative_helper": "tools/delivery/predictive-controller.mjs#assessQueuePressure",
     "thresholds": {
-      "soft_active": 12,
-      "soft_queued": 10,
-      "hard_active": 20,
-      "hard_queued": 20,
-      "max_projected_new_runs_per_action": 6
+      "soft_active": 8,
+      "soft_queued": 5,
+      "hard_active": 12,
+      "hard_queued": 8,
+      "max_projected_new_runs_per_action": 3
     },
     "pre_mutation_receipt": [
       "queued",
@@ -273,12 +273,13 @@
       "A recovery action is invalid when its expected effect increases total active plus queued work on an already pressured control plane.",
       "Related documentation, learning and skill writes for one obligation are tree-batched before remote CI when safe.",
       "Healthy current-head queued/in-progress runs are reused; age alone is never cancellation evidence.",
-      "Queued zombies require both configured stale age and a missing non-main head branch.",
       "Control-plane-only changes stay out of expensive artifact/browser lanes unless a real artifact path changed.",
       "Record before/after queue counts and projected-versus-observed fan-out.",
       "Stale in-progress runs may be cancelled only after the configured inactivity threshold and only when their delivery identity is provably obsolete.",
       "Run authority is SHA-bound: a branch that still exists on a different SHA does not keep an old run authoritative.",
-      "Unexpected candidate-head movement is fail-closed until the exact diff from the previously trusted head is inspected and accepted."
+      "Unexpected candidate-head movement is fail-closed until the exact diff from the previously trusted head is inspected and accepted.",
+      "Queued or in-progress runs are cancellation candidates within minutes only when SHA/PR/branch identity proves they are obsolete; age alone is never sufficient.",
+      "Repository-wide total non-terminal Actions pressure is authoritative: queued + in_progress + pending + waiting + requested is evaluated as one capacity budget."
     ],
     "forbidden_patterns": [
       "push-triggered repository-wide recovery scan",
@@ -298,7 +299,7 @@
       "learning_and_skill_projection_current"
     ],
     "obsolete_run_identity": {
-      "in_progress_min_age_seconds": 1800,
+      "in_progress_min_age_seconds": 300,
       "cancel_only_if_any": [
         "closed_pr",
         "pr_head_sha_mismatch",
@@ -307,7 +308,8 @@
         "old_main_sha"
       ],
       "branch_existence_alone_is_authority": false,
-      "unexpected_head_requires_diff_validation": true
+      "unexpected_head_requires_diff_validation": true,
+      "queued_min_age_seconds": 60
     }
   },
   "terminal_handoff_contract": {
