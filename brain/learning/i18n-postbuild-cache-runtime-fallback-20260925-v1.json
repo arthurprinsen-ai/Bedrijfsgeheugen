@@ -1,0 +1,36 @@
+{
+  "fingerprint": "i18n-postbuild-cache-runtime-fallback-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The static English cache validated successfully against source HTML, but the production build mutated/generated HTML before localized-route generation and introduced 1926 new strings. STATIC_I18N_REQUIRE_CACHE=1 therefore blocked every Netlify production build after generation.",
+  "root_cause": "Cache completeness was validated against pre-build source while release enforcement happened against post-build generated markup. Those are different string universes, so cache completeness was not a stable production invariant.",
+  "prevention": [
+    "Production remains provider-independent with STATIC_I18N_NETWORK=0.",
+    "STATIC_I18N_REQUIRE_CACHE must not block publication when post-build generators introduce strings after cache validation.",
+    "Untranslated static English output is marked data-bg-static-translated=false and handed to the canonical runtime i18n fallback.",
+    "LIVE_BEWEZEN still requires the production browser verifier to navigate to /en/prijzen and assert visible English content."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-i18n-production-fail-closed-v1.test.mjs"],
+    "shadow": ["tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-production-fail-closed-v1.test.mjs",
+    "tests/brain-static-i18n-provider-fallback-regression-v2.test.mjs",
+    "tools/site-shell/verify-pricing-i18n-production.mjs"
+  ],
+  "evidence": {
+    "diagnostic_run_id": "36148697004",
+    "missing_postbuild_strings": 1926,
+    "first_missing": "Aanmelden — begin met inzicht | Bedrijfsgeheugen"
+  },
+  "skill_targets": ["continuity","delivery"],
+  "compiler": {
+    "failure_class": "STATIC_I18N_POSTBUILD_CACHE_DRIFT",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
