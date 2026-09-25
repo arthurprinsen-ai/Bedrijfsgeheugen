@@ -1,0 +1,77 @@
+{
+  "fingerprint": "netlify-auth-recovery-exact-sha-provider-proof-20260925-v1",
+  "failure_class": "PRODUCTION_READBACK",
+  "problem": "A production release lineage was blocked by an expired Netlify MCP proxy credential (401). After credential recovery, Netlify exposed an exact production deploy for protected main. A later GitHub Production Release Readback run was cancelled while browser verification was still executing, so provider deployment truth and functional terminal proof must remain distinct.",
+  "root_cause": [
+    "Temporary Netlify MCP proxy credentials can expire independently of application code and must not be treated as durable deploy authority.",
+    "Production provider identity can become proven before a broader GitHub browser-readback workflow reaches a terminal conclusion.",
+    "Cancelling or superseding a readback workflow must not erase already observed immutable provider deploy evidence, but it also must not manufacture functional browser proof."
+  ],
+  "prevention": [
+    "Classify Netlify 401 at deploy transport as an auth incident before changing product code.",
+    "Persist immutable Netlify deploy evidence when state=ready, context=production and commit_ref is observed.",
+    "Treat provider exact-SHA proof and functional browser proof as separate gates; both are required when browser behavior is in scope.",
+    "A cancelled or superseded readback may reuse proven immutable provider identity, but missing functional checks must resume on the newest canonical lineage.",
+    "Never downgrade proven provider deployment because a later verifier is cancelled; never upgrade a cancelled verifier into LIVE_BEWEZEN without required functional evidence.",
+    "Store root cause, prevention, provider evidence and recovery outcome in Brain before terminal closure."
+  ],
+  "evidence": {
+    "original_failed_snapshot_run": 35991169738,
+    "original_failure": "Netlify deploy transport returned 401 Unauthorized",
+    "recovered_checkpoint": {
+      "observed_main_sha": "390e058e581874cb08f5b2d4608d886a5c9a7dcf",
+      "netlify_deploy_id": "6ab66640d19f130007c97fcb",
+      "netlify_state": "ready",
+      "netlify_context": "production",
+      "netlify_commit_ref": "390e058e581874cb08f5b2d4608d886a5c9a7dcf",
+      "published_at": "2026-09-25T12:18:44.654Z"
+    },
+    "readback_run": {
+      "id": 36134150890,
+      "conclusion": "cancelled",
+      "completed_steps": [
+        "Wait for exact live release marker and deploy identity",
+        "Verify live connector readiness contract"
+      ],
+      "unfinished_step": "Verify affected production routes"
+    },
+    "later_provider_observation": {
+      "deploy_id": "6ab66b7bb3dd8b0008d0c2a1",
+      "state": "ready",
+      "context": "production",
+      "commit_ref": "f45ad02f8f719958c00b7ff8e39e3ca2104353b1",
+      "note": "Production subsequently advanced again; earlier exact-SHA evidence remains an immutable recovery checkpoint."
+    }
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs",
+      "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs",
+      "tests/brain-production-readback-manual-exact-main-v1.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-netlify-deploy-auth-failfast-v1.test.mjs",
+    "tests/brain-netlify-deploy-auth-hard-boundary-v2.test.mjs",
+    "tests/brain-production-readback-manual-exact-main-v1.test.mjs",
+    "tests/brain-production-release-readback-scope.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "toolchain-authority"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
