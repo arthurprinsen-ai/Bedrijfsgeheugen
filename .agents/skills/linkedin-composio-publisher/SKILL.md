@@ -60,3 +60,46 @@ A successful personal LinkedIn create response is a provider side effect even wh
 - never erase the URN and never create a replacement post for the same daily claim.
 
 Fingerprint: linkedin-personal-created-urn-preservation-v1.
+
+## Global historical uniqueness — hard gate
+
+Fingerprint: `powerhouse-global-post-uniqueness-v1`.
+
+Every social post must be genuinely unique across the complete retained Powerhouse publication history. This applies across dates, channels and providers.
+
+Before any external social-provider create call:
+- reserve the final post text through `powerhouse_reserve_unique_publication_v1`;
+- reject an exact raw-content hash already seen;
+- reject an exact normalized-content hash already seen;
+- reject a near-duplicate whose normalized 3-word-shingle Jaccard similarity is at or above the governed threshold (currently 0.62);
+- strip URLs/punctuation/whitespace effects during normalized comparison so changing a tracking link, spacing, hashtags or superficial formatting cannot make old copy “new”;
+- treat scheduled, dispatched, possible-provider-side-effect and published content as already used;
+- block the claim with `republish_forbidden=true` before any provider side effect when uniqueness fails;
+- generate a materially different angle/source/story instead of paraphrasing the old post.
+
+A same-day same-channel claim may reuse its own exact database reservation for idempotent recovery, but no different daily/channel claim may reuse that content.
+
+Never solve a duplicate by changing only the hook, CTA, punctuation, hashtags, URL, sentence order or a few synonyms. The underlying story and wording must be genuinely new.
+
+## Story uniqueness v2
+
+Fingerprint: `powerhouse-global-post-story-uniqueness-v2`.
+
+Textual paraphrasing is not sufficient uniqueness. A post is a duplicate when the same underlying story, incident or content source is reused with different sentences.
+
+Additional hard gates:
+- personal LinkedIn derives a stable story fingerprint from verified `source_text` (or `content_id` when source text is unavailable);
+- reusing an already-used personal story fingerprint is forbidden;
+- all social copy also undergoes stopword-filtered keyword overlap;
+- at least 8 shared meaningful keywords with Jaccard overlap >= 0.30 is a story-level duplicate;
+- this runs in addition to exact raw hash, normalized hash and 3-word-shingle checks.
+
+The same anecdote may not be posted again merely because wording, hook, CTA, hashtags, punctuation or sentence order changed.
+
+## Canonical story fingerprint authority v3
+
+Fingerprint: `powerhouse-story-fingerprint-authority-v3`.
+
+Do not independently normalize/hash personal story sources in application code. Both historical backfill and live publishing must use the database function `powerhouse_story_fingerprint_v1`. This prevents punctuation, URL, whitespace or content-id formatting differences from producing different fingerprints for the same source lineage.
+
+If the canonical fingerprint function cannot be called or returns empty, publication fails closed before any provider write.

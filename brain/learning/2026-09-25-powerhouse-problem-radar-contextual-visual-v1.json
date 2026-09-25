@@ -2,8 +2,8 @@
   "fingerprint": "powerhouse-problem-radar-contextual-visual-v1",
   "date": "2026-09-25",
   "type": "PRODUCT_INTELLIGENCE_PORTAL_PROJECTION",
-  "status": "IMPLEMENTED_CANDIDATE",
-  "terminal_state": "CANDIDATE_UNTIL_PROTECTED_MERGE_AND_PRODUCTION_READBACK",
+  "status": "LIVE_PROVEN",
+  "terminal_state": "LIVE_PROVEN",
   "problem": "Canonical MKB problem intelligence existed in the portal executive problem cards, but context was not systematically projected into the other Powerhouse surfaces where impact, decisions, monitoring and evidence are interpreted.",
   "root_cause": "The canonical intake contract defined routing to customer intelligence but did not define contextual visual projection surfaces or a reusable visual context schema.",
   "fix": [
@@ -44,5 +44,21 @@
     "contextual_surfaces": "portal-v2/operating-system/operating-system-ui.js",
     "styles": "portal-v2/operating-system/styles.js",
     "documentation": "docs/changes/powerhouse-problem-radar-contextual-visual-v1.md"
+  },
+  "production_recovery": {
+    "reason": "Protected merge 5814f26d8c6855d30983a8b0572c3ee683242928 landed while first Netlify provider readback still reported production commit 5b49ad9ebe9ee280da1c1725458d2fcd910e79ad.",
+    "authority": ".github/workflows/production-source-snapshot.yml",
+    "rule": "Use the existing exact-main Production Source Snapshot; do not create a second deploy authority.",
+    "expected_terminal_proof": "Netlify ready + production + commit_ref equal to the protected snapshot merge SHA or a verified current-main descendant containing the contextual visual feature."
+  },
+  "production_proof": {
+    "feature_merge_sha": "5814f26d8c6855d30983a8b0572c3ee683242928",
+    "production_recovery_merge_sha": "18723fd6ade2459c8c0773c4536dffeff6e291b9",
+    "netlify_site_id": "fd527056-493a-4d8a-8125-d00370104fa3",
+    "production_deploy_id": "6ab62a6bdb43de00090ce33d",
+    "production_commit_ref": "5814f26d8c6855d30983a8b0572c3ee683242928",
+    "production_state": "ready",
+    "production_context": "production",
+    "proof": "Netlify provider readback exactly matches the protected contextual-visual feature merge."
   }
 }

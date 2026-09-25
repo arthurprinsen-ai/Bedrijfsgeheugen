@@ -1,4 +1,4 @@
-export const QUEUE_PRESSURE_DEFAULTS = Object.freeze({ softActive:12, softQueued:10, hardActive:20, hardQueued:20, maxProjectedNewRuns:6 });
+export const QUEUE_PRESSURE_DEFAULTS = Object.freeze({ softActive:8, softQueued:5, hardActive:12, hardQueued:8, maxProjectedNewRuns:3 });
 
 export function assessQueuePressure({queued=0,inProgress=0,pending=0,waiting=0,requested=0,projectedNewRuns=0,limits=QUEUE_PRESSURE_DEFAULTS}={}){
   const counts={queued:Math.max(0,Number(queued)||0),inProgress:Math.max(0,Number(inProgress)||0),pending:Math.max(0,Number(pending)||0),waiting:Math.max(0,Number(waiting)||0),requested:Math.max(0,Number(requested)||0),projectedNewRuns:Math.max(0,Number(projectedNewRuns)||0)};

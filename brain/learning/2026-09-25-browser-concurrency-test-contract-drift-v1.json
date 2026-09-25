@@ -1,0 +1,54 @@
+{
+  "fingerprint": "browser-concurrency-test-contract-drift-v1",
+  "date": "2026-09-25",
+  "type": "CI_REGRESSION_ORACLE_DRIFT",
+  "status": "ACTIVE",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "root_cause": [
+    "The bounded full-site visibility fix replaced sequential route iteration with worker-based route concurrency, but an older website release-risk regression still required the removed sequential loop shape.",
+    "The implementation regression and the older release-risk oracle were not cochanged, so unrelated website PRs inherited a deterministic baseline failure after the concurrency fix reached main.",
+    "The GitHub website browser lane invoked standalone-visibility-check.mjs without an OS-level process timeout, so a Playwright/browser protocol wedge could outlive the script's internal route budget and retain a runner.",
+    "PR #2896 proved that the semantic route checks could complete while Playwright context.close() itself wedged; the outer 9-minute timeout then produced exit 124 and a false-negative despite no product assertion failure."
+  ],
+  "prevention": [
+    "Any implementation-shape change in the visibility verifier must cochange every regression that asserts that shape.",
+    "The canonical brain boundedness regression now verifies the runtime concurrency contract and the website release-risk oracle together.",
+    "Do not rerun or rebuild multiple affected PRs until the shared main regression is fixed once.",
+    "Learning canonicalization accepts only classified tests/brain-*.test.mjs evaluation paths; non-Brain implementation tests remain supporting evidence, never canonical evaluation references.",
+    "Every full-site browser verifier must have both an internal semantic time budget and an outer OS-level hard timeout materially below the enclosing job timeout.",
+    "Bound page/context/browser teardown independently. A teardown hang after completed assertions is cleanup-infrastructure state, not a product regression; preserve semantic pass/fail and force process termination only after bounded cleanup."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-standalone-visibility-boundedness-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-browser-gate-boundedness/SKILL.md"
+  ],
+  "evidence": {
+    "runtime": "tools/site-shell/standalone-visibility-check.mjs",
+    "workflow": ".github/workflows/lane-website.yml",
+    "process_circuit_breaker": "timeout --signal=TERM --kill-after=15s 9m node tools/site-shell/standalone-visibility-check.mjs",
+    "stale_oracle": "tests/site-shell-website-release-risk.test.mjs",
+    "canonical_regression": "tests/brain-standalone-visibility-boundedness-v1.test.mjs",
+    "affected_prs": [
+      2880,
+      2881,
+      2882,
+      2883,
+      2884,
+      2885
+    ],
+    "problem_radar_learning_repair": "brain/learning/2026-09-25-powerhouse-problem-radar-canonical-intake-v1.json",
+    "problem_radar_evaluation_wrapper": "tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs",
+    "required_run_36111924855": "website/browser failed at context.close() after targeted route checks were green; OS timeout returned exit 124",
+    "cleanup_regression": "browser|playwright-cleanup|bounded-teardown|v1"
+  }
+}

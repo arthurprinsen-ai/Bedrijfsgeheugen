@@ -6,7 +6,7 @@ on:
   # another repository-wide recovery scan.
   workflow_dispatch:
   schedule:
-    - cron: '*/15 * * * *'
+    - cron: '*/5 * * * *'
 
 permissions:
   contents: write
@@ -20,7 +20,7 @@ concurrency:
 jobs:
   supervise:
     runs-on: ubuntu-latest
-    timeout-minutes: 4
+    timeout-minutes: 6
     steps:
       - uses: actions/checkout@v5
       - uses: actions/setup-node@v5
@@ -31,11 +31,11 @@ jobs:
       - name: Recover exact-head critical delivery workflows
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          ACTIVE_RUN_CIRCUIT_BREAKER: '20'
+          ACTIVE_RUN_CIRCUIT_BREAKER: '12'
           RECOVERY_PR_BUDGET: '1'
-          STALE_QUEUE_MIN_AGE_SECONDS: '21600'
-          STALE_QUEUE_CANCEL_BUDGET: '20'
-          STALE_IN_PROGRESS_MIN_AGE_SECONDS: '1800'
+          STALE_QUEUE_MIN_AGE_SECONDS: '60'
+          STALE_QUEUE_CANCEL_BUDGET: '100'
+          STALE_IN_PROGRESS_MIN_AGE_SECONDS: '300'
         shell: bash
         run: |
           set -euo pipefail
@@ -47,6 +47,7 @@ jobs:
           # missing non-main branch, or old main SHA after main has advanced.
           now_epoch="$(date -u +%s)"
           stale_cancelled=0
+          obsolete_uncancellable=0
           current_main_sha="$(gh api "repos/$repo/git/ref/heads/main" --jq '.object.sha')"
 
           is_run_obsolete() {
@@ -125,7 +126,8 @@ jobs:
                 stale_cancelled=$((stale_cancelled + 1))
                 echo "::notice::STALE_ACTIONS_RUN_CANCELLED:$run_id status:$status branch:$head_branch age_seconds:$age_seconds mode:$cancel_mode"
               else
-                echo "::warning::STALE_ACTIONS_RUN_CANCEL_FAILED:$run_id status:$status branch:$head_branch"
+                obsolete_uncancellable=$((obsolete_uncancellable + 1))
+                echo "::warning::STALE_ACTIONS_RUN_CANCEL_FAILED:$run_id status:$status branch:$head_branch classified:PROVIDER_CONTROL_PLANE_ZOMBIE"
               fi
             done < <(jq -c '.workflow_runs[]?' "/tmp/$status-runs.json")
           }
@@ -135,9 +137,11 @@ jobs:
           echo "::notice::STALE_ACTIONS_RUN_CANCEL_TOTAL:$stale_cancelled"
 
           active_runs="$(gh api "repos/$repo/actions/runs?per_page=100" --jq '[.workflow_runs[] | select(.status=="queued" or .status=="in_progress" or .status=="pending" or .status=="waiting" or .status=="requested")] | length')"
-          echo "::notice::ACTIONS_ACTIVE_RUNS:$active_runs circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
-          if [ "$active_runs" -ge "$ACTIVE_RUN_CIRCUIT_BREAKER" ]; then
-            echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$active_runs; recovery dispatch suppressed until backlog drains."
+          effective_active_runs=$((active_runs - obsolete_uncancellable))
+          [ "$effective_active_runs" -ge 0 ] || effective_active_runs=0
+          echo "::notice::ACTIONS_ACTIVE_RUNS_RAW:$active_runs effective:$effective_active_runs provider_zombies:$obsolete_uncancellable circuit_breaker:$ACTIVE_RUN_CIRCUIT_BREAKER"
+          if [ "$effective_active_runs" -ge "$ACTIVE_RUN_CIRCUIT_BREAKER" ]; then
+            echo "::warning::ACTIONS_QUEUE_CIRCUIT_OPEN:$effective_active_runs effective active runs; recovery dispatch suppressed until authoritative backlog drains."
             exit 0
           fi
           gh api --paginate "repos/$repo/pulls?state=open&per_page=100" > /tmp/open-prs.json

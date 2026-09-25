@@ -7,8 +7,8 @@ test('recovery supervisor is scheduled/manual only and applies repository backpr
   const yml = await readFile('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.doesNotMatch(yml,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
   assert.match(yml,/workflow_dispatch:/);
-  assert.match(yml,/cron:\s*'\*\/15 \* \* \* \*'/);
-  assert.match(yml,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'20'/);
+  assert.match(yml,/cron:\s*'\*\/5 \* \* \* \*'/);
+  assert.match(yml,/ACTIVE_RUN_CIRCUIT_BREAKER:\s*'12'/);
   assert.match(yml,/RECOVERY_PR_BUDGET:\s*'1'/);
   assert.match(yml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
   assert.match(yml,/concurrency:\n\s+group: powerhouse-delivery-recovery-supervisor\n\s+cancel-in-progress: true/);
@@ -37,7 +37,7 @@ test('Required executes this CI admission regression', async () => {
 
 test('queue pressure forecast blocks fan-out before mutation', () => {
   const projected=assessQueuePressure({queued:11,inProgress:7,projectedNewRuns:3});
-  assert.equal(projected.state,'PROJECTED_OVERLOAD');
+  assert.equal(projected.state,'CIRCUIT_OPEN');
   assert.equal(projected.allowOptionalDispatch,false);
   assert.equal(projected.shouldBatchWrites,true);
 
@@ -49,7 +49,7 @@ test('queue pressure forecast blocks fan-out before mutation', () => {
   assert.equal(tooWide.state,'PROJECTED_OVERLOAD');
 
   const pressured=assessQueuePressure({queued:10,inProgress:2,projectedNewRuns:1});
-  assert.equal(pressured.state,'PRESSURE_HIGH');
+  assert.equal(pressured.state,'CIRCUIT_OPEN');
   assert.equal(pressured.allowOptionalDispatch,false);
 
   const healthy=assessQueuePressure({queued:1,inProgress:2,projectedNewRuns:2});

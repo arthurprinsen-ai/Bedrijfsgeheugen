@@ -58,7 +58,7 @@ test('universal learning/writeback contract remains active and fail-closed', () 
 test('chats and agents are intrinsic execution nodes in one canonical Powerhouse loop', () => {
   const contract = continuityPolicy.loop_node_contract;
   assert.equal(continuityPolicy.status, 'ACTIVE');
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.5');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.6');
   assert.match(continuityPolicy.fingerprint, /intrinsic-loop-nodes/);
   assert.equal(contract.required, true);
   assert.deepEqual(contract.actor_kinds, ['chat', 'agent']);
@@ -369,7 +369,7 @@ test('predictive LinkedIn sales cockpit learning is discoverable through continu
 
 
 test('pending delivery state can never be the final chat or agent handoff', () => {
-  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.5');
+  assert.equal(continuityPolicy.version, 'POWERHOUSE-AGENT-CONTINUITY-v1.6');
   assert.ok(continuityPolicy.invariants.includes('NO_NON_TERMINAL_DELIVERY_STATUS_AS_FINAL_CHAT_OUTPUT'));
   const rule=continuityPolicy.loop_node_contract.non_terminal_output_rule;
   assert.equal(rule.required, true);
@@ -425,11 +425,11 @@ test('queue-pressure governor is inherited by every chat and agent', () => {
   assert.equal(q.required,true);
   assert.equal(q.fingerprint,'github|actions-queue-pressure-governor|predict-before-dispatch|v1');
   assert.deepEqual(q.applies_to.slice(0,2),['chat','agent']);
-  assert.equal(q.thresholds.soft_active,12);
-  assert.equal(q.thresholds.soft_queued,10);
-  assert.equal(q.thresholds.hard_active,20);
-  assert.equal(q.thresholds.hard_queued,20);
-  assert.equal(q.thresholds.max_projected_new_runs_per_action,6);
+  assert.equal(q.thresholds.soft_active,8);
+  assert.equal(q.thresholds.soft_queued,5);
+  assert.equal(q.thresholds.hard_active,12);
+  assert.equal(q.thresholds.hard_queued,8);
+  assert.equal(q.thresholds.max_projected_new_runs_per_action,3);
   for(const invariant of ['NO_MATERIAL_GITHUB_MUTATION_WITHOUT_QUEUE_PRESSURE_FORECAST','NO_RECOVERY_ACTION_THAT_INCREASES_SATURATED_BACKLOG','NO_UNBOUNDED_WORKFLOW_FANOUT','NO_DUPLICATE_ACTIVE_RUN_FOR_SAME_PR_AND_WORKFLOW','BATCH_REPOSITORY_WRITES_BEFORE_CI','STALE_ORPHANED_QUEUE_MUST_BE_REAPED','CONTROL_PLANE_CHANGES_MUST_NOT_TRIGGER_ARTIFACT_LANES']) assert.ok(continuityPolicy.invariants.includes(invariant),`missing queue invariant: ${invariant}`);
   assert.match(agentsSource,/github\|actions-queue-pressure-governor\|predict-before-dispatch\|v1/);
   assert.match(continuitySkillSource,/Predict-before-dispatch queue governor/);

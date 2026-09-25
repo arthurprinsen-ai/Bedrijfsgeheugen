@@ -15,7 +15,10 @@
     "On 2026-09-25 the artifact-ai stage failed repeatedly, leaving both LinkedIn decisions at decided with no content artifacts.",
     "The production Anthropic account returned invalid_request_error because its credit balance was too low, proving the generator had a financial/provider single point of failure.",
     "Personal LinkedIn create and readback were coupled in one throwing function. If create succeeded but LINKEDIN_GET_POST_CONTENT was forbidden, the created post URN was discarded before persistence, creating duplicate ambiguity.",
-    "Decision reconciliation did not treat blocked republish-forbidden or possible-provider-side-effect claims as preserved, so a later scheduler cycle could theoretically re-decide an ambiguous daily claim."
+    "Decision reconciliation did not treat blocked republish-forbidden or possible-provider-side-effect claims as preserved, so a later scheduler cycle could theoretically re-decide an ambiguous daily claim.",
+    "Duplicate prevention was claim/provider-centric instead of content-history-centric: there was no global database uniqueness reservation over final social copy, so the same content or a lightly rewritten version could be published on another date/channel.",
+    "The first global uniqueness implementation caught exact and close textual copies but same-story paraphrases could still fall below the 3-word-shingle threshold; the 2026-09-24 versus 2026-09-25 auto anecdote measured only 0.0875 on shingles despite clearly reusing the same story.",
+    "Story uniqueness v2 initially normalized historical fingerprints in SQL but live publisher fingerprints in TypeScript with a different normalization rule; content IDs containing punctuation such as hyphens therefore produced different hashes."
   ],
   "prevention": [
     "LinkedIn personal and company publication authority remains Composio-only with exact provider URN readback and no Buffer fallback.",
@@ -26,7 +29,10 @@
     "Use the separately approved supabase-bg-composio-content-fallback-v1 route only for explicit provider-availability failures (credit exhaustion, missing key, 401/403/429, or 5xx), never for ordinary validation/programming defects.",
     "Composio fallback generation must return exactly the existing six-string artifact schema and remains subject to all downstream personal-truth, company-tracking, identity, publication-authority, dedupe and exact-URN readback gates.",
     "After any successful personal LinkedIn create, persist the returned URN and create-success evidence even when exact readback fails; mark verification pending and republish forbidden, then reconcile only that exact URN.",
-    "The orchestrator must preserve any existing claim with republish_forbidden, possible_provider_side_effect, or a persisted provider_create_success plus delivery_ref, regardless of blocked state."
+    "The orchestrator must preserve any existing claim with republish_forbidden, possible_provider_side_effect, or a persisted provider_create_success plus delivery_ref, regardless of blocked state.",
+    "Every final social post must atomically reserve its final text in powerhouse_publication_uniqueness_v1 before any provider side effect. Exact raw/normalized hashes and near-duplicate 3-word-shingle similarity are hard blockers.",
+    "Add story-level uniqueness: stable personal source-text/content-id fingerprint plus stopword-filtered keyword Jaccard. Block when >=8 meaningful keywords overlap and Jaccard >=0.30, in addition to exact and shingle gates.",
+    "Use one canonical database function, powerhouse_story_fingerprint_v1, for both historical backfill and live publisher story fingerprints. Application-side independent normalization is forbidden."
   ],
   "evidence": {
     "production_observation": "84 powerhouse-content-orchestrator health rows on 2026-09-25 reported artifact-ai:AI_PROVIDER_REQUEST_FAILED before remediation.",
@@ -42,7 +48,14 @@
     "personal_urn_loss_incident": "On 2026-09-25 the personal lane reached LINKEDIN_GET_POST_CONTENT after create and received Forbidden, but the old catch path recorded no delivery_ref/external_id. The claim is treated as possibly written and is not retried.",
     "personal_urn_preservation_fingerprint": "linkedin-personal-created-urn-preservation-v1",
     "republish_preservation_fingerprint": "linkedin-republish-forbidden-preservation-v1",
-    "2026_09_25_personal_claim_freeze": "Canonical personal LinkedIn claim and obligation were explicitly marked republish_forbidden=true and possible_provider_side_effect=true with no replacement publication authorized."
+    "2026_09_25_personal_claim_freeze": "Canonical personal LinkedIn claim and obligation were explicitly marked republish_forbidden=true and possible_provider_side_effect=true with no replacement publication authorized.",
+    "historical_exact_duplicate": "social_posts contains the same Instagram content_hash 90fe291e312131df89cbc3fcd2c318cbe090c292b34b8694f9db6d8128dbfe3c on both 2026-09-14 and 2026-09-15.",
+    "historical_near_duplicate": "powerhouse_content_artifacts contains repeated/lightly rewritten personal LinkedIn printer stories across 2026-09-17, 2026-09-18, 2026-09-19, 2026-09-20 and 2026-09-22.",
+    "global_uniqueness_fingerprint": "powerhouse-global-post-uniqueness-v1",
+    "auto_story_keyword_overlap": "2026-09-24 vs 2026-09-25 personal LinkedIn auto story shared 24 meaningful keywords with keyword Jaccard 0.3529.",
+    "story_uniqueness_fingerprint": "powerhouse-global-post-story-uniqueness-v2",
+    "fingerprint_normalization_mismatch": "For content_id manual-linkedin-personal-2026-09-24-car, historical SQL fingerprint was caffa866... while the initial publisher-style hash was eec0abd4..., proving dual normalization authorities were unsafe.",
+    "canonical_story_fingerprint_authority": "powerhouse-story-fingerprint-authority-v3"
   },
   "evaluation": {
     "historical_replay": [

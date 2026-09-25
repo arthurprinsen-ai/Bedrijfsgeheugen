@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import {classifyRecovery,criticalWorkflowCoverage,latestCriticalWorkflowRuns} from '../tools/delivery/predictive-controller.mjs';
+import {assessQueuePressure,classifyRecovery,criticalWorkflowCoverage,latestCriticalWorkflowRuns} from '../tools/delivery/predictive-controller.mjs';
 
 test('zero-run head becomes recoverable after first-signal SLO',()=>{
   const r=classifyRecovery({workflowRuns:[],headUpdatedAt:'2026-09-18T08:00:00Z',now:Date.parse('2026-09-18T08:02:00Z')});
@@ -67,8 +67,8 @@ test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.doesNotMatch(yaml,/\n\s*push:\s*\n\s*branches:\s*\[main\]/);
   assert.match(yaml,/workflow_dispatch:/);
-  assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/15 \* \* \* \*'/);
-  assert.match(yaml,/ACTIVE_RUN_CIRCUIT_BREAKER: '20'/);
+  assert.match(yaml,/schedule:\s*\n\s*- cron: '\*\/5 \* \* \* \*'/);
+  assert.match(yaml,/ACTIVE_RUN_CIRCUIT_BREAKER: '12'/);
   assert.match(yaml,/ACTIONS_QUEUE_CIRCUIT_OPEN/);
   assert.match(yaml,/RECOVERY_PR_BUDGET: '1'/);
   assert.match(yaml,/RECOVERY_PR_BUDGET_EXHAUSTED/);
@@ -135,4 +135,14 @@ test('supervisor force-cancels unresponsive obsolete runs and avoids jq broken-p
   assert.match(yaml,/--method DELETE "repos\/\$repo\/actions\/runs\/\$run_id"/);
   assert.match(yaml,/done < <\(jq -c '\.\[\]' \/tmp\/open-prs\.json\)/);
   assert.doesNotMatch(yaml,/jq -c '\.\[\]' \/tmp\/open-prs\.json \| while read -r pr/);
+});
+
+
+test('total Actions pressure opens circuit before development queue becomes a storm',()=>{
+  const current=assessQueuePressure({queued:11,inProgress:19});
+  assert.equal(current.active,30);
+  assert.equal(current.state,'CIRCUIT_OPEN');
+  assert.equal(current.allowOptionalDispatch,false);
+  const projected=assessQueuePressure({queued:4,inProgress:5,projectedNewRuns:4});
+  assert.equal(projected.state,'PROJECTED_OVERLOAD');
 });

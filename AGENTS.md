@@ -25,6 +25,18 @@ Verplichte self-healing lus:
 
 Een agent mag dus niet eindigen met alleen “dit moet je aanpassen”, “controleer dit”, “hier is een advies”, “de build faalt” of “de deploy is rood” wanneer de agent de fout zelf veilig kan herstellen.
 
+## Terminal user handoff — geen open einde
+
+Fingerprint: `delivery|terminal-user-handoff|dashboard-writeback|v1`.
+
+Voor iedere materiële Powerhouse-taak geldt voortaan aanvullend:
+- een pending PR, lopende gate, auto-merge, deploy-start, readback-pending, learning-pending of documentatie-pending is interne uitvoeringsstaat en nooit het standaard eindantwoord;
+- de owner-node houdt de taak vast tot beschermd merge/promotion, productie/provider-readback, outcome, learning/prevention, relevante skill-projectie én Powerhouse-dashboard/current-state-registratie aantoonbaar zijn verwerkt;
+- de standaard gebruikersmelding na terminale afronding bevat alleen de terminale status, het bewezen productie/provider-resultaat en de vastgelegde borging; er wordt geen nieuwe "wat nu"-lijst teruggegeven voor werk dat de agent zelf kan uitvoeren;
+- iedere materiële fout, root cause, fix, regressie, preventieregel, terminale evidence en resterende harde grens wordt in dezelfde lineage zichtbaar gemaakt in de bestaande Powerhouse current-state/dashboard- en activity/learninglagen;
+- alleen `BLOCKED_HARD_BOUNDARY` mag eigenaarschap teruggeven aan de gebruiker, met exact één kleinste noodzakelijke menselijke actie en de reeds voorbereide vervolgstap;
+- na een interruption hervat de volgende capabele node automatisch vanaf het canonieke checkpoint; de gebruiker hoeft niet opnieuw "ga door" te zeggen.
+
 ## Accepted website baseline — protected invariant
 De **accepted website baseline** in `site/accepted-baseline.json` en `site/navigation-baseline.json` is bindend voor iedere huidige en toekomstige agent. Een route die nog bestaat en technisch/SEO-groen is, kan toch rood zijn wanneer de betekenis, propositie, het verhaal, verplichte inhoudsankers of de navigatiepositie onverwacht zijn gewijzigd.
 
@@ -412,6 +424,6 @@ Canonical fingerprints: `delivery|fast-terminal|critical-path|v2`, `delivery|pre
 
 ## Powerhouse closed-loop delivery — canonical
 
-All agents and chats MUST apply the canonical skill `.agents/skills/powerhouse-continuity/SKILL.md` to sales, content, social, growth, portal intelligence and autonomous improvement work.
+All agents and chats MUST apply the existing canonical skill `.agents/skills/powerhouse-continuity/SKILL.md` to sales, content, social, growth, portal intelligence and autonomous improvement work.
 
 Terminal delivery is evidence-backed progression through `signal → analysis → prediction → decision → execution → provider_readback → outcome → realized_value → calibration → next_decision`. Merge, deploy, dispatch and publication are intermediate states. Never claim LIVE/DONE from those states alone. Missing external evidence remains explicitly open/blocked/outcome_pending. Never fabricate outcomes or realized value. Replays must be idempotent and stages must remain contiguous. Prevention fingerprint: `powerhouse-closed-loop-evidence-first-v1`.
