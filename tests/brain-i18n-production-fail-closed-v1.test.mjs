@@ -10,7 +10,10 @@ test('production localized build fails closed when translation provider fails',(
   assert.match(source,/STATIC_I18N_PRODUCTION_TRANSLATION_FAILED/);
   assert.match(source,/STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED/);
   assert.match(source,/if \(networkAllowed\) \{\s*throw new Error/);
-  assert.doesNotMatch(source,/if \(networkAllowed\)[\s\S]{0,250}STATIC_I18N_PROVIDER_FALLBACK/);
+  assert.match(source,/if \(networkAllowed\) \{\s*throw new Error\('STATIC_I18N_PRODUCTION_TRANSLATION_FAILED:/);
+  const productionThrow=source.indexOf('STATIC_I18N_PRODUCTION_TRANSLATION_FAILED');
+  const previewFallback=source.indexOf('STATIC_I18N_PROVIDER_FALLBACK');
+  assert.ok(productionThrow >= 0 && previewFallback > productionThrow, 'preview fallback must exist only after the production throw path');
 });
 
 test('deploy previews may remain offline without pretending to be translated',()=>{
