@@ -1,0 +1,37 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "delivery|terminal-live-proof-writeback|v1",
+  "obligation_id": "terminal-live-proof-writeback-20260925-v1",
+  "problem": "A live deployment can be correctly proven in chat while the durable repository learning, skill projection, development ledger and human documentation lag behind, leaving future agents without canonical closure evidence.",
+  "root_cause": "Terminal production proof and post-proof knowledge writeback were treated as separable follow-up work instead of one delivery obligation.",
+  "fix": "Require same-lineage post-LIVE writeback across skill, Brain learning, append-only development ledger and human change documentation, bound to the production identity and browser/function evidence actually used.",
+  "prevention": [
+    "Do not finish a live delivery with chat-only evidence.",
+    "Persist skill, Brain learning, ledger and human documentation after production proof.",
+    "Reuse existing production proof only for explicitly non-production descendants allowed by the safe-supersession contract.",
+    "Require fresh production proof when runtime-affecting paths advance."
+  ],
+  "compiler": {
+    "failure_class": "TERMINAL_LIVE_WRITEBACK_GAP",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-live-proof-writeback-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization"
+  ],
+  "evidence": [
+    "Production deploy commit 06c650b72ae6a9386ceed4d20a32d8fd84ad7329 was observed ready in Netlify production.",
+    "Canonical production readback lineage proved affected routes plus pricing interactions and English route before the live claim.",
+    "This closure writes the rule into skill, Brain learning, ledger and human documentation."
+  ],
+  "outcome": "LIVE_PROOF_AND_CANONICAL_WRITEBACK_COUPLED"
+}
