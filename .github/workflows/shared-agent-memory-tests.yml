@@ -3,6 +3,7 @@ name: Shared Agent Memory Tests
 on:
   push:
     branches:
+      - main
       - 'automation/**'
   workflow_dispatch:
 
