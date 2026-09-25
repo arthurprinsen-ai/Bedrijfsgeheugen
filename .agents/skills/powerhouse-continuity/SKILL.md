@@ -1122,3 +1122,21 @@ For public frontend capabilities such as NL/EN:
 - require the real visible user interaction path in production readback before terminal completion.
 
 For NL/EN specifically, stylesheet presence and `/assets/js/i18n.js` presence are separate invariants, and mobile proof must exercise the active visible selector through NL → EN → NL.
+
+## NL/EN runtime asset completeness
+
+Fingerprint: `i18n-runtime-asset-independent-presence-v1`.
+
+For every public NL/EN website delivery:
+- never treat one shared i18n marker as proof that all locale assets are present;
+- prove `assets/i18n.css` and `assets/js/i18n.js` independently in the final production HTML;
+- build-time injection must be idempotent per asset: existing CSS may never suppress a missing runtime script, and existing JS may never suppress missing CSS;
+- always run mobile-control mounting after asset reconciliation;
+- verify the active navigation host used at the tested viewport, including `#v18MobileDrawer` where present;
+- exact Netlify `commit_ref` is necessary but not sufficient: terminal proof also requires a real browser NL → EN → NL roundtrip and absence of the user-visible “Switching language failed. Try again.” error;
+- if production HTML contains CSS but not the runtime script, classify it as `I18N_RUNTIME_ASSET_INCOMPLETE`, not as a navigation-host or translation-provider failure.
+
+Canonical regression evidence:
+- `tests/brain-i18n-asset-independent-injection-v1.test.mjs`
+- `tests/brain-i18n-v18-mobile-host-v1.test.mjs`
+- `tools/site-shell/verify-pricing-i18n-production.mjs`
