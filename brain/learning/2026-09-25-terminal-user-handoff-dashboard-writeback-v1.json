@@ -1,0 +1,31 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "delivery|terminal-user-handoff|dashboard-writeback|v1",
+  "status": "ACTIVE",
+  "observed_at": "2026-09-25",
+  "symptom": "A technical delivery could end with pending gates or a next-action list, leaving the user to ask what happens next even though the remaining steps were autonomously executable.",
+  "root_cause": [
+    "The no-pending-output contract prohibited non-terminal labels but did not make dashboard/current-state registration and fixed terminal user handoff explicit terminal gates.",
+    "A production Supabase migration could be applied under a provider-assigned timestamp different from the repository filename, causing terminal migration-ledger identity readback to fail after merge."
+  ],
+  "fix": [
+    "Require autonomous ownership through merge, production/provider readback, outcome, learning/prevention, skill projection, documentation, Powerhouse dashboard/current-state registration, activity ledger and read-after-write.",
+    "Reconcile repository migration identity to the production Supabase migration ledger before terminal closure."
+  ],
+  "prevention": [
+    "Never give the user an autonomous what-now list as the final response.",
+    "Only BLOCKED_HARD_BOUNDARY may transfer one smallest necessary human action.",
+    "Dashboard/current-state writeback and read-after-write are mandatory terminal evidence.",
+    "Migration filename/version identity must match the production migration ledger, not merely SQL content."
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency",
+    "powerhouse-delivery-self-optimization"
+  ],
+  "evidence": [
+    "Supabase production migration ledger: composio_content_fallback_governance_v1 registered as 20260925074007.",
+    "GitHub Obligation Terminal Closure rejected prior identity with MIGRATION_LEDGER_IDENTITY_MISMATCH."
+  ]
+}

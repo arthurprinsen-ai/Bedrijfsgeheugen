@@ -408,3 +408,7 @@ All repository-backed agents optimize for **time-to-terminal-proof**. Use the ca
 
 Canonical fingerprints: `delivery|fast-terminal|critical-path|v2`, `delivery|predictive-landing-coalescing|v1`.
 
+## Terminal delivery handoff invariant
+
+For every material Powerhouse task, apply fingerprint `delivery|terminal-user-handoff|dashboard-writeback|v1`: do not return an autonomously executable next-step list as the final handoff. Continue the same lineage until merge/promotion, production/provider readback, outcome, learning/prevention, relevant skill projection, canonical documentation, Powerhouse dashboard/current-state registration, activity-ledger writeback and read-after-write are complete. Only `BLOCKED_HARD_BOUNDARY` may transfer exactly one smallest necessary human action. After interruption, resume automatically from canonical state; the user should not need to say “ga door”.
+

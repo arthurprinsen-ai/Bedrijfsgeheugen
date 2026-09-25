@@ -825,3 +825,18 @@ When a required website gate verifies every public route across multiple viewpor
 - treat many PRs stuck on the same long browser step as shared CI queue amplification, not independent product defects.
 
 Regression: `tests/brain-standalone-visibility-bounded-concurrency-v1.test.mjs`.
+
+## Terminal user handoff + dashboard writeback — mandatory
+
+Fingerprint: `delivery|terminal-user-handoff|dashboard-writeback|v1`.
+
+A material delivery never ends with a user-facing list such as “the next action is…”, “Required is still running”, “auto-merge is armed”, “deploy/readback is pending”, or “documentation/skills still need updating” when those steps remain autonomously executable.
+
+The same owner node continues the canonical lineage through protected merge/promotion, deployment or runtime promotion, production/provider readback, outcome verification, root-cause learning, regression/prevention, relevant skill projection, canonical documentation, Powerhouse dashboard/current-state registration, activity/development-ledger writeback, and read-after-write.
+
+Before a normal terminal reply, register the verified state in the existing Powerhouse authorities rather than inventing a new dashboard. At minimum use the existing Canonical System Map / Latest Verified State / Agent Activity Log / Dashboard Hub / Powerhouse Control Center lineage as applicable. A durable terminal reply reports only what is already proven and registered.
+
+Only `BLOCKED_HARD_BOUNDARY` may transfer action back to the user. Then state exactly one smallest necessary human action and preserve the prepared resume action. After interruption, the next capable chat/agent resumes automatically; the user must not need to say “ga door”.
+
+Migration-ledger prevention: when a production migration was applied under a provider-assigned timestamp that differs from the repository filename, reconcile the repository migration identity to the provider ledger before rerunning terminal closure. Never treat SQL presence on main as proof that the production migration ledger identity matches.
+
