@@ -7,12 +7,12 @@ const netlify=fs.readFileSync('netlify.toml','utf8');
 const runtime=fs.readFileSync('assets/js/i18n.js','utf8');
 const verifier=fs.readFileSync('tools/site-shell/verify-pricing-i18n-production.mjs','utf8');
 
-test('production localized build is provider-independent and degrades to runtime translation when cache is incomplete',()=>{
-  assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"0"/);
+test('production localized build fails closed instead of publishing Dutch copies under /en',()=>{
+  assert.match(netlify,/STATIC_I18N_NETWORK\s*=\s*"1"/);
   assert.match(netlify,/STATIC_I18N_REQUIRE_CACHE\s*=\s*"0"/);
   assert.match(source,/const cacheRequired = String\(process\.env\.STATIC_I18N_REQUIRE_CACHE/);
-  assert.match(source,/STATIC_I18N_CACHE_INCOMPLETE/);
-  assert.match(source,/runtimeFallback:!translations/);
+  assert.match(source,/STATIC_I18N_PRODUCTION_TRANSLATION_FAILED/);
+  assert.match(source,/STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED/);
   assert.match(source,/setLocaleMetadata\(enDoc,'en',route,Boolean\(translations\)\)/);
   assert.match(runtime,/\/api\/i18n-translate/);
 });
