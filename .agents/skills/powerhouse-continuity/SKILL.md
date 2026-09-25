@@ -813,6 +813,21 @@ Regression: `tests/brain-pricing-mobile-lifecycle-actionability-v1.test.mjs`.
 Learning: `brain/learning/pricing-production-runtime-readiness-20260924-v1.json`.
 
 
+## Production route visible-surface proof
+
+Fingerprint: `production-route-visible-surface-v1`.
+
+For generic production route verification:
+- do not use the `body` element's own Playwright `visible` state as the sole rendering sentinel;
+- require body attachment, non-empty rendered text and at least one genuinely visible top-level content surface;
+- continue to verify HTTP status, canonical identity, title, assets and page errors;
+- keep functional browser verifiers separate and mandatory for critical interactions;
+- never weaken a pricing/i18n click gate merely to compensate for a generic route sentinel false negative.
+
+Regression: `tests/brain-production-route-visible-surface-v1.test.mjs`.
+Learning: `brain/learning/production-route-visible-surface-20260924-v1.json`.
+
+
 ## Full-site browser sweep without queue amplification
 
 Fingerprint: `standalone-visibility-bounded-concurrency-v1`.
