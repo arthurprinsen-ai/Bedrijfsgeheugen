@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260923105500_mira_continuous_human_video_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migrations/20260925075655_mira_continuous_human_video_v1.sql','utf8');
 const router=fs.readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts','utf8');
 const review=fs.readFileSync('supabase/functions/bg-pre-publish-review/index.ts','utf8');
 
