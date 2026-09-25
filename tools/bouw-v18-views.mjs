@@ -143,7 +143,7 @@ for (const p of VIEWS) {
   html = zetKop(html, titelVoor(p.bestand) || p.titel, p.omschrijving, canoniek, eigenZoekwoord);
   if (!eigenZoekwoord) html = html.replace(/<meta name="bg-zoekwoord"[^>]*>\s*/g, '');
   if (p.geenIndex) {
-    const robotsTag = /<meta\\b[^>]*name=(?:"robots"|'robots')[^>]*>/i;
+    const robotsTag = /<meta\b[^>]*name=(?:"robots"|'robots')[^>]*>/i;
     if (robotsTag.test(html)) {
       html = html.replace(robotsTag, '<meta name="robots" content="noindex, follow">');
     } else {
