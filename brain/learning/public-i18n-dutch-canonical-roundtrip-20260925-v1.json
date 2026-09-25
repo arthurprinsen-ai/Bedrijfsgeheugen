@@ -1,6 +1,6 @@
 {
   "fingerprint": "public-i18n-dutch-canonical-roundtrip-20260925-v1",
-  "status": "IMPLEMENTED_CANDIDATE",
+  "status": "RECOVERY_CANDIDATE",
   "date": "2026-09-25",
   "type": "PUBLIC_I18N_CANONICAL_ROUTE_SYMMETRY",
   "root_cause": "The public language switcher and static localized-route builder treated both locales as prefixed. That made English to Dutch navigate to /nl/* and caused Dutch canonical, hreflang and internal-link generation to diverge from the agreed public authority where Dutch is unprefixed and English lives under /en/*.",
@@ -10,7 +10,9 @@
     "Runtime language switching must preserve path, query and hash while mapping NL→EN to /en/* and EN→NL to the unprefixed route.",
     "Static localized-route generation must use the same canonical mapping for internal links, canonical URLs, hreflang and og:url.",
     "Legacy /nl and /nl/* URLs permanently redirect to the matching unprefixed Dutch route.",
-    "Production browser proof must execute a real NL→EN→NL roundtrip and fail if the Dutch return path contains /nl."
+    "Production browser proof must execute a real NL→EN→NL roundtrip and fail if the Dutch return path contains /nl.",
+    "Validate the complete English cache after all Netlify pre-i18n HTML transformations, not only against repository source before the build.",
+    "Production build must fail before locale generation if transformed public strings are absent from the versioned English cache."
   ],
   "compiler": {
     "failure_class": "PUBLIC_I18N_DUTCH_PREFIX_CANONICAL_DRIFT",
@@ -29,5 +31,19 @@
   "skill_targets": [
     "powerhouse-continuity"
   ],
-  "revision": 1
+  "revision": 5,
+  "recovery": {
+    "pr": 2934,
+    "base_sha": "efa4391575f06f1980cfe9487775c8df17ea3451",
+    "failed_netlify_deploy_id": "6ab6744ae51cac6be3a28a20",
+    "failed_netlify_commit": "abdfd8d7dd9bf08dbf95a9fb76a8d5266ef853c1",
+    "evidence": "Linked production deploy reached Netlify and failed during site build with exit code 2.",
+    "action": "Validate the versioned cache on the exact transformed build corpus immediately before localized route generation."
+  },
+  "evidence": {
+    "implementation_pr": 2918,
+    "deterministic_cache_pr": 2944,
+    "production_canary": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "post_transform_validator": "node tools/site-shell/build-localized-routes.mjs --validate-cache"
+  }
 }
