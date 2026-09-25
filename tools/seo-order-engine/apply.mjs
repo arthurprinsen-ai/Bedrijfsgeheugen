@@ -24,6 +24,17 @@ function ensureMeta(input,name,value){let html=String(input);const re=new RegExp
 function localIntent(meta){return String(meta?.title||meta?.canonical||'ondersteunende informatie').trim().toLocaleLowerCase('nl-NL');}
 function isBlogArticle(path){return /^blog\/.+\/index\.html$/i.test(path)&&path!=='blog/index.html';}
 function isExcludedPath(path){return EXCLUDES.has(path)||EXCLUDES.has(path.split('/').at(-1))||EXCLUDED_PREFIXES.some(prefix=>path.startsWith(prefix))||/(?:^|\/)shell-gate-[^/]*\.html$/i.test(path);}
+function sourceCanonicalForLocale(canonical){
+  try{
+    const url=new URL(canonical);
+    if(url.origin!==ORIGIN) return canonical;
+    if(url.pathname==='/en' || url.pathname.startsWith('/en/')){
+      const sourcePath=url.pathname==='/en' ? '/' : (url.pathname.slice(3)||'/');
+      return `${ORIGIN}${sourcePath}`;
+    }
+  }catch{}
+  return canonical;
+}
 
 function markBodyContext(input, role, funnel, intent = '', keyword = '', intentRole = 'supporting', owner = '', pageClass = role) {
   const html = String(input);
@@ -95,10 +106,12 @@ export async function applySeoOrderEngine() {
       out=injectGrowthMeasurement(out,{canonical,page_role:'article',funnel_stage:'discover',intent:metaContent(out,'bg-intent'),keyword_cluster:metaContent(out,'bg-keyword-cluster'),intent_owner:metaContent(out,'bg-intent-owner')});
       blogs++;
     } else {
-      const policy=classifyCanonical(canonical,registry);
+      const sourceCanonical=sourceCanonicalForLocale(canonical);
+      const policy=classifyCanonical(sourceCanonical,registry);
       if(!policy) throw new Error(`Ongeclassificeerde publieke pagina: ${canonical}. Voeg expliciet intent/rol/owner toe voordat deze pagina kan publiceren.`);
       if(policy.registered){
-        const entry=policy.entry;
+        const sourceEntry=policy.entry;
+        const entry=sourceCanonical===canonical ? sourceEntry : { ...sourceEntry, route:canonical };
         out=enrichRegisteredPage(html,entry);
         out=injectGrowthMeasurement(out,{canonical,page_role:entry.role,funnel_stage:entry.funnel_stage,intent:entry.primary_intent,keyword_cluster:entry.primary_keyword,intent_owner:entry.route});
         registered++;
