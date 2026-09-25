@@ -49,6 +49,16 @@ jobs:
           const riskConfig=JSON.parse(await readFile('site/website-release-risk.json','utf8'));
           const acceptedBaseline=JSON.parse(await readFile('site/accepted-baseline.json','utf8'));
           let result=classifyWebsiteRelease({changedPaths,riskConfig,acceptedBaseline});
+          if(changedPaths.includes('.github/workflows/lane-website.yml')){
+            result={
+              ...result,
+              lane:'high-risk',
+              affected_routes:['/','/prijzen','/en/prijzen'],
+              risk_reasons:[...new Set([...(result.risk_reasons||[]),'self-test:lane-website.yml'])],
+              escalated:true,
+              requires_preview:true
+            };
+          }
           // A netlify.toml change that only appends canonical 301 redirect blocks has a
           // bounded blast radius. Closure evidence and regression files are already
           // classified as non-artifact. Keep real build/header/security config edits
@@ -223,7 +233,7 @@ jobs:
           CONTEXT: production
           DEPLOY_ID: required-netlify-build-parity
           STATIC_I18N_NETWORK: '0'
-          STATIC_I18N_REQUIRE_CACHE: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
           STATIC_I18N_CONCURRENCY: '1'
         run: |
           set -euo pipefail
