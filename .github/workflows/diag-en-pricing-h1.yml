@@ -1,0 +1,45 @@
+name: Diagnostic EN Pricing H1
+on:
+  push:
+    branches: [diag/en-pricing-h1-2a99c270]
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22.12.0'
+      - run: npm install --no-audit --no-fund
+      - name: Build exact production output and inspect EN pricing
+        env:
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+          NODE_OPTIONS: '--max-old-space-size=2048'
+        run: |
+          set -euxo pipefail
+          node tools/site-shell/pricing-build-integrity.mjs capture
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          node tools/prijzen-uit-de-homepage.mjs
+          node tools/site-shell/pricing-build-integrity.mjs restore
+          node tools/site-shell/apply-i18n.mjs
+          node tools/site-shell/build-localized-routes.mjs
+          node --input-type=module <<'NODE'
+          import fs from 'node:fs';
+          const html=fs.readFileSync('en/prijzen.html','utf8');
+          const h1=(html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)||[])[1]||'';
+          const text=h1.replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+          const htmlTag=(html.match(/<html[^>]*>/i)||[])[0]||'';
+          console.log('EN_PRICING_H1',JSON.stringify(text));
+          console.log('EN_HTML_TAG',JSON.stringify(htmlTag));
+          console.log('HAS_DUTCH_H1',/Prijzen voor\s+digitalisering\s+in het mkb/i.test(text));
+          console.log('HAS_ENGLISH_H1',/Prices for\s+digitalization\s+in SMEs/i.test(text));
+          NODE
