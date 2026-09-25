@@ -11,3 +11,6 @@ The regression now asserts:
 - total reported coverage remains routes × viewports.
 
 No production assertion is weakened.
+
+## Production sizing
+The canonical sitemap currently contains 93 public routes. Production readback therefore uses an explicit bounded worker budget of 8 route workers × 3 viewport workers, while the global 480s fail-closed sweep budget and all semantic assertions remain unchanged.
