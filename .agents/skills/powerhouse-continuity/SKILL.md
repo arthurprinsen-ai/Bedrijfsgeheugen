@@ -949,3 +949,14 @@ Production English localization must not require a live translation-provider cal
 Before delivery, run `node tools/site-shell/build-localized-routes.mjs --validate-cache`. It must prove every currently selected public source string has a non-empty cached English translation.
 
 If source copy introduces new strings, update the cache in the same candidate lineage. Production remains fail-closed: never publish untranslated `/en/*` pages and never convert provider/cache failure into silent fallback.
+
+
+## Conflicting i18n prevention contracts
+
+Fingerprint: `static-i18n-provider-fallback-regression-20260925-v3`.
+
+- Build-time translation-provider availability is never terminal production authority while the canonical runtime i18n fallback exists.
+- Do not reintroduce `STATIC_I18N_PRODUCTION_TRANSLATION_FAILED` or `STATIC_I18N_PRODUCTION_TRANSLATION_REQUIRED`.
+- Production fail-closed authority lives at observable browser behavior: real NL→EN interaction, `/en/prijzen`, English document language and visible English pricing copy.
+- If an older test or learning rule conflicts with a newer canonical prevention rule, reconcile the stale contract in the same lineage rather than reverting the newer architecture.
+- A repeated regression must increment learning and update the skill rule, not merely patch the code again.
