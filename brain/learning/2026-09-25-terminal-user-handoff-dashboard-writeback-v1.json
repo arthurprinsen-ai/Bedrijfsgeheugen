@@ -26,5 +26,17 @@
   "documentation_targets": [
     "docs/changes/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.md",
     "docs/development-ledger-events/2026-09-25-terminal-user-handoff-dashboard-writeback-v1.md"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs"
+    ]
+  }
 }
