@@ -1,0 +1,40 @@
+{
+  "fingerprint": "static-i18n-partial-cache-route-isolation-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The /en/prijzen route had lang=en and correct routing but still rendered the Dutch pricing H1 because one or more unrelated static-English cache misses disabled translation for the entire site build.",
+  "root_cause": "build-localized-routes.mjs returned null for the complete translation map whenever STATIC_I18N_NETWORK=0 and any public string was absent from cache. That all-or-nothing fallback caused every English route to be emitted from Dutch source even when the route's own important strings were already cached.",
+  "prevention": [
+    "Offline static-English generation must preserve every cached translation instead of disabling the whole translation map.",
+    "Missing translations are isolated to their own text nodes and routes; they must not downgrade unrelated English routes.",
+    "Each English route records truthful data-bg-static-translated=false while any string on that route remains untranslated.",
+    "The pricing H1 cache fragments Prices for, digitalization and in SMEs are regression-locked.",
+    "Terminal release still requires exact-main production identity plus real-browser NL-to-EN-to-NL proof on homepage, pricing and systems/koppelingen."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-partial-cache-route-isolation-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-partial-cache-route-isolation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-static-i18n-partial-cache-route-isolation-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-static-i18n-partial-cache-route-isolation-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_GLOBAL_FALLBACK_FROM_LOCAL_CACHE_GAP",
+    "scope": "WEBSITE_I18N_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
