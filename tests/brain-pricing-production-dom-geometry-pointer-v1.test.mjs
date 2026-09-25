@@ -19,6 +19,6 @@ test('pricing production verifier uses DOM geometry and a real pointer without l
   assert.match(source,/page\.mouse\.click\(lossBox\.x \+ lossBox\.width \/ 2, lossBox\.y \+ lossBox\.height \/ 2\)/);
   assert.match(source,/loss stage aria-selected did not become true/);
   assert.match(source,/yearly billing click did not change a price/);
-  assert.match(source,/English route did not render html lang=en/);
+  assert.match(source,/locale switch did not render html lang=/);
   assert.doesNotMatch(source,/force:\s*true/);
 });
