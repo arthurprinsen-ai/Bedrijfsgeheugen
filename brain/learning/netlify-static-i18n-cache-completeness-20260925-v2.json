@@ -1,0 +1,48 @@
+{
+  "fingerprint": "netlify-static-i18n-cache-completeness-20260925-v2",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "STATIC_I18N_CACHE_SOURCE_DRIFT",
+  "problem": "Netlify production could not publish the exact protected main because the immutable English translation cache lagged behind the current public source by 1,926 strings.",
+  "root_cause": "The website source and versioned English translation cache could move independently. Production was correctly fail-closed with STATIC_I18N_REQUIRE_CACHE=1, but exact-candidate cache completeness was not enforced as a pre-promotion invariant.",
+  "prevention": [
+    "A website candidate may not enter production promotion unless the static English cache validates against the exact candidate source.",
+    "Cache generation runs before protected promotion and the generated cache must be versioned with the candidate.",
+    "Netlify production remains offline/fail-closed: STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "Production truth requires provider commit_ref == protected main SHA plus public NL/EN route readback.",
+    "Translation providers may enrich the versioned cache in CI, but they are not a production deploy dependency."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-static-i18n-cache-completeness-v2.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-static-i18n-cache-completeness-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-static-i18n-cache-completeness-v2.test.mjs"
+    ],
+    "expected_invariant": "node tools/site-shell/build-localized-routes.mjs --validate-cache succeeds with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1 before production promotion"
+  },
+  "evidence": {
+    "diagnostic_workflow_run": 36153434965,
+    "failed_netlify_deploy": "6ab68cc1620347dff3081d39",
+    "failure": "STATIC_I18N_CACHE_INCOMPLETE: 1926 missing translation(s)",
+    "generated_cache_path": "config/bg-static-i18n-en.json"
+  },
+  "skill_targets": [
+    "continuity",
+    "delivery",
+    "website"
+  ],
+  "test_evidence": [
+    "tests/brain-netlify-static-i18n-cache-completeness-v2.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_SOURCE_DRIFT",
+    "scope": "WEBSITE_I18N_PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 2
+}
