@@ -1057,3 +1057,13 @@ Fingerprint: `netlify-production-build-parity-20260925-v1`.
 - Reduced local/browser composers are useful for UI verification but are never substitutes for production build parity.
 - Any parity failure blocks merge and must be repaired before Netlify deployment.
 - Terminal closure remains exact production SHA plus production browser proof.
+
+
+## Netlify static i18n cache build parity
+
+Fingerprint: `netlify-i18n-cache-build-parity-20260925-v1`.
+
+- The full GitHub Netlify build-parity job must use the same static i18n cache policy as production: `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1`.
+- Source-only cache validation is insufficient because build transforms may introduce additional public strings.
+- Missing post-transform translations fail before merge and are repaired through canonical versioned cache patches, never by weakening production fail-closed behavior.
+- Production closure still requires exact-main Netlify identity and pricing/i18n browser proof.
