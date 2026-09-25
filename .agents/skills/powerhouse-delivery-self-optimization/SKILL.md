@@ -534,3 +534,35 @@ When source is already protected and production pointers are advancing:
 - never turn a text crawler's match of hidden fallback/error copy into a product regression without a user-visible behavioral oracle.
 
 This reduces duplicate builds, queue pressure and false repair work while preserving fail-closed terminal proof.
+
+
+## GitHub expression assertions must be literal-safe
+
+Fingerprint: `github|actions-test|literal-expression-assertion|v1`.
+
+When a regression test verifies literal GitHub Actions expressions such as `${{ ... }}`, do not encode the whole YAML fragment as an unescaped regular expression. GitHub expression delimiters contain regex metacharacters and can create a false negative even when the workflow is correct.
+
+Mandatory:
+- prefer exact string containment/equality for fixed workflow expressions;
+- use regex only when the regex adds real semantic value and all metacharacters are deliberately escaped;
+- when CI reports a mismatch but the emitted input visibly contains the expected literal, classify the test oracle before changing the workflow;
+- repair the assertion in the same canonical lineage rather than mutating working delivery logic;
+- keep historical replay fail-closed after the assertion is corrected.
+
+Reference incident: PR #3096, where the intended CodeQL concurrency expression was present exactly but a regex-based assertion falsely failed Skill Projection.
+
+Regression: `tests/brain-github-expression-literal-assertion-v1.test.mjs`.
+Learning: `brain/learning/github-expression-literal-assertion-20260925-v1.json`.
+
+## Fan-out optimization requires post-merge measurement
+
+Fingerprint: `github|actions|fanout-postmerge-observation|v1`.
+
+A fan-out optimization is not proven by workflow YAML inspection alone. After protected merge:
+- enumerate workflow runs bound to the exact resulting `main` SHA;
+- compare the observed run set against the intended trigger budget;
+- confirm removed/paths-scoped workflows did not start for an inapplicable change;
+- keep global invariants only when they are intentionally repository-wide;
+- treat the observed exact-main run count and names as closure evidence for the optimization.
+
+Reference proof: the Rocket Delivery v1 merge `e8054fc35dc2d824afa87a417790a2c3e073062f` produced seven main-bound runs and avoided the prior broad production fan-out for a workflow/tests/docs/Brain-only change.
