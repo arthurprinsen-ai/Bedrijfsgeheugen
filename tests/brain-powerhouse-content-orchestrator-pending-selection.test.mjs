@@ -34,3 +34,14 @@ test('orchestrator records only sanitized Anthropic validation detail',()=>{
   assert.match(source,/slice\(0,240\)/);
   assert.doesNotMatch(source,/x-api-key.*console\.error/);
 });
+
+test('orchestrator falls back through governed Composio only for provider availability failures',()=>{
+  assert.match(source,/COMPOSIO_SEARCH_GROQ_CHAT/);
+  assert.match(source,/supabase-bg-composio-content-fallback-v1/);
+  assert.match(source,/fallbackGov\.provider!=='Composio\/Groq'/);
+  assert.match(source,/credit balance is too low/);
+  assert.match(source,/\[401,403,429\]\.includes\(error\.status\)/);
+  assert.match(source,/validArtifactObject/);
+  assert.match(source,/Every factual statement and metadata value must be supported by the supplied user data/);
+  assert.match(source,/generation_evidence:\{model:generationModel,provider:generationProvider,primary_model:gov\.model_id,fallback_reason:fallbackReason/);
+});
