@@ -21,3 +21,7 @@ De repository had al sterke material-writeback controles, maar deze eis stond no
 
 ## Statusmodel
 Ontbreekt één van de verplichte closure-artifacts, dan blijft de status `WRITEBACK_INCOMPLETE`. Er mag dan geen `LIVE_BEWEZEN` of `PRODUCTION_GREEN` worden geclaimd.
+
+
+## Delivery metadata recovery
+The first Required preflight for this borging change consumed an older pull-request event payload that did not yet list all repository-native closure files in `Change-Scope`. The canonical PR metadata was corrected first; this same-lineage documentation commit intentionally emits a fresh `pull_request.synchronize` event so Required evaluates the current metadata. Re-running the old attempt is not accepted because it would reuse stale event metadata.
