@@ -82,13 +82,17 @@ async function run() {
     if ((await page.locator('[data-bg-billing="yearly"]').getAttribute('aria-pressed')) !== 'true') throw new Error('yearly billing aria-pressed did not become true');
     if (before.trim() === after.trim()) throw new Error('yearly billing click did not change a price');
 
-    // Public language switching must use the static English route, not runtime provider translation.
-    const current = page.locator('button[data-bg-language-current]').first();
-    await current.click();
-    const english = page.locator('[data-bg-language-option="en"]').first();
+    // Public language switching must use the actually visible control for this viewport.
+    // At the mobile proof viewport the desktop language button exists in the DOM but is hidden;
+    // open the mobile drawer and use its native select instead of clicking a hidden desktop control.
+    const mobileMenu = page.locator('#bgkopMob').first();
+    const mobileMenuButton = page.locator('#bgkopKnop').first();
+    if (await mobileMenu.count() && await mobileMenu.isHidden().catch(()=>false)) await mobileMenuButton.click();
+    const mobileLanguage = page.locator('[data-bg-language-select]:visible').first();
+    if (!await mobileLanguage.count()) throw new Error('visible mobile language select is missing');
     await Promise.all([
       page.waitForURL(url => /^\/en\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      english.click(),
+      mobileLanguage.selectOption('en'),
     ]);
     await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
     await page.waitForTimeout(500);
@@ -98,13 +102,14 @@ async function run() {
     if (/Prijzen voor digitalisering in het mkb/i.test(body)) throw new Error('English route still shows the Dutch pricing H1');
     if (!/Pricing/i.test(body)) throw new Error('English route has no visible Pricing text');
 
-    // English -> Dutch must return to the unprefixed canonical Dutch route.
-    const englishCurrent = page.locator('button[data-bg-language-current]').first();
-    await englishCurrent.click();
-    const dutch = page.locator('[data-bg-language-option="nl"]').first();
+    // English -> Dutch must return through the same visible mobile control.
+    const englishMobileMenu = page.locator('#bgkopMob').first();
+    if (await englishMobileMenu.count() && await englishMobileMenu.isHidden().catch(()=>false)) await page.locator('#bgkopKnop').first().click();
+    const dutchSelect = page.locator('[data-bg-language-select]:visible').first();
+    if (!await dutchSelect.count()) throw new Error('visible Dutch language select is missing');
     await Promise.all([
       page.waitForURL(url => /^\/prijzen\/?$/.test(new URL(url).pathname), { timeout:20_000 }),
-      dutch.click(),
+      dutchSelect.selectOption('nl'),
     ]);
     await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
     await page.waitForTimeout(300);
