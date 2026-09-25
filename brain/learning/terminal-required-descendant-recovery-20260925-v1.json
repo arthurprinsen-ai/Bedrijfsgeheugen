@@ -39,5 +39,12 @@
     "Rewriting historical failed evidence as if the exact candidate had passed.",
     "Opening duplicate recovery PRs instead of using contained descendant regression evidence."
   ],
-  "revision": 2
+  "revision": 2,
+  "evidence": [
+    ".github/workflows/obligation-terminal-closure.yml",
+    "tests/brain-terminal-required-descendant-recovery-v1.test.mjs",
+    "docs/changes/terminal-required-descendant-recovery-20260925-v1.md",
+    "docs/development-ledger-events/2026-09-25-terminal-required-descendant-recovery-v1.md",
+    "delivery|terminal-user-handoff|dashboard-writeback|v1"
+  ]
 }
