@@ -1,0 +1,16 @@
+{
+  "fingerprint": "netlify-identity-v2-build-compat-20260925-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production build failed because tools/bouw-powerhouse-auth.mjs required node_modules/@netlify/identity/dist/main.js.",
+  "root_cause": "@netlify/identity 2.0.0 no longer guarantees the legacy internal browser bundle path used by the custom vendoring step, while the customer portal uses the Netlify Identity Widget directly.",
+  "prevention": [
+    "Never couple production builds to undocumented node_modules internal file paths.",
+    "Treat legacy identity vendoring as optional compatibility output.",
+    "Keep customer portal auth race and recovery-token guards mandatory.",
+    "Verify production through exact-main deploy and browser readback."
+  ],
+  "test_evidence": ["tests/brain-netlify-identity-v2-build-compat-v1.test.mjs"],
+  "skill_targets": ["delivery","website","auth"],
+  "compiler": {"failure_class":"UNDOCUMENTED_DEPENDENCY_INTERNAL_PATH","scope":"NETLIFY_PRODUCTION_BUILD","machine_enforceable":true,"repeat_count":1,"security_sensitive":true},
+  "revision": 1
+}
