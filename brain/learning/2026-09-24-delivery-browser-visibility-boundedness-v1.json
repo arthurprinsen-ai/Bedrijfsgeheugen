@@ -20,9 +20,10 @@
     "Migrate stale pricing regressions to semantic content-addressed cache and dataset-readiness invariants",
     "Restore content-growth-ci push.branches=[main] and keep main out of paths",
     "Run independent viewport sweeps in bounded parallel batches so the full production sitemap readback can complete inside its fail-closed budget",
-    "Make visibility concurrency regressions assert semantic coverage and bounded worker structure rather than one obsolete loop implementation"
+    "Make visibility concurrency regressions assert semantic coverage and bounded worker structure rather than one obsolete loop implementation",
+    "Size production route concurrency to the observed 93-route sitemap: 8 route workers per viewport × 3 bounded viewport workers while retaining the 8-minute fail-closed sweep budget"
   ],
-  "prevention_rule": "Every browser/readback or expensive CI workflow must bound async waits and total runtime, use stable supersession keys, scope specialist main triggers to owned paths, validate YAML semantics after automated rewrites, and parallelize independent viewport sweeps within a bounded worker budget.",
+  "prevention_rule": "Every browser/readback or expensive CI workflow must bound async waits and total runtime, use stable supersession keys, scope specialist main triggers to owned paths, validate YAML semantics after automated rewrites, and size explicit route × viewport worker budgets to route inventory without weakening fail-closed assertions.",
   "compiler": {
     "failure_class": "UNBOUNDED_BROWSER_ASYNC_WAIT",
     "scope": "CI_WEBSITE_BROWSER_GATE",
@@ -63,6 +64,7 @@
     "A regression migration attempt changed the runtime contract but left older tests hard-coded to a timestamp cache key, literal selector spelling, and a stale System Map inventory.",
     "A workflow rewrite left content-growth-ci.yml with an empty push.branches key and moved main into paths, creating semantic YAML drift that only the multiline branch-scope regression exposed.",
     "Route-level concurrency alone was insufficient because phone, tablet and desktop sweeps still executed sequentially; the phone sweep could consume the entire 8-minute global budget before tablet/desktop started.",
-    "A stale regression asserted the exact sequential viewport loop syntax instead of the intended invariant of complete route × viewport coverage under bounded concurrency."
+    "A stale regression asserted the exact sequential viewport loop syntax instead of the intended invariant of complete route × viewport coverage under bounded concurrency.",
+    "With 93 public routes, 4 route workers per viewport still exceeded the 480-second production sweep budget even after viewport-level parallelism."
   ]
 }
