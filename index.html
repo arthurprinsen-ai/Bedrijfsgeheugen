@@ -409,6 +409,23 @@ nav .nb{transition:height .2s}
 .keten span.uit{background:var(--geel)}
 .keten i{color:var(--blauw);font-style:normal;font-weight:700}
 @media(max-width:600px){.keten span{font-size:.85rem;padding:.4rem .8rem}}
+
+/* AI-ecosysteem propositie */
+.aieco{padding:4.2rem 0;background:linear-gradient(180deg,#FBFAF7 0%,#F2F4FF 100%);border-top:1px solid var(--lijn);border-bottom:1px solid var(--lijn)}
+.aieco-grid{display:grid;grid-template-columns:.9fr 1.1fr;gap:2.2rem;align-items:center}
+.aieco h2{font-size:clamp(1.8rem,3.8vw,2.65rem);line-height:1.08;margin:.45rem 0 .8rem}
+.aieco .lead{font-size:1.03rem;color:var(--grijs);max-width:58ch}
+.aieco-flow{display:grid;grid-template-columns:repeat(3,1fr);gap:.7rem}
+.aieco-node{background:#fff;border:1px solid var(--lijn);border-radius:12px;padding:.85rem;min-height:96px}
+.aieco-node b{display:block;font-family:"Bricolage Grotesque",sans-serif;font-size:.95rem;margin-bottom:.2rem}
+.aieco-node span{font-size:.8rem;color:var(--grijs);line-height:1.4}
+.aieco-core{grid-column:1/-1;background:#0E2148;color:#fff;border-color:#0E2148}
+.aieco-core span{color:#C7D0E5}
+.aieco-agents{display:grid;grid-template-columns:repeat(3,1fr);gap:.55rem;margin-top:.8rem}
+.aieco-chip{font-size:.75rem;background:#EDF0FD;border:1px solid #D6DCF7;border-radius:999px;padding:.4rem .65rem;text-align:center;font-weight:600}
+.aieco-cta{display:flex;gap:.7rem;flex-wrap:wrap;margin-top:1.2rem}
+@media(max-width:860px){.aieco-grid{grid-template-columns:1fr}.aieco-flow{grid-template-columns:1fr 1fr}.aieco-agents{grid-template-columns:1fr 1fr}}
+@media(max-width:560px){.aieco-flow,.aieco-agents{grid-template-columns:1fr}}
 </style>
 <link rel="stylesheet" href="/assets/kop.css?v=0466dd43">
 <script>
@@ -646,6 +663,40 @@ article[data-bg-process-step]>p{color:#4C5961!important}
     </div>
   </div>
 </div>
+</section>
+
+
+<section class="aieco" data-section="ai-ecosysteem" aria-labelledby="aieco-title">
+  <div class="wrap">
+    <div class="aieco-grid">
+      <div>
+        <span class="eyebrow">POWERHOUSE · AI-ECOSYSTEEM</span>
+        <h2 id="aieco-title">Niet één AI-tool. <span class="mark">Een bedrijf dat samenwerkt.</span></h2>
+        <p class="lead">Bedrijfsgeheugen verbindt bedrijfsdata, kennis, applicaties, processen en AI-agents in één werkend geheel. Signalen worden herkend, context wordt toegevoegd, acties worden voorgesteld of uitgevoerd en de uitkomst vloeit terug in het bedrijfsgeheugen.</p>
+        <div class="aieco-agents" aria-label="Voorbeelden van AI-agents">
+          <span class="aieco-chip">Sales-agent</span>
+          <span class="aieco-chip">Finance-agent</span>
+          <span class="aieco-chip">HR-agent</span>
+          <span class="aieco-chip">Operations-agent</span>
+          <span class="aieco-chip">Management-agent</span>
+          <span class="aieco-chip">Strategie-agent</span>
+        </div>
+        <div class="aieco-cta">
+          <a class="bgknop" href="/ai-ecosysteem">Bekijk het AI-ecosysteem →</a>
+          <a class="bgknop" style="background:#fff" href="/frisse-blik">Ontdek waar het bij jou begint</a>
+        </div>
+      </div>
+      <div class="aieco-flow" aria-label="Hoe het AI-ecosysteem werkt">
+        <div class="aieco-node"><b>1. Data &amp; signalen</b><span>ERP, CRM, finance, HR, web, BI en externe bronnen.</span></div>
+        <div class="aieco-node"><b>2. Kennis &amp; context</b><span>Processen, afspraken, doelen, besluiten en bedrijfsspecifieke kennis.</span></div>
+        <div class="aieco-node"><b>3. Systemen</b><span>AFAS, Exact, Microsoft 365, webshops en branchespecifieke software.</span></div>
+        <div class="aieco-node aieco-core"><b>POWERHOUSE — het bedrijfsbrein</b><span>Verbindt wat er gebeurt met wat het bedrijf weet, wil bereiken en moet doen.</span></div>
+        <div class="aieco-node"><b>4. AI-agents</b><span>Analyseren, signaleren, voorstellen, uitvoeren en controleren binnen afgesproken grenzen.</span></div>
+        <div class="aieco-node"><b>5. Acties</b><span>Van opvolging en planning tot rapportage, escalatie en besluitvorming.</span></div>
+        <div class="aieco-node"><b>6. Leren &amp; verbeteren</b><span>Resultaten en feedback worden opnieuw context voor de volgende beslissing.</span></div>
+      </div>
+    </div>
+  </div>
 </section>
 
 <!-- onthouden hoe het moet werken -->
