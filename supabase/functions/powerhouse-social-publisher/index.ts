@@ -162,6 +162,7 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_AUTH_REQUIRED`);
   let accountId=await secret(db,secretName);
+  let accountUserId='';
   if(!accountId){
     const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=${encodeURIComponent(toolkit)}&statuses=ACTIVE`,{headers:{'x-api-key':apiKey}});
     const body:any=await response.json().catch(()=>({}));
@@ -171,6 +172,7 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
     if(active.length===0)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`);
     if(active.length===1){
       accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+      accountUserId=clean(active[0]?.user_id);
     } else if(toolkit==='instagram'){
       const preferredAliases=['bedrijfsgeheugen-instagram','bedrijfsgeheugen-mira','bedrijfsgeheugen'];
       const ranked=active
@@ -184,10 +186,12 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
       const preferred=ranked.filter((x:any)=>preferredAliases.includes(x.alias));
       if(preferred.length&&preferred[0].alias!==preferred[1]?.alias){
         accountId=preferred[0].id;
+        accountUserId=preferred[0].userId;
       } else {
       const metadataUsers=[...new Set(ranked.map((x:any)=>x.userId).filter(Boolean))];
       if(metadataUsers.length===1&&ranked.length){
         accountId=ranked[0].id;
+        accountUserId=ranked[0].userId;
       } else {
       const resolved:any[]=[];
       for(const item of active){
@@ -201,7 +205,7 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
         const pb:any=await proxy.json().catch(()=>({}));
         const igId=clean(pb?.data?.id||pb?.body?.data?.id);
         const username=clean(pb?.data?.username||pb?.body?.data?.username).toLowerCase();
-        if(proxy.ok&&igId)resolved.push({id,igId,username,alias:clean(item?.alias).toLowerCase()});
+        if(proxy.ok&&igId)resolved.push({id,igId,username,alias:clean(item?.alias).toLowerCase(),userId:clean(item?.user_id)});
       }
       const identities=[...new Set(resolved.map((x:any)=>x.igId))];
       if(identities.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
@@ -212,6 +216,7 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
       });
       if(!sameIdentity.length)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
       accountId=sameIdentity[0].id;
+      accountUserId=sameIdentity[0].userId;
       }
       }
     } else {
@@ -219,7 +224,14 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
     }
   }
   if(!accountId)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_REQUIRED`);
-  return {apiKey,accountId};
+  if(!accountUserId){
+    const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=${encodeURIComponent(toolkit)}&statuses=ACTIVE`,{headers:{'x-api-key':apiKey}});
+    const body:any=await response.json().catch(()=>({}));
+    const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
+    const exact=items.find((item:any)=>clean(item?.id||item?.connected_account_id)===accountId);
+    accountUserId=clean(exact?.user_id);
+  }
+  return {apiKey,accountId,userId:accountUserId};
 }
 function deepPickLinkedInPostUrn(value:any):string{
   if(typeof value==='string'&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(value.trim()))return value.trim();
@@ -532,13 +544,14 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   const mediaType=clean(proof.media_type).toLowerCase();
   if(mediaType!=='reel')throw new Error('INSTAGRAM_MIRA_REEL_ONLY_V3');
   const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
-  const {apiKey,accountId}=await composioConnectedAccount(db,'instagram','COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
-  const profile=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_GET_USER_INFO',{ig_user_id:'me',fields:'id,username,account_type'});
+  const {apiKey,accountId,userId}=await composioConnectedAccount(db,'instagram','COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
+  if(!userId)throw new Error('COMPOSIO_INSTAGRAM_USER_CONTEXT_REQUIRED');
+  const profile=await composioExecuteArgs(apiKey,accountId,userId,'INSTAGRAM_GET_USER_INFO',{ig_user_id:'me',fields:'id,username,account_type'});
   const profileData=profile?.data||profile;
   const igUserId=deepPickId(profileData,['id']);
   if(!igUserId)throw new Error('COMPOSIO_INSTAGRAM_USER_ID_MISSING');
   const caption=clean(art.body);
-  const created=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA',{
+  const created=await composioExecuteArgs(apiKey,accountId,userId,'INSTAGRAM_POST_IG_USER_MEDIA',{
     ig_user_id:igUserId,
     caption,
     video_url:mediaUrl,
@@ -548,7 +561,7 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   const createdData=created?.data||created;
   const containerId=deepPickId(createdData,['creation_id','container_id','id']);
   if(!containerId)throw new Error('COMPOSIO_MEDIA_CONTAINER_ID_MISSING');
-  const published=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH',{
+  const published=await composioExecuteArgs(apiKey,accountId,userId,'INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH',{
     ig_user_id:igUserId,
     creation_id:containerId,
     max_wait_seconds:180,
@@ -557,7 +570,7 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   const publishedData=published?.data||published;
   const mediaId=deepPickId(publishedData,['ig_media_id','media_id','id']);
   if(!mediaId)throw new Error('COMPOSIO_PUBLISHED_MEDIA_ID_MISSING');
-  const readback=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_GET_IG_MEDIA',{
+  const readback=await composioExecuteArgs(apiKey,accountId,userId,'INSTAGRAM_GET_IG_MEDIA',{
     ig_media_id:mediaId,
     fields:'id,permalink,media_type,media_product_type,caption,timestamp,media_url'
   });
