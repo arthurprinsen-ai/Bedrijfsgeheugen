@@ -8,3 +8,6 @@ assert.match(p,/if\(providerIds\.length!==1\)throw new Error\('COMPOSIO_INSTAGRA
 assert.match(p,/credentialCount:sameIdentity\.length/);
 assert.match(p,/await resolveUniqueInstagramAccount\(apiKey,active\)/);
 console.log('duplicate credentials for one Instagram provider identity resolve canonically; distinct identities remain fail-closed');
+
+assert.ok(!p.includes("COMPOSIO_BASE.replace('/api/v3','')"),'v3.1 base must not be truncated before proxy calls');
+assert.match(p,/\$\{COMPOSIO_BASE\}\/tools\/execute\/proxy/);
