@@ -22,9 +22,20 @@
     "Resume the same reserved unique artifact after OAuth recovery; never create a replacement merely because auth failed."
   ],
   "evaluation": {
-    "historical_replay": ["tests/social-provider-health-preflight.test.mjs"]
+    "historical_replay": [
+      "tests/brain-social-provider-health-preflight.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-provider-health-preflight.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-provider-health-preflight.test.mjs"
+    ]
   },
-  "skill_targets": ["linkedin-composio-publisher","instagram-composio-publisher"],
+  "skill_targets": [
+    "linkedin-composio-publisher",
+    "instagram-composio-publisher"
+  ],
   "skill_projection_required": true,
   "production_readback_required": true
 }
