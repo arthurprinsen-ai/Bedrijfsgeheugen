@@ -103,3 +103,21 @@ Fingerprint: `powerhouse-story-fingerprint-authority-v3`.
 Do not independently normalize/hash personal story sources in application code. Both historical backfill and live publishing must use the database function `powerhouse_story_fingerprint_v1`. This prevents punctuation, URL, whitespace or content-id formatting differences from producing different fingerprints for the same source lineage.
 
 If the canonical fingerprint function cannot be called or returns empty, publication fails closed before any provider write.
+
+
+## Provider auth preflight before claim
+
+Fingerprint: `linkedin-auth-preflight-before-claim-v1`.
+
+A Composio connected-account record with status `ACTIVE` is metadata, not provider health. Before moving a LinkedIn daily decision from `content_ready` to `dispatching`, before issuing/consuming a publication capability, before reserving a provider-side attempt, and before any external create call:
+
+- resolve the canonical connected account;
+- execute a minimal authenticated LinkedIn read (`LINKEDIN_GET_MY_INFO`);
+- require a valid member identity response;
+- classify HTTP 401/403, `REVOKED_ACCESS_TOKEN`, expired-token, auth-required or connection-required responses as pre-provider reauthorization state;
+- leave the exact daily decision resumable in `content_ready`;
+- record the obligation as `APPROVED` / waiting for reauthorization, never as terminal `BLOCKED`;
+- set `republish_forbidden=false` and `possible_provider_side_effect=false` because no write has occurred;
+- consume no one-time publish capability and create no uniqueness/provider side effect until preflight passes.
+
+After a provider create returns a LinkedIn URN, the opposite invariant applies: persist that exact URN, set `republish_forbidden=true`, and reconcile only that object. Never re-run create to repair readback.
