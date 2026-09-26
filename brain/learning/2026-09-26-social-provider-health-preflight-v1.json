@@ -37,5 +37,14 @@
     "instagram-composio-publisher"
   ],
   "skill_projection_required": true,
-  "production_readback_required": true
+  "production_readback_required": true,
+  "evidence": [
+    "Live Composio LinkedIn healthcheck on 2026-09-26 returned HTTP 401 REVOKED_ACCESS_TOKEN for all three pre-existing LinkedIn connections.",
+    "Live Composio Instagram account inspection on 2026-09-26 showed the pre-existing ACTIVE connections resolving to username arthurprinsen rather than the required bedrijfsgeheugen.nl identity.",
+    "Buffer account inspection on 2026-09-26 returned HTTP 429 with a long Retry-After, proving Buffer cannot be the availability dependency for LinkedIn/Instagram delivery.",
+    "tests/brain-social-provider-health-preflight-v1.test.mjs",
+    "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+    "supabase/functions/powerhouse-composio-instagram-setup/index.ts",
+    "supabase/functions/powerhouse-social-publisher/index.ts"
+  ]
 }
