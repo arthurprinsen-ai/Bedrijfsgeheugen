@@ -347,3 +347,10 @@ Never treat the number of active Composio connected-account credentials as the n
 
 
 Proxy URL invariant: `COMPOSIO_BASE` is already the v3.1 API base. Build proxy calls as `${COMPOSIO_BASE}/tools/execute/proxy`. Never strip `/api/v3` or reconstruct a versioned host using substring replacement.
+
+
+### Provider proxy endpoint construction
+
+Fingerprint: `instagram-composio-proxy-base-v1`.
+
+The Composio provider proxy URL must be constructed by appending the proxy path directly to the canonical API base. Never mutate or strip API-version substrings from a base that already contains its version; that can produce an invalid hostname before provider preflight. A malformed pre-provider request with `possible_provider_side_effect=false` is resumable on the same daily claim only; never create a replacement claim or regenerate media.
