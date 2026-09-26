@@ -325,3 +325,12 @@ After normalization, reuse `powerhouse_select_instagram_daily_winner_v1(date)` /
 Fingerprint: `composio-post-rotation-runtime-rebuild-v2`.
 
 For Netlify Functions credentials, compare the credential `updated_at` with the production deployment `published_at`. If the credential is newer, provider validation is not meaningful until a later protected Functions deployment is live. Fail closed and force exactly one post-rotation rebuild before re-validating.
+
+
+## Provider identity health preflight (2026-09-26)
+
+Fingerprint: `social-provider-health-preflight-v1`.
+
+Composio ACTIVE status alone is insufficient. Before Instagram publication capability issuance/consumption, the setup controller must call provider identity readback for every active candidate and accept only a live account whose username is exactly `bedrijfsgeheugen.nl`. Stale, revoked, unauthorized and wrong-identity accounts are rejected and do not create ambiguity.
+
+When multiple healthy candidates exist, prefer the single account with alias `bedrijfsgeheugen-mira-canonical`; otherwise fail closed. The publisher consumes only the health-verified account recorded by `powerhouse-composio-instagram-setup`. A reauth or identity failure preserves the exact proven Mira Reel at `content_ready`; no publication capability is consumed and no new Reel is generated to escape auth recovery.
