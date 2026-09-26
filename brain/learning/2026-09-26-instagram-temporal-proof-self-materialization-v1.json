@@ -20,8 +20,25 @@
     "No caller-supplied temporal booleans are sufficient publication proof."
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs"],
-    "canary": ["tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs"],
-    "shadow": ["tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_incident": "instagram_company remained blocked after exact Mira frame proof because no canonical temporal-proof executor existed",
+    "production_validation": "2026-09-26 exact OpenArt MP4 passed start/middle/end Mira vision plus canonical temporal verifier at confidence 0.93",
+    "exact_video_sha256": "45f5299344caf1ad70364a8e2c04a5a4590aa487f1ee2642e0dddb72b34782bb",
+    "temporal_evidence_ref": "temporal:anthropic:claude-sonnet-4-6:de1058efbbe0a5521c51",
+    "runtime_components": [
+      "powerhouse-instagram-temporal-verifier",
+      "powerhouse-instagram-media-router"
+    ],
+    "fail_closed": true
   }
 }
