@@ -29,5 +29,16 @@
     "instagram": "Instagram Business provider read and quota endpoint succeeded; quota usage 0/100",
     "today_company_urn": "urn:li:share:7509384024180686848",
     "instagram_runtime_contract": "MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED / mira-continuous-human-video-v1"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-provider-preflight-resumable-auth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-provider-preflight-resumable-auth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-provider-preflight-resumable-auth-v1.test.mjs"
+    ]
   }
 }
