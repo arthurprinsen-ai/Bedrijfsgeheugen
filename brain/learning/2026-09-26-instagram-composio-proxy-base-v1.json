@@ -1,0 +1,36 @@
+{
+  "fingerprint": "instagram-composio-proxy-base-v1",
+  "date": "2026-09-26",
+  "type": "SOCIAL_PUBLISHING_RELIABILITY",
+  "compiler": {
+    "failure_class": "PROVIDER_ENDPOINT_CONSTRUCTION",
+    "scope": "INSTAGRAM_PUBLISHING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": [
+    "The provider proxy URL was derived by mutating a base that already contained the API version, yielding an invalid endpoint before any provider write."
+  ],
+  "prevention": [
+    "Append the proxy path to the canonical provider base directly.",
+    "Never derive API versions with substring replacement.",
+    "Resume only the same daily claim when provider-side-effect evidence is false."
+  ],
+  "evidence": {
+    "observed_error": "malformed Composio proxy endpoint",
+    "provider_side_effect": false,
+    "claim_released": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-proxy-base-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-composio-proxy-base-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-composio-proxy-base-v1.test.mjs"
+    ]
+  }
+}
