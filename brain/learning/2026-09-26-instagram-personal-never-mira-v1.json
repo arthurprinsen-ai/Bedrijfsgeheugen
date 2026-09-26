@@ -1,0 +1,36 @@
+{
+  "fingerprint": "instagram-personal-never-mira-v1",
+  "date": "2026-09-26",
+  "type": "SOCIAL_IDENTITY_BOUNDARY",
+  "compiler": {
+    "failure_class": "ACCOUNT_ROLE_MISMATCH",
+    "scope": "INSTAGRAM_PUBLISHING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": [
+    "A Mira Reel was published through a Composio Instagram credential resolving to the personal username arthurprinsen because provider-user identity was checked without enforcing the account role."
+  ],
+  "prevention": [
+    "Mira may never publish to the personal Instagram identity arthurprinsen.",
+    "Mira requires an explicitly verified Bedrijfsgeheugen/business Instagram identity before any provider side effect.",
+    "Credential dedupe must preserve account role; same provider identity is not sufficient if the role is personal."
+  ],
+  "evidence": {
+    "personal_username": "arthurprinsen",
+    "violating_media_id": "18103653614617314",
+    "violating_permalink": "https://www.instagram.com/reel/DdwO622jMdb/"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-personal-never-mira-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-personal-never-mira-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-personal-never-mira-v1.test.mjs"
+    ]
+  }
+}
