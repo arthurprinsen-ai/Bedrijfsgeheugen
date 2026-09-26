@@ -107,6 +107,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-instagram-temporal-verifier",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-instagram-temporal-verifier/index.ts",
+      "evidence_contract": "tests/brain-instagram-temporal-proof-self-materialization-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-meta-instagram-setup",
       "type": "function",
       "authority": "supabase/functions/powerhouse-meta-instagram-setup/index.ts",
