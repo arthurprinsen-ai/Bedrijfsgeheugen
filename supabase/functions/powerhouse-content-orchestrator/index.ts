@@ -241,6 +241,7 @@ Deno.serve(async (req) => {
       media_provider: clean(mediaProof?.proof_lineage?.media_source) || clean(instagramObligation?.evidence?.media_provider),
       media_type: clean(mediaProof?.proof_lineage?.media_type) || clean(instagramObligation?.evidence?.media_type),
       instagram_visual: mediaProof?.proof_lineage?.instagram_visual || instagramObligation?.evidence?.instagram_visual || instagramObligation?.evidence?.instagram_media_proof?.instagram_visual || null,
+      temporal_proof: mediaProof?.proof_lineage?.temporal_proof || instagramObligation?.evidence?.temporal_proof || instagramObligation?.evidence?.instagram_media_proof?.temporal_proof || null,
       proof_fingerprint: mediaProof?.fingerprint || null,
     };
     const existingByChannel = new Map(existing.map((r:any) => [r.channel,r]));

@@ -158,7 +158,7 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
     if(active.length===1){
       accountId=clean(active[0]?.id||active[0]?.connected_account_id);
     } else if(toolkit==='instagram'){
-      const matches:any[]=[];
+      const resolved:any[]=[];
       for(const item of active){
         const id=clean(item?.id||item?.connected_account_id);
         if(!id)continue;
@@ -168,11 +168,19 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
           body:JSON.stringify({endpoint:'/me?fields=id,username',method:'GET',connected_account_id:id,parameters:[]})
         });
         const pb:any=await proxy.json().catch(()=>({}));
+        const igId=clean(pb?.data?.id||pb?.body?.data?.id);
         const username=clean(pb?.data?.username||pb?.body?.data?.username).toLowerCase();
-        if(proxy.ok&&username==='bedrijfsgeheugen.nl')matches.push({id,username});
+        if(proxy.ok&&igId)resolved.push({id,igId,username,alias:clean(item?.alias).toLowerCase()});
       }
-      if(matches.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
-      accountId=matches[0].id;
+      const identities=[...new Set(resolved.map((x:any)=>x.igId))];
+      if(identities.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
+      const sameIdentity=resolved.filter((x:any)=>x.igId===identities[0]).sort((a:any,b:any)=>{
+        const ar=a.alias==='bedrijfsgeheugen-mira'?0:a.alias==='bedrijfsgeheugen'?1:2;
+        const br=b.alias==='bedrijfsgeheugen-mira'?0:b.alias==='bedrijfsgeheugen'?1:2;
+        return ar-br||a.id.localeCompare(b.id);
+      });
+      if(!sameIdentity.length)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
+      accountId=sameIdentity[0].id;
     } else {
       throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
     }
@@ -261,6 +269,24 @@ async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expecte
   return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
 
+
+function isSafePreProviderInstagramError(error:unknown){
+  const message=error instanceof Error?error.message:String(error);
+  return message==='COMPOSIO_INSTAGRAM_AUTH_REQUIRED'
+    || message==='COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED'
+    || message==='COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS'
+    || message.startsWith('COMPOSIO_INSTAGRAM_ACCOUNT_DISCOVERY_');
+}
+async function releasePreProviderPublicationClaim(db:any,capability:any,runDate:string,channel:string,reason:string){
+  const capabilityId=clean(capability?.capabilityId);
+  if(capabilityId){
+    await db.from('powerhouse_social_publish_capabilities_v1')
+      .update({revoked_at:new Date().toISOString(),evidence:{release_reason:reason,release_contract:'pre-provider-no-side-effect-v1',possible_provider_side_effect:false}})
+      .eq('capability_id',capabilityId).is('revoked_at',null);
+  }
+  await db.from('powerhouse_publication_uniqueness_v1')
+    .delete().eq('tenant_id','canonical').eq('reservation_key','claim:'+runDate+':'+channel);
+}
 async function publicationStoryFingerprint(db:any,row:any,art:any){
   if(row?.channel!=='linkedin_personal')return null;
   const evidence=row?.delivery_evidence?.identity_gate_evidence||art?.generation_evidence?.identity_gate_evidence||{};
@@ -484,19 +510,7 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   const mediaType=clean(proof.media_type).toLowerCase();
   if(mediaType!=='reel')throw new Error('INSTAGRAM_MIRA_REEL_ONLY_V3');
   const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
-  const apiKey=await secret(db,'COMPOSIO_API_KEY');
-  if(!apiKey)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
-  let accountId=await secret(db,'COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
-  if(!accountId){
-    const accountsResponse=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=instagram&statuses=ACTIVE`,{headers:{'x-api-key':apiKey}});
-    const accountsBody:any=await accountsResponse.json().catch(()=>({}));
-    if(!accountsResponse.ok)throw new Error(`COMPOSIO_INSTAGRAM_ACCOUNT_DISCOVERY_${accountsResponse.status}`);
-    const items=Array.isArray(accountsBody?.items)?accountsBody.items:Array.isArray(accountsBody?.data?.items)?accountsBody.data.items:Array.isArray(accountsBody?.data)?accountsBody.data:[];
-    const active=items.filter((item:any)=>clean(item?.status).toUpperCase()==='ACTIVE'||!clean(item?.status));
-    if(active.length!==1)throw new Error(active.length===0?'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED':'COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
-    accountId=clean(active[0]?.id||active[0]?.connected_account_id);
-  }
-  if(!accountId)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED');
+  const {apiKey,accountId}=await composioConnectedAccount(db,'instagram','COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
   const caption=clean(art.body);
   const created=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA',
     `Create an Instagram Reel media container using this exact public video URL: ${mediaUrl}. Use this exact caption, preserving wording and line breaks: ${caption}`);
@@ -1066,10 +1080,19 @@ Deno.serve(async (req) => {
           continue;
         }
         const message=error instanceof Error?error.message:String(error);
+        const safePreProvider=isSafePreProviderInstagramError(error);
+        if(safePreProvider){
+          await releasePreProviderPublicationClaim(db,capability,runDate,row.channel,message);
+          const evidence={...(row.delivery_evidence||{}),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',make_dependency:false,possible_provider_side_effect:false,republish_forbidden:false,claim_released:true,claim_release_contract:'pre-provider-no-side-effect-v1'};
+          await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+          await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,'Repair provider connection and resume this exact content/media claim; no provider side-effect occurred.',message);
+          results.push({channel:row.channel,status:'waiting_transport_recovery',provider:'composio',resumable:true,error:message});
+          continue;
+        }
         const evidence={...(row.delivery_evidence||{}),provider:instagramMetaConfig?'meta':instagramComposioApiKey?'composio':'buffer',provider_truth_verified:false,error:message,transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',make_dependency:false};
         const authMissing=message==='META_INSTAGRAM_AUTH_REQUIRED'||message==='COMPOSIO_INSTAGRAM_AUTH_REQUIRED'||message==='COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED';
         await db.from('powerhouse_channel_decisions').update({state:authMissing?'content_ready':'failed',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,authMissing?'APPROVED':'FAILED',null,evidence,authMissing?'Use Buffer fallback when its circuit is closed; reuse same proven media.':'Retry only after transport diagnosis; never fall back to Make.',message);
+        await recordObligation(db,runDate,row.channel,authMissing?'APPROVED':'FAILED',null,evidence,authMissing?'Reuse the same proven Mira Reel after provider auth recovers.':'Retry only after transport diagnosis; never fall back to Make.',message);
         results.push({channel:row.channel,status:authMissing?'waiting_auth':'failed',provider:instagramMetaConfig?'meta':instagramComposioApiKey?'composio':'buffer',error:message});
         continue;
       }
