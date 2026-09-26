@@ -158,6 +158,23 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
     if(active.length===1){
       accountId=clean(active[0]?.id||active[0]?.connected_account_id);
     } else if(toolkit==='instagram'){
+      const preferredAliases=['bedrijfsgeheugen-instagram','bedrijfsgeheugen-mira','bedrijfsgeheugen'];
+      const ranked=active
+        .map((item:any)=>({item,id:clean(item?.id||item?.connected_account_id),alias:clean(item?.alias).toLowerCase(),userId:clean(item?.user_id)}))
+        .filter((x:any)=>x.id)
+        .sort((a:any,b:any)=>{
+          const ar=preferredAliases.includes(a.alias)?preferredAliases.indexOf(a.alias):999;
+          const br=preferredAliases.includes(b.alias)?preferredAliases.indexOf(b.alias):999;
+          return ar-br||a.id.localeCompare(b.id);
+        });
+      const preferred=ranked.filter((x:any)=>preferredAliases.includes(x.alias));
+      if(preferred.length&&preferred[0].alias!==preferred[1]?.alias){
+        accountId=preferred[0].id;
+      } else {
+      const metadataUsers=[...new Set(ranked.map((x:any)=>x.userId).filter(Boolean))];
+      if(metadataUsers.length===1&&ranked.length){
+        accountId=ranked[0].id;
+      } else {
       const resolved:any[]=[];
       for(const item of active){
         const id=clean(item?.id||item?.connected_account_id);
@@ -181,6 +198,8 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
       });
       if(!sameIdentity.length)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
       accountId=sameIdentity[0].id;
+      }
+      }
     } else {
       throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
     }
