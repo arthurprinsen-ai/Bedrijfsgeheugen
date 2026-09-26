@@ -42,6 +42,20 @@ async function composioExecute(apiKey:string,connectedAccountId:string,toolSlug:
   }
   return body;
 }
+async function composioExecuteArgsNoUser(apiKey:string,connectedAccountId:string,toolSlug:string,args:Record<string,unknown>){
+  const response=await fetch(COMPOSIO_BASE+'/tools/execute/'+toolSlug,{
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':apiKey},
+    body:JSON.stringify({connected_account_id:connectedAccountId,version:'latest',arguments:args})
+  });
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok||body?.successful!==true){
+    const err=clean(body?.error||body?.message||body?.data?.message||JSON.stringify(body));
+    const e:any=new Error('COMPOSIO_'+toolSlug+'_'+response.status+':'+err.slice(0,240));
+    e.http=response.status;e.composioBody=body;throw e;
+  }
+  return body;
+}
 async function composioExecuteArgs(apiKey:string,connectedAccountId:string,userId:string,toolSlug:string,args:Record<string,unknown>){
   const response=await fetch(COMPOSIO_BASE+'/tools/execute/'+toolSlug,{
     method:'POST',
@@ -519,26 +533,44 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
   if(mediaType!=='reel')throw new Error('INSTAGRAM_MIRA_REEL_ONLY_V3');
   const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
   const {apiKey,accountId}=await composioConnectedAccount(db,'instagram','COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
+  const profile=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_GET_USER_INFO',{ig_user_id:'me',fields:'id,username,account_type'});
+  const profileData=profile?.data||profile;
+  const igUserId=deepPickId(profileData,['id']);
+  if(!igUserId)throw new Error('COMPOSIO_INSTAGRAM_USER_ID_MISSING');
   const caption=clean(art.body);
-  const created=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA',
-    `Create an Instagram Reel media container using this exact public video URL: ${mediaUrl}. Use this exact caption, preserving wording and line breaks: ${caption}`);
-  const containerId=deepPickId(created?.data||created,['creation_id','container_id','id']);
+  const created=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA',{
+    ig_user_id:igUserId,
+    caption,
+    video_url:mediaUrl,
+    media_type:'REELS',
+    share_to_feed:true
+  });
+  const createdData=created?.data||created;
+  const containerId=deepPickId(createdData,['creation_id','container_id','id']);
   if(!containerId)throw new Error('COMPOSIO_MEDIA_CONTAINER_ID_MISSING');
-  const published=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH',
-    `Publish the Instagram media container with creation/container id ${containerId} now.`);
-  const mediaId=deepPickId(published?.data||published,['ig_media_id','media_id','id']);
+  const published=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH',{
+    ig_user_id:igUserId,
+    creation_id:containerId,
+    max_wait_seconds:180,
+    poll_interval_seconds:3
+  });
+  const publishedData=published?.data||published;
+  const mediaId=deepPickId(publishedData,['ig_media_id','media_id','id']);
   if(!mediaId)throw new Error('COMPOSIO_PUBLISHED_MEDIA_ID_MISSING');
-  const readback=await composioExecute(apiKey,accountId,'INSTAGRAM_GET_IG_MEDIA',
-    `Get Instagram media with id ${mediaId} and return its id, permalink, media type, caption, timestamp and media URL.`);
+  const readback=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_GET_IG_MEDIA',{
+    ig_media_id:mediaId,
+    fields:'id,permalink,media_type,media_product_type,caption,timestamp,media_url'
+  });
   const rb=readback?.data||readback;
   const readbackId=deepPickId(rb,['ig_media_id','media_id','id']);
-  if(readbackId!==mediaId)throw new Error('COMPOSIO_INSTAGRAM_READBACK_ID_MISMATCH');
   const permalink=deepPickString(rb,['permalink','permalink_url','url']);
   const publishedAt=deepPickString(rb,['timestamp','created_time','created_at'])||new Date().toISOString();
   const mediaTypeReadback=deepPickString(rb,['media_product_type','media_type','type'])||'REELS';
-  return {provider:'composio',provider_post_id:mediaId,container_id:containerId,permalink:permalink||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),published_at:publishedAt,media_type:mediaTypeReadback,media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256)};
+  const captionReadback=clean(deepPickString(rb,['caption']));
+  if(readbackId!==mediaId)throw new Error('COMPOSIO_INSTAGRAM_READBACK_ID_MISMATCH');
+  if(captionReadback&&captionReadback!==caption)throw new Error('COMPOSIO_INSTAGRAM_READBACK_CAPTION_MISMATCH');
+  return {provider:'composio',provider_post_id:mediaId,container_id:containerId,permalink:permalink||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),published_at:publishedAt,media_type:mediaTypeReadback,media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256),ig_user_id:igUserId};
 }
-
 async function bufferRequest(token: string, query: string, variables?: Record<string,unknown>) {
   const response = await fetch('https://api.buffer.com', { method: 'POST', headers: { authorization: `Bearer ${token}`, 'content-type': 'application/json' }, body: JSON.stringify(variables ? { query, variables } : { query }) });
   const body = await response.json().catch(() => ({}));
