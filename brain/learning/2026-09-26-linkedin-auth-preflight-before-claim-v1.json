@@ -1,0 +1,54 @@
+{
+  "fingerprint": "linkedin-auth-preflight-before-claim-v1",
+  "date": "2026-09-26",
+  "type": "SOCIAL_PUBLISHING_AUTH_RESILIENCE",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "CONTENT_LINKEDIN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": [
+    "Composio connected-account metadata reported ACTIVE while all observed LinkedIn provider tokens returned 401 REVOKED_ACCESS_TOKEN.",
+    "The canonical publisher claimed the daily row and consumed publication authority before proving LinkedIn provider authentication, turning a pre-provider auth failure into a blocked daily claim.",
+    "Buffer was simultaneously unavailable with HTTP 429, making any residual Buffer dependency unusable and demonstrating why it cannot be a LinkedIn fallback."
+  ],
+  "prevention": [
+    "Run a real LINKEDIN_GET_MY_INFO preflight before claim, capability consumption, uniqueness reservation or provider create.",
+    "Treat 401/403/revoked/expired/auth-required as resumable pre-provider reauthorization, preserving content_ready and APPROVED state.",
+    "ACTIVE connection metadata alone is never provider-health proof.",
+    "No Buffer fallback for LinkedIn.",
+    "After any provider create success, persist the exact LinkedIn URN and forbid republish; reconcile only that URN."
+  ],
+  "production_evidence": {
+    "observed_at": "2026-09-26",
+    "linkedin": "Three configured Composio LinkedIn connections returned 401 REVOKED_ACCESS_TOKEN on LINKEDIN_GET_MY_INFO.",
+    "buffer": "Buffer get_account returned HTTP 429 with Retry-After 507904 seconds.",
+    "current_company_claim": "2026-09-26 linkedin_company already has provider URN urn:li:share:7509384024180686848 and must never be recreated; exact-URN reconciliation only.",
+    "instagram": "Instagram Composio account read and publishing quota were healthy; today's Instagram blocker was missing exact-final Mira Reel proof, not quota."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-daily-self-healing.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed_provider_failures": [
+      "LinkedIn LINKEDIN_GET_MY_INFO returned HTTP 401 REVOKED_ACCESS_TOKEN for each previously configured account.",
+      "Buffer get_account returned HTTP 429 with Retry-After 507904 seconds."
+    ],
+    "canonical_state": [
+      "2026-09-26 linkedin_company retained provider URN urn:li:share:7509384024180686848 with exact readback permission failure; replacement forbidden.",
+      "2026-09-26 instagram_company was blocked before publication by EXACT_FINAL_MEDIA_PROOF_REQUIRED.",
+      "2026-09-26 linkedin_personal was blocked before generation by PERSONAL_TRUTH_SOURCE_UNVERIFIED."
+    ],
+    "regression_contract": "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs"
+  }
+}

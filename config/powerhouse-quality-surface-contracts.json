@@ -714,6 +714,20 @@
       "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
       "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
       "required": true
+    },
+    {
+      "id": "rpc:powerhouse_reserve_unique_publication_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260925080700_global_post_uniqueness_v1.sql",
+      "evidence_contract": "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_story_fingerprint_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260925083200_story_fingerprint_authority_v3.sql",
+      "evidence_contract": "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs",
+      "required": true
     }
   ]
 }

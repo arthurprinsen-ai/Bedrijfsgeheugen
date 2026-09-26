@@ -65,6 +65,25 @@ async function composioLinkedInContext(db:any){
   return {apiKey,accountId,userId};
 }
 
+function isLinkedInAuthPreflightError(error:any){
+  const message=clean(error instanceof Error?error.message:error).toUpperCase();
+  const status=Number((error as any)?.http||0);
+  return status===401||status===403
+    ||message.includes('REVOKED_ACCESS_TOKEN')
+    ||message.includes('UNAUTHORIZED')
+    ||message.includes('TOKEN')
+    ||message.includes('AUTH_REQUIRED')
+    ||message.includes('CONNECTION_REQUIRED');
+}
+
+async function preflightLinkedInComposio(db:any){
+  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
+  const personId=deepPickString(me?.data||me,['id']);
+  if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
+  return {provider:'composio',provider_auth_preflight:'passed',provider_auth_checked_at:new Date().toISOString(),account_id:accountId,person_id:personId};
+}
+
 async function runLinkedInCockpitAutopilot(db:any){
   const {data:actions,error}=await db.from('powerhouse_sales_actions')
     .select('action_id,action_type,channel,source_url,message_draft,status,person_name,company_name,evidence,priority')
@@ -852,6 +871,31 @@ Deno.serve(async (req) => {
           `Meta and Composio Instagram auth unavailable and Buffer cooldown open until ${bufferCircuit.retry_at}; reuse the same proven Mira Reel after reset.`,
           'INSTAGRAM_TRANSPORT_DEFERRED');
         results.push({channel:row.channel,status:'deferred_transport',retry_at:bufferCircuit.retry_at});
+        continue;
+      }
+    }
+
+    // External auth is a precondition, not a consumed publication attempt.
+    // A revoked/expired LinkedIn token must leave the exact daily claim resumable.
+    if(row.channel==='linkedin_personal'||row.channel==='linkedin_company'){
+      try{
+        const providerPreflight=await preflightLinkedInComposio(db);
+        const evidence={...gatePassedEvidence,...providerPreflight,provider_auth_required:false,republish_forbidden:false,buffer_dependency:false};
+        row.delivery_evidence=evidence;
+        await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+      }catch(error){
+        const message=error instanceof Error?error.message:String(error);
+        if(!isLinkedInAuthPreflightError(error))throw error;
+        const evidence={...gatePassedEvidence,provider:'composio',provider_auth_preflight:'failed',provider_auth_required:true,provider_truth_verified:false,
+          provider_auth_checked_at:new Date().toISOString(),error:'LINKEDIN_REAUTH_REQUIRED',provider_error:message,republish_forbidden:false,
+          possible_provider_side_effect:false,buffer_dependency:false,transport_contract:'linkedin-composio-direct-v3-auth-preflight'};
+        await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+        await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,
+          'Re-authorize the canonical LinkedIn Composio account; then resume this exact daily claim. No publish capability or provider side-effect has been consumed.',
+          'LINKEDIN_REAUTH_REQUIRED');
+        results.push({channel:row.channel,status:'waiting_reauth',provider:'composio',resumable:true,error:'LINKEDIN_REAUTH_REQUIRED'});
         continue;
       }
     }
