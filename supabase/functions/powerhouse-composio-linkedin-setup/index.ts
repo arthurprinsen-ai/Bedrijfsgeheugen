@@ -64,22 +64,45 @@ Deno.serve(async(req:Request)=>{
     const accounts=items.filter((x:any)=>clean(x?.status).toUpperCase()==='ACTIVE'&&!x?.is_disabled);
 
     if(accounts.length===0){
-      const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_LINKEDIN_CONNECTION_REQUIRED',api_key_present:true,active_accounts:0,personal_ready:false,company_ready:false};
+      const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_LINKEDIN_CONNECTION_REQUIRED',api_key_present:true,active_accounts:0,healthy_accounts:0,personal_ready:false,company_ready:false};
       await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result});
     }
-    if(accounts.length>1){
-      const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_LINKEDIN_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length,personal_ready:false,company_ready:false};
+
+    const healthy:any[]=[];
+    const rejected:any[]=[];
+    for(const candidate of accounts){
+      const candidateAccountId=clean(candidate?.id||candidate?.connected_account_id);
+      const candidateUserId=clean(candidate?.user_id);
+      if(!candidateAccountId||!candidateUserId){rejected.push({account_id:candidateAccountId||null,reason:'MISSING_ACCOUNT_OR_USER_ID'});continue;}
+      try{
+        const candidateWho=await execute(key,candidateAccountId,candidateUserId,'LINKEDIN_GET_MY_INFO',{});
+        const candidates=deepFindStrings(candidateWho,['author','author_id','person_id','member_id','id','sub']);
+        const candidatePersonAuthor=normalizePersonUrn(candidates.find(v=>!!v)||'');
+        if(!candidatePersonAuthor)throw new Error('LINKEDIN_PERSONAL_AUTHOR_UNVERIFIED');
+        healthy.push({account:candidate,accountId:candidateAccountId,userId:candidateUserId,who:candidateWho,personAuthor:candidatePersonAuthor});
+      }catch(error){
+        const message=error instanceof Error?error.message:String(error);
+        rejected.push({account_id:candidateAccountId,alias:clean(candidate?.alias)||null,reason:message.includes('REVOKED_ACCESS_TOKEN')?'REVOKED_ACCESS_TOKEN':'HEALTHCHECK_FAILED'});
+      }
+    }
+    if(healthy.length===0){
+      const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_LINKEDIN_REAUTH_REQUIRED',api_key_present:true,active_accounts:accounts.length,healthy_accounts:0,rejected_accounts:rejected,personal_ready:false,company_ready:false};
+      await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result},409);
+    }
+    const canonical=healthy.filter(x=>clean(x.account?.alias)==='bedrijfsgeheugen-canonical');
+    const selectable=canonical.length===1?canonical:healthy;
+    if(selectable.length!==1){
+      const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_LINKEDIN_HEALTHY_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,personal_ready:false,company_ready:false};
       await writeState(db,'BLOCKED_AMBIGUOUS',result);return json({ok:true,...result},409);
     }
 
-    const account=accounts[0];
-    const accountId=clean(account?.id||account?.connected_account_id);
-    const userId=clean(account?.user_id);
-    if(!userId)throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED');
+    const selected=selectable[0];
+    const account=selected.account;
+    const accountId=selected.accountId;
+    const userId=selected.userId;
+    const who=selected.who;
+    const personAuthor=selected.personAuthor;
     const grantedScopes=clean(account?.data?.scope).split(/[\s,]+/).map((v:string)=>v.trim()).filter(Boolean);
-    const who=await execute(key,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-    const personCandidates=deepFindStrings(who,['author','author_id','person_id','member_id','id','sub']);
-    const personAuthor=normalizePersonUrn(personCandidates.find(v=>!!v)||'');
 
     let companies:any=null;
     let companyError:string|null=null;
@@ -104,7 +127,11 @@ Deno.serve(async(req:Request)=>{
       state:personalReady?'ACTIVE':'CAPABILITY_UNVERIFIED',
       reason:personalReady?null:'LINKEDIN_PERSONAL_AUTHOR_UNVERIFIED',
       api_key_present:true,
-      active_accounts:1,
+      active_accounts:accounts.length,
+      healthy_accounts:healthy.length,
+      rejected_accounts:rejected,
+      health_verified:true,
+      canonical_alias_selected:clean(account?.alias)==='bedrijfsgeheugen-canonical',
       connected_account_id:accountId,
       user_id:userId,
       alias:clean(account?.alias),
