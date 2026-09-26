@@ -132,7 +132,7 @@ Deno.serve(async req=>{
     media_url:clean(proof.media_url)||clean(proof.carousel_manifest?.slides?.[0]?.asset_url)||null,provider_status:'prepublish_verified',
     canonical_copy:null,exact_copy_verified:false,exact_media_retrievable:true,exact_media_sha256:clean(proof.final_media_sha256),
     exact_media_verified_at:new Date().toISOString(),identity_contract:'mira-visible-identity-vision-v1',identity_gate_result:'PASS',
-    proof_lineage:{contract:'instagram-media-provider-routing-preproof-v1',media_type:proof.media_type,media_source:proof.media_provider,instagram_visual:proof.instagram_visual,carousel_manifest:proof.carousel_manifest||null,exact_final_media_proven:true},
+    proof_lineage:{contract:'instagram-media-provider-routing-preproof-v1',media_type:proof.media_type,media_source:proof.media_provider,instagram_visual:proof.instagram_visual,temporal_proof:proof.temporal_proof||null,carousel_manifest:proof.carousel_manifest||null,exact_final_media_proven:true},
     failure_reason:null,updated_at:new Date().toISOString()
   };
   const pw=await db.from('powerhouse_media_proof_evidence_v1').upsert(proofRow,{onConflict:'fingerprint'});
