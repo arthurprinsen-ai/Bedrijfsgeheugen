@@ -257,6 +257,24 @@ async function readLinkedInPersonalPostViaComposio(db:any,postUrn:string,expecte
   return {provider:'composio',provider_post_id:ref,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),provider_status:'published',author_urn:author,linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary,lifecycleState}};
 }
 
+
+function isSafePreProviderInstagramError(error:unknown){
+  const message=error instanceof Error?error.message:String(error);
+  return message==='COMPOSIO_INSTAGRAM_AUTH_REQUIRED'
+    || message==='COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED'
+    || message==='COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS'
+    || message.startsWith('COMPOSIO_INSTAGRAM_ACCOUNT_DISCOVERY_');
+}
+async function releasePreProviderPublicationClaim(db:any,capability:any,runDate:string,channel:string,reason:string){
+  const capabilityId=clean(capability?.capabilityId);
+  if(capabilityId){
+    await db.from('powerhouse_social_publish_capabilities_v1')
+      .update({revoked_at:new Date().toISOString(),evidence:{release_reason:reason,release_contract:'pre-provider-no-side-effect-v1',possible_provider_side_effect:false}})
+      .eq('capability_id',capabilityId).is('revoked_at',null);
+  }
+  await db.from('powerhouse_publication_uniqueness_v1')
+    .delete().eq('tenant_id','canonical').eq('reservation_key','claim:'+runDate+':'+channel);
+}
 async function publicationStoryFingerprint(db:any,row:any,art:any){
   if(row?.channel!=='linkedin_personal')return null;
   const evidence=row?.delivery_evidence?.identity_gate_evidence||art?.generation_evidence?.identity_gate_evidence||{};
@@ -1033,10 +1051,19 @@ Deno.serve(async (req) => {
           continue;
         }
         const message=error instanceof Error?error.message:String(error);
+        const safePreProvider=isSafePreProviderInstagramError(error);
+        if(safePreProvider){
+          await releasePreProviderPublicationClaim(db,capability,runDate,row.channel,message);
+          const evidence={...(row.delivery_evidence||{}),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',make_dependency:false,possible_provider_side_effect:false,republish_forbidden:false,claim_released:true,claim_release_contract:'pre-provider-no-side-effect-v1'};
+          await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+          await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,'Repair provider connection and resume this exact content/media claim; no provider side-effect occurred.',message);
+          results.push({channel:row.channel,status:'waiting_transport_recovery',provider:'composio',resumable:true,error:message});
+          continue;
+        }
         const evidence={...(row.delivery_evidence||{}),provider:instagramMetaConfig?'meta':instagramComposioApiKey?'composio':'buffer',provider_truth_verified:false,error:message,transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',make_dependency:false};
         const authMissing=message==='META_INSTAGRAM_AUTH_REQUIRED'||message==='COMPOSIO_INSTAGRAM_AUTH_REQUIRED'||message==='COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED';
         await db.from('powerhouse_channel_decisions').update({state:authMissing?'content_ready':'failed',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,authMissing?'APPROVED':'FAILED',null,evidence,authMissing?'Use Buffer fallback when its circuit is closed; reuse same proven media.':'Retry only after transport diagnosis; never fall back to Make.',message);
+        await recordObligation(db,runDate,row.channel,authMissing?'APPROVED':'FAILED',null,evidence,authMissing?'Reuse the same proven Mira Reel after provider auth recovers.':'Retry only after transport diagnosis; never fall back to Make.',message);
         results.push({channel:row.channel,status:authMissing?'waiting_auth':'failed',provider:instagramMetaConfig?'meta':instagramComposioApiKey?'composio':'buffer',error:message});
         continue;
       }
