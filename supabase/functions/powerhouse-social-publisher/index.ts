@@ -158,6 +158,8 @@ async function resolveUniqueInstagramAccount(apiKey:string,active:any[]){
     if(proxy.ok&&providerUserId)identities.push({id,providerUserId,username,isDefault:item?.is_default===true,alias:clean(item?.alias)});
   }
   const providerIds=[...new Set(identities.map(x=>x.providerUserId))];
+  const personalMatches=identities.filter(x=>x.username==='arthurprinsen');
+  if(personalMatches.length===identities.length&&identities.length>0)throw new Error('INSTAGRAM_PERSONAL_ACCOUNT_FORBIDDEN_FOR_MIRA');
   if(providerIds.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
   const sameIdentity=identities.filter(x=>x.providerUserId===providerIds[0]).sort((a,b)=>
     Number(b.alias==='bedrijfsgeheugen-mira')-Number(a.alias==='bedrijfsgeheugen-mira') ||
