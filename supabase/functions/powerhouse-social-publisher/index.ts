@@ -148,7 +148,7 @@ async function resolveUniqueInstagramAccount(apiKey:string,active:any[]){
   const identities:any[]=[];
   for(const item of active){
     const id=clean(item?.id||item?.connected_account_id);if(!id)continue;
-    const proxy=await fetch(`${COMPOSIO_BASE.replace('/api/v3','')}/api/v3.1/tools/execute/proxy`,{
+    const proxy=await fetch(`${COMPOSIO_BASE}/tools/execute/proxy`,{
       method:'POST',headers:{'content-type':'application/json','x-api-key':apiKey},
       body:JSON.stringify({endpoint:'/me?fields=id,username',method:'GET',connected_account_id:id,parameters:[]})
     });
