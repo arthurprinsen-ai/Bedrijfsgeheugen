@@ -8,6 +8,38 @@ async function digest(bytes:Uint8Array){const h=await crypto.subtle.digest('SHA-
 async function hashRemote(url:string,max=120*1024*1024){const r=await fetch(url,{redirect:'follow'});if(!r.ok)throw new Error('MEDIA_FETCH_FAILED');const bytes=new Uint8Array(await r.arrayBuffer());if(!bytes.length||bytes.length>max)throw new Error('MEDIA_SIZE_INVALID');return{sha256:await digest(bytes),contentType:clean(r.headers.get('content-type')).split(';')[0].toLowerCase()};}
 function inferType(...v:any[]){const s=v.map(clean).join(' ').toLowerCase();if(s.includes('carousel'))return'carousel';if(s.includes('reel'))return'reel';if(s.includes('video'))return'video';return'image';}
 async function invoke(base:string,token:string,name:string,payload:any){const r=await fetch(`${base}/functions/v1/${name}`,{method:'POST',headers:{'content-type':'application/json','x-powerhouse-token':token},body:JSON.stringify(payload)});return{http:r.status,body:await r.json().catch(()=>({}))};}
+async function temporalVisionProof(db:any,frames:any[],fps:any[]){
+ const gov=await db.from('brain_ai_governance_registry').select('model_id,provider,approved,lifecycle_status').eq('tenant_id','canonical').eq('use_case_id','supabase-powerhouse-instagram-media-verifier-v1').maybeSingle();
+ if(!gov.data||gov.data.approved!==true||gov.data.lifecycle_status!=='ACTIVE'||gov.data.provider!=='Anthropic')throw new Error('TEMPORAL_AI_GOVERNANCE_UNAVAILABLE');
+ const apiKey=clean((await db.rpc('bg_geheim',{p_naam:'ANTHROPIC_API_KEY'})).data);
+ if(!apiKey)throw new Error('TEMPORAL_AI_KEY_UNAVAILABLE');
+ const imageBlocks:any[]=[];
+ for(const f of frames){
+  const frameBase64=clean(f.imageBase64),frameUrl=clean(f.asset_url||f.assetUrl);
+  let mediaType=clean(f.mediaType||'image/jpeg').split(';')[0].toLowerCase(),data=frameBase64;
+  if(!data&&frameUrl){
+   const rr=await fetch(frameUrl,{redirect:'follow'});if(!rr.ok)throw new Error('TEMPORAL_FRAME_FETCH_FAILED');
+   mediaType=clean(rr.headers.get('content-type')||mediaType).split(';')[0].toLowerCase();
+   const bytes=new Uint8Array(await rr.arrayBuffer());let binary='';for(let i=0;i<bytes.length;i+=0x8000)binary+=String.fromCharCode(...bytes.subarray(i,Math.min(i+0x8000,bytes.length)));data=btoa(binary);
+  }
+  if(!data||!['image/jpeg','image/png'].includes(mediaType))throw new Error('TEMPORAL_FRAME_INPUT_INVALID');
+  imageBlocks.push({type:'text',text:`Frame ${clean(f.position)||'unknown'} at ${Number(f.seconds||0)}s`},{type:'image',source:{type:'base64',media_type:mediaType,data}});
+ }
+ const tool={name:'temporal_verdict',description:'Verify continuous human video evidence across ordered frames.',input_schema:{type:'object',additionalProperties:false,properties:{
+  single_continuous_take:{type:'boolean'},continuous_motion_verified:{type:'boolean'},scene_continuity_verified:{type:'boolean'},identity_continuity_verified:{type:'boolean'},human_motion_verified:{type:'boolean'},realistic_camera_motion:{type:'boolean'},slideshow_detected:{type:'boolean'},still_image_animation_detected:{type:'boolean'},confidence:{type:'number',minimum:0,maximum:1},reason:{type:'string'}
+ },required:['single_continuous_take','continuous_motion_verified','scene_continuity_verified','identity_continuity_verified','human_motion_verified','realistic_camera_motion','slideshow_detected','still_image_animation_detected','confidence','reason']}};
+ const response=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'x-api-key':apiKey,'anthropic-version':'2023-06-01','content-type':'application/json'},body:JSON.stringify({
+  model:gov.data.model_id,max_tokens:650,
+  system:'Inspect the supplied start, middle and end frames as ordered temporal evidence from one short vertical video. Determine conservatively whether they are consistent with one continuous human video take rather than a slideshow, stitched stills, or a frozen photo with only pan/zoom. Identity and scene must remain continuous and there must be plausible human motion. When uncertain, set the relevant boolean false.',
+  messages:[{role:'user',content:[...imageBlocks,{type:'text',text:'Return a strict temporal continuity verdict for this exact sequence.'}]}],
+  tools:[tool],tool_choice:{type:'tool',name:'temporal_verdict'}
+ })});
+ const body:any=await response.json().catch(()=>({}));if(!response.ok)throw new Error('TEMPORAL_VISION_PROVIDER_REQUEST_FAILED');
+ const item=(body.content||[]).find((x:any)=>x.type==='tool_use'&&x.name==='temporal_verdict');if(!item?.input)throw new Error('TEMPORAL_VISION_TOOL_OUTPUT_MISSING');
+ const v=item.input,refSeed=fps.map((x:any)=>clean(x.sha256)).join(':');
+ const evidenceRef=`temporal:anthropic:${gov.data.model_id}:${(await digest(new TextEncoder().encode(refSeed))).slice(0,16)}`;
+ return {...v,evidence_method:'vision',evidence_refs:[evidenceRef],verified_at:new Date().toISOString()};
+}
 
 Deno.serve(async req=>{
  if(req.method!=='POST')return json({ok:false,error:'POST_ONLY'},405);
