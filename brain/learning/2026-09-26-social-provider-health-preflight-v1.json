@@ -23,13 +23,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-social-provider-health-preflight.test.mjs"
+      "tests/brain-social-provider-health-preflight-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-social-provider-health-preflight.test.mjs"
+      "tests/brain-social-provider-health-preflight-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-social-provider-health-preflight.test.mjs"
+      "tests/brain-social-provider-health-preflight-v1.test.mjs"
     ]
   },
   "skill_targets": [
