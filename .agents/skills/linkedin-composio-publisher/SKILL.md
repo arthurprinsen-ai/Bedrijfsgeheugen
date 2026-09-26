@@ -121,3 +121,10 @@ A Composio connected-account record with status `ACTIVE` is metadata, not provid
 - consume no one-time publish capability and create no uniqueness/provider side effect until preflight passes.
 
 After a provider create returns a LinkedIn URN, the opposite invariant applies: persist that exact URN, set `republish_forbidden=true`, and reconcile only that object. Never re-run create to repair readback.
+
+
+## Real provider preflight before publication side effects (2026-09-26)
+
+Fingerprint: `social-provider-preflight-resumable-auth-v1`.
+
+A Composio LinkedIn connection marked ACTIVE is not sufficient health evidence. Before a new daily LinkedIn claim is moved to dispatching, before publication capability consumption, before global uniqueness reservation and before any provider write, perform a real `LINKEDIN_GET_MY_INFO` call on the exact canonical connected account. A 401/403, revoked token, expired token or missing connection is a resumable authentication state when no provider side effect exists: preserve the same canonical claim as `content_ready`, record provider-auth evidence, consume no publication capability, and do not create a replacement claim. If a provider URN/create-success already exists, never re-publish; reconcile only that exact URN. Buffer remains non-authoritative and cannot block LinkedIn.
