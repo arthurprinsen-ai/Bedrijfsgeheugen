@@ -354,3 +354,10 @@ Proxy URL invariant: `COMPOSIO_BASE` is already the v3.1 API base. Build proxy c
 Fingerprint: `instagram-composio-proxy-base-v1`.
 
 The Composio provider proxy URL must be constructed by appending the proxy path directly to the canonical API base. Never mutate or strip API-version substrings from a base that already contains its version; that can produce an invalid hostname before provider preflight. A malformed pre-provider request with `possible_provider_side_effect=false` is resumable on the same daily claim only; never create a replacement claim or regenerate media.
+
+
+### Personal Instagram is never a Mira destination
+
+Fingerprint: `instagram-personal-never-mira-v1`.
+
+The personal Instagram identity `arthurprinsen` is permanently unauthorized for Mira content. Before any Instagram provider side effect, verify both provider identity and account role. A credential that resolves to the personal username must fail closed for Mira even when technically healthy. Mira requires a separately verified Bedrijfsgeheugen/business Instagram identity. Credential deduplication must never collapse personal and business roles merely because credentials resolve to the same provider user. No Buffer, Composio, Meta, retry or recovery path may bypass this boundary.
