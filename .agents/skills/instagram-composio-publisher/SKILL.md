@@ -337,3 +337,10 @@ A Mira Reel is not eligible on frame snapshots alone. The canonical media router
 ### Temporal proof is self-materializing
 
 The continuous-Reel proof gate must have a canonical executor. After hashing the exact MP4 and extracting START/MIDDLE/END frames, `powerhouse-instagram-media-router` invokes `powerhouse-instagram-temporal-verifier`; callers must not manufacture or manually set temporal booleans. The verifier evaluates the ordered exact frames together, binds the result to the exact video SHA-256, and returns the `mira-continuous-human-video-v1` evidence. If that verifier cannot establish continuity at the required threshold, fail closed and generate a new Mira Reel; do not downgrade to an image or bypass the proof gate.
+
+
+### Deduplicate credentials by provider identity
+
+Fingerprint: `instagram-credential-provider-identity-dedupe-v1`.
+
+Never treat the number of active Composio connected-account credentials as the number of Instagram publishing identities. When multiple credentials are active, perform a real Instagram `/me` read through every candidate credential and group by the returned provider user id. Multiple credentials resolving to one provider user id are one canonical publishing identity and must not block publication as ambiguous. Select one credential deterministically. More than one distinct provider user id remains a hard fail-closed ambiguity. Do not choose the first discovery result without provider-identity proof.

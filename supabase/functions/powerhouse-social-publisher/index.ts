@@ -144,6 +144,28 @@ async function runLinkedInCockpitAutopilot(db:any){
   return results;
 }
 
+async function resolveUniqueInstagramAccount(apiKey:string,active:any[]){
+  const identities:any[]=[];
+  for(const item of active){
+    const id=clean(item?.id||item?.connected_account_id);if(!id)continue;
+    const proxy=await fetch(`${COMPOSIO_BASE.replace('/api/v3','')}/api/v3.1/tools/execute/proxy`,{
+      method:'POST',headers:{'content-type':'application/json','x-api-key':apiKey},
+      body:JSON.stringify({endpoint:'/me?fields=id,username',method:'GET',connected_account_id:id,parameters:[]})
+    });
+    const pb:any=await proxy.json().catch(()=>({}));
+    const providerUserId=clean(pb?.data?.id||pb?.body?.data?.id);
+    const username=clean(pb?.data?.username||pb?.body?.data?.username).toLowerCase();
+    if(proxy.ok&&providerUserId)identities.push({id,providerUserId,username,isDefault:item?.is_default===true,alias:clean(item?.alias)});
+  }
+  const providerIds=[...new Set(identities.map(x=>x.providerUserId))];
+  if(providerIds.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
+  const sameIdentity=identities.filter(x=>x.providerUserId===providerIds[0]).sort((a,b)=>
+    Number(b.alias==='bedrijfsgeheugen-mira')-Number(a.alias==='bedrijfsgeheugen-mira') ||
+    Number(b.isDefault)-Number(a.isDefault) || a.id.localeCompare(b.id));
+  if(!sameIdentity[0]?.id)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED');
+  return {accountId:sameIdentity[0].id,providerUserId:providerIds[0],username:sameIdentity[0].username,credentialCount:sameIdentity.length};
+}
+
 async function composioConnectedAccount(db:any,toolkit:string,secretName:string){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_AUTH_REQUIRED`);
@@ -158,21 +180,8 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
     if(active.length===1){
       accountId=clean(active[0]?.id||active[0]?.connected_account_id);
     } else if(toolkit==='instagram'){
-      const matches:any[]=[];
-      for(const item of active){
-        const id=clean(item?.id||item?.connected_account_id);
-        if(!id)continue;
-        const proxy=await fetch(`${COMPOSIO_BASE.replace('/api/v3','')}/api/v3.1/tools/execute/proxy`,{
-          method:'POST',
-          headers:{'content-type':'application/json','x-api-key':apiKey},
-          body:JSON.stringify({endpoint:'/me?fields=id,username',method:'GET',connected_account_id:id,parameters:[]})
-        });
-        const pb:any=await proxy.json().catch(()=>({}));
-        const username=clean(pb?.data?.username||pb?.body?.data?.username).toLowerCase();
-        if(proxy.ok&&username==='bedrijfsgeheugen.nl')matches.push({id,username});
-      }
-      if(matches.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
-      accountId=matches[0].id;
+      const resolved=await resolveUniqueInstagramAccount(apiKey,active);
+      accountId=resolved.accountId;
     } else {
       throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
     }
@@ -493,8 +502,9 @@ async function publishInstagramViaComposio(db:any,art:any,runDate:string){
     if(!accountsResponse.ok)throw new Error(`COMPOSIO_INSTAGRAM_ACCOUNT_DISCOVERY_${accountsResponse.status}`);
     const items=Array.isArray(accountsBody?.items)?accountsBody.items:Array.isArray(accountsBody?.data?.items)?accountsBody.data.items:Array.isArray(accountsBody?.data)?accountsBody.data:[];
     const active=items.filter((item:any)=>clean(item?.status).toUpperCase()==='ACTIVE'||!clean(item?.status));
-    if(active.length!==1)throw new Error(active.length===0?'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED':'COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
-    accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+    if(active.length===0)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED');
+    if(active.length===1)accountId=clean(active[0]?.id||active[0]?.connected_account_id);
+    else accountId=(await resolveUniqueInstagramAccount(apiKey,active)).accountId;
   }
   if(!accountId)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED');
   const caption=clean(art.body);
