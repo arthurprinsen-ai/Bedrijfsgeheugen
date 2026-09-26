@@ -471,6 +471,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_reserve_unique_publication_v1",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/brain-linkedin-composio-authority.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_select_instagram_daily_winner_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql",
@@ -496,6 +503,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260921121500_meta_instagram_direct_credentials.sql",
       "evidence_contract": "tests/brain-instagram-meta-direct-config.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_story_fingerprint_v1",
+      "type": "rpc",
+      "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
+      "evidence_contract": "tests/brain-linkedin-composio-authority.test.mjs",
       "required": true
     },
     {

@@ -11,6 +11,15 @@ async function sha256(v:string){const d=await crypto.subtle.digest('SHA-256',new
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_SETUP_'+r.status+':'+clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240));return b;}
+async function instagramIdentity(key:string,accountId:string){
+ const r=await fetch('https://backend.composio.dev/api/v3.1/tools/execute/proxy',{method:'POST',headers:{'x-api-key':key,'content-type':'application/json'},body:JSON.stringify({endpoint:'/me?fields=id,username',method:'GET',connected_account_id:accountId,parameters:[]})});
+ const b:any=await r.json().catch(()=>({}));
+ if(!r.ok)throw new Error('COMPOSIO_INSTAGRAM_HEALTH_'+r.status+':'+clean(b?.error||b?.message||JSON.stringify(b)).slice(0,180));
+ const username=clean(b?.data?.username||b?.body?.data?.username||b?.data?.data?.username).toLowerCase();
+ const id=clean(b?.data?.id||b?.body?.data?.id||b?.data?.data?.id);
+ if(!username)throw new Error('COMPOSIO_INSTAGRAM_USERNAME_MISSING');
+ return {username,id};
+}
 async function writeState(db:any,state:string,result:any){const now=new Date().toISOString();await db.from('brain_records').upsert({
  tenant_id:'canonical',record_id:'instagram-composio-setup-current-state-v1',record_type:'CurrentState',record_kind:'current_state',subject_id:SUBJECT,
  status:state,observed_at:now,executed:true,verified:true,result,payload:{fingerprint:'instagram-composio-connect-link-setup-v1',secret_values_exposed:false},
@@ -53,12 +62,31 @@ Deno.serve(async(req:Request)=>{
 
   const accountsBody=await api(key,'/connected_accounts?toolkit_slugs=instagram&statuses=ACTIVE&account_type=ALL&limit=50');
   const accounts=(Array.isArray(accountsBody?.items)?accountsBody.items:[]).filter((x:any)=>clean(x?.status).toUpperCase()==='ACTIVE'&&!x?.is_disabled);
-  if(accounts.length>1){
-    const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length};
+  const healthy:any[]=[];
+  const rejected:any[]=[];
+  for(const candidate of accounts){
+    const accountId=clean(candidate?.id||candidate?.connected_account_id);
+    if(!accountId)continue;
+    try{
+      const identity=await instagramIdentity(key,accountId);
+      if(identity.username!=='bedrijfsgeheugen.nl'){
+        rejected.push({account_id:accountId,alias:clean(candidate?.alias)||null,username:identity.username,reason:'IDENTITY_MISMATCH'});
+        continue;
+      }
+      healthy.push({account:candidate,accountId,identity});
+    }catch(error){
+      const message=error instanceof Error?error.message:String(error);
+      rejected.push({account_id:accountId,alias:clean(candidate?.alias)||null,reason:message.includes('401')?'REVOKED_OR_UNAUTHORIZED':'HEALTHCHECK_FAILED'});
+    }
+  }
+  const canonical=healthy.filter(x=>clean(x.account?.alias)==='bedrijfsgeheugen-mira-canonical');
+  const selectable=canonical.length===1?canonical:healthy;
+  if(selectable.length>1){
+    const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_INSTAGRAM_HEALTHY_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected};
     await writeState(db,'BLOCKED_AMBIGUOUS',result);return json({ok:true,...result},409);
   }
-  if(accounts.length===1){
-    const account=accounts[0],result:any={ready:true,state:'ACTIVE',reason:null,api_key_present:true,active_accounts:1,connected_account_id:clean(account?.id),user_id:clean(account?.user_id),alias:clean(account?.alias)};
+  if(selectable.length===1){
+    const selected=selectable[0],account=selected.account,result:any={ready:true,state:'ACTIVE',reason:null,api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,health_verified:true,canonical_alias_selected:clean(account?.alias)==='bedrijfsgeheugen-mira-canonical',connected_account_id:selected.accountId,user_id:clean(account?.user_id),alias:clean(account?.alias),username:selected.identity.username,instagram_user_id:selected.identity.id||null};
     await writeState(db,'ACTIVE',result);
     if(action==='resume'){
       if(!serviceOk)return json({ok:false,error:'ADMIN_SERVICE_AUTH_REQUIRED'},403);
@@ -79,7 +107,7 @@ Deno.serve(async(req:Request)=>{
     return json({ok:true,...result});
   }
   if(action==='status'||action==='set_api_key'||action==='resume'){
-    const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED',api_key_present:true,active_accounts:0,stored:action==='set_api_key'?true:undefined};
+    const result={ready:false,state:'CONNECTION_REQUIRED',reason:accounts.length?'COMPOSIO_INSTAGRAM_REAUTH_REQUIRED':'COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED',api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,stored:action==='set_api_key'?true:undefined};
     await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result});
   }
   if(action!=='create_link')return json({ok:false,error:'UNSUPPORTED_ACTION'},400);
