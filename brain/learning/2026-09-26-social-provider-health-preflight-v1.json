@@ -1,0 +1,30 @@
+{
+  "version": "social-provider-health-preflight-v1",
+  "date": "2026-09-26",
+  "fingerprint": "social|composio|active-status-is-not-token-health|reauth-preflight|v1",
+  "compiler": {
+    "failure_class": "SOCIAL_PROVIDER_AUTH_FALSE_POSITIVE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "incident": {
+    "symptom": "LinkedIn and Instagram daily publication can remain silent even while Composio lists connected accounts as ACTIVE.",
+    "root_cause": "Connection metadata was trusted without a live provider identity call. Revoked LinkedIn OAuth tokens remained ACTIVE in Composio, and multiple Instagram connections with the wrong provider identity could block selection as ambiguous."
+  },
+  "prevention": [
+    "Treat provider ACTIVE metadata as discovery only, never as readiness proof.",
+    "Run a live LinkedIn GET_MY_INFO healthcheck before publication claim/capability consumption.",
+    "Select one health-verified canonical LinkedIn alias and ignore revoked ACTIVE records.",
+    "Read Instagram provider identity and accept only username bedrijfsgeheugen.nl; ignore stale or wrong-identity ACTIVE records.",
+    "Keep auth failures at content_ready and consume no social publication capability before health proof.",
+    "Resume the same reserved unique artifact after OAuth recovery; never create a replacement merely because auth failed."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/social-provider-health-preflight.test.mjs"]
+  },
+  "skill_targets": ["linkedin-composio-publisher","instagram-composio-publisher"],
+  "skill_projection_required": true,
+  "production_readback_required": true
+}
