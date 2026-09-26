@@ -36,7 +36,7 @@
       "tests/brain-linkedin-daily-self-healing.test.mjs"
     ],
     "shadow": [
-      "Social Publish Recovery automation provider-preflight/readback loop"
+      "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs"
     ]
   }
 }
