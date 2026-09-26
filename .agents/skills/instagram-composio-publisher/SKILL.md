@@ -332,3 +332,8 @@ For Netlify Functions credentials, compare the credential `updated_at` with the 
 Fingerprint: `social-provider-preflight-resumable-auth-v1`.
 
 A Mira Reel is not eligible on frame snapshots alone. The canonical media router must require start/middle/end visible-Mira frame proof plus `mira-continuous-human-video-v1` temporal evidence: one continuous take, continuous human motion, scene continuity, identity continuity, realistic camera motion, no slideshow, no still-image animation, and a temporal evidence reference. Repository source, deployed Supabase runtime and tests must expose the same contract. Runtime/source drift is a release blocker; never weaken production proof to make a post pass. Buffer remains a bounded fallback only and cannot block a healthy Meta/Composio Instagram path.
+
+
+### Temporal proof is self-materializing
+
+The continuous-Reel proof gate must have a canonical executor. After hashing the exact MP4 and extracting START/MIDDLE/END frames, `powerhouse-instagram-media-router` invokes `powerhouse-instagram-temporal-verifier`; callers must not manufacture or manually set temporal booleans. The verifier evaluates the ordered exact frames together, binds the result to the exact video SHA-256, and returns the `mira-continuous-human-video-v1` evidence. If that verifier cannot establish continuity at the required threshold, fail closed and generate a new Mira Reel; do not downgrade to an image or bypass the proof gate.
