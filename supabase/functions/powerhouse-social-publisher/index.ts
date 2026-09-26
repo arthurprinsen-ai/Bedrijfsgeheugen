@@ -186,6 +186,18 @@ function deepPickLinkedInPostUrn(value:any):string{
   for(const v of Object.values(value)){const found=deepPickLinkedInPostUrn(v);if(found)return found;}
   return'';
 }
+function isLinkedInAuthFailure(error:any){
+  const status=Number(error?.http||error?.status||0);
+  const message=clean(error?.message||error).toUpperCase();
+  return status===401||status===403||message.includes('REVOKED_ACCESS_TOKEN')||message.includes('UNAUTHORIZED')||message.includes('AUTH_REQUIRED')||message.includes('CONNECTION_REQUIRED')||message.includes('TOKEN_EXPIRED')||message.includes('EXPIRED_TOKEN');
+}
+async function preflightLinkedInViaComposio(db:any){
+  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
+  const personId=deepPickString(me?.data||me,['id']);
+  if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
+  return {apiKey,accountId,userId,personId};
+}
 async function publishLinkedInPersonalViaComposio(db:any,art:any){
   const {apiKey,accountId,userId}=await composioLinkedInContext(db);
   const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
@@ -896,6 +908,23 @@ Deno.serve(async (req) => {
           'Re-authorize the canonical LinkedIn Composio account; then resume this exact daily claim. No publish capability or provider side-effect has been consumed.',
           'LINKEDIN_REAUTH_REQUIRED');
         results.push({channel:row.channel,status:'waiting_reauth',provider:'composio',resumable:true,error:'LINKEDIN_REAUTH_REQUIRED'});
+        continue;
+      }
+    }
+
+    // Provider-health preflight MUST happen before publication claim/capability/uniqueness reservation.
+    // Composio metadata may say ACTIVE while the underlying LinkedIn OAuth token is revoked.
+    if (row.channel === 'linkedin_personal' || row.channel === 'linkedin_company') {
+      try {
+        await preflightLinkedInViaComposio(db);
+      } catch (error) {
+        const message=error instanceof Error?error.message:String(error);
+        if (!isLinkedInAuthFailure(error)) throw error;
+        const evidence={...gatePassedEvidence,provider:'composio',provider_preflight:false,provider_auth_resumable:true,error:message,transport_contract:'linkedin-composio-direct-v3',buffer_dependency:false,republish_forbidden:false};
+        await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+        await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,'Reconnect LinkedIn OAuth. Resume this same canonical daily claim after a successful real provider preflight; do not create a replacement claim.',message);
+        results.push({channel:row.channel,status:'waiting_auth',provider:'composio',resumable:true,error:message});
         continue;
       }
     }

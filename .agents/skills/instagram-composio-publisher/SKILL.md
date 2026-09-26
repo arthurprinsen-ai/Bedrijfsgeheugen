@@ -325,3 +325,10 @@ After normalization, reuse `powerhouse_select_instagram_daily_winner_v1(date)` /
 Fingerprint: `composio-post-rotation-runtime-rebuild-v2`.
 
 For Netlify Functions credentials, compare the credential `updated_at` with the production deployment `published_at`. If the credential is newer, provider validation is not meaningful until a later protected Functions deployment is live. Fail closed and force exactly one post-rotation rebuild before re-validating.
+
+
+## Continuous Reel proof and source/runtime parity (2026-09-26)
+
+Fingerprint: `social-provider-preflight-resumable-auth-v1`.
+
+A Mira Reel is not eligible on frame snapshots alone. The canonical media router must require start/middle/end visible-Mira frame proof plus `mira-continuous-human-video-v1` temporal evidence: one continuous take, continuous human motion, scene continuity, identity continuity, realistic camera motion, no slideshow, no still-image animation, and a temporal evidence reference. Repository source, deployed Supabase runtime and tests must expose the same contract. Runtime/source drift is a release blocker; never weaken production proof to make a post pass. Buffer remains a bounded fallback only and cannot block a healthy Meta/Composio Instagram path.

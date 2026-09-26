@@ -1,0 +1,44 @@
+{
+  "fingerprint": "social-provider-preflight-resumable-auth-v1",
+  "date": "2026-09-26",
+  "type": "SOCIAL_PUBLISHING_RELIABILITY",
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "SOCIAL_PUBLISHING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": [
+    "Composio connection metadata reported LinkedIn accounts ACTIVE while a real LINKEDIN_GET_MY_INFO provider call returned 401 REVOKED_ACCESS_TOKEN.",
+    "LinkedIn publication claimed the daily row and progressed publication authority before real provider authentication was proven, allowing an authentication failure to leave the daily claim blocked instead of resumable.",
+    "Buffer was hard rate-limited and therefore cannot be a critical dependency for LinkedIn or Instagram delivery.",
+    "The deployed Instagram media router enforced temporal Reel proof that was missing from repository main, creating runtime/source contract drift."
+  ],
+  "prevention": [
+    "Run a real LinkedIn provider read before claim, publication capability consumption, uniqueness reservation or provider side effects.",
+    "Treat revoked/expired/401/403 LinkedIn authentication as resumable provider state while no provider side effect exists; keep the same daily claim content_ready and never create a replacement claim.",
+    "An existing LinkedIn provider URN remains republish-forbidden and is reconciled only by exact URN.",
+    "Buffer is telemetry/fallback only and never gates direct LinkedIn or canonical Instagram delivery.",
+    "Repository source and deployed Instagram router must share the same continuous-video proof contract; Reel publication requires temporal continuity evidence in addition to start/middle/end frame proof.",
+    "The social watchdog performs repeated provider-auth and final-provider-readback checks during the Amsterdam delivery day."
+  ],
+  "evidence": {
+    "buffer": "HTTP 429 with Retry-After 507904 seconds observed 2026-09-26",
+    "linkedin": "All three pre-existing LinkedIn connections returned 401 REVOKED_ACCESS_TOKEN on real provider read",
+    "instagram": "Instagram Business provider read and quota endpoint succeeded; quota usage 0/100",
+    "today_company_urn": "urn:li:share:7509384024180686848",
+    "instagram_runtime_contract": "MIRA_CONTINUOUS_VIDEO_PROOF_REQUIRED / mira-continuous-human-video-v1"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-provider-preflight-resumable-auth-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-provider-preflight-resumable-auth-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-provider-preflight-resumable-auth-v1.test.mjs"
+    ]
+  }
+}
