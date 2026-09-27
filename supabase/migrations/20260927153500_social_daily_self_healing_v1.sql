@@ -151,3 +151,9 @@ is 'No-gap fallback: when unused verified personal sources are exhausted, rotate
 
 comment on function public.powerhouse_content_closed_loop_tick_v1(timestamptz)
 is 'Single 5-minute content scheduler. Prepares fallbacks, ensures rotating verified personal source, reconciles outcomes, runs Instagram guard, then invokes the canonical content loop.';
+
+
+revoke execute on function public.powerhouse_ensure_personal_source_rotation_v1(date) from public, anon, authenticated;
+revoke execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) from public, anon, authenticated;
+grant execute on function public.powerhouse_ensure_personal_source_rotation_v1(date) to service_role;
+grant execute on function public.powerhouse_content_closed_loop_tick_v1(timestamptz) to service_role, postgres;
