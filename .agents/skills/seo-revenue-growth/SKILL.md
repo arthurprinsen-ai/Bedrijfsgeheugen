@@ -110,3 +110,25 @@ Do not claim LIVE & BEWEZEN at PR, merge, deploy-start or stale public readback.
 ## Cost and sustainability
 
 Reuse/caching/dedupe first. Avoid broad paid keyword expansion when a bounded Search Console or DataForSEO query can answer the decision. Do not rerun healthy exact-head CI or issue duplicate builds just to refresh status.
+
+
+## Opportunity must execute
+
+Fingerprint: `seo-opportunity-must-execute-v1`.
+
+A daily SEO opportunity is not a deliverable by itself. Never emit an advice-only opportunity to the operator when Powerhouse can safely act on it.
+
+For every commercially relevant opportunity, the same canonical lineage must terminate in exactly one evidenced outcome:
+- `EXECUTED`: the smallest justified change was implemented on the canonical intent owner, or distinct intent-gap content was created;
+- `REJECTED_WITH_EVIDENCE`: no write is justified because evidence is insufficient, intent is already fully served, expected commercial value is too low, or the action would create cannibalization.
+
+`NO_ACTION_EVIDENCE_INSUFFICIENT` is therefore an internal rejection reason, not the final product output. Persist why it was rejected.
+
+After `EXECUTED`:
+- preserve the protected-delivery contract: candidate PR → required gates → protected merge → exact-main production identity → public readback;
+- never claim LIVE before production readback;
+- derive useful distribution from the executed asset when it can create qualified reach without duplicating intent: Bedrijfsgeheugen LinkedIn company content and the canonical Bedrijfsgeheugen Instagram persona/channel; personal LinkedIn remains outside company-content distribution;
+- do not manufacture social posts merely to satisfy volume; distribution must point to the canonical commercial path and remain unique;
+- persist query → canonical page → CTA → Frisse blik/scan → lead → offer → order → realized revenue attribution.
+
+The operator-facing daily output is an execution/impact log, not an SEO advice list. Report what was executed, what was rejected and why, delivery/readback state, distribution state, and measured commercial outcomes. Recommendations are allowed only where a human decision is genuinely required.
