@@ -1,0 +1,42 @@
+{
+  "fingerprint": "instagram-composio-canonical-graph-id-v2",
+  "type": "SOCIAL_PUBLISHING_IDENTITY_RESILIENCE",
+  "failure_class": "WRONG_EXTERNAL_IDENTITY",
+  "date": "2026-09-27",
+  "status": "active",
+  "scope": "powerhouse-social-publisher/instagram_company",
+  "compiler": {
+    "failure_class": "WRONG_EXTERNAL_IDENTITY",
+    "scope": "CONTENT_INSTAGRAM",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": [
+    "Username-only and ig_user_id=me identity resolution remained coupled to the OAuth-selected account and could repeatedly resolve @arthurprinsen even though the canonical Bedrijfsgeheugen Graph user ID was known."
+  ],
+  "prevention": [
+    "Canonical Instagram Graph User ID is 17841446582493753 and username is bedrijfsgeheugen.nl.",
+    "Probe every candidate Composio connection against the explicit canonical Graph User ID before capability consumption.",
+    "Require both provider ID and username to match.",
+    "Pass the canonical Graph User ID explicitly to create and publish calls.",
+    "Never use me, Buffer, Make or direct Meta as a publication fallback for the Bedrijfsgeheugen Instagram lane."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-canonical-identity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-composio-canonical-identity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-composio-canonical-identity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "canonical_graph_user_id": "17841446582493753",
+    "canonical_username": "bedrijfsgeheugen.nl",
+    "wrong_connected_identity": "28328860976766075 / arthurprinsen",
+    "regression_contract": "tests/brain-instagram-composio-canonical-identity-v1.test.mjs"
+  }
+}

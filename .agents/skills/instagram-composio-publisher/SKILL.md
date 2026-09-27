@@ -374,3 +374,25 @@ Hard invariants:
 - Meta Business Suite membership/asset assignment is evidence that the business asset exists, but it does not substitute for Composio provider-identity readback.
 
 Terminal success is: canonical Composio account identity verified -> exact IG user ID bound -> one-time publication capability consumed -> Reel container created -> published -> exact provider readback -> canonical obligation/outcome writeback.
+
+
+## Canonical Instagram Graph User ID binding (2026-09-27)
+
+Fingerprint: `instagram-composio-canonical-graph-id-v2`.
+
+This section supersedes every older Instagram transport rule in this skill that permits Buffer fallback, direct-Meta primary/fallback routing, `ig_user_id=me`, alias-only identity, or username-only identity.
+
+Canonical Bedrijfsgeheugen Instagram identity:
+- username: `bedrijfsgeheugen.nl`
+- Instagram Graph User ID: `17841446582493753`
+
+Hard invariants:
+- Instagram publication is Composio-only.
+- Before capability consumption or any provider mutation, each candidate Composio connection must be probed with `INSTAGRAM_GET_USER_INFO` against the explicit Graph User ID `17841446582493753`; do not use `me` for canonical identity resolution.
+- A connection is eligible only when the provider response proves both `id=17841446582493753` and `username=bedrijfsgeheugen.nl`.
+- Every create/publish call must pass `ig_user_id=17841446582493753` explicitly.
+- `@arthurprinsen`, ID `28328860976766075`, aliases such as `bedrijfsgeheugen-*`, default-account status, Meta portfolio membership and Business/Creator labels are never sufficient identity proof.
+- If no Composio connection can access the canonical Graph User ID, the exact proven Reel remains recoverable at `content_ready`; no Buffer, Make, direct-Meta or regenerated replacement is permitted.
+- Provider readback must match the published media ID; when username is returned it must equal `bedrijfsgeheugen.nl`.
+
+Terminal success is canonical Graph ID access proof -> exact username proof -> one-time publication capability -> Composio create -> Composio publish -> provider readback -> canonical obligation/outcome writeback.
