@@ -1,0 +1,32 @@
+{
+  "id": "mkb-problem-radar-signal-to-outcome-v1",
+  "date": "2026-09-27",
+  "type": "CONTRACT_CHANGE",
+  "fingerprint": "mkb-problem-radar-signal-to-outcome-v1",
+  "signal": "Problem Radar scans could be reported as findings/content opportunities without proving downstream Powerhouse execution ownership.",
+  "root_cause": "The skill described the closed loop but did not explicitly classify report-only completion as incomplete work.",
+  "invariant": "Every accepted material radar signal remains owned through canonical PH-Pxxx/candidate projection and the next valid Powerhouse action: content, product gap or opportunity, followed by publication/readback where applicable and outcome learning.",
+  "prevention_rule": "RADAR_REPORT_ONLY_IS_INCOMPLETE",
+  "evidence_boundaries": [
+    "External evidence remains context/benchmark until tenant evidence supports relevance.",
+    "No fabricated market figures.",
+    "No capability claim without production evidence.",
+    "No LIVE/published claim without provider readback."
+  ],
+  "projections": [
+    "skills/mkb-voice-of-customer-problem-radar.md",
+    "docs/powerhouse/mkb-voice-of-customer.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-radar-executive.test.mjs"
+    ],
+    "required_assertions": [
+      "signal-to-outcome ownership",
+      "canonical PH-Pxxx reuse",
+      "PRODUCT_GAP fail-closed",
+      "publication readback",
+      "learning writeback"
+    ]
+  }
+}
