@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 const p=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
-assert.match(p,/const INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen\\.nl'/);
+assert.match(p,/const INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen\.nl'/);
 assert.match(p,/const INSTAGRAM_CANONICAL_USER_ID='17841446582493753'/);
 assert.match(p,/INSTAGRAM_GET_USER_INFO/);
 assert.match(p,/COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED/);
