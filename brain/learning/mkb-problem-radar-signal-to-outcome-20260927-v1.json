@@ -35,5 +35,11 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "evidence": {
+    "source_skill": "skills/mkb-voice-of-customer-problem-radar.md",
+    "human_contract": "docs/changes/mkb-problem-radar-signal-to-outcome-20260927-v1.md",
+    "ledger": "docs/development-ledger-events/mkb-problem-radar-signal-to-outcome-v1.md",
+    "trigger": "User clarified that radar findings must drive BREIN/Powerhouse actions, content/product gaps and learning rather than stop at reporting."
   }
 }
