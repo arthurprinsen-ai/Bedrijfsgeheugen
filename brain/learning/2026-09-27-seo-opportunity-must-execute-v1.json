@@ -1,0 +1,33 @@
+{
+  "fingerprint": "seo-opportunity-must-execute-v1",
+  "date": "2026-09-27",
+  "type": "SEO_REVENUE_EXECUTION",
+  "source": "operator-feedback",
+  "failure_class": "ADVICE_WITHOUT_EXECUTION",
+  "root_cause": [
+    "The daily SEO loop could surface commercially ranked opportunities as operator-facing advice without requiring Powerhouse to execute the justified action.",
+    "Distribution and downstream revenue measurement were not explicit terminal obligations of an executed SEO opportunity."
+  ],
+  "prevention": [
+    "An SEO opportunity is never a terminal deliverable.",
+    "Every commercially relevant opportunity terminates as EXECUTED or REJECTED_WITH_EVIDENCE in the same canonical lineage.",
+    "Existing intent owner means improve the canonical money page first; create content only for an evidenced distinct intent gap.",
+    "After execution, use protected delivery through production readback before LIVE claims.",
+    "Derive unique company-channel distribution only when commercially useful and preserve the canonical conversion path.",
+    "Measure query to canonical page to CTA to Frisse blik or scan to lead to offer to order to realized revenue."
+  ],
+  "operator_output": "execution_impact_log",
+  "skill_targets": ["seo-revenue-growth"],
+  "evaluation": {
+    "historical_replay": ["tests/brain-seo-opportunity-must-execute-v1.test.mjs"],
+    "canary": ["tests/brain-seo-opportunity-must-execute-v1.test.mjs"]
+  },
+  "compiler": {
+    "failure_class": "ADVICE_WITHOUT_EXECUTION",
+    "scope": "SEO_REVENUE_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION"
+}
