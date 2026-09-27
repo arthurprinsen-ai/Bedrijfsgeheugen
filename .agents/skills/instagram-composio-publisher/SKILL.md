@@ -354,3 +354,23 @@ Proxy URL invariant: `COMPOSIO_BASE` is already the v3.1 API base. Build proxy c
 Fingerprint: `instagram-composio-proxy-base-v1`.
 
 The Composio provider proxy URL must be constructed by appending the proxy path directly to the canonical API base. Never mutate or strip API-version substrings from a base that already contains its version; that can produce an invalid hostname before provider preflight. A malformed pre-provider request with `possible_provider_side_effect=false` is resumable on the same daily claim only; never create a replacement claim or regenerate media.
+
+
+## Composio-only canonical Instagram identity (2026-09-27)
+
+Fingerprint: `instagram-composio-canonical-identity-v1`.
+
+Instagram publication for Bedrijfsgeheugen is Composio-only. Buffer and direct-Meta publication are not fallback transports for this channel.
+
+Hard invariants:
+- Canonical Instagram username is exactly `bedrijfsgeheugen.nl`.
+- Before consuming a publication capability or making any provider side effect, resolve the active Composio Instagram connection with `INSTAGRAM_GET_USER_INFO` and verify the returned username equals `bedrijfsgeheugen.nl`.
+- A Composio alias such as `bedrijfsgeheugen`, `bedrijfsgeheugen-mira`, `bedrijfsgeheugen-business` or `bedrijfsgeheugen-canonical` is metadata only; it never proves provider identity.
+- `@arthurprinsen` or any other username must fail closed with `COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED` even when the connection reports ACTIVE/BUSINESS.
+- After identity preflight, use the resolved numeric Instagram Business user ID explicitly as `ig_user_id` for container creation and publish. Do not rely on `ig_user_id=me` for the actual side effect.
+- Use schema-driven Composio calls for `INSTAGRAM_POST_IG_USER_MEDIA`, `INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH` and `INSTAGRAM_GET_IG_MEDIA`; do not use natural-language execution for these provider mutations/readbacks.
+- Provider readback must match the created media ID and, when username is returned, must still equal `bedrijfsgeheugen.nl`.
+- Missing auth or wrong identity returns the exact same proven Reel to a recoverable `content_ready` state. Never regenerate and never fall back to Buffer, Make or direct Meta.
+- Meta Business Suite membership/asset assignment is evidence that the business asset exists, but it does not substitute for Composio provider-identity readback.
+
+Terminal success is: canonical Composio account identity verified -> exact IG user ID bound -> one-time publication capability consumed -> Reel container created -> published -> exact provider readback -> canonical obligation/outcome writeback.
