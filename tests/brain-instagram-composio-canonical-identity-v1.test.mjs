@@ -8,7 +8,7 @@ assert.match(p,/ig_user_id:ctx\.providerUserId/);
 assert.match(p,/INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
 assert.match(p,/INSTAGRAM_GET_IG_MEDIA/);
 assert.match(p,/instagram-composio-only-canonical-identity-v1/);
-const start=p.indexOf("if (row.channel === 'instagram_company') {");
+const start=p.lastIndexOf("if (row.channel === 'instagram_company') {");
 const end=p.indexOf("if (!bufferToken) {",start);
 assert.ok(start>=0&&end>start,'Instagram routing block must exist before generic legacy Buffer branch');
 const block=p.slice(start,end);
