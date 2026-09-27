@@ -9,4 +9,4 @@
 - Personal source recovery: least-recently-used verified non-sensitive source, new-angle-only, no verbatim reuse
 - Buffer fallback: forbidden
 - Skill projections: `linkedin-composio-publisher`, `personal-linkedin-life-only`
-- Regression: `tests/social-daily-self-healing-v1.test.mjs`
+- Regression: `tests/brain-social-daily-self-healing-v1.test.mjs`
