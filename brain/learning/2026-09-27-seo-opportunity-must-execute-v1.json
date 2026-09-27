@@ -17,10 +17,16 @@
     "Measure query to canonical page to CTA to Frisse blik or scan to lead to offer to order to realized revenue."
   ],
   "operator_output": "execution_impact_log",
-  "skill_targets": ["seo-revenue-growth"],
+  "skill_targets": [
+    "seo-revenue-growth"
+  ],
   "evaluation": {
-    "historical_replay": ["tests/brain-seo-opportunity-must-execute-v1.test.mjs"],
-    "canary": ["tests/brain-seo-opportunity-must-execute-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-seo-opportunity-must-execute-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-opportunity-must-execute-v1.test.mjs"
+    ]
   },
   "compiler": {
     "failure_class": "ADVICE_WITHOUT_EXECUTION",
@@ -29,5 +35,16 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "evidence": {
+    "observed_operator_feedback": "SEO opportunities reported as loose advice were not useful unless Powerhouse actually performs the justified work.",
+    "prior_terminal_behavior": "daily opportunity output could terminate as a recommendation list",
+    "required_terminal_behavior": [
+      "EXECUTED",
+      "REJECTED_WITH_EVIDENCE"
+    ],
+    "canonical_skill": ".agents/skills/seo-revenue-growth/SKILL.md",
+    "revenue_path": "query -> canonical page -> CTA -> Frisse blik/scan -> lead -> offer -> order -> realized revenue",
+    "delivery_truth": "LIVE only after protected merge, exact-main production identity and public readback"
+  }
 }
