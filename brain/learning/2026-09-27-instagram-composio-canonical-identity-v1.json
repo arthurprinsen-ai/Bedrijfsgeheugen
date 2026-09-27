@@ -1,0 +1,27 @@
+{
+  "fingerprint": "instagram-composio-canonical-identity-v1",
+  "failure_class": "WRONG_EXTERNAL_IDENTITY",
+  "date": "2026-09-27",
+  "status": "active",
+  "scope": "powerhouse-social-publisher/instagram_company",
+  "observed": {
+    "symptom": "Composio connections labeled for Bedrijfsgeheugen resolved to Instagram username arthurprinsen and could still pass connection-level checks.",
+    "root_cause": "Connection aliases and ACTIVE/BUSINESS status were treated as sufficient identity evidence, while the runtime could also fall back to Meta direct or Buffer. Provider username was not a hard pre-side-effect invariant.",
+    "evidence": [
+      "Composio INSTAGRAM_GET_USER_INFO returned username arthurprinsen for the canonical alias.",
+      "Meta Business Suite shows @bedrijfsgeheugen.nl exists and is assigned to the Bedrijfsgeheugen business portfolio."
+    ]
+  },
+  "prevention": [
+    "Instagram Bedrijfsgeheugen publication is Composio-only.",
+    "Require provider username bedrijfsgeheugen.nl before capability consumption or provider mutation.",
+    "Bind the numeric provider Instagram user id explicitly to create/publish calls.",
+    "Never infer identity from Composio alias, default status, Business account type, or Meta asset membership.",
+    "Wrong/missing identity is recoverable and cannot trigger Buffer, Make, direct-Meta fallback, regeneration, or replacement publication."
+  ],
+  "verification": [
+    "CI asserts canonical username gate and explicit ig_user_id binding.",
+    "CI asserts Instagram transport contract is instagram-composio-only-canonical-identity-v1.",
+    "Production readback must show provider=composio, buffer_dependency=false, meta_direct_dependency=false and canonical Instagram identity."
+  ]
+}
