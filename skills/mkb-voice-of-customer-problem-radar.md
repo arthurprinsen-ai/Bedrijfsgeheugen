@@ -312,3 +312,26 @@ Fingerprint: `powerhouse-problem-radar-contextual-visual-v1`.
 Status: `LIVE_PROVEN`. Netlify provider-readback bewijst production deploy `6ab62a6bdb43de00090ce33d` met `state=ready`, `context=production` en exact `commit_ref=5814f26d8c6855d30983a8b0572c3ee683242928` (feature merge #2899).
 
 Daarmee is de vaste Powerhouse-regel productiebewezen: Probleemradar-intelligentie wordt vanuit dezelfde canonieke `PH-Pxxx`- en evidence-lineage contextueel en visueel geprojecteerd in de bestaande cockpit, Impact Engine, Next Best Actions, Monitoring & Learning en Evidence Health. Geen apart probleemdashboard of parallelle waarheid.
+
+
+## Radar execution ownership — 27 september 2026
+
+Fingerprint: `mkb-problem-radar-signal-to-outcome-v1`.
+
+De Probleemradar is een uitvoerende sensor van BREIN/Powerhouse, geen rapportagefunctie. Een materieel nieuw of gewijzigd signaal mag niet eindigen bij “gevonden”, “gemeld” of “contentkans”. De owner houdt dezelfde lineage vast totdat het signaal naar de eerstvolgende geldige uitvoer is geprojecteerd.
+
+Verplichte keten:
+`SOURCE -> EVIDENCE -> DEDUPE -> PH-Pxxx/CANDIDATE -> PRIORITY -> POWERHOUSE ACTION -> CONTENT or PRODUCT_GAP -> PUBLICATION GATE -> PROVIDER READBACK -> PERFORMANCE/LEAD/OUTCOME -> LEARNING`.
+
+Permanent:
+- dedupliceer tegen bestaande evidence, Problem IDs en reeds gepubliceerde contenthoeken vóór nieuwe creatie;
+- score/prioriteer op actualiteit, omvang, urgentie, koopintentie en Powerhouse-relevantie zonder externe cijfers te verzinnen;
+- een bestaand `PH-Pxxx` wordt hergebruikt; ontbrekende dekking wordt `PROBLEM_LIBRARY_CANDIDATE`;
+- als Powerhouse de relevante capability niet productiebewezen heeft, routeer naar `PRODUCT_GAP` en publiceer geen capabilityclaim alsof die bestaat;
+- voldoende sterke contentkandidaten gaan naar de bestaande blog- en LinkedIn-bedrijfspipeline met structuur probleem -> symptomen -> zakelijke impact -> oorzaak/data -> praktische aanpak -> relevante capability -> meetbaar resultaat -> CTA;
+- selectie van een contentkandidaat is geen publicatiebewijs: duplicate-, identity-, evidence- en provider-readback-gates blijven verplicht;
+- publicatie-uitkomst, bereik/clicks/leads waar beschikbaar en Verified Value/outcome worden teruggeschreven naar dezelfde Problem ID en evidence-lineage;
+- wanneer een scan geen materiële wijziging oplevert, creëer geen duplicaat en geen kunstmatige contentactiviteit;
+- gebruikersrapportage meldt alleen materiële wijzigingen, concrete uitgevoerde vervolgacties en harde grenzen; interne pending-stappen zijn geen terminale uitkomst.
+
+Preventieregel: `RADAR_REPORT_ONLY_IS_INCOMPLETE`. Een geaccepteerd materieel radarsignaal zonder canonieke projectie naar Powerhouse/action/content/product-gap en zonder outcome/learning ownership blijft open werk.
