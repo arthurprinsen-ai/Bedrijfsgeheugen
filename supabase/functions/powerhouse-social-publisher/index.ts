@@ -71,14 +71,57 @@ async function composioExecuteArgsNoUser(apiKey:string,connectedAccountId:string
   return body;
 }
 async function composioLinkedInContext(db:any){
-  const {apiKey,accountId}=await composioConnectedAccount(db,'linkedin','COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID');
+  const apiKey=await secret(db,'COMPOSIO_API_KEY');
+  if(!apiKey)throw new Error('COMPOSIO_LINKEDIN_AUTH_REQUIRED');
+
   const {data,error}=await db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
   if(error)throw new Error('COMPOSIO_LINKEDIN_STATE_READ:'+error.message);
-  const userId=clean(data?.result?.user_id);
-  if(!userId)throw new Error('COMPOSIO_LINKEDIN_USER_ID_REQUIRED');
-  return {apiKey,accountId,userId};
-}
+  const state=data?.result||{};
+  const expectedPersonUrn=clean(state?.personal_author_urn)||'urn:li:person:N1twnCNCrD';
+  const expectedPersonId=expectedPersonUrn.replace(/^urn:li:person:/,'');
+  const stateUserId=clean(state?.user_id);
 
+  const candidates:any[]=[];
+  const seen=new Set<string>();
+  const addCandidate=(accountId:string,userId:string,source:string)=>{
+    const id=clean(accountId);const uid=clean(userId);
+    if(!id||!uid||seen.has(id))return;
+    seen.add(id);candidates.push({accountId:id,userId:uid,source});
+  };
+
+  addCandidate(clean(state?.connected_account_id),stateUserId,'setup_state');
+
+  const pinned=clean(await secret(db,'COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID'));
+  if(pinned)addCandidate(pinned,stateUserId,'pinned_secret');
+
+  try{
+    const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=linkedin&statuses=ACTIVE&account_type=ALL&limit=50`,{headers:{'x-api-key':apiKey}});
+    const body:any=await response.json().catch(()=>({}));
+    if(response.ok){
+      const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
+      for(const item of items){
+        if(clean(item?.status).toUpperCase()!=='ACTIVE'||item?.is_disabled===true)continue;
+        addCandidate(clean(item?.id||item?.connected_account_id),clean(item?.user_id),'active_discovery');
+      }
+    }
+  }catch(_error){}
+
+  let lastError='';
+  for(const candidate of candidates){
+    try{
+      const me=await composioExecuteArgs(apiKey,candidate.accountId,candidate.userId,'LINKEDIN_GET_MY_INFO',{});
+      const personId=deepPickString(me?.data||me,['id']);
+      if(personId&&personId===expectedPersonId){
+        return {apiKey,accountId:candidate.accountId,userId:candidate.userId,personId,connection_source:candidate.source};
+      }
+      lastError='LINKEDIN_CANONICAL_PERSON_MISMATCH';
+    }catch(error){
+      lastError=error instanceof Error?error.message:String(error);
+    }
+  }
+
+  throw new Error('LINKEDIN_REAUTH_REQUIRED:'+clean(lastError).slice(0,220));
+}
 function isLinkedInAuthPreflightError(error:any){
   const message=clean(error instanceof Error?error.message:error).toUpperCase();
   const status=Number((error as any)?.http||0);
