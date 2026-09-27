@@ -47,3 +47,18 @@ Fingerprint: `linkedin-composio-capability-proof-v1`.
 - Personal posting identity must be resolved through the authenticated LinkedIn member identity before any provider side effect.
 - Company-page posting capability must be proven separately from personal capability; do not infer organization permissions from a personal connection.
 - Capability discovery is read-only and runs before the canonical social publisher. The publisher remains the sole writer and all existing personal-truth, daily-channel and dedupe gates remain mandatory.
+
+
+## Personal source rotation no-gap rule (2026-09-27)
+
+Fingerprint: `personal-source-rotation-no-gap-v1`.
+
+Personal LinkedIn may never invent a daily-life event merely to satisfy a publishing cadence. If today's verified source pool is empty:
+- first use an unused verified non-sensitive personal source;
+- if all verified sources have been used before, select the least-recently-used verified non-sensitive source;
+- generate a fully new angle and wording from that factual source;
+- verbatim reuse, copied sentences, new facts, business bridges and management morals remain forbidden;
+- global final-text/story dedupe still applies;
+- the fallback remains a personal-life post, never company-page content.
+
+This rotation prevents an exhausted source pool from silently turning the daily channel into `PERSONAL_TRUTH_SOURCE_UNVERIFIED` while preserving truth and uniqueness.

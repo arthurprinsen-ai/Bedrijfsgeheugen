@@ -142,3 +142,16 @@ LinkedIn publication is Composio-only. Buffer is not an execution, recovery, sch
 - A revoked/expired token keeps the exact content claim resumable; reconnect and continue the same lineage.
 - Provider uncertainty after a create call forbids replacement publication until exact LinkedIn readback/reconciliation is complete.
 - Never route a failed Composio LinkedIn claim through Buffer or Make.
+
+
+## Daily self-healing delivery (2026-09-27)
+
+Fingerprint: `social-daily-self-healing-v1`.
+
+- Never treat multiple ACTIVE LinkedIn Composio connections as an ambiguity by itself.
+- Probe every active connection with `LINKEDIN_GET_MY_INFO` and accept only a connection that proves canonical member `urn:li:person:N1twnCNCrD`.
+- Prefer the canonical alias/default/newest healthy connection, but provider identity proof outranks aliases.
+- Ignore revoked/expired connections when another healthy canonical connection exists.
+- Only request user re-auth when no active connection can prove the canonical member.
+- The five-minute closed loop is the single owner. Do not add parallel schedulers or Buffer fallback.
+- After a successful LinkedIn create that returns a post URN, mark that daily claim republish-forbidden even if LinkedIn readback is unavailable/403. Reconcile the exact URN; never create a replacement post.
