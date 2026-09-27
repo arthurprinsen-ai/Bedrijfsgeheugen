@@ -28,5 +28,12 @@
       "publication readback",
       "learning writeback"
     ]
+  },
+  "compiler": {
+    "failure_class": "GOVERNANCE",
+    "scope": "POWERHOUSE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
