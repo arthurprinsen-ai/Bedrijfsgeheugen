@@ -18,13 +18,13 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/social-daily-self-healing-v1.test.mjs"
+      "tests/brain-social-daily-self-healing-v1.test.mjs"
     ],
     "canary": [
-      "tests/social-daily-self-healing-v1.test.mjs"
+      "tests/brain-social-daily-self-healing-v1.test.mjs"
     ],
     "shadow": [
-      "tests/social-daily-self-healing-v1.test.mjs"
+      "tests/brain-social-daily-self-healing-v1.test.mjs"
     ]
   }
 }
