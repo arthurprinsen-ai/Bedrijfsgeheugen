@@ -1,0 +1,30 @@
+{
+  "fingerprint": "social-daily-self-healing-v1",
+  "type": "SOCIAL_DELIVERY_RESILIENCE",
+  "failure_class": "DAILY_SOCIAL_DELIVERY_GAP",
+  "date": "2026-09-27",
+  "status": "active",
+  "scope": "linkedin_personal,linkedin_company,instagram_company",
+  "root_cause": [
+    "LinkedIn setup treated multiple active Composio connections as an ambiguity instead of probing for a healthy canonical identity.",
+    "The personal no-gap pool permanently excluded previously used source IDs, so the verified personal source pool could become empty even though reusable verified non-sensitive facts existed."
+  ],
+  "prevention": [
+    "Probe all active LinkedIn Composio connections and select the one that proves the canonical LinkedIn member; ignore revoked siblings.",
+    "Only require user re-auth when no active canonical connection is healthy.",
+    "Keep one five-minute closed-loop scheduler as the sole social delivery owner.",
+    "When unused personal sources are exhausted, rotate the least-recently-used verified non-sensitive source and require a fully new angle/copy.",
+    "Never use Buffer or invented personal facts as recovery."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/social-daily-self-healing-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/social-daily-self-healing-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/social-daily-self-healing-v1.test.mjs"
+    ]
+  }
+}
