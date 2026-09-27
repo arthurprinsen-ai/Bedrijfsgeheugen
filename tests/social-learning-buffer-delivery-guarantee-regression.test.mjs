@@ -51,7 +51,7 @@ test('social publisher atomically claims content_ready before any provider side 
   const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
   const claimIndex=publisher.indexOf(".eq('state', 'content_ready')");
   const dispatchIndex=publisher.indexOf("state: 'dispatching'");
-  const composioIndex=publisher.indexOf("publishInstagramViaComposio(db, art, runDate)");
+  const composioIndex=Math.max(publisher.indexOf("publishInstagramViaComposio(db, art, runDate"),publisher.indexOf("publishInstagramViaComposio(db,art,runDate"));
   const bufferIndex=publisher.indexOf("createPost(bufferToken, input)");
   assert.ok(claimIndex>=0 && dispatchIndex>=0,'atomic claim contract must exist');
   assert.ok(dispatchIndex<composioIndex,'Instagram provider call must occur only after dispatch claim');

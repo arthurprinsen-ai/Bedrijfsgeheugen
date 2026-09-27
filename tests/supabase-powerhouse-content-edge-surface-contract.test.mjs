@@ -66,16 +66,21 @@ test('social publisher retains identity gate, provider reconciliation, exact rea
   assert.match(publisher, /x-powerhouse-token/);
 });
 
-test('Instagram transport remains Mira-proof gated, Meta-primary and resilient to transport auth loss', () => {
-  assert.match(publisher, /NON_BUFFER_INSTAGRAM_PROVIDER_OWNED/);
-  assert.match(publisher, /instagram-meta-primary-composio-buffer-fallback-v1/);
-  assert.match(publisher, /instagramInput\(art,due,future\)/);
-  assert.match(publisher, /if\(instagramMetaConfig\)/);
-  assert.match(publisher, /if\(instagramComposioApiKey\)/);
-  assert.match(publisher, /if\(!instagramMetaConfig&&!instagramComposioApiKey&&bufferCircuit\.active\)/);
+test('Instagram transport is Mira-proof gated, Composio-only and bound to canonical provider identity', () => {
+  assert.match(publisher, /instagram-composio-only-canonical-identity-v1/);
+  assert.match(publisher, /INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen\.nl'/);
+  assert.match(publisher, /COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED/);
+  assert.match(publisher, /INSTAGRAM_GET_USER_INFO/);
+  assert.match(publisher, /ig_user_id:ctx\.providerUserId/);
+  assert.match(publisher, /INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
+  assert.match(publisher, /INSTAGRAM_GET_IG_MEDIA/);
   assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
-  assert.match(publisher, /BUFFER_RATE_LIMITED/);
-  assert.doesNotMatch(publisher, /publishInstagramViaMake|make\\.com|hook\\.eu/i);
+  const start=publisher.lastIndexOf("if (row.channel === 'instagram_company') {");
+  const end=publisher.indexOf("if (!bufferToken) {",start);
+  assert.ok(start>=0&&end>start,'canonical Instagram publish branch must be isolated before generic legacy Buffer handling');
+  const instagramBranch=publisher.slice(start,end);
+  assert.doesNotMatch(instagramBranch, /publishInstagramViaMeta|createPost\(bufferToken|BUFFER_RATE_LIMITED/);
+  assert.doesNotMatch(publisher, /publishInstagramViaMake|make\.com|hook\.eu/i);
 });
 
 test('Instagram replacement retry accounting is stable while the same external blocker persists', () => {
