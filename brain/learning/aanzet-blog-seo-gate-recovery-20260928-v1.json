@@ -1,0 +1,34 @@
+{
+  "fingerprint": "aanzet-blog-seo-gate-recovery-20260928-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "AanZET blog merged while a non-required technical SEO workflow had already found a title-length violation and missing functional figures.",
+  "root_cause": "The blog technical SEO workflow was informative rather than merge-blocking for this lineage, so auto-merge could complete before that quality defect was repaired.",
+  "prevention": [
+    "Treat Blog Technical SEO Gate failure as an immediate recovery obligation even when branch protection does not require it.",
+    "For new blog artifacts keep title <= 60 characters and include at least two functional figures with accessible SVG semantics.",
+    "Do not claim the content terminally live until the recovery candidate is merged and exact-main production readback succeeds."
+  ],
+  "evidence": {
+    "failed_run": 36394530358,
+    "failed_job": 108837689969,
+    "original_merge": "0fb851b0017f6898b895efd803992e0ca03617a3",
+    "repaired_file": "blog/aanzet-2026-emissieloze-trucks/index.html"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/seo-order-blog-contract.test.mjs"
+    ],
+    "invariants": [
+      "title length contract",
+      "two functional figures",
+      "same canonical URL and content lineage"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CONTENT_TECHNICAL_SEO",
+    "scope": "WEBSITE_BLOG",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
