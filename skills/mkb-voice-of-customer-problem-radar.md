@@ -335,3 +335,7 @@ Permanent:
 - gebruikersrapportage meldt alleen materiële wijzigingen, concrete uitgevoerde vervolgacties en harde grenzen; interne pending-stappen zijn geen terminale uitkomst.
 
 Preventieregel: `RADAR_REPORT_ONLY_IS_INCOMPLETE`. Een geaccepteerd materieel radarsignaal zonder canonieke projectie naar Powerhouse/action/content/product-gap en zonder outcome/learning ownership blijft open werk.
+
+
+## Growth Swarm integration
+Iedere gevalideerde probleemcluster is ook een feature voor `powerhouse-growth-swarm-v1`. De radar voedt friction-index, boardroom-blindness, lost-knowledge, M&A-risk, trigger-hijacking, contrarian content en Revenue Swarm accountprioritering. Een probleemcluster blijft markt/context-evidence totdat een concrete account/tenant-link is bewezen. Geen publiek prospectdetail en geen gefabriceerde marktstatistiek.
