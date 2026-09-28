@@ -1,0 +1,23 @@
+{
+  "fingerprint": "github|ci-pattern-memory|hot-files-failure-signatures|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Delivery Pattern Memory reuses canonical Brain learning for regression selection, but rolling GitHub CI history was not yet converted into empirical hot-file and repeated failure-signature memory.",
+  "prevention_rule": "Recompute rolling CI pattern memory from GitHub history daily. A file becomes hot only after repeated failed PR association. Hot-file evidence may raise adaptive risk but never lower it. One-off failures remain observations. Brain Delivery Pattern Memory remains the source for historical regression-test selection.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-ci-pattern-memory-v1.test.mjs"],
+    "shadow": ["tests/brain-integration-bundle-compiler-v1.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-ci-pattern-memory-v1.test.mjs", "tests/brain-integration-bundle-compiler-v1.test.mjs"],
+    "outputs": ["artifacts/ci-intelligence/pattern-memory.json"]
+  }
+}

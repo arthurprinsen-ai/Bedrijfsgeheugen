@@ -1,0 +1,14 @@
+{
+  "version": "POWERHOUSE-CI-PATTERN-MEMORY-v1",
+  "windowDays": 30,
+  "maxRuns": 80,
+  "maxFailedPullRequests": 25,
+  "hotFileMinFailures": 2,
+  "failurePatternMinOccurrences": 2,
+  "maxHotFiles": 30,
+  "maxFailurePatterns": 30,
+  "riskBoost": {
+    "hotFile": 1,
+    "repeatedFailurePattern": 1
+  }
+}
