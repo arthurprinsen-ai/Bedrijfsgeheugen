@@ -35,5 +35,11 @@
     "historical_replay": [
       "tests/brain-powerhouse-system-map-governance-v1.test.mjs"
     ]
-  }
+  },
+  "evidence": [
+    "tests/brain-powerhouse-system-map-governance-v1.test.mjs",
+    ".agents/skills/powerhouse-system-map-governance/SKILL.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "docs/powerhouse/POWERHOUSE_SYSTEM_MAP_GOVERNANCE.md"
+  ]
 }
