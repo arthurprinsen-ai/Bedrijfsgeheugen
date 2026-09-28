@@ -3,7 +3,7 @@
   "status": "CANDIDATE",
   "date": "2026-09-28",
   "obligation_id": "powerhouse-linkedin-sales-machine-v1",
-  "failure_class": "REVENUE_EXECUTION",
+  "failure_class": "IMPROVEMENT",
   "scope": "LINKEDIN_SALES",
   "machine_enforceable": true,
   "repeat_count": 1,
@@ -79,5 +79,19 @@
       "provider_capability",
       "provider_acknowledgement"
     ]
-  }
+  },
+  "compiler": {
+    "failure_class": "IMPROVEMENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "Production Powerhouse already had LinkedIn publishing, comment execution, relationship scoring and public-research evidence before this change.",
+    "Provider capability discovery confirmed LinkedIn post creation and comment creation paths, while no verified send-DM or create-reaction capability was available.",
+    "Production planner generated a sales-air-cover recommendation and evidence-bound LinkedIn comment candidates from fresh relationship research.",
+    "False-positive comment candidates were explicitly skipped by the company-specific relevance hardening rule; only evidence-bound context is eligible.",
+    "The canonical scheduler remains powerhouse-commercial-learning-v1 and all actions write back to the existing sales action/outcome lineage."
+  ],
+  "rootCause": "Powerhouse had posting, relationship scoring, public research and isolated comment capability, but they were not orchestrated as one revenue sequence. Direct-message capability was also being conceptually treated as if it might exist despite no supported provider action being available."
 }
