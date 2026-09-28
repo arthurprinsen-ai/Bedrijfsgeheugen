@@ -417,3 +417,15 @@ Rules:
 Canonical policy: `config/powerhouse-ci-calibration-v1.json`.
 Engine: `tools/delivery/ci-calibration-engine.mjs`.
 Regressions: `tests/brain-ci-calibration-engine-v1.test.mjs` and `tests/brain-ci-calibration-wiring-v1.test.mjs`.
+
+
+## Fan-out aware daily concurrency tuning
+
+Fingerprint: `github|ci-autonomous-optimizer|fanout-skip-aware-tuning|v1`.
+
+Daily concurrency tuning MUST consider workflow fan-out p95 and skipped-job ratio in addition to queue pressure and failures.
+
+- High fan-out or skipped-job waste reduces autonomous parallelism and increases batching.
+- Increasing parallelism requires low queue, low failure, low fan-out and low skip pressure.
+- Observations remain telemetry; only bounded approved tuning fields persist.
+- Protected merge, exact-SHA, security and production readback are immutable safety constraints.

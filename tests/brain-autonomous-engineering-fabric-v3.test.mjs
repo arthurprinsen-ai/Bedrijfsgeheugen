@@ -49,3 +49,39 @@ test('canonical v3 policy validates',async()=>{
   assert.equal(result.ok,true);
   assert.deepEqual(result.errors,[]);
 });
+
+
+test('daily optimizer reacts to fanout and skip waste without persisting observations',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,safety:{}};
+  const result=optimizeDailyTuning({metrics:{
+    queue_wait_seconds_p95:20,
+    execution_seconds_p95:200,
+    cancelled_jobs:0,
+    failed_jobs:1,
+    skipped_jobs:30,
+    sampled_jobs:50,
+    workflow_fanout_per_sha_p95:12
+  },current});
+  assert.equal(result.tuning.max_parallel_packages,3);
+  assert.equal(result.tuning.candidate_batch_window_seconds,30);
+  assert.ok(result.decisions.includes('reduce-fanout-and-batch-more'));
+  assert.equal(result.signals.workflow_fanout_per_sha_p95,12);
+  assert.equal(result.signals.skipped_rate,0.6);
+  assert.equal(Object.hasOwn(result.tuning,'observation'),false);
+});
+
+test('daily optimizer holds parallelism in the neutral fanout and skip zone',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,safety:{}};
+  const result=optimizeDailyTuning({metrics:{
+    queue_wait_seconds_p95:10,
+    execution_seconds_p95:100,
+    cancelled_jobs:0,
+    failed_jobs:0,
+    skipped_jobs:20,
+    sampled_jobs:50,
+    workflow_fanout_per_sha_p95:9
+  },current});
+  assert.equal(result.tuning.max_parallel_packages,4);
+  assert.equal(result.decisions.includes('increase-safe-parallelism'),false);
+  assert.equal(result.decisions.includes('reduce-fanout-and-batch-more'),false);
+});

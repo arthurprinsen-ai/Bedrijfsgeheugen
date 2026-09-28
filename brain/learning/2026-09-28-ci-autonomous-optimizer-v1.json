@@ -1,0 +1,37 @@
+{
+  "fingerprint": "github|ci-autonomous-optimizer|fanout-skip-aware-tuning|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The daily autonomous engineering optimizer tuned from queue, execution, cancellations and failures, but ignored workflow fan-out and skipped-job waste. It could therefore increase parallelism even while orchestration fan-out remained unnecessarily high.",
+  "prevention_rule": "Daily tuning must include workflow fan-out p95 and skipped-job ratio. High fan-out or skip waste reduces parallelism and increases batching. Safe parallelism may increase only when queue, failure, fan-out and skip pressure are all low. Observations remain telemetry and are never persisted as tuning fields.",
+  "enforcement": [
+    "scripts/brain/autonomous-engineering-fabric-v3.mjs",
+    "tests/brain-autonomous-engineering-fabric-v3.test.mjs",
+    ".github/workflows/powerhouse-autonomous-engineering-optimizer.yml"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ],
+    "safety": "Persistent tuning remains bounded to existing safe tuning fields and mandatory safety booleans."
+  }
+}
