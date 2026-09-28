@@ -1,0 +1,51 @@
+---
+name: powerhouse-system-map-governance
+description: Use for every material Powerhouse change that adds, removes, renames, changes ownership of, or changes relationships between skills, agents, intelligence, workflows, connectors, data flows, authorities, charts or control surfaces.
+---
+
+# Powerhouse System Map Governance
+
+Fingerprint: `powerhouse|system-map|same-lineage-auto-writeback|v1`.
+
+## Canonical surfaces
+
+- Machine-readable authority: `platform/system-map/canonical-system-map.mjs`
+- Human architecture: `docs/powerhouse/POWERHOUSE_SYSTEM_MAP_GOVERNANCE.md`
+- Portal projection: `/portal-v2/?page=powerhouse-control-center`
+- Human mirror/handbook: the Notion System Map authority already registered in the canonical map.
+
+## Mandatory behavior
+
+Every current and future chat, agent, workflow or autonomous node that makes a material structural Powerhouse change MUST update the System Map in the same delivery lineage.
+
+A material structural change includes at least:
+- skill/capability creation, deletion, rename, version or responsibility change;
+- agent creation, deletion, ownership, routing, inputs, outputs or authority change;
+- intelligence-layer or decision-loop change;
+- workflow, scheduler, connector, provider or runtime-authority change;
+- data-flow, dependency, relation, topology or control-surface change;
+- chart/dashboard/surface addition or removal when it represents canonical Powerhouse topology or intelligence.
+
+## Required writeback
+
+Before terminal status, update as applicable:
+1. machine-readable System Map;
+2. human architecture/change documentation;
+3. relevant skill inventory and ownership/relationship metadata;
+4. Brain learning/prevention;
+5. append-only development ledger;
+6. portal/human projection if topology is shown there.
+
+Then perform a read-after-write and prove the new node/relation is discoverable.
+
+## Fail closed
+
+If the underlying change is complete but the System Map, human documentation or required projection is stale, the state is:
+- `SYSTEM_MAP_WRITEBACK_INCOMPLETE` for System Map drift;
+- `WRITEBACK_INCOMPLETE` for other missing closure artifacts.
+
+Neither state is terminal green.
+
+## No manual reminder dependency
+
+The user must never need to ask separately to "update skills/documentation/system map". This obligation is inherited automatically from AGENTS.md by all current and future Powerhouse execution nodes.
