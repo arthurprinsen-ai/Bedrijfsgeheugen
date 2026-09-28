@@ -59,5 +59,12 @@
   ],
   "failed_approaches": [
     "Configured setup-node cache and npm ci against package-lock.json before verifying that this repository has no package-lock; RLS/Skill Projection immediately exposed the invalid assumption."
-  ]
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
