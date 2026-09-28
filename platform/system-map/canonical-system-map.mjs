@@ -106,7 +106,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         improvementQueue:'public.powerhouse_prediction_improvement_queue_v2',
         audit:'public.powerhouse_prediction_learning_audit_v2()',
         brain:'scripts/brain/foresight-autonomy.mjs',
-        portal:'portal-v2/foresight-intelligence.js'
+        portal:'portal-v2/foresight-intelligence.js',
+        contextualPortal:'portal-v2/foresight-context-ui.js',
+        predictionQualityApi:'netlify/functions/portal-prediction-intelligence.mjs'
       }),
       productionEvidence:Object.freeze({
         githubMergeSha:'16a15a7ae0c13a3a626c2fedba498c46123ba5c2',
