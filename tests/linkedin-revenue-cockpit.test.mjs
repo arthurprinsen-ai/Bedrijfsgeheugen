@@ -104,8 +104,8 @@ test('LinkedIn cockpit autopilot is part of the canonical social publisher', () 
   assert.match(source, /async function runLinkedInCockpitAutopilot\(db:any\)/);
   assert.match(source, /LINKEDIN_CREATE_COMMENT_ON_POST/);
   assert.match(source, /\.eq\('status','suggested'\)/);
-  assert.match(source, /status:'dispatching'/);
-  assert.match(source, /status:'executed'/);
+  assert.match(source, /status:'waiting'/);
+  assert.match(source, /status:'done'/);
   assert.match(source, /provider_ack_verified:true/);
   assert.match(source, /powerhouse_record_outcome/);
 });
