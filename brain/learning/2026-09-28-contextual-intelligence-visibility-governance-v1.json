@@ -32,7 +32,6 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/foresight-context-ui.test.mjs",
       "tests/portal-contextual-foresight-v1.test.mjs"
     ]
   },
