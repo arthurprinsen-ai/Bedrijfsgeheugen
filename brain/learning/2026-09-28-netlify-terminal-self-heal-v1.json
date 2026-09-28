@@ -29,6 +29,9 @@
     ],
     "canary": [
       "tests/brain-netlify-terminal-self-heal-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-terminal-self-heal-v1.test.mjs"
     ]
   },
   "compiler": {
