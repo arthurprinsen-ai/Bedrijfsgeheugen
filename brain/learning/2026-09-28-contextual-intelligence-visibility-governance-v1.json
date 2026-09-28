@@ -13,7 +13,8 @@
   "regression_contract": "portal-v2/tests/foresight-context-ui.test.mjs",
   "tests": [
     "portal-v2/tests/foresight-context-ui.test.mjs",
-    "tests/portal-contextual-foresight-v1.test.mjs"
+    "tests/portal-contextual-foresight-v1.test.mjs",
+    "tests/brain-contextual-intelligence-visibility-governance-v1.test.mjs"
   ],
   "evidence": {
     "foresight_skill": ".agents/skills/powerhouse-foresight-prediction-intelligence/SKILL.md",
@@ -32,7 +33,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-contextual-foresight-v1.test.mjs"
+      "tests/brain-contextual-intelligence-visibility-governance-v1.test.mjs"
     ]
   },
   "skill_targets": [
