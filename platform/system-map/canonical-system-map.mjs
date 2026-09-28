@@ -193,6 +193,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         realizedValueObservedNotSynthesized:true,
         learningUpdatesSharedPolicy:true,
         contextualPortalProjection:true,
+        roadmapContextBound:true,
+        capabilityGraphContextBound:true,
         customerPortalTenantScopedOnly:true,
         noGlobalUnscopedGraphInCustomerUi:true
       })
