@@ -97,3 +97,18 @@ De Relationship Revenue Engine geeft niet alleen leads door. Bij iedere gekwalif
 
 ## Growth Swarm projection
 Alle relationship intelligence projecteert voortaan ook naar `powerhouse-growth-swarm-v1`. Relationship warmth blijft geen kooptrigger; het is één feature naast fresh trigger evidence, dark-funnel convergentie, friction/knowledge/M&A risk, economic evidence, fatigue en outcomes. De Growth Swarm kiest daarna de volgende play en het kanaal, of bewust `research_and_wait`. Geen parallel CRM.
+
+## Externe relatie-intelligentie — vaste regel
+Fingerprint: `powerhouse-external-relationship-intelligence-v1`.
+
+Iedere geverifieerde externe update over een bekende connectie of het bedrijf van die connectie — publieke internetbron, bedrijfsnieuws, publieke LinkedIn-context of reeds toegelaten provider-evidence — wordt standaard aan de bestaande relatiegraph gekoppeld en hergebruikt door Powerhouse.
+
+Projectie:
+- persoon/connectie: `bg_connecties.extra.powerhouse_external_intelligence`;
+- bedrijf: via `powerhouse_predictive_signals` naar `powerhouse_company_intelligence_v1`;
+- klant: `powerhouse_customer_external_intelligence_v1`;
+- downstream: Relationship Revenue, Trigger Acquisition, Growth Swarm, LinkedIn Sales Machine, Persuasion Revenue Optimizer, outreach timing, customer expansion en learning/calibration.
+
+Een LinkedIn-update is een context-/intentfeature, nooit zelfstandig bewijs van koopintentie. Bron, versheid en confidence blijven onderdeel van de evidence. Geen parallel CRM, geen tweede scheduler en geen report-only extern signaal wanneer een bekende persoon of onderneming kan worden gematcht.
+
+De projectie `public.powerhouse_project_external_relationship_intelligence_v1(date)` draait vóór relationship scoring en trigger acquisition in de bestaande `powerhouse-commercial-learning-v1` cyclus.
