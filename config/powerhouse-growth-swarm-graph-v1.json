@@ -1,0 +1,14 @@
+{
+  "version": "powerhouse-growth-swarm-graph-v1",
+  "rule": "all commercial growth nodes use canonical Powerhouse evidence and write outcomes back",
+  "flows": [
+    "relationships -> research -> triggers -> revenue_swarm",
+    "problem_radar -> content -> seo -> growth_events",
+    "scans -> benchmark -> friction_index -> portal",
+    "linkedin -> dark_funnel -> outcomes",
+    "workshops -> scans -> benchmark -> portal",
+    "ma_due_diligence -> risk_learning -> partner_pipeline",
+    "growth_swarm -> sales_actions -> outcomes -> learning"
+  ],
+  "privacy": ["aggregate benchmark minimum group 5", "no participant identity", "no private prospect data in public content"]
+}
