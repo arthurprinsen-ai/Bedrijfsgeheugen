@@ -198,6 +198,39 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'linkedin-sales-machine-public-intent-bridge',
+      label:'LinkedIn Sales Machine — Public Intent Bridge',
+      authority:'netlify+supabase',
+      owner:'commercial-intelligence',
+      status:'LIVE_PROVEN_RUNTIME',
+      inputs:Object.freeze(['selfscan report-request','SaaS checkout-start','website attribution context']),
+      outputs:Object.freeze(['PII-free growth events','commercial intent evidence','Growth Swarm/NBA context','outcome-learning input']),
+      runtime:Object.freeze({
+        websiteRoutes:Object.freeze(['/zelfscan','/afsluiten']),
+        eventEndpoint:'/api/growth-event',
+        netlifyFunction:'netlify/functions/growth-event.mjs',
+        supabaseIngest:'growth-datahub-ingest',
+        linkedinSkill:'.agents/skills/powerhouse-linkedin-sales-machine/SKILL.md'
+      }),
+      productionEvidence:Object.freeze({
+        githubImplementationMergeSha:'6bce84b1a3d3f7eba1b7291895f7e7925945fd31',
+        productionReadbackRun:36474142016,
+        skillProjectionRun:36474141948,
+        netlifyDeployId:'6abac341b59a3f00080a08dc',
+        netlifyCommitRef:'6bce84b1a3d3f7eba1b7291895f7e7925945fd31',
+        netlifyPublishedAt:'2026-09-28T19:44:41.885Z'
+      }),
+      invariants:Object.freeze({
+        piiInGrowthTelemetry:false,
+        purposeBoundContactHandling:true,
+        oneCanonicalGrowthLoop:true,
+        noParallelCrm:true,
+        noParallelIntentStore:true,
+        consentAndSuppressionRemainAuthoritative:true,
+        evidenceAndFatigueGatesRemainAuthoritative:true
+      })
+    }),
+    Object.freeze({
       id:'daily-full-connection-enrichment',
       label:'Daily Full Connection Enrichment',
       authority:'supabase',
