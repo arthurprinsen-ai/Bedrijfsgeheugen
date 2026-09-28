@@ -28,3 +28,10 @@ No learning may become a production mutation directly. Unknown evidence remains 
 - `tests/powerhouse-daily-self-evolution.test.mjs`
 - `supabase/migrations/20260928194500_powerhouse_self_improvement_layer_v1.sql`
 - `platform/system-map/canonical-system-map.mjs`
+
+## Runtime hardening
+
+Production verification exposed one architectural inefficiency: the first daily self-improvement orchestrator synchronously invoked the heavier Company Intelligence cycle. That duplicated orchestration ownership and made the observer unnecessarily long-running.
+
+The hardened runtime now reads the current canonical Company Intelligence projections and Self-Improvement control state. Company Intelligence and autonomous-improvement keep their own canonical schedulers. Regression: `tests/brain-self-improvement-runtime-nonblocking-v1.test.mjs`.
+
