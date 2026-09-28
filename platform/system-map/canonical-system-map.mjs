@@ -93,7 +93,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Powerhouse Foresight & Prediction Intelligence v2',
       authority:'supabase',
       owner:'whole-brain-intelligence',
-      status:'CANDIDATE_DELIVERY',
+      status:'LIVE_PROVEN_RUNTIME',
       inputs:Object.freeze(['Company Graph','predictive signals','external signals','operating outcomes','forecast history','forecast calibration']),
       outputs:Object.freeze(['calibrated forecasts','scenario ensembles','leading indicators','prediction quality','resolution debt','bounded prediction improvement challengers']),
       runtime:Object.freeze({
@@ -107,6 +107,26 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         audit:'public.powerhouse_prediction_learning_audit_v2()',
         brain:'scripts/brain/foresight-autonomy.mjs',
         portal:'portal-v2/foresight-intelligence.js'
+      }),
+      productionEvidence:Object.freeze({
+        githubMergeSha:'16a15a7ae0c13a3a626c2fedba498c46123ba5c2',
+        migrationName:'powerhouse_foresight_prediction_intelligence_v2',
+        forecastTotal:1177,
+        forecastsDue:3,
+        resolvedTotal:3,
+        resolutionDebt:0,
+        brierScore:0.1092,
+        calibrationError:0.3297,
+        timingMaeDays:8.9,
+        signalTotal:143,
+        independentSourceTypes:3,
+        topics:16,
+        statisticallyUsableBuckets:0,
+        predictionState:'CALIBRATION_DEGRADED',
+        auditCron:'35 6 * * *',
+        predictiveEngineCron:'8 6 * * *',
+        calibratorCron:'50 * * * *',
+        runtimeReadbackAt:'2026-09-28T18:45:25Z'
       }),
       invariants:Object.freeze({
         predictionIsNotFact:true,
