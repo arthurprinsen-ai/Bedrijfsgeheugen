@@ -27,3 +27,5 @@
 - Canonical commercial scheduler: 1
 - Parallel Growth Play schedulers: 0
 - Control-plane operation: cb0b6417-2acd-4897-989b-3e0c987e92fb
+
+- Delivery metadata base SHA: 46739777d0a5563001a3520e046a29a57b0b9ec8
