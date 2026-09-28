@@ -73,16 +73,17 @@ test('website browser verification stays exact-candidate and preserves scoped cl
   assert.match(websiteLane, /python3 tools\/ci\/serve-clean-urls\.py --port 4173 --bind 127\.0\.0\.1/);
   assert.match(websiteLane, /http:\/\/127\.0\.0\.1:4173/);
   assert.match(websiteLane, /BASE_URL: \$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
-  assert.match(websiteLane, /name: Build and serve exact local candidate for broad browser checks/);
-  assert.match(websiteLane, /UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
+  assert.match(websiteLane, /name: Build and serve exact local candidate only when Netlify preview is unavailable/);
+  assert.match(websiteLane, /preview_mode == 'local-exact-candidate'/);
+  assert.match(websiteLane, /UI_VR_BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
   assert.match(websiteLane, /ref:\s*\$\{\{ inputs\.candidate_sha \}\}/);
 });
 
 test('local website verification builds the same final artifact layer as Netlify', () => {
   assert.match(websiteLane, /COMMIT_REF: \$\{\{ inputs\.candidate_sha \}\}/);
   const finalBuildCalls = websiteLane.match(/node tools\/bouw-release-evidence\.mjs/g) || [];
-  assert.ok(finalBuildCalls.length >= 2, 'page-seo and browser fallback must both execute the final Netlify build layer');
-  assert.match(websiteLane, /DEPLOY_ID: required-page-seo-local/);
+  assert.ok(finalBuildCalls.length >= 2, 'canonical Netlify parity build and local browser fallback must both execute the final build layer');
+  assert.match(websiteLane, /DEPLOY_ID: required-netlify-build-parity/);
   assert.match(websiteLane, /DEPLOY_ID: required-browser-local/);
 });
 
