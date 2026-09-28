@@ -89,3 +89,7 @@ Runtime: `public.powerhouse_prepare_autonomous_outreach_v1(date)` -> `public.pow
 
 ## LinkedIn sales machine
 Gebruik `powerhouse-linkedin-sales-machine-v1` als sociale commerciële laag vóór of naast private outreach. Een concrete relevante LinkedIn-post kan een contextuele commenttouch krijgen; geaggregeerde triggerpatronen voeden `linkedin_company` als sales-air-cover; inbound engagement wordt intent-evidence. LinkedIn DM wordt nooit gesimuleerd wanneer de provider geen send-DM capability heeft. In dat geval blijft e-mail de private fallback. Bij een geslaagde LinkedIn-comment wacht private e-mail 24 uur.
+
+
+### Revenue-first kanaalbeslissing
+De Relationship Revenue Engine geeft niet alleen leads door. Bij iedere gekwalificeerde relatie kiest Powerhouse zelfstandig de beste toegestane vervolgstap uit `linkedin_context_comment`, `linkedin_company_air_cover`, `private_email`, `nurture_wait` of een later ondersteund kanaal. De keuze wordt gevoed door first-party relatie-evidence, actuele triggerkwaliteit, eerdere touches, fatigue/suppression en gerealiseerde outcomes. Een ontbrekende provider-capability mag nooit worden gesimuleerd.
