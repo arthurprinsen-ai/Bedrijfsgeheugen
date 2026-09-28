@@ -167,6 +167,7 @@ declare
   v_content int:=0;
   v_actions int:=0;
   v_decisions int:=0;
+  v_rows int:=0;
 begin
   -- 1) MKB Friction Index: when the privacy floor is met, automatically create content demand.
   insert into public.powerhouse_content_recommendations(
@@ -212,7 +213,8 @@ begin
   order by g.swarm_score desc
   limit 2
   on conflict(dedupe_key) do update set priority=excluded.priority,reason=excluded.reason,evidence=excluded.evidence,updated_at=v_now;
-  get diagnostics v_actions=v_actions+row_count;
+  get diagnostics v_rows=row_count;
+  v_actions:=v_actions+v_rows;
 
   -- 3) Anti-consultancy challenge: a concrete conversion action on qualified scan/website interest.
   insert into public.powerhouse_sales_actions(
@@ -242,7 +244,8 @@ begin
   order by g.swarm_score desc
   limit 5
   on conflict(dedupe_key) do nothing;
-  get diagnostics v_actions=v_actions+row_count;
+  get diagnostics v_rows=row_count;
+  v_actions:=v_actions+v_rows;
 
   -- 4) Boardroom blindness: use aggregate recurring management/execution evidence.
   insert into public.powerhouse_content_recommendations(
@@ -267,7 +270,8 @@ begin
   where swarm_score>=.35
   having count(*)>=5
   on conflict(dedupe_key) do update set priority=excluded.priority,reason=excluded.reason,evidence=excluded.evidence,updated_at=v_now;
-  get diagnostics v_content=v_content+row_count;
+  get diagnostics v_rows=row_count;
+  v_content:=v_content+v_rows;
 
   -- 5) Competitor/problem switch pages: generate canonical SEO work items from repeated trigger types.
   with patterns as (
@@ -299,7 +303,8 @@ begin
     'suggested',v_now
   from patterns p
   on conflict(dedupe_key) do update set priority=excluded.priority,reason=excluded.reason,evidence=excluded.evidence,message_draft=excluded.message_draft,updated_at=v_now;
-  get diagnostics v_actions=v_actions+row_count;
+  get diagnostics v_rows=row_count;
+  v_actions:=v_actions+v_rows;
 
   -- 6) Data contribution flywheel: only after explicit consent recorded in scan payload.
   insert into public.powerhouse_sales_actions(
@@ -319,9 +324,10 @@ begin
     'suggested',v_now
   from public.scan_inzendingen s
   where s.submission_key is not null
-    and coalesce((s.payload->>'benchmark_consent')::boolean,false)=true
+    and lower(coalesce(s.payload->>'benchmark_consent','')) in ('true','1','yes','ja')
   on conflict(dedupe_key) do nothing;
-  get diagnostics v_actions=v_actions+row_count;
+  get diagnostics v_rows=row_count;
+  v_actions:=v_actions+v_rows;
 
   -- 7) Risk reversal: only for high-fit evidence-backed opportunities; bounded, conditional, never a blanket guarantee.
   insert into public.powerhouse_sales_actions(
@@ -357,7 +363,8 @@ begin
   order by g.swarm_score desc,g.expected_revenue_eur desc
   limit 5
   on conflict(dedupe_key) do nothing;
-  get diagnostics v_actions=v_actions+row_count;
+  get diagnostics v_rows=row_count;
+  v_actions:=v_actions+v_rows;
 
   -- Persist persuasion decision for every current top-ranked account/action path.
   insert into public.powerhouse_persuasion_decisions_v1(
