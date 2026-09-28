@@ -868,6 +868,41 @@
       "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "table:public.powerhouse_persuasion_principles_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260928140000_powerhouse_persuasion_growth_optimizer_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_persuasion_decisions_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260928140000_powerhouse_persuasion_growth_optimizer_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_persuasion_revenue_optimizer_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928140000_powerhouse_persuasion_growth_optimizer_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_activate_all_growth_plays_v2",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928140000_powerhouse_persuasion_growth_optimizer_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_execute_growth_play_actions_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928141000_powerhouse_growth_play_action_executor_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs",
+      "required": true
     }
   ]
 }
