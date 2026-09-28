@@ -4,6 +4,22 @@ const sharedLearning = Object.freeze(['outcome.v1','pattern.v1']);
 
 export const DEFAULT_AGENT_TEAM = Object.freeze([
   Object.freeze({
+    id:'agent-integration-engineer',
+    domains:['Operations','Product','Website','Data'],
+    capabilities:['analyze','integrate','verify','optimize'],
+    tasks:['integrate-specialist-patches','resolve-safe-conflicts','assemble-single-candidate','verify-candidate-coherence'],
+    playbooks:['one-writer-candidate-integration','late-bound-closure','critical-path-batching'],
+    learningContracts:[...sharedLearning,'engineering.v1','delivery.v1'],
+  }),
+  Object.freeze({
+    id:'agent-code-quality',
+    domains:['Product','Website','Data','Operations'],
+    capabilities:['analyze','audit','optimize','verify'],
+    tasks:['detect-duplication','enforce-architecture-patterns','review-maintainability','verify-design-system-consistency'],
+    playbooks:['reuse-before-create','quality-pass-before-candidate','hot-file-avoidance'],
+    learningContracts:[...sharedLearning,'engineering.v1','quality.v1'],
+  }),
+  Object.freeze({
     id:'agent-reliability',
     domains:['Reliability','Operations'],
     capabilities:['analyze','diagnose','recover','verify'],
