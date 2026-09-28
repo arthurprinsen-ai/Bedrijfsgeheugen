@@ -1,11 +1,26 @@
 {
   "version": "POWERHOUSE-ADAPTIVE-DELIVERY-v1",
   "riskLevels": {
-    "R0": {"label":"non-executable","fullSharedSuite":false},
-    "R1": {"label":"low-risk-control-plane","fullSharedSuite":false},
-    "R2": {"label":"bounded-runtime","fullSharedSuite":true},
-    "R3": {"label":"production-runtime","fullSharedSuite":true},
-    "R4": {"label":"security-or-release-authority","fullSharedSuite":true}
+    "R0": {
+      "label": "non-executable",
+      "fullSharedSuite": false
+    },
+    "R1": {
+      "label": "low-risk-control-plane",
+      "fullSharedSuite": false
+    },
+    "R2": {
+      "label": "bounded-runtime",
+      "fullSharedSuite": true
+    },
+    "R3": {
+      "label": "production-runtime",
+      "fullSharedSuite": true
+    },
+    "R4": {
+      "label": "security-or-release-authority",
+      "fullSharedSuite": true
+    }
   },
   "hotPaths": [
     ".github/workflows/required-test.yml",
@@ -27,22 +42,253 @@
     "styles.css"
   ],
   "riskRules": [
-    {"risk":"R4","paths":["supabase/migrations/","supabase/schema","config/brain-platform-adapters.json",".github/workflows/production-","tools/production/","scripts/production/"]},
-    {"risk":"R3","paths":["netlify/functions/","portal-v2/","portal-next/","klantportaal.html","index.html","script.js","styles.css","netlify.toml","_redirects","assets/","components/","pages/","site/"]},
-    {"risk":"R2","paths":["tools/","scripts/","brain/","platform/","automation/","config/"]},
-    {"risk":"R1","paths":[".github/","tests/",".agents/","skills/"]},
-    {"risk":"R0","paths":["docs/","brain/learning/"]}
+    {
+      "risk": "R4",
+      "paths": [
+        "supabase/migrations/",
+        "supabase/schema",
+        "config/brain-platform-adapters.json",
+        ".github/workflows/production-",
+        "tools/production/",
+        "scripts/production/"
+      ]
+    },
+    {
+      "risk": "R3",
+      "paths": [
+        "netlify/functions/",
+        "portal-v2/",
+        "portal-next/",
+        "klantportaal.html",
+        "index.html",
+        "script.js",
+        "styles.css",
+        "netlify.toml",
+        "_redirects",
+        "assets/",
+        "components/",
+        "pages/",
+        "site/"
+      ]
+    },
+    {
+      "risk": "R2",
+      "paths": [
+        "tools/",
+        "scripts/",
+        "brain/",
+        "platform/",
+        "automation/",
+        "config/"
+      ]
+    },
+    {
+      "risk": "R1",
+      "paths": [
+        ".github/",
+        "tests/",
+        ".agents/",
+        "skills/"
+      ]
+    },
+    {
+      "risk": "R0",
+      "paths": [
+        "docs/",
+        "brain/learning/"
+      ]
+    }
   ],
   "capabilities": [
-    {"id":"delivery-control-plane","paths":[".github/workflows/","tools/delivery/","tools/brain-delivery-system.mjs","config/brain-delivery-system.json"],"tests":["tests/brain-ci-admission-single-flight.test.mjs","tests/brain-change-scoped-release-lanes.test.mjs","tests/brain-ci-critical-path-acceleration-v1.test.mjs"]},
-    {"id":"brain-runtime","paths":["brain/","scripts/brain/","platform/"],"tests":["tests/brain-fast-development-protocol-v2.test.mjs","tests/brain-autonomous-engineering-fabric-v3.test.mjs","tests/unified-brain-production-handoff.test.mjs"]},
-    {"id":"portal-runtime","paths":["portal-v2/","portal-next/","klantportaal.html","klantenportaal-"],"tests":["tests/klantportaal-v2-flow.test.mjs","tests/klantportaal-v2-pages.test.mjs","tests/portal-production-contract.test.mjs"]},
-    {"id":"website-runtime","paths":["index.html","script.js","styles.css","assets/","components/","pages/","site/","tools/site-shell/"],"tests":["tests/final-site-navigation-contract.test.mjs","tests/website-release-risk.test.mjs","tests/site-shell-public-route-inventory.test.mjs"]},
-    {"id":"supabase-security","paths":["supabase/"],"tests":["tests/supabase-production-schema-replay-parity-v1.test.mjs"]},
-    {"id":"automation-runtime","paths":["automation/","notion/","make/"],"tests":["tests/delivery-test-coverage-guard.test.mjs"]}
+    {
+      "id": "delivery-control-plane",
+      "paths": [
+        ".github/workflows/",
+        "tools/delivery/",
+        "tools/brain-delivery-system.mjs",
+        "config/brain-delivery-system.json"
+      ],
+      "tests": [
+        "tests/brain-ci-admission-single-flight.test.mjs",
+        "tests/brain-change-scoped-release-lanes.test.mjs",
+        "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+      ]
+    },
+    {
+      "id": "brain-runtime",
+      "paths": [
+        "brain/",
+        "scripts/brain/",
+        "platform/"
+      ],
+      "tests": [
+        "tests/brain-fast-development-protocol-v2.test.mjs",
+        "tests/brain-autonomous-engineering-fabric-v3.test.mjs",
+        "tests/unified-brain-production-handoff.test.mjs"
+      ]
+    },
+    {
+      "id": "portal-runtime",
+      "paths": [
+        "portal-v2/",
+        "portal-next/",
+        "klantportaal.html",
+        "klantenportaal-"
+      ],
+      "tests": [
+        "tests/klantportaal-v2-flow.test.mjs",
+        "tests/klantportaal-v2-pages.test.mjs",
+        "tests/portal-production-contract.test.mjs"
+      ]
+    },
+    {
+      "id": "website-runtime",
+      "paths": [
+        "index.html",
+        "script.js",
+        "styles.css",
+        "assets/",
+        "components/",
+        "pages/",
+        "site/",
+        "tools/site-shell/"
+      ],
+      "tests": [
+        "tests/final-site-navigation-contract.test.mjs",
+        "tests/website-release-risk.test.mjs",
+        "tests/site-shell-public-route-inventory.test.mjs"
+      ]
+    },
+    {
+      "id": "supabase-security",
+      "paths": [
+        "supabase/"
+      ],
+      "tests": [
+        "tests/supabase-production-schema-replay-parity-v1.test.mjs"
+      ]
+    },
+    {
+      "id": "automation-runtime",
+      "paths": [
+        "automation/",
+        "notion/",
+        "make/"
+      ],
+      "tests": [
+        "tests/delivery-test-coverage-guard.test.mjs"
+      ]
+    }
   ],
   "alwaysTests": [
     "tests/brain-material-writeback-closure-guard.test.mjs",
     "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+  ],
+  "dependencyGraph": [
+    {
+      "id": "required-test-root",
+      "roots": [
+        ".github/workflows/required-test.yml"
+      ],
+      "riskFloor": "R2",
+      "capabilities": [
+        "delivery-control-plane",
+        "brain-runtime",
+        "portal-runtime",
+        "website-runtime",
+        "automation-runtime"
+      ],
+      "tests": [
+        "tests/brain-ci-admission-single-flight.test.mjs",
+        "tests/brain-change-scoped-release-lanes.test.mjs",
+        "tests/brain-integration-bundle-compiler-v1.test.mjs",
+        "tests/delivery-test-coverage-guard.test.mjs"
+      ]
+    },
+    {
+      "id": "integration-bundle-root",
+      "roots": [
+        "tools/delivery/integration-bundle-compiler.mjs",
+        "config/powerhouse-integration-bundle-v1.json"
+      ],
+      "riskFloor": "R2",
+      "capabilities": [
+        "delivery-control-plane",
+        "brain-runtime"
+      ],
+      "tests": [
+        "tests/brain-integration-bundle-compiler-v1.test.mjs",
+        "tests/brain-delivery-pattern-memory-v1.test.mjs",
+        "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+      ]
+    },
+    {
+      "id": "adaptive-router-root",
+      "roots": [
+        "tools/delivery/adaptive-delivery-engine.mjs",
+        "config/powerhouse-adaptive-delivery-v1.json"
+      ],
+      "riskFloor": "R2",
+      "capabilities": [
+        "delivery-control-plane"
+      ],
+      "tests": [
+        "tests/brain-adaptive-delivery-engine-v1.test.mjs",
+        "tests/brain-integration-bundle-compiler-v1.test.mjs"
+      ]
+    },
+    {
+      "id": "package-runtime-root",
+      "roots": [
+        "package.json",
+        "package-lock.json"
+      ],
+      "riskFloor": "R3",
+      "capabilities": [
+        "brain-runtime",
+        "portal-runtime",
+        "website-runtime",
+        "automation-runtime"
+      ],
+      "tests": [
+        "tests/delivery-test-coverage-guard.test.mjs",
+        "tests/website-release-risk.test.mjs",
+        "tests/portal-production-contract.test.mjs"
+      ]
+    },
+    {
+      "id": "netlify-runtime-root",
+      "roots": [
+        "netlify.toml",
+        "_redirects",
+        "netlify/functions/"
+      ],
+      "riskFloor": "R3",
+      "capabilities": [
+        "website-runtime"
+      ],
+      "tests": [
+        "tests/site-shell-website-release-risk.test.mjs",
+        "tests/website-release-risk.test.mjs",
+        "tests/final-site-navigation-contract.test.mjs"
+      ]
+    },
+    {
+      "id": "supabase-authority-root",
+      "roots": [
+        "supabase/migrations/",
+        "supabase/schema",
+        "config/brain-platform-adapters.json"
+      ],
+      "riskFloor": "R4",
+      "capabilities": [
+        "supabase-security",
+        "brain-runtime"
+      ],
+      "tests": [
+        "tests/supabase-production-schema-replay-parity-v1.test.mjs",
+        "tests/control-plane-supabase-terminal-readback-v1.test.mjs"
+      ]
+    }
   ]
 }

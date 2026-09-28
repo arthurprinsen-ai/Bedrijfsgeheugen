@@ -58,6 +58,17 @@ export function createAdaptiveDeliveryPlan({ changedPaths = [], policy } = {}) {
     for (const test of capability.tests || []) tests.add(test);
   }
 
+  const dependencyMatches = [];
+  for (const node of policy.dependencyGraph || []) {
+    const matchedRoots = paths.filter(path => matchesAny(path, node.roots || []));
+    if (!matchedRoots.length) continue;
+    dependencyMatches.push({ id: node.id, matchedRoots });
+    for (const capability of node.capabilities || []) capabilities.push(capability);
+    for (const test of node.tests || []) tests.add(test);
+    const floor = node.riskFloor || 'R0';
+    if (riskOrder.indexOf(floor) > riskOrder.indexOf(risk)) risk = floor;
+  }
+
   const unknownPaths = paths.filter(path => !matchedRiskPaths.has(path) && !capabilityMatchedPaths.has(path));
   const hot = paths.some(path => matchesAny(path, policy.hotPaths || []));
   if (hot && riskOrder.indexOf(risk) < riskOrder.indexOf('R2')) risk = 'R2';
@@ -68,6 +79,10 @@ export function createAdaptiveDeliveryPlan({ changedPaths = [], policy } = {}) {
     hot,
     capabilities: Object.freeze(unique(capabilities).sort()),
     tests: Object.freeze([...tests].sort()),
+    dependencyMatches: Object.freeze(dependencyMatches.map(item => Object.freeze({
+      id: item.id,
+      matchedRoots: Object.freeze([...item.matchedRoots].sort())
+    }))),
     fullSharedSuite: policy.riskLevels?.[risk]?.fullSharedSuite !== false,
     unknownPaths: Object.freeze(unknownPaths.sort())
   });

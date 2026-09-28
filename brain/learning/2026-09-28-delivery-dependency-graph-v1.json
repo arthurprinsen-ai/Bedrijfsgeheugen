@@ -1,0 +1,36 @@
+{
+  "fingerprint": "github|delivery-dependency-graph|hot-root-propagation|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Hot-path handling only raised aggregate risk. It did not express which downstream capabilities and regressions depend on a shared control-plane or manifest root, so critical cross-cutting changes could still rely on coarse full-suite coverage rather than explicit impact propagation.",
+  "prevention_rule": "Maintain a versioned delivery dependency graph for shared roots. When a root changes, propagate its risk floor, downstream capabilities and named regressions into the Adaptive Delivery plan. Graph propagation may only add evidence or raise risk.",
+  "enforcement": [
+    "config/powerhouse-adaptive-delivery-v1.json",
+    "tools/delivery/adaptive-delivery-engine.mjs",
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ]
+  }
+}

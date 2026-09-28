@@ -62,3 +62,33 @@ test('specific production workflow rule outranks broad .github governance rule',
   assert.equal(plan.risk, 'R4');
   assert.equal(plan.fullSharedSuite, true);
 });
+
+
+test('required-test hot root activates downstream capabilities through dependency graph', () => {
+  const plan = createAdaptiveDeliveryPlan({ changedPaths:['.github/workflows/required-test.yml'], policy });
+  assert.equal(plan.risk, 'R2');
+  assert.ok(plan.capabilities.includes('delivery-control-plane'));
+  assert.ok(plan.capabilities.includes('brain-runtime'));
+  assert.ok(plan.capabilities.includes('portal-runtime'));
+  assert.ok(plan.capabilities.includes('website-runtime'));
+  assert.ok(plan.capabilities.includes('automation-runtime'));
+  assert.ok(plan.tests.includes('tests/brain-integration-bundle-compiler-v1.test.mjs'));
+  assert.equal(plan.dependencyMatches.some(item => item.id === 'required-test-root'), true);
+});
+
+test('package manifest propagates to all runtime capabilities and raises risk floor to R3', () => {
+  const plan = createAdaptiveDeliveryPlan({ changedPaths:['package.json'], policy });
+  assert.equal(plan.risk, 'R3');
+  assert.ok(plan.capabilities.includes('brain-runtime'));
+  assert.ok(plan.capabilities.includes('portal-runtime'));
+  assert.ok(plan.capabilities.includes('website-runtime'));
+  assert.ok(plan.capabilities.includes('automation-runtime'));
+});
+
+test('supabase authority roots remain R4 and propagate brain runtime evidence', () => {
+  const plan = createAdaptiveDeliveryPlan({ changedPaths:['supabase/migrations/20260928_x.sql'], policy });
+  assert.equal(plan.risk, 'R4');
+  assert.ok(plan.capabilities.includes('supabase-security'));
+  assert.ok(plan.capabilities.includes('brain-runtime'));
+  assert.ok(plan.tests.includes('tests/control-plane-supabase-terminal-readback-v1.test.mjs'));
+});

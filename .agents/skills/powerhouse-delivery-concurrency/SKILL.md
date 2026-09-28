@@ -380,3 +380,20 @@ Rules:
 
 Canonical implementation: `tools/delivery/delivery-pattern-memory.mjs`.
 Regression: `tests/brain-delivery-pattern-memory-v1.test.mjs`.
+
+
+## Delivery Dependency Graph
+
+Fingerprint: `github|delivery-dependency-graph|hot-root-propagation|v1`.
+
+Shared control-plane and manifest roots MUST propagate their downstream impact explicitly.
+
+Rules:
+- maintain dependency nodes in `config/powerhouse-adaptive-delivery-v1.json`;
+- each node declares roots, a risk floor, downstream capabilities and named regressions;
+- matching a node may only add tests/capabilities or raise risk;
+- dependency propagation never lowers adaptive risk or removes security/production/readback evidence;
+- prefer graph nodes over ad-hoc hot-file exceptions when a shared root affects multiple capabilities;
+- keep roots narrow and explainable to avoid accidental CI fan-out.
+
+Regression: `tests/brain-adaptive-delivery-engine-v1.test.mjs`.
