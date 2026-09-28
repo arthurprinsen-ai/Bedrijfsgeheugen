@@ -724,3 +724,19 @@ Rules:
 
 Canonical implementation: `tools/delivery/delivery-pattern-memory.mjs`.
 Regression: `tests/brain-delivery-pattern-memory-v1.test.mjs`.
+
+
+## Terminal production-impact routing
+
+Fingerprint: `github|terminal-closure|production-impact-routing|v1`.
+
+Terminal closure MUST decide production evidence applicability from the canonical production-impact path contract, never from delivery-lane names.
+
+- If every changed path is intentionally ignored by both `Production Source Snapshot` and `Production Release Readback`, protected-main containment is the terminal runtime authority.
+- If any production-bearing path remains, provider/readback proof is mandatory.
+- Mixed candidates are always production-bearing.
+- The production-impact policy must stay regression-locked to both production workflow `paths-ignore` lists.
+- This optimization removes impossible waits only; it never converts a runtime change into control-plane closure.
+
+Policy: `config/powerhouse-production-impact-v1.json`.
+Classifier: `tools/delivery/production-impact.mjs`.
