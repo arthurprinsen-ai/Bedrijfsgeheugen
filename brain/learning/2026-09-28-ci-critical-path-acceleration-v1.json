@@ -1,0 +1,37 @@
+{
+  "fingerprint": "github|ci-critical-path-acceleration|build-once-preview-reuse|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "GITHUB_DELIVERY",
+  "scope": "GITHUB",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "powerhouse-ci-acceleration-v1",
+  "root_cause": "PR delivery duplicated domain checks and website builds across preflight and lane jobs, while repeated dependency installs and unnecessary local browser builds consumed runner time even when an exact-SHA Netlify preview already existed.",
+  "prevention_rule": "Keep one PR-scoped Required authority, classify before expensive work, cancel superseded same-PR runs, use lockfile-bound dependency caches, avoid duplicate domain checks, reuse the exact-SHA Netlify preview for browser verification, and build locally only as a fail-safe fallback.",
+  "enforcement": [
+    ".github/workflows/required-test.yml",
+    ".github/workflows/lane-website.yml",
+    ".github/workflows/lane-backend.yml",
+    ".github/workflows/powerhouse-public-rls-regression-guard.yml",
+    ".github/workflows/powerhouse-ci-intelligence.yml",
+    "scripts/brain/powerhouse-ci-intelligence.mjs",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization",
+    "powerhouse-delivery-concurrency"
+  ],
+  "evidence": {
+    "source": "GitHub Actions run analysis 2026-09-28",
+    "observed_duplicate_patterns": [
+      "preflight repeated Supabase security independent of lane",
+      "preflight repeated Portal suite independent of lane",
+      "website page-seo rebuilt candidate after Netlify build parity",
+      "browser rebuilt candidate even when exact Netlify preview could be ready",
+      "multiple npm installs without lockfile cache reuse"
+    ]
+  },
+  "revision": 1
+}
