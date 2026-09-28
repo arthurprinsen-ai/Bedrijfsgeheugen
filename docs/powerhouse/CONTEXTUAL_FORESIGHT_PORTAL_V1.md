@@ -26,3 +26,12 @@ The visual layer does not introduce a second predictive model or forecast store.
 - `portal-v2/foresight-context.css`
 - `netlify/functions/portal-prediction-intelligence.mjs`
 - `portal-v2/tests/foresight-context-ui.test.mjs`
+
+
+## Production proof
+
+Status: **LIVE_PROVEN_RUNTIME**.
+
+The contextual foresight merge is present in the live production ancestry. Netlify production deploy `602973dace20523c20f0b656713243c5c6408f72` is ready and includes the contextual foresight merge. GitHub production verification completed successfully for both **Production Release Readback** and **Portal V2 Production DOM Readback**. The live deployment also exposes the authenticated `portal-prediction-intelligence` function.
+
+This proves the visual projection is not only present in source: it is part of the deployed Portal V2 runtime. Future changes that remove the contextual placements, uncertainty/evidence labels, scenario distinction, or prediction-quality surface are regressions against this contract.
