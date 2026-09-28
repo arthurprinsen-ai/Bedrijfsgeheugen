@@ -1278,3 +1278,21 @@ Mandatory:
 - persist which evidence path proved closure.
 
 Canonical learning: `brain/learning/2026-09-25-terminal-gate-trigger-awareness-v1.json`.
+
+
+## Netlify terminal self-healing
+
+Fingerprint: `delivery|netlify-terminal-self-heal|v1`.
+
+For every Netlify production promotion or recovery, the delivery owner must resolve provider truth against **current protected main**, not keep waiting on an obsolete expected SHA.
+
+Mandatory:
+- preflight GitHub current `main` SHA and Netlify current production deploy before any new transport side effect;
+- if Netlify is already `ready` + `production` on current main, treat the older expected SHA as safely superseded and continue terminal browser/provider readback; do not restart or re-promote the stale SHA;
+- if the Netlify write proxy/transport credential is expired, classify `NETLIFY_TRANSPORT_AUTH_EXPIRED`, rotate/reacquire the authorized transport once, then immediately re-read provider state before retrying;
+- never expose proxy expiry, deploy-start, or “waiting for current production” as a final user handoff while autonomous recovery remains possible;
+- after any retry, re-resolve current main because another protected merge may have advanced the target during recovery;
+- terminal proof is `Netlify state=ready` + `context=production` + `commit_ref=current protected main` (or a repository-proven safe descendant/supersession) + required browser/readback checks;
+- preserve one canonical delivery lineage; no duplicate recovery PR/deploy just because the transport token or proxy URL expired.
+
+This rule is inherited by chats, agents, skills, workflows and future delivery nodes through One Brain.
