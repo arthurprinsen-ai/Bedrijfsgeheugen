@@ -105,53 +105,10 @@ Do not independently normalize/hash personal story sources in application code. 
 If the canonical fingerprint function cannot be called or returns empty, publication fails closed before any provider write.
 
 
-## Provider auth preflight before claim
+## Provider token health preflight (2026-09-26)
 
-Fingerprint: `linkedin-auth-preflight-before-claim-v1`.
+Fingerprint: `social-provider-health-preflight-v1`.
 
-A Composio connected-account record with status `ACTIVE` is metadata, not provider health. Before moving a LinkedIn daily decision from `content_ready` to `dispatching`, before issuing/consuming a publication capability, before reserving a provider-side attempt, and before any external create call:
+An account reported as ACTIVE by Composio is not publication-ready until a live provider call proves the OAuth token still works. Before issuing or consuming a publication capability, LinkedIn must run `LINKEDIN_GET_MY_INFO` against the canonical connected account. A 401 or `REVOKED_ACCESS_TOKEN` means `COMPOSIO_LINKEDIN_REAUTH_REQUIRED`; keep the daily claim at `content_ready`, consume no publication capability, create no Buffer fallback, and resume the same unique artifact only after OAuth health is re-proven.
 
-- resolve the canonical connected account;
-- execute a minimal authenticated LinkedIn read (`LINKEDIN_GET_MY_INFO`);
-- require a valid member identity response;
-- classify HTTP 401/403, `REVOKED_ACCESS_TOKEN`, expired-token, auth-required or connection-required responses as pre-provider reauthorization state;
-- leave the exact daily decision resumable in `content_ready`;
-- record the obligation as `APPROVED` / waiting for reauthorization, never as terminal `BLOCKED`;
-- set `republish_forbidden=false` and `possible_provider_side_effect=false` because no write has occurred;
-- consume no one-time publish capability and create no uniqueness/provider side effect until preflight passes.
-
-After a provider create returns a LinkedIn URN, the opposite invariant applies: persist that exact URN, set `republish_forbidden=true`, and reconcile only that object. Never re-run create to repair readback.
-
-
-## Real provider preflight before publication side effects (2026-09-26)
-
-Fingerprint: `social-provider-preflight-resumable-auth-v1`.
-
-A Composio LinkedIn connection marked ACTIVE is not sufficient health evidence. Before a new daily LinkedIn claim is moved to dispatching, before publication capability consumption, before global uniqueness reservation and before any provider write, perform a real `LINKEDIN_GET_MY_INFO` call on the exact canonical connected account. A 401/403, revoked token, expired token or missing connection is a resumable authentication state when no provider side effect exists: preserve the same canonical claim as `content_ready`, record provider-auth evidence, consume no publication capability, and do not create a replacement claim. If a provider URN/create-success already exists, never re-publish; reconcile only that exact URN. Buffer remains non-authoritative and cannot block LinkedIn.
-
-
-## Composio-only social transport (2026-09-27)
-
-Fingerprint: `social-composio-only-transport-v1`.
-
-LinkedIn publication is Composio-only. Buffer is not an execution, recovery, scheduling or fallback transport for LinkedIn personal or LinkedIn company publication.
-
-- Perform Composio auth/identity preflight before publication claim/capability consumption.
-- Personal LinkedIn must resolve the intended member identity before write.
-- Company LinkedIn must resolve the intended organization and required organization scopes before write; missing `r_organization_admin` / organization write scope is a recoverable auth blocker, not permission to fall back to Buffer.
-- A revoked/expired token keeps the exact content claim resumable; reconnect and continue the same lineage.
-- Provider uncertainty after a create call forbids replacement publication until exact LinkedIn readback/reconciliation is complete.
-- Never route a failed Composio LinkedIn claim through Buffer or Make.
-
-
-## Daily self-healing delivery (2026-09-27)
-
-Fingerprint: `social-daily-self-healing-v1`.
-
-- Never treat multiple ACTIVE LinkedIn Composio connections as an ambiguity by itself.
-- Probe every active connection with `LINKEDIN_GET_MY_INFO` and accept only a connection that proves canonical member `urn:li:person:N1twnCNCrD`.
-- Prefer the canonical alias/default/newest healthy connection, but provider identity proof outranks aliases.
-- Ignore revoked/expired connections when another healthy canonical connection exists.
-- Only request user re-auth when no active connection can prove the canonical member.
-- The five-minute closed loop is the single owner. Do not add parallel schedulers or Buffer fallback.
-- After a successful LinkedIn create that returns a post URN, mark that daily claim republish-forbidden even if LinkedIn readback is unavailable/403. Reconcile the exact URN; never create a replacement post.
+When multiple LinkedIn connected accounts exist, stale/revoked accounts do not count as healthy. Prefer the single health-verified account with alias `bedrijfsgeheugen-canonical`; ambiguity is evaluated only across healthy candidates. The publisher must use the health-verified connected account recorded by `powerhouse-composio-linkedin-setup`, never a stale secret-pinned account id.
