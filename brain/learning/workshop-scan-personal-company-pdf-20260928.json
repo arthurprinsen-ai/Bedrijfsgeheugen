@@ -1,0 +1,27 @@
+{
+  "fingerprint": "workshop-scan|personal-company-pdf|trusted-logo-only|v1",
+  "date": "2026-09-28",
+  "change": "Personalise each workshop PDF with the participant's own scan outcome, company name and trusted company-site logo when available.",
+  "compiler": {
+    "failure_class": "generic_or_untrusted_workshop_report_branding"
+  },
+  "root_cause": "A workshop PDF could carry the company name but had no explicit reliable rule for company branding, creating a risk of generic, guessed or incorrect logos.",
+  "prevention_rule": "Workshop reports must be generated from the participant's own answers. Always render the entered company name. Show a client logo only when an asset successfully loads from the explicitly supplied company website or a non-free-mail company domain; otherwise render no logo placeholder and never substitute a third-party guessed brand.",
+  "evidence": {
+    "tests": [
+      "tests/components/workshop-scan-personalisation.test.mjs"
+    ],
+    "artifacts": [
+      "pages/scan.html",
+      "assets/scan-workshop.js",
+      "assets/scan-workshop.css"
+    ],
+    "route": "/scan"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Earlier workshop reports could show company context but had no durable rule preventing guessed, third-party or placeholder logos.",
+      "A participant-specific PDF must remain usable when no reliable company logo can be resolved; the report must simply omit the logo."
+    ]
+  }
+}

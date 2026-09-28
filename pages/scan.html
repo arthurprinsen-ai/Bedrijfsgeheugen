@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Workshopscan | Bedrijfsgeheugen</title>
-<meta name="description" content="Doe in circa 10 minuten de Bedrijfsgeheugen workshopscan. Ontvang direct jouw persoonlijke nulmeting, domeinscores, radar, top 3 kansen en 90-dagenplan als PDF.">
+<meta name="description" content="Doe in circa 10 minuten de Bedrijfsgeheugen workshopscan. Ontvang direct jouw persoonlijke bedrijfsbeeld, domeinscores, benchmark, top 3 hefbomen en 90-dagenplan als PDF.">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/scan">
 <meta name="theme-color" content="#0E2148">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -15,7 +15,7 @@
 </head>
 <body>
 <header><div class="wrap topbar"><a class="brand" href="/"><span class="brandmark">B</span><span><b>Bedrijfsgeheugen</b><small>AI-gedreven. Menselijk gericht.</small></span></a><span class="topbadge">Workshopscan · circa 10 min</span></div></header>
-<section class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">Workshop → scan → PDF → portaal</span><h1>Jouw bedrijf.<br>Jouw nulmeting.<br><span>Jouw volgende stap.</span></h1><p>Beantwoord 18 praktische vragen. Je ontvangt direct een persoonlijk scanrapport met een spiderdiagram per domein, jouw top 3 kansen, een eerste 90-dagenplan en een route naar het Bedrijfsgeheugen-portaal.</p><div class="hero-flow"><span class="flow-pill">1 · Online invullen</span><span class="flow-pill">2 · Direct PDF</span><span class="flow-pill">3 · Verder in portaal</span></div></div><div class="hero-visual"><img src="/assets/mensen/praktijk.jpg" alt="Ondernemers in gesprek"><div class="hero-card"><strong>6 domeinen</strong><small>van strategie tot AI</small></div><div class="hero-copy"><b>Geen abstract advies. Een concreet vertrekpunt.</b><div class="hand">Mira helpt je van inzicht naar actie.</div></div></div></div></section>
+<section class="hero"><div class="wrap hero-grid"><div><span class="eyebrow">Workshop → scan → PDF → portaal</span><h1>Jouw bedrijf.<br>Jouw bedrijfsbeeld.<br><span>Jouw volgende stap.</span></h1><p>Beantwoord 18 praktische vragen. Je ontvangt direct een persoonlijk scanrapport met een spiderdiagram per domein, jouw top 3 kansen, een eerste 90-dagenplan en een route naar het Bedrijfsgeheugen-portaal.</p><div class="hero-flow"><span class="flow-pill">1 · Online invullen</span><span class="flow-pill">2 · Direct PDF</span><span class="flow-pill">3 · Verder in portaal</span></div></div><div class="hero-visual"><img src="/assets/mensen/praktijk.jpg" alt="Ondernemers in gesprek"><div class="hero-card"><strong>6 domeinen</strong><small>van strategie tot AI</small></div><div class="hero-copy"><b>Geen abstract advies. Een concreet vertrekpunt.</b><div class="hand">Mira helpt je van inzicht naar actie.</div></div></div></div></section>
 <main class="wrap scan-shell">
 <section class="scan-card" id="scanCard">
   <div id="introStep">
@@ -23,6 +23,7 @@
     <h2 class="step-title">Eerst even over jouw bedrijf.</h2><p class="step-lead">Zo maken we het rapport persoonlijk en kunnen we de uitkomst later koppelen aan jouw workshop en portal.</p>
     <div class="intro-grid">
       <div class="field"><label for="company">Bedrijfsnaam *</label><input id="company" autocomplete="organization"></div>
+      <div class="field"><label for="website">Website <small>(optioneel, voor je bedrijfslogo)</small></label><input id="website" type="url" inputmode="url" autocomplete="url" placeholder="https://jouwbedrijf.nl"></div>
       <div class="field"><label for="name">Jouw naam *</label><input id="name" autocomplete="name"></div>
       <div class="field"><label for="email">E-mailadres *</label><input id="email" type="email" autocomplete="email"></div>
       <div class="field"><label for="employees">Aantal medewerkers *</label><select id="employees"><option value="">Kies…</option><option>1-10</option><option>11-25</option><option>26-50</option><option>51-100</option><option>101-250</option><option>250+</option></select></div>
@@ -40,7 +41,7 @@
     <div class="navrow"><button class="btn secondary" id="backBtn">← Terug</button><span></span></div>
   </div>
   <div id="loadingStep" class="loading hide"><div class="spinner"></div><h2 class="step-title">Jouw rapport wordt opgebouwd…</h2><p class="step-lead">We berekenen de zes domeinscores, bepalen de grootste kansen en bouwen jouw PDF.</p></div>
-  <div id="resultStep" class="hide"><span class="eyebrow">Jouw nulmeting</span><h2 class="step-title">Je scanrapport staat klaar.</h2><p class="step-lead">Dit is de online samenvatting. Download de volledige PDF om te delen of mee te nemen naar het vervolggesprek.</p><div class="summary-grid"><div class="summary-kpi"><strong id="overallScore">—</strong><span>bedrijfsgezondheid</span></div><div class="summary-kpi"><strong>3</strong><span>directe kansen</span></div><div class="summary-kpi"><strong>90 dagen</strong><span>eerste verbetercyclus</span></div></div><div class="radarbox"><canvas id="screenRadar" width="680" height="430"></canvas></div><div class="opportunities" id="screenOpps"></div><div class="notice">De workshopscan is een eerste nulmeting. In het portaal wordt deze verrijkt met bedrijfsdata, bronnen, acties, benchmarks en voortgang.</div><div class="result-actions"><button class="btn primary" id="downloadBtn">Download jouw PDF</button><a class="btn navy" href="/klantportaal?source=workshopscan">Open jouw portaal →</a><a class="btn secondary" href="/prijzen?utm_source=scanrapport&utm_medium=workshop&utm_campaign=frisse-blik">Bekijk trajecten & prijzen</a><button class="btn secondary" id="restartBtn">Opnieuw invullen</button></div><div id="pdfError" class="error hide">PDF genereren lukte niet. Gebruik dan ‘Afdrukken’ in je browser en kies ‘Opslaan als PDF’.</div></div>
+  <div id="resultStep" class="hide"><span class="eyebrow">Jouw persoonlijke scanuitkomst</span><h2 class="step-title">Je scanrapport staat klaar.</h2><p class="step-lead">Dit is de online samenvatting. Download de volledige PDF om te delen of mee te nemen naar het vervolggesprek.</p><div class="summary-grid"><div class="summary-kpi"><strong id="overallScore">—</strong><span>bedrijfsgezondheid</span></div><div class="summary-kpi"><strong>3</strong><span>directe kansen</span></div><div class="summary-kpi"><strong>90 dagen</strong><span>eerste verbetercyclus</span></div></div><div class="radarbox"><canvas id="screenRadar" width="680" height="430"></canvas></div><div class="opportunities" id="screenOpps"></div><div class="notice">De workshopscan is een eerste nulmeting. In het portaal wordt deze verrijkt met bedrijfsdata, bronnen, acties, benchmarks en voortgang.</div><div class="result-actions"><button class="btn primary" id="downloadBtn">Download jouw PDF</button><a class="btn navy" href="/klantportaal?source=workshopscan">Open jouw portaal →</a><a class="btn secondary" href="/prijzen?utm_source=scanrapport&utm_medium=workshop&utm_campaign=frisse-blik">Bekijk trajecten & prijzen</a><button class="btn secondary" id="restartBtn">Opnieuw invullen</button></div><div id="pdfError" class="error hide">PDF genereren lukte niet. Gebruik dan ‘Afdrukken’ in je browser en kies ‘Opslaan als PDF’.</div></div>
 </section>
 <aside class="preview-card"><div class="preview-head"><b>Wat je straks krijgt</b><small>Direct na vraag 18</small></div><div class="preview-body"><div class="preview-kpis"><div class="mini"><strong>0–10</strong><small>bedrijfsgezondheid</small></div><div class="mini"><strong>6</strong><small>domeinscores</small></div><div class="mini"><strong>3</strong><small>kansen met hefboom</small></div><div class="mini"><strong>90</strong><small>dagen acties</small></div></div><ul class="preview-list"><li>✓ Spiderdiagram met jouw profiel</li><li>✓ Benchmark-indicatie per domein</li><li>✓ Concrete kansen en eerste acties</li><li>✓ Portaal-USP’s en vervolgstappen</li></ul><div class="preview-note">De PDF is de brug naar jouw levende Bedrijfsgeheugen.</div></div></aside>
 </main>
@@ -54,7 +55,7 @@
   <div class="report-titleblock">
     <h1 class="report-display">Kracht, knelpunten<br>en <span>benchmark.</span></h1>
     <p>De scan laat zien waar al kracht zit, waar frictie ontstaat en waar de grootste afwijking ten opzichte van gemiddeld MKB zichtbaar wordt.</p>
-    <div class="report-company" id="reportCompanyLine"></div>
+    <div class="report-client"><img id="reportClientLogo" class="report-client-logo" alt="" hidden><div class="report-company" id="reportCompanyLine"></div></div>
   </div>
   <div class="insight-grid">
     <div class="insight-stack">
@@ -91,6 +92,7 @@
     <div class="report-partner"><span>AMERSFOORT<br>NEDERLAND<br>ONDERNEMERS</span><i></i><span>STERKERE<br>ONDERNEMERS<br>EEN STERKER<br>ECOSYSTEEM</span></div>
   </div>
   <div class="report-titleblock action-title">
+    <div class="report-client report-client-page2"><img id="reportClientLogo2" class="report-client-logo" alt="" hidden><div class="report-company" id="reportCompanyLine2"></div></div>
     <h1 class="report-display">Jouw 3 grootste hefbomen<br><span>naar 90 dagen actie.</span></h1>
     <p>Hier zit de meeste winst, rust en versnelling voor de komende 90 dagen.</p>
   </div>
