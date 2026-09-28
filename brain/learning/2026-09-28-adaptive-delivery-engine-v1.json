@@ -1,0 +1,50 @@
+{
+  "fingerprint": "github|adaptive-delivery|impact-risk-capability-routing|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "GITHUB_DELIVERY",
+  "scope": "CI",
+  "machine_enforceable": true,
+  "security_sensitive": false,
+  "obligation_id": "powerhouse-adaptive-delivery-v1",
+  "root_cause": "The canonical Required gate still carried a large unconditional shared preflight suite. Lane routing removed duplicate domain jobs, but low-risk documentation/governance changes continued to pay much of the same preflight cost as production runtime changes.",
+  "prevention_rule": "Classify every changed path into risk R0-R4 and affected capabilities before the heavy shared suite. R0/R1 may use the fast impact gate; R2-R4 and hot/unknown executable surfaces stay fail-closed on the full shared suite. Deploy-preview browser sweeps must apply bounded provider backpressure: lower default route/viewport concurrency and retry only explicit transient HTTP status classes; persistent responses remain failures.",
+  "enforcement": [
+    "config/powerhouse-adaptive-delivery-v1.json",
+    "tools/delivery/adaptive-delivery-engine.mjs",
+    ".github/workflows/required-test.yml",
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs",
+    "tools/site-shell/standalone-visibility-check.mjs",
+    "tests/site-shell-website-release-risk.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization",
+    "powerhouse-delivery-concurrency"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "test_evidence": [
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs",
+    "tests/site-shell-website-release-risk.test.mjs",
+    "tests/brain-standalone-visibility-boundedness-v1.test.mjs"
+  ],
+  "evidence": {
+    "first_protected_run": "Adaptive planner classified the control-plane candidate as R2/hot and selected the full shared suite as designed.",
+    "regression": "tests/brain-adaptive-delivery-engine-v1.test.mjs",
+    "preview_backpressure_incident": "The exact Netlify deploy preview returned bursts of HTTP 403 during a 4-route x 3-viewport visibility crawl while targeted route checks on the same preview were HTTP 200. The crawler now reduces preview concurrency and retries only bounded transient HTTP classes before failing closed."
+  }
+}

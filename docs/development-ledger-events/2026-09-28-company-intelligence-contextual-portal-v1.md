@@ -28,3 +28,9 @@
 - Published: 2026-09-28T19:48:21.076Z
 - Tenant-isolation evals: historical replay + shadow + canary green
 - Terminal state: `LIVE_PROVEN`
+
+## Runtime context addendum
+
+- Roadmap resolves the secured `portal.runtime` projection before contextual rendering.
+- Derived roadmap cards expose only available impact/effort evidence.
+- Capability Graph receives the same Company Intelligence context layer.
