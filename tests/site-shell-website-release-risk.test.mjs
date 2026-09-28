@@ -92,10 +92,12 @@ test('exact-candidate fallback never bypasses full visibility and CLS quality ga
   assert.match(websiteLane, /needs\.preview-ready\.outputs\.base_url/);
   assert.match(visibilityCheck, /if \(state\.cls > 0\.1\)/);
   assert.match(visibilityCheck, /CLS \$\{state\.cls\.toFixed\(3\)\} exceeds 0\.100/);
-  assert.match(visibilityCheck, /const viewportConcurrency = Math\.max\(1, Math\.min\(viewports\.length, Number\(process\.env\.UI_VR_VIEWPORT_CONCURRENCY \|\| viewports\.length\)\)\)/);
+  assert.match(visibilityCheck, /UI_VR_VIEWPORT_CONCURRENCY/);
+  assert.match(visibilityCheck, /baseUrl\.includes\('deploy-preview-'\) \? 1 : viewports\.length/);
   assert.match(visibilityCheck, /const runViewport = async viewport =>/);
   assert.match(visibilityCheck, /await Promise\.all\(viewports\.slice\(viewportIndex, viewportIndex \+ viewportConcurrency\)\.map\(runViewport\)\)/);
-  assert.match(visibilityCheck, /const routeConcurrency = Math\.max\(1, Number\(process\.env\.UI_VR_ROUTE_CONCURRENCY \|\| 4\)\)/);
+  assert.match(visibilityCheck, /UI_VR_ROUTE_CONCURRENCY/);
+  assert.match(visibilityCheck, /baseUrl\.includes\('deploy-preview-'\) \? 2 : 4/);
   assert.match(visibilityCheck, /await Promise\.all\(Array\.from\(\{ length: workerCount \}/);
   assert.match(visibilityCheck, /for \(let routeIndex = workerIndex; routeIndex < routes\.length; routeIndex \+= workerCount\)/);
   assert.match(visibilityCheck, /const route = routes\[routeIndex\]/);
@@ -139,4 +141,12 @@ test('governance and delivery policy changes stay control-plane without website 
   assert.equal(result.lane, 'control-plane');
   assert.equal(result.requires_preview, false);
   assert.deepEqual(result.affected_routes, []);
+});
+
+
+test('Netlify deploy-preview visibility crawl applies bounded provider backpressure recovery', () => {
+  assert.match(visibilityCheck, /new Set\(\[403, 408, 425, 429, 500, 502, 503, 504\]\)/);
+  assert.match(visibilityCheck, /for \(let attempt = 1; attempt <= 3; attempt\+\+\)/);
+  assert.match(visibilityCheck, /if \(status && !transientStatuses\.has\(status\)\) break/);
+  assert.match(visibilityCheck, /await sleep\(750 \* attempt\)/);
 });
