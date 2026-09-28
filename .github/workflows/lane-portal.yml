@@ -22,6 +22,8 @@ jobs:
           python-version: '3.12'
       - name: Verify portal production contracts
         run: node --test tests/portal-*.test.mjs tests/connector-*.test.mjs tests/customer-portal-routing.test.mjs tests/portal-production-contract.test.mjs
+      - name: Verify Portal V2 contracts
+        run: node --test portal-v2/tests/*.test.mjs
       - name: Verify source-derived portal parity guard
         run: |
           python -m unittest tests/portal-parity-source-contract.py -v
