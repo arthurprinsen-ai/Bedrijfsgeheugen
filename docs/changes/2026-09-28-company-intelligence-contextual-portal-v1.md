@@ -25,3 +25,9 @@ De globale Company Intelligence runtime-views worden niet rechtstreeks in klant-
 ## Tenant-isolatie evaluatie
 
 De contextuele portalprojectie heeft expliciete shadow- en canary-regressie voor tenantisolatie. De evaluatie projecteert twee gescheiden klantcontexten en faalt wanneer labels, bronnen, acties, learnings of waarden tussen die contexten lekken. De canary controleert daarnaast dat verwachte en gerealiseerde waarde semantisch gescheiden blijven.
+
+## Aanvullende contextbinding
+
+- Roadmap leest dezelfde tenant-scoped `portal.runtime` als de overige portaloppervlakken en toont Powerhouse-afgeleide impact/effort-tags alleen wanneer die waarden werkelijk aanwezig zijn.
+- Capability Graph krijgt dezelfde Company Intelligence-context erboven, zodat graph-relaties niet losstaan van besluit, actie, outcome en learning.
+- De visualisatie blijft fail-closed: geen tenant-runtime betekent geen synthetische Company Intelligence-context.
