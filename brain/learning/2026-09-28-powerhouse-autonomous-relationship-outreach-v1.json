@@ -26,6 +26,9 @@
   "evaluation": {
     "regression": [
       "tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs"
+    ],
+    "historical_replay": [
+      "tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs"
     ]
   },
   "version": "powerhouse-autonomous-relationship-outreach-v1",
