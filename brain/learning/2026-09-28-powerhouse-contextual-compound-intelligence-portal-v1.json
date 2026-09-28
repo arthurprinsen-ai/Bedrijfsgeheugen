@@ -14,5 +14,26 @@
     "canonical Supabase view reused",
     "no parallel learning store",
     "unknown is not green"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "CONTEXTUAL_SELF_IMPROVEMENT_VISIBILITY_GAP",
+    "scope": "PORTAL_INTELLIGENCE_VISIBILITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-foresight-prediction-intelligence",
+    "powerhouse-self-improvement-layer"
+  ],
+  "evaluation": {
+    "regression": [
+      "portal-v2/tests/foresight-context-ui.test.mjs"
+    ],
+    "invariants": [
+      "canonical self-improvement state reused",
+      "no parallel learning store",
+      "improvement claims require evidence"
+    ]
+  }
 }
