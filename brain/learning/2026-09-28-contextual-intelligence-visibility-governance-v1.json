@@ -22,5 +22,23 @@
     "system_map": "platform/system-map/canonical-system-map.mjs",
     "portal_component": "portal-v2/foresight-context-ui.js"
   },
-  "outcome": "Contextual intelligence visibility becomes a permanent architecture and delivery rule rather than a one-off foresight implementation."
+  "outcome": "Contextual intelligence visibility becomes a permanent architecture and delivery rule rather than a one-off foresight implementation.",
+  "compiler": {
+    "failure_class": "INTELLIGENCE_WITHOUT_CONTEXTUAL_VISIBILITY",
+    "scope": "WHOLE_BRAIN_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "portal-v2/tests/foresight-context-ui.test.mjs",
+      "tests/portal-contextual-foresight-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-company-intelligence-os",
+    "powerhouse-system-map-governance",
+    "powerhouse-foresight-prediction-intelligence"
+  ]
 }
