@@ -334,3 +334,30 @@ Mandatory:
 Canonical policy: `config/powerhouse-adaptive-delivery-v1.json`.
 Compiler: `tools/delivery/adaptive-delivery-engine.mjs`.
 Regression: `tests/brain-adaptive-delivery-engine-v1.test.mjs`.
+
+
+## One-write Integration Bundle Compiler
+
+Fingerprint: `github|integration-bundle|one-write-closure-compiler|v1`.
+
+Before expensive delivery work, Powerhouse MUST compile one deterministic Integration Bundle from the immutable candidate scope.
+
+The bundle is the shared derivation source for:
+- exact candidate identity;
+- adaptive R0-R4 risk and affected capabilities;
+- capability-specific tests;
+- material-writeback closure readiness;
+- canonical PR contract fields;
+- exactly one terminal writer intent per obligation.
+
+Rules:
+- never create a second integration writer or parallel mutation authority;
+- Repository Writer / terminal writer lease remain the only repository mutation authorities;
+- bundle identity must be deterministic for the same base/head/scope;
+- material candidates fail fast when Brain learning, human documentation or activity-ledger evidence is missing;
+- `mainEpoch` remains late-bound at terminal handoff so moving-main does not force speculative duplicate candidates;
+- the compiler may consolidate derivation, but may never weaken exact-head, security, protected merge, production or provider/browser readback gates.
+
+Canonical policy: `config/powerhouse-integration-bundle-v1.json`.
+Compiler: `tools/delivery/integration-bundle-compiler.mjs`.
+Regression: `tests/brain-integration-bundle-compiler-v1.test.mjs`.
