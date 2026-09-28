@@ -23,6 +23,13 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/approved-central-blog.yml': 'automation',
+  '.github/workflows/blog-bijwerken.yml': 'automation',
+  '.github/workflows/daily-blog-publisher.yml': 'automation',
+  '.github/workflows/menu-balk-fix.yml': 'automation',
+  '.github/workflows/paginacontrole.yml': 'automation',
+  '.github/workflows/repo-writer-candidate-shadow.yml': 'automation',
+  '.github/workflows/seo-controle.yml': 'automation',
+  '.github/workflows/weekblog.yml': 'automation',
   '.github/workflows/powerhouse-assurance.yml': 'backend',
   '.github/workflows/powerhouse-quality-intelligence.yml': 'backend',
   '.github/workflows/powerhouse-quality-surface-gate.yml': 'backend',
