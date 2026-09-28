@@ -54,3 +54,21 @@ Prediction quality is an explicit Self-Improvement objective. Degradation produc
 ## Terminal production proof
 
 This capability is LIVE_PROVEN_RUNTIME. Production readback on 2026-09-28 verified 1,177 forecasts, 3 resolved outcomes, zero resolution debt for currently due forecasts, Brier score 0.1092, calibration error 0.3297, timing MAE 8.9 days, 143 predictive signals and 3 independent source types. The current state is intentionally CALIBRATION_DEGRADED, which creates bounded improvement work rather than falsely reporting prediction quality as green. The prediction learning audit runs daily at 06:35 and reuses the existing predictive engine and forecast calibrator.
+
+## Portal visibility contract
+
+Foresight is not a detached dashboard. It must be projected contextually wherever it changes a decision.
+
+Required customer-facing placements:
+- Executive overview: "Wat zien we aankomen?" with the top evidence-backed goal forecasts.
+- Bedrijfssituatie, Cijfers en Branche/markt: current → expected → uncertainty band → target.
+- Businesscase, Waarde/financiering, Due diligence and Exit: forecast plus scenario/what-if impact.
+- Roadmap and Actieve acties: at-risk/off-track forecasts and the corresponding next-best actions.
+- Outcomes, Learning, Brain and Trust Center: forecast-quality evidence including Brier score, calibration error, timing MAE, resolution coverage and signal diversity.
+
+Visual rules:
+- Never fabricate a forecast when there are fewer than the required observed history points.
+- Always distinguish forecast from what-if scenario.
+- Always show uncertainty and evidence state.
+- Prediction-quality metrics are operational evidence, not customer-specific predictions.
+- Contextual projection must reuse the canonical business-context goal forecasts/scenarios and the canonical prediction-control view; no second forecasting model in the portal.

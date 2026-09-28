@@ -13,17 +13,20 @@
     "Improving prediction methods without enough resolved outcomes."
   ],
   "fix": "Add canonical prediction quality, resolution debt, horizon calibration, scenario ensemble and evidence-driven challenger controls over the existing forecast tables.",
-  "prevention_rule": "Every due forecast becomes explicit learning debt until resolved; method changes require resolved-outcome evidence and backtest-shadow-canary promotion.",
+  "prevention_rule": "Every due forecast becomes explicit learning debt until resolved; method changes require resolved-outcome evidence and backtest-shadow-canary promotion. Foresight must also be visible in the decision context where it changes action; a backend-only forecast capability is incomplete.",
   "regression_contract": "tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs",
   "tests": [
     "tests/powerhouse-foresight-autonomy.test.mjs",
-    "tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs"
+    "tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs",
+    "portal-v2/tests/foresight-context-ui.test.mjs"
   ],
   "evidence": {
     "brain": "scripts/brain/foresight-autonomy.mjs",
     "config": "config/powerhouse-foresight-autonomy.json",
     "migration": "supabase/migrations/20260928203500_powerhouse_foresight_prediction_intelligence_v2.sql",
-    "portal": "portal-v2/foresight-intelligence.js"
+    "portal": "portal-v2/foresight-intelligence.js",
+    "contextual_portal": "portal-v2/foresight-context-ui.js",
+    "prediction_quality_api": "netlify/functions/portal-prediction-intelligence.mjs"
   },
   "outcome": "Powerhouse can measure whether future predictions improve and generate bounded improvement challengers instead of merely generating more forecasts.",
   "compiler": {

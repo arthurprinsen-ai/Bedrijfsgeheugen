@@ -261,6 +261,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:portal-prediction-intelligence",
+      "type": "netlify_function",
+      "authority": "netlify/functions/portal-prediction-intelligence.mjs",
+      "evidence_contract": "portal-v2/tests/foresight-context-ui.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:powerhouse-composio-config",
       "type": "netlify_function",
       "authority": "netlify/functions/powerhouse-composio-config.mjs",
