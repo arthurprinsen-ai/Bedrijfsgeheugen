@@ -17,8 +17,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install runtime dependencies for backend contracts
-        run: npm install --no-audit --no-fund --silent
+        run: npm ci --prefer-offline --no-audit --no-fund --silent
       - name: Verify backend Brain runtime and Quality Intelligence contracts
         run: >-
           node --test
