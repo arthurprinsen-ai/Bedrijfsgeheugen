@@ -50,3 +50,11 @@ Hard rules:
 - `brain/contracts/self-improvement-layer-v1.json`
 
 The runtime reuses Company Intelligence OS, existing optimization candidates, quality events, model health, autonomous-improvement control, policy versions and protected delivery rather than creating competing authorities.
+
+## Runtime hardening
+
+Production verification exposed one architectural inefficiency: the first daily self-improvement orchestrator synchronously invoked the heavier Company Intelligence cycle. That duplicated orchestration ownership and made the observer unnecessarily long-running.
+
+The hardened runtime now reads the current canonical Company Intelligence projections and Self-Improvement control state. Company Intelligence and autonomous-improvement keep their own canonical schedulers. Regression: `tests/brain-self-improvement-runtime-nonblocking-v1.test.mjs`.
+
+The daily observer is intentionally thin: it snapshots current canonical state, records evidence and leaves heavy domain execution to its owning schedulers.

@@ -9,3 +9,10 @@
 - Prevention: no learning without evidence; no change without evaluation; no deployment without regression proof; no intelligence without measurable outcome; no uncontrolled self-modification; UNKNOWN is not green.
 - Production authority remains `BRAIN-DELIVERY-v2`; the new layer cannot directly rewrite production.
 - PR: https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/3211
+
+## Runtime hardening
+
+- Production verification detected a long-running synchronous dependency on the Company Intelligence cycle.
+- Fix: `powerhouse_run_self_improvement_layer_v1(date)` now consumes current canonical projections and does not duplicate Company Intelligence execution.
+- Regression: `tests/brain-self-improvement-runtime-nonblocking-v1.test.mjs`.
+- Canonical Company Intelligence and autonomous-improvement schedulers remain authoritative.
