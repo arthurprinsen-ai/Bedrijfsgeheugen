@@ -1,0 +1,86 @@
+name: Powerhouse Autonomous Engineering Optimizer
+
+on:
+  schedule:
+    - cron: '27 5 * * *'
+  workflow_dispatch:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'config/powerhouse-autonomous-engineering-fabric-v3.json'
+      - 'config/powerhouse-engineering-tuning.json'
+      - 'scripts/brain/autonomous-engineering-fabric-v3.mjs'
+      - 'tests/brain-autonomous-engineering-fabric-v3.test.mjs'
+      - '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml'
+
+permissions:
+  actions: read
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: powerhouse-autonomous-engineering-optimizer
+  cancel-in-progress: true
+
+jobs:
+  optimize:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Verify autonomous engineering fabric
+        run: |
+          node --test tests/brain-autonomous-engineering-fabric-v3.test.mjs
+          node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
+      - name: Measure current CI
+        if: github.event_name != 'pull_request'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/brain/powerhouse-ci-intelligence.mjs
+      - name: Compute bounded daily tuning
+        if: github.event_name != 'pull_request'
+        run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --optimize artifacts/ci-intelligence/latest.json
+      - name: Persist safe tuning through protected PR
+        if: github.event_name != 'pull_request'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          proposed="artifacts/engineering-optimizer/proposed-tuning.json"
+          cmp -s "$proposed" config/powerhouse-engineering-tuning.json && {
+            echo "No bounded tuning change needed today."
+            exit 0
+          }
+
+          existing="$(gh pr list --state open --search 'in:title "Powerhouse: daily engineering tuning"' --json number --jq '.[0].number // empty')"
+          if [ -n "$existing" ]; then
+            echo "Existing tuning PR #$existing is still authoritative; no duplicate created."
+            exit 0
+          fi
+
+          cp "$proposed" config/powerhouse-engineering-tuning.json
+          branch="automation/engineering-tuning-$GITHUB_RUN_ID"
+          git config user.name "Powerhouse Engineering Optimizer"
+          git config user.email "actions@users.noreply.github.com"
+          git checkout -b "$branch"
+          git add config/powerhouse-engineering-tuning.json
+          git commit -m "Engineering: daily bounded tuning"
+          git push origin "$branch"
+          url="$(gh pr create --base main --head "$branch" --title "Powerhouse: daily engineering tuning" --body $'Obligation-ID: powerhouse-daily-engineering-tuning-v1\nDelivery-Lane: automation\nCandidate-Type: implementation\nSupersedes: none\n\nBounded autonomous tuning only. Safety gates, exact-SHA identity, protected merge and production readback cannot be weakened by this optimizer.')"
+          gh pr merge "$url" --auto --squash || true
+      - uses: actions/upload-artifact@v4
+        if: always() && github.event_name != 'pull_request'
+        with:
+          name: autonomous-engineering-optimizer-${{ github.run_id }}
+          path: |
+            artifacts/ci-intelligence/latest.json
+            artifacts/engineering-optimizer/latest.json
+            artifacts/engineering-optimizer/proposed-tuning.json
+          if-no-files-found: warn
+          retention-days: 30
