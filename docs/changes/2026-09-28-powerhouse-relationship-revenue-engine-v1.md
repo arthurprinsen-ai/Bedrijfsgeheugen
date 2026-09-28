@@ -28,3 +28,7 @@ De researchselectie is nu uitvoerend gemaakt. Bestaande Powerhouse-nieuws/signal
 
 ## Live public research
 De Edge Function `powerhouse-relationship-public-research` is gedeployed. `public.powerhouse_dispatch_relationship_public_research_v1(date)` dispatcht deze bounded publieke research vanuit dezelfde bestaande `powerhouse-commercial-learning-v1` cyclus. De eerder tijdelijke losse research-cron is verwijderd; scoring, trigger-classificatie, opportunity-materialisatie en learning blijven volledig Powerhouse-eigendom.
+
+
+## Production proof — automated research
+De publieke researchworker is na runtime recovery opnieuw uitgevoerd en gaf HTTP 200. In de gecontroleerde batch zijn 10 relaties onderzocht; 8 leverden bruikbare actuele evidence op en 2 niet. Die evidence is canoniek teruggeschreven. Directe readback daarna: 10 recente research-events, 10 eligible trigger-records, 10 trigger-opportunities en 8 afgeronde research-actions. Er is geen externe outreach uitgevoerd en vendor-enrichment bleef false.
