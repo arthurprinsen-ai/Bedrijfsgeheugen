@@ -12,7 +12,8 @@
     "causes": [
       "post-create verification state was allowed to overwrite provider-write truth",
       "read/admin/token/media-proof capabilities were conflated with existence of an already-created provider side effect",
-      "watchdogs could reopen a completed publication obligation instead of treating its durable external ID as an anti-duplicate fence"
+      "watchdogs could reopen a completed publication obligation instead of treating its durable external ID as an anti-duplicate fence",
+      "database reconciliation and Instagram obligation triggers could retroactively force provider-created Instagram obligations back to BLOCKED"
     ]
   },
   "prevention_rules": [
@@ -21,18 +22,22 @@
     "Never downgrade an already provider-created social post solely because later readback, token, ACL or media-proof checks fail.",
     "Post-create verification failures become enrichment/reconciliation state, not publication failure.",
     "Future auth or media-quality repairs apply prospectively to the next claim and may not create a replacement for the current claim.",
-    "Watchdogs reconcile exact provider IDs and cannot reopen provider-created obligations into duplicate-capable states."
+    "Watchdogs reconcile exact provider IDs and cannot reopen provider-created obligations into duplicate-capable states.",
+    "Database reconciler and Instagram triggers must honor terminal provider side effects before any post-write proof downgrade."
   ],
   "evidence": {
     "incident_date": "2026-09-28",
     "linkedin_company_id": "urn:li:share:7510281040192602112",
     "linkedin_personal_id": "urn:li:share:7510280992931188736",
     "instagram_media_id": "18193272064401728",
-    "regression_test": "tests/brain-linkedin-composio-authority.test.mjs"
+    "regression_test": "tests/brain-linkedin-composio-authority.test.mjs",
+    "database_migration": "supabase/migrations/20260928122000_social_provider_write_terminal_reconcile_v1.sql",
+    "production_reconcile_blocked_count": 0
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-linkedin-composio-authority.test.mjs"
+      "tests/brain-linkedin-composio-authority.test.mjs",
+      "database:powerhouse_reconcile_content_outcomes_v1:2026-09-28"
     ],
     "canary": [
       "tests/brain-linkedin-composio-authority.test.mjs"
