@@ -69,7 +69,7 @@
       "date": "2026-09-28",
       "content_id": "blog:aanzet-2026-emissieloze-trucks",
       "slug": "aanzet-2026-emissieloze-trucks",
-      "state": "candidate",
+      "state": "live",
       "selected_at": "2026-09-28T07:55:00Z",
       "selection_mode": "powerhouse_problem_radar",
       "source_of_truth": "RVO AanZET 2026",
@@ -79,7 +79,18 @@
       ],
       "publication_channel": "blog",
       "company_linkedin_state": "blocked_provider_scope",
-      "company_linkedin_blocker": "r_organization_admin scope missing; do not reroute to personal LinkedIn"
+      "company_linkedin_blocker": "r_organization_admin scope missing; do not reroute to personal LinkedIn",
+      "merged_at": "2026-09-28T22:36:27.495Z",
+      "live_at": "2026-09-28T22:36:27.495Z",
+      "live_url": "https://www.bedrijfsgeheugen.nl/blog/aanzet-2026-emissieloze-trucks/",
+      "live_proof": {
+        "ok": true,
+        "status": 200,
+        "url": "https://www.bedrijfsgeheugen.nl/blog/aanzet-2026-emissieloze-trucks/",
+        "content_id": "blog:aanzet-2026-emissieloze-trucks",
+        "slug": "aanzet-2026-emissieloze-trucks",
+        "canonical": "https://www.bedrijfsgeheugen.nl/blog/aanzet-2026-emissieloze-trucks/"
+      }
     }
   }
 }
