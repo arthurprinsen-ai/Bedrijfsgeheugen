@@ -21,3 +21,9 @@
 - Evidence rule: only matched public evidence becomes VERIFIED runtime evidence
 - Existing producer: bg-bedrijfsnieuws-werkdagen
 - Existing orchestration: powerhouse-commercial-learning-v1
+
+- Automated research executor: public.powerhouse_execute_relationship_research_v1(date)
+- Public research worker: powerhouse-relationship-public-research
+- Dispatcher: public.powerhouse_dispatch_relationship_public_research_v1(date)
+- Scheduler owner remains: powerhouse-commercial-learning-v1
+- External search source: existing DataForSEO credentials; enrichment vendor dependency remains false
