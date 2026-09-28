@@ -65,7 +65,7 @@ CRM is a source adapter, not the brain. Company, person, opportunity, action, ou
 
 Canonical loop:
 
-`Evidence → Company Graph → System of Context → Prediction/Decision → Autonomous Action → Provider Readback → Outcome Memory → Realized Value → Calibration → Next Decision`
+`Evidence → Company Graph → System of Context → Prediction/Decision → Autonomous Action → Provider Readback → Outcome Memory → Realized Value → Learning → Compound → Next Decision`
 
 Canonical runtime surfaces:
 - `public.powerhouse_company_graph_nodes_v1`
@@ -74,6 +74,7 @@ Canonical runtime surfaces:
 - `public.powerhouse_autonomous_action_layer_v1`
 - `public.powerhouse_outcome_memory_v1`
 - `public.powerhouse_compound_intelligence_v1`
+- `public.powerhouse_run_company_intelligence_os_v1(date)`
 - `brain/company-intelligence/company-intelligence-os.mjs`
 - `brain/contracts/company-intelligence-os-v1.json`
 - `.agents/skills/powerhouse-company-intelligence-os/SKILL.md`
