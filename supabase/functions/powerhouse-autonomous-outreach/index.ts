@@ -31,14 +31,69 @@ function pick(obj:any,keys:string[]):string{
   }
   return'';
 }
-async function sendEmail(apiKey:string,accountId:string,recipient:string,subject:string,body:string){
+const PDF_ASSETS=new Set(['board_one_pager','evidence_teardown','lost_knowledge_case','friction_business_case','mini_benchmark','peer_benchmark']);
+
+function assetNeedsPdf(evidence:any){
+  const explicit=clean(evidence?.asset_format).toLowerCase();
+  if(explicit==='pdf')return true;
+  return PDF_ASSETS.has(clean(evidence?.give_asset).toLowerCase());
+}
+function safeEvidenceLines(evidence:any){
+  const rows:any[]=[];
+  for(const [label,key] of [
+    ['Aanleiding','trigger_type'],
+    ['Publiek signaal','headline'],
+    ['Samenvatting','summary'],
+    ['Bron','source_url'],
+    ['Strategie','persuasion_strategy']
+  ]){
+    const value=clean(evidence?.[key]);
+    if(value)rows.push({label,value});
+  }
+  return rows;
+}
+function buildPdfMarkdown(action:any){
+  const e=action.evidence||{};
+  const asset=clean(e.give_asset)||'evidence_one_pager';
+  const company=clean(action.company_name)||'Organisatie';
+  const person=clean(action.person_name);
+  const lines=safeEvidenceLines(e);
+  const factual=lines.length?lines.map((x:any)=>`- **${x.label}:** ${x.value}`).join('\n'):'- Er zijn nog onvoldoende harde openbare feiten om aanvullende claims te doen.';
+  return `# Bedrijfsgeheugen — ${asset.replaceAll('_',' ')}\n\n**Voor:** ${company}${person?' — '+person:''}\n\n## Waarom dit document\nDit document is automatisch samengesteld door Powerhouse als waardevolle vervolgstap. Alleen beschikbare broninformatie en expliciete aannames worden gebruikt; ontbrekende feiten worden niet ingevuld.\n\n## Beschikbare signalen\n${factual}\n\n## Wat nu relevant is\n${clean(action.message_draft)||'Bekijk eerst de beschikbare signalen en bepaal daarna de kleinste zinvolle vervolgstap.'}\n\n## Volgende stap\n${clean(e.get_ask)||'Geen verplichting; gebruik dit document als interne bespreekbasis.'}\n\n---\nBedrijfsgeheugen.nl — automatisch gegenereerd, evidence-bounded.\n`;
+}
+function deepFile(obj:any):any{
+  if(!obj)return null;
+  if(typeof obj==='object'){
+    if(typeof obj.s3key==='string'&&clean(obj.s3key)){
+      return {name:clean(obj.name)||clean(obj.filename)||'bedrijfsgeheugen.pdf',mimetype:clean(obj.mimetype)||clean(obj.mime_type)||'application/pdf',s3key:clean(obj.s3key)};
+    }
+    for(const v of Object.values(obj)){const found=deepFile(v);if(found)return found;}
+  }
+  return null;
+}
+async function convertTextToPdf(apiKey:string,markdown:string){
+  const response=await fetch(COMPOSIO_BASE+'/tools/execute/TEXT_TO_PDF_CONVERT_TEXT_TO_PDF',{
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':apiKey},
+    body:JSON.stringify({version:'latest',arguments:{file_type:'markdown',text:markdown}})
+  });
+  const payload:any=await response.json().catch(()=>({}));
+  if(!response.ok||payload?.successful!==true){
+    throw new Error('COMPOSIO_TEXT_TO_PDF_'+response.status+':'+clean(payload?.error||payload?.message||JSON.stringify(payload)).slice(0,300));
+  }
+  const file=deepFile(payload?.data||payload);
+  if(!file||file.mimetype!=='application/pdf')throw new Error('COMPOSIO_PDF_FILE_MISSING');
+  return file;
+}
+
+async function sendEmail(apiKey:string,accountId:string,recipient:string,subject:string,body:string,attachment:any=null){
   const response=await fetch(COMPOSIO_BASE+'/tools/execute/GMAIL_SEND_EMAIL',{
     method:'POST',
     headers:{'content-type':'application/json','x-api-key':apiKey},
     body:JSON.stringify({
       connected_account_id:accountId,
       version:'latest',
-      arguments:{recipient_email:recipient,subject,body,is_html:false,user_id:'me'}
+      arguments:{recipient_email:recipient,subject,body,is_html:false,user_id:'me',...(attachment?{attachment}:{} )}
     })
   });
   const payload:any=await response.json().catch(()=>({}));
@@ -96,13 +151,29 @@ Deno.serve(async(req:Request)=>{
       if(!claimed){results.push({action_id:action.action_id,status:'skipped',reason:'ALREADY_CLAIMED'});continue;}
 
       try{
-        const sent=await sendEmail(apiKey,accountId,recipient,subject,body);
+        let attachment:any=null;
+        let generatedAsset:any=null;
+        if(assetNeedsPdf(action.evidence)){
+          const markdown=buildPdfMarkdown(action);
+          attachment=await convertTextToPdf(apiKey,markdown);
+          generatedAsset={
+            format:'pdf',
+            give_asset:clean(action.evidence?.give_asset),
+            filename:attachment.name,
+            mimetype:attachment.mimetype,
+            s3key_present:true,
+            generated_at:now,
+            generator:'composio-text-to-pdf',
+            autonomous:true
+          };
+        }
+        const sent=await sendEmail(apiKey,accountId,recipient,subject,body,attachment);
         const providerId=sent.message_id||sent.thread_id;
         if(!providerId)throw new Error('GMAIL_PROVIDER_ID_MISSING');
 
         const evidence={...(action.evidence||{}),autonomous_outbound:{
           contract:CONTRACT,provider:'composio-gmail',provider_message_id:sent.message_id,provider_thread_id:sent.thread_id,
-          provider_ack_verified:true,sent_at:now,republish_forbidden:true,user_authorized:true
+          provider_ack_verified:true,sent_at:now,republish_forbidden:true,user_authorized:true,asset:generatedAsset
         }};
         const {error:uErr}=await db.from('powerhouse_sales_actions')
           .update({status:'done',executed_at:now,evidence,updated_at:now})
@@ -117,7 +188,7 @@ Deno.serve(async(req:Request)=>{
           occurred_at:now,channel:'email'
         },{onConflict:'dedupe_key'});
 
-        results.push({action_id:action.action_id,status:'sent',provider_message_id:sent.message_id,provider_thread_id:sent.thread_id});
+        results.push({action_id:action.action_id,status:'sent',provider_message_id:sent.message_id,provider_thread_id:sent.thread_id,pdf_attached:Boolean(generatedAsset)});
       }catch(err:any){
         const message=clean(err?.message||err).slice(0,500);
         await db.from('powerhouse_sales_actions').update({
