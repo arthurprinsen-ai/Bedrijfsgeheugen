@@ -331,3 +331,16 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Verification rule:** main advancement is toegestaan wanneer de borging-commit aantoonbaar ancestor is en de actuele lineage terminal groen is; cancelled superseded readbacks zijn geen functioneel bewijs.
 - **Owner:** Powerhouse continuity / Knowledge & Governance.
 - **Reusable lesson:** institutionalisering is een delivery-resultaat, geen documentatie-bijzaak.
+
+
+## 2026-09-28 — IMPROVEMENT — Management accounting value-driver intelligence v1
+- **Fingerprint:** `management-accounting|value-driver-graph|benchmark-to-roadmap|v1`.
+- **Signal:** productiviteit, workforce, finance, commercie en roadmap waren aanwezig maar nog niet als één causale management-accounting/value graph verbonden.
+- **Impact:** directie en toekomstige koper/investeerder konden niet consistent zien hoe operationele afwijkingen doorwerken naar marge, cash, kapitaal en ondernemingswaarde; roadmapacties misten een uniforme impact/effort/value-link.
+- **Rationale/root cause:** KPI-silo's zonder gedeelde value-driver semantiek; benchmarkvergelijkingen waren niet standaard gekoppeld aan impacttypen en roadmapprojectie.
+- **Final implementation:** fail-closed calculator en broncatalogus in `brain/economics/management-accounting-intelligence.mjs`; visualisatie op executive overview; aanvullende optionele data-invoer; benchmarkgedreven Powerhouse-roadmapkandidaten met impacttype, potentiële waarde, effort, prioriteit, sprint, duur en source fingerprint.
+- **Truth controls:** geen verzonnen benchmark of ontbrekende waarde; output per uur zodra uren bestaan; capaciteit ≠ cash; werkkapitaal ≠ EBITDA; waardering blijft ESTIMATED/POTENTIAL en een multiple moet expliciet onderbouwd zijn.
+- **Evidence:** authoritative source families documented in `docs/changes/2026-09-28-management-accounting-value-driver-intelligence-v1.md`.
+- **Regression gates:** `brain/economics/management-accounting-intelligence.test.mjs` en `portal-v2/modules/management-accounting-intelligence.test.mjs`.
+- **Owner:** Impact/Value Intelligence + Portal/Executive Cockpit.
+- **Reusable lesson:** stuur niet op losse KPI's; verbind workforce, productiviteit, operatie, commercie, marge, cash, kapitaal en waarde in één evidence-backed graph en laat alleen expliciet bewezen benchmarkgaps automatisch doorwerken naar roadmapprioriteit.
