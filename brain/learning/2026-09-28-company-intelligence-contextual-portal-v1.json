@@ -16,7 +16,11 @@
     "Expected value remains distinct from realized value.",
     "Outcome Memory and learning are shown only when evidence exists.",
     "All material contextual projection changes update the canonical System Map, skill, tests, docs and ledger in the same lineage.",
-    "Roadmap and capability graph surfaces must show contextual intelligence when tenant-scoped evidence exists; do not strand intelligence in the cockpit."
+    "Roadmap and capability graph surfaces must show contextual intelligence when tenant-scoped evidence exists; do not strand intelligence in the cockpit.",
+    "Every material Company Intelligence capability must define a decision-useful Portal V2 projection or explicitly document why no customer projection is appropriate.",
+    "Contextual portal projection uses authenticated tenant runtime only; demo, global aggregate or synthesized data may never fill a missing tenant context.",
+    "Forecast/expected values and observed/realized outcomes must remain visually and semantically distinct.",
+    "Contextual portal projection changes must update skill, learning, System Map, tests, change documentation and development ledger in the same lineage."
   ],
   "failure_class": "PORTAL_CONTEXT_PROJECTION_GAP",
   "machine_enforceable": true,
@@ -70,5 +74,14 @@
     "production_surface": "https://www.bedrijfsgeheugen.nl/portal-v2/",
     "tenant_isolation_evaluation": "historical_replay + shadow + canary green",
     "terminal_state": "LIVE_PROVEN"
+  },
+  "governance": {
+    "customer_language": "Wat zien we? → Waarom telt dit? → Wat verwachten we? → Wat doen we? → Wat kwam eruit? → Wat leren we?",
+    "contextual_projection_is_default": true,
+    "separate_dashboard_requires_explicit_reason": true,
+    "tenant_runtime_only": true,
+    "fail_closed_on_missing_evidence": true,
+    "expected_realized_separation_required": true,
+    "cross_surface_single_lineage": true
   }
 }
