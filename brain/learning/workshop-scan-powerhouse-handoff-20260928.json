@@ -13,19 +13,19 @@
   "privacy_rule": "Do not copy participant name or e-mail into aggregate Powerhouse scan events. Identity linking happens only after verified account/organisation context is available.",
   "evaluation": {
     "historical_replay": [
-      "tests/components/workshop-scan-handoff.test.mjs"
+      "tests/workshop-scan-handoff.test.mjs"
     ],
     "canary": [
-      "tests/components/workshop-scan-handoff.test.mjs"
+      "tests/workshop-scan-handoff.test.mjs"
     ],
     "shadow": [
-      "tests/components/workshop-scan-handoff.test.mjs"
+      "tests/workshop-scan-handoff.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
       "tests/components/workshop-scan.test.mjs",
-      "tests/components/workshop-scan-handoff.test.mjs"
+      "tests/workshop-scan-handoff.test.mjs"
     ],
     "surfaces": [
       "/scan",
