@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse-daily-full-connection-enrichment-v2",
+  "version": "powerhouse-daily-full-connection-enrichment-v2",
+  "date": "2026-09-28",
+  "status": "LIVE_PROVEN_RUNTIME",
+  "failure_class": "COMMERCIAL_INTELLIGENCE",
+  "scope": "GROWTH_REVENUE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Connection enrichment was previously event- and priority-driven, so many connections could remain unchanged unless a trigger or bounded research action touched them.",
+  "decision": "Run a full-graph enrichment for every connection at least once per day, using all available and allowed ingested LinkedIn, company, news, runtime and external evidence, while preserving detailed source evidence in canonical stores.",
+  "prevention": [
+    "Every canonical connection must have an enrichment state for the current calendar day.",
+    "Newly ingested evidence must be projected into the same connection/company intelligence lineage.",
+    "Observed LinkedIn data may fill missing core fields but must not overwrite existing canonical values solely because it is newer social evidence.",
+    "Missing data must remain missing when no trustworthy source exists.",
+    "No sensitive-person inference, scraping or platform bypass."
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_INTELLIGENCE",
+    "scope": "GROWTH_REVENUE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-powerhouse-daily-full-connection-enrichment-v2.test.mjs"],
+    "regression": ["tests/supabase-powerhouse-daily-full-connection-enrichment-v2.test.mjs"]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
+  ],
+  "production_evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "total_connections": 23295,
+    "enriched_today": 23295,
+    "daily_completion_ratio": 1,
+    "with_linkedin_activity": 11,
+    "with_external_signals": 8,
+    "with_company_news": 7,
+    "average_data_completeness": 0.8035,
+    "scheduler_owner": "powerhouse-commercial-learning-v1",
+    "scheduler": "27 * * * *"
+  }
+}
