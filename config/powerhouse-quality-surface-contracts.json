@@ -777,6 +777,48 @@
       "authority": "supabase/migrations/20260928105310_powerhouse_relationship_public_research_dispatch_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "rpc:powerhouse_prepare_autonomous_outreach_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928112500_powerhouse_autonomous_relationship_outreach_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_dispatch_autonomous_outreach_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928112500_powerhouse_autonomous_relationship_outreach_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:powerhouse-autonomous-outreach",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-autonomous-outreach/index.ts",
+      "evidence_contract": "tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_prepare_linkedin_sales_machine_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928114500_powerhouse_linkedin_sales_machine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_dispatch_linkedin_sales_machine_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928114500_powerhouse_linkedin_sales_machine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:powerhouse-linkedin-sales-machine",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-linkedin-sales-machine/index.ts",
+      "evidence_contract": "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs",
+      "required": true
     }
   ]
 }

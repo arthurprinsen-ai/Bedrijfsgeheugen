@@ -64,7 +64,7 @@ Deno.serve(async(req:Request)=>{
       for(const item of organic){
         const title=clean(item?.title),desc=clean(item?.description),link=clean(item?.url);
         const text=[title,desc].join(' ');
-        if(!text.toLowerCase().includes(company.toLowerCase().split(' ')[0])) continue;
+        const companyNorm=company.toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); const textNorm=[title,desc,link].join(' ').toLowerCase().replace(/[^a-z0-9]+/g,' ').trim(); if(!companyNorm||!textNorm.includes(companyNorm)) continue;
         const hit=TRIGGERS.find(([,rx])=>rx.test(text));
         if(hit){best={trigger_type:hit[0],title,summary:desc,url:link,rank:Number(item?.rank_absolute||item?.rank_group||99)};break;}
       }

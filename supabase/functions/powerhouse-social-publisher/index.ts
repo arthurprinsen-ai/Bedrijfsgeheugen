@@ -192,8 +192,10 @@ async function runLinkedInCockpitAutopilot(db:any){
   const {data:actions,error}=await db.from('powerhouse_sales_actions')
     .select('action_id,action_type,channel,source_url,message_draft,status,person_name,company_name,evidence,priority')
     .eq('status','suggested')
+    .eq('action_type','reply_post')
+    .eq('channel','linkedin_personal')
     .order('priority',{ascending:false})
-    .limit(15);
+    .limit(3);
   if(error)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_READ:'+error.message);
   const results:any[]=[];
   for(const action of actions||[]){
@@ -209,7 +211,7 @@ async function runLinkedInCockpitAutopilot(db:any){
       continue;
     }
     const {data:claimed,error:claimError}=await db.from('powerhouse_sales_actions')
-      .update({status:'dispatching',updated_at:new Date().toISOString()})
+      .update({status:'waiting',updated_at:new Date().toISOString()})
       .eq('action_id',action.action_id).eq('status','suggested')
       .select('action_id').maybeSingle();
     if(claimError)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_CLAIM:'+claimError.message);
@@ -224,8 +226,8 @@ async function runLinkedInCockpitAutopilot(db:any){
       if(!providerId)throw new Error('COMPOSIO_LINKEDIN_COMMENT_ID_MISSING');
       providerEvidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',provider:'composio',tool:'LINKEDIN_CREATE_COMMENT_ON_POST',provider_id:providerId,source_url:sourceUrl,provider_ack_verified:true,exact_readback_available:false,republish_forbidden:true,executed_at:new Date().toISOString()}};
       const {error:updateError}=await db.from('powerhouse_sales_actions')
-        .update({status:'executed',evidence:providerEvidence,updated_at:new Date().toISOString()})
-        .eq('action_id',action.action_id).eq('status','dispatching');
+        .update({status:'done',executed_at:new Date().toISOString(),evidence:providerEvidence,updated_at:new Date().toISOString()})
+        .eq('action_id',action.action_id).eq('status','waiting');
       if(updateError)throw new Error('LINKEDIN_COCKPIT_AUTOPILOT_COMPLETE:'+updateError.message);
       const dedupe=await digest('cockpit-autopilot:'+action.action_id+':'+providerId);
       const {error:outcomeError}=await db.rpc('powerhouse_record_outcome',{p_action_id:action.action_id,p_dedupe_key:dedupe,p_outcome_type:'executed',p_evidence:providerEvidence.autopilot,p_revenue_eur:0});
@@ -236,12 +238,12 @@ async function runLinkedInCockpitAutopilot(db:any){
       if(providerId){
         const evidence=providerEvidence||{...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',provider:'composio',provider_id:providerId,source_url:sourceUrl,provider_ack_verified:true,republish_forbidden:true}};
         evidence.autopilot={...(evidence.autopilot||{}),reconciliation_required:true,writeback_error:messageError,failed_at:new Date().toISOString()};
-        await db.from('powerhouse_sales_actions').update({status:'executed',evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id);
+        await db.from('powerhouse_sales_actions').update({status:'done',executed_at:new Date().toISOString(),evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id);
         results.push({action_id:action.action_id,status:'reconciliation_required',provider:'composio',provider_id:providerId,reason:messageError,republish_forbidden:true});
         continue;
       }
       const evidence={...(action.evidence||{}),autopilot:{version:'linkedin-cockpit-autopilot-v1',failed_at:new Date().toISOString(),error:messageError,source_url:sourceUrl}};
-      await db.from('powerhouse_sales_actions').update({status:'suggested',evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','dispatching');
+      await db.from('powerhouse_sales_actions').update({status:'error',evidence,updated_at:new Date().toISOString()}).eq('action_id',action.action_id).eq('status','waiting');
       results.push({action_id:action.action_id,status:'failed_pre_provider',error:messageError});
     }
   }

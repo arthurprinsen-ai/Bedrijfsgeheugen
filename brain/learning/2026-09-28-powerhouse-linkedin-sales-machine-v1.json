@@ -1,0 +1,97 @@
+{
+  "fingerprint": "powerhouse-linkedin-sales-machine-v1",
+  "status": "CANDIDATE",
+  "date": "2026-09-28",
+  "obligation_id": "powerhouse-linkedin-sales-machine-v1",
+  "failure_class": "IMPROVEMENT",
+  "scope": "LINKEDIN_SALES",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Powerhouse had posting, relationship scoring, public research and isolated comment capability, but they were not orchestrated as one revenue sequence. Direct-message capability was also being conceptually treated as if it might exist despite no supported provider action being available.",
+  "decision": "Create one LinkedIn sales machine that turns fresh company-specific posts into bounded value-add comments, converts inbound LinkedIn engagement into intent evidence, feeds anonymized trigger clusters into company-page content, and coordinates private email follow-up after a LinkedIn touch.",
+  "prevention": [
+    "Never claim or simulate LinkedIn DM unless a verified provider send-DM tool exists.",
+    "A public comment requires a concrete LinkedIn post URL plus company-specific evidence, relationship score >= 0.55 and trigger confidence >= 0.60.",
+    "Cap autonomous comments at 3/day and one/person/14d; comments contain insight, not a sales pitch.",
+    "Sales air cover is published from the company page using anonymized trigger clusters; personal LinkedIn post identity rules remain unchanged.",
+    "When a contextual LinkedIn comment exists, wait 24 hours before direct email to the same person.",
+    "All outcomes feed the existing Powerhouse action/outcome/learning lineage.",
+    "Do not stop at a recommendation when an allowed evidence-backed action can be executed safely.",
+    "Autonomously choose comment, company-page air cover, private email or nurture/wait from the canonical evidence state rather than forcing one channel.",
+    "New LinkedIn write capabilities such as DM or reactions require a successful capability probe and provider acknowledgement test before activation.",
+    "Optimize channel sequencing on replies, meetings, scans, orders and realized revenue rather than impressions or raw activity volume."
+  ],
+  "canonical_runtime": {
+    "planner": "public.powerhouse_prepare_linkedin_sales_machine_v1(date)",
+    "dispatcher": "public.powerhouse_dispatch_linkedin_sales_machine_v1(date)",
+    "worker": "powerhouse-linkedin-sales-machine",
+    "comment_executor": "powerhouse-social-publisher",
+    "content_executor": "powerhouse-content-orchestrator",
+    "email_executor": "powerhouse-autonomous-outreach",
+    "scheduler_owner": "powerhouse-commercial-learning-v1"
+  },
+  "capability_truth": {
+    "linkedin_post_create": true,
+    "linkedin_comment_create": true,
+    "linkedin_reaction_read": true,
+    "linkedin_reaction_create": false,
+    "linkedin_dm_send": false,
+    "private_fallback": "email"
+  },
+  "evaluation": {
+    "regression": [
+      "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-linkedin-sales-machine-v1.test.mjs"
+    ]
+  },
+  "user_authorization": {
+    "autonomous_linkedin_context_comments": true,
+    "autonomous_linkedin_company_air_cover": true,
+    "autonomous_private_follow_up": true,
+    "per_message_human_approval_required": false,
+    "authorization_scope": "Only when canonical evidence, identity, dedupe, cooldown and suppression gates pass."
+  },
+  "execution_policy": {
+    "mode": "autonomous_revenue_first",
+    "human_approval_per_action": false,
+    "allowed_actions": [
+      "linkedin_context_comment",
+      "linkedin_company_air_cover",
+      "private_email",
+      "nurture_wait"
+    ],
+    "optimization_target": [
+      "reply",
+      "meeting",
+      "scan",
+      "order",
+      "realized_revenue"
+    ],
+    "hard_gates": [
+      "identity",
+      "evidence",
+      "dedupe",
+      "fatigue",
+      "suppression",
+      "provider_capability",
+      "provider_acknowledgement"
+    ]
+  },
+  "compiler": {
+    "failure_class": "IMPROVEMENT",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "Production Powerhouse already had LinkedIn publishing, comment execution, relationship scoring and public-research evidence before this change.",
+    "Provider capability discovery confirmed LinkedIn post creation and comment creation paths, while no verified send-DM or create-reaction capability was available.",
+    "Production planner generated a sales-air-cover recommendation and evidence-bound LinkedIn comment candidates from fresh relationship research.",
+    "False-positive comment candidates were explicitly skipped by the company-specific relevance hardening rule; only evidence-bound context is eligible.",
+    "The canonical scheduler remains powerhouse-commercial-learning-v1 and all actions write back to the existing sales action/outcome lineage."
+  ],
+  "rootCause": "Powerhouse had posting, relationship scoring, public research and isolated comment capability, but they were not orchestrated as one revenue sequence. Direct-message capability was also being conceptually treated as if it might exist despite no supported provider action being available."
+}

@@ -17,7 +17,7 @@ Externe vendors zijn nooit canonical truth, nooit vereist voor de dagelijkse loo
 - Gebruik bestaande relatie-, beslissers-, company-intent-, recency- en outcome-evidence om research te prioriteren.
 - Maak bij onvoldoende actuele evidence een `research_enrichment` actie op kanaal `internal`.
 - Alleen wanneer reeds echte opportunity-/waarde-evidence bestaat, mag een `commercial_outreach_review` worden voorbereid.
-- Ongevraagde externe outreach blijft human-authorized; deze skill verstuurt niets zelfstandig.
+- Autonome outbound is door de gebruiker expliciet geautoriseerd voor bestaande relaties wanneer fresh evidence, suppression, cooldown en kanaalvalidatie groen zijn.
 - Geen scraping, platform-bypass, bulk-DM of generieke pitch.
 - Dedupe acties en respecteer fatigue/suppression.
 - Optimaliseer voor paid order en realized revenue, niet voor aantallen leads of berichten.
@@ -30,7 +30,7 @@ Externe vendors zijn nooit canonical truth, nooit vereist voor de dagelijkse loo
 - Geen tweede scheduler, CRM, action queue of learning store.
 
 ## Bounded execution
-Per cycle maximaal 50 research-selecties en 20 activation reviews. Research is intern. Activation review vereist bestaande economische/opportunity-evidence én menselijke autorisatie voor extern contact.
+Per cycle maximaal 50 research-selecties en 20 activation reviews. Research is intern. Externe opvolging mag autonoom via een ondersteund kanaal wanneer de relatie- en evidence-gates groen zijn. Handmatige goedkeuring per bericht is niet vereist.
 
 ## Learning
 Meet research -> validated trigger, activation review -> contact, contact -> reply, reply -> meeting, meeting -> scan, scan -> order en realized revenue. Schrijf uitkomsten terug naar dezelfde canonical sales/outcome/forecast lineage zodat scoring zichzelf kalibreert.
@@ -65,6 +65,31 @@ Protected main bevat merge `35f465c613cdc32f37f0dd2810e86ceb1518be08` van PR #31
 - exact één scheduler-owner: `powerhouse-commercial-learning-v1`;
 - nul parallelle relationship-research crons;
 - `apollo_required=false`;
-- geen autonome externe outreach.
+- autonome externe outreach was in deze historische production proof nog niet actief; de opvolgende autonomous-outreach skill vervangt die beperking.
 
 Daarmee is de vaste regel: Powerhouse is het sales-intelligencebrein; publieke webdata is evidence-input; externe commerciële databrokers zijn alleen optionele fallback en nooit authority.
+
+
+## Autonome outbound
+Fingerprint: `powerhouse-autonomous-relationship-outreach-v1`.
+
+Powerhouse mag zelf commerciële opvolging uitvoeren zonder per bericht opnieuw menselijke goedkeuring te vragen, maar alleen binnen harde grenzen:
+- uitsluitend bestaande relaties met status `in_gesprek`, `aangeboden` of `rust`;
+- alleen bij een verse evidence-backed trigger van maximaal 30 dagen oud met confidence >= 0,60;
+- maximaal 5 autonome sends per dag;
+- maximaal 1 succesvolle e-mail per persoon per 30 dagen;
+- `unsubscribe`, `opt_out`, `do_not_contact`, `complaint` en `negative_reply` blokkeren automatisch vervolgcontact;
+- provider acknowledgement moet bestaan voordat een actie `done` wordt;
+- dedupe/republish-forbidden voorkomt dubbele verzending;
+- Gmail via de bestaande Composio-verbinding is het ondersteunde primaire kanaal;
+- LinkedIn DM wordt alleen gebruikt wanneer een daadwerkelijk ondersteunde DM-capability beschikbaar en geverifieerd is; nooit een niet-bestaande capability simuleren.
+
+Runtime: `public.powerhouse_prepare_autonomous_outreach_v1(date)` -> `public.powerhouse_dispatch_autonomous_outreach_v1(date)` -> Edge Function `powerhouse-autonomous-outreach`. De bestaande `powerhouse-commercial-learning-v1` blijft enige scheduler-owner.
+
+
+## LinkedIn sales machine
+Gebruik `powerhouse-linkedin-sales-machine-v1` als sociale commerciële laag vóór of naast private outreach. Een concrete relevante LinkedIn-post kan een contextuele commenttouch krijgen; geaggregeerde triggerpatronen voeden `linkedin_company` als sales-air-cover; inbound engagement wordt intent-evidence. LinkedIn DM wordt nooit gesimuleerd wanneer de provider geen send-DM capability heeft. In dat geval blijft e-mail de private fallback. Bij een geslaagde LinkedIn-comment wacht private e-mail 24 uur.
+
+
+### Revenue-first kanaalbeslissing
+De Relationship Revenue Engine geeft niet alleen leads door. Bij iedere gekwalificeerde relatie kiest Powerhouse zelfstandig de beste toegestane vervolgstap uit `linkedin_context_comment`, `linkedin_company_air_cover`, `private_email`, `nurture_wait` of een later ondersteund kanaal. De keuze wordt gevoed door first-party relatie-evidence, actuele triggerkwaliteit, eerdere touches, fatigue/suppression en gerealiseerde outcomes. Een ontbrekende provider-capability mag nooit worden gesimuleerd.
