@@ -32,5 +32,18 @@
     "historical_replay": [
       "tests/brain-company-intelligence-os-v1.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "ARCHITECTURE_DRIFT",
+    "scope": "GENERAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "regression_test": "tests/brain-company-intelligence-os-v1.test.mjs",
+    "migration": "supabase/migrations/20260928193000_powerhouse_company_intelligence_os_v1.sql",
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "expected_runtime_authority": "public.powerhouse_run_company_intelligence_os_v1(date)"
   }
 }
