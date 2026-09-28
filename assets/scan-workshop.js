@@ -45,14 +45,22 @@ async function resolveClientLogo(){
   clearClientLogo();
   var company=el("#company").value.trim();if(!company)return "";
   var site=normalizeWebsite(el("#website").value)||websiteFromEmail();if(!site)return "";
-  try{
-    var res=await fetch("/.netlify/functions/company-logo?site="+encodeURIComponent(site),{headers:{Accept:"application/json"}});
-    if(!res.ok)return "";
-    var data=await res.json();if(!data||!data.logo_data_url)return "";
-    clientLogoData=data.logo_data_url;
-    ["#reportClientLogo","#reportClientLogo2"].forEach(function(sel){var img=el(sel);if(img){img.src=clientLogoData;img.alt="Logo van "+company;img.hidden=false}});
-    return clientLogoData;
-  }catch(e){return ""}
+  var origin;try{origin=new URL(site).origin}catch(e){return ""}
+  var sources=[origin+"/favicon.svg",origin+"/favicon.png",origin+"/favicon.ico"];
+  for(var i=0;i<sources.length;i++){
+    var ok=await new Promise(function(done){
+      var probe=new Image();probe.referrerPolicy="no-referrer";
+      probe.onload=function(){done(probe.naturalWidth>0&&probe.naturalHeight>0)};
+      probe.onerror=function(){done(false)};
+      probe.src=sources[i]+"?bgscan="+Date.now();
+    });
+    if(ok){
+      clientLogoData=sources[i];
+      ["#reportClientLogo","#reportClientLogo2"].forEach(function(sel){var img=el(sel);if(img){img.src=clientLogoData;img.alt="Logo van "+company;img.hidden=false}});
+      return clientLogoData;
+    }
+  }
+  return "";
 }
 function finish(){show("#loadingStep");setTimeout(async function(){var r=calc();await resolveClientLogo();buildResults(r);persistScan(r);submitLead(r);show("#resultStep")},350)}
 function drawRadar(id,r){var c=document.getElementById(id);if(!c||!window.Chart)return;var old=Chart.getChart(c);if(old)old.destroy();new Chart(c,{type:"radar",data:{labels:DOMAINS.map(function(d){return d.name}),datasets:[{label:"Jouw score",data:DOMAINS.map(function(d){return r.scores[d.id]}),borderColor:"#f2b800",backgroundColor:"rgba(255,201,40,.24)",pointBackgroundColor:"#f2b800",borderWidth:2.5},{label:"Benchmark",data:DOMAINS.map(function(d){return d.benchmark}),borderColor:"#a8b6c8",backgroundColor:"rgba(168,182,200,.08)",pointBackgroundColor:"#a8b6c8",borderWidth:1.5}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:"top",labels:{boxWidth:10,font:{size:10}}}},scales:{r:{min:0,max:10,ticks:{stepSize:2,backdropColor:"transparent",font:{size:8}},pointLabels:{font:{size:9,weight:"600"},color:"#0e2148"},grid:{color:"#dce2ea"},angleLines:{color:"#dce2ea"}}}}})}
@@ -64,7 +72,7 @@ el("#rGood").textContent=r.best.good;el("#rFriction").textContent=r.top[0].frict
 el("#rScoreRows").innerHTML=DOMAINS.map(function(d){var sc=r.scores[d.id],st=status(sc),bench=d.benchmark,gap=Math.round((sc-bench)*10)/10;var note=sc>=7?d.good:(sc<5.5?d.friction:d.chance);return "<tr><td><b>"+d.name+"</b></td><td><div class=\"scorecell\"><strong>"+sc.toFixed(1).replace(".",",")+"</strong><div class=\"bar\"><div class=\"fill\" style=\"width:"+sc*10+"%\"></div></div></div></td><td><div class=\"scorecell benchmark\"><strong>"+bench.toFixed(1).replace(".",",")+"</strong><div class=\"bar\"><div class=\"fill\" style=\"width:"+bench*10+"%\"></div></div></div></td><td><span class=\"status "+st[1]+"\">"+st[0]+"</span></td><td>"+note+"</td></tr>"}).join("");
 el("#rOpps").innerHTML=r.top.map(function(d,i){var days=i===1?"30–90 dagen":"30–60 dagen";return '<div class="lever-card"><div class="lever-icon">'+(i===0?"▤":i===1?"▰":"◉")+"</div><h4>"+d.name+"</h4><p>"+d.chance+'</p><div class="lever-meta"><span><small>Verwachte impact</small><b>Hoge impact</b></span><span><small>Realisatie</small><b>'+days+"</b></span></div></div>"}).join("");
 var plans=[[],[],[]];r.top.forEach(function(d){plans[0].push(d.plan[0]);plans[1].push(d.plan[1]);plans[2].push(d.plan[2])});["#plan1","#plan2","#plan3"].forEach(function(sel,i){el(sel).innerHTML=plans[i].map(function(x){return "<li>"+x+"</li>"}).join("")});
-var maxGap=DOMAINS.reduce(function(m,d){return Math.max(m,Math.max(0,d.benchmark-r.scores[d.id]))},0);el("#rKpis").innerHTML=[["◷","Bedrijfsgezondheid",r.overall.toFixed(1).replace(".",",")+" /10","huidige nulmeting"],["↗","Grootste benchmarkgap","+"+maxGap.toFixed(1).replace(".",","),"naar gemiddeld MKB"],["◎","Prioritaire hefbomen","3","gericht verbeteren"],["▥","Verbetercyclus","90 dagen","meten en bijsturen"]].map(function(k){return '<div class="kpi-card"><div class="kpi-head"><span>'+k[0]+"</span><b>"+k[1]+'</b></div><strong>'+k[2]+'</strong><small>'+k[3]+"</small></div>"}).join("");
+var maxGap=DOMAINS.reduce(function(m,d){return Math.max(m,Math.max(0,d.benchmark-r.scores[d.id]))},0);el("#rKpis").innerHTML=[["◷","Bedrijfsgezondheid",r.overall.toFixed(1).replace(".",",")+" /10","jouw huidige bedrijfsbeeld"],["↗","Grootste benchmarkgap","+"+maxGap.toFixed(1).replace(".",","),"naar gemiddeld MKB"],["◎","Prioritaire hefbomen","3","gericht verbeteren"],["▥","Verbetercyclus","90 dagen","meten en bijsturen"]].map(function(k){return '<div class="kpi-card"><div class="kpi-head"><span>'+k[0]+"</span><b>"+k[1]+'</b></div><strong>'+k[2]+'</strong><small>'+k[3]+"</small></div>"}).join("");
 setTimeout(function(){drawRadar("reportRadar",r);buildQr()},80)}
 function buildQr(){var url="https://www.bedrijfsgeheugen.nl/klantportaal?source=scanrapport"+(submissionKey?"&scan="+encodeURIComponent(submissionKey):"");["#reportQr","#reportQr2"].forEach(function(sel){var box=el(sel);if(!box)return;box.innerHTML="";if(window.QRCode)new QRCode(box,{text:url,width:82,height:82,colorDark:"#0e2148",colorLight:"#ffffff",correctLevel:QRCode.CorrectLevel.M})})}
 function portalDims(r){return {sturing:1+r.scores.strategie*.4,mensen:1+((r.scores.kennis+r.scores.mensen)/2)*.4,operatie:1+r.scores.processen*.4,analytics:1+r.scores.data*.4,quality:1+r.scores.data*.4,tech:1+r.scores.ai*.4,culture:1+r.scores.mensen*.4,governance:1+((r.scores.strategie+r.scores.ai)/2)*.4}}
