@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration=fs.readFileSync('supabase/migrations/20260928161000_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql','utf8');
 const persuasion=fs.readFileSync('.agents/skills/powerhouse-persuasion-revenue/SKILL.md','utf8');
 const growth=fs.readFileSync('.agents/skills/powerhouse-growth-swarm/SKILL.md','utf8');
 
