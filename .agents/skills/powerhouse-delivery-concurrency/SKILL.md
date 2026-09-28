@@ -461,3 +461,16 @@ Auxiliary GitHub workflows MUST trigger from owned domain inputs, not generic de
 - Powerhouse Assurance must not trigger merely because the generic delivery classifier changed.
 - A workflow's own definition remains a valid trigger and receives an explicit owned delivery lane.
 - Domain-specific inputs remain mandatory triggers; this optimization removes unrelated fan-out only.
+
+
+## Calibration → optimizer advisory handoff
+
+Fingerprint: `github|ci-calibration|optimizer-advisory-handoff|v1`.
+
+CI Calibration remains read-only and has no repository mutation authority. The Autonomous Engineering Optimizer may consume calibration only as advisory safety evidence.
+
+- High-priority calibration may veto upward parallelism or speculation.
+- Calibration may never directly set persistent tuning values.
+- Downward/defensive tuning remains metric-derived and bounded to the existing tuning allowlist.
+- Calibration observations remain non-persistent signals.
+- Every persistent tuning change still requires the existing protected optimizer PR and all Required/security/exact-SHA/production gates.

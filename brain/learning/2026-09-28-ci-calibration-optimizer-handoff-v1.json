@@ -1,0 +1,36 @@
+{
+  "fingerprint": "github|ci-calibration|optimizer-advisory-handoff|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "CI Calibration produced bounded read-only recommendations while the daily Autonomous Engineering Optimizer made protected tuning decisions independently. The two feedback loops could therefore disagree and allow upward tuning while calibration still observed a high-priority CI risk.",
+  "prevention_rule": "Feed calibration recommendations into the optimizer only as advisory safety evidence. High-priority calibration may veto upward parallelism/speculation, but cannot directly mutate tuning. All tuning remains bounded to the existing safe allowlist and persists only through the protected optimizer PR.",
+  "enforcement": [
+    "scripts/brain/autonomous-engineering-fabric-v3.mjs",
+    "tools/delivery/ci-calibration-engine.mjs",
+    "tests/brain-autonomous-engineering-fabric-v3.test.mjs",
+    ".github/workflows/powerhouse-autonomous-engineering-optimizer.yml"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-calibration-engine-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-autonomous-engineering-fabric-v3.test.mjs",
+    "tests/brain-ci-calibration-engine-v1.test.mjs"
+  ],
+  "evidence": {
+    "authority": "Calibration remains SHADOW_RECOMMENDATIONS and safe_to_apply_automatically=false; optimizer retains protected-candidate-only mutation path."
+  }
+}
