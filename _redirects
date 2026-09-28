@@ -60,3 +60,5 @@
 /scan  /pages/scan.html  200
 /scan/  /pages/scan.html  200
 /zelfscan.html  /zelfscan  301!
+/groei  /pages/groei.html  200
+/groei/  /pages/groei.html  200
