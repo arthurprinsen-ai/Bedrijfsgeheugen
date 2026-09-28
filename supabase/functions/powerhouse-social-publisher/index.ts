@@ -367,16 +367,20 @@ async function publishLinkedInPersonalViaComposio(db:any,art:any){
       linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
     };
   }catch(error){
+    const readbackError=error instanceof Error?error.message:String(error);
+    const permissionLimited=/\b(401|403|FORBIDDEN|UNAUTHORIZED|PERMISSION|REVOKED_ACCESS_TOKEN)\b/i.test(readbackError);
     return {
       provider:'composio',
       provider_post_id:postUrn,
       provider_create_success:true,
+      provider_publication_ack_verified:true,
       provider_truth_verified:false,
       provider_truth_checked_at:new Date().toISOString(),
-      provider_status:'dispatched',
+      provider_status:'published',
       republish_forbidden:true,
       verification_pending:true,
-      readback_error:error instanceof Error?error.message:String(error),
+      readback_permission_limited:permissionLimited,
+      readback_error:readbackError,
       author_urn:author
     };
   }
@@ -784,7 +788,18 @@ async function reconcileExistingProviderTruth(db: any, token: string | null, run
     const obligation: any = obligationByChannel.get(obligationChannels[row.channel]) || null;
     const declaredProvider = clean(row.delivery_evidence?.provider || obligation?.evidence?.provider).toLowerCase();
     if (row.channel === 'instagram_company' && declaredProvider && declaredProvider !== 'buffer') {
-      results.push({ channel: row.channel, post_id: clean(row.delivery_ref) || clean(obligation?.external_id), state: row.state, reason: 'NON_BUFFER_INSTAGRAM_PROVIDER_OWNED', provider: declaredProvider, provider_truth_verified: row.delivery_evidence?.provider_truth_verified === true || obligation?.evidence?.provider_truth_verified === true });
+      const existingRef=clean(row.delivery_ref)||clean(obligation?.external_id);
+      const previous={...(obligation?.evidence||{}),...(row.delivery_evidence||{})};
+      const providerCreateProven=previous?.provider_create_success===true&&!!existingRef;
+      const providerTruthVerified=previous?.provider_truth_verified===true;
+      const evidence={...previous,provider_post_id:existingRef,provider_publication_ack_verified:providerCreateProven||providerTruthVerified,republish_forbidden:providerCreateProven||providerTruthVerified||previous?.republish_forbidden===true};
+      if(providerCreateProven||providerTruthVerified){
+        await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:existingRef,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'PUBLISHED',existingRef,evidence,'Existing Instagram provider side effect is authoritative; later media-proof drift may inform future generation but cannot negate or replace this publication.',null);
+        results.push({channel:row.channel,post_id:existingRef,state:'published',reason:'EXISTING_PROVIDER_SIDE_EFFECT_AUTHORITATIVE',provider:declaredProvider,provider_create_success:providerCreateProven,provider_truth_verified:providerTruthVerified});
+      }else{
+        results.push({ channel: row.channel, post_id: existingRef, state: row.state, reason: 'NON_BUFFER_INSTAGRAM_PROVIDER_OWNED', provider: declaredProvider, provider_truth_verified: false });
+      }
       continue;
     }
     const ref = clean(row.delivery_ref) || clean(obligation?.external_id);
@@ -801,10 +816,19 @@ async function reconcileExistingProviderTruth(db: any, token: string | null, run
         results.push({channel:row.channel,post_id:ref,state:'published',provider:'composio',provider_truth_verified:true,lineage_recovered_from_obligation:lineageRecovered});
       } catch(error) {
         const message=error instanceof Error?error.message:String(error);
-        const evidence={...(obligation?.evidence||{}),...(row.delivery_evidence||{}),provider:'composio',provider_post_id:ref,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),error:message,republish_forbidden:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
-        await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,'BLOCKED',ref,evidence,'Repair exact LinkedIn direct readback for this URN; never route this claim through Buffer or create a replacement post.',message);
-        results.push({channel:row.channel,post_id:ref,state:'blocked',provider:'composio',provider_truth_verified:false,reason:message});
+        const previous={...(obligation?.evidence||{}),...(row.delivery_evidence||{})};
+        const providerCreateProven=previous?.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref);
+        const permissionLimited=/\b(401|403|FORBIDDEN|UNAUTHORIZED|PERMISSION|REVOKED_ACCESS_TOKEN)\b/i.test(message);
+        const evidence={...previous,provider:'composio',provider_post_id:ref,provider_publication_ack_verified:providerCreateProven,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),readback_permission_limited:permissionLimited,error:message,republish_forbidden:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
+        if(providerCreateProven){
+          await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+          await recordObligation(db,runDate,row.channel,'PUBLISHED',ref,evidence,'Provider create acknowledgement is authoritative for side-effect existence; collect outcomes and never republish because readback/auth changed later.',null);
+          results.push({channel:row.channel,post_id:ref,state:'published',provider:'composio',provider_create_success:true,provider_publication_ack_verified:true,provider_truth_verified:false,readback_permission_limited:permissionLimited});
+        }else{
+          await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+          await recordObligation(db,runDate,row.channel,'BLOCKED',ref,evidence,'No provider-create proof exists for this URN; reconcile provider truth without creating a replacement post.',message);
+          results.push({channel:row.channel,post_id:ref,state:'blocked',provider:'composio',provider_truth_verified:false,reason:message});
+        }
       }
       continue;
     }
@@ -1127,12 +1151,14 @@ Deno.serve(async (req) => {
       try {
         await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
         const direct=await publishLinkedInPersonalViaComposio(db,art);
-        const verified=direct.provider_truth_verified===true;
-        const evidence={...gatePassedEvidence,...direct,pre_publish_gate:'passed',final_text_hash:textHash,personal_truth_verified:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
-        await db.from('powerhouse_channel_decisions').update({state:verified?'published':'dispatching',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await db.from('powerhouse_content_artifacts').update({status:verified?'published':'scheduled',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,verified?'PUBLISHED':'DISPATCHED',direct.provider_post_id,evidence,verified?'Collect LinkedIn outcome metrics and feed learning loop.':'Reconcile this exact LinkedIn personal post URN; never issue another post for this daily claim.',verified?null:'LINKEDIN_PERSONAL_READBACK_PENDING');
-        results.push({channel:row.channel,status:verified?'published':'verification_pending',post_id:direct.provider_post_id,provider:'composio',provider_truth_verified:verified});
+        const exactReadbackVerified=direct.provider_truth_verified===true;
+        const providerCreateProven=direct.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(clean(direct.provider_post_id));
+        if(!providerCreateProven)throw new Error('LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN');
+        const evidence={...gatePassedEvidence,...direct,provider_publication_ack_verified:true,pre_publish_gate:'passed',final_text_hash:textHash,personal_truth_verified:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,exactReadbackVerified?'Collect LinkedIn outcome metrics and feed learning loop.':'Collect outcome metrics; exact API readback is optional after provider create acknowledgement and must never trigger republish.',null);
+        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,provider:'composio',provider_create_success:true,provider_publication_ack_verified:true,provider_truth_verified:exactReadbackVerified,verification_pending:!exactReadbackVerified});
         continue;
       } catch(error) {
         const message=error instanceof Error?error.message:String(error);
