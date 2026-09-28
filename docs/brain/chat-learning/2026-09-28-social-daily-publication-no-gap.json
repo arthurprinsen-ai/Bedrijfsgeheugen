@@ -12,7 +12,7 @@
     "Buffer and Make are not social publication fallbacks."
   ],
   "runtime_owner": "powerhouse-social-publisher",
-  "regression_test": "tests/linkedin-channel-oauth-authority.test.mjs",
+  "regression_test": "tests/brain-linkedin-composio-authority.test.mjs",
   "skill_fingerprints": [
     "linkedin-daily-channel-oauth-authority-v1",
     "instagram-daily-no-gap-self-healing-v1"
