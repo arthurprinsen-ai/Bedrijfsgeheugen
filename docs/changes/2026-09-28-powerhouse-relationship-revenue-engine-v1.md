@@ -27,4 +27,4 @@ De researchselectie is nu uitvoerend gemaakt. Bestaande Powerhouse-nieuws/signal
 
 
 ## Live public research
-De Edge Function `powerhouse-relationship-public-research` is gedeployed en draait ieder uur op minuut 24. De bestaande `powerhouse-commercial-learning-v1` draait op minuut 27. Research gebruikt DataForSEO SERP uitsluitend als externe bewijsbron; scoring, trigger-classificatie, opportunity-materialisatie en learning blijven volledig Powerhouse-eigendom.
+De Edge Function `powerhouse-relationship-public-research` is gedeployed. `public.powerhouse_dispatch_relationship_public_research_v1(date)` dispatcht deze bounded publieke research vanuit dezelfde bestaande `powerhouse-commercial-learning-v1` cyclus. De eerder tijdelijke losse research-cron is verwijderd; scoring, trigger-classificatie, opportunity-materialisatie en learning blijven volledig Powerhouse-eigendom.
