@@ -28,3 +28,9 @@
 - Optimization target: reply -> meeting -> scan -> order -> realized revenue
 - Hard gates: identity / evidence / dedupe / fatigue / suppression / provider capability / provider acknowledgement
 - Future LinkedIn DM/reaction writes: disabled until capability probe + provider-ack regression evidence exists
+
+- Terminal status: LIVE_PROVEN
+- Protected main merge: 73e954d9e62af66cf6f47ff63df9041a98a2d519 via PR #3167
+- Edge readback: powerhouse-linkedin-sales-machine ACTIVE v2; powerhouse-autonomous-outreach ACTIVE v2; powerhouse-social-publisher ACTIVE v74
+- Runtime readback: planner/dispatcher RPCs present; canonical commercial scheduler active; sales-air-cover current; LinkedIn comment queue live
+- Dedicated LinkedIn Sales Machine cron: 0
