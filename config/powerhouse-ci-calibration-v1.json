@@ -1,0 +1,23 @@
+{
+  "version": "POWERHOUSE-CI-CALIBRATION-v1",
+  "mode": "SHADOW_RECOMMENDATIONS",
+  "guardrails": {
+    "neverLowerSecurityCoverage": true,
+    "neverBypassRequired": true,
+    "neverBypassCodeQL": true,
+    "neverBypassProductionReadback": true,
+    "neverAutoMergeCalibration": true,
+    "maxSuggestedRouteConcurrency": 4,
+    "minSuggestedRouteConcurrency": 1,
+    "maxSuggestedViewportConcurrency": 3,
+    "minSuggestedViewportConcurrency": 1,
+    "maxHistoricalPatternTests": 12
+  },
+  "thresholds": {
+    "queueP95HighSeconds": 180,
+    "executionP95HighSeconds": 900,
+    "fanoutP95High": 8,
+    "failureRateHigh": 0.12,
+    "cancelRateHigh": 0.15
+  }
+}
