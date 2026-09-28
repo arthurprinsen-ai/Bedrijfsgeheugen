@@ -16,7 +16,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      ".github/workflows/blog-technical-seo-gate.yml"
+      "tests/seo-order-blog-contract.test.mjs"
     ],
     "invariants": [
       "title length contract",
