@@ -58,5 +58,18 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "evaluation": {
+    "production_readback": [
+      "public.powerhouse_project_external_relationship_intelligence_v1((now() at time zone 'Europe/Amsterdam')::date)",
+      "public.powerhouse_relationship_external_intelligence_v1",
+      "public.powerhouse_customer_external_intelligence_v1"
+    ],
+    "regression": [
+      "tests/supabase-powerhouse-external-relationship-intelligence-v1.test.mjs"
+    ],
+    "historical_replay": [
+      "tests/supabase-powerhouse-external-relationship-intelligence-v1.test.mjs"
+    ]
   }
 }
