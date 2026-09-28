@@ -39,18 +39,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "scenario": "member token healthy but organization ACL missing",
-        "expected": "company preflight rejects that token and continues probing active connections; personal channel remains independent"
-      },
-      {
-        "scenario": "provider create returns a LinkedIn URN but exact readback is unavailable",
-        "expected": "URN is persisted and the same claim enters reconciliation with republish_forbidden=true"
-      },
-      {
-        "scenario": "Instagram daily claim has no final media",
-        "expected": "same Mira claim resumes media production instead of silently expiring or falling back to generic media"
-      }
+      "tests/brain-linkedin-composio-authority.test.mjs"
     ]
   },
   "outcome": {
