@@ -30,5 +30,19 @@
     "netlify_published_at": "2026-09-28T19:44:41.885Z",
     "exact_main_to_production": true,
     "browser_readback_green": true
-  }
+  },
+  "compiler": {
+    "failure_class": "COMMERCIAL_INTENT_NOT_IN_CANONICAL_LOOP",
+    "scope": "COMMERCIAL_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "PR #3221 merged the public-intent bridge to protected main.",
+    "Production Release Readback run 36474142016 completed successfully.",
+    "Netlify production deploy 6abac341b59a3f00080a08dc serves commit_ref 6bce84b1a3d3f7eba1b7291895f7e7925945fd31.",
+    "Powerhouse Skill Projection run 36474141948 completed successfully.",
+    "Regression coverage verifies PII-free selfscan and checkout intent routing."
+  ]
 }
