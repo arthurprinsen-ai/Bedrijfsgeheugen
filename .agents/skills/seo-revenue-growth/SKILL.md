@@ -152,3 +152,17 @@ Do not return “I did not create a candidate because repository state/owner/lin
 Human input is required only when an unresolved decision genuinely needs operator authority, credentials/authorization are unavailable, safety or legal constraints prohibit autonomous action, or two materially conflicting business choices cannot be resolved from canonical evidence. A transient tool or CI failure is a recovery task, not a reason to convert execution into advice.
 
 If evidence is insufficient after bounded inspection, terminate as `REJECTED_WITH_EVIDENCE` and persist the exact missing evidence. Never fabricate demand, rankings, conversion evidence or a reason to write.
+
+
+## First paid order revenue invariant
+
+Fingerprint: `first-paid-order-revenue-invariant-v1`.
+
+This skill inherits the One Brain revenue north star. While the canonical commercial state has no evidenced paid order, prioritize the shortest evidence-based path to the first paid order and realized revenue. SEO metrics are diagnostic signals, not terminal success.
+
+For every SEO/content action, identify its role in:
+`market problem → qualified prospect/visit → CTA/contact → lead → meeting → proposal → paid order → realized revenue → learning`.
+
+Do not optimize for impressions, rankings, traffic, posts, blogs, leads or pipeline as ends in themselves. Prefer the action that removes the highest-evidence conversion bottleneck. Where a safe executable action exists, execute it under the canonical delivery contract rather than returning advice.
+
+Never autonomously send unsolicited outbound messages. Powerhouse may identify and prepare qualified outreach opportunities, but a human must authorize/send unsolicited prospecting communication unless a separately approved consent-based workflow applies.
