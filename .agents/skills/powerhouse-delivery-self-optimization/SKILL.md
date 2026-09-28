@@ -792,3 +792,17 @@ Known engineering control-plane files MUST be assigned to their owned delivery l
 
 Canonical classifier: `tools/brain-delivery-system.mjs`.
 Regression: `tests/brain-change-scoped-release-lanes.test.mjs`.
+
+
+## Auxiliary workflow trigger ownership
+
+Fingerprint: `github|auxiliary-workflow-trigger|generic-control-plane-decoupling|v1`.
+
+Auxiliary GitHub workflows MUST trigger from owned domain inputs, not generic delivery policy/classifier roots.
+
+- Delivery-policy/classifier changes are validated by canonical Required regressions.
+- SEO growth intelligence must not trigger merely because the generic delivery policy changed.
+- Fresh-device certification must not trigger merely because the generic delivery policy changed.
+- Powerhouse Assurance must not trigger merely because the generic delivery classifier changed.
+- A workflow's own definition remains a valid trigger and receives an explicit owned delivery lane.
+- Domain-specific inputs remain mandatory triggers; this optimization removes unrelated fan-out only.
