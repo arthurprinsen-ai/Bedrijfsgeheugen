@@ -49,3 +49,17 @@ Neither state is terminal green.
 ## No manual reminder dependency
 
 The user must never need to ask separately to "update skills/documentation/system map". This obligation is inherited automatically from AGENTS.md by all current and future Powerhouse execution nodes.
+
+
+## Contextual visibility governance
+
+For every material intelligence, prediction, recommendation, benchmark, graph, risk, opportunity or learning capability, the delivery owner must decide whether the capability changes a user decision.
+
+If yes, same-lineage closure MUST include:
+1. the relevant Portal V2 contextual projection;
+2. a compact visual representation appropriate to that page;
+3. evidence/uncertainty state where applicable;
+4. regression coverage proving the projection is wired;
+5. System Map relationship from capability → portal surface.
+
+A backend-only implementation is non-terminal when the intelligence materially affects user decisions. Do not solve this by creating a generic "AI insights" dumping ground; place the intelligence where it is operationally relevant.
