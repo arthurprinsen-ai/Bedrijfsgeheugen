@@ -254,3 +254,10 @@ test('optimizer governance bundle activates backend plus automation but no porta
     shared:true, backend:true, portal:false, website:false, automation:true
   });
 });
+
+
+test('delivery policy root is backend-only and does not fan out to product lanes', () => {
+  assert.deepEqual(suitesFor(['config/brain-delivery-system.json']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
