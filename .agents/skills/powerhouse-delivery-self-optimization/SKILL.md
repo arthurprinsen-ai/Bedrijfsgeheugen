@@ -667,3 +667,16 @@ For broad browser verification against a Netlify deploy preview:
 - retry only explicit transient HTTP classes with a small deterministic backoff budget;
 - persistent 403/429/5xx responses remain fail-closed;
 - targeted route checks, exact candidate identity and semantic browser assertions remain mandatory.
+
+
+## Short-lived Netlify fallback proxy refresh
+
+Fingerprint: `netlify-fallback-proxy-refresh-20260925-v1`.
+
+When Production Source Snapshot reaches the exact-source `@netlify/mcp` fallback:
+- never assume the proxy acquired before linked-build/provider polling is still valid;
+- reacquire GitHub OIDC and a fresh bridge proxy immediately before the fallback upload;
+- bind the fresh proxy to the upload and subsequent provider watch;
+- classify a fallback `401 Unauthorized` as transport credential expiry before treating it as a site/build defect;
+- persistent authentication failure remains fail-closed;
+- terminal success still requires protected-main/provider identity and canonical browser readback.
