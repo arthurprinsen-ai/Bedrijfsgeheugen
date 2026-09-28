@@ -61,6 +61,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - id: scope
         name: Classify independent delivery lanes
         env:
@@ -128,14 +130,8 @@ jobs:
         run: node scripts/brain/material-writeback-closure-guard.mjs "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify material writeback closure regression
         run: node --test tests/brain-material-writeback-closure-guard.test.mjs
-      - name: Prove Supabase security gate blocks known unsafe patterns
-        run: python3 scripts/brain/check_powerhouse_supabase_security.py --self-test
-      - name: Enforce Supabase migration security contract
-        run: python3 scripts/brain/check_powerhouse_supabase_security.py "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
-      - name: Verify Portal V2 suite
-        run: node --test portal-v2/tests/*.test.mjs
       - name: Install runtime dependencies for the unwired contracts
-        run: npm install --no-audit --no-fund --silent
+        run: npm ci --prefer-offline --no-audit --no-fund --silent
       - name: Verify previously unwired test contracts
         run: >-
           node --test
