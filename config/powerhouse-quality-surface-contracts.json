@@ -457,6 +457,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_refresh_relationship_revenue_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928103246_powerhouse_relationship_revenue_engine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_reconcile_action_learning_obligations_v1",
       "type": "rpc",
       "authority": "supabase/functions/revenue-learning-store/index.ts",
