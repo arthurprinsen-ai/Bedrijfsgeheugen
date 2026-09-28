@@ -16,3 +16,15 @@
 - Shadow invariant: tenant A output contains no tenant B identifiers, sources, actions or learning, and vice versa.
 - Canary invariant: expected value and realized value remain separate.
 - Fail-closed invariant: absent tenant evidence renders unknown context rather than synthesized business facts.
+
+## Terminal production proof
+
+- Feature protected merge: `0b4547f33a74ce911a0d324a53404cff1cc6e737`
+- Security-evaluation merge: `764a7387e1852e7c1e8700efc443d29870221f39`
+- Netlify deploy: `6abac41210b244000884a323`
+- Provider state: `ready`
+- Context: `production`
+- Production commit ref: exact feature merge `0b4547f33a74ce911a0d324a53404cff1cc6e737`
+- Published: 2026-09-28T19:48:21.076Z
+- Tenant-isolation evals: historical replay + shadow + canary green
+- Terminal state: `LIVE_PROVEN`
