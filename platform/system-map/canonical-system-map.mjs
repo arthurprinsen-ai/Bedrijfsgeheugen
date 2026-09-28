@@ -128,7 +128,12 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         auditCron:'35 6 * * *',
         predictiveEngineCron:'8 6 * * *',
         calibratorCron:'50 * * * *',
-        runtimeReadbackAt:'2026-09-28T18:45:25Z'
+        runtimeReadbackAt:'2026-09-28T18:45:25Z',
+        contextualPortalLive:true,
+        contextualPortalMergeSha:'6a5e27df02e8cb5d43df7dce38b4094e9180f1af',
+        contextualPortalProductionDeploySha:'602973dace20523c20f0b656713243c5c6408f72',
+        productionReleaseReadback:'success',
+        portalDomReadback:'success'
       }),
       invariants:Object.freeze({
         predictionIsNotFact:true,

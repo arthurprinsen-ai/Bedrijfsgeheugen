@@ -73,3 +73,8 @@ Visual rules:
 - Always show uncertainty and evidence state.
 - Prediction-quality metrics are operational evidence, not customer-specific predictions.
 - Contextual projection must reuse the canonical business-context goal forecasts/scenarios and the canonical prediction-control view; no second forecasting model in the portal.
+
+
+## Contextual portal production proof
+
+The contextual foresight projection is LIVE_PROVEN_RUNTIME. Portal V2 production deploy `602973dace20523c20f0b656713243c5c6408f72` is a descendant of the contextual-foresight merge and production readback passed both **Production Release Readback** and **Portal V2 Production DOM Readback**. The authenticated `portal-prediction-intelligence` function is present in the live Netlify deployment. Required placements and truth rules in the Portal visibility contract are therefore production obligations, not optional presentation guidance.
