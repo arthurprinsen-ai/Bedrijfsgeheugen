@@ -1,0 +1,38 @@
+name: Powerhouse CI Intelligence
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/powerhouse-ci-intelligence.yml'
+      - 'scripts/brain/powerhouse-ci-intelligence.mjs'
+  schedule:
+    - cron: '17 5 * * *'
+  workflow_dispatch:
+
+permissions:
+  actions: read
+  contents: read
+
+concurrency:
+  group: powerhouse-ci-intelligence-${{ github.ref_name }}
+  cancel-in-progress: true
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Measure queue, execution, fan-out and wasted work
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: node scripts/brain/powerhouse-ci-intelligence.mjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: powerhouse-ci-intelligence-${{ github.run_id }}
+          path: artifacts/ci-intelligence/latest.json
+          retention-days: 30
