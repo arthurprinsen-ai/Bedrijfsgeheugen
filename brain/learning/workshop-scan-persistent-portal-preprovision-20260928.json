@@ -1,0 +1,28 @@
+{
+  "fingerprint": "workshop-scan|persistent-intake|portal-preprovision|identity-claim|v1",
+  "date": "2026-09-28",
+  "change": "Persist consented workshop inputs server-side and preprovision a canonical customer portal before account claim.",
+  "compiler": {
+    "failure_class": "workshop_scan_data_not_durably_available_in_customer_portal"
+  },
+  "root_cause": "The scan previously persisted only the no-PII aggregate scan event while richer participant/company context remained in browser state and a separate lead route, so a later portal session could lose the data or require re-entry.",
+  "prevention_rule": "Every consented workshop scan must persist the canonical scan, store portal PII in a private service-only intake, create canonical-brain portal state keyed by the same submission_key, and transfer that state to the authenticated tenant on claim. PII must never enter aggregate benchmark/growth learning.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-workshop-scan-portal-preprovision.test.mjs"
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-workshop-scan-portal-preprovision.test.mjs",
+      "tests/components/workshop-scan-portal-preprovision.test.mjs"
+    ],
+    "database": [
+      "public.workshop_portal_intakes",
+      "public.scan_inzendingen",
+      "public.portal_state_layers"
+    ],
+    "runtime_function": "powerhouse-scan-ingest v4",
+    "privacy": "workshop_portal_intakes service-role only; aggregate scan/growth events remain no-PII"
+  }
+}

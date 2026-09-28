@@ -62,3 +62,7 @@ The 2026-09-18 production closure proved three additional invariants:
 3. **Evidence paths must already be classified.** Before writing a new log/proof/document path, resolve it against Brain delivery membership. Prefer an existing classified canonical learning/ledger path; otherwise add classification deliberately in the same governed change. Fingerprint: `delivery|brain-classification|resync-proof-unclassified-path-v1`.
 
 Canonical machine-readable learning: `brain/learning/2026-09-18-toolchain-authority-release-learning-v1.json`.
+
+
+## Workshopscan → klantportaal persistentie
+Voor workshopscans geldt één submission-lineage. Na expliciete toestemming moeten de scanantwoorden duurzaam worden opgeslagen, persoonsgegevens gescheiden in een private service-only portal-intake blijven, en dezelfde `submission_key` direct een vooraf gevulde canonical-brain klantportaalstate creëren. PDF, scanstore, portal en latere identity claim mogen geen parallelle klantrecords of nieuwe scan-id's maken. Bij authenticated claim wordt de vooraf gevulde state naar de identity-backed tenant overgezet. PII mag nooit naar aggregate benchmark- of growth-learning events lekken.
