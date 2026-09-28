@@ -16,3 +16,7 @@ Migration `20260928103246 powerhouse_relationship_revenue_engine_v1` is toegepas
 
 ## Veiligheidsgrens
 Een sterke relatie is geen kooptrigger. Geen scraping/platform-bypass, geen bulk-DM en geen ongevraagde externe outreach zonder menselijke autorisatie.
+
+
+## Automatische research execution
+De tweede production migration `powerhouse_relationship_research_auto_enrichment_v1` voert geselecteerde research-acties automatisch uit tegen de bestaande publieke Powerhouse-evidencestores. Alleen evidence-hits worden als VERIFIED runtime-event aan dezelfde trigger/opportunity lineage toegevoegd. De bestaande werkdagelijkse bedrijfsnieuws-ingest en uurcyclus blijven de canonical producer/scheduler; er is geen extra vendor of scheduler toegevoegd.
