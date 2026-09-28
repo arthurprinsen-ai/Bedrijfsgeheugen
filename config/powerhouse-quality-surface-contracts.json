@@ -854,6 +854,20 @@
       "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "table:public.powerhouse_growth_play_catalog_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260928124000_powerhouse_growth_swarm_activation_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_growth_swarm_accounts_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
     }
   ]
 }
