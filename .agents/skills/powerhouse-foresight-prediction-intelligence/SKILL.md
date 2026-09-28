@@ -78,3 +78,18 @@ Visual rules:
 ## Contextual portal production proof
 
 The contextual foresight projection is LIVE_PROVEN_RUNTIME. Portal V2 production deploy `602973dace20523c20f0b656713243c5c6408f72` is a descendant of the contextual-foresight merge and production readback passed both **Production Release Readback** and **Portal V2 Production DOM Readback**. The authenticated `portal-prediction-intelligence` function is present in the live Netlify deployment. Required placements and truth rules in the Portal visibility contract are therefore production obligations, not optional presentation guidance.
+
+
+## Compound intelligence visibility contract
+
+The contextual foresight surface must also show whether Powerhouse itself is improving. On Overview and the prediction-quality surfaces, render the canonical self-improvement control state from `public.powerhouse_self_improvement_control_v1` alongside prediction quality.
+
+Required visual evidence:
+- current self-improvement state;
+- verified outcomes and number of learning companies;
+- measured versus total optimization candidates;
+- compiler-ready items and evidence/regression debt;
+- model-health/guardrail issues;
+- the explicit `observe → detect → hypothesize → build → test → evaluate → compare → promote → measure → learn` loop.
+
+This projection is evidence-only. It must never claim that Powerhouse became smarter merely because code changed or a model was added.

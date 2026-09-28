@@ -1,0 +1,18 @@
+{
+  "id": "2026-09-28-powerhouse-contextual-compound-intelligence-portal-v1",
+  "date": "2026-09-28",
+  "change_class": "PORTAL_INTELLIGENCE_VISIBILITY",
+  "scope": [
+    "Portal V2",
+    "Foresight",
+    "Self-Improvement",
+    "System Map"
+  ],
+  "outcome": "Candidate adds contextual visual evidence for the compounding intelligence/self-improvement loop.",
+  "files": [
+    "netlify/functions/portal-prediction-intelligence.mjs",
+    "portal-v2/foresight-context-ui.js",
+    "portal-v2/foresight-context.css",
+    "portal-v2/tests/foresight-context-ui.test.mjs"
+  ]
+}
