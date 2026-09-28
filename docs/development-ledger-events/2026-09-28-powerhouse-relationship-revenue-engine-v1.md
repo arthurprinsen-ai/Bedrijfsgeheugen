@@ -32,3 +32,6 @@
 - Public research scheduling: dispatched inside the existing powerhouse-commercial-learning-v1 cycle
 - Parallel research cron: removed
 - External evidence provider: DataForSEO SERP; canonical intelligence owner remains Powerhouse
+
+- Canonical scheduler rule: existing powerhouse-commercial-learning-v1 remains the sole recurring owner.
+- Duplicate hourly research scheduler candidate was removed; public research is dispatched from the canonical commercial cycle.
