@@ -15,7 +15,8 @@
     "Portal visualizations must fail closed when tenant evidence is missing.",
     "Expected value remains distinct from realized value.",
     "Outcome Memory and learning are shown only when evidence exists.",
-    "All material contextual projection changes update the canonical System Map, skill, tests, docs and ledger in the same lineage."
+    "All material contextual projection changes update the canonical System Map, skill, tests, docs and ledger in the same lineage.",
+    "Roadmap and capability graph surfaces must show contextual intelligence when tenant-scoped evidence exists; do not strand intelligence in the cockpit."
   ],
   "failure_class": "PORTAL_CONTEXT_PROJECTION_GAP",
   "machine_enforceable": true,
@@ -52,6 +53,8 @@
     "executive": "portal-v2/operating-system/executive-cockpit.js",
     "roadmap": "portal-v2/modules/roadmap-workspace.js",
     "test": "tests/brain-company-intelligence-contextual-portal-v1.test.mjs",
-    "tenant_isolation_shadow_canary": "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs"
+    "tenant_isolation_shadow_canary": "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs",
+    "roadmap_cards": "portal-v2/modules/roadmap-board.js",
+    "capability_graph": "portal-v2/operating-system/operating-system-ui.js"
   }
 }
