@@ -2,9 +2,9 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import fs from "node:fs";
 
-const js=fs.readFileSync(new URL("../../assets/scan-workshop.js",import.meta.url),"utf8");
-const edge=fs.readFileSync(new URL("../../supabase/functions/powerhouse-scan-ingest/index.ts",import.meta.url),"utf8");
-const migration=fs.readFileSync(new URL("../../supabase/migrations/20260928130500_workshop_scan_preprovision_customer_portal.sql",import.meta.url),"utf8");
+const js=fs.readFileSync(new URL("../assets/scan-workshop.js",import.meta.url),"utf8");
+const edge=fs.readFileSync(new URL("../supabase/functions/powerhouse-scan-ingest/index.ts",import.meta.url),"utf8");
+const migration=fs.readFileSync(new URL("../supabase/migrations/20260928130500_workshop_scan_preprovision_customer_portal.sql",import.meta.url),"utf8");
 
 test("workshop submission persists personal intake separately from aggregate scan",()=>{
   assert.match(js,/portal_intake/);
