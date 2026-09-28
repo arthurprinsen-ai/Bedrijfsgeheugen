@@ -1,0 +1,47 @@
+{
+  "fingerprint": "powerhouse-growth-plays-20of20-v1",
+  "version": "powerhouse-growth-plays-20of20-v1",
+  "date": "2026-09-28",
+  "obligation_id": "powerhouse-growth-plays-20of20-v1",
+  "status": "RUNTIME_ACTIVE_REPOSITORY_CANDIDATE",
+  "failure_class": "GROWTH_PLAY_PARTIAL_IMPLEMENTATION",
+  "scope": "GROWTH_REVENUE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "The Growth Swarm catalog contained twenty plays, but production readback showed only thirteen ACTIVE; seven remained ARMED or READY_FOR_SURFACE. This meant the catalog could overstate execution completeness.",
+  "decision": "Complete the seven missing trigger-to-executor paths and preserve the existing Persuasion Revenue Optimizer in the canonical commercial cycle.",
+  "formerly_incomplete": [
+    "mkb-friction-index",
+    "positive-public-teardown",
+    "anti-consultancy-challenge",
+    "boardroom-fear-of-blindness",
+    "competitor-switch-pages",
+    "data-contribution-flywheel",
+    "risk-reversal"
+  ],
+  "runtime_evidence": {
+    "catalog_plays": 20,
+    "active_plays": 20,
+    "persuasion_decisions_initial": 8,
+    "content_actions_routed_initial": 1,
+    "email_actions_routed_initial": 0,
+    "email_note": "No qualifying email action existed at the activation instant; the executor remains autonomous and gate-bound."
+  },
+  "prevention": [
+    "Never equate catalog presence with implementation completeness.",
+    "A growth play is ACTIVE only when it has trigger, decision, executor/surface, outcome metric and truth/privacy gates.",
+    "A persuasion recommendation is not terminal when a safe executable action exists.",
+    "Preserve the existing Persuasion Revenue Optimizer and autonomous asset/outbound lineage instead of creating a parallel system.",
+    "No sensitive psychographic profiling, fake scarcity, fake social proof, fabricated benchmarks or unsupported financial impact."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+    ".agents/skills/powerhouse-persuasion-revenue/SKILL.md"
+  ]
+}
