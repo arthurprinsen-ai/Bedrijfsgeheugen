@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v1',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T12:15:00Z',
+  observedAt:'2026-09-28T15:30:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -57,6 +57,30 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         valuationRequiresSupportedEarningsAndMultiple:true,
         roadmapFingerprintDedupe:true,
         derivedValueRemainsPotentialUntilOutcome:true
+      })
+    }),
+    Object.freeze({
+      id:'external-relationship-intelligence',
+      label:'External Relationship Intelligence',
+      authority:'supabase',
+      owner:'commercial-intelligence',
+      status:'CANDIDATE_DELIVERY',
+      inputs:Object.freeze(['verified public internet evidence','public LinkedIn context','provider-backed external runtime events','known connection/company identity']),
+      outputs:Object.freeze(['connection profile enrichment','company predictive signals','customer intelligence projection','downstream next-best-action context']),
+      runtime:Object.freeze({
+        projectionFunction:'public.powerhouse_project_external_relationship_intelligence_v1(date)',
+        relationshipView:'public.powerhouse_relationship_external_intelligence_v1',
+        customerView:'public.powerhouse_customer_external_intelligence_v1',
+        companyView:'public.powerhouse_company_intelligence_v1',
+        connectionProfile:'public.bg_connecties.extra.powerhouse_external_intelligence',
+        schedulerJob:'powerhouse-commercial-learning-v1'
+      }),
+      invariants:Object.freeze({
+        noParallelCrm:true,
+        connectionCompanyCustomerSameGraph:true,
+        linkedInSignalIsNotBuyingProof:true,
+        provenanceFreshnessConfidenceRequired:true,
+        reportOnlyRelevantSignalForbidden:true
       })
     }),
     Object.freeze({
