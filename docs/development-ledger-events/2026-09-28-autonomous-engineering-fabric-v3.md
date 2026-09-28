@@ -13,3 +13,5 @@
 - Scope metadata synchronized at final 18-file lineage.
 
 - Successor metadata normalized to numeric Supersedes authority.
+
+- Delivery metadata normalized before final candidate emission: successor identity uses numeric predecessor `3214`, so the fresh pull-request event receives valid canonical machine metadata.
