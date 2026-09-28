@@ -14,7 +14,10 @@
 - Truth boundary: relationship warmth does not equal buying intent
 - External unsolicited outreach: human-authorized
 - Repository branch: feat/powerhouse-relationship-revenue-engine-v1
-- Terminal repository state: candidate until protected merge / repository readback
+- Terminal repository state: LIVE_BEWEZEN
+- Terminal main SHA: 35f465c613cdc32f37f0dd2810e86ceb1518be08
+- Terminal PR: #3155
+- Production runtime: ACTIVE
 
 - Auto-research migration: powerhouse_relationship_research_auto_enrichment_v1
 - Research evidence sources: bg_bedrijfsnieuws, bg_externe_signalen, powerhouse_predictive_signals
@@ -39,3 +42,5 @@
 - Production research proof: HTTP 200; researched=10; matched=8; events=8; no_evidence=2.
 - Canonical downstream readback: 10 eligible triggers; 10 trigger opportunities; 8 research actions done.
 - External outreach executed: false.
+
+- Terminal production proof: relationship public research HTTP 200; researched=10; matched=8; events=8; no_evidence=2; vendor_enrichment=false; external_outreach_executed=false.
