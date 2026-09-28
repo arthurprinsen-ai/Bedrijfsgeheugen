@@ -20,3 +20,7 @@ Een sterke relatie is geen kooptrigger. Geen scraping/platform-bypass, geen bulk
 
 ## Automatische research execution
 De tweede production migration `powerhouse_relationship_research_auto_enrichment_v1` voert geselecteerde research-acties automatisch uit tegen de bestaande publieke Powerhouse-evidencestores. Alleen evidence-hits worden als VERIFIED runtime-event aan dezelfde trigger/opportunity lineage toegevoegd. De bestaande werkdagelijkse bedrijfsnieuws-ingest en uurcyclus blijven de canonical producer/scheduler; er is geen extra vendor of scheduler toegevoegd.
+
+
+## Automatisering afgerond
+De researchselectie is nu uitvoerend gemaakt. Bestaande Powerhouse-nieuws/signalen worden eerst automatisch gematcht. Voor resterende researchgaten dispatcht dezelfde commerciële cron de Powerhouse Edge Function `powerhouse-relationship-public-research`. Die gebruikt de bestaande DataForSEO-bron uitsluitend als publieke zoeklaag, niet als lead/vendor-database. Alleen gevonden actuele evidence wordt teruggeschreven naar de canonical runtime en opnieuw door de trigger-engine beoordeeld.
