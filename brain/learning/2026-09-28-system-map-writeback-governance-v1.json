@@ -23,5 +23,17 @@
     ".agents/skills/powerhouse-system-map-governance/SKILL.md",
     "platform/system-map/canonical-system-map.mjs",
     "docs/powerhouse/POWERHOUSE_SYSTEM_MAP_GOVERNANCE.md"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "METADATA_DRIFT",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-system-map-governance-v1.test.mjs"
+    ]
+  }
 }
