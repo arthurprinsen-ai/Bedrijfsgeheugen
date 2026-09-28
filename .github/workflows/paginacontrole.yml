@@ -33,7 +33,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  issues: write
+  issues: write  actions: write
+
 
 # PR-verificaties blijven per PR geïsoleerd en mogen een oudere run van dezelfde PR vervangen.
 # Alle niet-PR-runs kunnen naar main schrijven en delen daarom het niet-annuleerbare repo-slot.
@@ -337,7 +338,15 @@ jobs:
           else
             echo "Candidate PR bestaat al: #$existing"
           fi
+          echo "candidate_branch=$CANDIDATE_BRANCH" >> "$GITHUB_OUTPUT"
           echo "changed=true" >> "$GITHUB_OUTPUT"
+
+      - name: Dispatch read-only writer shadow
+        if: steps.candidate.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.candidate.outputs.candidate_branch }}
+        run: node scripts/ci/dispatch-writer-shadow.mjs "$CANDIDATE_BRANCH"
 
       - name: Rapporten samenvoegen
         if: always()
