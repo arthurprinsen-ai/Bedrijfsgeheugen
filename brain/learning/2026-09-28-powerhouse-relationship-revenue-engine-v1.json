@@ -22,5 +22,46 @@
     "activation_reviews_touched": 0,
     "apollo_required": false,
     "external_outreach_executed": false
+  },
+  "version": "powerhouse-relationship-revenue-engine-v1",
+  "date": "2026-09-28",
+  "obligation_id": "powerhouse-relationship-revenue-engine-v1",
+  "failure_class": "COMMERCIAL_INTELLIGENCE",
+  "scope": "REVENUE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Powerhouse already held a large first-party relationship graph and company/person intelligence, but the commercial runtime only materialized companies with explicit buying-trigger evidence. High-value relationships without a current trigger therefore remained commercially idle and could tempt an unnecessary vendor-first enrichment design.",
+  "prevention": [
+    "Powerhouse first-party evidence is always the canonical source for relationship scoring.",
+    "Use bounded public-web evidence only to close concrete freshness, company-identity, role or signal gaps.",
+    "Apollo/Lusha/ZoomInfo or similar vendors are optional fallback only and never required runtime dependencies or canonical truth.",
+    "Relationship warmth is not a buying trigger.",
+    "Unsolicited external outreach remains human-authorized; autonomous work is internal research and evidence enrichment."
+  ],
+  "evidence": [
+    "Production Supabase contained 23,295 connections and 17,034 company intelligence records on 2026-09-28.",
+    "The trigger-based acquisition projection had zero eligible company triggers at the same readback.",
+    "The first relationship-revenue refresh ranked 2,105 relationships and created 50 internal research actions with apollo_required=false and external_outreach_executed=false.",
+    "Runtime migration 20260928103246 is applied in Supabase project adhjwmvyoixzjtmiroln."
+  ],
+  "evaluation": {
+    "production_readback": [
+      "public.powerhouse_refresh_relationship_revenue_v1((now() at time zone 'Europe/Amsterdam')::date)"
+    ],
+    "regression": [
+      "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md",
+    ".agents/skills/trigger-based-mkb-acquisition/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_INTELLIGENCE",
+    "scope": "REVENUE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
