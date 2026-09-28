@@ -46,7 +46,7 @@
   "test_evidence": [
     "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
   ],
-  "status": "ACTIVE_PREVENTION",
+  "status": "LIVE_PROVEN",
   "problem": "GitHub PR delivery spent unnecessary time and runner capacity on duplicated domain checks, repeated website builds, repeated dependency downloads and local browser builds that could reuse an exact-SHA preview.",
   "prevention": [
     "Keep one PR-scoped Required authority and cancel superseded same-PR work.",
@@ -66,5 +66,16 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "live_evidence": {
+    "main_sha": "451c6f40868fb35af77d70f6f6aa0972b324f634",
+    "required_pr_run": 36449795424,
+    "production_readback_run": 36454941832,
+    "ci_intelligence_run": 36454941660,
+    "netlify_deploy_id": "6aba9ce2aa152f00088fc87c",
+    "netlify_commit_ref": "451c6f40868fb35af77d70f6f6aa0972b324f634",
+    "codeql_run": 36454941678,
+    "quality_run": 36454941734,
+    "skill_projection_run": 36454941764
   }
 }
