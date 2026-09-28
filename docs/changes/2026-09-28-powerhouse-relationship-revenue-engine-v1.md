@@ -24,3 +24,7 @@ De tweede production migration `powerhouse_relationship_research_auto_enrichment
 
 ## Automatisering afgerond
 De researchselectie is nu uitvoerend gemaakt. Bestaande Powerhouse-nieuws/signalen worden eerst automatisch gematcht. Voor resterende researchgaten dispatcht dezelfde commerciële cron de Powerhouse Edge Function `powerhouse-relationship-public-research`. Die gebruikt de bestaande DataForSEO-bron uitsluitend als publieke zoeklaag, niet als lead/vendor-database. Alleen gevonden actuele evidence wordt teruggeschreven naar de canonical runtime en opnieuw door de trigger-engine beoordeeld.
+
+
+## Live public research
+De Edge Function `powerhouse-relationship-public-research` is gedeployed en draait ieder uur op minuut 24. De bestaande `powerhouse-commercial-learning-v1` draait op minuut 27. Research gebruikt DataForSEO SERP uitsluitend als externe bewijsbron; scoring, trigger-classificatie, opportunity-materialisatie en learning blijven volledig Powerhouse-eigendom.
