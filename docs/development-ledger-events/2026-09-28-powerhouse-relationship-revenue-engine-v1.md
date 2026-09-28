@@ -15,3 +15,9 @@
 - External unsolicited outreach: human-authorized
 - Repository branch: feat/powerhouse-relationship-revenue-engine-v1
 - Terminal repository state: candidate until protected merge / repository readback
+
+- Auto-research migration: powerhouse_relationship_research_auto_enrichment_v1
+- Research evidence sources: bg_bedrijfsnieuws, bg_externe_signalen, powerhouse_predictive_signals
+- Evidence rule: only matched public evidence becomes VERIFIED runtime evidence
+- Existing producer: bg-bedrijfsnieuws-werkdagen
+- Existing orchestration: powerhouse-commercial-learning-v1
