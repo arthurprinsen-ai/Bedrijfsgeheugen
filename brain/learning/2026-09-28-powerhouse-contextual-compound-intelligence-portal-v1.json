@@ -16,12 +16,32 @@
     ".agents/skills/powerhouse-foresight-prediction-intelligence/SKILL.md",
     "platform/system-map/canonical-system-map.mjs"
   ],
-  "regression_contract": "portal-v2/tests/foresight-context-ui.test.mjs",
+  "regression_contract": "tests/brain-contextual-compound-intelligence-portal-v1.test.mjs",
   "safeguards": [
     "authenticated endpoint only",
     "canonical Supabase control view reused",
     "no parallel learning store",
     "no uncontrolled self-modification claim",
     "unknown is not green"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "CONTEXTUAL_INTELLIGENCE_VISIBILITY_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-contextual-compound-intelligence-portal-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-contextual-compound-intelligence-portal-v1.test.mjs"
+    ],
+    "invariants": [
+      "compound intelligence evidence is visible on contextual foresight surfaces",
+      "portal reads canonical self-improvement control instead of creating a parallel learning store",
+      "unknown or degraded state is never presented as green"
+    ]
+  }
 }
