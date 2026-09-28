@@ -70,7 +70,7 @@ create or replace function public.powerhouse_persuasion_revenue_optimizer_v1(
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   g public.powerhouse_growth_swarm_accounts_v1%rowtype;
@@ -164,7 +164,7 @@ create or replace function public.powerhouse_activate_all_growth_plays_v2(
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_now timestamptz:=now();
@@ -469,7 +469,7 @@ create or replace function public.powerhouse_trigger_based_mkb_acquisition_cycle
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_relationship jsonb;
@@ -532,7 +532,7 @@ create or replace function public.powerhouse_execute_growth_play_actions_v1(
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_now timestamptz:=now();
@@ -689,7 +689,7 @@ create or replace function public.powerhouse_trigger_based_mkb_acquisition_cycle
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_relationship jsonb;
@@ -751,7 +751,7 @@ create or replace function public.powerhouse_trigger_based_mkb_acquisition_cycle
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_relationship jsonb;
