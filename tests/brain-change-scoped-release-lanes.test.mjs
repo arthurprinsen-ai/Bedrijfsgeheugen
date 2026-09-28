@@ -204,3 +204,60 @@ test('terminal writer lease regression is automation-classified', () => {
 test('incremental static i18n cache patches are classified as website delivery', () => {
   assert.deepEqual(suitesFor(['.cache/bg-static-i18n-en.d/2026-09-25-money-pages.json']), { shared:true, backend:false, portal:false, website:true, automation:false });
 });
+
+
+test('component registry is governance-only and does not activate runtime lanes', () => {
+  assert.deepEqual(suitesFor(['docs/brain/component-registry.json']), {
+    shared:true, backend:false, portal:false, website:false, automation:false
+  });
+});
+
+test('autonomous engineering tuning stays off portal and website lanes', () => {
+  for (const path of [
+    'scripts/brain/autonomous-engineering-fabric-v3.mjs',
+    'config/powerhouse-autonomous-engineering-fabric-v3.json',
+    'config/powerhouse-engineering-tuning.json',
+    'tests/brain-autonomous-engineering-fabric-v3.test.mjs'
+  ]) {
+    assert.deepEqual(suitesFor([path]), {
+      shared:true, backend:false, portal:false, website:false, automation:true
+    }, path);
+  }
+});
+
+test('CI intelligence and calibration control plane stays backend-only', () => {
+  for (const path of [
+    'scripts/brain/powerhouse-ci-intelligence.mjs',
+    'config/powerhouse-ci-calibration-v1.json',
+    'tools/delivery/ci-calibration-engine.mjs',
+    'tests/brain-ci-calibration-engine-v1.test.mjs',
+    'tests/brain-ci-calibration-wiring-v1.test.mjs'
+  ]) {
+    assert.deepEqual(suitesFor([path]), {
+      shared:true, backend:true, portal:false, website:false, automation:false
+    }, path);
+  }
+});
+
+test('optimizer governance bundle activates backend plus automation but no portal or website', () => {
+  const suites = suitesFor([
+    '.agents/skills/powerhouse-delivery-self-optimization/SKILL.md',
+    'docs/brain/component-registry.json',
+    'docs/changes/example.md',
+    'docs/development-ledger-events/example.md',
+    'brain/learning/example.json',
+    'scripts/brain/autonomous-engineering-fabric-v3.mjs',
+    'config/powerhouse-engineering-tuning.json',
+    'tests/brain-autonomous-engineering-fabric-v3.test.mjs'
+  ]);
+  assert.deepEqual(suites, {
+    shared:true, backend:true, portal:false, website:false, automation:true
+  });
+});
+
+
+test('delivery policy root is backend-only and does not fan out to product lanes', () => {
+  assert.deepEqual(suitesFor(['config/brain-delivery-system.json']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});

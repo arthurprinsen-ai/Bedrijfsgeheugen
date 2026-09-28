@@ -8,6 +8,19 @@ import { evaluatePromotionActivation } from './platform-promotion-activation-gat
 function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
+const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'config/brain-delivery-system.json': 'backend',
+  'scripts/brain/autonomous-engineering-fabric-v3.mjs': 'automation',
+  'config/powerhouse-autonomous-engineering-fabric-v3.json': 'automation',
+  'config/powerhouse-engineering-tuning.json': 'automation',
+  'scripts/brain/powerhouse-ci-intelligence.mjs': 'backend',
+  'config/powerhouse-ci-calibration-v1.json': 'backend',
+  'tools/delivery/ci-calibration-engine.mjs': 'backend',
+  'tests/brain-autonomous-engineering-fabric-v3.test.mjs': 'automation',
+  'tests/brain-ci-calibration-engine-v1.test.mjs': 'backend',
+  'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend'
+});
+
 const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/approved-central-blog.yml': 'automation',
   '.github/workflows/powerhouse-assurance.yml': 'backend',
@@ -68,6 +81,7 @@ const ASSURANCE_NON_EXECUTABLE_PATHS = Object.freeze([
 ]);
 
 function scopedLaneForPath(path) {
+  if (SCOPED_CONTROL_PLANE_LANES[path]) return SCOPED_CONTROL_PLANE_LANES[path];
   if (SCOPED_WORKFLOW_LANES[path]) return SCOPED_WORKFLOW_LANES[path];
   if (matches(path, ASSURANCE_BACKEND_PATHS)) return 'backend';
   if (matches(path, ENGINEERING_TRUST_BACKEND_PATHS)) return 'backend';

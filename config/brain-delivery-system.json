@@ -26,11 +26,12 @@
     "docs/self-healing-agents.md"
   ],
   "nonExecutableSharedPaths": [
+    "docs/brain/component-registry.json",
     "docs/changes/",
-    "docs/learning/",
     "docs/growth-revenue-os-architecture.md",
-    "docs/superpowers/skills/",
-    "docs/self-healing-agents.md"
+    "docs/learning/",
+    "docs/self-healing-agents.md",
+    "docs/superpowers/skills/"
   ],
   "ignoredPaths": [
     "docs/development-ledger-events/",

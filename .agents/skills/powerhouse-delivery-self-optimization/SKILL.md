@@ -774,3 +774,21 @@ The daily autonomous engineering optimizer MUST tune from queue pressure, execut
 - Telemetry observations are not persistent tuning fields.
 - Auto-tuning may never weaken Required, security, exact-SHA, protected merge or production-readback invariants.
 - Every tuning change still lands only through a protected PR.
+
+
+## Control-plane lane scoping
+
+Fingerprint: `github|delivery-lane-scope|control-plane-no-runtime-fanout|v1`.
+
+Known engineering control-plane files MUST be assigned to their owned delivery lane before generic shared-path expansion.
+
+- autonomous engineering optimizer/config/tuning/test → automation;
+- CI intelligence/calibration → backend;
+- `docs/brain/component-registry.json` → governance-only/non-executable;
+- skills remain backend-governed;
+- a control-plane-only change MUST NOT activate portal or website/Netlify/browser lanes;
+- if any real portal/website/runtime path is also changed, its normal lane remains mandatory;
+- unknown shared executable surfaces remain fail-closed under the broad shared rule.
+
+Canonical classifier: `tools/brain-delivery-system.mjs`.
+Regression: `tests/brain-change-scoped-release-lanes.test.mjs`.
