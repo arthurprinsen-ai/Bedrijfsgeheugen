@@ -87,3 +87,17 @@ Verplicht:
 Fingerprint: `powerhouse-problem-radar-canonical-intake-v1`.
 
 Commerciële triggers en contentkansen die ontstaan uit nieuwe MKB-bronnen mogen niet rechtstreeks een losse sales/content-waarheid vormen. Lees en hergebruik de canonieke evidence lineage uit `config/powerhouse-problem-radar-intake-contract.json`: dedupe -> bestaande `PH-Pxxx` -> problem hypothesis -> relevante capability -> next-best-action/content -> outcome learning. Externe signalen blijven hypothese/context totdat tenant- of company-evidence het probleem ondersteunt. Dezelfde bron/probleemlineage wordt hergebruikt voor portal, Frisse Blik, content en commerciële learning.
+
+
+## Relationship-to-revenue self-first — 28 september 2026
+
+Fingerprint: `powerhouse-relationship-revenue-engine-v1`.
+
+De canonical commerciële cyclus activeert nu ook de bestaande relatiegraph vóór trigger-materialisatie. De bronvolgorde is verplicht: Powerhouse first-party evidence -> bounded publieke web-evidence -> alleen optionele vendor-enrichment voor een aantoonbaar resterend datagat. Apollo en vergelijkbare vendors zijn nooit required dependency, canonical truth of eigenaar van score/next-best-action.
+
+Runtime authority:
+- `public.powerhouse_relationship_revenue_intelligence_v1`
+- `public.powerhouse_refresh_relationship_revenue_v1(date)`
+- dezelfde bestaande `powerhouse-commercial-learning-v1` scheduler via `powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)`
+
+Een gewone connectie of warme relatie blijft géén kooptrigger. Kansrijke relaties krijgen eerst interne `research_enrichment`; een activation review ontstaat alleen bij bestaande opportunity-/waarde-evidence. Ongevraagde externe outreach blijft human-authorized. Geen scraping, platform-bypass, parallel CRM, tweede scheduler of vendor lock-in.

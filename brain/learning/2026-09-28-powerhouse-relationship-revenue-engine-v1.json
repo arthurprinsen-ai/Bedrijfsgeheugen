@@ -1,0 +1,90 @@
+{
+  "fingerprint": "powerhouse-relationship-revenue-engine-v1",
+  "status": "RUNTIME_PROVEN_REPOSITORY_CANDIDATE",
+  "observed_at": "2026-09-28T12:32:51+02:00",
+  "problem": "The existing relationship graph was commercially underused because company trigger materialization correctly required explicit trigger evidence.",
+  "decision": "Use Powerhouse itself as the canonical relationship intelligence and scoring layer. Public web is the second evidence layer; Apollo and other vendors are optional fallback only.",
+  "prevention_rule": "Never make a vendor the canonical sales brain. Relationship warmth is not a buying trigger. Use bounded internal research to create evidence, and keep unsolicited external outreach human-authorized.",
+  "canonical_runtime": {
+    "view": "public.powerhouse_relationship_revenue_intelligence_v1",
+    "refresh": "public.powerhouse_refresh_relationship_revenue_v1(date)",
+    "scheduler_owner": "powerhouse-commercial-learning-v1",
+    "no_parallel_crm": true,
+    "no_parallel_scheduler": true,
+    "existing_evidence_executor": "public.powerhouse_execute_relationship_research_v1(date)",
+    "public_research_dispatcher": "public.powerhouse_dispatch_relationship_public_research_v1(date)",
+    "public_research_worker": "powerhouse-relationship-public-research"
+  },
+  "live_evidence": {
+    "supabase_project": "adhjwmvyoixzjtmiroln",
+    "migration_version": "20260928103246",
+    "known_connections": 23295,
+    "known_companies": 17034,
+    "ranked_relationships": 2105,
+    "research_actions_touched": 50,
+    "activation_reviews_touched": 0,
+    "apollo_required": false,
+    "external_outreach_executed": false,
+    "public_research_http_status": 200,
+    "public_research_researched": 10,
+    "public_research_matched": 8,
+    "public_research_events": 8,
+    "eligible_triggers_after_research": 10,
+    "trigger_opportunities_after_research": 10,
+    "research_actions_done": 8,
+    "public_research_observed_at": "2026-09-28T11:02:36.791Z"
+  },
+  "version": "powerhouse-relationship-revenue-engine-v1",
+  "date": "2026-09-28",
+  "obligation_id": "powerhouse-relationship-revenue-engine-v1",
+  "failure_class": "COMMERCIAL_INTELLIGENCE",
+  "scope": "REVENUE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Powerhouse already held a large first-party relationship graph and company/person intelligence, but the commercial runtime only materialized companies with explicit buying-trigger evidence. High-value relationships without a current trigger therefore remained commercially idle and could tempt an unnecessary vendor-first enrichment design.",
+  "prevention": [
+    "Powerhouse first-party evidence is always the canonical source for relationship scoring.",
+    "Use bounded public-web evidence only to close concrete freshness, company-identity, role or signal gaps.",
+    "Apollo/Lusha/ZoomInfo or similar vendors are optional fallback only and never required runtime dependencies or canonical truth.",
+    "Relationship warmth is not a buying trigger.",
+    "Unsolicited external outreach remains human-authorized; autonomous work is internal research and evidence enrichment.",
+    "Execute bounded internal relationship research automatically against canonical public evidence stores before trigger materialization; do not leave autonomous-safe research as advice-only work.",
+    "A selected relationship research action must not remain a dead-end queue item: execute existing-evidence matching automatically and dispatch bounded public research from the existing commercial scheduler."
+  ],
+  "evidence": [
+    "Production Supabase contained 23,295 connections and 17,034 company intelligence records on 2026-09-28.",
+    "The trigger-based acquisition projection had zero eligible company triggers at the same readback.",
+    "The first relationship-revenue refresh ranked 2,105 relationships and created 50 internal research actions with apollo_required=false and external_outreach_executed=false.",
+    "Runtime migration 20260928103246 is applied in Supabase project adhjwmvyoixzjtmiroln.",
+    "Production migration powerhouse_relationship_research_auto_enrichment_v1 is applied and the existing commercial cycle now calls relationship research before trigger acquisition.",
+    "Production Edge Function powerhouse-relationship-public-research version 1 deployed ACTIVE on 2026-09-28.",
+    "Production uses one scheduler owner: powerhouse-commercial-learning-v1 dispatches public relationship research through public.powerhouse_dispatch_relationship_public_research_v1(date); the temporary separate research cron was removed.",
+    "Production public-research readback returned HTTP 200: researched=10, matched=8, events=8, no_evidence=2, vendor_enrichment=false, external_outreach_executed=false.",
+    "Post-research canonical readback: 10 recent research runtime events, 10 eligible triggers, 10 trigger opportunities, 8 relationship research actions done."
+  ],
+  "evaluation": {
+    "production_readback": [
+      "public.powerhouse_refresh_relationship_revenue_v1((now() at time zone 'Europe/Amsterdam')::date)",
+      "public.powerhouse_execute_relationship_research_v1((now() at time zone 'Europe/Amsterdam')::date)"
+    ],
+    "regression": [
+      "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs",
+      "supabase/functions/powerhouse-relationship-public-research/index.ts"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-relationship-revenue-engine-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md",
+    ".agents/skills/trigger-based-mkb-acquisition/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_INTELLIGENCE",
+    "scope": "REVENUE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
