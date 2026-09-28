@@ -55,3 +55,27 @@ Neither is compatible with `PRODUCTION_GREEN`, `LIVE_BEWEZEN` or equivalent term
 
 System Map maintenance is part of the Definition of Done, not a separate user-requested documentation task. Agents must perform read-after-write verification before terminal closure.
 
+
+
+## Company Intelligence OS
+
+Powerhouse is architecturally governed as an AI-native Company Operating System / Company Intelligence Platform.
+
+CRM is a source adapter, not the brain. Company, person, opportunity, action, outcome and realized-value evidence is projected into one Company Graph and compiled into a System of Context before decisions and actions.
+
+Canonical loop:
+
+`Evidence → Company Graph → System of Context → Prediction/Decision → Autonomous Action → Provider Readback → Outcome Memory → Realized Value → Calibration → Next Decision`
+
+Canonical runtime surfaces:
+- `public.powerhouse_company_graph_nodes_v1`
+- `public.powerhouse_company_graph_edges_v1`
+- `public.powerhouse_system_of_context_v1`
+- `public.powerhouse_autonomous_action_layer_v1`
+- `public.powerhouse_outcome_memory_v1`
+- `public.powerhouse_compound_intelligence_v1`
+- `brain/company-intelligence/company-intelligence-os.mjs`
+- `brain/contracts/company-intelligence-os-v1.json`
+- `.agents/skills/powerhouse-company-intelligence-os/SKILL.md`
+
+All future skills, agents, connectors and portal capabilities that touch company intelligence must reuse these layers rather than create a parallel CRM, graph, context store or learning loop.
