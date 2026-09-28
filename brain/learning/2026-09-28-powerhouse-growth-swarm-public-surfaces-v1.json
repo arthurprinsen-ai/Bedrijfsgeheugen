@@ -3,7 +3,7 @@
   "version": "powerhouse-growth-swarm-public-surfaces-v1",
   "date": "2026-09-28",
   "obligation_id": "powerhouse-growth-swarm-public-surfaces-v1",
-  "status": "CANDIDATE",
+  "status": "LIVE_PROVEN",
   "failure_class": "REVENUE_SURFACE_GAP",
   "scope": "WEBSITE_GROWTH",
   "machine_enforceable": true,
@@ -31,7 +31,9 @@
   ],
   "evidence": [
     "Canonical pages selected: benchmark.html, kennisverlies-vergrijzing-mkb.html, investeerders-ma.html, workshops.html and frisse-blik.html.",
-    "Shared browser runtime uses powerhouse-growth-tools and has no private Revenue Swarm read path."
+    "Shared browser runtime uses powerhouse-growth-tools and has no private Revenue Swarm read path.",
+    "PR #3187 merged to main as 12680d5664f8074e93b55e9c35ab2c155980c4b7.",
+    "Netlify production deploy 6aba698b5048cc0007294302 is READY on exact commit_ref 12680d5664f8074e93b55e9c35ab2c155980c4b7."
   ],
   "compiler": {
     "failure_class": "REVENUE_SURFACE_GAP",
@@ -39,5 +41,15 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "terminal": {
+    "pr": 3187,
+    "main_sha": "12680d5664f8074e93b55e9c35ab2c155980c4b7",
+    "netlify_site_id": "fd527056-493a-4d8a-8125-d00370104fa3",
+    "deploy_id": "6aba698b5048cc0007294302",
+    "deploy_state": "ready",
+    "deploy_context": "production",
+    "deploy_commit_ref": "12680d5664f8074e93b55e9c35ab2c155980c4b7",
+    "published_at": "2026-09-28T13:22:13.590Z"
   }
 }
