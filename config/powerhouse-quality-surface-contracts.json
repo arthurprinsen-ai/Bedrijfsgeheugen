@@ -803,21 +803,21 @@
       "id": "rpc:powerhouse_prepare_linkedin_sales_machine_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928114500_powerhouse_linkedin_sales_machine_v1.sql",
-      "evidence_contract": "tests/powerhouse-linkedin-sales-machine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs",
       "required": true
     },
     {
       "id": "rpc:powerhouse_dispatch_linkedin_sales_machine_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928114500_powerhouse_linkedin_sales_machine_v1.sql",
-      "evidence_contract": "tests/powerhouse-linkedin-sales-machine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs",
       "required": true
     },
     {
       "id": "function:powerhouse-linkedin-sales-machine",
       "type": "function",
       "authority": "supabase/functions/powerhouse-linkedin-sales-machine/index.ts",
-      "evidence_contract": "tests/powerhouse-linkedin-sales-machine-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs",
       "required": true
     }
   ]
