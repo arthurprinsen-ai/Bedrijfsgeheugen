@@ -360,3 +360,31 @@ Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
 
 Instagram generation must reject any concrete example/story family already consumed by another retained social publication. A different caption, Mira treatment, visual, hook or CTA does not reset uniqueness. When overlap is detected, select a materially different story family before media generation or provider dispatch.
 
+
+
+## Existing provider side effect outranks later media-proof drift (2026-09-28)
+
+Fingerprint: `instagram-provider-write-terminal-v1`.
+
+Once Instagram returns a durable published media ID, the daily claim is terminally published for anti-duplicate purposes. Later changes in media-generation metadata, missing exact-final-media proof, or a stricter future identity/media gate may affect future content generation but may never retroactively invalidate, replace or duplicate an already-created provider post.
+
+Hard rules:
+- persist the Instagram media ID immediately after publish success;
+- set `provider_create_success=true` and `republish_forbidden=true`;
+- if provider readback has already verified the media, later media-proof drift cannot set the obligation back to BLOCKED;
+- media-quality/identity learnings discovered after publication are prospective controls for the next claim, not grounds to republish the current claim;
+- watchdogs reconcile the existing media ID only.
+
+
+## Provider-created social side effects are terminal across channels (2026-09-28)
+
+Fingerprint: `provider-write-terminal-all-social-v1`.
+
+Once Instagram returns a durable media ID or provider truth is already verified for the existing post, later media-proof drift, changed content rules or readback limitations are non-retroactive. They apply to future generation, not to the already-created provider side effect.
+
+Required behavior:
+- preserve the existing media ID and mark `republish_forbidden=true`;
+- keep the daily obligation `PUBLISHED`;
+- never reclassify a live post to BLOCKED solely because a later exact-media gate would reject the same asset today;
+- never create a replacement for the same daily claim;
+- use stricter Mira/media rules only before the next provider write.

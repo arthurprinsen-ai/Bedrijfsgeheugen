@@ -33,11 +33,12 @@ test('Composio execution uses v3.1 latest tool semantics', () => {
 
 test('LinkedIn personal preserves created URN when exact readback is unavailable', () => {
   assert.match(source, /provider_create_success:true/);
+  assert.match(source, /provider_publication_ack_verified:true/);
   assert.match(source, /verification_pending:true/);
-  assert.match(source, /readback_error:error instanceof Error\?error\.message:String\(error\)/);
-  assert.match(source, /LINKEDIN_PERSONAL_READBACK_PENDING/);
-  assert.match(source, /Reconcile this exact LinkedIn personal post URN; never issue another post for this daily claim/);
-  assert.match(source, /state:verified\?'published':'dispatching'/);
+  assert.match(source, /readback_permission_limited/);
+  assert.match(source, /LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN/);
+  assert.match(source, /recordObligation\(db,runDate,row\.channel,'PUBLISHED',direct\.provider_post_id/);
+  assert.match(source, /exact API readback is optional after provider create acknowledgement and must never trigger republish/);
   assert.match(source, /republish_forbidden:true/);
 });
 
@@ -122,4 +123,32 @@ test('LinkedIn company reconciliation never converts a provider-created URN into
   assert.match(source, /Provider create acknowledgement is authoritative for side-effect existence/);
   assert.match(source, /republish_forbidden:true/);
   assert.match(source, /readback is permission-limited/);
+});
+
+
+test('LinkedIn personal provider create acknowledgement survives later revoked-token readback', () => {
+  assert.match(source, /LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN/);
+  assert.match(source, /provider_publication_ack_verified:true/);
+  assert.match(source, /REVOKED_ACCESS_TOKEN/);
+  assert.match(source, /Provider create acknowledgement is authoritative for side-effect existence; collect outcomes and never republish because readback\/auth changed later/);
+});
+
+test('Instagram existing provider side effect remains published despite later media-proof drift', () => {
+  assert.match(source, /EXISTING_PROVIDER_SIDE_EFFECT_AUTHORITATIVE/);
+  assert.match(source, /Existing Instagram provider side effect is authoritative; later media-proof drift may inform future generation but cannot negate or replace this publication/);
+  assert.match(source, /provider_publication_ack_verified:providerCreateProven\|\|providerTruthVerified/);
+});
+
+
+test('personal LinkedIn provider create remains published when later auth/readback changes', () => {
+  assert.match(source, /providerCreateProven=direct\.provider_create_success===true/);
+  assert.match(source, /LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN/);
+  assert.match(source, /exact API readback is optional after provider create acknowledgement and must never trigger republish/);
+  assert.match(source, /Provider create acknowledgement is authoritative for side-effect existence; collect outcomes and never republish because readback\/auth changed later/);
+});
+
+test('Instagram existing provider side effect cannot be negated by later media-proof drift', () => {
+  assert.match(source, /EXISTING_PROVIDER_SIDE_EFFECT_AUTHORITATIVE/);
+  assert.match(source, /Existing Instagram provider side effect is authoritative/);
+  assert.match(source, /later media-proof drift may inform future generation but cannot negate or replace this publication/);
 });

@@ -186,3 +186,32 @@ Hard rules:
 - watchdogs must treat a persisted provider-created URN as a terminal anti-duplicate fence and must not classify it as a silent publication failure.
 
 Reusable lesson: write authority and readback authority are distinct. A failed read permission cannot negate a successful write acknowledgement.
+
+
+## Personal LinkedIn provider write is terminal too (2026-09-28)
+
+Fingerprint: `linkedin-personal-provider-write-terminal-v1`.
+
+The same provider-write truth rule applies to personal LinkedIn. If the provider create call has already returned a durable personal post URN, later token revocation, 401/403 readback, or account reconnection may not retroactively turn that published side effect into a failed obligation.
+
+Hard rules:
+- persist the personal post URN immediately after create success;
+- set `provider_create_success=true`, `provider_publication_ack_verified=true` and `republish_forbidden=true`;
+- later `REVOKED_ACCESS_TOKEN`, 401 or 403 during readback is a verification limitation only for that already-created post;
+- reconnecting a token is a prospective capability repair for future posts, never justification to replace the existing URN;
+- watchdog/recovery reconciles the existing URN only.
+
+
+## Provider-created social side effects are terminal across channels (2026-09-28)
+
+Fingerprint: `provider-write-terminal-all-social-v1`.
+
+Once LinkedIn returns a durable post URN for personal or company publication, the daily claim is `PUBLISHED` for side-effect truth. Later auth revocation, 401/403 readback limits, ACL failures or analytics failures may affect verification enrichment, but may never downgrade the publication to failed/blocked or trigger a replacement post.
+
+Required behavior:
+- persist the provider URN immediately;
+- set `provider_create_success=true`, `provider_publication_ack_verified=true` and `republish_forbidden=true`;
+- recover readback/auth separately from publication state;
+- reconcile only the existing URN;
+- never request reauthorization merely to prove an already-created post;
+- daily watchdogs must close the existing claim, not reopen publication.
