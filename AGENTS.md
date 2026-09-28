@@ -528,3 +528,21 @@ Verplicht:
 
 Canonieke implementation authority: `assets/scan-workshop.js`, `supabase/functions/powerhouse-scan-ingest/index.ts`, `netlify/functions/powerhouse-scan-ingest.mjs`, `netlify/functions/portal-scans.mjs`.
 Canonieke data authority: `public.scan_inzendingen`, `public.workshop_portal_intakes`, `public.portal_state_layers`.
+
+
+## Provider-write truth heeft voorrang op beperkte readback
+
+Fingerprint: `provider-write-ack-is-terminal-side-effect-v1`.
+
+Voor alle chats, agents, watchdogs en herstelroutines geldt:
+- een succesvolle provider-write met een duurzaam extern ID/URN bewijst dat een side effect is ontstaan;
+- sla dat ID onmiddellijk duurzaam op en zet `republish_forbidden=true`;
+- een latere 401/403 op readback, ACL, analytics of admin-inspectie mag dat side effect nooit terugclassificeren naar “niet gepubliceerd”;
+- readbackrechten en writerechten zijn afzonderlijke capabilities;
+- na create-success mag herstel alleen het bestaande provider-ID reconciliëren; nooit vervangen, dupliceren of opnieuw publiceren;
+- visueel/public page bewijs mag provider-truth sluiten wanneer API-readback permission-limited is;
+- OAuth opnieuw koppelen is geen automatische herstelactie voor een reeds succesvol aangemaakte providerpost;
+- dagelijkse watchdogs beschouwen provider-create + extern ID als terminal anti-duplicate fence;
+- “silent publication failure” mag alleen worden gebruikt wanneer géén provider-createbewijs en géén extern ID bestaan.
+
+Dit contract geldt kanaaloverstijgend; de LinkedIn-bedrijfspagina is de eerste expliciete toepassing.
