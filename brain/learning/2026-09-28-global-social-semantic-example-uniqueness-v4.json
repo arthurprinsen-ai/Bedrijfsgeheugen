@@ -27,5 +27,12 @@
     "scope": "SOCIAL",
     "machine_enforceable": true,
     "security_sensitive": false
+  },
+  "evidence": {
+    "replacement_post_urn": "urn:li:share:7510299688642961408",
+    "linkedin_create_success": true,
+    "linkedin_exact_readback": "403_FORBIDDEN",
+    "regression_test": "tests/brain-social-semantic-example-uniqueness-v1.test.mjs",
+    "republish_forbidden": true
   }
 }
