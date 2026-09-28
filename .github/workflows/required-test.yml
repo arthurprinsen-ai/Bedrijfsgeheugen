@@ -61,8 +61,12 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
       - id: scope
         name: Classify independent delivery lanes
         env:
@@ -131,7 +135,7 @@ jobs:
       - name: Verify material writeback closure regression
         run: node --test tests/brain-material-writeback-closure-guard.test.mjs
       - name: Install runtime dependencies for the unwired contracts
-        run: npm ci --prefer-offline --no-audit --no-fund --silent
+        run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Verify previously unwired test contracts
         run: >-
           node --test
