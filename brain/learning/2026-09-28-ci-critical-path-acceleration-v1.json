@@ -1,0 +1,70 @@
+{
+  "fingerprint": "github|ci-critical-path-acceleration|build-once-preview-reuse|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "failure_class": "GITHUB_DELIVERY",
+  "scope": "GITHUB",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "powerhouse-ci-acceleration-v1",
+  "root_cause": "PR delivery duplicated domain checks and website builds across preflight and lane jobs, while repeated dependency installs and unnecessary local browser builds consumed runner time even when an exact-SHA Netlify preview already existed.",
+  "prevention_rule": "Keep one PR-scoped Required authority, classify before expensive work, cancel superseded same-PR runs, use package-manifest-keyed npm download caches, avoid duplicate domain checks, reuse the exact-SHA Netlify preview for browser verification, and build locally only as a fail-safe fallback.",
+  "enforcement": [
+    ".github/workflows/required-test.yml",
+    ".github/workflows/lane-website.yml",
+    ".github/workflows/lane-backend.yml",
+    ".github/workflows/powerhouse-public-rls-regression-guard.yml",
+    ".github/workflows/powerhouse-ci-intelligence.yml",
+    "scripts/brain/powerhouse-ci-intelligence.mjs",
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-delivery-self-optimization",
+    "powerhouse-delivery-concurrency"
+  ],
+  "evidence": {
+    "source": "GitHub Actions run analysis 2026-09-28",
+    "observed_duplicate_patterns": [
+      "preflight repeated Supabase security independent of lane",
+      "preflight repeated Portal suite independent of lane",
+      "website page-seo rebuilt candidate after Netlify build parity",
+      "browser rebuilt candidate even when exact Netlify preview could be ready",
+      "multiple npm installs without package-manifest cache reuse"
+    ]
+  },
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "problem": "GitHub PR delivery spent unnecessary time and runner capacity on duplicated domain checks, repeated website builds, repeated dependency downloads and local browser builds that could reuse an exact-SHA preview.",
+  "prevention": [
+    "Keep one PR-scoped Required authority and cancel superseded same-PR work.",
+    "Classify affected lanes before expensive work and avoid unconditional duplicate domain checks.",
+    "Use package.json-keyed npm download caching while this repository has no lockfile; switch to lockfile-bound deterministic installs if a lockfile is introduced.",
+    "Run page/SEO artifact checks on the canonical website build rather than rebuilding.",
+    "Use the exact-SHA Netlify preview for browser checks when route-ready; local build is fallback only.",
+    "Keep expensive mutation testing on schedule/manual rather than the ordinary PR critical path.",
+    "Measure queue, execution, fan-out and cancellation metrics so recurring waste becomes an optimization obligation."
+  ],
+  "failed_approaches": [
+    "Configured setup-node cache and npm ci against package-lock.json before verifying that this repository has no package-lock; RLS/Skill Projection immediately exposed the invalid assumption."
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

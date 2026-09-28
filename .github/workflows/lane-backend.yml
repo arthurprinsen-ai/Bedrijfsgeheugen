@@ -17,8 +17,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
       - name: Install runtime dependencies for backend contracts
-        run: npm install --no-audit --no-fund --silent
+        run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Verify backend Brain runtime and Quality Intelligence contracts
         run: >-
           node --test

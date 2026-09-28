@@ -215,8 +215,14 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22.12.0'
+      - uses: actions/cache@v4
+        with:
+          path: ~/.npm
+          key: npm-${{ runner.os }}-${{ hashFiles('package.json') }}
+          restore-keys: |
+            npm-${{ runner.os }}-
       - name: Install exact Netlify build dependencies
-        run: npm install --no-audit --no-fund --silent
+        run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Run exact Netlify production build command
         env:
           COMMIT_REF: ${{ inputs.candidate_sha }}
@@ -240,39 +246,11 @@ jobs:
           node tools/site-shell/build-localized-routes.mjs
           node tools/genereer-sitemap.mjs
           node tools/bouw-release-evidence.mjs
-
-  page-seo:
-    needs: [classify, syntax-preflight]
-    if: needs.classify.outputs.requires_preview == 'true' && needs.classify.outputs.risk_lane != 'fast-fix'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ inputs.candidate_sha }}
-      - uses: actions/setup-node@v5
-        with:
-          node-version: '22'
-      - name: Install Netlify build dependencies
-        run: npm install
-      - name: Build and verify exact Netlify website artifact
-        env:
-          COMMIT_REF: ${{ inputs.candidate_sha }}
-          CONTEXT: deploy-preview
-          DEPLOY_ID: required-page-seo-local
-        run: |
-          node tools/bouw-powerhouse-auth.mjs
-          node tools/bouw-kennisindex.mjs
-          node tools/bouw-v18-production.mjs
-          node tools/apply-tabbladen.mjs
-          node tools/bouw-v18-views.mjs
-          node tools/bouw-v18-chrome-alles.mjs
-          node tools/prijzen-uit-de-homepage.mjs
-          node tools/bouw-release-evidence.mjs
       - name: Verify built artifact contracts
         run: node --test tests/tabbladen.test.mjs
 
   browser:
-    needs: [classify, syntax-preflight, preview-ready]
+    needs: [classify, syntax-preflight, preview-ready, netlify-build-parity]
     timeout-minutes: 25
     if: needs.classify.outputs.requires_preview == 'true'
     runs-on: ubuntu-latest
@@ -283,7 +261,8 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - name: Build and serve exact local candidate for broad browser checks
+      - name: Build and serve exact local candidate only when Netlify preview is unavailable
+        if: needs.preview-ready.outputs.preview_mode == 'local-exact-candidate'
         env:
           COMMIT_REF: ${{ inputs.candidate_sha }}
           CONTEXT: deploy-preview
@@ -327,17 +306,17 @@ jobs:
         run: node tools/site-shell/verify-targeted-website-routes.mjs
       - name: Verify all public pages are visibly rendered
         env:
-          UI_VR_BASE_URL: http://127.0.0.1:4173
+          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
         run: timeout --signal=TERM --kill-after=15s 9m node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify every header menu panel is readable
         if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
-          UI_VR_BASE_URL: http://127.0.0.1:4173
+          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
         run: node tools/site-shell/v18-header-menu-contrast-check.mjs
       - name: Verify broad high-risk browser contracts
         if: needs.classify.outputs.risk_lane == 'high-risk'
         env:
-          UI_VR_BASE_URL: http://127.0.0.1:4173
+          UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
           EXPECTED_COMMIT: ${{ inputs.change_head_sha }}
         run: |
           node tools/site-shell/v18-megamenu-browser-check.mjs

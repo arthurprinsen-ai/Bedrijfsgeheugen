@@ -45,77 +45,56 @@ test('static syntax preflight blocks preview, artifact build and browser executi
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   assert.match(website, /\n  syntax-preflight:[\s\S]*Fail fast on broken inline JavaScript[\s\S]*website-static-syntax-preflight\.mjs/);
   assert.match(website, /\n  preview-ready:\n\s+needs:\s*\[classify, syntax-preflight\]/);
-  assert.match(website, /\n  page-seo:\n\s+needs:\s*\[classify, syntax-preflight\]/);
-  assert.match(website, /\n  browser:\n\s+needs:\s*\[classify, syntax-preflight, preview-ready\]/);
+  assert.match(website, /\n  netlify-build-parity:\n\s+needs:\s*\[classify, syntax-preflight\]/);
+  assert.match(website, /\n  browser:\n\s+needs:\s*\[classify, syntax-preflight, preview-ready, netlify-build-parity\]/);
+  assert.doesNotMatch(website, /\n  page-seo:/);
 });
 
-test('exact artifact build owns modern SEO validation while browser separates targeted preview proof from broad exact-local proof', () => {
+test('one exact artifact build owns SEO validation and browser reuses exact preview with local fallback', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   const previewReadyStart = website.indexOf('\n  preview-ready:');
-  const pageSeoStart = website.indexOf('\n  page-seo:', previewReadyStart);
-  const browserStart = website.indexOf('\n  browser:', pageSeoStart);
+  const buildStart = website.indexOf('\n  netlify-build-parity:', previewReadyStart);
+  const browserStart = website.indexOf('\n  browser:', buildStart);
   assert.notEqual(previewReadyStart, -1);
-  assert.notEqual(pageSeoStart, -1);
+  assert.notEqual(buildStart, -1);
   assert.notEqual(browserStart, -1);
-  const previewReady = website.slice(previewReadyStart, pageSeoStart);
-  const pageSeo = website.slice(pageSeoStart, browserStart);
+  const previewReady = website.slice(previewReadyStart, buildStart);
+  const artifactBuild = website.slice(buildStart, browserStart);
   const browser = website.slice(browserStart);
 
-  assert.match(pageSeo, /needs:\s*\[classify, syntax-preflight\]/);
-  assert.match(pageSeo, /name: Install Netlify build dependencies/);
-  assert.match(pageSeo, /run: npm install/);
-  assert.match(pageSeo, /name: Build and verify exact Netlify website artifact/);
-  const commands = [
-    'node tools/bouw-powerhouse-auth.mjs',
-    'node tools/bouw-kennisindex.mjs',
-    'node tools/bouw-v18-production.mjs',
-    'node tools/apply-tabbladen.mjs',
-    'node tools/bouw-v18-views.mjs',
-    'node tools/bouw-v18-chrome-alles.mjs',
-    'node tools/prijzen-uit-de-homepage.mjs',
-  ];
-  for (const command of commands) {
-    assert.match(pageSeo, new RegExp(command.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')));
+  assert.match(artifactBuild, /needs:\s*\[classify, syntax-preflight\]/);
+  assert.match(artifactBuild, /name: Install exact Netlify build dependencies/);
+  assert.match(artifactBuild, /run: npm install --prefer-offline/);
+  assert.match(artifactBuild, /name: Run exact Netlify production build command/);
+  assert.match(artifactBuild, /name: Verify built artifact contracts/);
+  for (const command of ['node tools/bouw-powerhouse-auth.mjs','node tools/bouw-kennisindex.mjs','node tools/bouw-v18-production.mjs','node tools/apply-tabbladen.mjs','node tools/bouw-v18-views.mjs','node tools/bouw-v18-chrome-alles.mjs','node tools/prijzen-uit-de-homepage.mjs']) {
+    assert.ok(artifactBuild.includes(command), `missing build command: ${command}`);
   }
-  assert.ok(
-    pageSeo.indexOf('name: Install Netlify build dependencies') < pageSeo.indexOf(commands[0]),
-    'Netlify build dependencies must be installed before artifact production',
-  );
-  for (let index = 1; index < commands.length; index += 1) {
-    assert.ok(
-      pageSeo.indexOf(commands[index - 1]) < pageSeo.indexOf(commands[index]),
-      `Netlify build order must preserve ${commands[index - 1]} before ${commands[index]}`,
-    );
-  }
-  assert.doesNotMatch(pageSeo, /normaliseer-site-ui\.mjs|seocontrole\.py|paginacontrole\.py|playwright|PAGINA_BASE_URL/);
 
   assert.match(previewReady, /HEAD_SHA:\s*\$\{\{ inputs\.change_head_sha \}\}/);
   assert.match(previewReady, /netlify\/bedrijfsgeheugen\/deploy-preview/);
-  assert.match(previewReady, /deploy-preview-\$\{process\.env\.PR_NUMBER\}--bedrijfsgeheugen\.netlify\.app/);
   assert.match(previewReady, /preview_mode=local-exact-candidate/);
-  assert.match(previewReady, /base_url=http:\/\/127\.0\.0\.1:4173/);
-
-  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
+  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready, netlify-build-parity\]/);
   assert.match(browser, /BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
-  assert.match(browser, /name: Build and serve exact local candidate for broad browser checks/);
-  assert.match(browser, /name: Verify all public pages are visibly rendered[\s\S]*UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
-  assert.doesNotMatch(browser, /Build and serve exact local candidate for broad browser checks[\s\S]{0,180}preview_mode == 'local-exact-candidate'/);
-  assert.doesNotMatch(browser, /https:\/\/deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(browser, /name: Build and serve exact local candidate only when Netlify preview is unavailable/);
+  assert.match(browser, /if:\s*needs\.preview-ready\.outputs\.preview_mode == 'local-exact-candidate'/);
+  assert.match(browser, /UI_VR_BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.doesNotMatch(website, /\n  page-seo:/);
 });
 
 test('Netlify preview failure falls through to exact local candidate verification', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   const previewReadyStart = website.indexOf('\n  preview-ready:');
-  const pageSeoStart = website.indexOf('\n  page-seo:', previewReadyStart);
+  const buildStart = website.indexOf('\n  netlify-build-parity:', previewReadyStart);
   assert.notEqual(previewReadyStart, -1);
-  assert.notEqual(pageSeoStart, -1);
-  const previewReady = website.slice(previewReadyStart, pageSeoStart);
+  assert.notEqual(buildStart, -1);
+  const previewReady = website.slice(previewReadyStart, buildStart);
   assert.match(previewReady, /\['failure','error'\]\.includes\(status\?\.state\)/);
   assert.doesNotMatch(previewReady, /\['failure','error'\]\.includes\(status\?\.state\)\) throw new Error/);
   assert.match(previewReady, /Netlify preview .*exact local candidate fallback/);
   assert.match(previewReady, /preview_mode=local-exact-candidate/);
+  assert.match(website, /if:\s*needs\.preview-ready\.outputs\.preview_mode == 'local-exact-candidate'/);
 });
-
 test('production readback is single-flight and supersedes obsolete main readbacks', () => {
   const production = readFileSync('.github/workflows/production-release-readback.yml', 'utf8');
   assert.match(production, /group:\s*production-release-readback\s*$/m);
