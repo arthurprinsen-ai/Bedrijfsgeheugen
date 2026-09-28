@@ -195,7 +195,7 @@ create or replace function public.powerhouse_prediction_learning_audit_v2()
 returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = public, pg_catalog
 as $$
 declare v_control jsonb; v_queue jsonb;
 begin
