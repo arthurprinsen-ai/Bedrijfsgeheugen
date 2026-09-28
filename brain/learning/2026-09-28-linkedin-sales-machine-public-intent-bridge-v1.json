@@ -11,10 +11,12 @@
     "PII must remain in purpose-bound lead/order handlers and never be copied to SEO/growth telemetry.",
     "Website intent augments LinkedIn/e-mail context but never bypasses consent or execution gates."
   ],
-  "evidence_contracts": [
-    "tests/brain-linkedin-sales-machine-public-intent-bridge-v1.test.mjs"
-  ],
   "skill_targets": [
     ".agents/skills/powerhouse-linkedin-sales-machine/SKILL.md"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-sales-machine-public-intent-bridge-v1.test.mjs"
+    ]
+  }
 }
