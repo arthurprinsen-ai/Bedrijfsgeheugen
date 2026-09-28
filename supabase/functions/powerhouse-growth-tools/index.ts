@@ -76,17 +76,7 @@ Deno.serve(async(req:Request)=>{
       return json({ok:true,contract:CONTRACT,tool,summary,participant:own?{score:own.score,delta_to_workshop:own.delta_to_workshop,percentile_rank:own.percentile_rank}:null,privacy:'No participant identities are returned.'});
     }
 
-    if(tool==='revenue-swarm'){
-      const {data:tokenData}=await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'});
-      const expected=clean(tokenData);
-      if(!expected||req.headers.get('x-powerhouse-token')!==expected)return json({ok:false,error:'UNAUTHORIZED'},401);
-      const {data,error}=await db.from('powerhouse_revenue_swarm_v1')
-        .select('*').order('revenue_rank',{ascending:true}).limit(50);
-      if(error)throw new Error('REVENUE_SWARM:'+error.message);
-      return json({ok:true,contract:CONTRACT,tool,rows:data||[]});
-    }
-
-    return json({ok:false,error:'UNKNOWN_TOOL',supported:['friction-index','competitor-benchmark','lost-knowledge','ma-risk','workshop-benchmark','revenue-swarm']},400);
+    return json({ok:false,error:'UNKNOWN_TOOL',supported:['friction-index','competitor-benchmark','lost-knowledge','ma-risk','workshop-benchmark']},400);
   }catch(err:any){
     return json({ok:false,contract:CONTRACT,error:clean(err?.message||err).slice(0,500)},503);
   }
