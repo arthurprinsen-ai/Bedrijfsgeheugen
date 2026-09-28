@@ -74,7 +74,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         oneRequiredAuthorityPerPr:true,
         supersededPrRunsCancelled:true,
         affectedLanesOnly:true,
-        deterministicDependencyCache:true,
+        packageManifestNpmCache:true,
         exactShaPreviewReuse:true,
         localBrowserBuildFallbackOnly:true,
         safetyGatesNeverWeakened:true
