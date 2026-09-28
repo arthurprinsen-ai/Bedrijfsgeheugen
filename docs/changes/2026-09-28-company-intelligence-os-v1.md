@@ -25,7 +25,7 @@ CRM, LinkedIn, ERP, accounting, analytics, documents, external intelligence and 
 - Supabase migration: `supabase/migrations/20260928193000_powerhouse_company_intelligence_os_v1.sql`
 - Skill: `.agents/skills/powerhouse-company-intelligence-os/SKILL.md`
 - System Map: `platform/system-map/canonical-system-map.mjs`
-- Tests: `tests/company-intelligence-os-v1.test.mjs`
+- Tests: `tests/brain-company-intelligence-os-v1.test.mjs`
 
 ## Runtime model
 
@@ -38,3 +38,16 @@ No parallel CRM, action queue or learning database was created. The Company Grap
 - context and graph projections retain canonical lineage;
 - sensitive-person inference remains forbidden;
 - learning is incomplete until it can alter a future priority, prediction, policy or next-best-action.
+
+## Production proof
+
+Production Supabase readback on 2026-09-28 confirmed the runtime projections over canonical data:
+
+- Company Graph nodes: **42,217**
+- Company Graph edges: **25,164**
+- System of Context company contexts: **17,328**
+- Autonomous Action Layer rows: **2,883**
+- Outcome Memory rows: **12**
+- Compound Intelligence company rows: **17,328**
+
+This closes the architecture change as `LIVE_PROVEN_RUNTIME`: GitHub remains the versioned architecture authority; Supabase is the canonical runtime authority; CRM remains a source rather than the reasoning brain.
