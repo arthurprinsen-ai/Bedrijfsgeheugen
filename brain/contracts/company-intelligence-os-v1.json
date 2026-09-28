@@ -1,6 +1,6 @@
 {
   "contract_id": "POWERHOUSE-COMPANY-INTELLIGENCE-OS-v1",
-  "status": "canonical-candidate",
+  "status": "canonical",
   "purpose": "Unify company graph, context, decisions, autonomous actions, outcomes and learning into one AI-native company operating system.",
   "positioning": {
     "category": "AI-native Company Operating System / Company Intelligence Platform",
@@ -10,8 +10,9 @@
       "understand",
       "decide",
       "act",
-      "measure",
-      "learn"
+      "observe",
+      "learn",
+      "compound"
     ]
   },
   "layers": {
@@ -61,6 +62,20 @@
     "REALIZED_VALUE_IS_OBSERVED_NOT_SYNTHESIZED",
     "LEARNING_UPDATES_SHARED_POLICY",
     "PROVENANCE_FRESHNESS_CONFIDENCE_REQUIRED",
-    "SYSTEM_MAP_WRITEBACK_REQUIRED"
-  ]
+    "SYSTEM_MAP_WRITEBACK_REQUIRED",
+    "CRM_IS_A_SOURCE_NOT_THE_BRAIN",
+    "EXECUTION_BOUNDARY_REQUIRED",
+    "OUTCOMES_ARE_OBSERVED_NOT_INVENTED",
+    "PREDICTED_VALUE_IS_NOT_REALIZED_VALUE",
+    "LEARNING_MUST_CHANGE_A_FUTURE_DECISION"
+  ],
+  "canonical_runtime": {
+    "company_graph_nodes": "public.powerhouse_company_graph_nodes_v1",
+    "company_graph_edges": "public.powerhouse_company_graph_edges_v1",
+    "system_context": "public.powerhouse_system_of_context_v1",
+    "action_layer": "public.powerhouse_autonomous_action_layer_v1",
+    "outcome_memory": "public.powerhouse_outcome_memory_v1",
+    "compound_intelligence": "public.powerhouse_compound_intelligence_v1",
+    "orchestrator": "public.powerhouse_run_company_intelligence_os_v1(date)"
+  }
 }
