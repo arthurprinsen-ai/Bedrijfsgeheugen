@@ -1,0 +1,38 @@
+{
+  "event_id": "2026-09-28-powerhouse-self-improvement-layer-v1",
+  "date": "2026-09-28",
+  "type": "IMPROVEMENT",
+  "component": "whole-brain-intelligence",
+  "summary": "Unified Powerhouse self-improvement contract spanning measurable agent objectives, evaluation/promotion, provider-neutral model routing, architecture health, learning compilation and daily compounding.",
+  "root_cause": "Strong learning, quality, autonomous-improvement and Company Intelligence capabilities existed, but the cross-layer promotion contract was implicit rather than one canonical self-improvement layer.",
+  "fix": "Compose existing authorities into one evidence-first layer with explicit objectives, eval gates, Architecture Guardian, Model Router, Learning Compiler bridge, daily self-evolution and runtime control projection.",
+  "changed": [
+    "brain/self-improvement/self-improvement-layer.mjs",
+    "brain/contracts/self-improvement-layer-v1.json",
+    "tests/brain-self-improvement-layer-v1.test.mjs",
+    "supabase/migrations/20260928194500_powerhouse_self_improvement_layer_v1.sql",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+    "docs/powerhouse/POWERHOUSE_SELF_IMPROVEMENT_LAYER.md",
+    "docs/powerhouse/POWERHOUSE_SYSTEM_MAP_GOVERNANCE.md",
+    "platform/system-map/canonical-system-map.mjs",
+    ".github/workflows/powerhouse-daily-self-evolution.yml",
+    "config/powerhouse-daily-self-evolution.json",
+    "scripts/brain/daily-self-evolution.mjs"
+  ],
+  "prevention": [
+    "No learning without evidence.",
+    "No change without evaluation.",
+    "No deployment without regression proof.",
+    "No intelligence without measurable outcome.",
+    "No uncontrolled self-modification.",
+    "Unknown evidence never becomes green.",
+    "Protected delivery remains production authority."
+  ],
+  "evidence": {
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/3211",
+    "regression": "tests/brain-self-improvement-layer-v1.test.mjs",
+    "migration": "supabase/migrations/20260928194500_powerhouse_self_improvement_layer_v1.sql",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  }
+}

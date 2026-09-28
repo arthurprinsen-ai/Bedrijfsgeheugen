@@ -57,3 +57,7 @@ Required closure behavior:
 - Never create a second proof/store/queue to represent the same runtime truth.
 
 Verified baseline on 2026-09-28: 42,217 graph nodes; 25,164 graph edges; 17,328 company contexts; 2,883 action-layer rows; 12 outcome-memory rows; 17,328 compound-intelligence company rows.
+
+## Self-improvement bridge
+
+Verified Company Intelligence outcomes feed `powerhouse-self-improvement-layer`. That layer may recalibrate agents, model-routing candidates, policies, tests and engineering candidates, but must reuse Outcome Memory, existing optimization evidence and protected delivery. It must never create a parallel graph, outcome ledger, learning store or uncontrolled production writer.

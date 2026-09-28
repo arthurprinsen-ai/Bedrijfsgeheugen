@@ -1,0 +1,70 @@
+{
+  "fingerprint": "powerhouse-self-improvement-layer-v1",
+  "date": "2026-09-28",
+  "problem": "Powerhouse had strong Company Intelligence, autonomous-improvement, quality and engineering-learning capabilities, but lacked one explicit cross-layer contract joining agent objectives, model routing, architecture health, evaluation/promotion and learning compilation into a single compounding intelligence loop.",
+  "root_cause": "Capabilities existed across separate canonical subsystems without one explicit self-improvement authority and measurable north-star contract.",
+  "decision": "Add a thin Self-Improvement Layer that composes existing authorities rather than creating parallel stores or schedulers.",
+  "prevention": [
+    "Every agent must expose a measurable objective plus guardrails.",
+    "Every material candidate must pass evidence, quality, security and regression gates.",
+    "Architecture health participates in promotion decisions.",
+    "Learning compiles into regression, skill, documentation, system-map and bounded candidate outputs.",
+    "No learning path may directly rewrite production."
+  ],
+  "canonical_refs": [
+    "brain/self-improvement/self-improvement-layer.mjs",
+    "brain/contracts/self-improvement-layer-v1.json",
+    "docs/powerhouse/POWERHOUSE_SELF_IMPROVEMENT_LAYER.md",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
+  ],
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "title": "Powerhouse self-improvement cross-layer authority",
+  "impact": "Without one explicit cross-layer contract, learning quality, model selection, architecture health and agent objectives could improve locally without proving that Powerhouse as a whole became better.",
+  "failed_approaches": [
+    "Adding more isolated agents or AI features without a shared outcome/evaluation authority.",
+    "Treating code presence or model novelty as proof of improvement."
+  ],
+  "fix": "Compose existing Company Intelligence, quality, autonomous-improvement and protected-delivery authorities behind one evidence-first Self-Improvement Layer.",
+  "prevention_rule": "Every material autonomous improvement must have explicit objective, verified evidence, representative evaluation, regression/security non-degradation and protected promotion. Unknown is never green and learning may not directly rewrite production.",
+  "regression_contract": "tests/brain-self-improvement-layer-v1.test.mjs",
+  "tests": [
+    "tests/brain-self-improvement-layer-v1.test.mjs",
+    "tests/powerhouse-daily-self-evolution.test.mjs"
+  ],
+  "evidence": {
+    "module": "brain/self-improvement/self-improvement-layer.mjs",
+    "contract": "brain/contracts/self-improvement-layer-v1.json",
+    "migration": "supabase/migrations/20260928194500_powerhouse_self_improvement_layer_v1.sql",
+    "tests": [
+      "tests/brain-self-improvement-layer-v1.test.mjs",
+      "tests/powerhouse-daily-self-evolution.test.mjs"
+    ],
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "outcome": "Candidate unifies evidence-backed daily compounding across company, agent and engineering learning without creating a parallel truth or production writer.",
+  "compiler": {
+    "failure_class": "FRAGMENTED_SELF_IMPROVEMENT_WITHOUT_UNIFIED_PROMOTION_CONTRACT",
+    "scope": "WHOLE_BRAIN_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-self-improvement-layer-v1.test.mjs"
+    ],
+    "invariants": [
+      "learning requires evidence",
+      "candidate promotion requires quality security and regression gates",
+      "model routing respects privacy and capability boundaries",
+      "architecture health can block promotion",
+      "self-improvement never directly rewrites production"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-company-intelligence-os"
+  ]
+}
