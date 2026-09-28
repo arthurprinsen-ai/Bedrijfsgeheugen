@@ -51,11 +51,18 @@ export function createAdaptiveDeliveryPlan({ changedPaths = [], policy } = {}) {
   const tests = new Set(policy.alwaysTests || []);
   const capabilityMatchedPaths = new Set();
   for (const capability of policy.capabilities || []) {
-    const matching = paths.filter(path => matchesAny(path, capability.paths || []));
+    const matching = paths.filter(path =>
+      matchesAny(path, capability.paths || []) &&
+      !matchesAny(path, capability.excludePaths || [])
+    );
     if (!matching.length) continue;
     capabilities.push(capability.id);
     matching.forEach(path => capabilityMatchedPaths.add(path));
     for (const test of capability.tests || []) tests.add(test);
+  }
+
+  for (const path of paths) {
+    if (/^tests\/.+\.test\.mjs$/.test(path)) tests.add(path);
   }
 
   const unknownPaths = paths.filter(path => !matchedRiskPaths.has(path) && !capabilityMatchedPaths.has(path));
