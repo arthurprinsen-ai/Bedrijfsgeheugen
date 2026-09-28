@@ -1,0 +1,25 @@
+{
+  "fingerprint": "powerhouse-growth-lab-public-v1",
+  "date": "2026-09-28",
+  "status": "CANDIDATE",
+  "obligation_id": "powerhouse-growth-swarm-public-surface-v1",
+  "failure_class": "REVENUE_SURFACE_GAP",
+  "scope": "WEBSITE_GROWTH",
+  "machine_enforceable": true,
+  "root_cause": "Growth Swarm runtime was live but its public calculators and benchmark value proposition were not yet exposed on a canonical website route.",
+  "decision": "Expose the Growth Lab on /groei using the already-live Growth Tools Edge Function, preserve privacy/truth boundaries, route to Frisse Blik, and index the page in the sitemap.",
+  "prevention": [
+    "A newly introduced public growth tool is incomplete until it has a canonical public route or an explicit internal-only designation.",
+    "Public benchmark surfaces must fail closed when sample/privacy floors are not met.",
+    "Scenario financial outputs and M&A risk outputs must remain labelled as estimates.",
+    "Public Growth Lab must not expose private Revenue Swarm account intelligence."
+  ],
+  "evaluation": {
+    "regression": [
+      "tests/brain-powerhouse-growth-lab-public-v1.test.mjs"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-growth-lab-public-v1.test.mjs"
+    ]
+  }
+}
