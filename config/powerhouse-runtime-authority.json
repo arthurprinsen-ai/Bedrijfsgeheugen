@@ -43,12 +43,12 @@
     },
     {
       "id": "powerhouse-social-publisher",
-      "runtime": "supabase_buffer",
+      "runtime": "supabase_composio",
       "classification": "ACTIVE",
       "authority": "ACTIVE",
       "production_execution_allowed": true,
       "obligations": ["social_delivery"],
-      "role": "canonical social provider delivery for supported social channels"
+      "role": "canonical social provider delivery through Composio; channel capability gates are independent and exact-account-bound"
     },
     {
       "id": "chatgpt-powerhouse-social-delivery",
@@ -136,16 +136,16 @@
     {
       "channel": "linkedin_personal",
       "owner_component_id": "powerhouse-social-publisher",
-      "delivery_runtime": "supabase_buffer",
+      "delivery_runtime": "supabase_composio",
       "autonomous_publish_allowed": true,
-      "evidence_policy": "identity gate + Buffer delivery id + due time + post-due provider/live readback"
+      "evidence_policy": "personal identity gate + exact Composio account binding + action-specific health + LinkedIn external id/url + live readback; unrelated channel failures never block"
     },
     {
       "channel": "linkedin_company",
       "owner_component_id": "powerhouse-social-publisher",
-      "delivery_runtime": "supabase_buffer",
+      "delivery_runtime": "supabase_composio",
       "autonomous_publish_allowed": true,
-      "evidence_policy": "company identity gate + Buffer delivery id + due time + post-due provider/live readback"
+      "evidence_policy": "company identity gate + exact Composio account binding + organization capability + LinkedIn external id/url + live readback; absent capability fails closed only for company"
     },
     {
       "channel": "linkedin_article_personal",
@@ -164,9 +164,9 @@
     {
       "channel": "instagram_company",
       "owner_component_id": "powerhouse-social-publisher",
-      "delivery_runtime": "supabase_buffer",
+      "delivery_runtime": "supabase_composio",
       "autonomous_publish_allowed": true,
-      "evidence_policy": "Mira identity gate + exact-final-media proof + Buffer delivery + provider/live readback"
+      "evidence_policy": "Mira temporal identity proof + exact canonical Composio Instagram binding + external media id/permalink + live readback; unrelated channel failures never block"
     },
     {
       "channel": "blog",
