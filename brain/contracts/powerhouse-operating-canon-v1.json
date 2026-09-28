@@ -165,5 +165,45 @@
     "learning_without_originating_prediction",
     "claiming_completion_without_readback",
     "starting_from_scratch_when_canonical_components_exist"
-  ]
+  ],
+  "company_intelligence_os": {
+    "contract": "COMPANY-INTELLIGENCE-OS-v1",
+    "category": "AI-native company operating system / company intelligence platform",
+    "principle": "CRM is a source, never the brain; Powerhouse is the company intelligence and execution layer.",
+    "loop": [
+      "know",
+      "understand",
+      "decide",
+      "act",
+      "observe",
+      "learn",
+      "compound"
+    ],
+    "layers": [
+      "company_graph",
+      "system_of_context",
+      "autonomous_action_layer",
+      "outcome_memory",
+      "compound_intelligence"
+    ],
+    "authorities": {
+      "contract": "brain/contracts/company-intelligence-os-v1.json",
+      "module": "brain/company-intelligence/company-intelligence-os.mjs",
+      "graph_nodes": "public.powerhouse_company_graph_nodes_v1",
+      "graph_edges": "public.powerhouse_company_graph_edges_v1",
+      "context": "public.powerhouse_system_of_context_v1",
+      "actions": "public.powerhouse_autonomous_action_layer_v1",
+      "outcomes": "public.powerhouse_outcome_memory_v1",
+      "compound": "public.powerhouse_compound_intelligence_v1",
+      "orchestrator": "public.powerhouse_run_company_intelligence_os_v1(date)"
+    },
+    "invariants": [
+      "no_parallel_crm",
+      "no_parallel_truth_store",
+      "evidence_lineage_required",
+      "bounded_execution_only",
+      "observed_outcomes_only",
+      "learning_must_change_future_decision"
+    ]
+  }
 }

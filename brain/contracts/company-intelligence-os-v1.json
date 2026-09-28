@@ -1,0 +1,81 @@
+{
+  "contract_id": "POWERHOUSE-COMPANY-INTELLIGENCE-OS-v1",
+  "status": "canonical",
+  "purpose": "Unify company graph, context, decisions, autonomous actions, outcomes and learning into one AI-native company operating system.",
+  "positioning": {
+    "category": "AI-native Company Operating System / Company Intelligence Platform",
+    "principle": "CRM is a source, never the brain.",
+    "loop": [
+      "know",
+      "understand",
+      "decide",
+      "act",
+      "observe",
+      "learn",
+      "compound"
+    ]
+  },
+  "layers": {
+    "company_graph": {
+      "role": "Canonical relationship and dependency graph across companies, people, opportunities, actions, outcomes, capabilities and evidence.",
+      "authority": "Supabase canonical runtime",
+      "invariant": "No parallel CRM or duplicate graph truth."
+    },
+    "system_of_context": {
+      "role": "Compile current business, relationship, market, operational, financial and evidence context into one explainable decision frame.",
+      "invariant": "Every recommendation must cite provenance, freshness and confidence."
+    },
+    "autonomous_action_layer": {
+      "role": "Translate decisions into bounded executable actions using existing Powerhouse agents and provider transports.",
+      "invariant": "External side effects must respect channel, identity, consent, safety and human-authorization gates."
+    },
+    "outcome_memory": {
+      "role": "Persist what happened after each decision/action and link realized value and evidence back to the originating cycle.",
+      "invariant": "No learning without outcome lineage."
+    },
+    "compound_intelligence_loop": {
+      "role": "Continuously recalibrate next decisions from verified outcomes, realized value, failures and feedback.",
+      "invariant": "Every cycle must improve shared policy/context instead of a domain-local silo."
+    }
+  },
+  "canonical_flow": [
+    "source evidence",
+    "company graph",
+    "system of context",
+    "prediction",
+    "decision",
+    "autonomous action",
+    "provider readback",
+    "outcome memory",
+    "realized value",
+    "calibration",
+    "next decision"
+  ],
+  "crm_role": "Source adapter for identity, relationship and opportunity evidence; never canonical reasoning authority.",
+  "invariants": [
+    "NO_PARALLEL_CRM",
+    "NO_PARALLEL_LEARNING_STORE",
+    "EVIDENCE_FIRST",
+    "CONTEXT_BEFORE_ACTION",
+    "ACTION_REQUIRES_LINEAGE",
+    "OUTCOME_REQUIRES_ORIGIN",
+    "REALIZED_VALUE_IS_OBSERVED_NOT_SYNTHESIZED",
+    "LEARNING_UPDATES_SHARED_POLICY",
+    "PROVENANCE_FRESHNESS_CONFIDENCE_REQUIRED",
+    "SYSTEM_MAP_WRITEBACK_REQUIRED",
+    "CRM_IS_A_SOURCE_NOT_THE_BRAIN",
+    "EXECUTION_BOUNDARY_REQUIRED",
+    "OUTCOMES_ARE_OBSERVED_NOT_INVENTED",
+    "PREDICTED_VALUE_IS_NOT_REALIZED_VALUE",
+    "LEARNING_MUST_CHANGE_A_FUTURE_DECISION"
+  ],
+  "canonical_runtime": {
+    "company_graph_nodes": "public.powerhouse_company_graph_nodes_v1",
+    "company_graph_edges": "public.powerhouse_company_graph_edges_v1",
+    "system_context": "public.powerhouse_system_of_context_v1",
+    "action_layer": "public.powerhouse_autonomous_action_layer_v1",
+    "outcome_memory": "public.powerhouse_outcome_memory_v1",
+    "compound_intelligence": "public.powerhouse_compound_intelligence_v1",
+    "orchestrator": "public.powerhouse_run_company_intelligence_os_v1(date)"
+  }
+}
