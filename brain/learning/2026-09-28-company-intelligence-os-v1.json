@@ -1,0 +1,27 @@
+{
+  "type": "LEARNING_RECORD",
+  "version": "1.0.0",
+  "fingerprint": "powerhouse-company-intelligence-os-v1",
+  "date": "2026-09-28",
+  "status": "ACTIVE_PREVENTION",
+  "scope": "all current and future Powerhouse chats, agents, skills, workflows, CRM/connectors, portal surfaces and intelligence producers",
+  "problem": "Powerhouse already contained context, graph, action, outcome and learning components, but they were distributed across domain-specific projections and lacked one mandatory company-intelligence semantic contract.",
+  "root_cause_class": "DISTRIBUTED_INTELLIGENCE_WITHOUT_SINGLE_SEMANTIC_OS_CONTRACT",
+  "root_cause": "Canonical data and closed-loop machinery existed while Company Graph, System of Context, autonomous action, Outcome Memory and Compound Intelligence were not governed as one operating layer.",
+  "proven_fix": "Introduce Company Intelligence OS v1 as a derived semantic/runtime layer over existing canonical stores. CRM remains a source; no duplicate truth store is introduced.",
+  "prevention": [
+    "Every company/customer intelligence feature attaches to Company Intelligence OS or documents why it cannot.",
+    "CRM integrations feed evidence/context and never become competing reasoning authority.",
+    "Action mechanisms reuse the canonical sales/action/agent fabric and explicit execution boundaries.",
+    "Observed outcomes land in canonical outcome/realized-value lineage with evidence.",
+    "Predicted or expected value never becomes realized value without evidence.",
+    "Learning is incomplete until it changes a later priority, prediction, policy or next-best-action.",
+    "System Map, human docs, skills and tests update in the same delivery lineage."
+  ],
+  "architecture": {
+    "contract": "brain/contracts/company-intelligence-os-v1.json",
+    "module": "brain/company-intelligence/company-intelligence-os.mjs",
+    "migration": "supabase/migrations/20260928193000_powerhouse_company_intelligence_os_v1.sql",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  }
+}
