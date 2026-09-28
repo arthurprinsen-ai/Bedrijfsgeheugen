@@ -23,3 +23,5 @@ Regression oracle: `tests/brain-ci-critical-path-acceleration-v1.test.mjs`.
 - PR scope metadata is gesynchroniseerd op 17 bestanden, inclusief de portal-lane ownership-wijziging.
 
 - Release-control regression assertions now validate build-once plus exact-preview reuse rather than the superseded duplicate page-SEO/local-build architecture.
+
+- Website-risk regression contract now treats the canonical parity build as the shared artifact owner and local browser build as preview-unavailable fallback only.
