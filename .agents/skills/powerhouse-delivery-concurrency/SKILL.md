@@ -305,7 +305,7 @@ For every PR delivery:
 - preserve one PR-scoped canonical `Required test` authority and cancel superseded same-PR work;
 - run admission/classification before expensive lanes and execute only affected lanes;
 - never repeat Portal/Supabase domain tests unconditionally in generic preflight when the owned lane/specialist contract already provides that proof;
-- use lockfile-bound dependency caching and deterministic `npm ci --prefer-offline`;
+- when no lockfile exists, use package-manifest-keyed npm download caching with `npm install --prefer-offline`; when a lockfile is introduced, prefer lockfile-bound deterministic installs;
 - do not rebuild the website merely to run page/SEO artifact contracts after the canonical parity build;
 - use the exact-SHA Netlify deploy preview for browser verification when it is route-ready; build/serve locally only as a fail-safe fallback;
 - measure queue wait, execution duration, fan-out per SHA, failure/cancel/skip counts and use those observations to remove recurring runner waste;
