@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_LEARNING",
   "version": "v2",
-  "status": "CANDIDATE",
+  "status": "LIVE_PROVEN_RUNTIME",
   "fingerprint": "powerhouse-foresight-prediction-intelligence-v2",
   "date": "2026-09-28",
   "title": "Forecast resolution is required for compounding predictive intelligence",
@@ -41,5 +41,19 @@
   "skill_targets": [
     "powerhouse-foresight-prediction-intelligence",
     "powerhouse-self-improvement-layer"
-  ]
+  ],
+  "production_evidence": {
+    "github_merge_sha": "16a15a7ae0c13a3a626c2fedba498c46123ba5c2",
+    "forecast_total": 1177,
+    "resolved_total": 3,
+    "resolution_debt": 0,
+    "brier_score": 0.1092,
+    "calibration_error": 0.3297,
+    "timing_mae_days": 8.9,
+    "signal_total": 143,
+    "independent_source_types": 3,
+    "prediction_state": "CALIBRATION_DEGRADED",
+    "audit_cron": "35 6 * * *",
+    "runtime_readback_at": "2026-09-28T18:45:25Z"
+  }
 }
