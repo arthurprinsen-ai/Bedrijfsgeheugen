@@ -200,3 +200,18 @@ Hard rules:
 - later `REVOKED_ACCESS_TOKEN`, 401 or 403 during readback is a verification limitation only for that already-created post;
 - reconnecting a token is a prospective capability repair for future posts, never justification to replace the existing URN;
 - watchdog/recovery reconciles the existing URN only.
+
+
+## Provider-created social side effects are terminal across channels (2026-09-28)
+
+Fingerprint: `provider-write-terminal-all-social-v1`.
+
+Once LinkedIn returns a durable post URN for personal or company publication, the daily claim is `PUBLISHED` for side-effect truth. Later auth revocation, 401/403 readback limits, ACL failures or analytics failures may affect verification enrichment, but may never downgrade the publication to failed/blocked or trigger a replacement post.
+
+Required behavior:
+- persist the provider URN immediately;
+- set `provider_create_success=true`, `provider_publication_ack_verified=true` and `republish_forbidden=true`;
+- recover readback/auth separately from publication state;
+- reconcile only the existing URN;
+- never request reauthorization merely to prove an already-created post;
+- daily watchdogs must close the existing claim, not reopen publication.
