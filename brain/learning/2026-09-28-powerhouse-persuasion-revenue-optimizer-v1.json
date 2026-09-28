@@ -1,0 +1,42 @@
+{
+  "fingerprint": "powerhouse-persuasion-revenue-optimizer-v1",
+  "date": "2026-09-28",
+  "status": "RUNTIME_ACTIVE_REPOSITORY_CANDIDATE",
+  "obligation_id": "powerhouse-persuasion-revenue-optimizer-v1",
+  "failure_class": "ADVICE_WITHOUT_EXECUTION",
+  "scope": "REVENUE_PERSUASION",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Growth Swarm had twenty catalog plays but seven were ARMED/READY_FOR_SURFACE rather than end-to-end executable. Persuasion could also become a recommendation-only layer unless every decision had an executor path.",
+  "decision": "Activate all 20 plays and introduce an ethical Persuasion Revenue Optimizer whose output is routed into canonical email, LinkedIn, content/SEO, benchmark, scan and portal executors.",
+  "runtime_evidence": {
+    "growth_plays_active": 20,
+    "growth_plays_catalog": 20,
+    "persuasion_principles": 10,
+    "initial_persuasion_decisions": 8,
+    "initial_executor_content_routes": 1,
+    "initial_executor_email_routes": 0,
+    "explanation": "No eligible email action existed at the activation instant; executor remains armed and routes automatically once existing evidence/suppression/cooldown gates pass."
+  },
+  "prevention": [
+    "A persuasion score or message strategy is never terminal; safe eligible actions must route into an executor.",
+    "Never use sensitive-trait or psychological personality profiling for persuasion.",
+    "Never fabricate scarcity, urgency, authority, testimonials, benchmarks or financial impact.",
+    "Keep no-buy, wait and self-fix as real options where evidence does not support purchase.",
+    "Optimize on reply, meeting, scan, paid order and realized revenue, with a measurement floor before declaring a winner.",
+    "Reuse canonical Powerhouse executors and outcome lineage; never create an isolated persuasion CRM."
+  ],
+  "evaluation": {
+    "regression": [
+      "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-persuasion-revenue-optimizer/SKILL.md",
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md"
+  ]
+}
