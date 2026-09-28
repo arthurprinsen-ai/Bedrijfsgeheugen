@@ -31,7 +31,7 @@ export function buildCompanyIntelligenceContext(runtime={},surface='executive-co
   const proven=Boolean(graphNodes.length||decisions.length||actions.length||outcomes.length||learning.length);
   return Object.freeze({
     surface,proven,observedAt,
-    graph:Object.freeze({nodes:graphNodes.length,edges:graphEdges}),
+    graph:Object.freeze({nodes:graphNodes.length,edges:graphEdges,items:graphNodes.slice(0,5)}),
     context:Object.freeze({decisions:decisions.length,now:arr(portfolio.NOW).length,next:arr(portfolio.NEXT).length,approvals:approvals.length}),
     action:Object.freeze({items:actions.slice(0,3),count:actions.length}),
     outcome:Object.freeze({items:outcomes.slice(0,3),count:outcomes.length,realizedValue:num(economics.realizedValue)}),
@@ -42,21 +42,24 @@ export function buildCompanyIntelligenceContext(runtime={},surface='executive-co
 
 function itemTitle(item={}){return item.title||item.naam||item.label||item.subjectId||item.id||'Context';}
 function itemReason(item={}){return arr(item.reasons).join(' · ')||item.nextAction||item.status||item.reason||'';}
+function stage(icon,label,value,detail){return '<article class="ci-stage"><span>'+icon+'</span><small>'+esc(label)+'</small><strong>'+esc(value)+'</strong><em>'+esc(detail)+'</em></article>';}
 
 export function renderCompanyIntelligenceContext(runtime={},surface='executive-cockpit'){
   const model=buildCompanyIntelligenceContext(runtime,surface);
-  if(!model.proven)return '<section class="ci-context ci-context-empty" data-company-intelligence-context="'+esc(surface)+'"><div><span>Powerhouse intelligence</span><strong>Nog geen bewezen context</strong></div><p>Deze visualisatie blijft leeg totdat tenant-scoped runtime-evidence beschikbaar is.</p></section>';
-  const focus=model.focus.length?model.focus.map(item=>'<article><strong>'+esc(itemTitle(item))+'</strong><small>'+esc(itemReason(item)||'Herleidbaar uit de actuele bedrijfscontext')+'</small></article>').join(''):'<article><strong>Geen extra focus nodig</strong><small>Er is voor deze context geen aanvullende bewezen prioriteit.</small></article>';
+  if(!model.proven)return '<section class="ci-context ci-context-empty" data-company-intelligence-context="'+esc(surface)+'"><div class="ci-head"><div><small>Powerhouse intelligence</small><h3>Nog geen bewezen context</h3><p>Deze visualisatie blijft leeg totdat tenant-scoped runtime-evidence beschikbaar is.</p></div><span>'+esc(surface)+'</span></div></section>';
+  const graphItems=(model.graph.items.length?model.graph.items:model.focus).slice(0,5);
+  const graph=graphItems.length?'<div class="ci-mini-graph" aria-label="Relevante Company Graph context">'+graphItems.map((item,index)=>'<span><i></i><b>'+esc(itemTitle(item))+'</b><small>'+esc(item.status||item.portfolioBucket||'context')+'</small></span>'+(index<graphItems.length-1?'<em>→</em>':'')).join('')+'</div>':'';
+  const memory=model.learning.items[0];
+  const memoryMarkup='<div class="ci-memory"><div><strong>Outcome memory & learning</strong><small>'+model.learning.count+' learning'+(model.learning.count===1?'':'s')+'</small></div><p>'+(memory?esc(itemTitle(memory)+(itemReason(memory)?' · '+itemReason(memory):'')):'Nog geen geverifieerde learning voor deze context.')+'</p></div>';
   return '<section class="ci-context" data-company-intelligence-context="'+esc(surface)+'">'
-    +'<header><div><span>Powerhouse intelligence</span><h3>Wat zien we → wat doen we → wat leren we?</h3></div><small>'+(model.observedAt?'Bijgewerkt '+esc(model.observedAt):'Actuele runtime')+'</small></header>'
-    +'<div class="ci-loop" aria-label="Company Intelligence feedbackloop">'
-      +'<article><i>1</i><span>Context</span><b>'+model.graph.nodes+'</b><small>graph-nodes · '+model.graph.edges+' relaties</small></article>'
-      +'<article><i>2</i><span>Besluiten</span><b>'+model.context.decisions+'</b><small>'+model.context.now+' nu · '+model.context.approvals+' goedkeuring</small></article>'
-      +'<article><i>3</i><span>Acties</span><b>'+model.action.count+'</b><small>volgende uitvoerbare stappen</small></article>'
-      +'<article><i>4</i><span>Uitkomsten</span><b>'+model.outcome.count+'</b><small>'+euro(model.outcome.realizedValue)+' gerealiseerde waarde</small></article>'
-      +'<article><i>5</i><span>Leren</span><b>'+model.learning.count+'</b><small>herbruikbare learnings</small></article>'
-    +'</div>'
-    +'<div class="ci-focus"><div class="ci-focus-head"><strong>Relevant op deze plek</strong><span>'+esc(surface)+'</span></div>'+focus+'</div>'
-    +'<details><summary>Waarom laat Powerhouse dit zien?</summary><p>Dit is geen losse AI-score. De visualisatie projecteert alleen tenant-scoped graph-, besluit-, actie-, outcome- en learning-evidence uit dezelfde canonieke runtime. Ontbrekende evidence wordt niet ingevuld of geschat.</p></details>'
+    +'<div class="ci-head"><div><small>Powerhouse intelligence</small><h3>Wat zien we → waarom → actie → resultaat → leren</h3><p>Dezelfde tenant-scoped Company Intelligence-context, visueel vertaald naar wat hier relevant is.</p></div><span>'+esc(surface)+'</span></div>'
+    +'<div class="ci-stages">'
+      +stage('◎','Context',model.graph.nodes+' nodes',model.graph.edges+' relaties')
+      +stage('✦','Besluiten',String(model.context.decisions),model.context.now+' nu · '+model.context.approvals+' goedkeuring')
+      +stage('⚡','Acties',String(model.action.count),'volgende uitvoerbare stappen')
+      +stage('✓','Uitkomsten',String(model.outcome.count),euro(model.outcome.realizedValue)+' gerealiseerd')
+      +stage('↺','Leren',String(model.learning.count),'wijzigt volgende beslissingen')
+    +'</div>'+graph+memoryMarkup
+    +'<details><summary>Waarom laat Powerhouse dit zien?</summary><p>Dit is geen losse AI-score. Alleen tenant-scoped graph-, besluit-, actie-, outcome- en learning-evidence uit de canonieke runtime wordt geprojecteerd. Ontbrekende evidence wordt niet ingevuld of geschat.</p></details>'
   +'</section>';
 }
