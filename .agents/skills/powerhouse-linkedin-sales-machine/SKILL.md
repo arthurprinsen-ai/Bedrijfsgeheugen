@@ -55,3 +55,13 @@ Geen scraping/platform-bypass, geen bulk generieke comments, geen gefingeerde DM
 - Likes, comments, shares, profiel-/contentinteractie en andere LinkedIn-signalen zijn features in de score, nooit op zichzelf bewijs van koopintentie.
 - Alle acties blijven uniek: provider acknowledgement, action-dedupe, semantic content-dedupe, person cooldown en suppression zijn harde gates.
 - Iedere nieuwe provider-capability (bijvoorbeeld echte LinkedIn DM of create-reaction) wordt pas geactiveerd na capability-probe, identity verification, provider-ack test en regressietest.
+
+
+## Terminal production proof — LIVE
+- Protected main merge: `73e954d9e62af66cf6f47ff63df9041a98a2d519` (PR #3167).
+- `powerhouse-linkedin-sales-machine` ACTIVE v2.
+- `powerhouse-autonomous-outreach` ACTIVE v2.
+- `powerhouse-social-publisher` ACTIVE v74.
+- Canonical planner/dispatcher RPCs are present in production.
+- Sales-air-cover recommendation exists for the current run date and the LinkedIn comment queue is live.
+- The canonical recurring commercial owner remains `powerhouse-commercial-learning-v1`; no dedicated LinkedIn Sales Machine cron was introduced.
