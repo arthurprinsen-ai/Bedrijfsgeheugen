@@ -353,3 +353,10 @@ Hard rules:
 - every Amsterdam calendar day with an approved Instagram obligation must be checked again after its intended publish window; missing publication evidence automatically re-enters the same recovery lineage.
 
 The objective is not “attempt every day” but “close every daily obligation without duplicate side effects”.
+
+
+## Cross-channel semantic uniqueness (2026-09-28)
+
+Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
+
+Instagram generation must reject any concrete example/story family already consumed by another retained social publication. A different caption, Mira treatment, visual, hook or CTA does not reset uniqueness. When overlap is detected, select a materially different story family before media generation or provider dispatch.

@@ -98,6 +98,14 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     beforeTerminal:Object.freeze(['production/provider readback','learning + prevention writeback','skill projection when applicable','repository human documentation readback','System Map read-after-write']),
     failClosed:'An unregistered material agent/capability or a stale topology inventory is WRITEBACK_INCOMPLETE and cannot be LIVE_BEWEZEN.'
   }),
+  socialPublicationGovernance:Object.freeze({
+    fingerprint:'powerhouse-global-semantic-example-uniqueness-v4',
+    rule:'Every social post must use a genuinely new underlying story family; paraphrase, channel changes or visual changes do not reset uniqueness.',
+    scope:'cross-date-cross-channel',
+    providerCreateConsumesStory:true,
+    userReportedDuplicateRetiresStoryFamily:true,
+    knownRetiredExamples:Object.freeze(['printer'])
+  }),
   userFacingReportingContract:Object.freeze({
     fingerprint:'delivery|user-facing-reporting|terminal-outcomes-only|v1',
     mode:'TERMINAL_OUTCOMES_ONLY',

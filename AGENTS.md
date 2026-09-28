@@ -509,3 +509,10 @@ Alle chats, agents, schedulers en Powerhouse-runtimes behandelen goedgekeurde da
 - terminale sluiting vereist provider-side bewijs plus outcome/learning/prevention writeback.
 
 Doel: niet alleen dagelijks proberen, maar iedere goedgekeurde dagelijkse publicatie-obligation zonder dubbele side effects sluiten.
+
+
+## Global social semantic uniqueness — no recycled stories
+
+Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
+
+For every current and future social publishing agent/chat/workflow, uniqueness means a genuinely different underlying subject, concrete example, incident or story family — not merely different wording. Before provider dispatch, compare against retained cross-channel publication history and known duplicate feedback. If the same story family was already consumed, fail closed on that candidate and autonomously select a different verified source/topic. Never “fix” duplication by paraphrasing. Provider create success consumes the story even when later readback is unavailable. Known consumed personal-LinkedIn example family: `printer`.

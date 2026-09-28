@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse-global-semantic-example-uniqueness-v4",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-28",
+  "problem": "A personal LinkedIn printer post was published after an earlier printer post, showing that text/story fingerprint gates were not sufficient to prevent reuse of the same concrete example.",
+  "root_cause": "Uniqueness controls could still be interpreted around text/source fingerprints while a concrete story family could be regenerated or re-sourced with different wording.",
+  "prevention": [
+    "Treat the underlying subject/example/story family as a permanently consumed unit after provider create.",
+    "Apply the rule across dates and social channels.",
+    "Never resolve a duplicate by paraphrasing; choose another verified source/topic.",
+    "User-reported duplicate feedback immediately retires that story family.",
+    "The printer story family is retired for personal LinkedIn."
+  ],
+  "provider_evidence": {
+    "replacement_post_urn": "urn:li:share:7510299688642961408",
+    "create_success": true,
+    "exact_readback": "403_FORBIDDEN",
+    "republish_forbidden": true
+  },
+  "evaluation": {
+    "required_test": "tests/brain-social-semantic-example-uniqueness-v1.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "CONTENT_INTEGRITY",
+    "scope": "SOCIAL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
+}

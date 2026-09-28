@@ -62,3 +62,21 @@ Personal LinkedIn may never invent a daily-life event merely to satisfy a publis
 - the fallback remains a personal-life post, never company-page content.
 
 This rotation prevents an exhausted source pool from silently turning the daily channel into `PERSONAL_TRUTH_SOURCE_UNVERIFIED` while preserving truth and uniqueness.
+
+
+## Concrete subject / example reuse is forbidden (2026-09-28)
+
+Fingerprint: `personal-linkedin-semantic-example-uniqueness-v1`.
+
+A personal post may not reuse an underlying concrete subject, incident, example, anecdote or story family that has already been published, even when the wording, hook, conclusion or source text is different.
+
+Hard rules:
+- historical uniqueness is semantic, not merely textual;
+- a previously published concrete example is permanently consumed for personal LinkedIn;
+- when a candidate overlaps a previously used story family, discard it and select a genuinely different verified personal source;
+- never rotate back to a least-recently-used source once it has been published;
+- if the verified unused source pool is exhausted, do not recycle old examples to satisfy cadence; source a different verified personal-life event first;
+- changing synonyms, structure, CTA, tone or lesson never makes the same example new;
+- the known `printer` story family is consumed and must not be published again.
+
+This rule is stricter than text-hash/shingle dedupe and overrides the older rotation wording wherever that could be read as allowing reuse of a previously published source.
