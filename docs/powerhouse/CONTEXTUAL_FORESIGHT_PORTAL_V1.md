@@ -35,3 +35,10 @@ Status: **LIVE_PROVEN_RUNTIME**.
 The contextual foresight merge is present in the live production ancestry. Netlify production deploy `602973dace20523c20f0b656713243c5c6408f72` is ready and includes the contextual foresight merge. GitHub production verification completed successfully for both **Production Release Readback** and **Portal V2 Production DOM Readback**. The live deployment also exposes the authenticated `portal-prediction-intelligence` function.
 
 This proves the visual projection is not only present in source: it is part of the deployed Portal V2 runtime. Future changes that remove the contextual placements, uncertainty/evidence labels, scenario distinction, or prediction-quality surface are regressions against this contract.
+
+
+## Compound intelligence / self-improvement projection
+
+Portal V2 makes the compounding learning loop visible in the same contextual foresight layer. Overview and prediction-quality surfaces show canonical self-improvement state, verified outcomes, learning-company count, measured candidate coverage, compiler readiness, evidence/regression debt, model-health/guardrail issues and the complete Observe → Learn loop.
+
+Source: `public.powerhouse_self_improvement_control_v1`, read through the authenticated `portal-prediction-intelligence` endpoint. No second learning store is introduced and improvement is never inferred from code volume or model novelty.
