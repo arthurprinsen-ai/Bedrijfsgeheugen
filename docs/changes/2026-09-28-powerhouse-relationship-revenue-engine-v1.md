@@ -32,3 +32,7 @@ De Edge Function `powerhouse-relationship-public-research` is gedeployed. `publi
 
 ## Production proof — automated research
 De publieke researchworker is na runtime recovery opnieuw uitgevoerd en gaf HTTP 200. In de gecontroleerde batch zijn 10 relaties onderzocht; 8 leverden bruikbare actuele evidence op en 2 niet. Die evidence is canoniek teruggeschreven. Directe readback daarna: 10 recente research-events, 10 eligible trigger-records, 10 trigger-opportunities en 8 afgeronde research-actions. Er is geen externe outreach uitgevoerd en vendor-enrichment bleef false.
+
+
+## Terminal closure
+PR #3155 is merged to protected main at `35f465c613cdc32f37f0dd2810e86ceb1518be08`. Production runtime and the single canonical scheduler are active. Controlled public-research readback returned HTTP 200 with 10 researched relationships, 8 evidence matches, 8 evidence events, 10 eligible downstream triggers, 10 trigger opportunities and 8 completed research actions. No external outreach was executed and no vendor enrichment dependency was introduced.
