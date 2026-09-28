@@ -131,3 +131,29 @@ test('bundle merges bounded historical pattern-memory regressions into adaptive 
   assert.ok(bundle.adaptive.tests.includes('tests/brain-delivery-pattern-memory-v1.test.mjs'));
   assert.equal(bundle.patternMemory.matches[0].fingerprint,'delivery|historical-regression|v1');
 });
+
+
+test('integration bundle combines Brain historical regressions with empirical CI hot-file escalation', () => {
+  const changedPaths = [
+    'docs/changes/hot.md',
+    'brain/learning/hot.json',
+    'docs/development-ledger-events/hot.md'
+  ];
+  const bundle = compileIntegrationBundle({
+    changedPaths,
+    metadata:{ obligationId:'hot-v1', deliveryLane:'docs', candidateType:'docs', baseSha:base, supersedes:null },
+    baseSha:base,
+    headSha:head,
+    adaptivePolicy,
+    integrationPolicy,
+    learningRecords:[{
+      fingerprint:'history|docs|v1',
+      enforcement:['docs/changes/'],
+      test_evidence:['tests/brain-ci-pattern-memory-v1.test.mjs']
+    }],
+    ciPatternMemory:{ hotFiles:[{path:'docs/changes/hot.md',failures:3}] }
+  });
+  assert.ok(bundle.adaptive.tests.includes('tests/brain-ci-pattern-memory-v1.test.mjs'));
+  assert.equal(bundle.adaptive.risk,'R1');
+  assert.equal(bundle.adaptive.ciPatternMemory.escalated,true);
+});

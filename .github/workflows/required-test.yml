@@ -133,11 +133,31 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
           console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
+      - id: ci-memory
+        name: Restore latest CI pattern memory
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts/ci-pattern-memory
+          run_id="$(gh run list --workflow powerhouse-ci-intelligence.yml --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId // empty' || true)"
+          if [ -n "$run_id" ]; then
+            gh run download "$run_id" -n "powerhouse-ci-intelligence-$run_id" -D .artifacts/ci-pattern-memory || true
+          fi
+          path=".artifacts/ci-pattern-memory/pattern-memory.json"
+          if [ -f "$path" ]; then
+            echo "path=$path" >> "$GITHUB_OUTPUT"
+            echo "CI_PATTERN_MEMORY_RESTORED:$run_id"
+          else
+            echo "path=" >> "$GITHUB_OUTPUT"
+            echo "CI_PATTERN_MEMORY_NOT_AVAILABLE"
+          fi
       - id: integration
         name: Compile one-write integration bundle
         env:
           PR_BODY: ${{ github.event.pull_request.body || '' }}
           PR_NUMBER: ${{ steps.scope.outputs.pr_number }}
+          CI_PATTERN_MEMORY_PATH: ${{ steps.ci-memory.outputs.path }}
         run: node tools/delivery/integration-bundle-compiler.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify adaptive and integration compiler regressions
         run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs

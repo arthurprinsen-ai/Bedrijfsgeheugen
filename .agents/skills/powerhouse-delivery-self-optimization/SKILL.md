@@ -741,3 +741,16 @@ Rules:
 - keep roots narrow and explainable to avoid accidental CI fan-out.
 
 Regression: `tests/brain-adaptive-delivery-engine-v1.test.mjs`.
+
+
+### CI pattern memory
+
+Fingerprint: `github|ci-pattern-memory|hot-files-failure-signatures|v1`.
+
+CI Pattern Memory complements canonical Delivery Pattern Memory:
+- Delivery Pattern Memory selects historical regression tests from Brain learning.
+- CI Pattern Memory learns empirical hot files and recurring GitHub workflow/job failure signatures.
+- A file becomes hot only after the configured repeated-failure threshold.
+- Latest successful CI pattern-memory is restored into the Integration Bundle Compiler.
+- CI history may raise adaptive risk; it may never lower static, security or production risk.
+- If CI pattern-memory is unavailable, fall back to Adaptive Delivery + canonical Brain Delivery Pattern Memory.

@@ -5,6 +5,7 @@ import { pathToFileURL } from 'node:url';
 import { parseDeliveryMetadata } from './delivery-hygiene.mjs';
 import { createAdaptiveDeliveryPlan, loadAdaptiveDeliveryPolicy } from './adaptive-delivery-engine.mjs';
 import { derivePatternMemoryRoute, loadLearningRecords } from './delivery-pattern-memory.mjs';
+import { applyPatternMemoryToPlan } from './ci-pattern-memory.mjs';
 
 const SHA40 = /^[0-9a-f]{40}$/i;
 
@@ -79,7 +80,8 @@ export function compileIntegrationBundle({
   prNumber = null,
   adaptivePolicy,
   integrationPolicy,
-  learningRecords = []
+  learningRecords = [],
+  ciPatternMemory = null
 } = {}) {
   if (!integrationPolicy || integrationPolicy.version !== 'POWERHOUSE-INTEGRATION-BUNDLE-v1') {
     throw new TypeError('POWERHOUSE-INTEGRATION-BUNDLE-v1 policy is required');
@@ -89,10 +91,13 @@ export function compileIntegrationBundle({
   const paths = unique(changedPaths);
   const adaptiveBase = createAdaptiveDeliveryPlan({ changedPaths: paths, policy: adaptivePolicy });
   const patternMemory = derivePatternMemoryRoute({ changedPaths: paths, learningRecords });
-  const adaptive = Object.freeze({
+  const adaptiveWithHistoricalTests = Object.freeze({
     ...adaptiveBase,
     tests: Object.freeze(unique([...(adaptiveBase.tests || []), ...(patternMemory.tests || [])]))
   });
+  const adaptive = ciPatternMemory
+    ? applyPatternMemoryToPlan({ plan: adaptiveWithHistoricalTests, changedPaths: paths, memory: ciPatternMemory })
+    : adaptiveWithHistoricalTests;
   const closure = compileClosurePlan({ changedPaths: paths, policy: integrationPolicy });
   const canonicalMetadata = Object.freeze({
     obligationId: String(metadata.obligationId || '').trim(),
@@ -156,6 +161,15 @@ async function main() {
   const adaptivePolicy = await loadAdaptiveDeliveryPolicy();
   const integrationPolicy = JSON.parse(await readFile('config/powerhouse-integration-bundle-v1.json', 'utf8'));
   const learningRecords = await loadLearningRecords();
+  let ciPatternMemory = null;
+  const ciPatternMemoryPath = process.env.CI_PATTERN_MEMORY_PATH || '';
+  if (ciPatternMemoryPath) {
+    try {
+      ciPatternMemory = JSON.parse(await readFile(ciPatternMemoryPath, 'utf8'));
+    } catch (error) {
+      process.stderr.write(`CI_PATTERN_MEMORY_UNAVAILABLE:${error.message}\n`);
+    }
+  }
   const metadata = parseDeliveryMetadata(process.env.PR_BODY || '');
   const bundle = compileIntegrationBundle({
     changedPaths,
@@ -165,7 +179,8 @@ async function main() {
     prNumber: process.env.PR_NUMBER || null,
     adaptivePolicy,
     integrationPolicy,
-    learningRecords
+    learningRecords,
+    ciPatternMemory
   });
   await mkdir('.artifacts', { recursive: true });
   const artifactPath = '.artifacts/powerhouse-integration-bundle.json';
