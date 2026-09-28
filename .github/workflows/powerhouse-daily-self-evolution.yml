@@ -49,6 +49,8 @@ jobs:
         run: node scripts/brain/continuous-improvement/capability-inventory.mjs
       - name: Run Engineering OS self-test
         run: node scripts/brain/powerhouse-engineering-closed-loop.mjs --self-test
+      - name: Verify autonomous engineering fabric v3
+        run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
       - uses: actions/upload-artifact@v4
         with:
           name: powerhouse-daily-self-evolution-${{ github.run_id }}

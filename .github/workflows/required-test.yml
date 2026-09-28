@@ -149,6 +149,7 @@ jobs:
           tests/delivery-test-coverage-guard.test.mjs
           tests/brain-ci-admission-single-flight.test.mjs
           tests/brain-ci-critical-path-acceleration-v1.test.mjs
+          tests/brain-autonomous-engineering-fabric-v3.test.mjs
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
           tests/daily-cost-optimizer.test.mjs
@@ -217,6 +218,8 @@ jobs:
           tests/website-static-syntax-preflight.test.mjs
       - name: Verify Fast Development Protocol v2 authority contract
         run: node scripts/brain/powerhouse-fast-development-protocol-v2.mjs --check
+      - name: Verify Autonomous Engineering Fabric v3 authority contract
+        run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
 
   backend:
     needs: preflight

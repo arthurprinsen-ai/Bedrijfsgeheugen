@@ -1,0 +1,68 @@
+{
+  "fingerprint": "powerhouse-autonomous-engineering-fabric-v3",
+  "version": 3,
+  "status": "active",
+  "extends": [
+    "powerhouse-fast-development-protocol-v2",
+    "powerhouse-parallel-engineering-fabric-v1",
+    "powerhouse-engineering-os-v1",
+    "BRAIN-DELIVERY-v2"
+  ],
+  "authority": {
+    "delivery": "config/brain-delivery-system.json",
+    "parallel_fabric": "config/powerhouse-parallel-engineering-fabric.json",
+    "engineering_os": "config/powerhouse-engineering-os.json",
+    "production_promotion": "BG169",
+    "creates_parallel_authority": false
+  },
+  "planning": {
+    "one_integrated_candidate_per_obligation": true,
+    "specialists_work_in_isolated_packages": true,
+    "integration_agent_is_only_candidate_writer": true,
+    "batch_branch_updates": true,
+    "prefer_one_ci_wave_per_coherent_candidate": true,
+    "reuse_before_create": true,
+    "hot_shared_files_late_bound": true
+  },
+  "risk_classes": {
+    "R0": "documentation_or_non_executable",
+    "R1": "isolated_ui_or_low_risk_content",
+    "R2": "ordinary_application_code",
+    "R3": "shared_runtime_or_control_plane",
+    "R4": "security_auth_database_or_external_side_effect"
+  },
+  "testing": {
+    "impact_graph_required": true,
+    "full_suite_on_unknown_scope": true,
+    "full_release_gate_preserved": true,
+    "risk_profiles": {
+      "R0": ["docs-contract"],
+      "R1": ["affected-unit", "ui-contract"],
+      "R2": ["affected-unit", "affected-integration"],
+      "R3": ["affected-unit", "affected-integration", "architecture-contract"],
+      "R4": ["affected-unit", "affected-integration", "security", "full-required"]
+    }
+  },
+  "routing": {
+    "use_capability_score": true,
+    "score_dimensions": ["domain_match", "capability_match", "first_pass_success", "rework_rate", "ci_failure_rate", "production_incident_rate", "lead_time"],
+    "exploration_share": 0.05,
+    "minimum_observations_for_history_weight": 5
+  },
+  "closure_compiler": {
+    "enabled": true,
+    "late_bound": true,
+    "outputs": ["brain_learning", "change_documentation", "development_ledger", "skill_projection", "system_map_delta", "release_evidence"],
+    "one_final_candidate_update": true
+  },
+  "daily_optimizer": {
+    "enabled": true,
+    "cadence": "daily",
+    "persistent_tuning": "config/powerhouse-engineering-tuning.json",
+    "safe_auto_change_scope": ["max_parallel_packages", "candidate_batch_window_seconds", "fast_path_target_seconds", "speculative_execution_threshold"],
+    "never_auto_weaken": ["required_release_gate", "security_gate", "codeql_for_security_changes", "production_readback", "protected_merge", "exact_sha_identity"],
+    "bounded_change_per_day": true,
+    "auto_pr": true,
+    "auto_merge_only_after_protected_gates": true
+  }
+}
