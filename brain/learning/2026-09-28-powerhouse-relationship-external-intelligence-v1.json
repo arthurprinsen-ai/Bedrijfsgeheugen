@@ -38,6 +38,9 @@
   },
   "evaluation": {
     "historical_replay": [
+      "tests/brain-powerhouse-relationship-external-intelligence-v1.test.mjs"
+    ],
+    "regression": [
       "tests/supabase-powerhouse-relationship-external-intelligence-v1.test.mjs"
     ]
   },
