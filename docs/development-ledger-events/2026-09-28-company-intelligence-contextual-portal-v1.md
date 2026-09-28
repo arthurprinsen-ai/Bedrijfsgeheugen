@@ -16,3 +16,9 @@
 - Shadow invariant: tenant A output contains no tenant B identifiers, sources, actions or learning, and vice versa.
 - Canary invariant: expected value and realized value remain separate.
 - Fail-closed invariant: absent tenant evidence renders unknown context rather than synthesized business facts.
+
+## Runtime context addendum
+
+- Roadmap resolves the secured `portal.runtime` projection before rendering Company Intelligence context.
+- Derived roadmap cards expose available impact and effort context visually; absent values remain absent.
+- Capability Graph now receives the same contextual intelligence layer.
