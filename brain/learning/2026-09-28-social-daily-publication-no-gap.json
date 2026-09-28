@@ -1,0 +1,60 @@
+{
+  "fingerprint": "social-daily-publication-no-gap-v1",
+  "compiler": {
+    "failure_class": "SOCIAL_PROVIDER_CHANNEL_CAPABILITY_DRIFT"
+  },
+  "root_cause": {
+    "summary": "LinkedIn personal and company publishing shared one connected-account resolver. A token could prove the canonical member identity while lacking the organization ACL/write capability required by the company channel; auth-config scopes and ACTIVE/default metadata were therefore insufficient runtime truth.",
+    "causes": [
+      "company create/readback inherited personal connected-account selection",
+      "organization capability was not proven on the exact connected account before company publication",
+      "provider auth metadata could diverge from the effective permissions of the connected token"
+    ]
+  },
+  "prevention_rules": [
+    "Resolve LinkedIn personal and LinkedIn company provider identities independently.",
+    "Require LINKEDIN_GET_MY_INFO plus LINKEDIN_GET_COMPANY_INFO ADMINISTRATOR proof on the exact company connected account before consuming publication capability.",
+    "Persist every provider-created post/media ID immediately and set republish_forbidden=true.",
+    "When readback is unavailable, reconcile the exact provider ID instead of issuing a replacement.",
+    "Keep approved daily obligations open and self-heal the same claim until provider evidence exists or a genuine external authorization boundary is reached.",
+    "For Instagram, complete missing final Mira media inside the same daily obligation; never substitute generic company media.",
+    "Never use Buffer or Make as LinkedIn or Instagram publication fallback."
+  ],
+  "evidence": {
+    "incident_date": "2026-09-28",
+    "auth_config": "linkedin-cjenok",
+    "auth_config_required_scopes": [
+      "r_organization_admin",
+      "w_organization_social"
+    ],
+    "canonical_company_urn": "urn:li:organization:18234216",
+    "regression_test": "tests/brain-linkedin-composio-authority.test.mjs",
+    "skill_fingerprints": [
+      "linkedin-daily-channel-oauth-authority-v1",
+      "instagram-daily-no-gap-self-healing-v1",
+      "social-daily-publication-no-gap-v1"
+    ],
+    "existing_provider_ids_preserved": true,
+    "duplicate_replacement_forbidden": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "scenario": "member token healthy but organization ACL missing",
+        "expected": "company preflight rejects that token and continues probing active connections; personal channel remains independent"
+      },
+      {
+        "scenario": "provider create returns a LinkedIn URN but exact readback is unavailable",
+        "expected": "URN is persisted and the same claim enters reconciliation with republish_forbidden=true"
+      },
+      {
+        "scenario": "Instagram daily claim has no final media",
+        "expected": "same Mira claim resumes media production instead of silently expiring or falling back to generic media"
+      }
+    ]
+  },
+  "outcome": {
+    "intended_state": "Every approved Amsterdam-day social obligation is terminally closed through provider evidence without duplicate side effects.",
+    "owner": "powerhouse-social-publisher"
+  }
+}
