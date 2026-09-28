@@ -16,7 +16,7 @@ test('daily self-evolution covers chats agents skills and delivery',()=>{
 
 test('daily snapshot requires the canonical Powerhouse controls',()=>{
   const s=buildDailySelfEvolutionSnapshot({now:'2026-09-18T06:30:00.000Z'});
-  assert.equal(s.fingerprint,'powerhouse-daily-self-evolution-v1');
+  assert.equal(s.fingerprint,'powerhouse-daily-self-evolution-v2');
   assert.deepEqual(s.missing_controls,[]);
   assert.equal(s.status,'READY_FOR_DAILY_SELF_EVOLUTION');
   assert.ok(s.surfaces.find(x=>x.surface==='chats'));
