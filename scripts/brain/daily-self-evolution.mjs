@@ -26,7 +26,10 @@ export function buildDailySelfEvolutionSnapshot({now=new Date().toISOString()}={
     ['engineering_learning','.github/workflows/engineering-os-learning.yml'],
     ['autonomous_runtime','scripts/brain/continuous-improvement/run-autonomous-improvement.mjs'],
     ['capability_inventory','scripts/brain/continuous-improvement/capability-inventory.mjs'],
-    ['autonomous_engineering_optimizer','scripts/brain/autonomous-engineering-fabric-v3.mjs']
+    ['autonomous_engineering_optimizer','scripts/brain/autonomous-engineering-fabric-v3.mjs'],
+    ['self_improvement_layer','brain/self-improvement/self-improvement-layer.mjs'],
+    ['self_improvement_contract','brain/contracts/self-improvement-layer-v1.json'],
+    ['self_improvement_skill','.agents/skills/powerhouse-self-improvement-layer/SKILL.md']
   ];
   const controls=required.map(([id,p])=>({id,path:p,present:exists(p)}));
   const missing=controls.filter(x=>!x.present).map(x=>x.id);
