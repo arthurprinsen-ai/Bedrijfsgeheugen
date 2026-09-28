@@ -1,0 +1,22 @@
+{
+  "fingerprint": "workshop-scan|online-form|personal-pdf|portal-conversion|v1",
+  "date": "2026-09-28",
+  "change": "Workshop scan funnel from QR/URL to personal scan report PDF and portal next step.",
+  "compiler": {
+    "failure_class": "missing_workshop_to_portal_conversion_flow"
+  },
+  "root_cause": "The existing selfscan and workshop pages were separate surfaces and did not produce the new visual six-domain report with radar, top opportunities, 90-day actions, workshop attribution and a direct portal conversion path.",
+  "prevention_rule": "Workshop acquisition must remain one testable lineage: attributed URL -> consented scan -> deterministic six-domain scoring -> visible result -> downloadable report -> portal/pricing CTA. New workshop variants reuse this canonical flow rather than creating parallel forms.",
+  "evaluation": {
+    "historical_replay": [
+      "Earlier workshop handout required a QR but had no canonical online destination that generated the intended report.",
+      "Existing zelfscan used a different 12-question model and did not provide the new six-domain workshop PDF design."
+    ]
+  },
+  "evidence": {
+    "tests": ["tests/components/workshop-scan.test.mjs"],
+    "routes": ["/scan"],
+    "artifacts": ["pages/scan.html","assets/scan-workshop.css","assets/scan-workshop.js"],
+    "production_readback": "pending protected merge and exact-main deployment"
+  }
+}
