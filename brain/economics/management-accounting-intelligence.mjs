@@ -1,4 +1,4 @@
-const n=value=>Number.isFinite(Number(value))?Number(value):null;
+const n=value=>value===null||value===undefined||value===''?null:(Number.isFinite(Number(value))?Number(value):null);
 const pct=value=>{const x=n(value);return x==null?null:x/100;};
 const round=(value,digits=2)=>{if(!Number.isFinite(value))return null;const f=10**digits;return Math.round((value+Number.EPSILON)*f)/f;};
 const ratio=(a,b)=>{const x=n(a),y=n(b);return x==null||y==null||y===0?null:x/y;};
