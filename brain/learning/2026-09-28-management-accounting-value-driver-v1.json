@@ -1,0 +1,41 @@
+{
+  "version": "powerhouse-management-accounting-value-driver-v1",
+  "date": "2026-09-28",
+  "fingerprint": "powerhouse|management-accounting|value-driver-graph|roadmap-v1",
+  "problem": "Financial KPIs, workforce/productivity, working capital, due-diligence and valuation signals existed as separate portal concepts and did not form one causal management-accounting graph with benchmark-driven roadmap actions.",
+  "rootCause": "Metrics were calculated page-by-page without a shared causal model from people/productivity through margin/cash/capital to enterprise value. Benchmark context and roadmap effort/value were not bound to the same derived signal.",
+  "decision": "Create one evidence-first value-driver graph that reuses canonical tenant state, explicit customer benchmarks, the existing roadmap truth and Powerhouse evidence rules. Never substitute generic internet benchmarks for customer facts.",
+  "invariants": [
+    "missing inputs remain missing, never zero",
+    "internet benchmarks are context until explicitly stored with source and fit",
+    "output per hour is preferred when actual hours exist",
+    "working-capital release is cash impact, not EBITDA",
+    "capacity value is not automatically cash saving",
+    "enterprise value needs sustainable earnings and an explicitly supported multiple",
+    "roadmap candidates dedupe on a stable source fingerprint",
+    "all derived impacts remain POTENTIAL until realized outcome evidence exists"
+  ],
+  "architecture": {
+    "brainModule": "brain/economics/management-accounting-intelligence.mjs",
+    "portalModule": "portal-v2/modules/management-accounting-intelligence.js",
+    "overviewMount": "portal-v2/modules/overview.js",
+    "roadmapProjection": "portal-v2/modules/roadmap-workspace.js",
+    "inputExpansion": [
+      "portal-v2/modules/functional-suite.js",
+      "portal-v2/modules/full-company-input.js"
+    ]
+  },
+  "sources": [
+    "https://www.ifrs.org/issued-standards/list-of-standards/management-commentary-practice-statement-1/",
+    "https://www.ons.gov.uk/employmentandlabourmarket/peopleinwork/labourproductivity/methodologies/labourproductivityqmi",
+    "https://www.bls.gov/productivity/overview.htm",
+    "https://www.iso.org/standard/30414",
+    "https://www.accaglobal.com/gb/en/student/exam-support-resources/professional-exams-study-resources/p5/technical-articles/divisional-performance-management.html",
+    "https://www.accaglobal.com/uk/en/student/exam-support-resources/professional-exams-study-resources/p4/technical-articles/economic-value-added.html",
+    "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/free-cash-flow-valuation",
+    "https://www.cfainstitute.org/insights/professional-learning/refresher-readings/2026/market-based-valuation-price-enterprise-value-multiples",
+    "https://www.pwc.com/us/en/services/consulting/deals/joint-ventures-alliances/financial-due-diligence.html",
+    "https://www.deloitte.com/content/dam/assets-zone2/ie/en/docs/services/financial-advisory/2023/IE_CF_MA_Preparing_your_business_Due_Diligence_A4_2pp_0119_FINAL.pdf",
+    "https://pages.stern.nyu.edu/adamodar/New_Home_Page/valquestions/growth.htm"
+  ]
+}
