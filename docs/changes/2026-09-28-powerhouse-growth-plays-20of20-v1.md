@@ -13,3 +13,6 @@ Een score, recommendation, draft of optimizer-output geldt niet meer als termina
 
 ## Truth
 Geen gevoelige psychografische profilering, fake scarcity, nep-social-proof, fake benchmark of ongefundeerde financiële impact. Risk reversal blijft conditioneel en vereist contractreview voordat een financiële garantie kan worden geclaimd.
+
+## Terminal production proof
+PR #3207 is merged to main at `46739777d0a5563001a3520e046a29a57b0b9ec8`. Production readback confirms `20/20 ACTIVE`, 8 active persuasion decisions, 10 persuasion principles, exactly one canonical commercial scheduler and zero parallel Growth Play schedulers. A control-plane operation is bound under `powerhouse-growth-plays-20of20-v1`. Eligible actions route into canonical executors; a zero-send result remains valid when evidence, cooldown, suppression or provider gates do not permit contact.

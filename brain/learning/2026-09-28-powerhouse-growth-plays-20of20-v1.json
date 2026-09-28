@@ -3,7 +3,7 @@
   "version": "powerhouse-growth-plays-20of20-v1",
   "date": "2026-09-28",
   "obligation_id": "powerhouse-growth-plays-20of20-v1",
-  "status": "RUNTIME_ACTIVE_REPOSITORY_CANDIDATE",
+  "status": "LIVE_PROVEN",
   "failure_class": "GROWTH_PLAY_PARTIAL_IMPLEMENTATION",
   "scope": "GROWTH_REVENUE",
   "machine_enforceable": true,
@@ -51,6 +51,21 @@
     "Production runtime readback: 20 Growth Swarm plays ACTIVE out of 20 catalog entries.",
     "Initial Persuasion decision materialization created 8 decisions.",
     "Growth action executor routed an eligible SEO/problem action into canonical content execution.",
-    "No external email was forced when no action passed evidence, cooldown and suppression gates."
-  ]
+    "No external email was forced when no action passed evidence, cooldown and suppression gates.",
+    "PR #3207 merged to main as 46739777d0a5563001a3520e046a29a57b0b9ec8.",
+    "Production readback after merge: 20 ACTIVE / 20 catalog, 8 active persuasion decisions, 10 persuasion principles, one canonical commercial scheduler and zero parallel Growth Play schedulers.",
+    "Control-plane binding recorded for powerhouse-growth-plays-20of20-v1."
+  ],
+  "terminal": {
+    "pr": 3207,
+    "main_sha": "46739777d0a5563001a3520e046a29a57b0b9ec8",
+    "runtime_active_plays": 20,
+    "runtime_catalog_plays": 20,
+    "persuasion_decisions": 8,
+    "persuasion_principles": 10,
+    "canonical_scheduler": 1,
+    "parallel_growth_play_schedulers": 0,
+    "control_plane_operation_id": "cb0b6417-2acd-4897-989b-3e0c987e92fb",
+    "execution_truth": "Eligible actions execute through canonical providers; ineligible actions wait/nurture rather than forcing contact."
+  }
 }
