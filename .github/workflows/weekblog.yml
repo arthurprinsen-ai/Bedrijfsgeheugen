@@ -22,7 +22,8 @@ on:
 permissions:
   contents: write
   pull-requests: write
-  id-token: write
+  id-token: write  actions: write
+
 
 concurrency:
   group: repo-schrijven
@@ -395,6 +396,13 @@ jobs:
             --title "Weekblog candidate: $SLUG" \
             --body "Gecontroleerde candidate uit weekblog. Base SHA: $BASE_SHA. Notion blijft Gepland totdat de wijziging werkelijk is gepromoveerd. Deze workflow merge't zichzelf niet."
 
+
+      - name: Dispatch read-only writer shadow
+        if: steps.kalender.outputs.gevonden == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+        run: node scripts/ci/dispatch-writer-shadow.mjs "$CANDIDATE_BRANCH"
 
       - name: Niets te doen
         if: steps.kalender.outputs.gevonden != 'true'
