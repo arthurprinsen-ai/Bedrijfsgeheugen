@@ -1,0 +1,50 @@
+{
+  "fingerprint": "netlify-fallback-proxy-refresh-20260925-v1",
+  "date": "2026-09-28",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Exact-source Netlify fallback uploads can return 401 Unauthorized even though OIDC proxy acquisition succeeded earlier in the same production snapshot job.",
+  "root_cause": "The Netlify MCP proxy is short-lived. It was acquired before linked-build/provider polling and then reused later for the exact-source fallback upload, so the credential could expire before @netlify/mcp used it.",
+  "prevention_rule": "Refresh GitHub OIDC and obtain a new Netlify MCP proxy immediately before every exact-source fallback upload; never reuse the earlier proxy across provider polling. Exact-main provider identity and browser readback remain mandatory.",
+  "prevention": [
+    "Refresh the OIDC-backed Netlify MCP proxy immediately before every exact-source fallback upload.",
+    "Do not reuse a proxy across a potentially long linked-build/provider-watch phase.",
+    "Keep exact-main commit_ref proof and browser readback as terminal gates.",
+    "Classify fallback 401 as transport credential expiry rather than a site build failure."
+  ],
+  "evidence": {
+    "historical_failed_snapshot_run": 36162171454,
+    "recurrence_snapshot_run": 36476034816,
+    "recurrence_expected_sha": "c3d990dd45d263f4d9c47c5ff90544a38a014ee6",
+    "failure": "Failed to deploy site: 401 Unauthorized",
+    "linked_build_trigger": "ok=false"
+  },
+  "test_evidence": [
+    "tests/brain-netlify-fallback-proxy-refresh-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth",
+    "powerhouse-delivery-self-optimization"
+  ],
+  "revision": 2,
+  "failure_class": "NETLIFY_FALLBACK_PROXY_EXPIRED",
+  "compiler": {
+    "failure_class": "NETLIFY_FALLBACK_PROXY_EXPIRED",
+    "scope": "PRODUCTION_DEPLOY_TRANSPORT",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-fallback-proxy-refresh-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-netlify-fallback-proxy-refresh-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-fallback-proxy-refresh-v1.test.mjs"
+    ],
+    "expected_invariant": "a fresh OIDC-backed Netlify MCP proxy is acquired immediately before exact-source fallback upload"
+  }
+}
