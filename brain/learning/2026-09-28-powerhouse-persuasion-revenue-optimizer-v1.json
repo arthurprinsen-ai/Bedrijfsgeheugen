@@ -45,11 +45,8 @@
     ".agents/skills/powerhouse-growth-swarm/SKILL.md"
   ],
   "evaluation": {
-    "regression": [
-      "tests/powerhouse-persuasion-revenue-optimizer-v1.test.mjs"
-    ],
     "historical_replay": [
-      "tests/powerhouse-persuasion-revenue-optimizer-v1.test.mjs"
+      "tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs"
     ]
   },
   "compiler": {
