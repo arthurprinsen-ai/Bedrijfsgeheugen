@@ -30,13 +30,18 @@ export function createAdaptiveDeliveryPlan({ changedPaths = [], policy } = {}) {
   const matchedRiskPaths = new Set();
   for (const path of paths) {
     let pathRisk = null;
+    let bestSpecificity = -1;
     for (const rule of policy.riskRules || []) {
-      if (matchesAny(path, rule.paths || [])) {
-        pathRisk = rule.risk;
-        matchedRiskPaths.add(path);
-        break;
+      for (const pattern of rule.paths || []) {
+        if (!matchPath(path, pattern)) continue;
+        const specificity = String(pattern).replace(/\*+/g, '').length;
+        if (specificity > bestSpecificity) {
+          bestSpecificity = specificity;
+          pathRisk = rule.risk;
+        }
       }
     }
+    if (pathRisk) matchedRiskPaths.add(path);
     // Unknown executable surfaces fail closed into R3 instead of receiving a cheap lane.
     if (!pathRisk) pathRisk = 'R3';
     if (riskOrder.indexOf(pathRisk) > riskOrder.indexOf(risk)) risk = pathRisk;
