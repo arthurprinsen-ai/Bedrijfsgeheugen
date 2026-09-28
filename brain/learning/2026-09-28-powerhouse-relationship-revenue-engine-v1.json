@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse-relationship-revenue-engine-v1",
+  "status": "RUNTIME_PROVEN_REPOSITORY_CANDIDATE",
+  "observed_at": "2026-09-28T12:32:51+02:00",
+  "problem": "The existing relationship graph was commercially underused because company trigger materialization correctly required explicit trigger evidence.",
+  "decision": "Use Powerhouse itself as the canonical relationship intelligence and scoring layer. Public web is the second evidence layer; Apollo and other vendors are optional fallback only.",
+  "prevention_rule": "Never make a vendor the canonical sales brain. Relationship warmth is not a buying trigger. Use bounded internal research to create evidence, and keep unsolicited external outreach human-authorized.",
+  "canonical_runtime": {
+    "view": "public.powerhouse_relationship_revenue_intelligence_v1",
+    "refresh": "public.powerhouse_refresh_relationship_revenue_v1(date)",
+    "scheduler_owner": "powerhouse-commercial-learning-v1",
+    "no_parallel_crm": true,
+    "no_parallel_scheduler": true
+  },
+  "live_evidence": {
+    "supabase_project": "adhjwmvyoixzjtmiroln",
+    "migration_version": "20260928103246",
+    "known_connections": 23295,
+    "known_companies": 17034,
+    "ranked_relationships": 2105,
+    "research_actions_touched": 50,
+    "activation_reviews_touched": 0,
+    "apollo_required": false,
+    "external_outreach_executed": false
+  }
+}
