@@ -39,7 +39,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Relationship External Intelligence',
       authority:'supabase',
       owner:'commercial-intelligence',
-      status:'CANDIDATE_DELIVERY',
+      status:'LIVE_PROVEN_RUNTIME',
       inputs:Object.freeze(['public web evidence','LinkedIn/company updates via supported capabilities','runtime events','person/company/customer lineage']),
       outputs:Object.freeze(['person/company/customer enriched context','predictive signals','opportunity/NBA evidence features']),
       runtime:Object.freeze({
