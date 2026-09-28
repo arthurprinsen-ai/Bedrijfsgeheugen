@@ -361,3 +361,22 @@ Rules:
 Canonical policy: `config/powerhouse-integration-bundle-v1.json`.
 Compiler: `tools/delivery/integration-bundle-compiler.mjs`.
 Regression: `tests/brain-integration-bundle-compiler-v1.test.mjs`.
+
+
+## Delivery Pattern Memory
+
+Fingerprint: `github|delivery-pattern-memory|historical-regression-routing|v1`.
+
+Powerhouse MUST reuse proven regression evidence from canonical `brain/learning/*.json` when a new candidate touches the same enforcement surface.
+
+Rules:
+- Brain learning remains the only truth source; do not create a second CI-memory database;
+- match current changed paths against prior learning enforcement paths;
+- merge only repository test files into the Integration Bundle;
+- bound historical additions to prevent fan-out growth;
+- record matched learning fingerprints in the bundle for explainability;
+- pattern memory may add evidence but never remove adaptive, security, exact-head, production or readback gates;
+- unreadable learning records are skipped by Pattern Memory but remain subject to the existing semantic-learning/JSON guards.
+
+Canonical implementation: `tools/delivery/delivery-pattern-memory.mjs`.
+Regression: `tests/brain-delivery-pattern-memory-v1.test.mjs`.
