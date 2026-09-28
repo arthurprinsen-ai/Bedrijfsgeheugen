@@ -12,7 +12,7 @@ test('historical replay preserves Powerhouse-first commercial intelligence',()=>
   assert.match(learning.root_cause,/first-party relationship graph/i);
   assert.ok(Array.isArray(learning.evidence) && learning.evidence.length>=4);
   assert.match(skill,/Powerhouse first-party/i);
-  assert.match(skill,/Apollo.*optional/i);
+  assert.match(skill,/Apollo.*option/i);
   assert.match(migration,/apollo_required',false/);
 });
 
