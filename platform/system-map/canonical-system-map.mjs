@@ -35,6 +35,29 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'daily-full-connection-enrichment',
+      label:'Daily Full Connection Enrichment',
+      authority:'supabase',
+      owner:'commercial-intelligence',
+      status:'LIVE_PROVEN_RUNTIME',
+      inputs:Object.freeze(['bg_connecties','linkedin_engagement_events','powerhouse_predictive_signals','bg_bedrijfsnieuws','bg_externe_signalen','powerhouse_runtime_events']),
+      outputs:Object.freeze(['powerhouse_connection_enrichment_state_v1','powerhouse_connection_enrichment_v1','powerhouse_connection_enrichment_coverage_v1','enriched bg_connecties.extra']),
+      runtime:Object.freeze({
+        refresh:'public.powerhouse_refresh_all_connection_enrichment_v1(date,integer)',
+        schedulerOwner:'powerhouse-commercial-learning-v1',
+        minimumCadence:'every connection at least once per calendar day',
+        currentGraphSize:23295
+      }),
+      invariants:Object.freeze({
+        fullGraphDailyCoverage:true,
+        allAvailableAllowedIngestedEvidence:true,
+        preserveDetailedCanonicalEvidence:true,
+        noSensitiveInference:true,
+        noPlatformBypass:true,
+        noFabricatedMissingFields:true
+      })
+    }),
+    Object.freeze({
       id:'relationship-external-intelligence',
       label:'Relationship External Intelligence',
       authority:'supabase',
