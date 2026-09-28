@@ -22,7 +22,7 @@ Iedere connectie in de canonieke Powerhouse-relatiegraph krijgt iedere kalenderd
 - Projection view: `public.powerhouse_connection_enrichment_v1`
 - Refresh: `public.powerhouse_refresh_all_connection_enrichment_v1(date,integer)`
 - Scheduler owner: bestaande `powerhouse-commercial-learning-v1`
-- Batch: 1100 per uur; met de huidige graph van circa 23k connecties is daarmee een volledige dagelijkse pass haalbaar binnen dezelfde bestaande scheduler.
+- Uitvoering: set-based full-graph refresh in iedere bestaande commerciële cyclus. De huidige 23k+ connecties worden in één schaalbare pass vernieuwd; tussentijdse LinkedIn- en externe events blijven daarnaast direct doorwerken.
 
 ## Definition of done
-Een dag is pas compleet wanneer `connections_enriched_today = connections_total`. Nieuwe evidence die later op dezelfde dag binnenkomt wordt bij volgende passes opnieuw meegenomen.
+Een dag is pas compleet wanneer `connections_enriched_today = connections_total` en `full_graph_daily_refresh=true`. Nieuwe evidence die later op dezelfde dag binnenkomt wordt bij de volgende bestaande commerciële cyclus opnieuw op de volledige graph geprojecteerd.
