@@ -38,7 +38,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-relationship-external-intelligence-v1.test.mjs"
+      "tests/supabase-powerhouse-relationship-external-intelligence-v1.test.mjs"
     ]
   },
   "evidence": [
