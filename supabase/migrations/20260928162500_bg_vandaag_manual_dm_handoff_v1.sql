@@ -1,4 +1,5 @@
-create or replace view public.bg_vandaag as
+create or replace view public.bg_vandaag
+with (security_invoker=true) as
 select
   round(a.priority) as prioriteit,
   coalesce(nullif(a.person_name,''),c.naam,'?') as persoon,
@@ -53,3 +54,7 @@ where a.status in ('suggested','prepared')
 order by
   case when lower(a.action_type) like '%dm%' or lower(a.channel) in ('linkedin dm','linkedin_dm','linkedin-direct-message') then 0 else 1 end,
   a.priority desc;
+
+
+revoke all on public.bg_vandaag from public, anon, authenticated;
+grant select on public.bg_vandaag to service_role;
