@@ -25,7 +25,8 @@ export function buildDailySelfEvolutionSnapshot({now=new Date().toISOString()}={
     ['shared_agent_memory','.github/workflows/shared-agent-memory-tests.yml'],
     ['engineering_learning','.github/workflows/engineering-os-learning.yml'],
     ['autonomous_runtime','scripts/brain/continuous-improvement/run-autonomous-improvement.mjs'],
-    ['capability_inventory','scripts/brain/continuous-improvement/capability-inventory.mjs']
+    ['capability_inventory','scripts/brain/continuous-improvement/capability-inventory.mjs'],
+    ['autonomous_engineering_optimizer','scripts/brain/autonomous-engineering-fabric-v3.mjs']
   ];
   const controls=required.map(([id,p])=>({id,path:p,present:exists(p)}));
   const missing=controls.filter(x=>!x.present).map(x=>x.id);
