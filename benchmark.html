@@ -189,6 +189,7 @@ table.tab tr:last-child td{border-bottom:0}
 .bron-k{display:block;margin-top:.5rem;font-size:.78rem;color:#5C646E;font-style:italic}
 .tab-aiscan tbody tr:hover{background:#FBFAF7}
 </style>
+<link rel="stylesheet" href="/assets/growth-tools.css?v=1">
 </head>
 <body>
 <div class="bgtop"><div class="bgtop-in">
@@ -360,6 +361,18 @@ table.tab tr:last-child td{border-bottom:0}
 <div class="wrap" style="max-width:1120px;margin:0 auto;padding:1.6rem 1.5rem 2.4rem"><p style="font-size:.95rem;color:#5C646E;margin:0">Cijfers en context: <a href="/ai-cijfers-mkb">AI-gebruik in het mkb</a>, <a href="/waarom-ai-projecten-mislukken">waarom AI-projecten mislukken</a> en <a href="/kennisverlies-vergrijzing-mkb">kennis borgen bij pensionering</a>.</p></div>
 </main>
 
+<section class="gs-tool" aria-labelledby="gs-friction-title">
+  <div class="gs-tool-card" data-growth-tool="friction-index">
+    <span class="gs-badge">Powerhouse · MKB Frictie-index</span>
+    <h2 id="gs-friction-title">Hoeveel operationele frictie zien we in jouw branche?</h2>
+    <p>De index gebruikt alleen geanonimiseerde scanwaarnemingen. We tonen pas een benchmark als er minimaal vijf geldige waarnemingen in een groep zitten.</p>
+    <label for="gs-sector">Branche (optioneel)</label>
+    <input id="gs-sector" name="sector" autocomplete="organization-title" placeholder="bijv. bouw, industrie, zakelijke dienstverlening">
+    <button type="button">Bekijk de beschikbare benchmark</button>
+    <div class="gs-tool-output" data-growth-output><b>Nog niet geladen</b><span>Geen benchmark wordt gefabriceerd als de dataset te klein is.</span></div>
+    <div class="gs-proof">Deze benchmark wordt ook gebruikt door Powerhouse voor scanrapporten, sectorcontent en evidence-backed salesdossiers.</div>
+  </div>
+</section>
 <footer class="bgvoet"><div class="bgvoet-in">
   <div class="bgvoet-net">
     <div>
@@ -424,5 +437,6 @@ table.tab tr:last-child td{border-bottom:0}
     <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
   </div>
 </div></footer>
+<script src="/assets/growth-tools.js?v=1" defer></script>
 </body>
 </html>
