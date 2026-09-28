@@ -96,3 +96,7 @@ PR #3182 is merged to protected main at `ce0e18df0876a38be2ce6ce83964b2a274c9b15
 - `powerhouse-growth-tools` ACTIVE v4.
 
 Plays that lack enough real data stay ARMED/READY_FOR_SURFACE rather than inventing benchmark or intent evidence.
+
+## Public surfaces terminal proof — 28 september 2026
+Status: `LIVE_PROVEN`.
+PR #3187 is merged to main at `12680d5664f8074e93b55e9c35ab2c155980c4b7`. Netlify production deploy `6aba698b5048cc0007294302` is `ready` with the exact same commit_ref. Public buyer-intent surfaces for benchmark, knowledge loss, M&A, workshops and Frisse Blik are part of this production lineage.
