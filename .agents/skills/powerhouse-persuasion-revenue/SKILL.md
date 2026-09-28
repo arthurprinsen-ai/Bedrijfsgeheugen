@@ -64,3 +64,18 @@ This rule is inherited by chats, agents, scheduled runs, Growth Swarm, LinkedIn 
 
 ## Growth Swarm 20/20 integration
 All twenty Growth Swarm plays use this canonical optimizer where a message/value exchange exists. Persuasion remains downstream of eligibility/play selection and upstream of provider execution. It may select framing, give asset and minimal get ask, but may not create an independent contact budget or bypass evidence, consent, identity, dedupe, fatigue, suppression, opt-out, provider capability or provider acknowledgement. No sensitive personality/psychographic profiling is used.
+
+
+## Manual LinkedIn DM handoff
+Fingerprint: `powerhouse-manual-linkedin-dm-handoff-v1`.
+
+When LinkedIn DM execution is not available through a verified provider, the agent must not stop at “send a DM”. It creates one complete Arthur handoff card in the canonical Today cockpit containing:
+- exact recipient name, role, company and LinkedIn profile link when verified;
+- connection/relationship status with “not verified” when direct connection evidence is absent;
+- why-now trigger and estimated commercial value;
+- exact final DM text;
+- required attachment type;
+- a Powerhouse-generated downloadable PDF when the selected asset is PDF-class;
+- one-click outcome controls: sent, later, not relevant.
+
+Only genuinely manual actions are shown. Actions that Powerhouse can execute itself remain outside the human queue. After Arthur marks “sent”, the outcome is written back to the canonical commercial learning loop and autonomous follow-up resumes.
