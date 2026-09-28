@@ -46,3 +46,7 @@ De volgorde in dezelfde scheduler is: relationship ranking -> research execution
 
 ## Autonome research-uitvoering
 De engine stopt niet bij een research-queue. `public.powerhouse_execute_relationship_research_v1(date)` hergebruikt bestaande Powerhouse-evidence. Wanneer die ontbreekt dispatcht `public.powerhouse_dispatch_relationship_public_research_v1(date)` de Edge Function `powerhouse-relationship-public-research` vanuit dezelfde bestaande commerciële scheduler. Deze worker zoekt bounded publieke SERP-evidence via de bestaande DataForSEO-credentials, schrijft alleen gevonden evidence terug naar `powerhouse_runtime_events` en triggert daarna de bestaande MKB-triggerrefresh. Geen tweede scheduler, geen Apollo-afhankelijkheid en geen externe outreach.
+
+
+## Productieplanning
+De live Edge Function `powerhouse-relationship-public-research` draait ieder uur op minuut 24 met de bestaande Powerhouse scheduler-token. De canonical commercial learning cycle blijft op minuut 27 en verwerkt daardoor nieuw gevonden evidence in dezelfde uurcyclus. Geen tweede brein of losse commerciële schedulerfamilie.
