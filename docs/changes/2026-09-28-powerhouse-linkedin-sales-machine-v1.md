@@ -25,3 +25,7 @@ De machine kiest autonoom tussen:
 - bewust wachten/nurture wanneer timing of bewijs onvoldoende is.
 
 Succes wordt niet primair gemeten op bereik of aantallen acties, maar op reply, gesprek, scan, offerte/order en gerealiseerde omzet. Nieuwe LinkedIn-write-capabilities zoals DM of reactions worden alleen toegevoegd na capability-probe, identity verification, provider acknowledgement en regressietest.
+
+
+## Terminal production closure
+PR #3167 is protected-merged to main at `73e954d9e62af66cf6f47ff63df9041a98a2d519`. Exact-main Edge Functions are active: LinkedIn Sales Machine v2, Autonomous Outreach v2 and Social Publisher v74. Production readback confirms the planner/dispatcher RPCs, active canonical scheduler, current sales-air-cover recommendation and live LinkedIn comment queue. No dedicated LinkedIn Sales Machine cron was added; orchestration remains in the canonical commercial cycle.
