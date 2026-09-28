@@ -32,3 +32,19 @@ Daily reconciliation may enrich provider truth, collect metrics, repair future c
 - request repeated OAuth reconnect solely to verify an existing provider side effect.
 
 Durable external IDs are permanent anti-duplicate fences.
+
+
+## Database enforcement
+
+The same terminality rule is enforced below the Edge Function layer.
+
+Migration: `supabase/migrations/20260928122000_social_provider_write_terminal_reconcile_v1.sql`.
+
+It changes the canonical outcome reconciler and both Instagram obligation triggers so that:
+- provider-created external IDs are terminal side effects;
+- `powerhouse_reconcile_content_outcomes_v1` restores/keeps `PUBLISHED` for provider-created LinkedIn and Instagram claims;
+- the Instagram exact-final-media and vision triggers remain fail-closed **before** provider write;
+- after provider write, missing media/vision proof becomes a prospective quality control and cannot retroactively set the existing post to `BLOCKED`;
+- the existing provider ID stays the permanent anti-duplicate fence.
+
+Production replay for 2026-09-28 returned `blocked_count=0` after this database contract was applied.

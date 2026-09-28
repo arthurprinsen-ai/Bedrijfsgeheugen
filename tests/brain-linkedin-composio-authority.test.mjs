@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const source = readFileSync('supabase/functions/powerhouse-social-publisher/index.ts', 'utf8');
+const terminalMigration = readFileSync('supabase/migrations/20260928122000_social_provider_write_terminal_reconcile_v1.sql', 'utf8');
 
 test('LinkedIn publishing authority is Composio-only before Buffer fallback', () => {
   assert.match(source, /publishLinkedInPersonalViaComposio/);
@@ -151,4 +152,23 @@ test('Instagram existing provider side effect cannot be negated by later media-p
   assert.match(source, /EXISTING_PROVIDER_SIDE_EFFECT_AUTHORITATIVE/);
   assert.match(source, /Existing Instagram provider side effect is authoritative/);
   assert.match(source, /later media-proof drift may inform future generation but cannot negate or replace this publication/);
+});
+
+
+test('database reconciler preserves provider-created social side effects', () => {
+  assert.match(terminalMigration, /create or replace function public\.powerhouse_reconcile_content_outcomes_v1/);
+  assert.match(terminalMigration, /v_provider_side_effect/);
+  assert.match(terminalMigration, /terminal_provider_side_effect/);
+  assert.match(terminalMigration, /provider_publication_ack_verified/);
+  assert.match(terminalMigration, /republish_forbidden/);
+  assert.match(terminalMigration, /else 'PUBLISHED'/);
+});
+
+test('Instagram media and vision gates remain pre-write fail-closed but post-write prospective', () => {
+  assert.match(terminalMigration, /enforce_instagram_exact_final_media_gate_v1/);
+  assert.match(terminalMigration, /enforce_instagram_obligation_vision_v1/);
+  assert.match(terminalMigration, /post_publish_exact_media_proof_gap/);
+  assert.match(terminalMigration, /post_publish_visual_proof_gap/);
+  assert.match(terminalMigration, /proof_gap_prospective_only/);
+  assert.match(terminalMigration, /v_provider_side_effect/);
 });
