@@ -44,7 +44,7 @@
       "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs"
     ],
     "historical_replay": [
-      "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs"
+      "tests/brain-powerhouse-linkedin-sales-machine-v1.test.mjs"
     ]
   },
   "user_authorization": {
