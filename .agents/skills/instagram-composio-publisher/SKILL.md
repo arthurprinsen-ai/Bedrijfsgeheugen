@@ -374,3 +374,17 @@ Hard rules:
 - if provider readback has already verified the media, later media-proof drift cannot set the obligation back to BLOCKED;
 - media-quality/identity learnings discovered after publication are prospective controls for the next claim, not grounds to republish the current claim;
 - watchdogs reconcile the existing media ID only.
+
+
+## Provider-created social side effects are terminal across channels (2026-09-28)
+
+Fingerprint: `provider-write-terminal-all-social-v1`.
+
+Once Instagram returns a durable media ID or provider truth is already verified for the existing post, later media-proof drift, changed content rules or readback limitations are non-retroactive. They apply to future generation, not to the already-created provider side effect.
+
+Required behavior:
+- preserve the existing media ID and mark `republish_forbidden=true`;
+- keep the daily obligation `PUBLISHED`;
+- never reclassify a live post to BLOCKED solely because a later exact-media gate would reject the same asset today;
+- never create a replacement for the same daily claim;
+- use stricter Mira/media rules only before the next provider write.
