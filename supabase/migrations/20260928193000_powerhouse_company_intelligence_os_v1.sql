@@ -295,3 +295,189 @@ comment on view public.powerhouse_outcome_memory_v1 is
 'Outcome Memory projection over observed outcomes and realized value; never synthesizes success.';
 comment on view public.powerhouse_compound_intelligence_v1 is
 'Compound Intelligence Loop projection feeding observed outcomes and realized value back into the next decision.';
+
+
+-- Company Intelligence OS v1 hardening:
+-- execution boundaries, evidence-backed outcome memory, context confidence and canonical orchestrator.
+
+create or replace view public.powerhouse_autonomous_action_layer_v1
+with (security_invoker=true) as
+select
+  a.action_id,a.dedupe_key,a.subject_key,a.person_key,a.company_key,a.action_type,a.channel,
+  a.priority,a.reason,a.status,a.due_at,a.expected_value_eur,a.evidence,
+  c.context as system_context,
+  case
+    when a.status not in ('prepared','suggested','waiting') then false
+    when a.due_at is not null and a.due_at>now() then false
+    when coalesce((a.evidence#>>'{execution_gate,human_authorization_required}')::boolean,false) then false
+    when coalesce((a.evidence#>>'{execution_gate,unsolicited_outreach_requires_human_authorization}')::boolean,false) then false
+    else true
+  end execution_candidate,
+  jsonb_build_object(
+    'contract','powerhouse-autonomous-action-layer-v1',
+    'requires_context',true,
+    'requires_lineage',true,
+    'external_side_effects_respect_existing_channel_identity_consent_and_authorization_gates',true
+  ) as action_contract,
+  case
+    when a.status in ('done','skipped','expired','error') then 'terminal'
+    when coalesce((a.evidence#>>'{execution_gate,human_authorization_required}')::boolean,false)
+      or coalesce((a.evidence#>>'{execution_gate,unsolicited_outreach_requires_human_authorization}')::boolean,false)
+      then 'human_gate'
+    when a.action_type in ('research_enrichment','internal_analysis','context_refresh') then 'autonomous_internal'
+    when a.status='prepared' then 'runtime_governed'
+    else 'policy_review'
+  end execution_boundary,
+  case when a.outcome_id is null then null else 'sales_outcome:'||a.outcome_id::text end outcome_memory_key
+from public.powerhouse_sales_actions a
+left join public.powerhouse_system_of_context_v1 c
+  on lower(regexp_replace(trim(coalesce(c.company_key,'')),'\\s+',' ','g'))=
+     lower(regexp_replace(trim(coalesce(a.company_key,'')),'\\s+',' ','g'));
+
+revoke all on public.powerhouse_autonomous_action_layer_v1 from public,anon,authenticated;
+grant select on public.powerhouse_autonomous_action_layer_v1 to service_role;
+
+drop view if exists public.powerhouse_compound_intelligence_v1;
+drop view if exists public.powerhouse_outcome_memory_v1;
+
+create view public.powerhouse_outcome_memory_v1
+with (security_invoker=true) as
+select
+  'sales_outcome'::text memory_type,
+  o.outcome_id::text memory_id,
+  nullif(lower(regexp_replace(trim(coalesce(o.company_key,'')),'\\s+',' ','g')),'') company_key,
+  o.person_key,o.action_id::text origin_action_id,
+  o.outcome_type outcome_class,
+  o.revenue_eur realized_value,
+  'EUR'::text unit,
+  o.evidence,
+  o.occurred_at observed_at,
+  'powerhouse_sales_outcomes:'||o.outcome_id::text canonical_ref,
+  (coalesce(o.evidence,'{}'::jsonb) <> '{}'::jsonb) verified
+from public.powerhouse_sales_outcomes o
+
+union all
+select
+  'realized_value',
+  r.observation_id::text,
+  null,
+  null,
+  r.cycle_id::text,
+  r.value_type,
+  r.numeric_value,
+  coalesce(r.currency,r.unit),
+  jsonb_build_object(
+    'evidence_ref',r.evidence_ref,
+    'provenance',r.provenance,
+    'source_entity_type',r.source_entity_type,
+    'source_entity_id',r.source_entity_id
+  ),
+  r.observed_at,
+  'powerhouse_realized_values:'||r.observation_id::text,
+  nullif(trim(coalesce(r.evidence_ref,'')),'') is not null
+from public.powerhouse_realized_values r;
+
+revoke all on public.powerhouse_outcome_memory_v1 from public,anon,authenticated;
+grant select on public.powerhouse_outcome_memory_v1 to service_role;
+
+create view public.powerhouse_compound_intelligence_v1
+with (security_invoker=true) as
+with verified_outcomes as (
+  select company_key,count(*)::integer verified_outcomes,max(observed_at) latest_verified_outcome_at
+  from public.powerhouse_outcome_memory_v1
+  where company_key is not null and verified
+  group by company_key
+)
+select
+  c.company_key,
+  c.people_count,c.open_opportunities,c.expected_revenue_value,c.actions_30d,c.pending_actions,
+  c.outcomes_90d,c.realized_revenue_eur,c.last_context_at,
+  coalesce(v.verified_outcomes,0) verified_outcomes,
+  case
+    when c.pending_actions>0 then 'act_and_observe'
+    when coalesce(v.verified_outcomes,0)>0 and c.open_opportunities>0 then 'learn_and_reprioritize'
+    when c.open_opportunities>0 then 'decide_next_action'
+    else 'enrich_context'
+  end compound_loop_state,
+  round(least(1,coalesce(v.verified_outcomes,0)::numeric/greatest(3,c.open_opportunities+1)),4) learning_density,
+  jsonb_build_object(
+    'contract','powerhouse-compound-intelligence-loop-v1',
+    'loop',jsonb_build_array('know','understand','decide','act','observe','learn','compound'),
+    'context',c.context,
+    'verified_outcomes',coalesce(v.verified_outcomes,0),
+    'rule','Every next decision must consume verified outcomes and realized value where available; learning is incomplete until it can alter a later decision.'
+  ) intelligence
+from public.powerhouse_system_of_context_v1 c
+left join verified_outcomes v using(company_key);
+
+revoke all on public.powerhouse_compound_intelligence_v1 from public,anon,authenticated;
+grant select on public.powerhouse_compound_intelligence_v1 to service_role;
+
+create or replace function public.powerhouse_run_company_intelligence_os_v1(
+  p_run_date date default (now() at time zone 'Europe/Amsterdam')::date
+) returns jsonb
+language plpgsql
+security definer
+set search_path = pg_catalog, public
+as $$
+declare
+  v_execution jsonb;
+  v_result jsonb;
+begin
+  -- Reuse the canonical Powerhouse execution loop; this OS does not create a second scheduler or queue.
+  v_execution:=public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(p_run_date);
+
+  v_result:=jsonb_build_object(
+    'contract','company-intelligence-os.v1',
+    'category','AI-native company operating system / company intelligence platform',
+    'crm_role','source',
+    'powerhouse_role','company_intelligence_and_execution_brain',
+    'loop',jsonb_build_array('know','understand','decide','act','observe','learn','compound'),
+    'company_graph',jsonb_build_object(
+      'nodes',(select count(*) from public.powerhouse_company_graph_nodes_v1),
+      'edges',(select count(*) from public.powerhouse_company_graph_edges_v1)
+    ),
+    'system_of_context',jsonb_build_object(
+      'companies',(select count(*) from public.powerhouse_system_of_context_v1),
+      'fresh_30d',(select count(*) from public.powerhouse_system_of_context_v1 where last_context_at>=now()-interval '30 days')
+    ),
+    'autonomous_action_layer',jsonb_build_object(
+      'actions',(select count(*) from public.powerhouse_autonomous_action_layer_v1),
+      'autonomous_internal',(select count(*) from public.powerhouse_autonomous_action_layer_v1 where execution_boundary='autonomous_internal'),
+      'runtime_governed',(select count(*) from public.powerhouse_autonomous_action_layer_v1 where execution_boundary='runtime_governed'),
+      'human_gated',(select count(*) from public.powerhouse_autonomous_action_layer_v1 where execution_boundary='human_gate')
+    ),
+    'outcome_memory',jsonb_build_object(
+      'observations',(select count(*) from public.powerhouse_outcome_memory_v1),
+      'verified',(select count(*) from public.powerhouse_outcome_memory_v1 where verified)
+    ),
+    'compound_intelligence',jsonb_build_object(
+      'companies',(select count(*) from public.powerhouse_compound_intelligence_v1),
+      'learning_companies',(select count(*) from public.powerhouse_compound_intelligence_v1 where verified_outcomes>0)
+    ),
+    'canonical_execution',v_execution,
+    'executed_at',now()
+  );
+
+  insert into public.powerhouse_runtime_events(
+    dedupe_key,event_type,source,subject_key,occurred_at,evidence,context,state,data_quality,confidence
+  ) values (
+    'company-intelligence-os:'||p_run_date::text,
+    'company_intelligence_os_cycle','company-intelligence-os.v1','company-intelligence-os',
+    now(),v_result,
+    jsonb_build_object('no_parallel_crm',true,'no_parallel_truth',true,'existing_action_fabric_reused',true),
+    'actioned','VERIFIED',1
+  )
+  on conflict(dedupe_key) do update set
+    occurred_at=excluded.occurred_at,evidence=excluded.evidence,context=excluded.context,
+    state=excluded.state,updated_at=now();
+
+  return v_result;
+end;
+$$;
+
+revoke execute on function public.powerhouse_run_company_intelligence_os_v1(date) from public,anon,authenticated;
+grant execute on function public.powerhouse_run_company_intelligence_os_v1(date) to service_role;
+
+comment on function public.powerhouse_run_company_intelligence_os_v1(date) is
+'Company Intelligence OS orchestrator. Reuses the canonical execution loop, then reads Company Graph, System of Context, bounded action layer, verified Outcome Memory and Compound Intelligence. No parallel CRM, scheduler or truth store.';
