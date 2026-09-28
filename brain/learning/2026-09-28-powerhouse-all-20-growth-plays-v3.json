@@ -1,0 +1,52 @@
+{
+  "fingerprint": "powerhouse-all-20-growth-plays-v3",
+  "version": "powerhouse-all-20-growth-plays-v3",
+  "date": "2026-09-28",
+  "obligation_id": "powerhouse-all-20-growth-plays-v3",
+  "status": "RUNTIME_ACTIVE_REPOSITORY_CANDIDATE",
+  "failure_class": "GROWTH_PLAY_EXECUTION_GAP",
+  "scope": "POWERHOUSE_GROWTH_REVENUE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "The Growth Swarm catalog contained twenty plays, but catalog presence was being conflated with execution completeness. Seven plays were still ARMED or READY_FOR_SURFACE and did not yet have a fully auditable trigger-to-executor-to-surface-to-outcome path.",
+  "decision": "Require an execution contract for every play and complete the seven missing paths through existing canonical Powerhouse owners. Reuse the existing Persuasion Revenue Optimizer rather than introducing a parallel persuasion system.",
+  "formerly_incomplete": [
+    "mkb-friction-index",
+    "positive-public-teardown",
+    "anti-consultancy-challenge",
+    "boardroom-fear-of-blindness",
+    "competitor-switch-pages",
+    "data-contribution-flywheel",
+    "risk-reversal"
+  ],
+  "prevention": [
+    "Never call a Growth Swarm play built solely because it exists in the catalog.",
+    "A built play requires trigger owner, executor, surface, outcome metric, truth/privacy gate and execution_complete=true.",
+    "Persuasion must reuse powerhouse-persuasion-revenue-optimizer-v1 and may not create an independent sending budget.",
+    "Growth-play emails share the existing five-per-day email cap, suppression, opt-out and cooldown rules.",
+    "Benchmark contribution requires explicit optional consent and public aggregate output still requires minimum group size five.",
+    "Competitor/switch content must reuse the canonical SEO owner and pass owner/cannibalization and public-evidence gates."
+  ],
+  "live_evidence": {
+    "supabase_project": "adhjwmvyoixzjtmiroln",
+    "catalog_plays": 20,
+    "active_plays": 20,
+    "built_active": 20,
+    "canonical_persuasion_optimizer": true,
+    "duplicate_persuasion_optimizer": false,
+    "scan_ingest_edge_function_version": 5
+  },
+  "evaluation": {
+    "regression": [
+      "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs"
+    ],
+    "historical_replay": [
+      "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+    ".agents/skills/powerhouse-persuasion-revenue/SKILL.md"
+  ]
+}
