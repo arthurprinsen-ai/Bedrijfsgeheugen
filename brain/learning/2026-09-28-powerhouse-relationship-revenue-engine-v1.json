@@ -50,7 +50,8 @@
     "The first relationship-revenue refresh ranked 2,105 relationships and created 50 internal research actions with apollo_required=false and external_outreach_executed=false.",
     "Runtime migration 20260928103246 is applied in Supabase project adhjwmvyoixzjtmiroln.",
     "Production migration powerhouse_relationship_research_auto_enrichment_v1 is applied and the existing commercial cycle now calls relationship research before trigger acquisition.",
-    "Production Edge Function powerhouse-relationship-public-research version 1 deployed ACTIVE on 2026-09-28."
+    "Production Edge Function powerhouse-relationship-public-research version 1 deployed ACTIVE on 2026-09-28.",
+    "The production Edge Function powerhouse-relationship-public-research is deployed and scheduled hourly at minute 24, before powerhouse-commercial-learning-v1 at minute 27."
   ],
   "evaluation": {
     "production_readback": [
