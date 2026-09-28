@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse-manual-linkedin-dm-handoff-v1",
+  "version": "powerhouse-manual-linkedin-dm-handoff-v1",
+  "date": "2026-09-28",
+  "status": "PRODUCTION_APPLIED",
+  "failure_class": "HUMAN_HANDOFF_GAP",
+  "scope": "GROWTH_REVENUE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Manual LinkedIn DM fallback existed conceptually but did not give the user one complete executable handoff containing recipient, connection context, final text, attachment and outcome controls.",
+  "decision": "Project only irreducibly manual LinkedIn DM actions into Arthur Actions; make Powerhouse generate the final DM and any required PDF, then capture sent/defer/not-relevant outcomes so autonomous follow-up resumes.",
+  "prevention": [
+    "Never ask the user to research which person or connection should receive a manual DM.",
+    "Never surface a manual DM without final ready-to-send text.",
+    "Never ask the user to create a required attachment; Powerhouse generates the PDF.",
+    "Never imply a LinkedIn connection degree without evidence.",
+    "Never place provider-executable actions in the manual queue."
+  ],
+  "compiler": {
+    "failure_class": "HUMAN_HANDOFF_GAP",
+    "scope": "GROWTH_REVENUE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-manual-sales-handoff/SKILL.md",
+    ".agents/skills/powerhouse-persuasion-revenue/SKILL.md"
+  ],
+  "evidence": [
+    "Production bg_vandaag view now exposes manual_required, relationship state, estimated value, trigger and PDF requirement.",
+    "Production bg-dagoverzicht Edge Function version 5 can generate a PDF for an active sales action.",
+    "The Today cockpit implementation renders only manual actions and supports Copy DM, PDF generation, Sent, Later and Not relevant."
+  ]
+}
