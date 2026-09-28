@@ -15,3 +15,5 @@ GitHub delivery is versneld zonder security- of exact-head-gates te verzwakken.
 Regression oracle: `tests/brain-ci-critical-path-acceleration-v1.test.mjs`.
 
 - Closure metadata is gesynchroniseerd met de volledige 16-file candidate scope na Required readback.
+
+- Scope metadata reconciled with the complete 16-file delivery lineage after CI readback.
