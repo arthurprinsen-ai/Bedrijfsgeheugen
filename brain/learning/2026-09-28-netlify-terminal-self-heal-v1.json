@@ -1,0 +1,44 @@
+{
+  "fingerprint": "delivery|netlify-terminal-self-heal|v1",
+  "date": "2026-09-28",
+  "type": "PRODUCTION_DELIVERY_RECOVERY",
+  "failure_class": "NETLIFY_STALE_TARGET_OR_EXPIRED_TRANSPORT",
+  "root_cause": [
+    "A recovery node could remain anchored to the SHA that was current when promotion started even after protected main advanced.",
+    "An expired Netlify write proxy/transport could be treated as a user-visible waiting state instead of a recoverable transport fault.",
+    "Provider truth was not always re-read before and after a transport retry."
+  ],
+  "observed_evidence": {
+    "stale_expected_sha": "6a57a3332566719243f60f7f3810d5ac34917f7e",
+    "current_main_sha": "a7bc8529d6b061836ed0b6958fc605b135c84775",
+    "netlify_deploy_id": "6aba29af6a9120db859fa44c",
+    "netlify_state": "ready",
+    "netlify_context": "production",
+    "netlify_commit_ref": "a7bc8529d6b061836ed0b6958fc605b135c84775"
+  },
+  "prevention": [
+    "Resolve current protected main and current Netlify production before any retry.",
+    "Accept only repository-proven safe supersession when the originally expected SHA is no longer current.",
+    "Reacquire expired authorized Netlify transport once, then provider-readback before another write.",
+    "Never return a pending production state as final while autonomous recovery remains possible.",
+    "Re-resolve main after transport recovery because the target may have advanced."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-terminal-self-heal-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-terminal-self-heal-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "NETLIFY_STALE_TARGET_OR_EXPIRED_TRANSPORT",
+    "scope": "PRODUCTION_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "status": "ACTIVE_PREVENTION"
+}
