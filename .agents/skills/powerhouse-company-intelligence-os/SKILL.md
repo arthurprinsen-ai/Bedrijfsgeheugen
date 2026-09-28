@@ -44,3 +44,8 @@ Canonical layers:
 - Sensitive-person inference is forbidden.
 - A learning is incomplete unless it can alter a subsequent decision or action.
 - Material changes inherit `powerhouse-system-map-governance`: update map, docs, learning and tests in the same lineage.
+
+
+## Self-improvement bridge
+
+Verified Company Intelligence outcomes feed `powerhouse-self-improvement-layer`. That layer may recalibrate agents, model-routing candidates, policies, tests and engineering candidates, but must reuse Outcome Memory, existing optimization evidence and protected delivery. It must never create a parallel graph, outcome ledger, learning store or uncontrolled production writer.
