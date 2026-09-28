@@ -18,7 +18,8 @@
     "Default user-facing reporting to terminal outcomes only.",
     "Expose BLOCKED_HARD_BOUNDARY only when a genuinely external human permission, credential or irreversible decision is required, and ask only for the minimum action.",
     "Reveal technical delivery diagnostics only when the user explicitly requests them.",
-    "Interruption is not a handoff; resume autonomously from canonical state."
+    "Interruption is not a handoff; resume autonomously from canonical state.",
+    "Continue autonomously through internal blockers and interruptions; never require the user to say 'ga door' or retry when the system can resume from canonical state."
   ],
   "failed_approaches": [
     "Reporting PR head/ref mismatches and queued checks as progress updates.",
@@ -42,12 +43,17 @@
     "failure_class": "DELIVERY_USER_HANDOFF_NOISE",
     "scope": "DELIVERY_CONTROL_PLANE",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
   },
   "skill_targets": [
     "powerhouse-continuity"
   ],
   "status": "ACTIVE_PREVENTION",
-  "revision": 1
+  "revision": 2,
+  "reinforcement": {
+    "fingerprint": "delivery|terminal-continuation|no-internal-handoff|v2",
+    "reason": "Repeated user feedback confirmed that hiding internal status is insufficient unless the owning node also keeps executing through the terminal state.",
+    "rule": "Internal delivery blockers and chat/client timeouts are non-terminal recovery inputs. Ownership stays with the canonical Powerhouse node until terminal proof or BLOCKED_HARD_BOUNDARY."
+  }
 }

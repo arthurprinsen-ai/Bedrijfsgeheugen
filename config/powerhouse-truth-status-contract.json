@@ -89,6 +89,13 @@
     ],
     "blocked_hard_boundary_output": "minimum_external_human_action_only",
     "technical_details_on_explicit_user_request_only": true,
-    "interruption_is_not_handoff": true
+    "interruption_is_not_handoff": true,
+    "continuation_fingerprint": "delivery|terminal-continuation|no-internal-handoff|v2",
+    "owner_must_continue_until_terminal": true,
+    "internal_blocker_is_stop_condition": false,
+    "chat_or_client_timeout_cancels_obligation": false,
+    "user_retry_or_continue_required": false,
+    "resume_from_canonical_checkpoint": true,
+    "dedupe_side_effects_after_interruption": true
   }
 }
