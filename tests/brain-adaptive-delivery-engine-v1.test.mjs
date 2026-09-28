@@ -61,3 +61,18 @@ test('specific production workflow rule outranks broad .github governance rule',
   assert.equal(plan.risk, 'R4');
   assert.equal(plan.fullSharedSuite, true);
 });
+
+test('learning-only path does not activate brain runtime capability', () => {
+  const plan = createAdaptiveDeliveryPlan({ changedPaths:['brain/learning/example.json'], policy });
+  assert.equal(plan.risk, 'R0');
+  assert.equal(plan.fullSharedSuite, false);
+  assert.ok(!plan.capabilities.includes('brain-runtime'));
+});
+
+test('changed regression files are included in fast-path evidence', () => {
+  const path = 'tests/example-fast-path.test.mjs';
+  const plan = createAdaptiveDeliveryPlan({ changedPaths:[path], policy });
+  assert.equal(plan.risk, 'R1');
+  assert.equal(plan.fullSharedSuite, false);
+  assert.ok(plan.tests.includes(path));
+});
