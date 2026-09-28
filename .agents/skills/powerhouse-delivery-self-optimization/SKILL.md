@@ -657,3 +657,13 @@ Mandatory:
 Canonical policy: `config/powerhouse-adaptive-delivery-v1.json`.
 Compiler: `tools/delivery/adaptive-delivery-engine.mjs`.
 Regression: `tests/brain-adaptive-delivery-engine-v1.test.mjs`.
+
+
+### Preview-provider backpressure
+
+For broad browser verification against a Netlify deploy preview:
+- do not treat a burst of preview-only HTTP 403/429/5xx responses as application evidence before bounded retry;
+- use lower default route and viewport concurrency on deploy-preview hosts than on local/production verification;
+- retry only explicit transient HTTP classes with a small deterministic backoff budget;
+- persistent 403/429/5xx responses remain fail-closed;
+- targeted route checks, exact candidate identity and semantic browser assertions remain mandatory.
