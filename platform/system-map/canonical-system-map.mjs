@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T18:10:00Z',
+  observedAt:'2026-09-28T18:25:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -30,10 +30,39 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'agents',label:'Agent fabric',purpose:'Route work to agents, bounded execution, collaboration, recovery and self-heal'}),
     Object.freeze({id:'delivery',label:'Delivery intelligence',purpose:'PR, CI, exact-head gates, protected merge, deploy and production readback'}),
     Object.freeze({id:'learning',label:'Learning & prevention',purpose:'Root cause, failed approaches, regression, prevention and skill projection'}),
+    Object.freeze({id:'self-improvement',label:'Self-improvement & evals',purpose:'Agent objectives, provider-neutral model routing, architecture health, candidate evaluation, controlled promotion and learning compilation'}),
     Object.freeze({id:'governance',label:'Trust, security & compliance',purpose:'Auth, RLS, admin boundaries, AI governance, evidence coverage and controls'}),
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'self-improvement-layer',
+      label:'Powerhouse Self-Improvement Layer',
+      authority:'supabase',
+      owner:'whole-brain-intelligence',
+      status:'CANDIDATE_DELIVERY',
+      inputs:Object.freeze(['Company Intelligence OS','verified Outcome Memory','optimization candidates','quality events','model health','autonomous-improvement evidence','engineering evidence']),
+      outputs:Object.freeze(['agent objective registry','learning compiler queue','self-improvement control state','provider-neutral model routing policy','architecture health','controlled promotion recommendations']),
+      runtime:Object.freeze({
+        control:'public.powerhouse_self_improvement_control_v1',
+        learningQueue:'public.powerhouse_learning_compiler_queue_v1',
+        agentObjectives:'public.powerhouse_agent_objective_registry_v1',
+        orchestrator:'public.powerhouse_run_self_improvement_layer_v1(date)',
+        module:'brain/self-improvement/self-improvement-layer.mjs',
+        contract:'brain/contracts/self-improvement-layer-v1.json',
+        dailyWorkflow:'.github/workflows/powerhouse-daily-self-evolution.yml'
+      }),
+      invariants:Object.freeze({
+        noLearningWithoutEvidence:true,
+        noChangeWithoutEvaluation:true,
+        noDeploymentWithoutRegressionProof:true,
+        noIntelligenceWithoutMeasurableOutcome:true,
+        noUncontrolledSelfModification:true,
+        unknownIsNotGreen:true,
+        noParallelLearningStore:true,
+        protectedDeliveryReused:true
+      })
+    }),
     Object.freeze({
       id:'company-intelligence-os',
       label:'Powerhouse Company Intelligence OS',
@@ -290,12 +319,12 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     githubWorkflows:Object.freeze(["add-netlify-component-preview.yml","approved-central-blog.yml","autonomous-improvement-completion-gate.yml","bg168-materiality-promotion-tests.yml","bg184-stateful-blocker-dedupe-tests.yml","blog-bijwerken.yml","blog-technical-seo-gate.yml","brain-foundation-diagnostic.yml","brain-foundation-verify.yml","buffer-social-learning.yml","business-os-experience.yml","business-os-foundation.yml","business-os-intelligence.yml","business-os-live-preview.yml","business-os-migration.yml","business-os-trust.yml","canonical-brand-shell-full-build.yml","canonical-brand-shell-live-readback.yml","canonical-brand-shell-test.yml","chat-learning-preflight-pr.yml","codeql.yml","completion-supervisor-backfill-shadow.yml","compliance-status-contract.yml","component-foundation-tdd.yml","component-integration-tdd.yml","component-preview.yml","config-wacht.yml","content-growth-ci.yml","content-growth-learning.yml","daily-blog-live-watchdog.yml","daily-blog-publisher.yml","engineering-intelligence-trust.yml","engineering-os-learning.yml","engineering-supply-chain-trust.yml","error-learning-contract.yml","fresh-device-autonomy-canary.yml","hero-media-production-verify.yml","homepage-hero-video-verify.yml","homepage-pricing-boundary-regression.yml","klanten-uit-broncode.yml","lane-automation.yml","lane-backend.yml","lane-portal.yml","lane-website.yml","learning-contract-delivery-classifier-tests.yml","linkedin-revenue-cockpit-tests.yml","live-preview-smoke.yml","main-protection-observation.yml","main-write-integrity-regression.yml","main-write-integrity.yml","menu-balk-fix.yml","native-approved-blog-supply.yml","obligation-terminal-closure.yml","outcome-obligation-sweep.yml","paginacontrole-debug.yml","paginacontrole.yml","portal-native-regression-tests.yml","portal-parity.yml","portal-v2-live-preview.yml","portal-v2-production-dom-readback.yml","portal-v2-tests.yml","powerhouse-assurance.yml","powerhouse-autonomous-engineering-optimizer.yml","powerhouse-closure-a-f.yml","powerhouse-codeql.yml","powerhouse-daily-blog.yml","powerhouse-daily-self-evolution.yml","powerhouse-delivery-hygiene.yml","powerhouse-delivery-recovery-supervisor.yml","powerhouse-foresight-autonomy.yml","powerhouse-merged-branch-cleanup.yml","powerhouse-obligation-terminalizer.yml","powerhouse-public-rls-regression-guard.yml","powerhouse-quality-intelligence.yml","powerhouse-quality-surface-gate.yml","powerhouse-ci-intelligence.yml","powerhouse-repository-janitor.yml","powerhouse-resource-intelligence.yml","powerhouse-scan-production-proof.yml","powerhouse-security-operations-closure.yml","powerhouse-skill-projection.yml","powerhouse-supabase-security-contract.yml","powerhouse-terminal-writer-lease-closure-guard.yml","prijzen-hero-seo-regression.yml","production-release-readback.yml","production-source-snapshot.yml","regelgeving-actueel.yml","regelgeving-bijwerken.yml","regulatory-source-watch.yml","repo-writer-candidate-shadow.yml","repo-writer-cheap-canary.yml","repo-writer-gate-dispatch.yml","repo-writer-operational-verification.yml","repo-writer-parity-rollback.yml","repository-hygiene.yml","required-test.yml","revenue-content-intelligence.yml","revenue-learning.yml","runtime-authority-governance-tests.yml","security-operations-proof.yml","seo-controle.yml","seo-growth-intelligence.yml","seo-order-engine.yml","shared-agent-memory-tests.yml","supabase-pr-preview.yml","unified-brain-delivery.yml","unified-content-operations.yml","universal-closed-loop-learning.yml","universal-event-retention-contract.yml","v18-megamenu-production-readback.yml","v18-production-promotion.yml","verify-approved-central-blog.yml","weekblog.yml","whole-brain-canonical-loop-v2.yml","writer-certification-reconcile.yml","writer-production-reconcile.yml"]),
     netlifyFunctions:Object.freeze(["_ai-usage-store.mjs","_brain-ai.mjs","_brain-event-store.mjs","_buffer-social-collector.mjs","_commercial-lead.mjs","_connector-ai.mjs","_cost-projection-store.mjs","_portal-connectors-store.mjs","_portal-eu-primary-store.mjs","_portal-project-store.mjs","_portal-read-model-store.mjs","_portal-supabase-store.mjs","_revenue-learning-model.mjs","_revenue-learning-store.mjs","_social-learning-model.mjs","_social-learning-store.mjs","brain-operating-ingest.mjs","brain-operating-loop.mjs","brain-runtime-metric.mjs","buffer-social-collect.mjs","checkout-create.mjs","checkout-readiness.mjs","company-decision-notion-sync.mjs","company-decision.mjs","connector-ai-guide.mjs","connector-readiness.mjs","content-learning-application-reconcile.mjs","content-learning.mjs","document-extractor.mjs","growth-event.mjs","growth-intelligence-daily.mjs","growth-outcome.mjs","growth-replay.mjs","i18n-translate.mjs","instagram-video-frames.mjs","koppelingen.mjs","linkedin-revenue-cockpit.mjs","meta-instagram-token-refresh.mjs","monitor.mjs","portaalvraag.mjs","portal-business-input.mjs","portal-connectors.mjs","portal-entitlements.mjs","portal-feedback.mjs","portal-ondernemersdata.mjs","portal-project.mjs","portal-scans.mjs","portal-state.mjs","powerhouse-control-plane-evidence.mjs","powerhouse-composio-config.mjs","powerhouse-composio-secret-sync.mjs","powerhouse-composio-secret-sync-deploy.mjs","powerhouse-composio-secret-sync-now.mjs","powerhouse-control-plane.mjs","powerhouse-costs.mjs","powerhouse-meta-instagram-config.mjs","powerhouse-meta-instagram-oauth-callback.mjs","powerhouse-observability.mjs","powerhouse-scan-ingest.mjs","revenue-learning-context.mjs","revenue-learning-evaluate.mjs","revenue-learning-project.mjs","social-learning-context.mjs","social-learning-evaluate.mjs","social-outcome-ingest.mjs","social-publication-delivery.mjs","stripe-webhook.mjs","vraag.mjs"]),
     supabaseFunctions:Object.freeze(["bg-analytics-sync-composio","bg-buffer-sync","bg-dagoverzicht","bg-ga4-sync","bg-notion-sync","bg-opdrachtenradar","bg-pre-publish-review","brain-operating-authority","brain-runtime-metric-ingest","commercial-lead-ingest","content-operations","growth-datahub-ingest","portal-state-eu","powerhouse-autonomous-outreach","powerhouse-composio-instagram-setup","powerhouse-composio-linkedin-setup","powerhouse-content-loop","powerhouse-content-orchestrator","powerhouse-dataforseo-intelligence","powerhouse-forecast-calibrator","powerhouse-growth-tools","powerhouse-instagram-media-router","powerhouse-instagram-media-verifier","powerhouse-instagram-temporal-verifier","powerhouse-linkedin-sales-machine","powerhouse-meta-instagram-setup","powerhouse-predictive-engine","powerhouse-relationship-public-research","powerhouse-revenue-intelligence","powerhouse-runtime","powerhouse-scan-ingest","powerhouse-seo-opportunity-resolver","powerhouse-social-publisher","powerhouse-system-map-inventory","resource-usage-eu","revenue-learning-store","social-learning-store"]),
-    skills:Object.freeze(["instagram-composio-publisher","linkedin-composio-publisher","personal-linkedin-life-only","powerhouse-autonomous-engineering-fabric","powerhouse-browser-gate-boundedness","powerhouse-company-intelligence-os","powerhouse-connector-response-normalization","powerhouse-continuity","powerhouse-daily-full-connection-enrichment","powerhouse-delivery-concurrency","powerhouse-delivery-self-optimization","powerhouse-growth-swarm","powerhouse-linkedin-sales-machine","powerhouse-management-accounting-intelligence","powerhouse-manual-sales-handoff","powerhouse-netlify-production-truth","powerhouse-persuasion-revenue","powerhouse-post-merge-codeql","powerhouse-relationship-external-intelligence","powerhouse-relationship-revenue","powerhouse-resource-sustainability","powerhouse-system-map-governance","powerhouse-toolchain-authority","seo-revenue-growth","trigger-based-mkb-acquisition"]),
+    skills:Object.freeze(["instagram-composio-publisher","linkedin-composio-publisher","personal-linkedin-life-only","powerhouse-autonomous-engineering-fabric","powerhouse-browser-gate-boundedness","powerhouse-company-intelligence-os","powerhouse-connector-response-normalization","powerhouse-continuity","powerhouse-daily-full-connection-enrichment","powerhouse-delivery-concurrency","powerhouse-delivery-self-optimization","powerhouse-growth-swarm","powerhouse-linkedin-sales-machine","powerhouse-management-accounting-intelligence","powerhouse-manual-sales-handoff","powerhouse-netlify-production-truth","powerhouse-persuasion-revenue","powerhouse-post-merge-codeql","powerhouse-relationship-external-intelligence","powerhouse-relationship-revenue","powerhouse-resource-sustainability","powerhouse-system-map-governance","powerhouse-self-improvement-layer","powerhouse-toolchain-authority","seo-revenue-growth","trigger-based-mkb-acquisition"]),
     agentFabricModules:Object.freeze(["agent-fabric.mjs","agent-registry.mjs","agent-team.mjs","agent-work.mjs","completion-supervisor.mjs","learning-memory.mjs","self-heal.mjs","team-memory-bridge.mjs"])
   }),
   providerSnapshot:Object.freeze({
     supabase:Object.freeze({tables:255,views:136,functions:250,activeCronJobs:51,projectId:'adhjwmvyoixzjtmiroln'}),
-    github:Object.freeze({workflows:116,skills:25,agentFabricModules:8}),
+    github:Object.freeze({workflows:116,skills:26,agentFabricModules:8}),
     netlify:Object.freeze({functions:68}),
     notion:Object.freeze({canonicalSystemMap:true,humanHandbook:true,latestVerifiedState:true,agentActivityLog:true})
   }),
