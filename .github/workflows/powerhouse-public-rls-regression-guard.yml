@@ -13,6 +13,10 @@ on:
       - 'supabase/migrations/**.sql'
       - '.github/workflows/powerhouse-public-rls-regression-guard.yml'
 
+concurrency:
+  group: powerhouse-public-rls-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref_name }}
+  cancel-in-progress: true
+
 permissions:
   contents: read
 
@@ -25,5 +29,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Verify fail-closed public RLS contract
         run: node --test tests/supabase-public-rls-regression-guard.test.mjs
