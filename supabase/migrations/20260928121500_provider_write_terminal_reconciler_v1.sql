@@ -1,14 +1,12 @@
--- Provider-created social side effects are terminal publication truth.
--- A later readback/auth/media verification failure must never negate an existing provider object.
+-- Canonical provider-side-effect terminal reconciliation.
+-- Snapshot of the live reconciler after 2026-09-28 recovery; preserve exact-ID anti-duplicate semantics.
 
-create or replace function public.powerhouse_reconcile_content_outcomes_v1(
-  p_date date default ((now() at time zone 'Europe/Amsterdam'))::date
-)
-returns jsonb
-language plpgsql
-security definer
-set search_path to 'public','pg_catalog'
-as $function$
+CREATE OR REPLACE FUNCTION public.powerhouse_reconcile_content_outcomes_v1(p_date date DEFAULT ((now() AT TIME ZONE 'Europe/Amsterdam'::text))::date)
+ RETURNS jsonb
+ LANGUAGE plpgsql
+ SECURITY DEFINER
+ SET search_path TO 'public', 'pg_catalog'
+AS $function$
 declare
   r record;
   v_ob_channel text;
@@ -17,7 +15,7 @@ declare
   v_blocked integer := 0;
   v_provider_verified integer := 0;
   v_outcome_verified integer := 0;
-  v_side_effect boolean := false;
+  v_provider_side_effect boolean;
 begin
   perform public.sync_content_publication_obligations(p_date, p_date);
 
@@ -29,37 +27,46 @@ begin
   loop
     v_ob_channel := case when r.channel='instagram_company' then 'instagram' else r.channel end;
 
-    v_side_effect :=
+    v_provider_side_effect :=
       nullif(coalesce(r.delivery_ref,''),'') is not null
-      and lower(coalesce(r.evidence->>'provider','')) <> 'buffer'
       and (
-        public.powerhouse_jsonb_true(r.evidence,'provider_create_success') is true
-        or public.powerhouse_jsonb_true(r.evidence,'provider_publication_ack_verified') is true
-        or (
-          public.powerhouse_jsonb_true(r.evidence,'provider_truth_verified') is true
-          and lower(coalesce(r.evidence->>'provider_status','')) in ('published','sent','live')
-        )
+        public.powerhouse_jsonb_true(r.evidence,'provider_create_success')
+        or public.powerhouse_jsonb_true(r.evidence,'provider_publication_ack_verified')
+        or public.powerhouse_jsonb_true(r.evidence,'provider_truth_verified')
+        or public.powerhouse_jsonb_true(r.evidence,'terminal_provider_side_effect')
       );
 
-    if v_side_effect then
+    -- Provider-write truth is terminal for anti-duplicate purposes.
+    -- Later token/readback/ACL/media-proof drift may enrich evidence, but may not
+    -- retroactively turn an already-created provider side effect into BLOCKED.
+    if v_provider_side_effect then
       update public.content_publication_obligations
-         set status = case when status in ('LIVE_PROVEN','MEASURED','LEARNED') then status else 'PUBLISHED' end,
-             external_id = coalesce(nullif(r.delivery_ref,''),external_id),
-             evidence = coalesce(evidence,'{}'::jsonb) || r.evidence || jsonb_build_object(
-               'reconciler','powerhouse_reconcile_content_outcomes_v1',
-               'provider_publication_ack_verified',true,
-               'provider_side_effect_authoritative',true,
-               'republish_forbidden',true,
-               'reconciled_at',now()
-             ),
+         set status = case
+               when status in ('LIVE_PROVEN','MEASURED','LEARNED') then status
+               else 'PUBLISHED'
+             end,
+             external_id = coalesce(nullif(r.delivery_ref,''), external_id),
+             evidence = coalesce(evidence,'{}'::jsonb)
+               || r.evidence
+               || jsonb_build_object(
+                    'reconciler','powerhouse_reconcile_content_outcomes_v1',
+                    'provider_publication_ack_verified',true,
+                    'terminal_provider_side_effect',true,
+                    'republish_forbidden',true,
+                    'reconciled_at',now(),
+                    'terminality_contract','social-provider-write-terminal-v1'
+                  ),
              last_error = null,
-             next_action = 'Collect outcome metrics for the existing provider side effect; never republish this daily claim.',
+             next_action = 'Collect outcome metrics; reconcile this exact provider ID only. Never republish an already-created side effect.',
+             published_at = coalesce(published_at, now()),
              updated_at = now()
-       where tenant_id='canonical' and publication_date=p_date and channel=v_ob_channel;
-      v_updated := v_updated + 1;
-      if public.powerhouse_jsonb_true(r.evidence,'provider_truth_verified') is true then
+       where tenant_id='canonical'
+         and publication_date=p_date
+         and channel=v_ob_channel;
+      if public.powerhouse_jsonb_true(r.evidence,'provider_truth_verified') then
         v_provider_verified := v_provider_verified + 1;
       end if;
+      v_updated := v_updated + 1;
       continue;
     end if;
 
@@ -68,12 +75,14 @@ begin
       update public.content_publication_obligations
          set status='BLOCKED',
              external_id=coalesce(nullif(r.delivery_ref,''),external_id),
-             evidence=coalesce(evidence,'{}'::jsonb) || r.evidence || jsonb_build_object(
-               'reconciler','powerhouse_reconcile_content_outcomes_v1',
-               'provider_truth_verified',false,
-               'reconciled_at',now(),
-               'reconciliation_reason','PROVIDER_RECORD_MISSING'
-             ),
+             evidence=coalesce(evidence,'{}'::jsonb)
+               || r.evidence
+               || jsonb_build_object(
+                    'reconciler','powerhouse_reconcile_content_outcomes_v1',
+                    'provider_truth_verified',false,
+                    'reconciled_at',now(),
+                    'reconciliation_reason','PROVIDER_RECORD_MISSING'
+                  ),
              last_error='PROVIDER_RECORD_MISSING',
              next_action='Provider record ontbreekt; re-enter canonieke loop na truth/idempotency preflight. Geen blinde replacement.',
              updated_at=now()
@@ -88,13 +97,14 @@ begin
        and public.powerhouse_jsonb_true(r.evidence,'personal_truth_verified') is not true then
       update public.content_publication_obligations
          set status='BLOCKED',
-             evidence=coalesce(evidence,'{}'::jsonb) || jsonb_build_object(
-               'reconciler','powerhouse_reconcile_content_outcomes_v1',
-               'personal_truth_verified',false,
-               'reconciled_at',now()
-             ),
+             evidence=coalesce(evidence,'{}'::jsonb)
+               || jsonb_build_object(
+                    'reconciler','powerhouse_reconcile_content_outcomes_v1',
+                    'personal_truth_verified',false,
+                    'reconciled_at',now()
+                  ),
              last_error='PERSONAL_TRUTH_UNVERIFIED',
-             next_action='Persoonlijk LinkedIn blijft fail-closed vóór provider-write tot expliciete personal_truth_verified=true evidence bestaat.',
+             next_action='Persoonlijk LinkedIn blijft fail-closed tot expliciete personal_truth_verified=true evidence bestaat.',
              updated_at=now()
        where tenant_id='canonical' and publication_date=p_date and channel=v_ob_channel;
       v_blocked := v_blocked + 1;
@@ -111,15 +121,18 @@ begin
       else
         v_status := null;
       end if;
+
       if v_status is not null then
         update public.content_publication_obligations
            set status=v_status,
                external_id=coalesce(nullif(r.delivery_ref,''),external_id),
-               evidence=coalesce(evidence,'{}'::jsonb) || r.evidence || jsonb_build_object(
-                 'reconciler','powerhouse_reconcile_content_outcomes_v1',
-                 'provider_truth_verified',true,
-                 'reconciled_at',now()
-               ),
+               evidence=coalesce(evidence,'{}'::jsonb)
+                 || r.evidence
+                 || jsonb_build_object(
+                      'reconciler','powerhouse_reconcile_content_outcomes_v1',
+                      'provider_truth_verified',true,
+                      'reconciled_at',now()
+                    ),
                last_error=null,
                updated_at=now()
          where tenant_id='canonical'
@@ -133,14 +146,15 @@ begin
 
   update public.content_publication_obligations
      set status='BLOCKED',
-         evidence=coalesce(evidence,'{}'::jsonb) || jsonb_build_object(
-           'reconciler','powerhouse_reconcile_content_outcomes_v1',
-           'provider_truth_verified',public.powerhouse_jsonb_true(evidence,'provider_truth_verified'),
-           'reconciled_at',now(),
-           'reconciliation_reason','EXACT_FINAL_MEDIA_PROOF_REQUIRED'
-         ),
+         evidence=coalesce(evidence,'{}'::jsonb)
+           || jsonb_build_object(
+                'reconciler','powerhouse_reconcile_content_outcomes_v1',
+                'provider_truth_verified',public.powerhouse_jsonb_true(evidence,'provider_truth_verified'),
+                'reconciled_at',now(),
+                'reconciliation_reason','EXACT_FINAL_MEDIA_PROOF_REQUIRED'
+              ),
          last_error='EXACT_FINAL_MEDIA_PROOF_REQUIRED',
-         next_action='Bewijs immutable exact-final-media digest/frames + Mira PASS vóór provider-write.',
+         next_action='Bewijs immutable exact-final-media digest/frames + Mira PASS vóór een toekomstige provider write.',
          updated_at=now()
    where tenant_id='canonical'
      and publication_date=p_date
@@ -152,25 +166,25 @@ begin
        and coalesce(evidence->>'mira_gate_result','')='PASS'
      )
      and not (
-       nullif(coalesce(external_id,''),'') is not null
+       nullif(external_id,'') is not null
        and (
-         public.powerhouse_jsonb_true(evidence,'provider_create_success') is true
-         or public.powerhouse_jsonb_true(evidence,'provider_publication_ack_verified') is true
-         or (
-           public.powerhouse_jsonb_true(evidence,'provider_truth_verified') is true
-           and lower(coalesce(evidence->>'provider_status','')) in ('published','sent','live')
-         )
+         public.powerhouse_jsonb_true(evidence,'provider_create_success')
+         or public.powerhouse_jsonb_true(evidence,'provider_publication_ack_verified')
+         or public.powerhouse_jsonb_true(evidence,'provider_truth_verified')
+         or public.powerhouse_jsonb_true(evidence,'terminal_provider_side_effect')
        )
      )
-     and status not in ('MEASURED','LEARNED');
+     and status not in ('LIVE_PROVEN','MEASURED','LEARNED');
+  get diagnostics v_blocked = row_count;
 
   update public.content_publication_obligations o
      set status = case when o.status='PLANNED' then 'GENERATED' else o.status end,
-         evidence=coalesce(o.evidence,'{}'::jsonb) || jsonb_build_object(
-           'reconciler','powerhouse_reconcile_content_outcomes_v1',
-           'artifact_truth_verified',true,
-           'reconciled_at',now()
-         ),
+         evidence=coalesce(o.evidence,'{}'::jsonb)
+           || jsonb_build_object(
+                'reconciler','powerhouse_reconcile_content_outcomes_v1',
+                'artifact_truth_verified',true,
+                'reconciled_at',now()
+              ),
          next_action=case
            when o.status='PLANNED' then 'Canonical blog artifact gereed; continue via approved central queue → BG169 → public proof.'
            else o.next_action
@@ -182,7 +196,8 @@ begin
      and exists (
        select 1
        from public.powerhouse_content_artifacts a
-       join public.powerhouse_channel_decisions d on d.run_date=a.run_date and d.channel=a.channel
+       join public.powerhouse_channel_decisions d
+         on d.run_date=a.run_date and d.channel=a.channel
        where a.run_date=p_date
          and a.channel='blog'
          and a.status='content_ready'
@@ -191,8 +206,9 @@ begin
      )
      and o.status not in ('PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED','SKIPPED');
 
-  select count(*) filter (where status in ('LIVE_PROVEN','MEASURED','LEARNED','SKIPPED','PUBLISHED')),
-         count(*) filter (where status in ('BLOCKED','FAILED'))
+  select
+    count(*) filter (where status in ('LIVE_PROVEN','MEASURED','LEARNED','SKIPPED')),
+    count(*) filter (where status in ('BLOCKED','FAILED'))
     into v_outcome_verified, v_blocked
     from public.content_publication_obligations
    where tenant_id='canonical'
@@ -206,8 +222,10 @@ begin
     'provider_truth_verified_count',v_provider_verified,
     'outcome_verified_count',v_outcome_verified,
     'blocked_count',v_blocked,
-    'truth_contract','PROVIDER CREATE ACK + DURABLE ID IS TERMINAL SIDE-EFFECT TRUTH',
+    'truth_contract','GREEN MEANS OUTCOME VERIFIED',
+    'provider_side_effect_contract','social-provider-write-terminal-v1',
     'missing_provider_fingerprint','PROVIDER_RECORD_MISSING'
   );
 end;
-$function$;
+$function$
+
