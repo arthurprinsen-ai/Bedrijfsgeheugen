@@ -1,21 +1,26 @@
 {
   "fingerprint": "social-runtime-authority-composio-channel-isolation-v1",
   "compiler": {
-    "failure_class": "runtime_authority_provider_drift"
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   },
   "root_cause": "Canonical runtime authority still declared supabase_buffer and Buffer delivery evidence after Buffer had been retired, while actual supported social transport is Composio. Provider capability was also treated too globally, allowing a LinkedIn company scope failure to impede unrelated channels.",
   "prevention_rule": "Canonical social authority must name Supabase+Composio, bind one exact provider account/capability per channel, and fail closed only the affected channel. Provider ACTIVE metadata is insufficient; terminal success requires action-specific provider health and external readback.",
   "evaluation": {
     "historical_replay": [
-      "2026-09-28 LinkedIn personal health passed while organization ACL returned 403 r_organization_admin missing.",
-      "2026-09-28 Instagram canonical account bedrijfsgeheugen.nl returned BUSINESS identity while stale personal Instagram connections also existed.",
-      "Runtime authority on main still named supabase_buffer despite Buffer retirement."
+      "tests/brain-runtime-authority-governance.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-runtime-authority-governance.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
-      "Runtime Authority Governance Tests passed on PR #3145 before closure artifact gate.",
-      "Required admission passed after canonical obligation metadata repair."
+      "tests/brain-runtime-authority-governance.test.mjs",
+      "Runtime Authority Governance Tests passed on the candidate lineage."
     ],
     "production_readback": "Pending protected merge and exact-main runtime readback; learning must not be marked PROVEN until terminal readback."
   },
