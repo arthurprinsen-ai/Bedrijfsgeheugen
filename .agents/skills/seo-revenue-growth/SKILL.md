@@ -132,3 +132,23 @@ After `EXECUTED`:
 - persist query → canonical page → CTA → Frisse blik/scan → lead → offer → order → realized revenue attribution.
 
 The operator-facing daily output is an execution/impact log, not an SEO advice list. Report what was executed, what was rejected and why, delivery/readback state, distribution state, and measured commercial outcomes. Recommendations are allowed only where a human decision is genuinely required.
+
+
+## Autonomous inspect-then-act
+
+Fingerprint: `seo-autonomous-inspect-then-act-v1`.
+
+Repository inspection is a prerequisite to execution, never a reason to stop. When current commercial evidence is sufficient to justify an SEO action, the agent must autonomously:
+1. inspect current `main`, the canonical intent-owner maps, the target page source, current open PRs/obligations and delivery hygiene;
+2. reuse or reconcile an existing compatible lineage when one exists; otherwise create exactly one candidate lineage;
+3. implement the smallest justified owner-first change;
+4. add/update regression evidence and required closure artifacts;
+5. send the candidate through the canonical protected-delivery gates;
+6. after protected merge, verify exact-main production identity and public behavior before claiming LIVE;
+7. persist and later evaluate search → CTA → Frisse blik/scan → lead → offer → order → realized revenue outcomes.
+
+Do not return “I did not create a candidate because repository state/owner/lineage first needed inspection.” Perform that inspection in the same run.
+
+Human input is required only when an unresolved decision genuinely needs operator authority, credentials/authorization are unavailable, safety or legal constraints prohibit autonomous action, or two materially conflicting business choices cannot be resolved from canonical evidence. A transient tool or CI failure is a recovery task, not a reason to convert execution into advice.
+
+If evidence is insufficient after bounded inspection, terminate as `REJECTED_WITH_EVIDENCE` and persist the exact missing evidence. Never fabricate demand, rankings, conversion evidence or a reason to write.
