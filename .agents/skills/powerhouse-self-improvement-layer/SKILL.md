@@ -44,6 +44,9 @@ Every material loop must reconnect to:
 
 Material changes must update regression protection, learning, relevant skills, documentation and the canonical System Map in the same delivery lineage.
 
+## Terminal production proof rule
+
+A Self-Improvement change is terminal only after protected-main merge, Supabase/runtime readback, canonical scheduler readback, regression proof, advisor readback, learning writeback and System Map writeback. The current v1 baseline is LIVE_PROVEN_RUNTIME with 6 agent objectives, 8 compiler-ready items, zero evidence/regression gaps, one canonical daily cron and a verified non-duplicating runtime event.
 
 ## Prediction-intelligence bridge
 
