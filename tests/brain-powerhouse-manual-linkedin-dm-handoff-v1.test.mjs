@@ -35,3 +35,12 @@ test('database projection never invents direct connection evidence',()=>{
   assert.match(migration,/handmatig_nodig/);
   assert.match(migration,/pdf_nodig/);
 });
+
+
+test('quality registry contains the handoff runtime surfaces',()=>{
+  const registry=JSON.parse(fs.readFileSync('config/powerhouse-quality-surface-contracts.json','utf8'));
+  const ids=new Set((registry.surfaces||[]).map(x=>x.id));
+  assert.ok(ids.has('function:bg-dagoverzicht'));
+  assert.ok(ids.has('rpc:bg_uitkomst_vastleggen'));
+  assert.ok(ids.has('view:public.bg_vandaag'));
+});
