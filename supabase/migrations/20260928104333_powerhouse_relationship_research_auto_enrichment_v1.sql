@@ -62,7 +62,7 @@ begin
        or nullif(trim(coalesce(summary,'')),'') is not null
   )
   update public.powerhouse_sales_actions a
-  set status='executed',executed_at=v_now,
+  set status='done',executed_at=v_now,
       evidence=coalesce(a.evidence,'{}'::jsonb)||jsonb_build_object(
         'public_research_execution',jsonb_build_object(
           'contract','powerhouse-relationship-research-auto-enrichment-v1','source_url',u.source_url,
