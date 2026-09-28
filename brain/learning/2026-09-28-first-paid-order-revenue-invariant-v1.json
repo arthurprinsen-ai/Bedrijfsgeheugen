@@ -1,0 +1,35 @@
+{
+  "fingerprint": "first-paid-order-revenue-invariant-v1",
+  "date": "2026-09-28",
+  "type": "POWERHOUSE_REVENUE_GOVERNANCE",
+  "failure_class": "ACTIVITY_OPTIMIZED_WITHOUT_PAID_ORDER",
+  "root_cause": [
+    "Powerhouse could optimize and report intermediate acquisition outputs without a system-wide invariant that makes paid orders and realized revenue the commercial terminal objective.",
+    "SEO, content, social, leads and pipeline could be treated as successful outputs even while no paid order had been evidenced."
+  ],
+  "evidence": {
+    "operator_state": "Operator reported on 2026-09-28 that no order has been received.",
+    "business_target": "EUR 1,000,000 realized revenue by 2027-09-01.",
+    "canonical_brain": "config/powerhouse-one-loop-v1.json",
+    "prior_learning": ["seo-opportunity-must-execute-v1", "seo-autonomous-inspect-then-act-v1"]
+  },
+  "prevention": [
+    "While no paid order is evidenced, FIRST_PAID_ORDER is the primary commercial objective.",
+    "REALIZED_PAID_REVENUE_EUR is the terminal commercial success metric.",
+    "Impressions, rankings, traffic, publishing volume, leads and pipeline are diagnostic/intermediate metrics only.",
+    "Every acquisition action maps to market problem -> qualified prospect/visit -> CTA/contact -> lead -> meeting -> proposal -> paid order -> realized revenue -> learning.",
+    "Chats, agents, skills, workflows, schedulers, portal, cockpits and future capabilities inherit the invariant from One Brain.",
+    "Safe executable commercial actions are executed rather than returned as advice; unsolicited outbound communication remains human-authorized."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-first-paid-order-revenue-invariant-v1.test.mjs"],
+    "canary": ["tests/brain-first-paid-order-revenue-invariant-v1.test.mjs"]
+  },
+  "compiler": {
+    "failure_class": "ACTIVITY_OPTIMIZED_WITHOUT_PAID_ORDER",
+    "scope": "POWERHOUSE_ONE_BRAIN",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION"
+}

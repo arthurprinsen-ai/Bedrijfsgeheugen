@@ -145,6 +145,62 @@
       "OUTCOME_VALUE",
       "LEARN",
       "PREVENT_OPTIMIZE"
-    ]
+    ],
+    "revenueNorthStar": {
+      "version": "FIRST-PAID-ORDER-REVENUE-INVARIANT-v1",
+      "targetRealizedRevenueEur": 1000000,
+      "targetDate": "2027-09-01",
+      "currentKnownOrderState": "ZERO_ORDERS_REPORTED_BY_OPERATOR_2026-09-28",
+      "primaryObjectiveWhileNoPaidOrder": "FIRST_PAID_ORDER",
+      "successMetric": "REALIZED_PAID_REVENUE_EUR",
+      "vanityMetricsNeverTerminalSuccess": [
+        "impressions",
+        "rankings",
+        "traffic",
+        "posts_published",
+        "blogs_published",
+        "leads_without_order",
+        "pipeline_without_order"
+      ],
+      "canonicalFunnel": [
+        "market_problem",
+        "qualified_prospect_or_visit",
+        "cta_or_contact",
+        "lead",
+        "meeting",
+        "proposal",
+        "paid_order",
+        "realized_revenue",
+        "learning"
+      ],
+      "prioritization": [
+        "remove the highest-evidence bottleneck to the first paid order",
+        "prefer actions with direct commercial intent and measurable conversion path",
+        "use SEO/content/social as acquisition instruments, never terminal output",
+        "prefer a concrete bounded paid offer before broad platform selling when evidence supports it",
+        "feed realized order/revenue outcomes back into prioritization"
+      ],
+      "autonomousExecution": {
+        "required": true,
+        "adviceOnlyForbiddenWhenSafeActionExists": true,
+        "inspectThenAct": true,
+        "humanGateOnlyFor": [
+          "authority_or_credentials",
+          "safety_or_legal_constraint",
+          "irreducible_business_choice"
+        ],
+        "unsolicitedOutboundMessagesRequireHumanApproval": true
+      },
+      "inheritance": {
+        "chats": true,
+        "agents": true,
+        "skills": true,
+        "workflows": true,
+        "schedulers": true,
+        "portal": true,
+        "cockpits": true,
+        "futureCapabilities": true
+      }
+    }
   }
 }
