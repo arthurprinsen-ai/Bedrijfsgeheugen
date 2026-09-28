@@ -1,6 +1,8 @@
 export function buildCustomerForesightView(packet={}){
   return {
     title:'Vooruitblik & benchmark',
+    predictionQuality:packet.prediction_quality??null,
+    learningState:packet.forecast_learning??null,
     subtitle:'Wat gebeurt er waarschijnlijk als niets verandert — en wat kan er verbeteren?',
     generatedAt:packet.observed_at??null,
     forecasts:(packet.forecasts??[]).map(f=>({
