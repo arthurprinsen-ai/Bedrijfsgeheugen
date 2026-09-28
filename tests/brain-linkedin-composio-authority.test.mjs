@@ -123,3 +123,17 @@ test('LinkedIn company reconciliation never converts a provider-created URN into
   assert.match(source, /republish_forbidden:true/);
   assert.match(source, /readback is permission-limited/);
 });
+
+
+test('LinkedIn personal provider create acknowledgement survives later revoked-token readback', () => {
+  assert.match(source, /LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN/);
+  assert.match(source, /provider_publication_ack_verified:true/);
+  assert.match(source, /REVOKED_ACCESS_TOKEN/);
+  assert.match(source, /Provider create acknowledgement is authoritative for side-effect existence; collect outcomes and never republish because readback\/auth changed later/);
+});
+
+test('Instagram existing provider side effect remains published despite later media-proof drift', () => {
+  assert.match(source, /EXISTING_PROVIDER_SIDE_EFFECT_AUTHORITATIVE/);
+  assert.match(source, /Existing Instagram provider side effect is authoritative; later media-proof drift may inform future generation but cannot negate or replace this publication/);
+  assert.match(source, /provider_publication_ack_verified:providerCreateProven\|\|providerTruthVerified/);
+});
