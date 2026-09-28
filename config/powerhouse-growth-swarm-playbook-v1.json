@@ -430,5 +430,10 @@
     "platform bypass",
     "named-prospect leakage in public content",
     "unverified financial impact presented as observed"
-  ]
+  ],
+  "execution_contract": "powerhouse-growth-plays-v3",
+  "execution_status_authority": "public.powerhouse_growth_play_build_status_v1",
+  "persuasion_optimizer": "powerhouse-persuasion-revenue-optimizer-v1",
+  "all_20_executable": true,
+  "execution_rule": "Catalog presence is insufficient: BUILT_ACTIVE requires an execution contract with trigger owner, executor, surface, outcome metric, persuasion/truth gate and execution_complete=true."
 }
