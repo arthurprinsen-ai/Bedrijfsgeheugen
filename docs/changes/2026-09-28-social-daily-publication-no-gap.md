@@ -33,7 +33,7 @@ Company create/readback and company preflight no longer inherit the personal Lin
 
 ## Prevention
 
-Regression test: `tests/linkedin-channel-oauth-authority.test.mjs`.
+Regression test: `tests/brain-linkedin-composio-authority.test.mjs`.
 
 Related skills:
 - `.agents/skills/linkedin-composio-publisher/SKILL.md`
