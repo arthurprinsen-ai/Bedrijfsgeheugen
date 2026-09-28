@@ -1,0 +1,27 @@
+{
+  "id": "2026-09-28-system-map-writeback-governance-v1",
+  "fingerprint": "powerhouse|system-map|same-lineage-auto-writeback|v1",
+  "date": "2026-09-28",
+  "type": "CONTRACT_CHANGE",
+  "problem": "Powerhouse structural changes can become difficult to understand when topology, skills, agents, intelligence and relations are not projected back into one canonical System Map.",
+  "root_cause": "System Map writeback existed as a general repository-native rule but was not yet a dedicated discoverable skill with an explicit regression contract and canonical human document.",
+  "fix": [
+    "Add dedicated powerhouse-system-map-governance skill",
+    "Add canonical human architecture document",
+    "Add machine-readable System Map governance policy",
+    "Add regression coverage",
+    "Make same-lineage System Map writeback automatic for all current and future chats/agents"
+  ],
+  "prevention": [
+    "Material topology changes cannot reach terminal green while System Map writeback is stale",
+    "Read-after-write must prove new/changed nodes and relations are discoverable",
+    "User reminder is never required"
+  ],
+  "fail_closed_state": "SYSTEM_MAP_WRITEBACK_INCOMPLETE",
+  "canonical_sources": [
+    "AGENTS.md",
+    ".agents/skills/powerhouse-system-map-governance/SKILL.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "docs/powerhouse/POWERHOUSE_SYSTEM_MAP_GOVERNANCE.md"
+  ]
+}
