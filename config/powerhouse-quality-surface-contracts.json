@@ -604,6 +604,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_refresh_all_connection_enrichment_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928180500_powerhouse_daily_full_connection_enrichment_v2.sql",
+      "evidence_contract": "tests/supabase-powerhouse-daily-full-connection-enrichment-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_refresh_growth_swarm_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
@@ -772,6 +779,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_connection_enrichment_state_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260928180500_powerhouse_daily_full_connection_enrichment_v2.sql",
+      "evidence_contract": "tests/supabase-powerhouse-daily-full-connection-enrichment-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_cycle_events",
       "type": "table",
       "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
@@ -923,6 +937,13 @@
       "type": "view",
       "authority": "supabase/migrations/20260928162500_bg_vandaag_manual_dm_handoff_v1.sql",
       "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "view:public.powerhouse_connection_enrichment_v1",
+      "type": "view",
+      "authority": "supabase/migrations/20260928180500_powerhouse_daily_full_connection_enrichment_v2.sql",
+      "evidence_contract": "tests/supabase-powerhouse-daily-full-connection-enrichment-v1.test.mjs",
       "required": true
     },
     {
