@@ -101,3 +101,7 @@ Alle relationship intelligence projecteert voortaan ook naar `powerhouse-growth-
 
 ## Externe relatie-intelligentie
 Gebruik standaard `powerhouse-relationship-external-intelligence-v1`. Relevante publieke internet-, bedrijfs- en ondersteunde LinkedIn-updates worden na geldige entity matching gekoppeld aan de canonieke person → company → customer → opportunity/NBA-lineage en wegen mee in scoring, timing en next-best-action. Externe evidence is nooit op zichzelf koopintentie; provenance, freshness, confidence, suppression, cooldown en outcome-learning blijven harde gates. Geen gevoelige persoonsinferenties en geen los nieuwsarchief als eindpunt.
+
+
+## Daily full connection enrichment
+Gebruik permanent `powerhouse-daily-full-connection-enrichment-v1`. Iedere canonieke connectie wordt iedere kalenderdag opnieuw verrijkt met alle reeds ingeladen relevante LinkedIn-, bedrijfs-, publieke web-, runtime-, opportunity- en outcome-evidence. De full-graph refresh draait set-based binnen de bestaande `powerhouse-commercial-learning-v1` scheduler. Gedetailleerde evidence blijft in de canonieke bronstores; de dagelijkse enrichment-state is een rollup/provenance-laag en geen parallel CRM. Nieuwe evidence die later op de dag binnenkomt wordt bij de volgende bestaande commerciële cyclus opnieuw op de volledige graph geprojecteerd.
