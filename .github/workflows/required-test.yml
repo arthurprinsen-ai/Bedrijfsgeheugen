@@ -53,9 +53,9 @@ jobs:
       change_head_sha: ${{ steps.scope.outputs.change_head_sha }}
       candidate_sha: ${{ steps.scope.outputs.candidate_sha }}
       pr_number: ${{ steps.scope.outputs.pr_number }}
-      risk_level: ${{ steps.impact.outputs.risk }}
-      full_shared_suite: ${{ steps.impact.outputs.full_shared_suite }}
-      affected_capabilities: ${{ steps.impact.outputs.capabilities_json }}
+      risk_level: ${{ steps.integration.outputs.risk }}
+      full_shared_suite: ${{ steps.integration.outputs.full_shared_suite }}
+      affected_capabilities: ${{ steps.integration.outputs.capabilities_json }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -133,15 +133,23 @@ jobs:
           await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
           console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
-      - id: impact
-        name: Compile adaptive risk and test impact graph
-        run: node tools/delivery/adaptive-delivery-engine.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
-      - name: Verify adaptive delivery planner regression
-        run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs
-      - name: Execute fast impact quality gate
-        if: steps.impact.outputs.full_shared_suite == 'false'
+      - id: integration
+        name: Compile one-write integration bundle
         env:
-          TESTS_JSON: ${{ steps.impact.outputs.tests_json }}
+          PR_BODY: ${{ github.event.pull_request.body || '' }}
+          PR_NUMBER: ${{ steps.scope.outputs.pr_number }}
+        run: node tools/delivery/integration-bundle-compiler.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
+      - name: Verify adaptive and integration compiler regressions
+        run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs
+      - name: Fail fast on incomplete integration closure
+        if: steps.integration.outputs.closure_ready != 'true'
+        run: |
+          echo "::error::INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+          exit 78
+      - name: Execute fast impact quality gate
+        if: steps.integration.outputs.full_shared_suite == 'false'
+        env:
+          TESTS_JSON: ${{ steps.integration.outputs.tests_json }}
         run: |
           node --input-type=module - <<'NODE'
           import { execFileSync } from 'node:child_process';
@@ -154,10 +162,10 @@ jobs:
       - name: Verify material writeback closure regression
         run: node --test tests/brain-material-writeback-closure-guard.test.mjs
       - name: Install runtime dependencies for the unwired contracts
-        if: steps.impact.outputs.full_shared_suite == 'true'
+        if: steps.integration.outputs.full_shared_suite == 'true'
         run: npm install --prefer-offline --no-audit --no-fund --silent
       - name: Verify previously unwired test contracts
-        if: steps.impact.outputs.full_shared_suite == 'true'
+        if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
           node --test
           tests/agents-delivery-contract.test.mjs
@@ -215,7 +223,7 @@ jobs:
           tests/v18-standalone-compositor-safety.test.mjs
           tests/website-release-risk.test.mjs
       - name: Verify composable release control plane and agent completion contract
-        if: steps.impact.outputs.full_shared_suite == 'true'
+        if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
           node --test --test-concurrency=1
           tests/brain-fast-development-protocol-v2.test.mjs
@@ -239,10 +247,10 @@ jobs:
           tests/portal-v2-release-identity-invariant.test.mjs
           tests/website-static-syntax-preflight.test.mjs
       - name: Verify Fast Development Protocol v2 authority contract
-        if: steps.impact.outputs.full_shared_suite == 'true'
+        if: steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/powerhouse-fast-development-protocol-v2.mjs --check
       - name: Verify Autonomous Engineering Fabric v3 authority contract
-        if: steps.impact.outputs.full_shared_suite == 'true'
+        if: steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
 
   backend:

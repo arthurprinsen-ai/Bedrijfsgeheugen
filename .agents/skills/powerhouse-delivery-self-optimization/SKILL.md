@@ -678,3 +678,30 @@ Adaptive risk classification is specificity-first, not declaration-order-first.
 - Apply hot-path escalation only after that selection; escalation may raise but never lower risk.
 - Unknown executable surfaces remain R3 fail-closed.
 - Nested closure/learning paths may therefore remain R0/R1 even when their parent directory is runtime-classified.
+
+
+## Integration Bundle Compiler v1
+
+Fingerprint: `github|integration-bundle|one-write-closure-compiler|v1`.
+
+Before expensive CI, compile one deterministic bundle from the immutable candidate scope.
+
+The bundle is the single preflight source for:
+- exact base/head identity;
+- PR metadata contract;
+- adaptive risk and test impact;
+- closure-artifact completeness;
+- exactly one repository-writer intent;
+- deterministic bundle identity.
+
+Rules:
+- this compiler never creates a second writer or production authority;
+- Repository Writer / Unified Brain / terminal writer lease remain the mutation authorities;
+- incomplete material closure fails before dependency installation and heavy tests;
+- one obligation may have at most one terminal writer intent;
+- writer main epoch is late-bound at handoff, never guessed during development;
+- unknown executable paths remain fail-closed and hot paths may only escalate risk.
+
+Canonical policy: `config/powerhouse-integration-bundle-v1.json`.
+Compiler: `tools/delivery/integration-bundle-compiler.mjs`.
+Regression: `tests/brain-integration-bundle-compiler-v1.test.mjs`.

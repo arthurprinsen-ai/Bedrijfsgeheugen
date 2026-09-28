@@ -1,0 +1,23 @@
+{
+  "fingerprint": "github|integration-bundle|one-write-closure-compiler|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Candidate metadata, risk routing, closure evidence and terminal writer intent were assembled by separate scripts and workflow steps. That duplication creates drift, repeated repository reads and avoidable integration commits.",
+  "prevention_rule": "Compile candidate identity, adaptive test impact, closure requirements, canonical PR contract and exactly-one writer intent into one deterministic Integration Bundle before expensive delivery work. Existing Repository Writer and terminal writer lease remain the only mutation authorities.",
+  "evaluation": {
+    "historical_replay": ["tests/brain-integration-bundle-compiler-v1.test.mjs"],
+    "shadow": ["tests/brain-integration-bundle-compiler-v1.test.mjs"]
+  },
+  "evidence": {
+    "tests": ["tests/brain-integration-bundle-compiler-v1.test.mjs"],
+    "expected": "same immutable scope produces the same bundle hash and one writer intent"
+  }
+}
