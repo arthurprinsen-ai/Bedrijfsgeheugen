@@ -27,5 +27,30 @@
     "regression": [
       "tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs"
     ]
+  },
+  "version": "powerhouse-autonomous-relationship-outreach-v1",
+  "failure_class": "REVENUE_EXECUTION",
+  "scope": "AUTONOMOUS_OUTREACH",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Powerhouse could identify evidence-backed relationship opportunities but stopped at a per-message human authorization boundary, so the revenue loop did not autonomously execute a supported private follow-up channel.",
+  "prevention": [
+    "Use only existing relationships with fresh evidence-backed triggers and explicit suppression/cooldown checks.",
+    "Cap autonomous email sends at five per day and one successful email per person per 30 days.",
+    "Require provider acknowledgement and durable dedupe evidence before marking an action done.",
+    "Never claim or simulate LinkedIn DM when the provider has no verified send-DM capability.",
+    "Use LinkedIn context engagement first when available and wait 24 hours before email to the same person."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md",
+    ".agents/skills/powerhouse-linkedin-sales-machine/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "REVENUE_EXECUTION",
+    "scope": "AUTONOMOUS_OUTREACH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
