@@ -334,3 +334,22 @@ Fingerprint: `social-provider-health-preflight-v1`.
 Composio ACTIVE status alone is insufficient. Before Instagram publication capability issuance/consumption, the setup controller must call provider identity readback for every active candidate and accept only a live account whose username is exactly `bedrijfsgeheugen.nl`. Stale, revoked, unauthorized and wrong-identity accounts are rejected and do not create ambiguity.
 
 When multiple healthy candidates exist, prefer the single account with alias `bedrijfsgeheugen-mira-canonical`; otherwise fail closed. The publisher consumes only the health-verified account recorded by `powerhouse-composio-instagram-setup`. A reauth or identity failure preserves the exact proven Mira Reel at `content_ready`; no publication capability is consumed and no new Reel is generated to escape auth recovery.
+
+
+## Daily no-gap publication invariant (2026-09-28)
+
+Fingerprint: `instagram-daily-no-gap-self-healing-v1`.
+
+An approved Instagram company obligation must not silently expire because media, auth, identity proof or transport state is incomplete. The daily closed loop owns recovery until the exact Mira claim is either provider-published with readback or reaches a genuine external hard boundary.
+
+Hard rules:
+- before the daily publish window, verify canonical Instagram identity, Composio token health, final-media readiness and exact Mira proof;
+- if media is missing, generate/finish the required fresh Mira OpenArt asset inside the same claim instead of leaving `MEDIA_ASSET_REQUIRED` as a terminal state;
+- if an OAuth token is unhealthy, preserve the exact claim/media and resume after repair; never regenerate merely because auth failed;
+- if provider create succeeds, persist the media/post ID immediately and forbid republish even when later readback fails;
+- daily watchdog retries only proven pre-provider failures; uncertain/provider-created states enter reconciliation only;
+- no Buffer or Make fallback is allowed;
+- no generic Bedrijfsgeheugen visual may satisfy the Mira channel;
+- every Amsterdam calendar day with an approved Instagram obligation must be checked again after its intended publish window; missing publication evidence automatically re-enters the same recovery lineage.
+
+The objective is not “attempt every day” but “close every daily obligation without duplicate side effects”.

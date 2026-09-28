@@ -112,3 +112,33 @@ Fingerprint: `social-provider-health-preflight-v1`.
 An account reported as ACTIVE by Composio is not publication-ready until a live provider call proves the OAuth token still works. Before issuing or consuming a publication capability, LinkedIn must run `LINKEDIN_GET_MY_INFO` against the canonical connected account. A 401 or `REVOKED_ACCESS_TOKEN` means `COMPOSIO_LINKEDIN_REAUTH_REQUIRED`; keep the daily claim at `content_ready`, consume no publication capability, create no Buffer fallback, and resume the same unique artifact only after OAuth health is re-proven.
 
 When multiple LinkedIn connected accounts exist, stale/revoked accounts do not count as healthy. Prefer the single health-verified account with alias `bedrijfsgeheugen-canonical`; ambiguity is evaluated only across healthy candidates. The publisher must use the health-verified connected account recorded by `powerhouse-composio-linkedin-setup`, never a stale secret-pinned account id.
+
+
+## Daily publication invariant — channel-specific OAuth authority (2026-09-28)
+
+Fingerprint: `linkedin-daily-channel-oauth-authority-v1`.
+
+Daily LinkedIn delivery is an obligation, not a best-effort scheduler. Every Amsterdam calendar day with an approved publication obligation must autonomously reach one of two terminal outcomes: exact provider publication evidence for that same claim, or a narrowly defined external hard boundary that genuinely requires human authorization. Internal connection selection, stale account IDs, expired aliases, scope drift, readback limitations, concurrent agents, retries or legacy provider state are never terminal excuses.
+
+Hard rules:
+- LinkedIn personal and LinkedIn company are distinct provider identities and must resolve independently.
+- Personal publication selects a health-proven connection for canonical person `urn:li:person:N1twnCNCrD`.
+- Company publication selects a connection only after both the canonical person identity and live organization ACL for the configured company URN are proven on that exact connected account.
+- A connection that passes `LINKEDIN_GET_MY_INFO` is not sufficient evidence for company publication.
+- Company preflight must prove organization capability with `LINKEDIN_GET_COMPANY_INFO` before any publication capability is consumed.
+- The runtime must never reuse the personal connection merely because it is default, newest, named canonical, or already present in setup state.
+- Auth-config metadata is not token truth. Selected scopes must be verified by live provider calls on the exact connected account used for the write.
+- When multiple active connections exist, probe them and select by proven capability; ignore revoked, expired, scope-deficient or wrong-identity accounts.
+- After the provider returns a post URN, persist it immediately and set `republish_forbidden=true`. Missing readback may trigger reconciliation, never a second post.
+- Recovery always resumes the existing daily claim; it never creates a replacement claim merely to escape auth/readback problems.
+- Buffer and Make remain forbidden as LinkedIn publication fallbacks.
+- Daily watchdog logic must detect any approved but unpublished LinkedIn obligation and re-enter this same canonical recovery path automatically.
+
+Required regression proof:
+- company publish/readback paths call the organization-capability resolver, not the personal resolver;
+- company auth preflight is channel-specific;
+- personal and company claims remain separately deduped;
+- a provider-created URN cannot be replaced by a retry;
+- daily recovery reuses the same obligation and unique artifact.
+
+Reusable lesson: an OAuth auth-config can advertise the right scopes while a particular connected token still lacks them. Publication authority therefore belongs to a live, capability-proven connected account, not to an auth-config, alias, default flag or prior setup-state pointer.

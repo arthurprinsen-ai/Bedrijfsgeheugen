@@ -48,9 +48,9 @@ test('all social provider side effects require global historical uniqueness rese
   assert.match(source, /global_uniqueness_gate:'blocked'/);
   assert.match(source, /republish_forbidden:true/);
   const uniqueness = source.indexOf('reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body),storyFingerprint)');
-  const personalCreate = source.indexOf('publishLinkedInPersonalViaComposio(db,art)');
-  const companyCreate = source.indexOf('publishLinkedInCompanyViaComposio(db,art)');
-  const instagramCreate = source.indexOf('publishInstagramViaComposio(db, art, runDate)');
+  const personalCreate = source.indexOf('publishLinkedInPersonalViaComposio(db,art)', uniqueness);
+  const companyCreate = source.indexOf('publishLinkedInCompanyViaComposio(db,art)', uniqueness);
+  const instagramCreate = source.indexOf('publishInstagramViaComposio(db,art,runDate,instagramContext)', uniqueness);
   assert.ok(uniqueness > 0);
   assert.ok(personalCreate > uniqueness);
   assert.ok(companyCreate > uniqueness);
@@ -68,4 +68,30 @@ test('story fingerprint normalization has one database authority', () => {
   assert.match(source, /STORY_FINGERPRINT_RPC/);
   assert.match(source, /publicationStoryFingerprint\(db,row,art\)/);
   assert.doesNotMatch(source, /digest\('personal-story-v1:'\+source\.toLowerCase/);
+});
+
+
+test('LinkedIn company resolves a live organization-capable connection separately from personal', () => {
+  assert.match(source, /async function composioLinkedInCompanyContext\(db:any\)/);
+  const publishStart = source.indexOf('async function publishLinkedInCompanyViaComposio');
+  const readStart = source.indexOf('async function readLinkedInCompanyPostViaComposio');
+  assert.ok(publishStart >= 0);
+  assert.ok(readStart > publishStart);
+  const publishBlock = source.slice(publishStart, readStart);
+  assert.match(publishBlock, /composioLinkedInCompanyContext\(db\)/);
+  assert.doesNotMatch(publishBlock, /composioLinkedInContext\(db\)/);
+  const nextFunction = source.indexOf('\nfunction ', readStart);
+  const readBlock = source.slice(readStart, nextFunction > readStart ? nextFunction : readStart + 3500);
+  assert.match(readBlock, /composioLinkedInCompanyContext\(db\)/);
+  assert.doesNotMatch(readBlock, /composioLinkedInContext\(db\)/);
+});
+
+test('LinkedIn company preflight proves live organization ACL on the exact token', () => {
+  assert.match(source, /preflightLinkedInCompanyComposio/);
+  assert.match(source, /preflightLinkedInCompanyViaComposio/);
+  assert.match(source, /LINKEDIN_GET_COMPANY_INFO/);
+  assert.match(source, /role:'ADMINISTRATOR'/);
+  assert.match(source, /organization_capability_probe/);
+  assert.match(source, /LINKEDIN_COMPANY_REAUTH_REQUIRED/);
+  assert.match(source, /row\.channel==='linkedin_company' \? await preflightLinkedInCompanyComposio\(db\) : await preflightLinkedInComposio\(db\)/);
 });

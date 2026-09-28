@@ -122,6 +122,53 @@ async function composioLinkedInContext(db:any){
 
   throw new Error('LINKEDIN_REAUTH_REQUIRED:'+clean(lastError).slice(0,220));
 }
+async function composioLinkedInCompanyContext(db:any){
+  const apiKey=await secret(db,'COMPOSIO_API_KEY');
+  if(!apiKey)throw new Error('COMPOSIO_LINKEDIN_AUTH_REQUIRED');
+  const targetOrg=clean(await secret(db,'COMPOSIO_LINKEDIN_COMPANY_AUTHOR_URN'))||'urn:li:organization:18234216';
+  const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=linkedin&statuses=ACTIVE&account_type=ALL&limit=50`,{headers:{'x-api-key':apiKey}});
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(`COMPOSIO_LINKEDIN_ACCOUNT_DISCOVERY_${response.status}`);
+  const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
+  const candidates:any[]=[];
+  let lastError='';
+  for(const item of items){
+    if(clean(item?.status).toUpperCase()!=='ACTIVE'||item?.is_disabled===true)continue;
+    const accountId=clean(item?.id||item?.connected_account_id);
+    const userId=clean(item?.user_id);
+    if(!accountId||!userId)continue;
+    try{
+      const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
+      const personId=deepPickString(me?.data||me,['id']);
+      if(!personId||personId!=='N1twnCNCrD')continue;
+      const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
+      const raw=JSON.stringify(companies?.data||companies);
+      if(!raw.includes(targetOrg))continue;
+      candidates.push({apiKey,accountId,userId,personId,alias:clean(item?.alias),isDefault:item?.is_default===true,createdAt:clean(item?.created_at)});
+    }catch(error){
+      lastError=error instanceof Error?error.message:String(error);
+    }
+  }
+  if(candidates.length===0)throw new Error('LINKEDIN_COMPANY_REAUTH_REQUIRED:'+clean(lastError).slice(0,220));
+  candidates.sort((a:any,b:any)=>
+    Number((b.alias||'').includes('canonical-org'))-Number((a.alias||'').includes('canonical-org'))
+    || Number((b.alias||'').includes('company'))-Number((a.alias||'').includes('company'))
+    || Number(b.isDefault)-Number(a.isDefault)
+    || b.createdAt.localeCompare(a.createdAt)
+  );
+  return {...candidates[0],targetOrg,connection_source:'organization_capability_probe'};
+}
+
+async function preflightLinkedInCompanyComposio(db:any){
+  const {apiKey,accountId,userId,targetOrg}=await composioLinkedInCompanyContext(db);
+  return {provider:'composio',provider_auth_preflight:'passed',provider_auth_checked_at:new Date().toISOString(),account_id:accountId,organization_urn:targetOrg,organization_capability_verified:true};
+}
+
+async function preflightLinkedInCompanyViaComposio(db:any){
+  const {apiKey,accountId,userId,targetOrg}=await composioLinkedInCompanyContext(db);
+  return {apiKey,accountId,userId,organizationUrn:targetOrg};
+}
+
 function isLinkedInAuthPreflightError(error:any){
   const message=clean(error instanceof Error?error.message:error).toUpperCase();
   const status=Number((error as any)?.http||0);
@@ -434,7 +481,7 @@ async function linkedinCompanyAuthorUrn(db:any):Promise<string>{
   return urns[0];
 }
 async function publishLinkedInCompanyViaComposio(db:any,art:any){
-  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const {apiKey,accountId,userId}=await composioLinkedInCompanyContext(db);
   const author=await linkedinCompanyAuthorUrn(db);
   const commentary=clean(art.body);
   const created=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary,visibility:'PUBLIC',lifecycleState:'PUBLISHED'});
@@ -478,7 +525,7 @@ async function publishLinkedInCompanyViaComposio(db:any,art:any){
 async function readLinkedInCompanyPostViaComposio(db:any,postUrn:string,expectedCommentary:string=''){
   const ref=clean(postUrn);
   if(!/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref))throw new Error('COMPOSIO_LINKEDIN_COMPANY_POST_URN_INVALID');
-  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const {apiKey,accountId,userId}=await composioLinkedInCompanyContext(db);
   const author=await linkedinCompanyAuthorUrn(db);
   const readback=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_POST_CONTENT',{post_id:ref});
   const rb=readback?.data||readback;
@@ -969,7 +1016,7 @@ Deno.serve(async (req) => {
     // A revoked/expired LinkedIn token must leave the exact daily claim resumable.
     if(row.channel==='linkedin_personal'||row.channel==='linkedin_company'){
       try{
-        const providerPreflight=await preflightLinkedInComposio(db);
+        const providerPreflight=row.channel==='linkedin_company' ? await preflightLinkedInCompanyComposio(db) : await preflightLinkedInComposio(db);
         const evidence={...gatePassedEvidence,...providerPreflight,provider_auth_required:false,republish_forbidden:false,buffer_dependency:false};
         row.delivery_evidence=evidence;
         await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
@@ -994,7 +1041,7 @@ Deno.serve(async (req) => {
     // Composio metadata may say ACTIVE while the underlying LinkedIn OAuth token is revoked.
     if (row.channel === 'linkedin_personal' || row.channel === 'linkedin_company') {
       try {
-        await preflightLinkedInViaComposio(db);
+        if(row.channel==='linkedin_company') await preflightLinkedInCompanyViaComposio(db); else await preflightLinkedInViaComposio(db);
       } catch (error) {
         const message=error instanceof Error?error.message:String(error);
         if (!isLinkedInAuthFailure(error)) throw error;

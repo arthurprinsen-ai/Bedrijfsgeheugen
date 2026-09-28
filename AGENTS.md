@@ -488,3 +488,24 @@ De gebruikersuitvoer is standaard beperkt tot:
 2. `BLOCKED_HARD_BOUNDARY` met uitsluitend de kleinste externe menselijke actie die werkelijk niet autonoom kan worden uitgevoerd.
 
 Technische tussenstatus blijft wel volledig vastgelegd in machineleesbare evidence, learning, ledger en provider/GitHub state. Alleen wanneer de gebruiker expliciet om technische details vraagt, mogen die details worden uitgelegd.
+
+
+## Dagelijkse social-publicatie is een harde obligation
+
+Fingerprint: `social-daily-publication-no-gap-v1`.
+
+Alle chats, agents, schedulers en Powerhouse-runtimes behandelen goedgekeurde dagelijkse social-publicaties als terminale obligations. Voor LinkedIn persoonlijk, LinkedIn bedrijf en Instagram bedrijf geldt per Amsterdam-kalenderdag:
+
+- lees eerst bestaande claim, provider-ID, dedupe-reservering en laatste provider-evidence;
+- gebruik één canonieke writer en hervat dezelfde claim;
+- LinkedIn persoonlijk en LinkedIn bedrijf gebruiken afzonderlijk bewezen provider-identiteiten; company vereist live organisatie-ACL + write-capability op de exacte connection;
+- Instagram bedrijf blijft Mira-only en maakt ontbrekende definitieve media autonoom af vóór publicatie;
+- `ACTIVE`, alias, default-flag of auth-config scopes zijn geen voldoende providerbewijs; live capability-preflight is verplicht;
+- provider-created IDs worden direct duurzaam vastgelegd en blokkeren elke replacement/duplicate;
+- readbackfalen leidt tot reconcile van exact dezelfde provider-ID, nooit tot opnieuw publiceren;
+- interne auth-, scope-, media-, scheduler-, runtime- of connectorproblemen worden autonoom hersteld en niet als eindstatus aan de gebruiker teruggegeven;
+- na de geplande publicatie-window controleert de watchdog opnieuw of provider-evidence bestaat en hervat zo nodig dezelfde lineage;
+- Buffer en Make zijn geen social-publicatiefallbacks;
+- terminale sluiting vereist provider-side bewijs plus outcome/learning/prevention writeback.
+
+Doel: niet alleen dagelijks proberen, maar iedere goedgekeurde dagelijkse publicatie-obligation zonder dubbele side effects sluiten.
