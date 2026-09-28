@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v1',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T15:45:00Z',
+  observedAt:'2026-09-28T16:12:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -34,6 +34,30 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'daily-full-connection-enrichment',
+      label:'Daily Full Connection Enrichment',
+      authority:'supabase',
+      owner:'commercial-intelligence',
+      status:'LIVE_PROVEN_RUNTIME',
+      inputs:Object.freeze(['bg_connecties','linkedin_engagement_events','powerhouse_predictive_signals','bg_bedrijfsnieuws','bg_externe_signalen','powerhouse_runtime_events','person/company intelligence','opportunity/outcome lineage']),
+      outputs:Object.freeze(['daily enriched connection graph','freshness/completeness rollup','person/company/customer opportunity context']),
+      runtime:Object.freeze({
+        stateTable:'public.powerhouse_connection_enrichment_state_v1',
+        view:'public.powerhouse_connection_enrichment_v1',
+        refresh:'public.powerhouse_refresh_all_connection_enrichment_v1(date,integer)',
+        schedulerOwner:'powerhouse-commercial-learning-v1'
+      }),
+      invariants:Object.freeze({
+        everyConnectionDaily:true,
+        allIngestedEvidenceProjected:true,
+        sourceEvidencePreserved:true,
+        deepDiscoveryBounded:true,
+        sensitiveInferenceAllowed:false,
+        noParallelCrm:true,
+        noParallelScheduler:true
+      })
+    }),
     Object.freeze({
       id:'relationship-external-intelligence',
       label:'Relationship External Intelligence',
