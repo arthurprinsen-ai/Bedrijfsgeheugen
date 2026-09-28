@@ -53,5 +53,16 @@
     "security_sensitive": false
   },
   "revision": 1,
-  "status": "CANDIDATE_DELIVERY"
+  "status": "LIVE_PROVEN",
+  "live_evidence": {
+    "implementation_merge_sha": "35cc516051f51fa78ef5842687b243c1de810715",
+    "required_pr_run": 36467540983,
+    "codeql_pr_run": 36467540522,
+    "optimizer_pr_run": 36467540607,
+    "daily_self_evolution_pr_run": 36467540608,
+    "skill_projection_pr_run": 36467540627,
+    "netlify_deploy_id": "6abab74554a72a00072dae3b",
+    "netlify_commit_ref": "35cc516051f51fa78ef5842687b243c1de810715",
+    "netlify_published_at": "2026-09-28T18:53:41.769Z"
+  }
 }

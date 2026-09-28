@@ -216,7 +216,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Autonomous Engineering Fabric v3',
       authority:'github',
       owner:'delivery-intelligence',
-      status:'CANDIDATE_DELIVERY',
+      status:'LIVE_PROVEN',
       inputs:Object.freeze(['user/chat intent','changed paths','dependency graph','CI telemetry','agent outcome scorecard']),
       outputs:Object.freeze(['risk-classed work packages','capability-routed specialists','bounded parallel waves','single integrated candidate','late-bound closure manifest','daily engineering tuning']),
       runtime:Object.freeze({
@@ -225,6 +225,17 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         planner:'scripts/brain/autonomous-engineering-fabric-v3.mjs',
         optimizerWorkflow:'.github/workflows/powerhouse-autonomous-engineering-optimizer.yml',
         requiredGate:'.github/workflows/required-test.yml'
+      }),
+      productionEvidence:Object.freeze({
+        implementationMergeSha:'35cc516051f51fa78ef5842687b243c1de810715',
+        requiredPrRun:36467540983,
+        codeqlPrRun:36467540522,
+        optimizerPrRun:36467540607,
+        dailySelfEvolutionPrRun:36467540608,
+        skillProjectionPrRun:36467540627,
+        netlifyDeployId:'6abab74554a72a00072dae3b',
+        netlifyCommitRef:'35cc516051f51fa78ef5842687b243c1de810715',
+        netlifyPublishedAt:'2026-09-28T18:53:41.769Z'
       }),
       invariants:Object.freeze({
         oneIntegrationWriterPerObligation:true,
