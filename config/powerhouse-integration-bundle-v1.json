@@ -1,0 +1,30 @@
+{
+  "version": "POWERHOUSE-INTEGRATION-BUNDLE-v1",
+  "writer": {
+    "mode": "ONE_WRITE_INTEGRATION",
+    "owner": "powerhouse-terminal-delivery",
+    "maxTerminalWritersPerObligation": 1,
+    "mainEpoch": "LATE_BOUND_AT_HANDOFF"
+  },
+  "closureArtifacts": {
+    "brain_learning": ["brain/learning/"],
+    "activity_ledger": ["docs/development-ledger-events/", "docs/development-ledger/"],
+    "human_documentation": ["docs/changes/", "docs/learning/"]
+  },
+  "closureOnly": [
+    "brain/learning/",
+    "docs/development-ledger-events/",
+    "docs/development-ledger/",
+    "docs/changes/",
+    "docs/learning/",
+    "brain/skills/powerhouse-learning-skill-index-v1.json"
+  ],
+  "prContractFields": [
+    "Obligation-ID",
+    "Delivery-Lane",
+    "Candidate-Type",
+    "Base-SHA",
+    "Change-Scope",
+    "Scope-Budget"
+  ]
+}
