@@ -35,3 +35,7 @@
 
 - Canonical scheduler rule: existing powerhouse-commercial-learning-v1 remains the sole recurring owner.
 - Duplicate hourly research scheduler candidate was removed; public research is dispatched from the canonical commercial cycle.
+
+- Production research proof: HTTP 200; researched=10; matched=8; events=8; no_evidence=2.
+- Canonical downstream readback: 10 eligible triggers; 10 trigger opportunities; 8 research actions done.
+- External outreach executed: false.
