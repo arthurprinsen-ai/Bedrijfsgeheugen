@@ -136,8 +136,10 @@ test('canonical approved blog writer is a non-artifact generator change until it
   assert.ok(risk.nonArtifactPaths.includes('scripts/publish_approved_blog_v2.py'));
 });
 
-test('shared executable control-plane work fans out to all required suites', () => {
-  assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:true, website:true, automation:true });
+test('delivery control-plane workflows stay on their owned lanes instead of forcing unrelated browser gates', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/required-test.yml']), { shared:true, backend:true, portal:false, website:false, automation:false });
+  assert.deepEqual(suitesFor(['.github/workflows/powerhouse-daily-self-evolution.yml']), { shared:true, backend:false, portal:false, website:false, automation:true });
+  assert.deepEqual(suitesFor(['.github/workflows/powerhouse-autonomous-engineering-optimizer.yml']), { shared:true, backend:false, portal:false, website:false, automation:true });
 });
 
 test('unknown suite lanes fail closed', () => {
