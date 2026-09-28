@@ -8,3 +8,11 @@
 - Outcome contract: expected and realized value stay separate; learning is evidence-backed
 - Regression authority: `tests/brain-company-intelligence-contextual-portal-v1.test.mjs`
 - Terminal proof required: protected main → production deploy → browser/source readback of contextual renderer and affected surfaces
+
+## Security evaluation closure
+
+- Security-sensitive learning canonicalization requires historical replay + shadow + canary.
+- Added `tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs`.
+- Shadow invariant: tenant A output contains no tenant B identifiers, sources, actions or learning, and vice versa.
+- Canary invariant: expected value and realized value remain separate.
+- Fail-closed invariant: absent tenant evidence renders unknown context rather than synthesized business facts.
