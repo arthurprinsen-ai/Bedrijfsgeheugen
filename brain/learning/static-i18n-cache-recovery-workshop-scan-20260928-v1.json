@@ -12,14 +12,13 @@
   "failure_class": "STATIC_I18N_CACHE_INCOMPLETE_BLOCKS_PRODUCTION",
   "evaluation": {
     "historical_replay": [
-      "Production Source Snapshot run 36397804474 failed at the exact-source Netlify deploy with build exit code 2.",
-      "Required netlify-build-parity showed STATIC_I18N_PARTIAL_CACHE_FALLBACK with 17 missing strings when its non-production cache requirement was disabled."
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
     ],
     "shadow": [
-      "Static i18n cache patch covers the current missing public-string set without disabling the production fail-closed contract."
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
     ],
     "canary": [
-      "Exact-main Netlify deployment followed by /scan production readback."
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
     ],
     "expected_invariant": "STATIC_I18N_REQUIRE_CACHE remains 1 and every current public translatable string has an immutable English cache entry before production promotion."
   },
@@ -35,7 +34,11 @@
     "first_missing_string": "AanZET 2026 : wat verandert er nu?",
     "production_readback": "pending recovery candidate promotion"
   },
-  "skill_targets": ["website","powerhouse-continuity","powerhouse-netlify-production-truth"],
+  "skill_targets": [
+    "website",
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth"
+  ],
   "compiler": {
     "failure_class": "STATIC_I18N_CACHE_INCOMPLETE_BLOCKS_PRODUCTION",
     "scope": "WEBSITE_I18N_PRODUCTION_BUILD",
