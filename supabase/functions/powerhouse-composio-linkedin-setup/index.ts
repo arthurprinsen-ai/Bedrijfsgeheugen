@@ -31,7 +31,6 @@ function deepFindStrings(value:any,keys:string[],out:string[]=[]){
 }
 function normalizePersonUrn(raw:string){const v=clean(raw);if(!v)return'';if(v.startsWith('urn:li:person:'))return v;if(v.startsWith('urn:li:'))return v;return `urn:li:person:${v}`;}
 function normalizeOrganizationUrn(raw:string){const v=clean(raw);if(!v)return'';if(v.startsWith('urn:li:organization:'))return v;if(v.startsWith('urn:li:'))return v;return `urn:li:organization:${v}`;}
-const LINKEDIN_CANONICAL_PERSON_URN='urn:li:person:N1twnCNCrD';
 async function writeState(db:any,state:string,result:any){
   const now=new Date().toISOString();
   await db.from('brain_records').upsert({
@@ -65,46 +64,45 @@ Deno.serve(async(req:Request)=>{
     const accounts=items.filter((x:any)=>clean(x?.status).toUpperCase()==='ACTIVE'&&!x?.is_disabled);
 
     if(accounts.length===0){
-      const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_LINKEDIN_CONNECTION_REQUIRED',api_key_present:true,active_accounts:0,personal_ready:false,company_ready:false};
+      const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_LINKEDIN_CONNECTION_REQUIRED',api_key_present:true,active_accounts:0,healthy_accounts:0,personal_ready:false,company_ready:false};
       await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result});
     }
 
-    // Multiple active OAuth connections are expected after re-auth. Never fail merely
-    // because more than one exists: probe each connection and select the one that
-    // proves the canonical LinkedIn member identity.
-    const candidates:any[]=[];
-    for(const account of accounts){
-      const accountId=clean(account?.id||account?.connected_account_id);
-      const userId=clean(account?.user_id);
-      if(!accountId||!userId)continue;
+    const healthy:any[]=[];
+    const rejected:any[]=[];
+    for(const candidate of accounts){
+      const candidateAccountId=clean(candidate?.id||candidate?.connected_account_id);
+      const candidateUserId=clean(candidate?.user_id);
+      if(!candidateAccountId||!candidateUserId){rejected.push({account_id:candidateAccountId||null,reason:'MISSING_ACCOUNT_OR_USER_ID'});continue;}
       try{
-        const who=await execute(key,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-        const personCandidates=deepFindStrings(who,['author','author_id','person_id','member_id','id','sub']);
-        const personAuthor=normalizePersonUrn(personCandidates.find(v=>!!v)||'');
-        if(personAuthor!==LINKEDIN_CANONICAL_PERSON_URN)continue;
-        const grantedScopes=clean(account?.data?.scope).split(/[\s,]+/).map((v:string)=>v.trim()).filter(Boolean);
-        candidates.push({account,accountId,userId,personAuthor,grantedScopes});
-      }catch(_error){
-        // Revoked/expired connections are ignored when a healthy canonical one exists.
+        const candidateWho=await execute(key,candidateAccountId,candidateUserId,'LINKEDIN_GET_MY_INFO',{});
+        const candidates=deepFindStrings(candidateWho,['author','author_id','person_id','member_id','id','sub']);
+        const candidatePersonAuthor=normalizePersonUrn(candidates.find(v=>!!v)||'');
+        if(!candidatePersonAuthor)throw new Error('LINKEDIN_PERSONAL_AUTHOR_UNVERIFIED');
+        healthy.push({account:candidate,accountId:candidateAccountId,userId:candidateUserId,who:candidateWho,personAuthor:candidatePersonAuthor});
+      }catch(error){
+        const message=error instanceof Error?error.message:String(error);
+        rejected.push({account_id:candidateAccountId,alias:clean(candidate?.alias)||null,reason:message.includes('REVOKED_ACCESS_TOKEN')?'REVOKED_ACCESS_TOKEN':'HEALTHCHECK_FAILED'});
       }
     }
-
-    if(candidates.length===0){
-      const result={ready:false,state:'REAUTH_REQUIRED',reason:'COMPOSIO_LINKEDIN_NO_HEALTHY_CANONICAL_CONNECTION',api_key_present:true,active_accounts:accounts.length,healthy_accounts:0,personal_ready:false,company_ready:false,canonical_person_urn:LINKEDIN_CANONICAL_PERSON_URN};
-      await writeState(db,'REAUTH_REQUIRED',result);return json({ok:true,...result},409);
+    if(healthy.length===0){
+      const result={ready:false,state:'CONNECTION_REQUIRED',reason:'COMPOSIO_LINKEDIN_REAUTH_REQUIRED',api_key_present:true,active_accounts:accounts.length,healthy_accounts:0,rejected_accounts:rejected,personal_ready:false,company_ready:false};
+      await writeState(db,'CONNECTION_REQUIRED',result);return json({ok:true,...result},409);
+    }
+    const canonical=healthy.filter(x=>clean(x.account?.alias)==='bedrijfsgeheugen-canonical');
+    const selectable=canonical.length===1?canonical:healthy;
+    if(selectable.length!==1){
+      const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_LINKEDIN_HEALTHY_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,personal_ready:false,company_ready:false};
+      await writeState(db,'BLOCKED_AMBIGUOUS',result);return json({ok:true,...result},409);
     }
 
-    candidates.sort((a:any,b:any)=>
-      Number(b.account?.alias==='bedrijfsgeheugen-canonical')-Number(a.account?.alias==='bedrijfsgeheugen-canonical')
-      || Number(b.account?.is_default===true)-Number(a.account?.is_default===true)
-      || clean(b.account?.created_at).localeCompare(clean(a.account?.created_at))
-    );
-    const selected=candidates[0];
+    const selected=selectable[0];
     const account=selected.account;
     const accountId=selected.accountId;
     const userId=selected.userId;
-    const grantedScopes=selected.grantedScopes;
+    const who=selected.who;
     const personAuthor=selected.personAuthor;
+    const grantedScopes=clean(account?.data?.scope).split(/[\s,]+/).map((v:string)=>v.trim()).filter(Boolean);
 
     let companies:any=null;
     let companyError:string|null=null;
@@ -116,12 +114,12 @@ Deno.serve(async(req:Request)=>{
     const rawOrgIds=companies?deepFindStrings(companies,['organization','organization_id','company_id','id','entity_urn','urn']):[];
     const orgUrns=[...new Set(rawOrgIds.map(normalizeOrganizationUrn).filter(v=>v&&v.startsWith('urn:li:organization:')))].slice(0,25);
 
-    const personalReady=personAuthor===LINKEDIN_CANONICAL_PERSON_URN;
+    const personalReady=!!personAuthor;
     const hasMemberReadScope=grantedScopes.includes('r_member_social');
     const hasOrgAdminScope=grantedScopes.includes('r_organization_admin')||grantedScopes.includes('rw_organization_admin');
     const hasOrgWriteScope=grantedScopes.includes('w_organization_social')||grantedScopes.includes('w_organization_social_feed');
     const hasOrgReadScope=grantedScopes.includes('r_organization_social')||grantedScopes.includes('r_organization_social_feed');
-    const companyReady=orgUrns.length===1&&hasOrgWriteScope;
+    const companyReady=orgUrns.length===1&&hasOrgAdminScope&&hasOrgWriteScope;
     const personalReadbackReady=personalReady&&hasMemberReadScope;
     const companyReadbackReady=companyReady&&hasOrgReadScope;
     const result={
@@ -130,8 +128,10 @@ Deno.serve(async(req:Request)=>{
       reason:personalReady?null:'LINKEDIN_PERSONAL_AUTHOR_UNVERIFIED',
       api_key_present:true,
       active_accounts:accounts.length,
-      healthy_accounts:candidates.length,
-      selection_strategy:'probe-canonical-member-and-prefer-canonical-alias-v1',
+      healthy_accounts:healthy.length,
+      rejected_accounts:rejected,
+      health_verified:true,
+      canonical_alias_selected:clean(account?.alias)==='bedrijfsgeheugen-canonical',
       connected_account_id:accountId,
       user_id:userId,
       alias:clean(account?.alias),
@@ -143,7 +143,10 @@ Deno.serve(async(req:Request)=>{
       company_ready:companyReady,
       company_author_urns:orgUrns,
       company_count:orgUrns.length,
-      company_scope_required:companyReady?null:[...(hasOrgWriteScope?[]:['w_organization_social'])],
+      company_scope_required:companyReady?null:[
+        ...(hasOrgAdminScope?[]:['r_organization_admin']),
+        ...(hasOrgWriteScope?[]:['w_organization_social'])
+      ],
       company_admin_scope_present:hasOrgAdminScope,
       company_write_scope_present:hasOrgWriteScope,
       company_readback_ready:companyReadbackReady,

@@ -327,72 +327,10 @@ Fingerprint: `composio-post-rotation-runtime-rebuild-v2`.
 For Netlify Functions credentials, compare the credential `updated_at` with the production deployment `published_at`. If the credential is newer, provider validation is not meaningful until a later protected Functions deployment is live. Fail closed and force exactly one post-rotation rebuild before re-validating.
 
 
-## Continuous Reel proof and source/runtime parity (2026-09-26)
+## Provider identity health preflight (2026-09-26)
 
-Fingerprint: `social-provider-preflight-resumable-auth-v1`.
+Fingerprint: `social-provider-health-preflight-v1`.
 
-A Mira Reel is not eligible on frame snapshots alone. The canonical media router must require start/middle/end visible-Mira frame proof plus `mira-continuous-human-video-v1` temporal evidence: one continuous take, continuous human motion, scene continuity, identity continuity, realistic camera motion, no slideshow, no still-image animation, and a temporal evidence reference. Repository source, deployed Supabase runtime and tests must expose the same contract. Runtime/source drift is a release blocker; never weaken production proof to make a post pass. Buffer remains a bounded fallback only and cannot block a healthy Meta/Composio Instagram path.
+Composio ACTIVE status alone is insufficient. Before Instagram publication capability issuance/consumption, the setup controller must call provider identity readback for every active candidate and accept only a live account whose username is exactly `bedrijfsgeheugen.nl`. Stale, revoked, unauthorized and wrong-identity accounts are rejected and do not create ambiguity.
 
-
-### Temporal proof is self-materializing
-
-The continuous-Reel proof gate must have a canonical executor. After hashing the exact MP4 and extracting START/MIDDLE/END frames, `powerhouse-instagram-media-router` invokes `powerhouse-instagram-temporal-verifier`; callers must not manufacture or manually set temporal booleans. The verifier evaluates the ordered exact frames together, binds the result to the exact video SHA-256, and returns the `mira-continuous-human-video-v1` evidence. If that verifier cannot establish continuity at the required threshold, fail closed and generate a new Mira Reel; do not downgrade to an image or bypass the proof gate.
-
-
-### Deduplicate credentials by provider identity
-
-Fingerprint: `instagram-credential-provider-identity-dedupe-v1`.
-
-Never treat the number of active Composio connected-account credentials as the number of Instagram publishing identities. When multiple credentials are active, perform a real Instagram `/me` read through every candidate credential and group by the returned provider user id. Multiple credentials resolving to one provider user id are one canonical publishing identity and must not block publication as ambiguous. Select one credential deterministically. More than one distinct provider user id remains a hard fail-closed ambiguity. Do not choose the first discovery result without provider-identity proof.
-
-
-Proxy URL invariant: `COMPOSIO_BASE` is already the v3.1 API base. Build proxy calls as `${COMPOSIO_BASE}/tools/execute/proxy`. Never strip `/api/v3` or reconstruct a versioned host using substring replacement.
-
-
-### Provider proxy endpoint construction
-
-Fingerprint: `instagram-composio-proxy-base-v1`.
-
-The Composio provider proxy URL must be constructed by appending the proxy path directly to the canonical API base. Never mutate or strip API-version substrings from a base that already contains its version; that can produce an invalid hostname before provider preflight. A malformed pre-provider request with `possible_provider_side_effect=false` is resumable on the same daily claim only; never create a replacement claim or regenerate media.
-
-
-## Composio-only canonical Instagram identity (2026-09-27)
-
-Fingerprint: `instagram-composio-canonical-identity-v1`.
-
-Instagram publication for Bedrijfsgeheugen is Composio-only. Buffer and direct-Meta publication are not fallback transports for this channel.
-
-Hard invariants:
-- Canonical Instagram username is exactly `bedrijfsgeheugen.nl`.
-- Before consuming a publication capability or making any provider side effect, resolve the active Composio Instagram connection with `INSTAGRAM_GET_USER_INFO` and verify the returned username equals `bedrijfsgeheugen.nl`.
-- A Composio alias such as `bedrijfsgeheugen`, `bedrijfsgeheugen-mira`, `bedrijfsgeheugen-business` or `bedrijfsgeheugen-canonical` is metadata only; it never proves provider identity.
-- `@arthurprinsen` or any other username must fail closed with `COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED` even when the connection reports ACTIVE/BUSINESS.
-- After identity preflight, use the resolved numeric Instagram Business user ID explicitly as `ig_user_id` for container creation and publish. Do not rely on `ig_user_id=me` for the actual side effect.
-- Use schema-driven Composio calls for `INSTAGRAM_POST_IG_USER_MEDIA`, `INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH` and `INSTAGRAM_GET_IG_MEDIA`; do not use natural-language execution for these provider mutations/readbacks.
-- Provider readback must match the created media ID and, when username is returned, must still equal `bedrijfsgeheugen.nl`.
-- Missing auth or wrong identity returns the exact same proven Reel to a recoverable `content_ready` state. Never regenerate and never fall back to Buffer, Make or direct Meta.
-- Meta Business Suite membership/asset assignment is evidence that the business asset exists, but it does not substitute for Composio provider-identity readback.
-
-Terminal success is: canonical Composio account identity verified -> exact IG user ID bound -> one-time publication capability consumed -> Reel container created -> published -> exact provider readback -> canonical obligation/outcome writeback.
-
-
-## Canonical Instagram Graph User ID binding (2026-09-27)
-
-Fingerprint: `instagram-composio-canonical-graph-id-v2`.
-
-This section supersedes every older Instagram transport rule in this skill that permits Buffer fallback, direct-Meta primary/fallback routing, `ig_user_id=me`, alias-only identity, or username-only identity.
-
-Canonical Bedrijfsgeheugen Instagram identity:
-- username: `bedrijfsgeheugen.nl`
-- Instagram Graph User ID: `17841446582493753`
-
-Hard invariants:
-- Instagram publication is Composio-only.
-- Before capability consumption or any provider mutation, each candidate Composio connection must be probed with `INSTAGRAM_GET_USER_INFO` against the explicit Graph User ID `17841446582493753`; do not use `me` for canonical identity resolution.
-- A connection is eligible only when the provider response proves both `id=17841446582493753` and `username=bedrijfsgeheugen.nl`.
-- Every create/publish call must pass `ig_user_id=17841446582493753` explicitly.
-- `@arthurprinsen`, ID `28328860976766075`, aliases such as `bedrijfsgeheugen-*`, default-account status, Meta portfolio membership and Business/Creator labels are never sufficient identity proof.
-- If no Composio connection can access the canonical Graph User ID, the exact proven Reel remains recoverable at `content_ready`; no Buffer, Make, direct-Meta or regenerated replacement is permitted.
-- Provider readback must match the published media ID; when username is returned it must equal `bedrijfsgeheugen.nl`.
-
-Terminal success is canonical Graph ID access proof -> exact username proof -> one-time publication capability -> Composio create -> Composio publish -> provider readback -> canonical obligation/outcome writeback.
+When multiple healthy candidates exist, prefer the single account with alias `bedrijfsgeheugen-mira-canonical`; otherwise fail closed. The publisher consumes only the health-verified account recorded by `powerhouse-composio-instagram-setup`. A reauth or identity failure preserves the exact proven Mira Reel at `content_ready`; no publication capability is consumed and no new Reel is generated to escape auth recovery.
