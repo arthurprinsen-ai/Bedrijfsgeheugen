@@ -575,3 +575,19 @@ Fingerprint: `provider-write-terminal-all-social-v1`.
 Voor LinkedIn persoonlijk, LinkedIn bedrijf en Instagram geldt universeel: zodra de provider een duurzaam extern ID/URN heeft teruggegeven, of provider-truth voor dat ID aantoonbaar groen is, bestaat het side effect. Die waarheid is terminal voor publicatiestatus.
 
 Daarna mogen OAuth-revocation, 401/403-readback, ACL-beperkingen, analyticsfouten, strengere mediagates of latere policy-wijzigingen de post nooit terugzetten naar BLOCKED/FAILED. Zij mogen alleen verificatie- of toekomstig generatiegedrag beïnvloeden. Exact-ID reconcile is toegestaan; replacement/duplicate publication is verboden.
+
+
+## Powerhouse System Map automatic writeback
+
+Fingerprint: `powerhouse|system-map|same-lineage-auto-writeback|v1`.
+
+Voor **alle huidige en toekomstige chats, agents, workflows en autonome Powerhouse-nodes** is System Map-onderhoud een automatische Definition-of-Done-verplichting.
+
+- canonieke machinebron: `platform/system-map/canonical-system-map.mjs`;
+- canonieke skill: `.agents/skills/powerhouse-system-map-governance/SKILL.md`;
+- menselijke architectuur: `docs/powerhouse/POWERHOUSE_SYSTEM_MAP_GOVERNANCE.md`;
+- bedoelde Portal V2-projectie: `https://www.bedrijfsgeheugen.nl/portal-v2/?page=powerhouse-control-center`;
+- iedere materiële wijziging aan skills, agents, intelligence, workflows, connectors, authority, dataflows, relaties, topology, charts of canonieke surfaces schrijft de wijziging in dezelfde lineage terug;
+- read-after-write is verplicht vóór terminale closure;
+- de gebruiker hoeft nooit apart te vragen om skills, documentatie of System Map te actualiseren;
+- stale/missende kaartprojectie blijft `SYSTEM_MAP_WRITEBACK_INCOMPLETE` en is niet terminal groen.
