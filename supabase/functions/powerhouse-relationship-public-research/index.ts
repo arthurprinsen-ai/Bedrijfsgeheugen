@@ -111,7 +111,7 @@ Deno.serve(async(req:Request)=>{
     return json({ok:true,contract:CONTRACT,researched,matched,events,no_evidence:noEvidence,vendor_enrichment:false,external_outreach_executed:false,observed_at:observedAt});
   }catch(error:any){
     const detail=clean(error?.message||error).slice(0,500);
-    await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT}}).catch(()=>{});
+    try { await db.from('bg_gezondheid').insert({gemeten_op:observedAt,onderdeel:'relationship-public-research',soort:'commercial-intelligence',status:'fout',detail,gegevens:{contract:CONTRACT}}); } catch { /* best-effort failure telemetry */ }
     return json({ok:false,contract:CONTRACT,error:detail},503);
   }
 });
