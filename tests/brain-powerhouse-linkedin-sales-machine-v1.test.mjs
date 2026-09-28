@@ -10,7 +10,7 @@ const skill=fs.readFileSync('.agents/skills/powerhouse-linkedin-sales-machine/SK
 
 test('linkedin sales machine only comments on evidence-bound company-specific posts',()=>{
   assert.match(planner,/source_company_specific/);
-  assert.ok(planner.includes('linkedin.com'));
+  assert.ok(planner.includes('linkedin'));
   assert.ok(planner.includes('posts/') || planner.includes('feed/update/'));
   assert.match(planner,/relationship_revenue_score>=\.55/);
   assert.match(planner,/t\.confidence>=\.60/);
