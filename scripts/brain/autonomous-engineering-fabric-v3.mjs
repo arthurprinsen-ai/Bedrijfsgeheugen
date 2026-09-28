@@ -76,14 +76,24 @@ export function buildClosureManifest({ obligationId, changedPaths = [] } = {}) {
   });
 }
 
-export function buildAutonomousEngineeringPlan({ obligationId, baseSha, candidateSha, workPackages = [], deliveryConfig, fabricPolicy, policy, scorecard = {} } = {}) {
+function boundExecutionWaves(execution, maxParallelPackages = 4) {
+  const max = clamp(Number(maxParallelPackages || 4), 1, 16);
+  const waves = [];
+  for (const wave of execution.waves ?? []) {
+    for (let i=0;i<wave.length;i+=max) waves.push(wave.slice(i,i+max));
+  }
+  return { ...execution, waves };
+}
+
+export function buildAutonomousEngineeringPlan({ obligationId, baseSha, candidateSha, workPackages = [], deliveryConfig, fabricPolicy, policy, scorecard = {}, tuning = {} } = {}) {
   if (!obligationId) throw new TypeError('obligationId is required');
   const enriched = workPackages.map(pkg => {
     const paths = uniq(pkg.paths);
     const route = routeEngineeringAgent({ paths, capabilities:pkg.capabilities ?? ['analyze','verify'], scorecard, policy });
     return { ...pkg, baseSha:pkg.baseSha ?? baseSha, candidateSha:pkg.candidateSha ?? candidateSha, specialist:pkg.specialist ?? route.primaryAgentId, agentRoute:route, riskClass:classifyEngineeringRisk(paths) };
   });
-  const execution = buildExecutionPlan({ workPackages:enriched, deliveryConfig, policy:fabricPolicy });
+  const rawExecution = buildExecutionPlan({ workPackages:enriched, deliveryConfig, policy:fabricPolicy });
+  const execution = boundExecutionWaves(rawExecution, tuning.max_parallel_packages ?? 4);
   const allPaths = uniq(enriched.flatMap(p=>p.paths ?? []));
   return Object.freeze({
     fingerprint:'powerhouse-autonomous-engineering-plan-v3',
