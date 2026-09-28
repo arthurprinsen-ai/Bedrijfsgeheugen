@@ -1,0 +1,20 @@
+{
+  "fingerprint": "powerhouse-self-improvement-layer-v1",
+  "date": "2026-09-28",
+  "problem": "Powerhouse had strong Company Intelligence, autonomous-improvement, quality and engineering-learning capabilities, but lacked one explicit cross-layer contract joining agent objectives, model routing, architecture health, evaluation/promotion and learning compilation into a single compounding intelligence loop.",
+  "root_cause": "Capabilities existed across separate canonical subsystems without one explicit self-improvement authority and measurable north-star contract.",
+  "decision": "Add a thin Self-Improvement Layer that composes existing authorities rather than creating parallel stores or schedulers.",
+  "prevention": [
+    "Every agent must expose a measurable objective plus guardrails.",
+    "Every material candidate must pass evidence, quality, security and regression gates.",
+    "Architecture health participates in promotion decisions.",
+    "Learning compiles into regression, skill, documentation, system-map and bounded candidate outputs.",
+    "No learning path may directly rewrite production."
+  ],
+  "canonical_refs": [
+    "brain/self-improvement/self-improvement-layer.mjs",
+    "brain/contracts/self-improvement-layer-v1.json",
+    "docs/powerhouse/POWERHOUSE_SELF_IMPROVEMENT_LAYER.md",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md"
+  ]
+}
