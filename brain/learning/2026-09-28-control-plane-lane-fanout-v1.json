@@ -1,0 +1,43 @@
+{
+  "fingerprint": "github|delivery-lane-scope|control-plane-no-runtime-fanout|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Generic sharedPaths treated scripts/brain/*, config/* and docs/brain/* as executable shared changes. A control-plane-only autonomous optimizer PR therefore activated backend, portal, website and automation lanes, including Netlify build parity and browser verification despite no website or portal runtime delta.",
+  "prevention_rule": "Assign known engineering control-plane files to explicit owned lanes before generic shared-path expansion, and classify the component registry as governance-only. Control-plane-only optimizer/calibration changes must not activate portal or website lanes unless another changed path has real runtime impact.",
+  "enforcement": [
+    "config/brain-delivery-system.json",
+    "tools/brain-delivery-system.mjs",
+    "tests/brain-change-scoped-release-lanes.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-change-scoped-release-lanes.test.mjs"
+  ],
+  "evidence": {
+    "observed_pr": 3251,
+    "observed_waste": [
+      "portal lane",
+      "website syntax/static/baseline",
+      "Netlify build parity",
+      "website browser"
+    ],
+    "tests": [
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ]
+  }
+}
