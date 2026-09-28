@@ -21,3 +21,10 @@
 - Sales-air-cover identity: linkedin_company
 - Personal post identity policy unchanged: personal-life-only
 - Scheduler owner: powerhouse-commercial-learning-v1
+
+- Revenue-first execution policy: autonomous
+- Per-action human approval: not required when all canonical gates pass
+- Autonomous choices: LinkedIn context comment / LinkedIn company air cover / private email / nurture-wait
+- Optimization target: reply -> meeting -> scan -> order -> realized revenue
+- Hard gates: identity / evidence / dedupe / fatigue / suppression / provider capability / provider acknowledgement
+- Future LinkedIn DM/reaction writes: disabled until capability probe + provider-ack regression evidence exists
