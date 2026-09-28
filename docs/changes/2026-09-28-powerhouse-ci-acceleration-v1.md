@@ -19,3 +19,5 @@ Regression oracle: `tests/brain-ci-critical-path-acceleration-v1.test.mjs`.
 - Scope metadata reconciled with the complete 16-file delivery lineage after CI readback.
 
 - Portal V2 verification now belongs to the portal lane rather than the generic Required preflight, preserving coverage while avoiding unrelated PR execution.
+
+- PR scope metadata is gesynchroniseerd op 17 bestanden, inclusief de portal-lane ownership-wijziging.
