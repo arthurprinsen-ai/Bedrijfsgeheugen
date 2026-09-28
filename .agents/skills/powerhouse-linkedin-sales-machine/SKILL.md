@@ -69,3 +69,9 @@ Geen scraping/platform-bypass, geen bulk generieke comments, geen gefingeerde DM
 
 ## Externe relatie-intelligentie
 Gebruik standaard `powerhouse-relationship-external-intelligence-v1`. Relevante publieke internet-, bedrijfs- en ondersteunde LinkedIn-updates worden na geldige entity matching gekoppeld aan de canonieke person → company → customer → opportunity/NBA-lineage en wegen mee in scoring, timing en next-best-action. Externe evidence is nooit op zichzelf koopintentie; provenance, freshness, confidence, suppression, cooldown en outcome-learning blijven harde gates. Geen gevoelige persoonsinferenties en geen los nieuwsarchief als eindpunt.
+
+
+## Public-intent bridge — v1
+Fingerprint: `powerhouse-linkedin-sales-machine-public-intent-bridge-v1`.
+
+Website intent is part of the same commercial context as LinkedIn and e-mail. High-signal public actions such as a completed selfscan report request and checkout start must emit a PII-free canonical `/api/growth-event` observation. Personal contact data stays in the purpose-bound form/order path and must never be copied into SEO/growth telemetry. Growth events feed attribution, Company/Relationship context, Growth Swarm prioritisation, next-best-action and outcome learning; they never override consent, suppression, fatigue, evidence or provider-capability gates.
