@@ -14,3 +14,5 @@
 - Human architecture: docs/powerhouse/POWERHOUSE_CI_ACCELERATION.md.
 
 - Scope synchronized to 18 files after moving the release-control regression contract into this lineage.
+
+- Browser-runtime regression contract migrated from duplicate page-seo/local-only assumptions to build-once plus exact-preview reuse with local fallback.
