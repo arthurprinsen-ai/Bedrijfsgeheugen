@@ -669,14 +669,12 @@ For broad browser verification against a Netlify deploy preview:
 - targeted route checks, exact candidate identity and semantic browser assertions remain mandatory.
 
 
-## Short-lived Netlify fallback proxy refresh
+### Risk-rule specificity
 
-Fingerprint: `netlify-fallback-proxy-refresh-20260925-v1`.
+Adaptive risk classification is specificity-first, not declaration-order-first.
 
-When Production Source Snapshot reaches the exact-source `@netlify/mcp` fallback:
-- never assume the proxy acquired before linked-build/provider polling is still valid;
-- reacquire GitHub OIDC and a fresh bridge proxy immediately before the fallback upload;
-- bind the fresh proxy to the upload and subsequent provider watch;
-- classify a fallback `401 Unauthorized` as transport credential expiry before treating it as a site/build defect;
-- persistent authentication failure remains fail-closed;
-- terminal success still requires protected-main/provider identity and canonical browser readback.
+- Evaluate all matching risk patterns for each changed path.
+- Select the most-specific matching path rule.
+- Apply hot-path escalation only after that selection; escalation may raise but never lower risk.
+- Unknown executable surfaces remain R3 fail-closed.
+- Nested closure/learning paths may therefore remain R0/R1 even when their parent directory is runtime-classified.
