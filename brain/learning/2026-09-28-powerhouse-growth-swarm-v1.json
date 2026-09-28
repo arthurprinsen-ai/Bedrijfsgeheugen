@@ -61,5 +61,14 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
-  }
+  },
+  "evidence": [
+    "Production Supabase migration powerhouse_growth_swarm_v1 applied successfully on 2026-09-28.",
+    "Production Supabase migration powerhouse_growth_swarm_activation_v1 applied successfully on 2026-09-28.",
+    "First refresh processed 17,034 company-intelligence accounts and created three evidence-backed content recommendations.",
+    "First materialization registered 20 growth plays, marked 13 runtime-active, created eight prebuilt prospect dossiers and eight ranked growth-play runtime events.",
+    "Edge Function powerhouse-growth-tools deployed ACTIVE version 1.",
+    "Controlled lost-knowledge public-tool readback returned HTTP 200 with classification SCENARIO_ESTIMATE and explicit truth boundary.",
+    "Friction-index and workshop leaderboard returned zero rows because the privacy/data minimum was not yet met; no sample benchmark was fabricated."
+  ]
 }
