@@ -16,6 +16,13 @@
       "required": true
     },
     {
+      "id": "function:bg-dagoverzicht",
+      "type": "function",
+      "authority": "supabase/functions/bg-dagoverzicht/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:bg-notion-sync",
       "type": "function",
       "authority": "supabase/functions/bg-notion-sync/index.ts",
@@ -422,6 +429,13 @@
       "required": true
     },
     {
+      "id": "rpc:bg_uitkomst_vastleggen",
+      "type": "rpc",
+      "authority": "supabase/functions/bg-dagoverzicht/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:brain_create_obligation",
       "type": "rpc",
       "authority": "supabase/functions/growth-datahub-ingest/index.ts",
@@ -454,6 +468,13 @@
       "type": "rpc",
       "authority": "supabase/functions/growth-datahub-ingest/index.ts",
       "evidence_contract": "tests/delivery-control-plane-vertical-slice.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_activate_remaining_growth_plays_v3",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
+      "evidence_contract": "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
       "required": true
     },
     {
@@ -545,6 +566,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260928114500_powerhouse_linkedin_sales_machine_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_promote_growth_play_emails_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
+      "evidence_contract": "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
       "required": true
     },
     {
@@ -758,6 +786,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_growth_play_execution_contract_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
+      "evidence_contract": "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_growth_swarm_accounts_v1",
       "type": "table",
       "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
@@ -877,29 +912,15 @@
       "required": true
     },
     {
-      "id": "table:public.powerhouse_growth_play_execution_contract_v1",
-      "type": "table",
-      "authority": "supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
-      "evidence_contract": "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
+      "id": "view:public.bg_vandaag",
+      "type": "view",
+      "authority": "supabase/migrations/20260928162500_bg_vandaag_manual_dm_handoff_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-manual-linkedin-dm-handoff-v1.test.mjs",
       "required": true
     },
     {
       "id": "view:public.powerhouse_growth_play_build_status_v1",
       "type": "view",
-      "authority": "supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
-      "evidence_contract": "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
-      "required": true
-    },
-    {
-      "id": "rpc:powerhouse_activate_remaining_growth_plays_v3",
-      "type": "rpc",
-      "authority": "supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
-      "evidence_contract": "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
-      "required": true
-    },
-    {
-      "id": "rpc:powerhouse_promote_growth_play_emails_v1",
-      "type": "rpc",
       "authority": "supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
       "evidence_contract": "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
       "required": true
