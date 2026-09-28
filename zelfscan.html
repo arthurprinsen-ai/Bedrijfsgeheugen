@@ -424,7 +424,32 @@ document.getElementById('scanform').addEventListener('submit',function(ev){
  antwoorden.forEach(function(a,i){data['vraag_'+(i+1)+'_'+a.cat]=a.tekst+' ('+a.punten+' ptn)'});
  var knop=ev.target.querySelector('button');knop.textContent='Versturen…';knop.disabled=true;
  fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
-  .then(function(){bgEvent('zelfscan-email');toon('s-klaar')})
+  .then(function(){
+    bgEvent('zelfscan-email');
+    var now=new Date().toISOString();
+    var attribution={};try{attribution=JSON.parse(bgHerkomst()||'{}')}catch(e){}
+    fetch('/api/growth-event',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({
+      event_type:'lead_outcome',
+      event_id:'selfscan-'+Date.now(),
+      occurred_at:now,
+      canonical:'https://www.bedrijfsgeheugen.nl/zelfscan',
+      landing_canonical:'https://www.bedrijfsgeheugen.nl/zelfscan',
+      intent_id:'selfscan-report-request',
+      intent_owner:'growth-swarm',
+      page_role:'lead-magnet',
+      funnel_stage:'lead',
+      content_id:'page:zelfscan',
+      content_type:'page',
+      channel:'website',
+      source:attribution.utm_source||'website',
+      medium:attribution.utm_medium||'selfscan',
+      campaign:attribution.utm_campaign||'',
+      cta_action:'report_requested',
+      target_canonical:'https://www.bedrijfsgeheugen.nl/frisse-blik',
+      evidence_refs:['website:selfscan:report-request']
+    })}).catch(function(){});
+    toon('s-klaar')
+  })
   .catch(function(){knop.textContent='Opnieuw proberen →';knop.disabled=false;alert('Versturen mislukte — probeer het nog eens of mail arthur@bedrijfsgeheugen.nl')});
 });
 </script>
