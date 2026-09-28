@@ -13,3 +13,5 @@ GitHub delivery is versneld zonder security- of exact-head-gates te verzwakken.
 - Learning, skills en de canonical System Map zijn in dezelfde lineage bijgewerkt.
 
 Regression oracle: `tests/brain-ci-critical-path-acceleration-v1.test.mjs`.
+
+- Closure metadata is gesynchroniseerd met de volledige 16-file candidate scope na Required readback.
