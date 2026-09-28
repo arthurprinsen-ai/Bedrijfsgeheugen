@@ -767,7 +767,7 @@ function instagramIdentityProven(evidence: any) {
     &&clean(proof?.mira_gate_result)==='PASS'&&visible&&dims&&providerOk;
 }
 
-async function reconcileExistingProviderTruth(db: any, token: string, runDate: string) {
+async function reconcileExistingProviderTruth(db: any, token: string | null, runDate: string) {
   const [{ data: rows, error }, { data: obligations, error: obligationError }] = await Promise.all([
     db.from('powerhouse_channel_decisions').select('channel,decision,state,delivery_ref,delivery_evidence').eq('run_date', runDate).in('channel', ['linkedin_personal','linkedin_company','instagram_company']),
     db.from('content_publication_obligations').select('channel,external_id,evidence,status').eq('tenant_id', 'canonical').eq('publication_date', runDate).in('channel', ['linkedin_personal','linkedin_company','instagram']),
@@ -820,6 +820,10 @@ async function reconcileExistingProviderTruth(db: any, token: string, runDate: s
         await recordObligation(db,runDate,row.channel,'BLOCKED',ref,evidence,'Repair exact LinkedIn company Composio readback for this URN; never route this claim through Buffer or create a replacement post.',message);
         results.push({channel:row.channel,post_id:ref,state:'blocked',provider:'composio',provider_truth_verified:false,reason:message});
       }
+      continue;
+    }
+    if (!token) {
+      results.push({channel:row.channel,post_id:ref,state:row.state,provider:'buffer',reason:'BUFFER_AUDIT_DEFERRED',provider_truth_verified:false});
       continue;
     }
     const provider = await getPost(token, ref);
@@ -922,15 +926,22 @@ Deno.serve(async (req) => {
   let bufferCircuit = await readBufferCircuit(db);
   let containment_sweep:any = { skipped:false };
   let provider_reconciliation:any[] = [];
+
+  // LinkedIn/Composio reconciliation is independent from Buffer health.
+  // A Buffer cooldown may defer only Buffer-owned audit work, never exact LinkedIn URN reconciliation.
+  provider_reconciliation = await reconcileExistingProviderTruth(
+    db,
+    !bufferCircuit.active && bufferToken ? bufferToken : null,
+    runDate
+  );
+
   if (!bufferCircuit.active && bufferToken) {
     try {
       containment_sweep = await containmentSweepInstagram(db, bufferToken);
-      provider_reconciliation = await reconcileExistingProviderTruth(db, bufferToken, runDate);
     } catch (error) {
       if (error instanceof BufferHttpError && error.status === 429) {
         bufferCircuit = await openBufferCircuit(db,error.retryAfter,'provider-audit');
         containment_sweep = { skipped:true, reason:'BUFFER_RATE_LIMITED', retry_at:bufferCircuit.retry_at };
-        provider_reconciliation = [];
       } else throw error;
     }
   } else {

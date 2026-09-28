@@ -95,3 +95,15 @@ test('LinkedIn company preflight proves live organization ACL on the exact token
   assert.match(source, /LINKEDIN_COMPANY_REAUTH_REQUIRED/);
   assert.match(source, /row\.channel==='linkedin_company' \? await preflightLinkedInCompanyComposio\(db\) : await preflightLinkedInComposio\(db\)/);
 });
+
+
+test('LinkedIn reconciliation remains active while Buffer circuit is open', () => {
+  assert.match(source, /async function reconcileExistingProviderTruth\(db: any, token: string \| null, runDate: string\)/);
+  assert.match(source, /provider_reconciliation = await reconcileExistingProviderTruth\(/);
+  assert.match(source, /!bufferCircuit\.active && bufferToken \? bufferToken : null/);
+  assert.match(source, /reason:'BUFFER_AUDIT_DEFERRED'/);
+  const reconciliation = source.indexOf('provider_reconciliation = await reconcileExistingProviderTruth(');
+  const containment = source.indexOf('containment_sweep = await containmentSweepInstagram', reconciliation);
+  assert.ok(reconciliation > 0);
+  assert.ok(containment > reconciliation);
+});

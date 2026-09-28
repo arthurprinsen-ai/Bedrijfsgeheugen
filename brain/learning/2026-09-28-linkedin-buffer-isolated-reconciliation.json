@@ -1,0 +1,36 @@
+{
+  "fingerprint": "linkedin-reconciliation-buffer-isolation-v1",
+  "compiler": {
+    "failure_class": "CONNECTOR_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": {
+    "summary": "LinkedIn exact-provider reconciliation was nested inside the Buffer-health branch, so an open Buffer 429 circuit suppressed reconciliation of Composio-owned LinkedIn post URNs even though Buffer is not the LinkedIn transport.",
+    "cause": "provider reconciliation orchestration coupled unrelated providers"
+  },
+  "prevention_rules": [
+    "Always run exact LinkedIn Composio reconciliation independently of Buffer state.",
+    "Pass a null Buffer token when Buffer audit is unavailable and skip only Buffer-owned records.",
+    "Never clear LinkedIn reconciliation results because Buffer containment receives 429.",
+    "Preserve exact LinkedIn URNs and keep republish forbidden until the same URN is reconciled."
+  ],
+  "evidence": {
+    "runtime_observation": "Buffer circuit was open until 2026-09-29 while LinkedIn daily claims already had provider URNs.",
+    "regression_test": "tests/brain-linkedin-composio-authority.test.mjs",
+    "runtime_owner": "powerhouse-social-publisher"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ]
+  },
+  "outcome": {
+    "intended_state": "Buffer cooldown affects only Buffer-owned audit/containment; LinkedIn personal/company reconciliation stays available every run."
+  }
+}
