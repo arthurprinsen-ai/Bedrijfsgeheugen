@@ -40,3 +40,7 @@ Friction-index/workshop-output blijft leeg zolang de minimum dataset niet beschi
 
 ## Truth & privacy
 Publieke benchmarkgroepen hebben minimaal vijf waarnemingen. Private relaties en prospectnamen komen niet in publieke content. Economische waarde en M&A-risk blijven estimates totdat tenant/transactie-evidence beschikbaar is.
+
+
+## Terminal closure
+PR #3182 is protected merged to main at `ce0e18df0876a38be2ce6ce83964b2a274c9b150`. Production readback confirms 20 catalog plays, 13 runtime-active plays, 17.034 Growth Swarm accounts, 8 prebuilt dossiers and 8 ranked play-events today. The existing `powerhouse-commercial-learning-v1` remains the single scheduler owner; there are zero parallel Growth Swarm schedulers. The commercial cycle contains both Growth Swarm refresh and materialization. `powerhouse-growth-tools` is ACTIVE v4.

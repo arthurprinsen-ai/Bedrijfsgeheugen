@@ -80,3 +80,19 @@ Every play must map to one or more terminal outcomes:
 reply -> meeting -> scan -> proposal -> paid order -> realized revenue.
 
 Use `powerhouse_experiment_assignments` / effect-estimate infrastructure when sample sizes permit causal comparison. Do not promote a winning play before its measurement floor is met.
+
+
+## Terminal production proof — 28 september 2026
+Status: `LIVE_PROVEN`.
+
+PR #3182 is merged to protected main at `ce0e18df0876a38be2ce6ce83964b2a274c9b150`. Production readback confirms:
+- 20 canonical growth plays;
+- 13 runtime-active plays;
+- 17.034 accounts in the Growth Swarm state;
+- 8 prebuilt prospect dossiers;
+- 8 ranked play-events;
+- exactly one canonical commercial scheduler and zero parallel Growth Swarm schedulers;
+- Growth Swarm refresh + materialization are both wired into the canonical commercial cycle;
+- `powerhouse-growth-tools` ACTIVE v4.
+
+Plays that lack enough real data stay ARMED/READY_FOR_SURFACE rather than inventing benchmark or intent evidence.
