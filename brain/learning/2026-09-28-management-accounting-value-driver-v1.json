@@ -37,5 +37,17 @@
     "https://www.pwc.com/us/en/services/consulting/deals/joint-ventures-alliances/financial-due-diligence.html",
     "https://www.deloitte.com/content/dam/assets-zone2/ie/en/docs/services/financial-advisory/2023/IE_CF_MA_Preparing_your_business_Due_Diligence_A4_2pp_0119_FINAL.pdf",
     "https://pages.stern.nyu.edu/adamodar/New_Home_Page/valquestions/growth.htm"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "IMPROVEMENT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-management-accounting-intelligence.test.mjs"
+    ]
+  }
 }
