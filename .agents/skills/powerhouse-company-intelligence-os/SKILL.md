@@ -44,3 +44,16 @@ Canonical layers:
 - Sensitive-person inference is forbidden.
 - A learning is incomplete unless it can alter a subsequent decision or action.
 - Material changes inherit `powerhouse-system-map-governance`: update map, docs, learning and tests in the same lineage.
+
+## Terminal production proof
+
+A Company Intelligence OS delivery is terminal only after production readback proves the canonical runtime projections. Migration presence, CI success or a merged PR alone are not sufficient.
+
+Required closure behavior:
+- Re-read Company Graph, System of Context, Autonomous Action Layer, Outcome Memory and Compound Intelligence in production.
+- After proof, promote the canonical System Map capability to `LIVE_PROVEN_RUNTIME` in the same lineage.
+- Persist the proof in learning/prevention and the development ledger.
+- Never leave a stale candidate status after production evidence exists.
+- Never create a second proof/store/queue to represent the same runtime truth.
+
+Verified baseline on 2026-09-28: 42,217 graph nodes; 25,164 graph edges; 17,328 company contexts; 2,883 action-layer rows; 12 outcome-memory rows; 17,328 compound-intelligence company rows.
