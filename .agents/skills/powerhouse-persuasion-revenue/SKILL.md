@@ -61,3 +61,6 @@ Draft, suggestion, CTA recommendation, asset recommendation and TODO are non-ter
 `asset_format=pdf` is authoritative. `board_one_pager`, `evidence_teardown`, `lost_knowledge_case`, `friction_business_case`, `mini_benchmark` and `peer_benchmark` default to PDF. The autonomous Gmail executor generates the PDF with the approved text-to-PDF provider and attaches it to the same outgoing e-mail before sending. Missing facts remain unknown; never invent evidence, ROI, benchmark values, urgency, scarcity or customer proof.
 
 This rule is inherited by chats, agents, scheduled runs, Growth Swarm, LinkedIn sales, autonomous outreach and future commercial agents. Human intervention is reserved for missing authority/credentials, safety/legal boundaries or an irreducible business choice.
+
+## Growth Swarm 20/20 integration
+All twenty Growth Swarm plays use this canonical optimizer where a message/value exchange exists. Persuasion remains downstream of eligibility/play selection and upstream of provider execution. It may select framing, give asset and minimal get ask, but may not create an independent contact budget or bypass evidence, consent, identity, dedupe, fatigue, suppression, opt-out, provider capability or provider acknowledgement. No sensitive personality/psychographic profiling is used.
