@@ -42,3 +42,8 @@ Elke run hergebruikt echte outcomes uit `powerhouse_sales_outcomes`. Strategieë
 
 ## Productiestaat — 28 september 2026
 De migratie is toegepast op Supabase project `adhjwmvyoixzjtmiroln`. De catalogus bevat 8 strategieën. Een gecontroleerde readback heeft bestaande prepared autonomous-email en LinkedIn-commentacties voorzien van persuasion metadata zonder extra actievolume te creëren.
+
+## Growth Swarm 20/20 integration
+All twenty Growth Swarm plays may consume the canonical Persuasion Revenue Optimizer where a message/value exchange exists. Persuasion remains downstream of play/eligibility selection and upstream of provider execution.
+
+The optimizer may select framing, give asset and minimal get ask, but it may not create an independent contact budget or bypass evidence, consent, identity, dedupe, fatigue, suppression, opt-out, provider capability or provider acknowledgement. Anti-consultancy uses value-first + no-buy autonomy; bounded risk-reduction uses an explicit output condition, never fabricated scarcity or an uncontrolled guarantee. Public demand-generation content may use evidence, contrast and verified aggregate social proof, but never sensitive psychological/personality profiling of prospects.
