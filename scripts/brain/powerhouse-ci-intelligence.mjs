@@ -1,4 +1,5 @@
-import { mkdir, writeFile, appendFile } from 'node:fs/promises';
+import { mkdir, writeFile, appendFile, readFile } from 'node:fs/promises';
+import { calibrateCi } from '../../tools/delivery/ci-calibration-engine.mjs';
 
 const repo = process.env.GITHUB_REPOSITORY;
 const token = process.env.GITHUB_TOKEN;
@@ -58,7 +59,7 @@ const workflowFanout = new Map();
 for (const run of runs) workflowFanout.set(run.head_sha, (workflowFanout.get(run.head_sha) || 0) + 1);
 const fanoutValues = [...workflowFanout.values()];
 
-const report = {
+const baseReport = {
   version: 'powerhouse-ci-intelligence-v1',
   observed_at: new Date().toISOString(),
   window_days: 7,
@@ -87,6 +88,10 @@ const report = {
   jobs: jobRows,
 };
 
+const calibrationPolicy = JSON.parse(await readFile('config/powerhouse-ci-calibration-v1.json','utf8'));
+const calibration = calibrateCi({ report: baseReport, policy: calibrationPolicy });
+const report = { ...baseReport, calibration };
+
 await mkdir('artifacts/ci-intelligence', { recursive: true });
 await writeFile('artifacts/ci-intelligence/latest.json', JSON.stringify(report, null, 2) + '\n');
 console.log(JSON.stringify(report.metrics, null, 2));
@@ -94,5 +99,5 @@ console.log(JSON.stringify(report.metrics, null, 2));
 if (process.env.GITHUB_STEP_SUMMARY) {
   const m = report.metrics;
   await appendFile(process.env.GITHUB_STEP_SUMMARY,
-    `## Powerhouse CI Intelligence\n\n- Queue avg / p95: **${m.queue_wait_seconds_avg}s / ${m.queue_wait_seconds_p95}s**\n- Execution avg / p95: **${m.execution_seconds_avg}s / ${m.execution_seconds_p95}s**\n- Fan-out per SHA avg / p95: **${m.workflow_fanout_per_sha_avg} / ${m.workflow_fanout_per_sha_p95}**\n- Failed / cancelled / skipped jobs: **${m.failed_jobs} / ${m.cancelled_jobs} / ${m.skipped_jobs}**\n`);
+    `## Powerhouse CI Intelligence\n\n- Queue avg / p95: **${m.queue_wait_seconds_avg}s / ${m.queue_wait_seconds_p95}s**\n- Execution avg / p95: **${m.execution_seconds_avg}s / ${m.execution_seconds_p95}s**\n- Fan-out per SHA avg / p95: **${m.workflow_fanout_per_sha_avg} / ${m.workflow_fanout_per_sha_p95}**\n- Failed / cancelled / skipped jobs: **${m.failed_jobs} / ${m.cancelled_jobs} / ${m.skipped_jobs}**\n- Calibration recommendations: **${report.calibration.recommendations.length}** (mode: ${report.calibration.mode})\n`);
 }

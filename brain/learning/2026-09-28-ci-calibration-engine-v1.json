@@ -1,0 +1,40 @@
+{
+  "fingerprint": "github|ci-calibration|telemetry-feedback-shadow|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "CI Intelligence measured queue, execution, fan-out and wasted work but produced no machine-readable feedback plan. Optimization therefore still depended on manual interpretation of telemetry.",
+  "prevention_rule": "Translate canonical CI telemetry into bounded calibration recommendations on every intelligence run. Calibration stays read-only/shadow and may never weaken security, Required, CodeQL or production readback; any future mutation must use a protected candidate.",
+  "enforcement": [
+    "config/powerhouse-ci-calibration-v1.json",
+    "tools/delivery/ci-calibration-engine.mjs",
+    "scripts/brain/powerhouse-ci-intelligence.mjs",
+    "tests/brain-ci-calibration-engine-v1.test.mjs",
+    "tests/brain-ci-calibration-wiring-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-calibration-engine-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-calibration-wiring-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-ci-calibration-engine-v1.test.mjs",
+    "tests/brain-ci-calibration-wiring-v1.test.mjs"
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-ci-calibration-engine-v1.test.mjs",
+      "tests/brain-ci-calibration-wiring-v1.test.mjs"
+    ]
+  }
+}
