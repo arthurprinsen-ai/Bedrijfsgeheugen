@@ -1,0 +1,44 @@
+{
+  "fingerprint": "provider-write-terminal-all-social-v1",
+  "compiler": {
+    "failure_class": "FALSE_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": {
+    "summary": "Powerhouse could reclassify an already-created social provider side effect as blocked when later auth, readback or media-proof checks failed.",
+    "causes": [
+      "publication truth and later verification truth were coupled",
+      "later policy/media gates were applied retroactively to already-created posts",
+      "existing provider IDs were not always treated as terminal anti-duplicate fences"
+    ]
+  },
+  "prevention_rules": [
+    "Provider create success plus durable external ID/URN is terminal publication evidence.",
+    "Provider-truth-verified existing Instagram media is terminal publication evidence.",
+    "Later OAuth revocation, 401/403 readback, ACL or analytics failure cannot downgrade an already-created post.",
+    "Later media-policy drift applies only to future generation and may not retroactively block a live post.",
+    "Persist republish_forbidden=true and reconcile exact IDs only.",
+    "Daily watchdogs must preserve published state for existing provider side effects."
+  ],
+  "evidence": {
+    "date": "2026-09-28",
+    "linkedin_personal_id": "urn:li:share:7510280992931188736",
+    "linkedin_company_id": "urn:li:share:7510281040192602112",
+    "instagram_id": "18193272064401728",
+    "regression_test": "tests/brain-linkedin-composio-authority.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ]
+  },
+  "outcome": {
+    "intended_state": "All daily social provider side effects remain terminally published once created or provider-truth-verified, with no duplicate replacement on later verification drift."
+  }
+}
