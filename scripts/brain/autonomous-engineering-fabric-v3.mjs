@@ -108,7 +108,7 @@ export function buildAutonomousEngineeringPlan({ obligationId, baseSha, candidat
 }
 
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
-export function optimizeDailyTuning({ metrics = {}, current = {} } = {}) {
+export function optimizeDailyTuning({ metrics = {}, calibration = {}, current = {} } = {}) {
   const next = { ...current };
   const decisions = [];
   const queueP95 = Number(metrics.queue_wait_seconds_p95 ?? 0);
@@ -121,6 +121,9 @@ export function optimizeDailyTuning({ metrics = {}, current = {} } = {}) {
   const skippedRate = skipped / jobs;
   const fanoutP95 = Number(metrics.workflow_fanout_per_sha_p95 ?? 0);
 
+  const calibrationRecommendations = Array.isArray(calibration?.recommendations) ? calibration.recommendations : [];
+  const highCalibrationWarnings = calibrationRecommendations.filter(item => item?.priority === 'high');
+  const calibrationVeto = highCalibrationWarnings.length > 0;
   const runnerPressure = queueP95 > 120 || cancelled > 8;
   const orchestrationWaste = fanoutP95 > 10 || skippedRate > 0.45;
 
@@ -129,7 +132,7 @@ export function optimizeDailyTuning({ metrics = {}, current = {} } = {}) {
     next.max_parallel_packages=clamp(before-1,2,8);
     next.candidate_batch_window_seconds=clamp(Number(next.candidate_batch_window_seconds ?? 20)+(orchestrationWaste?10:5),10,60);
     decisions.push(orchestrationWaste?'reduce-fanout-and-batch-more':'reduce-runner-pressure-and-batch-more');
-  } else if (queueP95 < 30 && fanoutP95 <= 6 && failureRate < 0.05 && skippedRate < 0.25) {
+  } else if (!calibrationVeto && queueP95 < 30 && fanoutP95 <= 6 && failureRate < 0.05 && skippedRate < 0.25) {
     next.max_parallel_packages=clamp(Number(next.max_parallel_packages ?? 4)+1,2,8);
     decisions.push('increase-safe-parallelism');
   }
@@ -140,7 +143,7 @@ export function optimizeDailyTuning({ metrics = {}, current = {} } = {}) {
   if (failureRate > 0.15) {
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)+0.05,0.6,0.95);
     decisions.push('raise-speculation-confidence-threshold');
-  } else if (failureRate < 0.03 && queueP95 < 60 && fanoutP95 <= 6) {
+  } else if (!calibrationVeto && failureRate < 0.03 && queueP95 < 60 && fanoutP95 <= 6) {
     next.speculative_execution_threshold=clamp(Number(next.speculative_execution_threshold ?? 0.75)-0.02,0.6,0.95);
     decisions.push('allow-more-safe-speculation');
   }
@@ -149,7 +152,9 @@ export function optimizeDailyTuning({ metrics = {}, current = {} } = {}) {
     execution_seconds_p95:executionP95,
     workflow_fanout_per_sha_p95:fanoutP95,
     failure_rate:Number(failureRate.toFixed(4)),
-    skipped_rate:Number(skippedRate.toFixed(4))
+    skipped_rate:Number(skippedRate.toFixed(4)),
+    calibration_mode:String(calibration?.mode || 'NONE'),
+    calibration_high_priority_recommendations:Object.freeze(highCalibrationWarnings.map(item => String(item.id || '')).filter(Boolean))
   });
   next.safety={ ...(current.safety ?? {}), required_release_gate:true, security_gate:true, production_readback:true, protected_merge:true, exact_sha_identity:true };
   return Object.freeze({ changed:JSON.stringify(next)!==JSON.stringify(current), decisions:Object.freeze(decisions), signals, tuning:Object.freeze(next) });
@@ -188,7 +193,7 @@ async function main(){
     ]);
     const metricsDoc=JSON.parse(metricsRaw);
     const current=JSON.parse(currentRaw);
-    const result=optimizeDailyTuning({metrics:{...metricsDoc.metrics,sampled_jobs:metricsDoc.sampled_jobs},current});
+    const result=optimizeDailyTuning({metrics:{...metricsDoc.metrics,sampled_jobs:metricsDoc.sampled_jobs},calibration:metricsDoc.calibration || {},current});
     const out={...result,observed_at:new Date().toISOString(),source_metrics:metricsDoc.metrics};
     await mkdir(path.join(repoRoot,'artifacts/engineering-optimizer'),{recursive:true});
     await writeFile(path.join(repoRoot,'artifacts/engineering-optimizer/latest.json'),JSON.stringify(out,null,2)+'\n');
