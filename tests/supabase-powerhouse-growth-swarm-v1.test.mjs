@@ -54,13 +54,13 @@ test('revenue swarm materializes dossiers before external outreach',()=>{
   assert.ok(growthAt>0 && linkedinAt>growthAt && emailAt>linkedinAt);
 });
 
-test('public growth tools keep revenue swarm private',()=>{
-  assert.match(worker,/tool==='revenue-swarm'/);
-  assert.match(worker,/x-powerhouse-token/);
-  assert.match(worker,/UNAUTHORIZED/);
+test('public growth tools expose only privacy-safe calculators and benchmarks',()=>{
   assert.match(worker,/tool==='lost-knowledge'/);
   assert.match(worker,/tool==='ma-risk'/);
   assert.match(worker,/tool==='workshop-benchmark'/);
+  assert.match(worker,/tool==='friction-index'/);
+  assert.doesNotMatch(worker,/tool==='revenue-swarm'/);
+  assert.doesNotMatch(worker,/bg_geheim/);
 });
 
 test('growth swarm forbids fabricated growth claims',()=>{
