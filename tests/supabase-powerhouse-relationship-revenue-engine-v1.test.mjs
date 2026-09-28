@@ -42,3 +42,17 @@ test('new RPC is a required Powerhouse quality surface',()=>{
   assert.equal(surface.required,true);
   assert.equal(surface.evidence_contract,'tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs');
 });
+
+
+test('relationship research is executed from canonical public evidence stores before trigger materialization',()=>{
+  const auto=fs.readFileSync('supabase/migrations/20260928104500_powerhouse_relationship_research_auto_enrichment_v1.sql','utf8');
+  assert.match(auto,/powerhouse_execute_relationship_research_v1/);
+  assert.match(auto,/bg_bedrijfsnieuws/);
+  assert.match(auto,/bg_externe_signalen/);
+  assert.match(auto,/powerhouse_predictive_signals/);
+  assert.match(auto,/vendor_used',false/);
+  assert.match(auto,/external_outreach_executed',false/);
+  const researchAt=auto.indexOf('v_research:=public.powerhouse_execute_relationship_research_v1');
+  const triggerAt=auto.indexOf('v_trigger:=public.powerhouse_refresh_trigger_based_mkb_acquisition_v1');
+  assert.ok(researchAt>0 && triggerAt>researchAt);
+});
