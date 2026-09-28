@@ -43,3 +43,15 @@ Gebruik LinkedIn als actieve commerciële relatie- en distributielaag, niet als 
 
 ## Verboden
 Geen scraping/platform-bypass, geen bulk generieke comments, geen gefingeerde DM-capability, geen prospectnamen in sales-air-cover posts, geen dubbel contact, geen comment op een post zonder company-specific evidence.
+
+
+## Permanente revenue-first uitvoeringsregel
+- Deze capability is **execution-first**: signaleren zonder passende actie is geen terminale uitkomst.
+- Powerhouse beslist autonoom tussen publieke LinkedIn-engagement, bedrijfspagina-air-cover, private e-mail en wachten/nurture op basis van evidence, fatigue, suppression en kanaalbeschikbaarheid.
+- Geen handmatige goedkeuring per comment, company-post of private follow-up wanneer alle bestaande gates groen zijn.
+- Een relevante publieke post mag een autonome inhoudelijke comment krijgen; een cluster van actuele prospectproblemen mag een geanonimiseerde `linkedin_company` post voeden; een sterk private koopsignaal mag via het ondersteunde private kanaal worden opgevolgd.
+- Niet elk signaal hoeft contact op te leveren. `wait/nurture` is een geldige autonome actie wanneer timing of evidence nog onvoldoende is.
+- Kanaalvolgorde wordt outcome-driven geleerd: comment -> engagement -> private follow-up -> reply -> meeting -> scan -> order -> realized revenue.
+- Likes, comments, shares, profiel-/contentinteractie en andere LinkedIn-signalen zijn features in de score, nooit op zichzelf bewijs van koopintentie.
+- Alle acties blijven uniek: provider acknowledgement, action-dedupe, semantic content-dedupe, person cooldown en suppression zijn harde gates.
+- Iedere nieuwe provider-capability (bijvoorbeeld echte LinkedIn DM of create-reaction) wordt pas geactiveerd na capability-probe, identity verification, provider-ack test en regressietest.
