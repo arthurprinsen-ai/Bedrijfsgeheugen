@@ -76,3 +76,19 @@ Required customer-facing surfaces:
 - roadmap/execution.
 
 Portal rule: show the understandable loop `Ziet → Begrijpt → Beslist → Doet → Leert`, with compact graph context and Outcome Memory where evidence exists. Use only tenant-scoped portal/runtime evidence. Do not read globally aggregated Company Intelligence views directly into customer UI until tenant isolation is explicit and production-proven. Missing evidence must render as unknown/empty, never as invented context. Roadmap cards may expose impact/effort/intelligence tags only when those values exist in canonical tenant context; Capability Graph must be connected to decision/action/outcome context rather than shown as an isolated diagram.
+
+
+## Contextual intelligence visibility invariant
+
+Any intelligence that can materially change a management decision must be projected into the relevant Portal V2 context rather than existing only in Brain, Supabase, logs or a standalone intelligence page.
+
+Required behavior:
+- show the intelligence where the user decides, prioritizes or acts;
+- prefer compact visual context over detached technical dashboards;
+- reuse canonical tenant-scoped evidence and runtime authorities;
+- show uncertainty, provenance and evidence state when applicable;
+- never fabricate an insight, forecast, benchmark, scenario or action when evidence is insufficient;
+- avoid duplicate widgets: project only the subset relevant to the current decision context;
+- connect predictions to actions and outcomes so the user can see not only what may happen, but what Powerhouse recommends doing and what happened afterward.
+
+A material intelligence capability is incomplete until its customer-facing projection is implemented where relevant, tested and documented.
