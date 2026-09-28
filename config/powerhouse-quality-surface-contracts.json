@@ -121,6 +121,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-scan-ingest",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-scan-ingest/index.ts",
+      "evidence_contract": "tests/brain-workshop-scan-powerhouse-handoff-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-runtime",
       "type": "function",
       "authority": "supabase/functions/powerhouse-runtime/index.ts",
