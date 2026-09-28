@@ -201,6 +201,31 @@
         "cockpits": true,
         "futureCapabilities": true
       }
+    },
+    "netlifyTerminalSelfHealing": {
+      "version": "NETLIFY-TERMINAL-SELF-HEAL-v1",
+      "fingerprint": "delivery|netlify-terminal-self-heal|v1",
+      "authority": "CURRENT_PROTECTED_MAIN_PLUS_PROVIDER_READBACK",
+      "preflight": [
+        "resolve_current_main_sha",
+        "read_current_netlify_production"
+      ],
+      "staleTargetPolicy": "SAFE_SUPERSESSION_BEFORE_RETRY",
+      "expiredTransportPolicy": "REACQUIRE_ONCE_THEN_PROVIDER_READBACK",
+      "noPendingFinalHandoff": true,
+      "terminalRequires": [
+        "netlify_state_ready",
+        "netlify_context_production",
+        "commit_ref_matches_current_main_or_proven_safe_supersession",
+        "browser_readback_green"
+      ],
+      "inheritance": {
+        "chats": true,
+        "agents": true,
+        "skills": true,
+        "workflows": true,
+        "futureCapabilities": true
+      }
     }
   }
 }
