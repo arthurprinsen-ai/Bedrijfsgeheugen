@@ -19,19 +19,21 @@
   ],
   "type": "POWERHOUSE_LEARNING",
   "version": "v1",
-  "status": "CANDIDATE",
+  "status": "LIVE_PROVEN_RUNTIME",
   "title": "Powerhouse self-improvement cross-layer authority",
   "impact": "Without one explicit cross-layer contract, learning quality, model selection, architecture health and agent objectives could improve locally without proving that Powerhouse as a whole became better.",
   "failed_approaches": [
     "Adding more isolated agents or AI features without a shared outcome/evaluation authority.",
-    "Treating code presence or model novelty as proof of improvement."
+    "Treating code presence or model novelty as proof of improvement.",
+    "Synchronously invoking the full Company Intelligence acquisition cycle from the daily self-improvement observer; production proof exceeded the interactive execution window and duplicated orchestration responsibility."
   ],
-  "fix": "Compose existing Company Intelligence, quality, autonomous-improvement and protected-delivery authorities behind one evidence-first Self-Improvement Layer.",
-  "prevention_rule": "Every material autonomous improvement must have explicit objective, verified evidence, representative evaluation, regression/security non-degradation and protected promotion. Unknown is never green and learning may not directly rewrite production.",
+  "fix": "Compose existing Company Intelligence, quality, autonomous-improvement and protected-delivery authorities behind one evidence-first Self-Improvement Layer; the self-improvement observer reads current canonical projections and never synchronously reruns the heavier Company Intelligence cycle.",
+  "prevention_rule": "Every material autonomous improvement must have explicit objective, verified evidence, representative evaluation, regression/security non-degradation and protected promotion. Cross-layer observers consume canonical projections instead of synchronously duplicating another scheduler/orchestrator. Unknown is never green and learning may not directly rewrite production.",
   "regression_contract": "tests/brain-self-improvement-layer-v1.test.mjs",
   "tests": [
     "tests/brain-self-improvement-layer-v1.test.mjs",
-    "tests/powerhouse-daily-self-evolution.test.mjs"
+    "tests/powerhouse-daily-self-evolution.test.mjs",
+    "tests/brain-self-improvement-runtime-nonblocking-v1.test.mjs"
   ],
   "evidence": {
     "module": "brain/self-improvement/self-improvement-layer.mjs",
@@ -41,9 +43,31 @@
       "tests/brain-self-improvement-layer-v1.test.mjs",
       "tests/powerhouse-daily-self-evolution.test.mjs"
     ],
-    "system_map": "platform/system-map/canonical-system-map.mjs"
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "runtime_hardening_migration": "supabase/migrations/20260928203000_powerhouse_self_improvement_orchestrator_nonblocking_v1.sql",
+    "production": {
+      "github_implementation_merge_sha": "9feaa95a77e7bc24c53ffd852058fe56de02c67d",
+      "github_runtime_hardening_merge_sha": "26199abfb2accb3a015c45490f8e0da9e4e32d47",
+      "initial_migration_applied_version": "20260928182014",
+      "hardening_migration_applied_version": "20260928183018",
+      "agent_objectives": 6,
+      "compiler_ready": 8,
+      "evidence_pending": 0,
+      "regression_pending": 0,
+      "escaped_defects_without_regression": 0,
+      "model_health_degraded": 0,
+      "model_health_unknown": 0,
+      "learning_companies": 5,
+      "verified_outcomes": 5,
+      "runtime_events": 1,
+      "daily_cron": "7 3 * * *",
+      "duplicate_orchestration": false,
+      "new_security_advisor_findings": 0,
+      "new_performance_advisor_findings": 0,
+      "runtime_readback_at": "2026-09-28T18:30:25.114667Z"
+    }
   },
-  "outcome": "Candidate unifies evidence-backed daily compounding across company, agent and engineering learning without creating a parallel truth or production writer.",
+  "outcome": "LIVE_PROVEN_RUNTIME: the Self-Improvement Layer is deployed, scheduled daily, emits verified runtime evidence, consumes current canonical Company Intelligence projections without duplicate orchestration, and exposes eight regression/evidence-ready compiler items with zero evidence/regression gaps in the current control state.",
   "compiler": {
     "failure_class": "FRAGMENTED_SELF_IMPROVEMENT_WITHOUT_UNIFIED_PROMOTION_CONTRACT",
     "scope": "WHOLE_BRAIN_INTELLIGENCE",
@@ -53,7 +77,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-self-improvement-layer-v1.test.mjs"
+      "tests/brain-self-improvement-layer-v1.test.mjs",
+      "tests/brain-self-improvement-runtime-nonblocking-v1.test.mjs"
     ],
     "invariants": [
       "learning requires evidence",

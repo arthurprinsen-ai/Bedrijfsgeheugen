@@ -1,0 +1,45 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v2",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse-foresight-prediction-intelligence-v2",
+  "date": "2026-09-28",
+  "title": "Forecast resolution is required for compounding predictive intelligence",
+  "problem": "Powerhouse could produce many forecasts while only a small number had verified resolved outcomes, limiting reliable calibration and autonomous prediction improvement.",
+  "root_cause": "Prediction generation and forecast calibration existed, but forecast-resolution coverage was not a first-class learning objective across Self-Improvement.",
+  "impact": "Without resolution coverage, probability quality, timing quality and model improvements cannot be proven and prediction volume can create false confidence.",
+  "failed_approaches": [
+    "Treating number of forecasts as evidence of predictive intelligence.",
+    "Improving prediction methods without enough resolved outcomes."
+  ],
+  "fix": "Add canonical prediction quality, resolution debt, horizon calibration, scenario ensemble and evidence-driven challenger controls over the existing forecast tables.",
+  "prevention_rule": "Every due forecast becomes explicit learning debt until resolved; method changes require resolved-outcome evidence and backtest-shadow-canary promotion.",
+  "regression_contract": "tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs",
+  "tests": [
+    "tests/powerhouse-foresight-autonomy.test.mjs",
+    "tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs"
+  ],
+  "evidence": {
+    "brain": "scripts/brain/foresight-autonomy.mjs",
+    "config": "config/powerhouse-foresight-autonomy.json",
+    "migration": "supabase/migrations/20260928203500_powerhouse_foresight_prediction_intelligence_v2.sql",
+    "portal": "portal-v2/foresight-intelligence.js"
+  },
+  "outcome": "Powerhouse can measure whether future predictions improve and generate bounded improvement challengers instead of merely generating more forecasts.",
+  "compiler": {
+    "failure_class": "PREDICTION_WITHOUT_SUFFICIENT_RESOLUTION",
+    "scope": "WHOLE_BRAIN_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-foresight-prediction-intelligence",
+    "powerhouse-self-improvement-layer"
+  ]
+}
