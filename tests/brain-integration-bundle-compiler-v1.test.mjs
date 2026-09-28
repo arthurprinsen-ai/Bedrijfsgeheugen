@@ -111,3 +111,23 @@ test('Required test consumes the integration bundle as one derivation authority'
   assert.match(workflow, /steps\.integration\.outputs\.full_shared_suite/);
   assert.doesNotMatch(workflow, /id: impact[\s\S]*adaptive-delivery-engine\.mjs/);
 });
+
+
+test('bundle merges bounded historical pattern-memory regressions into adaptive tests', () => {
+  const bundle = compileIntegrationBundle({
+    changedPaths:['tools/delivery/example.mjs'],
+    metadata:{ obligationId:'memory-v1', deliveryLane:'backend', candidateType:'implementation', baseSha:base, supersedes:null },
+    baseSha:base,
+    headSha:head,
+    adaptivePolicy,
+    integrationPolicy,
+    learningRecords:[{
+      fingerprint:'delivery|historical-regression|v1',
+      enforcement:['tools/delivery/'],
+      test_evidence:['tests/brain-delivery-pattern-memory-v1.test.mjs']
+    }]
+  });
+  assert.ok(bundle.patternMemory.tests.includes('tests/brain-delivery-pattern-memory-v1.test.mjs'));
+  assert.ok(bundle.adaptive.tests.includes('tests/brain-delivery-pattern-memory-v1.test.mjs'));
+  assert.equal(bundle.patternMemory.matches[0].fingerprint,'delivery|historical-regression|v1');
+});
