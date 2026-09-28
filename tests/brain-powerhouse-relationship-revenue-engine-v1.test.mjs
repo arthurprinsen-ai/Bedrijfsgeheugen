@@ -36,3 +36,12 @@ test('public research edge function is authenticated, evidence-only and feeds ca
   assert.match(fn,/external_outreach_executed:false/);
   assert.doesNotMatch(fn,/linkedin_dm|send.*message|email.*send/i);
 });
+
+
+test('public research schedule runs before the canonical commercial cycle',()=>{
+  const sched=fs.readFileSync('supabase/migrations/20260928105500_powerhouse_relationship_public_research_schedule_v1.sql','utf8');
+  assert.match(sched,/powerhouse-relationship-public-research-hourly/);
+  assert.match(sched,/'24 \* \* \* \*'/);
+  assert.match(sched,/powerhouse_daily_scheduler_token/);
+  assert.match(sched,/powerhouse-relationship-public-research/);
+});
