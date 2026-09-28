@@ -61,3 +61,18 @@ Verified baseline on 2026-09-28: 42,217 graph nodes; 25,164 graph edges; 17,328 
 ## Self-improvement bridge
 
 Verified Company Intelligence outcomes feed `powerhouse-self-improvement-layer`. That layer may recalibrate agents, model-routing candidates, policies, tests and engineering candidates, but must reuse Outcome Memory, existing optimization evidence and protected delivery. It must never create a parallel graph, outcome ledger, learning store or uncontrolled production writer.
+
+## Contextual portal projection
+
+Company Intelligence is visible **where a user decides or acts**, not as a separate dashboard.
+
+Required customer-facing surfaces:
+- executive cockpit;
+- company/decision cockpit;
+- impact/value context;
+- next-best-actions;
+- monitoring & learning;
+- evidence health;
+- roadmap/execution.
+
+Portal rule: show the understandable loop `Ziet → Begrijpt → Beslist → Doet → Leert`, with compact graph context and Outcome Memory where evidence exists. Use only tenant-scoped portal/runtime evidence. Do not read globally aggregated Company Intelligence views directly into customer UI until tenant isolation is explicit and production-proven. Missing evidence must render as unknown/empty, never as invented context.

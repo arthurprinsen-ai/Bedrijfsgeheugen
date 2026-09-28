@@ -327,6 +327,7 @@ export function enhancePortalShell(){
   ensureStylesheet('./powerhouse-observability.css');
   ensureStylesheet('./trusted-advisor-assurance.css');
   ensureStylesheet('./business-context.css');
+  ensureStylesheet('./company-intelligence-context.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
 
   bindTextButton('.nav button','csrd','csrd-impact');

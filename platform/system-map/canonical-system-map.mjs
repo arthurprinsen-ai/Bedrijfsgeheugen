@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T18:46:00Z',
+  observedAt:'2026-09-28T19:45:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -156,7 +156,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         compoundIntelligence:'public.powerhouse_compound_intelligence_v1',
         brainModule:'brain/company-intelligence/company-intelligence-os.mjs',
         contract:'brain/contracts/company-intelligence-os-v1.json',
-        orchestrator:'public.powerhouse_run_company_intelligence_os_v1(date)'
+        orchestrator:'public.powerhouse_run_company_intelligence_os_v1(date)',
+        portalProjection:'portal-v2/operating-system/company-intelligence-context.js',
+        portalStyles:'portal-v2/company-intelligence-context.css'
       }),
       productionEvidence:Object.freeze({
         githubMainMergeSha:'f177340af3aa08287cc510915623e01ce701778d',
@@ -182,7 +184,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         actionRequiresLineage:true,
         outcomeRequiresOrigin:true,
         realizedValueObservedNotSynthesized:true,
-        learningUpdatesSharedPolicy:true
+        learningUpdatesSharedPolicy:true,
+        contextualPortalProjection:true,
+        customerPortalTenantScopedOnly:true,
+        noGlobalUnscopedGraphInCustomerUi:true
       })
     }),
     Object.freeze({

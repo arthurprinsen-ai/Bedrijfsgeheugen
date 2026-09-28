@@ -1,5 +1,6 @@
 import {mapRuntimeProjection} from './runtime-evidence.js';
 import {buildCompanyCockpit} from './company-cockpit.js';
+import {renderCompanyIntelligenceContext} from './operating-system/company-intelligence-context.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const eur=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(value)||0);
@@ -40,7 +41,7 @@ export function renderCompanyCockpitHtml(runtime={}){
   const verifiedValue=cockpit.sections.find(x=>x.key==='verified-value')?.items||[];
   const blocked=cockpit.sections.find(x=>x.key==='blocked')?.items||[];
   const audit=cockpit.sections.find(x=>x.key==='audit')?.items||[];
-  return `<div class="company-cockpit-head"><div><h2>Wat moet eerst</h2><p>Één prioriteitenlijst uit Brein & Powerhouse — met bewijs, goedkeuring, kosten en gerealiseerde waarde.</p></div><span class="company-live">Brain runtime</span></div>
+  return `${renderCompanyIntelligenceContext(runtime,'company-cockpit')}<div class="company-cockpit-head"><div><h2>Wat moet eerst</h2><p>Één prioriteitenlijst uit Brein & Powerhouse — met bewijs, goedkeuring, kosten en gerealiseerde waarde.</p></div><span class="company-live">Brain runtime</span></div>
     <div class="company-economics">
       <span><small>Verwachte waarde</small><b>${eur(economics.expectedValue)}</b></span>
       <span><small>Werkelijke kosten</small><b>${eur(economics.actualCost)}</b></span>

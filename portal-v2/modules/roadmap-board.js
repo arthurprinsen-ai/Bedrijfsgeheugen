@@ -13,10 +13,19 @@ export function reorderRoadmapItems(items,sourceId,targetId){
  const [moved]=next.splice(from,1);next.splice(to,0,moved);return next;
 }
 
+function intelligenceMarkup(item){
+ const chips=[];
+ if(item.managementAccountingDerived||item.sourceFingerprint)chips.push('Powerhouse-afgeleid');
+ const impact=Number(item.expected_value??item.expectedValue);if(Number.isFinite(impact)&&impact>0)chips.push('Impact '+new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(impact));
+ const effort=Number(item.effort_score??item.effortScore);if(Number.isFinite(effort))chips.push('Effort '+Math.round(effort)+'/100');
+ return chips.length?'<div class="v2roadmapintel" aria-label="Powerhouse context">'+chips.map(chip=>'<span>'+esc(chip)+'</span>').join('')+'</div>':'';
+}
+
 function cardMarkup(item){
  const sprint=clampSprint(item.sprint);
  return `<article class="v2roadmapcard" draggable="true" data-repeat-row data-roadmap-id="${esc(item.id)}" data-sprint="${sprint}">
   <div class="v2roadmapdrag" aria-hidden="true">⠿</div>
+  ${intelligenceMarkup(item)}
   <label>Titel<input data-card-field="title" data-repeat-col="title" value="${esc(item.title||'')}" aria-label="Titel roadmapkaart"></label>
   <div class="v2roadmapmeta">
    <label>Onderdeel<input data-card-field="dimension" data-repeat-col="dimension" value="${esc(item.dimension||'')}"></label>
