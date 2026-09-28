@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T17:54:27Z',
+  observedAt:'2026-09-28T18:30:25.114667Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -40,7 +40,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Powerhouse Self-Improvement Layer',
       authority:'supabase',
       owner:'whole-brain-intelligence',
-      status:'CANDIDATE_DELIVERY',
+      status:'LIVE_PROVEN_RUNTIME',
       inputs:Object.freeze(['Company Intelligence OS','verified Outcome Memory','optimization candidates','quality events','model health','autonomous-improvement evidence','engineering evidence']),
       outputs:Object.freeze(['agent objective registry','learning compiler queue','self-improvement control state','provider-neutral model routing policy','architecture health','controlled promotion recommendations']),
       runtime:Object.freeze({
@@ -51,6 +51,31 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         module:'brain/self-improvement/self-improvement-layer.mjs',
         contract:'brain/contracts/self-improvement-layer-v1.json',
         dailyWorkflow:'.github/workflows/powerhouse-daily-self-evolution.yml'
+      }),
+      productionEvidence:Object.freeze({
+        githubImplementationMergeSha:'9feaa95a77e7bc24c53ffd852058fe56de02c67d',
+        githubRuntimeHardeningMergeSha:'26199abfb2accb3a015c45490f8e0da9e4e32d47',
+        initialMigrationName:'powerhouse_self_improvement_layer_v1',
+        initialMigrationSourceVersion:'20260928194500',
+        initialMigrationAppliedVersion:'20260928182014',
+        hardeningMigrationName:'powerhouse_self_improvement_orchestrator_nonblocking_v1',
+        hardeningMigrationSourceVersion:'20260928203000',
+        hardeningMigrationAppliedVersion:'20260928183018',
+        agentObjectives:6,
+        compilerReady:8,
+        compilerEvidencePending:0,
+        compilerRegressionPending:0,
+        escapedDefectsWithoutRegression:0,
+        modelHealthDegraded:0,
+        modelHealthUnknown:0,
+        learningCompanies:5,
+        verifiedOutcomes:5,
+        runtimeEvents:1,
+        dailyCron:'7 3 * * *',
+        duplicateOrchestration:false,
+        newSecurityAdvisorFindings:0,
+        newPerformanceAdvisorFindings:0,
+        runtimeReadbackAt:'2026-09-28T18:30:25.114667Z'
       }),
       invariants:Object.freeze({
         noLearningWithoutEvidence:true,
