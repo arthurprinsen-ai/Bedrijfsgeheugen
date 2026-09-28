@@ -13,3 +13,5 @@
 - Scope metadata synchronized at final 18-file lineage.
 
 - Successor metadata normalized to numeric Supersedes authority.
+
+- Latest-main reconciliation completed for PR #3215 against `16a15a7ae0c13a3a626c2fedba498c46123ba5c2`; scope metadata refreshed before final protected re-proof.
