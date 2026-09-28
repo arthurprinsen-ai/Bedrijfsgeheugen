@@ -21,3 +21,7 @@ De herbruikbare renderer toont vijf begrijpelijke stappen: **Ziet â†’ Begrijpt â
 ## Security/truth boundary
 
 De globale Company Intelligence runtime-views worden niet rechtstreeks in klant-UI gelezen zolang tenantisolatie daar niet expliciet bewezen is. De klantvisualisatie gebruikt uitsluitend de bestaande beveiligde tenant-state/runtime. Ontbreekt bewijs, dan toont de UI bewust geen verzonnen context.
+
+## Tenant-isolatie evaluatie
+
+De contextuele portalprojectie heeft expliciete shadow- en canary-regressie voor tenantisolatie. De evaluatie projecteert twee gescheiden klantcontexten en faalt wanneer labels, bronnen, acties, learnings of waarden tussen die contexten lekken. De canary controleert daarnaast dat verwachte en gerealiseerde waarde semantisch gescheiden blijven.
