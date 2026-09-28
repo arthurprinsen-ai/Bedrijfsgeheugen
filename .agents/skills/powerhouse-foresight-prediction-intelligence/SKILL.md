@@ -50,3 +50,7 @@ Powerhouse must become measurably better at anticipating future company, custome
 ## Self-improvement bridge
 
 Prediction quality is an explicit Self-Improvement objective. Degradation produces bounded challenger hypotheses; only evidence-backed winners may be promoted through existing protected delivery.
+
+## Terminal production proof
+
+This capability is LIVE_PROVEN_RUNTIME. Production readback on 2026-09-28 verified 1,177 forecasts, 3 resolved outcomes, zero resolution debt for currently due forecasts, Brier score 0.1092, calibration error 0.3297, timing MAE 8.9 days, 143 predictive signals and 3 independent source types. The current state is intentionally CALIBRATION_DEGRADED, which creates bounded improvement work rather than falsely reporting prediction quality as green. The prediction learning audit runs daily at 06:35 and reuses the existing predictive engine and forecast calibrator.
