@@ -1,0 +1,47 @@
+{
+  "fingerprint": "github|auxiliary-workflow-trigger|generic-control-plane-decoupling|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Auxiliary workflows directly listed generic delivery policy/classifier files in pull_request path triggers. Delivery-control-plane changes therefore started SEO growth, Fresh Device Canary and Powerhouse Assurance even when their owned domain surfaces were untouched.",
+  "prevention_rule": "Auxiliary workflows must trigger from their owned domain inputs and their own workflow definition, not from generic delivery policy/classifier roots. Delivery classifier changes are validated by canonical Required regressions. Auxiliary workflow files themselves receive explicit owned lane classification.",
+  "enforcement": [
+    ".github/workflows/seo-growth-intelligence.yml",
+    ".github/workflows/powerhouse-assurance.yml",
+    ".github/workflows/fresh-device-autonomy-canary.yml",
+    "tools/brain-delivery-system.mjs",
+    "tests/brain-auxiliary-workflow-trigger-scope-v1.test.mjs",
+    "tests/brain-change-scoped-release-lanes.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-auxiliary-workflow-trigger-scope-v1.test.mjs",
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-auxiliary-workflow-trigger-scope-v1.test.mjs",
+    "tests/brain-change-scoped-release-lanes.test.mjs"
+  ],
+  "evidence": {
+    "observed_pr": 3252,
+    "unnecessarily_triggered": [
+      "SEO growth intelligence",
+      "Fresh Device Autonomy Canary",
+      "Powerhouse Assurance"
+    ],
+    "tests": [
+      "tests/brain-auxiliary-workflow-trigger-scope-v1.test.mjs"
+    ]
+  }
+}

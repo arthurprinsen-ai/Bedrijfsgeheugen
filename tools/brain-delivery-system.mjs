@@ -26,6 +26,8 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/powerhouse-assurance.yml': 'backend',
   '.github/workflows/powerhouse-quality-intelligence.yml': 'backend',
   '.github/workflows/powerhouse-quality-surface-gate.yml': 'backend',
+  '.github/workflows/seo-growth-intelligence.yml': 'backend',
+  '.github/workflows/fresh-device-autonomy-canary.yml': 'automation',
   '.github/workflows/lane-automation.yml': 'automation',
   '.github/workflows/regelgeving-bijwerken.yml': 'automation',
   '.github/workflows/regulatory-source-watch.yml': 'automation',
