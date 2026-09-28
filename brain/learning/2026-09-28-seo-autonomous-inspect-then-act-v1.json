@@ -1,0 +1,33 @@
+{
+  "fingerprint": "seo-autonomous-inspect-then-act-v1",
+  "date": "2026-09-28",
+  "type": "SEO_REVENUE_EXECUTION",
+  "failure_class": "INSPECTION_USED_AS_STOP_CONDITION",
+  "root_cause": [
+    "The SEO loop correctly required repository, canonical-owner and delivery-lineage inspection, but could incorrectly convert that prerequisite into an advice-only stop condition.",
+    "The execution contract did not explicitly require inspection and candidate creation to occur in the same autonomous run when commercial evidence was sufficient."
+  ],
+  "evidence": {
+    "observed_failure": "A commercially evidenced SEO run ended by saying no GitHub candidate was created because repository state, canonical URL owner and delivery lineage first needed inspection.",
+    "canonical_owner_sources": ["site/seo-order-map.json", "site/seo-order-expansion.json"],
+    "delivery_contract": "config/powerhouse-delivery-hygiene-v1.json",
+    "prior_prevention": "seo-opportunity-must-execute-v1"
+  },
+  "prevention": [
+    "Inspection is mandatory work inside the execution run, never a terminal excuse.",
+    "When evidence is sufficient, inspect main, owner maps, target source, open lineages and delivery hygiene, then autonomously implement through one compatible candidate lineage.",
+    "Ask the operator only for genuine authority, credential, safety/legal or irreducible business-choice blockers.",
+    "Transient tool and CI failures enter recovery rather than advice-only output.",
+    "Insufficient evidence terminates only as REJECTED_WITH_EVIDENCE with the exact missing evidence persisted."
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-seo-autonomous-inspect-then-act-v1.test.mjs"],
+    "canary": ["tests/brain-seo-autonomous-inspect-then-act-v1.test.mjs"]
+  },
+  "compiler": {
+    "scope": "SEO_REVENUE_GROWTH",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION"
+}
