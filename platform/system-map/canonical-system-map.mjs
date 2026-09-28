@@ -146,6 +146,12 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     allowedTerminalStates:Object.freeze(['LIVE_BEWEZEN','ROLLED_BACK_GREEN','BLOCKED_HARD_BOUNDARY']),
     hardBoundaryOutput:'minimum external human action only',
     technicalDetailPolicy:'explicit user request only',
-    interruptionCreatesHandoff:false
+    interruptionCreatesHandoff:false,
+    continuationFingerprint:'delivery|terminal-continuation|no-internal-handoff|v2',
+    ownerMustContinueUntilTerminal:true,
+    internalBlockerIsStopCondition:false,
+    chatOrClientTimeoutCancelsObligation:false,
+    userContinuePromptRequired:false,
+    resumeFromCanonicalCheckpoint:true
   })
 });

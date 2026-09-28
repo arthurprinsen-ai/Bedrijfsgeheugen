@@ -529,9 +529,22 @@ Verplicht:
 Canonieke implementation authority: `assets/scan-workshop.js`, `supabase/functions/powerhouse-scan-ingest/index.ts`, `netlify/functions/powerhouse-scan-ingest.mjs`, `netlify/functions/portal-scans.mjs`.
 Canonieke data authority: `public.scan_inzendingen`, `public.workshop_portal_intakes`, `public.portal_state_layers`.
 
+## Autonome terminale voortzetting — nooit stoppen op interne blockers
+
+Fingerprint: `delivery|terminal-continuation|no-internal-handoff|v2`.
+
+Voor alle huidige en toekomstige chats, agents, workflows en recovery-nodes geldt:
+- een interne blocker zoals PR/ref-sync, branch-head drift, queued/running CI, branch protection, mergeability refresh, provider polling, deploy-wacht of production-readback-wacht is **geen geldige stopconditie** en **geen overdracht aan de gebruiker**;
+- de owner-node blijft dezelfde canonieke obligation/candidate-lineage autonoom vervolgen: reconciliëren → testen → protected merge → deploy/promote → productie/provider-readback → outcome/value → learning/prevention → skill/system-map/human-doc writeback;
+- “gebouwd maar nog niet LIVE_BEWEZEN”, “de laatste gate loopt nog”, “PR-head loopt achter”, “probeer opnieuw” of equivalente tussenstatussen mogen niet als eindantwoord worden gebruikt wanneer de agent zelf verder kan;
+- een chat/tool-timeout, modelinterruption of mobiele client-timeout verandert de obligation niet: de volgende capabele node hervat vanaf het canonieke checkpoint en controleert eerst bestaande side-effects om duplicaten te voorkomen;
+- alleen een aantoonbare `BLOCKED_HARD_BOUNDARY` mag menselijke actie vragen; vraag dan uitsluitend de kleinste noodzakelijke externe handeling en houd de vervolgstap vooraf voorbereid;
+- terminale gebruikerscommunicatie bevat het bewezen eindresultaat en de borging, niet de interne uitvoeringsruis.
+
+Deze regel is aanvullend op `delivery|user-facing-reporting|terminal-outcomes-only|v1` en maakt voortzetting, niet alleen rapportagestilte, expliciet afdwingbaar.
+
 ## Global social semantic uniqueness — no recycled stories
 
 Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
 
 For every current and future social publishing agent/chat/workflow, uniqueness means a genuinely different underlying subject, concrete example, incident or story family — not merely different wording. Before provider dispatch, compare against retained cross-channel publication history and known duplicate feedback. If the same story family was already consumed, fail closed on that candidate and autonomously select a different verified source/topic. Never “fix” duplication by paraphrasing. Provider create success consumes the story even when later readback is unavailable. Known consumed personal-LinkedIn example family: `printer`.
-

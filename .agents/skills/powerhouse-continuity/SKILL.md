@@ -1312,3 +1312,19 @@ Mandatory:
 - interruption does not justify a status handoff. The next capable node resumes from canonical state automatically.
 
 This rule supersedes any older wording that merely allowed intermediate status while execution continued. User-facing progress chatter about internal delivery mechanics is forbidden by default.
+
+## Terminal continuation — no internal handoff
+
+Fingerprint: `delivery|terminal-continuation|no-internal-handoff|v2`.
+
+A material Powerhouse node never stops on an internal delivery state it can still resolve. PR/ref drift, queued/running checks, merge waits, provider polling, deploy waits, production readback waits, and chat/client timeouts are recovery inputs, not terminal states.
+
+Required behavior:
+- retain ownership of the canonical obligation/candidate lineage;
+- reconcile and resume autonomously until protected merge/promotion, production/provider readback, outcome/value and closure writeback are complete;
+- after interruption, read canonical state first and dedupe already-completed side effects before continuing;
+- never require the user to say “ga door”, retry the same request, or interpret a UI timeout as cancellation;
+- only `BLOCKED_HARD_BOUNDARY` may transfer one minimal external action to the user;
+- keep internal technical progress in evidence/logs and report terminal outcomes by default.
+
+A response such as “built but not yet LIVE_BEWEZEN” is itself a continuity defect when the node can still proceed.

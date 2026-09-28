@@ -12,3 +12,9 @@ Technische details blijven op expliciet verzoek beschikbaar. Een chatonderbrekin
 
 ## Borging
 De regel is vastgelegd in AGENTS, Powerhouse Continuity, het truth-status-contract, System Map, Brain learning en een executable regression test.
+
+## Versterking: uitvoering mag ook niet stoppen
+
+Fingerprint: `delivery|terminal-continuation|no-internal-handoff|v2`.
+
+De eerdere regel over terminal-only rapportage wordt aangescherpt: niet alleen de melding verdwijnt, ook het onderliggende eigenaarschap blijft bij Powerhouse. Interne GitHub-, CI-, Netlify-, Supabase-, provider- of readbacktoestanden zijn recovery-state. De uitvoerende node blijft dezelfde lineage autonoom vervolgen totdat een bewezen terminale toestand is bereikt. Een app-/chat-time-out is geen annulering en vereist geen nieuw “ga door”-bericht van de gebruiker.
