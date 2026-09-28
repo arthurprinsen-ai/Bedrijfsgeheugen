@@ -11,6 +11,8 @@ on:
       - 'scripts/brain/foresight-autonomy.mjs'
       - 'portal-v2/foresight-intelligence.js'
       - 'tests/powerhouse-foresight-autonomy.test.mjs'
+      - 'tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs'
+      - 'supabase/migrations/20260928203500_powerhouse_foresight_prediction_intelligence_v2.sql'
       - '.github/workflows/powerhouse-foresight-autonomy.yml'
 
 permissions:
@@ -33,7 +35,7 @@ jobs:
       - name: Chat learning preflight
         run: node scripts/brain/chat-learning-preflight.mjs
       - name: Verify foresight autonomy contract
-        run: node --test tests/powerhouse-foresight-autonomy.test.mjs
+        run: node --test tests/powerhouse-foresight-autonomy.test.mjs tests/brain-powerhouse-foresight-prediction-intelligence-v2.test.mjs
       - name: Verify technology discovery remains benchmark-first
         run: |
           grep -q "benchmark_required: true" scripts/brain/continuous-improvement/technology-discovery.mjs
