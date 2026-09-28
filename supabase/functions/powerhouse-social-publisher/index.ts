@@ -56,45 +56,89 @@ async function composioExecuteArgs(apiKey:string,connectedAccountId:string,userI
   }
   return body;
 }
+async function composioExecuteArgsNoUser(apiKey:string,connectedAccountId:string,toolSlug:string,args:Record<string,unknown>){
+  const response=await fetch(COMPOSIO_BASE+'/tools/execute/'+toolSlug,{
+    method:'POST',
+    headers:{'content-type':'application/json','x-api-key':apiKey},
+    body:JSON.stringify({connected_account_id:connectedAccountId,version:'latest',arguments:args})
+  });
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok||body?.successful!==true){
+    const err=clean(body?.error||body?.message||body?.data?.message||JSON.stringify(body));
+    const e:any=new Error('COMPOSIO_'+toolSlug+'_'+response.status+':'+err.slice(0,240));
+    e.http=response.status;e.composioBody=body;throw e;
+  }
+  return body;
+}
 async function composioLinkedInContext(db:any){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error('COMPOSIO_LINKEDIN_AUTH_REQUIRED');
+
   const {data,error}=await db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','linkedin-composio-setup-current-state-v1').maybeSingle();
   if(error)throw new Error('COMPOSIO_LINKEDIN_STATE_READ:'+error.message);
   const state=data?.result||{};
-  const accountId=clean(state?.connected_account_id);
-  const userId=clean(state?.user_id);
-  if(state?.personal_ready!==true||!accountId||!userId)throw new Error('COMPOSIO_LINKEDIN_REAUTH_REQUIRED');
-  return {apiKey,accountId,userId};
-}
-function composioAuthFailure(message:string){
-  const value=clean(message).toUpperCase();
-  return value.includes('REVOKED_ACCESS_TOKEN')||value.includes('_401:')||value.includes('HTTP 401')||value.includes('AUTH_REQUIRED')||value.includes('REAUTH_REQUIRED')||value.includes('CONNECTION_REQUIRED');
-}
-async function preflightLinkedInConnection(db:any){
-  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const expectedPersonUrn=clean(state?.personal_author_urn)||'urn:li:person:N1twnCNCrD';
+  const expectedPersonId=expectedPersonUrn.replace(/^urn:li:person:/,'');
+  const stateUserId=clean(state?.user_id);
+
+  const candidates:any[]=[];
+  const seen=new Set<string>();
+  const addCandidate=(accountId:string,userId:string,source:string)=>{
+    const id=clean(accountId);const uid=clean(userId);
+    if(!id||!uid||seen.has(id))return;
+    seen.add(id);candidates.push({accountId:id,userId:uid,source});
+  };
+
+  addCandidate(clean(state?.connected_account_id),stateUserId,'setup_state');
+
+  const pinned=clean(await secret(db,'COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID'));
+  if(pinned)addCandidate(pinned,stateUserId,'pinned_secret');
+
   try{
-    const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
-    const personId=deepPickString(me?.data||me,['id','sub']);
-    if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
-    return {accountId,userId,personId};
-  }catch(error){
-    const message=error instanceof Error?error.message:String(error);
-    if(composioAuthFailure(message))throw new Error('COMPOSIO_LINKEDIN_REAUTH_REQUIRED:'+message.slice(0,180));
-    throw error;
+    const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=linkedin&statuses=ACTIVE&account_type=ALL&limit=50`,{headers:{'x-api-key':apiKey}});
+    const body:any=await response.json().catch(()=>({}));
+    if(response.ok){
+      const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
+      for(const item of items){
+        if(clean(item?.status).toUpperCase()!=='ACTIVE'||item?.is_disabled===true)continue;
+        addCandidate(clean(item?.id||item?.connected_account_id),clean(item?.user_id),'active_discovery');
+      }
+    }
+  }catch(_error){}
+
+  let lastError='';
+  for(const candidate of candidates){
+    try{
+      const me=await composioExecuteArgs(apiKey,candidate.accountId,candidate.userId,'LINKEDIN_GET_MY_INFO',{});
+      const personId=deepPickString(me?.data||me,['id']);
+      if(personId&&personId===expectedPersonId){
+        return {apiKey,accountId:candidate.accountId,userId:candidate.userId,personId,connection_source:candidate.source};
+      }
+      lastError='LINKEDIN_CANONICAL_PERSON_MISMATCH';
+    }catch(error){
+      lastError=error instanceof Error?error.message:String(error);
+    }
   }
+
+  throw new Error('LINKEDIN_REAUTH_REQUIRED:'+clean(lastError).slice(0,220));
 }
-async function composioInstagramContext(db:any){
-  const apiKey=await secret(db,'COMPOSIO_API_KEY');
-  if(!apiKey)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
-  const {data,error}=await db.from('brain_records').select('result').eq('tenant_id','canonical').eq('record_id','instagram-composio-setup-current-state-v1').maybeSingle();
-  if(error)throw new Error('COMPOSIO_INSTAGRAM_STATE_READ:'+error.message);
-  const state=data?.result||{};
-  const accountId=clean(state?.connected_account_id);
-  const username=clean(state?.username).toLowerCase();
-  if(state?.ready!==true||!accountId)throw new Error('COMPOSIO_INSTAGRAM_REAUTH_REQUIRED');
-  if(username!=='bedrijfsgeheugen.nl')throw new Error('COMPOSIO_INSTAGRAM_IDENTITY_MISMATCH:'+username);
-  return {apiKey,accountId,username};
+function isLinkedInAuthPreflightError(error:any){
+  const message=clean(error instanceof Error?error.message:error).toUpperCase();
+  const status=Number((error as any)?.http||0);
+  return status===401||status===403
+    ||message.includes('REVOKED_ACCESS_TOKEN')
+    ||message.includes('UNAUTHORIZED')
+    ||message.includes('TOKEN')
+    ||message.includes('AUTH_REQUIRED')
+    ||message.includes('CONNECTION_REQUIRED');
+}
+
+async function preflightLinkedInComposio(db:any){
+  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
+  const personId=deepPickString(me?.data||me,['id']);
+  if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
+  return {provider:'composio',provider_auth_preflight:'passed',provider_auth_checked_at:new Date().toISOString(),account_id:accountId,person_id:personId};
 }
 
 async function runLinkedInCockpitAutopilot(db:any){
@@ -157,6 +201,53 @@ async function runLinkedInCockpitAutopilot(db:any){
   return results;
 }
 
+const INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen.nl';
+const INSTAGRAM_CANONICAL_USER_ID='17841446582493753';
+async function inspectInstagramComposioIdentity(apiKey:string,accountId:string){
+  const info=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_GET_USER_INFO',{ig_user_id:INSTAGRAM_CANONICAL_USER_ID,fields:'id,username,account_type'});
+  const data=info?.data||info;
+  const providerUserId=deepPickString(data,['id','user_id']);
+  const username=deepPickString(data,['username']).toLowerCase();
+  const accountType=deepPickString(data,['account_type']).toUpperCase();
+  if(!providerUserId||!username)throw new Error('COMPOSIO_INSTAGRAM_IDENTITY_UNREADABLE');
+  if(providerUserId!==INSTAGRAM_CANONICAL_USER_ID)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_ID_MISMATCH');
+  if(username!==INSTAGRAM_CANONICAL_USERNAME)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED');
+  return {accountId,providerUserId,username,accountType};
+}
+async function resolveUniqueInstagramAccount(apiKey:string,active:any[]){
+  const identities:any[]=[];
+  for(const item of active){
+    const id=clean(item?.id||item?.connected_account_id);if(!id)continue;
+    try{
+      const identity=await inspectInstagramComposioIdentity(apiKey,id);
+      identities.push({...identity,isDefault:item?.is_default===true,alias:clean(item?.alias)});
+    }catch(_error){}
+  }
+  const canonical=identities.filter(x=>x.username===INSTAGRAM_CANONICAL_USERNAME&&x.providerUserId===INSTAGRAM_CANONICAL_USER_ID);
+  if(canonical.length===0)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED');
+  const providerIds=[...new Set(canonical.map(x=>x.providerUserId))];
+  if(providerIds.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
+  canonical.sort((a,b)=>Number(b.alias==='bedrijfsgeheugen-canonical')-Number(a.alias==='bedrijfsgeheugen-canonical')||Number(b.isDefault)-Number(a.isDefault)||a.accountId.localeCompare(b.accountId));
+  return {...canonical[0],credentialCount:canonical.length};
+}
+async function canonicalInstagramComposioContext(db:any){
+  const apiKey=await secret(db,'COMPOSIO_API_KEY');
+  if(!apiKey)throw new Error('COMPOSIO_INSTAGRAM_AUTH_REQUIRED');
+  const explicit=await secret(db,'COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID');
+  if(explicit){
+    const identity=await inspectInstagramComposioIdentity(apiKey,explicit);
+    if(identity.username!==INSTAGRAM_CANONICAL_USERNAME||identity.providerUserId!==INSTAGRAM_CANONICAL_USER_ID)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED');
+    return {apiKey,...identity};
+  }
+  const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=instagram&statuses=ACTIVE`,{headers:{'x-api-key':apiKey}});
+  const body:any=await response.json().catch(()=>({}));
+  if(!response.ok)throw new Error(`COMPOSIO_INSTAGRAM_ACCOUNT_DISCOVERY_${response.status}`);
+  const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
+  const active=items.filter((item:any)=>clean(item?.status).toUpperCase()==='ACTIVE'||!clean(item?.status));
+  if(active.length===0)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED');
+  return {apiKey,...await resolveUniqueInstagramAccount(apiKey,active)};
+}
+
 async function composioConnectedAccount(db:any,toolkit:string,secretName:string){
   const apiKey=await secret(db,'COMPOSIO_API_KEY');
   if(!apiKey)throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_AUTH_REQUIRED`);
@@ -171,21 +262,8 @@ async function composioConnectedAccount(db:any,toolkit:string,secretName:string)
     if(active.length===1){
       accountId=clean(active[0]?.id||active[0]?.connected_account_id);
     } else if(toolkit==='instagram'){
-      const matches:any[]=[];
-      for(const item of active){
-        const id=clean(item?.id||item?.connected_account_id);
-        if(!id)continue;
-        const proxy=await fetch(`${COMPOSIO_BASE.replace('/api/v3','')}/api/v3.1/tools/execute/proxy`,{
-          method:'POST',
-          headers:{'content-type':'application/json','x-api-key':apiKey},
-          body:JSON.stringify({endpoint:'/me?fields=id,username',method:'GET',connected_account_id:id,parameters:[]})
-        });
-        const pb:any=await proxy.json().catch(()=>({}));
-        const username=clean(pb?.data?.username||pb?.body?.data?.username).toLowerCase();
-        if(proxy.ok&&username==='bedrijfsgeheugen.nl')matches.push({id,username});
-      }
-      if(matches.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
-      accountId=matches[0].id;
+      const resolved=await resolveUniqueInstagramAccount(apiKey,active);
+      accountId=resolved.accountId;
     } else {
       throw new Error(`COMPOSIO_${toolkit.toUpperCase()}_CONNECTION_AMBIGUOUS`);
     }
@@ -198,6 +276,18 @@ function deepPickLinkedInPostUrn(value:any):string{
   if(!value||typeof value!=='object')return'';
   for(const v of Object.values(value)){const found=deepPickLinkedInPostUrn(v);if(found)return found;}
   return'';
+}
+function isLinkedInAuthFailure(error:any){
+  const status=Number(error?.http||error?.status||0);
+  const message=clean(error?.message||error).toUpperCase();
+  return status===401||status===403||message.includes('REVOKED_ACCESS_TOKEN')||message.includes('UNAUTHORIZED')||message.includes('AUTH_REQUIRED')||message.includes('CONNECTION_REQUIRED')||message.includes('TOKEN_EXPIRED')||message.includes('EXPIRED_TOKEN');
+}
+async function preflightLinkedInViaComposio(db:any){
+  const {apiKey,accountId,userId}=await composioLinkedInContext(db);
+  const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
+  const personId=deepPickString(me?.data||me,['id']);
+  if(!personId)throw new Error('COMPOSIO_LINKEDIN_PERSON_ID_MISSING');
+  return {apiKey,accountId,userId,personId};
 }
 async function publishLinkedInPersonalViaComposio(db:any,art:any){
   const {apiKey,accountId,userId}=await composioLinkedInContext(db);
@@ -479,31 +569,30 @@ async function publishInstagramViaMeta(db:any,art:any){
     return {provider:'meta',provider_post_id:mediaId,container_id:containerId,permalink:null,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),published_at:new Date().toISOString(),media_type:'REELS',media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256),verification_pending:true,readback_error:error instanceof Error?error.message:String(error)};
   }
 }
-async function publishInstagramViaComposio(db:any,art:any,runDate:string){
+async function publishInstagramViaComposio(db:any,art:any,runDate:string,preflight?:any){
   const proof=art?.generation_evidence?.instagram_media_proof||{};
   if(!instagramIdentityProven(proof))throw new Error('MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED');
-  const mediaType=clean(proof.media_type).toLowerCase();
-  if(mediaType!=='reel')throw new Error('INSTAGRAM_MIRA_REEL_ONLY_V3');
+  if(clean(proof.media_type).toLowerCase()!=='reel')throw new Error('INSTAGRAM_MIRA_REEL_ONLY_V3');
   const mediaUrl=clean(proof.media_url);if(!mediaUrl)throw new Error('FINAL_MEDIA_URL_REQUIRED');
-  const {apiKey,accountId}=await composioInstagramContext(db);
+  const ctx=preflight||await canonicalInstagramComposioContext(db);
+  if(clean(ctx.username).toLowerCase()!==INSTAGRAM_CANONICAL_USERNAME||clean(ctx.providerUserId)!==INSTAGRAM_CANONICAL_USER_ID)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED');
   const caption=clean(art.body);
-  const created=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA',
-    `Create an Instagram Reel media container using this exact public video URL: ${mediaUrl}. Use this exact caption, preserving wording and line breaks: ${caption}`);
+  const created=await composioExecuteArgsNoUser(ctx.apiKey,ctx.accountId,'INSTAGRAM_POST_IG_USER_MEDIA',{ig_user_id:INSTAGRAM_CANONICAL_USER_ID,video_url:mediaUrl,media_type:'REELS',caption,share_to_feed:true});
   const containerId=deepPickId(created?.data||created,['creation_id','container_id','id']);
   if(!containerId)throw new Error('COMPOSIO_MEDIA_CONTAINER_ID_MISSING');
-  const published=await composioExecute(apiKey,accountId,'INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH',
-    `Publish the Instagram media container with creation/container id ${containerId} now.`);
+  const published=await composioExecuteArgsNoUser(ctx.apiKey,ctx.accountId,'INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH',{ig_user_id:INSTAGRAM_CANONICAL_USER_ID,creation_id:containerId,max_wait_seconds:180,poll_interval_seconds:3});
   const mediaId=deepPickId(published?.data||published,['ig_media_id','media_id','id']);
   if(!mediaId)throw new Error('COMPOSIO_PUBLISHED_MEDIA_ID_MISSING');
-  const readback=await composioExecute(apiKey,accountId,'INSTAGRAM_GET_IG_MEDIA',
-    `Get Instagram media with id ${mediaId} and return its id, permalink, media type, caption, timestamp and media URL.`);
+  const readback=await composioExecuteArgsNoUser(ctx.apiKey,ctx.accountId,'INSTAGRAM_GET_IG_MEDIA',{ig_media_id:mediaId,fields:'id,username,permalink,media_type,media_product_type,caption,timestamp,media_url'});
   const rb=readback?.data||readback;
   const readbackId=deepPickId(rb,['ig_media_id','media_id','id']);
+  const readbackUsername=deepPickString(rb,['username']).toLowerCase();
   if(readbackId!==mediaId)throw new Error('COMPOSIO_INSTAGRAM_READBACK_ID_MISMATCH');
+  if(readbackUsername&&readbackUsername!==INSTAGRAM_CANONICAL_USERNAME)throw new Error('COMPOSIO_INSTAGRAM_READBACK_IDENTITY_MISMATCH');
   const permalink=deepPickString(rb,['permalink','permalink_url','url']);
   const publishedAt=deepPickString(rb,['timestamp','created_time','created_at'])||new Date().toISOString();
   const mediaTypeReadback=deepPickString(rb,['media_product_type','media_type','type'])||'REELS';
-  return {provider:'composio',provider_post_id:mediaId,container_id:containerId,permalink:permalink||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),published_at:publishedAt,media_type:mediaTypeReadback,media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256)};
+  return {provider:'composio',provider_post_id:mediaId,container_id:containerId,permalink:permalink||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),published_at:publishedAt,media_type:mediaTypeReadback,media_url:mediaUrl,final_media_sha256:clean(proof.final_media_sha256),instagram_username:INSTAGRAM_CANONICAL_USERNAME,instagram_user_id:INSTAGRAM_CANONICAL_USER_ID,transport_contract:'instagram-composio-only-canonical-graph-id-v2',buffer_dependency:false,meta_direct_dependency:false};
 }
 
 async function bufferRequest(token: string, query: string, variables?: Record<string,unknown>) {
@@ -859,39 +948,11 @@ Deno.serve(async (req) => {
     const gatePassedEvidence={...(row.delivery_evidence||{}),pre_publish_gate:'passed',identity_gate_version:GATE,final_text_hash:textHash,publication_authority_version:PUBLICATION_AUTHORITY};
     await db.from('powerhouse_channel_decisions').update({delivery_evidence:gatePassedEvidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
 
-    if(row.channel==='linkedin_personal'||row.channel==='linkedin_company'){
-      try{
-        const health=await preflightLinkedInConnection(db);
-        row.delivery_evidence={...gatePassedEvidence,composio_health_verified:true,composio_connected_account_id:health.accountId,composio_health_checked_at:new Date().toISOString()};
-      }catch(error){
-        const message=error instanceof Error?error.message:String(error);
-        const evidence={...gatePassedEvidence,provider:'composio',provider_truth_verified:false,composio_health_verified:false,error:message,auth_recovery_required:true,transport_contract:'linkedin-composio-direct-v2'};
-        await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
-        await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,'Re-authorize the canonical LinkedIn Composio connection. No publication capability is consumed before auth health is proven.','COMPOSIO_LINKEDIN_REAUTH_REQUIRED');
-        results.push({channel:row.channel,status:'waiting_auth',provider:'composio',reason:'COMPOSIO_LINKEDIN_REAUTH_REQUIRED'});continue;
-      }
-    }
-
     let instagramMetaConfig:MetaInstagramConfig|null=null;
     let instagramComposioApiKey:string|null=null;
     if(row.channel==='instagram_company'){
       instagramMetaConfig=await metaInstagramConfig(db);
       instagramComposioApiKey=await secret(db,'COMPOSIO_API_KEY');
-      if(!instagramMetaConfig&&instagramComposioApiKey){
-        try{
-          const health=await composioInstagramContext(db);
-          row.delivery_evidence={...gatePassedEvidence,composio_health_verified:true,composio_connected_account_id:health.accountId,instagram_username:health.username,composio_health_checked_at:new Date().toISOString()};
-        }catch(error){
-          const message=error instanceof Error?error.message:String(error);
-          const evidence={...gatePassedEvidence,provider:'composio',provider_truth_verified:false,composio_health_verified:false,error:message,auth_recovery_required:true,transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1'};
-          if(bufferCircuit.active){
-            await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
-            await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,'Re-authorize the canonical bedrijfsgeheugen.nl Instagram connection; preserve the exact Mira Reel and retry only after identity health is proven.','COMPOSIO_INSTAGRAM_REAUTH_REQUIRED');
-            results.push({channel:row.channel,status:'waiting_auth',provider:'composio',reason:message});continue;
-          }
-          instagramComposioApiKey=null;
-        }
-      }
       if(!instagramMetaConfig&&!instagramComposioApiKey&&bufferCircuit.active){
         const evidence={...gatePassedEvidence,provider:'meta',provider_config_ready:false,provider_truth_verified:false,error:'INSTAGRAM_TRANSPORT_DEFERRED',transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',buffer_retry_at:bufferCircuit.retry_at};
         await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
@@ -900,6 +961,48 @@ Deno.serve(async (req) => {
           `Meta and Composio Instagram auth unavailable and Buffer cooldown open until ${bufferCircuit.retry_at}; reuse the same proven Mira Reel after reset.`,
           'INSTAGRAM_TRANSPORT_DEFERRED');
         results.push({channel:row.channel,status:'deferred_transport',retry_at:bufferCircuit.retry_at});
+        continue;
+      }
+    }
+
+    // External auth is a precondition, not a consumed publication attempt.
+    // A revoked/expired LinkedIn token must leave the exact daily claim resumable.
+    if(row.channel==='linkedin_personal'||row.channel==='linkedin_company'){
+      try{
+        const providerPreflight=await preflightLinkedInComposio(db);
+        const evidence={...gatePassedEvidence,...providerPreflight,provider_auth_required:false,republish_forbidden:false,buffer_dependency:false};
+        row.delivery_evidence=evidence;
+        await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+      }catch(error){
+        const message=error instanceof Error?error.message:String(error);
+        if(!isLinkedInAuthPreflightError(error))throw error;
+        const evidence={...gatePassedEvidence,provider:'composio',provider_auth_preflight:'failed',provider_auth_required:true,provider_truth_verified:false,
+          provider_auth_checked_at:new Date().toISOString(),error:'LINKEDIN_REAUTH_REQUIRED',provider_error:message,republish_forbidden:false,
+          possible_provider_side_effect:false,buffer_dependency:false,transport_contract:'linkedin-composio-direct-v3-auth-preflight'};
+        await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+        await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,
+          'Re-authorize the canonical LinkedIn Composio account; then resume this exact daily claim. No publish capability or provider side-effect has been consumed.',
+          'LINKEDIN_REAUTH_REQUIRED');
+        results.push({channel:row.channel,status:'waiting_reauth',provider:'composio',resumable:true,error:'LINKEDIN_REAUTH_REQUIRED'});
+        continue;
+      }
+    }
+
+    // Provider-health preflight MUST happen before publication claim/capability/uniqueness reservation.
+    // Composio metadata may say ACTIVE while the underlying LinkedIn OAuth token is revoked.
+    if (row.channel === 'linkedin_personal' || row.channel === 'linkedin_company') {
+      try {
+        await preflightLinkedInViaComposio(db);
+      } catch (error) {
+        const message=error instanceof Error?error.message:String(error);
+        if (!isLinkedInAuthFailure(error)) throw error;
+        const evidence={...gatePassedEvidence,provider:'composio',provider_preflight:false,provider_auth_resumable:true,error:message,transport_contract:'linkedin-composio-direct-v3',buffer_dependency:false,republish_forbidden:false};
+        await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()})
+          .eq('run_date',runDate).eq('channel',row.channel).eq('state','content_ready');
+        await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,'Reconnect LinkedIn OAuth. Resume this same canonical daily claim after a successful real provider preflight; do not create a replacement claim.',message);
+        results.push({channel:row.channel,status:'waiting_auth',provider:'composio',resumable:true,error:message});
         continue;
       }
     }
@@ -993,59 +1096,23 @@ Deno.serve(async (req) => {
 
     if (row.channel === 'instagram_company') {
       try {
+        const instagramContext=await canonicalInstagramComposioContext(db);
         await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
-        if(instagramMetaConfig){
-          const direct=await publishInstagramViaMeta(db,art);
-          const evidence={...gatePassedEvidence,...direct,pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',make_dependency:false,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
-          const verified=direct.provider_truth_verified===true;
-          await db.from('powerhouse_channel_decisions').update({state:verified?'published':'dispatching',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-          await db.from('powerhouse_content_artifacts').update({status:verified?'published':'scheduled',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-          await recordObligation(db,runDate,row.channel,verified?'PUBLISHED':'DISPATCHED',direct.provider_post_id,evidence,verified?'Collect Instagram outcome metrics and feed learning loop.':'Reconcile this exact Meta media id; never issue another publish.',verified?null:'META_READBACK_PENDING');
-          const socialIngest=verified?await ingestDirectInstagramSocialPost(db,runDate,art,direct,textHash):null;
-          results.push({channel:row.channel,status:verified?'published':'verification_pending',post_id:direct.provider_post_id,permalink:direct.permalink,provider:'meta',provider_truth_verified:verified,social_ingest:socialIngest});
-          continue;
-        }
-        if(instagramComposioApiKey){
-          const direct = await publishInstagramViaComposio(db, art, runDate);
-          const evidence = { ...gatePassedEvidence, ...direct, pre_publish_gate:'passed', final_text_hash:textHash, transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1', fallback_reason:'META_AUTH_UNAVAILABLE', make_dependency:false, publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true} };
-          await db.from('powerhouse_channel_decisions').update({ state:'published', delivery_ref:direct.provider_post_id, delivery_evidence:evidence, updated_at:new Date().toISOString() }).eq('run_date',runDate).eq('channel',row.channel);
-          await db.from('powerhouse_content_artifacts').update({ status:'published', updated_at:new Date().toISOString() }).eq('run_date',runDate).eq('channel',row.channel);
-          await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,'Collect Instagram outcome metrics and feed learning loop.',null);
-          const socialIngest=await ingestDirectInstagramSocialPost(db,runDate,art,direct,textHash);
-          results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,permalink:direct.permalink,provider:'composio',provider_truth_verified:true,social_ingest:socialIngest});
-          continue;
-        }
-
-        const created=await createPost(bufferToken,instagramInput(art,due,future));
-        if(!created.post?.id) throw new Error(created.error||'BUFFER_INSTAGRAM_CREATE_FAILED');
-        const readback=await getPost(bufferToken,created.post.id);
-        const readbackOk=!!readback&&readback.id===created.post.id&&readback.channelId===INSTAGRAM&&clean(readback.text)===clean(art.body);
-        if(!readbackOk){
-          const containment=await deletePost(bufferToken,created.post.id);
-          throw new Error('BUFFER_INSTAGRAM_READBACK_MISMATCH:'+JSON.stringify({containment}));
-        }
-        const evidence={...gatePassedEvidence,provider:'buffer',provider_post_id:readback.id,provider_status:clean(readback.status).toLowerCase(),provider_due_at:readback.dueAt||null,provider_truth_verified:true,provider_truth_checked_at:new Date().toISOString(),pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',fallback_reason:'META_AND_COMPOSIO_AUTH_UNAVAILABLE',make_dependency:false,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
-        const decisionState=clean(readback.status).toLowerCase()==='sent'?'published':'scheduled';
-        await db.from('powerhouse_channel_decisions').update({state:decisionState,delivery_ref:readback.id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await db.from('powerhouse_content_artifacts').update({status:decisionState==='published'?'published':'scheduled',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,decisionState==='published'?'PUBLISHED':'DISPATCHED',readback.id,evidence,decisionState==='published'?'Collect Instagram outcome metrics and feed learning loop.':'Await provider send, then reconcile.',null);
-        results.push({channel:row.channel,status:decisionState,post_id:readback.id,provider:'buffer',provider_truth_verified:true});
+        const direct=await publishInstagramViaComposio(db,art,runDate,instagramContext);
+        const evidence={...gatePassedEvidence,...direct,pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'instagram-composio-only-canonical-graph-id-v2',buffer_dependency:false,meta_direct_dependency:false,make_dependency:false,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,'Collect Instagram outcome metrics and feed learning loop.',null);
+        const socialIngest=await ingestDirectInstagramSocialPost(db,runDate,art,direct,textHash);
+        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,permalink:direct.permalink,provider:'composio',provider_truth_verified:true,instagram_username:INSTAGRAM_CANONICAL_USERNAME,social_ingest:socialIngest});
         continue;
-      } catch(error){
-        if(error instanceof BufferHttpError && error.status===429){
-          bufferCircuit=await openBufferCircuit(db,error.retryAfter,'instagram-buffer-fallback');
-          const evidence={...(row.delivery_evidence||{}),provider:'buffer',provider_truth_verified:false,error:'BUFFER_RATE_LIMITED',transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',buffer_retry_at:bufferCircuit.retry_at};
-          await db.from('powerhouse_channel_decisions').update({state:'content_ready',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-          await recordObligation(db,runDate,row.channel,'APPROVED',null,evidence,`Reuse same proven Mira Reel after Buffer reset at ${bufferCircuit.retry_at}.`,'BUFFER_RATE_LIMITED');
-          results.push({channel:row.channel,status:'deferred_rate_limit',provider:'buffer',retry_at:bufferCircuit.retry_at});
-          continue;
-        }
+      } catch(error) {
         const message=error instanceof Error?error.message:String(error);
-        const evidence={...(row.delivery_evidence||{}),provider:instagramMetaConfig?'meta':instagramComposioApiKey?'composio':'buffer',provider_truth_verified:false,error:message,transport_contract:'instagram-meta-primary-composio-buffer-fallback-v1',make_dependency:false};
-        const authMissing=message==='META_INSTAGRAM_AUTH_REQUIRED'||message==='COMPOSIO_INSTAGRAM_AUTH_REQUIRED'||message.includes('COMPOSIO_INSTAGRAM_REAUTH_REQUIRED')||message.includes('COMPOSIO_INSTAGRAM_CONNECTION_REQUIRED')||message.includes('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS')||message.includes('COMPOSIO_INSTAGRAM_IDENTITY_MISMATCH');
-        await db.from('powerhouse_channel_decisions').update({state:authMissing?'content_ready':'failed',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,authMissing?'APPROVED':'FAILED',null,evidence,authMissing?'Use Buffer fallback when its circuit is closed; reuse same proven media.':'Retry only after transport diagnosis; never fall back to Make.',message);
-        results.push({channel:row.channel,status:authMissing?'waiting_auth':'failed',provider:instagramMetaConfig?'meta':instagramComposioApiKey?'composio':'buffer',error:message});
+        const authOrIdentity=message.includes('AUTH_REQUIRED')||message.includes('CONNECTION_REQUIRED')||message.includes('CANONICAL_IDENTITY_REQUIRED')||message.includes('IDENTITY_UNREADABLE');
+        const evidence={...(row.delivery_evidence||{}),provider:'composio',provider_truth_verified:false,error:message,transport_contract:'instagram-composio-only-canonical-graph-id-v2',buffer_dependency:false,meta_direct_dependency:false,make_dependency:false};
+        await db.from('powerhouse_channel_decisions').update({state:authOrIdentity?'content_ready':'failed',delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel).eq('state','dispatching');
+        await recordObligation(db,runDate,row.channel,authOrIdentity?'APPROVED':'FAILED',null,evidence,authOrIdentity?'Repair canonical Composio Instagram identity for @bedrijfsgeheugen.nl; reuse the same proven Reel. No Buffer or Meta-direct fallback.':'Diagnose Composio transport/readback for this exact claim; never create a replacement post.',message);
+        results.push({channel:row.channel,status:authOrIdentity?'waiting_canonical_composio_identity':'failed',provider:'composio',error:message});
         continue;
       }
     }

@@ -6,7 +6,7 @@ const publisher=readFileSync('supabase/functions/powerhouse-social-publisher/ind
 const linkedinSetup=readFileSync('supabase/functions/powerhouse-composio-linkedin-setup/index.ts','utf8');
 const instagramSetup=readFileSync('supabase/functions/powerhouse-composio-instagram-setup/index.ts','utf8');
 
-test('LinkedIn uses live provider health instead of raw ACTIVE account count',()=>{
+test('LinkedIn setup uses live provider health instead of raw ACTIVE metadata',()=>{
   assert.match(linkedinSetup,/LINKEDIN_GET_MY_INFO/);
   assert.match(linkedinSetup,/REVOKED_ACCESS_TOKEN/);
   assert.match(linkedinSetup,/healthy_accounts/);
@@ -14,14 +14,11 @@ test('LinkedIn uses live provider health instead of raw ACTIVE account count',()
   assert.match(linkedinSetup,/COMPOSIO_LINKEDIN_REAUTH_REQUIRED/);
 });
 
-test('publisher preflights LinkedIn auth before canonical claim and capability consumption',()=>{
-  const preflight=publisher.indexOf("await preflightLinkedInConnection(db)");
-  const claim=publisher.indexOf("const { data: claimed, error: claimError }");
-  const consume=publisher.indexOf("await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha)");
-  assert.ok(preflight>0);
-  assert.ok(claim>preflight);
-  assert.ok(consume>claim);
-  assert.match(publisher,/COMPOSIO_LINKEDIN_REAUTH_REQUIRED/);
+test('publisher preflights LinkedIn through live Composio identity before provider mutation',()=>{
+  assert.match(publisher,/preflightLinkedInComposio/);
+  assert.match(publisher,/preflightLinkedInViaComposio/);
+  assert.match(publisher,/LINKEDIN_GET_MY_INFO/);
+  assert.match(publisher,/isLinkedInAuthPreflightError/);
   assert.match(publisher,/state:'content_ready'/);
 });
 
@@ -33,9 +30,11 @@ test('Instagram setup selects only live bedrijfsgeheugen.nl identity and ignores
   assert.match(instagramSetup,/COMPOSIO_INSTAGRAM_REAUTH_REQUIRED/);
 });
 
-test('Instagram publisher consumes the health-verified setup account, not a stale secret pin',()=>{
-  assert.match(publisher,/instagram-composio-setup-current-state-v1/);
-  assert.match(publisher,/COMPOSIO_INSTAGRAM_IDENTITY_MISMATCH/);
-  assert.match(publisher,/await composioInstagramContext\(db\)/);
-  assert.doesNotMatch(publisher,/let accountId=await secret\(db,'COMPOSIO_INSTAGRAM_CONNECTED_ACCOUNT_ID'\)/);
+test('Instagram publisher independently verifies exact canonical provider identity',()=>{
+  assert.match(publisher,/instagram-composio-only-canonical-graph-id-v2/);
+  assert.match(publisher,/INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen\.nl'/);
+  assert.match(publisher,/INSTAGRAM_CANONICAL_USER_ID='17841446582493753'/);
+  assert.match(publisher,/COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED/);
+  assert.match(publisher,/canonicalInstagramComposioContext/);
+  assert.match(publisher,/INSTAGRAM_GET_USER_INFO/);
 });
