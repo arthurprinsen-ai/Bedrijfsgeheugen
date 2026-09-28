@@ -10,3 +10,4 @@
 - Prevention: never paraphrase a consumed story; choose a different verified source/topic. User duplicate feedback permanently retires the story family.
 
 - Delivery metadata authority: obligation `social-semantic-example-uniqueness-v4`, lane `docs`, candidate `docs`, based on main `09702478ba9131702642b625b4c08eed7f20d5f3`.
+- Machine-readable PR metadata is bound to the current main epoch before the canonical Required gate is re-entered.
