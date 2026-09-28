@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T19:55:00Z',
+  observedAt:'2026-09-28T17:54:27Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -68,7 +68,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Powerhouse Company Intelligence OS',
       authority:'supabase',
       owner:'whole-brain-intelligence',
-      status:'CANDIDATE_DELIVERY',
+      status:'LIVE_PROVEN_RUNTIME',
       inputs:Object.freeze(['canonical source evidence','CRM/relationship evidence','company/people graph','opportunities','actions','provider readback','outcomes','realized value']),
       outputs:Object.freeze(['Company Graph','System of Context','autonomous action candidates','Outcome Memory','compound intelligence next-decision context']),
       runtime:Object.freeze({
@@ -79,7 +79,22 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         outcomeMemory:'public.powerhouse_outcome_memory_v1',
         compoundIntelligence:'public.powerhouse_compound_intelligence_v1',
         brainModule:'brain/company-intelligence/company-intelligence-os.mjs',
-        contract:'brain/contracts/company-intelligence-os-v1.json'
+        contract:'brain/contracts/company-intelligence-os-v1.json',
+        orchestrator:'public.powerhouse_run_company_intelligence_os_v1(date)'
+      }),
+      productionEvidence:Object.freeze({
+        githubMainMergeSha:'f177340af3aa08287cc510915623e01ce701778d',
+        migrationName:'powerhouse_company_intelligence_os_v1',
+        migrationExpectedVersion:'20260928193000',
+        migrationAppliedVersion:'20260928175205',
+        migrationMatchMode:'UNIQUE_NAME_RECONCILED',
+        graphNodes:42217,
+        graphEdges:25164,
+        companiesInContext:17328,
+        actions:2883,
+        outcomeMemories:12,
+        compoundCompanies:17328,
+        runtimeReadbackAt:'2026-09-28T17:54:27Z'
       }),
       invariants:Object.freeze({
         crmIsSourceNotBrain:true,
@@ -281,7 +296,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     agentFabricModules:Object.freeze(["agent-fabric.mjs","agent-registry.mjs","agent-team.mjs","agent-work.mjs","completion-supervisor.mjs","learning-memory.mjs","self-heal.mjs","team-memory-bridge.mjs"])
   }),
   providerSnapshot:Object.freeze({
-    supabase:Object.freeze({tables:255,views:116,functions:204,activeCronJobs:50,projectId:'adhjwmvyoixzjtmiroln'}),
+    supabase:Object.freeze({tables:255,views:136,functions:250,activeCronJobs:51,projectId:'adhjwmvyoixzjtmiroln'}),
     github:Object.freeze({workflows:115,skills:25,agentFabricModules:8}),
     netlify:Object.freeze({functions:68}),
     notion:Object.freeze({canonicalSystemMap:true,humanHandbook:true,latestVerifiedState:true,agentActivityLog:true})
