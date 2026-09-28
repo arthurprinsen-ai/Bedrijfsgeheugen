@@ -75,3 +75,19 @@ Gebruik standaard `powerhouse-relationship-external-intelligence-v1`. Relevante 
 Fingerprint: `powerhouse-linkedin-sales-machine-public-intent-bridge-v1`.
 
 Website intent is part of the same commercial context as LinkedIn and e-mail. High-signal public actions such as a completed selfscan report request and checkout start must emit a PII-free canonical `/api/growth-event` observation. Personal contact data stays in the purpose-bound form/order path and must never be copied into SEO/growth telemetry. Growth events feed attribution, Company/Relationship context, Growth Swarm prioritisation, next-best-action and outcome learning; they never override consent, suppression, fatigue, evidence or provider-capability gates.
+
+
+## Public-intent bridge — terminal production proof
+Fingerprint: `powerhouse-linkedin-sales-machine-public-intent-bridge-v1-live-proof`.
+
+Status: **LIVE_PROVEN_RUNTIME**.
+
+- Implementation merged to protected main at `6bce84b1a3d3f7eba1b7291895f7e7925945fd31`.
+- Production Release Readback run: `36474142016` — success.
+- Skill Projection run: `36474141948` — success.
+- Netlify production deploy: `6abac341b59a3f00080a08dc`.
+- Netlify commit_ref: `6bce84b1a3d3f7eba1b7291895f7e7925945fd31`.
+- Published at: `2026-09-28T19:44:41.885Z`.
+- Selfscan report-request and checkout-start now emit PII-free commercial intent into the canonical growth/datahub loop.
+- Personal contact data remains in purpose-bound lead/order handlers and is never copied into growth telemetry.
+- This bridge is part of the existing LinkedIn Sales Machine / Growth Swarm / Persuasion Revenue Optimizer lineage; no parallel CRM, intent store or scheduler was introduced.
