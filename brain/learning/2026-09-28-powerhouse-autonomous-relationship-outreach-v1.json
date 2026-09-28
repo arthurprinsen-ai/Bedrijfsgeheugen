@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse-autonomous-relationship-outreach-v1",
+  "status": "CANDIDATE",
+  "date": "2026-09-28",
+  "obligation_id": "powerhouse-autonomous-relationship-outreach-v1",
+  "problem": "Evidence-backed commercial opportunities were created but external follow-up still stopped at a human authorization gate.",
+  "decision": "The user's explicit instruction authorizes Powerhouse to execute bounded autonomous outbound for existing relationships. Use supported Gmail delivery first; never invent unsupported LinkedIn DM capability.",
+  "safeguards": [
+    "Only existing relationships with status in_gesprek, aangeboden or rust.",
+    "Fresh trigger evidence within 30 days and confidence at least 0.60.",
+    "Maximum five autonomous sends per day.",
+    "At most one successful email per person per 30 days.",
+    "Respect unsubscribe, opt-out, do-not-contact, complaint and negative-reply outcomes.",
+    "Provider acknowledgement is required before marking done; dedupe prevents duplicate sends."
+  ],
+  "canonical_runtime": {
+    "prepare": "public.powerhouse_prepare_autonomous_outreach_v1(date)",
+    "dispatch": "public.powerhouse_dispatch_autonomous_outreach_v1(date)",
+    "worker": "powerhouse-autonomous-outreach",
+    "scheduler_owner": "powerhouse-commercial-learning-v1"
+  },
+  "external_outreach_authorized": true,
+  "unsupported_capabilities": [
+    "LinkedIn direct messaging is not claimed unless a supported provider tool becomes available."
+  ],
+  "evaluation": {
+    "regression": [
+      "tests/supabase-powerhouse-autonomous-outreach-v1.test.mjs"
+    ]
+  }
+}
