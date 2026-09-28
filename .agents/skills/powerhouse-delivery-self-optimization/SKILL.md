@@ -741,3 +741,23 @@ Rules:
 - keep roots narrow and explainable to avoid accidental CI fan-out.
 
 Regression: `tests/brain-adaptive-delivery-engine-v1.test.mjs`.
+
+
+## CI Telemetry Calibration
+
+Fingerprint: `github|ci-calibration|telemetry-feedback-shadow|v1`.
+
+Powerhouse CI Intelligence MUST translate recent CI telemetry into bounded calibration recommendations.
+
+Rules:
+- canonical inputs are queue p95, execution p95, workflow fan-out, failure rate and cancellation rate;
+- calibration runs in `SHADOW_RECOMMENDATIONS` until a protected candidate explicitly changes configuration;
+- recommendations may reduce waste, tighten impact routing or increase regression evidence;
+- recommendations may never weaken Required, CodeQL, security, exact-head, production promotion or provider/browser readback;
+- the CI Intelligence workflow remains read-only;
+- repository mutation authority remains `PROTECTED_CANDIDATE_ONLY`;
+- do not create a parallel optimizer state store: calibration is embedded in the canonical CI Intelligence artifact.
+
+Canonical policy: `config/powerhouse-ci-calibration-v1.json`.
+Engine: `tools/delivery/ci-calibration-engine.mjs`.
+Regressions: `tests/brain-ci-calibration-engine-v1.test.mjs` and `tests/brain-ci-calibration-wiring-v1.test.mjs`.
