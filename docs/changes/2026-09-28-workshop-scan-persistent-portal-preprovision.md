@@ -38,3 +38,15 @@ Hiermee verdwijnt de ingevulde data niet wanneer localStorage, browser of sessie
 
 ## Privacygrens
 PII is uitsluitend account/portal context en wordt niet gebruikt als benchmarkdimensie of aggregate Powerhouse learning. Benchmark- en growth events houden `privacy_scope: no_pii`.
+
+## Powerhouse-borging voor chats en agents
+Deze capability is niet alleen runtimecode maar een vaste Powerhouse-regel. Iedere chat/agent die workshopscan, rapport, PDF, klantdata of klantportaal wijzigt:
+- hergebruikt dezelfde submission-lineage;
+- leest eerst de huidige scan-, intake- en portalstate;
+- bewaart consented invoer duurzaam;
+- maakt/preprovisiont het klantportaal met dezelfde scanreferentie;
+- bewaakt PII-isolatie;
+- voert regressie- én productie-readback uit;
+- schrijft learnings en structurele contractwijzigingen terug naar skill, Brain, ledger, documentatie en System Map.
+
+De capability mag dus niet meer terugvallen naar een browser-only scan, los PDF-bestand of een portal dat pas na registratie leeg wordt aangemaakt.

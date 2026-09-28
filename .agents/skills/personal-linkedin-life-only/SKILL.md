@@ -63,7 +63,6 @@ Personal LinkedIn may never invent a daily-life event merely to satisfy a publis
 
 This rotation prevents an exhausted source pool from silently turning the daily channel into `PERSONAL_TRUTH_SOURCE_UNVERIFIED` while preserving truth and uniqueness.
 
-
 ## Concrete subject / example reuse is forbidden (2026-09-28)
 
 Fingerprint: `personal-linkedin-semantic-example-uniqueness-v1`.
@@ -80,3 +79,4 @@ Hard rules:
 - the known `printer` story family is consumed and must not be published again.
 
 This rule is stricter than text-hash/shingle dedupe and overrides the older rotation wording wherever that could be read as allowing reuse of a previously published source.
+

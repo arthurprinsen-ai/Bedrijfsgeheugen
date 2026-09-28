@@ -150,7 +150,6 @@ Fingerprint: `linkedin-reconciliation-buffer-isolation-v1`.
 
 Exact LinkedIn provider reconciliation must execute independently of Buffer availability, cooldown or HTTP 429 state. Buffer health may defer only Buffer-owned audit/containment work. It must never suppress readback of an existing LinkedIn URN, company capability probing, personal/company recovery, or closure of a Composio-owned daily claim. This prevents a retired/limited fallback provider from becoming a hidden dependency of the canonical LinkedIn path.
 
-
 ## Semantic example uniqueness v4 (2026-09-28)
 
 Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
@@ -166,3 +165,4 @@ Required behavior:
 - the rule applies cross-date and cross-channel: a concrete story already consumed by one social output cannot silently be recycled elsewhere as “new”.
 
 A successful provider create permanently consumes the story family even when LinkedIn exact readback returns 403; retry/reconciliation must never publish a replacement.
+

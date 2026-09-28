@@ -65,4 +65,20 @@ Canonical machine-readable learning: `brain/learning/2026-09-18-toolchain-author
 
 
 ## Workshopscan → klantportaal persistentie
+
+Fingerprint: `workshop-scan|persistent-intake|portal-preprovision|identity-claim|v2`.
+
 Voor workshopscans geldt één submission-lineage. Na expliciete toestemming moeten de scanantwoorden duurzaam worden opgeslagen, persoonsgegevens gescheiden in een private service-only portal-intake blijven, en dezelfde `submission_key` direct een vooraf gevulde canonical-brain klantportaalstate creëren. PDF, scanstore, portal en latere identity claim mogen geen parallelle klantrecords of nieuwe scan-id's maken. Bij authenticated claim wordt de vooraf gevulde state naar de identity-backed tenant overgezet. PII mag nooit naar aggregate benchmark- of growth-learning events lekken.
+
+Verplicht voor iedere huidige en toekomstige chat, agent, skill en workflow die de workshopscan raakt:
+1. lees vóór wijziging de bestaande `scan_inzendingen`, `workshop_portal_intakes` en `portal_state_layers` contracten;
+2. behoud één `submission_key` over scan, PDF, portalstate en claim;
+3. sla ingevulde scan- en bedrijfsdata server-side op; browser/localStorage is alleen tijdelijke transport/cache en nooit de enige waarheid;
+4. preprovision het klantportaal onmiddellijk na een geldige, consented scan;
+5. toon bedrijfsnaam altijd; toon klantlogo alleen wanneer het betrouwbaar vanaf het opgegeven/afgeleide bedrijfsdomein komt, anders geen logo-placeholder;
+6. claim na authenticatie exact de bestaande preprovisioned portalstate; nooit een tweede klantrecord of lege nieuwe portalstate aanmaken;
+7. test minimaal persistent scan write, private intake write, portalstate write, identity claim, idempotency en PII-isolatie;
+8. productie is pas groen na runtime readback van de scan-ingest route én bewijs dat dezelfde `submission_key` in portalstate terugkomt;
+9. iedere materiële wijziging schrijft skill + Brain learning + ledger + menselijke documentatie + System Map terug in dezelfde lineage.
+
+Chats mogen deze flow niet reduceren tot advies of losse mock-up. Als de gebruiker vraagt om opslaan, portalvorming, PDF of workshopscan-personalisatie, behandelt de chat dit als één bestaande Powerhouse capability en werkt hij binnen deze canonieke lineage door tot terminale verificatie.
