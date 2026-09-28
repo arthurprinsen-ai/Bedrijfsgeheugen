@@ -357,4 +357,4 @@ revoke all on function public.assert_content_publication_daily_invariant(date) f
 grant execute on function public.assert_content_publication_daily_invariant(date) to service_role, postgres;
 
 -- Repair today's known provider-created social side effects using the same generic rule.
-perform public.powerhouse_reconcile_content_outcomes_v1((timezone('Europe/Amsterdam',now()))::date);
+select public.powerhouse_reconcile_content_outcomes_v1((timezone('Europe/Amsterdam',now()))::date);
