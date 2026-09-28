@@ -12,3 +12,5 @@
 - Regression evidence: tests/brain-ci-critical-path-acceleration-v1.test.mjs.
 - System Map: platform/system-map/canonical-system-map.mjs registers Powerhouse CI Intelligence & Acceleration.
 - Human architecture: docs/powerhouse/POWERHOUSE_CI_ACCELERATION.md.
+
+- Scope synchronized to 18 files after moving the release-control regression contract into this lineage.
