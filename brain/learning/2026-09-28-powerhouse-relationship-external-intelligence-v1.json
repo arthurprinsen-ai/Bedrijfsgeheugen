@@ -1,7 +1,7 @@
 {
   "fingerprint": "powerhouse-relationship-external-intelligence-v1",
   "date": "2026-09-28",
-  "status": "CANDIDATE_DELIVERY",
+  "status": "LIVE_PROVEN_RUNTIME",
   "problem": "External web and LinkedIn/company updates could exist as loose evidence without being guaranteed to enrich the canonical relationship, customer and next-best-action context.",
   "decision": "Project verified external relationship evidence into canonical predictive signals and expose one person->company->customer->opportunity/NBA context view before relationship scoring.",
   "prevention_rule": "No relevant external relationship signal may terminate as an isolated news/event record. It must retain provenance and, when entity matching is valid, flow into canonical person/company/customer intelligence. External evidence alone never proves buying intent and may not create sensitive personal inferences.",
@@ -49,5 +49,14 @@
     "Production refresh projected 10 company and 10 person external-intelligence signals.",
     "The enriched relationship context covers 23,295 relationships and already exposes external updates for matched relationships.",
     "The system map registers Relationship External Intelligence as a Powerhouse commercial-intelligence capability."
-  ]
+  ],
+  "production_evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "migration": "powerhouse_relationship_external_intelligence_v1",
+    "projected_company_signals": 10,
+    "projected_person_signals": 10,
+    "enriched_relationships": 23295,
+    "external_updates_matched_relationships": 8,
+    "scheduler_owner": "powerhouse-commercial-learning-v1"
+  }
 }
