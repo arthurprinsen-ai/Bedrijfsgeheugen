@@ -761,3 +761,16 @@ Rules:
 Canonical policy: `config/powerhouse-ci-calibration-v1.json`.
 Engine: `tools/delivery/ci-calibration-engine.mjs`.
 Regressions: `tests/brain-ci-calibration-engine-v1.test.mjs` and `tests/brain-ci-calibration-wiring-v1.test.mjs`.
+
+
+## Autonomous CI tuning from orchestration waste
+
+Fingerprint: `github|ci-autonomous-optimizer|fanout-skip-aware-tuning|v1`.
+
+The daily autonomous engineering optimizer MUST tune from queue pressure, execution time, failure rate, workflow fan-out and skipped-job ratio.
+
+- High fan-out or skip waste must bias toward more batching and less parallelism.
+- Parallelism may increase only when queue, failure, fan-out and skip pressure are all low.
+- Telemetry observations are not persistent tuning fields.
+- Auto-tuning may never weaken Required, security, exact-SHA, protected merge or production-readback invariants.
+- Every tuning change still lands only through a protected PR.
