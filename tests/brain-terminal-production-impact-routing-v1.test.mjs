@@ -53,3 +53,12 @@ test('production impact ignore policy stays in parity with both canonical produc
     assert.ok(readback.includes(pattern),`readback missing ${pattern}`);
   }
 });
+
+
+test('terminal closure derives production applicability from production-impact authority, not lane name', async () => {
+  const workflow = await readFile('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(workflow, /CHANGED_PATHS="\$\{changed_paths\}" node tools\/delivery\/production-impact\.mjs/);
+  assert.match(workflow, /productionReadbackRequired===true/);
+  assert.match(workflow, /CONTROL_PLANE_MAIN_READBACK_PROVEN/);
+  assert.doesNotMatch(workflow, /DELIVERY_LANE}" = "automation"/);
+});
