@@ -129,3 +129,12 @@ Draft, suggestion, CTA recommendation, asset recommendation and TODO are non-ter
 `asset_format=pdf` is authoritative. `board_one_pager`, `evidence_teardown`, `lost_knowledge_case`, `friction_business_case`, `mini_benchmark` and `peer_benchmark` default to PDF. The autonomous Gmail executor generates the PDF with the approved text-to-PDF provider and attaches it to the same outgoing e-mail before sending. Missing facts remain unknown; never invent evidence, ROI, benchmark values, urgency, scarcity or customer proof.
 
 This rule is inherited by chats, agents, scheduled runs, Growth Swarm, LinkedIn sales, autonomous outreach and future commercial agents. Human intervention is reserved for missing authority/credentials, safety/legal boundaries or an irreducible business choice.
+
+## Superseding execution proof — all 20 plays v3
+Fingerprint: `powerhouse-all-20-growth-plays-v3`.
+
+The historical 13-active state is superseded. A play is built only when the execution authority records trigger owner, executor, surface, outcome metric, truth/privacy gate and `execution_complete=true`.
+
+Runtime authorities: `public.powerhouse_growth_play_execution_contract_v1`, `public.powerhouse_growth_play_build_status_v1`, `public.powerhouse_activate_remaining_growth_plays_v3(date)`, and `public.powerhouse_promote_growth_play_emails_v1(date)`.
+
+Current production runtime readback: **20 catalog plays / 20 ACTIVE / 20 BUILT_ACTIVE**. Growth-play e-mails share the existing five-per-day autonomous-email budget. Benchmark contribution requires separate optional consent. ACTIVE means executable when evidence gates pass; it does not force an external action every run.
