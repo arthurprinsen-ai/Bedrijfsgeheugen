@@ -32,6 +32,9 @@
     "historical_replay": [
       "tests/brain-content-closed-loop-contract.test.mjs"
     ],
+    "shadow": [
+      "tests/brain-content-closed-loop-contract.test.mjs"
+    ],
     "canary": [
       "tests/brain-content-closed-loop-contract.test.mjs"
     ]
