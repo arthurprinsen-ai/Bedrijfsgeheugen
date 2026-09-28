@@ -18,7 +18,7 @@ test('foresight v2 requires calibrated prediction learning',()=>{
 });
 
 test('brier and calibration are measurable',()=>{
-  assert.equal(brierScore(.8,true),.04);
+  assert.ok(Math.abs(brierScore(.8,true)-.04)<1e-12);
   const c=calibrationBand([{probability:.8,outcome:true},{probability:.2,outcome:false}]);
   assert.equal(c.n,2);
   assert.ok(c.brier<.1);
