@@ -227,9 +227,7 @@ begin
     'missing_provider_fingerprint','PROVIDER_RECORD_MISSING'
   );
 end;
-$function$
-
-
+$function$;
 
 -- Fail-closed execution contract: internal service runtime only.
 revoke all on function public.powerhouse_reconcile_content_outcomes_v1(date) from public;
