@@ -18,7 +18,9 @@
     "republish_forbidden": true
   },
   "evaluation": {
-    "required_test": "tests/brain-social-semantic-example-uniqueness-v1.test.mjs"
+    "historical_replay": [
+      "tests/brain-social-semantic-example-uniqueness-v1.test.mjs"
+    ]
   },
   "compiler": {
     "failure_class": "CONTENT_INTEGRITY",
