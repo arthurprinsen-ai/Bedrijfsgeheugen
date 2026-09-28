@@ -61,3 +61,22 @@ Draft, suggestion, CTA recommendation, asset recommendation and TODO are non-ter
 `asset_format=pdf` is authoritative. `board_one_pager`, `evidence_teardown`, `lost_knowledge_case`, `friction_business_case`, `mini_benchmark` and `peer_benchmark` default to PDF. The autonomous Gmail executor generates the PDF with the approved text-to-PDF provider and attaches it to the same outgoing e-mail before sending. Missing facts remain unknown; never invent evidence, ROI, benchmark values, urgency, scarcity or customer proof.
 
 This rule is inherited by chats, agents, scheduled runs, Growth Swarm, LinkedIn sales, autonomous outreach and future commercial agents. Human intervention is reserved for missing authority/credentials, safety/legal boundaries or an irreducible business choice.
+
+
+## 20/20 Growth Play execution
+De Persuasion Revenue Optimizer is onderdeel van execution, niet een advieslaag. Alle 20 Growth Swarm plays hebben een canonical trigger -> decision -> executor/surface -> outcome pad.
+
+De zeven eerder niet volledig uitvoerbare plays zijn geactiveerd:
+- MKB Friction Index;
+- Positive Public Teardown;
+- Anti-consultancy Challenge;
+- Boardroom Blindness;
+- Problem/Competitor Switch Pages;
+- Benchmark Data Contribution Flywheel;
+- Conditional Risk Reversal.
+
+`powerhouse_activate_all_growth_plays_v2(date)` maakt de play uitvoerbaar zodra evidence-gates slagen. `powerhouse_execute_growth_play_actions_v1(date)` routeert naar bestaande email-, LinkedIn-, content/SEO-, benchmark-, scan- of portalexecutors. Daarna blijft `powerhouse_optimize_prepared_outreach_v1(date)` de bestaande give/get en boodschap optimaliseren vóór provider execution.
+
+Een optimizer-output, draft, recommendation of score is nooit terminal. Terminal is provider execution/readback of bewust wait/nurture omdat gates niet slagen.
+
+Persuasion mag bedrijfscontext, rol, funnelstage en geverifieerde relatie-/triggerdata gebruiken. Gevoelige persoonskenmerken en psychologische persoonlijkheidsprofilering zijn verboden. Fake scarcity, nep-social-proof, unsupported fear en hidden commitment zijn harde verboden.
