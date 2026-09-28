@@ -2,9 +2,13 @@
   "fingerprint": "powerhouse-persuasion-revenue-optimizer-v1",
   "version": "powerhouse-persuasion-revenue-optimizer-v1",
   "date": "2026-09-28",
+  "obligation_id": "powerhouse-persuasion-revenue-optimizer-v1",
   "status": "PRODUCTION_APPLIED",
+  "failure_class": "REVENUE_PERSUASION_OPTIMIZATION",
   "scope": "GROWTH_REVENUE",
   "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
   "root_cause": "Growth Swarm selected accounts, triggers, channels and actions, but message framing, give/get exchange and persuasion learning were not yet a canonical measurable layer.",
   "decision": "Insert one persuasion optimizer between prepared action and provider execution. Reuse existing sales actions/outcomes and never increase contact volume merely because persuasion exists.",
   "strategies": [
@@ -35,5 +39,41 @@
     "prepared_email_actions_tagged": 2,
     "prepared_linkedin_actions_tagged": 1,
     "extra_send_volume_created": 0
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-persuasion-revenue/SKILL.md",
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md"
+  ],
+  "evaluation": {
+    "regression": [
+      "tests/powerhouse-persuasion-revenue-optimizer-v1.test.mjs"
+    ],
+    "historical_replay": [
+      "tests/powerhouse-persuasion-revenue-optimizer-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "REVENUE_PERSUASION_OPTIMIZATION",
+    "scope": "GROWTH_REVENUE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "Production migration powerhouse_persuasion_revenue_optimizer_v1 applied successfully on 2026-09-28.",
+    "Production readback confirmed eight persuasion strategies in the catalog.",
+    "Controlled optimizer readback tagged two prepared autonomous-email actions and one prepared LinkedIn action without creating extra send volume.",
+    "The canonical acquisition cycle contains powerhouse_optimize_prepared_outreach_v1 between autonomous outreach preparation and provider dispatch.",
+    "The strategy performance view reads canonical sales actions and outcomes including realized revenue."
+  ],
+  "terminal": {
+    "production_runtime": "ACTIVE",
+    "production_readback": {
+      "catalog_strategies": 8,
+      "prepared_email_actions_tagged": 2,
+      "prepared_linkedin_actions_tagged": 1,
+      "extra_send_volume_created": 0,
+      "optimizer_wired": true
+    }
   }
 }
