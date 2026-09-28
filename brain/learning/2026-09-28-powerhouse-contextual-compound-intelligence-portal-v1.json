@@ -1,0 +1,18 @@
+{
+  "fingerprint": "powerhouse-contextual-compound-intelligence-portal-v1",
+  "date": "2026-09-28",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "problem": "Forecast and prediction-quality evidence were visible, but the portal did not show whether the whole Powerhouse self-improvement loop was actually learning.",
+  "root_cause": "The authenticated portal read model exposed forecast quality only; canonical self-improvement control was not projected into the contextual foresight UI.",
+  "fix": "Project public.powerhouse_self_improvement_control_v1 through the existing prediction endpoint and render it on Overview and prediction-quality surfaces.",
+  "prevention_rule": "Autonomous learning is not user-visible until evidence, debt and promotion guardrails are rendered in decision context; code/model change alone is not proof of improvement.",
+  "regression_contract": "portal-v2/tests/foresight-context-ui.test.mjs",
+  "safeguards": [
+    "authenticated endpoint",
+    "canonical Supabase view reused",
+    "no parallel learning store",
+    "unknown is not green"
+  ]
+}
