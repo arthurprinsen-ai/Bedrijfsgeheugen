@@ -9,3 +9,16 @@
 - New orchestration: `public.powerhouse_run_company_intelligence_os_v1(date)`, wrapping the existing canonical execution loop.
 - Governance: system map, operating canon, skill, learning and regression test updated in the same lineage.
 - Required terminal proof: repository tests + migration delivery + production Supabase readback + system-map projection readback.
+
+## Terminal proof achieved
+
+- Production readback date: 2026-09-28
+- Runtime project: canonical production Supabase
+- Graph nodes: 42,217
+- Graph edges: 25,164
+- Company contexts: 17,328
+- Autonomous action rows: 2,883
+- Outcome-memory rows: 12
+- Compound-intelligence company rows: 17,328
+- Final capability state: `LIVE_PROVEN_RUNTIME`
+- Closure invariant added: production proof must update skill + learning + ledger + System Map; candidate status may not remain stale after verified runtime readback.
