@@ -30,5 +30,33 @@
     "learning/calibration"
   ],
   "date": "2026-09-28",
-  "machine_enforceable": true
+  "machine_enforceable": true,
+  "obligation_id": "powerhouse-external-relationship-intelligence-v1",
+  "failure_class": "COMMERCIAL_INTELLIGENCE",
+  "scope": "REVENUE",
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Verified public internet and LinkedIn evidence could exist as isolated runtime events without becoming standard reusable context on the known connection, company and customer graph.",
+  "prevention": [
+    "Every verified external update about a known connection or its company is projected into the canonical relationship graph.",
+    "Preserve source, freshness and confidence; LinkedIn activity is a signal and never standalone buying proof.",
+    "Reuse existing predictive signals, company intelligence, connection profiles and commercial scheduler; never introduce a parallel CRM."
+  ],
+  "evidence": [
+    "powerhouse_relationship_external_intelligence_v1 aggregates external runtime evidence by person and company.",
+    "powerhouse_project_external_relationship_intelligence_v1 projects company evidence into powerhouse_predictive_signals and connection context into bg_connecties.extra.",
+    "powerhouse_customer_external_intelligence_v1 exposes the same context for customers.",
+    "The canonical commercial cycle invokes external relationship intelligence before relationship-revenue and trigger acquisition."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md",
+    ".agents/skills/powerhouse-linkedin-sales-machine/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_INTELLIGENCE",
+    "scope": "REVENUE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
