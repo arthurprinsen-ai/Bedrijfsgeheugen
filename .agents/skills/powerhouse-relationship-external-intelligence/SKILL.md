@@ -28,3 +28,11 @@ Geen los nieuwsarchief als eindpunt. Een relevant signaal moet terugkomen in de 
 
 ## Doel
 Powerhouse moet bij iedere relevante connectie/klant/bedrijf weten wat er extern veranderd is en dit gebruiken om betere commerciële beslissingen te nemen, zonder losse datasilo's of vendor-afhankelijkheid.
+
+
+## Dagelijkse volledige connectieverrijking
+Fingerprint: `powerhouse-daily-full-connection-enrichment-v2`.
+
+Iedere connectie in `bg_connecties` krijgt **minimaal één volledige enrichment-pass per kalenderdag**. Alle op dat moment beschikbare en toegestane LinkedIn-, bedrijfs-, nieuws-, runtime- en externe intelligence wordt opnieuw geprojecteerd op het connectieprofiel. Nieuwe evidence die later binnenkomt wordt via dezelfde bestaande commerciële cyclus opnieuw meegenomen; de dagelijkse full-graph refresh is de minimumgarantie, niet de enige verrijking.
+
+De canonieke state is `powerhouse_connection_enrichment_state_v1`; coverage wordt gemeten via `powerhouse_connection_enrichment_coverage_v1`. Detail-evidence blijft in de oorspronkelijke canonical stores, zodat de enrichment geen informatie weggooit. Social/LinkedIn-observaties vullen ontbrekende kernvelden aan maar overschrijven bestaande canonical waarden niet zonder sterkere authority. Niet-beschikbare velden worden niet verzonnen. Alleen publieke of geautoriseerde bronnen; geen scraping/platform-bypass en geen gevoelige persoonsinferenties.
