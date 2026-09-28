@@ -1,0 +1,23 @@
+# Development ledger event — powerhouse-linkedin-sales-machine-v1
+
+- Date: 2026-09-28
+- Obligation: powerhouse-linkedin-sales-machine-v1
+- Lane: backend / revenue-growth / social
+- Candidate: implementation
+- Planner: public.powerhouse_prepare_linkedin_sales_machine_v1(date)
+- Dispatcher: public.powerhouse_dispatch_linkedin_sales_machine_v1(date)
+- Worker: powerhouse-linkedin-sales-machine
+- Comment executor: powerhouse-social-publisher cockpit autopilot
+- Company content executor: powerhouse-content-orchestrator
+- Private fallback: autonomous email
+- Max comments/day: 3
+- Comment cooldown/person: 14 days
+- Email delay after LinkedIn comment: 24 hours
+- LinkedIn create-post capability: true
+- LinkedIn create-comment capability: true
+- LinkedIn create-reaction capability: false
+- LinkedIn send-DM capability: false
+- DM fallback: email
+- Sales-air-cover identity: linkedin_company
+- Personal post identity policy unchanged: personal-life-only
+- Scheduler owner: powerhouse-commercial-learning-v1
