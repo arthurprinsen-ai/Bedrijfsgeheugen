@@ -9,3 +9,5 @@
 - Fail-closed: onbekende materiële scope, security/auth/database en production proof.
 
 - Delivery learning: GitHub pull_request workflow events snapshot PR metadata at trigger time. When Change-Scope changes after a commit, the next coherent candidate head must be emitted only after metadata is synchronized; this prevents a wasted preflight rerun on stale scope metadata.
+
+- Scope metadata synchronized at final 18-file lineage.
