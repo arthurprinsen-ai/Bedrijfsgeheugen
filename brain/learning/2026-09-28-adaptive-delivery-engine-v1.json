@@ -20,8 +20,26 @@
     "powerhouse-delivery-concurrency"
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-adaptive-delivery-engine-v1.test.mjs"],
-    "shadow": ["tests/brain-adaptive-delivery-engine-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ]
   },
-  "status": "CANDIDATE"
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "test_evidence": [
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+  ],
+  "evidence": {
+    "first_protected_run": "Adaptive planner classified the control-plane candidate as R2/hot and selected the full shared suite as designed.",
+    "regression": "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+  }
 }
