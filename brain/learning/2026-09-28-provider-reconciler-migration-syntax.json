@@ -1,0 +1,45 @@
+{
+  "fingerprint": "provider-reconciler-migration-syntax-closure-v1",
+  "compiler": {
+    "failure_class": "DELIVERY_ARTIFACT_SYNTAX",
+    "scope": "REPOSITORY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": {
+    "summary": "The canonical migration snapshot ended the PL/pgSQL dollar-quoted function body without the required SQL statement semicolon before subsequent REVOKE/GRANT statements.",
+    "causes": [
+      "live function definition text was copied into a migration and concatenated with privilege statements without restoring the statement terminator",
+      "runtime deployment had already succeeded independently, so the repository migration syntax defect was not visible until clean replay"
+    ]
+  },
+  "prevention_rules": [
+    "Every CREATE OR REPLACE FUNCTION ... AS $function$ block in a migration must end with $function$; before any following statement.",
+    "Security-definer migration snapshots must be clean-replay parsable and carry explicit revoke/grant boundaries.",
+    "Runtime success never substitutes for clean repository migration replay.",
+    "Material recovery must include Brain learning, activity ledger and human documentation in the same lineage."
+  ],
+  "evidence": {
+    "date": "2026-09-28",
+    "migration": "supabase/migrations/20260928121500_provider_write_terminal_reconciler_v1.sql",
+    "failure": "syntax error at or near revoke because function statement terminator was missing",
+    "security_contract": "revoke public/anon/authenticated; grant service_role",
+    "runtime_reapplied": true,
+    "regression_test": "tests/brain-content-closed-loop-contract.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-content-closed-loop-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-content-closed-loop-contract.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-content-closed-loop-contract.test.mjs"
+    ]
+  },
+  "outcome": {
+    "intended_state": "Canonical migration replays from a clean environment, preserves terminal provider-side-effect behavior, and remains service-role-only."
+  }
+}
