@@ -42,3 +42,22 @@ Elke run hergebruikt echte outcomes uit `powerhouse_sales_outcomes`. Strategieë
 
 ## Productiestaat — 28 september 2026
 De migratie is toegepast op Supabase project `adhjwmvyoixzjtmiroln`. De catalogus bevat 8 strategieën. Een gecontroleerde readback heeft bestaande prepared autonomous-email en LinkedIn-commentacties voorzien van persuasion metadata zonder extra actievolume te creëren.
+
+
+## Autonomous sales asset execution
+Fingerprint: `powerhouse-autonomous-sales-asset-execution-v1`.
+
+A Powerhouse decision is an executable obligation, not a recommendation. The owning agent completes the whole chain itself:
+- e-mail -> write final copy, create required attachment, send through the authorized provider, capture provider acknowledgement and outcome;
+- LinkedIn/company post -> generate unique final copy/media, publish through the canonical provider, read back and record outcome;
+- public comment -> generate the contextual final comment and publish it; never stop at a suggestion;
+- DM -> use the authorized DM capability when verified. If the provider cannot DM, automatically route to the highest-ranked executable fallback rather than stop;
+- PDF/one-pager/benchmark/evidence dossier -> generate the actual document first, then attach or link it to the selected delivery action;
+- visual/reel/carousel -> generate the actual media before publication through the canonical identity.
+
+Draft, suggestion, CTA recommendation, asset recommendation and TODO are non-terminal states. Terminal commercial execution is: materialize -> provider execute -> provider ack/readback -> sales outcome -> learning.
+
+### PDF execution rule
+`asset_format=pdf` is authoritative. `board_one_pager`, `evidence_teardown`, `lost_knowledge_case`, `friction_business_case`, `mini_benchmark` and `peer_benchmark` default to PDF. The autonomous Gmail executor generates the PDF with the approved text-to-PDF provider and attaches it to the same outgoing e-mail before sending. Missing facts remain unknown; never invent evidence, ROI, benchmark values, urgency, scarcity or customer proof.
+
+This rule is inherited by chats, agents, scheduled runs, Growth Swarm, LinkedIn sales, autonomous outreach and future commercial agents. Human intervention is reserved for missing authority/credentials, safety/legal boundaries or an irreducible business choice.
