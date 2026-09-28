@@ -1,0 +1,27 @@
+{
+  "fingerprint": "powerhouse-contextual-compound-intelligence-portal-v1",
+  "date": "2026-09-28",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "problem": "Prediction quality and contextual forecasts were visible, but the user could not see whether the whole Powerhouse self-improvement loop was actually learning and improving.",
+  "root_cause": "The portal prediction endpoint projected forecast quality only; the canonical self-improvement control view was not included in the contextual foresight read model.",
+  "fix": "Extend the authenticated prediction intelligence endpoint with the canonical self-improvement control projection and render it contextually on Overview and prediction-quality surfaces.",
+  "prevention_rule": "Every material autonomous-learning capability must expose evidence of learning quality and promotion guardrails in the portal where decisions are made; code/model changes alone are never proof of improvement.",
+  "canonical_refs": [
+    "portal-v2/foresight-context-ui.js",
+    "portal-v2/foresight-context.css",
+    "netlify/functions/portal-prediction-intelligence.mjs",
+    "docs/powerhouse/CONTEXTUAL_FORESIGHT_PORTAL_V1.md",
+    ".agents/skills/powerhouse-foresight-prediction-intelligence/SKILL.md",
+    "platform/system-map/canonical-system-map.mjs"
+  ],
+  "regression_contract": "portal-v2/tests/foresight-context-ui.test.mjs",
+  "safeguards": [
+    "authenticated endpoint only",
+    "canonical Supabase control view reused",
+    "no parallel learning store",
+    "no uncontrolled self-modification claim",
+    "unknown is not green"
+  ]
+}
