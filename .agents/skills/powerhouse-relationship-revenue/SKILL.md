@@ -49,4 +49,4 @@ De engine stopt niet bij een research-queue. `public.powerhouse_execute_relation
 
 
 ## Productieplanning
-De live Edge Function `powerhouse-relationship-public-research` draait ieder uur op minuut 24 met de bestaande Powerhouse scheduler-token. De canonical commercial learning cycle blijft op minuut 27 en verwerkt daardoor nieuw gevonden evidence in dezelfde uurcyclus. Geen tweede brein of losse commerciële schedulerfamilie.
+De live Edge Function `powerhouse-relationship-public-research` wordt vanuit dezelfde bestaande `powerhouse-commercial-learning-v1` cyclus gedispatcht. De canonical scheduler blijft de enige scheduler-owner. Geen tweede cron, geen tweede brein en geen losse commerciële schedulerfamilie.
