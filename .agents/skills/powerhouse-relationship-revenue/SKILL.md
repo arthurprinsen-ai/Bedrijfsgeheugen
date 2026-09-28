@@ -93,3 +93,7 @@ Gebruik `powerhouse-linkedin-sales-machine-v1` als sociale commerciële laag vó
 
 ### Revenue-first kanaalbeslissing
 De Relationship Revenue Engine geeft niet alleen leads door. Bij iedere gekwalificeerde relatie kiest Powerhouse zelfstandig de beste toegestane vervolgstap uit `linkedin_context_comment`, `linkedin_company_air_cover`, `private_email`, `nurture_wait` of een later ondersteund kanaal. De keuze wordt gevoed door first-party relatie-evidence, actuele triggerkwaliteit, eerdere touches, fatigue/suppression en gerealiseerde outcomes. Een ontbrekende provider-capability mag nooit worden gesimuleerd.
+
+
+## Growth Swarm projection
+Alle relationship intelligence projecteert voortaan ook naar `powerhouse-growth-swarm-v1`. Relationship warmth blijft geen kooptrigger; het is één feature naast fresh trigger evidence, dark-funnel convergentie, friction/knowledge/M&A risk, economic evidence, fatigue en outcomes. De Growth Swarm kiest daarna de volgende play en het kanaal, of bewust `research_and_wait`. Geen parallel CRM.
