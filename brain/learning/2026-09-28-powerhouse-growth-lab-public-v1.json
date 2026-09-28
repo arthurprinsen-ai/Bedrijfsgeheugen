@@ -21,5 +21,18 @@
     "historical_replay": [
       "tests/brain-powerhouse-growth-lab-public-v1.test.mjs"
     ]
-  }
+  },
+  "compiler": {
+    "failure_class": "REVENUE_SURFACE_GAP",
+    "scope": "WEBSITE_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "Growth Swarm runtime and Growth Tools were already live before this website candidate.",
+    "The candidate adds a canonical /groei route backed by the existing Growth Tools API.",
+    "The page fails closed when benchmark sample/privacy thresholds are not met.",
+    "Regression test binds route, calculators, truth labels and Frisse Blik conversion handoff."
+  ]
 }
