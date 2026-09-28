@@ -4,6 +4,18 @@ This ledger is append-only operational memory for material engineering outcomes.
 
 Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORTUNITY`, `EXPERIMENT_RESULT`, `PRODUCTION_PROMOTION`, `PRODUCTION_ROLLBACK` and `CONTRACT_CHANGE`.
 
+## 2026-09-28 — IMPROVEMENT — Management accounting value-driver intelligence v1
+- **Fingerprint:** `powerhouse|management-accounting|value-driver-graph|roadmap-v1`.
+- **Signal:** finance, people/productivity, operations, commercial, working-capital, due-diligence and valuation measures existed in separate portal surfaces without one causal model or benchmark-driven roadmap projection.
+- **Impact:** customers could see individual KPIs but Powerhouse could not consistently explain how workforce/process changes flow through margin, cash, capital and enterprise value, nor turn an evidenced gap into a deduplicated effort/value roadmap item.
+- **Root cause:** page-local calculations and disconnected metric families; generic benchmark context was not bound to the same evidence/roadmap lineage.
+- **Final fix:** add a shared evidence-first management-accounting module, a portal value-driver visual, explicit customer input fields for missing cash/productivity/value drivers, and automatic roadmap materialization only for adverse deviations from explicit tenant benchmarks. Working-capital release, capacity value and EBITDA/gross-profit potential are kept as separate value types.
+- **Truth boundary:** missing inputs stay missing; internet/cross-industry benchmarks are context only until stored as an explicit customer benchmark with source; enterprise value requires sustainable/normalised EBITDA plus an explicitly supported multiple; all derived value is `POTENTIAL` until outcome readback.
+- **Sources:** IFRS Management Commentary, ONS/BLS productivity, ISO 30414:2025, SHRM Revenue/FTE, ACCA ROI/EVA, CFA FCF/multiples, PwC/Deloitte financial due diligence and Damodaran growth/value relationships.
+- **Regression gate:** `brain/economics/management-accounting-intelligence.test.mjs` plus Portal V2 tests and production DOM readback.
+- **Owner:** Finance/Value Intelligence + Portal + Whole Brain.
+- **Reusable lesson:** management accounting is most useful as a causal value-driver graph, not a KPI list: connect people/productivity → operations → commercial → profitability → cash → capital → value, and only promote benchmark gaps into the roadmap when both the customer value and benchmark evidence are explicit.
+
 
 ## 2026-09-18 — CONTRACT_CHANGE — GitHub executable delivery state machine proven
 - **Fingerprint:** `github|delivery-state-machine|parallel-build-serialized-landing|v1`.
