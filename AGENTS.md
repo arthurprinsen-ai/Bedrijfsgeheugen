@@ -566,3 +566,12 @@ Voor alle chats, agents, watchdogs en herstelroutines geldt:
 - “silent publication failure” mag alleen worden gebruikt wanneer géén provider-createbewijs en géén extern ID bestaan.
 
 Dit contract geldt kanaaloverstijgend; de LinkedIn-bedrijfspagina is de eerste expliciete toepassing.
+
+
+## Provider side-effect terminality — alle social kanalen
+
+Fingerprint: `provider-write-terminal-all-social-v1`.
+
+Voor LinkedIn persoonlijk, LinkedIn bedrijf en Instagram geldt universeel: zodra de provider een duurzaam extern ID/URN heeft teruggegeven, of provider-truth voor dat ID aantoonbaar groen is, bestaat het side effect. Die waarheid is terminal voor publicatiestatus.
+
+Daarna mogen OAuth-revocation, 401/403-readback, ACL-beperkingen, analyticsfouten, strengere mediagates of latere policy-wijzigingen de post nooit terugzetten naar BLOCKED/FAILED. Zij mogen alleen verificatie- of toekomstig generatiegedrag beïnvloeden. Exact-ID reconcile is toegestaan; replacement/duplicate publication is verboden.
