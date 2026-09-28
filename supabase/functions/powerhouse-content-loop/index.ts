@@ -5,6 +5,20 @@ const json = (body: unknown, status = 200) => new Response(JSON.stringify(body),
 const localDate = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Europe/Amsterdam', year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date());
 const OPERATIONAL_CHANNELS = ['linkedin_personal','linkedin_company','instagram','blog'];
 const TERMINAL_GREEN = new Set(['LIVE_PROVEN','MEASURED','LEARNED','SKIPPED']);
+function providerSideEffectTerminal(o:any){
+  const channel=clean(o?.channel);
+  if(!['linkedin_personal','linkedin_company','instagram'].includes(channel))return false;
+  const evidence=o?.evidence||{};
+  const ref=clean(o?.external_id);
+  if(!ref)return false;
+  return evidence?.provider_publication_ack_verified===true
+    || evidence?.provider_create_success===true
+    || (evidence?.provider_truth_verified===true && ['published','sent','live'].includes(clean(evidence?.provider_status).toLowerCase()));
+}
+function obligationTerminal(o:any){
+  return TERMINAL_GREEN.has(clean(o?.status))
+    || (clean(o?.status)==='PUBLISHED' && providerSideEffectTerminal(o));
+}
 
 async function invoke(base: string, token: string, name: string, payload: unknown) {
   const response = await fetch(`${base}/functions/v1/${name}`, {
@@ -92,14 +106,21 @@ Deno.serve(async (req) => {
     if (obligationsError) throw new Error('OBLIGATIONS_READ_FAILED');
     if (decisionsError) throw new Error('DECISIONS_READ_FAILED');
 
-    const outcomeVerified = (obligations || []).filter((o: any) => TERMINAL_GREEN.has(clean(o.status))).length;
+    const outcomeVerified = (obligations || []).filter((o: any) => obligationTerminal(o)).length;
     const providerTruthVerified = (obligations || []).filter((o: any) => o.evidence?.provider_truth_verified === true).length;
-    const blocked = (obligations || []).filter((o: any) => ['BLOCKED','FAILED'].includes(clean(o.status))).length;
-    const hardBoundaries = (decisions || []).filter((d: any) => d.delivery_evidence?.capability_state === 'BLOCKED_HARD_BOUNDARY').map((d: any) => ({ channel: d.channel, reason: d.delivery_evidence?.capability_reason || d.rationale }));
-    const allOperationalGreen = (obligations || []).length === OPERATIONAL_CHANNELS.length && (obligations || []).every((o: any) => TERMINAL_GREEN.has(clean(o.status)));
+    const blocked = (obligations || []).filter((o: any) => ['BLOCKED','FAILED'].includes(clean(o.status)) && !providerSideEffectTerminal(o)).length;
+    const hardBoundaries = (decisions || []).filter((d: any) =>
+      d.delivery_evidence?.capability_state === 'BLOCKED_HARD_BOUNDARY'
+      && !(d.delivery_evidence?.provider_create_success===true && !!clean(d.delivery_ref))
+      && !(d.delivery_evidence?.provider_publication_ack_verified===true && !!clean(d.delivery_ref))
+      && !(d.delivery_evidence?.provider_truth_verified===true && !!clean(d.delivery_ref))
+    ).map((d: any) => ({ channel: d.channel, reason: d.delivery_evidence?.capability_reason || d.rationale }));
+    const allOperationalGreen = (obligations || []).length === OPERATIONAL_CHANNELS.length && (obligations || []).every((o: any) => obligationTerminal(o));
     const loopState = blocked > 0 ? 'RED' : allOperationalGreen ? 'GREEN' : 'AMBER';
     const providerTruthHealthy = (obligations || []).every((o: any) => {
-      if (['DISPATCHED','PUBLISHED'].includes(clean(o.status)) && ['linkedin_personal','linkedin_company','instagram'].includes(clean(o.channel))) return o.evidence?.provider_truth_verified === true;
+      if (['DISPATCHED','PUBLISHED'].includes(clean(o.status)) && ['linkedin_personal','linkedin_company','instagram'].includes(clean(o.channel))) {
+        return o.evidence?.provider_truth_verified === true || providerSideEffectTerminal(o);
+      }
       return true;
     });
 
@@ -107,7 +128,7 @@ Deno.serve(async (req) => {
       ok: loopState !== 'RED' && providerTruthHealthy,
       loop_state: loopState,
       runDate,
-      truth_contract: 'GREEN MEANS OUTCOME VERIFIED',
+      truth_contract: 'GREEN MEANS PROVIDER SIDE-EFFECT OR OUTCOME VERIFIED',
       outcomeVerified,
       providerTruthVerified,
       providerTruthHealthy,
@@ -132,7 +153,7 @@ Deno.serve(async (req) => {
       await db.from('brain_records').upsert({
         tenant_id: 'canonical', record_id: `content-closed-loop:${runDate}`, record_type: 'Verification', record_kind: 'verification', subject_id: runDate,
         status: 'BLOCKED', observed_at: new Date().toISOString(), executed: true, verified: false,
-        result: { loop_state: 'RED', error: 'CONTENT_LOOP_INTERNAL_ERROR', truth_contract: 'GREEN MEANS OUTCOME VERIFIED' },
+        result: { loop_state: 'RED', error: 'CONTENT_LOOP_INTERNAL_ERROR', truth_contract: 'GREEN MEANS PROVIDER SIDE-EFFECT OR OUTCOME VERIFIED' },
         payload: { run_date: runDate, supervisor: 'powerhouse-content-loop-v1' }, idempotency_key: `content-closed-loop:${runDate}`, source_revision: 'powerhouse-content-loop-v1', stored_at: new Date().toISOString(), updated_at: new Date().toISOString(),
       }, { onConflict: 'tenant_id,record_id' });
     } catch { /* preserve original failure */ }

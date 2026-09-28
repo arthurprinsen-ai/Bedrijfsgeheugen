@@ -21,24 +21,31 @@
     "Later OAuth revocation, 401/403 readback, ACL or analytics failure cannot downgrade an already-created post.",
     "Later media-policy drift applies only to future generation and may not retroactively block a live post.",
     "Persist republish_forbidden=true and reconcile exact IDs only.",
-    "Daily watchdogs must preserve published state for existing provider side effects."
+    "Daily watchdogs must preserve published state for existing provider side effects.",
+    "The canonical reconciler must short-circuit on an existing provider side effect before stale-record, identity, or media-proof blocking logic.",
+    "The content supervisor must treat PUBLISHED + durable provider side-effect evidence as terminal green even when exact API readback is unavailable."
   ],
   "evidence": {
     "date": "2026-09-28",
     "linkedin_personal_id": "urn:li:share:7510280992931188736",
     "linkedin_company_id": "urn:li:share:7510281040192602112",
     "instagram_id": "18193272064401728",
-    "regression_test": "tests/brain-linkedin-composio-authority.test.mjs"
+    "regression_test": "tests/brain-linkedin-composio-authority.test.mjs",
+    "reconciler_migration": "supabase/migrations/20260928121500_provider_write_terminal_reconciler_v1.sql",
+    "supervisor_surface": "supabase/functions/powerhouse-content-loop/index.ts"
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-linkedin-composio-authority.test.mjs"
+      "tests/brain-linkedin-composio-authority.test.mjs",
+      "tests/brain-content-closed-loop-contract.test.mjs"
     ],
     "canary": [
-      "tests/brain-linkedin-composio-authority.test.mjs"
+      "tests/brain-linkedin-composio-authority.test.mjs",
+      "tests/brain-content-closed-loop-contract.test.mjs"
     ]
   },
   "outcome": {
-    "intended_state": "All daily social provider side effects remain terminally published once created or provider-truth-verified, with no duplicate replacement on later verification drift."
+    "intended_state": "All daily social provider side effects remain terminally published once created or provider-truth-verified, with no duplicate replacement on later verification drift.",
+    "supervisor_contract": "GREEN MEANS PROVIDER SIDE-EFFECT OR OUTCOME VERIFIED"
   }
 }

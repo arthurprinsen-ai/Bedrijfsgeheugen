@@ -35,3 +35,9 @@ Recovery is exact-ID only. Persist `republish_forbidden=true`, reconcile the exi
 The closed loop and watchdog must distinguish *publication truth* from *verification truth*. A later verification failure can be logged, but cannot reopen an already-completed provider write.
 
 Regression proof: `tests/brain-linkedin-composio-authority.test.mjs`.
+
+## Reconciler and supervisor closure
+
+The database reconciler now short-circuits on durable provider side-effect evidence before any stale-record, identity, readback or media-proof blocking path. The content supervisor independently treats `PUBLISHED` plus provider-create/acknowledgement evidence as terminal green for social channels. This prevents a later verification limitation from reopening a completed daily publication.
+
+Canonical migration: `supabase/migrations/20260928121500_provider_write_terminal_reconciler_v1.sql`. Supervisor proof: `tests/brain-content-closed-loop-contract.test.mjs`.
