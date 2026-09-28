@@ -34,3 +34,13 @@
 - Roadmap resolves the secured `portal.runtime` projection before contextual rendering.
 - Derived roadmap cards expose only available impact/effort evidence.
 - Capability Graph receives the same Company Intelligence context layer.
+
+## Governance closure
+
+- Contextual projection is now a permanent Company Intelligence OS invariant.
+- Customer language contract: `Wat zien we? → Waarom telt dit? → Wat verwachten we? → Wat doen we? → Wat kwam eruit? → Wat leren we?`
+- UI truth source: authenticated tenant-scoped portal/runtime state.
+- Missing evidence behavior: fail closed; no global/demo/synthesized fallback.
+- Value semantics: forecast/expected remains distinct from observed/realized.
+- Cross-surface rule: cockpit, impact, decisions, graph, roadmap, monitoring/learning and evidence reuse one canonical lineage.
+- Future material changes must update skill + learning + tests + System Map + change doc + ledger in one lineage.

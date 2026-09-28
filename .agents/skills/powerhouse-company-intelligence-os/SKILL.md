@@ -76,3 +76,19 @@ Required customer-facing surfaces:
 - roadmap/execution.
 
 Portal rule: show the understandable loop `Ziet → Begrijpt → Beslist → Doet → Leert`, with compact graph context and Outcome Memory where evidence exists. Use only tenant-scoped portal/runtime evidence. Do not read globally aggregated Company Intelligence views directly into customer UI until tenant isolation is explicit and production-proven. Missing evidence must render as unknown/empty, never as invented context. Roadmap cards may expose impact/effort/intelligence tags only when those values exist in canonical tenant context; Capability Graph must be connected to decision/action/outcome context rather than shown as an isolated diagram.
+
+## Contextual portal governance
+
+The contextual portal projection is a permanent part of the Company Intelligence OS contract.
+
+Mandatory rules:
+- Every new material Company Intelligence capability must declare where it becomes visible in Portal V2 when that context is decision-useful.
+- Prefer contextual projection into an existing workflow surface over adding a new dashboard.
+- Customer-facing projections must resolve from authenticated tenant-scoped portal/runtime state only.
+- Global runtime aggregates may be used for backend intelligence, diagnostics and System Map evidence, but never as an unscoped customer UI source.
+- If tenant evidence is absent, render unknown/empty; never backfill with demo, global or synthesized business facts.
+- Keep the customer vocabulary understandable: `Wat zien we? → Waarom telt dit? → Wat verwachten we? → Wat doen we? → Wat kwam eruit? → Wat leren we?`.
+- Preserve semantic separation between forecast/expected value and observed/realized value.
+- Show Outcome Memory only when an executed action and observed outcome have evidence lineage.
+- Roadmap, graph, impact, next-best-action, monitoring/learning and evidence surfaces must reuse the same canonical context lineage; no parallel UI truth.
+- Material portal projection changes require regression coverage, tenant-isolation evaluation, skill update, learning/prevention update, System Map update, change documentation and development-ledger writeback in the same delivery lineage.

@@ -39,3 +39,17 @@ De aanvullende tenant-isolatie-evaluatie is protected merged als `764a7387e1852e
 - Roadmap leest dezelfde beveiligde tenant-scoped `portal.runtime` als de overige portaloppervlakken.
 - Powerhouse-afgeleide roadmapkaarten tonen beschikbare impact- en effortcontext; ontbrekende waarden blijven bewust afwezig.
 - Capability Graph toont dezelfde Company Intelligence-context zodat relaties direct verbonden blijven met besluit, actie, outcome en learning.
+
+## Permanente governance
+
+Deze contextuele projectie is voortaan onderdeel van het vaste Company Intelligence OS-contract.
+
+Voor toekomstige uitbreidingen geldt:
+- nieuwe intelligentie wordt waar relevant ingebed in bestaande besluit- en uitvoeringsschermen;
+- een nieuw los dashboard is alleen toegestaan als een bestaande contextuele surface aantoonbaar niet volstaat;
+- klantweergave gebruikt uitsluitend geauthenticeerde tenant-scoped runtime;
+- ontbrekende tenant-evidence blijft leeg/onbekend en wordt nooit aangevuld met globale of voorbeelddata;
+- verwacht/forecast blijft altijd gescheiden van gerealiseerd/observed;
+- Outcome Memory verschijnt alleen bij aantoonbare actie→uitkomst-lineage;
+- dezelfde intelligence lineage wordt hergebruikt op cockpit, impact, beslissingen, graph, roadmap, monitoring/learning en evidence;
+- iedere materiële wijziging sluit af met tests, tenant-isolatie-evaluatie, skill, learning, System Map, change-doc en development ledger.
