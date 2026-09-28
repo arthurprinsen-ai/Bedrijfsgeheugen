@@ -85,7 +85,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Powerhouse CI Intelligence & Acceleration',
       authority:'github',
       owner:'delivery-intelligence',
-      status:'CANDIDATE_DELIVERY',
+      status:'LIVE_PROVEN',
       inputs:Object.freeze(['GitHub Actions workflow runs','job queue/start/finish timestamps','PR SHA fan-out','lane classification']),
       outputs:Object.freeze(['queue/execution/fan-out metrics','critical-path optimization evidence','runner-waste prevention']),
       runtime:Object.freeze({
@@ -93,6 +93,14 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         collector:'scripts/brain/powerhouse-ci-intelligence.mjs',
         requiredGate:'.github/workflows/required-test.yml',
         websiteLane:'.github/workflows/lane-website.yml'
+      }),
+      productionEvidence:Object.freeze({
+        mainSha:'451c6f40868fb35af77d70f6f6aa0972b324f634',
+        requiredPrRun:36449795424,
+        productionReadbackRun:36454941832,
+        ciIntelligenceRun:36454941660,
+        netlifyDeployId:'6aba9ce2aa152f00088fc87c',
+        netlifyCommitRef:'451c6f40868fb35af77d70f6f6aa0972b324f634'
       }),
       invariants:Object.freeze({
         oneRequiredAuthorityPerPr:true,
