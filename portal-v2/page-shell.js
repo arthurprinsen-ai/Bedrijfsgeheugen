@@ -20,6 +20,7 @@ import { mountLegacyExternalPlacements } from './modules/legacy-external-placeme
 import { mountPowerhouseObservability } from './modules/powerhouse-observability.js';
 import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
+import { mountContextualForesight } from './foresight-context-ui.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
@@ -302,6 +303,7 @@ export function openPortalPage(pageId){
     mountChangeWizard(wizard,{domainState:portalContext.domainState,onSaved:()=>openPortalPage('wijzigingen')});
   }
   ensureRuntimeEvidence();
+  mountContextualForesight(native,{pageId,state:portalStateSnapshot(),openPage:openPortalPage}).catch(()=>null);
   mountTrustedAdvisorAssurance(root.querySelector('.pvbody'),{pageId,state:portalStateSnapshot(),openPage:openPortalPage});
   mountAskPortal(root.querySelector('.pvbody'),{currentPage:()=>pageId});
   root.classList.add('open');root.setAttribute('aria-hidden','false');document.documentElement.classList.add('portalview-open');
