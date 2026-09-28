@@ -1,0 +1,58 @@
+{
+  "fingerprint": "powerhouse-social-semantic-subject-uniqueness-v3",
+  "status": "active",
+  "date": "2026-09-28",
+  "problem": "A personal LinkedIn printer anecdote reappeared after earlier publication even though existing exact, normalized, shingle, source-fingerprint and keyword-overlap dedupe gates were present.",
+  "root_cause": "The v2 semantic protection could miss a repeated concrete subject when the new wording shared too few total meaningful keywords and when source_text/content_id changed enough to produce a different story fingerprint. A single high-signal concrete object such as 'printer' was not itself a hard duplicate signal.",
+  "fix": [
+    "Add cross-channel distinctive semantic anchor comparison to the canonical uniqueness reservation.",
+    "Block two shared distinctive anchors, or one shared anchor of at least seven characters, after excluding broad generic life/business domains.",
+    "Keep exact hash, normalized hash, shingle, source/story fingerprint and keyword-overlap checks cumulative.",
+    "Supersede personal source rotation that could recycle a used concrete story under a new angle."
+  ],
+  "prevention": [
+    "Every social provider write must pass the global semantic subject/example uniqueness gate first.",
+    "The same concrete incident, anecdote, object-led example or story can never be republished on another date or channel by paraphrasing.",
+    "If no unused verified personal source exists, fail closed rather than inventing or recycling an event."
+  ],
+  "incident_example": {
+    "channel": "linkedin_personal",
+    "exhausted_subject": "printer",
+    "allowed_future_behavior": "choose a different verified personal subject/example"
+  },
+  "machine_enforceable": true,
+  "scope": "SOCIAL_PUBLICATION",
+  "revision": 3,
+  "type": "SOCIAL_CONTENT_INTEGRITY",
+  "failure_class": "SEMANTIC_SOCIAL_DUPLICATE",
+  "compiler": {
+    "failure_class": "SEMANTIC_SOCIAL_DUPLICATE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-semantic-subject-uniqueness-v3.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-semantic-subject-uniqueness-v3.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-social-semantic-subject-uniqueness-v3.test.mjs"
+    ]
+  },
+  "evidence": {
+    "incident": "On 2026-09-28 the user observed a personal LinkedIn post about a printer while an earlier printer post already existed.",
+    "existing_gates": "v1/v2 already enforced exact hash, normalized hash, shingle similarity, source/story fingerprint and aggregate meaningful-keyword overlap.",
+    "observed_gap": "A rewritten concrete anecdote can evade aggregate keyword thresholds when only one high-signal subject anchor remains shared.",
+    "implementation": [
+      "supabase/migrations/20260928133500_social_semantic_subject_uniqueness_v3.sql",
+      "tests/brain-social-semantic-subject-uniqueness-v3.test.mjs",
+      ".agents/skills/linkedin-composio-publisher/SKILL.md",
+      ".agents/skills/personal-linkedin-life-only/SKILL.md",
+      "AGENTS.md"
+    ]
+  }
+}

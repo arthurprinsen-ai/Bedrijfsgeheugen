@@ -62,3 +62,17 @@ Personal LinkedIn may never invent a daily-life event merely to satisfy a publis
 - the fallback remains a personal-life post, never company-page content.
 
 This rotation prevents an exhausted source pool from silently turning the daily channel into `PERSONAL_TRUTH_SOURCE_UNVERIFIED` while preserving truth and uniqueness.
+
+
+## Never recycle a personal story/example (2026-09-28)
+
+Fingerprint: `personal-linkedin-never-recycle-story-v2`.
+
+The earlier source-rotation fallback is superseded where it allowed a previously used source to return with a different angle. Personal LinkedIn may reuse a broad life domain, but never the same concrete incident, anecdote, object/example or source story.
+
+Examples:
+- another school observation may be valid; the same school incident is not;
+- another technology frustration may be valid; the same printer anecdote is not;
+- changing wording, hook, lesson, CTA, order or tone does not make a used story new.
+
+When the verified unused source pool is empty, publication must wait for or discover a new verified non-sensitive source. Never invent a personal event and never recycle an exhausted story merely to satisfy cadence.

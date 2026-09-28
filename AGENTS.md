@@ -542,3 +542,18 @@ Voor alle huidige en toekomstige chats, agents, workflows en recovery-nodes geld
 - terminale gebruikerscommunicatie bevat het bewezen eindresultaat en de borging, niet de interne uitvoeringsruis.
 
 Deze regel is aanvullend op `delivery|user-facing-reporting|terminal-outcomes-only|v1` en maakt voortzetting, niet alleen rapportagestilte, expliciet afdwingbaar.
+
+## Social semantic uniqueness — universal hard gate
+
+Fingerprint: `powerhouse-social-semantic-subject-uniqueness-v3`.
+
+For every current and future chat, agent, workflow and social publisher:
+- no social post may repeat the same concrete story, incident, example, object-led anecdote or semantic subject already used anywhere in retained social history, even when the words, hook, CTA, channel or format differ;
+- duplicate detection is global across dates and social channels and runs before any provider side effect;
+- exact/normalized hash, near-text, story/source and semantic-anchor checks are cumulative, not alternatives;
+- generic life/business domains may recur, but the concrete example and narrative payload must be materially new;
+- a detected duplicate is never repaired by paraphrasing; select a genuinely unused source/subject/example;
+- provider idempotency and daily-claim idempotency remain separate from content uniqueness;
+- if no unused verified source exists, fail closed rather than inventing or recycling content.
+
+A social delivery cannot be terminal green unless the uniqueness reservation passed before provider creation.

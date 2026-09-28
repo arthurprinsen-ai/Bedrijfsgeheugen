@@ -149,3 +149,22 @@ Reusable lesson: an OAuth auth-config can advertise the right scopes while a par
 Fingerprint: `linkedin-reconciliation-buffer-isolation-v1`.
 
 Exact LinkedIn provider reconciliation must execute independently of Buffer availability, cooldown or HTTP 429 state. Buffer health may defer only Buffer-owned audit/containment work. It must never suppress readback of an existing LinkedIn URN, company capability probing, personal/company recovery, or closure of a Composio-owned daily claim. This prevents a retired/limited fallback provider from becoming a hidden dependency of the canonical LinkedIn path.
+
+
+## Semantic subject/example uniqueness v3 (2026-09-28)
+
+Fingerprint: `powerhouse-social-semantic-subject-uniqueness-v3`.
+
+A social post is not unique merely because the wording, hook or source_text differs. Before every provider create, Powerhouse must also reject reuse of the same distinctive subject, concrete object, incident, anecdote or worked example anywhere in retained social history, across every social channel.
+
+Hard rules:
+- the historical comparison is cross-channel and cross-date;
+- exact hashes, normalized hashes, shingles, story fingerprints and keyword overlap remain mandatory;
+- additionally compare distinctive semantic anchors from the final copy against historical normalized copy;
+- one shared high-signal anchor may block when it represents the concrete subject/example rather than a generic life domain;
+- generic domains such as family, school, sport, holiday, garden or car are not by themselves duplicates; the concrete incident/example within them must be new;
+- a known used example such as the printer anecdote is permanently exhausted and must never be reused, even with a new angle, new hook, synonyms or a different channel;
+- duplicate recovery selects a genuinely unused subject/example/source; it never paraphrases or rotates an exhausted story;
+- if no unused verified personal source exists, fail closed and obtain another verified non-sensitive personal source rather than inventing or recycling one.
+
+The provider write is forbidden until all uniqueness gates pass.
