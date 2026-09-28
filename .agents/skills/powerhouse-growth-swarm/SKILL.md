@@ -96,3 +96,17 @@ PR #3182 is merged to protected main at `ce0e18df0876a38be2ce6ce83964b2a274c9b15
 - `powerhouse-growth-tools` ACTIVE v4.
 
 Plays that lack enough real data stay ARMED/READY_FOR_SURFACE rather than inventing benchmark or intent evidence.
+
+
+## Persuasion Revenue Optimizer
+Fingerprint: `powerhouse-persuasion-revenue-optimizer-v1`.
+
+Every prepared private outreach action is eligible for one final value-exchange optimization before provider dispatch:
+- choose an evidence-bounded persuasion strategy;
+- choose one concrete give asset;
+- choose the smallest reasonable get ask;
+- preserve identity, consent, dedupe, fatigue, suppression and provider-capability gates;
+- write strategy metadata into the canonical sales action;
+- evaluate strategy against reply -> meeting -> scan -> proposal -> paid order -> realized revenue.
+
+The optimizer may improve framing but may not create extra send volume, fabricate urgency/scarcity/social proof, or turn public LinkedIn comments into sales pitches.
