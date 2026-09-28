@@ -25,15 +25,15 @@
     "migration": "supabase/migrations/20260928121500_provider_write_terminal_reconciler_v1.sql",
     "failure": "syntax error at or near revoke because function statement terminator was missing",
     "security_contract": "revoke public/anon/authenticated; grant service_role",
-    "runtime_reapplied": true
+    "runtime_reapplied": true,
+    "regression_test": "tests/brain-content-closed-loop-contract.test.mjs"
   },
   "evaluation": {
     "historical_replay": [
-      "Supabase PR Preview Contract",
-      "Powerhouse Supabase Security Contract"
+      "tests/brain-content-closed-loop-contract.test.mjs"
     ],
     "canary": [
-      "Required test"
+      "tests/brain-content-closed-loop-contract.test.mjs"
     ]
   },
   "outcome": {
