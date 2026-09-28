@@ -107,3 +107,20 @@ test('LinkedIn reconciliation remains active while Buffer circuit is open', () =
   assert.ok(reconciliation > 0);
   assert.ok(containment > reconciliation);
 });
+
+
+test('LinkedIn company provider create acknowledgement closes publication even when exact readback is permission-limited', () => {
+  assert.match(source, /provider_publication_ack_verified:true/);
+  assert.match(source, /providerCreateProven=direct\.provider_create_success===true/);
+  assert.match(source, /state:'published'/);
+  assert.match(source, /recordObligation\(db,runDate,row\.channel,'PUBLISHED',direct\.provider_post_id/);
+  assert.match(source, /readback_permission_limited/);
+  assert.match(source, /exact API readback is optional after provider create acknowledgement and must never trigger republish/);
+});
+
+test('LinkedIn company reconciliation never converts a provider-created URN into a false publication failure', () => {
+  assert.match(source, /const providerCreateProven=previous\?\.provider_create_success===true/);
+  assert.match(source, /Provider create acknowledgement is authoritative for side-effect existence/);
+  assert.match(source, /republish_forbidden:true/);
+  assert.match(source, /readback is permission-limited/);
+});
