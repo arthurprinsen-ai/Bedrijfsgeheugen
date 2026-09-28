@@ -1296,3 +1296,19 @@ Mandatory:
 - preserve one canonical delivery lineage; no duplicate recovery PR/deploy just because the transport token or proxy URL expired.
 
 This rule is inherited by chats, agents, skills, workflows and future delivery nodes through One Brain.
+
+## User-facing reporting silence — terminal outcomes only
+
+Fingerprint: `delivery|user-facing-reporting|terminal-outcomes-only|v1`.
+
+For Bedrijfsgeheugen/Powerhouse delivery, recovery, CI, GitHub, Netlify, Supabase and provider work, internal execution state is not user-facing content.
+
+Mandatory:
+- never surface branch refs, commit SHAs, PR-head/ref synchronization, queued/running Required/BRAIN/CodeQL jobs, branch-protection waits, deploy-progress, provider polling, retry state, or "not yet LIVE_BEWEZEN" as routine chat updates;
+- do not narrate autonomous recovery while the node can still act safely;
+- keep those details in canonical machine evidence, logs, ledgers and recovery state, not in the user's chat;
+- return only a terminal outcome: verified live/complete, verified rolled-back/green, or one concrete `BLOCKED_HARD_BOUNDARY` requiring an external human permission/credential/irreversible decision;
+- for a hard boundary, expose only the minimum human action required; do not dump internal pipeline diagnostics unless the user explicitly asks for technical evidence;
+- interruption does not justify a status handoff. The next capable node resumes from canonical state automatically.
+
+This rule supersedes any older wording that merely allowed intermediate status while execution continued. User-facing progress chatter about internal delivery mechanics is forbidden by default.

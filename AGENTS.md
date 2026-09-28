@@ -475,3 +475,16 @@ Verplicht vóór terminale afronding:
 - protected merge/main-readback en skill-projection/readback volgens de bestaande terminale delivery-contracten.
 
 Deze artifacts horen bij één obligation/candidate-lineage en worden waar veilig gebundeld vóór CI. Geen agent of chat mag één van deze artifacts buiten de codebase parkeren om de repository-gate te omzeilen. Ontbreekt één verplicht onderdeel, dan is de status `WRITEBACK_INCOMPLETE` en niet `LIVE_BEWEZEN`.
+
+
+## User-facing reporting silence — terminal outcomes only
+
+Fingerprint: `delivery|user-facing-reporting|terminal-outcomes-only|v1`.
+
+Alle huidige en toekomstige chats/agents behandelen GitHub-, CI-, deployment- en provider-tussenstaten als interne uitvoering. Branch refs, SHA's, PR-head-sync, queued/running gates, branch-protection waits, deploy-progress en formuleringen zoals "nog niet LIVE_BEWEZEN" worden niet meer als normale chatstatus aan de gebruiker getoond.
+
+De gebruikersuitvoer is standaard beperkt tot:
+1. terminal bewezen resultaat; of
+2. `BLOCKED_HARD_BOUNDARY` met uitsluitend de kleinste externe menselijke actie die werkelijk niet autonoom kan worden uitgevoerd.
+
+Technische tussenstatus blijft wel volledig vastgelegd in machineleesbare evidence, learning, ledger en provider/GitHub state. Alleen wanneer de gebruiker expliciet om technische details vraagt, mogen die details worden uitgelegd.

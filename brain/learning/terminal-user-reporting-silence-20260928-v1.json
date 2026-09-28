@@ -1,0 +1,53 @@
+{
+  "id": "terminal-user-reporting-silence-20260928-v1",
+  "fingerprint": "delivery|user-facing-reporting|terminal-outcomes-only|v1",
+  "date": "2026-09-28",
+  "type": "incident_prevention",
+  "source": "user-feedback+chat+github-delivery",
+  "failure_class": "DELIVERY_USER_HANDOFF_NOISE",
+  "symptom": [
+    "Internal GitHub PR/ref synchronization, commit SHA, queued Required-run and not-yet-LIVE_BEWEZEN details were repeatedly surfaced in chat.",
+    "The user had to read implementation plumbing that Powerhouse should autonomously resolve."
+  ],
+  "root_cause": [
+    "The prior terminal-handoff rule prohibited pending state as a final answer but still allowed intermediate status narration while execution continued.",
+    "User-facing reporting and machine-readable execution observability were not explicitly separated."
+  ],
+  "prevention": [
+    "Keep internal delivery state in canonical logs, evidence, ledgers and provider/GitHub state rather than routine chat output.",
+    "Default user-facing reporting to terminal outcomes only.",
+    "Expose BLOCKED_HARD_BOUNDARY only when a genuinely external human permission, credential or irreversible decision is required, and ask only for the minimum action.",
+    "Reveal technical delivery diagnostics only when the user explicitly requests them.",
+    "Interruption is not a handoff; resume autonomously from canonical state."
+  ],
+  "failed_approaches": [
+    "Reporting PR head/ref mismatches and queued checks as progress updates.",
+    "Using 'nog niet LIVE_BEWEZEN' as a user-facing intermediate state."
+  ],
+  "evidence": {
+    "contract": "config/powerhouse-truth-status-contract.json",
+    "skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "agent_policy": "AGENTS.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-user-reporting-silence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-user-reporting-silence-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "DELIVERY_USER_HANDOFF_NOISE",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-continuity"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}

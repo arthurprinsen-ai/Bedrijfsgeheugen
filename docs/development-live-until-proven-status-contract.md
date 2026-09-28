@@ -47,3 +47,12 @@ Wanneer de harde grens verdwijnt, wordt de open recovery automatisch hervat; de 
 **Is er aantoonbaar een harde grens?** Dan productie waar mogelijk veilig groen houden, recovery packet maken, fix-agent/chat-handoff genereren en alleen de minimale externe actie vragen.
 
 **Is de grens opgeheven?** Dan onmiddellijk recovery hervatten tot `LIVE & BEWEZEN` met productie-evidence en writeback.
+
+
+## User-facing reporting silence — terminal outcomes only
+
+De technische waarheid blijft fail-closed en volledig bewijsbaar, maar de chat is geen CI-console. Interne deliverydetails zoals SHA's, refs, open/queued gates, PR-synchronisatie, deploy-progress en provider polling worden intern afgehandeld en duurzaam gelogd.
+
+De gebruiker krijgt standaard pas bericht bij een terminale uitkomst. Alleen een bewezen `BLOCKED_HARD_BOUNDARY` mag eerder eigenaarschap teruggeven, en dan uitsluitend met de minimaal vereiste externe actie. Technische diagnostiek wordt alleen op expliciet verzoek in de chat uitgewerkt.
+
+Dit vervangt de eerdere ruimte om tijdens uitvoering tussentijdse delivery-status te tonen.
