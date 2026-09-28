@@ -611,6 +611,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_refresh_relationship_external_intelligence_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928173100_powerhouse_relationship_external_intelligence_v1.sql",
+      "evidence_contract": "tests/powerhouse-relationship-external-intelligence-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_refresh_relationship_revenue_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928103246_powerhouse_relationship_revenue_engine_v1.sql",
@@ -923,6 +930,13 @@
       "type": "view",
       "authority": "supabase/migrations/20260928161000_powerhouse_all_20_growth_plays_v3.sql",
       "evidence_contract": "tests/brain-powerhouse-all-20-growth-plays-v3.test.mjs",
+      "required": true
+    },
+    {
+      "id": "view:public.powerhouse_relationship_context_enriched_v1",
+      "type": "view",
+      "authority": "supabase/migrations/20260928173100_powerhouse_relationship_external_intelligence_v1.sql",
+      "evidence_contract": "tests/powerhouse-relationship-external-intelligence-v1.test.mjs",
       "required": true
     }
   ]
