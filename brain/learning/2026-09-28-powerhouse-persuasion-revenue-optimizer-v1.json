@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse-persuasion-revenue-optimizer-v1",
+  "version": "powerhouse-persuasion-revenue-optimizer-v1",
+  "date": "2026-09-28",
+  "status": "PRODUCTION_APPLIED",
+  "scope": "GROWTH_REVENUE",
+  "machine_enforceable": true,
+  "root_cause": "Growth Swarm selected accounts, triggers, channels and actions, but message framing, give/get exchange and persuasion learning were not yet a canonical measurable layer.",
+  "decision": "Insert one persuasion optimizer between prepared action and provider execution. Reuse existing sales actions/outcomes and never increase contact volume merely because persuasion exists.",
+  "strategies": [
+    "reciprocity_value_first",
+    "authority_evidence",
+    "social_proof_peer",
+    "loss_aversion",
+    "commitment_microstep",
+    "contrast_before_after",
+    "curiosity_gap",
+    "reverse_sell"
+  ],
+  "prevention": [
+    "Never fabricate social proof, scarcity, urgency, benchmark or financial impact.",
+    "Never optimize on activity volume when terminal sales outcomes exist.",
+    "Never create a parallel outreach sequence system.",
+    "Persuasion may change framing and offered value, not bypass suppression, identity, dedupe, fatigue, opt-out or provider capability."
+  ],
+  "canonical_runtime": {
+    "catalog": "public.powerhouse_persuasion_play_catalog_v1",
+    "next_best_action": "public.powerhouse_persuasion_next_best_action_v1",
+    "performance": "public.powerhouse_persuasion_strategy_performance_v1",
+    "optimizer": "public.powerhouse_optimize_prepared_outreach_v1(date)"
+  },
+  "live_evidence": {
+    "supabase_project": "adhjwmvyoixzjtmiroln",
+    "catalog_strategies": 8,
+    "prepared_email_actions_tagged": 2,
+    "prepared_linkedin_actions_tagged": 1,
+    "extra_send_volume_created": 0
+  }
+}
