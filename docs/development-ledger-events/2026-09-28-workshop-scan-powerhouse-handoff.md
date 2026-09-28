@@ -12,3 +12,8 @@
 - Projected the rule into `.agents/skills/seo-revenue-growth/SKILL.md`.
 - Added Brain learning and regression coverage.
 - Privacy boundary: participant PII stays in the consented lead path; aggregate Powerhouse scan persistence contains no participant name/e-mail.
+
+- Runtime readback: Supabase `powerhouse-scan-ingest` ACTIVE version 3, SHA-256 `5b9636479ad94e8d70602b69638c1cb5708a50267b67cae82e6feec91c69ba2e`.
+- Runtime readback confirms the deployed function accepts canonical `/scan` and emits `workshop_scan`.
+- Website production commit `7a2d9cf8b7f5c2b9090e7eb1fd406bf2ddc14016` is a descendant of the functional workshop-handoff merge `ea1d6716c7b1c5830c22c8c44ceb84957de0734b`.
+- Quality-surface registry and canonical Brain evaluation were repaired in the same closure lineage.
