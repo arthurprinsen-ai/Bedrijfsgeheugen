@@ -29,14 +29,12 @@ test('Powerhouse hides internal delivery state from routine user chat', () => {
 });
 
 
-test('terminal continuation v2 keeps ownership through internal blockers and interruption', async () => {
-  const [agents, skill, truth, learning, systemMap] = await Promise.all([
-    readFile('AGENTS.md','utf8'),
-    readFile('.agents/skills/powerhouse-continuity/SKILL.md','utf8'),
-    readFile('config/powerhouse-truth-status-contract.json','utf8'),
-    readFile('brain/learning/terminal-user-reporting-silence-20260928-v1.json','utf8'),
-    readFile('platform/system-map/canonical-system-map.mjs','utf8'),
-  ]);
+test('terminal continuation v2 keeps ownership through internal blockers and interruption', () => {
+  const agents = read('AGENTS.md');
+  const skill = read('.agents/skills/powerhouse-continuity/SKILL.md');
+  const truth = read('config/powerhouse-truth-status-contract.json');
+  const learning = read('brain/learning/terminal-user-reporting-silence-20260928-v1.json');
+  const systemMap = read('platform/system-map/canonical-system-map.mjs');
   for (const body of [agents, skill, truth, learning, systemMap]) assert.match(body, /delivery\|terminal-continuation\|no-internal-handoff\|v2/);
   const contract=JSON.parse(truth);
   assert.equal(contract.userFacingReportingPolicy.owner_must_continue_until_terminal,true);
