@@ -572,7 +572,7 @@
       "id": "rpc:powerhouse_project_external_relationship_intelligence_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928153000_powerhouse_external_relationship_intelligence_v1.sql",
-      "evidence_contract": "tests/powerhouse-external-relationship-intelligence-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-external-relationship-intelligence-v1.test.mjs",
       "required": true
     },
     {
@@ -929,7 +929,7 @@
       "id": "view:public.powerhouse_customer_external_intelligence_v1",
       "type": "view",
       "authority": "supabase/migrations/20260928153000_powerhouse_external_relationship_intelligence_v1.sql",
-      "evidence_contract": "tests/powerhouse-external-relationship-intelligence-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-external-relationship-intelligence-v1.test.mjs",
       "required": true
     },
     {
@@ -943,7 +943,7 @@
       "id": "view:public.powerhouse_relationship_external_intelligence_v1",
       "type": "view",
       "authority": "supabase/migrations/20260928153000_powerhouse_external_relationship_intelligence_v1.sql",
-      "evidence_contract": "tests/powerhouse-external-relationship-intelligence-v1.test.mjs",
+      "evidence_contract": "tests/supabase-powerhouse-external-relationship-intelligence-v1.test.mjs",
       "required": true
     }
   ]
