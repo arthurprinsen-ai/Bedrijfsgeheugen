@@ -79,3 +79,22 @@ When LinkedIn DM execution is not available through a verified provider, the age
 - one-click outcome controls: sent, later, not relevant.
 
 Only genuinely manual actions are shown. Actions that Powerhouse can execute itself remain outside the human queue. After Arthur marks “sent”, the outcome is written back to the canonical commercial learning loop and autonomous follow-up resumes.
+
+
+## 20/20 Growth Play execution
+De Persuasion Revenue Optimizer is onderdeel van execution, niet een advieslaag. Alle 20 Growth Swarm plays hebben een canonical trigger -> decision -> executor/surface -> outcome pad.
+
+De zeven eerder niet volledig uitvoerbare plays zijn geactiveerd:
+- MKB Friction Index;
+- Positive Public Teardown;
+- Anti-consultancy Challenge;
+- Boardroom Blindness;
+- Problem/Competitor Switch Pages;
+- Benchmark Data Contribution Flywheel;
+- Conditional Risk Reversal.
+
+`powerhouse_activate_all_growth_plays_v2(date)` maakt de play uitvoerbaar zodra evidence-gates slagen. `powerhouse_execute_growth_play_actions_v1(date)` routeert naar bestaande email-, LinkedIn-, content/SEO-, benchmark-, scan- of portalexecutors. Daarna blijft `powerhouse_optimize_prepared_outreach_v1(date)` de bestaande give/get en boodschap optimaliseren vóór provider execution.
+
+Een optimizer-output, draft, recommendation of score is nooit terminal. Terminal is provider execution/readback of bewust wait/nurture omdat gates niet slagen.
+
+Persuasion mag bedrijfscontext, rol, funnelstage en geverifieerde relatie-/triggerdata gebruiken. Gevoelige persoonskenmerken en psychologische persoonlijkheidsprofilering zijn verboden. Fake scarcity, nep-social-proof, unsupported fear en hidden commitment zijn harde verboden.
