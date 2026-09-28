@@ -32,5 +32,12 @@
   "evidence": [
     "Canonical pages selected: benchmark.html, kennisverlies-vergrijzing-mkb.html, investeerders-ma.html, workshops.html and frisse-blik.html.",
     "Shared browser runtime uses powerhouse-growth-tools and has no private Revenue Swarm read path."
-  ]
+  ],
+  "compiler": {
+    "failure_class": "REVENUE_SURFACE_GAP",
+    "scope": "WEBSITE_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
 }
