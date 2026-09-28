@@ -1,0 +1,46 @@
+{
+  "fingerprint": "provider-side-effect-terminal-fence-v1",
+  "compiler": {
+    "failure_class": "FALSE_FAILURE",
+    "scope": "DATABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": {
+    "summary": "Database reconciliation and daily watchdog logic could retroactively downgrade already provider-created social posts because later readback, auth, admin or media-proof checks failed.",
+    "causes": [
+      "post-provider reconciliation reused pre-provider verification gates",
+      "daily terminal success ignored durable provider-created PUBLISHED social side effects",
+      "verification subsystems were allowed to overwrite provider side-effect truth"
+    ]
+  },
+  "prevention_rules": [
+    "Durable external ID plus provider_create_success/provider_publication_ack_verified/provider_truth_verified plus republish_forbidden is a terminal social side-effect fence.",
+    "Provider-created LinkedIn and Instagram posts remain PUBLISHED even when later readback/admin/media-proof calls fail.",
+    "Pre-publish identity/media gates may block before provider write, never after a successful provider side effect.",
+    "Daily watchdog and daily assertion count provider-created PUBLISHED social obligations as terminal success.",
+    "Any recovery after provider create is exact-ID reconciliation only and can never issue a replacement post."
+  ],
+  "evidence": {
+    "incident_date": "2026-09-28",
+    "linkedin_company_post_id": "urn:li:share:7510281040192602112",
+    "linkedin_personal_post_id": "urn:li:share:7510280992931188736",
+    "instagram_media_id": "18193272064401728",
+    "user_visual_evidence_linkedin_company": true,
+    "user_visual_evidence_linkedin_personal": true,
+    "provider_readback_permission_limited": true,
+    "regression_test": "tests/brain-provider-side-effect-terminal-fence-v1.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-provider-side-effect-terminal-fence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-provider-side-effect-terminal-fence-v1.test.mjs"
+    ]
+  },
+  "outcome": {
+    "intended_state": "Every provider-created daily social post is protected from false failure reclassification and duplicate recovery."
+  }
+}
