@@ -25,7 +25,7 @@ CRM, LinkedIn, ERP, accounting, analytics, documents, external intelligence and 
 - Supabase migration: `supabase/migrations/20260928193000_powerhouse_company_intelligence_os_v1.sql`
 - Skill: `.agents/skills/powerhouse-company-intelligence-os/SKILL.md`
 - System Map: `platform/system-map/canonical-system-map.mjs`
-- Tests: `tests/company-intelligence-os-v1.test.mjs`
+- Tests: `tests/brain-company-intelligence-os-v1.test.mjs`
 
 ## Runtime model
 
@@ -38,3 +38,17 @@ No parallel CRM, action queue or learning database was created. The Company Grap
 - context and graph projections retain canonical lineage;
 - sensitive-person inference remains forbidden;
 - learning is incomplete until it can alter a future priority, prediction, policy or next-best-action.
+
+## Production proof
+
+Production readback on 2026-09-28 confirms:
+
+- Company Graph: 42,217 nodes and 25,164 edges;
+- System of Context: 17,328 company contexts;
+- Autonomous Action Layer: 2,883 canonical actions;
+- Outcome Memory: 12 observed outcome records;
+- Compound Intelligence: 17,328 company contexts participating in the closed loop;
+- canonical orchestrator: `public.powerhouse_run_company_intelligence_os_v1(date)`;
+- migration lineage: expected `20260928193000_powerhouse_company_intelligence_os_v1`, applied as unique-name reconciled version `20260928175205` and verified by `powerhouse_supabase_migration_readback_v1`.
+
+The System Map capability is therefore `LIVE_PROVEN_RUNTIME`.
