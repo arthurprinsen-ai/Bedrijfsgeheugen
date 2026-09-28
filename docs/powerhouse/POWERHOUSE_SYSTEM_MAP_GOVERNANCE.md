@@ -80,3 +80,25 @@ Canonical runtime surfaces:
 - `.agents/skills/powerhouse-company-intelligence-os/SKILL.md`
 
 All future skills, agents, connectors and portal capabilities that touch company intelligence must reuse these layers rather than create a parallel CRM, graph, context store or learning loop.
+
+
+## Self-Improvement Layer
+
+Powerhouse uses one controlled compounding loop above Company Intelligence. It composes existing optimization, quality, model-health, autonomous-improvement and protected-delivery authorities; it does not create a second learning store or a second production writer.
+
+Canonical loop:
+
+`Observe → Detect → Hypothesize → Build → Test → Evaluate → Compare → Promote → Measure → Learn`
+
+Canonical runtime:
+- `public.powerhouse_agent_objective_registry_v1`
+- `public.powerhouse_learning_compiler_queue_v1`
+- `public.powerhouse_self_improvement_control_v1`
+- `public.powerhouse_run_self_improvement_layer_v1(date)`
+- `brain/self-improvement/self-improvement-layer.mjs`
+- `brain/contracts/self-improvement-layer-v1.json`
+- `.agents/skills/powerhouse-self-improvement-layer/SKILL.md`
+
+North Star: Powerhouse must function measurably better tomorrow than today without degrading reliability, safety or code quality.
+
+Self-learning may autonomously observe, diagnose, generate candidates and evaluate them. Production promotion remains evidence-gated and reuses protected delivery. Unknown evidence is never green.
