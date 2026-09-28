@@ -7,7 +7,8 @@ on:
 
 permissions:
   contents: write
-  pull-requests: write
+  pull-requests: write  actions: write
+
 
 concurrency:
   group: regulatory-source-watch
@@ -79,4 +80,5 @@ jobs:
           Raw official-source evidence was persisted before this projection candidate.
           EOF
           )")
+          node scripts/ci/dispatch-writer-shadow.mjs "$BRANCH"
           gh pr merge --auto --squash "$PR_URL"
