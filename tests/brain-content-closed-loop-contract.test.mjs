@@ -92,7 +92,7 @@ test('single content supervisor drains generation, dispatches, readbacks and rec
   assert.match(loop, /powerhouse-social-publisher/);
   assert.match(loop, /powerhouse-blog-queue/);
   assert.match(loop, /bg-buffer-sync/);
-  assert.match(loop, /GREEN MEANS OUTCOME VERIFIED/);
+  assert.match(loop, /GREEN MEANS PROVIDER SIDE-EFFECT OR OUTCOME VERIFIED/);
   assert.match(loop, /loop_state/);
 });
 
@@ -164,4 +164,15 @@ test('linkedin composio capability is checked before social dispatch', () => {
   const capability = loop.indexOf("'powerhouse-composio-linkedin-setup'");
   const publisher = loop.indexOf("'powerhouse-social-publisher'");
   assert.ok(capability >= 0 && publisher > capability);
+});
+
+
+test('closed loop treats durable provider side effects as terminal publication truth', () => {
+  const loop = read('supabase/functions/powerhouse-content-loop/index.ts');
+  assert.match(loop, /function providerSideEffectTerminal/);
+  assert.match(loop, /provider_publication_ack_verified/);
+  assert.match(loop, /provider_create_success/);
+  assert.match(loop, /obligationTerminal/);
+  assert.match(loop, /providerTruthHealthy/);
+  assert.match(loop, /GREEN MEANS PROVIDER SIDE-EFFECT OR OUTCOME VERIFIED/);
 });
