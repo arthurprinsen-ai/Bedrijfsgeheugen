@@ -25,3 +25,7 @@ Added a reusable contextual foresight visual layer. It consumes existing tenant-
 - `portal-v2/tests/foresight-context-ui.test.mjs`
 - standard Portal V2 regression suite
 - Required browser regression
+
+## Delivery lineage
+
+Superseded predecessor: PR 3225. Canonical reconciled delivery: PR 3230.
