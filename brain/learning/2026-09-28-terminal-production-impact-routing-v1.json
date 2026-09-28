@@ -1,0 +1,30 @@
+{
+  "fingerprint": "github|terminal-closure|production-impact-routing|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Obligation Terminal Closure decided whether to wait for production readback partly from Delivery-Lane. Backend control-plane changes therefore waited for a Production Release Readback that canonical production workflows intentionally never trigger for ignored control-plane paths.",
+  "prevention_rule": "Terminal production evidence applicability must be derived from the same ignored-path contract used by Production Source Snapshot and Production Release Readback. Pure ignored-path changes close on protected-main containment; any production-bearing path remains fail-closed on provider/readback proof.",
+  "enforcement": [
+    "config/powerhouse-production-impact-v1.json",
+    "tools/delivery/production-impact.mjs",
+    ".github/workflows/obligation-terminal-closure.yml",
+    "tests/brain-terminal-production-impact-routing-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-terminal-production-impact-routing-v1.test.mjs"],
+    "shadow": ["tests/brain-terminal-production-impact-routing-v1.test.mjs"]
+  },
+  "test_evidence": ["tests/brain-terminal-production-impact-routing-v1.test.mjs"],
+  "evidence": {
+    "observed": "Delivery Pattern Memory v1 was a pure control-plane change and canonical production workflows ignored it, while terminal closure still entered production readback wait.",
+    "tests": ["tests/brain-terminal-production-impact-routing-v1.test.mjs"]
+  }
+}
