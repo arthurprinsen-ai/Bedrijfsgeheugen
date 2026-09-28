@@ -9,6 +9,10 @@ on:
     paths:
       - 'config/powerhouse-daily-self-evolution.json'
       - 'scripts/brain/daily-self-evolution.mjs'
+      - 'brain/self-improvement/**'
+      - 'brain/contracts/self-improvement-layer-v1.json'
+      - '.agents/skills/powerhouse-self-improvement-layer/**'
+      - 'tests/brain-self-improvement-layer-v1.test.mjs'
       - 'tests/powerhouse-daily-self-evolution.test.mjs'
       - '.github/workflows/powerhouse-daily-self-evolution.yml'
       - 'docs/learning/2026-09-18-powerhouse-daily-self-evolution-v1.md'
@@ -35,6 +39,8 @@ jobs:
         run: node scripts/brain/chat-learning-preflight.mjs
       - name: Verify self-evolution contract
         run: node --test tests/powerhouse-daily-self-evolution.test.mjs
+      - name: Verify Powerhouse self-improvement layer
+        run: node --test tests/brain-self-improvement-layer-v1.test.mjs
       - name: Build universal chat-agent-skill snapshot
         run: node scripts/brain/daily-self-evolution.mjs
       - name: Run canonical autonomous improvement probe
