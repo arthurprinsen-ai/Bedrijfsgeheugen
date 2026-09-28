@@ -85,7 +85,7 @@ Deno.serve(async(req:Request)=>{
         events++;
 
         const {error:uErr}=await db.from('powerhouse_sales_actions').update({
-          status:'executed',executed_at:observedAt,source_url:best.url,
+          status:'done',executed_at:observedAt,source_url:best.url,
           evidence:{...(action.evidence||{}),public_research_execution:{contract:CONTRACT,trigger_type:best.trigger_type,headline:best.title,summary:best.summary,source_url:best.url,confidence,observed_at:observedAt,provider:'dataforseo-serp',vendor_used:false,evidence_only:true}}
         }).eq('action_id',action.action_id);
         if(uErr) throw new Error('ACTION_UPDATE:'+uErr.message);
