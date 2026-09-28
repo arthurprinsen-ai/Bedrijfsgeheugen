@@ -312,7 +312,7 @@ insert into public.brain_failure_registry(
   'External web and LinkedIn evidence could exist as isolated runtime events without being standard profile context for connection, company and customer intelligence.',
   'Project verified external runtime evidence into existing predictive signals, bg_connecties.extra and a customer intelligence view before the canonical commercial cycle scores opportunities and next-best-actions.',
   'Every verified external update about a known connection or its company must attach to the canonical relationship graph and become reusable intelligence; never create a parallel CRM or leave relevant evidence report-only.',
-  'tests/powerhouse-external-relationship-intelligence-v1.test.mjs|powerhouse-external-relationship-intelligence-v1',
+  'tests/supabase-powerhouse-external-relationship-intelligence-v1.test.mjs|powerhouse-external-relationship-intelligence-v1',
   1,1,now(),now(),jsonb_build_object('no_parallel_crm',true,'linkedin_is_signal_not_buying_proof',true)
 ) on conflict(fingerprint) do update set
   root_cause=excluded.root_cause,proven_fix=excluded.proven_fix,prevention_rule=excluded.prevention_rule,
