@@ -45,8 +45,10 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: 24
+          cache: 'npm'
+          cache-dependency-path: package-lock.json
       - name: Install projection-test dependencies
-        run: npm install --ignore-scripts --no-audit --no-fund
+        run: npm ci --prefer-offline --ignore-scripts --no-audit --no-fund
 
       - name: Evaluate changed learning before canonicalization
         env:
