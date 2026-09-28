@@ -1,6 +1,6 @@
 {
   "fingerprint": "powerhouse-relationship-revenue-engine-v1",
-  "status": "RUNTIME_PROVEN_REPOSITORY_CANDIDATE",
+  "status": "LIVE_PROVEN",
   "observed_at": "2026-09-28T12:32:51+02:00",
   "problem": "The existing relationship graph was commercially underused because company trigger materialization correctly required explicit trigger evidence.",
   "decision": "Use Powerhouse itself as the canonical relationship intelligence and scoring layer. Public web is the second evidence layer; Apollo and other vendors are optional fallback only.",
@@ -86,5 +86,35 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "production_evidence": {
+    "github_main_merge_sha": "35f465c613cdc32f37f0dd2810e86ceb1518be08",
+    "github_pr": 3155,
+    "supabase_project_id": "adhjwmvyoixzjtmiroln",
+    "edge_function": {
+      "slug": "powerhouse-relationship-public-research",
+      "status": "ACTIVE",
+      "version": 4
+    },
+    "canonical_scheduler": {
+      "jobname": "powerhouse-commercial-learning-v1",
+      "active": true,
+      "count": 1,
+      "parallel_relationship_scheduler_count": 0
+    },
+    "readback": {
+      "ranked_relationships": 2105,
+      "public_research_events_24h": 10,
+      "eligible_triggers": 10,
+      "trigger_opportunities": 10,
+      "research_actions_done": 8,
+      "public_research_http_status": 200,
+      "public_research_researched": 10,
+      "public_research_matched": 8,
+      "public_research_events": 8,
+      "external_outreach_executed": false
+    },
+    "apollo_required": false,
+    "canonical_intelligence_owner": "Powerhouse"
   }
 }

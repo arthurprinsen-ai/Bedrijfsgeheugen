@@ -39,3 +39,13 @@
 - Production research proof: HTTP 200; researched=10; matched=8; events=8; no_evidence=2.
 - Canonical downstream readback: 10 eligible triggers; 10 trigger opportunities; 8 research actions done.
 - External outreach executed: false.
+
+- Terminal-State: LIVE_PROVEN
+- Terminal-Main-SHA: 35f465c613cdc32f37f0dd2810e86ceb1518be08
+- Terminal-PR: #3155
+- Production Edge Function: powerhouse-relationship-public-research ACTIVE v4
+- Production readback: ranked=2105; public_research_events_24h=10; eligible_triggers=10; trigger_opportunities=10; research_actions_done=8
+- Canonical scheduler owners: 1
+- Parallel relationship schedulers: 0
+- Apollo required: false
+- Autonomous external outreach executed: false
