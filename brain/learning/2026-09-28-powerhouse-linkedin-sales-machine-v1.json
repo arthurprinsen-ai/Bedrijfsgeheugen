@@ -41,10 +41,10 @@
   },
   "evaluation": {
     "regression": [
-      "tests/powerhouse-linkedin-sales-machine-v1.test.mjs"
+      "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs"
     ],
     "historical_replay": [
-      "tests/powerhouse-linkedin-sales-machine-v1.test.mjs"
+      "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs"
     ]
   },
   "user_authorization": {
