@@ -80,3 +80,7 @@ De zeven eerder niet volledig uitvoerbare plays zijn geactiveerd:
 Een optimizer-output, draft, recommendation of score is nooit terminal. Terminal is provider execution/readback of bewust wait/nurture omdat gates niet slagen.
 
 Persuasion mag bedrijfscontext, rol, funnelstage en geverifieerde relatie-/triggerdata gebruiken. Gevoelige persoonskenmerken en psychologische persoonlijkheidsprofilering zijn verboden. Fake scarcity, nep-social-proof, unsupported fear en hidden commitment zijn harde verboden.
+
+## 20/20 terminal proof — 28 september 2026
+Status: `LIVE_PROVEN`.
+The Growth Swarm 20/20 extension is merged through PR #3207 at `46739777d0a5563001a3520e046a29a57b0b9ec8`. Production readback confirms 20/20 executable plays and 8 active persuasion decisions. The Persuasion Revenue Optimizer remains in the canonical chain before provider execution and is measured on terminal commercial outcomes rather than activity volume.
