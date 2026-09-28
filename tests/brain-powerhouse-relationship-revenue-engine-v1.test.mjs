@@ -5,7 +5,7 @@ import fs from 'node:fs';
 const learning=JSON.parse(fs.readFileSync('brain/learning/2026-09-28-powerhouse-relationship-revenue-engine-v1.json','utf8'));
 const skill=fs.readFileSync('.agents/skills/powerhouse-relationship-revenue/SKILL.md','utf8');
 const migration=fs.readFileSync('supabase/migrations/20260928103246_powerhouse_relationship_revenue_engine_v1.sql','utf8');
-const auto=fs.readFileSync('supabase/migrations/20260928104500_powerhouse_relationship_research_auto_enrichment_v1.sql','utf8');
+const auto=fs.readFileSync('supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql','utf8');
 
 test('historical replay preserves Powerhouse-first commercial intelligence',()=>{
   assert.equal(learning.fingerprint,'powerhouse-relationship-revenue-engine-v1');
@@ -38,10 +38,10 @@ test('public research edge function is authenticated, evidence-only and feeds ca
 });
 
 
-test('public research schedule runs before the canonical commercial cycle',()=>{
-  const sched=fs.readFileSync('supabase/migrations/20260928105500_powerhouse_relationship_public_research_schedule_v1.sql','utf8');
-  assert.match(sched,/powerhouse-relationship-public-research-hourly/);
-  assert.match(sched,/'24 \* \* \* \*'/);
-  assert.match(sched,/powerhouse_daily_scheduler_token/);
-  assert.match(sched,/powerhouse-relationship-public-research/);
+test('public research dispatch reuses the existing canonical commercial scheduler',()=>{
+  const dispatch=fs.readFileSync('supabase/migrations/20260928105310_powerhouse_relationship_public_research_dispatch_v1.sql','utf8');
+  assert.match(dispatch,/powerhouse_dispatch_relationship_public_research_v1/);
+  assert.match(dispatch,/powerhouse_daily_scheduler_token/);
+  assert.match(dispatch,/powerhouse-relationship-public-research/);
+  assert.doesNotMatch(dispatch,/cron\.schedule\s*\(/i);
 });
