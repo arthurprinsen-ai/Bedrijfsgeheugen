@@ -41,12 +41,13 @@ test('unknown path escalates instead of silently taking a cheap lane', () => {
 });
 
 
-test('Required test wires the adaptive plan before the heavy shared suite', async () => {
+test('Required test consumes adaptive outputs through the Integration Bundle before the heavy shared suite', async () => {
   const workflow = await readFile('.github/workflows/required-test.yml', 'utf8');
-  assert.match(workflow, /id: impact[\s\S]*adaptive-delivery-engine\.mjs/);
-  assert.match(workflow, /Execute fast impact quality gate[\s\S]*full_shared_suite == 'false'/);
-  assert.match(workflow, /Verify previously unwired test contracts[\s\S]*full_shared_suite == 'true'/);
-  assert.match(workflow, /Verify composable release control plane[\s\S]*full_shared_suite == 'true'/);
+  assert.match(workflow, /id: integration[\s\S]*integration-bundle-compiler\.mjs/);
+  assert.match(workflow, /Verify adaptive and integration compiler regressions/);
+  assert.match(workflow, /Execute fast impact quality gate[\s\S]*steps\.integration\.outputs\.full_shared_suite == 'false'/);
+  assert.match(workflow, /Verify previously unwired test contracts[\s\S]*steps\.integration\.outputs\.full_shared_suite == 'true'/);
+  assert.match(workflow, /Verify composable release control plane[\s\S]*steps\.integration\.outputs\.full_shared_suite == 'true'/);
 });
 
 
