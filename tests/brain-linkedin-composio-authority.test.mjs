@@ -137,3 +137,17 @@ test('Instagram existing provider side effect remains published despite later me
   assert.match(source, /Existing Instagram provider side effect is authoritative; later media-proof drift may inform future generation but cannot negate or replace this publication/);
   assert.match(source, /provider_publication_ack_verified:providerCreateProven\|\|providerTruthVerified/);
 });
+
+
+test('personal LinkedIn provider create remains published when later auth/readback changes', () => {
+  assert.match(source, /providerCreateProven=direct\.provider_create_success===true/);
+  assert.match(source, /LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN/);
+  assert.match(source, /exact API readback is optional after provider create acknowledgement and must never trigger republish/);
+  assert.match(source, /Provider create acknowledgement is authoritative for side-effect existence; collect outcomes and never republish because readback\/auth changed later/);
+});
+
+test('Instagram existing provider side effect cannot be negated by later media-proof drift', () => {
+  assert.match(source, /EXISTING_PROVIDER_SIDE_EFFECT_AUTHORITATIVE/);
+  assert.match(source, /Existing Instagram provider side effect is authoritative/);
+  assert.match(source, /later media-proof drift may inform future generation but cannot negate or replace this publication/);
+});
