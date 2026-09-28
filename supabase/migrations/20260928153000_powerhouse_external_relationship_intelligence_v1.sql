@@ -89,8 +89,18 @@ left join lateral (
     sum(r.linkedin_updates_30d)::int linkedin_updates_30d,
     max(r.latest_external_at) latest_external_at,
     round(avg(r.external_confidence),4) external_confidence,
-    array(select distinct unnest(array_cat_agg(coalesce(r.source_classes,array[]::text[])))) source_classes,
-    array(select distinct unnest(array_cat_agg(coalesce(r.topics,array[]::text[])))) topics,
+    array(
+      select distinct s
+      from public.powerhouse_relationship_external_intelligence_v1 rs
+      cross join lateral unnest(coalesce(rs.source_classes,array[]::text[])) s
+      where rs.company_key=ci.company_key
+    ) source_classes,
+    array(
+      select distinct t
+      from public.powerhouse_relationship_external_intelligence_v1 rt
+      cross join lateral unnest(coalesce(rt.topics,array[]::text[])) t
+      where rt.company_key=ci.company_key
+    ) topics,
     (select jsonb_agg(u order by (u->>'occurred_at') desc)
        from (select jsonb_array_elements(coalesce(r2.latest_updates,'[]'::jsonb)) u
              from public.powerhouse_relationship_external_intelligence_v1 r2
