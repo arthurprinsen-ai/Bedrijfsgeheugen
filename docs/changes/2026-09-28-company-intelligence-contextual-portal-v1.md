@@ -33,3 +33,9 @@ Status: **LIVE_PROVEN**.
 Netlify provider-readback bevestigt productie-deploy `6abac41210b244000884a323` met `state=ready`, `context=production` en exact `commit_ref=0b4547f33a74ce911a0d324a53404cff1cc6e737`. Dat is de protected feature merge die de contextuele Company Intelligence renderer, styling en koppelingen naar executive cockpit, company cockpit, impact, next-best-actions, monitoring/learning, evidence health en roadmap bevat.
 
 De aanvullende tenant-isolatie-evaluatie is protected merged als `764a7387e1852e7c1e8700efc443d29870221f39`; historical replay, shadow en canary zijn groen. Daarmee is de klantprojectie zowel functioneel als tenant-isolatie-technisch geborgd.
+
+## Aanvullende contextbinding
+
+- Roadmap leest dezelfde beveiligde tenant-scoped `portal.runtime` als de overige portaloppervlakken.
+- Powerhouse-afgeleide roadmapkaarten tonen beschikbare impact- en effortcontext; ontbrekende waarden blijven bewust afwezig.
+- Capability Graph toont dezelfde Company Intelligence-context zodat relaties direct verbonden blijven met besluit, actie, outcome en learning.
