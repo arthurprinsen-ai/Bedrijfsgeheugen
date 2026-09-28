@@ -17,7 +17,7 @@ test('LinkedIn publishing authority is Composio-only before Buffer fallback', ()
   assert.ok(genericBuffer > companyPublish, 'LinkedIn company must terminate before generic Buffer fallback');
 });
 
-test('LinkedIn company fails closed unless exact Composio readback is proven', () => {
+test('LinkedIn company fails closed before create, then preserves the created URN when readback is limited', () => {
   assert.match(source, /COMPOSIO_LINKEDIN_COMPANY_EXACT_READBACK_MISMATCH/);
   assert.match(source, /COMPOSIO_LINKEDIN_COMPANY_AUTHOR_UNVERIFIED/);
   assert.match(source, /COMPOSIO_LINKEDIN_COMPANY_AUTHOR_AMBIGUOUS/);
