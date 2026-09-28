@@ -1,0 +1,36 @@
+{
+  "fingerprint": "aanzet-static-i18n-cache-recovery-20260928-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The new AanZET radar blog entered the public sitemap but introduced Dutch strings that were absent from the mandatory static English translation cache, causing Netlify production builds to fail closed.",
+  "root_cause": "Content execution added a new public route without adding its deterministic English cache patch in the same candidate.",
+  "prevention": [
+    "Every newly public sitemap route must carry complete static English cache coverage in the same lineage.",
+    "Never disable STATIC_I18N_REQUIRE_CACHE to make production green.",
+    "Content automation must validate the localized-route cache before merge/promotion."
+  ],
+  "evidence": {
+    "failed_netlify_deploys": [
+      "6aba2165bb2c68214fe79c18",
+      "6aba20a9b245cde3526dc505"
+    ],
+    "content_route": "/blog/aanzet-2026-emissieloze-trucks/",
+    "cache_patch": "config/bg-static-i18n-en.d/2026-09-28-aanzet-blog.json"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs",
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ],
+    "invariants": [
+      "new public route has deterministic English cache",
+      "production remains fail-closed on missing translations"
+    ]
+  },
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_MISSING",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
