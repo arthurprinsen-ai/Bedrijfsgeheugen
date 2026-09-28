@@ -28,7 +28,7 @@
     "contextual_portal": "portal-v2/foresight-context-ui.js",
     "prediction_quality_api": "netlify/functions/portal-prediction-intelligence.mjs"
   },
-  "outcome": "Powerhouse can measure whether future predictions improve and generate bounded improvement challengers instead of merely generating more forecasts.",
+  "outcome": "Powerhouse measures whether future predictions improve and now projects evidence-backed forecasts, what-if scenarios and prediction-quality context directly into the portal decision surfaces where action is taken.",
   "compiler": {
     "failure_class": "PREDICTION_WITHOUT_SUFFICIENT_RESOLUTION",
     "scope": "WHOLE_BRAIN_INTELLIGENCE",
@@ -57,6 +57,12 @@
     "independent_source_types": 3,
     "prediction_state": "CALIBRATION_DEGRADED",
     "audit_cron": "35 6 * * *",
-    "runtime_readback_at": "2026-09-28T18:45:25Z"
+    "runtime_readback_at": "2026-09-28T18:45:25Z",
+    "contextual_portal_merge_sha": "6a5e27df02e8cb5d43df7dce38b4094e9180f1af",
+    "verified_production_deploy_sha": "602973dace20523c20f0b656713243c5c6408f72",
+    "production_release_readback": "success",
+    "portal_dom_readback": "success",
+    "live_prediction_quality_api": true,
+    "contextual_portal_live": true
   }
 }
