@@ -20,8 +20,11 @@ function normalize(body:any){
   for(const [k,v] of Object.entries(dimIn)){const n=num(v,0,5);if(n!==null)dimensions[clean(k,80)]=n;}
   if(!Object.keys(dimensions).length)throw new Error('INVALID_DIMENSIONS');
   const canonical=clean(body?.canonical||`${ORIGIN}/frisse-blik`,1000);
-  if(!(canonical===`${ORIGIN}/frisse-blik`||canonical.startsWith(`${ORIGIN}/frisse-blik?`)))throw new Error('INVALID_CANONICAL');
-  return {submissionKey,score,niveau,dimensions,answers:safeAnswers(input.antwoorden),branche:clean(input.branche,120)||null,omvang:clean(input.omvang,120)||null,doel:clean(input.doel,500)||null,datum:clean(input.datum,40)||new Date().toISOString().slice(0,10),canonical,raw:input};
+  const isFrisse=canonical===`${ORIGIN}/frisse-blik`||canonical.startsWith(`${ORIGIN}/frisse-blik?`);
+  const isWorkshop=canonical===`${ORIGIN}/scan`||canonical.startsWith(`${ORIGIN}/scan?`);
+  if(!(isFrisse||isWorkshop))throw new Error('INVALID_CANONICAL');
+  const kind=isWorkshop?'workshop_scan':'frisse_blik';
+  return {submissionKey,score,niveau,dimensions,answers:safeAnswers(input.antwoorden),branche:clean(input.branche,120)||null,omvang:clean(input.omvang,120)||null,doel:clean(input.doel,500)||null,datum:clean(input.datum,40)||new Date().toISOString().slice(0,10),canonical,kind,raw:input};
 }
 
 Deno.serve(async(req:Request)=>{
@@ -66,19 +69,19 @@ Deno.serve(async(req:Request)=>{
 
   let scan:any;try{scan=normalize(body)}catch(e){return json({error:String((e as Error).message||'INVALID_SCAN')},422)}
   if(body?.dry_run===true)return json({ok:true,dry_run:true,contract:'powerhouse-canonical-scan-loop-v1',normalized:{submission_key:scan.submissionKey,score:scan.score,niveau:scan.niveau,dimensions:Object.keys(scan.dimensions).length}});
-  const scanRow={submission_key:scan.submissionKey,schema_version:2,soort:'frisse_blik',scan_datum:scan.datum,score:scan.score,branche:scan.branche,omvang:scan.omvang,niveaus:scan.dimensions,taken:[],doel:scan.doel,bron:'website',bron_url:scan.canonical,organisatie_id:null,tenant_identity_status:'unverified',company_key:null,payload:{contract:'powerhouse-canonical-scan-loop-v1',niveau:scan.niveau,dimensions:scan.dimensions,antwoorden:scan.answers,source_version:clean(scan.raw?.stempel,120)||null}};
+  const scanRow={submission_key:scan.submissionKey,schema_version:2,soort:scan.kind,scan_datum:scan.datum,score:scan.score,branche:scan.branche,omvang:scan.omvang,niveaus:scan.dimensions,taken:[],doel:scan.doel,bron:'website',bron_url:scan.canonical,organisatie_id:null,tenant_identity_status:'unverified',company_key:null,payload:{contract:'powerhouse-canonical-scan-loop-v1',niveau:scan.niveau,dimensions:scan.dimensions,antwoorden:scan.answers,source_version:clean(scan.raw?.stempel,120)||null,source_kind:clean(scan.raw?.source_kind,80)||scan.kind,attribution:safeObj(scan.raw?.attribution)}};
   const {data:created,error:insertError}=await client.from('scan_inzendingen').upsert(scanRow,{onConflict:'submission_key',ignoreDuplicates:true}).select('id,submission_key,score,tenant_identity_status,powerhouse_event_id,aangemaakt').maybeSingle();
   if(insertError)return json({error:'SCAN_STORE_FAILED',detail:insertError.message.slice(0,300)},500);
   let stored=created;
   if(!stored){const {data,error}=await client.from('scan_inzendingen').select('id,submission_key,score,tenant_identity_status,powerhouse_event_id,aangemaakt').eq('submission_key',scan.submissionKey).maybeSingle();if(error||!data)return json({error:'SCAN_READBACK_FAILED'},500);stored=data;}
   const dedupe=`scan:${scan.submissionKey}`;
-  const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
+  const eventRow={dedupe_key:dedupe,event_type:'scan_submitted',source:scan.kind==='workshop_scan'?'website.workshop_scan':'website.frisse_blik',channel:'website',topic_key:'digital_maturity',occurred_at:new Date().toISOString(),evidence:{scan_id:stored.id,submission_key:scan.submissionKey,canonical:scan.canonical},context:{score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,scan_kind:scan.kind,tenant_identity_status:'unverified',learning_scope:'aggregate_only'},state:'observed',data_quality:'OBSERVED',confidence:0.9};
   const {data:eventCreated,error:eventError}=await client.from('powerhouse_runtime_events').upsert(eventRow,{onConflict:'dedupe_key',ignoreDuplicates:true}).select('event_id,dedupe_key').maybeSingle();
   if(eventError)return json({error:'POWERHOUSE_EVENT_FAILED',scan_id:stored.id,detail:eventError.message.slice(0,300)},500);
   let event=eventCreated;
   if(!event){const {data,error}=await client.from('powerhouse_runtime_events').select('event_id,dedupe_key').eq('dedupe_key',dedupe).maybeSingle();if(error||!data)return json({error:'POWERHOUSE_EVENT_READBACK_FAILED',scan_id:stored.id},500);event=data;}
   const {error:updateError}=await client.from('scan_inzendingen').update({powerhouse_event_id:event.event_id,bijgewerkt_op:new Date().toISOString()}).eq('id',stored.id);
   if(updateError)return json({error:'SCAN_EVENT_LINK_FAILED',scan_id:stored.id,event_id:event.event_id},500);
-  await client.from('growth_events').upsert({event_id:dedupe,event_type:'scan_completed',canonical:scan.canonical,intent:'frisse_blik',intent_owner:'bedrijfsgeheugen',source:'website',medium:'organic',occurred_at:new Date().toISOString(),page_role:'conversion',funnel_stage:'lead',value:0,payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,privacy_scope:'no_pii'}},{onConflict:'event_id',ignoreDuplicates:true});
+  await client.from('growth_events').upsert({event_id:dedupe,event_type:'scan_completed',canonical:scan.canonical,intent:scan.kind==='workshop_scan'?'workshop_scan':'frisse_blik',intent_owner:'bedrijfsgeheugen',source:'website',medium:'organic',occurred_at:new Date().toISOString(),page_role:'conversion',funnel_stage:'lead',value:0,payload:{scan_id:stored.id,score:scan.score,niveau:scan.niveau,scan_kind:scan.kind,privacy_scope:'no_pii'}},{onConflict:'event_id',ignoreDuplicates:true});
   return json({ok:true,stored:true,deduped:!created,contract:'powerhouse-canonical-scan-loop-v1',scan_id:stored.id,event_id:event.event_id,tenant_identity_status:'unverified'},created?201:200);
 });
