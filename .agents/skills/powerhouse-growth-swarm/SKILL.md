@@ -110,3 +110,20 @@ Every prepared private outreach action is eligible for one final value-exchange 
 - evaluate strategy against reply -> meeting -> scan -> proposal -> paid order -> realized revenue.
 
 The optimizer may improve framing but may not create extra send volume, fabricate urgency/scarcity/social proof, or turn public LinkedIn comments into sales pitches.
+
+## Superseding execution proof — all 20 plays v3
+Fingerprint: `powerhouse-all-20-growth-plays-v3`.
+
+The historical 13-active state above is superseded. A Growth Swarm play is now considered built only when the execution authority records trigger owner, executor, surface, outcome metric, truth/privacy gate and `execution_complete=true`.
+
+Runtime authorities:
+- `public.powerhouse_growth_play_execution_contract_v1`
+- `public.powerhouse_growth_play_build_status_v1`
+- `public.powerhouse_activate_remaining_growth_plays_v3(date)`
+- `public.powerhouse_promote_growth_play_emails_v1(date)`
+
+Current production readback: **20 catalog plays / 20 ACTIVE / 20 BUILT_ACTIVE**.
+
+The seven completed paths are MKB Friction Index, Positive Public Teardown, Anti-consultancy Challenge, Boardroom Blindness, Competitor/Problem Switch Pages, Data Contribution Flywheel and bounded Risk Reversal. They reuse existing content, SEO, scan/portal and autonomous-outreach owners; no parallel CRM or scheduler is allowed.
+
+Growth-play e-mail candidates share the existing five-per-day autonomous-email budget. Benchmark contribution requires a separate optional consent. ACTIVE means the capability is executable when evidence gates pass; it does not mean every run must create an external action.
