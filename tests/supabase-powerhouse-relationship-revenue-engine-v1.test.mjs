@@ -4,6 +4,9 @@ import fs from 'node:fs';
 
 const migration=fs.readFileSync('supabase/migrations/20260928103246_powerhouse_relationship_revenue_engine_v1.sql','utf8');
 const skill=fs.readFileSync('.agents/skills/powerhouse-relationship-revenue/SKILL.md','utf8');
+const autoResearch=fs.readFileSync('supabase/migrations/20260928104333_powerhouse_relationship_research_auto_enrichment_v1.sql','utf8');
+const dispatch=fs.readFileSync('supabase/migrations/20260928105310_powerhouse_relationship_public_research_dispatch_v1.sql','utf8');
+const worker=fs.readFileSync('supabase/functions/powerhouse-relationship-public-research/index.ts','utf8');
 const triggerSkill=fs.readFileSync('.agents/skills/trigger-based-mkb-acquisition/SKILL.md','utf8');
 const quality=JSON.parse(fs.readFileSync('config/powerhouse-quality-surface-contracts.json','utf8'));
 
@@ -55,4 +58,16 @@ test('relationship research is executed from canonical public evidence stores be
   const researchAt=auto.indexOf('v_research:=public.powerhouse_execute_relationship_research_v1');
   const triggerAt=auto.indexOf('v_trigger:=public.powerhouse_refresh_trigger_based_mkb_acquisition_v1');
   assert.ok(researchAt>0 && triggerAt>researchAt);
+});
+
+
+test('selected relationships are autonomously researched through the existing commercial scheduler',()=>{
+  assert.match(autoResearch,/powerhouse_execute_relationship_research_v1/);
+  assert.match(dispatch,/powerhouse_dispatch_relationship_public_research_v1/);
+  assert.match(dispatch,/powerhouse-relationship-public-research/);
+  assert.doesNotMatch(dispatch,/cron\.schedule\s*\(/i);
+  assert.match(worker,/DATAFORSEO_LOGIN/);
+  assert.match(worker,/relationship_public_research_evidence/);
+  assert.match(worker,/vendor_enrichment:false/);
+  assert.match(worker,/external_outreach_executed:false/);
 });
