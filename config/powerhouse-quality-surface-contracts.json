@@ -362,7 +362,7 @@
       "id": "rpc:bg_geheim",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "evidence_contract": "tests/brain-powerhouse-relationship-revenue-engine-v1.test.mjs",
       "required": true
     },
     {
@@ -755,6 +755,20 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260925083200_story_fingerprint_authority_v3.sql",
       "evidence_contract": "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:powerhouse-relationship-public-research",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-relationship-public-research/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-relationship-revenue-engine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_refresh_trigger_based_mkb_acquisition_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-relationship-revenue-engine-v1.test.mjs",
       "required": true
     }
   ]
