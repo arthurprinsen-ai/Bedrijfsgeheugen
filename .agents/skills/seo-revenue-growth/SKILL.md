@@ -198,3 +198,7 @@ The workshop journey has exactly three visual surfaces:
 3. post-scan result page 2: top three levers, 90-day roadmap, measurable KPI follow-up and portal CTA.
 
 The generated participant PDF contains surfaces 2 and 3 only. Never insert the handout as page 1 of the participant result. Keep both post-scan pages bound to the same `submission_key` and portal QR lineage. Derived result pages may show questionnaire scores, benchmark gaps and deterministic planning guidance; do not invent quantified savings or improvement percentages that the scan did not measure.
+
+
+## Growth Swarm integration
+SEO is een demand/intent-ingang van `powerhouse-growth-swarm-v1`, niet een los optimalisatiedoel. Zoekvragen, money-page gedrag, problem/switch-page kansen en content outcomes mogen account-/segmentprioriteit verhogen, maar tellen niet zelfstandig als koopintentie. De 20-play catalog bevat `competitor-switch-pages`, `prospect-generated-content-loop`, `we-disagree-content` en `mkb-friction-index`; deze blijven onder canonical intent ownership, cannibalization control en query -> lead -> order -> realized revenue attributie.
