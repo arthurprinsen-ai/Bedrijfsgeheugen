@@ -1,0 +1,50 @@
+{
+  "fingerprint": "static-i18n-cache-recovery-workshop-scan-20260928-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The workshop scan was merged to protected main, but the exact-main Netlify production deploy failed during the site build before /scan could become live.",
+  "root_cause": "The production build keeps STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1. The current generated public estate contained static Dutch strings that were not yet present in the immutable English translation cache, so the fail-closed localized-route builder terminated the production build with exit code 2.",
+  "prevention": [
+    "Keep production fail-closed for static English translation completeness.",
+    "Before promotion, compare the post-transform public-string set with the canonical translation cache and add missing translations in the same candidate.",
+    "Do not solve this incident by setting STATIC_I18N_REQUIRE_CACHE=0.",
+    "Production closure still requires exact-main Netlify commit parity and browser readback of /scan."
+  ],
+  "failure_class": "STATIC_I18N_CACHE_INCOMPLETE_BLOCKS_PRODUCTION",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-production-failclosed-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "expected_invariant": "STATIC_I18N_REQUIRE_CACHE remains 1 and every current public translatable string has an immutable English cache entry before production promotion."
+  },
+  "test_evidence": [
+    "Required netlify-build-parity",
+    "Production Source Snapshot exact-main deploy",
+    "Production Release Readback"
+  ],
+  "evidence": {
+    "failed_main_sha": "d95189e8cf67b40e490766ae3224206ee07eb8bf",
+    "failed_source_snapshot_run": 36397804474,
+    "failed_netlify_deploy": "6aba262553fa98392a3521bf",
+    "first_missing_string": "AanZET 2026 : wat verandert er nu?",
+    "production_readback": "pending recovery candidate promotion"
+  },
+  "skill_targets": [
+    "website",
+    "powerhouse-continuity",
+    "powerhouse-netlify-production-truth"
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE_BLOCKS_PRODUCTION",
+    "scope": "WEBSITE_I18N_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
