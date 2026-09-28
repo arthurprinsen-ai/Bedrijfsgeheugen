@@ -65,3 +65,6 @@ Geen scraping/platform-bypass, geen bulk generieke comments, geen gefingeerde DM
 - Canonical planner/dispatcher RPCs are present in production.
 - Sales-air-cover recommendation exists for the current run date and the LinkedIn comment queue is live.
 - The canonical recurring commercial owner remains `powerhouse-commercial-learning-v1`; no dedicated LinkedIn Sales Machine cron was introduced.
+
+## LinkedIn-profielcontext
+Publieke LinkedIn-updates over bekende connecties en hun bedrijven zijn niet alleen input voor comments. Zodra Powerhouse ze als geverifieerde runtime-evidence kent, worden ze via `powerhouse-external-relationship-intelligence-v1` standaard onderdeel van de persoon-, bedrijfs- en klantcontext. Deze context mag de prioriteit, timing, researchbehoefte en next-best-action beïnvloeden, maar een like, post, functiewijziging of andere LinkedIn-activiteit is nooit op zichzelf koopbewijs.
