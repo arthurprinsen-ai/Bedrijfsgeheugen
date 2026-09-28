@@ -1,0 +1,45 @@
+{
+  "contract_id": "POWERHOUSE-SELF-IMPROVEMENT-LAYER-v1",
+  "status": "canonical",
+  "north_star": "Powerhouse must function measurably better tomorrow than today without degrading reliability, safety or code quality.",
+  "loop": ["observe","detect","hypothesize","build","test","evaluate","compare","promote","measure","learn"],
+  "learning_levels": {
+    "company": "What works for this specific company, grounded in verified outcomes.",
+    "cross_company": "Privacy-safe aggregate patterns only; never leak tenant-specific data.",
+    "agent": "Which context, strategies, tools and handoffs improve the agent's explicit objective.",
+    "engineering": "Which code, architecture, test and delivery changes improve reliability, speed, quality and cost."
+  },
+  "components": {
+    "company_graph": "Reuse Company Intelligence OS v1 canonical graph.",
+    "outcome_memory": "Reuse verified canonical outcome memory; predictions are never realized value.",
+    "agent_objective_registry": "Every agent has a primary measurable objective plus hard guardrails.",
+    "eval_promotion_gate": "No prompt/model/routing/tool/policy/code candidate promotes without complete evidence and non-regression gates.",
+    "model_router": "Provider-neutral, evidence-backed routing by capability, privacy, quality, reliability, cost and latency.",
+    "architecture_guardian": "Continuously scores coupling, cycles, duplication, security, performance and schema drift.",
+    "learning_compiler": "Verified learning compiles into regression requirements, skills, docs, system-map writeback and bounded optimization candidates.",
+    "daily_improvement_score": "One cross-layer score with reliability, architecture and evidence guardrails."
+  },
+  "hard_rules": [
+    "NO_LEARNING_WITHOUT_EVIDENCE",
+    "NO_CHANGE_WITHOUT_EVALUATION",
+    "NO_DEPLOYMENT_WITHOUT_REGRESSION_PROOF",
+    "NO_INTELLIGENCE_WITHOUT_MEASURABLE_OUTCOME",
+    "NO_UNCONTROLLED_SELF_MODIFICATION",
+    "UNKNOWN_IS_NOT_GREEN",
+    "NO_PARALLEL_LEARNING_STORE",
+    "NO_PARALLEL_DELIVERY_AUTHORITY"
+  ],
+  "promotion": {
+    "required_gates": ["quality","security","regression"],
+    "business_or_quality_improvement_required": true,
+    "cost_and_latency_regression_bounded": true,
+    "protected_delivery_authority_only": true
+  },
+  "runtime": {
+    "control_view": "public.powerhouse_self_improvement_control_v1",
+    "learning_queue": "public.powerhouse_learning_compiler_queue_v1",
+    "agent_objectives": "public.powerhouse_agent_objective_registry_v1",
+    "orchestrator": "public.powerhouse_run_self_improvement_layer_v1(date)",
+    "module": "brain/self-improvement/self-improvement-layer.mjs"
+  }
+}
