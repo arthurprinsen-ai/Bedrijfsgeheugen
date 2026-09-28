@@ -124,7 +124,7 @@
       "id": "function:powerhouse-scan-ingest",
       "type": "function",
       "authority": "supabase/functions/powerhouse-scan-ingest/index.ts",
-      "evidence_contract": "tests/workshop-scan-handoff.test.mjs",
+      "evidence_contract": "tests/brain-workshop-scan-powerhouse-handoff-v1.test.mjs",
       "required": true
     },
     {
