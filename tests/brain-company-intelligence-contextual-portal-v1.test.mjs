@@ -15,13 +15,15 @@ test('Company Intelligence OS is projected contextually instead of as a separate
  assert.match(context,/tenant-scoped/);
  assert.match(context,/Outcome Memory/);
  assert.match(context,/Company Graph context/);
- for(const surface of ['impact-engine','next-best-actions','monitoring-learning','evidence-health']) assert.ok(ui.includes(`renderCompanyIntelligenceContext(state,'${surface}')`));
+ for(const surface of ['impact-engine','next-best-actions','monitoring-learning','evidence-health','company-graph']) assert.ok(ui.includes(`renderCompanyIntelligenceContext(state,'${surface}')`));
  assert.match(cockpit,/renderCompanyIntelligenceContext\(model,'executive-cockpit'\)/);
  assert.match(companyCockpit,/renderCompanyIntelligenceContext\(runtime,'company-cockpit'\)/);
  assert.match(roadmap,/renderCompanyIntelligenceContext\(state,'roadmap'\)/);
  assert.match(shell,/company-intelligence-context\.css/);
  assert.match(styles,/\.ci-mini-graph/);
  assert.match(styles,/\.v2roadmapintel/);
+ assert.match(context,/input\?\.portal\?\.runtime/);
+ assert.match(fs.readFileSync('portal-v2/modules/roadmap-board.js','utf8'),/v2roadmapintel/);
 });
 
 test('context projection fails closed when tenant evidence is missing',()=>{

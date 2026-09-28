@@ -4,6 +4,7 @@ const esc=value=>txt(value).replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':
 const euro=value=>new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(value)||0);
 
 function normalize(input={}){
+  if(input?.portal?.runtime) return normalize(input.portal.runtime);
   if(input?.available!==undefined&&Array.isArray(input?.next_best_actions)) return {executive:input,outcomePairs:arr(input.outcome_pairs),runtime:null};
   if(input?.decisions?.items||input?.outcomes?.items) return {executive:{problems:[],opportunities:[],changes:[],forecasts:[],next_best_actions:arr(input?.decisions?.items),outcomes:arr(input?.outcomes?.items)},outcomePairs:arr(input?.learning?.items),runtime:input};
   return {executive:input?.powerhouse?.executive||input?.executive||{},outcomePairs:arr(input?.powerhouse?.outcome_pairs||input?.outcome_pairs),runtime:null};

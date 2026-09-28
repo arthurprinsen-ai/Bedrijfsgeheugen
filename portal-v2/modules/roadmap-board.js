@@ -23,6 +23,11 @@ function intelligenceMarkup(item){
 
 function cardMarkup(item){
  const sprint=clampSprint(item.sprint);
+ const intel=[
+  item.managementAccountingDerived?'Powerhouse-afgeleid':'',
+  item.expected_value!=null?`Impact ${new Intl.NumberFormat('nl-NL',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(Number(item.expected_value)||0)}`:'',
+  item.effort_score!=null?`Effort ${Math.round(Number(item.effort_score)||0)}/100`:''
+ ].filter(Boolean);
  return `<article class="v2roadmapcard" draggable="true" data-repeat-row data-roadmap-id="${esc(item.id)}" data-sprint="${sprint}">
   <div class="v2roadmapdrag" aria-hidden="true">⠿</div>
   ${intelligenceMarkup(item)}
