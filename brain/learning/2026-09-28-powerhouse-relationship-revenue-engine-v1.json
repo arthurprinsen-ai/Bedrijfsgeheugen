@@ -1,6 +1,6 @@
 {
   "fingerprint": "powerhouse-relationship-revenue-engine-v1",
-  "status": "RUNTIME_PROVEN_REPOSITORY_CANDIDATE",
+  "status": "LIVE_BEWEZEN",
   "observed_at": "2026-09-28T12:32:51+02:00",
   "problem": "The existing relationship graph was commercially underused because company trigger materialization correctly required explicit trigger evidence.",
   "decision": "Use Powerhouse itself as the canonical relationship intelligence and scoring layer. Public web is the second evidence layer; Apollo and other vendors are optional fallback only.",
@@ -86,5 +86,22 @@
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
+  },
+  "terminal": {
+    "pr": 3155,
+    "main_sha": "35f465c613cdc32f37f0dd2810e86ceb1518be08",
+    "production_runtime": "ACTIVE",
+    "production_proof": {
+      "http_status": 200,
+      "researched": 10,
+      "matched": 8,
+      "events": 8,
+      "no_evidence": 2,
+      "eligible_triggers": 10,
+      "trigger_opportunities": 10,
+      "research_actions_done": 8,
+      "vendor_enrichment": false,
+      "external_outreach_executed": false
+    }
   }
 }
