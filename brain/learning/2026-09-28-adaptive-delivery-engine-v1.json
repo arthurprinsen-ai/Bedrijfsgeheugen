@@ -29,7 +29,7 @@
       "tests/brain-adaptive-delivery-engine-v1.test.mjs"
     ]
   },
-  "status": "CANDIDATE",
+  "status": "PROVEN",
   "compiler": {
     "failure_class": "GITHUB_DELIVERY",
     "scope": "CI",
@@ -46,5 +46,16 @@
     "first_protected_run": "Adaptive planner classified the control-plane candidate as R2/hot and selected the full shared suite as designed.",
     "regression": "tests/brain-adaptive-delivery-engine-v1.test.mjs",
     "preview_backpressure_incident": "The exact Netlify deploy preview returned bursts of HTTP 403 during a 4-route x 3-viewport visibility crawl while targeted route checks on the same preview were HTTP 200. The crawler now reduces preview concurrency and retries only bounded transient HTTP classes before failing closed."
+  },
+  "proof": {
+    "merged_pr": 3222,
+    "merged_candidate_head": "fea74acc76c31f35e0fde483d0a0a2580ef9dcca",
+    "main_sha": "c3d990dd45d263f4d9c47c5ff90544a38a014ee6",
+    "exact_main_engine_present": true,
+    "required_workflow_wired": true,
+    "skill_projection_present": true,
+    "codeql": "success",
+    "canonical_brand_shell_contract": "success",
+    "note": "Historical PR-event closure was stale because its immutable pull_request payload predated the final two-file preview-backpressure fix. Terminal truth is re-established from current protected main."
   }
 }
