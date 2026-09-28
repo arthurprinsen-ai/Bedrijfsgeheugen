@@ -2,7 +2,7 @@
   "fingerprint": "github|delivery-pattern-memory|historical-regression-routing|v1",
   "date": "2026-09-28",
   "type": "CONTROL_PLANE_PREVENTION",
-  "status": "CANDIDATE",
+  "status": "PROVEN",
   "compiler": {
     "failure_class": "GITHUB_DELIVERY",
     "scope": "CI",
@@ -19,8 +19,12 @@
     "tests/brain-integration-bundle-compiler-v1.test.mjs"
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-delivery-pattern-memory-v1.test.mjs"],
-    "shadow": ["tests/brain-integration-bundle-compiler-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-delivery-pattern-memory-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ]
   },
   "test_evidence": [
     "tests/brain-delivery-pattern-memory-v1.test.mjs",
@@ -31,5 +35,12 @@
       "tests/brain-delivery-pattern-memory-v1.test.mjs",
       "tests/brain-integration-bundle-compiler-v1.test.mjs"
     ]
+  },
+  "proof": {
+    "implementation_merge_sha": "64e2a555f65615bf3577b3438128ca58f912480f",
+    "current_main_contains_implementation": true,
+    "compiler_wired": true,
+    "skill_projection": true,
+    "component_registry": true
   }
 }
