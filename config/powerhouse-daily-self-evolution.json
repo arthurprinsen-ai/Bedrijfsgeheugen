@@ -1,9 +1,10 @@
 {
-  "version": "powerhouse-daily-self-evolution-v1",
+  "version": "powerhouse-daily-self-evolution-v2",
   "extends": [
     "powerhouse-continuous-improvement-engine-v1",
     "powerhouse-autonomous-improvement-runtime-v1",
-    "BRAIN-CHAT-LEARNING-v1"
+    "BRAIN-CHAT-LEARNING-v1",
+    "powerhouse-self-improvement-layer-v1"
   ],
   "applies_to": [
     "all_existing_chats",
@@ -13,7 +14,7 @@
     "all_skills",
     "all_material_workflows"
   ],
-  "objective": "Every day make Powerhouse faster, smarter, more reliable and simpler using measured evidence; never change merely to create activity.",
+  "objective": "Every day make Powerhouse measurably smarter, more reliable, faster and simpler using verified business and engineering outcomes; never improve activity at the expense of safety, architecture or evidence.",
   "cadence": {
     "daily_learning_required": true,
     "continuous_runtime_evidence": true
@@ -91,7 +92,14 @@
     "no_change_is_valid_when_champion_remains_best": true,
     "stale_or_failed_learning_must_be_revalidated": true,
     "learning_writeback_required": true,
-    "prevention_rule_update_required": true
+    "prevention_rule_update_required": true,
+    "no_learning_without_evidence": true,
+    "no_change_without_evaluation": true,
+    "no_deployment_without_regression_proof": true,
+    "no_uncontrolled_self_modification": true,
+    "agent_objective_required": true,
+    "architecture_health_guard_required": true,
+    "provider_neutral_model_routing": true
   },
   "autonomy": {
     "safe_reversible_changes": "auto",
