@@ -92,3 +92,18 @@ Mandatory rules:
 - Show Outcome Memory only when an executed action and observed outcome have evidence lineage.
 - Roadmap, graph, impact, next-best-action, monitoring/learning and evidence surfaces must reuse the same canonical context lineage; no parallel UI truth.
 - Material portal projection changes require regression coverage, tenant-isolation evaluation, skill update, learning/prevention update, System Map update, change documentation and development-ledger writeback in the same delivery lineage.
+
+## Contextual intelligence visibility invariant
+
+Any intelligence that can materially change a management decision must be projected into the relevant Portal V2 context rather than existing only in Brain, Supabase, logs or a standalone intelligence page.
+
+Required behavior:
+- show the intelligence where the user decides, prioritizes or acts;
+- prefer compact visual context over detached technical dashboards;
+- reuse canonical tenant-scoped evidence and runtime authorities;
+- show uncertainty, provenance and evidence state when applicable;
+- never fabricate an insight, forecast, benchmark, scenario or action when evidence is insufficient;
+- avoid duplicate widgets: project only the subset relevant to the current decision context;
+- connect predictions to actions and outcomes so the user can see not only what may happen, but what Powerhouse recommends doing and what happened afterward.
+
+A material intelligence capability is incomplete until its customer-facing projection is implemented where relevant, tested and documented.

@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "CANDIDATE",
+  "fingerprint": "powerhouse-contextual-intelligence-visibility-governance-v1",
+  "date": "2026-09-28",
+  "title": "Material intelligence must be visible where the user decides",
+  "problem": "A capability can be technically live in Brain, Supabase or agents while remaining operationally invisible to a manager at the moment a decision is made.",
+  "root_cause": "Delivery governance historically treated runtime completion and portal projection as separable concerns instead of one customer-value obligation.",
+  "impact": "Useful intelligence can become a backend-only feature, lowering adoption, trust and realized business value even when the underlying AI works.",
+  "fix": "Make contextual portal visibility a cross-cutting invariant in Company Intelligence OS and System Map Governance. Material intelligence must be projected into the relevant Portal V2 decision context, with evidence and uncertainty state, in the same delivery lineage.",
+  "prevention_rule": "No material prediction, recommendation, benchmark, risk, opportunity, graph insight or learning is terminal when it changes user decisions but is not contextually visible in the relevant Portal V2 surface.",
+  "regression_contract": "portal-v2/tests/foresight-context-ui.test.mjs",
+  "tests": [
+    "portal-v2/tests/foresight-context-ui.test.mjs",
+    "tests/portal-contextual-foresight-v1.test.mjs",
+    "tests/brain-contextual-intelligence-visibility-governance-v1.test.mjs"
+  ],
+  "evidence": {
+    "foresight_skill": ".agents/skills/powerhouse-foresight-prediction-intelligence/SKILL.md",
+    "company_intelligence_skill": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+    "system_map_skill": ".agents/skills/powerhouse-system-map-governance/SKILL.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs",
+    "portal_component": "portal-v2/foresight-context-ui.js"
+  },
+  "outcome": "Contextual intelligence visibility becomes a permanent architecture and delivery rule rather than a one-off foresight implementation.",
+  "compiler": {
+    "failure_class": "INTELLIGENCE_WITHOUT_CONTEXTUAL_VISIBILITY",
+    "scope": "WHOLE_BRAIN_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-contextual-intelligence-visibility-governance-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-company-intelligence-os",
+    "powerhouse-system-map-governance",
+    "powerhouse-foresight-prediction-intelligence"
+  ]
+}

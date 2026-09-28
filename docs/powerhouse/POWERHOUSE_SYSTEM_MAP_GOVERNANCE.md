@@ -102,3 +102,17 @@ Canonical runtime:
 North Star: Powerhouse must function measurably better tomorrow than today without degrading reliability, safety or code quality.
 
 Self-learning may autonomously observe, diagnose, generate candidates and evaluate them. Production promotion remains evidence-gated and reuses protected delivery. Unknown evidence is never green.
+
+
+## Contextual intelligence visibility
+
+System Map governance also governs whether intelligence is visible at the point of decision.
+
+When a material capability produces a prediction, recommendation, benchmark, risk, opportunity, graph insight or learning that can alter a user's decision, the same delivery lineage must include:
+- the relevant Portal V2 projection;
+- an appropriate compact visual;
+- evidence/uncertainty behavior;
+- regression coverage;
+- a System Map relation from capability to portal surface.
+
+A technically live backend capability with no relevant customer-facing projection is `WRITEBACK_INCOMPLETE`. Do not centralize everything into a generic AI-insights page; place each intelligence signal where it is operationally relevant.
