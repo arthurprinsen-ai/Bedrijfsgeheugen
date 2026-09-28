@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse-autonomous-sales-asset-execution-v1",
+  "version": "powerhouse-autonomous-sales-asset-execution-v1",
+  "date": "2026-09-28",
+  "status": "PRODUCTION_APPLIED",
+  "failure_class": "EXECUTION_GAP",
+  "scope": "GROWTH_REVENUE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Commercial agents could select a message or asset but still treat draft/suggestion/asset recommendation as sufficient instead of materializing and executing the selected action.",
+  "decision": "Make materialization part of the same commercial obligation. The owning agent creates final copy and required assets, executes through the authorized provider, captures provider evidence and writes the sales outcome before learning.",
+  "prevention": [
+    "Never treat a draft, suggestion, CTA recommendation, asset recommendation or TODO as a terminal sales outcome.",
+    "If an approved PDF-class give_asset is selected, generate the actual PDF before the email is sent.",
+    "When a selected channel capability is unavailable, route to the best executable fallback rather than stop.",
+    "Never fabricate evidence, ROI, benchmark values, scarcity, urgency or social proof while generating assets."
+  ],
+  "compiler": {
+    "failure_class": "EXECUTION_GAP",
+    "scope": "GROWTH_REVENUE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-autonomous-sales-asset-execution-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-persuasion-revenue/SKILL.md",
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md"
+  ],
+  "evidence": [
+    "Supabase Edge Function powerhouse-autonomous-outreach deployed as ACTIVE version 3.",
+    "The runtime now calls TEXT_TO_PDF_CONVERT_TEXT_TO_PDF for PDF-class give_assets and attaches the returned PDF to GMAIL_SEND_EMAIL.",
+    "Gmail and text-to-PDF capabilities were read from active Composio tooling; LinkedIn DM capability was not available and therefore remains fallback-routed.",
+    "Provider execution and sales outcome writeback remain in the canonical autonomous outreach function."
+  ]
+}
