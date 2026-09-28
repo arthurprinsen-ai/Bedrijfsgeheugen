@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { readFile } from 'node:fs/promises';
 import adaptivePolicy from '../config/powerhouse-adaptive-delivery-v1.json' with { type: 'json' };
 import integrationPolicy from '../config/powerhouse-integration-bundle-v1.json' with { type: 'json' };
 import { compileClosurePlan, compileIntegrationBundle, compilePrContract } from '../tools/delivery/integration-bundle-compiler.mjs';
@@ -99,4 +100,14 @@ test('Required test uses the Integration Bundle as the single preflight compiler
   assert.match(workflow, /Fail fast on incomplete integration closure/);
   assert.doesNotMatch(workflow, /id: impact\s/);
   assert.match(workflow, /steps\.integration\.outputs\.full_shared_suite/);
+});
+
+
+test('Required test consumes the integration bundle as one derivation authority', async () => {
+  const workflow = await readFile('.github/workflows/required-test.yml', 'utf8');
+  assert.match(workflow, /id: integration[\s\S]*integration-bundle-compiler\.mjs/);
+  assert.match(workflow, /Verify adaptive and integration compiler regressions/);
+  assert.match(workflow, /Fail fast on incomplete integration closure/);
+  assert.match(workflow, /steps\.integration\.outputs\.full_shared_suite/);
+  assert.doesNotMatch(workflow, /id: impact[\s\S]*adaptive-delivery-engine\.mjs/);
 });
