@@ -7,6 +7,7 @@ import { openPortalPage } from '../page-shell.js';
 import { renderLegacyOverviewComplete } from './legacy-overview-complete.js';
 import { mountControlPlaneCockpit } from '../control-plane-cockpit.js';
 import { buildBusinessContext, BUSINESS_STAGES } from '../../brain/context/business-context-engine.mjs';
+import { renderManagementAccountingIntelligence } from './management-accounting-intelligence.js';
 
 const nl0=value=>new Intl.NumberFormat('nl-NL',{maximumFractionDigits:0}).format(value||0);
 const nl1=value=>new Intl.NumberFormat('nl-NL',{minimumFractionDigits:1,maximumFractionDigits:1}).format(value||0);
@@ -138,6 +139,7 @@ export function applyOverviewDashboard(root=document,state={}){
  renderLegacyOverviewComplete(root,state,openPortalPage,globalThis.__BG_PORTAL_DOMAIN_STATE__);
  renderLegacyOverviewInsights(root,state);
  renderBusinessJourneyOverview(root,state);
+ renderManagementAccountingIntelligence(root,state);
  renderDirectievragen(root,state);
  ensureOverviewReorder(root);
  if(isDemoCustomer(state)&&renderDemoOverview(root)){bindPageButtons(root.querySelector?.('.ovz'));return true;}
