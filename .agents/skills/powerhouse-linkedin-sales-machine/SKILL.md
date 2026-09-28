@@ -65,3 +65,7 @@ Geen scraping/platform-bypass, geen bulk generieke comments, geen gefingeerde DM
 - Canonical planner/dispatcher RPCs are present in production.
 - Sales-air-cover recommendation exists for the current run date and the LinkedIn comment queue is live.
 - The canonical recurring commercial owner remains `powerhouse-commercial-learning-v1`; no dedicated LinkedIn Sales Machine cron was introduced.
+
+
+## Externe relatie-intelligentie
+Gebruik standaard `powerhouse-relationship-external-intelligence-v1`. Relevante publieke internet-, bedrijfs- en ondersteunde LinkedIn-updates worden na geldige entity matching gekoppeld aan de canonieke person → company → customer → opportunity/NBA-lineage en wegen mee in scoring, timing en next-best-action. Externe evidence is nooit op zichzelf koopintentie; provenance, freshness, confidence, suppression, cooldown en outcome-learning blijven harde gates. Geen gevoelige persoonsinferenties en geen los nieuwsarchief als eindpunt.
