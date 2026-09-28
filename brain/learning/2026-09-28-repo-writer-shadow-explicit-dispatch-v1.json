@@ -1,0 +1,49 @@
+{
+  "fingerprint": "github|repo-writer-shadow|explicit-dispatch-only|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Repository Writer Candidate Shadow subscribed to every pull_request and skipped unless the head branch started with writer/. GitHub cannot pre-filter pull_request events by head-ref prefix, so every ordinary PR still created a workflow run that immediately skipped. Several writer creators also relied on this global trigger instead of explicit immutable handoff.",
+  "prevention_rule": "All canonical repository writers must explicitly dispatch Candidate Shadow after resolving the exact candidate PR base SHA, head SHA and writer branch. Candidate Shadow itself is workflow_dispatch-only. Writer workflow definitions are automation control-plane paths. Adding a new writer requires explicit shadow dispatch regression coverage.",
+  "enforcement": [
+    "scripts/ci/dispatch-writer-shadow.mjs",
+    ".github/workflows/repo-writer-candidate-shadow.yml",
+    ".github/workflows/approved-central-blog.yml",
+    ".github/workflows/blog-bijwerken.yml",
+    ".github/workflows/daily-blog-publisher.yml",
+    ".github/workflows/menu-balk-fix.yml",
+    ".github/workflows/paginacontrole.yml",
+    ".github/workflows/regelgeving-bijwerken.yml",
+    ".github/workflows/regulatory-source-watch.yml",
+    ".github/workflows/seo-controle.yml",
+    ".github/workflows/weekblog.yml",
+    "tests/repo-writer-shadow-explicit-dispatch-v1.test.mjs",
+    "tests/brain-change-scoped-release-lanes.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/repo-writer-shadow-explicit-dispatch-v1.test.mjs",
+      "tests/brain-change-scoped-release-lanes.test.mjs"
+    ],
+    "shadow": [
+      "tests/repo-writer-governance.test.mjs",
+      "tests/repo-writer-candidate.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/repo-writer-shadow-explicit-dispatch-v1.test.mjs",
+    "tests/brain-change-scoped-release-lanes.test.mjs"
+  ],
+  "evidence": {
+    "observed_normal_pr": 3254,
+    "observed_waste": "Repository Writer Candidate Shadow scheduled and concluded skipped on a non-writer PR.",
+    "writer_count": 9
+  }
+}
