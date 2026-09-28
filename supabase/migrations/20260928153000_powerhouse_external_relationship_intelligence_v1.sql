@@ -166,21 +166,53 @@ begin
       jsonb_build_object(
         'contract','powerhouse-external-relationship-intelligence-v1',
         'updated_at',now(),
-        'external_updates_30d',coalesce(sum(x.external_updates_30d),0),
-        'linkedin_updates_30d',coalesce(sum(x.linkedin_updates_30d),0),
-        'latest_external_at',max(x.latest_external_at),
-        'external_confidence',round(avg(x.external_confidence),4),
-        'source_classes',to_jsonb(array_remove(array_agg(distinct s),null)),
-        'topics',to_jsonb(array_remove(array_agg(distinct t),null))
+        'external_updates_30d',(
+          select coalesce(sum(x.external_updates_30d),0)
+          from public.powerhouse_relationship_external_intelligence_v1 x
+          where x.person_key=coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
+             or x.company_key=lower(regexp_replace(trim(coalesce(c.bedrijf,'')),'\\s+',' ','g'))
+        ),
+        'linkedin_updates_30d',(
+          select coalesce(sum(x.linkedin_updates_30d),0)
+          from public.powerhouse_relationship_external_intelligence_v1 x
+          where x.person_key=coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
+             or x.company_key=lower(regexp_replace(trim(coalesce(c.bedrijf,'')),'\\s+',' ','g'))
+        ),
+        'latest_external_at',(
+          select max(x.latest_external_at)
+          from public.powerhouse_relationship_external_intelligence_v1 x
+          where x.person_key=coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
+             or x.company_key=lower(regexp_replace(trim(coalesce(c.bedrijf,'')),'\\s+',' ','g'))
+        ),
+        'external_confidence',(
+          select round(avg(x.external_confidence),4)
+          from public.powerhouse_relationship_external_intelligence_v1 x
+          where x.person_key=coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
+             or x.company_key=lower(regexp_replace(trim(coalesce(c.bedrijf,'')),'\\s+',' ','g'))
+        ),
+        'source_classes',to_jsonb(array(
+          select distinct s
+          from public.powerhouse_relationship_external_intelligence_v1 x
+          cross join lateral unnest(coalesce(x.source_classes,array[]::text[])) s
+          where x.person_key=coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
+             or x.company_key=lower(regexp_replace(trim(coalesce(c.bedrijf,'')),'\\s+',' ','g'))
+        )),
+        'topics',to_jsonb(array(
+          select distinct t
+          from public.powerhouse_relationship_external_intelligence_v1 x
+          cross join lateral unnest(coalesce(x.topics,array[]::text[])) t
+          where x.person_key=coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
+             or x.company_key=lower(regexp_replace(trim(coalesce(c.bedrijf,'')),'\\s+',' ','g'))
+        ))
       ) snapshot
     from public.bg_connecties c
-    join public.powerhouse_relationship_external_intelligence_v1 x
-      on x.person_key=coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
-      or x.company_key=lower(regexp_replace(trim(coalesce(c.bedrijf,'')),'\\s+',' ','g'))
-    left join lateral unnest(coalesce(x.source_classes,array[]::text[])) s on true
-    left join lateral unnest(coalesce(x.topics,array[]::text[])) t on true
     where c.sleutel is not null
-    group by c.sleutel
+      and exists (
+        select 1
+        from public.powerhouse_relationship_external_intelligence_v1 x
+        where x.person_key=coalesce(nullif(trim(c.sleutel),''),nullif(trim(c.linkedin_url),''))
+           or x.company_key=lower(regexp_replace(trim(coalesce(c.bedrijf,'')),'\\s+',' ','g'))
+      )
   )
   update public.bg_connecties c
   set extra=coalesce(c.extra,'{}'::jsonb)||jsonb_build_object('powerhouse_external_intelligence',l.snapshot),
