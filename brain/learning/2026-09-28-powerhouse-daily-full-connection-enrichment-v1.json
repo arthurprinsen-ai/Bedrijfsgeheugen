@@ -1,0 +1,49 @@
+{
+  "fingerprint": "powerhouse-daily-full-connection-enrichment-v1",
+  "version": "powerhouse-daily-full-connection-enrichment-v1",
+  "date": "2026-09-28",
+  "status": "LIVE_PROVEN_RUNTIME",
+  "failure_class": "COMMERCIAL_INTELLIGENCE",
+  "scope": "GROWTH_REVENUE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Relationship enrichment was event- and trigger-centric, so the full connection graph did not have a guaranteed daily refresh contract even when new LinkedIn and external evidence had already been ingested.",
+  "decision": "Add one set-based daily full-graph enrichment projection that reuses all canonical evidence stores and the existing commercial scheduler. Detailed evidence remains in canonical source stores; the daily state is a rollup and provenance pointer.",
+  "prevention": [
+    "Every canonical connection must receive a daily enrichment pass.",
+    "All already-ingested LinkedIn and external evidence must be projected onto matching connections each cycle.",
+    "Do not duplicate source evidence into a parallel CRM; retain provenance pointers to canonical stores.",
+    "Deep external discovery remains prioritized and bounded; daily full-graph refresh must not imply one paid search per connection.",
+    "No sensitive personal inference or platform-bypass."
+  ],
+  "compiler": {
+    "failure_class": "COMMERCIAL_INTELLIGENCE",
+    "scope": "GROWTH_REVENUE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-daily-full-connection-enrichment-v1.test.mjs"
+    ],
+    "regression": [
+      "tests/supabase-powerhouse-daily-full-connection-enrichment-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-daily-full-connection-enrichment/SKILL.md",
+    ".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",
+    ".agents/skills/powerhouse-relationship-revenue/SKILL.md"
+  ],
+  "production_evidence": {
+    "project_id": "adhjwmvyoixzjtmiroln",
+    "connections_total": 23295,
+    "connections_enriched_today": 23295,
+    "connections_remaining_today": 0,
+    "daily_completion_ratio": 1,
+    "full_graph_daily_refresh": true,
+    "scheduler_owner": "powerhouse-commercial-learning-v1"
+  }
+}
