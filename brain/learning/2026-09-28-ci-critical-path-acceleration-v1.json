@@ -45,5 +45,19 @@
   },
   "test_evidence": [
     "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "problem": "GitHub PR delivery spent unnecessary time and runner capacity on duplicated domain checks, repeated website builds, repeated dependency downloads and local browser builds that could reuse an exact-SHA preview.",
+  "prevention": [
+    "Keep one PR-scoped Required authority and cancel superseded same-PR work.",
+    "Classify affected lanes before expensive work and avoid unconditional duplicate domain checks.",
+    "Use package.json-keyed npm download caching while this repository has no lockfile; switch to lockfile-bound deterministic installs if a lockfile is introduced.",
+    "Run page/SEO artifact checks on the canonical website build rather than rebuilding.",
+    "Use the exact-SHA Netlify preview for browser checks when route-ready; local build is fallback only.",
+    "Keep expensive mutation testing on schedule/manual rather than the ordinary PR critical path.",
+    "Measure queue, execution, fan-out and cancellation metrics so recurring waste becomes an optimization obligation."
+  ],
+  "failed_approaches": [
+    "Configured setup-node cache and npm ci against package-lock.json before verifying that this repository has no package-lock; RLS/Skill Projection immediately exposed the invalid assumption."
   ]
 }
