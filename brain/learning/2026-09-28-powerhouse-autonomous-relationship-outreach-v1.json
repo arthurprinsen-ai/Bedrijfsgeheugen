@@ -32,7 +32,7 @@
     ]
   },
   "version": "powerhouse-autonomous-relationship-outreach-v1",
-  "failure_class": "REVENUE_EXECUTION",
+  "failure_class": "IMPROVEMENT",
   "scope": "AUTONOMOUS_OUTREACH",
   "machine_enforceable": true,
   "repeat_count": 1,
@@ -50,10 +50,17 @@
     ".agents/skills/powerhouse-linkedin-sales-machine/SKILL.md"
   ],
   "compiler": {
-    "failure_class": "REVENUE_EXECUTION",
+    "failure_class": "IMPROVEMENT",
     "scope": "AUTONOMOUS_OUTREACH",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
-  }
+  },
+  "evidence": [
+    "User explicitly authorized autonomous external follow-up for existing relationships on 2026-09-28.",
+    "Production Supabase contains canonical relationship, trigger, sales-action, outcome, cooldown and suppression state used by the outbound planner.",
+    "The autonomous outreach runtime is designed for existing relationships only, fresh trigger evidence, a five-send daily cap and a 30-day per-person successful-email cooldown.",
+    "LinkedIn DM remains disabled until a verified provider send-DM capability exists; supported private fallback is email."
+  ],
+  "rootCause": "Powerhouse could identify evidence-backed relationship opportunities but stopped at a per-message human authorization boundary, so the revenue loop did not autonomously execute a supported private follow-up channel."
 }
