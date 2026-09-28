@@ -23,6 +23,7 @@
     <h2 class="step-title">Eerst even over jouw bedrijf.</h2><p class="step-lead">Zo maken we het rapport persoonlijk en kunnen we de uitkomst later koppelen aan jouw workshop en portal.</p>
     <div class="intro-grid">
       <div class="field"><label for="company">Bedrijfsnaam *</label><input id="company" autocomplete="organization"></div>
+      <div class="field"><label for="website">Website <small>(optioneel, voor je bedrijfslogo)</small></label><input id="website" type="url" inputmode="url" autocomplete="url" placeholder="https://jouwbedrijf.nl"></div>
       <div class="field"><label for="name">Jouw naam *</label><input id="name" autocomplete="name"></div>
       <div class="field"><label for="email">E-mailadres *</label><input id="email" type="email" autocomplete="email"></div>
       <div class="field"><label for="employees">Aantal medewerkers *</label><select id="employees"><option value="">Kies…</option><option>1-10</option><option>11-25</option><option>26-50</option><option>51-100</option><option>101-250</option><option>250+</option></select></div>
@@ -54,7 +55,7 @@
   <div class="report-titleblock">
     <h1 class="report-display">Kracht, knelpunten<br>en <span>benchmark.</span></h1>
     <p>De scan laat zien waar al kracht zit, waar frictie ontstaat en waar de grootste afwijking ten opzichte van gemiddeld MKB zichtbaar wordt.</p>
-    <div class="report-company" id="reportCompanyLine"></div>
+    <div class="report-client"><img id="reportClientLogo" class="report-client-logo" alt="" hidden><div class="report-company" id="reportCompanyLine"></div></div>
   </div>
   <div class="insight-grid">
     <div class="insight-stack">
@@ -91,6 +92,7 @@
     <div class="report-partner"><span>AMERSFOORT<br>NEDERLAND<br>ONDERNEMERS</span><i></i><span>STERKERE<br>ONDERNEMERS<br>EEN STERKER<br>ECOSYSTEEM</span></div>
   </div>
   <div class="report-titleblock action-title">
+    <div class="report-client report-client-page2"><img id="reportClientLogo2" class="report-client-logo" alt="" hidden><div class="report-company" id="reportCompanyLine2"></div></div>
     <h1 class="report-display">Jouw 3 grootste hefbomen<br><span>naar 90 dagen actie.</span></h1>
     <p>Hier zit de meeste winst, rust en versnelling voor de komende 90 dagen.</p>
   </div>
