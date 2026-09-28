@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "fingerprint": "powerhouse-company-intelligence-contextual-portal-v1",
   "date": "2026-09-28",
-  "status": "ACTIVE_PREVENTION",
+  "status": "LIVE_PROVEN_PREVENTION",
   "scope": "Powerhouse Portal V2 contextual intelligence visualization",
   "problem": "Company Intelligence OS runtime existed, but its Company Graph, context, action, outcome and learning semantics were not consistently visible where users make decisions in Portal V2.",
   "root_cause_class": "INTELLIGENCE_RUNTIME_WITHOUT_CONTEXTUAL_PORTAL_PROJECTION",
@@ -53,5 +53,18 @@
     "roadmap": "portal-v2/modules/roadmap-workspace.js",
     "test": "tests/brain-company-intelligence-contextual-portal-v1.test.mjs",
     "tenant_isolation_shadow_canary": "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs"
+  },
+  "production_proof": {
+    "github_feature_merge_sha": "0b4547f33a74ce911a0d324a53404cff1cc6e737",
+    "github_tenant_isolation_eval_merge_sha": "764a7387e1852e7c1e8700efc443d29870221f39",
+    "netlify_site_id": "fd527056-493a-4d8a-8125-d00370104fa3",
+    "netlify_deploy_id": "6abac41210b244000884a323",
+    "netlify_state": "ready",
+    "netlify_context": "production",
+    "netlify_commit_ref": "0b4547f33a74ce911a0d324a53404cff1cc6e737",
+    "published_at": "2026-09-28T19:48:21.076Z",
+    "production_surface": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+    "tenant_isolation_evaluation": "historical_replay + shadow + canary green",
+    "terminal_state": "LIVE_PROVEN"
   }
 }
