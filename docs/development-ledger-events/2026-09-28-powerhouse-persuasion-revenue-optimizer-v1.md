@@ -1,0 +1,22 @@
+# Development ledger event — powerhouse-persuasion-revenue-optimizer-v1
+
+- Date: 2026-09-28
+- Obligation: powerhouse-persuasion-revenue-optimizer-v1
+- Lane: backend / revenue-growth
+- Candidate-Type: implementation
+- Canonical design: optimizer inside the existing Growth Swarm and commercial cycle, not a parallel CRM or sequence engine
+- Persuasion strategies: 8
+- Runtime owner: powerhouse_trigger_based_mkb_acquisition_cycle_v1
+- Optimizer: powerhouse_optimize_prepared_outreach_v1
+- Strategy performance: powerhouse_persuasion_strategy_performance_v1
+- Next-best-action view: powerhouse_persuasion_next_best_action_v1
+- Prepared email actions enriched in controlled production readback: 2
+- Prepared LinkedIn actions enriched in controlled production readback: 1
+- Extra send volume created: 0
+- Learning objective: reply -> meeting -> scan -> proposal -> paid order -> realized revenue
+- Guardrails: identity, dedupe, fatigue, suppression, opt-out, provider capability and provider acknowledgement remain mandatory
+- Truth boundary: framing may be optimized; evidence, urgency, scarcity, benchmarks, customer proof and financial impact may not be invented
+- Supabase production migration: powerhouse_persuasion_revenue_optimizer_v1 applied successfully
+- Skill projection: powerhouse-persuasion-revenue plus Growth Swarm integration
+- Human documentation: docs/changes/2026-09-28-powerhouse-persuasion-revenue-optimizer-v1.md
+- Regression evidence: tests/brain-powerhouse-persuasion-revenue-optimizer-v1.test.mjs
