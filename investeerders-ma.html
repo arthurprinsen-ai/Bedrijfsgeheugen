@@ -197,6 +197,7 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 .bg-cluster a:hover{text-decoration:underline}
 @media(max-width:820px){.bg-cluster{margin:1.5rem 1rem}}
 </style>
+<link rel="stylesheet" href="/assets/growth-tools.css?v=1">
 </head>
 <body>
 <div class="bgtop"><div class="bgtop-in">
@@ -362,6 +363,23 @@ var j=document.querySelectorAll('.jr');var y=new Date().getFullYear();j.forEach(
 })();
 </script>
 <script src="/assets/stijl.js" defer></script>
+<section class="gs-tool" aria-labelledby="gs-ma-title">
+  <div class="gs-tool-card" data-growth-tool="ma-risk">
+    <span class="gs-badge">Powerhouse · M&A Knowledge &amp; Execution Risk</span>
+    <h2 id="gs-ma-title">Waar kan de overdraagbaarheid van een bedrijf breken?</h2>
+    <p>Gebruik vijf operationele aannames als eerste risicoscreening. De score is geen waardering of dealadvies, maar een startpunt voor betere due-diligencevragen.</p>
+    <div class="gs-tool-grid">
+      <div><label>Afhankelijkheid sleutelpersonen (0–100)</label><input name="key_person" type="number" min="0" max="100" value="60"></div>
+      <div><label>Procesdocumentatie-gap (0–100)</label><input name="process_gap" type="number" min="0" max="100" value="50"></div>
+      <div><label>Managementinformatie-gap (0–100)</label><input name="management_gap" type="number" min="0" max="100" value="40"></div>
+      <div><label>Systeemfragmentatie (0–100)</label><input name="fragmentation" type="number" min="0" max="100" value="50"></div>
+      <div><label>Kennisconcentratie (0–100)</label><input name="knowledge_concentration" type="number" min="0" max="100" value="60"></div>
+    </div>
+    <button type="button">Bereken eerste risicoscore</button>
+    <div class="gs-tool-output" data-growth-output><b>Risicoscore nog niet berekend</b><span>Gebruik de uitkomst als hypothese voor de volgende due-diligencestap.</span></div>
+    <div class="gs-proof">Classificatie: ESTIMATED_RISK. Geen waardering, juridisch advies of transactieadvies.</div>
+  </div>
+</section>
 <footer class="bgvoet"><div class="bgvoet-in">
   <div class="bgvoet-net">
     <div>
@@ -426,5 +444,6 @@ var j=document.querySelectorAll('.jr');var y=new Date().getFullYear();j.forEach(
     <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
   </div>
 </div></footer>
+<script src="/assets/growth-tools.js?v=1" defer></script>
 </body>
 </html>
