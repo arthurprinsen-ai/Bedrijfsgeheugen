@@ -35,6 +35,28 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'relationship-external-intelligence',
+      label:'Relationship External Intelligence',
+      authority:'supabase',
+      owner:'commercial-intelligence',
+      status:'CANDIDATE_DELIVERY',
+      inputs:Object.freeze(['public web evidence','LinkedIn/company updates via supported capabilities','runtime events','person/company/customer lineage']),
+      outputs:Object.freeze(['person/company/customer enriched context','predictive signals','opportunity/NBA evidence features']),
+      runtime:Object.freeze({
+        projector:'public.powerhouse_refresh_relationship_external_intelligence_v1(date)',
+        contextView:'public.powerhouse_relationship_context_enriched_v1',
+        schedulerOwner:'powerhouse-commercial-learning-v1'
+      }),
+      invariants:Object.freeze({
+        noLooseNewsDeadEnd:true,
+        externalEvidenceIsNotBuyingIntent:true,
+        sensitiveInferenceAllowed:false,
+        preserveProvenance:true,
+        noParallelCrm:true,
+        noParallelScheduler:true
+      })
+    }),
+    Object.freeze({
       id:'management-accounting-value-driver-intelligence',
       label:'Management Accounting & Value Driver Intelligence',
       authority:'supabase',
