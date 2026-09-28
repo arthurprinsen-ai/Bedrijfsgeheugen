@@ -36,7 +36,23 @@
       "assets/scan-workshop.js",
       "pages/scan.html",
       "supabase/functions/powerhouse-scan-ingest/index.ts"
-    ]
+    ],
+    "runtime": {
+      "supabase_project": "adhjwmvyoixzjtmiroln",
+      "edge_function": "powerhouse-scan-ingest",
+      "edge_version": 3,
+      "edge_status": "ACTIVE",
+      "edge_sha256": "5b9636479ad94e8d70602b69638c1cb5708a50267b67cae82e6feec91c69ba2e",
+      "workshop_contract_readback": true,
+      "production_site_commit": "7a2d9cf8b7f5c2b9090e7eb1fd406bf2ddc14016",
+      "production_site_contains_functional_handoff_commit": "ea1d6716c7b1c5830c22c8c44ceb84957de0734b"
+    },
+    "closure": {
+      "quality_surface_registered": true,
+      "skill_projection": ".agents/skills/seo-revenue-growth/SKILL.md",
+      "docs": "docs/changes/2026-09-28-workshop-scan-powerhouse-handoff.md",
+      "ledger": "docs/development-ledger-events/2026-09-28-workshop-scan-powerhouse-handoff.md"
+    }
   },
   "type": "COMMERCIAL_FUNNEL_CONTINUITY",
   "failure_class": "SCAN_RESULT_NOT_DURABLE_AFTER_PDF_GENERATION",

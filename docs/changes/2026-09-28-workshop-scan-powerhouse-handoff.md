@@ -38,3 +38,16 @@ Dezelfde lineage moet later uitkomsten kunnen meten op:
 `scan completion → PDF → portal open/account → meeting → offer → paid order → realized revenue`.
 
 Een workshop is dus niet succesvol omdat een PDF is gemaakt; de PDF is de brug naar vervolggebruik en omzet.
+
+
+## Runtimebewijs
+
+De functionele handoff is ook op runtime-niveau teruggelezen.
+
+- De websiteproductie draait op een commit die de workshopscan-handoff uit de functionele lineage bevat.
+- De Supabase Edge Function `powerhouse-scan-ingest` is direct uit productie teruggelezen als `ACTIVE`, versie 3.
+- De actieve functie accepteert expliciet zowel `/frisse-blik` als `/scan` en classificeert workshopinzendingen als `workshop_scan`.
+- De productiecode bewaart workshopattributie en schrijft dezelfde scan naar de bestaande Powerhouse scanstore, zonder naam/e-mail aan de aggregate scanpayload toe te voegen.
+- De quality-surface registry bevat `function:powerhouse-scan-ingest` met canonieke regressie-evidence.
+
+Daarmee is de workshopscan niet alleen een visuele/PDF-flow, maar een geborgde acquisitie- en nulmetingflow die doorloopt in Powerhouse en het klantportaal.
