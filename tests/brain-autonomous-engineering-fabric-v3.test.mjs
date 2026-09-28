@@ -85,3 +85,30 @@ test('daily optimizer holds parallelism in the neutral fanout and skip zone',()=
   assert.equal(result.decisions.includes('increase-safe-parallelism'),false);
   assert.equal(result.decisions.includes('reduce-fanout-and-batch-more'),false);
 });
+
+
+test('high-priority calibration can veto upward tuning but cannot mutate tuning directly',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,safety:{}};
+  const result=optimizeDailyTuning({
+    metrics:{queue_wait_seconds_p95:10,execution_seconds_p95:80,cancelled_jobs:0,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:3},
+    calibration:{mode:'SHADOW_RECOMMENDATIONS',recommendations:[{id:'reduce-workflow-fanout',priority:'high'}]},
+    current
+  });
+  assert.equal(result.tuning.max_parallel_packages,4);
+  assert.equal(result.tuning.speculative_execution_threshold,0.75);
+  assert.equal(result.decisions.includes('increase-safe-parallelism'),false);
+  assert.equal(result.decisions.includes('allow-more-safe-speculation'),false);
+  assert.deepEqual(result.signals.calibration_high_priority_recommendations,['reduce-workflow-fanout']);
+  assert.equal(Object.hasOwn(result.tuning,'calibration'),false);
+});
+
+test('low-priority calibration does not block otherwise-safe upward tuning',()=>{
+  const current={max_parallel_packages:4,candidate_batch_window_seconds:20,fast_path_target_seconds:45,speculative_execution_threshold:0.75,safety:{}};
+  const result=optimizeDailyTuning({
+    metrics:{queue_wait_seconds_p95:10,execution_seconds_p95:80,cancelled_jobs:0,failed_jobs:0,skipped_jobs:0,sampled_jobs:50,workflow_fanout_per_sha_p95:3},
+    calibration:{mode:'SHADOW_RECOMMENDATIONS',recommendations:[{id:'tighten-impact-routing',priority:'medium'}]},
+    current
+  });
+  assert.equal(result.tuning.max_parallel_packages,5);
+  assert.ok(result.tuning.speculative_execution_threshold<0.75);
+});
