@@ -149,3 +149,20 @@ Reusable lesson: an OAuth auth-config can advertise the right scopes while a par
 Fingerprint: `linkedin-reconciliation-buffer-isolation-v1`.
 
 Exact LinkedIn provider reconciliation must execute independently of Buffer availability, cooldown or HTTP 429 state. Buffer health may defer only Buffer-owned audit/containment work. It must never suppress readback of an existing LinkedIn URN, company capability probing, personal/company recovery, or closure of a Composio-owned daily claim. This prevents a retired/limited fallback provider from becoming a hidden dependency of the canonical LinkedIn path.
+
+## Semantic example uniqueness v4 (2026-09-28)
+
+Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
+
+Before any LinkedIn create call, dedupe must evaluate the underlying subject/example/story family across retained history, not only final-copy hashes. A candidate is blocked when it reuses the same concrete example or anecdote even if its sentences are entirely rewritten.
+
+Required behavior:
+- final-copy dedupe, story fingerprinting and source/content-id dedupe are cumulative gates, never alternatives;
+- historical provider posts and canonical publication records are both part of the comparison set whenever available;
+- user-reported duplicates are treated as authoritative negative evidence and immediately retire that story family from future candidate generation;
+- after a semantic duplicate is detected, generate from a different source/event/topic; never paraphrase the blocked candidate;
+- known retired example family: `printer` on personal LinkedIn;
+- the rule applies cross-date and cross-channel: a concrete story already consumed by one social output cannot silently be recycled elsewhere as “new”.
+
+A successful provider create permanently consumes the story family even when LinkedIn exact readback returns 403; retry/reconciliation must never publish a replacement.
+

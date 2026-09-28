@@ -542,3 +542,9 @@ Voor alle huidige en toekomstige chats, agents, workflows en recovery-nodes geld
 - terminale gebruikerscommunicatie bevat het bewezen eindresultaat en de borging, niet de interne uitvoeringsruis.
 
 Deze regel is aanvullend op `delivery|user-facing-reporting|terminal-outcomes-only|v1` en maakt voortzetting, niet alleen rapportagestilte, expliciet afdwingbaar.
+
+## Global social semantic uniqueness — no recycled stories
+
+Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
+
+For every current and future social publishing agent/chat/workflow, uniqueness means a genuinely different underlying subject, concrete example, incident or story family — not merely different wording. Before provider dispatch, compare against retained cross-channel publication history and known duplicate feedback. If the same story family was already consumed, fail closed on that candidate and autonomously select a different verified source/topic. Never “fix” duplication by paraphrasing. Provider create success consumes the story even when later readback is unavailable. Known consumed personal-LinkedIn example family: `printer`.
