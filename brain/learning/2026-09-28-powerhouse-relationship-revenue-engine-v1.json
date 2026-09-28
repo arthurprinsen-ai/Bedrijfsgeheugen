@@ -56,7 +56,7 @@
       "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs"
     ],
     "historical_replay": [
-      "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs"
+      "tests/brain-powerhouse-relationship-revenue-engine-v1.test.mjs"
     ]
   },
   "skill_targets": [
