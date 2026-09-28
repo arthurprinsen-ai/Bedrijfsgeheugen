@@ -3,16 +3,23 @@
   "date": "2026-09-28",
   "change": "Make the workshop scan a durable Powerhouse and portal acquisition lineage instead of a PDF-only completion.",
   "compiler": {
-    "failure_class": "scan_result_not_durable_after_pdf_generation"
+    "failure_class": "SCAN_RESULT_NOT_DURABLE_AFTER_PDF_GENERATION",
+    "scope": "COMMERCIAL_FUNNEL",
+    "machine_enforceable": true,
+    "security_sensitive": true
   },
   "root_cause": "The workshop scan generated a strong visible result and PDF but the scan completion still relied on the lead-mail path. The canonical Powerhouse scan store and the existing portal-local nulmeting handoff were not populated by /scan.",
   "prevention_rule": "Every completed /scan must create one idempotent submission key, persist a no-PII canonical scan event through /api/powerhouse-scan-ingest, write the compatible browser-local scan package for the portal, preserve workshop attribution, and route the PDF/result CTA into the portal. Lead delivery remains separate and consented.",
   "privacy_rule": "Do not copy participant name or e-mail into aggregate Powerhouse scan events. Identity linking happens only after verified account/organisation context is available.",
   "evaluation": {
     "historical_replay": [
-      "A PDF-only workshop result could be downloaded while the Powerhouse scan history remained unaware of the participant's nulmeting.",
-      "The portal already knew how to start from bg_scan_pakket, but /scan did not populate that canonical browser handoff.",
-      "The canonical scan ingest already had idempotency and claim semantics, but it accepted only /frisse-blik."
+      "tests/components/workshop-scan-handoff.test.mjs"
+    ],
+    "canary": [
+      "tests/components/workshop-scan-handoff.test.mjs"
+    ],
+    "shadow": [
+      "tests/components/workshop-scan-handoff.test.mjs"
     ]
   },
   "evidence": {
@@ -30,5 +37,19 @@
       "pages/scan.html",
       "supabase/functions/powerhouse-scan-ingest/index.ts"
     ]
-  }
+  },
+  "type": "COMMERCIAL_FUNNEL_CONTINUITY",
+  "failure_class": "SCAN_RESULT_NOT_DURABLE_AFTER_PDF_GENERATION",
+  "prevention": [
+    "Every completed /scan gets one idempotent submission key.",
+    "Persist the no-PII scan result through the canonical Powerhouse scan ingest.",
+    "Write the compatible browser-local scan package for the customer portal.",
+    "Preserve workshop/partner/event and UTM attribution across the handoff.",
+    "Keep participant name and email in the separate consented lead path.",
+    "Use the portal as the primary product continuation after scan completion."
+  ],
+  "skill_targets": [
+    ".agents/skills/seo-revenue-growth/SKILL.md"
+  ],
+  "status": "ACTIVE_PREVENTION"
 }
