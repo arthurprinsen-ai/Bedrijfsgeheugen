@@ -9,6 +9,7 @@ function unique(values) { return [...new Set(values)]; }
 function matches(path, patterns = []) { return patterns.some(pattern => pattern.endsWith('/') ? path.startsWith(pattern) : path === pattern || path.startsWith(pattern)); }
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
+  'config/brain-delivery-system.json': 'backend',
   'scripts/brain/autonomous-engineering-fabric-v3.mjs': 'automation',
   'config/powerhouse-autonomous-engineering-fabric-v3.json': 'automation',
   'config/powerhouse-engineering-tuning.json': 'automation',
