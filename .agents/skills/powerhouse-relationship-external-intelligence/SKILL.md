@@ -28,3 +28,7 @@ Geen los nieuwsarchief als eindpunt. Een relevant signaal moet terugkomen in de 
 
 ## Doel
 Powerhouse moet bij iedere relevante connectie/klant/bedrijf weten wat er extern veranderd is en dit gebruiken om betere commerciële beslissingen te nemen, zonder losse datasilo's of vendor-afhankelijkheid.
+
+
+## Daily full connection enrichment
+Gebruik permanent `powerhouse-daily-full-connection-enrichment-v1`. Iedere canonieke connectie wordt iedere kalenderdag opnieuw verrijkt met alle reeds ingeladen relevante LinkedIn-, bedrijfs-, publieke web-, runtime-, opportunity- en outcome-evidence. De full-graph refresh draait set-based binnen de bestaande `powerhouse-commercial-learning-v1` scheduler. Gedetailleerde evidence blijft in de canonieke bronstores; de dagelijkse enrichment-state is een rollup/provenance-laag en geen parallel CRM. Nieuwe evidence die later op de dag binnenkomt wordt bij de volgende bestaande commerciële cyclus opnieuw op de volledige graph geprojecteerd.
