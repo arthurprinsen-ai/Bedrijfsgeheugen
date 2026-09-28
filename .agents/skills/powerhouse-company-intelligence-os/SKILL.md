@@ -44,3 +44,13 @@ Canonical layers:
 - Sensitive-person inference is forbidden.
 - A learning is incomplete unless it can alter a subsequent decision or action.
 - Material changes inherit `powerhouse-system-map-governance`: update map, docs, learning and tests in the same lineage.
+
+## Production proof
+
+A Company Intelligence OS change is not terminally complete until the canonical runtime projections are readable in production and their counts/shape are checked. The production closure readback on 2026-09-28 verified all five layers against real canonical data: Company Graph nodes/edges, System of Context, Autonomous Action Layer, Outcome Memory and Compound Intelligence.
+
+Closure rules:
+- Promote the System Map capability to `LIVE_PROVEN_RUNTIME` only after production readback.
+- Record production evidence in the learning record and development ledger; never leave a stale `CANDIDATE_DELIVERY` status after proof exists.
+- Production proof is readback evidence, not merely migration presence or CI success.
+- Re-read canonical runtime after deployment; never infer live state from GitHub alone.
