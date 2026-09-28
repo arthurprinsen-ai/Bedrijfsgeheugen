@@ -1,0 +1,44 @@
+{
+  "fingerprint": "linkedin-company-create-ack-over-readback-v1",
+  "compiler": {
+    "failure_class": "FALSE_FAILURE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": {
+    "summary": "Powerhouse incorrectly treated LinkedIn organization/readback 401/403 responses after a successful company-post create as evidence that publication had failed. The provider had already returned a durable post URN and the post was visibly live.",
+    "causes": [
+      "write capability and readback/admin capability were conflated",
+      "provider_truth_verified was used as the publication state instead of provider_create_success plus durable post URN",
+      "the watchdog could downgrade an already-created provider side effect because exact API readback was permission-limited"
+    ]
+  },
+  "prevention_rules": [
+    "Provider create success plus a durable external post ID is authoritative evidence that the provider side effect exists.",
+    "Persist the provider ID immediately and set republish_forbidden=true.",
+    "Never downgrade a provider-created LinkedIn company post to failed or blocked solely because GET_POST_CONTENT or GET_COMPANY_INFO returns 401/403.",
+    "Close the daily publication obligation as PUBLISHED on provider create acknowledgement; exact readback is optional verification enrichment.",
+    "Reconcile the exact existing provider ID only; never create a replacement post.",
+    "User-visible public-page evidence may close provider truth when API readback is permission-limited.",
+    "Do not request repeated OAuth reconnection merely to verify an already-created post."
+  ],
+  "evidence": {
+    "incident_date": "2026-09-28",
+    "provider": "linkedin_via_composio",
+    "provider_post_id": "urn:li:share:7510281040192602112",
+    "provider_create_success": true,
+    "public_page_visual_evidence": true,
+    "api_readback_permission_limited": true,
+    "regression_test": "tests/brain-linkedin-composio-authority.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-authority.test.mjs"
+    ]
+  },
+  "outcome": {
+    "intended_state": "Daily LinkedIn company publications remain published after provider acknowledgement even when exact API readback is permission-limited, with no duplicate retries or unnecessary reconnect loops."
+  }
+}
