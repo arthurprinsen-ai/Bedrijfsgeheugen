@@ -1,0 +1,39 @@
+{
+  "fingerprint": "mkb-problem-radar-aanzet-execution-20260928-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "A high-priority radar signal can be correctly detected but still create no customer-facing or acquisition action.",
+  "root_cause": "Signal detection and routing existed, but execution had to be owned through the actual content/provider path instead of terminating in a chat summary.",
+  "prevention": [
+    "RADAR_REPORT_ONLY_IS_INCOMPLETE",
+    "For external-only signals, choose a real governed action: contextual portal projection when tenant relevance exists, otherwise content/opportunity execution.",
+    "Never route company content to personal LinkedIn when organization capability is unproven.",
+    "Persist source evidence, canonical PH-P mapping, chosen action and blocker state in one lineage."
+  ],
+  "evidence": {
+    "source": "https://www.rvo.nl/subsidies-financiering/aanzet",
+    "source_checked": "2026-09-28",
+    "content": "blog/aanzet-2026-emissieloze-trucks/index.html",
+    "growth_event": "radar-aanzet-2026-20260928",
+    "publication_ledger": "data/content-publication-ledger.json",
+    "linkedin_preflight": "healthy member token; organization ACL read returned 403 missing r_organization_admin"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-problem-radar-canonical-intake-v1.test.mjs",
+      "tests/brain-powerhouse-problem-radar-contextual-visual-v1.test.mjs"
+    ],
+    "invariants": [
+      "external evidence remains context until tenant relevance",
+      "accepted signal owns a real execution route",
+      "company identity never falls back to personal LinkedIn",
+      "publication claims require provider/readback evidence"
+    ]
+  },
+  "compiler": {
+    "failure_class": "RADAR_EXECUTION_GAP",
+    "scope": "POWERHOUSE_CONTENT_AND_OPPORTUNITY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}

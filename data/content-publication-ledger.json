@@ -64,6 +64,22 @@
         "github_merge_sha": "d6dac2565c74815658305fad807f045a5fb844f2",
         "netlify_deploy_id": "6aacdb2e0b6e3a00082d9163"
       }
+    },
+    "2026-09-28": {
+      "date": "2026-09-28",
+      "content_id": "blog:aanzet-2026-emissieloze-trucks",
+      "slug": "aanzet-2026-emissieloze-trucks",
+      "state": "candidate",
+      "selected_at": "2026-09-28T07:55:00Z",
+      "selection_mode": "powerhouse_problem_radar",
+      "source_of_truth": "RVO AanZET 2026",
+      "canonical_problem_ids": [
+        "PH-P028",
+        "PH-P014"
+      ],
+      "publication_channel": "blog",
+      "company_linkedin_state": "blocked_provider_scope",
+      "company_linkedin_blocker": "r_organization_admin scope missing; do not reroute to personal LinkedIn"
     }
   }
 }

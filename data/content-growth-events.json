@@ -1,1 +1,43 @@
-[]
+[
+  {
+    "event_id": "radar-aanzet-2026-20260928",
+    "event_type": "problem_radar_signal_accepted",
+    "observed_at": "2026-09-28T07:55:00Z",
+    "source": {
+      "publisher": "RVO",
+      "url": "https://www.rvo.nl/subsidies-financiering/aanzet",
+      "source_date": "2026-09-18",
+      "source_class": "government_policy_or_guidance"
+    },
+    "signal": {
+      "sector_or_segment": "transport en logistiek",
+      "problem_summary": "AanZET 2026 creates a time-bound investment trigger that couples vehicle purchase, financing, charging infrastructure and grid capacity.",
+      "symptoms": [
+        "subsidieaanvraag los van investeringsbesluit",
+        "laadcapaciteit of netaansluiting nog onzeker",
+        "meerdere owners en deadlines"
+      ],
+      "business_impact": "POTENTIAL",
+      "buying_trigger": "AanZET opens 2026-09-29 09:00 and closes 2026-10-16 12:00",
+      "freshness_status": "CURRENT",
+      "confidence": "HIGH"
+    },
+    "canonical_problem_ids": [
+      "PH-P028",
+      "PH-P014"
+    ],
+    "routing": {
+      "portal": "CONTEXT_ONLY_WHEN_TENANT_RELEVANCE",
+      "blog": "blog:aanzet-2026-emissieloze-trucks",
+      "linkedin_company": "BLOCKED_PROVIDER_SCOPE",
+      "product_gap": false
+    },
+    "source_facts": {
+      "total_budget_eur": 119200000,
+      "max_subsidy_eur": 115200,
+      "application_start": "2026-09-29T09:00:00+02:00",
+      "application_end": "2026-10-16T12:00:00+02:00"
+    },
+    "no_fabricated_numbers": true
+  }
+]
