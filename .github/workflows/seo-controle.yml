@@ -26,7 +26,8 @@ concurrency:
 
 permissions:
   contents: write
-  pull-requests: write
+  pull-requests: write  actions: write
+
 
 jobs:
   controle:
@@ -123,6 +124,13 @@ jobs:
             --head "$CANDIDATE_BRANCH" \
             --title "SEO candidate $GITHUB_RUN_ID" \
             --body "BRAIN-DELIVERY-v2 candidate uit seo-controle. Base SHA: $BASE_SHA. Deze workflow pusht of merge't nooit rechtstreeks naar main; BG169 is productieautoriteit."
+
+      - name: Dispatch read-only writer shadow
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          CANDIDATE_BRANCH: ${{ steps.commit.outputs.candidate_branch }}
+        run: node scripts/ci/dispatch-writer-shadow.mjs "$CANDIDATE_BRANCH"
 
       - name: Uitkomst in de samenvatting
         run: cat uitkomst.txt >> $GITHUB_STEP_SUMMARY
