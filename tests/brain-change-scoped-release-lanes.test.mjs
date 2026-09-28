@@ -274,3 +274,23 @@ test('auxiliary workflow definitions stay on owned control-plane lanes', () => {
     shared:true, backend:false, portal:false, website:false, automation:true
   });
 });
+
+
+test('writer workflow definitions are automation control-plane only', () => {
+  for (const path of [
+    '.github/workflows/approved-central-blog.yml',
+    '.github/workflows/blog-bijwerken.yml',
+    '.github/workflows/daily-blog-publisher.yml',
+    '.github/workflows/menu-balk-fix.yml',
+    '.github/workflows/paginacontrole.yml',
+    '.github/workflows/regelgeving-bijwerken.yml',
+    '.github/workflows/regulatory-source-watch.yml',
+    '.github/workflows/repo-writer-candidate-shadow.yml',
+    '.github/workflows/seo-controle.yml',
+    '.github/workflows/weekblog.yml'
+  ]) {
+    assert.deepEqual(suitesFor([path]), {
+      shared:true, backend:false, portal:false, website:false, automation:true
+    }, path);
+  }
+});
