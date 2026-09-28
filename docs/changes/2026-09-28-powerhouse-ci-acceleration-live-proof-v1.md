@@ -15,3 +15,5 @@ Deze closure legt de terminale productie-evidence vast voor de CI-versnelling di
 - Netlify commit_ref: `451c6f40868fb35af77d70f6f6aa0972b324f634`
 
 De systeemkaart wordt hiermee van `CANDIDATE_DELIVERY` naar `LIVE_PROVEN` gezet. Er worden geen safety-gates verwijderd; de versnelling reduceert uitsluitend duplicatie, overbodige runner-starts en herhaalde builds/installaties.
+
+PR metadata scope is canonicalized at four files.
