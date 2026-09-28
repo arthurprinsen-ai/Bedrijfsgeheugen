@@ -58,3 +58,13 @@ Production verification exposed one architectural inefficiency: the first daily 
 The hardened runtime now reads the current canonical Company Intelligence projections and Self-Improvement control state. Company Intelligence and autonomous-improvement keep their own canonical schedulers. Regression: `tests/brain-self-improvement-runtime-nonblocking-v1.test.mjs`.
 
 The daily observer is intentionally thin: it snapshots current canonical state, records evidence and leaves heavy domain execution to its owning schedulers.
+## Terminal production proof
+
+- Implementation merged to protected main: `9feaa95a77e7bc24c53ffd852058fe56de02c67d`.
+- Runtime hardening merged to protected main: `26199abfb2accb3a015c45490f8e0da9e4e32d47`.
+- Supabase migrations applied as `20260928182014 powerhouse_self_improvement_layer_v1` and `20260928183018 powerhouse_self_improvement_orchestrator_nonblocking_v1`.
+- Runtime readback at `2026-09-28T18:30:25.114667Z`: 6 agent objectives, 8 compiler-ready items, 0 evidence gaps, 0 regression gaps, 0 escaped defects without regression, 0 degraded/unknown model-health scopes, 5 learning companies and 5 verified outcomes.
+- Canonical daily cron exists exactly once at `7 3 * * *`; temporary proof scheduling is removed.
+- The verified runtime event records `duplicate_orchestration=false`, `protected_delivery_reused=true` and `uncontrolled_self_modification=false`.
+- Supabase advisor readback found 0 new security findings and 0 new performance findings attributable to the new Self-Improvement surfaces.
+
