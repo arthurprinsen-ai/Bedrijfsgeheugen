@@ -50,7 +50,7 @@ test('all social provider side effects require global historical uniqueness rese
   const uniqueness = source.indexOf('reserveGlobalUniquePublication(db,runDate,row.channel,clean(art.body),storyFingerprint)');
   const personalCreate = source.indexOf('publishLinkedInPersonalViaComposio(db,art)');
   const companyCreate = source.indexOf('publishLinkedInCompanyViaComposio(db,art)');
-  const instagramCreate = source.indexOf('publishInstagramViaComposio(db, art, runDate)');
+  const instagramCreate = source.indexOf('publishInstagramViaComposio(db, art, runDate)', uniqueness);
   assert.ok(uniqueness > 0);
   assert.ok(personalCreate > uniqueness);
   assert.ok(companyCreate > uniqueness);
