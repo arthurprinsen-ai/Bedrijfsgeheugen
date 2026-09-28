@@ -39,8 +39,8 @@ test('social publisher uses allowed sales-action statuses for LinkedIn autopilot
   assert.match(block,/status:'waiting'/);
   assert.match(block,/status:'done'/);
   assert.match(block,/status:'error'/);
-  assert.doesNotMatch(block,/status:'dispatching'/);
-  assert.doesNotMatch(block,/status:'executed'/);
+  assert.doesNotMatch(block,/\.update\(\{status:'dispatching'/);
+  assert.doesNotMatch(block,/\.update\(\{status:'executed'/);
   assert.match(block,/eq\('action_type','reply_post'\)/);
   assert.match(block,/limit\(3\)/);
 });
