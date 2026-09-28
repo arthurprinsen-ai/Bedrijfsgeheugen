@@ -34,6 +34,7 @@ begin
       and t.do_not_contact_reason is null
       and t.observed_at>=v_now-interval '30 days'
       and t.confidence>=.60
+      and lower(concat_ws(' ',t.evidence#>>'{raw_evidence,evidence,headline}',t.evidence#>>'{raw_evidence,evidence,source_url}')) like '%'||lower(trim(r.company_name))||'%'
       and not exists (
         select 1 from public.powerhouse_sales_outcomes o
         where o.person_key=r.person_key
@@ -66,7 +67,7 @@ begin
     jsonb_build_object(
       'contract','powerhouse-autonomous-relationship-outreach-v1',
       'recipient_email',r.email,
-      'email_subject',coalesce(nullif(r.company_name,''),'Even bijpraten')||': even sparren over '||replace(coalesce(r.trigger_type,'ontwikkeling'),'_',' ')||'?',
+      'email_subject',coalesce(nullif(r.company_name,''),'Even bijpraten')||' — even sparren over '||case r.trigger_type when 'erp_afas_change' then 'ERP/AFAS' when 'regulation' then 'wet- en regelgeving' when 'ai_data_digitalisation' then 'AI, data en digitalisering' when 'growth' then 'groei en schaalbaarheid' when 'new_management' then 'verandering in management' when 'post_merger_integration' then 'integratie na overname' when 'buy_sell_ma' then 'overname of fusie' when 'margin_cost_cashflow_pressure' then 'marge, kosten en cashflow' when 'talent_shortage_key_person_risk' then 'personeel en sleutelafhankelijkheid' when 'financing' then 'financiering en groei' when 'turnaround' then 'reorganisatie en verandering' when 'investor_pe' then 'investering en participatie' else 'een actuele ontwikkeling' end||'?',
       'trigger_key',r.trigger_key,
       'trigger_type',r.trigger_type,
       'trigger_confidence',r.confidence,
@@ -86,7 +87,7 @@ begin
     ),
     'Hoi '||coalesce(nullif(split_part(trim(r.person_name),' ',1),''),'daar')||','||chr(10)||chr(10)
       ||'Ik zag dat er bij '||coalesce(nullif(r.company_name,''),'jullie organisatie')||' beweging is rond '
-      ||replace(coalesce(r.trigger_type,'een relevante ontwikkeling'),'_',' ')||'. We kennen elkaar al, daarom stuur ik je rechtstreeks even een bericht.'||chr(10)||chr(10)
+      ||case r.trigger_type when 'erp_afas_change' then 'ERP/AFAS en de informatiehuishouding' when 'regulation' then 'nieuwe wet- en regelgeving' when 'ai_data_digitalisation' then 'AI, data en digitalisering' when 'growth' then 'groei en schaalbaarheid' when 'new_management' then 'verandering in management' when 'post_merger_integration' then 'integratie na overname' when 'buy_sell_ma' then 'overname of fusie' when 'margin_cost_cashflow_pressure' then 'marge, kosten en cashflow' when 'talent_shortage_key_person_risk' then 'personeel en sleutelafhankelijkheid' when 'financing' then 'financiering en groei' when 'turnaround' then 'reorganisatie en verandering' when 'investor_pe' then 'investering en participatie' else 'een actuele ontwikkeling' end||'. We kennen elkaar al, daarom stuur ik je rechtstreeks even een bericht.'||chr(10)||chr(10)
       ||'Met Bedrijfsgeheugen help ik organisaties om bedrijfskennis, processen, data en AI praktisch beter te benutten. '
       ||'Als dit onderwerp nu speelt, kijk ik graag 15 minuten mee waar de grootste hefboom zit.'||chr(10)||chr(10)
       ||'Zal ik je twee concrete observaties sturen, of zullen we kort bellen?'||chr(10)||chr(10)
