@@ -508,17 +508,21 @@ async function publishLinkedInCompanyViaComposio(db:any,art:any){
       linkedin_readback:{id:rbUrn,author:clean(rb?.author),commentary:clean(rb?.commentary),lifecycleState:clean(rb?.lifecycleState)}
     };
   }catch(error){
+    const readbackError=error instanceof Error?error.message:String(error);
+    const permissionLimited=/\b(401|403|FORBIDDEN|UNAUTHORIZED|PERMISSION)\b/i.test(readbackError);
     return {
       provider:'composio',
       provider_post_id:postUrn,
       provider_create_success:true,
+      provider_publication_ack_verified:true,
       provider_truth_verified:false,
       provider_truth_checked_at:new Date().toISOString(),
-      provider_status:'dispatched',
+      provider_status:'published',
       verification_pending:true,
+      readback_permission_limited:permissionLimited,
       republish_forbidden:true,
       author_urn:author,
-      readback_error:error instanceof Error?error.message:String(error)
+      readback_error:readbackError
     };
   }
 }
@@ -815,10 +819,19 @@ async function reconcileExistingProviderTruth(db: any, token: string | null, run
         results.push({channel:row.channel,post_id:ref,state:'published',provider:'composio',provider_truth_verified:true,lineage_recovered_from_obligation:lineageRecovered});
       } catch(error) {
         const message=error instanceof Error?error.message:String(error);
-        const evidence={...(obligation?.evidence||{}),...(row.delivery_evidence||{}),provider:'composio',provider_post_id:ref,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),error:message,republish_forbidden:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
-        await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,'BLOCKED',ref,evidence,'Repair exact LinkedIn company Composio readback for this URN; never route this claim through Buffer or create a replacement post.',message);
-        results.push({channel:row.channel,post_id:ref,state:'blocked',provider:'composio',provider_truth_verified:false,reason:message});
+        const previous={...(obligation?.evidence||{}),...(row.delivery_evidence||{})};
+        const providerCreateProven=previous?.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(ref);
+        const permissionLimited=/\b(401|403|FORBIDDEN|UNAUTHORIZED|PERMISSION)\b/i.test(message);
+        const evidence={...previous,provider:'composio',provider_post_id:ref,provider_publication_ack_verified:providerCreateProven,provider_truth_verified:false,provider_truth_checked_at:new Date().toISOString(),readback_permission_limited:permissionLimited,error:message,republish_forbidden:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false};
+        if(providerCreateProven){
+          await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+          await recordObligation(db,runDate,row.channel,'PUBLISHED',ref,evidence,'Provider create acknowledgement is authoritative for side-effect existence; collect outcomes and do not republish because readback is permission-limited.',null);
+          results.push({channel:row.channel,post_id:ref,state:'published',provider:'composio',provider_create_success:true,provider_publication_ack_verified:true,provider_truth_verified:false,readback_permission_limited:permissionLimited});
+        }else{
+          await db.from('powerhouse_channel_decisions').update({state:'blocked',delivery_ref:ref,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+          await recordObligation(db,runDate,row.channel,'BLOCKED',ref,evidence,'No provider-create proof exists for this URN; reconcile provider truth without creating a replacement post.',message);
+          results.push({channel:row.channel,post_id:ref,state:'blocked',provider:'composio',provider_truth_verified:false,reason:message});
+        }
       }
       continue;
     }
@@ -1135,12 +1148,14 @@ Deno.serve(async (req) => {
       try {
         await consumePublishCapability(db,capability,runDate,row.channel,textHash,mediaSha);
         const direct=await publishLinkedInCompanyViaComposio(db,art);
-        const verified=direct.provider_truth_verified===true;
-        const evidence={...gatePassedEvidence,...direct,pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
-        await db.from('powerhouse_channel_decisions').update({state:verified?'published':'dispatching',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await db.from('powerhouse_content_artifacts').update({status:verified?'published':'scheduled',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
-        await recordObligation(db,runDate,row.channel,verified?'PUBLISHED':'DISPATCHED',direct.provider_post_id,evidence,verified?'Collect LinkedIn company outcome metrics and feed learning loop.':'Reconcile this exact LinkedIn organization post URN; never issue another post for this daily claim.',verified?null:'LINKEDIN_COMPANY_READBACK_PENDING');
-        results.push({channel:row.channel,status:verified?'published':'verification_pending',post_id:direct.provider_post_id,provider:'composio',provider_truth_verified:verified});
+        const exactReadbackVerified=direct.provider_truth_verified===true;
+        const providerCreateProven=direct.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(clean(direct.provider_post_id));
+        if(!providerCreateProven)throw new Error('LINKEDIN_COMPANY_PROVIDER_CREATE_NOT_PROVEN');
+        const evidence={...gatePassedEvidence,...direct,provider_publication_ack_verified:true,pre_publish_gate:'passed',final_text_hash:textHash,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
+        await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,exactReadbackVerified?'Collect LinkedIn company outcome metrics and feed learning loop.':'Collect outcome metrics; exact API readback is optional after provider create acknowledgement and must never trigger republish.',null);
+        results.push({channel:row.channel,status:'published',post_id:direct.provider_post_id,provider:'composio',provider_create_success:true,provider_publication_ack_verified:true,provider_truth_verified:exactReadbackVerified,verification_pending:!exactReadbackVerified});
         continue;
       } catch(error) {
         const message=error instanceof Error?error.message:String(error);
