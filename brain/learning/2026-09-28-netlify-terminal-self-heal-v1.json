@@ -8,14 +8,6 @@
     "An expired Netlify write proxy/transport could be treated as a user-visible waiting state instead of a recoverable transport fault.",
     "Provider truth was not always re-read before and after a transport retry."
   ],
-  "observed_evidence": {
-    "stale_expected_sha": "6a57a3332566719243f60f7f3810d5ac34917f7e",
-    "current_main_sha": "a7bc8529d6b061836ed0b6958fc605b135c84775",
-    "netlify_deploy_id": "6aba29af6a9120db859fa44c",
-    "netlify_state": "ready",
-    "netlify_context": "production",
-    "netlify_commit_ref": "a7bc8529d6b061836ed0b6958fc605b135c84775"
-  },
   "prevention": [
     "Resolve current protected main and current Netlify production before any retry.",
     "Accept only repository-proven safe supersession when the originally expected SHA is no longer current.",
@@ -43,5 +35,13 @@
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md"
   ],
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "evidence": {
+    "stale_expected_sha": "6a57a3332566719243f60f7f3810d5ac34917f7e",
+    "current_main_sha": "a7bc8529d6b061836ed0b6958fc605b135c84775",
+    "netlify_deploy_id": "6aba29af6a9120db859fa44c",
+    "netlify_state": "ready",
+    "netlify_context": "production",
+    "netlify_commit_ref": "a7bc8529d6b061836ed0b6958fc605b135c84775"
+  }
 }
