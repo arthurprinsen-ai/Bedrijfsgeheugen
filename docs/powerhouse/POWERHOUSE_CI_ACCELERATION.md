@@ -10,7 +10,7 @@ Minimaliseer time-to-terminal-proof zonder exact-head, security, protected merge
 2. Cheap admission en classificatie gaan vóór dure build/browser/security-lanes.
 3. Alleen geraakte lanes draaien.
 4. Superseded runs op dezelfde PR worden automatisch geannuleerd.
-5. Node dependency installs gebruiken lockfile-gebonden npm-cache en `npm ci --prefer-offline`.
+5. Node dependency installs gebruiken package-manifest-gebonden npm-downloadcache en `npm install --prefer-offline`.
 6. Website-validatie bouwt niet opnieuw voor page/SEO; die controle draait op het al opgebouwde artifact.
 7. Browservalidatie gebruikt de exact-SHA Netlify deploy preview wanneer beschikbaar. Alleen bij ontbrekende preview wordt lokaal opnieuw gebouwd.
 8. Domeinspecifieke Supabase/Portal-contracten worden niet meer onvoorwaardelijk dubbel in preflight uitgevoerd.
