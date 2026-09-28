@@ -50,3 +50,21 @@ De engine stopt niet bij een research-queue. `public.powerhouse_execute_relation
 
 ## Productieplanning
 De live Edge Function `powerhouse-relationship-public-research` wordt vanuit dezelfde bestaande `powerhouse-commercial-learning-v1` cyclus gedispatcht. De canonical scheduler blijft de enige scheduler-owner. Geen tweede cron, geen tweede brein en geen losse commerciële schedulerfamilie.
+
+
+## Terminal production proof — 28 september 2026
+
+Status: `LIVE_PROVEN`.
+
+Protected main bevat merge `35f465c613cdc32f37f0dd2810e86ceb1518be08` van PR #3155. Productie-readback bevestigt:
+- 2.105 relaties boven de researchdrempel;
+- 10 actuele public-research events;
+- 10 evidence-backed trigger-opportunities;
+- 8 afgeronde relationship-research acties;
+- Edge Function `powerhouse-relationship-public-research` ACTIVE;
+- exact één scheduler-owner: `powerhouse-commercial-learning-v1`;
+- nul parallelle relationship-research crons;
+- `apollo_required=false`;
+- geen autonome externe outreach.
+
+Daarmee is de vaste regel: Powerhouse is het sales-intelligencebrein; publieke webdata is evidence-input; externe commerciële databrokers zijn alleen optionele fallback en nooit authority.
