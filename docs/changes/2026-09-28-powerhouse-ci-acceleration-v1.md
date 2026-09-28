@@ -21,3 +21,5 @@ Regression oracle: `tests/brain-ci-critical-path-acceleration-v1.test.mjs`.
 - Portal V2 verification now belongs to the portal lane rather than the generic Required preflight, preserving coverage while avoiding unrelated PR execution.
 
 - PR scope metadata is gesynchroniseerd op 17 bestanden, inclusief de portal-lane ownership-wijziging.
+
+- Release-control regression assertions now validate build-once plus exact-preview reuse rather than the superseded duplicate page-SEO/local-build architecture.
