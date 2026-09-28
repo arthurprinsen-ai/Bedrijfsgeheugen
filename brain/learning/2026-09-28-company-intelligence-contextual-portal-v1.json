@@ -1,0 +1,57 @@
+{
+  "type": "LEARNING_RECORD",
+  "version": "1.0.0",
+  "fingerprint": "powerhouse-company-intelligence-contextual-portal-v1",
+  "date": "2026-09-28",
+  "status": "ACTIVE_PREVENTION",
+  "scope": "Powerhouse Portal V2 contextual intelligence visualization",
+  "problem": "Company Intelligence OS runtime existed, but its Company Graph, context, action, outcome and learning semantics were not consistently visible where users make decisions in Portal V2.",
+  "root_cause_class": "INTELLIGENCE_RUNTIME_WITHOUT_CONTEXTUAL_PORTAL_PROJECTION",
+  "root_cause": "The runtime architecture and portal UI evolved separately; existing cockpit, roadmap, evidence and decision surfaces had no shared Company Intelligence visual contract.",
+  "proven_fix": "Add one reusable tenant-scoped Company Intelligence context renderer and project it into executive cockpit, company cockpit, impact, next-best-actions, monitoring/learning, evidence health and roadmap.",
+  "prevention": [
+    "Never create a separate Company Intelligence dashboard when context can be embedded in an existing decision surface.",
+    "Never read global Company Intelligence runtime views directly into customer UI unless tenant isolation is explicit and proven.",
+    "Portal visualizations must fail closed when tenant evidence is missing.",
+    "Expected value remains distinct from realized value.",
+    "Outcome Memory and learning are shown only when evidence exists.",
+    "All material contextual projection changes update the canonical System Map, skill, tests, docs and ledger in the same lineage."
+  ],
+  "failure_class": "PORTAL_CONTEXT_PROJECTION_GAP",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": true,
+  "compiler": {
+    "failure_class": "PORTAL_CONTEXT_PROJECTION_GAP",
+    "scope": "POWERHOUSE_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-intelligence-contextual-portal-v1.test.mjs"
+    ],
+    "invariants": [
+      "tenant-scoped UI context only",
+      "no parallel truth store",
+      "no global unscoped graph read into customer portal",
+      "expected != realized",
+      "context embedded where decision-useful"
+    ],
+    "shadow": [
+      "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "renderer": "portal-v2/operating-system/company-intelligence-context.js",
+    "styles": "portal-v2/company-intelligence-context.css",
+    "executive": "portal-v2/operating-system/executive-cockpit.js",
+    "roadmap": "portal-v2/modules/roadmap-workspace.js",
+    "test": "tests/brain-company-intelligence-contextual-portal-v1.test.mjs",
+    "tenant_isolation_shadow_canary": "tests/brain-company-intelligence-contextual-portal-shadow-canary-v1.test.mjs"
+  }
+}
