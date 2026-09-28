@@ -16,7 +16,8 @@
     "Observed outcomes land in canonical outcome/realized-value lineage with evidence.",
     "Predicted or expected value never becomes realized value without evidence.",
     "Learning is incomplete until it changes a later priority, prediction, policy or next-best-action.",
-    "System Map, human docs, skills and tests update in the same delivery lineage."
+    "System Map, human docs, skills and tests update in the same delivery lineage.",
+    "The canonical Company Intelligence OS skill must explicitly require production readback before terminal closure."
   ],
   "architecture": {
     "contract": "brain/contracts/company-intelligence-os-v1.json",
@@ -59,6 +60,7 @@
       "outcome_memories": 12,
       "compound_companies": 17328,
       "orchestrator": "public.powerhouse_run_company_intelligence_os_v1(date)"
-    }
+    },
+    "skill_terminal_proof_contract": ".agents/skills/powerhouse-company-intelligence-os/SKILL.md"
   }
 }

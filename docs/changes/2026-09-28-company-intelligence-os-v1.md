@@ -52,3 +52,7 @@ Production readback on 2026-09-28 confirms:
 - migration lineage: expected `20260928193000_powerhouse_company_intelligence_os_v1`, applied as unique-name reconciled version `20260928175205` and verified by `powerhouse_supabase_migration_readback_v1`.
 
 The System Map capability is therefore `LIVE_PROVEN_RUNTIME`.
+
+## Skill closure governance
+
+The canonical agent skill now requires production readback before a Company Intelligence OS delivery may be considered terminal. A merged PR or applied migration alone is insufficient; the five runtime projections must be read back, and System Map, learning and ledger state must remain synchronized.

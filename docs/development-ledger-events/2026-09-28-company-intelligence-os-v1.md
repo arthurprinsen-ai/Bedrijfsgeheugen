@@ -18,3 +18,9 @@
 - Runtime objects present: Company Graph nodes/edges, System of Context, Autonomous Action Layer, Outcome Memory, Compound Intelligence and OS orchestrator.
 - Runtime population readback: 42,217 graph nodes; 25,164 edges; 17,328 company contexts; 2,883 actions; 12 outcome-memory records; 17,328 compound-intelligence contexts.
 - System Map status promoted to `LIVE_PROVEN_RUNTIME` only after production readback.
+
+## Skill closure addendum
+
+- Canonical skill updated to require production readback as terminal evidence.
+- Closure artifacts are intentionally kept in the existing Company Intelligence OS learning/change/ledger lineage; no parallel governance record is created.
+- Future agents must reconcile System Map status after live proof rather than leaving stale candidate state.
