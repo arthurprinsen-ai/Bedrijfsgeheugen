@@ -770,6 +770,13 @@
       "authority": "supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
       "evidence_contract": "tests/brain-powerhouse-relationship-revenue-engine-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "rpc:powerhouse_dispatch_relationship_public_research_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928105310_powerhouse_relationship_public_research_dispatch_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs",
+      "required": true
     }
   ]
 }
