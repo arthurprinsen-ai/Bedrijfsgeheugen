@@ -1,0 +1,34 @@
+{
+  "fingerprint": "powerhouse-external-relationship-intelligence-v1",
+  "status": "CANDIDATE_DELIVERY",
+  "observed_at": "2026-09-28T17:30:00+02:00",
+  "decision": "Verified public internet, LinkedIn and external-provider evidence about a known connection or its company becomes standard context on the canonical relationship graph and must feed person, company, customer, opportunity and next-best-action intelligence.",
+  "prevention_rule": "Never leave relevant external evidence as a report-only event. Attach it to the existing relationship graph, preserve source/freshness/confidence, and reuse it through canonical Powerhouse intelligence. LinkedIn activity is a signal, never standalone buying proof.",
+  "runtime": {
+    "projection": "public.powerhouse_project_external_relationship_intelligence_v1(date)",
+    "relationship_view": "public.powerhouse_relationship_external_intelligence_v1",
+    "customer_view": "public.powerhouse_customer_external_intelligence_v1",
+    "company_projection": "public.powerhouse_company_intelligence_v1 via powerhouse_predictive_signals",
+    "connection_profile": "public.bg_connecties.extra.powerhouse_external_intelligence",
+    "scheduler_owner": "powerhouse-commercial-learning-v1",
+    "no_parallel_crm": true
+  },
+  "sources": [
+    "public internet",
+    "public LinkedIn context",
+    "DataForSEO/Tavily/provider evidence already admitted to runtime",
+    "Powerhouse runtime events"
+  ],
+  "downstream": [
+    "relationship revenue",
+    "trigger acquisition",
+    "Growth Swarm",
+    "LinkedIn Sales Machine",
+    "Persuasion Revenue Optimizer",
+    "outreach timing",
+    "customer expansion",
+    "learning/calibration"
+  ],
+  "date": "2026-09-28",
+  "machine_enforceable": true
+}
