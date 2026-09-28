@@ -93,7 +93,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Powerhouse Foresight & Prediction Intelligence v2',
       authority:'supabase',
       owner:'whole-brain-intelligence',
-      status:'CANDIDATE_DELIVERY',
+      status:'LIVE_PROVEN_RUNTIME',
       inputs:Object.freeze(['Company Graph','predictive signals','external signals','operating outcomes','forecast history','forecast calibration']),
       outputs:Object.freeze(['calibrated forecasts','scenario ensembles','leading indicators','prediction quality','resolution debt','bounded prediction improvement challengers']),
       runtime:Object.freeze({
@@ -107,6 +107,20 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         audit:'public.powerhouse_prediction_learning_audit_v2()',
         brain:'scripts/brain/foresight-autonomy.mjs',
         portal:'portal-v2/foresight-intelligence.js'
+      }),
+      productionEvidence:Object.freeze({
+        githubMainSha:'16a15a7ae0c13a3a626c2fedba498c46123ba5c2',
+        netlifyDeployId:'6abab549cfca2a0008f8bfc0',
+        netlifyCommitRef:'16a15a7ae0c13a3a626c2fedba498c46123ba5c2',
+        predictionLearningAudit:'2026-09-28T18:45:25.695243Z',
+        forecastTotal:1177,
+        resolvedForecasts:3,
+        signalTotal:143,
+        brierScore:0.1092,
+        calibrationError:0.3297,
+        timingMaeDays:8.9,
+        predictionState:'CALIBRATION_DEGRADED',
+        dailyAuditCron:'35 6 * * *'
       }),
       invariants:Object.freeze({
         predictionIsNotFact:true,
