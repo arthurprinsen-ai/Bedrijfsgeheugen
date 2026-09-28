@@ -43,3 +43,8 @@ Every material loop must reconnect to:
 ## Closure
 
 Material changes must update regression protection, learning, relevant skills, documentation and the canonical System Map in the same delivery lineage.
+
+
+## Prediction-intelligence bridge
+
+Prediction quality is a first-class Self-Improvement objective. Consume `public.powerhouse_prediction_intelligence_control_v2` and `public.powerhouse_prediction_improvement_queue_v2`. Prefer fewer well-resolved, calibrated forecasts over higher forecast volume. A degraded Brier score, calibration error, timing MAE, resolution coverage or signal diversity must create a bounded challenger/backtest obligation rather than an uncontrolled production rewrite.
