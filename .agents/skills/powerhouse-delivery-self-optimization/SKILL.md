@@ -636,3 +636,34 @@ For every PR delivery:
 
 Canonical telemetry: `.github/workflows/powerhouse-ci-intelligence.yml` and `scripts/brain/powerhouse-ci-intelligence.mjs`.
 Canonical learning: `brain/learning/2026-09-28-ci-critical-path-acceleration-v1.json`.
+
+
+## Adaptive delivery impact routing
+
+Fingerprint: `github|adaptive-delivery|impact-risk-capability-routing|v1`.
+
+Before expensive PR validation, compile the exact changed paths into a risk class R0-R4 and capability-specific test impact set.
+
+Mandatory:
+- R0/R1 non-runtime work may use the fast impact gate instead of the full generic shared suite;
+- hot control-plane files automatically escalate to at least R2;
+- portal, website, Netlify runtime and other production-bearing changes remain R3 or higher;
+- Supabase schema/migrations and production authority surfaces remain R4;
+- unknown executable paths fail closed to R3 instead of receiving a cheap path;
+- capability routing selects historical regressions for the affected subsystem;
+- the canonical `Required test` remains the single PR authority; this optimization changes evidence selection, not merge authority;
+- exact-head identity, security, production promotion and provider/browser readback are never weakened.
+
+Canonical policy: `config/powerhouse-adaptive-delivery-v1.json`.
+Compiler: `tools/delivery/adaptive-delivery-engine.mjs`.
+Regression: `tests/brain-adaptive-delivery-engine-v1.test.mjs`.
+
+
+### Preview-provider backpressure
+
+For broad browser verification against a Netlify deploy preview:
+- do not treat a burst of preview-only HTTP 403/429/5xx responses as application evidence before bounded retry;
+- use lower default route and viewport concurrency on deploy-preview hosts than on local/production verification;
+- retry only explicit transient HTTP classes with a small deterministic backoff budget;
+- persistent 403/429/5xx responses remain fail-closed;
+- targeted route checks, exact candidate identity and semantic browser assertions remain mandatory.

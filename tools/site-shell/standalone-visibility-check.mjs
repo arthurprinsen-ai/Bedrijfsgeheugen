@@ -8,7 +8,7 @@ const canonicalOrigin = 'https://www.bedrijfsgeheugen.nl';
 const navigationTimeoutMs = Number(process.env.UI_VR_NAVIGATION_TIMEOUT_MS || 8000);
 const fontReadyTimeoutMs = Number(process.env.UI_VR_FONT_READY_TIMEOUT_MS || 1500);
 const totalBudgetMs = Number(process.env.UI_VR_TOTAL_BUDGET_MS || 8 * 60 * 1000);
-const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || 4));
+const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 2 : 4)));
 const cleanupTimeoutMs = Number(process.env.UI_VR_CLEANUP_TIMEOUT_MS || 5000);
 const startedAt = Date.now();
 let cleanupTimedOut = false;
@@ -17,7 +17,7 @@ const viewports = [
   { name: 'tablet', width: 768, height: 1024 },
   { name: 'desktop', width: 1440, height: 900 },
 ];
-const viewportConcurrency = Math.max(1, Math.min(viewports.length, Number(process.env.UI_VR_VIEWPORT_CONCURRENCY || viewports.length)));
+const viewportConcurrency = Math.max(1, Math.min(viewports.length, Number(process.env.UI_VR_VIEWPORT_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 1 : viewports.length))));
 const sleep = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function closeBounded(label, closeFn) {
@@ -49,13 +49,16 @@ function assertBudget(route, viewport) {
 
 async function openReachable(page, url) {
   let last;
-  for (let attempt = 1; attempt <= 2; attempt++) {
+  const transientStatuses = new Set([403, 408, 425, 429, 500, 502, 503, 504]);
+  for (let attempt = 1; attempt <= 3; attempt++) {
     try {
       const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: navigationTimeoutMs });
+      const status = response?.status() ?? null;
       if (response?.ok()) return response;
-      last = new Error(`HTTP ${response?.status() ?? 'no-response'} ${url}`);
+      last = new Error(`HTTP ${status ?? 'no-response'} ${url}`);
+      if (status && !transientStatuses.has(status)) break;
     } catch (error) { last = error; }
-    if (attempt < 2) await sleep(500 * attempt);
+    if (attempt < 3) await sleep(750 * attempt);
   }
   throw last || new Error(`Could not load ${url}`);
 }
