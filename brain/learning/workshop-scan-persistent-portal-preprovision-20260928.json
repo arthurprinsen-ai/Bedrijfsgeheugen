@@ -9,11 +9,12 @@
   "prevention_rule": "Every consented workshop scan must persist the canonical scan, store portal PII in a private service-only intake, create canonical-brain portal state keyed by the same submission_key, and transfer that state to the authenticated tenant on claim. PII must never enter aggregate benchmark/growth learning.",
   "evaluation": {
     "historical_replay": [
-      "tests/components/workshop-scan-portal-preprovision.test.mjs"
+      "tests/brain-workshop-scan-portal-preprovision.test.mjs"
     ]
   },
   "evidence": {
     "tests": [
+      "tests/brain-workshop-scan-portal-preprovision.test.mjs",
       "tests/components/workshop-scan-portal-preprovision.test.mjs"
     ],
     "database": [
