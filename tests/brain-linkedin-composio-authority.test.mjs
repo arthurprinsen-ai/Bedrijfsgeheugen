@@ -33,11 +33,12 @@ test('Composio execution uses v3.1 latest tool semantics', () => {
 
 test('LinkedIn personal preserves created URN when exact readback is unavailable', () => {
   assert.match(source, /provider_create_success:true/);
+  assert.match(source, /provider_publication_ack_verified:true/);
   assert.match(source, /verification_pending:true/);
-  assert.match(source, /readback_error:error instanceof Error\?error\.message:String\(error\)/);
-  assert.match(source, /LINKEDIN_PERSONAL_READBACK_PENDING/);
-  assert.match(source, /Reconcile this exact LinkedIn personal post URN; never issue another post for this daily claim/);
-  assert.match(source, /state:verified\?'published':'dispatching'/);
+  assert.match(source, /readback_permission_limited/);
+  assert.match(source, /LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN/);
+  assert.match(source, /recordObligation\(db,runDate,row\.channel,'PUBLISHED',direct\.provider_post_id/);
+  assert.match(source, /exact API readback is optional after provider create acknowledgement and must never trigger republish/);
   assert.match(source, /republish_forbidden:true/);
 });
 
