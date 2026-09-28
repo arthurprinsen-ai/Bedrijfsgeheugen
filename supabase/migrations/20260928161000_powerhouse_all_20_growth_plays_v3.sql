@@ -72,7 +72,7 @@ create or replace function public.powerhouse_persuasion_package_for_company_v1(
 ) returns jsonb
 language sql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
   select coalesce((
     select jsonb_build_object(
@@ -103,7 +103,7 @@ create or replace function public.powerhouse_activate_remaining_growth_plays_v3(
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_now timestamptz:=now();
@@ -352,7 +352,7 @@ create or replace function public.powerhouse_promote_growth_play_emails_v1(
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_now timestamptz:=now();
@@ -445,7 +445,7 @@ create or replace function public.powerhouse_optimize_prepared_outreach_v1(
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_now timestamptz:=now();
@@ -523,7 +523,7 @@ create or replace function public.powerhouse_trigger_based_mkb_acquisition_cycle
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=pg_catalog,public
+set search_path = pg_catalog, public
 as $$
 declare
   v_relationship jsonb;
