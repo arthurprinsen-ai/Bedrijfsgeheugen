@@ -1,0 +1,38 @@
+{
+  "fingerprint": "workshop-scan|three-surface-design|v1",
+  "date": "2026-09-28",
+  "type": "COMMERCIAL_FUNNEL_PRESENTATION",
+  "failure_class": "PRE_SCAN_HANDOUT_AND_POST_SCAN_RESULTS_CONFLATED",
+  "root_cause": [
+    "The workshop collateral and the scan result PDF were treated as one generic report family.",
+    "That blurred the user journey: one page belongs before the scan, while two pages belong only after completion."
+  ],
+  "prevention": [
+    "Maintain exactly three visual surfaces for the workshop journey: one pre-scan handout plus two post-scan result pages.",
+    "Never include the workshop handout inside the participant's generated result PDF.",
+    "Page one after completion is benchmark/strength/friction/domain detail.",
+    "Page two after completion is top-three levers/90-day roadmap/KPIs/portal continuation.",
+    "Only show measured or derivable KPI values; do not fabricate improvement percentages from questionnaire answers."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-workshop-scan-results-design-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-workshop-scan-results-design-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/components/workshop-scan.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRE_SCAN_HANDOUT_AND_POST_SCAN_RESULTS_CONFLATED",
+    "scope": "COMMERCIAL_FUNNEL",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    ".agents/skills/seo-revenue-growth/SKILL.md"
+  ],
+  "status": "ACTIVE_PREVENTION"
+}

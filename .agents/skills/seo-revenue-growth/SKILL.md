@@ -186,3 +186,15 @@ Rules:
 - QR codes inside the personal PDF should continue the participant into the portal and preserve the scan lineage where possible.
 - A workshop is commercially incomplete if it only produces a PDF. Measure scan completion → PDF → portal open/account → meeting/offer → paid order.
 - Update regression evidence whenever the scan schema, portal mapping, scoring, prices, CTA destinations or ingestion contract changes.
+
+
+### Workshop scan visual contract
+
+Fingerprint: `workshop-scan-three-surface-design-v1`.
+
+The workshop journey has exactly three visual surfaces:
+1. pre-scan workshop handout: QR + promise + explanation; used during the workshop;
+2. post-scan result page 1: strength, friction, opportunity, benchmark radar and domain table;
+3. post-scan result page 2: top three levers, 90-day roadmap, measurable KPI follow-up and portal CTA.
+
+The generated participant PDF contains surfaces 2 and 3 only. Never insert the handout as page 1 of the participant result. Keep both post-scan pages bound to the same `submission_key` and portal QR lineage. Derived result pages may show questionnaire scores, benchmark gaps and deterministic planning guidance; do not invent quantified savings or improvement percentages that the scan did not measure.
