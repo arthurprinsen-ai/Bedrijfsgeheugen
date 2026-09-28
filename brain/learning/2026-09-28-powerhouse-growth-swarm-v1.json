@@ -3,7 +3,7 @@
   "version": "powerhouse-growth-swarm-v1",
   "date": "2026-09-28",
   "obligation_id": "powerhouse-growth-swarm-v1",
-  "status": "RUNTIME_PROVEN_REPOSITORY_CANDIDATE",
+  "status": "LIVE_PROVEN",
   "failure_class": "REVENUE_ORCHESTRATION",
   "scope": "GROWTH",
   "machine_enforceable": true,
@@ -70,5 +70,23 @@
     "Edge Function powerhouse-growth-tools deployed ACTIVE version 1.",
     "Controlled lost-knowledge public-tool readback returned HTTP 200 with classification SCENARIO_ESTIMATE and explicit truth boundary.",
     "Friction-index and workshop leaderboard returned zero rows because the privacy/data minimum was not yet met; no sample benchmark was fabricated."
-  ]
+  ],
+  "terminal": {
+    "pr": 3182,
+    "main_sha": "ce0e18df0876a38be2ce6ce83964b2a274c9b150",
+    "production_runtime": "ACTIVE",
+    "production_readback": {
+      "catalog_plays": 20,
+      "active_plays": 13,
+      "swarm_accounts": 17034,
+      "dossiers_today": 8,
+      "play_events_today": 8,
+      "canonical_scheduler": 1,
+      "parallel_growth_schedulers": 0,
+      "cycle_has_refresh": true,
+      "cycle_has_materialize": true,
+      "growth_tools_status": "ACTIVE",
+      "growth_tools_version": 4
+    }
+  }
 }
