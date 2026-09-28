@@ -96,3 +96,7 @@ PR #3182 is merged to protected main at `ce0e18df0876a38be2ce6ce83964b2a274c9b15
 - `powerhouse-growth-tools` ACTIVE v4.
 
 Plays that lack enough real data stay ARMED/READY_FOR_SURFACE rather than inventing benchmark or intent evidence.
+
+
+## 20/20 execution closure
+Alle 20 canonieke Growth Swarm plays moeten een trigger -> decision -> executor/surface -> outcome pad hebben. `powerhouse_activate_all_growth_plays_v2(date)` completeert de zeven eerder ARMED/READY plays. `powerhouse_execute_growth_play_actions_v1(date)` voorkomt dat een play eindigt als advies: uitvoerbare beslissingen worden naar bestaande email, LinkedIn, content/SEO, benchmark, scan of portal executors gerouteerd. Persuasion-strategie komt uit `powerhouse-persuasion-revenue-optimizer-v1`; outcome learning blijft canonical.
