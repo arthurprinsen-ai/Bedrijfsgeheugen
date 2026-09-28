@@ -29,7 +29,5 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-          cache: 'npm'
-          cache-dependency-path: package-lock.json
       - name: Verify fail-closed public RLS contract
         run: node --test tests/supabase-public-rls-regression-guard.test.mjs
