@@ -309,8 +309,8 @@ select
   case
     when a.status not in ('prepared','suggested','waiting') then false
     when a.due_at is not null and a.due_at>now() then false
-    when coalesce((a.evidence#>>'{execution_gate,human_authorization_required}')::boolean,false) then false
-    when coalesce((a.evidence#>>'{execution_gate,unsolicited_outreach_requires_human_authorization}')::boolean,false) then false
+    when lower(coalesce(a.evidence#>>'{execution_gate,human_authorization_required}',''))='true' then false
+    when lower(coalesce(a.evidence#>>'{execution_gate,unsolicited_outreach_requires_human_authorization}',''))='true' then false
     else true
   end execution_candidate,
   jsonb_build_object(
@@ -321,8 +321,8 @@ select
   ) as action_contract,
   case
     when a.status in ('done','skipped','expired','error') then 'terminal'
-    when coalesce((a.evidence#>>'{execution_gate,human_authorization_required}')::boolean,false)
-      or coalesce((a.evidence#>>'{execution_gate,unsolicited_outreach_requires_human_authorization}')::boolean,false)
+    when lower(coalesce(a.evidence#>>'{execution_gate,human_authorization_required}',''))='true'
+      or lower(coalesce(a.evidence#>>'{execution_gate,unsolicited_outreach_requires_human_authorization}',''))='true'
       then 'human_gate'
     when a.action_type in ('research_enrichment','internal_analysis','context_refresh') then 'autonomous_internal'
     when a.status='prepared' then 'runtime_governed'
