@@ -43,5 +43,14 @@
   "skill_targets": [
     ".agents/skills/powerhouse-growth-swarm/SKILL.md",
     ".agents/skills/powerhouse-persuasion-revenue/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "GROWTH_PLAY_PARTIAL_IMPLEMENTATION"
+  },
+  "evidence": [
+    "Production runtime readback: 20 Growth Swarm plays ACTIVE out of 20 catalog entries.",
+    "Initial Persuasion decision materialization created 8 decisions.",
+    "Growth action executor routed an eligible SEO/problem action into canonical content execution.",
+    "No external email was forced when no action passed evidence, cooldown and suppression gates."
   ]
 }
