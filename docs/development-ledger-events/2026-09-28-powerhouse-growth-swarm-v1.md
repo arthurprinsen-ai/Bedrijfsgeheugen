@@ -19,3 +19,11 @@
 - New cron families: 0
 - Core optimization: reply -> meeting -> scan -> order -> realized revenue
 - Truth boundary: weak signals != buying intent; estimates != observed value
+
+- Terminal state: LIVE_PROVEN
+- Protected merge PR: #3182
+- Main SHA: ce0e18df0876a38be2ce6ce83964b2a274c9b150
+- Production readback: 20 plays / 13 active / 17,034 accounts / 8 dossiers / 8 play-events
+- Canonical scheduler count: 1
+- Parallel Growth Swarm schedulers: 0
+- Growth Tools: ACTIVE v4
