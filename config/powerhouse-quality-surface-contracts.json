@@ -819,6 +819,41 @@
       "authority": "supabase/functions/powerhouse-linkedin-sales-machine/index.ts",
       "evidence_contract": "tests/supabase-powerhouse-linkedin-sales-machine-v1.test.mjs",
       "required": true
+    },
+    {
+      "id": "function:powerhouse-growth-tools",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-growth-tools/index.ts",
+      "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_refresh_growth_swarm_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_materialize_growth_swarm_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928124000_powerhouse_growth_swarm_activation_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_lost_knowledge_value_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_ma_knowledge_execution_risk_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
     }
   ]
 }
