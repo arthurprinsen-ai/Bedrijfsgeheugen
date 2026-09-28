@@ -229,3 +229,9 @@ begin
 end;
 $function$
 
+
+
+-- Fail-closed execution contract: internal service runtime only.
+revoke all on function public.powerhouse_reconcile_content_outcomes_v1(date) from public;
+revoke execute on function public.powerhouse_reconcile_content_outcomes_v1(date) from anon, authenticated;
+grant execute on function public.powerhouse_reconcile_content_outcomes_v1(date) to service_role;
