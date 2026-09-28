@@ -85,3 +85,7 @@ Powerhouse mag zelf commerciële opvolging uitvoeren zonder per bericht opnieuw 
 - LinkedIn DM wordt alleen gebruikt wanneer een daadwerkelijk ondersteunde DM-capability beschikbaar en geverifieerd is; nooit een niet-bestaande capability simuleren.
 
 Runtime: `public.powerhouse_prepare_autonomous_outreach_v1(date)` -> `public.powerhouse_dispatch_autonomous_outreach_v1(date)` -> Edge Function `powerhouse-autonomous-outreach`. De bestaande `powerhouse-commercial-learning-v1` blijft enige scheduler-owner.
+
+
+## LinkedIn sales machine
+Gebruik `powerhouse-linkedin-sales-machine-v1` als sociale commerciële laag vóór of naast private outreach. Een concrete relevante LinkedIn-post kan een contextuele commenttouch krijgen; geaggregeerde triggerpatronen voeden `linkedin_company` als sales-air-cover; inbound engagement wordt intent-evidence. LinkedIn DM wordt nooit gesimuleerd wanneer de provider geen send-DM capability heeft. In dat geval blijft e-mail de private fallback. Bij een geslaagde LinkedIn-comment wacht private e-mail 24 uur.
