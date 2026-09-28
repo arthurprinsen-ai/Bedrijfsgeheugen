@@ -45,5 +45,12 @@
     "daily_completion_ratio": 1,
     "full_graph_daily_refresh": true,
     "scheduler_owner": "powerhouse-commercial-learning-v1"
-  }
+  },
+  "evidence": [
+    "Production migration powerhouse_daily_full_connection_enrichment_v1 applied successfully.",
+    "Production optimization migration powerhouse_daily_full_connection_enrichment_v2 applied successfully.",
+    "Controlled production refresh enriched 23,295 of 23,295 canonical connections with zero remaining and completion ratio 1.0.",
+    "Existing scheduler powerhouse-commercial-learning-v1 remains the single owner through powerhouse_trigger_based_mkb_acquisition_cycle_v1(date).",
+    "Detailed LinkedIn and external evidence remains in canonical source stores and is referenced through the daily enrichment rollup."
+  ]
 }
