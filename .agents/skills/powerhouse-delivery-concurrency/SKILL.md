@@ -429,3 +429,21 @@ Daily concurrency tuning MUST consider workflow fan-out p95 and skipped-job rati
 - Increasing parallelism requires low queue, low failure, low fan-out and low skip pressure.
 - Observations remain telemetry; only bounded approved tuning fields persist.
 - Protected merge, exact-SHA, security and production readback are immutable safety constraints.
+
+
+## Control-plane lane scoping
+
+Fingerprint: `github|delivery-lane-scope|control-plane-no-runtime-fanout|v1`.
+
+Known engineering control-plane files MUST be assigned to their owned delivery lane before generic shared-path expansion.
+
+- autonomous engineering optimizer/config/tuning/test → automation;
+- CI intelligence/calibration → backend;
+- `docs/brain/component-registry.json` → governance-only/non-executable;
+- skills remain backend-governed;
+- a control-plane-only change MUST NOT activate portal or website/Netlify/browser lanes;
+- if any real portal/website/runtime path is also changed, its normal lane remains mandatory;
+- unknown shared executable surfaces remain fail-closed under the broad shared rule.
+
+Canonical classifier: `tools/brain-delivery-system.mjs`.
+Regression: `tests/brain-change-scoped-release-lanes.test.mjs`.
