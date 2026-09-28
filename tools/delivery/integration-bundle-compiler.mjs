@@ -4,6 +4,7 @@ import { execFileSync } from 'node:child_process';
 import { pathToFileURL } from 'node:url';
 import { parseDeliveryMetadata } from './delivery-hygiene.mjs';
 import { createAdaptiveDeliveryPlan, loadAdaptiveDeliveryPolicy } from './adaptive-delivery-engine.mjs';
+import { derivePatternMemoryRoute, loadLearningRecords } from './delivery-pattern-memory.mjs';
 
 const SHA40 = /^[0-9a-f]{40}$/i;
 
@@ -77,7 +78,8 @@ export function compileIntegrationBundle({
   headSha,
   prNumber = null,
   adaptivePolicy,
-  integrationPolicy
+  integrationPolicy,
+  learningRecords = []
 } = {}) {
   if (!integrationPolicy || integrationPolicy.version !== 'POWERHOUSE-INTEGRATION-BUNDLE-v1') {
     throw new TypeError('POWERHOUSE-INTEGRATION-BUNDLE-v1 policy is required');
@@ -85,7 +87,12 @@ export function compileIntegrationBundle({
   const normalizedBase = requireSha(baseSha, 'INVALID_BASE_SHA');
   const normalizedHead = requireSha(headSha, 'INVALID_HEAD_SHA');
   const paths = unique(changedPaths);
-  const adaptive = createAdaptiveDeliveryPlan({ changedPaths: paths, policy: adaptivePolicy });
+  const adaptiveBase = createAdaptiveDeliveryPlan({ changedPaths: paths, policy: adaptivePolicy });
+  const patternMemory = derivePatternMemoryRoute({ changedPaths: paths, learningRecords });
+  const adaptive = Object.freeze({
+    ...adaptiveBase,
+    tests: Object.freeze(unique([...(adaptiveBase.tests || []), ...(patternMemory.tests || [])]))
+  });
   const closure = compileClosurePlan({ changedPaths: paths, policy: integrationPolicy });
   const canonicalMetadata = Object.freeze({
     obligationId: String(metadata.obligationId || '').trim(),
@@ -125,6 +132,7 @@ export function compileIntegrationBundle({
       changedPaths: paths
     },
     adaptive,
+    patternMemory,
     closure,
     prContract,
     writerIntent
@@ -147,6 +155,7 @@ async function main() {
     .split(/\r?\n/).filter(Boolean);
   const adaptivePolicy = await loadAdaptiveDeliveryPolicy();
   const integrationPolicy = JSON.parse(await readFile('config/powerhouse-integration-bundle-v1.json', 'utf8'));
+  const learningRecords = await loadLearningRecords();
   const metadata = parseDeliveryMetadata(process.env.PR_BODY || '');
   const bundle = compileIntegrationBundle({
     changedPaths,
@@ -155,7 +164,8 @@ async function main() {
     headSha,
     prNumber: process.env.PR_NUMBER || null,
     adaptivePolicy,
-    integrationPolicy
+    integrationPolicy,
+    learningRecords
   });
   await mkdir('.artifacts', { recursive: true });
   const artifactPath = '.artifacts/powerhouse-integration-bundle.json';
