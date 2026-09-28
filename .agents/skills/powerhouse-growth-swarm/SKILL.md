@@ -85,9 +85,9 @@ Use `powerhouse_experiment_assignments` / effect-estimate infrastructure when sa
 ## Terminal production proof — 28 september 2026
 Status: `LIVE_PROVEN`.
 
-PR #3182 is merged to protected main at `ce0e18df0876a38be2ce6ce83964b2a274c9b150`. Production readback confirms:
+The earlier 13/20 proof was superseded by the 20/20 execution closure. PR #3207 is merged to protected main at `46739777d0a5563001a3520e046a29a57b0b9ec8`. Production readback confirms:
 - 20 canonical growth plays;
-- 13 runtime-active plays;
+- 20 runtime-active plays;
 - 17.034 accounts in the Growth Swarm state;
 - 8 prebuilt prospect dossiers;
 - 8 ranked play-events;
@@ -135,3 +135,7 @@ This rule is inherited by chats, agents, scheduled runs, Growth Swarm, LinkedIn 
 Alle 20 canonieke plays zijn runtime `ACTIVE`. ACTIVE betekent: er bestaat een werkend trigger -> decision -> executor/surface -> metric pad. Het betekent niet dat iedere play vandaag voldoende bewijs heeft om extern te handelen.
 
 `powerhouse_activate_all_growth_plays_v2(date)` en `powerhouse_execute_growth_play_actions_v1(date)` zijn onderdeel van dezelfde commerciële cyclus, vóór de bestaande Persuasion Revenue Optimizer en provider dispatch. Daardoor kan Powerhouse zelfstandig kiezen, uitvoeren, readback vastleggen en leren in plaats van een aanbeveling achter te laten.
+
+## 20/20 terminal proof — 28 september 2026
+Status: `LIVE_PROVEN`.
+PR #3207 is merged to main at `46739777d0a5563001a3520e046a29a57b0b9ec8`. Runtime readback: 20/20 plays ACTIVE, 8 active persuasion decisions, 10 persuasion principles, one canonical commercial scheduler, zero parallel Growth Play schedulers. Recommendation-only completion is forbidden when a safe executor exists.
