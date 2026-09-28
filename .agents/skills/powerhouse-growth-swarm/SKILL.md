@@ -129,3 +129,9 @@ Draft, suggestion, CTA recommendation, asset recommendation and TODO are non-ter
 `asset_format=pdf` is authoritative. `board_one_pager`, `evidence_teardown`, `lost_knowledge_case`, `friction_business_case`, `mini_benchmark` and `peer_benchmark` default to PDF. The autonomous Gmail executor generates the PDF with the approved text-to-PDF provider and attaches it to the same outgoing e-mail before sending. Missing facts remain unknown; never invent evidence, ROI, benchmark values, urgency, scarcity or customer proof.
 
 This rule is inherited by chats, agents, scheduled runs, Growth Swarm, LinkedIn sales, autonomous outreach and future commercial agents. Human intervention is reserved for missing authority/credentials, safety/legal boundaries or an irreducible business choice.
+
+
+## 20/20 executable plays
+Alle 20 canonieke plays zijn runtime `ACTIVE`. ACTIVE betekent: er bestaat een werkend trigger -> decision -> executor/surface -> metric pad. Het betekent niet dat iedere play vandaag voldoende bewijs heeft om extern te handelen.
+
+`powerhouse_activate_all_growth_plays_v2(date)` en `powerhouse_execute_growth_play_actions_v1(date)` zijn onderdeel van dezelfde commerciële cyclus, vóór de bestaande Persuasion Revenue Optimizer en provider dispatch. Daardoor kan Powerhouse zelfstandig kiezen, uitvoeren, readback vastleggen en leren in plaats van een aanbeveling achter te laten.
