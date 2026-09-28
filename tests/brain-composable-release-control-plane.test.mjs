@@ -47,27 +47,39 @@ test('static syntax preflight blocks preview, artifact build and browser executi
   assert.match(website, /\n  preview-ready:\n\s+needs:\s*\[classify, syntax-preflight\]/);
   assert.match(website, /\n  netlify-build-parity:\n\s+needs:\s*\[classify, syntax-preflight\]/);
   assert.match(website, /\n  browser:\n\s+needs:\s*\[classify, syntax-preflight, preview-ready, netlify-build-parity\]/);
+  assert.doesNotMatch(website, /\n  page-seo:/);
 });
 
-test('one exact artifact build owns website validation and browser reuses exact preview when available', () => {
+test('one exact artifact build owns SEO validation and browser reuses exact preview with local fallback', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
-  const buildStart = website.indexOf('\n  netlify-build-parity:');
+  const previewReadyStart = website.indexOf('\n  preview-ready:');
+  const buildStart = website.indexOf('\n  netlify-build-parity:', previewReadyStart);
   const browserStart = website.indexOf('\n  browser:', buildStart);
+  assert.notEqual(previewReadyStart, -1);
   assert.notEqual(buildStart, -1);
   assert.notEqual(browserStart, -1);
-  const build = website.slice(buildStart, browserStart);
+  const previewReady = website.slice(previewReadyStart, buildStart);
+  const artifactBuild = website.slice(buildStart, browserStart);
   const browser = website.slice(browserStart);
-  assert.match(build, /name: Install exact Netlify build dependencies/);
-  assert.match(build, /run: npm install --prefer-offline/);
-  assert.match(build, /name: Run exact Netlify production build command/);
-  assert.match(build, /name: Verify built artifact contracts/);
-  assert.match(build, /tests\/tabbladen\.test\.mjs/);
-  assert.doesNotMatch(website, /\n  page-seo:/);
+
+  assert.match(artifactBuild, /needs:\s*\[classify, syntax-preflight\]/);
+  assert.match(artifactBuild, /name: Install exact Netlify build dependencies/);
+  assert.match(artifactBuild, /run: npm install --prefer-offline/);
+  assert.match(artifactBuild, /name: Run exact Netlify production build command/);
+  assert.match(artifactBuild, /name: Verify built artifact contracts/);
+  for (const command of ['node tools/bouw-powerhouse-auth.mjs','node tools/bouw-kennisindex.mjs','node tools/bouw-v18-production.mjs','node tools/apply-tabbladen.mjs','node tools/bouw-v18-views.mjs','node tools/bouw-v18-chrome-alles.mjs','node tools/prijzen-uit-de-homepage.mjs']) {
+    assert.ok(artifactBuild.includes(command), `missing build command: ${command}`);
+  }
+
+  assert.match(previewReady, /HEAD_SHA:\s*\$\{\{ inputs\.change_head_sha \}\}/);
+  assert.match(previewReady, /netlify\/bedrijfsgeheugen\/deploy-preview/);
+  assert.match(previewReady, /preview_mode=local-exact-candidate/);
   assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready, netlify-build-parity\]/);
   assert.match(browser, /BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
   assert.match(browser, /name: Build and serve exact local candidate only when Netlify preview is unavailable/);
-  assert.match(browser, /preview_mode == 'local-exact-candidate'/);
+  assert.match(browser, /if:\s*needs\.preview-ready\.outputs\.preview_mode == 'local-exact-candidate'/);
   assert.match(browser, /UI_VR_BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
+  assert.doesNotMatch(website, /\n  page-seo:/);
 });
 
 test('Netlify preview failure falls through to exact local candidate verification', () => {
@@ -81,6 +93,7 @@ test('Netlify preview failure falls through to exact local candidate verificatio
   assert.doesNotMatch(previewReady, /\['failure','error'\]\.includes\(status\?\.state\)\) throw new Error/);
   assert.match(previewReady, /Netlify preview .*exact local candidate fallback/);
   assert.match(previewReady, /preview_mode=local-exact-candidate/);
+  assert.match(website, /if:\s*needs\.preview-ready\.outputs\.preview_mode == 'local-exact-candidate'/);
 });
 test('production readback is single-flight and supersedes obsolete main readbacks', () => {
   const production = readFileSync('.github/workflows/production-release-readback.yml', 'utf8');
