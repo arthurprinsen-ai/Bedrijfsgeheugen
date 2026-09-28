@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T17:45:00Z',
+  observedAt:'2026-09-28T18:15:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -39,7 +39,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Powerhouse Company Intelligence OS',
       authority:'supabase',
       owner:'whole-brain-intelligence',
-      status:'CANDIDATE_DELIVERY',
+      status:'LIVE_PROVEN_RUNTIME',
       inputs:Object.freeze(['canonical source evidence','CRM/relationship evidence','company/people graph','opportunities','actions','provider readback','outcomes','realized value']),
       outputs:Object.freeze(['Company Graph','System of Context','autonomous action candidates','Outcome Memory','compound intelligence next-decision context']),
       runtime:Object.freeze({
