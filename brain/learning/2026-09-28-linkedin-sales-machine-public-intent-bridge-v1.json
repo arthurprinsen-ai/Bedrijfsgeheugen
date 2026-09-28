@@ -1,0 +1,20 @@
+{
+  "fingerprint": "powerhouse-linkedin-sales-machine-public-intent-bridge-v1",
+  "version": "v1",
+  "date": "2026-09-28",
+  "status": "REPOSITORY_CANDIDATE",
+  "failure_class": "COMMERCIAL_INTENT_NOT_IN_CANONICAL_LOOP",
+  "root_cause": "Selfscan lead completion and checkout start were handled on public pages without guaranteed PII-free emission into the canonical growth event/datahub loop.",
+  "decision": "Bridge high-signal public actions into /api/growth-event while keeping personal contact data out of growth telemetry.",
+  "prevention": [
+    "High-signal public commercial intent must enter the canonical growth loop.",
+    "PII must remain in purpose-bound lead/order handlers and never be copied to SEO/growth telemetry.",
+    "Website intent augments LinkedIn/e-mail context but never bypasses consent or execution gates."
+  ],
+  "evidence_contracts": [
+    "tests/brain-linkedin-sales-machine-public-intent-bridge-v1.test.mjs"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-linkedin-sales-machine/SKILL.md"
+  ]
+}
