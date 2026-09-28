@@ -17,5 +17,11 @@
       "assets/scan-workshop.css"
     ],
     "route": "/scan"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Earlier workshop reports could show company context but had no durable rule preventing guessed, third-party or placeholder logos.",
+      "A participant-specific PDF must remain usable when no reliable company logo can be resolved; the report must simply omit the logo."
+    ]
   }
 }
