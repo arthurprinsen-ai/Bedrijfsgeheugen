@@ -97,5 +97,14 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     onCreateOrChange:Object.freeze(['register component/agent identity','declare owner, domain, inputs, outputs and relations','emit runtime evidence with actor identity','update tests/contracts/inventory when structural topology changes','update repository human documentation and the human System Map in the same lineage']),
     beforeTerminal:Object.freeze(['production/provider readback','learning + prevention writeback','skill projection when applicable','repository human documentation readback','System Map read-after-write']),
     failClosed:'An unregistered material agent/capability or a stale topology inventory is WRITEBACK_INCOMPLETE and cannot be LIVE_BEWEZEN.'
+  }),
+  userFacingReportingContract:Object.freeze({
+    fingerprint:'delivery|user-facing-reporting|terminal-outcomes-only|v1',
+    mode:'TERMINAL_OUTCOMES_ONLY',
+    internalExecutionStateUserVisible:false,
+    allowedTerminalStates:Object.freeze(['LIVE_BEWEZEN','ROLLED_BACK_GREEN','BLOCKED_HARD_BOUNDARY']),
+    hardBoundaryOutput:'minimum external human action only',
+    technicalDetailPolicy:'explicit user request only',
+    interruptionCreatesHandoff:false
   })
 });

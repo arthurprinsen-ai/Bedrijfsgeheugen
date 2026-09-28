@@ -15,7 +15,13 @@
   ],
   "legacyPolicy": {
     "historicalChatClaimsDefaultTo": "UNVERIFIED_LEGACY",
-    "claims": ["live", "klaar", "groen", "opgelost", "geborgd"],
+    "claims": [
+      "live",
+      "klaar",
+      "groen",
+      "opgelost",
+      "geborgd"
+    ],
     "promotionRequiresCurrentProductionEvidence": true,
     "chatTextNeverOverridesCanonicalRuntimeEvidence": true
   },
@@ -61,5 +67,28 @@
     "learningWritebackRequired": true,
     "sharedContextRefreshRequired": true
   },
-  "failClosed": true
+  "failClosed": true,
+  "userFacingReportingPolicy": {
+    "fingerprint": "delivery|user-facing-reporting|terminal-outcomes-only|v1",
+    "default_mode": "TERMINAL_OUTCOMES_ONLY",
+    "internal_states_hidden_from_chat": [
+      "branch_ref",
+      "commit_sha",
+      "pr_head_ref_sync",
+      "queued_or_running_ci",
+      "branch_protection_wait",
+      "deploy_progress",
+      "provider_polling",
+      "retry_state",
+      "not_yet_live_bewezen"
+    ],
+    "allowed_user_facing_states": [
+      "LIVE_BEWEZEN",
+      "ROLLED_BACK_GREEN",
+      "BLOCKED_HARD_BOUNDARY"
+    ],
+    "blocked_hard_boundary_output": "minimum_external_human_action_only",
+    "technical_details_on_explicit_user_request_only": true,
+    "interruption_is_not_handoff": true
+  }
 }
