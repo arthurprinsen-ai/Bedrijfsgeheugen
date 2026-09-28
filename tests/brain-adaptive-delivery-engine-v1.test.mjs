@@ -48,3 +48,16 @@ test('Required test wires the adaptive plan before the heavy shared suite', asyn
   assert.match(workflow, /Verify previously unwired test contracts[\s\S]*full_shared_suite == 'true'/);
   assert.match(workflow, /Verify composable release control plane[\s\S]*full_shared_suite == 'true'/);
 });
+
+
+test('nested low-risk learning path overrides broader brain runtime rule', () => {
+  const plan = createAdaptiveDeliveryPlan({ changedPaths:['brain/learning/example.json'], policy });
+  assert.equal(plan.risk, 'R0');
+  assert.equal(plan.fullSharedSuite, false);
+});
+
+test('specific production workflow rule outranks broad .github governance rule', () => {
+  const plan = createAdaptiveDeliveryPlan({ changedPaths:['.github/workflows/production-release-readback.yml'], policy });
+  assert.equal(plan.risk, 'R4');
+  assert.equal(plan.fullSharedSuite, true);
+});
