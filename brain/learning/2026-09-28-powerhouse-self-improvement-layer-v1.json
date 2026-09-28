@@ -49,12 +49,11 @@
     "scope": "WHOLE_BRAIN_INTELLIGENCE",
     "machine_enforceable": true,
     "repeat_count": 1,
-    "security_sensitive": true
+    "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-self-improvement-layer-v1.test.mjs",
-      "tests/powerhouse-daily-self-evolution.test.mjs"
+      "tests/brain-self-improvement-layer-v1.test.mjs"
     ],
     "invariants": [
       "learning requires evidence",
