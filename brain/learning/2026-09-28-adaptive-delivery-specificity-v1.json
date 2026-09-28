@@ -1,0 +1,31 @@
+{
+  "fingerprint": "github|adaptive-delivery|most-specific-risk-rule|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Adaptive Delivery v1 evaluated risk rules in declaration order and stopped on the first match. A nested low-risk path such as brain/learning therefore inherited the broader brain/ R2 classification before its specific R0 rule could apply.",
+  "prevention_rule": "For each changed path, evaluate all matching risk patterns and select the most-specific matching path rule first. After path classification, hot-path escalation remains authoritative and may only raise risk. Unknown executable surfaces remain fail-closed at R3.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "observed": "PR #3234 docs-only closure executed the full shared suite instead of the intended fast-impact route.",
+    "expected": "brain/learning/* => R0 unless another changed path or hot-path escalation raises the aggregate risk.",
+    "tests": [
+      "nested low-risk learning path overrides broader brain runtime rule",
+      "specific production workflow rule outranks broad .github governance rule"
+    ]
+  }
+}
