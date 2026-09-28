@@ -8,3 +8,5 @@
 - Provider recovery: published a different personal-life post; LinkedIn create returned `urn:li:share:7510299688642961408`.
 - Verification: provider exact readback endpoint returned 403; create side effect is therefore preserved as authoritative dispatch evidence and republish is forbidden.
 - Prevention: never paraphrase a consumed story; choose a different verified source/topic. User duplicate feedback permanently retires the story family.
+
+- Delivery metadata authority: obligation `social-semantic-example-uniqueness-v4`, lane `docs`, candidate `docs`, based on main `09702478ba9131702642b625b4c08eed7f20d5f3`.
