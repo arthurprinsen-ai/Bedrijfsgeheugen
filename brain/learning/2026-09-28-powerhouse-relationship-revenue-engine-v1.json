@@ -24,7 +24,15 @@
     "research_actions_touched": 50,
     "activation_reviews_touched": 0,
     "apollo_required": false,
-    "external_outreach_executed": false
+    "external_outreach_executed": false,
+    "public_research_http_status": 200,
+    "public_research_researched": 10,
+    "public_research_matched": 8,
+    "public_research_events": 8,
+    "eligible_triggers_after_research": 10,
+    "trigger_opportunities_after_research": 10,
+    "research_actions_done": 8,
+    "public_research_observed_at": "2026-09-28T11:02:36.791Z"
   },
   "version": "powerhouse-relationship-revenue-engine-v1",
   "date": "2026-09-28",
@@ -51,7 +59,9 @@
     "Runtime migration 20260928103246 is applied in Supabase project adhjwmvyoixzjtmiroln.",
     "Production migration powerhouse_relationship_research_auto_enrichment_v1 is applied and the existing commercial cycle now calls relationship research before trigger acquisition.",
     "Production Edge Function powerhouse-relationship-public-research version 1 deployed ACTIVE on 2026-09-28.",
-    "Production uses one scheduler owner: powerhouse-commercial-learning-v1 dispatches public relationship research through public.powerhouse_dispatch_relationship_public_research_v1(date); the temporary separate research cron was removed."
+    "Production uses one scheduler owner: powerhouse-commercial-learning-v1 dispatches public relationship research through public.powerhouse_dispatch_relationship_public_research_v1(date); the temporary separate research cron was removed.",
+    "Production public-research readback returned HTTP 200: researched=10, matched=8, events=8, no_evidence=2, vendor_enrichment=false, external_outreach_executed=false.",
+    "Post-research canonical readback: 10 recent research runtime events, 10 eligible triggers, 10 trigger opportunities, 8 relationship research actions done."
   ],
   "evaluation": {
     "production_readback": [
