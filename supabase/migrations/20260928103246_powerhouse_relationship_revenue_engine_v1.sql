@@ -78,7 +78,7 @@ create or replace function public.powerhouse_refresh_relationship_revenue_v1(
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = pg_catalog, public
 as $$
 declare
   v_now timestamptz:=now();
@@ -184,7 +184,7 @@ create or replace function public.powerhouse_trigger_based_mkb_acquisition_cycle
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = pg_catalog, public
 as $$
 declare
   v_relationship jsonb;
