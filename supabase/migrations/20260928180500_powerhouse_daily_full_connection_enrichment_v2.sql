@@ -210,3 +210,9 @@ $$;
 
 comment on function public.powerhouse_refresh_all_connection_enrichment_v1(date,integer) is
 'Set-based daily enrichment of every canonical connection from all already-ingested relationship evidence. The second argument is retained for backward compatibility and ignored.';
+
+
+revoke execute on function public.powerhouse_refresh_all_connection_enrichment_v1(date,integer)
+  from public,anon,authenticated;
+grant execute on function public.powerhouse_refresh_all_connection_enrichment_v1(date,integer)
+  to service_role;
