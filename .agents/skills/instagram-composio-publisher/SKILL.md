@@ -360,3 +360,12 @@ Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
 
 Instagram generation must reject any concrete example/story family already consumed by another retained social publication. A different caption, Mira treatment, visual, hook or CTA does not reset uniqueness. When overlap is detected, select a materially different story family before media generation or provider dispatch.
 
+
+
+## Post-provider terminal fence (2026-09-28)
+
+Fingerprint: `instagram-provider-side-effect-terminal-fence-v1`.
+
+The exact-final-media/Mira proof gate is strictly a pre-provider gate. Once Instagram has accepted the create/publish operation and a durable media ID is persisted with `provider_create_success=true` and `republish_forbidden=true`, later media-proof, readback or capability checks may not downgrade the publication to BLOCKED/FAILED.
+
+Recovery after provider create is exact-ID reconciliation only. It must never regenerate media, create a replacement post or reopen the daily claim because a verification subsystem cannot re-fetch the original media bytes.
