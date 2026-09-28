@@ -295,3 +295,21 @@ During terminal verification, another protected merge may advance main. Treat th
 - Do not increase CI/deploy fan-out just to chase a moving pointer.
 
 Regression: tests/brain-live-bewezen-exact-main-atomic-proof-v1.test.mjs.
+
+
+## CI critical-path acceleration
+
+Fingerprint: `github|ci-critical-path-acceleration|build-once-preview-reuse|v1`.
+
+For every PR delivery:
+- preserve one PR-scoped canonical `Required test` authority and cancel superseded same-PR work;
+- run admission/classification before expensive lanes and execute only affected lanes;
+- never repeat Portal/Supabase domain tests unconditionally in generic preflight when the owned lane/specialist contract already provides that proof;
+- use lockfile-bound dependency caching and deterministic `npm ci --prefer-offline`;
+- do not rebuild the website merely to run page/SEO artifact contracts after the canonical parity build;
+- use the exact-SHA Netlify deploy preview for browser verification when it is route-ready; build/serve locally only as a fail-safe fallback;
+- measure queue wait, execution duration, fan-out per SHA, failure/cancel/skip counts and use those observations to remove recurring runner waste;
+- optimization may remove duplicate work only; exact-head identity, security, protected landing and production/provider readback remain fail-closed.
+
+Canonical telemetry: `.github/workflows/powerhouse-ci-intelligence.yml` and `scripts/brain/powerhouse-ci-intelligence.mjs`.
+Canonical learning: `brain/learning/2026-09-28-ci-critical-path-acceleration-v1.json`.
