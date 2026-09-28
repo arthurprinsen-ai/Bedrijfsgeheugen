@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T19:45:00Z',
+  observedAt:'2026-09-28T19:52:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -172,7 +172,14 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         actions:2883,
         outcomeMemories:12,
         compoundCompanies:17328,
-        runtimeReadbackAt:'2026-09-28T17:54:27Z'
+        runtimeReadbackAt:'2026-09-28T17:54:27Z',
+        portalContextualProjectionMergeSha:'0b4547f33a74ce911a0d324a53404cff1cc6e737',
+        portalTenantIsolationEvalMergeSha:'764a7387e1852e7c1e8700efc443d29870221f39',
+        portalNetlifyDeployId:'6abac41210b244000884a323',
+        portalNetlifyCommitRef:'0b4547f33a74ce911a0d324a53404cff1cc6e737',
+        portalNetlifyState:'ready',
+        portalNetlifyContext:'production',
+        portalPublishedAt:'2026-09-28T19:48:21.076Z'
       }),
       invariants:Object.freeze({
         crmIsSourceNotBrain:true,
