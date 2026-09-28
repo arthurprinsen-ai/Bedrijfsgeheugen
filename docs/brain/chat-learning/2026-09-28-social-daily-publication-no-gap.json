@@ -1,0 +1,20 @@
+{
+  "fingerprint": "social-daily-publication-no-gap-v1",
+  "date": "2026-09-28",
+  "type": "CONTRACT_CHANGE",
+  "root_cause": "LinkedIn personal and company reused one connection resolver; auth-config scopes were treated too strongly while exact connected-token organization capability could differ.",
+  "prevention": [
+    "Resolve personal and company LinkedIn connections independently.",
+    "Company connection selection requires live GET_MY_INFO plus GET_COMPANY_INFO administrator proof for the configured organization.",
+    "Persist provider IDs immediately and never duplicate when readback is uncertain.",
+    "Daily unresolved approved obligations re-enter the same claim via watchdog/self-healing.",
+    "Instagram missing final media is autonomously completed inside the same Mira claim.",
+    "Buffer and Make are not social publication fallbacks."
+  ],
+  "runtime_owner": "powerhouse-social-publisher",
+  "regression_test": "tests/linkedin-channel-oauth-authority.test.mjs",
+  "skill_fingerprints": [
+    "linkedin-daily-channel-oauth-authority-v1",
+    "instagram-daily-no-gap-self-healing-v1"
+  ]
+}
