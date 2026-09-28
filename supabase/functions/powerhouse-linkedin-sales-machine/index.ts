@@ -58,7 +58,11 @@ Deno.serve(async(req:Request)=>{
 
     const aiKey=await secret(db,'ANTHROPIC_API_KEY');
     if(!aiKey)throw new Error('ANTHROPIC_API_KEY_MISSING');
-    const model='claude-sonnet-4-20250514';
+    const {data:gov,error:govError}=await db.from('brain_ai_governance_registry')
+      .select('model_id,provider,approved,lifecycle_status')
+      .eq('tenant_id','canonical').eq('use_case_id','supabase-bg-native-content-generate-v4').maybeSingle();
+    if(govError||!gov||gov.approved!==true||gov.lifecycle_status!=='ACTIVE'||gov.provider!=='Anthropic')throw new Error('AI_GOVERNANCE_UNAVAILABLE');
+    const model=clean(gov.model_id);
     const generated:any[]=[];
 
     for(const action of actions||[]){
