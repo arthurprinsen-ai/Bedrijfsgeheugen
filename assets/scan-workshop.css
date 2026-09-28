@@ -30,3 +30,12 @@ header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0
 .portal-strip-action{margin-top:10px}
 .report-footer{position:absolute;left:30px;right:30px;bottom:12px;border-top:1px solid #e5e8ee;padding-top:5px;display:flex;justify-content:space-between;color:#6b788b;font-size:.47rem}
 @media print{#reportRoot{position:static!important;left:auto!important;top:auto!important;width:auto!important}.report-page{page-break-after:always}}
+
+/* Persoonlijke klantbranding in workshoprapport */
+.report-client{display:flex;align-items:center;gap:14px;margin-top:12px;min-height:34px}
+.report-client-logo{display:block;max-width:132px;max-height:46px;width:auto;height:auto;object-fit:contain;object-position:left center}
+.report-client-logo[hidden]{display:none!important}
+.report-client-page2{margin:0 0 12px}
+@media print{
+  .report-client-logo{max-width:125px;max-height:42px}
+}
