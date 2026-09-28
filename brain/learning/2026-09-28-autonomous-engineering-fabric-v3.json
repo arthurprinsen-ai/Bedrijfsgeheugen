@@ -1,0 +1,57 @@
+{
+  "fingerprint": "powerhouse|autonomous-engineering-fabric|v3",
+  "date": "2026-09-28",
+  "type": "ENGINEERING_ARCHITECTURE",
+  "failure_class": "DELIVERY_LATENCY_AND_AGENT_CONTENTION",
+  "scope": "ENGINEERING",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "obligation_id": "powerhouse-autonomous-engineering-fabric-v3",
+  "problem": "Multiple chats and agents can create repeated branch-head movement, duplicated CI waves, hot-file contention and generic test execution even when development work itself is parallel.",
+  "root_cause": "Parallel agent execution was already modeled, but candidate writing, capability routing, risk classification, late-bound closure and bounded daily tuning were not combined into one executable engineering control loop.",
+  "prevention_rule": "Parallelize specialist work before GitHub, keep one integrated candidate writer, select impacted tests and risk profiles, late-bind shared closure files, route agents by proven capability outcomes and tune only bounded performance parameters daily through protected delivery.",
+  "prevention": [
+    "One integration writer per obligation.",
+    "Impact graph and R0-R4 risk class before expensive execution.",
+    "Capability and outcome based specialist routing.",
+    "Late-bound closure for learning/docs/ledger/skills/System Map.",
+    "Daily bounded optimizer driven by CI telemetry.",
+    "Unknown material scope fails closed.",
+    "No daily optimizer action may weaken security, Required, exact-SHA, protected merge or production readback."
+  ],
+  "failed_approaches": [
+    "Letting every specialist commit independently to the shared candidate, causing repeated CI cancellation/restart.",
+    "Treating all code changes as the same test/risk class.",
+    "Writing hot shared closure files throughout development instead of once at closure."
+  ],
+  "enforcement": [
+    "config/powerhouse-autonomous-engineering-fabric-v3.json",
+    "config/powerhouse-engineering-tuning.json",
+    "scripts/brain/autonomous-engineering-fabric-v3.mjs",
+    "tests/brain-autonomous-engineering-fabric-v3.test.mjs",
+    ".github/workflows/powerhouse-autonomous-engineering-optimizer.yml",
+    ".github/workflows/required-test.yml",
+    ".agents/skills/powerhouse-autonomous-engineering-fabric/SKILL.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+    ],
+    "shadow": [
+      "Powerhouse CI Intelligence daily metrics"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-autonomous-engineering-fabric-v3.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DELIVERY_LATENCY_AND_AGENT_CONTENTION",
+    "scope": "ENGINEERING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1,
+  "status": "CANDIDATE_DELIVERY"
+}
