@@ -548,3 +548,21 @@ Deze regel is aanvullend op `delivery|user-facing-reporting|terminal-outcomes-on
 Fingerprint: `powerhouse-global-semantic-example-uniqueness-v4`.
 
 For every current and future social publishing agent/chat/workflow, uniqueness means a genuinely different underlying subject, concrete example, incident or story family — not merely different wording. Before provider dispatch, compare against retained cross-channel publication history and known duplicate feedback. If the same story family was already consumed, fail closed on that candidate and autonomously select a different verified source/topic. Never “fix” duplication by paraphrasing. Provider create success consumes the story even when later readback is unavailable. Known consumed personal-LinkedIn example family: `printer`.
+
+
+## Provider-write truth heeft voorrang op beperkte readback
+
+Fingerprint: `provider-write-ack-is-terminal-side-effect-v1`.
+
+Voor alle chats, agents, watchdogs en herstelroutines geldt:
+- een succesvolle provider-write met een duurzaam extern ID/URN bewijst dat een side effect is ontstaan;
+- sla dat ID onmiddellijk duurzaam op en zet `republish_forbidden=true`;
+- een latere 401/403 op readback, ACL, analytics of admin-inspectie mag dat side effect nooit terugclassificeren naar “niet gepubliceerd”;
+- readbackrechten en writerechten zijn afzonderlijke capabilities;
+- na create-success mag herstel alleen het bestaande provider-ID reconciliëren; nooit vervangen, dupliceren of opnieuw publiceren;
+- visueel/public page bewijs mag provider-truth sluiten wanneer API-readback permission-limited is;
+- OAuth opnieuw koppelen is geen automatische herstelactie voor een reeds succesvol aangemaakte providerpost;
+- dagelijkse watchdogs beschouwen provider-create + extern ID als terminal anti-duplicate fence;
+- “silent publication failure” mag alleen worden gebruikt wanneer géén provider-createbewijs en géén extern ID bestaan.
+
+Dit contract geldt kanaaloverstijgend; de LinkedIn-bedrijfspagina is de eerste expliciete toepassing.
