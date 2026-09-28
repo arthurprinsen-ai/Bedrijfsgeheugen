@@ -17,7 +17,8 @@
     ".github/workflows/powerhouse-public-rls-regression-guard.yml",
     ".github/workflows/powerhouse-ci-intelligence.yml",
     "scripts/brain/powerhouse-ci-intelligence.mjs",
-    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md"
+    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
+    "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
   ],
   "skill_targets": [
     "powerhouse-delivery-self-optimization",
@@ -33,5 +34,16 @@
       "multiple npm installs without package-manifest cache reuse"
     ]
   },
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-ci-critical-path-acceleration-v1.test.mjs"
+  ]
 }
