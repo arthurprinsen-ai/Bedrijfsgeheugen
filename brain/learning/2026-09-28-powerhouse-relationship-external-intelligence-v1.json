@@ -1,0 +1,10 @@
+{
+  "fingerprint":"powerhouse-relationship-external-intelligence-v1",
+  "date":"2026-09-28",
+  "status":"CANDIDATE_DELIVERY",
+  "problem":"External web and LinkedIn/company updates could exist as loose evidence without being guaranteed to enrich the canonical relationship, customer and next-best-action context.",
+  "decision":"Project verified external relationship evidence into canonical predictive signals and expose one person->company->customer->opportunity/NBA context view before relationship scoring.",
+  "prevention_rule":"No relevant external relationship signal may terminate as an isolated news/event record. It must retain provenance and, when entity matching is valid, flow into canonical person/company/customer intelligence. External evidence alone never proves buying intent and may not create sensitive personal inferences.",
+  "skill_targets":[".agents/skills/powerhouse-relationship-external-intelligence/SKILL.md",".agents/skills/powerhouse-relationship-revenue/SKILL.md",".agents/skills/powerhouse-linkedin-sales-machine/SKILL.md"],
+  "runtime":{"projector":"public.powerhouse_refresh_relationship_external_intelligence_v1(date)","context_view":"public.powerhouse_relationship_context_enriched_v1","scheduler_owner":"powerhouse-commercial-learning-v1"}
+}
