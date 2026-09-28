@@ -25,3 +25,14 @@ test('historical replay preserves evidence-first automation and human outbound g
   assert.match(auto,/external_outreach_executed',false/);
   assert.match(skill,/Ongevraagde externe outreach blijft human-authorized/i);
 });
+
+
+test('public research edge function is authenticated, evidence-only and feeds canonical trigger runtime',()=>{
+  const fn=fs.readFileSync('supabase/functions/powerhouse-relationship-public-research/index.ts','utf8');
+  assert.match(fn,/x-powerhouse-token/);
+  assert.match(fn,/db\.rpc\('bg_geheim'/);
+  assert.match(fn,/powerhouse_refresh_trigger_based_mkb_acquisition_v1/);
+  assert.match(fn,/vendor_enrichment:false/);
+  assert.match(fn,/external_outreach_executed:false/);
+  assert.doesNotMatch(fn,/linkedin_dm|send.*message|email.*send/i);
+});
