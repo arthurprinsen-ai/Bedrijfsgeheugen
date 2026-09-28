@@ -1,0 +1,36 @@
+# Skill: Powerhouse Relationship Revenue
+
+Fingerprint: `powerhouse-relationship-revenue-engine-v1`
+
+## Doel
+Activeer de bestaande relatie- en bedrijfsgraph als commerciële asset richting eerste betaalde order en gerealiseerde omzet, zonder een parallel CRM of externe vendor als brein te introduceren.
+
+## Canonieke bronvolgorde
+1. **Powerhouse first-party**: `bg_connecties`, person/company intelligence, runtime events, opportunities, actions, outcomes, forecasts en learnings.
+2. **Publieke web-evidence**: bedrijfswebsite/newsroom, vacatures, publieke nieuws- en marktbronnen en publiek toegankelijke LinkedIn/company context waar dat rechtmatig en technisch toegestaan is.
+3. **Optionele vendor fallback**: Apollo, Lusha, ZoomInfo of vergelijkbaar alleen wanneer een concreet bewijs- of contactdatagat na stap 1 en 2 overblijft.
+
+Externe vendors zijn nooit canonical truth, nooit vereist voor de dagelijkse loop en nooit eigenaar van scoring of next-best-action.
+
+## Beslisregels
+- Relatiewarmte is **geen kooptrigger**.
+- Gebruik bestaande relatie-, beslissers-, company-intent-, recency- en outcome-evidence om research te prioriteren.
+- Maak bij onvoldoende actuele evidence een `research_enrichment` actie op kanaal `internal`.
+- Alleen wanneer reeds echte opportunity-/waarde-evidence bestaat, mag een `commercial_outreach_review` worden voorbereid.
+- Ongevraagde externe outreach blijft human-authorized; deze skill verstuurt niets zelfstandig.
+- Geen scraping, platform-bypass, bulk-DM of generieke pitch.
+- Dedupe acties en respecteer fatigue/suppression.
+- Optimaliseer voor paid order en realized revenue, niet voor aantallen leads of berichten.
+
+## Runtime authority
+- View: `public.powerhouse_relationship_revenue_intelligence_v1`.
+- Refresh: `public.powerhouse_refresh_relationship_revenue_v1(date)`.
+- Bestaande dagelijkse owner: `powerhouse-commercial-learning-v1` via `public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)`.
+- Volgorde: relationship revenue -> trigger acquisition -> commercial learning.
+- Geen tweede scheduler, CRM, action queue of learning store.
+
+## Bounded execution
+Per cycle maximaal 50 research-selecties en 20 activation reviews. Research is intern. Activation review vereist bestaande economische/opportunity-evidence én menselijke autorisatie voor extern contact.
+
+## Learning
+Meet research -> validated trigger, activation review -> contact, contact -> reply, reply -> meeting, meeting -> scan, scan -> order en realized revenue. Schrijf uitkomsten terug naar dezelfde canonical sales/outcome/forecast lineage zodat scoring zichzelf kalibreert.
