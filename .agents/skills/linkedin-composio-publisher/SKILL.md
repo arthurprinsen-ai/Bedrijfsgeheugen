@@ -142,3 +142,10 @@ Required regression proof:
 - daily recovery reuses the same obligation and unique artifact.
 
 Reusable lesson: an OAuth auth-config can advertise the right scopes while a particular connected token still lacks them. Publication authority therefore belongs to a live, capability-proven connected account, not to an auth-config, alias, default flag or prior setup-state pointer.
+
+
+### Buffer-independent reconciliation addendum (2026-09-28)
+
+Fingerprint: `linkedin-reconciliation-buffer-isolation-v1`.
+
+Exact LinkedIn provider reconciliation must execute independently of Buffer availability, cooldown or HTTP 429 state. Buffer health may defer only Buffer-owned audit/containment work. It must never suppress readback of an existing LinkedIn URN, company capability probing, personal/company recovery, or closure of a Composio-owned daily claim. This prevents a retired/limited fallback provider from becoming a hidden dependency of the canonical LinkedIn path.
