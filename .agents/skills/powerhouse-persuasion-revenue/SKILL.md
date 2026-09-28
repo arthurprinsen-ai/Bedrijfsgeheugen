@@ -62,20 +62,21 @@ Draft, suggestion, CTA recommendation, asset recommendation and TODO are non-ter
 
 This rule is inherited by chats, agents, scheduled runs, Growth Swarm, LinkedIn sales, autonomous outreach and future commercial agents. Human intervention is reserved for missing authority/credentials, safety/legal boundaries or an irreducible business choice.
 
-## Growth Swarm 20/20 integration
-All twenty Growth Swarm plays use this canonical optimizer where a message/value exchange exists. Persuasion remains downstream of eligibility/play selection and upstream of provider execution. It may select framing, give asset and minimal get ask, but may not create an independent contact budget or bypass evidence, consent, identity, dedupe, fatigue, suppression, opt-out, provider capability or provider acknowledgement. No sensitive personality/psychographic profiling is used.
 
+## 20/20 Growth Play execution
+De Persuasion Revenue Optimizer is onderdeel van execution, niet een advieslaag. Alle 20 Growth Swarm plays hebben een canonical trigger -> decision -> executor/surface -> outcome pad.
 
-## Manual LinkedIn DM handoff
-Fingerprint: `powerhouse-manual-linkedin-dm-handoff-v1`.
+De zeven eerder niet volledig uitvoerbare plays zijn geactiveerd:
+- MKB Friction Index;
+- Positive Public Teardown;
+- Anti-consultancy Challenge;
+- Boardroom Blindness;
+- Problem/Competitor Switch Pages;
+- Benchmark Data Contribution Flywheel;
+- Conditional Risk Reversal.
 
-When LinkedIn DM execution is not available through a verified provider, the agent must not stop at “send a DM”. It creates one complete Arthur handoff card in the canonical Today cockpit containing:
-- exact recipient name, role, company and LinkedIn profile link when verified;
-- connection/relationship status with “not verified” when direct connection evidence is absent;
-- why-now trigger and estimated commercial value;
-- exact final DM text;
-- required attachment type;
-- a Powerhouse-generated downloadable PDF when the selected asset is PDF-class;
-- one-click outcome controls: sent, later, not relevant.
+`powerhouse_activate_all_growth_plays_v2(date)` maakt de play uitvoerbaar zodra evidence-gates slagen. `powerhouse_execute_growth_play_actions_v1(date)` routeert naar bestaande email-, LinkedIn-, content/SEO-, benchmark-, scan- of portalexecutors. Daarna blijft `powerhouse_optimize_prepared_outreach_v1(date)` de bestaande give/get en boodschap optimaliseren vóór provider execution.
 
-Only genuinely manual actions are shown. Actions that Powerhouse can execute itself remain outside the human queue. After Arthur marks “sent”, the outcome is written back to the canonical commercial learning loop and autonomous follow-up resumes.
+Een optimizer-output, draft, recommendation of score is nooit terminal. Terminal is provider execution/readback of bewust wait/nurture omdat gates niet slagen.
+
+Persuasion mag bedrijfscontext, rol, funnelstage en geverifieerde relatie-/triggerdata gebruiken. Gevoelige persoonskenmerken en psychologische persoonlijkheidsprofilering zijn verboden. Fake scarcity, nep-social-proof, unsupported fear en hidden commitment zijn harde verboden.
