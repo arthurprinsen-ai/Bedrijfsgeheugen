@@ -340,7 +340,7 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Rationale/root cause:** KPI-silo's zonder gedeelde value-driver semantiek; benchmarkvergelijkingen waren niet standaard gekoppeld aan impacttypen en roadmapprojectie.
 - **Final implementation:** fail-closed calculator en broncatalogus in `brain/economics/management-accounting-intelligence.mjs`; visualisatie op executive overview; aanvullende optionele data-invoer; benchmarkgedreven Powerhouse-roadmapkandidaten met impacttype, potentiële waarde, effort, prioriteit, sprint, duur en source fingerprint.
 - **Truth controls:** geen verzonnen benchmark of ontbrekende waarde; output per uur zodra uren bestaan; capaciteit ≠ cash; werkkapitaal ≠ EBITDA; waardering blijft ESTIMATED/POTENTIAL en een multiple moet expliciet onderbouwd zijn.
-- **Evidence:** authoritative source families documented in `docs/changes/2026-09-28-management-accounting-value-driver-intelligence-v1.md`.
+- **Evidence:** authoritative source families documented in `docs/changes/2026-09-28-management-accounting-value-driver-v1.md`.
 - **Regression gates:** `brain/economics/management-accounting-intelligence.test.mjs` en `portal-v2/modules/management-accounting-intelligence.test.mjs`.
 - **Owner:** Impact/Value Intelligence + Portal/Executive Cockpit.
 - **Reusable lesson:** stuur niet op losse KPI's; verbind workforce, productiviteit, operatie, commercie, marge, cash, kapitaal en waarde in één evidence-backed graph en laat alleen expliciet bewezen benchmarkgaps automatisch doorwerken naar roadmapprioriteit.
