@@ -16,7 +16,7 @@ export function fullCompanyInputGroups(){
  const metricFields=metrics();
  return [
   {id:'profile',label:'Profiel',fields:companyInputSchema('profiel')},
-  {id:'financials',label:'Bedrijfscijfers',fields:legacyIds(metricFields,['cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt'])},
+  {id:'financials',label:'Bedrijfscijfers',fields:legacyIds(metricFields,['cOmzet','cBrutomarge','cEbitda','cLoon','cKlanten','cGrootste','cMarketing','cNieuw','cDso','cIt','cRecurring','cVariabel','cFcf','cNopat'])},
   {id:'finance',label:'Balans en financiering',fields:finance()},
   {id:'people',label:'Mensen',fields:legacyIds(people(),['mVerzuim','mVerloop','mEnps','mMto','mVac'])},
   {id:'customers',label:'Klanten',fields:legacyIds(metricFields,['kNps','kTevreden','kHerhaal','kKlacht'])},
