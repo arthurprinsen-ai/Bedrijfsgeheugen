@@ -1,5 +1,5 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
-  version:'powerhouse-live-system-map-v1',
+  version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
   observedAt:'2026-09-28T17:45:00Z',
   notionAuthority:Object.freeze({
@@ -21,7 +21,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   intelligenceLayers:Object.freeze([
     Object.freeze({id:'evidence',label:'Evidence & provenance',purpose:'Observed facts, source identity, freshness, confidence and evidence refs'}),
     Object.freeze({id:'knowledge',label:'Knowledge & memory',purpose:'Documents, context, canonical state, reusable learning and lineage'}),
-    Object.freeze({id:'graph',label:'Execution & capability graph',purpose:'Objects, relations, dependencies, capabilities, systems and owners'}),
+    Object.freeze({id:'graph',label:'Company, execution & capability graph',purpose:'Typed people, company, opportunity, action, outcome, dependency, capability, system and owner relations with canonical lineage'}),
     Object.freeze({id:'semantics',label:'Semantic intelligence',purpose:'Normalize meaning across sources, domains, entities and events'}),
     Object.freeze({id:'signals',label:'Signals & external intelligence',purpose:'Market, SEO, regulation, analytics, provider and customer signals'}),
     Object.freeze({id:'prediction',label:'Prediction & foresight',purpose:'Forecasts, opportunity prediction, scenario and calibration'}),
