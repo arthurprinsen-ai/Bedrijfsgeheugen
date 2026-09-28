@@ -63,6 +63,39 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         ordinaryConnectionFalsePositives:0,
         newSurfaceSecurityAdvisorLints:0
       })
+    }),
+    Object.freeze({
+      id:'workshop-scan-customer-portal',
+      label:'Workshop Scan → Personal PDF → Customer Portal',
+      authority:'supabase',
+      owner:'customer-intelligence',
+      status:'LIVE_PROVEN_PERSISTENT_PORTAL',
+      inputs:Object.freeze(['consented-workshop-answers','company-context','optional-company-website']),
+      outputs:Object.freeze(['personal-scan-pdf','private-portal-intake','canonical-brain-portal-state','identity-claimed-customer-portal']),
+      runtime:Object.freeze({
+        scanRoute:'/scan',
+        publicIngest:'/api/powerhouse-scan-ingest',
+        portalClaim:'/api/portal-scans',
+        supabaseFunction:'powerhouse-scan-ingest',
+        scanTable:'public.scan_inzendingen',
+        privateIntakeTable:'public.workshop_portal_intakes',
+        portalStateTable:'public.portal_state_layers'
+      }),
+      invariants:Object.freeze({
+        singleSubmissionKey:true,
+        durableServerSideStorage:true,
+        portalPreprovisionBeforeAccountClaim:true,
+        privatePiiIntake:true,
+        aggregateLearningContainsPii:false,
+        trustedCompanyLogoOnly:true,
+        chatsAndAgentsReuseCanonicalLineage:true
+      }),
+      productionEvidence:Object.freeze({
+        productionSmokeWorkflow:'Powerhouse Scan Production Proof',
+        productionReadbackWorkflow:'Production Release Readback',
+        runtimeFunctionVersion:4,
+        privacyModel:'RLS + service-role-only intake'
+      })
     })
   ]),
   flow:Object.freeze([

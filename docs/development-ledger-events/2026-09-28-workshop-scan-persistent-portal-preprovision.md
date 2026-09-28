@@ -9,3 +9,6 @@
 - Aggregate benchmark/growth events blijven `no_pii`.
 - Productie Supabase Edge Function `powerhouse-scan-ingest` draait op versie 4.
 - Regressie: `tests/components/workshop-scan-portal-preprovision.test.mjs`.
+
+- 2026-09-28: capability gepromoveerd tot expliciete chat/agent-invariant; alle huidige en toekomstige nodes moeten dezelfde submission-lineage, private PII-intake, portal-preprovisioning en identity-claim hergebruiken.
+- 2026-09-28: System Map registratie en repository-governance toegevoegd zodat preflight deze capability als bestaande Powerhouse-architectuur ontdekt.

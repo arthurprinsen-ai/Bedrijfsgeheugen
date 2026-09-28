@@ -509,3 +509,22 @@ Alle chats, agents, schedulers en Powerhouse-runtimes behandelen goedgekeurde da
 - terminale sluiting vereist provider-side bewijs plus outcome/learning/prevention writeback.
 
 Doel: niet alleen dagelijks proberen, maar iedere goedgekeurde dagelijkse publicatie-obligation zonder dubbele side effects sluiten.
+
+## Workshopscan, PDF en klantportaal — vaste chat/agent-invariant
+
+Fingerprint: `workshop-scan|chat-agent-portal-persistence|v1`.
+
+Iedere huidige en toekomstige chat/agent behandelt de workshopscan als één bestaande Powerhouse capability, niet als losse pagina, PDF of leadformulier.
+
+Verplicht:
+- één `submission_key` verbindt deelnemer-scan, persoonlijke PDF, private intake, vooraf gevulde `canonical-brain` portalstate en latere identity claim;
+- consented antwoorden en bedrijfscontext worden server-side duurzaam opgeslagen; verlies van browserstate mag geen dataverlies veroorzaken;
+- het klantportaal wordt direct na een geldige scan vooraf gevuld met bedrijfscontext, totaalscore, domeinscores, antwoorden, benchmarkcontext en topprioriteiten/hefbomen;
+- authenticatie claimt die bestaande state; er wordt geen tweede klant, tweede scan of lege parallelle portal aangemaakt;
+- persoonsgegevens blijven in private service-only intake en mogen niet in aggregate benchmark/growth learning terechtkomen;
+- bedrijfsnaam wordt in de persoonlijke PDF gebruikt; klantlogo alleen bij betrouwbare domeinbron, anders volledig weglaten;
+- wijzigingen vereisen regressietest + runtime readback + repository-native closure artifacts;
+- een chat die deze capability bespreekt, moet bestaande state eerst lezen en de bestaande lineage voortzetten in plaats van opnieuw ontwerpen of de gebruiker met technische tussenstappen te belasten.
+
+Canonieke implementation authority: `assets/scan-workshop.js`, `supabase/functions/powerhouse-scan-ingest/index.ts`, `netlify/functions/powerhouse-scan-ingest.mjs`, `netlify/functions/portal-scans.mjs`.
+Canonieke data authority: `public.scan_inzendingen`, `public.workshop_portal_intakes`, `public.portal_state_layers`.
