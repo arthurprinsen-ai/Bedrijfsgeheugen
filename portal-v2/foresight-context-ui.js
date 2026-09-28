@@ -66,12 +66,24 @@ function ensureStyles(doc=document){
   const link=doc.createElement('link');link.rel='stylesheet';link.href='./foresight-context.css';link.dataset.foresightContextUi='true';doc.head.appendChild(link);
 }
 function contextModel(state={}){try{return buildBusinessContext(state||{});}catch{return null;}}
-function sectionMarkup({pageId,state,quality,overview=false}={}){
+export function buildContextualForesightModel(pageId,state={},quality=null,{overview=false}={}){
   const context=contextModel(state);
-  const forecasts=context?.goalForecasts||[];
-  const scenarios=context?.goalScenarios||[];
-  const showQuality=overview||QUALITY_PAGES.has(pageId);
-  const showScenario=SCENARIO_PAGES.has(pageId);
+  return Object.freeze({
+    pageId,
+    context,
+    forecasts:Object.freeze([...(context?.goalForecasts||[])]),
+    scenarios:Object.freeze([...(context?.goalScenarios||[])]),
+    showQuality:Boolean(overview||QUALITY_PAGES.has(pageId)),
+    showScenario:Boolean(SCENARIO_PAGES.has(pageId)),
+    quality
+  });
+}
+function sectionMarkup({pageId,state,quality,overview=false}={}){
+  const model=buildContextualForesightModel(pageId,state,quality,{overview});
+  const forecasts=model.forecasts;
+  const scenarios=model.scenarios;
+  const showQuality=model.showQuality;
+  const showScenario=model.showScenario;
   const predictionCards=forecasts.slice(0,overview?3:4).map(forecastCard).join('');
   const scenarioCards=showScenario?scenarios.slice(0,3).map(scenarioCard).join(''):'';
   if(!predictionCards&&!scenarioCards&&!showQuality)return '';
