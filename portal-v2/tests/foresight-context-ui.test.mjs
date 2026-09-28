@@ -1,3 +1,5 @@
+import fs from 'node:fs';
+import path from 'node:path';
 
 import test from 'node:test';
 import assert from 'node:assert/strict';
@@ -48,4 +50,15 @@ test('trust pages expose prediction quality without fabricating customer forecas
   assert.equal(model.showQuality,true);
   assert.equal(model.quality,quality);
   assert.equal(model.forecasts.length,0);
+});
+
+
+test('compound intelligence self-improvement is a visible contextual portal obligation',()=>{
+  const ui=fs.readFileSync(path.resolve('portal-v2/foresight-context-ui.js'),'utf8');
+  const api=fs.readFileSync(path.resolve('netlify/functions/portal-prediction-intelligence.mjs'),'utf8');
+  assert.match(ui,/Compound Intelligence/);
+  assert.match(ui,/Wordt Powerhouse aantoonbaar slimmer\?/);
+  assert.match(ui,/self_improvement/);
+  assert.match(api,/powerhouse_self_improvement_control_v1/);
+  assert.match(api,/self_improvement:selfImprovement/);
 });
