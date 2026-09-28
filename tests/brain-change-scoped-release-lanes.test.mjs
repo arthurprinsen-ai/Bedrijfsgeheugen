@@ -261,3 +261,16 @@ test('delivery policy root is backend-only and does not fan out to product lanes
     shared:true, backend:true, portal:false, website:false, automation:false
   });
 });
+
+
+test('auxiliary workflow definitions stay on owned control-plane lanes', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/seo-growth-intelligence.yml']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+  assert.deepEqual(suitesFor(['.github/workflows/powerhouse-assurance.yml']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+  assert.deepEqual(suitesFor(['.github/workflows/fresh-device-autonomy-canary.yml']), {
+    shared:true, backend:false, portal:false, website:false, automation:true
+  });
+});
