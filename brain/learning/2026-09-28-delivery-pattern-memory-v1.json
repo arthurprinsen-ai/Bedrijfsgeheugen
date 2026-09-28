@@ -1,0 +1,35 @@
+{
+  "fingerprint": "github|delivery-pattern-memory|historical-regression-routing|v1",
+  "date": "2026-09-28",
+  "type": "CONTROL_PLANE_PREVENTION",
+  "status": "CANDIDATE",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Adaptive routing knew static capability-to-test mappings but did not reuse historical regression evidence from prior Brain learning. Similar failures could therefore recur without automatically pulling their proven regression tests into the next affected candidate.",
+  "prevention_rule": "Derive bounded historical regression tests from canonical brain/learning records whose enforcement paths overlap the current changed paths. Merge those tests into the Integration Bundle while keeping all existing risk, security and production gates fail-closed.",
+  "enforcement": [
+    "tools/delivery/delivery-pattern-memory.mjs",
+    "tools/delivery/integration-bundle-compiler.mjs",
+    "tests/brain-delivery-pattern-memory-v1.test.mjs",
+    "tests/brain-integration-bundle-compiler-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-delivery-pattern-memory-v1.test.mjs"],
+    "shadow": ["tests/brain-integration-bundle-compiler-v1.test.mjs"]
+  },
+  "test_evidence": [
+    "tests/brain-delivery-pattern-memory-v1.test.mjs",
+    "tests/brain-integration-bundle-compiler-v1.test.mjs"
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-delivery-pattern-memory-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ]
+  }
+}
