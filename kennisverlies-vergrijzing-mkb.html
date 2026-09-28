@@ -50,6 +50,7 @@ ul{margin:0 0 1rem;padding-left:1.15rem}
 li{margin-bottom:.4rem}
 .bron{font-size:.9rem;color:var(--grijs)}
 </style>
+<link rel="stylesheet" href="/assets/growth-tools.css?v=1">
 </head>
 <body>
 <div class="bgtop"><div class="bgtop-in">
@@ -119,6 +120,23 @@ li{margin-bottom:.4rem}
 <script type="application/ld+json">
 {"@context":"https://schema.org","@type":"Article","headline":"De kennis loopt de deur uit: vergrijzing in het mkb, in cijfers","datePublished":"2026-08-26","dateModified":"2026-08-26","author":{"@type":"Person","name":"Arthur Prinsen"},"publisher":{"@type":"Organization","name":"Bedrijfsgeheugen.nl","url":"https://www.bedrijfsgeheugen.nl"},"mainEntityOfPage":"https://www.bedrijfsgeheugen.nl/kennisverlies-vergrijzing-mkb"}
 </script>
+<section class="gs-tool" aria-labelledby="gs-knowledge-title">
+  <div class="gs-tool-card" data-growth-tool="lost-knowledge">
+    <span class="gs-badge">Powerhouse · Lost Knowledge Calculator</span>
+    <h2 id="gs-knowledge-title">Wat kan kennisverlies economisch betekenen?</h2>
+    <p>Maak een scenario-inschatting voordat je een traject koopt. Dit is bewust geen 'waarheidscijfer': Powerhouse gebruikt het als hypothese die later met echte bedrijfsdata moet worden getoetst.</p>
+    <div class="gs-tool-grid">
+      <div><label>Medewerkers</label><input name="employees" type="number" min="0" value="75"></div>
+      <div><label>Jaarlijks verloop (%)</label><input name="turnover" type="number" min="0" max="100" value="12"></div>
+      <div><label>Gemiddelde loaded cost (€ / jaar)</label><input name="cost" type="number" min="0" value="65000"></div>
+      <div><label>Aandeel kritieke kennis (%)</label><input name="critical" type="number" min="0" max="100" value="25"></div>
+      <div><label>Hersteltijd (maanden)</label><input name="months" type="number" min="0" value="4"></div>
+    </div>
+    <button type="button">Bereken scenario</button>
+    <div class="gs-tool-output" data-growth-output><b>Scenario nog niet berekend</b><span>Vul je aannames in.</span></div>
+    <div class="gs-proof">Classificatie: SCENARIO_ESTIMATE. Geen geobserveerde financiële schade zolang brondata dit niet bevestigt.</div>
+  </div>
+</section>
 <footer class="bgvoet"><div class="bgvoet-in">
   <div class="bgvoet-net">
     <div>
@@ -183,5 +201,6 @@ li{margin-bottom:.4rem}
     <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
   </div>
 </div></footer>
+<script src="/assets/growth-tools.js?v=1" defer></script>
 </body>
 </html>

@@ -1,0 +1,43 @@
+{
+  "fingerprint": "powerhouse-growth-swarm-public-surfaces-v1",
+  "version": "powerhouse-growth-swarm-public-surfaces-v1",
+  "date": "2026-09-28",
+  "obligation_id": "powerhouse-growth-swarm-public-surfaces-v1",
+  "status": "CANDIDATE",
+  "failure_class": "REVENUE_SURFACE_GAP",
+  "scope": "WEBSITE_GROWTH",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "Growth Swarm intelligence and calculators existed in production, but the strongest demand-generation capabilities were not yet embedded in the canonical public pages where buyers already evaluate benchmarks, knowledge loss, M&A risk, workshops and the Frisse Blik.",
+  "decision": "Project Growth Swarm into existing classified website authorities instead of creating a parallel microsite: benchmark -> Friction Index, knowledge-loss page -> scenario calculator, investor/M&A -> Knowledge & Execution Risk, workshops -> anonymous cohort benchmark, Frisse Blik -> evidence-first reverse-selling promise.",
+  "prevention": [
+    "Prefer existing canonical buyer-intent pages over introducing a parallel growth microsite.",
+    "Public surfaces may call only privacy-safe Growth Tools; never expose private Revenue Swarm account state.",
+    "Benchmark surfaces fail closed below the minimum sample size rather than inventing numbers.",
+    "Financial outputs remain scenario estimates and M&A outputs remain estimated risk.",
+    "A scan may recommend not buying when evidence does not justify a commercial next step."
+  ],
+  "evaluation": {
+    "regression": [
+      "tests/brain-growth-swarm-public-surfaces-v1.test.mjs"
+    ],
+    "historical_replay": [
+      "tests/brain-growth-swarm-public-surfaces-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md"
+  ],
+  "evidence": [
+    "Canonical pages selected: benchmark.html, kennisverlies-vergrijzing-mkb.html, investeerders-ma.html, workshops.html and frisse-blik.html.",
+    "Shared browser runtime uses powerhouse-growth-tools and has no private Revenue Swarm read path."
+  ],
+  "compiler": {
+    "failure_class": "REVENUE_SURFACE_GAP",
+    "scope": "WEBSITE_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  }
+}
