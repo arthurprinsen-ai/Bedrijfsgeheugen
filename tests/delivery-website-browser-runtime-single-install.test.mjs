@@ -37,14 +37,15 @@ test('local exact-candidate fallback preserves Netlify-style clean URLs', () => 
   assert.match(cleanUrlServer, /os\.path\.isfile\(candidate\)/);
 });
 
-test('single browser job retains targeted, visibility, and high-risk broad exact-candidate contracts', () => {
+test('single browser job retains targeted, visibility, and high-risk contracts while reusing exact preview when available', () => {
   const previewReadyStart = workflow.indexOf('\n  preview-ready:');
-  const pageSeoStart = workflow.indexOf('\n  page-seo:', previewReadyStart);
-  const browserStart = workflow.indexOf('\n  browser:', pageSeoStart);
+  const buildStart = workflow.indexOf('\n  netlify-build-parity:', previewReadyStart);
+  const browserStart = workflow.indexOf('\n  browser:', buildStart);
   assert.notEqual(previewReadyStart, -1);
-  assert.notEqual(pageSeoStart, -1);
+  assert.notEqual(buildStart, -1);
   assert.notEqual(browserStart, -1);
-  const previewReady = workflow.slice(previewReadyStart, pageSeoStart);
+  const previewReady = workflow.slice(previewReadyStart, buildStart);
+  const build = workflow.slice(buildStart, browserStart);
   const browser = workflow.slice(browserStart);
 
   assert.match(previewReady, /HEAD_SHA:\s*\$\{\{ inputs\.change_head_sha \}\}/);
@@ -52,27 +53,29 @@ test('single browser job retains targeted, visibility, and high-risk broad exact
   assert.match(previewReady, /preview_mode=local-exact-candidate/);
   assert.match(previewReady, /base_url=http:\/\/127\.0\.0\.1:4173/);
 
-  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready\]/);
+  assert.match(build, /name: Run exact Netlify production build command/);
+  assert.match(build, /name: Verify built artifact contracts/);
+  assert.doesNotMatch(workflow, /\n  page-seo:/);
+
+  assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready, netlify-build-parity\]/);
   assert.match(browser, /name: Verify affected routes on desktop and mobile/);
   assert.match(browser, /name: Verify all public pages are visibly rendered/);
   assert.match(browser, /Verify broad high-risk browser contracts/);
   assert.match(browser, /BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
-  assert.match(browser, /name: Build and serve exact local candidate for broad browser checks/);
-  assert.match(browser, /name: Verify all public pages are visibly rendered[\s\S]*UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
-  assert.match(browser, /name: Verify every header menu panel is readable[\s\S]*UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
-  assert.match(browser, /name: Verify broad high-risk browser contracts[\s\S]*UI_VR_BASE_URL:\s*http:\/\/127\.0\.0\.1:4173/);
-  assert.doesNotMatch(browser, /Build and serve exact local candidate for broad browser checks[\s\S]{0,160}preview_mode == 'local-exact-candidate'/);
+  assert.match(browser, /name: Build and serve exact local candidate only when Netlify preview is unavailable/);
+  assert.match(browser, /preview_mode == 'local-exact-candidate'/);
+  assert.match(browser, /UI_VR_BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
   assert.match(browser, /needs\.classify\.outputs\.risk_lane/);
-  assert.doesNotMatch(browser, /https:\/\/deploy-preview-\$\{\{ inputs\.pr_number \}\}--bedrijfsgeheugen\.netlify\.app/);
 });
 
-test('page-seo only builds the exact artifact and never starts legacy duplicate checkers', () => {
-  const pageSeoStart = workflow.indexOf('\n  page-seo:');
-  const browserStart = workflow.indexOf('\n  browser:', pageSeoStart);
-  assert.notEqual(pageSeoStart, -1);
+test('build-once website lane does not start legacy duplicate checkers', () => {
+  const buildStart = workflow.indexOf('\n  netlify-build-parity:');
+  const browserStart = workflow.indexOf('\n  browser:', buildStart);
+  assert.notEqual(buildStart, -1);
   assert.notEqual(browserStart, -1);
-  const pageSeo = workflow.slice(pageSeoStart, browserStart);
-  assert.match(pageSeo, /needs:\s*\[classify, syntax-preflight\]/);
-  assert.match(pageSeo, /name: Build and verify exact Netlify website artifact/);
-  assert.doesNotMatch(pageSeo, /playwright|PAGINA_BASE_URL|paginacontrole\.py|seocontrole\.py/);
+  const build = workflow.slice(buildStart, browserStart);
+  assert.match(build, /needs:\s*\[classify, syntax-preflight\]/);
+  assert.match(build, /name: Run exact Netlify production build command/);
+  assert.match(build, /name: Verify built artifact contracts/);
+  assert.doesNotMatch(build, /playwright|PAGINA_BASE_URL|paginacontrole\.py|seocontrole\.py/);
 });
