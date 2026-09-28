@@ -166,3 +166,23 @@ For every SEO/content action, identify its role in:
 Do not optimize for impressions, rankings, traffic, posts, blogs, leads or pipeline as ends in themselves. Prefer the action that removes the highest-evidence conversion bottleneck. Where a safe executable action exists, execute it under the canonical delivery contract rather than returning advice.
 
 Never autonomously send unsolicited outbound messages. Powerhouse may identify and prepare qualified outreach opportunities, but a human must authorize/send unsolicited prospecting communication unless a separately approved consent-based workflow applies.
+
+
+## Workshop scan → Powerhouse → portal handoff
+
+Fingerprint: `workshop-scan-powerhouse-handoff-v1`.
+
+Workshop scans are a revenue surface, not a disposable lead form. The canonical chain is:
+
+`attributed workshop URL/QR → consented scan → deterministic score/radar → personal PDF → Powerhouse scan store → portal handoff → account/organisation claim → follow-up → offer → paid order → realized revenue → learning`.
+
+Rules:
+- Reuse the canonical `/scan` flow; never create a parallel workshop form for a partner, event or municipality.
+- Persist the non-PII scan result to the canonical Powerhouse scan ingest in the same completion action that builds the visible result.
+- Preserve `submission_key`, partner/workshop/event and UTM attribution across the scan, PDF and portal handoff.
+- Keep personal name/email in the consented lead path only; the aggregate Powerhouse scan event remains no-PII until verified organisation identity claims it.
+- Save a browser-local scan package so a participant who opens the portal on the same device starts from the scan as the first nulmeting instead of starting from zero.
+- Portal/account handoff is the primary product continuation; pricing remains a commercial choice surface, not a substitute for the portal.
+- QR codes inside the personal PDF should continue the participant into the portal and preserve the scan lineage where possible.
+- A workshop is commercially incomplete if it only produces a PDF. Measure scan completion → PDF → portal open/account → meeting/offer → paid order.
+- Update regression evidence whenever the scan schema, portal mapping, scoring, prices, CTA destinations or ingestion contract changes.
