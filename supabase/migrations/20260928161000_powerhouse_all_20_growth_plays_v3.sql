@@ -8,6 +8,65 @@ drop function if exists public.powerhouse_persuasion_revenue_optimizer_v1(text,t
 drop table if exists public.powerhouse_persuasion_decisions_v1;
 drop table if exists public.powerhouse_persuasion_principles_v1;
 
+
+create table if not exists public.powerhouse_growth_play_execution_contract_v1 (
+  play_key text primary key references public.powerhouse_growth_play_catalog_v1(play_key) on delete cascade,
+  trigger_owner text not null,
+  executor text not null,
+  surface text not null,
+  outcome_metric text not null,
+  persuasion_enabled boolean not null default true,
+  truth_gate text not null,
+  execution_complete boolean not null default false,
+  evidence jsonb not null default '{}'::jsonb,
+  updated_at timestamptz not null default now()
+);
+alter table public.powerhouse_growth_play_execution_contract_v1 enable row level security;
+revoke all on public.powerhouse_growth_play_execution_contract_v1 from public,anon,authenticated;
+grant select,insert,update,delete on public.powerhouse_growth_play_execution_contract_v1 to service_role;
+
+insert into public.powerhouse_growth_play_execution_contract_v1
+(play_key,trigger_owner,executor,surface,outcome_metric,persuasion_enabled,truth_gate,execution_complete,evidence)
+values
+('mkb-friction-index','scan+benchmark evidence','powerhouse_activate_remaining_growth_plays_v3 + powerhouse-content-orchestrator','benchmark + LinkedIn company + blog','qualified_scan_started',true,'public benchmark group >= 5',true,'{"contract":"powerhouse-growth-plays-v3"}'),
+('prebuilt-prospect-dossier','Growth Swarm score','powerhouse_materialize_growth_swarm_v1','internal dossier -> LinkedIn/email','reply_or_meeting',true,'public/first-party evidence only',true,'{"contract":"powerhouse-growth-swarm-v1"}'),
+('positive-public-teardown','public research evidence','powerhouse_activate_remaining_growth_plays_v3 + powerhouse-content-orchestrator','LinkedIn company + blog','inbound_lead',true,'constructive public evidence only',true,'{"contract":"powerhouse-growth-plays-v3"}'),
+('anti-consultancy-challenge','qualified account evidence','powerhouse_activate_remaining_growth_plays_v3 -> shared autonomous email','Frisse Blik + email','scan_completion',true,'no false guarantee; no-buy outcome allowed',true,'{"contract":"powerhouse-growth-plays-v3"}'),
+('reverse-selling','low fit / insufficient evidence','powerhouse-persuasion-revenue-optimizer-v1','scan report + email','trust_then_later_conversion',true,'no pressure when low fit',true,'{"contract":"powerhouse-persuasion-revenue-optimizer-v1"}'),
+('trigger-hijacking','fresh company trigger','powerhouse-linkedin-sales-machine + autonomous outreach','LinkedIn + email','reply_or_meeting',true,'fresh company-specific evidence',true,'{"contract":"powerhouse-linkedin-sales-machine-v1"}'),
+('boardroom-fear-of-blindness','aggregate management/execution gaps','powerhouse_activate_remaining_growth_plays_v3 + powerhouse-content-orchestrator','LinkedIn company + blog + scan','executive_scan_started',true,'aggregate evidence; no prospect-name leakage',true,'{"contract":"powerhouse-growth-plays-v3"}'),
+('lost-knowledge-calculator','people/knowledge risk','powerhouse-growth-tools','public calculator + PDF + portal','lead_or_scan',true,'scenario estimate label required',true,'{"contract":"powerhouse-growth-tools-v1"}'),
+('value-before-demo','qualified opportunity','Growth Swarm dossier + persuasion optimizer','dossier + email + scan','meeting_to_scan',true,'value remains hypothesis until observed',true,'{"contract":"powerhouse-growth-swarm-v1"}'),
+('prospect-generated-content-loop','repeated problem pattern','content recommendations + powerhouse-content-orchestrator','LinkedIn company + blog + SEO','content_assisted_pipeline',true,'anonymized pattern only',true,'{"contract":"powerhouse-growth-swarm-v1"}'),
+('competitor-switch-pages','search/problem pattern','powerhouse_activate_remaining_growth_plays_v3 -> canonical SEO owner','SEO/blog/money-page owner','organic_lead',true,'existing-owner and no-fake-comparison gates',true,'{"contract":"powerhouse-growth-plays-v3"}'),
+('ma-knowledge-risk','M&A/investor trigger','powerhouse-growth-tools + Growth Swarm','public tool + partner email + scan','partner_or_portfolio_meeting',true,'estimated risk; not valuation/advice',true,'{"contract":"powerhouse-growth-tools-v1"}'),
+('competitor-benchmark','benchmark interest','powerhouse-growth-tools','public benchmark + scan','benchmark_to_scan',true,'aggregate group >= 5; public evidence only',true,'{"contract":"powerhouse-growth-tools-v1"}'),
+('data-contribution-flywheel','explicit benchmark consent','scan ingest -> powerhouse_activate_remaining_growth_plays_v3','scan + portal benchmark','contribution_then_retention',true,'explicit optional consent; aggregate output only',true,'{"contract":"powerhouse-growth-plays-v3"}'),
+('warm-referral','positive sales outcome','powerhouse_materialize_growth_swarm_v1','internal -> email/partner intro','warm_intro',true,'specific peer ask only after real positive outcome',true,'{"contract":"powerhouse-growth-swarm-v1"}'),
+('risk-reversal','high-fit value evidence','powerhouse_activate_remaining_growth_plays_v3 -> shared email -> persuasion optimizer','Frisse Blik + email','paid_scan',true,'bounded output condition; no blanket money-back claim',true,'{"contract":"powerhouse-growth-plays-v3"}'),
+('workshop-leaderboard','workshop scan cohort','powerhouse-growth-tools + workshop scan portal handoff','workshop + PDF + portal','portal_activation_or_scan',true,'minimum cohort 5; no participant identity exposure',true,'{"contract":"powerhouse-growth-tools-v1"}'),
+('dark-funnel','multi-signal account activity','powerhouse_dark_funnel_intent_v1 -> Growth Swarm','Revenue Swarm','intent_to_reply',true,'single weak signal never equals buying intent',true,'{"contract":"powerhouse-growth-swarm-v1"}'),
+('we-disagree-content','dominant evidence-backed pattern','content recommendations + powerhouse-content-orchestrator','LinkedIn company + blog','qualified_engagement',true,'claim must be supportable',true,'{"contract":"powerhouse-growth-swarm-v1"}'),
+('revenue-swarm','canonical daily commercial cycle','powerhouse_trigger_based_mkb_acquisition_cycle_v1','Revenue Command Center + actions + content','realized_revenue',true,'all hard gates + provider acknowledgement',true,'{"contract":"powerhouse-growth-swarm-v1"}')
+on conflict(play_key) do update set
+  trigger_owner=excluded.trigger_owner,executor=excluded.executor,surface=excluded.surface,
+  outcome_metric=excluded.outcome_metric,persuasion_enabled=excluded.persuasion_enabled,
+  truth_gate=excluded.truth_gate,execution_complete=excluded.execution_complete,
+  evidence=excluded.evidence,updated_at=now();
+
+create or replace view public.powerhouse_growth_play_build_status_v1
+with (security_invoker=true) as
+select
+  c.play_key,c.name,c.funnel_stage,c.readiness,
+  x.trigger_owner,x.executor,x.surface,x.outcome_metric,x.persuasion_enabled,x.truth_gate,
+  x.execution_complete,
+  case when c.readiness='ACTIVE' and x.execution_complete then 'BUILT_ACTIVE' else 'INCOMPLETE' end build_state,
+  c.updated_at catalog_updated_at,x.updated_at execution_updated_at
+from public.powerhouse_growth_play_catalog_v1 c
+left join public.powerhouse_growth_play_execution_contract_v1 x using(play_key);
+revoke all on public.powerhouse_growth_play_build_status_v1 from public,anon,authenticated;
+grant select on public.powerhouse_growth_play_build_status_v1 to service_role;
+
 create or replace function public.powerhouse_persuasion_package_for_company_v1(
   p_company_key text
 ) returns jsonb
