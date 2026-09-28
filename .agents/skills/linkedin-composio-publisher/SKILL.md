@@ -149,3 +149,23 @@ Reusable lesson: an OAuth auth-config can advertise the right scopes while a par
 Fingerprint: `linkedin-reconciliation-buffer-isolation-v1`.
 
 Exact LinkedIn provider reconciliation must execute independently of Buffer availability, cooldown or HTTP 429 state. Buffer health may defer only Buffer-owned audit/containment work. It must never suppress readback of an existing LinkedIn URN, company capability probing, personal/company recovery, or closure of a Composio-owned daily claim. This prevents a retired/limited fallback provider from becoming a hidden dependency of the canonical LinkedIn path.
+
+
+## Provider create acknowledgement is authoritative (2026-09-28)
+
+Fingerprint: `linkedin-company-create-ack-over-readback-v1`.
+
+A successful LinkedIn company create call that returns a durable LinkedIn post URN is authoritative evidence that a provider side effect occurred. API readback and organization-ACL reads are separate capabilities and may return 401/403 even when the post was created and is live.
+
+Hard rules:
+- when `LINKEDIN_CREATE_LINKED_IN_POST` succeeds for the configured organization and returns `urn:li:share:...` or `urn:li:ugcPost:...`, immediately persist that URN, set `provider_create_success=true`, `provider_publication_ack_verified=true` and `republish_forbidden=true`;
+- never downgrade that claim to failed/blocked merely because `LINKEDIN_GET_POST_CONTENT` or `LINKEDIN_GET_COMPANY_INFO` returns 401/403;
+- readback failure after provider create is a verification limitation, not publication failure;
+- the daily obligation is closed as `PUBLISHED` on provider create acknowledgement; exact readback remains optional enrichment;
+- reconcile only the existing URN; never generate a replacement post;
+- user-visible evidence on the LinkedIn company page may upgrade `provider_truth_verified` when API readback is permission-limited;
+- do not request repeated OAuth reconnection solely to verify an already-created post;
+- organization-scope diagnostics belong before a provider write, not after a successful provider write;
+- watchdogs must treat a persisted provider-created URN as a terminal anti-duplicate fence and must not classify it as a silent publication failure.
+
+Reusable lesson: write authority and readback authority are distinct. A failed read permission cannot negate a successful write acknowledgement.
