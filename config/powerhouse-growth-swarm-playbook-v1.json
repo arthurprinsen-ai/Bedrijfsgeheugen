@@ -1,0 +1,434 @@
+{
+  "version": "powerhouse-growth-swarm-v1",
+  "objective": "first_paid_order_then_realized_revenue",
+  "system_rule": "Every play reuses canonical Powerhouse evidence, opportunities, actions, content, outcomes and learning. No parallel CRM or isolated growth stack.",
+  "plays": [
+    {
+      "key": "mkb-friction-index",
+      "name": "MKB Friction Index",
+      "stage": "demand_creation",
+      "trigger": "aggregate_scan_or_problem_evidence",
+      "inputs": [
+        "scan_inzendingen",
+        "benchmark_branche",
+        "problem_radar"
+      ],
+      "actions": [
+        "publish_index",
+        "sector_content",
+        "benchmark_cta"
+      ],
+      "outputs": [
+        "linkedin_company",
+        "blog",
+        "public_tool"
+      ],
+      "metric": "qualified_scan_started"
+    },
+    {
+      "key": "prebuilt-prospect-dossier",
+      "name": "Pre-built Prospect Dossier",
+      "stage": "outbound",
+      "trigger": "swarm_score>=0.35",
+      "inputs": [
+        "relationship_graph",
+        "public_research",
+        "trigger_intelligence",
+        "dark_funnel"
+      ],
+      "actions": [
+        "three_observations",
+        "two_opportunities",
+        "value_hypothesis",
+        "next_best_action"
+      ],
+      "outputs": [
+        "sales_action",
+        "email",
+        "linkedin_comment"
+      ],
+      "metric": "reply_or_meeting"
+    },
+    {
+      "key": "positive-public-teardown",
+      "name": "Positive Public Teardown",
+      "stage": "demand_creation",
+      "trigger": "strong_public_evidence",
+      "inputs": [
+        "public_web",
+        "company_posts",
+        "market_benchmarks"
+      ],
+      "actions": [
+        "publish_positive_teardown"
+      ],
+      "outputs": [
+        "linkedin_company",
+        "blog"
+      ],
+      "metric": "inbound_lead"
+    },
+    {
+      "key": "anti-consultancy-challenge",
+      "name": "Anti-consultancy Challenge",
+      "stage": "conversion",
+      "trigger": "landing_or_scan_visit",
+      "inputs": [
+        "scan",
+        "benchmark"
+      ],
+      "actions": [
+        "challenge_offer"
+      ],
+      "outputs": [
+        "website",
+        "scan"
+      ],
+      "metric": "scan_completion"
+    },
+    {
+      "key": "reverse-selling",
+      "name": "Reverse Selling",
+      "stage": "conversion",
+      "trigger": "low_need_or_low_fit",
+      "inputs": [
+        "scan",
+        "swarm_score",
+        "problem_evidence"
+      ],
+      "actions": [
+        "tell_prospect_not_to_buy_yet",
+        "give_internal_actions"
+      ],
+      "outputs": [
+        "scan_report",
+        "email"
+      ],
+      "metric": "trust_then_later_conversion"
+    },
+    {
+      "key": "trigger-hijacking",
+      "name": "Trigger Hijacking",
+      "stage": "outbound",
+      "trigger": "fresh_company_trigger",
+      "inputs": [
+        "public_research",
+        "predictive_signals",
+        "linkedin"
+      ],
+      "actions": [
+        "context_comment",
+        "air_cover",
+        "private_followup"
+      ],
+      "outputs": [
+        "linkedin_personal_comment",
+        "linkedin_company",
+        "email"
+      ],
+      "metric": "reply_or_meeting"
+    },
+    {
+      "key": "boardroom-fear-of-blindness",
+      "name": "Boardroom Blindness",
+      "stage": "demand_creation",
+      "trigger": "management_information_or_execution_gap",
+      "inputs": [
+        "problem_radar",
+        "scan",
+        "management_accounting"
+      ],
+      "actions": [
+        "five_unknowns_content",
+        "executive_scan"
+      ],
+      "outputs": [
+        "linkedin_company",
+        "blog",
+        "scan"
+      ],
+      "metric": "executive_scan_started"
+    },
+    {
+      "key": "lost-knowledge-calculator",
+      "name": "Lost Knowledge Calculator",
+      "stage": "lead_magnet",
+      "trigger": "people_or_knowledge_risk",
+      "inputs": [
+        "employee_count",
+        "turnover",
+        "loaded_cost",
+        "knowledge_risk"
+      ],
+      "actions": [
+        "scenario_calculation"
+      ],
+      "outputs": [
+        "public_tool",
+        "pdf",
+        "portal"
+      ],
+      "metric": "lead_capture_or_scan"
+    },
+    {
+      "key": "value-before-demo",
+      "name": "Value Before Demo",
+      "stage": "conversion",
+      "trigger": "qualified_opportunity",
+      "inputs": [
+        "expected_value",
+        "friction",
+        "knowledge_risk",
+        "trigger"
+      ],
+      "actions": [
+        "economic_hypothesis_before_demo"
+      ],
+      "outputs": [
+        "dossier",
+        "email",
+        "scan"
+      ],
+      "metric": "meeting_to_scan"
+    },
+    {
+      "key": "prospect-generated-content-loop",
+      "name": "Prospect Generated Content Loop",
+      "stage": "flywheel",
+      "trigger": "repeated_problem_pattern",
+      "inputs": [
+        "triggers",
+        "questions",
+        "comments",
+        "outcomes"
+      ],
+      "actions": [
+        "anonymized_content_recommendation"
+      ],
+      "outputs": [
+        "blog",
+        "linkedin_company",
+        "seo"
+      ],
+      "metric": "content_assisted_pipeline"
+    },
+    {
+      "key": "competitor-switch-pages",
+      "name": "Competitor / Problem Switch Pages",
+      "stage": "seo",
+      "trigger": "search_intent_with_problem",
+      "inputs": [
+        "seo_signals",
+        "problem_radar",
+        "customer_language"
+      ],
+      "actions": [
+        "problem_page_or_switch_page"
+      ],
+      "outputs": [
+        "website",
+        "seo"
+      ],
+      "metric": "organic_lead"
+    },
+    {
+      "key": "ma-knowledge-risk",
+      "name": "M&A Knowledge & Execution Risk",
+      "stage": "partner_sales",
+      "trigger": "ma_or_investor_trigger",
+      "inputs": [
+        "knowledge_risk",
+        "process_gap",
+        "management_info_gap",
+        "system_fragmentation"
+      ],
+      "actions": [
+        "risk_score",
+        "due_diligence_questions",
+        "portfolio_offer"
+      ],
+      "outputs": [
+        "partner_email",
+        "public_tool",
+        "scan"
+      ],
+      "metric": "partner_or_portfolio_meeting"
+    },
+    {
+      "key": "competitor-benchmark",
+      "name": "Public Competitor Benchmark",
+      "stage": "lead_magnet",
+      "trigger": "benchmark_interest",
+      "inputs": [
+        "public_metrics",
+        "aggregate_benchmarks"
+      ],
+      "actions": [
+        "relative_public_benchmark"
+      ],
+      "outputs": [
+        "public_tool",
+        "scan"
+      ],
+      "metric": "benchmark_to_scan"
+    },
+    {
+      "key": "data-contribution-flywheel",
+      "name": "Benchmark Unlock by Data Contribution",
+      "stage": "flywheel",
+      "trigger": "user_requests_deeper_benchmark",
+      "inputs": [
+        "consented_scan_metrics"
+      ],
+      "actions": [
+        "unlock_deeper_anonymized_benchmark"
+      ],
+      "outputs": [
+        "portal",
+        "scan"
+      ],
+      "metric": "contributed_data_then_retention"
+    },
+    {
+      "key": "warm-referral",
+      "name": "Referral Without Referral Program",
+      "stage": "referral",
+      "trigger": "positive_outcome",
+      "inputs": [
+        "sales_outcomes",
+        "relationship_warmth"
+      ],
+      "actions": [
+        "ask_for_one_specific_peer",
+        "forwardable_intro"
+      ],
+      "outputs": [
+        "email",
+        "partner_intro"
+      ],
+      "metric": "warm_intro"
+    },
+    {
+      "key": "risk-reversal",
+      "name": "Scan Risk Reversal",
+      "stage": "conversion",
+      "trigger": "high_value_fit_and_scan_objection",
+      "inputs": [
+        "scan",
+        "value_hypothesis"
+      ],
+      "actions": [
+        "conditional_risk_reversal_offer"
+      ],
+      "outputs": [
+        "website",
+        "email"
+      ],
+      "metric": "paid_scan"
+    },
+    {
+      "key": "workshop-leaderboard",
+      "name": "Live Workshop Benchmark Leaderboard",
+      "stage": "event_conversion",
+      "trigger": "workshop_scan_submissions",
+      "inputs": [
+        "workshop_portal_intakes",
+        "scan_inzendingen"
+      ],
+      "actions": [
+        "anonymous_percentile",
+        "top_frictions",
+        "portal_handoff"
+      ],
+      "outputs": [
+        "workshop_screen",
+        "pdf",
+        "portal"
+      ],
+      "metric": "portal_activation_or_scan"
+    },
+    {
+      "key": "dark-funnel",
+      "name": "Dark Funnel Account Intent",
+      "stage": "intent",
+      "trigger": "multi_signal_account_activity",
+      "inputs": [
+        "growth_events",
+        "linkedin_engagement",
+        "scan",
+        "company_intent"
+      ],
+      "actions": [
+        "account_intent_score",
+        "next_best_action"
+      ],
+      "outputs": [
+        "revenue_swarm"
+      ],
+      "metric": "intent_to_reply"
+    },
+    {
+      "key": "we-disagree-content",
+      "name": "Contrarian We-Disagree Content",
+      "stage": "demand_creation",
+      "trigger": "dominant_problem_pattern",
+      "inputs": [
+        "trigger_clusters",
+        "problem_radar",
+        "outcomes"
+      ],
+      "actions": [
+        "contrarian_claim_with_evidence"
+      ],
+      "outputs": [
+        "linkedin_company",
+        "blog"
+      ],
+      "metric": "qualified_engagement"
+    },
+    {
+      "key": "revenue-swarm",
+      "name": "Revenue Swarm",
+      "stage": "orchestration",
+      "trigger": "daily_commercial_cycle",
+      "inputs": [
+        "all_growth_signals",
+        "relationships",
+        "content",
+        "outcomes",
+        "experiments"
+      ],
+      "actions": [
+        "rank_accounts",
+        "choose_channel",
+        "execute_or_wait",
+        "learn"
+      ],
+      "outputs": [
+        "revenue_command_center",
+        "sales_actions",
+        "content_recommendations"
+      ],
+      "metric": "realized_revenue"
+    }
+  ],
+  "hard_gates": [
+    "evidence",
+    "identity",
+    "privacy",
+    "dedupe",
+    "fatigue",
+    "suppression",
+    "provider_capability",
+    "provider_acknowledgement",
+    "outcome_learning"
+  ],
+  "prohibited": [
+    "fabricated benchmarks",
+    "fabricated intent",
+    "generic bulk spam",
+    "platform bypass",
+    "named-prospect leakage in public content",
+    "unverified financial impact presented as observed"
+  ]
+}
