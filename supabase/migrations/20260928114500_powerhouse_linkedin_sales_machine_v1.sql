@@ -58,7 +58,7 @@ begin
       p.person_name,
       p.company_name,
       p.role,
-      r.relationship_revenue_score,
+      least(1::numeric,greatest(0::numeric,.55*coalesce(p.relationship_warmth,0)+.45*coalesce(p.decision_influence,0))) relationship_revenue_score,
       ev.evidence->>'source_url' source_url,
       ev.evidence->>'headline' headline,
       ev.evidence->>'summary' summary,
@@ -72,7 +72,6 @@ begin
       ) person_rn
     from public.powerhouse_runtime_events ev
     join public.powerhouse_person_intelligence_v1 p on p.person_key=ev.person_key
-    join public.powerhouse_relationship_revenue_intelligence_v1 r on r.person_key=ev.person_key
     join public.powerhouse_mkb_trigger_intelligence_v1 t
       on t.company_key=ev.company_key
      and t.do_not_contact_reason is null
@@ -81,8 +80,8 @@ begin
     where ev.source='powerhouse-relationship-public-research-v1'
       and ev.occurred_at>=v_now-interval '14 days'
       and ev.evidence->>'source_url' ~* 'https://[^ ]*linkedin\.com/(posts/|feed/update/)'
-      and r.relationship_revenue_score>=.55
-      and r.actions_30d<3
+      and (.55*coalesce(p.relationship_warmth,0)+.45*coalesce(p.decision_influence,0))>=.50
+      and p.actions_30d<3
       and (
         lower(coalesce(ev.evidence->>'headline','')||' '||coalesce(ev.evidence->>'summary',''))
           like '%'||lower(trim(coalesce(p.company_name,'')))||'%'
@@ -151,11 +150,9 @@ begin
       count(*)::int signal_count,
       round(avg(t.confidence)::numeric,3) avg_confidence
     from public.powerhouse_mkb_trigger_intelligence_v1 t
-    join public.powerhouse_relationship_revenue_intelligence_v1 r on r.company_key=t.company_key
     where t.do_not_contact_reason is null
       and t.observed_at>=v_now-interval '14 days'
       and t.confidence>=.60
-      and r.relationship_revenue_score>=.50
     group by t.trigger_type
     order by count(*) desc,avg(t.confidence) desc,t.trigger_type
     limit 1
