@@ -23,5 +23,14 @@
     "module": "brain/company-intelligence/company-intelligence-os.mjs",
     "migration": "supabase/migrations/20260928193000_powerhouse_company_intelligence_os_v1.sql",
     "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "failure_class": "ARCHITECTURE_DRIFT",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-intelligence-os-v1.test.mjs"
+    ]
   }
 }
