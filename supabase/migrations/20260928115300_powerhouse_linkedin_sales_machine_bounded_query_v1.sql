@@ -83,7 +83,7 @@ begin
       and (.55*coalesce(p.relationship_warmth,0)+.45*coalesce(p.decision_influence,0))>=.50
       and p.actions_30d<3
       and (
-        lower(coalesce(ev.evidence->>'headline','')||' '||coalesce(ev.evidence->>'summary',''))
+        lower(coalesce(ev.evidence->>'headline',''))
           like '%'||lower(trim(coalesce(p.company_name,'')))||'%'
         or (
           length(trim(coalesce(ev.company_key,'')))>=4
