@@ -27,3 +27,8 @@
 - Dispatcher: public.powerhouse_dispatch_relationship_public_research_v1(date)
 - Scheduler owner remains: powerhouse-commercial-learning-v1
 - External search source: existing DataForSEO credentials; enrichment vendor dependency remains false
+
+- Public research Edge Function: powerhouse-relationship-public-research
+- Public research schedule: hourly, minute 24
+- Commercial cycle: hourly, minute 27
+- External evidence provider: DataForSEO SERP; canonical intelligence owner remains Powerhouse
