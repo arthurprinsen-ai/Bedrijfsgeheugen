@@ -401,3 +401,14 @@ Canoniek:
 - user-upload ids `Jt5SWKRgyK3heTqEXH4w`, `w4HhwCmX5GxL8jTGljxe`, `umWzAKt6YBeoVpHlKTtK` zijn expliciet verboden voor Mira;
 - ontbreken of afwijken van deze proof blokkeert de job vóór `VERIFYING`;
 - user photos/video mogen alleen worden gebruikt voor user-identity content wanneer de gebruiker dat expliciet vraagt; nooit als fallback voor Mira.
+
+
+## Runtime canonical Instagram identity — 29 september 2026
+Fingerprint: `instagram-runtime-canonical-user-id-v1`.
+
+De Instagram publisher mag nooit een stale/hardcoded business-account-ID als enige waarheid gebruiken. Verplicht:
+- canonical Composio account blijft `instagram_tun-pored`;
+- preflight leest `INSTAGRAM_GET_USER_INFO` met `ig_user_id='me'`;
+- username moet exact `bedrijfsgeheugen.nl` zijn;
+- het live teruggelezen provider user ID wordt gebruikt voor create/publish/readback;
+- mismatch = fail closed; geen Buffer/Make fallback, geen tweede postclaim.
