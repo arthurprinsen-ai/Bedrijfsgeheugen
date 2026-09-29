@@ -40,3 +40,13 @@ Borging correction:
 - extended the canonical skill with mandatory system-map/documentation/writeback closure;
 - extended Brain learning with system-map/documentation references and prevention rule;
 - added regression coverage so this discoverability drift fails tests in future.
+
+Existing-page conversion application:
+- unified primary order path on 9 priority commercial pages;
+- primary CTA now routes to the free 30-minute Frisse Blik qualification step;
+- added explicit no-obligation/risk-reversal copy;
+- removed generic-contact-first paths on Exact, API and Power BI priority CTAs;
+- corrected inconsistent paid/free Frisse Blik wording;
+- removed stale AFAS monitoring price and unsupported trust/security copy;
+- added regression test `tests/seo-money-page-order-conversion-v2.test.mjs`.
+
