@@ -47,7 +47,10 @@
     "PROVIDER_NEUTRAL_CAPABILITY_MUST_NOT_DEPEND_ON_ONE_OPTIONAL_VENDOR",
     "RETIRED_TOOLING_IS_TELEMETRY_ONLY_UNLESS_REAUTHORIZED",
     "NO_DUPLICATE_SIDE_EFFECT_TO_REPAIR_READBACK",
-    "HEALTH_MUST_RECOMPUTE_AFTER_REPAIR"
+    "HEALTH_MUST_RECOMPUTE_AFTER_REPAIR",
+    "LIVE_PROMOTION_REQUIRES_GOVERNANCE_WRITEBACK",
+    "READY_DEPLOY_IS_NOT_ALL_CAPABILITIES_GREEN",
+    "CAPABILITY_READBACK_REMAINS_INDEPENDENT"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -534,5 +537,26 @@
       "System Map"
     ],
     "read_after_write_required": true
+  },
+  "live_promotion_governance_closure": {
+    "fingerprint": "powerhouse|live-promotion|governance-closure|2026-09-29-v1",
+    "required": true,
+    "sequence": [
+      "protected_merge_main",
+      "exact_production_or_provider_side_effect",
+      "capability_specific_readback",
+      "outcome_truth",
+      "brain_learning",
+      "skill_projection",
+      "agent_chat_projection",
+      "ledger_and_human_docs",
+      "system_map_writeback",
+      "read_after_write"
+    ],
+    "deploy_ready_is_only_deployment_evidence": true,
+    "functional_subchains_independently_gated": true,
+    "inherited_by_all_current_and_future_agents_chats": true,
+    "user_repeat_request_required": false,
+    "learning": "brain/learning/2026-09-29-live-promotion-governance-closure-v1.json"
   }
 }

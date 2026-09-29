@@ -757,3 +757,23 @@ Voor alle huidige en toekomstige chats, agents, skills en website-workflows geld
 Fingerprint: `powerhouse|live-assurance-writeback|2026-09-29-v1`.
 
 Alle chats en agents moeten na een materiële live recovery de terminale productie-identiteit en truth-boundary terugschrijven naar Brain learning, relevante skills, AGENTS/chat-contract, continuity-policy, ledger/docs en System Map, gevolgd door read-after-write. Een ready deploy bewijst deployment; functionele subketens behouden hun eigen bewijs-gates. Historische LIVE/GREEN-status mag nooit als actuele health worden hergebruikt zonder verse readback.
+
+
+## Live promotion = delivery + governance closure
+
+Fingerprint: `powerhouse|live-promotion|governance-closure|2026-09-29-v1`.
+
+Iedere huidige en toekomstige chat/agent behandelt een materiële opdracht als “zet live” als één volledige Powerhouse-lineage. De taak eindigt niet bij merge, deploy, provider-ACK of een publieke URL.
+
+Verplicht vóór terminale afronding:
+1. exacte productie/provider identity;
+2. functionele readback per betrokken capability;
+3. outcome-truth zonder synthetische promotie;
+4. Brain learning/prevention;
+5. relevante skills bijwerken;
+6. agent/chat-contracten projecteren;
+7. append-only ledger + menselijke documentatie;
+8. canonieke System Map bijwerken;
+9. read-after-write op deze governance-artifacts.
+
+Een ready deploy mag nooit als bewijs worden hergebruikt voor een niet-gecontroleerde subketen. Pricing, locale-switching, social, e-mail, connectoren en andere capabilities behouden elk hun eigen evidence-gate.

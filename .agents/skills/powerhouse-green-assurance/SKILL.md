@@ -118,3 +118,17 @@ Na iedere materiële live recovery:
 - behandel een exact ready deploy uitsluitend als deploymentbewijs;
 - houd functionele subketens zoals pricing, NL↔EN, content-publicatie en connector-readback onafhankelijk gated;
 - hergebruik nooit historische LIVE/GREEN als actuele health zonder verse provider/runtime readback.
+
+
+## Live promotion governance closure
+
+Fingerprint: `powerhouse|live-promotion|governance-closure|2026-09-29-v1`.
+
+Voor iedere materiële live-promotie geldt voortaan één verplichte closure-lijn:
+`protected merge/main → exact productie/provider side effect → actuele readback → outcome-truth → Brain learning → skill/agent/chat projection → ledger/docs → System Map → read-after-write`.
+
+Belangrijk:
+- een ready deploy is uitsluitend deploymentbewijs;
+- capability-specifieke uitkomsten blijven onafhankelijk gated;
+- de governance-writeback hoort bij dezelfde obligation en mag niet als los vervolgwerk blijven liggen;
+- toekomstige chats/agents voeren deze writeback standaard uit zonder dat de gebruiker opnieuw “borg / leg vast / documenteer” hoeft te zeggen.
