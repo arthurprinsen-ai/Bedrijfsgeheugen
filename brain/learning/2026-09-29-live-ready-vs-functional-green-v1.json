@@ -35,13 +35,12 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/development-doc-contract.test.mjs",
       "tests/brain-chat-learning-complete.test.mjs",
       "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
     ],
     "canary": [
-      "tests/development-doc-contract.test.mjs",
-      "tests/brain-chat-learning-complete.test.mjs"
+      "tests/brain-chat-learning-complete.test.mjs",
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
     ]
   },
   "skill_targets": [
