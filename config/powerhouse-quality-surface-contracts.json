@@ -89,7 +89,7 @@
       "id": "function:powerhouse-content-orchestrator",
       "type": "function",
       "authority": "supabase/functions/powerhouse-content-orchestrator/index.ts",
-      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "evidence_contract": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
       "required": true
     },
     {
@@ -139,6 +139,13 @@
       "type": "function",
       "authority": "supabase/functions/powerhouse-meta-instagram-setup/index.ts",
       "evidence_contract": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:powerhouse-mira-problem-radar",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -397,7 +404,7 @@
       "id": "rpc:bg_geheim",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
       "required": true
     },
     {
@@ -464,6 +471,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_activate_all_growth_plays_v2",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_consume_social_publish_capability_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260920072000_social_publication_authority_v1.sql",
@@ -496,6 +510,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql",
       "evidence_contract": "tests/brain-instagram-mira-winner-selection-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_execute_growth_play_actions_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
       "required": true
     },
     {
@@ -538,6 +559,20 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260928124000_powerhouse_growth_swarm_activation_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_materialize_mira_problem_recommendation_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260929205000_powerhouse_mira_public_problem_source_contract_v3.sql",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_materialize_source_backed_channel_candidates_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260929214500_powerhouse_source_backed_channel_selection_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
       "required": true
     },
     {
@@ -800,6 +835,20 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_mira_problem_lineage_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260929201000_powerhouse_mira_public_complaint_source_loop_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_mira_problem_signals_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260929201000_powerhouse_mira_public_complaint_source_loop_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_obligation_reconciliations",
       "type": "table",
       "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
@@ -814,10 +863,31 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_outbound_source_lineage_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_persuasion_decisions_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_persuasion_play_catalog_v1",
       "type": "table",
       "authority": "supabase/migrations/20260928152400_powerhouse_persuasion_revenue_optimizer_v1.sql",
       "evidence_contract": "tests/powerhouse-persuasion-revenue-optimizer-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_persuasion_principles_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
       "required": true
     },
     {
@@ -881,34 +951,6 @@
       "type": "table",
       "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
       "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
-      "required": true
-    },
-    {
-      "id": "table:public.powerhouse_persuasion_principles_v1",
-      "type": "table",
-      "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
-      "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
-      "required": true
-    },
-    {
-      "id": "table:public.powerhouse_persuasion_decisions_v1",
-      "type": "table",
-      "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
-      "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
-      "required": true
-    },
-    {
-      "id": "rpc:powerhouse_activate_all_growth_plays_v2",
-      "type": "rpc",
-      "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
-      "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
-      "required": true
-    },
-    {
-      "id": "rpc:powerhouse_execute_growth_play_actions_v1",
-      "type": "rpc",
-      "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
-      "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
       "required": true
     }
   ]
