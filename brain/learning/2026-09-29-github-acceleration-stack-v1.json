@@ -21,6 +21,33 @@
     "delivery_dependency_graph": "PROVEN",
     "docs_fast_impact_route": "PROVEN",
     "source_terminal_main": "fa52dd3de6a14750a5fbf2dc8aaff678346ba12a",
-    "implementation_prs": [3222, 3236, 3242, 3244, 3247, 3256]
+    "implementation_prs": [
+      3222,
+      3236,
+      3242,
+      3244,
+      3247,
+      3256
+    ]
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ]
   }
 }
