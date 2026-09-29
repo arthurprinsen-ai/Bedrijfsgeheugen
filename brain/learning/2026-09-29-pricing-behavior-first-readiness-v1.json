@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "PRICING-BEHAVIOR-FIRST-READINESS-v1",
+  "status": "ACTIVE_PREVENTION_CANDIDATE",
+  "fingerprint": "pricing|production-readback|behavior-first-readiness|v1",
+  "date": "2026-09-29",
+  "problem": "Production pricing/i18n readback stopped before any interaction because the verifier required the private data-bg-pricing-interactions=ready-v3 marker.",
+  "root_cause": "The terminal browser proof coupled readiness to an implementation marker even though its real contract is observable user behavior. Static production evidence showed the required pricing controls and runtime source were present, but the marker gate prevented the verifier from reaching click/postcondition checks.",
+  "prevention": [
+    "Terminal browser proof must gate on the actionable DOM contract and then prove behavior through real interactions.",
+    "Private readiness markers may be logged as diagnostics but cannot be the sole terminal authority when stronger behavior evidence follows.",
+    "Lifecycle, plan-group, billing and NL/EN route switching remain fail-closed through their actual postconditions.",
+    "A missing or broken runtime must still fail at the first behavioral postcondition; this change may not weaken those assertions."
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_FALSE_RED",
+    "scope": "WEBSITE_PRICING_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-behavior-first-readiness-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_run_id": 36583975442,
+    "symptom": "page.waitForFunction timeout before pricing interaction proof",
+    "live_static_controls_observed": true,
+    "canonical_runtime_source_present": true,
+    "truth_boundary": "This learning justifies removing the private-marker precondition; it does not claim pricing behavior is green until the updated production browser proof passes."
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-green-assurance"
+  ]
+}
