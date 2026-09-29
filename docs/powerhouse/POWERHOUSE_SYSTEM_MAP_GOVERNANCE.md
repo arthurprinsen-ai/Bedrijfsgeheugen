@@ -158,3 +158,21 @@ Locale-authority:
 - terminal bewijs: live browserreadback van NL→EN→NL op representatieve routes plus correcte `html lang`, header/footer en routebehoud.
 
 Alle huidige en toekomstige chats, agents, skills en website-workflows erven dit contract. Tussentijdse CI/deploy-status is interne uitvoeringsstate en geen gebruikersmelding.
+
+
+## Source-backed outbound loop v1 — 29 september 2026
+
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+Powerhouse behandelt Instagram, LinkedIn persoonlijk, LinkedIn bedrijf, blog, e-mail en LinkedIn DM als channel-native projecties van één evidence-first outbound loop:
+
+`SOURCE -> EVIDENCE -> DEDUPE -> PROBLEM/TRIGGER -> CHANNEL FIT -> CANDIDATE -> IDENTITY/TRUTH GATE -> PUBLISH/SEND -> PROVIDER READBACK -> OUTCOME -> LEARNING -> NEXT SELECTION`.
+
+Runtime authorities:
+- `public.powerhouse_outbound_source_lineage_v1`
+- `public.powerhouse_materialize_source_backed_channel_candidates_v1(date)`
+- `public.powerhouse_require_source_for_direct_outreach_v1()`
+- `public.powerhouse_refresh_outbound_source_lineage_v1(date)`
+- `supabase/functions/powerhouse-content-orchestrator/index.ts`
+
+Channel boundaries remain hard: public evidence may select a personal-life theme but cannot fabricate an Arthur experience; company/blog prefer current evidence over static seeds; email/LinkedIn DM require a traceable trigger plus person/company context; Instagram remains Mira-only. Provider outcomes and commercial outcomes return to the same lineage.
