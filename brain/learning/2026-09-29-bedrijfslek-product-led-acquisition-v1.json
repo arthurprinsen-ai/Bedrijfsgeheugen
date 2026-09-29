@@ -1,0 +1,19 @@
+{
+  "fingerprint": "powerhouse-bedrijfslek-product-led-acquisition-v1",
+  "date": "2026-09-29",
+  "problem": "The public selfscan delivered only partial value and gated the remaining risks and quick wins behind personal data, while the homepage primary CTA asked for a meeting before product value was experienced.",
+  "change": [
+    "Homepage primary CTA now routes to /zelfscan",
+    "Selfscan renamed/reframed as Bedrijfslek value-first experience",
+    "Full benchmark and three lowest-domain quick wins render before any lead capture",
+    "No mandatory personal-data form is required for the result",
+    "Direct portal order, demo and share actions follow the delivered value",
+    "Final-build authority and regression test preserve this acquisition path"
+  ],
+  "truth_guardrails": [
+    "Scores and benchmarks remain indicative",
+    "No fabricated financial outcome or buying-intent claim",
+    "Paid order and realized revenue remain terminal commercial outcomes"
+  ],
+  "expected_learning": "Compare Bedrijfslek completion -> portal/demo/order-start -> paid order against the prior meeting-first path. Do not promote conclusions without observed outcomes."
+}
