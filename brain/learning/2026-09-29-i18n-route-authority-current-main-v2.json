@@ -1,0 +1,35 @@
+{
+  "fingerprint": "i18n-route-authority-current-main-20260929-v2",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The current public route-aware language injector had a malformed compact-mobile fallback, and existing locale links were not defensively rebound to the equivalent current route at runtime.",
+  "root_cause": "A concurrent reconciliation corrupted one fallback replacement expression while leaving runtime normalization absent.",
+  "prevention": [
+    "The mobile fallback preserves the matched CTA with the valid $& replacement expression.",
+    "Public language anchors are normalized at runtime with localizedHref(target).",
+    "NL↔EN same-page route authority is regression-tested on current main lineage."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-route-authority-current-main-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-route-authority-current-main-v2.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-route-authority-current-main-v2.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 2
+}
