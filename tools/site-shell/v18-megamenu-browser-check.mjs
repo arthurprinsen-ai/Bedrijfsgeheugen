@@ -82,6 +82,10 @@ async function inspectMegamenu(page, route = '/') {
       });
 
     const rect=root.getBoundingClientRect();
+    const header=document.querySelector('header.v17-header');
+    const nav=document.querySelector('header.v17-header .v17-nav');
+    const footerWrap=document.querySelector('footer[data-bg-component="footer"]>.wrap');
+    const rectOf=(el)=>{if(!el)return null;const r=el.getBoundingClientRect();return{left:Math.round(r.left*10)/10,width:Math.round(r.width*10)/10,height:Math.round(r.height*10)/10};};
     const navLabels=[...document.querySelectorAll('header.v17-header .navbtn,header.v17-header a[data-view]')]
       .filter(visible)
       .map(el=>norm(el.textContent));
@@ -94,7 +98,8 @@ async function inspectMegamenu(page, route = '/') {
         right:Math.round(rect.right*10)/10,
         width:Math.round(rect.width*10)/10
       },
-      navLabels
+      navLabels,
+      shellGeometry:{header:rectOf(header),nav:rectOf(nav),footer:rectOf(footerWrap)}
     };
   }, labels);
 }
@@ -106,6 +111,17 @@ function assertParity(reference, current, route) {
   assert.ok(Math.abs(reference.geometry.left-current.geometry.left)<=2,
     `${route}: mega-menu left edge drifted: ${current.geometry.left}px vs ${reference.geometry.left}px`);
   assert.deepEqual(current.navLabels, reference.navLabels, `${route}: desktop navigation differs from homepage`);
+  for (const key of ['header','nav','footer']) {
+    assert.ok(reference.shellGeometry?.[key] && current.shellGeometry?.[key], `${route}: missing ${key} geometry`);
+    assert.ok(Math.abs(reference.shellGeometry[key].width-current.shellGeometry[key].width)<=1,
+      `${route}: ${key} width drifted: ${current.shellGeometry[key].width}px vs ${reference.shellGeometry[key].width}px`);
+    assert.ok(Math.abs(reference.shellGeometry[key].left-current.shellGeometry[key].left)<=1,
+      `${route}: ${key} left edge drifted: ${current.shellGeometry[key].left}px vs ${reference.shellGeometry[key].left}px`);
+  }
+  assert.ok(Math.abs(current.shellGeometry.nav.height-72)<=1,
+    `${route}: nav height must stay 72px, got ${current.shellGeometry.nav.height}px`);
+  assert.ok(Math.abs(current.shellGeometry.footer.width-1220)<=1,
+    `${route}: footer inner width must stay 1220px at 1440 viewport, got ${current.shellGeometry.footer.width}px`);
 }
 
 function assertMegamenu(result) {
@@ -143,7 +159,7 @@ try {
         assertMegamenu(result);
         if (!reference) reference = result;
         else assertParity(reference, result, route);
-        routeResults.push({ route, geometry: result.geometry, navLabels: result.navLabels });
+        routeResults.push({ route, geometry: result.geometry, shellGeometry: result.shellGeometry, navLabels: result.navLabels });
       }
       console.log(`V18 megamenu sitewide contract passed on attempt ${attempt}:`, JSON.stringify(routeResults));
       lastError = null;
