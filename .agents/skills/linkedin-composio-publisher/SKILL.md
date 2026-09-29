@@ -261,3 +261,19 @@ Hard rules:
 - a 401/`REVOKED_ACCESS_TOKEN` remains a genuine reconnect boundary;
 - a successful create URN is terminal publication evidence and permanently activates `republish_forbidden=true`;
 - reconnect flows must preserve separate personal and company canonical identities and must not create duplicate aliases/writers.
+
+
+## Production-workspace OAuth authority (2026-09-29)
+
+Fingerprint: `linkedin-production-workspace-oauth-self-heal-v1`.
+
+OAuth repair for autonomous Powerhouse publishing must be initiated by the production `powerhouse-composio-linkedin-setup` controller using the production `COMPOSIO_API_KEY`. A connection created in another Composio workspace or ChatGPT connector is not evidence that the Supabase publishing runtime is repaired.
+
+Hard rules:
+- create/reconnect links from the production workspace itself;
+- reuse the production LinkedIn managed auth config when uniquely identifiable;
+- bind the connection to stable user `bedrijfsgeheugen-owner` and alias `bedrijfsgeheugen-company-canonical`;
+- after OAuth completion, provider-health-check the production connected account before publication;
+- resume the existing Amsterdam-day claim through `powerhouse-social-publisher`; never create a replacement claim;
+- cross-runtime “ACTIVE” metadata is never sufficient: the exact production runtime must prove provider health;
+- no Buffer/Make fallback is allowed.

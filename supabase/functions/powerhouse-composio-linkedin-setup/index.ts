@@ -3,6 +3,9 @@ import { createClient } from 'npm:@supabase/supabase-js@2';
 const BASE='https://backend.composio.dev/api/v3.1';
 const EXEC_BASE='https://backend.composio.dev/api/v3.1';
 const SUBJECT='linkedin-composio-setup';
+const USER_ID='bedrijfsgeheugen-owner';
+const ALIAS='bedrijfsgeheugen-company-canonical';
+const localDate=()=>new Intl.DateTimeFormat('en-CA',{timeZone:'Europe/Amsterdam',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
 const SERVICE_TOKEN_HASH='0ca9abe4469bea5e83355a193662d5d9455b04f7b6f76a668755e87348eadb75';
 const clean=(v:unknown)=>String(v??'').trim();
 const json=(body:unknown,status=200)=>new Response(JSON.stringify(body),{status,headers:{'content-type':'application/json','cache-control':'no-store'}});
@@ -53,12 +56,32 @@ Deno.serve(async(req:Request)=>{
     const serviceToken=req.headers.get('x-bg-service-token')||'';
     const serviceOk=Boolean(serviceToken&&await sha256(serviceToken)===SERVICE_TOKEN_HASH);
     if(!schedulerOk&&!serviceOk)return json({ok:false,error:'UNAUTHORIZED'},401);
+    let body:any={};try{body=await req.json()}catch{}
+    const action=clean(body.action)||'status';
 
     const key=await secret(db,'COMPOSIO_API_KEY');
     if(!key){
       const result={ready:false,state:'BLOCKED_EXTERNAL_CONFIG',reason:'COMPOSIO_API_KEY_REQUIRED',api_key_present:false,active_accounts:0,personal_ready:false,company_ready:false};
       await writeState(db,'BLOCKED_EXTERNAL_CONFIG',result);
       return json({ok:true,...result});
+    }
+
+    if(action==='create_link'){
+      const configsBody=await api(key,'/auth_configs?toolkit_slug=linkedin&is_composio_managed=true&show_disabled=false&limit=50');
+      const configs=(Array.isArray(configsBody?.items)?configsBody.items:[]).filter((x:any)=>x?.is_composio_managed===true&&clean(x?.status).toUpperCase()!=='DISABLED');
+      if(configs.length>1)return json({ok:false,error:'COMPOSIO_LINKEDIN_AUTH_CONFIG_AMBIGUOUS',count:configs.length},409);
+      let authConfigId=clean(configs[0]?.id);
+      if(!authConfigId){
+        const created=await api(key,'/auth_configs',{method:'POST',body:JSON.stringify({toolkit:{slug:'linkedin'},auth_config:{type:'use_composio_managed_auth',credentials:{},restrict_to_following_tools:[]}})});
+        authConfigId=clean(created?.auth_config?.id||created?.id);
+      }
+      if(!authConfigId)throw new Error('COMPOSIO_LINKEDIN_AUTH_CONFIG_ID_MISSING');
+      const link=await api(key,'/connected_accounts/link',{method:'POST',body:JSON.stringify({auth_config_id:authConfigId,user_id:USER_ID,alias:ALIAS})});
+      const redirectUrl=clean(link?.redirect_url),connectedAccountId=clean(link?.connected_account_id);
+      if(!redirectUrl)throw new Error('COMPOSIO_LINKEDIN_REDIRECT_URL_MISSING');
+      const result={ready:false,state:'AUTH_LINK_READY',reason:'USER_OAUTH_REQUIRED',api_key_present:true,auth_config_id:authConfigId,connected_account_id:connectedAccountId||null,link_available:true,expires_at:clean(link?.expires_at)||null,production_workspace:true};
+      await writeState(db,'AUTH_LINK_READY',result);
+      return json({ok:true,...result,redirect_url:redirectUrl});
     }
 
     const accountsBody=await api(key,'/connected_accounts?toolkit_slugs=linkedin&statuses=ACTIVE&account_type=ALL&limit=50');
@@ -161,6 +184,21 @@ Deno.serve(async(req:Request)=>{
       company_capability_error:companyError?companyError.slice(0,220):null,
       toolkit_version_policy:'latest'
     };
+    if(action==='resume'&&personalReady){
+      if(!expected)return json({ok:false,error:'SCHEDULER_AUTH_REQUIRED'},503);
+      const publisherResponse=await fetch(url+'/functions/v1/powerhouse-social-publisher',{
+        method:'POST',
+        headers:{'content-type':'application/json','x-powerhouse-token':expected},
+        body:JSON.stringify({runDate:localDate(),trigger:'linkedin-production-oauth-complete'})
+      });
+      const publisher:any=await publisherResponse.json().catch(()=>({}));
+      result.resume_attempted=true;
+      result.publisher_http=publisherResponse.status;
+      result.publisher_ok=publisherResponse.ok&&publisher?.ok!==false;
+      result.publisher_results=Array.isArray(publisher?.results)?publisher.results:[];
+      await writeState(db,result.publisher_ok?'ACTIVE_RESUMED':'ACTIVE_RESUME_FAILED',result);
+      return json({ok:result.publisher_ok,...result},result.publisher_ok?200:502);
+    }
     await writeState(db,personalReady?'ACTIVE':'CAPABILITY_UNVERIFIED',result);
     return json({ok:true,...result});
   }catch(error){

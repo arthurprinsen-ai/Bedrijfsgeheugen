@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "linkedin|production-workspace-oauth-self-heal|v1",
+  "obligation_id": "linkedin-production-oauth-self-heal-20260929",
+  "problem": "Chat-side LinkedIn OAuth was healthy while the Supabase Powerhouse runtime still saw only provider-dead LinkedIn accounts.",
+  "root_cause": "OAuth was repaired in a different Composio credential/workspace lineage than the production COMPOSIO_API_KEY used by Powerhouse.",
+  "fix": "Add create_link and resume actions to the production LinkedIn setup controller so reconnect originates from the exact production Composio workspace and resumes the same daily claim.",
+  "prevention": [
+    "OAuth repair authority belongs to the production runtime workspace.",
+    "Verify provider health in Supabase after authorization.",
+    "Resume the existing daily claim; never create a second claim or fallback writer."
+  ],
+  "compiler": {
+    "failure_class": "CROSS_RUNTIME_OAUTH_LINEAGE_MISMATCH",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "linkedin-composio-publisher"
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+    "tests/brain-linkedin-composio-capability-proof.test.mjs",
+    ".agents/skills/linkedin-composio-publisher/SKILL.md"
+  ],
+  "outcome": "PRODUCTION_COMPOSIO_OAUTH_IS_CANONICAL_REPAIR_AUTHORITY"
+}
