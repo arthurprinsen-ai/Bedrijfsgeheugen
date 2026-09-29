@@ -13,7 +13,7 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-instagram-composio-canonical-identity-v1.test.mjs",
-      "tests/supabase-powerhouse-content-edge-surface-contract.test.mjs"
+      "tests/brain-social-provider-health-preflight-v1.test.mjs"
     ]
   },
   "evidence": {
