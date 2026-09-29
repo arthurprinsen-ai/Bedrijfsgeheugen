@@ -321,8 +321,8 @@
       "owner": "Powerhouse governance",
       "code_paths": [
         "powerhouse/assurance/loop-registry.json",
-        "scripts/powerhouse-loop-assurance-contract.mjs",
-        "tests/powerhouse-loop-assurance-v2.test.mjs",
+        "scripts/brain/powerhouse-loop-assurance-contract.mjs",
+        "tests/brain-powerhouse-loop-assurance-v2.test.mjs",
         "supabase/migrations/20260929211000_powerhouse_loop_assurance_v2.sql",
         ".github/workflows/powerhouse-assurance.yml"
       ],
@@ -348,11 +348,11 @@
       "recovery_contract": {
         "critical": true,
         "status": "tested",
-        "evidence": "tests/powerhouse-loop-assurance-v2.test.mjs + database refresh/readback"
+        "evidence": "tests/brain-powerhouse-loop-assurance-v2.test.mjs + database refresh/readback"
       },
       "cost_capacity_contract": "Bounded metadata/runtime freshness queries every five minutes; no paid external provider calls.",
       "test_contract": [
-        "tests/powerhouse-loop-assurance-v2.test.mjs",
+        "tests/brain-powerhouse-loop-assurance-v2.test.mjs",
         "tests/powerhouse-assurance.test.mjs"
       ],
       "evidence_contract": "GREEN requires active scheduler when applicable, fresh runtime when applicable, and all eight closure-stage receipts current; non-GREEN creates/updates OPERATIONS_ASSURANCE obligation.",
