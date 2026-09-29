@@ -52,3 +52,19 @@ The existing daily optimizer can execute at most three reversible high-confidenc
 
 ## System integration
 This capability is registered as `CAPABILITY_SEO_CONVERSION_ORDERS`, upgraded to “SEO + Behavioral Conversion-to-Orders Engine v2”, linked to the Growth Swarm and Persuasion Revenue Optimizer. It is therefore part of the same Powerhouse Brain/System Map rather than a separate marketing stack.
+
+
+## Applied commercial surfaces
+The contract is now applied to the existing revenue surfaces rather than remaining a configuration-only capability:
+- homepage — pain/value reframing, free diagnostic as primary action, truthful trust copy;
+- Frisse Blik — outcome-first diagnostic framing, explicit no-obligation risk reversal;
+- Zelfscan — sharper problem recognition and micro-commitment;
+- pricing — evidence-first investment route;
+- product — executive outcome framing and no-rip-and-replace reassurance;
+- bedrijfsprocessen automatiseren — repaired CTA markup, profitability filter and lower-friction path;
+- AFAS coupling — direct fixed-price order path plus simpler-solution risk reversal;
+- Exact Online coupling — avoided manual work, direct order path and no-unnecessary-integration promise;
+- Power BI implementation — one-truth decision framing;
+- AI automation MKB — business-case-first framing.
+
+These pages are covered by `tests/brain-seo-conversion-orders-v1.test.mjs` so the behavioral revenue contract cannot silently regress.
