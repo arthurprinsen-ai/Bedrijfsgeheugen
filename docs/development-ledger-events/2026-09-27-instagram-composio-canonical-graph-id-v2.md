@@ -4,7 +4,7 @@
 - Obligation: social-publish-resilience-v1
 - Failure class: WRONG_EXTERNAL_IDENTITY
 - Canonical username: `bedrijfsgeheugen.nl`
-- Canonical Instagram Graph User ID: `17841446582493753`
+- Canonical Instagram Graph User ID: `28537384955950341`
 - Known wrong OAuth identity: `arthurprinsen` / `28328860976766075`
 - Runtime change: remove `me` from canonical identity resolution; probe explicit Graph ID before publication authority; bind create/publish to the explicit canonical ID.
 - Recovery: wrong/missing OAuth access remains recoverable; no replacement media and no alternative transport.
