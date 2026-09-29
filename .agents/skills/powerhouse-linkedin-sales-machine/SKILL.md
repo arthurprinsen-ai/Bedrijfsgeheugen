@@ -107,3 +107,19 @@ Niet-onderhandelbaar:
 - Warm/consented outreach, bestaande relatie/opportunity follow-up, due follow-up en bestaande klant-/partnercontext mogen autonoom worden uitgevoerd wanneer de bestaande gates groen zijn.
 - LinkedIn persoonlijk blijft personal-life-only; commercieel air-cover hoort op de Bedrijfsgeheugen-bedrijfspagina. Instagram blijft Mira-only.
 - Iedere kanaalactie schrijft terug: provider/readback → reply/meeting/scan/proposal/order → realized revenue → learning → volgende prioritering.
+
+
+## Bounded prep runtime — 2026-09-29
+
+Fingerprint: `linkedin-sales-bounded-prep-v1`.
+
+De LinkedIn Sales Machine mag nooit de volledige `powerhouse_person_intelligence_v1` opbouwen om maximaal drie dagelijkse contextreacties te selecteren. De prep moet eerst actuele LinkedIn/public-research events begrenzen, daarna alleen de bijbehorende relaties en recente action-state ophalen, en pas daarna scoren.
+
+Hard runtime contract:
+- candidate-first, not population-first;
+- maximaal 250 recente public-research events in de candidate stage;
+- maximaal 3 contextreacties per dag;
+- 14 dagen cooldown per persoon;
+- geen sales pitch of gefabriceerde feiten in publieke comments;
+- LinkedIn DM blijft `UNAVAILABLE` zolang geen provider-write capability aantoonbaar bestaat; fallback is de bestaande e-mailroute;
+- geen retry-loop op statement timeout; root cause fix + provider/readback verplicht.
