@@ -451,15 +451,14 @@ const files = discoveredFiles.filter(file => publicRoutes.has(normalizedRoute(ro
 const aliases = routeAliases(files);
 if (!files.length) throw new Error('No public HTML files selected for localized build');
 console.log('STATIC_I18N_SCOPE',JSON.stringify({discovered:discoveredFiles.length,public:files.length}));
-const parsed = new Map();
 const allStrings = new Set();
 
 for (const file of files) {
   const html = fs.readFileSync(path.join(ROOT,file),'utf8');
   const doc = parse(html,{sourceCodeLocationInfo:false});
   const refs = collectTranslatables(doc);
-  parsed.set(file,{doc,refs});
   refs.forEach(ref=>allStrings.add(ref.source));
+  // Do not retain parse5 document trees across routes: 100+ full DOM trees can exceed the Netlify build memory limit.
 }
 
 const cacheValidationOnly = process.argv.includes('--validate-cache');
@@ -517,5 +516,5 @@ console.log('STATIC_I18N_ROUTES',JSON.stringify({
   translatedRoutes,
   partialRoutes,
   untranslatedRefs,
-  runtimeFallback:untranslatedRefs > 0
+  runtimeFallback:!translations || untranslatedRefs > 0
 }));

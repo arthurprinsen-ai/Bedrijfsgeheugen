@@ -1,0 +1,24 @@
+{
+  "fingerprint": "static-i18n|parse5|memory-bound|netlify|v1",
+  "date": "2026-09-29",
+  "problem": "Production localization was killed with exit 137 while processing more than 100 public routes.",
+  "root_cause": "The discovery phase retained every parse5 DOM tree and its node references in a Map, even though the output phase reparsed each route later.",
+  "prevention": "Retain only unique translatable source strings during discovery and let each DOM tree be garbage-collected before moving to the next route.",
+  "compiler": {
+    "failure_class": "BUILD_MEMORY_EXHAUSTION",
+    "scope": "WEBSITE_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-memory-bounded-v1.test.mjs",
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "implementation": "tools/site-shell/build-localized-routes.mjs",
+    "production_parity": "111 routes, 8411 strings, 0 untranslated refs, exit 0",
+    "translation_patch": "config/bg-static-i18n-en.d/2026-09-29-bedrijfslek-growth.json"
+  }
+}
