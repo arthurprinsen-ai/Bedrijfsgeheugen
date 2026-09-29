@@ -30,4 +30,4 @@ jobs:
       - name: Regression tests
         run: node --test tests/brain-universal-closed-loop-learning.test.mjs
       - name: Compound learning integration regression
-        run: node --test tests/powerhouse-daily-compound-learning-v1.test.mjs
+        run: node --test tests/brain-powerhouse-daily-compound-learning-v1.test.mjs
