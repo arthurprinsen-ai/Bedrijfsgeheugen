@@ -7,3 +7,5 @@
 - Safety: no Required/security/protected-merge/production-readback invariant weakened
 - Canonical source: `github|acceleration-stack|adaptive-one-write-memory-graph|v1`
 - Prior proven lineages: #3222, #3236, #3242, #3244, #3247, #3256
+
+- Dedicated skill path: `.agents/skills/powerhouse-github-acceleration-stack/SKILL.md`
