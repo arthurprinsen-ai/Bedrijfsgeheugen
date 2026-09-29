@@ -2,7 +2,16 @@
   "id": "chat-to-brain-completeness-v1",
   "version": 1,
   "status": "ACTIVE",
-  "scope": ["chat", "agent", "workflow", "scenario", "development_run", "incident", "recovery", "production_verification"],
+  "scope": [
+    "chat",
+    "agent",
+    "workflow",
+    "scenario",
+    "development_run",
+    "incident",
+    "recovery",
+    "production_verification"
+  ],
   "purpose": "Voorkom dat duurzame technische of operationele kennis alleen in conversatietekst blijft staan. Materiële learnings worden vóór completion genormaliseerd naar het centrale Bedrijfsgeheugen zodat iedere volgende chat, agent en workflow ze kan hergebruiken. Geen materiële run mag terminaliseren zonder exhaustive universal completion manifest.",
   "authority": {
     "role": "CANONICAL_POLICY",
@@ -58,20 +67,67 @@
     ]
   },
   "normalizeMaterialLearningInto": [
-    "FailureClass", "Learning", "Pattern", "AntiPattern", "Policy", "Invariant", "RegressionContract", "Dependency", "Decision", "OutcomeObligation", "ProductionEvidence", "BlockerState", "OwnershipOrSuccessorMapping"
+    "FailureClass",
+    "Learning",
+    "Pattern",
+    "AntiPattern",
+    "Policy",
+    "Invariant",
+    "RegressionContract",
+    "Dependency",
+    "Decision",
+    "OutcomeObligation",
+    "ProductionEvidence",
+    "BlockerState",
+    "OwnershipOrSuccessorMapping"
   ],
   "materiality": {
     "include": [
-      "new error fingerprints", "root causes", "proven fixes", "failed or forbidden approaches", "prevention rules", "regression contracts", "production or public evidence", "cost and performance learnings", "security learnings", "workflow and outcome obligations", "open blocker state", "ownership and successor mappings", "gate or sensor state", "architecture decisions that constrain future work"
+      "new error fingerprints",
+      "root causes",
+      "proven fixes",
+      "failed or forbidden approaches",
+      "prevention rules",
+      "regression contracts",
+      "production or public evidence",
+      "cost and performance learnings",
+      "security learnings",
+      "workflow and outcome obligations",
+      "open blocker state",
+      "ownership and successor mappings",
+      "gate or sensor state",
+      "architecture decisions that constrain future work"
     ],
-    "exclude": ["secrets", "credentials", "PII", "irrelevant conversational wording", "ephemeral acknowledgements", "duplicate learnings with no new evidence"]
+    "exclude": [
+      "secrets",
+      "credentials",
+      "PII",
+      "irrelevant conversational wording",
+      "ephemeral acknowledgements",
+      "duplicate learnings with no new evidence"
+    ]
   },
-  "pipeline": ["extract", "classify", "fingerprint", "deduplicate", "link_evidence", "normalize", "persist_to_brain", "validate_universal_completion_manifest", "refresh_shared_context", "make_available_to_preflight"],
+  "pipeline": [
+    "extract",
+    "classify",
+    "fingerprint",
+    "deduplicate",
+    "link_evidence",
+    "normalize",
+    "persist_to_brain",
+    "validate_universal_completion_manifest",
+    "refresh_shared_context",
+    "make_available_to_preflight"
+  ],
   "dedupe": {
     "requiredBeforeWrite": true,
     "stableFingerprintRequired": true,
     "duplicateAction": "COALESCE_WITH_EXISTING_RECORD",
-    "duplicateMustNotTrigger": ["new_material_write", "duplicate_alert", "expensive_context_refresh"]
+    "duplicateMustNotTrigger": [
+      "new_material_write",
+      "duplicate_alert",
+      "expensive_context_refresh"
+    ]
   },
   "crossChatRequirement": {
     "allFutureAgentsMustReadCanonicalBrainBeforeMaterialExecution": true,
@@ -107,5 +163,24 @@
     "live_and_proven_requires_zero_open_obligations",
     "live_and_proven_requires_exact_candidate_readback",
     "material_change_requires_learning_writeback"
-  ]
+  ],
+  "public_cms_i18n_authority": {
+    "fingerprint": "powerhouse|public-cms-i18n|shared-shell-same-route|v1",
+    "scope": "all current and future chats, agents, skills and website delivery workflows",
+    "rules": [
+      "one canonical public site shell owns header footer mega-menu navigation and language controls",
+      "Dutch routes remain unprefixed and English routes use /en/*",
+      "language switching preserves the same functional route",
+      "build-time localized routes are primary public locale authority",
+      "runtime i18n only normalizes and guards existing public locale links",
+      "i18n assets are versioned to prevent stale browser or CDN behavior",
+      "terminal success requires exact-main production deploy plus live NL→EN→NL browser readback",
+      "do not report intermediate CI deploy or readback state to the user unless a hard boundary requires action"
+    ],
+    "terminal_states": [
+      "LIVE_BEWEZEN",
+      "ROLLED_BACK_GREEN",
+      "BLOCKED_HARD_BOUNDARY"
+    ]
+  }
 }
