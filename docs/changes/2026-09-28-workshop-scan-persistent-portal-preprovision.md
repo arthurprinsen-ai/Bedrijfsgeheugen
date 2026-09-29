@@ -50,3 +50,7 @@ Deze capability is niet alleen runtimecode maar een vaste Powerhouse-regel. Iede
 - schrijft learnings en structurele contractwijzigingen terug naar skill, Brain, ledger, documentatie en System Map.
 
 De capability mag dus niet meer terugvallen naar een browser-only scan, los PDF-bestand of een portal dat pas na registratie leeg wordt aangemaakt.
+
+
+## Persoonlijke PDF-identiteit
+Vanaf 2026-09-29 is de deelnemernaam een verplicht zichtbaar onderdeel van het scanrapport. Beide PDF-pagina's tonen de naam van de deelnemer boven de bedrijfscontext. De bestandsnaam bevat zowel bedrijf als deelnemer. De naam komt uit dezelfde consented portal-intake en blijft gekoppeld aan dezelfde `submission_key`; er ontstaat geen aparte PDF-identiteit of parallel klantrecord.
