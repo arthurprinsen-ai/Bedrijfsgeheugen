@@ -19,4 +19,5 @@ assert.ok(!block.includes('createPost(bufferToken'),'Instagram canonical lane mu
 assert.ok(block.includes('canonicalInstagramComposioContext'),'Instagram identity must be preflighted before provider side effect');
 assert.ok(block.indexOf('canonicalInstagramComposioContext') < block.indexOf('consumePublishCapability'),'identity preflight must happen before capability consumption');
 assert.match(p,/INSTAGRAM_GET_USER_INFO'\s*,\s*\{ig_user_id:'me'/);
+assert.doesNotMatch(p,/INSTAGRAM_CANONICAL_USER_ID/, 'INSTAGRAM_CANONICAL_USER_ID must never remain as an undefined runtime authority');
 console.log('Instagram publication is Composio-only and bound to live Bedrijfsgeheugen provider identity');
