@@ -97,5 +97,31 @@
     "user_retry_or_continue_required": false,
     "resume_from_canonical_checkpoint": true,
     "dedupe_side_effects_after_interruption": true
+  },
+  "greenAssurancePolicy": {
+    "fingerprint": "powerhouse|green-assurance|truthful-closed-loop|v1",
+    "required": true,
+    "skill": ".agents/skills/powerhouse-green-assurance/SKILL.md",
+    "greenRequires": [
+      "required_evidence_fresh",
+      "required_lineage_complete",
+      "required_obligations_terminal_or_valid_hard_boundary",
+      "external_or_provider_readback_when_applicable",
+      "outcome_truth_not_synthesized",
+      "canonical_learning_and_writeback_current"
+    ],
+    "forbiddenGreenInputs": [
+      "wiring_only",
+      "scheduler_active_only",
+      "provider_ack_only",
+      "generated_asset_only",
+      "legacy_telemetry_only",
+      "stale_evidence",
+      "synthetic_success_evidence"
+    ],
+    "providerNeutralFailover": true,
+    "retiredToolingCanBlock": false,
+    "recomputeAfterRepair": true,
+    "unknownIsGreen": false
   }
 }

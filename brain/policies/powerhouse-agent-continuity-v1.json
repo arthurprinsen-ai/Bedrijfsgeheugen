@@ -1,6 +1,6 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.8",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.9",
   "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|terminal-borging-closure|same-repo-reviewable-writeback|v1.8",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
@@ -42,7 +42,12 @@
     "ALL_MATERIAL_BORGING_MUST_BE_REPOSITORY_NATIVE_SAME_LINEAGE_AND_REVIEWABLE",
     "DOCS_CLOSURE_ALIAS_CANONICALIZES_BEFORE_ADMISSION",
     "SETTLED_SUCCESSFUL_DOCUMENT_REQUEST_ABORT_IS_NOT_AN_ASSET_FAILURE",
-    "PRODUCTION_READBACK_ACCEPTS_ONLY_SAFE_NON_RUNTIME_DESCENDANT_SUPERSESSION"
+    "PRODUCTION_READBACK_ACCEPTS_ONLY_SAFE_NON_RUNTIME_DESCENDANT_SUPERSESSION",
+    "GREEN_REQUIRES_FRESH_REQUIRED_EVIDENCE_NOT_WIRING_ONLY",
+    "PROVIDER_NEUTRAL_CAPABILITY_MUST_NOT_DEPEND_ON_ONE_OPTIONAL_VENDOR",
+    "RETIRED_TOOLING_IS_TELEMETRY_ONLY_UNLESS_REAUTHORIZED",
+    "NO_DUPLICATE_SIDE_EFFECT_TO_REPAIR_READBACK",
+    "HEALTH_MUST_RECOMPUTE_AFTER_REPAIR"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -220,7 +225,8 @@
     "brain/learning/2026-09-25-repository-native-borging-all-agents-v1.json",
     "brain/learning/2026-09-25-candidate-type-closure-canonicalization-v1.json",
     "brain/learning/2026-09-25-browser-settled-document-request-failure-v1.json",
-    "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json"
+    "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json",
+    "brain/learning/2026-09-29-powerhouse-green-assurance-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -493,5 +499,23 @@
     ],
     "runtime_affecting_descendant_behavior": "FAIL_CLOSED",
     "non_descendant_behavior": "FAIL_CLOSED"
+  },
+  "green_assurance_rule": {
+    "required": true,
+    "fingerprint": "powerhouse|green-assurance|truthful-closed-loop|v1",
+    "skill": ".agents/skills/powerhouse-green-assurance/SKILL.md",
+    "learning": "brain/learning/2026-09-29-powerhouse-green-assurance-v1.json",
+    "sequence": [
+      "read_runtime_health",
+      "read_terminal_control_plane",
+      "read_required_source_coverage",
+      "read_open_obligations",
+      "repair_root_causes_without_fabricating_evidence",
+      "reconcile_already_proven_side_effects_without_duplicates",
+      "recompute_health",
+      "write_learning_skill_agent_docs_ledger_system_map",
+      "read_after_write"
+    ],
+    "terminal_rule": "GREEN_OR_LIVE_BEWEZEN_ONLY_FROM_CURRENT_REQUIRED_EVIDENCE"
   }
 }
