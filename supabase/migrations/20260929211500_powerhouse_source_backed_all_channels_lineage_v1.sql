@@ -32,7 +32,7 @@ create or replace function public.powerhouse_refresh_outbound_source_lineage_v1(
 returns jsonb
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = public, pg_catalog
 as $$
 declare
   r record;
