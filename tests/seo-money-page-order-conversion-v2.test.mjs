@@ -18,11 +18,16 @@ const moneyPages=[
   'voor-mkb.html'
 ];
 
-test('priority money pages use one low-friction Frisse Blik conversion path',()=>{
+test('priority money pages use one low-friction conversion path',()=>{
   for(const path of moneyPages){
     const html=readFileSync(path,'utf8');
-    assert.match(html,/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/frisse-blik["']/i,`${path}: primary CTA must lead to Frisse Blik`);
-    assert.match(html,/geen verplichting/i,`${path}: risk reversal must be explicit`);
+    if(path==='index.html'){
+      assert.match(html,/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/zelfscan["']/i,`${path}: homepage primary CTA must lead to the ungated Bedrijfslek`);
+      assert.match(html,/Geen formulier\. Geen e-mail\. Meteen resultaat\./i,`${path}: homepage must explain the ungated value exchange`);
+    }else{
+      assert.match(html,/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/frisse-blik["']/i,`${path}: primary CTA must lead to Frisse Blik`);
+      assert.match(html,/geen verplichting/i,`${path}: risk reversal must be explicit`);
+    }
   }
 });
 
@@ -57,7 +62,7 @@ test('final build authority preserves the order path after V18 regeneration',()=
   assert.match(pipeline,/applyMoneyPageOrderConversion/);
   assert.match(finalizer,/id="view-home"/);
   assert.match(finalizer,/Doe de gratis zelfscan/);
-  assert.match(finalizer,/Plan gratis een Frisse Blik/);
+  assert.match(finalizer,/Ontdek gratis waar je bedrijf lekt/);
   assert.match(finalizer,/product\\.html/);
   assert.match(finalizer,/data-money-order-contract/);
   for(const path of moneyPages) assert.ok(finalizer.includes(path), `${path}: missing from finalizer authority`);
