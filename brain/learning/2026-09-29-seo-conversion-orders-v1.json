@@ -39,7 +39,8 @@
     "Limit autonomous daily changes to three reversible evidence-gated changes.",
     "Require production readback and downstream CTA/lead/order/revenue measurement before promoting the learning to PROVEN.",
     "Keep the canonical system map, skill projection, Brain learning, human documentation and regression test synchronized in the same delivery lineage.",
-    "Keep one explicit low-friction primary CTA across priority money pages and route generic contact intent through the canonical qualification path unless evidence shows a better order outcome."
+    "Keep one explicit low-friction primary CTA across priority money pages and route generic contact intent through the canonical qualification path unless evidence shows a better order outcome.",
+    "For generated website routes, enforce CRO/SEO contracts after the final generator/normalizer stage and fail the build on drift; editing readable source HTML alone is not terminal."
   ],
   "canonical_runtime": "config/seo-growth-loop.json",
   "canonical_allowlist": "config/seo-optimization-allowlist.json",
@@ -62,7 +63,9 @@
     "site/seo-order-map.json",
     "tests/brain-seo-conversion-orders-v1.test.mjs",
     "platform/system-map/canonical-system-map.mjs",
-    "tests/seo-money-page-order-conversion-v2.test.mjs"
+    "tests/seo-money-page-order-conversion-v2.test.mjs",
+    "tools/site-shell/apply-money-page-order-conversion.mjs",
+    "tools/prijzen-uit-de-homepage.mjs"
   ],
   "evaluation": {
     "historical_replay": [
@@ -103,5 +106,7 @@
     "voor-mkb"
   ],
   "conversion_path": "free Frisse Blik 30 min -> evidence/fit -> paid Scan or scoped implementation -> outcome learning",
-  "last_application_wave": "2026-09-29-money-pages-wave2"
+  "last_application_wave": "2026-09-29-money-pages-wave2",
+  "root_cause_build_authority": "V18 build regeneration can overwrite readable repository HTML for generated pages such as homepage and product, so conversion rules must also be enforced on the final build artifact.",
+  "build_authority": "tools/site-shell/apply-money-page-order-conversion.mjs via tools/prijzen-uit-de-homepage.mjs"
 }
