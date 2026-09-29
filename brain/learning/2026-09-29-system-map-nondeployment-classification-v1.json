@@ -3,19 +3,22 @@
   "status": "ACTIVE_PREVENTION",
   "failure_class": "SYSTEM_MAP_GOVERNANCE_FALSE_WEBSITE_DEPLOY",
   "problem": "A repository-native skills/agents/chats borging change updated platform/system-map/canonical-system-map.mjs. Delivery classification treated the .mjs system-map source as executable website work, causing Production Source Snapshot to attempt an unrelated Netlify deployment and terminal closure to fail.",
-  "root_cause": "The canonical system-map source is machine-readable governance/documentation but was not listed in the non-executable shared-path authority. Production Source Snapshot also lacked path exclusions for the system map and brain delivery control-plane file.",
-  "fix": "Classify platform/system-map/canonical-system-map.mjs as non-executable shared governance and exclude the system map plus tools/brain-delivery-system.mjs from Production Source Snapshot push deployment triggers.",
+  "root_cause": "The canonical system-map source is machine-readable governance/documentation but was not listed in the non-executable shared-path authority. Production Source Snapshot also lacked path exclusions for the system map and brain delivery control-plane file. A second gap remained: .github/workflows/production-source-snapshot.yml itself was not narrowly scoped and therefore counted as shared executable work, fanning the recovery commit into every lane.",
+  "fix": "Classify platform/system-map/canonical-system-map.mjs as non-executable shared governance and exclude the system map plus tools/brain-delivery-system.mjs from Production Source Snapshot push deployment triggers. The production-source-snapshot workflow is now explicitly backend-scoped in the delivery planner.",
   "prevention": [
     "System-map-only governance changes must not activate website or portal deployment lanes.",
     "Production Source Snapshot must ignore known non-runtime governance/control-plane paths.",
     "Production Release Readback may still provide explicit deployment-not-applicable terminal evidence for governance changes.",
-    "Do not weaken actual website/runtime production gates."
+    "Do not weaken actual website/runtime production gates.",
+    "Production Source Snapshot workflow changes must remain backend-scoped and must never fan a governance recovery into the website lane."
   ],
   "evidence": {
     "triggering_merge": "d734e4f162e78f680582decea1b911d139bb7cd5",
     "failed_snapshot_run": 36536561253,
     "failed_terminal_closure_run": 36536563261,
-    "observed_failure": "unrelated Netlify deployment attempted for governance-only system-map change"
+    "observed_failure": "unrelated Netlify deployment attempted for governance-only system-map change",
+    "follow_up_triggering_merge": "60a65d55e0330848b822cff9dce7f589863dbe20",
+    "follow_up_symptom": "production-release readback still reported deployment_required=true because production-source-snapshot.yml was shared executable"
   },
   "evaluation": {
     "historical_replay": [
