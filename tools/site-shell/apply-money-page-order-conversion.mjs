@@ -35,7 +35,7 @@ function replaceAnchorByText(html, textPattern, { href, text, attr }) {
 
 function transformHome(input) {
   let html = String(input);
-  if (/data-money-primary[^>]+href=["']\/frisse-blik["']/i.test(html) && /30 minuten, geen verplichting/i.test(html)) return html;
+  if (/data-money-primary[^>]+href=["']\/zelfscan["']/i.test(html) && /Geen formulier\. Geen e-mail\. Meteen resultaat\./i.test(html)) return html;
 
   const homeStart = html.indexOf('id="view-home"');
   if (homeStart < 0) throw new Error('money-page conversion: generated homepage view-home not found');
@@ -44,22 +44,22 @@ function transformHome(input) {
 
   let scope = html.slice(homeStart, homeEnd);
   const primary = replaceAnchorByText(scope, /^Doe de gratis zelfscan$/i, {
-    href: '/frisse-blik',
-    text: 'Plan gratis een Frisse Blik →',
+    href: '/zelfscan',
+    text: 'Ontdek gratis waar je bedrijf lekt →',
     attr: 'data-money-primary',
   });
   if (!primary.changed) throw new Error('money-page conversion: homepage hero primary CTA anchor not found');
   scope = primary.html;
 
   const secondary = replaceAnchorByText(scope, /^Bereken je verlies$/i, {
-    href: '/prijzen',
-    text: 'Bekijk prijzen & aanpak',
+    href: '/portaal/demo',
+    text: 'Bekijk het portaal',
     attr: 'data-money-secondary',
   });
   if (!secondary.changed) throw new Error('money-page conversion: homepage hero secondary CTA anchor not found');
   scope = secondary.html;
 
-  const marker = '<p data-money-risk-reversal="true"><strong>30 minuten, geen verplichting.</strong> We bepalen eerst waar kennis, handwerk of stuurinformatie aantoonbaar waarde lekt. Alleen bij voldoende fit volgt een betaalde vervolgstap.</p>';
+  const marker = '<p data-money-risk-reversal="true"><strong>Geen formulier. Geen e-mail. Meteen resultaat.</strong> In 3 minuten zie je je Bedrijfslek-score, grootste risico’s en drie concrete acties. Daarna beslis je pas of je verder wilt.</p>';
   const secondaryIndex = scope.indexOf('data-money-secondary');
   const secondaryClose = scope.indexOf('</a>', secondaryIndex);
   if (secondaryClose < 0) throw new Error('money-page conversion: homepage secondary CTA close not found');
@@ -93,7 +93,8 @@ function transformProduct(input) {
   return html.slice(0, mainStart) + scope + html.slice(mainEnd);
 }
 
-function hasPrimary(html) {
+function hasPrimary(html, path) {
+  if (path === 'index.html') return /data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/zelfscan["']/i.test(html);
   return /data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/frisse-blik["']/i.test(html);
 }
 
@@ -104,8 +105,8 @@ export async function applyMoneyPageOrderConversion() {
     if (path === 'index.html') html = transformHome(html);
     if (path === 'product.html') html = transformProduct(html);
 
-    if (!hasPrimary(html)) {
-      throw new Error(`${path}: final built money page has no primary Frisse Blik CTA`);
+    if (!hasPrimary(html, path)) {
+      throw new Error(`${path}: final built money page has no valid primary conversion CTA`);
     }
     if (!/geen verplichting/i.test(html)) {
       throw new Error(`${path}: final built money page has no explicit risk reversal`);
