@@ -22,7 +22,10 @@
     "docs/changes/2026-09-29-linkedin-company-standard-delivery-v1.md",
     "config/powerhouse-one-million-revenue-operating-contract-v1.json",
     "brain/learning/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.json",
-    "docs/changes/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.md"
+    "docs/changes/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.md",
+    "config/instagram-canonical-provider-identity-v3.json",
+    "brain/learning/2026-09-29-instagram-provider-id-drift-v3.json",
+    "docs/changes/2026-09-29-instagram-provider-id-drift-v3.md"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -54,7 +57,11 @@
     "commercialExecutionBeforeRecommendationWhenAuthorized": true,
     "genericColdBulkAutosendForbidden": true,
     "warmConsentedFollowupAutonomous": true,
-    "realizedRevenueIsCommercialNorthStar": true
+    "realizedRevenueIsCommercialNorthStar": true,
+    "requireLiveInstagramProviderIdentity": true,
+    "instagramProviderIdentityFingerprint": "instagram-canonical-provider-identity-v3",
+    "hardcodedInstagramGraphIdForbidden": true,
+    "instagramCreatePublishReadbackSameProviderUserId": true
   },
   "lessons": [
     {
