@@ -71,3 +71,10 @@ Behavioral revenue closure:
 - persisted behavioral models, outcome hierarchy, rollback and dark-pattern prevention in Brain learning;
 - kept one canonical conversion/revenue stack rather than introducing parallel CRO authority;
 - regression coverage extended to fail on future system-map / learning / skill projection drift.
+
+Chats/agents inheritance closure:
+- promoted the live-proven commercial money-page contract into AGENTS.md;
+- projected the same rule into SEO Conversion-to-Orders and Continuity skills;
+- required same-lineage static-i18n cache closure for future public copy;
+- retained final-build enforcement, exact-main Netlify proof and browser readback;
+- future chats and agents must discover and inherit this through repository preflight.
