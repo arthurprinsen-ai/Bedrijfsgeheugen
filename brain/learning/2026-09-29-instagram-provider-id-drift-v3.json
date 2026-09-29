@@ -3,10 +3,11 @@
   "date": "2026-09-29",
   "problem": "Mira Reel was publication-ready but Composio identity preflight used a stale numeric Instagram provider ID.",
   "root_cause": "A provider connection node id and the Instagram Graph user_id were treated as interchangeable publication identity fields.",
-  "prevention": "Resolve INSTAGRAM_GET_USER_INFO(me), read id and user_id separately, require user_id=17841446582493753 plus username=bedrijfsgeheugen.nl and BUSINESS/CREATOR, and keep create/publish/readback on the same canonical connection.",
+  "prevention": "Resolve INSTAGRAM_GET_USER_INFO(me), read id and user_id separately, require a non-empty live user_id plus username=bedrijfsgeheugen.nl and BUSINESS/CREATOR, and bind create/publish/readback to that same live user_id. Numeric observations remain evidence, not compile-time authority.",
   "failed_approaches": [
     "Hardcoded historical Graph ID",
-    "ACTIVE connection metadata without live provider identity readback"
+    "ACTIVE connection metadata without live provider identity readback",
+    "Referencing an undefined INSTAGRAM_CANONICAL_USER_ID runtime constant."
   ],
   "compiler": {
     "failure_class": "PROVIDER_IDENTITY_DRIFT",
