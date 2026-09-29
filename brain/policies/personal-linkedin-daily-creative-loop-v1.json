@@ -1,0 +1,120 @@
+{
+  "version": "personal-linkedin-daily-creative-loop-v1",
+  "status": "CANONICAL",
+  "owner": "Powerhouse Brain",
+  "channel": "linkedin_personal",
+  "purpose": "Choose and publish a genuinely new recognizable personal-life subject every day without requiring user topic selection.",
+  "loop": [
+    "SCAN",
+    "CANDIDATES",
+    "SEMANTIC_DEDUPE_FATIGUE",
+    "RANK",
+    "TRUTH_PRIVACY_IDENTITY",
+    "GENERATE",
+    "FINAL_DUPLICATE_GATE",
+    "PUBLISH",
+    "PROVIDER_ACK_READBACK",
+    "OUTCOME_24H_72H_7D",
+    "LEARN",
+    "NEXT_DAY_DECISION"
+  ],
+  "candidate_policy": {
+    "minimum_materially_distinct_candidates": 3,
+    "discover_new_categories": true,
+    "dimensions": [
+      "recognition",
+      "freshness",
+      "concreteness",
+      "human_detail",
+      "dry_humor",
+      "conversation_value",
+      "historical_distance"
+    ],
+    "strong_topic_fatigue_penalty": true,
+    "exploration_required": true
+  },
+  "everyday_problem_examples": [
+    "apps",
+    "whatsapp-group-chats",
+    "notifications",
+    "passwords-logins",
+    "customer-service",
+    "subscriptions",
+    "parking-traffic",
+    "shopping-delivery",
+    "school-apps",
+    "sport-apps",
+    "calendars",
+    "forms",
+    "qr-tickets",
+    "household-devices",
+    "digital-government",
+    "smart-devices",
+    "updates-cookies",
+    "family-logistics",
+    "social-awkwardness",
+    "newly-discovered-daily-friction"
+  ],
+  "semantic_uniqueness": {
+    "cross_date": true,
+    "compare": [
+      "subject",
+      "situation",
+      "conflict",
+      "gag",
+      "example",
+      "angle",
+      "moral",
+      "story_family"
+    ],
+    "paraphrase_does_not_reset": true,
+    "provider_create_consumes_story_family": true
+  },
+  "identity_truth": {
+    "personal_life_only": true,
+    "forbid_business_bridge": true,
+    "forbid_sales_cta": true,
+    "forbid_bedrijfsgeheugen_reference": true,
+    "first_person_requires_evidence": true,
+    "invent_personal_event": false
+  },
+  "learning": {
+    "windows": [
+      "24h",
+      "72h",
+      "7d"
+    ],
+    "components": [
+      "category",
+      "hook",
+      "opening",
+      "length",
+      "humor",
+      "discussion_question"
+    ],
+    "reuse_mechanisms_not_consumed_story": true
+  },
+  "consumed_story_families": [
+    {
+      "id": "printer",
+      "source": "historical canonical duplicate feedback"
+    },
+    {
+      "id": "whatsapp-group-chaos",
+      "source": "linkedin-provider-create",
+      "provider_id": "urn:li:share:7510601516681064448",
+      "consumed_at": "2026-09-29"
+    }
+  ],
+  "inherited_by": [
+    "all-current-chats",
+    "all-future-chats",
+    "all-agents",
+    "daily-content-publisher",
+    "powerhouse-content-loop",
+    "powerhouse-content-orchestrator"
+  ],
+  "canonical_skill": ".agents/skills/personal-linkedin-life-only/SKILL.md",
+  "human_doc": "docs/brain/personal-linkedin-daily-creative-loop-v1.md",
+  "chat_preflight": "config/brain-chat-learning-contract.json"
+}
