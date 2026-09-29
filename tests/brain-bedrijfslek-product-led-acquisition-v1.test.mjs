@@ -41,3 +41,27 @@ test('V18 generator cannot overwrite the standalone Bedrijfslek route',()=>{
   assert.match(netlify,/bedrijfslek-build-integrity\.mjs restore/);
   assert.match(netlify,/bedrijfslek-build-integrity\.mjs restore[^\n]*normaliseer-site-ui\.mjs/);
 });
+
+
+test('Bedrijfslek turns one result into a privacy-safe team challenge loop',()=>{
+  const scan=read('zelfscan.html');
+  assert.match(scan,/Daag mijn MT \/ collega uit/i);
+  assert.match(scan,/challenge_score/);
+  assert.match(scan,/challenge_risk/);
+  assert.match(scan,/bedrijfslek-teamchallenge-share/);
+  assert.match(scan,/bedrijfslek-teamchallenge-complete/);
+  assert.match(scan,/zonder account of e-mailadres/i);
+  assert.match(scan,/verschil met jouw score/i);
+});
+
+
+test('Bedrijfsgeheugen Mini converts diagnosis into action before paid conversion',()=>{
+  const scan=read('zelfscan.html');
+  assert.match(scan,/Gratis Bedrijfsgeheugen Mini · 7 dagen/i);
+  assert.match(scan,/renderMini\(laagste\)/);
+  assert.match(scan,/bg_bedrijfsgeheugen_mini/);
+  assert.match(scan,/bedrijfsgeheugen-mini-action-done/);
+  assert.match(scan,/bedrijfsgeheugen-mini-complete/);
+  assert.match(scan,/voortgang blijft alleen in deze browser bewaard/i);
+  assert.match(scan,/borg dit structureel in het portaal/i);
+});
