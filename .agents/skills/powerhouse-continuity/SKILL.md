@@ -1366,3 +1366,8 @@ Required:
 - governance-only closure uses protected main plus applicable non-deployment readback;
 - actual website/portal/runtime changes in the same candidate still retain their normal production gates;
 - never weaken website production proof by mislabeling executable runtime as governance.
+
+## Production snapshot control-plane scope
+Fingerprint: `delivery|production-snapshot|backend-control-plane|v1`.
+
+Changes to `.github/workflows/production-source-snapshot.yml` are delivery control-plane work and must be classified narrowly as backend. They must not fan a governance/system-map recovery into the website lane. Actual website, portal and Netlify runtime paths keep their normal deployment requirements.
