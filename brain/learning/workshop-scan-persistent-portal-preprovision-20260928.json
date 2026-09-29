@@ -1,16 +1,17 @@
 {
-  "fingerprint": "workshop-scan|persistent-intake|portal-preprovision|identity-claim|v2",
+  "fingerprint": "workshop-scan|persistent-intake|portal-preprovision|personal-pdf-identity|v3",
   "date": "2026-09-28",
-  "change": "Persist consented workshop inputs, preprovision the customer portal, and make the same-lineage behavior mandatory for all Powerhouse chats, agents, skills and workflows.",
+  "change": "Make participant identity visibly part of the generated workshop PDF while preserving the same submission lineage, private portal intake and authenticated portal claim.",
   "compiler": {
     "failure_class": "workshop_scan_data_not_durably_available_in_customer_portal"
   },
   "root_cause": "The scan previously persisted only the no-PII aggregate scan event while richer participant/company context remained in browser state and a separate lead route, so a later portal session could lose the data or require re-entry.",
-  "prevention_rule": "Every consented workshop scan must persist the canonical scan, store portal PII in a private service-only intake, create canonical-brain portal state keyed by the same submission_key, and transfer that state to the authenticated tenant on claim. All chats/agents must reuse this existing capability and its single submission lineage. PII must never enter aggregate benchmark/growth learning.",
+  "prevention_rule": "Every consented workshop scan must use one submission_key across stored answers, private intake, generated PDF and portal state. The PDF must visibly show participant name + company context on both pages and use a company+participant filename. The name stays private account/portal context and never enters aggregate benchmark/growth learning.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-workshop-scan-portal-preprovision.test.mjs",
-      "tests/brain-workshopscan-agent-contract.test.mjs"
+      "tests/brain-workshopscan-agent-contract.test.mjs",
+      "tests/brain-workshop-scan-participant-name-pdf.test.mjs"
     ]
   },
   "evidence": {

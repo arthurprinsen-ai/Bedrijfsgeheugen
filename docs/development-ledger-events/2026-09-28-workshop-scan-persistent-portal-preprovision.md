@@ -12,3 +12,5 @@
 
 - 2026-09-28: capability gepromoveerd tot expliciete chat/agent-invariant; alle huidige en toekomstige nodes moeten dezelfde submission-lineage, private PII-intake, portal-preprovisioning en identity-claim hergebruiken.
 - 2026-09-28: System Map registratie en repository-governance toegevoegd zodat preflight deze capability als bestaande Powerhouse-architectuur ontdekt.
+
+- 2026-09-29: persoonlijke workshop-PDF toont deelnemernaam op beide pagina's en gebruikt bedrijf + deelnemer in de bestandsnaam; naam blijft onderdeel van dezelfde private intake/submission-lineage.
