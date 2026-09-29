@@ -44,3 +44,38 @@ test('SEO/CRO guardrails block low-value or deceptive growth tactics',()=>{
   assert.ok((allow.allowed_actions||[]).includes('risk-reversal'));
   assert.ok((allow.allowed_actions||[]).includes('schema-freshness'));
 });
+
+
+test('behavioral landing-page engine is revenue-first and ethical',()=>{
+  const models=new Set(growth.optimization.models||[]);
+  for(const model of [
+    'cialdini-reciprocity',
+    'cialdini-authority',
+    'loss-aversion',
+    'fogg-behavior-model',
+    'hick-hyman-choice-reduction',
+    'cognitive-fluency',
+    'commitment-ladder',
+    'choice-architecture'
+  ]) assert.ok(models.has(model),`missing behavioral model: ${model}`);
+
+  const engine=growth.optimization.behavioral_decision_engine;
+  assert.match(engine.objective,/qualified_order_probability/);
+  assert.equal(engine.autonomy.no_dark_patterns,true);
+  assert.equal(engine.autonomy.rollback_on_guardrail_regression,true);
+  assert.equal(engine.optimization_metric_order[0],'realized_revenue');
+  assert.equal(engine.optimization_metric_order[1],'paid_orders');
+});
+
+test('CRO action surface supports autonomous page composition without dark patterns',()=>{
+  const actions=new Set(allow.allowed_actions||[]);
+  for(const action of ['section-order','proof-placement','trust-block','choice-reduction','commitment-step','loss-gain-framing']){
+    assert.ok(actions.has(action),`missing CRO action: ${action}`);
+  }
+  const blocked=new Set(allow.always_blocked_without_explicit_evidence||[]);
+  for(const action of ['fake-scarcity','fake-urgency','fake-social-proof','hidden-cost','preselected-consent','confirmshaming']){
+    assert.ok(blocked.has(action),`missing dark-pattern guard: ${action}`);
+  }
+  assert.ok((allow.cro_decision_requirements||[]).includes('reversible-change'));
+  assert.ok((allow.cro_decision_requirements||[]).includes('preserve-accessibility-and-mobile-readability'));
+});
