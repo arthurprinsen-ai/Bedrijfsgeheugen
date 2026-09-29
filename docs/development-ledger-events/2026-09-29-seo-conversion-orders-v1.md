@@ -50,3 +50,8 @@ Existing-page conversion application:
 - removed stale AFAS monitoring price and unsupported trust/security copy;
 - added regression test `tests/seo-money-page-order-conversion-v2.test.mjs`.
 
+Money-page conversion wave 2:
+- extended the same qualified-order path to Twinfield, AI adoption, Bedrijfsgeheugen and Voor MKB;
+- aligned AI-adoption canonical CTA authority with the visible Frisse Blik route;
+- expanded conversion regression coverage to all four pages;
+- preserved existing-page-first and no-duplicate-intent rules.
