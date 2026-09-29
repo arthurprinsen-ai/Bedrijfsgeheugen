@@ -784,8 +784,8 @@ Fingerprint: `instagram-canonical-provider-identity-v3`.
 
 Alle huidige en toekomstige chats/agents die Instagram publiceren, herstellen of controleren erven:
 - resolve canonical identity via `INSTAGRAM_GET_USER_INFO(me)` op de geselecteerde canonical Composio-verbinding;
-- behandel provider node `id=28537384955950341` en Instagram Graph `user_id=17841446582493753` als verschillende identifiers;
-- publication identity vereist Graph `user_id=17841446582493753`, username `bedrijfsgeheugen.nl` en BUSINESS/CREATOR;
+- behandel provider node `id` en Instagram Graph `user_id` als verschillende live provider-identifiers;
+- publication identity vereist live `user_id`, username `bedrijfsgeheugen.nl` en BUSINESS/CREATOR; historische numerieke IDs zijn alleen evidence en nooit runtime-authority;
 - identity-check, create, publish en readback gebruiken dezelfde canonical connection;
 - provider-ID/schema drift is pre-provider herstelbaar en mag nooit Buffer/Make fallback, replacement content of duplicaatpublicatie veroorzaken;
 - na provider-create met duurzaam media-ID geldt `republish_forbidden=true` en alleen exact-ID reconcile.

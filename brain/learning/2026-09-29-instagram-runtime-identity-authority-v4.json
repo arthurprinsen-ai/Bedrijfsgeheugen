@@ -1,0 +1,36 @@
+{
+  "fingerprint": "instagram-runtime-identity-authority-v4",
+  "date": "2026-09-29",
+  "problem": "The deployed Instagram publisher referenced INSTAGRAM_CANONICAL_USER_ID after the literal constant had been removed, creating a latent ReferenceError for a future publish run.",
+  "root_cause": "Identity governance evolved from a hardcoded Graph ID to live provider readback, but two runtime comparisons still referenced the deleted constant. Existing tests rejected the literal ID but did not reject the undefined symbol.",
+  "prevention": "Never compare against a historical numeric Instagram ID at runtime. Resolve id and user_id live from INSTAGRAM_GET_USER_INFO(me), require canonical username plus BUSINESS/CREATOR, use the live user_id from that same canonical connection for create/publish/readback, and regression-test that INSTAGRAM_CANONICAL_USER_ID is absent from executable source.",
+  "failed_approaches": [
+    "Treating observed node id as Graph publication user_id.",
+    "Removing the hardcoded literal without removing all references to the deleted symbol."
+  ],
+  "compiler": {
+    "failure_class": "PROVIDER_IDENTITY_AUTHORITY_DRIFT",
+    "scope": "SOCIAL_PUBLICATION",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-canonical-identity-v1.test.mjs",
+      "tests/brain-social-provider-health-preflight-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "live_provider_readback": {
+      "username": "bedrijfsgeheugen.nl",
+      "account_type": "BUSINESS",
+      "observed_node_id": "28537384955950341",
+      "observed_graph_user_id": "17841446582493753",
+      "media_id": "18105956765257858",
+      "permalink": "https://www.instagram.com/reel/Dd4MOdTEarq/"
+    },
+    "publisher": "supabase/functions/powerhouse-social-publisher/index.ts",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "status": "ACTIVE_PREVENTION"
+}
