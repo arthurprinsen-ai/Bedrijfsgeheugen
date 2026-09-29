@@ -4,34 +4,23 @@
   "fingerprint": "powerhouse|live-assurance-writeback|2026-09-29-v1",
   "date": "2026-09-29",
   "status": "ACTIVE_PREVENTION",
-  "context": "Final governance closure after live recovery of NL/EN route authority and exact production deployment.",
-  "root_cause": "The live recovery state had been proven in production, but terminal governance was still distributed across runtime evidence and prior chat/agent execution rather than being fully projected into one repository-native closure lineage with skills, AGENTS/chat contract, continuity policy, Brain learning, ledger, human documentation and System Map read-after-write.",
-  "evidence": {
+  "context": "Governance closure after live NL/EN route-authority recovery.",
+  "observed": {
     "production_main": "204269314239ea2cc56a00a0da1ed87a5056415f",
     "netlify_deploy": "6abbdf73c4c7d80008d9811f",
-    "netlify_state": "ready",
-    "netlify_context": "production",
-    "repository_projection": [
-      ".agents/skills/powerhouse-green-assurance/SKILL.md",
-      ".agents/skills/powerhouse-continuity/SKILL.md",
-      "AGENTS.md",
-      "brain/policies/powerhouse-agent-continuity-v1.json",
-      "platform/system-map/canonical-system-map.mjs",
-      "docs/changes/2026-09-29-live-assurance-governance-closure-v1.md",
-      "docs/development-ledger-events/2026-09-29-live-assurance-governance-closure-v1.md"
-    ],
-    "human_system_map": "Notion Powerhouse Canonical System Map & Agent Update Contract updated with Live Assurance governance closure",
-    "truth_boundary": "Exact ready production proves deployment identity only; functional sub-capabilities require their own current readback."
+    "deploy_state": "ready",
+    "deploy_context": "production",
+    "production_url": "https://www.bedrijfsgeheugen.nl"
   },
   "lessons": [
     "A ready exact production deploy is deployment evidence, not blanket functional evidence for every sub-flow.",
-    "Live recovery is not fully governed until skills, agent/chat contracts, Brain learning, ledger/docs and System Map all contain the same truth-boundary and are read back.",
+    "Live recovery is not governance-complete until skills, agent/chat contracts, Brain learning, ledger/docs and System Map contain the same truth-boundary and are read back.",
     "Historical LIVE/GREEN may never be reused as current health without fresh runtime/provider readback."
   ],
   "prevention": [
-    "Write terminal production identity into canonical learning and ledger after material live recovery.",
+    "Persist terminal production identity after each material live recovery.",
     "Project the same rule into Green Assurance, continuity and AGENTS/chat contract.",
-    "Keep functional sub-gates such as pricing and NL↔EN independent from deploy-state truth.",
+    "Keep functional sub-gates independent from deploy-state truth.",
     "Require read-after-write on governance projections."
   ],
   "compiler": {
@@ -49,5 +38,5 @@
       "tests/brain-material-writeback-closure-guard.test.mjs"
     ]
   },
-  "truth_boundary": "This record proves governance writeback and exact deployment identity; it does not assert future runtime health without fresh readback."
+  "truth_boundary": "This record proves governance writeback and historical exact deployment identity; it does not assert future runtime health without fresh readback."
 }
