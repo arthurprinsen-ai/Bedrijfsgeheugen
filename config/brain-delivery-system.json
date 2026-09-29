@@ -276,6 +276,7 @@
         "tests/notion-synced-posts-",
         "tests/platform-promotion-",
         "tests/powerhouse-daily-self-evolution",
+        "tests/powerhouse-daily-compound-learning",
         "tests/powerhouse-foresight-autonomy",
         "tests/powerhouse-revenue-calibration-persistence-contract.test.mjs",
         "tests/powerhouse-runtime-action-learning-api.test.mjs",
