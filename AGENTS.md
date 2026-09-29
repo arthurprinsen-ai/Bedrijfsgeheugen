@@ -633,3 +633,20 @@ Canonieke authorities:
 - regression: `tests/brain-linkedin-company-historical-dedupe-v1.test.mjs`.
 
 Deze regel is onderdeel van Powerhouse/One Brain en wordt automatisch geërfd; lokale chatcontext mag hem niet afzwakken of overschrijven.
+
+
+## LinkedIn company OAuth capability — provider proof boven connectorstatus
+
+Fingerprint: `linkedin-company-scope-aware-reconnect-v1`.
+
+Voor LinkedIn-bedrijfspublicatie geldt voor alle chats/agents:
+- Composio `ACTIVE` is geen bewijs van een geldige provider-token of organisatie-scope;
+- `REVOKED_ACCESS_TOKEN` maakt de account direct ongeschikt voor publiceren, ook als Composio hem nog ACTIVE noemt;
+- `LINKEDIN_GET_MY_INFO` groen + `LINKEDIN_GET_COMPANY_INFO` 403 is `SCOPE_DEFICIENT`, niet hersteld;
+- een bedrijfsreconnect moet expliciet een organisatie-capabele auth-config gebruiken en live organisatie-ACL/write-capability bewijzen voor `urn:li:organization:18234216`;
+- reconnects via een persoonlijke/default auth-config mogen nooit als bedrijfsherstel worden geaccepteerd;
+- houd exact één capability-bewezen canonieke bedrijfsverbinding over; stale/ingetrokken/scope-deficiënte bedrijfsaliases mogen geen dagelijkse writer zijn;
+- bij een echte OAuth/auth-config hard boundary wordt exact één menselijke autorisatiestap gevraagd, terwijl dezelfde dagelijkse claim en contentreservering behouden blijven;
+- Buffer/Make/persoonlijk LinkedIn zijn nooit fallback voor de Bedrijfsgeheugen-bedrijfspagina.
+
+Canonieke skill: `.agents/skills/linkedin-composio-publisher/SKILL.md`.
