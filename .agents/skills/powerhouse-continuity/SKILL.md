@@ -1441,3 +1441,17 @@ Wanneer een chat of agent verdergaat op Bedrijfslek/growth-werk:
 - een chatwissel of onderbreking mag nooit terugvallen naar advies-only, contact-first of een losse campagne;
 - repository closure omvat minimaal Growth Swarm-skill, SEO/CRO-skill waar relevant, AGENTS inheritance, System Map, Brain learning, human docs, ledger en regression evidence;
 - de owner blijft verantwoordelijk tot deze writeback op protected main aantoonbaar discoverable is.
+
+
+## Truthful Green Assurance
+Fingerprint: `powerhouse|green-assurance|truthful-closed-loop|v1`.
+
+When Powerhouse must be “all green”, continuity ownership means root-cause assurance, not status repainting. Use `.agents/skills/powerhouse-green-assurance/SKILL.md`.
+
+Permanent:
+- required evidence freshness, lineage, obligations and provider/readback truth outrank wiring/activity;
+- provider-neutral capabilities may fail over across approved sources while provider-specific telemetry remains visible;
+- retired tooling cannot remain a hidden blocking authority;
+- already-proven side effects are reconciled and never duplicated;
+- health is recomputed after repair;
+- learning is projected into agents/chats/skills/docs/System Map before terminal completion.

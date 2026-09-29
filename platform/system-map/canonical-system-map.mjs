@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-29T08:45:00Z',
+  observedAt:'2026-09-29T14:20:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,36 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'green-assurance-v1',
+      label:'Powerhouse Truthful Green Assurance',
+      authority:'supabase+github+provider-readback',
+      owner:'whole-brain-reliability',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['runtime health','terminal control-plane health','required evidence coverage','open obligations','provider readback','outcome evidence']),
+      outputs:Object.freeze(['root-cause repair','recomputed health','provider-neutral failover state','learning/skill/agent/docs/System Map writeback']),
+      runtime:Object.freeze({
+        oneBrainHealth:'public.powerhouse_one_brain_runtime_health_v1',
+        terminalHealth:'public.powerhouse_terminal_control_plane_health_v1',
+        evidenceHealth:'public.powerhouse_evidence_operating_health_v3',
+        sourceCoverage:'public.powerhouse_evidence_source_coverage_v1',
+        skill:'.agents/skills/powerhouse-green-assurance/SKILL.md',
+        learning:'brain/learning/2026-09-29-powerhouse-green-assurance-v1.json',
+        truthContract:'config/powerhouse-truth-status-contract.json'
+      }),
+      invariants:Object.freeze({
+        wiringIsNotGreen:true,
+        staleIsNotGreen:true,
+        unknownIsNotGreen:true,
+        providerAckIsNotOutcome:true,
+        providerNeutralFailover:true,
+        retiredToolingTelemetryOnly:true,
+        noDuplicateRepublish:true,
+        instagramMiraExactProofRequired:true,
+        recomputeAfterRepair:true,
+        canonicalWritebackRequired:true
+      })
+    }),
     Object.freeze({
       id:'daily-compound-learning',
       label:'Powerhouse Daily Compound Learning',
@@ -336,46 +366,6 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         noParallelIntentStore:true,
         consentAndSuppressionRemainAuthoritative:true,
         evidenceAndFatigueGatesRemainAuthoritative:true
-      })
-    }),
-    Object.freeze({
-      id:'one-million-revenue-operating-contract',
-      label:'€1M Revenue Operating Contract',
-      authority:'powerhouse-one-brain',
-      owner:'commercial-intelligence',
-      status:'ACTIVE',
-      inputs:Object.freeze(['relationship/company intelligence','Growth Swarm evidence','website/scan intent','social engagement','email replies','open opportunities','orders','realized revenue']),
-      outputs:Object.freeze(['daily commercial next-best-action','authorized execution','provider/readback evidence','order/revenue pacing','commercial learning']),
-      runtime:Object.freeze({
-        contract:'config/powerhouse-one-million-revenue-operating-contract-v1.json',
-        schedulerOwner:'powerhouse-commercial-learning-v1',
-        growthSkill:'.agents/skills/powerhouse-growth-swarm/SKILL.md',
-        linkedinSkill:'.agents/skills/powerhouse-linkedin-sales-machine/SKILL.md',
-        relationshipSkill:'.agents/skills/powerhouse-relationship-revenue/SKILL.md',
-        persuasionSkill:'.agents/skills/powerhouse-persuasion-revenue/SKILL.md',
-        seoSkill:'.agents/skills/seo-revenue-growth/SKILL.md',
-        outreachExecutor:'supabase/functions/powerhouse-autonomous-outreach/index.ts',
-        linkedinExecutor:'supabase/functions/powerhouse-linkedin-sales-machine/index.ts',
-        socialExecutor:'powerhouse-social-publisher',
-        learning:'brain/learning/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.json'
-      }),
-      objective:Object.freeze({
-        realizedRevenueEur:1000000,
-        horizonDays:365,
-        targetDate:'2027-09-29',
-        terminalNorthStar:'realized_revenue'
-      }),
-      invariants:Object.freeze({
-        oneCommercialTruth:true,
-        executeAuthorizedActionBeforeRecommendation:true,
-        genericColdBulkAutosend:false,
-        warmConsentedFollowupAutonomous:true,
-        consentSuppressionAndDedupeHardGates:true,
-        linkedinPersonalCompanyCampaignsForbidden:true,
-        instagramMiraOnly:true,
-        providerReadbackRequired:true,
-        revenueOutcomeLearningRequired:true,
-        noParallelCommercialScheduler:true
       })
     }),
     Object.freeze({
