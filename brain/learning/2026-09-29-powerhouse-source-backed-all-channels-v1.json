@@ -25,7 +25,7 @@
     "learning",
     "next_selection"
   ],
-  "status": "PRODUCTION_ACTIVATED_SOURCE_TO_SELECTION_AND_OUTCOME_LINEAGE",
+  "status": "RUNTIME_IMPLEMENTED_SOURCE_SELECTION_PROVEN_AND_CONTINUOUSLY_ASSURED",
   "failure_class": "OUTBOUND_SOURCE_LINEAGE_GAP",
   "evaluation": {
     "historical_replay": [
@@ -72,7 +72,16 @@
       "powerhouse-content-orchestrator",
       "powerhouse_outbound_source_lineage_v1",
       "powerhouse_sales_actions_source_gate_v1"
-    ]
+    ],
+    "continuous_assurance": {
+      "loop_key": "source-backed-outbound",
+      "status": "GREEN",
+      "scheduler_active": true,
+      "fresh_stage_count": 8,
+      "required_stage_count": 8,
+      "missing_stages": [],
+      "checked_at": "2026-09-29T19:25:33.362040Z"
+    }
   },
   "production_evidence": {
     "instagram": {
