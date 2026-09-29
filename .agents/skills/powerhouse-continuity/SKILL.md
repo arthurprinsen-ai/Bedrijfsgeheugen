@@ -1455,3 +1455,10 @@ Permanent:
 - already-proven side effects are reconciled and never duplicated;
 - health is recomputed after repair;
 - learning is projected into agents/chats/skills/docs/System Map before terminal completion.
+
+
+## CMS/i18n continuation checkpoint
+
+Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
+
+Bij interruption, chat-streamingverlies, CI-wachttijd of main-drift hervat de owner-node dezelfde obligation vanaf de laatst bewezen checkpoint. Geen nieuwe parallelle PR voor dezelfde CMS/i18n-obligation tenzij de bestaande lineage aantoonbaar niet herstelbaar is. De gebruiker hoeft niet opnieuw `ga door`, `zet live` of `borg` te zeggen.
