@@ -1,9 +1,48 @@
 {
-  "fingerprint":"powerhouse-source-backed-all-channels-v1",
-  "date":"2026-09-29",
-  "learning":"The source-backed selection principle is a Powerhouse-wide outbound rule, not an Instagram-only rule.",
-  "scope":["instagram_company","linkedin_personal","linkedin_company","blog","email","linkedin_dm"],
-  "guardrail":"Shared evidence spine, channel-native transformation. Public evidence may select a personal topic but can never fabricate Arthur first-person experience.",
-  "canonical_loop":["source","evidence","dedupe","problem_or_trigger","channel_fit","candidate","identity_and_truth_gate","publish_or_send","provider_readback","outcome","learning","next_selection"],
-  "status":"CONTRACT_IMPLEMENTED"
+  "fingerprint": "powerhouse-source-backed-all-channels-v1",
+  "date": "2026-09-29",
+  "learning": "The source-backed selection principle is a Powerhouse-wide outbound rule, not an Instagram-only rule.",
+  "scope": [
+    "instagram_company",
+    "linkedin_personal",
+    "linkedin_company",
+    "blog",
+    "email",
+    "linkedin_dm"
+  ],
+  "guardrail": "Shared evidence spine, channel-native transformation. Public evidence may select a personal topic but can never fabricate Arthur first-person experience.",
+  "canonical_loop": [
+    "source",
+    "evidence",
+    "dedupe",
+    "problem_or_trigger",
+    "channel_fit",
+    "candidate",
+    "identity_and_truth_gate",
+    "publish_or_send",
+    "provider_readback",
+    "outcome",
+    "learning",
+    "next_selection"
+  ],
+  "status": "CONTRACT_IMPLEMENTED",
+  "failure_class": "OUTBOUND_SOURCE_LINEAGE_GAP",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "OUTBOUND_SOURCE_LINEAGE_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "linkedin-composio-publisher",
+    "personal-linkedin-life-only",
+    "powerhouse-growth-swarm"
+  ]
 }
