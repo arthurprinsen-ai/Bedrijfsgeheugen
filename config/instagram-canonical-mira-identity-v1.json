@@ -1,0 +1,16 @@
+{
+  "version": "instagram-canonical-mira-identity-v1",
+  "canonical_reference": {
+    "provider": "openart",
+    "media_type": "image",
+    "reference_id": "Yjqu4D7v76HABNPmQPj1",
+    "label": "Fictional Mira master",
+    "source": "OpenArt generated fictional AI character; no user photo reference"
+  },
+  "forbidden_user_reference_ids": [
+    "Jt5SWKRgyK3heTqEXH4w",
+    "w4HhwCmX5GxL8jTGljxe",
+    "umWzAKt6YBeoVpHlKTtK"
+  ],
+  "rule": "Instagram Mira media must prove canonical_reference.reference_id before VERIFYING or publication. User-upload identity assets are never valid Mira references."
+}
