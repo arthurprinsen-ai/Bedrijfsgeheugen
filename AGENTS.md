@@ -810,3 +810,20 @@ Fingerprint: `instagram-live-proven-20260929-v1`.
 - Current canonical evidence: @bedrijfsgeheugen.nl, BUSINESS, provider user id `28537384955950341`, post id `18105956765257858`, permalink `https://www.instagram.com/reel/Dd4MOdTEarq/`.
 - Exact final media SHA-256: `1624616152e89468579fd110db7e68d1900b39bb0309db40acffc7b95000dfa7`; identity confidence 0.93; continuity confidence 0.93.
 - After LIVE_PROVEN only outcome collection/learning is allowed; republish/replacement is forbidden for the same daily claim.
+
+## Continuous loop integrity — verplicht
+
+Fingerprint: `powerhouse-loop-assurance-v2`.
+
+Iedere huidige en toekomstige materiële Powerhouse-capability, workflow, scheduler, publicatielijn, sales/outreach-flow, intelligence-loop en recovery-loop valt onder de canonieke Loop Assurance-laag.
+
+- registreer de loop in `powerhouse/assurance/loop-registry.json`;
+- bewijs `input → decision → action → readback → outcome → measurement → learning → guard`;
+- als een scheduler hoort bij de loop moet die actief en opgenomen zijn;
+- GREEN mag alleen ontstaan bij actuele end-to-end evidence; ontbrekende stage-evidence is minimaal AMBER;
+- ontbrekende/inactieve scheduler of >2× cadence stale runtime is RED;
+- AMBER/RED materialiseren als bestaande `OPERATIONS_ASSURANCE` Brain-obligation en worden niet alleen in chat gemeld;
+- herstel schrijft nieuwe stage/runtime-evidence terug zodat de obligation automatisch kan sluiten;
+- een nieuwe capability zonder Loop Assurance-registratie en evidencecontract is niet production-ready.
+
+Canonieke runtime: `public.powerhouse_loop_assurance_state_v1`, `public.powerhouse_loop_assurance_receipts_v1`, `public.powerhouse_refresh_loop_assurance_v1()`.

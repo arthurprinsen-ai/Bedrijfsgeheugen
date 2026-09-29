@@ -1,6 +1,11 @@
 {
   "fingerprint": "powerhouse-assurance-layer-v1",
-  "drift_roots": [".github/workflows", "netlify/functions", "portal-v2", "supabase/functions"],
+  "drift_roots": [
+    ".github/workflows",
+    "netlify/functions",
+    "portal-v2",
+    "supabase/functions"
+  ],
   "components": [
     {
       "canonical_id": "powerhouse-assurance-layer-v1",
@@ -8,16 +13,38 @@
       "lifecycle": "active",
       "authority": "GitHub current main plus GitHub Actions readback",
       "owner": "Powerhouse governance",
-      "code_paths": ["scripts/powerhouse-assurance-check.mjs", "tests/powerhouse-assurance.test.mjs", ".github/workflows/powerhouse-assurance.yml", "powerhouse/assurance/**"],
-      "runtime_surfaces": ["GitHub Actions", "Powerhouse documentation projection"],
-      "docs": ["docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md", "docs/superpowers/specs/2026-09-15-powerhouse-assurance-layer-design.md", "docs/superpowers/plans/2026-09-15-powerhouse-assurance-layer.md"],
-      "dependencies": ["GitHub", "existing Powerhouse runtime readbacks", "Notion canonical documentation"],
+      "code_paths": [
+        "scripts/powerhouse-assurance-check.mjs",
+        "tests/powerhouse-assurance.test.mjs",
+        ".github/workflows/powerhouse-assurance.yml",
+        "powerhouse/assurance/**"
+      ],
+      "runtime_surfaces": [
+        "GitHub Actions",
+        "Powerhouse documentation projection"
+      ],
+      "docs": [
+        "docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md",
+        "docs/superpowers/specs/2026-09-15-powerhouse-assurance-layer-design.md",
+        "docs/superpowers/plans/2026-09-15-powerhouse-assurance-layer.md"
+      ],
+      "dependencies": [
+        "GitHub",
+        "existing Powerhouse runtime readbacks",
+        "Notion canonical documentation"
+      ],
       "data_contract": "Consumes assurance manifests and existing evidence references; creates no parallel business-data authority.",
       "security_contract": "Read-only validation; no secret values in manifests; fail-closed on contract gaps.",
       "observability_contract": "GitHub Actions check plus deterministic JSON report.",
-      "recovery_contract": {"critical": false, "status": "tested", "evidence": "CI rerun and Git revert are intrinsic to this non-runtime validation layer"},
+      "recovery_contract": {
+        "critical": false,
+        "status": "tested",
+        "evidence": "CI rerun and Git revert are intrinsic to this non-runtime validation layer"
+      },
       "cost_capacity_contract": "Static deterministic validation; bounded repository scan; no paid provider calls.",
-      "test_contract": ["tests/powerhouse-assurance.test.mjs"],
+      "test_contract": [
+        "tests/powerhouse-assurance.test.mjs"
+      ],
       "evidence_contract": "Merged SHA, successful Powerhouse Assurance workflow, current-main readback and Notion writeback.",
       "learning_contract": "Failures become deduplicated obligations and feed existing Powerhouse learning/error lineage.",
       "last_verified_at": "2026-09-15T20:05:00Z"
@@ -28,16 +55,73 @@
       "lifecycle": "active",
       "authority": "Powerhouse Assurance + BRAIN-DELIVERY-v2 + deterministic GitHub Actions evidence; v2 is an extension and v1 remains release authority",
       "owner": "Powerhouse quality governance",
-      "code_paths": ["powerhouse/assurance/quality-intelligence.json", "powerhouse/assurance/quality-intelligence-v2.json", "powerhouse/assurance/quality-innovation-sources.json", "scripts/brain/powerhouse-quality-intelligence.mjs", "scripts/brain/quality/**", "tests/brain-quality-intelligence.test.mjs", "tests/brain-quality-intelligence-v2.test.mjs", "tests/brain-quality-*.test.mjs", "tests/brain-quality/**", "tests/brain-quality-performance/**", "config/powerhouse-quality-*.json", "config/stryker.quality.conf.json", ".github/workflows/powerhouse-quality-intelligence.yml", ".github/workflows/powerhouse-codeql.yml"],
-      "runtime_surfaces": ["GitHub Actions", "https://www.bedrijfsgeheugen.nl/", "registered Portal/cockpit/API/integration targets only"],
-      "docs": ["docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md", "docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-design.md", "docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence.md", "docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-v2-design.md", "docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence-v2.md"],
-      "dependencies": ["Powerhouse Assurance", "BRAIN-DELIVERY-v2", "BRAIN-CLOSED-LOOP-v1", "existing accepted website/visual baselines", "Playwright", "axe-core", "Hypothesis", "Schemathesis", "Testcontainers", "k6", "CodeQL", "Trivy", "OWASP ZAP", "Stryker", "Syft", "GitHub artifact attestations"],
+      "code_paths": [
+        "powerhouse/assurance/quality-intelligence.json",
+        "powerhouse/assurance/quality-intelligence-v2.json",
+        "powerhouse/assurance/quality-innovation-sources.json",
+        "scripts/brain/powerhouse-quality-intelligence.mjs",
+        "scripts/brain/quality/**",
+        "tests/brain-quality-intelligence.test.mjs",
+        "tests/brain-quality-intelligence-v2.test.mjs",
+        "tests/brain-quality-*.test.mjs",
+        "tests/brain-quality/**",
+        "tests/brain-quality-performance/**",
+        "config/powerhouse-quality-*.json",
+        "config/stryker.quality.conf.json",
+        ".github/workflows/powerhouse-quality-intelligence.yml",
+        ".github/workflows/powerhouse-codeql.yml"
+      ],
+      "runtime_surfaces": [
+        "GitHub Actions",
+        "https://www.bedrijfsgeheugen.nl/",
+        "registered Portal/cockpit/API/integration targets only"
+      ],
+      "docs": [
+        "docs/powerhouse/POWERHOUSE_QUALITY_INTELLIGENCE.md",
+        "docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-design.md",
+        "docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence.md",
+        "docs/superpowers/specs/2026-09-16-powerhouse-quality-intelligence-v2-design.md",
+        "docs/superpowers/plans/2026-09-16-powerhouse-quality-intelligence-v2.md"
+      ],
+      "dependencies": [
+        "Powerhouse Assurance",
+        "BRAIN-DELIVERY-v2",
+        "BRAIN-CLOSED-LOOP-v1",
+        "existing accepted website/visual baselines",
+        "Playwright",
+        "axe-core",
+        "Hypothesis",
+        "Schemathesis",
+        "Testcontainers",
+        "k6",
+        "CodeQL",
+        "Trivy",
+        "OWASP ZAP",
+        "Stryker",
+        "Syft",
+        "GitHub artifact attestations"
+      ],
       "data_contract": "Creates quality evidence, blind-spot obligations and impact classification only; business/runtime truth remains in existing canonical Powerhouse and provider authorities.",
       "security_contract": "AI cannot waive deterministic gates; security findings remain independent; destructive production exploration is forbidden; no secrets are inferred or persisted; unregistered authenticated targets remain fail-closed obligations.",
       "observability_contract": "Per-dimension GitHub Actions evidence with exact candidate SHA, artifacts and deterministic status; scheduled deep sensors preserve their own evidence; UNKNOWN/NOT_REGISTERED are never green.",
-      "recovery_contract": {"critical": false, "status": "tested_core", "evidence": "v1+v2 core quality contracts are regression-tested and revertable; external deep targets remain independently evidenced and must not be inferred from core green."},
+      "recovery_contract": {
+        "critical": false,
+        "status": "tested_core",
+        "evidence": "v1+v2 core quality contracts are regression-tested and revertable; external deep targets remain independently evidenced and must not be inferred from core green."
+      },
       "cost_capacity_contract": "Impact-select expensive PR jobs; deep browser/adversarial/performance/mutation/DAST/provenance jobs are scheduled/manual; quality economics may place tests but cannot waive critical gates.",
-      "test_contract": ["tests/brain-quality-intelligence.test.mjs", "tests/brain-quality-intelligence-v2.test.mjs", "tests/brain-quality-exploration.test.mjs", "tests/brain-quality-adversarial.test.mjs", "tests/brain-quality-production-shadow.test.mjs", "tests/brain-quality-economics.test.mjs", "tests/brain-quality/test_powerhouse_quality_properties.py", "tests/brain-quality/test_powerhouse_api_contract.py", "tests/brain-quality/test_powerhouse_integration_profile.py", "tests/brain-quality-performance/powerhouse-smoke.js"],
+      "test_contract": [
+        "tests/brain-quality-intelligence.test.mjs",
+        "tests/brain-quality-intelligence-v2.test.mjs",
+        "tests/brain-quality-exploration.test.mjs",
+        "tests/brain-quality-adversarial.test.mjs",
+        "tests/brain-quality-production-shadow.test.mjs",
+        "tests/brain-quality-economics.test.mjs",
+        "tests/brain-quality/test_powerhouse_quality_properties.py",
+        "tests/brain-quality/test_powerhouse_api_contract.py",
+        "tests/brain-quality/test_powerhouse_integration_profile.py",
+        "tests/brain-quality-performance/powerhouse-smoke.js"
+      ],
       "evidence_contract": "Core green requires deterministic v1+v2 contract evidence on exact candidate SHA. Scheduled sensors, exact-SHA provenance and registered external targets require their own same-target evidence and may never be inferred from a skipped/unregistered test.",
       "learning_contract": "Escaped defects reuse BRAIN-CLOSED-LOOP-v1 and BG168/BG166/BG167; no parallel QA learning store. Internet discoveries are candidates for controlled experiments, never automatic adoption.",
       "last_verified_at": "2026-09-16T10:44:00Z"
@@ -48,16 +132,38 @@
       "lifecycle": "active",
       "authority": "GitHub current main + Netlify production deploy + public URL readback",
       "owner": "Powerhouse website",
-      "code_paths": ["*.html", "assets/**", "css/**", "js/**", "_headers", "_redirects", "netlify.toml"],
-      "runtime_surfaces": ["https://www.bedrijfsgeheugen.nl/"],
-      "docs": ["docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md"],
-      "dependencies": ["Netlify", "Supabase", "approved analytics/search providers"],
+      "code_paths": [
+        "*.html",
+        "assets/**",
+        "css/**",
+        "js/**",
+        "_headers",
+        "_redirects",
+        "netlify.toml"
+      ],
+      "runtime_surfaces": [
+        "https://www.bedrijfsgeheugen.nl/"
+      ],
+      "docs": [
+        "docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md"
+      ],
+      "dependencies": [
+        "Netlify",
+        "Supabase",
+        "approved analytics/search providers"
+      ],
       "data_contract": "Website reads/writes only through approved canonical Powerhouse and provider contracts.",
       "security_contract": "Headers, redirects, server-side secret boundaries and public-route fail-closed rules remain code/release governed.",
       "observability_contract": "Netlify deploy SHA, public URL readback and existing health/analytics evidence.",
-      "recovery_contract": {"critical": true, "status": "documented", "evidence": "Git revert and Netlify deploy rollback path; destructive production drill not yet evidenced"},
+      "recovery_contract": {
+        "critical": true,
+        "status": "documented",
+        "evidence": "Git revert and Netlify deploy rollback path; destructive production drill not yet evidenced"
+      },
       "cost_capacity_contract": "Netlify/Supabase/provider usage is covered by existing Powerhouse resource-footprint monitoring.",
-      "test_contract": ["existing website/release/production-proof workflows"],
+      "test_contract": [
+        "existing website/release/production-proof workflows"
+      ],
       "evidence_contract": "Current-main SHA must match deployment/readback; browser/provider proof remains external evidence.",
       "learning_contract": "Deployment and production failures write back to existing Powerhouse error/learning lineage.",
       "last_verified_at": "2026-09-15T20:05:00Z"
@@ -68,16 +174,37 @@
       "lifecycle": "active",
       "authority": "GitHub current main + Netlify production readback + Supabase/Powerhouse data authority",
       "owner": "Powerhouse portal",
-      "code_paths": ["portal-v2/**", ".github/scripts/portal_parity.py"],
-      "runtime_surfaces": ["/portal-v2/", "/klantportaal?klant=demoAI"],
-      "docs": ["docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md", "docs/superpowers/specs/2026-09-15-powerhouse-assurance-layer-design.md"],
-      "dependencies": ["Supabase", "Netlify", "Powerhouse runtime", "customer authentication"],
+      "code_paths": [
+        "portal-v2/**",
+        ".github/scripts/portal_parity.py"
+      ],
+      "runtime_surfaces": [
+        "/portal-v2/",
+        "/klantportaal?klant=demoAI"
+      ],
+      "docs": [
+        "docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md",
+        "docs/superpowers/specs/2026-09-15-powerhouse-assurance-layer-design.md"
+      ],
+      "dependencies": [
+        "Supabase",
+        "Netlify",
+        "Powerhouse runtime",
+        "customer authentication"
+      ],
       "data_contract": "Portal is a dynamic view on canonical Powerhouse data; user input writes back to the same lineage.",
       "security_contract": "Authenticated customer context, tenant isolation, identity and permission gates fail closed.",
       "observability_contract": "Portal parity tests, production URL readback and runtime-event evidence.",
-      "recovery_contract": {"critical": true, "status": "documented", "evidence": "Rollback path documented; parity test is explicitly not treated as a recovery drill"},
+      "recovery_contract": {
+        "critical": true,
+        "status": "documented",
+        "evidence": "Rollback path documented; parity test is explicitly not treated as a recovery drill"
+      },
       "cost_capacity_contract": "Uses existing Netlify/Supabase capacity and Powerhouse resource-footprint metering.",
-      "test_contract": [".github/scripts/portal_parity.py", "portal-v2/legacy-functional-inventory.js"],
+      "test_contract": [
+        ".github/scripts/portal_parity.py",
+        "portal-v2/legacy-functional-inventory.js"
+      ],
       "evidence_contract": "Code parity is separate from production interaction proof; both must be visible in assurance status.",
       "learning_contract": "Portal errors, overrides and customer interactions feed existing Powerhouse outcome/learning lineage.",
       "last_verified_at": "2026-09-15T20:05:00Z"
@@ -88,16 +215,30 @@
       "lifecycle": "active",
       "authority": "GitHub Actions on current main",
       "owner": "Powerhouse release control",
-      "code_paths": [".github/workflows/**"],
-      "runtime_surfaces": ["GitHub Actions"],
-      "docs": ["docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md"],
-      "dependencies": ["GitHub Actions"],
+      "code_paths": [
+        ".github/workflows/**"
+      ],
+      "runtime_surfaces": [
+        "GitHub Actions"
+      ],
+      "docs": [
+        "docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md"
+      ],
+      "dependencies": [
+        "GitHub Actions"
+      ],
       "data_contract": "Workflow state is release evidence; business runtime state remains in Powerhouse/providers.",
       "security_contract": "Least-privilege workflow permissions; secrets are referenced, never documented.",
       "observability_contract": "Workflow conclusions, job logs and check-run readback.",
-      "recovery_contract": {"critical": false, "status": "documented", "evidence": "GitHub rerun/revert via current-main release process"},
+      "recovery_contract": {
+        "critical": false,
+        "status": "documented",
+        "evidence": "GitHub rerun/revert via current-main release process"
+      },
       "cost_capacity_contract": "Bounded by GitHub Actions quotas and workflow timeouts.",
-      "test_contract": [".github/workflows/powerhouse-assurance.yml"],
+      "test_contract": [
+        ".github/workflows/powerhouse-assurance.yml"
+      ],
       "evidence_contract": "Successful check run at the exact merged SHA.",
       "learning_contract": "Failed checks create/update existing Powerhouse obligations; no silent bypass.",
       "last_verified_at": "2026-09-15T20:05:00Z"
@@ -108,16 +249,32 @@
       "lifecycle": "active",
       "authority": "GitHub current main + Netlify production deployment/readback",
       "owner": "Powerhouse runtime",
-      "code_paths": ["netlify/functions/**"],
-      "runtime_surfaces": ["Netlify functions"],
-      "docs": ["docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md"],
-      "dependencies": ["Netlify", "Supabase", "approved external providers"],
+      "code_paths": [
+        "netlify/functions/**"
+      ],
+      "runtime_surfaces": [
+        "Netlify functions"
+      ],
+      "docs": [
+        "docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md"
+      ],
+      "dependencies": [
+        "Netlify",
+        "Supabase",
+        "approved external providers"
+      ],
       "data_contract": "Functions may read/write only through existing canonical Powerhouse contracts.",
       "security_contract": "Server-side secrets only; public routes fail closed for privileged actions.",
       "observability_contract": "Netlify deployment/function readback plus existing health contracts.",
-      "recovery_contract": {"critical": false, "status": "documented", "evidence": "Netlify deploy rollback + Git revert runbook"},
+      "recovery_contract": {
+        "critical": false,
+        "status": "documented",
+        "evidence": "Netlify deploy rollback + Git revert runbook"
+      },
       "cost_capacity_contract": "Covered by Powerhouse resource-footprint and provider quota monitoring.",
-      "test_contract": ["existing function-specific tests and production proof workflows"],
+      "test_contract": [
+        "existing function-specific tests and production proof workflows"
+      ],
       "evidence_contract": "Netlify deployed SHA and function-specific provider/HTTP readback.",
       "learning_contract": "Failures/outcomes feed existing Powerhouse error/learning lineage.",
       "last_verified_at": "2026-09-15T20:05:00Z"
@@ -128,19 +285,79 @@
       "lifecycle": "active",
       "authority": "GitHub current main migrations/functions + Supabase production runtime",
       "owner": "Powerhouse data/runtime",
-      "code_paths": ["supabase/functions/**"],
-      "runtime_surfaces": ["Supabase Edge Functions"],
-      "docs": ["docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md"],
-      "dependencies": ["Supabase"],
+      "code_paths": [
+        "supabase/functions/**"
+      ],
+      "runtime_surfaces": [
+        "Supabase Edge Functions"
+      ],
+      "docs": [
+        "docs/powerhouse/POWERHOUSE_ASSURANCE_LAYER.md"
+      ],
+      "dependencies": [
+        "Supabase"
+      ],
       "data_contract": "Canonical tenant-aware Powerhouse schema, provenance and lineage contracts.",
       "security_contract": "RLS/service-role boundaries, authenticated privileged execution and explicit grants.",
       "observability_contract": "Function invocation/readback, database health and scheduled runtime evidence.",
-      "recovery_contract": {"critical": false, "status": "documented", "evidence": "Git migration/function rollback and Supabase recovery process"},
+      "recovery_contract": {
+        "critical": false,
+        "status": "documented",
+        "evidence": "Git migration/function rollback and Supabase recovery process"
+      },
       "cost_capacity_contract": "Covered by resource-footprint, token/provider and database capacity monitoring.",
-      "test_contract": ["existing Supabase migration/function tests"],
+      "test_contract": [
+        "existing Supabase migration/function tests"
+      ],
       "evidence_contract": "Production schema/function readback and runtime event evidence.",
       "learning_contract": "Runtime failures/outcomes feed existing Powerhouse learning/calibration lineage.",
       "last_verified_at": "2026-09-15T20:05:00Z"
+    },
+    {
+      "canonical_id": "powerhouse-loop-assurance-v2",
+      "name": "Powerhouse continuous loop integrity controller",
+      "lifecycle": "active",
+      "authority": "Supabase runtime truth + pg_cron + canonical brain_obligations + GitHub contract",
+      "owner": "Powerhouse governance",
+      "code_paths": [
+        "powerhouse/assurance/loop-registry.json",
+        "scripts/brain/powerhouse-loop-assurance-contract.mjs",
+        "tests/brain-powerhouse-loop-assurance-v2.test.mjs",
+        "supabase/migrations/20260929211000_powerhouse_loop_assurance_v2.sql",
+        ".github/workflows/powerhouse-assurance.yml"
+      ],
+      "runtime_surfaces": [
+        "public.powerhouse_loop_assurance_state_v1",
+        "public.powerhouse_loop_assurance_receipts_v1",
+        "public.brain_obligations",
+        "pg_cron:powerhouse-loop-assurance-v2"
+      ],
+      "docs": [
+        "docs/powerhouse/POWERHOUSE_LOOP_ASSURANCE_V2.md"
+      ],
+      "dependencies": [
+        "Supabase",
+        "pg_cron",
+        "powerhouse_runtime_events",
+        "brain_obligations",
+        "GitHub Actions"
+      ],
+      "data_contract": "Assurance state is derived from existing canonical runtime/scheduler evidence; it creates no parallel business truth.",
+      "security_contract": "Internal RLS-protected assurance tables; SECURITY DEFINER functions are not executable by anon/authenticated; fail-closed status semantics.",
+      "observability_contract": "Every five minutes refreshes GREEN/AMBER/RED per registered loop and emits a canonical runtime summary event.",
+      "recovery_contract": {
+        "critical": true,
+        "status": "tested",
+        "evidence": "tests/brain-powerhouse-loop-assurance-v2.test.mjs + database refresh/readback"
+      },
+      "cost_capacity_contract": "Bounded metadata/runtime freshness queries every five minutes; no paid external provider calls.",
+      "test_contract": [
+        "tests/brain-powerhouse-loop-assurance-v2.test.mjs",
+        "tests/powerhouse-assurance.test.mjs"
+      ],
+      "evidence_contract": "GREEN requires active scheduler when applicable, fresh runtime when applicable, and all eight closure-stage receipts current; non-GREEN creates/updates OPERATIONS_ASSURANCE obligation.",
+      "learning_contract": "Loop regressions become canonical Brain obligations and runtime evidence; no silent green or chat-only repair.",
+      "last_verified_at": "2026-09-29T19:30:00Z"
     }
   ]
 }

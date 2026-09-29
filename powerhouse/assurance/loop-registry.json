@@ -1,0 +1,226 @@
+{
+  "fingerprint": "powerhouse-loop-assurance-v2",
+  "status_semantics": {
+    "GREEN": "scheduler/runtime freshness and all required loop-stage receipts are current",
+    "AMBER": "runtime is not failed, but one or more required closed-loop stage receipts are missing/stale or cadence is drifting",
+    "RED": "scheduler is missing/inactive or runtime evidence is absent/stale beyond 2x cadence"
+  },
+  "required_stages": [
+    "input",
+    "decision",
+    "action",
+    "readback",
+    "outcome",
+    "measurement",
+    "learning",
+    "guard"
+  ],
+  "next_run_contract": "scheduler must be active when cron_jobname is defined; next_expected_at is derived from last runtime/cadence",
+  "obligation_contract": "non-GREEN states materialize as OPERATIONS_ASSURANCE obligations in canonical brain_obligations",
+  "loops": [
+    {
+      "loop_key": "full-cycle-production-proof",
+      "runtime_source": "powerhouse_full_cycle_production_proof",
+      "cron_jobname": "powerhouse-full-cycle-proof-hourly-v1",
+      "expected_cadence_minutes": 60,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "data-spine-watchdog",
+      "runtime_source": "powerhouse-data-spine",
+      "cron_jobname": "powerhouse-data-spine-watchdog-v1",
+      "expected_cadence_minutes": 10,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "one-brain-reconcile",
+      "runtime_source": null,
+      "cron_jobname": "powerhouse-one-brain-reconcile-v1",
+      "expected_cadence_minutes": 10,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "execution-resilience",
+      "runtime_source": null,
+      "cron_jobname": "powerhouse-execution-resilience-watchdog-v1",
+      "expected_cadence_minutes": 1,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "content-closed-loop",
+      "runtime_source": null,
+      "cron_jobname": "powerhouse-content-closed-loop-v1",
+      "expected_cadence_minutes": 5,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "daily-compound-learning",
+      "runtime_source": "powerhouse-daily-compound-learning-v1",
+      "cron_jobname": "powerhouse-daily-compound-learning-v1",
+      "expected_cadence_minutes": 1440,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "revenue-flywheel",
+      "runtime_source": "powerhouse_revenue_flywheel_v1",
+      "cron_jobname": "powerhouse-revenue-flywheel-health-v1",
+      "expected_cadence_minutes": 60,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "autonomous-outreach",
+      "runtime_source": null,
+      "cron_jobname": "powerhouse-autonomous-outreach-dispatch-daily",
+      "expected_cadence_minutes": 1440,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "social-publisher",
+      "runtime_source": "powerhouse-social-publisher",
+      "cron_jobname": null,
+      "expected_cadence_minutes": 1440,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "seo-opportunity-resolver",
+      "runtime_source": null,
+      "cron_jobname": "powerhouse-seo-opportunity-resolver-daily",
+      "expected_cadence_minutes": 1440,
+      "critical": false,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "mira-problem-loop",
+      "runtime_source": null,
+      "cron_jobname": "powerhouse-mira-problem-radar-v1",
+      "expected_cadence_minutes": 1440,
+      "critical": false,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    },
+    {
+      "loop_key": "self-improvement-layer",
+      "runtime_source": "powerhouse-self-improvement-layer.v1",
+      "cron_jobname": "powerhouse-self-improvement-layer-v1",
+      "expected_cadence_minutes": 1440,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
+    }
+  ]
+}
