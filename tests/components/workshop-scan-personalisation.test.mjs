@@ -10,7 +10,7 @@ test("workshop report is personalised with company context", () => {
   assert.match(html, /id="company"/);
   assert.match(html, /id="website"/);
   assert.match(html, /id="reportCompanyLine"/);
-  assert.match(html, /id="reportCompanyLine2"/);
+  assert.match(html, /id="reportCompanyLine2"/);\n  assert.match(html, /id="phone"/);\n  assert.match(html, /id="reportContactLine"/);\n  assert.match(html, /id="reportContactLine2"/);\n  assert.match(js, /el\("#name"\).*el\("#email"\).*el\("#phone"\)/);
   assert.match(html, /id="reportClientLogo"/);
   assert.match(html, /id="reportClientLogo2"/);
   assert.match(js, /resolveClientLogo/);
