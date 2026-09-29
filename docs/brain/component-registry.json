@@ -1,6 +1,6 @@
 {
   "registry_version": "brain-components-v1",
-  "generated_at": "2026-09-29T06:45:00Z",
+  "generated_at": "2026-09-29T14:20:00Z",
   "source_authority": "config/powerhouse-runtime-authority.json",
   "source_authority_version": "POWERHOUSE-RUNTIME-AUTHORITY-v1",
   "source_authority_fingerprint": "powerhouse-agent-scheduler-authority-drift-2026-09-17-v1",
@@ -1619,6 +1619,28 @@
         "skill": ".agents/skills/powerhouse-growth-swarm/SKILL.md",
         "regression": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
       }
+    },
+    {
+      "key": "BG181",
+      "id": 1810001,
+      "name": "€1M Revenue Operating Contract",
+      "role": "GOVERNOR",
+      "cortex": "COMMERCIAL",
+      "authority": "commercial_revenue_objective",
+      "inputs": [
+        "Evidence",
+        "CurrentState",
+        "Opportunity",
+        "Outcome"
+      ],
+      "outputs": [
+        "DecisionGate",
+        "Mission",
+        "Outcome",
+        "Pattern"
+      ],
+      "status": "active",
+      "brain_contract_version": "brain.v1"
     }
   ]
 }

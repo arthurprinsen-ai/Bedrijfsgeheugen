@@ -19,7 +19,10 @@
     "docs/changes/2026-09-29-powerhouse-daily-compound-learning-v1.md",
     "brain/policies/linkedin-company-standard-delivery-v1.json",
     "brain/learning/2026-09-29-linkedin-company-standard-delivery-v1.json",
-    "docs/changes/2026-09-29-linkedin-company-standard-delivery-v1.md"
+    "docs/changes/2026-09-29-linkedin-company-standard-delivery-v1.md",
+    "config/powerhouse-one-million-revenue-operating-contract-v1.json",
+    "brain/learning/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.json",
+    "docs/changes/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.md"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -45,7 +48,13 @@
     "linkedinCompanyStandardFingerprint": "linkedin-company-standard-delivery-v1",
     "companySocialRejectPersonalTopics": true,
     "productionSocialAuthAuthorityBeforeChatConnector": true,
-    "userDeletedCompanyPostRequiresNewStoryReplacement": true
+    "userDeletedCompanyPostRequiresNewStoryReplacement": true,
+    "requireOneMillionRevenueOperatingContract": true,
+    "oneMillionRevenueFingerprint": "powerhouse-one-million-revenue-operating-contract-v1",
+    "commercialExecutionBeforeRecommendationWhenAuthorized": true,
+    "genericColdBulkAutosendForbidden": true,
+    "warmConsentedFollowupAutonomous": true,
+    "realizedRevenueIsCommercialNorthStar": true
   },
   "lessons": [
     {

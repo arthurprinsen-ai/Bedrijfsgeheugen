@@ -435,5 +435,9 @@
   "execution_status_authority": "public.powerhouse_growth_play_build_status_v1",
   "persuasion_optimizer": "powerhouse-persuasion-revenue-optimizer-v1",
   "all_20_executable": true,
-  "execution_rule": "Catalog presence is insufficient: BUILT_ACTIVE requires an execution contract with trigger owner, executor, surface, outcome metric, truth/privacy gate and execution_complete=true."
+  "execution_rule": "Catalog presence is insufficient: BUILT_ACTIVE requires an execution contract with trigger owner, executor, surface, outcome metric, truth/privacy gate and execution_complete=true. The canonical commercial scheduler must execute the complete trigger-based acquisition cycle, not learning-only, so eligible Growth Swarm, LinkedIn sales and warm/consented outreach actions reach their existing executors.",
+  "revenue_operating_contract": "config/powerhouse-one-million-revenue-operating-contract-v1.json",
+  "realized_revenue_target_eur": 1000000,
+  "revenue_horizon_days": 365,
+  "scheduler_owner": "powerhouse-commercial-learning-v1"
 }

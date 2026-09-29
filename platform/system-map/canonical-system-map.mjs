@@ -339,6 +339,46 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'one-million-revenue-operating-contract',
+      label:'€1M Revenue Operating Contract',
+      authority:'powerhouse-one-brain',
+      owner:'commercial-intelligence',
+      status:'ACTIVE',
+      inputs:Object.freeze(['relationship/company intelligence','Growth Swarm evidence','website/scan intent','social engagement','email replies','open opportunities','orders','realized revenue']),
+      outputs:Object.freeze(['daily commercial next-best-action','authorized execution','provider/readback evidence','order/revenue pacing','commercial learning']),
+      runtime:Object.freeze({
+        contract:'config/powerhouse-one-million-revenue-operating-contract-v1.json',
+        schedulerOwner:'powerhouse-commercial-learning-v1',
+        growthSkill:'.agents/skills/powerhouse-growth-swarm/SKILL.md',
+        linkedinSkill:'.agents/skills/powerhouse-linkedin-sales-machine/SKILL.md',
+        relationshipSkill:'.agents/skills/powerhouse-relationship-revenue/SKILL.md',
+        persuasionSkill:'.agents/skills/powerhouse-persuasion-revenue/SKILL.md',
+        seoSkill:'.agents/skills/seo-revenue-growth/SKILL.md',
+        outreachExecutor:'supabase/functions/powerhouse-autonomous-outreach/index.ts',
+        linkedinExecutor:'supabase/functions/powerhouse-linkedin-sales-machine/index.ts',
+        socialExecutor:'powerhouse-social-publisher',
+        learning:'brain/learning/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.json'
+      }),
+      objective:Object.freeze({
+        realizedRevenueEur:1000000,
+        horizonDays:365,
+        targetDate:'2027-09-29',
+        terminalNorthStar:'realized_revenue'
+      }),
+      invariants:Object.freeze({
+        oneCommercialTruth:true,
+        executeAuthorizedActionBeforeRecommendation:true,
+        genericColdBulkAutosend:false,
+        warmConsentedFollowupAutonomous:true,
+        consentSuppressionAndDedupeHardGates:true,
+        linkedinPersonalCompanyCampaignsForbidden:true,
+        instagramMiraOnly:true,
+        providerReadbackRequired:true,
+        revenueOutcomeLearningRequired:true,
+        noParallelCommercialScheduler:true
+      })
+    }),
+    Object.freeze({
       id:'seo-conversion-orders',
       label:'SEO + Behavioral Conversion-to-Orders Engine v2',
       authority:'github+netlify+supabase',

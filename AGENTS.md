@@ -702,3 +702,20 @@ Iedere huidige en toekomstige chat/agent die websitegroei, acquisitie, Bedrijfsl
 - de volgende agent/chat moet deze regel via repository-preflight ontdekken zonder afhankelijk te zijn van de oorspronkelijke chat.
 
 Een verandering die alleen bereik of leads verhoogt maar de gesloten lus, privacy of terminale revenue-outcome verbreekt, is geen geldige Powerhouse-groeiwijziging.
+
+
+## €1M commerciële operating contract — verplicht voor alle chats en agents
+
+Fingerprint: `powerhouse-one-million-revenue-operating-contract-v1`.
+
+Alle huidige en toekomstige chats, agents, schedulers en commerciële capabilities erven `config/powerhouse-one-million-revenue-operating-contract-v1.json`.
+
+- North star is €1.000.000 **gerealiseerde omzet** binnen 365 dagen; tussenmetrics zijn nooit terminale winst.
+- Iedere commerciële run gebruikt één gedeelde next-best-action ruimte en één canonical relationship/company/opportunity/outcome truth.
+- Als een gekwalificeerde, veilige en geautoriseerde actie uitvoerbaar is, voert de owner-node hem uit en verifieert provider/readback; aanbeveling/draft/TODO is dan niet terminal.
+- Kanalen zijn uitvoeringsvormen, geen silo's: LinkedIn company, Mira Instagram, SEO/blog/CRO, contextuele comments, warm/consented e-mail, ondersteunde private follow-up, offertefollow-up, referrals, partner/workshop-acties en sales-assets concurreren op verwachte bijdrage aan order/omzet.
+- Omzetachterstand verhoogt research, value-before-ask, partner/referral-activatie, conversion experiments en due follow-up; nooit spamvolume of omzeiling van consent, suppression, dedupe, fatigue, identity, privacy of provider-capability.
+- Generieke cold-bulk autosend blijft verboden. Koude prospects mogen automatisch worden gevonden, onderzocht, gescoord en voorbereid; extern verzenden vereist afzonderlijk bewezen lawful/consent-based eligibility.
+- Warm/consented leads, bestaande relaties, open opportunities, klanten en partners mogen autonoom worden opgevolgd binnen bestaande gates.
+- Persoonlijk LinkedIn blijft personal-life-only; Bedrijfsgeheugen-company content hoort op de bedrijfspagina; Instagram blijft Mira-only.
+- Iedere uitvoering schrijft outcome terug tot minimaal reply/meeting/scan/proposal/order/realized revenue en voedt daarna de volgende beslissing.
