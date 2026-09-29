@@ -1366,3 +1366,14 @@ Required:
 - governance-only closure uses protected main plus applicable non-deployment readback;
 - actual website/portal/runtime changes in the same candidate still retain their normal production gates;
 - never weaken website production proof by mislabeling executable runtime as governance.
+
+## Governance/runtime readback scope parity
+Fingerprint: `production-readback|governance-runtime-scope|v1`.
+
+Production readback must classify deployment impact from runtime-relevant paths, not from the raw merge diff.
+
+Rules:
+- skills, docs, tests, Brain learning, `AGENTS.md`, canonical system-map and delivery-control-plane metadata do not alone require Netlify deployment;
+- mixed candidates still require normal deployment whenever a true website, portal or Netlify-runtime path is present;
+- trigger-level ignore semantics and internal deployment applicability must stay aligned;
+- governance-only closure terminates on protected-main + non-deployment production truth, never on an invented exact Netlify SHA requirement.
