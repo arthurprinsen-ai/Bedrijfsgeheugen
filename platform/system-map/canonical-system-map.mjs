@@ -311,10 +311,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       authority:'netlify+supabase',
       owner:'commercial-intelligence',
       status:'LIVE_PROVEN_RUNTIME',
-      inputs:Object.freeze(['selfscan report-request','SaaS checkout-start','website attribution context']),
+      inputs:Object.freeze(['Bedrijfslek result/deel/order intent','SaaS checkout-start','website attribution context']),
       outputs:Object.freeze(['PII-free growth events','commercial intent evidence','Growth Swarm/NBA context','outcome-learning input']),
       runtime:Object.freeze({
-        websiteRoutes:Object.freeze(['/zelfscan','/afsluiten']),
+        websiteRoutes:Object.freeze(['/','/zelfscan','/afsluiten']),
         eventEndpoint:'/api/growth-event',
         netlifyFunction:'netlify/functions/growth-event.mjs',
         supabaseIngest:'growth-datahub-ingest',
@@ -371,7 +371,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         noFakeScarcityUrgencySocialProofHiddenCostsConfirmshamingOrPreselectedConsent:true,
         oneCanonicalCroRevenueStack:true,
         inheritedByAllChatsAndAgents:true,
-        currentPrimaryQualification:'free Frisse Blik 30 minutes',
+        currentPrimaryQualification:'ungated Bedrijfslek /zelfscan on homepage; Frisse Blik remains contextual on other money pages',
         publicCopyRequiresSameLineageStaticI18n:true,
         finalBuildArtifactIsAuthority:true
       })
