@@ -5,6 +5,7 @@ import fs from 'node:fs';
 const policy=JSON.parse(fs.readFileSync('brain/policies/linkedin-company-standard-delivery-v1.json','utf8'));
 const skill=fs.readFileSync('.agents/skills/linkedin-composio-publisher/SKILL.md','utf8');
 const agents=fs.readFileSync('AGENTS.md','utf8');
+const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
 
 test('company channel rejects personal topics and retires printer globally',()=>{
   assert.equal(policy.channel,'linkedin_company');
@@ -30,4 +31,14 @@ test('explicit user deletion permits one new-story replacement only',()=>{
   assert.equal(policy.user_deleted_recovery.replacement_requires_new_story_fingerprint,true);
   assert.equal(policy.user_deleted_recovery.replacement_requires_materially_different_business_topic,true);
   assert.match(skill,/User-deleted company post recovery/);
+});
+
+
+test('runtime publisher blocks retired printer story before provider write',()=>{
+  assert.match(publisher,/function assertLinkedInCompanyContentPolicy/);
+  assert.match(publisher,/LINKEDIN_COMPANY_RETIRED_STORY_FAMILY:printer/);
+  const guard=publisher.indexOf('assertLinkedInCompanyContentPolicy(commentary)');
+  const create=publisher.indexOf("LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary");
+  assert.ok(guard>0);
+  assert.ok(create>guard);
 });
