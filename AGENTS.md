@@ -733,3 +733,14 @@ Voor iedere agent/chat die commerciële e-mail, Growth & Revenue OS, relationshi
 - een bestaande cycle/lineage guard wordt nooit verzwakt om een tweede outcome te forceren; gebruik evidence-bound origin lineage;
 - er is exact één commerciële scheduler/owner; geen parallelle Gmail reply cron, inbox-store, CRM, queue of learning store;
 - closure vereist read-after-write op reply-event, suppression/follow-up, outcome, learning en health evidence.
+
+
+## Instagram canonical Mira identity — inherited
+Fingerprint: `instagram-canonical-mira-identity-v1`.
+
+Alle chats/agents erven:
+- Mira is fictief en mag nooit de identiteit/foto/video van de gebruiker overnemen;
+- uitsluitend canonical fictional Mira reference `Yjqu4D7v76HABNPmQPj1` is geldig voor Mira-media;
+- user-upload references `Jt5SWKRgyK3heTqEXH4w`, `w4HhwCmX5GxL8jTGljxe`, `umWzAKt6YBeoVpHlKTtK` zijn verboden in de Mira lineage;
+- een Mira media-job moet de canonical identity-reference expliciet bewijzen vóór verification/publication;
+- persoonlijke user-media wordt nooit als fallback, training seed of identity source voor Mira gebruikt.

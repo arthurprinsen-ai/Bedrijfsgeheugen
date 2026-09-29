@@ -1,0 +1,29 @@
+{
+  "fingerprint": "instagram-canonical-mira-identity-v1",
+  "date": "2026-09-29",
+  "problem": "Personal user upload photos were misclassified as the Mira identity reference, causing generated Mira media to depict the user.",
+  "root_cause": "The media generator trusted an upload label/history without a canonical identity-reference contract and without proving the selected reference belonged to the fictional Mira lineage.",
+  "prevention": "Require one canonical fictional Mira master reference in every media job and reject known user-upload reference IDs before verification or publication.",
+  "compiler": {
+    "failure_class": "IDENTITY_REFERENCE_MISCLASSIFICATION",
+    "scope": "INSTAGRAM_MIRA",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-canonical-mira-identity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-canonical-mira-identity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-canonical-mira-identity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "contract": "config/instagram-canonical-mira-identity-v1.json",
+    "runtime": "supabase/migrations/20260929173500_instagram_canonical_mira_identity_guard_v1.sql",
+    "skill": ".agents/skills/instagram-composio-publisher/SKILL.md"
+  }
+}
