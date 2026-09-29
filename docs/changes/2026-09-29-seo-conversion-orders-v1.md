@@ -16,3 +16,11 @@ Geen doorway pages, scaled thin AI content, keyword stuffing, cloaking, link sch
 
 ## Meting
 Promotie van deze learning naar PROVEN vereist productie-readback plus gemeten CTA-, lead-, order- en revenue-outcomes. Geen waargenomen outcome betekent geen omzetclaim.
+
+
+## Borging en skills
+- Nieuwe canonieke skill: `.agents/skills/powerhouse-seo-conversion-orders/SKILL.md`.
+- Growth Swarm erft deze regels expliciet via `.agents/skills/powerhouse-growth-swarm/SKILL.md`.
+- Systeemkaart/component-registry bevat `CAPABILITY_SEO_CONVERSION_ORDERS`.
+- Machine-enforcement: `tests/brain-seo-conversion-orders-v1.test.mjs`.
+- Brain-learning: `brain/learning/2026-09-29-seo-conversion-orders-v1.json`.
