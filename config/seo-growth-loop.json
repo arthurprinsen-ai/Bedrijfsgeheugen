@@ -54,8 +54,91 @@
   "optimization": {
     "mode": "bounded",
     "allowlist_config": "config/seo-optimization-allowlist.json",
-    "objective": "visibility -> CTR -> engaged visit -> CTA -> lead -> order -> revenue",
-    "traffic_only_selection": false
+    "objective": "qualified organic demand -> message match -> engaged visit -> CTA -> qualified lead -> order -> revenue -> outcome learning",
+    "traffic_only_selection": false,
+    "commercial_priority_formula": "intent_strength * search_demand * ranking_feasibility * conversion_gap * expected_order_value",
+    "max_high_confidence_changes_per_daily_cycle": 3,
+    "models": [
+      "search-intent-mapping",
+      "jobs-to-be-done",
+      "PAS",
+      "AIDA",
+      "4P",
+      "risk-reversal",
+      "message-match",
+      "information-scent",
+      "topic-clusters",
+      "E-E-A-T-evidence",
+      "conversion-hierarchy",
+      "objection-handling",
+      "outcome-memory"
+    ],
+    "money_page_contract": [
+      "one-primary-intent",
+      "problem-outcome-fit",
+      "buyer-language",
+      "specific-proof",
+      "price-or-effort-expectation",
+      "risk-reversal",
+      "primary-cta",
+      "lower-friction-secondary-cta",
+      "buying-objection-faq",
+      "contextual-internal-links",
+      "cta-instrumentation"
+    ],
+    "guardrails": [
+      "people-first",
+      "no-doorway-pages",
+      "no-scaled-thin-content",
+      "no-keyword-stuffing",
+      "no-link-schemes",
+      "no-cloaking",
+      "schema-must-match-visible-current-content",
+      "no-duplicate-intent-pages",
+      "no-unverified-testimonials-or-results"
+    ],
+    "priority_intents_baseline_2026_09_29": [
+      {
+        "query": "bedrijfsprocessen automatiseren",
+        "nl_monthly_search_volume": 480,
+        "role": "money"
+      },
+      {
+        "query": "afas koppeling",
+        "nl_monthly_search_volume": 320,
+        "role": "money"
+      },
+      {
+        "query": "exact online koppeling",
+        "nl_monthly_search_volume": 140,
+        "role": "money"
+      },
+      {
+        "query": "power bi implementatie",
+        "nl_monthly_search_volume": 50,
+        "role": "money"
+      },
+      {
+        "query": "kennisborging",
+        "nl_monthly_search_volume": 40,
+        "role": "support"
+      },
+      {
+        "query": "ai automatisering mkb",
+        "nl_monthly_search_volume": 20,
+        "role": "money"
+      }
+    ],
+    "daily_cycle": [
+      "observe-production-and-search-evidence",
+      "detect-ranking-content-schema-cro-and-link-gaps",
+      "prioritize-by-commercial-value",
+      "apply-up-to-three-reversible-high-confidence-changes",
+      "validate-technical-seo-content-and-conversion-contracts",
+      "protected-delivery-and-production-readback",
+      "measure-qualified-leads-orders-and-revenue",
+      "route-outcomes-to-BG168-BG166-BG167"
+    ]
   },
   "failure_policy": {
     "unknown_producer": "fail_closed",
