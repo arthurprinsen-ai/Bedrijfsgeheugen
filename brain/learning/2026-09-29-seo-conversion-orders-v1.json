@@ -54,7 +54,8 @@
     "Behavioral landing-page optimization must remain part of the existing SEO Conversion-to-Orders + Growth Swarm + Persuasion Revenue stack; never create a parallel CRO authority.",
     "Optimize behavioral variants by realized revenue and paid orders before weaker micro-metrics whenever terminal outcomes are available.",
     "Rollback on material trust, accessibility, mobile-readability or qualified-conversion regression.",
-    "Never use fake scarcity, fake urgency, fake social proof, hidden costs, confirmshaming or preselected consent."
+    "Never use fake scarcity, fake urgency, fake social proof, hidden costs, confirmshaming or preselected consent.",
+    "Require every future chat/agent touching commercial website copy to inherit the repository-native order-first contract, including same-lineage static-i18n and final-build production proof."
   ],
   "canonical_runtime": "config/seo-growth-loop.json",
   "canonical_allowlist": "config/seo-optimization-allowlist.json",
@@ -157,5 +158,32 @@
     ],
     "max_reversible_changes_per_daily_cycle": 3,
     "dark_patterns_forbidden": true
+  },
+  "agent_chat_inheritance": {
+    "fingerprint": "commercial-website|orders-first|existing-pages|v1",
+    "applies_to": [
+      "current-chats",
+      "future-chats",
+      "agents",
+      "scheduled-runs",
+      "website-growth-nodes"
+    ],
+    "rules": [
+      "existing-canonical-money-page-first",
+      "qualified-lead-proposal-paid-order-realized-revenue-over-traffic",
+      "free-frisse-blik-30m-is-current-default-qualification-step",
+      "public-copy-requires-same-lineage-static-i18n-cache",
+      "final-build-artifact-is-authority-for-generated-pages",
+      "protected-main-netlify-exact-main-browser-readback-required",
+      "max-three-reversible-evidence-gated-changes-per-daily-cycle",
+      "no-dark-patterns-or-unverified-revenue-claims"
+    ],
+    "production_proof": {
+      "netlify_deploy_id": "6abb65338413c2000813595f",
+      "production_commit_ref": "e103bbc49541c70b2fa9e535b7e162fac83893c4",
+      "state": "ready",
+      "production_source_snapshot": "success",
+      "production_release_readback": "success"
+    }
   }
 }

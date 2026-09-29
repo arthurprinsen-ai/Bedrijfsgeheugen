@@ -278,7 +278,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         revenueClaimRequiresObservedOutcome:true,
         noDoorwayThinSpamOrDarkPatterns:true,
         noFakeScarcityUrgencySocialProofHiddenCostsConfirmshamingOrPreselectedConsent:true,
-        oneCanonicalCroRevenueStack:true
+        oneCanonicalCroRevenueStack:true,
+        inheritedByAllChatsAndAgents:true,
+        currentPrimaryQualification:'free Frisse Blik 30 minutes',
+        publicCopyRequiresSameLineageStaticI18n:true,
+        finalBuildArtifactIsAuthority:true
       })
     }),
     Object.freeze({

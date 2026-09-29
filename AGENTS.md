@@ -591,3 +591,20 @@ Voor **alle huidige en toekomstige chats, agents, workflows en autonome Powerhou
 - read-after-write is verplicht vóór terminale closure;
 - de gebruiker hoeft nooit apart te vragen om skills, documentatie of System Map te actualiseren;
 - stale/missende kaartprojectie blijft `SYSTEM_MAP_WRITEBACK_INCOMPLETE` en is niet terminal groen.
+
+## Commercial website order-first inheritance
+
+Fingerprint: `commercial-website|orders-first|existing-pages|v1`.
+
+Voor alle huidige en toekomstige chats, agents, scheduled runs en commerciële website-owners geldt:
+- bestaande canonieke money pages eerst; geen duplicate intent-pagina maken wanneer een bestaande route de intent al bezit;
+- commerciële website-optimalisatie stuurt op gekwalificeerde lead -> voorstel -> betaalde order -> gerealiseerde omzet, niet op traffic als einddoel;
+- de standaard primaire kwalificatiestap op de huidige MKB-money pages is de gratis Frisse Blik van 30 minuten, tenzij gemeten evidence een andere bestaande canonieke route overtuigend beter maakt;
+- risk reversal moet waarheidsgetrouw en zichtbaar zijn; geen fake urgency, fake scarcity, fake social proof, hidden costs of dark patterns;
+- iedere public-copywijziging moet in dezelfde candidate de NL/EN static-i18n authority bijwerken en de cache-completeness gate doorstaan;
+- gegenereerde pagina's worden op final build-artifact bewaakt via de bestaande money-page order finalizer; source HTML alleen is geen bewijs;
+- maximaal drie reversibele high-confidence SEO/CRO-wijzigingen per dagelijkse cyclus;
+- na wijziging: protected merge -> exact-main Netlify production -> browser/readback -> CTA/lead/order/revenue learning;
+- een chat of agent mag niet stoppen bij advies wanneer de wijziging veilig uitvoerbaar is; terminal is production readback + writeback, of een echte `BLOCKED_HARD_BOUNDARY`.
+
+Canonieke skill: `.agents/skills/powerhouse-seo-conversion-orders/SKILL.md`.
