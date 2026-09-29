@@ -1383,3 +1383,14 @@ Mandatory:
 - update the canonical site standard, Brain learning and System Map when this contract changes.
 
 This rule is inherited by all current/future chats, agents and website delivery workflows through Powerhouse.
+
+## Governance/runtime readback scope parity
+Fingerprint: `production-readback|governance-runtime-scope|v1`.
+
+Production readback must classify deployment impact from runtime-relevant paths, not from the raw merge diff.
+
+Rules:
+- skills, docs, tests, Brain learning, `AGENTS.md`, canonical system-map and delivery-control-plane metadata do not alone require Netlify deployment;
+- mixed candidates still require normal deployment whenever a true website, portal or Netlify-runtime path is present;
+- trigger-level ignore semantics and internal deployment applicability must stay aligned;
+- governance-only closure terminates on protected-main + non-deployment production truth, never on an invented exact Netlify SHA requirement.
