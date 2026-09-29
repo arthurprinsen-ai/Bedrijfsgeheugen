@@ -221,6 +221,22 @@ function rewriteLinks(doc,sourceFile,locale,aliases) {
   visit(doc);
 }
 
+function rewriteLanguageSwitchers(doc,route,activeLocale) {
+  const visit = node => {
+    if (node.tagName === 'a') {
+      const target = attr(node,'data-bg-language-option');
+      if (LOCALES.includes(target)) {
+        setAttr(node,'href',canonicalRoute(target,route));
+        setAttr(node,'hreflang',target);
+        setAttr(node,'lang',target);
+        setAttr(node,'aria-current',target === activeLocale ? 'page' : 'false');
+      }
+    }
+    for (const child of node.childNodes || []) visit(child);
+  };
+  visit(doc);
+}
+
 function setLocaleMetadata(doc,locale,route,translated=true) {
   const html = findFirst(doc,n=>n.tagName==='html');
   const head = findFirst(doc,n=>n.tagName==='head');
@@ -487,6 +503,7 @@ for (const file of files) {
 
   const nlDoc = parse(sourceHtml);
   rewriteLinks(nlDoc,file,'nl',aliases);
+  rewriteLanguageSwitchers(nlDoc,route,'nl');
   setLocaleMetadata(nlDoc,'nl',route,true);
   const nlOut = outputPath('nl',file);
   ensureDir(nlOut);
@@ -501,6 +518,7 @@ for (const file of files) {
   if (missingForRoute.length) partialRoutes++;
   else translatedRoutes++;
   rewriteLinks(enDoc,file,'en',aliases);
+  rewriteLanguageSwitchers(enDoc,route,'en');
   setLocaleMetadata(enDoc,'en',route,missingForRoute.length === 0);
   const enOut = outputPath('en',file);
   ensureDir(enOut);
