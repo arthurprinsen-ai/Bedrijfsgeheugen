@@ -10,6 +10,8 @@ async function sha256(v:string){const d=await crypto.subtle.digest('SHA-256',new
 async function secret(db:any,name:string){const env=Deno.env.get(name);if(env)return clean(env);const {data}=await db.rpc('bg_geheim',{p_naam:name});return clean(data)||null;}
 async function api(key:string,path:string,init:RequestInit={}){const r=await fetch(BASE+path,{...init,headers:{'x-api-key':key,'content-type':'application/json',...(init.headers||{})}});const b:any=await r.json().catch(()=>({}));if(!r.ok)throw new Error('COMPOSIO_LINKEDIN_SETUP_'+r.status+':'+clean(b?.error||b?.message||JSON.stringify(b)).slice(0,240));return b;}
 async function execute(key:string,accountId:string,userId:string,toolSlug:string,args:Record<string,unknown>={}){
+  if(!clean(accountId))throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID_REQUIRED');
+  if(!clean(userId))throw new Error('COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED');
   const r=await fetch(`${EXEC_BASE}/tools/execute/${toolSlug}`,{
     method:'POST',
     headers:{'x-api-key':key,'content-type':'application/json'},
