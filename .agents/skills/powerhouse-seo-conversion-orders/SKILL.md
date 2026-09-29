@@ -116,3 +116,13 @@ Iedere materiële wijziging aan doelstelling, modellen, money-page contract, gua
 - protected merge en relevante productie/provider-readback doorlopen vóór een terminale LIVE-claim.
 
 Een skill-update zonder systeemkaart + learning + documentatie + regressiebewijs is `WRITEBACK_INCOMPLETE`.
+
+
+## Behavioral landing-page revenue optimization
+Fingerprint: `powerhouse-behavioral-landing-revenue-v2`.
+
+Commercial website pages are an execution surface of the same Powerhouse Growth Swarm and Persuasion Revenue Optimizer; never create a parallel CRO stack. Powerhouse may autonomously choose hero/message match, CTA hierarchy, proof order, objection handling, risk reversal, section order, progressive disclosure and scan-versus-conversation routing from intent, funnel stage and measured outcomes.
+
+Use Cialdini, loss aversion/prospect theory, Fogg, Hick-Hyman, cognitive fluency, commitment ladders, specificity and choice architecture only within truth/evidence guardrails. Optimize in this order: realized revenue -> paid orders -> qualified proposals -> qualified meetings -> qualified leads -> CTA progression -> engagement. Raw clicks, scroll depth and time-on-page are never standalone winner criteria.
+
+All changes flow through `config/seo-growth-loop.json`, `config/seo-optimization-allowlist.json`, protected delivery, production readback and outcome learning. Maximum three reversible high-confidence changes per daily cycle. Roll back on trust, accessibility, mobile-readability or qualified-conversion regression. Fake scarcity, fake urgency, fake social proof, hidden costs, confirmshaming and preselected consent are forbidden.
