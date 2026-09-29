@@ -1462,3 +1462,8 @@ Permanent:
 Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
 
 Bij interruption, chat-streamingverlies, CI-wachttijd of main-drift hervat de owner-node dezelfde obligation vanaf de laatst bewezen checkpoint. Geen nieuwe parallelle PR voor dezelfde CMS/i18n-obligation tenzij de bestaande lineage aantoonbaar niet herstelbaar is. De gebruiker hoeft niet opnieuw `ga door`, `zet live` of `borg` te zeggen.
+
+
+## Live recovery closure
+
+Na een productie-recovery blijft de uitvoerende node eigenaar tot ook de governance-writeback is gelezen en bevestigd. Minimaal: Brain learning, relevante skills, AGENTS/chat-contract, ledger/docs en System Map. Een deployment mag daarbij niet als bewijs voor een nog niet functioneel teruggelezen subketen worden gebruikt.
