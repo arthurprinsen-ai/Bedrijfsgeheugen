@@ -31,7 +31,8 @@ function preprovisionProjection(scan:any,intake:any,tenantId:string){
   return {
     schemaVersion:2,tenantId,origin:'canonical-brain',updatedBy:'workshop-scan',updatedAt:now,sourceUpdatedAt:now,
     data:{
-      company:{name:intake.company_name,employees:intake.employees,sector:intake.sector,region:intake.region,website:intake.website,lastSync:now},\n      contact:{name:intake.contact_name,email:intake.email,phone:intake.phone},
+      company:{name:intake.company_name,employees:intake.employees,sector:intake.sector,region:intake.region,website:intake.website,lastSync:now},
+      contact:{name:intake.contact_name,email:intake.email,phone:intake.phone},
       managementSummary:{
         title:'Jouw persoonlijke workshopscan',
         score:scan.score,
