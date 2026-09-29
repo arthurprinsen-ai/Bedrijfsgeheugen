@@ -1,0 +1,29 @@
+{
+  "fingerprint": "bedrijfslek|canonical-source|legacy-builder-overwrite|v2",
+  "date": "2026-09-29",
+  "problem": "The canonical 12-question Bedrijfslek source on main was replaced during the Netlify build by an older six-question generated artifact.",
+  "root_cause": "Legacy website builders ran before final shell normalization. The source-level route owner was correct, but no build-integrity boundary preserved its canonical HTML through those mutating builders.",
+  "prevention": "Capture the canonical Bedrijfslek source before legacy builders, restore it after those builders, re-run the canonical shell normalization, then run i18n. Fail the final artifact test if the old six-question copy returns.",
+  "compiler": {
+    "failure_class": "CANONICAL_ROUTE_OVERWRITTEN_DURING_BUILD",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "production_readback": "https://www.bedrijfsgeheugen.nl/zelfscan",
+    "files": [
+      "tools/site-shell/bedrijfslek-build-integrity.mjs",
+      "netlify.toml",
+      ".github/workflows/lane-website.yml",
+      "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+    ],
+    "expected_outcome": "Final built and live /zelfscan contains 12-question Bedrijfslek and does not contain 'Beantwoord zes vragen'.",
+    "production_observation": "Before the v2 fix, public /zelfscan exposed the legacy six-question artifact while main contained the canonical twelve-question Bedrijfslek; exact build-parity reproduced the overwrite."
+  }
+}
