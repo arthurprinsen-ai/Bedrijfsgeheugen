@@ -13,5 +13,5 @@ test('LinkedIn company selector accepts canonical organization URN and numeric i
 test('canonical Bedrijfsgeheugen organization remains the fallback authority',()=>{
   assert.match(publisher,/urn:li:organization:18234216/);
   assert.match(publisher,/LINKEDIN_GET_COMPANY_INFO/);
-  assert.match(publisher,/w_organization_social/);
+  assert.match(publisher,/targetOrgId/);
 });
