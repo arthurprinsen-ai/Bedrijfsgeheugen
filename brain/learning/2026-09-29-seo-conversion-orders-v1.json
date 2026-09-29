@@ -62,18 +62,12 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/seo-growth-*.test.mjs",
-      "tests/seo-order-*.test.mjs"
-    ],
-    "production_outcome": [
-      "primary_cta_click",
-      "lead_outcome",
-      "order_outcome"
+      "tests/seo-order-money-v2.test.mjs",
+      "tests/seo-order-measurement.test.mjs"
     ]
   },
   "test_evidence": [
-    "SEO growth intelligence workflow",
-    "SEO order engine workflow",
-    "Pagina- en SEO-controle"
+    "tests/seo-order-money-v2.test.mjs",
+    "tests/seo-order-measurement.test.mjs"
   ]
 }
