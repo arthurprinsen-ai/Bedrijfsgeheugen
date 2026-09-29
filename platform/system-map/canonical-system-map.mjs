@@ -846,3 +846,18 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     resumeFromCanonicalCheckpoint:true
   })
 });
+
+
+export const POWERHOUSE_LOOP_ASSURANCE_V3 = Object.freeze({
+  fingerprint:'powerhouse|loop-assurance|receipt-bridge|v3',
+  owner:'powerhouse-loop-assurance-v2',
+  cadenceMinutes:5,
+  registry:'public.powerhouse_loop_assurance_registry_v1',
+  receipts:'public.powerhouse_loop_assurance_receipts_v1',
+  state:'public.powerhouse_loop_assurance_state_v1',
+  aggregateHealth:'public.powerhouse_loop_integrity_health_v1',
+  receiptBridge:'public.powerhouse_sync_loop_assurance_receipts_v1',
+  requiredStages:Object.freeze(['input','decision','action','readback','outcome','measurement','learning','guard']),
+  criticalZeroEvidence:'RED',
+  truthRule:'No synthetic outcome, learning or guard evidence; GREEN requires fresh proof for every required stage.'
+});
