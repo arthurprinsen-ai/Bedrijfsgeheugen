@@ -14,3 +14,12 @@ Recovery:
 Prevention:
 - bridge acquisition success is not upload-authorization proof;
 - stale ready production may never satisfy terminal delivery.
+
+## 2026-09-29 recurrence
+- obligation: money-pages-order-production-v1
+- protected source ancestor: 7ffef9742bc900491a07de070e157b726e2ad579
+- production source transport failed twice with provider HTTP 401
+- cross-provider credential copying was not used
+- recovery reuses the bounded Git-linked source-trigger path
+- terminal proof remains Netlify production identity plus live route readback
+
