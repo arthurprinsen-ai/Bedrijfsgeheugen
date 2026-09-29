@@ -39,7 +39,8 @@ const BUILT_IN_NON_EXECUTABLE_SHARED_PATHS = Object.freeze([
   'brain/learning/',
   'docs/superpowers/changes/',
   'docs/engineering-intelligence-trust-',
-  'docs/plans/'
+  'docs/plans/',
+  'platform/system-map/canonical-system-map.mjs'
 ]);
 function effectiveNonExecutableSharedPaths(policy = {}) { return unique([...(policy.nonExecutableSharedPaths || []), ...BUILT_IN_NON_EXECUTABLE_SHARED_PATHS]); }
 

@@ -1355,6 +1355,18 @@ Wanneer een commerciële website-optimalisatie eenmaal als canonical order contr
 
 Dit contract erft de SEO Conversion-to-Orders skill en geldt ook na chat-interrupties.
 
+## System-map governance is non-deployment
+Fingerprint: `system-map|governance|nondeployment-classification|v1`.
+
+The canonical `platform/system-map/canonical-system-map.mjs` is repository governance authority. A system-map-only update does not by itself require a Netlify website deployment.
+
+Required:
+- delivery classification treats the canonical system map as non-executable shared governance;
+- Production Source Snapshot must not deploy merely because this system-map file changed;
+- governance-only closure uses protected main plus applicable non-deployment readback;
+- actual website/portal/runtime changes in the same candidate still retain their normal production gates;
+- never weaken website production proof by mislabeling executable runtime as governance.
+
 ## Canonical public website chrome geometry
 
 Fingerprint: `website|canonical-chrome|cms-pixel-parity|v1`.
