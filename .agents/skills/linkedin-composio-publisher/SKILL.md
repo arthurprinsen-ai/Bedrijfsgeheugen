@@ -300,3 +300,57 @@ Hard rules:
 Incident evidence: on 2026-09-29 the chat-local connector returned revoked/insufficient-scope results while canonical production state remained ACTIVE with `r_organization_admin` + `w_organization_social`, and the company post was already published as `urn:li:share:7510609161110482944`.
 
 Reusable lesson: connector UI/session state and production OAuth authority are different control planes. Production provider evidence wins.
+
+
+## Bedrijfsgeheugen company standard delivery (2026-09-29)
+
+Fingerprint: `linkedin-company-standard-delivery-v1`.
+
+This contract is mandatory for every current and future chat, agent, scheduler, watchdog and recovery path that creates or publishes `linkedin_company`.
+
+### Company identity gate
+
+Bedrijfsgeheugen LinkedIn is a company channel. Before generation or publication:
+- classify the channel as `linkedin_company`;
+- reject personal-life anecdotes, household friction, printer/scanner stories, family logistics, private WhatsApp/app irritations and other personal-channel material;
+- select a business-relevant subject for owner/CEO/MT/director audiences: execution, decision follow-up, process friction, knowledge flow, data/AI, governance, commercial performance, risk, adoption or measurable improvement;
+- never transform a rejected personal topic into company copy by merely adding a Bedrijfsgeheugen CTA.
+
+Known globally retired story family: `printer`. It is forbidden on both personal and company LinkedIn unless the user explicitly asks to discuss printers as a new factual business subject.
+
+### Historical novelty gate
+
+Before provider write:
+- run complete retained-history comparison across personal + company social history;
+- treat user deletion/duplicate feedback as authoritative negative evidence;
+- retire the underlying story family, not just the exact wording;
+- choose a materially different business topic automatically;
+- never reuse a story by changing hook, CTA, hashtags, URL, examples or sentence order.
+
+### Production auth gate and self-healing
+
+The production Powerhouse runtime is the authority, not a chat-local connector list.
+For each company run:
+1. read canonical production setup state and the exact daily obligation;
+2. if a durable provider URN already exists, do not republish;
+3. enumerate production LinkedIn connected accounts and select only the canonical person identity with organization-write capability;
+4. verify live token health before write; metadata `ACTIVE` alone is insufficient;
+5. ignore stale, revoked, wrong-scope, personal-only and duplicate aliases;
+6. if an existing production account can be repaired without human consent, repair it and resume the same claim automatically;
+7. only when LinkedIn itself requires fresh human OAuth consent may the run surface one reconnect action; never fall back to Buffer or Make;
+8. after reconnect, re-prove provider capability in production runtime and resume the same obligation.
+
+### User-deleted company post recovery
+
+A user explicitly deleting a company post is a new verified outcome, not a readback failure.
+When the user confirms deletion:
+- mark the deleted provider URN as `USER_DELETED`/retired evidence;
+- keep that story family consumed/retired;
+- permit at most one replacement for the same Amsterdam-day company obligation;
+- the replacement must have a new story fingerprint and pass full historical uniqueness;
+- never resurrect or reuse the deleted text/topic;
+- persist the replacement provider URN as the terminal daily side effect.
+
+### Terminal standard
+
+A company run is terminal only when one correct Bedrijfsgeheugen business post exists with a durable provider URN, or LinkedIn requires explicit human OAuth that cannot be performed autonomously. Internal alias drift, stale connection pointers, content-selection mistakes and readback 403s are self-healed inside the same lineage.
