@@ -6,17 +6,19 @@
   "obligation_id": "sitewide-canonical-chrome-geometry-v1",
   "problem": "Public routes could inherit different historical shell dimensions, allowing header, navigation, footer and mega-menu geometry to drift by route.",
   "root_cause": "Multiple generations of site chrome retained different width and height values while the live V18 shell had become the effective production authority.",
-  "fix": "Make the V18 production chrome the single geometry authority, lock canonical dimensions centrally, and enforce route-to-route browser parity.",
+  "fix": "Make the V18 production chrome the single geometry authority, load its canonical dimensions in head before first layout, and enforce route-to-route browser parity.",
   "failed_approaches": [
     "Keeping legacy 1120px component geometry alongside the live 1220px V18 shell.",
     "Fixing individual routes with page-specific header, footer or menu overrides.",
-    "Testing mega-menu contrast and width without also asserting header, navigation and footer parity."
+    "Testing mega-menu contrast and width without also asserting header, navigation and footer parity.",
+    "Injecting the canonical geometry stylesheet at the end of body; browser visibility testing exposed mobile CLS above the 0.100 contract."
   ],
   "prevention": [
     "Never add route-local geometry overrides for header, navigation, footer or mega-menu.",
     "All new public routes inherit the canonical shell.",
     "Representative routes are compared in browser regression checks.",
-    "A geometry contract change requires same-lineage skill, docs, learning and System Map updates."
+    "A geometry contract change requires same-lineage skill, docs, learning and System Map updates.",
+    "Load canonical shell geometry in head before first layout to prevent mobile cumulative layout shift."
   ],
   "compiler": {
     "failure_class": "PUBLIC_SITE_CHROME_GEOMETRY_DRIFT",
