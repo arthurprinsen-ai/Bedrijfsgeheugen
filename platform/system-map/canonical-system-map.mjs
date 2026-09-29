@@ -392,6 +392,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         netlifyCommitRef:'451c6f40868fb35af77d70f6f6aa0972b324f634'
       }),
       invariants:Object.freeze({
+        netlifyBuildParityProductionEnv:true,
         oneRequiredAuthorityPerPr:true,
         supersededPrRunsCancelled:true,
         affectedLanesOnly:true,
