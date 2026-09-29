@@ -180,5 +180,6 @@ De publieke route `/zelfscan` is voortaan de value-first Bedrijfslek-instap voor
 - score/benchmark blijft indicatief; geen financieel resultaat of koopintentie als feit presenteren;
 - `bedrijfslek-resultaat`, deelactie en checkout-start zijn commerciële tussenuitkomsten; paid order en realized revenue blijven terminale north-star outcomes;
 - de final-build authority moet deze route expliciet behouden zodat een latere V18/build-transformatie de acquisition-loop niet terugzet naar een leadgate.
+- `/zelfscan` is een standalone productroute en mag daarom nooit als `selfscan`-view in `tools/v18-views-lijst.mjs` staan; `tools/bouw-v18-views.mjs` mag `zelfscan.html` niet genereren of overschrijven.
 
 Dit is geen parallelle funnel. De route blijft onderdeel van de bestaande Growth Swarm, Persuasion Revenue Optimizer, SEO Conversion-to-Orders en canonical growth-event lineage.
