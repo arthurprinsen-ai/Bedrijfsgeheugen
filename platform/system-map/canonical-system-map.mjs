@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-29T15:16:00Z',
+  observedAt:'2026-09-29T16:10:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -95,7 +95,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         netlifyDeployId:'6abbdf73c4c7d80008d9811f',
         netlifyState:'ready',
         netlifyContext:'production',
-        writebackLearning:'brain/learning/2026-09-29-live-assurance-writeback-v1.json'
+        writebackLearning:'brain/learning/2026-09-29-live-assurance-writeback-v1.json',
+        livePromotionGovernanceClosure:'brain/learning/2026-09-29-live-promotion-governance-closure-v1.json'
       }),
       invariants:Object.freeze({
         wiringIsNotGreen:true,
@@ -109,7 +110,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         recomputeAfterRepair:true,
         canonicalWritebackRequired:true,
         liveAssuranceWriteback:true,
-        freshReadbackRequiredForCurrentGreen:true
+        freshReadbackRequiredForCurrentGreen:true,
+        livePromotionGovernanceClosure:true,
+        readyDeployIsOnlyDeploymentEvidence:true,
+        capabilitySubchainsIndependentlyGated:true
       })
     }),
     Object.freeze({
