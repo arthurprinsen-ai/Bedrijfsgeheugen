@@ -41,3 +41,15 @@ test('V18 generator cannot overwrite the standalone Bedrijfslek route',()=>{
   assert.match(netlify,/bedrijfslek-build-integrity\.mjs restore/);
   assert.match(netlify,/bedrijfslek-build-integrity\.mjs restore[^\n]*normaliseer-site-ui\.mjs/);
 });
+
+
+test('Bedrijfslek turns one result into a privacy-safe team challenge loop',()=>{
+  const scan=read('zelfscan.html');
+  assert.match(scan,/Daag mijn MT \/ collega uit/i);
+  assert.match(scan,/challenge_score/);
+  assert.match(scan,/challenge_risk/);
+  assert.match(scan,/bedrijfslek-teamchallenge-share/);
+  assert.match(scan,/bedrijfslek-teamchallenge-complete/);
+  assert.match(scan,/zonder account of e-mailadres/i);
+  assert.match(scan,/verschil met jouw score/i);
+});
