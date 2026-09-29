@@ -1,0 +1,17 @@
+{
+  "id": "linkedin-company-historical-dedupe-v1",
+  "date": "2026-09-29",
+  "status": "PROPOSED",
+  "scope": "powerhouse-social-publisher",
+  "failure": "A LinkedIn company post could repeat a previous-day story because the durable story fingerprint was only generated for linkedin_personal and the company body contained a date-varying measured URL.",
+  "root_cause": [
+    "publicationStoryFingerprint returned null for linkedin_company",
+    "company campaign URLs varied by publication date and could weaken text-similarity matching"
+  ],
+  "prevention": [
+    "derive durable story fingerprints for both LinkedIn personal and company",
+    "strip URLs, hashtags, date markers and whitespace noise before company historical uniqueness reservation",
+    "keep the existing atomic publication claim and provider-side-effect terminality unchanged"
+  ],
+  "regression_test": "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs"
+}
