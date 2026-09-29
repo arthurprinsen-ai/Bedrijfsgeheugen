@@ -34,7 +34,8 @@ header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0
 /* Persoonlijke klantbranding in workshoprapport */
 .report-client{display:flex;align-items:center;gap:14px;margin-top:12px;min-height:34px}
 .report-client-logo{display:block;max-width:132px;max-height:46px;width:auto;height:auto;object-fit:contain;object-position:left center}
-.report-client-logo[hidden]{display:none!important}\n.report-contact{margin-top:4px;font:600 12px/1.35 "Instrument Sans",sans-serif;color:#526078;letter-spacing:.01em}
+.report-client-logo[hidden]{display:none!important}
+.report-contact{margin-top:4px;font:600 12px/1.35 "Instrument Sans",sans-serif;color:#526078;letter-spacing:.01em}
 .report-client-page2{margin:0 0 12px}
 @media print{
   .report-client-logo{max-width:125px;max-height:42px}
