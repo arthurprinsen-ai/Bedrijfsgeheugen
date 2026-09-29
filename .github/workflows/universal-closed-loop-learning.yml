@@ -1,6 +1,8 @@
 name: Universal Closed-loop Learning
 
 on:
+  schedule:
+    - cron: '37 4 * * *'
   pull_request:
     paths:
       - 'config/universal-closed-loop-learning.json'
@@ -27,3 +29,5 @@ jobs:
         run: node scripts/brain/validate-universal-closed-loop-learning.mjs
       - name: Regression tests
         run: node --test tests/brain-universal-closed-loop-learning.test.mjs
+      - name: Compound learning integration regression
+        run: node --test tests/powerhouse-daily-compound-learning-v1.test.mjs
