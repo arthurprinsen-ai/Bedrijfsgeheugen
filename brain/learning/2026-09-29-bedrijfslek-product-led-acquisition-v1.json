@@ -26,7 +26,7 @@
     "failure_class": "CONVERSION_FRICTION",
     "scope": "WEBSITE",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 2,
     "security_sensitive": false
   },
   "skill_targets": [
@@ -35,12 +35,14 @@
   ],
   "root_cause": [
     "The selfscan was optimized for early lead capture instead of delivered value.",
-    "The homepage asked for a meeting before visitors experienced the diagnostic product promise."
+    "The homepage asked for a meeting before visitors experienced the diagnostic product promise.",
+    "The V18 view registry still owned selfscan and overwrote the standalone Bedrijfslek source during the production build."
   ],
   "prevention": [
     "Do not gate the primary promised diagnostic value behind PII.",
     "Place contact, demo or checkout choices after useful on-screen value.",
-    "Preserve the Bedrijfslek path in final build transforms and regression tests."
+    "Preserve the Bedrijfslek path in final build transforms and regression tests.",
+    "The V18 VIEWS registry must never own /zelfscan; the standalone Bedrijfslek product route is authoritative."
   ],
   "evidence": {
     "source_routes": [
@@ -48,8 +50,13 @@
       "/zelfscan"
     ],
     "skill": ".agents/skills/powerhouse-growth-swarm/SKILL.md",
-    "build_authority": "tools/site-shell/apply-money-page-order-conversion.mjs",
+    "build_authority": [
+      "tools/v18-views-lijst.mjs",
+      "tools/bouw-v18-views.mjs",
+      "tools/site-shell/apply-money-page-order-conversion.mjs"
+    ],
     "regression_test": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs",
     "change_scope": "site/change-scope-bedrijfslek-order-magnet-20260929.json"
-  }
+  },
+  "revision": 2
 }
