@@ -744,3 +744,10 @@ Alle chats/agents erven:
 - user-upload references `Jt5SWKRgyK3heTqEXH4w`, `w4HhwCmX5GxL8jTGljxe`, `umWzAKt6YBeoVpHlKTtK` zijn verboden in de Mira lineage;
 - een Mira media-job moet de canonical identity-reference expliciet bewijzen vóór verification/publication;
 - persoonlijke user-media wordt nooit als fallback, training seed of identity source voor Mira gebruikt.
+
+
+## Canonical public CMS + i18n authority
+
+Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
+
+Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: header, footer, mega-menu, primaire navigatie en publieke NL/EN-switching zijn één gedeelde CMS/site-shell-capability. Pagina-lokale forks zijn verboden. NL/EN behoudt altijd dezelfde functionele route (`/x ↔ /en/x`; homepage `/ ↔ /en/`). De build-time shell is primary authority; runtime normalisatie is alleen een defensieve borging. I18n-assets zijn versiegebonden om stale browser/CDN-runtime te voorkomen. Een websitewijziging is pas terminal wanneer build/static/browser-gates groen zijn, protected merge is gedaan, Netlify exact-current-main toont en live browser-readback de NL→EN→NL roundtrip op representatieve routes bewijst. De gebruiker krijgt geen tussentijdse CI/deploy-status; alleen terminale uitkomst of echte harde grens.
