@@ -31,5 +31,11 @@
   "skill_targets": [
     "powerhouse-continuity",
     "powerhouse-system-map-governance"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "SYSTEM_MAP_GOVERNANCE_FALSE_WEBSITE_DEPLOY",
+    "scope": "DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
 }
