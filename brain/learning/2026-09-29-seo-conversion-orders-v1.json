@@ -1,0 +1,45 @@
+{
+  "id": "seo-conversion-orders-v1",
+  "date": "2026-09-29",
+  "status": "TESTING",
+  "area": "SEO_DEMAND",
+  "problem": "Technical SEO is strong, but organic growth was not explicitly optimizing money pages for qualified orders and revenue.",
+  "evidence": {
+    "lighthouse": "homepage SEO 1.00/performance 0.94; process automation SEO 1.00/performance 0.85",
+    "dataforseo_rank_set": "No measurable ranked-keyword set returned for bedrijfsgeheugen.nl in the NL dataset at audit time.",
+    "nl_keyword_baseline": {
+      "bedrijfsprocessen automatiseren": 480,
+      "afas koppeling": 320,
+      "exact online koppeling": 140,
+      "power bi implementatie": 50,
+      "kennisborging": 40,
+      "ai automatisering mkb": 20
+    }
+  },
+  "decision": "Extend the existing canonical SEO Growth Intelligence rather than create a parallel SEO system.",
+  "models": [
+    "search-intent",
+    "JTBD",
+    "PAS",
+    "AIDA",
+    "4P",
+    "risk-reversal",
+    "message-match",
+    "information-scent",
+    "topic-clusters",
+    "E-E-A-T",
+    "conversion-hierarchy",
+    "objection-handling",
+    "outcome-memory"
+  ],
+  "prevention": [
+    "Do not optimize raw traffic without a conversion hypothesis.",
+    "Prefer updating the canonical money page over creating another page for the same intent.",
+    "Never use doorway pages, scaled thin content, keyword stuffing, link schemes, cloaking or unsupported social proof.",
+    "Limit autonomous daily changes to three reversible evidence-gated changes.",
+    "Require production readback and downstream CTA/lead/order/revenue measurement before promoting the learning to PROVEN."
+  ],
+  "canonical_runtime": "config/seo-growth-loop.json",
+  "canonical_allowlist": "config/seo-optimization-allowlist.json",
+  "outcome_router": "BG168 -> BG166 -> BG167"
+}
