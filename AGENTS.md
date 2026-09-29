@@ -751,3 +751,9 @@ Alle chats/agents erven:
 Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
 
 Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: header, footer, mega-menu, primaire navigatie en publieke NL/EN-switching zijn één gedeelde CMS/site-shell-capability. Pagina-lokale forks zijn verboden. NL/EN behoudt altijd dezelfde functionele route (`/x ↔ /en/x`; homepage `/ ↔ /en/`). De build-time shell is primary authority; runtime normalisatie is alleen een defensieve borging. I18n-assets zijn versiegebonden om stale browser/CDN-runtime te voorkomen. Een websitewijziging is pas terminal wanneer build/static/browser-gates groen zijn, protected merge is gedaan, Netlify exact-current-main toont en live browser-readback de NL→EN→NL roundtrip op representatieve routes bewijst. De gebruiker krijgt geen tussentijdse CI/deploy-status; alleen terminale uitkomst of echte harde grens.
+
+
+### Live Assurance writeback — verplicht
+Fingerprint: `powerhouse|live-assurance-writeback|2026-09-29-v1`.
+
+Alle chats en agents moeten na een materiële live recovery de terminale productie-identiteit en truth-boundary terugschrijven naar Brain learning, relevante skills, AGENTS/chat-contract, continuity-policy, ledger/docs en System Map, gevolgd door read-after-write. Een ready deploy bewijst deployment; functionele subketens behouden hun eigen bewijs-gates. Historische LIVE/GREEN-status mag nooit als actuele health worden hergebruikt zonder verse readback.
