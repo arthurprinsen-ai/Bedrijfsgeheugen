@@ -244,3 +244,20 @@ Required machine evidence before dispatch:
 Canonical runtime authority: `supabase/functions/powerhouse-social-publisher/index.ts`.
 Regression authority: `tests/brain-linkedin-company-historical-dedupe-v1.test.mjs`.
 Brain learning: `brain/learning/2026-09-29-linkedin-company-historical-dedupe-v1.json`.
+
+
+## Company write/read scope separation (2026-09-29)
+
+Fingerprint: `linkedin-company-write-read-scope-separation-v1`.
+
+A LinkedIn organization write must never be blocked merely because organization ACL/read endpoints return 403. The canonical Bedrijfsgeheugen organization author is `urn:li:organization:18234216` (or the configured `COMPOSIO_LINKEDIN_COMPANY_AUTHOR_URN`).
+
+Hard rules:
+- provider token health is proven with `LINKEDIN_GET_MY_INFO`;
+- company author identity comes from the configured canonical organization URN, with ACL discovery used only as optional corroboration;
+- `r_organization_admin` and organization-read scopes are verification/enrichment capabilities, not prerequisites for attempting a company write;
+- `w_organization_social` remains the actual provider write capability; if scope metadata is unavailable, the create call itself is the authoritative capability probe;
+- a 403 on `LINKEDIN_GET_COMPANY_INFO` must not force reconnect or fallback when the personal token is healthy and canonical organization identity is known;
+- a 401/`REVOKED_ACCESS_TOKEN` remains a genuine reconnect boundary;
+- a successful create URN is terminal publication evidence and permanently activates `republish_forbidden=true`;
+- reconnect flows must preserve separate personal and company canonical identities and must not create duplicate aliases/writers.

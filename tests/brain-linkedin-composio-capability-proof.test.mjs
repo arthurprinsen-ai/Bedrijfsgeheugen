@@ -45,7 +45,7 @@ test('LinkedIn Composio execution uses v3.1 latest tool semantics',()=>{
 test('connected-account user_id is forwarded to every Composio LinkedIn tool call',()=>{
   assert.match(setup,/COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED/);
   assert.match(setup,/user_id:userId/);
-  assert.match(setup,/execute\(key,accountId,userId,'LINKEDIN_GET_MY_INFO'/);
+  assert.match(setup,/execute\(key,candidateAccountId,candidateUserId,'LINKEDIN_GET_MY_INFO'/);
   assert.match(setup,/execute\(key,accountId,userId,'LINKEDIN_GET_COMPANY_INFO'/);
 });
 
@@ -75,4 +75,15 @@ test('LinkedIn company Composio publishing is exact-readback and fail-closed',()
   assert.match(publisher,/COMPOSIO_LINKEDIN_COMPANY_AUTHOR_AMBIGUOUS/);
   assert.match(publisher,/republish_forbidden:true/);
   assert.match(publisher,/do not fall back to Buffer or issue a replacement post/);
+});
+
+
+test('LinkedIn company write readiness is independent from organization ACL read permission', () => {
+  assert.match(setup,/companyReady=personalReady&&companyAuthorConfigured/);
+  assert.doesNotMatch(setup,/companyReady=orgUrns\.length===1&&hasOrgAdminScope&&hasOrgWriteScope/);
+  assert.match(setup,/company_admin_read_ready:companyAdminReadReady/);
+  assert.match(setup,/company_admin_read_scope_required:companyAdminReadReady\?null:'r_organization_admin'/);
+  assert.match(publisher,/organizationReadVerified=false/);
+  assert.match(publisher,/catch\(_organizationReadError\)\{\}/);
+  assert.match(publisher,/canonical_org_write_candidate/);
 });
