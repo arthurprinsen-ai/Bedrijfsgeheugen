@@ -162,3 +162,5 @@ test('Mira visible identity incident is promoted into canonical learning and ski
   assert.match(skill, /reel\/video 1080x1920/);
   assert.match(skill, /Never treat any of these as identity proof/);
 });
+
+assert.doesNotMatch(publisher ?? p,/INSTAGRAM_CANONICAL_USER_ID/, 'INSTAGRAM_CANONICAL_USER_ID must never remain as an undefined runtime authority');
