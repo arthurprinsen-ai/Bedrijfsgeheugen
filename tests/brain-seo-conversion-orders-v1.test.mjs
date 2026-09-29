@@ -79,3 +79,19 @@ test('CRO action surface supports autonomous page composition without dark patte
   assert.ok((allow.cro_decision_requirements||[]).includes('reversible-change'));
   assert.ok((allow.cro_decision_requirements||[]).includes('preserve-accessibility-and-mobile-readability'));
 });
+
+
+test('behavioral capability is projected into Powerhouse Brain and inherited by commercial skills',()=>{
+  const registry=JSON.parse(readFileSync('docs/brain/component-registry.json','utf8'));
+  const cap=(registry.components||[]).find(c=>c.key==='CAPABILITY_SEO_CONVERSION_ORDERS');
+  assert.ok(cap,'missing CAPABILITY_SEO_CONVERSION_ORDERS');
+  assert.match(cap.name,/Behavioral Conversion-to-Orders Engine v2/);
+  assert.equal(cap.autonomy,'contextual evidence-gated page composition with rollback');
+  assert.ok((cap.linked_capabilities||[]).includes('powerhouse-persuasion-revenue-optimizer-v1'));
+  assert.ok((cap.linked_capabilities||[]).includes('powerhouse-growth-swarm-v1'));
+
+  const swarm=readFileSync('.agents/skills/powerhouse-growth-swarm/SKILL.md','utf8');
+  const persuasion=readFileSync('.agents/skills/powerhouse-persuasion-revenue/SKILL.md','utf8');
+  assert.match(swarm,/powerhouse-behavioral-landing-revenue-v2/);
+  assert.match(persuasion,/powerhouse-behavioral-landing-revenue-v2/);
+});
