@@ -744,3 +744,14 @@ Alle chats/agents erven:
 - user-upload references `Jt5SWKRgyK3heTqEXH4w`, `w4HhwCmX5GxL8jTGljxe`, `umWzAKt6YBeoVpHlKTtK` zijn verboden in de Mira lineage;
 - een Mira media-job moet de canonical identity-reference expliciet bewijzen vóór verification/publication;
 - persoonlijke user-media wordt nooit als fallback, training seed of identity source voor Mira gebruikt.
+
+
+## Instagram provider identity — inherited contract
+Fingerprint: `instagram-canonical-provider-identity-v3`.
+
+Alle chats/agents die Instagram publiceren:
+- behandelen `bedrijfsgeheugen.nl` als canonieke accountidentiteit;
+- ontdekken de numerieke Business/Graph user ID live via `INSTAGRAM_GET_USER_INFO(me)`;
+- hardcoden geen historische Instagram user ID als publication authority;
+- binden create → publish → readback aan dezelfde live `providerUserId`;
+- herstellen provider-ID drift vóór side effect en hervatten dezelfde idempotente daily claim.
