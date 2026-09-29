@@ -72,7 +72,9 @@
     "requireLiveVsFunctionalTruthSeparation": true,
     "liveVsFunctionalTruthFingerprint": "production|live-ready-vs-functional-green|2026-09-29-v1",
     "deploymentReadyNeverImpliesFunctionalGreen": true,
-    "materialLivePromotionAutoWriteback": true
+    "materialLivePromotionAutoWriteback": true,
+    "instagramLiveGraphUserIdRuntimeAuthority": true,
+    "instagramObservedNumericIdsAreEvidenceOnly": true
   },
   "lessons": [
     {

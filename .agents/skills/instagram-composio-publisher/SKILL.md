@@ -406,9 +406,9 @@ Canoniek:
 ## Live Instagram provider identity — 29 september 2026
 Fingerprint: `instagram-canonical-provider-identity-v3`.
 - Canonieke username: `bedrijfsgeheugen.nl`.
-- `INSTAGRAM_GET_USER_INFO(me)` levert twee verschillende identifiers: provider/connection node `id=28537384955950341` en Instagram Graph publication `user_id=17841446582493753`.
+- `INSTAGRAM_GET_USER_INFO(me)` levert twee verschillende identifiers: provider/connection node `id` en Instagram Graph publication `user_id`; de laatst waargenomen waarden staan alleen als evidence in Brain/System Map.
 - `id` en `user_id` zijn nooit uitwisselbaar; Graph `user_id` is de publication identity.
-- Vóór provider-write: lees `id,user_id,username,name,account_type`; eis Graph `user_id=17841446582493753`, juiste username en BUSINESS/CREATOR.
+- Vóór provider-write: lees `id,user_id,username,name,account_type`; eis een niet-lege Graph `user_id`, username `bedrijfsgeheugen.nl` en BUSINESS/CREATOR. Gebruik exact die live `user_id` voor create → publish → readback.
 - Gebruik dezelfde selected canonical connection voor identity-check → create → publish → readback.
 - Bij drift: hervat dezelfde ongepubliceerde claim; maak geen replacement post.
 - Live closure: media-id `18105956765257858`, permalink `https://www.instagram.com/reel/Dd4MOdTEarq/`, `republish_forbidden=true`.

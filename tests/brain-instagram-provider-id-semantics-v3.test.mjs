@@ -15,13 +15,15 @@ test('Instagram identity preflight keeps node id and Graph user_id distinct',()=
   assert.match(block,/fields:'id,user_id,username,name,account_type'/);
   assert.match(block,/providerUserId=deepPickString\(data,\['user_id'\]\)/);
   assert.match(block,/providerNodeId=deepPickString\(data,\['id'\]\)/);
-  assert.match(block,/providerUserId!==INSTAGRAM_CANONICAL_USER_ID/);
+  assert.doesNotMatch(publisher,/INSTAGRAM_CANONICAL_USER_ID/);
+  assert.match(block,/if\(!providerUserId\|\|!providerNodeId\|\|!username\)/);
   assert.equal(config.observed_graph_user_id,'17841446582493753');
   assert.equal(config.observed_connection_node_id,'28537384955950341');
 });
 
 test('System Map carries live canonical Instagram truth',()=>{
-  assert.match(map,/canonicalGraphUserId:'17841446582493753'/);
+  assert.match(map,/observedGraphUserId:'17841446582493753'/);
+  assert.match(map,/liveGraphUserIdIsRuntimeAuthority:true/);
   assert.match(map,/providerNodeId:'28537384955950341'/);
   assert.match(map,/liveMediaId:'18105956765257858'/);
   assert.match(map,/nodeIdDistinctFromGraphUserId:true/);
