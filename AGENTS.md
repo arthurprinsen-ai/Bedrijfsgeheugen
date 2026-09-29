@@ -683,3 +683,22 @@ All chats/agents inherit the Bedrijfsgeheugen company-channel contract:
 - an explicitly user-deleted company post may receive one same-day replacement only with a new story fingerprint and a materially different business topic;
 - Buffer/Make are never LinkedIn recovery fallbacks;
 - provider create URN is persisted immediately and prevents duplicate retries.
+
+
+## Bedrijfslek product-led growth inheritance
+
+Fingerprint: `growth|bedrijfslek|value-first-team-loop|v2`.
+
+Iedere huidige en toekomstige chat/agent die websitegroei, acquisitie, Bedrijfslek, scans, leadmagnets, Growth Swarm, SEO/CRO of commerciële portal-handoffs wijzigt, erft voortaan dit contract:
+
+- begin bij aantoonbare waarde vóór persoonsgegevens: score, inzicht en concrete actie mogen niet achter een naam/e-mail/telefoon-gate worden geplaatst;
+- behandel `/zelfscan` als één product-led acquisitielus: organisch bereik → Bedrijfslek → volledige uitslag → Bedrijfsgeheugen Mini → teamchallenge → tweede gekwalificeerde gebruiker → interne vergelijking → portal/order;
+- optimaliseer niet op formulierstarts of losse scans als terminale uitkomst; de north star blijft paid order en realized revenue;
+- één afgeronde scan moet, waar passend, een privacy-safe vervolgmechanisme hebben dat nieuwe gekwalificeerde gebruikers kan opleveren zonder PII in de challenge-URL;
+- teamchallenge-URL's bevatten uitsluitend score, risicocategorie en campagne-attributie; nooit naam, e-mail, telefoon, bedrijfsnaam of private antwoorden;
+- Mini-voortgang blijft lokaal in de browser tenzij de gebruiker later expliciet kiest voor een portaal/account;
+- gebruik één bestaande Growth Swarm / SEO Conversion-to-Orders authority; bouw geen parallelle funnel, CRM, scan-engine of tweede growth scheduler;
+- iedere materiële wijziging aan deze loop moet dezelfde-lineage skills, Brain learning, human docs, development ledger, System Map en regressie-evidence bijwerken;
+- de volgende agent/chat moet deze regel via repository-preflight ontdekken zonder afhankelijk te zijn van de oorspronkelijke chat.
+
+Een verandering die alleen bereik of leads verhoogt maar de gesloten lus, privacy of terminale revenue-outcome verbreekt, is geen geldige Powerhouse-groeiwijziging.
