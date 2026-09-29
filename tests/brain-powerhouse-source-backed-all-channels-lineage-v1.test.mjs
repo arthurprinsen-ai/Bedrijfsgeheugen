@@ -11,4 +11,9 @@ test('all outbound channels share one source/outcome lineage',()=>{
   assert.ok(selection.includes('powerhouse_sales_actions_source_gate_v1'));
   assert.ok(orchestrator.includes("row?.evidence?.source_backed === true"));
   assert.ok(orchestrator.includes('powerhouse_materialize_source_backed_channel_candidates_v1'));
+  const loops=JSON.parse(fs.readFileSync('powerhouse/assurance/loop-registry.json','utf8'));
+  const outbound=loops.loops.find(x=>x.loop_key==='source-backed-outbound');
+  assert.ok(outbound);
+  assert.equal(outbound.cron_jobname,'powerhouse-outbound-source-lineage-hourly-v1');
+  assert.deepEqual(outbound.required_stages,['input','decision','action','readback','outcome','measurement','learning','guard']);
 });
