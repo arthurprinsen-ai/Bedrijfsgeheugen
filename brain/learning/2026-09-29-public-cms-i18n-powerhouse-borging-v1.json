@@ -1,0 +1,45 @@
+{
+  "fingerprint": "powerhouse|public-cms-i18n|shared-shell-same-route|v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Public website chrome and NL/EN behavior previously had split authority across shared shell, static routes, runtime controls and page-local remnants, while chats could expose intermediate delivery state.",
+  "root_cause": "The architecture lacked one explicit Powerhouse-wide authority contract tying website chrome, locale routing, cache versioning, production truth, agent/chat continuity and user-facing terminal reporting into one governed capability.",
+  "fix": [
+    "registered publicLocaleAuthority under canonicalWebsiteChrome in the System Map",
+    "projected the contract into green assurance, continuity and system-map skills",
+    "bound the rule into AGENTS.md and chat/agent learning policies",
+    "documented terminal production and readback requirements"
+  ],
+  "prevention": [
+    "one shared site shell owns header footer mega-menu navigation and language switching",
+    "same-route NL/EN is mandatory",
+    "versioned i18n assets are mandatory",
+    "exact-main Netlify production and live browser roundtrip are terminal evidence",
+    "all chats and agents continue through terminal state without reporting internal delivery noise"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-cms-i18n-powerhouse-borging-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-cms-i18n-powerhouse-borging-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-public-cms-i18n-powerhouse-borging-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity",
+    "system-map",
+    "green-assurance"
+  ],
+  "compiler": {
+    "failure_class": "GOVERNANCE_DRIFT",
+    "scope": "PUBLIC_CMS_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
