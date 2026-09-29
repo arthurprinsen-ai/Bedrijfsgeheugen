@@ -14,5 +14,6 @@ test('website lane executes the complete Netlify production build chain before m
   assert.match(workflow,/genereer-sitemap\.mjs/);
   assert.match(workflow,/bouw-release-evidence\.mjs/);
   assert.match(workflow,/STATIC_I18N_NETWORK: '0'/);
+  assert.match(workflow,/STATIC_I18N_REQUIRE_CACHE: '1'/);
   assert.match(workflow,/STATIC_I18N_CONCURRENCY: '1'/);
 });
