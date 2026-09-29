@@ -1,10 +1,11 @@
 {
   "version": "instagram-canonical-provider-identity-v3",
   "username": "bedrijfsgeheugen.nl",
-  "observed_business_user_id": "28537384955950341",
+  "observed_graph_user_id": "17841446582493753",
+  "observed_connection_node_id": "28537384955950341",
   "provider": "composio-instagram",
   "account_type": "BUSINESS",
-  "observed_at": "2026-09-29T16:15:08Z",
-  "rule": "Canonical identity is username plus live BUSINESS/CREATOR provider readback. Discover numeric providerUserId with INSTAGRAM_GET_USER_INFO(me) before provider mutation; never hardcode historical provider IDs.",
-  "publish_binding": "Use the same live providerUserId for create, publish and readback."
+  "observed_at": "2026-09-29T16:30:06Z",
+  "rule": "Canonical identity is username plus live BUSINESS/CREATOR provider readback. Discover both id and user_id with INSTAGRAM_GET_USER_INFO(me); id is the provider connection node identity and user_id is the Instagram Graph publication identity. Never treat them as interchangeable or hardcode a stale publication ID.",
+  "publish_binding": "Use the same selected canonical connection for identity check, create, publish and readback; Graph user_id 17841446582493753 is the publication identity."
 }
