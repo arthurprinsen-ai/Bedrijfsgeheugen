@@ -1,0 +1,13 @@
+{
+  "version": "CMS-LOCALE-AUTHORITY-v1",
+  "date": "2026-09-29",
+  "obligation_id": "cms-locale-authority-20260929",
+  "learning": "Public NL/EN switching must be owned by the canonical site-shell build and deterministic locale routes, not by ad-hoc page scripts or runtime translation.",
+  "invariant": "Header, footer, mega-menu, navigation and language switching inherit one shared shell; public locale switching preserves the current route and navigates to prebuilt /en equivalents.",
+  "prevention": [
+    "Keep public language controls as real links with hreflang.",
+    "Bind same-page locale hrefs during localized build.",
+    "Reserve runtime translation for portal and dynamic contexts.",
+    "Regression-test the shared authority path."
+  ]
+}
