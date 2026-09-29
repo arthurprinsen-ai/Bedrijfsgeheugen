@@ -16,7 +16,10 @@
     "brain/skills/powerhouse-missing-connections-recovery-v1.json",
     "brain/learning/2026-09-18-missing-connections-recovery-v1.json",
     "brain/learning/2026-09-29-powerhouse-daily-compound-learning-v1.json",
-    "docs/changes/2026-09-29-powerhouse-daily-compound-learning-v1.md"
+    "docs/changes/2026-09-29-powerhouse-daily-compound-learning-v1.md",
+    "brain/policies/linkedin-company-standard-delivery-v1.json",
+    "brain/learning/2026-09-29-linkedin-company-standard-delivery-v1.json",
+    "docs/changes/2026-09-29-linkedin-company-standard-delivery-v1.md"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -37,7 +40,12 @@
     "verifiedOutcomeBeforeLearning": true,
     "silenceIsNeverOutcome": true,
     "forbidParallelOutcomeForecastLearningStores": true,
-    "requireOutcomeLearningNextDecisionClosure": true
+    "requireOutcomeLearningNextDecisionClosure": true,
+    "requireLinkedInCompanyStandardDelivery": true,
+    "linkedinCompanyStandardFingerprint": "linkedin-company-standard-delivery-v1",
+    "companySocialRejectPersonalTopics": true,
+    "productionSocialAuthAuthorityBeforeChatConnector": true,
+    "userDeletedCompanyPostRequiresNewStoryReplacement": true
   },
   "lessons": [
     {
