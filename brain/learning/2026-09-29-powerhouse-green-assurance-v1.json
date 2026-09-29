@@ -47,16 +47,22 @@
       "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
     ]
   },
-  "root_cause": "Powerhouse health could remain non-green because wiring/activity, provider-specific dependency state, legacy telemetry, required evidence freshness, open terminal obligations and canonical lineage were not evaluated as separate truth dimensions.",
+  "root_cause": "Powerhouse health was partly inferred from wiring/activity and provider-specific/legacy signals instead of requiring fresh end-to-end evidence, complete lineage, terminal obligations and readback for the required capability.",
   "evidence": {
-    "observed": "During assurance, all 32 intelligence layers were wired and all 18 required jobs active while architecture/content health still remained non-green.",
-    "repaired": [
-      "required source freshness restored with truthful readback",
-      "external intelligence made provider-neutral instead of Tavily-single-vendor",
-      "retired Buffer removed from critical green gate",
-      "identified commercial-progression lineage gap repaired",
-      "system-map/agent/skill/truth contracts updated in one canonical lineage"
+    "observed_runtime": {
+      "intelligence_layers_wired": "32/32",
+      "required_jobs_active": "18/18",
+      "prior_architecture_state": "RED",
+      "repaired_architecture_state": "AMBER",
+      "structural_lineage_gaps_repaired": "1->0"
+    },
+    "repairs": [
+      "required provider-neutral external-intelligence observation refreshed from governed current source",
+      "Tavily removed as whole-Brain single point of failure while remaining visible as provider telemetry",
+      "legacy Buffer removed from critical full-cycle green gate",
+      "missing commercial_progression forecast lineage repaired without synthesizing outcome",
+      "new Mira Instagram asset generated but correctly not treated as published/readback proof"
     ],
-    "boundary": "This evidence proves the operating rule and applied repairs; it does not claim all future runtime health is permanently green."
+    "truth_boundary": "These facts support the assurance contract; they do not assert every runtime obligation is currently green."
   }
 }
