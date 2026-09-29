@@ -15,8 +15,9 @@ test('Bedrijfslek delivers full value before PII capture',()=>{
 test('homepage and build authority preserve Bedrijfslek as primary acquisition path',()=>{
   const home=read('index.html');
   const build=read('tools/site-shell/apply-money-page-order-conversion.mjs');
-  assert.match(home,/data-money-primary[^>]+href="\/zelfscan"/i);
+  assert.match(home,/data-money-primary[^>]+href="https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan"/i);
   assert.match(home,/Geen formulier\. Geen e-mail\. Geen verplichting\. Meteen resultaat\./i);
+  assert.match(build,/https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan/);
   assert.match(build,/Ontdek gratis waar je bedrijf lekt/i);
   assert.match(build,/Geen verplichting/i);
 });
