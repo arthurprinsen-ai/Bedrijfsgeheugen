@@ -18,17 +18,18 @@
       "w_organization_social"
     ],
     "affected_function": "supabase/functions/powerhouse-social-publisher/index.ts",
-    "observed_setup_state": "company_ready=true"
+    "observed_setup_state": "company_ready=true",
+    "regression": "tests/brain-linkedin-company-org-id-normalization-v1.test.mjs"
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-central-social-publication-authority-v1.test.mjs"
+      "tests/brain-linkedin-company-org-id-normalization-v1.test.mjs"
     ],
     "shadow": [
-      "tests/brain-social-publish-atomic-claim-dedupe-v1.test.mjs"
+      "tests/brain-linkedin-company-org-id-normalization-v1.test.mjs"
     ],
     "canary": [
-      "tests/brain-central-social-publication-authority-v1.test.mjs"
+      "tests/brain-linkedin-company-org-id-normalization-v1.test.mjs"
     ]
   },
   "compiler": {
