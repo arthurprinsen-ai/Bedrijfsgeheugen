@@ -1,0 +1,41 @@
+{
+  "fingerprint": "production-readback|governance-runtime-scope|v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "GOVERNANCE_PATHS_FALSE_PRODUCTION_DEPLOYMENT",
+  "problem": "Production Release Readback reclassified all changed files after a merge, including paths that are ignored by the workflow trigger such as skills, docs, tests and Brain learning. A mixed governance closure therefore became deployment-required even though no Netlify runtime changed.",
+  "root_cause": "The workflow trigger had governance paths-ignore rules, but the internal scope derivation used the unfiltered full git diff. Trigger scope and deployment scope diverged.",
+  "fix": "Filter governance-only paths into runtimeChangedPaths before createDeliveryPlan, Netlify runtime checks and website risk classification. Keep manual readback explicit and preserve real website/portal/runtime production requirements.",
+  "prevention": [
+    "Workflow trigger scope and internal deployment scope must use the same non-runtime governance semantics.",
+    "Skills, docs, tests, Brain learning, AGENTS.md and canonical system-map updates do not alone require Netlify deployment.",
+    "Mixed candidates still require deployment when any runtimeChangedPath belongs to website, portal or Netlify runtime.",
+    "Manual readback may still request browser verification explicitly."
+  ],
+  "evidence": {
+    "triggering_merge": "60a65d55e0330848b822cff9dce7f589863dbe20",
+    "stuck_readback_run": 36538050556,
+    "prior_false_deploy_merge": "d734e4f162e78f680582decea1b911d139bb7cd5",
+    "regression": "tests/brain-production-release-readback-scope.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "GOVERNANCE_PATHS_FALSE_PRODUCTION_DEPLOYMENT",
+    "scope": "PRODUCTION_READBACK_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}
