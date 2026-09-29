@@ -87,9 +87,9 @@ async function run() {
     const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
     await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
     await page.waitForFunction(() => {
-      const root = document.documentElement;
-      return root?.dataset?.bgPricingInteractions === 'ready-v3'
-        && Boolean(document.querySelector('[data-bg-stage="loss"]'));
+      return Boolean(document.querySelector('[data-bg-stage="loss"]'))
+        && Boolean(document.querySelector('[data-bg-price-tab="run"]'))
+        && Boolean(document.querySelector('[data-bg-billing="yearly"]'));
     }, null, { timeout:20_000 });
 
     // Lifecycle toggle must change the actual visible panel.
