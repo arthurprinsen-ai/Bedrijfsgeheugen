@@ -100,3 +100,15 @@ When Production Source Snapshot reaches the exact-source `@netlify/mcp` fallback
 - classify a fallback `401 Unauthorized` as transport credential expiry before treating it as a site/build defect;
 - persistent authentication failure remains fail-closed;
 - terminal success still requires protected-main/provider identity and canonical browser readback.
+
+## Production build parity includes environment
+
+Fingerprint: `netlify-production-build-parity-20260925-v1` revision 2.
+
+"Same build" means the same production-critical command chain **and** the same fail-closed environment semantics. In particular:
+- `STATIC_I18N_NETWORK=0`;
+- `STATIC_I18N_REQUIRE_CACHE=1`;
+- production-equivalent Node version;
+- the exact pricing/i18n/localized-route/sitemap/release-evidence chain.
+
+A parity job that disables a production guard is not parity and may not authorize merge. If Netlify fails after a supposedly green parity run, compare environment flags before changing content or credentials.
