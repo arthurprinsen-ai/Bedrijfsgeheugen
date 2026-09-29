@@ -19,8 +19,8 @@
   gtag('js', new Date());
   gtag('config', 'G-912L0PB68G');
 </script><meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Gratis zelfscan — waar lekt jouw kennis? | Bedrijfsgeheugen</title>
-<meta name="description" content="5 klikvragen, 2 minuten, direct je score. Ontdek waar jouw bedrijf kwetsbaar is: offertes, planning, klantkennis en systemen. Gratis, zonder verplichtingen.">
+<title>Gratis Bedrijfslek — waar lekt tijd, geld en kennis? | Bedrijfsgeheugen</title>
+<meta name="description" content="12 klikvragen, direct je volledige Bedrijfslek-score, risico’s en quick wins. Geen account, geen e-mail, geen verkoopgesprek nodig.">
 <meta name="bg-zoekwoord" content="kennis vastleggen medewerker vertrekt">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/zelfscan">
 <meta name="theme-color" content="#2742D6">
@@ -92,7 +92,13 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 .risico b{display:block;margin-bottom:.2rem}
 .gesloten{border:2px dashed var(--lijn);border-radius:12px;padding:1rem 1.2rem;margin:.6rem 0;color:var(--grijs);font-size:.9rem;display:flex;gap:.6rem;align-items:center}
 .gesloten svg{width:16px;height:16px;flex-shrink:0}
-/* formulier */
+.quickwins{margin:1.2rem 0 0;display:grid;gap:.7rem}
+.quickwin{border:1px solid var(--lijn);border-radius:12px;padding:1rem 1.1rem;background:#FFFDF5}
+.quickwin b{display:block;margin-bottom:.2rem}
+.quickwin span{display:block;color:#3C424A;font-size:.9rem;line-height:1.5}
+.quickwin small{display:block;color:var(--grijs);margin-top:.35rem}
+.sharestatus{font-size:.8rem;color:var(--grijs);margin-top:.5rem}
+ /* formulier */
 label.veld{display:block;font-weight:600;font-size:.9rem;margin:1rem 0 .3rem}
 input[type=text],input[type=email],input[type=tel]{width:100%;border:2px solid var(--inkt);border-radius:10px;padding:.75rem .9rem;font:inherit;background:#fff}
 .optioneel{font-weight:400;color:var(--grijs)}
@@ -185,26 +191,26 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
 
   <!-- INTRO -->
   <section class="stapje actief hero-scan" id="s-intro">
-    <span class="vraagnr">Gratis zelfscan · 12 vragen · 3 minuten</span>
+    <span class="vraagnr">Gratis Bedrijfslek · 12 vragen · 3 minuten</span>
     <div class="introgrid">
       <div>
-        <h1>Waar lekt jouw bedrijf kennis?</h1>
-        <p class="intro">Twaalf klikvragen langs de acht onderdelen die we bij een Frisse blik ook nalopen: verkoop, planning, klantkennis, systemen, administratie, inwerken, AI-gebruik en continuïteit. Geen typwerk, geen gegevens vooraf.</p>
+        <h1>Waar lekt tijd, geld en kennis uit jouw bedrijf?</h1>
+        <p class="intro">Twaalf klikvragen. Geen account, geen e-mail en geen gegevens vooraf. Je ziet direct waar je organisatie waarschijnlijk tijd, kennis en uitvoeringskracht verliest — plus de eerste acties die je morgen kunt nemen.</p>
         <ul class="bullets">
-          <li>Direct je score <b>per onderdeel</b> op het scherm — je ziet meteen waar het scheef zit</li>
-          <li>Het volledige rapport (risico's + quick wins) gratis in je mail</li>
-          <li>Geen verplichtingen — en we bellen je niet ongevraagd</li>
+          <li>Direct je score <b>per onderdeel</b> op het scherm</li>
+          <li>Direct je grootste risico’s én concrete quick wins</li>
+          <li>Geen formulier, geen e-mailmuur, geen verkoopgesprek nodig</li>
         </ul>
-        <button class="knopvol" onclick="ga(1)">Start de zelfscan →</button>
+        <button class="knopvol" onclick="ga(1)">Laat zien waar mijn bedrijf lekt →</button>
       </div>
       <figure class="voorbeeld" aria-hidden="true">
-        <div class="vkop">Jouw Bedrijfsgeheugen-rapport</div>
+        <div class="vkop">Jouw Bedrijfslek-score</div>
         <div class="score-mini"><b>68</b><span style="font-size:.7rem;color:var(--grijs)">/ 100<br>voorbeeldscore</span></div>
         <div class="regel k"></div><div class="regel"></div>
         <div class="regel blur"></div><div class="regel blur" style="width:80%"></div>
         <div class="regel k" style="width:40%"></div>
         <div class="regel blur" style="width:70%"></div><div class="regel blur"></div>
-        <figcaption>voorbeeld van het rapport</figcaption>
+        <figcaption>voorbeeld — jouw uitslag verschijnt direct</figcaption>
       </figure>
     </div>
   </section>
@@ -224,22 +230,17 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <div id="profiel"></div>
     <div id="benchmark"></div>
     <div class="risico"><b>⚠ Jouw grootste risico</b><span id="risicotekst"></span></div>
-    <div class="gesloten"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="11" width="14" height="9" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>Risico 2 en 3 + de quick wins per onderdeel → in het volledige rapport</div>
-    <h2 style="font-size:1.25rem;margin:1.4rem 0 .2rem">Ontvang het volledige rapport — gratis</h2>
-    <form id="scanform">
-      <label class="veld" for="f-naam">Naam</label>
-      <input type="text" id="f-naam" name="naam" autocomplete="name" required>
-      <label class="veld" for="f-mail">E-mailadres <small class="optioneel">(hier sturen we het rapport naartoe)</small></label>
-      <input type="email" id="f-mail" name="email" autocomplete="email" required>
-      <p class="foutje" id="fout">Vul je naam en een geldig e-mailadres in.</p>
-      <label class="veld" for="f-bedrijf">Bedrijfsnaam <small class="optioneel">(optioneel)</small></label>
-      <input type="text" id="f-bedrijf" name="bedrijf" autocomplete="organization">
-      <label class="veld" for="f-tel">Telefoon <small class="optioneel">(optioneel — alleen als je liever gebeld wordt over de uitkomst)</small></label>
-      <input type="tel" id="f-tel" name="telefoon" autocomplete="tel">
-      <label class="consent"><input type="checkbox" name="toestemming_nieuwsupdates" value="ja">Ik wil daarnaast af en toe praktische tips en updates van Bedrijfsgeheugen ontvangen (optioneel, altijd uitschrijfbaar).</label>
-      <p class="privacy">Je gegevens worden alleen gebruikt om het rapport te sturen en je eventuele vraag te beantwoorden — zie de <a href="/privacy" target="_blank">privacyverklaring</a>.</p>
-      <button class="knopvol" type="submit">Stuur mij het volledige rapport →</button>
-    </form>
+    <div class="quickwins" id="quickwins"></div>
+    <div class="scanscope" style="margin-top:1.4rem">
+      <h3>Wat wil je nu doen?</h3>
+      <p style="font-size:.9rem;margin:.2rem 0 .8rem">Je hebt de analyse al. Kies pas daarna of je verder wilt. Bedrijfsgeheugen kan de signalen, acties en voortgang vervolgens blijvend in één portaal zetten.</p>
+      <div style="display:flex;gap:.7rem;flex-wrap:wrap">
+        <a class="knopvol" id="orderCta" href="https://www.bedrijfsgeheugen.nl/afsluiten?plan=control&bron=bedrijfslek" style="display:inline-flex;width:auto;text-decoration:none;align-items:center;justify-content:center">Start met het portaal →</a>
+        <a class="btn blauw" href="https://www.bedrijfsgeheugen.nl/portal-v2/">Bekijk eerst het portaal</a>
+        <button class="btn" type="button" onclick="deelScore()">Deel mijn score</button>
+      </div>
+      <p class="privacy" style="margin-top:.9rem">De score is indicatief en gebaseerd op jouw antwoorden. Financiële of benchmarkwaarden zijn geen vastgestelde bedrijfsfeiten.</p>
+    </div>
   </section>
 
   <!-- KLAAR -->
@@ -349,6 +350,17 @@ var RISICO={
  ai:"Er wordt AI gebruikt zonder afspraken over welke gegevens erin mogen. Verbieden werkt niet — vastleggen wel.",
  continuiteit:"Jullie continuïteit leunt op enkele mensen. Eén ziekmelding legt werk stil — dit is het kernrisico om eerst te borgen."};
 
+var QUICKWIN={
+ verkoop:"Maak één eigenaar en één automatische opvolgstatus voor open offertes. Begin met offertes ouder dan zeven dagen.",
+ planning:"Maak één gedeelde capaciteits- en planningswaarheid. Stop parallelle lijstjes voordat je verder automatiseert.",
+ klantkennis:"Leg klantafspraken, historie en uitzonderingen vast op één plek die niet aan één mailbox of persoon hangt.",
+ systemen:"Kies één terugkerende overtypactie en automatiseer precies die eerst. Meet daarna de vrijgespeelde tijd.",
+ administratie:"Pak de maandelijkse handmatige stap met de hoogste frequentie. Standaardiseer invoer vóór je AI toevoegt.",
+ inwerken:"Leg de vijf meest gestelde inwerkvragen als actuele werkwijze vast en maak één eigenaar verantwoordelijk voor actualiteit.",
+ ai:"Maak drie simpele AI-afspraken: welke data mag erin, welke taken mogen ermee, en wanneer moet een mens controleren.",
+ continuiteit:"Doe een tweewekelijkse uitval-test op één sleutelrol: kan iemand anders het werk uitvoeren zonder de persoon te bellen?"};
+
+
 var stap=0, antwoorden=[];
 function toon(id){document.querySelectorAll('.stapje').forEach(function(s){s.classList.remove('actief')});document.getElementById(id).classList.add('actief');window.scrollTo({top:0,behavior:'smooth'})}
 function ga(n){if(n===1)bgEvent('zelfscan-gestart');stap=n;renderVraag()}
@@ -391,7 +403,7 @@ function toonScore(){
 
  // benchmark: jouw score naast wat wij in de praktijk zien bij 11-50 medewerkers
  var REF={verkoop:52,planning:48,klantkennis:45,systemen:41,administratie:50,inwerken:38,ai:33,continuiteit:36};
- var volg=Object.keys(DOMEIN), open=volg.slice(0,3), dicht=volg.slice(3);
+ var volg=Object.keys(DOMEIN), open=volg, dicht=[];
  function bmrij(c){
    if(!per[c])return '';
    var pct=Math.round(per[c].p/(per[c].n*3)*100), ref=REF[c];
@@ -404,54 +416,27 @@ function toonScore(){
  var bm='<div class="bmkop">Hoe je ertegenover staat</div>'+
         '<p class="bmuitleg">Het streepje is het richtgetal dat wij in de praktijk zien bij bedrijven van 11 tot 50 medewerkers. Indicatief, geen onderzoek.</p>';
  open.forEach(function(c){ bm+=bmrij(c) });
- var rest=''; dicht.forEach(function(c){ rest+=bmrij(c) });
- bm+='<div class="bmslot"><div class="bmwaas">'+rest+'</div><div class="bmdeksel"><span>De andere vijf onderdelen staan in het volledige rapport →</span></div></div>';
+ var rest=''; dicht.forEach(function(c){ rest+=bmrij(c) }); if(rest){ bm+=rest; }
  document.getElementById('benchmark').innerHTML=bm;
  document.getElementById('risicotekst').textContent=RISICO[laag.cat];
+ var laagste=Object.keys(per).map(function(cat){return {cat:cat,pct:Math.round(per[cat].p/(per[cat].n*3)*100)}}).sort(function(a,b){return a.pct-b.pct}).slice(0,3);
+ var qw='<div class="profkop">Drie acties die je morgen kunt nemen</div>';
+ laagste.forEach(function(x,idx){qw+='<div class="quickwin"><b>'+(idx+1)+'. '+DOMEIN[x.cat]+' · '+x.pct+'%</b><span>'+QUICKWIN[x.cat]+'</span><small>Gebaseerd op jouw antwoorden · geen verkoopgesprek nodig</small></div>'});
+ document.getElementById('quickwins').innerHTML=qw;
+ var oc=document.getElementById('orderCta'); if(oc){oc.href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=control&bron=bedrijfslek&score='+score+'&risico='+encodeURIComponent(laag.cat);}
+ bgEvent('bedrijfslek-resultaat');
  toon('s-score');
 }
-document.getElementById('scanform').addEventListener('submit',function(ev){
- ev.preventDefault();
- var naam=document.getElementById('f-naam').value.trim(),mail=document.getElementById('f-mail').value.trim();
- if(!naam||!/.+@.+\..+/.test(mail)){document.getElementById('fout').style.display='block';return}
- var tot=antwoorden.reduce(function(a,x){return a+x.punten},0);
- var score=Math.round(tot/(VRAGEN.length*3)*100);
- var data={access_key:'5d2bad12-e036-4469-b83d-f6ef1ec68e07',subject:'Zelfscan: '+naam+' — score '+score,
-  from_name:'Zelfscan bedrijfsgeheugen.nl',naam:naam,email:mail,
-  bedrijf:document.getElementById('f-bedrijf').value,telefoon:document.getElementById('f-tel').value,
-  toestemming_nieuwsupdates:(document.querySelector('input[name=toestemming_nieuwsupdates]').checked?'ja':'nee'),
-  score:score+'/100',herkomst:bgHerkomst()};
- antwoorden.forEach(function(a,i){data['vraag_'+(i+1)+'_'+a.cat]=a.tekst+' ('+a.punten+' ptn)'});
- var knop=ev.target.querySelector('button');knop.textContent='Versturen…';knop.disabled=true;
- fetch('https://api.web3forms.com/submit',{method:'POST',headers:{'Content-Type':'application/json',Accept:'application/json'},body:JSON.stringify(data)})
-  .then(function(){
-    bgEvent('zelfscan-email');
-    var now=new Date().toISOString();
-    var attribution={};try{attribution=JSON.parse(bgHerkomst()||'{}')}catch(e){}
-    fetch('/api/growth-event',{method:'POST',headers:{'Content-Type':'application/json'},keepalive:true,body:JSON.stringify({
-      event_type:'lead_outcome',
-      event_id:'selfscan-'+Date.now(),
-      occurred_at:now,
-      canonical:'https://www.bedrijfsgeheugen.nl/zelfscan',
-      landing_canonical:'https://www.bedrijfsgeheugen.nl/zelfscan',
-      intent_id:'selfscan-report-request',
-      intent_owner:'growth-swarm',
-      page_role:'lead-magnet',
-      funnel_stage:'lead',
-      content_id:'page:zelfscan',
-      content_type:'page',
-      channel:'website',
-      source:attribution.utm_source||'website',
-      medium:attribution.utm_medium||'selfscan',
-      campaign:attribution.utm_campaign||'',
-      cta_action:'report_requested',
-      target_canonical:'https://www.bedrijfsgeheugen.nl/frisse-blik',
-      evidence_refs:['website:selfscan:report-request']
-    })}).catch(function(){});
-    toon('s-klaar')
-  })
-  .catch(function(){knop.textContent='Opnieuw proberen →';knop.disabled=false;alert('Versturen mislukte — probeer het nog eens of mail arthur@bedrijfsgeheugen.nl')});
-});
+function deelScore(){
+ var score=document.getElementById('scoregetal').textContent;
+ var tekst='Mijn Bedrijfslek-score is '+score+'/100. Ontdek gratis waar tijd, geld en kennis uit jouw bedrijf lekken.';
+ var url='https://www.bedrijfsgeheugen.nl/zelfscan';
+ bgEvent('bedrijfslek-deel');
+ if(navigator.share){navigator.share({title:'Mijn Bedrijfslek-score',text:tekst,url:url}).catch(function(){});return}
+ if(navigator.clipboard){navigator.clipboard.writeText(tekst+' '+url).then(function(){alert('Score en link gekopieerd.')});return}
+ window.prompt('Kopieer deze tekst:',tekst+' '+url);
+}
+
 </script>
 <!-- Cookiebanner (AVG/GDPR) — toestemming voor Google Analytics -->
 <style>

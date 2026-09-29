@@ -1,0 +1,23 @@
+{
+  "routes": [
+    "/",
+    "/zelfscan"
+  ],
+  "change_class": "growth-conversion-value-before-lead",
+  "preserve": [
+    "canonical navigation",
+    "privacy/consent controls",
+    "existing paid portal pricing",
+    "truth/evidence guardrails",
+    "mobile readability",
+    "accessibility"
+  ],
+  "hypothesis": "Showing the complete diagnostic value before asking for contact details reduces commitment friction and improves progression from qualified visitors to portal checkout.",
+  "target_metric": "bedrijfslek_result -> checkout_start -> paid_order -> realized_revenue",
+  "rollback_condition": "qualified conversion, accessibility, mobile usability, trust or production-readback regression",
+  "evidence_refs": [
+    "powerhouse-growth-swarm-v1",
+    "powerhouse-behavioral-landing-revenue-v2",
+    "existing /zelfscan funnel"
+  ]
+}
