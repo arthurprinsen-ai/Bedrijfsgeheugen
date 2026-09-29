@@ -51,3 +51,14 @@ A Self-Improvement change is terminal only after protected-main merge, Supabase/
 ## Prediction-intelligence bridge
 
 Prediction quality is a first-class Self-Improvement objective. Consume `public.powerhouse_prediction_intelligence_control_v2` and `public.powerhouse_prediction_improvement_queue_v2`. Prefer fewer well-resolved, calibrated forecasts over higher forecast volume. A degraded Brier score, calibration error, timing MAE, resolution coverage or signal diversity must create a bounded challenger/backtest obligation rather than an uncontrolled production rewrite.
+
+## Daily compound-learning prerequisite
+
+Before the daily Self-Improvement observation, Powerhouse must run the canonical compound-learning pass:
+- capture only verified observed runtime outcomes into the existing Outcome Memory;
+- link outcomes back to executed actions when lineage exists;
+- resolve eligible forecasts only from explicit verified outcomes;
+- never infer a negative result from silence;
+- expose outcome coverage and forecast-resolution coverage through `public.powerhouse_daily_compound_learning_control_v1`.
+
+Canonical runner: `public.powerhouse_run_daily_compound_learning_v1(date)`. It is scheduled once daily before the Self-Improvement cron. Whole-Brain integrity and Universal Closed-loop Learning must also run daily, so “everything works with everything” is continuously regression-tested rather than assumed.

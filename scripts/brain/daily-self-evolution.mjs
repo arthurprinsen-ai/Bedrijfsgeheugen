@@ -29,7 +29,10 @@ export function buildDailySelfEvolutionSnapshot({now=new Date().toISOString()}={
     ['autonomous_engineering_optimizer','scripts/brain/autonomous-engineering-fabric-v3.mjs'],
     ['self_improvement_layer','brain/self-improvement/self-improvement-layer.mjs'],
     ['self_improvement_contract','brain/contracts/self-improvement-layer-v1.json'],
-    ['self_improvement_skill','.agents/skills/powerhouse-self-improvement-layer/SKILL.md']
+    ['self_improvement_skill','.agents/skills/powerhouse-self-improvement-layer/SKILL.md'],
+    ['daily_compound_learning','supabase/migrations/20260929084144_powerhouse_daily_compound_learning_v1.sql'],
+    ['whole_brain_daily_audit','.github/workflows/whole-brain-canonical-loop-v2.yml'],
+    ['universal_closed_loop_daily_audit','.github/workflows/universal-closed-loop-learning.yml']
   ];
   const controls=required.map(([id,p])=>({id,path:p,present:exists(p)}));
   const missing=controls.filter(x=>!x.present).map(x=>x.id);

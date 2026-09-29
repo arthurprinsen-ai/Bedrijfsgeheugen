@@ -93,3 +93,14 @@ Required visual evidence:
 - the explicit `observe → detect → hypothesize → build → test → evaluate → compare → promote → measure → learn` loop.
 
 This projection is evidence-only. It must never claim that Powerhouse became smarter merely because code changed or a model was added.
+
+## Automatic evidence-backed resolution
+
+Forecast resolution consumes the existing canonical Outcome Memory through `public.powerhouse_forecast_resolution_candidates_v3` and `public.powerhouse_resolve_forecasts_from_outcomes_v3()`.
+
+Rules:
+- eligible commercial-progression forecasts may resolve positively from a matching verified outcome inside their horizon;
+- a missing outcome is never auto-resolved as failure;
+- no parallel forecast or calibration store is allowed;
+- forecast-resolution coverage is part of the daily compound-learning control plane;
+- resolved outcomes feed calibration and the next prediction-learning cycle automatically.
