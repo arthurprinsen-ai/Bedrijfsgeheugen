@@ -1,0 +1,51 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "CMS-I18N-SAME-ROUTE-BUILD-SYNTAX-RECOVERY-v1",
+  "status": "ACTIVE_PREVENTION_CANDIDATE",
+  "fingerprint": "cms-i18n|same-route|build-syntax-recovery|v1",
+  "date": "2026-09-29",
+  "problem": "The same-route NL/EN fix was correct in intent but made the production build undeployable because tools/site-shell/apply-i18n.mjs contained a malformed String.replace expression.",
+  "root_cause": "The legacy mobile CTA injection path was edited into `mobileLanguage + 'MOBILE_LANGUAGE + '$&''`, which is invalid JavaScript. The i18n authority regression checked route semantics but did not compile the actual build injector, so the syntax defect escaped pre-merge semantic tests and Netlify failed before deployment.",
+  "fix": [
+    "Restore the replacement expression to `mobileLanguage + '$&'` so the generated language switcher is inserted immediately before the matched CTA.",
+    "Add `node --check tools/site-shell/apply-i18n.mjs` as an executable regression.",
+    "Align the older global i18n test with the canonical route-link architecture instead of the retired select-based injector.",
+    "Keep same-page NL/EN route generation and production browser round-trip verification fail-closed."
+  ],
+  "prevention": [
+    "Every JavaScript build-time transformer modified by a candidate must be syntax-compiled before protected merge.",
+    "Semantic string assertions are not a substitute for parsing/executing the build script.",
+    "Static public locale navigation remains route-link based: /prijzen ↔ /en/prijzen, /systemen-koppelen ↔ /en/systemen-koppelen, and / ↔ /en.",
+    "A production deploy failure remains non-green until exact-main deploy and browser readback pass."
+  ],
+  "compiler": {
+    "failure_class": "BUILD_SCRIPT_SYNTAX_ERROR",
+    "scope": "CMS_I18N_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cms-i18n-build-syntax-v1.test.mjs",
+      "tests/brain-cms-i18n-authority.test.mjs"
+    ],
+    "shadow": [
+      "tests/site-shell-global-i18n.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "evidence": {
+    "exact_failed_main": "ec95ef4f8e2717b56482dcaa858e23255984b640",
+    "netlify_failure": "Build script returned non-zero exit code: 2",
+    "local_exact_source_check": "node --check tools/site-shell/apply-i18n.mjs => SyntaxError: missing ) after argument list",
+    "malformed_expression": "mobileLanguage + 'MOBILE_LANGUAGE + '$&''",
+    "truth_boundary": "This proves the root cause and prevention contract. LIVE_BEWEZEN still requires exact production deployment and NL/EN browser readback."
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-green-assurance"
+  ]
+}
