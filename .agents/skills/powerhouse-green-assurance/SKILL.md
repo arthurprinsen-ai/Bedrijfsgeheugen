@@ -149,3 +149,10 @@ Verboden:
 - De governance-writeback uitstellen tot de gebruiker opnieuw vraagt om borging.
 
 Iedere materiële live-promotie schrijft in dezelfde obligation-lineage terug naar Brain learning, relevante skills, AGENTS/chat-contract, ledger/docs en System Map.
+
+
+## Duplicate mobile locale controls
+
+Fingerprint: `i18n|duplicate-mobile-controls|stale-route-link|2026-09-29-v1`.
+
+Publieke pagina's kunnen meerdere mobile-nav hosts bevatten. De i18n build mag daarom nooit alleen de eerste `data-bg-language-switcher="mobile"` normaliseren. Alle bestaande mobiele taalcontrols moeten dezelfde logische route projecteren: `/x ↔ /en/x`. Een stale tweede control is functionele route-drift en blokkeert production green.
