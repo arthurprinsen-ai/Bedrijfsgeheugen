@@ -608,3 +608,28 @@ Voor alle huidige en toekomstige chats, agents, scheduled runs en commerciële w
 - een chat of agent mag niet stoppen bij advies wanneer de wijziging veilig uitvoerbaar is; terminal is production readback + writeback, of een echte `BLOCKED_HARD_BOUNDARY`.
 
 Canonieke skill: `.agents/skills/powerhouse-seo-conversion-orders/SKILL.md`.
+
+
+## Historical social uniqueness — mandatory for every chat and agent
+
+Fingerprint: `social|historical-uniqueness|all-chat-agent-inheritance|v1`.
+
+Voor iedere huidige en toekomstige chat, agent, scheduler, watchdog en recovery-route die social content maakt of publiceert:
+- controleer vóór iedere provider-write de volledige behouden publicatiehistorie, niet alleen de huidige dagclaim;
+- gebruik cumulatief: exact hash + genormaliseerde hash + near-duplicate similarity + canonieke story fingerprint + semantic story-family/example gate;
+- LinkedIn bedrijf en LinkedIn persoonlijk krijgen beide een duurzame story fingerprint;
+- normaliseer dynamische ruis zoals tracking-URLs, datumtokens, hashtags, CTA-varianten, interpunctie en whitespace vóór de historische vergelijking;
+- één atomic daily writer/idempotency-lock blijft verplicht, maar geldt alleen als concurrency/retry-bescherming en mag nooit als bewijs van historische uniekheid worden gebruikt;
+- user-reported duplicate feedback is bindende negatieve evidence: retire de betrokken story family en selecteer autonoom een wezenlijk ander onderwerp;
+- bekende retired company-story family: `employee_absence_or_departure__knowledge_only_in_heads`;
+- na provider create + duurzaam extern ID is die story family verbruikt en geldt `republish_forbidden=true`;
+- reconnect, retry, tweede alias, tweede agent/chat of watchdog mag dezelfde inhoud nooit nogmaals schrijven;
+- auth/readbackproblemen herstellen de capability voor toekomstige writes, maar mogen een bestaande provider-side effect nooit vervangen.
+
+Canonieke authorities:
+- runtime: `supabase/functions/powerhouse-social-publisher/index.ts`;
+- skill: `.agents/skills/linkedin-composio-publisher/SKILL.md`;
+- learning: `brain/learning/2026-09-29-linkedin-company-historical-dedupe-v1.json`;
+- regression: `tests/brain-linkedin-company-historical-dedupe-v1.test.mjs`.
+
+Deze regel is onderdeel van Powerhouse/One Brain en wordt automatisch geërfd; lokale chatcontext mag hem niet afzwakken of overschrijven.

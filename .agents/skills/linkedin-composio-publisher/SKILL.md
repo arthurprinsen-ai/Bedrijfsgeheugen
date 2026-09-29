@@ -215,3 +215,32 @@ Required behavior:
 - reconcile only the existing URN;
 - never request reauthorization merely to prove an already-created post;
 - daily watchdogs must close the existing claim, not reopen publication.
+
+
+## LinkedIn company historical duplicate prevention v5 (2026-09-29)
+
+Fingerprint: `linkedin-company-historical-dedupe-v5`.
+
+Incident lesson: company-page duplicates can still escape when exact daily idempotency is correct but historical semantic uniqueness is weaker than on personal LinkedIn. A changing measured URL, hashtag set, date token, CTA or small wording change may never be treated as novelty.
+
+Permanent hard rules for all current and future chats, agents, schedulers and recovery paths:
+- `linkedin_company` must receive a durable story fingerprint before any provider write, exactly like `linkedin_personal`;
+- the company candidate must be canonicalized before uniqueness reservation: strip URLs, hashtags, publication-date markers, punctuation/formatting noise and repeated whitespace;
+- exact raw hash, normalized hash, shingle similarity, canonical story fingerprint and semantic example/story-family checks are cumulative;
+- compare against retained history across dates and channels, not only the current daily claim;
+- a user-reported duplicate is authoritative negative evidence: retire that story family immediately and generate from a materially different source/topic;
+- known retired company story family: employee leaves/is sick/on leave → critical customer/process knowledge only existed in that person's head;
+- a new CTA, measured URL, hook, sentence order or synonyms can never reactivate a retired story family;
+- the atomic single-writer claim remains required, but it is not a substitute for historical uniqueness;
+- provider create + durable URN permanently consumes the story family and sets `republish_forbidden=true`;
+- retries, reconnects, parallel chats/agents and watchdog recovery must resume/reconcile the same claim and may never issue another provider write for already-consumed content.
+
+Required machine evidence before dispatch:
+`historical_story_fingerprint_present=true`,
+`canonical_duplicate_body_reserved=true`,
+`semantic_story_family_unique=true`,
+`single_writer_claim_acquired=true`.
+
+Canonical runtime authority: `supabase/functions/powerhouse-social-publisher/index.ts`.
+Regression authority: `tests/brain-linkedin-company-historical-dedupe-v1.test.mjs`.
+Brain learning: `brain/learning/2026-09-29-linkedin-company-historical-dedupe-v1.json`.
