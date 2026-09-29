@@ -25,6 +25,9 @@
     ],
     "canary": [
       "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
     ]
   },
   "skill_targets": [
