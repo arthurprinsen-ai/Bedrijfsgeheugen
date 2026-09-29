@@ -1,0 +1,35 @@
+{
+  "fingerprint": "i18n-production-navigation-readback-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The live NL→EN route switch reached the correct destination, but the production verifier timed out waiting for the full window load event.",
+  "root_cause": "The acceptance test coupled route correctness to all page assets completing load. That can fail on slow non-critical resources even when navigation, DOM and localized route are correct.",
+  "prevention": [
+    "Locale navigation readback waits for DOMContentLoaded instead of the full load event.",
+    "The verifier still requires the exact target pathname, expected html lang and visible localized content.",
+    "The canonical i18n asset version is rotated so the final production run proves the exact runtime."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-production-navigation-readback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-production-navigation-readback-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-production-navigation-readback-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}

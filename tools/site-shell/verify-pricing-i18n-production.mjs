@@ -59,7 +59,7 @@ async function switchPublicLocale(page, locale, expectedPath) {
     const path = new URL(url).pathname.replace(/\/$/, '') || '/';
     const expected = expectedPath.replace(/\/$/, '') || '/';
     return path === expected;
-  }, { timeout:20_000 });
+  }, { timeout:30_000, waitUntil:'domcontentloaded' });
 
   if (control.kind === 'link') {
     await Promise.all([navigation, control.locator.click()]);
