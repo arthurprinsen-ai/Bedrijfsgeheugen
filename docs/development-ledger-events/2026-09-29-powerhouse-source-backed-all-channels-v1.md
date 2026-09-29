@@ -18,4 +18,6 @@ Production evidence recorded during delivery:
 
 Outcome contract: social metrics, replies, sales outcomes, orders and revenue remain attached to source/action/recommendation lineage and feed subsequent selection.
 
-Delivery metadata readback: PR #3374 is bound to obligation `powerhouse-source-backed-all-channels-v1`, backend implementation lane, with immutable base SHA `5dea11c020209d753d17563a2ba4b31639e0b69f`.
+Delivery metadata readback: PR #3374 is bound to obligation `powerhouse-source-backed-all-channels-v1`, backend implementation lane, with current reconciled base SHA `0dbf154a7c300db8a43551443e54b3ebef08c5c6`.
+
+Continuous assurance production readback: `source-backed-outbound` = `GREEN`, scheduler active, 8/8 stages fresh, 0 missing stages; latest checked runtime 2026-09-29T19:25:33.362040Z.
