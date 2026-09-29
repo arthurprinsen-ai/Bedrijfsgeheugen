@@ -1,0 +1,35 @@
+{
+  "fingerprint": "pricing-i18n-readback-domcontentloaded-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "The production NL→EN readback timed out while waiting for the browser load event even though the route navigation itself could already be correct.",
+  "root_cause": "The verifier used Playwright waitForURL with its default full-load completion semantics. Slow non-critical page assets can delay load and create a false navigation failure.",
+  "prevention": [
+    "Locale navigation proof waits for the expected route with waitUntil domcontentloaded.",
+    "The verifier still validates html lang, visible page content, and runtime error messages after navigation.",
+    "A slow decorative or non-critical asset must not invalidate an otherwise correct same-route locale switch."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-i18n-readback-domcontentloaded-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-i18n-readback-domcontentloaded-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-i18n-readback-domcontentloaded-v1.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK_FALSE_TIMEOUT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
