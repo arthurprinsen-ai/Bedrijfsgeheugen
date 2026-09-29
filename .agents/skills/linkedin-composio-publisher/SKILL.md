@@ -277,3 +277,26 @@ Hard rules:
 - resume the existing Amsterdam-day claim through `powerhouse-social-publisher`; never create a replacement claim;
 - cross-runtime “ACTIVE” metadata is never sufficient: the exact production runtime must prove provider health;
 - no Buffer/Make fallback is allowed.
+
+## Production runtime authority beats chat-session connector state (2026-09-29)
+
+Fingerprint: `linkedin-production-runtime-authority-over-chat-session-v1`.
+
+For Bedrijfsgeheugen LinkedIn, a chat-local Composio connection list is diagnostic only. It is not the canonical authority for whether the production publisher can post.
+
+Before reporting an OAuth blocker, requesting reconnection, or creating any new LinkedIn connection, every chat/agent must first read:
+1. `brain_records.record_id = linkedin-composio-setup-current-state-v1`;
+2. the current `content_publication_obligations` row for the exact Amsterdam date + channel;
+3. any persisted LinkedIn provider URN/ID for that obligation.
+
+Hard rules:
+- if the obligation already has `provider_create_success=true` or a durable `external_id/provider_post_id`, publication is terminal and `republish_forbidden=true`; never reconnect or republish to “fix” readback;
+- if production runtime state is `ACTIVE`, `company_ready=true`, the canonical organization is `urn:li:organization:18234216`, and the production connected account has `w_organization_social`, a 401/403 from a chat-local connector means local-session credential divergence, not a production outage;
+- never create a replacement alias merely because a chat-local connection says ACTIVE but fails provider health;
+- a human OAuth request is allowed only when the production runtime itself lacks a healthy capability-proven account and no provider side effect already exists;
+- after human OAuth, verify provider-level capability in production runtime, not only connector status;
+- personal and company identities remain separate; organization write authority requires the production company capability state, never the default personal account.
+
+Incident evidence: on 2026-09-29 the chat-local connector returned revoked/insufficient-scope results while canonical production state remained ACTIVE with `r_organization_admin` + `w_organization_social`, and the company post was already published as `urn:li:share:7510609161110482944`.
+
+Reusable lesson: connector UI/session state and production OAuth authority are different control planes. Production provider evidence wins.

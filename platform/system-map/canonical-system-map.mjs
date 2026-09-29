@@ -215,6 +215,37 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'linkedin-production-auth-authority',
+      label:'LinkedIn Production OAuth Authority',
+      authority:'supabase+composio-provider-truth',
+      owner:'social-publication-authority',
+      status:'LIVE_PROVEN_RUNTIME',
+      inputs:Object.freeze(['brain_records.linkedin-composio-setup-current-state-v1','content_publication_obligations','LinkedIn provider URN']),
+      outputs:Object.freeze(['channel-specific auth readiness','no-false-blocker decision','anti-duplicate reconnect guard']),
+      runtime:Object.freeze({
+        setupState:'linkedin-composio-setup-current-state-v1',
+        companyOrganizationUrn:'urn:li:organization:18234216',
+        publisher:'supabase/functions/powerhouse-social-publisher/index.ts',
+        setup:'supabase/functions/powerhouse-composio-linkedin-setup/index.ts',
+        skill:'.agents/skills/linkedin-composio-publisher/SKILL.md',
+        learning:'brain/learning/2026-09-29-linkedin-production-runtime-authority-v1.json'
+      }),
+      productionEvidence:Object.freeze({
+        runtimeStatus:'ACTIVE',
+        companyReady:true,
+        providerPostUrn:'urn:li:share:7510609161110482944',
+        verifiedAt:'2026-09-29T08:25:46Z'
+      }),
+      invariants:Object.freeze({
+        productionRuntimeIsCanonical:true,
+        chatLocalConnectorIsDiagnosticOnly:true,
+        providerUrnBlocksRepublish:true,
+        humanOauthOnlyOnProductionHardBoundary:true,
+        noRecoveryAliasProliferation:true,
+        personalAndCompanyCapabilitiesSeparate:true
+      })
+    }),
+    Object.freeze({
       id:'linkedin-sales-machine-public-intent-bridge',
       label:'LinkedIn Sales Machine — Public Intent Bridge',
       authority:'netlify+supabase',

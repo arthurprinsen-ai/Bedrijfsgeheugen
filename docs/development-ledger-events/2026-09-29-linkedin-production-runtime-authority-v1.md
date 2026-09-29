@@ -1,0 +1,21 @@
+# 2026-09-29 — LinkedIn production runtime authority
+
+- Type: incident prevention / social publication authority
+- Fingerprint: `linkedin-production-runtime-authority-over-chat-session-v1`
+- Symptom: a chat-local Composio LinkedIn session reported revoked or insufficient-scope credentials and was incorrectly interpreted as a production company-post blocker.
+- Impact: unnecessary human OAuth request, risk of connection-alias proliferation, and risk of duplicate publication during recovery.
+- Root cause: chat-session connector state was treated as canonical production OAuth authority instead of the Powerhouse runtime capability state plus provider side-effect evidence.
+- Evidence: canonical runtime record `linkedin-composio-setup-current-state-v1` was ACTIVE with `company_ready=true`, organization `urn:li:organization:18234216`, and organization admin/write scopes. The 2026-09-29 company obligation already held provider URN `urn:li:share:7510609161110482944`.
+- Failed approach: reconnecting or validating only the chat-local/default Composio account.
+- Definitive fix: require runtime-state + publication-obligation + provider-URN readback before any OAuth/reconnect decision; make chat-local connections diagnostic only; forbid recovery alias proliferation; preserve provider-create as terminal anti-duplicate fence.
+- Owner: social-publication-authority
+- Obligation: `linkedin-production-runtime-authority-20260929`
+- Regression: `tests/brain-linkedin-production-runtime-authority-v1.test.mjs`
+- Learning: `brain/learning/2026-09-29-linkedin-production-runtime-authority-v1.json`
+- Skill: `.agents/skills/linkedin-composio-publisher/SKILL.md`
+- System Map: `platform/system-map/canonical-system-map.mjs`
+- Verification: production post is already terminal; no republish is permitted. Candidate must pass Required test, CodeQL, learning canonicalization, skill projection, merge to protected main, and main readback.
+- Rollback: revert only the governance candidate if regression gates fail; never delete or replace the already-created LinkedIn provider side effect.
+- Reusable lesson: connector-session state and production OAuth authority are separate control planes; production provider evidence wins.
+- Rebase authority: rebased onto current main `1d0e23d54efdb4f3b66b108c30e27e88bcb2643f`, preserving PR #3284 company write/read separation before re-running protected gates.
+- Latest rebase authority: rebased onto current main `c47ca048e3729f7a12c6776621f4b8c848ea9f6a`, preserving PR #3286 production-workspace OAuth self-heal before protected verification.
