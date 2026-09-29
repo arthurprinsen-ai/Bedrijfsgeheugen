@@ -558,7 +558,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       authority:'supabase',
       owner:'customer-intelligence',
       status:'LIVE_PROVEN_PERSISTENT_PORTAL',
-      inputs:Object.freeze(['consented-workshop-answers','company-context','optional-company-website']),
+      inputs:Object.freeze(['consented-workshop-answers','company-context','contact-name','contact-email','contact-phone','optional-company-website']),
       outputs:Object.freeze(['personal-scan-pdf','private-portal-intake','canonical-brain-portal-state','identity-claimed-customer-portal']),
       runtime:Object.freeze({
         scanRoute:'/scan',
@@ -574,6 +574,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         durableServerSideStorage:true,
         portalPreprovisionBeforeAccountClaim:true,
         privatePiiIntake:true,
+        personalPdfShowsContactNameEmailPhone:true,
         aggregateLearningContainsPii:false,
         trustedCompanyLogoOnly:true,
         chatsAndAgentsReuseCanonicalLineage:true
