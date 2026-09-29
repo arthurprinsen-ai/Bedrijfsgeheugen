@@ -15,5 +15,22 @@
     "No fabricated financial outcome or buying-intent claim",
     "Paid order and realized revenue remain terminal commercial outcomes"
   ],
-  "expected_learning": "Compare Bedrijfslek completion -> portal/demo/order-start -> paid order against the prior meeting-first path. Do not promote conclusions without observed outcomes."
+  "expected_learning": "Compare Bedrijfslek completion -> portal/demo/order-start -> paid order against the prior meeting-first path. Do not promote conclusions without observed outcomes.",
+  "failure_class": "CONVERSION_FRICTION",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "CONVERSION_FRICTION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "powerhouse-growth-swarm",
+    "powerhouse-seo-conversion-orders"
+  ]
 }
