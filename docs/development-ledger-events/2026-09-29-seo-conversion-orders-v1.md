@@ -55,3 +55,10 @@ Money-page conversion wave 2:
 - aligned AI-adoption canonical CTA authority with the visible Frisse Blik route;
 - expanded conversion regression coverage to all four pages;
 - preserved existing-page-first and no-duplicate-intent rules.
+
+Build-authority recovery:
+- detected that `bouw-v18-production-core.mjs` restores the homepage from a pinned V18 payload and `bouw-v18-views.mjs` regenerates product.html;
+- added a post-generation conversion finalizer to the canonical pricing/site-shell pipeline;
+- final deploy artifact now fails closed if any of the nine priority money pages loses its Frisse Blik primary CTA, explicit no-obligation risk reversal, or regresses to generic-contact-first;
+- extended regression coverage to require that the finalizer remains wired into the build.
+
