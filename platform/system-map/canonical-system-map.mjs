@@ -52,7 +52,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         orchestrator:'public.powerhouse_run_daily_compound_learning_v1(date)',
         cron:'50 2 * * *',
         wholeBrainDaily:'.github/workflows/whole-brain-canonical-loop-v2.yml',
-        universalLearningDaily:'.github/workflows/universal-closed-loop-learning.yml'
+        universalLearningDaily:'.github/workflows/universal-closed-loop-learning.yml',
+        agentContract:'AGENTS.md',
+        chatLearningContract:'config/brain-chat-learning-contract.json',
+        continuitySkill:'.agents/skills/powerhouse-continuity/SKILL.md'
       }),
       productionEvidence:Object.freeze({
         migrationAppliedVersion:'20260929084144',
@@ -76,7 +79,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         noParallelForecastStore:true,
         nextDecisionMustConsumeLearning:true,
         wholeBrainIntegrityDaily:true,
-        universalClosedLoopDaily:true
+        universalClosedLoopDaily:true,
+        inheritedByAllChatsAgentsSkills:true,
+        chatLearningPreflightRequired:true,
+        agentContractRequired:true,
+        nextAgentDiscoverabilityRequired:true
       })
     }),
     Object.freeze({
