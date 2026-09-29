@@ -47,5 +47,10 @@
     "scope": "GROWTH_REVENUE_OS",
     "machine_enforceable": true,
     "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
+    ]
   }
 }
