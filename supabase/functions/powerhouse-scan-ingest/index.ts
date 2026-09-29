@@ -31,7 +31,7 @@ function preprovisionProjection(scan:any,intake:any,tenantId:string){
   return {
     schemaVersion:2,tenantId,origin:'canonical-brain',updatedBy:'workshop-scan',updatedAt:now,sourceUpdatedAt:now,
     data:{
-      company:{name:intake.company_name,employees:intake.employees,sector:intake.sector,region:intake.region,website:intake.website,lastSync:now},
+      company:{name:intake.company_name,employees:intake.employees,sector:intake.sector,region:intake.region,website:intake.website,lastSync:now},\n      contact:{name:intake.contact_name,email:intake.email,phone:intake.phone},
       managementSummary:{
         title:'Jouw persoonlijke workshopscan',
         score:scan.score,
@@ -145,7 +145,7 @@ Deno.serve(async(req:Request)=>{
       const snapshot={score:scan.score,niveau:scan.niveau,dimensions:scan.dimensions,answers:scan.answers,branche:scan.branche,omvang:scan.omvang,doel:scan.doel,datum:scan.datum};
       const {error:intakeError}=await client.from('workshop_portal_intakes').upsert({
         submission_key:scan.submissionKey,portal_tenant_id:portalTenantId,
-        company_name:intake.company_name,contact_name:intake.contact_name,email:intake.email,website:intake.website,
+        company_name:intake.company_name,contact_name:intake.contact_name,email:intake.email,phone:intake.phone,website:intake.website,
         employees:intake.employees,sector:intake.sector,region:intake.region,scan_snapshot:snapshot,updated_at:new Date().toISOString()
       },{onConflict:'submission_key'});
       if(intakeError)return json({error:'PORTAL_INTAKE_STORE_FAILED',detail:intakeError.message.slice(0,200)},500);
