@@ -1,0 +1,17 @@
+{
+  "fingerprint": "workshopscan|production-build|static-i18n-cache|required|v1",
+  "date": "2026-09-29",
+  "compiler": {
+    "failure_class": "static_i18n_cache_incomplete_blocks_production_build"
+  },
+  "root_cause": "Public Dutch growth-loop copy existed without corresponding entries in the cache-required static English translation cache, so the exact production build stopped before deployment.",
+  "prevention_rule": "Any new public Dutch copy must add or reuse deterministic English cache entries in config/bg-static-i18n-en.json or config/bg-static-i18n-en.d before a cache-required production build.",
+  "evaluation": {
+    "historical_replay": [
+      "tools/site-shell/build-localized-routes.mjs"
+    ]
+  },
+  "evidence": {
+    "patch": "config/bg-static-i18n-en.d/2026-09-29-growth-loop.json"
+  }
+}
