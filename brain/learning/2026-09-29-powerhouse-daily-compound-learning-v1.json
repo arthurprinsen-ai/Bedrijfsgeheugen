@@ -1,30 +1,61 @@
 {
-  "id": "powerhouse-daily-compound-learning-v1",
+  "version": "powerhouse-daily-compound-learning-v1",
   "date": "2026-09-29",
-  "status": "production_runtime_verified",
-  "problem": [
-    "outcome_memory_underfed",
-    "forecast_resolution_feedback_sparse",
-    "whole_brain_not_daily",
-    "universal_learning_not_daily"
-  ],
-  "learning": "Daily intelligence compounds only when verified outcomes are automatically captured and fed back into forecast calibration and the next decision. Silence is not an outcome.",
+  "fingerprint": "powerhouse|daily-compound-learning|outcome-memory|forecast-resolution|whole-brain|v1",
+  "incident": {
+    "symptom": "Daily intelligence loops existed, but verified action outcomes were under-projected into Outcome Memory and whole-brain/universal-learning integrity was not scheduled daily.",
+    "root_cause": "Outcome capture, forecast resolution and daily estate-wide integrity checks were separate capabilities without one evidence-gated daily compound-learning prerequisite.",
+    "prior_evidence": "Production had 6 sales outcomes, 13 done actions, 3 resolved forecasts and non-daily Whole Brain / Universal Closed-loop workflows."
+  },
   "prevention": [
-    "capture_verified_runtime_outcomes_daily",
-    "exclude_test_and_synthetic_events",
-    "never_infer_negative_outcome_from_silence",
-    "resolve_forecasts_only_from_explicit_evidence",
-    "run_whole_brain_integrity_daily",
-    "run_universal_closed_loop_learning_daily"
+    "Capture only verified observed runtime outcomes into the existing powerhouse_sales_outcomes store.",
+    "Exclude smoke, test, synthetic and fixture events from learning.",
+    "Never infer a negative result from silence or missing provider evidence.",
+    "Resolve eligible forecasts only from explicit verified outcomes.",
+    "Run Whole Brain Canonical Loop daily.",
+    "Run Universal Closed-loop Learning daily.",
+    "Require the compound-learning controls in Daily Self Evolution."
   ],
-  "runtime_evidence": {
-    "outcomes_before": 6,
-    "outcomes_after": 24,
-    "inserted_outcomes": 18,
-    "actions_linked": 3,
-    "forecasts_total": 1223,
-    "forecasts_resolved": 3,
-    "forecast_resolution_debt": 0,
-    "executed_action_outcome_coverage": 0.4615
-  }
+  "status": "LIVE_PROVEN_RUNTIME",
+  "obligation_id": "powerhouse-daily-compound-learning-20260929",
+  "compiler": {
+    "failure_class": "COMPOUND_LEARNING_FEEDBACK_LOOP_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/powerhouse-daily-compound-learning-v1.test.mjs"
+    ],
+    "canary": [
+      "public.powerhouse_run_daily_compound_learning_v1(date)"
+    ],
+    "production_readback": {
+      "outcomes_before": 6,
+      "sales_outcomes_after": 24,
+      "outcome_memory_after": 30,
+      "inserted_outcomes": 18,
+      "actions_linked": 3,
+      "forecasts_total": 1223,
+      "forecasts_resolved": 3,
+      "forecast_resolution_debt": 0,
+      "executed_action_outcome_coverage": 0.4615
+    }
+  },
+  "skill_targets": [
+    "powerhouse-self-improvement-layer",
+    "powerhouse-foresight-prediction-intelligence",
+    "powerhouse-company-intelligence-os"
+  ],
+  "evidence": [
+    "supabase/migrations/20260929084144_powerhouse_daily_compound_learning_v1.sql",
+    ".github/workflows/whole-brain-canonical-loop-v2.yml",
+    ".github/workflows/universal-closed-loop-learning.yml",
+    "scripts/brain/daily-self-evolution.mjs",
+    "platform/system-map/canonical-system-map.mjs",
+    "tests/powerhouse-daily-compound-learning-v1.test.mjs"
+  ],
+  "outcome": "VERIFIED_OUTCOME_TO_LEARNING_LOOP_CLOSED_DAILY"
 }
