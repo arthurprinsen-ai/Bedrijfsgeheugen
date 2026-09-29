@@ -29,14 +29,22 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-route-aware-mobile-switcher-v1.test.mjs",
-      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs"
+      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs",
+      "tests/brain-apply-i18n-syntax-regression-v1.test.mjs"
     ],
     "canary": [
-      "tools/site-shell/verify-pricing-i18n-production.mjs"
+      "tools/site-shell/verify-pricing-i18n-production.mjs",
+      "tests/brain-apply-i18n-syntax-regression-v1.test.mjs"
     ]
   },
   "skill_targets": [
     ".agents/skills/powerhouse-green-assurance/SKILL.md"
   ],
-  "truth_boundary": "A route-aware build contract is not production proof until the exact production browser readback passes."
+  "truth_boundary": "A route-aware build contract is not production proof until the exact production browser readback passes.",
+  "secondary_failure": {
+    "observed": "The first route-aware patch introduced an invalid concatenation in the legacy compact-mobile insertion path.",
+    "root_cause": "A textual replacement left a stale MOBILE_LANGUAGE token inside a quoted JavaScript expression.",
+    "prevention": "Syntax-check tools/site-shell/apply-i18n.mjs in regression tests in addition to behavioral route tests.",
+    "regression": "tests/brain-apply-i18n-syntax-regression-v1.test.mjs"
+  }
 }
