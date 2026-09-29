@@ -139,3 +139,22 @@ Authority:
 - `docs/sitestandaard.md`
 
 The System Map exposes this as `canonicalWebsiteChrome`. Any future sitewide shell migration must update these authorities in one lineage and prove route parity before terminal production status.
+
+
+## Canonical public CMS + locale authority
+
+Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
+
+De publieke site is één canonieke control surface. Header, footer, mega-menu, primaire navigatie, mobiele navigatie en NL/EN-switching horen bij dezelfde gedeelde site-shell en mogen niet per route afsplitsen.
+
+Locale-authority:
+- Nederlands: on-geprefixte canonical routes;
+- Engels: `/en/*`;
+- same-route invariant: `/x ↔ /en/x` en homepage `/ ↔ /en/`;
+- build authority: `tools/site-shell/apply-i18n.mjs` + `tools/site-shell/build-localized-routes.mjs`;
+- runtime guard: `assets/js/i18n.js`;
+- cache authority: versiegebonden i18n JS/CSS;
+- production authority: Netlify current production moet exact de actuele protected-main identity voeren;
+- terminal bewijs: live browserreadback van NL→EN→NL op representatieve routes plus correcte `html lang`, header/footer en routebehoud.
+
+Alle huidige en toekomstige chats, agents, skills en website-workflows erven dit contract. Tussentijdse CI/deploy-status is interne uitvoeringsstate en geen gebruikersmelding.
