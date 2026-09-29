@@ -33,7 +33,7 @@ test('compound learning is scheduled before self improvement',()=>{
 test('compound learning regression is classified as backend delivery work',()=>{
   const policy=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
   const plan=createDeliveryPlan({
-    changedPaths:['tests/powerhouse-daily-compound-learning-v1.test.mjs'],
+    changedPaths:['tests/brain-powerhouse-daily-compound-learning-v1.test.mjs'],
     headSha:'decafbad12345678',
     policy
   });
