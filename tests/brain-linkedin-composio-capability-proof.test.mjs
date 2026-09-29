@@ -45,7 +45,7 @@ test('LinkedIn Composio execution uses v3.1 latest tool semantics',()=>{
 test('connected-account user_id is forwarded to every Composio LinkedIn tool call',()=>{
   assert.match(setup,/COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_USER_ID_REQUIRED/);
   assert.match(setup,/user_id:userId/);
-  assert.match(setup,/execute\(key,accountId,userId,'LINKEDIN_GET_MY_INFO'/);
+  assert.match(setup,/execute\(key,candidateAccountId,candidateUserId,'LINKEDIN_GET_MY_INFO'/);
   assert.match(setup,/execute\(key,accountId,userId,'LINKEDIN_GET_COMPANY_INFO'/);
 });
 
