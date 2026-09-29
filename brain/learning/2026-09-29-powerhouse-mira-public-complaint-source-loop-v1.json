@@ -1,0 +1,10 @@
+{
+  "fingerprint":"powerhouse-mira-public-complaint-source-loop-v1",
+  "date":"2026-09-29",
+  "problem":"Instagram Mira had an immutable daily winner and strong publication gates, but the research corpus was stale and the selected winner could still come from a static calendar seed instead of current public human-problem evidence.",
+  "observed_production_evidence":{"instagram_growth_research_sources_count":10,"instagram_growth_research_sources_latest_fetched_at":"2026-09-12","current_winner_recommendation_type":"calendar_seed"},
+  "root_cause":"Source ingestion, recommendation materialization, winner selection and outcome learning were separate lineages. Fresh complaint/blog/forum evidence was not a mandatory upstream input to Mira ranking.",
+  "decision":"Create one canonical source-backed lineage: public complaint/blog/forum signals -> scored private-life problem -> recommendation -> immutable Instagram winner -> Mira media/publish -> social metrics -> winner/source learning writeback.",
+  "prevention":["Run the complaint radar every six hours for the next Amsterdam run date.","Prefer source-backed Mira recommendations over static calendar seeds.","Keep the winner immutable after selection.","Write post and metric outcomes back to the same source/recommendation/winner lineage."],
+  "status":"IMPLEMENTED_PENDING_PRODUCTION_READBACK"
+}
