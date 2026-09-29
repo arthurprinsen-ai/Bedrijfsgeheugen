@@ -147,3 +147,11 @@ Verplicht:
 - geen dark patterns of onbewezen commerciële claims.
 
 Een chat-only instructie is geen borging. De volgende agent moet deze regel uit repository-preflight kunnen ontdekken.
+
+
+## Bedrijfslek homepage qualification — 29 september 2026
+Fingerprint: `seo-cro-bedrijfslek-value-first-v1`.
+
+Voor de homepage is de primaire kwalificatie vanaf deze wijziging de ungated Bedrijfslek-ervaring op `/zelfscan`, niet eerst een afspraak. De bezoeker moet vóór leadcapture voldoende waarde krijgen om zelfstandig relevantie te beoordelen. De vaste volgorde is: herkenbaar probleem -> Bedrijfslek -> directe score/risico/quick wins -> portaal/demo/orderkeuze -> outcome learning. Geen verplichte leadform vóór de eerste volledige uitslag. Andere bestaande money pages mogen hun Frisse Blik-pad behouden wanneer dat intent-match technisch of commercieel beter is.
+
+De final-build authority `tools/site-shell/apply-money-page-order-conversion.mjs` en regressietest `tests/seo-money-page-order-conversion-v2.test.mjs` moeten deze homepage-uitzondering expliciet afdwingen.
