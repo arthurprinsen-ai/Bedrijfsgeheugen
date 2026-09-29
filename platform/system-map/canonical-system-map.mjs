@@ -853,6 +853,28 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     invariant:'No route-local header/navigation/footer/megamenu geometry fork; every public route inherits one CMS-like canonical chrome.',
     productionReadbackRequired:true
   }),
+  sourceBackedOutbound:Object.freeze({
+    fingerprint:'powerhouse-source-backed-all-channels-v1',
+    label:'Source-backed outbound loop',
+    status:'ACTIVE_CONTINUOUSLY_ASSURED',
+    loopAssuranceKey:'source-backed-outbound',
+    cadenceMinutes:60,
+    canonicalLineage:'SOURCE -> EVIDENCE -> DEDUPE -> PROBLEM/TRIGGER -> CHANNEL FIT -> CANDIDATE -> IDENTITY/TRUTH GATE -> PUBLISH/SEND -> PROVIDER READBACK -> OUTCOME -> LEARNING -> NEXT SELECTION',
+    channels:Object.freeze(['instagram_company','linkedin_personal','linkedin_company','blog','email','linkedin_dm']),
+    runtimeAuthorities:Object.freeze([
+      'public.powerhouse_outbound_source_lineage_v1',
+      'public.powerhouse_materialize_source_backed_channel_candidates_v1(date)',
+      'public.powerhouse_require_source_for_direct_outreach_v1()',
+      'public.powerhouse_refresh_outbound_source_lineage_v1(date)',
+      'public.powerhouse_refresh_source_backed_outbound_assurance_v1(date)',
+      'supabase/functions/powerhouse-content-orchestrator/index.ts'
+    ]),
+    sourceRule:'Fresh eligible evidence-backed candidates outrank static calendar or evergreen fallback.',
+    personalTruthRule:'External public evidence may select a LinkedIn-personal theme but can never manufacture an Arthur first-person experience.',
+    directOutreachRule:'Email and LinkedIn DM require traceable account/person evidence plus person/company context before send eligibility.',
+    outcomeWriteback:Object.freeze(['social-metrics','email-replies','linkedin-dm-replies','leads','meetings','orders','revenue']),
+    continuousAssurance:Object.freeze({requiredStages:8,scheduler:'powerhouse-outbound-source-lineage-hourly-v1',greenRequiresCurrentRuntime:true})
+  }),
   socialPublicationGovernance:Object.freeze({
     fingerprint:'linkedin-company-historical-dedupe-v5',
     rule:'Every social post must use a genuinely new underlying story family; LinkedIn company and personal both require durable historical story fingerprints before provider write.',
