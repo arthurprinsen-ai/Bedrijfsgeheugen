@@ -2,7 +2,7 @@
   "fingerprint": "github|delivery-dependency-graph|hot-root-propagation|v1",
   "date": "2026-09-28",
   "type": "CONTROL_PLANE_PREVENTION",
-  "status": "CANDIDATE",
+  "status": "PROVEN",
   "compiler": {
     "failure_class": "GITHUB_DELIVERY",
     "scope": "CI",
@@ -32,5 +32,14 @@
     "tests": [
       "tests/brain-adaptive-delivery-engine-v1.test.mjs"
     ]
+  },
+  "proof": {
+    "implementation_pr": 3247,
+    "implementation_head": "940b0d988c5ebba962fc494d3791342adb6748f5",
+    "terminal_state": "LIVE_BEWEZEN",
+    "terminal_main_sha": "e3c6e6b0a4e1eb727b44d6b4e8896f0c1883b0fb",
+    "terminal_production_readback": "descendant:e3c6e6b0a4e1eb727b44d6b4e8896f0c1883b0fb:deploy:6abad3d8e1d2c30008090357",
+    "terminal_skill_projection_run": 36482399411,
+    "current_main_contains_implementation": true
   }
 }
