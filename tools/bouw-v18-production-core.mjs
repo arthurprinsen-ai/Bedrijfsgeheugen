@@ -168,7 +168,8 @@ header.v17-header .mega{
 // tekst erop (contrast ±2,9:1). Tekst en knop op die kaart worden wit.
 const productkaartContrast = `<style id="bg-productkaart-contrast">.service-product-card.cyan{color:#fff}.service-product-card.cyan p{color:rgba(255,255,255,.86)}</style>`;
 
-html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${canonicalChromeGeometryContract}\n${productkaartContrast}\n</body>`);
+html = html.replace('</head>', `${canonicalChromeGeometryContract}\n</head>`);
+html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${productkaartContrast}\n</body>`);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
