@@ -1,0 +1,24 @@
+{
+  "id": "2026-09-29-linkedin-company-org-id-normalization-v1",
+  "fingerprint": "linkedin-company-org-id-normalization-v1",
+  "type": "LEARNING",
+  "status": "PROVEN_RULE",
+  "observed_at": "2026-09-29",
+  "problem": "LinkedIn GET_COMPANY_INFO may return organization id as a numeric JSON value (18234216) while the publisher compared only against the full URN urn:li:organization:18234216, causing healthy organization-scoped OAuth connections to be rejected as reauth-required.",
+  "root_cause": "String containment check assumed LinkedIn organization identity would always be returned in URN form.",
+  "fix": "Normalize the canonical organization URN to its id component and accept either the full URN or the canonical numeric id in organization capability evidence.",
+  "prevention": [
+    "Treat LinkedIn organization identity as equivalent across URN and numeric-id representations.",
+    "Keep provider organization capability proof separate from optional readback scope.",
+    "Never create a replacement publication claim after provider side-effect; resume the existing daily claim."
+  ],
+  "evidence": {
+    "company_urn": "urn:li:organization:18234216",
+    "company_id": "18234216",
+    "required_scopes": [
+      "r_organization_admin",
+      "w_organization_social"
+    ],
+    "affected_function": "powerhouse-social-publisher"
+  }
+}
