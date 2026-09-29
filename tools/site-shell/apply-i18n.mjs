@@ -52,7 +52,7 @@ function injectMobileLanguage(html,file) {
 
   if (/id=(["'])bgkopMob\1/i.test(html) || /class=(["'])[^"']*\bbgkop-mob\b[^"']*\1/i.test(html)) {
     const cta = /<a\b[^>]*class=(["'])[^"']*\bbgkop-mcta\b[^"']*\1/i;
-    if (cta.test(html)) return html.replace(cta, mobileLanguage + 'if (cta.test(html)) return html.replace(cta, mobileLanguage + 'MOBILE_LANGUAGE + '$&'');');
+    if (cta.test(html)) return html.replace(cta, mobileLanguage + 'if (cta.test(html)) return html.replace(cta, mobileLanguage + 'if (cta.test(html)) return html.replace(cta, mobileLanguage + 'MOBILE_LANGUAGE + '$&'');');');
   }
 
   return html;
