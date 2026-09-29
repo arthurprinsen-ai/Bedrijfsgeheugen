@@ -1,13 +1,49 @@
 {
-  "version": "CMS-LOCALE-AUTHORITY-v1",
-  "date": "2026-09-29",
-  "obligation_id": "cms-locale-authority-20260929",
-  "learning": "Public NL/EN switching must be owned by the canonical site-shell build and deterministic locale routes, not by ad-hoc page scripts or runtime translation.",
-  "invariant": "Header, footer, mega-menu, navigation and language switching inherit one shared shell; public locale switching preserves the current route and navigates to prebuilt /en equivalents.",
+  "fingerprint": "cms-locale-authority-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Public NL/EN switching behaved like a hybrid page/runtime patch instead of one CMS-style shared site-shell responsibility.",
+  "root_cause": "Header, footer, mega-menu and navigation already shared a canonical shell, but public language switching still mixed static locale routes with browser-driven translation and controls, creating inconsistent same-page switching behavior.",
   "prevention": [
-    "Keep public language controls as real links with hreflang.",
-    "Bind same-page locale hrefs during localized build.",
-    "Reserve runtime translation for portal and dynamic contexts.",
-    "Regression-test the shared authority path."
-  ]
+    "Public NL/EN controls are owned by the canonical shared site-shell.",
+    "Desktop and mobile language controls use real locale links with hreflang.",
+    "The localized build binds each switch to the equivalent route in the target language.",
+    "Public pages use prebuilt locale routes; runtime translation remains limited to portal or dynamic contexts.",
+    "Regression coverage must verify the shared CMS/i18n authority rather than page-specific language patches."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/site-shell-cms-i18n-authority.test.mjs"
+    ],
+    "shadow": [
+      "tests/site-shell-cms-i18n-authority.test.mjs"
+    ],
+    "canary": [
+      "tests/site-shell-cms-i18n-authority.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/site-shell-cms-i18n-authority.test.mjs"
+  ],
+  "evidence": {
+    "obligation_id": "cms-locale-authority-20260929",
+    "changed_authorities": [
+      "tools/site-shell/apply-i18n.mjs",
+      "tools/site-shell/build-localized-routes.mjs",
+      "assets/js/i18n.js",
+      "assets/i18n.css"
+    ]
+  },
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_I18N_AUTHORITY_SPLIT",
+    "scope": "WEBSITE_SHARED_SHELL_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
 }
