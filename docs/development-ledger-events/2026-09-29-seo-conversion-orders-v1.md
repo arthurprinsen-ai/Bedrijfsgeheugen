@@ -62,3 +62,12 @@ Build-authority recovery:
 - final deploy artifact now fails closed if any of the nine priority money pages loses its Frisse Blik primary CTA, explicit no-obligation risk reversal, or regresses to generic-contact-first;
 - extended regression coverage to require that the finalizer remains wired into the build.
 
+
+Behavioral revenue closure:
+- confirmed runtime decision engine in `config/seo-growth-loop.json`;
+- confirmed ethical CRO action/guardrail authority in `config/seo-optimization-allowlist.json`;
+- confirmed inheritance by SEO Conversion-to-Orders, Growth Swarm and Persuasion Revenue skills;
+- upgraded canonical system-map projection to SEO + Behavioral Conversion-to-Orders Engine v2;
+- persisted behavioral models, outcome hierarchy, rollback and dark-pattern prevention in Brain learning;
+- kept one canonical conversion/revenue stack rather than introducing parallel CRO authority;
+- regression coverage extended to fail on future system-map / learning / skill projection drift.
