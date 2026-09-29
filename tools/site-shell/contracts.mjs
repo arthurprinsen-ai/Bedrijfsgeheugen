@@ -58,8 +58,26 @@ function hasRenderedClass(html, className) {
   return new RegExp(`<[a-z0-9-]+\\b[^>]*class="[^"]*\\b${escaped}\\b[^"]*"[^>]*>`, 'i').test(String(html));
 }
 
+function normalizeRouteBoundLanguageState(fragment) {
+  return String(fragment).replace(
+    /<a\b[^>]*data-bg-language-option=(["'])(nl|en)\1[^>]*>/gi,
+    tag => {
+      const locale = tag.match(/data-bg-language-option=(["'])(nl|en)\1/i)?.[2]?.toLowerCase() || 'x';
+      let normalized = tag;
+      if (/\bhref=(["'])[^"']*\1/i.test(normalized)) {
+        normalized = normalized.replace(/\bhref=(["'])[^"']*\1/i, `href="__BG_LOCALE_${locale}__"`);
+      }
+      if (/\baria-current=(["'])[^"']*\1/i.test(normalized)) {
+        normalized = normalized.replace(/\baria-current=(["'])[^"']*\1/i, 'aria-current="__BG_ROUTE_CURRENT__"');
+      }
+      return normalized;
+    }
+  );
+}
+
 export function componentHash(html, name) {
-  return createHash('sha256').update(extractMarkedElement(String(html), name)).digest('hex');
+  const fragment = normalizeRouteBoundLanguageState(extractMarkedElement(String(html), name));
+  return createHash('sha256').update(fragment).digest('hex');
 }
 
 export function verifyPageShell(input, path = '') {

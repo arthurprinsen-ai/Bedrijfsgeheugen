@@ -94,3 +94,8 @@ Voor publieke NL/EN-switching geldt permanent: taal wisselen verandert alleen de
 ### Runtime guard voor locale-links
 
 Naast build-time route-aware injectie normaliseert de publieke runtime elke taal-link opnieuw naar de equivalente actuele route. Daarmee blijven NL/EN-switches correct wanneer oude DOM-fragmenten of gecachte markup aanwezig zijn. De injector zelf moet vóór promotie syntactisch uitvoerbaar zijn.
+
+### Route-aware shell hash normalisatie
+
+Canonieke shell-integriteit vergelijkt structuur en inhoud, maar routegebonden locale-state is geen shell-drift. Bij hashing van gedeelde shellcomponenten moeten uitsluitend de href-waarden van `data-bg-language-option="nl|en"` en hun route-afhankelijke `aria-current` worden genormaliseerd. Andere links, labels, classes, volgorde en markup blijven hash-bepalend. Zo kan `/prijzen ↔ /en/prijzen` correct route-aware zijn zonder een vals mobile-menu drift-alarm te veroorzaken.
+
