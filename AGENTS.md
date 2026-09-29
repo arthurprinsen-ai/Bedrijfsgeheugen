@@ -757,3 +757,15 @@ Voor alle huidige en toekomstige chats, agents, skills en website-workflows geld
 Fingerprint: `powerhouse|live-assurance-writeback|2026-09-29-v1`.
 
 Alle chats en agents moeten na een materiële live recovery de terminale productie-identiteit en truth-boundary terugschrijven naar Brain learning, relevante skills, AGENTS/chat-contract, continuity-policy, ledger/docs en System Map, gevolgd door read-after-write. Een ready deploy bewijst deployment; functionele subketens behouden hun eigen bewijs-gates. Historische LIVE/GREEN-status mag nooit als actuele health worden hergebruikt zonder verse readback.
+
+
+## Instagram current-user identity preflight — inherited
+Fingerprint: `instagram-current-user-identity-preflight-v1`.
+
+Alle chats/agents die Instagram-publicatie of herstel raken erven:
+- bepaal canonical Instagram identity via de actuele authenticated connection met `GET_USER_INFO(me)`;
+- behandel provider node `id` en Graph `user_id` als verschillende identifiers;
+- canonical truth is `user_id=17841446582493753`, `username=bedrijfsgeheugen.nl`, `account_type=BUSINESS`;
+- create/publish/readback moeten dezelfde canonical connection gebruiken;
+- schema/ID-drift is een herstelbare pre-provider fout en mag nooit replacement content, Buffer/Make fallback of duplicaatpublicatie veroorzaken;
+- na provider side-effect wordt exact de bestaande media-id gereconcilieerd en `republish_forbidden=true`.
