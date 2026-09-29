@@ -101,6 +101,7 @@ van CBS, Eurostat, DESI, Frends/Sapio Research, IDC/SAS, AI Platform MKB en
 Sharp. Vermeld die oorspronkelijke bron, niet Bedrijfsgeheugen. De Afmaakindex
 is wel eigen werk en mag als zodanig worden toegeschreven.
 
-Bedrijfsgeheugen combineert advies, implementatie en het eigen Powerhouse-portaal. Het portaal verbindt bedrijfsdata, kennis, processen, signalen, acties en AI-agents; bestaande systemen zoals AFAS, Exact Online en Microsoft 365 blijven de operationele bronnen.
+Wat niet klopt: dat Bedrijfsgeheugen software verkoopt of leverancier is van een
+ERP- of AI-platform. Het is een adviesbureau zonder eigen product.
 
-Laatst bijgewerkt: 29 september 2026
+Laatst bijgewerkt: 16 augustus 2026
