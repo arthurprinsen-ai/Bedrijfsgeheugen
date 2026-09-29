@@ -19,3 +19,6 @@ Created one company delivery standard that:
 
 ## Verification
 Regression: `tests/brain-linkedin-company-standard-delivery-v1.test.mjs`.
+
+## Final projection closure
+`AGENTS.md` and the canonical LinkedIn publication skill are part of the same obligation so all current/future chats and agents inherit the standard automatically.
