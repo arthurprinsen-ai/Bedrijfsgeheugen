@@ -36,6 +36,33 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'instagram-live-provider-identity',
+      label:'Instagram Live Provider Identity',
+      authority:'composio-provider-readback',
+      owner:'social-publication-authority',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['active Instagram connections','INSTAGRAM_GET_USER_INFO(me)','canonical username bedrijfsgeheugen.nl']),
+      outputs:Object.freeze(['verified providerUserId','BUSINESS/CREATOR identity','create→publish→readback binding']),
+      runtime:Object.freeze({
+        publisher:'supabase/functions/powerhouse-social-publisher/index.ts',
+        contract:'config/instagram-canonical-provider-identity-v3.json',
+        skill:'.agents/skills/instagram-composio-publisher/SKILL.md',
+        learning:'brain/learning/2026-09-29-instagram-provider-id-drift-v3.json'
+      }),
+      productionEvidence:Object.freeze({
+        username:'bedrijfsgeheugen.nl',
+        accountType:'BUSINESS',
+        observedProviderUserId:'28537384955950341',
+        observedAt:'2026-09-29T16:15:08Z'
+      }),
+      invariants:Object.freeze({
+        hardcodedProviderUserIdForbidden:true,
+        liveProviderIdentityBeforeSideEffect:true,
+        sameProviderUserIdForCreatePublishReadback:true,
+        sameDailyClaimOnDrift:true
+      })
+    }),
+    Object.freeze({
       id:'email-reply-revenue-learning-v1',
       label:'Commercial Email Reply → Revenue Learning',
       authority:'gmail+supabase',
