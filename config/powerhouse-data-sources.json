@@ -373,6 +373,40 @@
         "powerhouse_runtime_events",
         "learning-lineage"
       ]
+    },
+    {
+      "id": "mira-public-complaint-signals",
+      "kind": "public-human-problem-intelligence",
+      "mode": "scheduled",
+      "collector": "powerhouse-mira-problem-radar",
+      "schedule": "17 20 * * *",
+      "timezone_semantics": "target next Europe/Amsterdam publication date",
+      "freshness_sla_hours": 30,
+      "required_activity": true,
+      "providers": [
+        "tavily",
+        "dataforseo_fallback"
+      ],
+      "source_classes": [
+        "public_blogs",
+        "forums",
+        "consumer_complaints",
+        "public_web_discussions"
+      ],
+      "downstream": [
+        "powerhouse_mira_problem_signals_v1",
+        "powerhouse_content_recommendations",
+        "powerhouse_instagram_daily_winners_v1",
+        "social-learning"
+      ],
+      "contract": "mira-public-complaint-source-loop-v1",
+      "rules": [
+        "private_daily_life_only",
+        "forced_business_bridge_forbidden",
+        "source_backed_preferred_over_calendar_seed",
+        "45_day_source_or_topic_reuse_block",
+        "outcome_writeback_required"
+      ]
     }
   ]
 }
