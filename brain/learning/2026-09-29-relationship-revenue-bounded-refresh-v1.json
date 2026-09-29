@@ -1,0 +1,21 @@
+{
+  "fingerprint": "relationship-revenue-bounded-refresh-v1",
+  "date": "2026-09-29",
+  "problem": "The commercial governor timed out inside relationship revenue refresh.",
+  "root_cause": "The relationship refresh expanded the full relationship intelligence view, which itself stacked full person and company intelligence across the relationship population.",
+  "prevention": "Select bounded candidate people from recent events, open opportunities, recent outcomes and recently updated warm relationships before computing relationship scores and actions.",
+  "compiler": {
+    "failure_class": "COMMERCIAL_QUERY_UNBOUNDED_FANOUT",
+    "scope": "RELATIONSHIP_REVENUE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-relationship-revenue-bounded-refresh-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "implementation": "supabase/migrations/20260929171000_relationship_revenue_bounded_refresh_v1.sql"
+  }
+}
