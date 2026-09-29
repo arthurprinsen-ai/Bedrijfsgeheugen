@@ -1,0 +1,35 @@
+{
+  "fingerprint": "i18n-same-page-raw-routes-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "On unprefixed Dutch production pages the mobile language switch could still point English to /en/ instead of the equivalent /en/<current-route> page.",
+  "root_cause": "The localized route builder corrected generated locale outputs, but the raw canonical Dutch HTML kept the injector's homepage placeholder hrefs. Because the shared mobile switcher already existed, runtime mount skipped replacing it.",
+  "prevention": [
+    "The shared injector derives the canonical route from each HTML file and writes same-page NL/EN hrefs at build time.",
+    "The public runtime also normalizes every language-option anchor to localizedHref(target) as a defensive layer.",
+    "Same-page NL↔EN behavior is regression-tested independently from translation content."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-same-page-raw-routes.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-same-page-raw-routes.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-same-page-raw-routes.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
