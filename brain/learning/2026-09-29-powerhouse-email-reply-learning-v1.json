@@ -58,5 +58,17 @@
     "canary": [
       "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "runtime_health": "public.bg_gezondheid:powerhouse-email-reply-loop",
+    "reply_events": [
+      "1a0ed7c9e12c75a7",
+      "1a0e92a02e93f7e0"
+    ],
+    "suppression": "public.powerhouse_email_contact_suppressions:marco@didtelecom.com",
+    "nurture_action": "email-reply-nurture:1a0e92a02e93f7e0",
+    "learning_projection": "public.powerhouse_email_learning_stats",
+    "canonical_owner": "Powerhouse Growth & Revenue OS",
+    "repository_test": "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
   }
 }
