@@ -39,3 +39,22 @@ De systeemkaart registreert voortaan `seo-conversion-orders` met:
 - geen omzetclaim zonder waargenomen outcome.
 
 De regressietest bewaakt nu expliciet dat systeemkaart, skill en componentregister discoverable en synchroon blijven.
+
+## Bestaande money pages toegepast
+De revenue-first SEO/CRO-regels zijn toegepast op de bestaande commerciële pagina's met hoogste koopintentie:
+- homepage;
+- prijzen;
+- product/portaal;
+- bedrijfsprocessen automatiseren;
+- AFAS-koppeling;
+- Exact Online-koppeling;
+- API-koppeling;
+- Power BI implementatie;
+- AI-automatisering voor het mkb.
+
+De primaire conversieroute is nu uniform: **gratis Frisse Blik van 30 minuten → alleen bij aantoonbare fit een betaalde vervolgstap**. De pagina's maken prijs/werkwijze, risicoverlaging en eigenaarschap explicieter en sturen niet langer primair naar een generiek contactformulier.
+
+Tegelijk zijn conversierisico's verwijderd: een betaalde Frisse Blik werd op één pagina onjuist beschreven, een verouderde monitoringprijs op de AFAS-pagina is verwijderd, onbewezen social-proof/security-copy op home/product is vervangen door controleerbare producteigenschappen en een foutieve geneste CTA-markup is hersteld.
+
+Regressie: `tests/seo-money-page-order-conversion-v2.test.mjs` borgt de primaire Frisse-Blik-route, risk reversal en de genoemde evidence-safe correcties.
+
