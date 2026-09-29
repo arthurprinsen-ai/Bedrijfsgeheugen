@@ -11,7 +11,11 @@ const moneyPages=[
   'exact-online-koppeling.html',
   'api-koppeling-laten-maken.html',
   'power-bi-implementatie.html',
-  'ai-automatisering-mkb.html'
+  'ai-automatisering-mkb.html',
+  'twinfield-koppeling.html',
+  'ai-adoptie.html',
+  'bedrijfsgeheugen.html',
+  'voor-mkb.html'
 ];
 
 test('priority money pages use one low-friction Frisse Blik conversion path',()=>{
