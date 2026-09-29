@@ -764,6 +764,28 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     invariant:'No route-local header/navigation/footer/megamenu geometry fork; every public route inherits one CMS-like canonical chrome.',
     productionReadbackRequired:true
   }),
+  instagramCanonicalIdentityTransport:Object.freeze({
+    fingerprint:'instagram-current-user-identity-preflight-v1',
+    toolkit:'instagram',
+    canonicalConnectionAlias:'bedrijfsgeheugen-nl-canonical',
+    identityLookup:'INSTAGRAM_GET_USER_INFO(me)',
+    providerNodeId:'28537384955950341',
+    canonicalGraphUserId:'17841446582493753',
+    canonicalUsername:'bedrijfsgeheugen.nl',
+    requiredAccountType:'BUSINESS',
+    publishTransport:'Composio Instagram',
+    fallbackForbidden:Object.freeze(['Buffer','Make','replacement-post']),
+    liveProof:Object.freeze({
+      mediaId:'18105956765257858',
+      permalink:'https://www.instagram.com/reel/Dd4MOdTEarq/',
+      providerReadback:true,
+      miraIdentityConfidence:0.93,
+      temporalContinuityConfidence:0.93
+    }),
+    runtimeAuthority:'supabase/functions/powerhouse-social-publisher/index.ts',
+    skillAuthority:'.agents/skills/instagram-composio-publisher/SKILL.md',
+    learningAuthority:'brain/learning/2026-09-29-instagram-current-user-identity-preflight-v1.json'
+  }),
   socialPublicationGovernance:Object.freeze({
     fingerprint:'linkedin-company-historical-dedupe-v5',
     rule:'Every social post must use a genuinely new underlying story family; LinkedIn company and personal both require durable historical story fingerprints before provider write.',
