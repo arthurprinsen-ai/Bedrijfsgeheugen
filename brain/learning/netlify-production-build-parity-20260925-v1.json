@@ -4,6 +4,7 @@
   "problem": "GitHub website validation could be green while Netlify production failed because pre-merge build parity did not fully match the production build environment.",
   "root_cause": "The parity job executed the same command chain but set STATIC_I18N_REQUIRE_CACHE=0 while netlify.toml production sets STATIC_I18N_REQUIRE_CACHE=1. A candidate could therefore pass CI under permissive cache behavior and fail in Netlify production.",
   "prevention": [
+    "Every new production-visible NL copy string must land with its static English cache entry in the same candidate when STATIC_I18N_REQUIRE_CACHE=1.",
     "Production parity must match both the Netlify build command and production-critical environment flags, including STATIC_I18N_REQUIRE_CACHE=1.",
     "Every website candidate that requires preview must execute the exact Netlify production build chain before merge.",
     "The parity job must include pricing-build-integrity capture and restore, apply-i18n, build-localized-routes, sitemap generation and release-evidence generation.",
@@ -35,7 +36,10 @@
       "linked_deploy": "6abb6024a756cfe338cb2324",
       "exact_source_deploy": "6abb605e18fa3d27a93ff88f",
       "provider_error": "Build script returned non-zero exit code: 2",
-      "parity_env_mismatch": "CI STATIC_I18N_REQUIRE_CACHE=0 vs production=1"
+      "parity_env_mismatch": "CI STATIC_I18N_REQUIRE_CACHE=0 vs production=1",
+      "missing_static_i18n_translations": 54,
+      "cache_patch": "config/bg-static-i18n-en.d/2026-09-29-money-page-order-conversion.json",
+      "first_missing": "Check gratis welke AFAS-koppeling eerst loont →"
     }
   },
   "skill_targets": [
