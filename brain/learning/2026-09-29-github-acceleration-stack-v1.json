@@ -6,8 +6,7 @@
   "root_cause": "Delivery acceleration had been implemented as several individually proven capabilities. Without a composed closure contract, future agents could optimize one stage locally while omitting another part of the terminal path.",
   "prevention_rule": "Treat adaptive risk routing, one-write integration, historical pattern memory, dependency propagation, calibration, bounded optimizer handoff and terminal proof/writeback as one composed GitHub acceleration stack.",
   "enforcement": [
-    ".agents/skills/powerhouse-delivery-self-optimization/SKILL.md",
-    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md",
+    ".agents/skills/powerhouse-github-acceleration-stack/SKILL.md",
     "docs/brain/component-registry.json",
     "config/powerhouse-adaptive-delivery-v1.json",
     "tools/delivery/integration-bundle-compiler.mjs",
