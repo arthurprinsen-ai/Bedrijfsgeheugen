@@ -66,3 +66,19 @@ Geen interne PR/SHA/queue/blocker-detail als eindhandoff. De node blijft eigenaa
 ## Permanente learning 2026-09-29
 
 De assurance-run bewees dat een systeem tegelijk volledig bedraad kan zijn en toch niet groen: 32/32 intelligence-lagen en 18/18 required jobs waren actief terwijl content/evidence/lineage nog rood waren. De juiste herstelstrategie is daarom evidence-first, provider-neutral en fail-closed, niet dashboard-first.
+
+
+## Final build integrity ordering
+
+Fingerprint: `pricing|final-normalizer|post-restore-runtime-strip|2026-09-29-v1`.
+
+Voor publieke surfaces met post-build feature restoration geldt:
+- destructieve/globale UI-normalisatie draait vóór feature-integrity restore;
+- feature-integrity restore draait vóór i18n/localized-route projection;
+- een verifier volgt de actuele canonieke UI-authority, niet een historische selector;
+- exacte deploy zonder functionele browser-readback blijft non-green.
+
+Specifiek voor pricing:
+`normaliseer-site-ui → pricing restore → Bedrijfslek restore → apply-i18n → localized routes`.
+
+De productie-gate moet lifecycle, plan, billing en NL→EN→NL daadwerkelijk bedienen.
