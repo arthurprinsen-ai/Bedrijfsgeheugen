@@ -24,3 +24,8 @@ Een opdracht als **“zet live”** eindigt niet bij een deploy, merge of provid
 ## Truth boundary
 
 De productie-identiteit bewijst dat deze bronversie op productie staat. Capability-specifieke claims blijven uitsluitend geldig bij hun eigen actuele functionele readback.
+
+
+## Expliciete chat/continuity-projectie
+
+De closure is aanvullend rechtstreeks geprojecteerd naar `config/brain-chat-learning-contract.json` en `.agents/skills/powerhouse-continuity/SKILL.md`. Daarmee erven toekomstige chats én continuity/recovery-agents deze regel expliciet, naast de universele AGENTS-policy.
