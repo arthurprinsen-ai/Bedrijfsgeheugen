@@ -183,3 +183,27 @@ De publieke route `/zelfscan` is voortaan de value-first Bedrijfslek-instap voor
 - `/zelfscan` is een standalone productroute en mag daarom nooit als `selfscan`-view in `tools/v18-views-lijst.mjs` staan; `tools/bouw-v18-views.mjs` mag `zelfscan.html` niet genereren of overschrijven.
 
 Dit is geen parallelle funnel. De route blijft onderdeel van de bestaande Growth Swarm, Persuasion Revenue Optimizer, SEO Conversion-to-Orders en canonical growth-event lineage.
+
+
+## Bedrijfslek teamchallenge + Mini — permanent product-led contract
+
+Fingerprint: `powerhouse-bedrijfslek-product-led-acquisition-v2`.
+
+De op 29 september 2026 gemergede Bedrijfslek-loop is een permanente Growth Swarm-capability, geen tijdelijke campagne.
+
+Canonieke lus:
+`organic reach → /zelfscan → volledige waarde vóór PII → score + benchmark + quick wins → Bedrijfsgeheugen Mini → privacy-safe teamchallenge → tweede gekwalificeerde gebruiker → interne vergelijking → portal/order → outcome learning`.
+
+Verplicht:
+- de eerste gebruiker krijgt de volledige bruikbare uitkomst zonder leadgate;
+- Bedrijfsgeheugen Mini vertaalt de drie zwakste domeinen naar drie uitvoerbare acties en bewaart voortgang uitsluitend lokaal;
+- de challenge bevat alleen score, risk category en campaign attribution;
+- na challenge-completion wordt het scoreverschil zichtbaar; een verschil van 15 punten of meer mag als inhoudelijk onderzoeksignaal worden getoond, nooit als verkoopfeit;
+- challenge share/copy/completion en Mini action/complete events blijven commerciële tussenuitkomsten;
+- paid order en realized revenue blijven terminale commerciële waarheid;
+- iedere nieuwe growth-hack rond Bedrijfslek moet deze bestaande lus versterken of meetbaar vervangen, nooit ernaast een tweede funnel creëren;
+- historische duplicatie, dark patterns, verplichte PII vóór waarde, fake benchmarks en onbewezen ROI zijn verboden;
+- skill, agent/chat contract, System Map, Brain learning, docs, ledger en regression guard blijven in dezelfde lineage synchroon.
+
+Canonical public authority: `zelfscan.html`.
+Regression authority: `tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs`.
