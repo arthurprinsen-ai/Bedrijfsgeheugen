@@ -387,3 +387,23 @@ test('canonical system map is non-executable governance', async () => {
   assert.deepEqual(plan.nonExecutableSharedPaths, ['platform/system-map/canonical-system-map.mjs']);
   assert.equal(plan.integration.required, false);
 });
+
+
+test('production snapshot control-plane changes do not activate website delivery', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({
+    changedPaths:[
+      '.github/workflows/production-source-snapshot.yml',
+      'tools/brain-delivery-system.mjs',
+      'platform/system-map/canonical-system-map.mjs',
+      'brain/learning/2026-09-29-system-map-nondeployment-classification-v1.json',
+      'docs/changes/2026-09-29-system-map-nondeployment-classification-v1.md',
+      'docs/development-ledger-events/2026-09-29-system-map-nondeployment-classification-v1.md'
+    ],
+    headSha:'abc123def4567890',
+    policy
+  });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['backend']);
+  assert.ok(!plan.lanes.some(lane => lane.id === 'website'));
+  assert.ok(plan.nonExecutableSharedPaths.includes('platform/system-map/canonical-system-map.mjs'));
+});
