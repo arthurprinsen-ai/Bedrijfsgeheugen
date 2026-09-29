@@ -8,6 +8,27 @@ const LINK = `<link rel="stylesheet" href="/assets/i18n.css?v=${I18N_ASSET_VERSI
 const SCRIPT = `<script src="/assets/js/i18n.js?v=${I18N_ASSET_VERSION}" defer data-bg-i18n-asset></script>`;
 const MOBILE_LANGUAGE = '<nav class="bg-mobile-language" data-bg-language-switcher="mobile" data-bg-no-translate aria-label="Language"><span class="bg-mobile-language-label" data-bg-language-label>Language</span><div class="bg-mobile-language-select-wrap"><a class="bg-mobile-language-link" href="/" data-bg-language-option="nl" hreflang="nl">Nederlands</a><a class="bg-mobile-language-link" href="/en/" data-bg-language-option="en" hreflang="en">English</a></div></nav>';
 
+function routeForFile(file) {
+  let rel = path.relative(ROOT,file).replace(/\\\\/g,'/');
+  rel = rel.replace(/^(?:nl|en)\//,'');
+  if (rel === 'index.html') return '/';
+  if (rel.endsWith('/index.html')) return '/' + rel.slice(0,-'index.html'.length);
+  return '/' + rel.replace(/\.html$/,'');
+}
+
+function localeHref(locale,route) {
+  if (locale === 'nl') return route === '/' ? '/' : route;
+  return '/en' + (route === '/' ? '/' : route);
+}
+
+function bindLanguageRoutes(html,file) {
+  const route = routeForFile(file);
+  return html.replace(/<a\b[^>]*data-bg-language-option=(["'])(nl|en)\1[^>]*>/gi,(tag,_quote,locale)=>{
+    const href = localeHref(locale,route);
+    if (/\bhref=(["'])[^"']*\1/i.test(tag)) return tag.replace(/\bhref=(["'])[^"']*\1/i,'href="' + href + '"');
+    return tag.replace(/^<a\b/i,'<a href="' + href + '"');
+  });
+}
 function injectMobileLanguage(html) {
   if (/data-bg-language-switcher="mobile"/.test(html)) return html;
 
@@ -51,6 +72,7 @@ function patch(file) {
     html = html.replace(/<\/head>/i, missing + '\n</head>');
   }
   html = injectMobileLanguage(html);
+  html = bindLanguageRoutes(html,file);
   if (html !== before) fs.writeFileSync(file,html);
 }
 walk(ROOT);
