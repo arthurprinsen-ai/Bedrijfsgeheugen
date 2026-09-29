@@ -95,3 +95,26 @@ test('behavioral capability is projected into Powerhouse Brain and inherited by 
   assert.match(swarm,/powerhouse-behavioral-landing-revenue-v2/);
   assert.match(persuasion,/powerhouse-behavioral-landing-revenue-v2/);
 });
+
+
+test('existing commercial pages apply behavioral revenue contract',()=>{
+  const checks=[
+    ['index.html',/data-money-primary[^>]+href="\/frisse-blik"/,/tijd, kennis en omzet/i],
+    ['frisse-blik.html',/data-money-primary/,/verplicht je tot niets/i],
+    ['zelfscan.html',/data-money-primary/,/grootste lek/i],
+    ['prijzen.html',/data-money-primary[^>]+href="\/frisse-blik"/,/eerst bewijs, dan investering/i],
+    ['product.html',/data-money-primary[^>]+href="\/frisse-blik"/,/Geen rip-and-replace/i],
+    ['bedrijfsprocessen-automatiseren.html',/data-money-primary/,/automatiseren niet rendabel/i],
+    ['afas-koppeling.html',/data-money-primary[^>]+href="\/contact"/,/vóór je investeert/i],
+    ['exact-online-koppeling.html',/data-money-primary[^>]+href="\/contact"/,/Geen onnodige koppeling/i],
+    ['power-bi-implementatie.html',/data-money-primary/,/hetzelfde cijfer sturen/i],
+    ['ai-automatisering-mkb.html',/data-money-primary/,/businesscase klopt/i]
+  ];
+  for(const [path,cta,proof] of checks){
+    const html=readFileSync(path,'utf8');
+    assert.match(html,cta,`missing primary conversion action: ${path}`);
+    assert.match(html,proof,`missing behavioral revenue copy: ${path}`);
+  }
+  const process=readFileSync('bedrijfsprocessen-automatiseren.html','utf8');
+  assert.doesNotMatch(process,/Doe eerst de Zelfscan<p/,'malformed nested paragraph returned in CTA');
+});
