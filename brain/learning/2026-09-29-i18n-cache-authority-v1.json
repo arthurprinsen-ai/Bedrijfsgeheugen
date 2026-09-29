@@ -1,0 +1,35 @@
+{
+  "fingerprint": "i18n-cache-authority-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production could serve a stale i18n runtime from an unversioned asset URL after the canonical language control changed.",
+  "root_cause": "The shared injector accepted any existing /assets/js/i18n.js and /assets/i18n.css reference without rotating the URL, so browser/CDN caches could retain an obsolete language-control implementation.",
+  "prevention": [
+    "Canonical public i18n JS and CSS asset URLs carry an explicit version.",
+    "The shared injector rewrites existing i18n asset references to the current canonical version.",
+    "Production readback must prove same-route NL→EN→NL after exact-main deployment."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-cache-authority.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-i18n-cache-authority.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-i18n-cache-authority.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}

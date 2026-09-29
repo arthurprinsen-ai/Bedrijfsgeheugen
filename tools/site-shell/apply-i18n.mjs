@@ -3,8 +3,9 @@ import path from 'node:path';
 
 const ROOT = process.cwd();
 const SKIP = new Set(['node_modules','.git','dist','.netlify']);
-const LINK = '<link rel="stylesheet" href="/assets/i18n.css" data-bg-i18n-asset>';
-const SCRIPT = '<script src="/assets/js/i18n.js" defer data-bg-i18n-asset></script>';
+const I18N_ASSET_VERSION = 'cms-i18n-20260929-2';
+const LINK = `<link rel="stylesheet" href="/assets/i18n.css?v=${I18N_ASSET_VERSION}" data-bg-i18n-asset>`;
+const SCRIPT = `<script src="/assets/js/i18n.js?v=${I18N_ASSET_VERSION}" defer data-bg-i18n-asset></script>`;
 const MOBILE_LANGUAGE = '<nav class="bg-mobile-language" data-bg-language-switcher="mobile" data-bg-no-translate aria-label="Language"><span class="bg-mobile-language-label" data-bg-language-label>Language</span><div class="bg-mobile-language-select-wrap"><a class="bg-mobile-language-link" href="/" data-bg-language-option="nl" hreflang="nl">Nederlands</a><a class="bg-mobile-language-link" href="/en/" data-bg-language-option="en" hreflang="en">English</a></div></nav>';
 
 function injectMobileLanguage(html) {
@@ -38,8 +39,12 @@ function patch(file) {
   let html = fs.readFileSync(file,'utf8');
   if (!/<html\b/i.test(html)) return;
   const before = html;
-  const hasI18nCss = /<link\b[^>]*href=(["'])[^"']*\/assets\/i18n\.css(?:\?[^"']*)?\1[^>]*>/i.test(html);
-  const hasI18nScript = /<script\b[^>]*src=(["'])[^"']*\/assets\/js\/i18n\.js(?:\?[^"']*)?\1[^>]*><\/script>/i.test(html);
+  const cssPattern = /<link\b[^>]*href=(["'])[^"']*\/assets\/i18n\.css(?:\?[^"']*)?\1[^>]*>/i;
+  const scriptPattern = /<script\b[^>]*src=(["'])[^"']*\/assets\/js\/i18n\.js(?:\?[^"']*)?\1[^>]*><\/script>/i;
+  const hasI18nCss = cssPattern.test(html);
+  const hasI18nScript = scriptPattern.test(html);
+  if (hasI18nCss) html = html.replace(cssPattern, LINK);
+  if (hasI18nScript) html = html.replace(scriptPattern, SCRIPT);
   if (!hasI18nCss || !hasI18nScript) {
     if (!/<\/head>/i.test(html)) return;
     const missing = [!hasI18nCss ? LINK : '', !hasI18nScript ? SCRIPT : ''].filter(Boolean).join('\n');
