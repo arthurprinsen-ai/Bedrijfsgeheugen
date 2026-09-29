@@ -1422,3 +1422,10 @@ This skill inherits the canonical daily compound-learning contract. Every materi
 - remain discoverable through System Map and canonical skill projection.
 
 Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
+
+
+## LinkedIn company continuity invariant
+
+Fingerprint: `linkedin-company-standard-delivery-v1`.
+
+For Bedrijfsgeheugen LinkedIn recovery, continuity means the same daily company obligation survives content rejection, connection drift and OAuth repair. Company content must remain business/CEO/MT-only, globally retired story families such as `printer` stay retired, production runtime auth is authoritative, and explicit user deletion allows at most one materially different new-story replacement. Never start a parallel publisher, alias lineage, Buffer route or replacement claim to escape a recoverable state.
