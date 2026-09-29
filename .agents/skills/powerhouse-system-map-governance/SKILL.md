@@ -63,3 +63,19 @@ If yes, same-lineage closure MUST include:
 5. System Map relationship from capability → portal surface.
 
 A backend-only implementation is non-terminal when the intelligence materially affects user decisions. Do not solve this by creating a generic "AI insights" dumping ground; place the intelligence where it is operationally relevant.
+
+
+## Canonical website shell is a Powerhouse control surface
+
+Fingerprint: `powerhouse|website-shell|canonical-chrome-geometry|v1`.
+
+The public Bedrijfsgeheugen chrome is a canonical Powerhouse control surface. Its header, navigation, footer and mega-menu geometry belong to one centrally governed shell contract.
+
+Structural website-shell changes must therefore:
+- update `platform/system-map/canonical-system-map.mjs`;
+- update `docs/sitestandaard.md`;
+- preserve sitewide pixel-parity regression coverage;
+- avoid route-local geometry forks;
+- remain discoverable from Powerhouse Control Center / System Map governance.
+
+The current geometry contract is 1220px desktop shell width, 72px navigation height, 1190px maximum centered “Meer” mega-menu and 850px solutions mega-menu, with mobile gutters centrally defined.

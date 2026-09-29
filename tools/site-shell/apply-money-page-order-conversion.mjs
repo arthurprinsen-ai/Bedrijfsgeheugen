@@ -86,7 +86,7 @@ function transformProduct(input) {
   const block = `
 <div class="bg-money-order-path" data-money-order-path="${MONEY_PAGE_ORDER_CONVERSION_VERSION}">
   <a class="btn btn-primary" data-money-primary href="/frisse-blik">Plan gratis een Frisse Blik →</a>
-  <a class="btn" data-money-secondary href="/portaal/demo">Bekijk eerst het portaal</a>
+  <a class="btn" data-money-secondary href="/portal-v2/">Bekijk eerst het portaal</a>
   <p><strong>30 minuten, geen verplichting.</strong> We toetsen eerst of kennisborging, koppelingen of stuurinformatie voor jouw situatie voldoende waarde opleveren. Alleen bij voldoende fit volgt een betaalde vervolgstap.</p>
 </div>`;
   scope = scope.slice(0, introEnd + 4) + block + scope.slice(introEnd + 4);

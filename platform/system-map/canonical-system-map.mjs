@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-28T19:52:00Z',
+  observedAt:'2026-09-29T07:37:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -538,6 +538,33 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     requiredWriteback:Object.freeze(['machine-system-map','human-architecture-docs','relevant-skill-inventory','brain-learning','development-ledger','portal-or-human-projection-when-applicable']),
     failClosedState:'SYSTEM_MAP_WRITEBACK_INCOMPLETE',
     terminalGreenWithStaleMap:false
+  }),
+  canonicalWebsiteChrome:Object.freeze({
+    fingerprint:'powerhouse|website-shell|canonical-chrome-geometry|v1',
+    label:'Canonical public website CMS shell',
+    authority:'github+netlify',
+    owner:'website-delivery',
+    status:'ACTIVE_PROTECTED_CONTRACT',
+    surfaces:Object.freeze(['public-header','primary-navigation','footer','solutions-megamenu','more-megamenu','mobile-navigation']),
+    geometry:Object.freeze({
+      desktopShellWidthPx:1220,
+      desktopNavigationHeightPx:72,
+      moreMegamenuMaxWidthPx:1190,
+      solutionsMegamenuWidthPx:850,
+      desktopGutterPx:20,
+      mobileGutterPx:12,
+      routeParityTolerancePx:1,
+      megamenuParityTolerancePx:2
+    }),
+    authorityFiles:Object.freeze([
+      'tools/bouw-v18-production-core.mjs',
+      'tools/site-shell/v18-megamenu-browser-check.mjs',
+      'tests/v18-megamenu-regression-lock.test.mjs',
+      'docs/sitestandaard.md'
+    ]),
+    inheritedBy:Object.freeze(['all-public-routes','all-current-chats','all-future-chats','all-current-agents','all-future-agents','website-workflows']),
+    invariant:'No route-local header/navigation/footer/megamenu geometry fork; every public route inherits one CMS-like canonical chrome.',
+    productionReadbackRequired:true
   }),
   socialPublicationGovernance:Object.freeze({
     fingerprint:'powerhouse-global-semantic-example-uniqueness-v4',

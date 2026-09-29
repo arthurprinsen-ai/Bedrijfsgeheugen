@@ -1,0 +1,62 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "fingerprint": "website|canonical-chrome|cms-pixel-parity|v1",
+  "obligation_id": "sitewide-canonical-chrome-geometry-v1",
+  "problem": "Public routes could inherit different historical shell dimensions, allowing header, navigation, footer and mega-menu geometry to drift by route.",
+  "root_cause": "Multiple generations of site chrome retained different width and height values while the live V18 shell had become the effective production authority.",
+  "fix": "Make the V18 production chrome the single geometry authority, load its canonical dimensions in head before first layout, and enforce route-to-route browser parity.",
+  "failed_approaches": [
+    "Keeping legacy 1120px component geometry alongside the live 1220px V18 shell.",
+    "Fixing individual routes with page-specific header, footer or menu overrides.",
+    "Testing mega-menu contrast and width without also asserting header, navigation and footer parity.",
+    "Injecting the canonical geometry stylesheet at the end of body; browser visibility testing exposed mobile CLS above the 0.100 contract."
+  ],
+  "prevention": [
+    "Never add route-local geometry overrides for header, navigation, footer or mega-menu.",
+    "All new public routes inherit the canonical shell.",
+    "Representative routes are compared in browser regression checks.",
+    "A geometry contract change requires same-lineage skill, docs, learning and System Map updates.",
+    "Load canonical shell geometry in head before first layout to prevent mobile cumulative layout shift."
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_SITE_CHROME_GEOMETRY_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-website-regression-family.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-website-regression-family.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "continuity",
+    "system-map-governance"
+  ],
+  "evidence": [
+    "tools/bouw-v18-production-core.mjs",
+    "tools/site-shell/v18-megamenu-browser-check.mjs",
+    "tests/v18-megamenu-regression-lock.test.mjs",
+    "docs/sitestandaard.md",
+    "platform/system-map/canonical-system-map.mjs",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-system-map-governance/SKILL.md"
+  ],
+  "contract": {
+    "desktop_shell_width_px": 1220,
+    "navigation_height_px": 72,
+    "more_megamenu_max_width_px": 1190,
+    "solutions_megamenu_width_px": 850,
+    "desktop_gutter_px": 20,
+    "mobile_gutter_px": 12,
+    "route_tolerance_px": 1,
+    "megamenu_tolerance_px": 2
+  },
+  "outcome": "ONE_CANONICAL_CMS_LIKE_PUBLIC_CHROME_WITH_SITEWIDE_PIXEL_PARITY"
+}

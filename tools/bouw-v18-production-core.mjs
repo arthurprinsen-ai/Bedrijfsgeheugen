@@ -122,10 +122,53 @@ const megaMenuContrastContract = `<style id="v18-megamenu-contrast-contract">
 })();
 </script>`;
 
+// Canonieke CMS-shellgeometrie: iedere publieke route gebruikt exact dezelfde
+// desktop-/tabletbreedte en vaste navigatiehoogte. Pagina-CSS mag deze chrome
+// niet per route laten driften. Mobiel houdt dezelfde gutter-logica.
+const canonicalChromeGeometryContract = `<style id="v18-canonical-chrome-geometry">
+:root{--bg-shell-max:1220px;--bg-shell-gutter:20px;--bg-nav-height:72px}
+header.v17-header .v17-nav,
+footer[data-bg-component="footer"]>.wrap,
+.bg-uniform-trust>.bg-uniform-trust-in{
+  width:min(var(--bg-shell-max),calc(100% - (2 * var(--bg-shell-gutter))))!important;
+  max-width:var(--bg-shell-max)!important;
+  margin-left:auto!important;
+  margin-right:auto!important;
+  box-sizing:border-box!important;
+}
+header.v17-header .v17-nav{
+  height:var(--bg-nav-height)!important;
+  min-height:var(--bg-nav-height)!important;
+  max-height:var(--bg-nav-height)!important;
+}
+header.v17-header .v17-navlinks{align-items:center!important}
+header.v17-header .v17-nav>.brand,
+header.v17-header .v17-nav>.login,
+header.v17-header .v17-nav>.cta,
+header.v17-header .v17-nav>.mobile-toggle{flex-shrink:0}
+header.v17-header .mega{
+  box-sizing:border-box!important;
+}
+@media(min-width:1101px){
+  header.v17-header .v17-solutions-mega{
+    width:850px!important;
+    max-width:min(850px,calc(100vw - 32px))!important;
+  }
+  header.v17-header [data-bg-megamenu-root="true"]{
+    width:min(1190px,calc(100vw - 32px))!important;
+    max-width:min(1190px,calc(100vw - 32px))!important;
+  }
+}
+@media(max-width:680px){
+  :root{--bg-shell-gutter:12px}
+}
+</style>`;
+
 // De cyaan productkaart kreeg via --cyan de merkkleur #2742D6, met donkere
 // tekst erop (contrast ±2,9:1). Tekst en knop op die kaart worden wit.
 const productkaartContrast = `<style id="bg-productkaart-contrast">.service-product-card.cyan{color:#fff}.service-product-card.cyan p{color:rgba(255,255,255,.86)}</style>`;
 
+html = html.replace('</head>', `${canonicalChromeGeometryContract}\n</head>`);
 html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${productkaartContrast}\n</body>`);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
