@@ -1,0 +1,36 @@
+{
+  "fingerprint": "instagram-canonical-provider-identity-v3",
+  "date": "2026-09-29",
+  "problem": "Instagram publication passed all Mira media gates but failed in Composio identity preflight because the publisher still used a historical numeric Instagram Business/Graph User ID.",
+  "root_cause": "The canonical social publisher treated a provider-issued numeric user ID as a permanent identity constant. The active canonical connection still represented bedrijfsgeheugen.nl but returned a different current Business user ID.",
+  "prevention": "Bind canonical identity to username bedrijfsgeheugen.nl plus BUSINESS/CREATOR account type. Discover providerUserId live with INSTAGRAM_GET_USER_INFO(me) on the selected active canonical connection before side effects, and use that same returned ID for create, publish and readback.",
+  "failed_approaches": [
+    "Calling INSTAGRAM_GET_USER_INFO with the historical hardcoded Graph ID.",
+    "Treating ACTIVE connection metadata alone as enough without provider identity readback."
+  ],
+  "compiler": {
+    "failure_class": "PROVIDER_IDENTITY_DRIFT",
+    "scope": "SOCIAL_PUBLICATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-canonical-identity-v1.test.mjs",
+      "tests/brain-social-provider-health-preflight-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "provider_readback": {
+      "username": "bedrijfsgeheugen.nl",
+      "account_type": "BUSINESS",
+      "current_provider_user_id": "28537384955950341",
+      "observed_at": "2026-09-29T16:15:08Z"
+    },
+    "publisher": "supabase/functions/powerhouse-social-publisher/index.ts",
+    "config": "config/instagram-canonical-provider-identity-v3.json",
+    "skill": ".agents/skills/instagram-composio-publisher/SKILL.md"
+  },
+  "status": "ACTIVE_PREVENTION"
+}
