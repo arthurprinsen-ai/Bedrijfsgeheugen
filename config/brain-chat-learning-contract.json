@@ -14,7 +14,11 @@
     "docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md",
     "brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json",
     "brain/skills/powerhouse-missing-connections-recovery-v1.json",
-    "brain/learning/2026-09-18-missing-connections-recovery-v1.json"
+    "brain/learning/2026-09-18-missing-connections-recovery-v1.json",
+    "brain/policies/personal-linkedin-daily-creative-loop-v1.json",
+    "brain/learning/2026-09-29-personal-linkedin-daily-creative-loop-v1.json",
+    "docs/brain/personal-linkedin-daily-creative-loop-v1.md",
+    ".agents/skills/personal-linkedin-life-only/SKILL.md"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -30,7 +34,9 @@
     "failClosedOnMissingOrStaleSourceEvidence": true,
     "requireAutomaticSkillProjection": true,
     "skillProjectionFingerprint": "powerhouse-learning-skill-auto-projection-v1",
-    "failClosedOnSkillProjectionDrift": true
+    "failClosedOnSkillProjectionDrift": true,
+    "requirePersonalLinkedInDailyCreativeLoop": true,
+    "personalLinkedInDailyCreativeLoopFingerprint": "personal-linkedin-daily-creative-loop-v1"
   },
   "lessons": [
     {
