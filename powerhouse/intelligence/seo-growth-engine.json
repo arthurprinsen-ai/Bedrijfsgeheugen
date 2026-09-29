@@ -1,0 +1,71 @@
+{
+  "id": "powerhouse-seo-growth-engine-v1",
+  "status": "canonical",
+  "updated_at": "2026-09-29",
+  "objective": "qualified_orders_not_raw_traffic",
+  "priority_intents": [
+    {
+      "query": "bedrijfsprocessen automatiseren",
+      "monthly_search_volume_nl": 480,
+      "role": "money_page"
+    },
+    {
+      "query": "afas koppeling",
+      "monthly_search_volume_nl": 320,
+      "role": "money_page"
+    },
+    {
+      "query": "exact online koppeling",
+      "monthly_search_volume_nl": 140,
+      "role": "money_page"
+    },
+    {
+      "query": "power bi implementatie",
+      "monthly_search_volume_nl": 50,
+      "role": "money_page"
+    },
+    {
+      "query": "kennisborging",
+      "monthly_search_volume_nl": 40,
+      "role": "supporting_intent"
+    },
+    {
+      "query": "ai automatisering mkb",
+      "monthly_search_volume_nl": 20,
+      "role": "money_page"
+    }
+  ],
+  "models": [
+    "search_intent",
+    "jtbd",
+    "pas",
+    "aida",
+    "4p",
+    "risk_reversal",
+    "message_match",
+    "information_scent",
+    "topic_clusters",
+    "eeat",
+    "conversion_hierarchy",
+    "objection_handling",
+    "outcome_memory"
+  ],
+  "guardrails": [
+    "people_first",
+    "no_doorway_pages",
+    "no_scaled_thin_content",
+    "no_keyword_stuffing",
+    "schema_matches_visible_content",
+    "no_duplicate_intent_pages"
+  ],
+  "daily_loop": [
+    "observe",
+    "prioritize",
+    "change_max_3",
+    "validate",
+    "deploy",
+    "production_readback",
+    "measure",
+    "learn"
+  ]
+}
