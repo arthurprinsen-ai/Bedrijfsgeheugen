@@ -73,7 +73,7 @@ $$;
 revoke all on function public.powerhouse_record_loop_stage_v1(text,text,jsonb,timestamptz) from public, anon, authenticated;
 
 create or replace function public.powerhouse_refresh_loop_assurance_v1(p_now timestamptz default now())
-returns table(loop_key text, status text, reason text)
+returns table(out_loop_key text, out_status text, out_reason text)
 language plpgsql
 security definer
 set search_path = public, extensions, cron
@@ -162,7 +162,7 @@ begin
         'critical',r.critical
       )
     )
-    on conflict (loop_key) do update set
+    on conflict on constraint powerhouse_loop_assurance_state_v1_pkey do update set
       status=excluded.status,
       last_runtime_at=excluded.last_runtime_at,
       scheduler_active=excluded.scheduler_active,
@@ -205,9 +205,9 @@ begin
       updated_at = excluded.updated_at,
       version = public.brain_obligations.version + 1;
 
-    loop_key := r.loop_key;
-    status := v_status;
-    reason := v_reason;
+    out_loop_key := r.loop_key;
+    out_status := v_status;
+    out_reason := v_reason;
     return next;
   end loop;
 
