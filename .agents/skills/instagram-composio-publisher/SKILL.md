@@ -401,3 +401,15 @@ Canoniek:
 - user-upload ids `Jt5SWKRgyK3heTqEXH4w`, `w4HhwCmX5GxL8jTGljxe`, `umWzAKt6YBeoVpHlKTtK` zijn expliciet verboden voor Mira;
 - ontbreken of afwijken van deze proof blokkeert de job vóór `VERIFYING`;
 - user photos/video mogen alleen worden gebruikt voor user-identity content wanneer de gebruiker dat expliciet vraagt; nooit als fallback voor Mira.
+
+
+## Current-user identity preflight — 29 september 2026
+Fingerprint: `instagram-current-user-identity-preflight-v1`.
+
+Voor de canonical Instagram/Composio-route geldt:
+- identity-preflight gebruikt `INSTAGRAM_GET_USER_INFO` met `ig_user_id='me'`;
+- lees `id` en `user_id` afzonderlijk; deze zijn niet uitwisselbaar;
+- valideer `user_id=17841446582493753`, `username=bedrijfsgeheugen.nl` en `account_type=BUSINESS`;
+- gebruik exact dezelfde selected canonical connection voor create, publish en readback;
+- een 400 op direct node lookup mag nooit leiden tot Buffer/Make fallback, regeneratie of replacement post;
+- provider create/readback van media-id `18105956765257858` op `bedrijfsgeheugen.nl` is de bewezen closure voor deze repair.
