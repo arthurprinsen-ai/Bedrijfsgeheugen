@@ -756,3 +756,12 @@ Voor alle huidige en toekomstige chats, agents, skills en website-workflows geld
 ## Instagram provider identity — inherited contract
 Fingerprint: `instagram-canonical-provider-identity-v3`.
 Alle chats/agents ontdekken de numerieke Instagram Business/Graph user ID live via `INSTAGRAM_GET_USER_INFO(me)`, eisen username `bedrijfsgeheugen.nl` plus BUSINESS/CREATOR en gebruiken dezelfde `providerUserId` voor create, publish en readback. Historische numerieke IDs zijn nooit publication authority.
+
+### Live-assurance writeback — verplicht
+Wanneer een Powerhouse-recovery naar productie is gebracht, geldt voor alle chats en agents:
+- schrijf de terminale productie-identiteit en truth-boundary terug naar Brain learning, ledger, menselijke docs en System Map;
+- update relevante skills en agent/chat-contracts;
+- voer read-after-write uit op deze governance-projections;
+- hergebruik nooit een historische LIVE/GREEN-status als actuele health zonder nieuwe runtime/provider readback.
+
+Dit valt onder fingerprint `powerhouse|green-assurance|truthful-closed-loop|v1`.

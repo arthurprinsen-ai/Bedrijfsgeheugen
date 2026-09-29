@@ -106,3 +106,14 @@ Canonieke shell-integriteit vergelijkt structuur en inhoud, maar routegebonden l
 Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
 
 Green assurance voor publieke websitewijzigingen moet expliciet controleren dat de centrale shell header/footer/megamenu/navigatie én locale-controls bezit; dat NL/EN dezelfde route behoudt; dat i18n-assets versiegebonden zijn; dat exacte main gelijk is aan de productie-deploy; en dat live browser-readback NL→EN→NL op ten minste een money page en een gewone publieke route slaagt. Een groene PR of preview is niet terminal.
+
+
+## Live-borging 2026-09-29
+
+De actuele productie-authority voor deze recovery is `main` + Netlify production + externe readback. Een ready deploy op exact dezelfde `main` commit bewijst alleen deployment; functionele subketens zoals pricing en NL↔EN blijven afzonderlijke truth-gates.
+
+Permanent:
+- na iedere live recovery wordt de exacte production commit/deploy gekoppeld aan Brain learning en ledger;
+- skill, AGENTS/chat-contract, continuity-policy en System Map moeten dezelfde truth-boundary projecteren;
+- een future agent mag een eerdere live status nooit hergebruiken als actuele health zonder nieuwe readback;
+- terminale closure vereist read-after-write op de governance-writeback zelf.

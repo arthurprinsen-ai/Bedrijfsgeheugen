@@ -117,6 +117,13 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         learning:'brain/learning/2026-09-29-powerhouse-green-assurance-v1.json',
         truthContract:'config/powerhouse-truth-status-contract.json'
       }),
+      productionEvidence:Object.freeze({
+        productionMain:'204269314239ea2cc56a00a0da1ed87a5056415f',
+        netlifyDeployId:'6abbdf73c4c7d80008d9811f',
+        netlifyState:'ready',
+        netlifyContext:'production',
+        writebackLearning:'brain/learning/2026-09-29-live-assurance-writeback-v1.json'
+      }),
       invariants:Object.freeze({
         wiringIsNotGreen:true,
         staleIsNotGreen:true,
@@ -127,7 +134,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         noDuplicateRepublish:true,
         instagramMiraExactProofRequired:true,
         recomputeAfterRepair:true,
-        canonicalWritebackRequired:true
+        canonicalWritebackRequired:true,
+        liveAssuranceWriteback:true,
+        freshReadbackRequiredForCurrentGreen:true
       })
     }),
     Object.freeze({
