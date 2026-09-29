@@ -1,0 +1,28 @@
+{
+  "fingerprint": "money-page-order-conversion-i18n-cache-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Revenue-first money-page copy introduced new public Dutch strings while production requires a complete static English cache.",
+  "root_cause": "The conversion rollout changed public copy without adding the matching static English translation cache entries in the same lineage.",
+  "prevention": [
+    "Every public money-page copy change must carry matching static English cache entries in the same candidate.",
+    "Run the canonical static i18n cache completeness regression before production promotion.",
+    "Do not weaken STATIC_I18N_REQUIRE_CACHE=1; repair cache authority instead.",
+    "Terminal success still requires Netlify ready production plus live route readback."
+  ],
+  "evidence": {
+    "failed_netlify_deploy": "6abb61cc7aeb06d4b6b3cf4c",
+    "failed_source_sha": "e1062092747bb4f895142b913316c503673296b5",
+    "missing_cache_entries": 54,
+    "patch": "config/bg-static-i18n-en.d/2026-09-29-money-page-order-conversion.json"
+  },
+  "evaluation": {
+    "regression": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-seo-conversion-orders",
+    "continuity",
+    "delivery"
+  ]
+}
