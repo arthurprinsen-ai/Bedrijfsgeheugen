@@ -388,3 +388,16 @@ Required behavior:
 - never reclassify a live post to BLOCKED solely because a later exact-media gate would reject the same asset today;
 - never create a replacement for the same daily claim;
 - use stricter Mira/media rules only before the next provider write.
+
+
+## Canonical Mira identity — 29 september 2026
+Fingerprint: `instagram-canonical-mira-identity-v1`.
+
+Mira is een fictief Bedrijfsgeheugen-personage. Een persoonlijke upload/foto van de gebruiker mag nooit als Mira-reference worden gebruikt.
+
+Canoniek:
+- OpenArt fictional Mira master reference id: `Yjqu4D7v76HABNPmQPj1`;
+- iedere nieuwe Mira Reel moet in het media-job `identity_reference_id=Yjqu4D7v76HABNPmQPj1` bewijzen;
+- user-upload ids `Jt5SWKRgyK3heTqEXH4w`, `w4HhwCmX5GxL8jTGljxe`, `umWzAKt6YBeoVpHlKTtK` zijn expliciet verboden voor Mira;
+- ontbreken of afwijken van deze proof blokkeert de job vóór `VERIFYING`;
+- user photos/video mogen alleen worden gebruikt voor user-identity content wanneer de gebruiker dat expliciet vraagt; nooit als fallback voor Mira.
