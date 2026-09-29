@@ -29,7 +29,22 @@
       "observed_at": "2026-09-29T16:15:08Z"
     },
     "publisher": "supabase/functions/powerhouse-social-publisher/index.ts",
-    "config": "config/instagram-canonical-provider-identity-v3.json"
+    "config": "config/instagram-canonical-provider-identity-v3.json",
+    "live_publication": {
+      "username": "bedrijfsgeheugen.nl",
+      "account_type": "BUSINESS",
+      "provider_user_id": "28537384955950341",
+      "provider_post_id": "18105956765257858",
+      "permalink": "https://www.instagram.com/reel/Dd4MOdTEarq/",
+      "media_product_type": "REELS",
+      "provider_media_type": "VIDEO",
+      "published_at": "2026-09-29T16:29:48Z",
+      "independently_read_back": true,
+      "readback_source": "INSTAGRAM_GET_IG_MEDIA on canonical active connection",
+      "media_job_state": "LIVE_PROVEN",
+      "republish_forbidden": true
+    }
   },
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "revision": 2
 }
