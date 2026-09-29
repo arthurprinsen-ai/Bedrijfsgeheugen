@@ -163,3 +163,7 @@ Commercial website pages are an execution surface of the same Powerhouse Growth 
 Use Cialdini, loss aversion/prospect theory, Fogg, Hick-Hyman, cognitive fluency, commitment ladders, specificity and choice architecture only within truth/evidence guardrails. Optimize in this order: realized revenue -> paid orders -> qualified proposals -> qualified meetings -> qualified leads -> CTA progression -> engagement. Raw clicks, scroll depth and time-on-page are never standalone winner criteria.
 
 All changes flow through `config/seo-growth-loop.json`, `config/seo-optimization-allowlist.json`, protected delivery, production readback and outcome learning. Maximum three reversible high-confidence changes per daily cycle. Roll back on trust, accessibility, mobile-readability or qualified-conversion regression. Fake scarcity, fake urgency, fake social proof, hidden costs, confirmshaming and preselected consent are forbidden.
+
+
+### Behavioral revenue writeback closure
+De fingerprint `powerhouse-behavioral-landing-revenue-v2` is onderdeel van de bestaande Powerhouse authority. Bij materiële wijzigingen moeten runtime-config, deze skill-laag, Brain learning, `docs/brain/component-registry.json`, `platform/system-map/canonical-system-map.mjs`, menselijke change/ledger-documentatie en regressietests in dezelfde delivery-lineage synchroon blijven. Een runtime- of copywijziging zonder deze writeback is niet terminal.
