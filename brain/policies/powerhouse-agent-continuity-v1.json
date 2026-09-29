@@ -226,7 +226,8 @@
     "brain/learning/2026-09-25-candidate-type-closure-canonicalization-v1.json",
     "brain/learning/2026-09-25-browser-settled-document-request-failure-v1.json",
     "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json",
-    "brain/learning/2026-09-29-powerhouse-green-assurance-v1.json"
+    "brain/learning/2026-09-29-powerhouse-green-assurance-v1.json",
+    "brain/learning/2026-09-29-live-assurance-writeback-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -517,5 +518,21 @@
       "read_after_write"
     ],
     "terminal_rule": "GREEN_OR_LIVE_BEWEZEN_ONLY_FROM_CURRENT_REQUIRED_EVIDENCE"
+  },
+  "live_assurance_writeback_rule": {
+    "required": true,
+    "fingerprint": "powerhouse|live-assurance-writeback|2026-09-29-v1",
+    "exact_deploy_is_not_blanket_functional_proof": true,
+    "fresh_readback_required_for_current_green": true,
+    "governance_targets": [
+      "Brain learning",
+      "skills",
+      "AGENTS/chat-contract",
+      "continuity policy",
+      "development ledger",
+      "human docs",
+      "System Map"
+    ],
+    "read_after_write_required": true
   }
 }
