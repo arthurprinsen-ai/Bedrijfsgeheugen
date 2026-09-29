@@ -5,7 +5,7 @@ create or replace function public.powerhouse_materialize_mira_problem_recommenda
 returns jsonb
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = public, pg_catalog
 as $$
 declare
   s public.powerhouse_mira_problem_signals_v1%rowtype;
@@ -93,7 +93,7 @@ create or replace function public.powerhouse_select_instagram_daily_winner_v1(p_
 returns jsonb
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = public, pg_catalog
 as $$
 declare
   v_existing public.powerhouse_instagram_daily_winners_v1%rowtype;
