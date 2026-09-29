@@ -69,10 +69,11 @@ test('social publisher retains identity gate, provider reconciliation, exact rea
 test('Instagram transport is Mira-proof gated, Composio-only and bound to canonical provider identity', () => {
   assert.match(publisher, /instagram-composio-only-canonical-graph-id-v2/);
   assert.match(publisher, /INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen\.nl'/);
-  assert.match(publisher, /INSTAGRAM_CANONICAL_USER_ID='17841446582493753'/);
+  assert.match(publisher, /INSTAGRAM_CANONICAL_USER_ID='28537384955950341'/);
   assert.match(publisher, /COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED/);
   assert.match(publisher, /INSTAGRAM_GET_USER_INFO/);
-  assert.match(publisher, /ig_user_id:INSTAGRAM_CANONICAL_USER_ID/);
+  assert.match(publisher, /ig_user_id:'me'/);
+  assert.match(publisher, /ig_user_id:ctx\.providerUserId/);
   assert.match(publisher, /INSTAGRAM_POST_IG_USER_MEDIA_PUBLISH/);
   assert.match(publisher, /INSTAGRAM_GET_IG_MEDIA/);
   assert.match(publisher, /MIRA_VISIBLE_IDENTITY_PROOF_REQUIRED/);
