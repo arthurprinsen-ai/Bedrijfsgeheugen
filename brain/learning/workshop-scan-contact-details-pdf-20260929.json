@@ -1,0 +1,18 @@
+{
+  "fingerprint": "workshop-scan|contact-name-email-phone|personal-pdf-private-intake|v1",
+  "failure_class": "personal_scan_pdf_missing_contact_identity_and_phone",
+  "change": "Require contact name, email and phone for consented workshop scans, render them into the personal PDF, and persist phone only in the private portal intake and canonical portal state.",
+  "prevention_rule": "Every consented workshop scan must keep one submission_key and collect company name, contact name, email and phone. The personal PDF must show contact name/email/phone; PII must remain service-role-only and never enter aggregate benchmark or growth learning.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-workshop-scan-contact-pdf.test.mjs"
+    ]
+  },
+  "evidence": {
+    "form": "pages/scan.html",
+    "runtime": "assets/scan-workshop.js",
+    "edge": "supabase/functions/powerhouse-scan-ingest/index.ts",
+    "migration": "supabase/migrations/20260929150500_workshop_portal_intake_phone.sql",
+    "system_map": "platform/system-map/canonical-system-map.mjs#workshop-scan-customer-portal"
+  }
+}
