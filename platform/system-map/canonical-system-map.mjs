@@ -249,27 +249,36 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     }),
     Object.freeze({
       id:'seo-conversion-orders',
-      label:'SEO Conversion-to-Orders Engine',
+      label:'SEO + Behavioral Conversion-to-Orders Engine v2',
       authority:'github+netlify+supabase',
-      owner:'seo-demand',
+      owner:'seo-demand+growth-swarm',
       status:'ACTIVE_EVIDENCE_GATED',
-      inputs:Object.freeze(['Search Console evidence','DataForSEO evidence','production page state','CTA/lead/order/revenue outcomes']),
-      outputs:Object.freeze(['commercial SEO opportunity','bounded reversible money-page change','conversion outcome','learning pattern']),
+      inputs:Object.freeze(['Search Console evidence','DataForSEO evidence','production page state','visitor context','funnel state','CTA/lead/proposal/order/revenue outcomes']),
+      outputs:Object.freeze(['commercial SEO opportunity','experience decision','bounded reversible money-page change','experiment outcome','conversion outcome','learning pattern']),
       runtime:Object.freeze({
         skill:'.agents/skills/powerhouse-seo-conversion-orders/SKILL.md',
+        growthSkill:'.agents/skills/powerhouse-growth-swarm/SKILL.md',
+        persuasionSkill:'.agents/skills/powerhouse-persuasion-revenue/SKILL.md',
         growthLoop:'config/seo-growth-loop.json',
         allowlist:'config/seo-optimization-allowlist.json',
         moneyPageAuthority:'site/seo-order-map.json',
+        finalBuildAuthority:'tools/site-shell/apply-money-page-order-conversion.mjs',
         learning:'brain/learning/2026-09-29-seo-conversion-orders-v1.json'
       }),
+      behavioralModels:Object.freeze(['Cialdini','loss-aversion','prospect-theory','Fogg Behavior Model','Hick-Hyman','cognitive-fluency','commitment-ladder','specificity','choice-architecture']),
+      optimizationOrder:Object.freeze(['realized revenue','paid orders','qualified proposals','qualified meetings','qualified leads','CTA progression','engagement']),
       invariants:Object.freeze({
         trafficIsNotTerminalOutcome:true,
         existingCanonicalMoneyPageFirst:true,
         maxDailyAutonomousChanges:3,
         reversibleEvidenceGatedOnly:true,
+        contextualPageCompositionAllowed:true,
+        rollbackOnTrustAccessibilityOrQualifiedConversionRegression:true,
         productionReadbackRequired:true,
         revenueClaimRequiresObservedOutcome:true,
-        noDoorwayThinSpamOrDarkPatterns:true
+        noDoorwayThinSpamOrDarkPatterns:true,
+        noFakeScarcityUrgencySocialProofHiddenCostsConfirmshamingOrPreselectedConsent:true,
+        oneCanonicalCroRevenueStack:true
       })
     }),
     Object.freeze({
