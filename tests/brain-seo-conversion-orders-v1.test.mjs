@@ -4,6 +4,9 @@ import { readFileSync } from 'node:fs';
 
 const growth=JSON.parse(readFileSync('config/seo-growth-loop.json','utf8'));
 const allow=JSON.parse(readFileSync('config/seo-optimization-allowlist.json','utf8'));
+const systemMap=readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
+const skill=readFileSync('.agents/skills/powerhouse-seo-conversion-orders/SKILL.md','utf8');
+const registry=readFileSync('docs/brain/component-registry.json','utf8');
 
 test('SEO growth optimizes qualified commercial outcomes rather than raw traffic',()=>{
   assert.match(growth.optimization.objective,/qualified organic demand/i);
@@ -43,4 +46,13 @@ test('SEO/CRO guardrails block low-value or deceptive growth tactics',()=>{
   assert.ok((allow.allowed_actions||[]).includes('cta-friction-reduction'));
   assert.ok((allow.allowed_actions||[]).includes('risk-reversal'));
   assert.ok((allow.allowed_actions||[]).includes('schema-freshness'));
+});
+
+test('SEO conversion system map and skill projection stay discoverable',()=>{
+  assert.match(systemMap,/id:'seo-conversion-orders'/);
+  assert.match(systemMap,/powerhouse-seo-conversion-orders\/SKILL\.md/);
+  assert.match(systemMap,/maxDailyAutonomousChanges:3/);
+  assert.match(skill,/Systeemkaart- en documentatieborging/);
+  assert.match(skill,/WRITEBACK_INCOMPLETE/);
+  assert.match(registry,/CAPABILITY_SEO_CONVERSION_ORDERS/);
 });
