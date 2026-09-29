@@ -11,6 +11,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-production-i18n-route-link-readback.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-i18n-route-link-readback.test.mjs"
     ]
   },
   "test_evidence": [
