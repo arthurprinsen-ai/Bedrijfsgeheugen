@@ -206,8 +206,8 @@
       ],
       "funnel_stage": "consider",
       "primary_cta": {
-        "action": "zelfscan",
-        "url": "https://www.bedrijfsgeheugen.nl/zelfscan"
+        "action": "frisse-blik",
+        "url": "https://www.bedrijfsgeheugen.nl/frisse-blik"
       },
       "supporting_routes": [
         "https://www.bedrijfsgeheugen.nl/ai-act",
