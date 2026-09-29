@@ -23,3 +23,11 @@ test('homepage and build authority preserve Bedrijfslek as primary acquisition p
   assert.match(build,/Ontdek gratis waar je bedrijf lekt/i);
   assert.match(build,/Geen verplichting/i);
 });
+
+
+test('V18 generator cannot overwrite the standalone Bedrijfslek route',()=>{
+  const views=read('tools/v18-views-lijst.mjs');
+  assert.doesNotMatch(views,/view:\s*['"]selfscan['"]/i);
+  assert.match(views,/Bedrijfslek-productroute/i);
+  assert.match(views,/V18-generator mag die standalone acquisitieroute niet overschrijven/i);
+});
