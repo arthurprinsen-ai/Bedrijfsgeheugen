@@ -420,3 +420,27 @@ Fingerprint: `instagram-live-proven-20260929-v1`.
 - Current canonical evidence: @bedrijfsgeheugen.nl, BUSINESS, provider user id `28537384955950341`, post id `18105956765257858`, permalink `https://www.instagram.com/reel/Dd4MOdTEarq/`.
 - Exact final media SHA-256: `1624616152e89468579fd110db7e68d1900b39bb0309db40acffc7b95000dfa7`; identity confidence 0.93; continuity confidence 0.93.
 - After LIVE_PROVEN only outcome collection/learning is allowed; republish/replacement is forbidden for the same daily claim.
+
+
+## Public human-problem source loop — 29 september 2026
+
+Fingerprint: `mira-public-complaint-source-loop-v1`.
+
+Mira Instagram is personal/daily-life content sourced from public evidence of real human friction. It is not a generic Bedrijfsgeheugen sales feed.
+
+Canonical one-loop lineage:
+
+`public complaint/blog/forum signal -> powerhouse_mira_problem_signals_v1 -> source quality + freshness + semantic dedupe -> source_backed_private_problem recommendation -> immutable powerhouse_instagram_daily_winners_v1 -> OpenArt Mira Reel job -> exact Mira proof -> canonical social publisher -> Instagram provider readback -> social_posts -> metric snapshots -> social learning evaluation -> powerhouse_mira_problem_lineage_v1 outcome/learning writeback -> next selection`.
+
+Hard rules:
+- source discovery uses public blogs, forums, consumer complaint media and other public lived-experience sources; source URLs are retained as evidence;
+- a support/contact/FAQ page is not a complaint merely because it contains words such as app, subscription or customer service;
+- winner selection fails closed unless the recommendation is source-backed and carries `source_signal_id` plus non-empty `source_lineage`;
+- exact source/hash reuse is blocked for 90 days; the same broad topic may recur only with a materially different source/story and not on consecutive nearby days;
+- calendar seeds cannot outrank or substitute for a missing public human-problem signal;
+- no forced business bridge, corporate moral or portal/scan CTA is required in Mira copy;
+- publication remains Reel-only, fresh OpenArt, canonical fictional Mira identity, exact-media proof and provider-readback controlled;
+- publication, metrics and social-learning evaluation write back to the same `powerhouse_mira_problem_lineage_v1` row;
+- do not create a second research truth store or parallel Instagram winner path.
+
+Runtime scheduler: the Mira problem radar prepares the next Amsterdam publication day before the Instagram media/publication lane executes.
