@@ -6,7 +6,7 @@ const workflowPath = new URL('../.github/workflows/production-release-readback.y
 
 test('production readback handles no-op merge commits without calling the non-empty classifier', async () => {
   const workflow = await readFile(workflowPath, 'utf8');
-  assert.match(workflow, /const risk=changedPaths\.length\s*\?\s*classifyWebsiteRelease/);
+  assert.match(workflow, /const risk=runtimeChangedPaths\.length\s*\?\s*classifyWebsiteRelease/);
   assert.match(workflow, /:\s*\{lane:'no-op',affected_routes:\[\]\}/);
   assert.match(workflow, /if\(routes\.length===0\).*\['\/'\]/s);
 });
