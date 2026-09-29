@@ -39,9 +39,13 @@ test('explicit user deletion permits one new-story replacement only',()=>{
 test('runtime publisher blocks retired printer story before provider write',()=>{
   assert.match(publisher,/function assertLinkedInCompanyContentPolicy/);
   assert.match(publisher,/LINKEDIN_COMPANY_RETIRED_STORY_FAMILY:printer/);
-  const guard=publisher.indexOf('assertLinkedInCompanyContentPolicy(commentary)');
-  const create=publisher.indexOf("LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary");
-  assert.ok(guard>0);
+  const start=publisher.indexOf('async function publishLinkedInCompanyViaComposio');
+  const end=publisher.indexOf('async function readLinkedInCompanyPostViaComposio',start);
+  const companyPublisher=publisher.slice(start,end);
+  const guard=companyPublisher.indexOf('assertLinkedInCompanyContentPolicy(commentary)');
+  const create=companyPublisher.indexOf("LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary");
+  assert.ok(start>0);
+  assert.ok(guard>=0);
   assert.ok(create>guard);
 });
 
