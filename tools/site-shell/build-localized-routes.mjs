@@ -516,5 +516,5 @@ console.log('STATIC_I18N_ROUTES',JSON.stringify({
   translatedRoutes,
   partialRoutes,
   untranslatedRefs,
-  runtimeFallback:untranslatedRefs > 0
+  runtimeFallback:!translations || untranslatedRefs > 0
 }));
