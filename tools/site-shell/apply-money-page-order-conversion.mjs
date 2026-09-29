@@ -55,7 +55,7 @@ function transformHome(input) {
   scope = primary.html;
 
   const secondary = replaceAnchorByText(scope, /^(?:Bereken je verlies|Bekijk prijzen & aanpak)$/i, {
-    href: 'https://www.bedrijfsgeheugen.nl/portal-v2/',
+    href: 'https://www.bedrijfsgeheugen.nl/product',
     text: 'Bekijk het portaal',
     attr: 'data-money-secondary',
   });
