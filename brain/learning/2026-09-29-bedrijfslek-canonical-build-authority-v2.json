@@ -12,8 +12,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "production /zelfscan showed 'Beantwoord zes vragen' while main/zelfscan.html contained the 12-question Bedrijfslek",
-      "exact Netlify build-parity reproduced the mismatch"
+      "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
     ]
   },
   "evidence": {
@@ -24,6 +23,7 @@
       ".github/workflows/lane-website.yml",
       "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
     ],
-    "expected_outcome": "Final built and live /zelfscan contains 12-question Bedrijfslek and does not contain 'Beantwoord zes vragen'."
+    "expected_outcome": "Final built and live /zelfscan contains 12-question Bedrijfslek and does not contain 'Beantwoord zes vragen'.",
+    "production_observation": "Before the v2 fix, public /zelfscan exposed the legacy six-question artifact while main contained the canonical twelve-question Bedrijfslek; exact build-parity reproduced the overwrite."
   }
 }
