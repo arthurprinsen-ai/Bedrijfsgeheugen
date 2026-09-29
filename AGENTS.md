@@ -751,3 +751,9 @@ Alle chats/agents erven:
 Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
 
 Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: header, footer, mega-menu, primaire navigatie en publieke NL/EN-switching zijn één gedeelde CMS/site-shell-capability. Pagina-lokale forks zijn verboden. NL/EN behoudt altijd dezelfde functionele route (`/x ↔ /en/x`; homepage `/ ↔ /en/`). De build-time shell is primary authority; runtime normalisatie is alleen een defensieve borging. I18n-assets zijn versiegebonden om stale browser/CDN-runtime te voorkomen. Een websitewijziging is pas terminal wanneer build/static/browser-gates groen zijn, protected merge is gedaan, Netlify exact-current-main toont en live browser-readback de NL→EN→NL roundtrip op representatieve routes bewijst. De gebruiker krijgt geen tussentijdse CI/deploy-status; alleen terminale uitkomst of echte harde grens.
+
+
+## Instagram runtime identity inheritance
+Fingerprint: `instagram-runtime-canonical-user-id-v1`.
+
+Alle agents/chats gebruiken voor Instagram uitsluitend de actuele canonical Composio connection voor `bedrijfsgeheugen.nl`; identity wordt runtime via `me` gelezen en de teruggelezen provider user id wordt doorgegeven aan create/publish. Geen stale hardcoded ID, geen fallback naar persoonlijke Instagram, Buffer of Make.
