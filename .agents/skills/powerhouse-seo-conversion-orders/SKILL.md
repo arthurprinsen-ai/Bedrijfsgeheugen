@@ -104,3 +104,45 @@ Een patroon mag pas van TESTING/CANDIDATE naar PROVEN wanneer:
 - downstream outcome-data beschikbaar is;
 - geen omzet wordt geclaimd zonder waargenomen order/revenue evidence;
 - regressie- en guardrailtests groen blijven.
+
+
+## Behavioral landing-page decision engine v2
+Elke money page gebruikt dezelfde canonieke revenue-loop; geen parallel CRO-systeem.
+
+Verplichte gedragsprincipes, alleen waar ze de bezoeker helpen beslissen:
+- Cialdini: reciprocity, authority, social proof, commitment/consistency, liking/unity;
+- loss aversion en prospect-theory framing, zonder angstmarketing;
+- Fogg Behavior Model: motivatie x ability x prompt;
+- Hick-Hyman: beperk keuze op beslismomenten;
+- cognitive fluency: één boodschap per sectie, scanbare taal en duidelijke hiërarchie;
+- progressive disclosure en commitment ladder;
+- specificity effect en proof-next-to-claim;
+- Zeigarnik/open-loop alleen als nieuwsgierigheid niet misleidt;
+- choice architecture zonder defaults die toestemming of aankoop afdwingen.
+
+### Canonieke sectievolgorde
+attention -> relevance -> problem -> consequence -> desired outcome -> mechanism -> proof -> risk removal -> action.
+
+### Autonome beslissingen
+Powerhouse mag op basis van intentie, bron, funnelstadium en gemeten gedrag zelfstandig kiezen:
+- hero/message match;
+- CTA en micro-commitment;
+- volgorde van bewijs en bezwaren;
+- risk reversal;
+- pricing-anchor copy;
+- section order;
+- progressive disclosure;
+- scan-versus-gesprek route.
+
+### Optimalisatievolgorde
+realized revenue -> paid orders -> qualified proposals -> qualified meetings -> qualified leads -> CTA progression -> engagement.
+
+Klikratio, scroll depth en time-on-page zijn nooit zelfstandig wincriteria.
+
+### Experiment governance
+- Maximaal de bestaande drie reversibele high-confidence wijzigingen per dagelijkse cyclus.
+- Challenger alleen wanneer hypothese, metric, evidence en rollback vooraf vastliggen.
+- Winnaar pas promoten met voldoende bewijs; terminale sales-outcomes wegen zwaarder dan microconversies.
+- Bij onvoldoende sample: incumbent behouden of een begrensde challenger testen.
+- Regressie op trust, accessibility, mobile readability of gekwalificeerde conversie = rollback.
+- Dark patterns blijven verboden: geen fake urgency/scarcity/social proof, hidden costs, preselected consent of confirmshaming.
