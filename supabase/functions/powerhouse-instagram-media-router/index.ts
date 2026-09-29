@@ -31,6 +31,39 @@ Deno.serve(async req=>{
  const active=new Set((ints||[]).filter((x:any)=>['actief','active','connected','ready'].includes(clean(x.status).toLowerCase())).map((x:any)=>clean(x.integration).toLowerCase()));
  const ready=(p:string)=>p==='openart'?(active.has('openart')||active.has('openart_mcp')):active.has(p);
  const historical=!!clean(ob?.external_id);
+ const providerTerminal=historical
+  && ['PUBLISHED','LIVE_PROVEN','MEASURED','LEARNED'].includes(clean(ob?.status).toUpperCase())
+  && (
+    ob?.evidence?.provider_publication_ack_verified===true
+    || ob?.evidence?.provider_truth_verified===true
+    || ob?.evidence?.terminal_provider_side_effect===true
+  );
+
+ if(providerTerminal){
+  const currentAsset={...(job?.asset_manifest||{})};
+  if(!clean(currentAsset.identity_reference_id)&&clean(ob?.evidence?.canonical_mira_identity)){
+    currentAsset.identity_reference_id=clean(ob.evidence.canonical_mira_identity);
+  }
+  const currentProof={
+    ...(job?.proof_manifest||{}),
+    provider_post_id:clean(ob.external_id),
+    permalink:clean(ob?.evidence?.permalink)||clean(job?.proof_manifest?.permalink)||null,
+    instagram_user_id:clean(ob?.evidence?.instagram_user_id)||clean(ob?.evidence?.provider_node_id)||null,
+    provider_node_id:clean(ob?.evidence?.provider_node_id)||clean(ob?.evidence?.instagram_user_id)||null,
+    provider_truth_verified:true,
+    provider_publication_ack_verified:true,
+    terminal_provider_side_effect:true,
+    republish_forbidden:true,
+    terminality_contract:'social-provider-write-terminal-v1'
+  };
+  const row={tenant_id:'canonical',publication_date:runDate,channel:'instagram',post_type:postType,status:'LIVE_PROVEN',required_provider:policy?.required_provider||null,
+   selected_provider:job?.selected_provider||clean(ob?.evidence?.media_provider)||null,
+   asset_manifest:currentAsset,proof_manifest:currentProof,replacement_of_external_id:null,republish_forbidden:true,
+   provider_connection_state:'LIVE_PROVEN',attempts:job?.attempts||0,last_error:null,
+   next_action:'Collect outcomes only; terminal provider side effect is authoritative. Never republish.',updated_at:new Date().toISOString()};
+  await db.from('powerhouse_instagram_media_jobs_v1').upsert(row,{onConflict:'tenant_id,publication_date,channel'});
+  return json({ok:true,ready:false,terminal:true,runDate,postType,status:row.status,republish_forbidden:true,external_id:ob.external_id});
+ }
 
  if(historical&&(ob?.status==='BLOCKED'||ob?.evidence?.republish_forbidden===true)){
   const sameReplacement=job?.status==='REPLACEMENT_REQUIRED'&&clean(job?.replacement_of_external_id)===clean(ob.external_id);
