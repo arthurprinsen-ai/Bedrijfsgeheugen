@@ -52,7 +52,7 @@ function transformHome(input) {
   scope = primary.html;
 
   const secondary = replaceAnchorByText(scope, /^Bereken je verlies$/i, {
-    href: 'https://www.bedrijfsgeheugen.nl/portaal/demo',
+    href: 'https://www.bedrijfsgeheugen.nl/portal-v2/',
     text: 'Bekijk het portaal',
     attr: 'data-money-secondary',
   });
