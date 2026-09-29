@@ -16,7 +16,13 @@
     "patch": "config/bg-static-i18n-en.d/2026-09-29-money-page-order-conversion.json"
   },
   "evaluation": {
-    "regression": [
+    "historical_replay": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
+    ],
+    "canary": [
       "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
     ]
   },
@@ -24,5 +30,12 @@
     "powerhouse-seo-conversion-orders",
     "continuity",
     "delivery"
-  ]
+  ],
+  "failure_class": "PRODUCTION_I18N_CACHE_PREMERGE_GAP",
+  "compiler": {
+    "failure_class": "PRODUCTION_I18N_CACHE_PREMERGE_GAP",
+    "scope": "WEBSITE_PRODUCTION_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
 }
