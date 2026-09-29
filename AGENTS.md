@@ -608,3 +608,23 @@ Voor alle huidige en toekomstige chats, agents, scheduled runs en commerciële w
 - een chat of agent mag niet stoppen bij advies wanneer de wijziging veilig uitvoerbaar is; terminal is production readback + writeback, of een echte `BLOCKED_HARD_BOUNDARY`.
 
 Canonieke skill: `.agents/skills/powerhouse-seo-conversion-orders/SKILL.md`.
+
+
+## Personal LinkedIn daily creative loop — inherited by all chats and agents
+
+Fingerprint: `personal-linkedin-daily-creative-loop-v1`.
+
+Alle huidige en toekomstige chats, agents, schedulers en contentflows die persoonlijk LinkedIn aanraken erven deze Brain-regel:
+- Powerhouse/Brain kiest dagelijks autonoom uit meerdere materieel verschillende, herkenbare alledaagse menselijke problemen/observaties;
+- vóór generatie geldt historische semantische dedupe op onderwerp, situatie, conflict, grap, voorbeeld, hoek én moraal; paraphrase telt nooit als nieuw;
+- topic-fatigue wordt zwaar bestraft en de loop houdt expliciet exploration-capaciteit voor nieuwe dagelijkse probleemcategorieën;
+- persoonlijke content blijft vrij van Bedrijfsgeheugen, consultancy, AI/data-businessmoraal, sales-CTA of corporate thought leadership;
+- geen persoonlijke gebeurtenis wordt verzonnen; first-person claims vereisen evidence;
+- provider-create + duurzaam extern ID consumeert de story family onmiddellijk voor toekomstige runs, ook wanneer latere readback 401/403 geeft;
+- outcome-learning wordt op 24h/72h/7d teruggeschreven waar providerdata beschikbaar is en stuurt de volgende dag alleen mechanismekeuze, nooit hergebruik van een verbruikte storyline;
+- actuele machine-authority staat in `brain/policies/personal-linkedin-daily-creative-loop-v1.json` en is opgenomen in de verplichte BRAIN chat-learning preflight.
+
+De vaste loop is:
+`SCAN -> CANDIDATES -> SEMANTIC DEDUPE/FATIGUE -> RANK -> TRUTH/PRIVACY/IDENTITY -> GENERATE -> FINAL DUPLICATE GATE -> PUBLISH -> PROVIDER ACK/READBACK -> OUTCOME -> LEARN -> NEXT-DAY DECISION`.
+
+Bekend verbruikt: `printer`; vanaf 2026-09-29 ook `whatsapp-group-chaos` door LinkedIn provider-create `urn:li:share:7510601516681064448`.
