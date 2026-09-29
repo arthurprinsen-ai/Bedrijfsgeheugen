@@ -1,17 +1,41 @@
 {
-  "id": "linkedin-company-historical-dedupe-v1",
-  "date": "2026-09-29",
-  "status": "PROPOSED",
-  "scope": "powerhouse-social-publisher",
-  "failure": "A LinkedIn company post could repeat a previous-day story because the durable story fingerprint was only generated for linkedin_personal and the company body contained a date-varying measured URL.",
-  "root_cause": [
-    "publicationStoryFingerprint returned null for linkedin_company",
-    "company campaign URLs varied by publication date and could weaken text-similarity matching"
-  ],
+  "fingerprint": "linkedin-company|historical-dedupe|v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "LINKEDIN_COMPANY_HISTORICAL_DUPLICATE_ESCAPE",
+  "problem": "A Bedrijfsgeheugen LinkedIn company story could repeat on a later day even though the atomic single-writer guard prevented same-claim concurrency duplicates.",
+  "root_cause": "The durable story fingerprint was only generated for linkedin_personal. LinkedIn company therefore depended on text similarity while its measured campaign URL changes by publication date and can weaken historical matching.",
+  "fix": "Generate the durable story fingerprint for linkedin_company as well and canonicalize company text before uniqueness reservation by removing URLs, hashtags, date markers and whitespace noise.",
   "prevention": [
-    "derive durable story fingerprints for both LinkedIn personal and company",
-    "strip URLs, hashtags, date markers and whitespace noise before company historical uniqueness reservation",
-    "keep the existing atomic publication claim and provider-side-effect terminality unchanged"
+    "Apply historical story fingerprints to both linkedin_personal and linkedin_company.",
+    "Canonicalize date-varying measured-link noise before company uniqueness reservation.",
+    "Fail closed before any provider write when an exact or near-duplicate historical story is detected.",
+    "Preserve the existing atomic claim, capability consumption and provider-side-effect terminality."
   ],
-  "regression_test": "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs"
+  "evidence": {
+    "affected_function": "supabase/functions/powerhouse-social-publisher/index.ts",
+    "regression": "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs",
+    "company_channel": "linkedin_company",
+    "duplicate_gate": "powerhouse_reserve_unique_publication_v1"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "LINKEDIN_COMPANY_HISTORICAL_DUPLICATE_ESCAPE",
+    "scope": "SOCIAL_PUBLICATION_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "linkedin-composio-publisher",
+    "powerhouse-continuity"
+  ]
 }
