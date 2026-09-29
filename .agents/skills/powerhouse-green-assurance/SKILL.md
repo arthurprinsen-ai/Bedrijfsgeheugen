@@ -82,3 +82,10 @@ Specifiek voor pricing:
 `normaliseer-site-ui → pricing restore → Bedrijfslek restore → apply-i18n → localized routes`.
 
 De productie-gate moet lifecycle, plan, billing en NL→EN→NL daadwerkelijk bedienen.
+
+
+## Same-route locale authority
+
+Fingerprint: `i18n|mobile-switcher|same-route-authority|2026-09-29-v1`.
+
+Voor publieke NL/EN-switching geldt permanent: taal wisselen verandert alleen de locale, niet de functionele route. Dus `/x ↔ /en/x`; alleen de homepage gebruikt `/ ↔ /en/`. Build-time injectors moeten route-aware zijn en bestaande stale switchers herschrijven. Production green vereist een echte NL→EN→NL browser-roundtrip.
