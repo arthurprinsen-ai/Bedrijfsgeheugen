@@ -156,3 +156,10 @@ Iedere materiële live-promotie schrijft in dezelfde obligation-lineage terug na
 Fingerprint: `i18n|duplicate-mobile-controls|stale-route-link|2026-09-29-v1`.
 
 Publieke pagina's kunnen meerdere mobile-nav hosts bevatten. De i18n build mag daarom nooit alleen de eerste `data-bg-language-switcher="mobile"` normaliseren. Alle bestaande mobiele taalcontrols moeten dezelfde logische route projecteren: `/x ↔ /en/x`. Een stale tweede control is functionele route-drift en blokkeert production green.
+
+
+## Loop-integrity receipt bridge v3
+
+Fingerprint: `powerhouse|loop-assurance|receipt-bridge|v3`.
+
+Before calling a loop GREEN, read `public.powerhouse_loop_integrity_health_v1` and the per-loop assurance state. The five-minute assurance owner projects only canonical cron/runtime evidence into receipts. It does not manufacture outcome, learning or guard proof. For critical loops, zero fresh stage evidence is RED, not indefinite AMBER. Preserve `brain_obligations` immutable identity during recovery.
