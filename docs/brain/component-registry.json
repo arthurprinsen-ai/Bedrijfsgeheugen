@@ -1597,7 +1597,10 @@
       "chat_agent_inheritance": "commercial-website|orders-first|existing-pages|v1",
       "current_primary_qualification": "ungated Bedrijfslek /zelfscan on homepage; Frisse Blik remains contextual on other money pages",
       "public_copy_requires_same_lineage_static_i18n": true,
-      "final_build_artifact_authority": "tools/site-shell/apply-money-page-order-conversion.mjs"
+      "final_build_artifact_authority": "tools/site-shell/apply-money-page-order-conversion.mjs",
+      "bedrijfslek_page_authority": "zelfscan.html",
+      "bedrijfslek_v18_exclusion": "tools/v18-views-lijst.mjs",
+      "bedrijfslek_single_route_owner": true
     }
   ]
 }

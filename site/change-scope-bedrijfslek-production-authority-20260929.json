@@ -1,0 +1,24 @@
+{
+  "routes": [
+    "/zelfscan"
+  ],
+  "change_class": "production-route-authority-recovery",
+  "preserve": [
+    "standalone Bedrijfslek product experience",
+    "ungated complete result",
+    "full benchmark",
+    "three quick wins",
+    "absolute portal and checkout links",
+    "canonical shell",
+    "privacy and truth guardrails"
+  ],
+  "hypothesis": "Removing selfscan from the V18 generated-view registry prevents production builds from overwriting the standalone Bedrijfslek order-magnet route.",
+  "target_metric": "production /zelfscan preserves Bedrijfslek -> portal/demo/order progression",
+  "rollback_condition": "build regression, route missing, canonical shell regression or live /zelfscan not matching standalone Bedrijfslek",
+  "evidence_refs": [
+    "production readback after merge 9a78a9679849d0d5e8e68574df4cb2bb8d001794",
+    "tools/v18-views-lijst.mjs",
+    "tools/bouw-v18-views.mjs",
+    "powerhouse-bedrijfslek-product-led-acquisition-v1"
+  ]
+}

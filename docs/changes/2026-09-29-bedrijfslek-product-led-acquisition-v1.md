@@ -18,3 +18,6 @@ LinkedIn / SEO / direct verkeer → homepage → Bedrijfslek → directe waarde 
 
 ## Guardrails
 Benchmark en score zijn indicatief. Geen onbewezen omzetclaim, urgentie of social proof. De scan mag geen persoonsgegevens afdwingen voordat de eerste volledige waarde geleverd is.
+
+## Production-authority recovery
+De eerste production readback liet zien dat de V18-viewgenerator `zelfscan.html` opnieuw genereerde en daarmee de standalone Bedrijfslek-bron overschreef. De root cause was dubbele route-eigendom. `selfscan` is daarom uit `tools/v18-views-lijst.mjs` verwijderd. Vanaf nu is `zelfscan.html` de enige pagina-authority voor `/zelfscan`; de V18-generator mag deze route niet meer schrijven. Een regressietest blokkeert herintroductie.

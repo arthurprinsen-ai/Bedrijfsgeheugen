@@ -155,3 +155,9 @@ Fingerprint: `seo-cro-bedrijfslek-value-first-v1`.
 Voor de homepage is de primaire kwalificatie vanaf deze wijziging de ungated Bedrijfslek-ervaring op `/zelfscan`, niet eerst een afspraak. De bezoeker moet vóór leadcapture voldoende waarde krijgen om zelfstandig relevantie te beoordelen. De vaste volgorde is: herkenbaar probleem -> Bedrijfslek -> directe score/risico/quick wins -> portaal/demo/orderkeuze -> outcome learning. Geen verplichte leadform vóór de eerste volledige uitslag. Andere bestaande money pages mogen hun Frisse Blik-pad behouden wanneer dat intent-match technisch of commercieel beter is.
 
 De final-build authority `tools/site-shell/apply-money-page-order-conversion.mjs` en regressietest `tests/seo-money-page-order-conversion-v2.test.mjs` moeten deze homepage-uitzondering expliciet afdwingen.
+
+
+## Bedrijfslek route authority recovery — 29 september 2026
+Fingerprint: `powerhouse-bedrijfslek-product-led-acquisition-v1` revision 2.
+
+De route `/zelfscan` is een standalone product-led acquisitieroute met `zelfscan.html` als enige pagina-authority. De V18-generator mag `/zelfscan` niet overschrijven: `selfscan` hoort niet in `tools/v18-views-lijst.mjs`. Iedere build- of CRO-wijziging die deze route opnieuw door `tools/bouw-v18-views.mjs` laat genereren is een route-owner collision en moet fail-closed blokkeren.
