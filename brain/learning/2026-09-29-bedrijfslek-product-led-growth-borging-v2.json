@@ -40,5 +40,40 @@
     "platform/system-map/canonical-system-map.mjs",
     "docs/brain/component-registry.json",
     "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+  ],
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v2",
+  "area": "GROWTH",
+  "obligation_id": "bedrijfslek-product-led-growth-borging-v2",
+  "problem": "The live Bedrijfslek growth mechanisms were not yet projected as one permanent inherited contract across agents, chats, relevant skills and the canonical System Map.",
+  "root_cause": "Runtime implementation, basic learning and human documentation existed after PR #3301, but agent/chat inheritance and multi-skill/System Map discoverability were incomplete.",
+  "fix": "Project the value-before-PII Bedrijfslek → Mini → teamchallenge → portal/order loop into AGENTS, Growth Swarm, SEO/CRO, Continuity, System Map, component registry, Brain learning, docs, ledger and regression evidence.",
+  "failed_approaches": [
+    "Treating a merged page feature plus one learning file as sufficient permanent borging.",
+    "Allowing future chats to reconstruct the growth concept from conversational context instead of repository authority."
+  ],
+  "compiler": {
+    "failure_class": "GROWTH_GOVERNANCE_PROJECTION_DRIFT",
+    "scope": "GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+    ]
+  },
+  "enforcement": [
+    "AGENTS.md",
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+    ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "docs/brain/component-registry.json",
+    "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
   ]
 }
