@@ -407,6 +407,40 @@
         "45_day_source_or_topic_reuse_block",
         "outcome_writeback_required"
       ]
+    },
+    {
+      "id": "powerhouse-source-backed-outbound-spine",
+      "kind": "cross-channel-evidence-spine",
+      "mode": "scheduled_and_event_driven",
+      "contract": "powerhouse-source-backed-all-channels-v1",
+      "source_classes": [
+        "public_daily_life_friction",
+        "mkb_problem_radar",
+        "search_intent",
+        "current_external_signal",
+        "account_specific_public_trigger",
+        "relationship_context",
+        "predictive_signal",
+        "reply_learning"
+      ],
+      "downstream": [
+        "linkedin_personal",
+        "linkedin_company",
+        "blog",
+        "instagram_company",
+        "email",
+        "linkedin_dm",
+        "powerhouse_outbound_source_lineage_v1"
+      ],
+      "rules": [
+        "evidence_first",
+        "channel_native_transformation",
+        "identity_truth_gate",
+        "provider_readback_required",
+        "outcome_writeback_required",
+        "static_calendar_fallback_only",
+        "no_fabricated_personal_or_account_claims"
+      ]
     }
   ]
 }
