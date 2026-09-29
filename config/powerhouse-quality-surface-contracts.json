@@ -632,6 +632,13 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_refresh_source_backed_outbound_assurance_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260929222500_powerhouse_source_backed_outbound_loop_assurance_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_refresh_trigger_based_mkb_acquisition_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260924131500_trigger_based_mkb_acquisition_runtime_v1.sql",
