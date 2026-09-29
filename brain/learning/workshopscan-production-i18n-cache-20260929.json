@@ -8,7 +8,7 @@
   "prevention_rule": "Any new public Dutch copy must add or reuse deterministic English cache entries in config/bg-static-i18n-en.json or config/bg-static-i18n-en.d before a cache-required production build.",
   "evaluation": {
     "historical_replay": [
-      "tools/site-shell/build-localized-routes.mjs"
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
     ]
   },
   "evidence": {
