@@ -1,0 +1,32 @@
+{
+  "fingerprint": "instagram-current-user-identity-preflight-v1",
+  "date": "2026-09-29",
+  "problem": "The canonical Instagram Reel passed all Mira media gates but the publisher failed before provider write because INSTAGRAM_GET_USER_INFO was called with the legacy Instagram Business user id as a direct node lookup.",
+  "root_cause": "The Composio Instagram Login connection exposes a connection node id and a separate Graph user_id. Identity preflight queried the legacy Graph id directly and then collapsed id/user_id into one field, causing a 400 even though the canonical bedrijfsgeheugen.nl BUSINESS connection was active.",
+  "prevention": "Resolve the authenticated Instagram account with ig_user_id='me', read both id and user_id, validate user_id against the canonical Graph ID, validate username independently, require BUSINESS account type, and use the same selected canonical connection for publish and readback.",
+  "compiler": {
+    "failure_class": "INSTAGRAM_IDENTITY_PREFLIGHT_SCHEMA_DRIFT",
+    "scope": "SOCIAL_PUBLISHER",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-current-user-identity-preflight-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-current-user-identity-preflight-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-current-user-identity-preflight-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "live_media_id": "18105956765257858",
+    "live_permalink": "https://www.instagram.com/reel/Dd4MOdTEarq/",
+    "provider_username": "bedrijfsgeheugen.nl",
+    "provider_user_id": "17841446582493753",
+    "connection_node_id": "28537384955950341",
+    "live_readback": true
+  }
+}
