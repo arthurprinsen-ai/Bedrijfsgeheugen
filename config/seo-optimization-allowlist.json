@@ -16,7 +16,16 @@
     "faq-objection",
     "schema-freshness",
     "conversion-path",
-    "cta-friction-reduction"
+    "cta-friction-reduction",
+    "section-order",
+    "proof-placement",
+    "trust-block",
+    "benefit-feature-order",
+    "choice-reduction",
+    "commitment-step",
+    "loss-gain-framing",
+    "pricing-anchor-copy",
+    "progressive-disclosure"
   ],
   "auto_publish_requires": [
     "no-new-factual-claim",
@@ -34,7 +43,13 @@
     "security-certification",
     "rating",
     "review",
-    "market-leadership-claim"
+    "market-leadership-claim",
+    "fake-scarcity",
+    "fake-urgency",
+    "fake-social-proof",
+    "hidden-cost",
+    "preselected-consent",
+    "confirmshaming"
   ],
   "candidate_required_fields": [
     "action",
@@ -49,5 +64,14 @@
     "max_auto_changes_per_daily_cycle": 3,
     "reversible_only": true
   },
-  "no_change_rule": "If evidence does not support a material user or commercial improvement, publish nothing."
+  "no_change_rule": "If evidence does not support a material user or commercial improvement, publish nothing.",
+  "cro_decision_requirements": [
+    "clear-user-benefit",
+    "one-primary-business-hypothesis",
+    "measurable-downstream-event",
+    "reversible-change",
+    "truthful-visible-claim",
+    "no-dark-pattern",
+    "preserve-accessibility-and-mobile-readability"
+  ]
 }
