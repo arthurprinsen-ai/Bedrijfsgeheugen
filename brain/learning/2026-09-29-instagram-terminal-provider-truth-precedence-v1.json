@@ -1,0 +1,23 @@
+{
+  "fingerprint": "instagram-terminal-provider-truth-precedence-v1",
+  "date": "2026-09-29",
+  "problem": "The Instagram media router rewrote a verified live publication from LIVE_PROVEN to REPLACEMENT_REQUIRED.",
+  "root_cause": "The router treated any historical external_id combined with republish_forbidden as replacement-required before checking terminal provider acknowledgement/readback.",
+  "prevention": "Terminal provider truth has precedence. If external_id exists and provider ack/readback/terminal-side-effect is verified, upsert media job as LIVE_PROVEN and prohibit replacement. Replacement logic only applies to historical unproven/blocked side effects.",
+  "compiler": {
+    "failure_class": "POST_PUBLICATION_STATE_DIVERGENCE",
+    "scope": "INSTAGRAM_MEDIA_ROUTER",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-terminal-provider-truth-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "runtime": "supabase/functions/powerhouse-instagram-media-router/index.ts",
+    "provider_post_id": "18105956765257858",
+    "permalink": "https://www.instagram.com/reel/Dd4MOdTEarq/"
+  }
+}
