@@ -25,7 +25,8 @@
     "docs/changes/2026-09-29-powerhouse-one-million-revenue-operating-contract-v1.md",
     "config/instagram-canonical-provider-identity-v3.json",
     "brain/learning/2026-09-29-instagram-provider-id-drift-v3.json",
-    "docs/changes/2026-09-29-instagram-provider-id-drift-v3.md"
+    "docs/changes/2026-09-29-instagram-provider-id-drift-v3.md",
+    "brain/learning/2026-09-29-live-promotion-governance-closure-v1.json"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -61,7 +62,12 @@
     "requireLiveInstagramProviderIdentity": true,
     "instagramProviderIdentityFingerprint": "instagram-canonical-provider-identity-v3",
     "hardcodedInstagramGraphIdForbidden": true,
-    "instagramCreatePublishReadbackSameProviderUserId": true
+    "instagramCreatePublishReadbackSameProviderUserId": true,
+    "requireLivePromotionGovernanceClosure": true,
+    "livePromotionGovernanceFingerprint": "powerhouse|live-promotion|governance-closure|2026-09-29-v1",
+    "readyDeployIsOnlyDeploymentEvidence": true,
+    "capabilitySubchainsRemainIndependentlyGated": true,
+    "userMustRepeatBorgRequest": false
   },
   "lessons": [
     {

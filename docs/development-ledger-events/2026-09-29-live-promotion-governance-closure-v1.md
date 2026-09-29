@@ -7,3 +7,8 @@
 - **Required writeback:** skill → AGENTS/chat contract → continuity policy → Brain learning → ledger/docs → System Map → read-after-write.
 - **Truth rule:** exact deploy is alleen deploymentbewijs; capability-outcomes blijven onafhankelijk gated.
 - **Owner:** Whole Brain / Reliability / Delivery Governance.
+
+
+## Expliciete chat/continuity-projectie
+
+De closure is aanvullend rechtstreeks geprojecteerd naar `config/brain-chat-learning-contract.json` en `.agents/skills/powerhouse-continuity/SKILL.md`. Daarmee erven toekomstige chats én continuity/recovery-agents deze regel expliciet, naast de universele AGENTS-policy.
