@@ -112,15 +112,19 @@ Deno.serve(async(req:Request)=>{
       companyError=error instanceof Error?error.message:String(error);
     }
     const rawOrgIds=companies?deepFindStrings(companies,['organization','organization_id','company_id','id','entity_urn','urn']):[];
-    const orgUrns=[...new Set(rawOrgIds.map(normalizeOrganizationUrn).filter(v=>v&&v.startsWith('urn:li:organization:')))].slice(0,25);
+    const discoveredOrgUrns=[...new Set(rawOrgIds.map(normalizeOrganizationUrn).filter(v=>v&&v.startsWith('urn:li:organization:')))].slice(0,25);
+    const configuredOrg=normalizeOrganizationUrn((await secret(db,'COMPOSIO_LINKEDIN_COMPANY_AUTHOR_URN'))||'urn:li:organization:18234216');
+    const orgUrns=[...new Set([configuredOrg,...discoveredOrgUrns].filter(v=>/^urn:li:organization:[A-Za-z0-9_-]+$/.test(v)))];
 
     const personalReady=!!personAuthor;
     const hasMemberReadScope=grantedScopes.includes('r_member_social');
     const hasOrgAdminScope=grantedScopes.includes('r_organization_admin')||grantedScopes.includes('rw_organization_admin');
     const hasOrgWriteScope=grantedScopes.includes('w_organization_social')||grantedScopes.includes('w_organization_social_feed');
     const hasOrgReadScope=grantedScopes.includes('r_organization_social')||grantedScopes.includes('r_organization_social_feed');
-    const companyReady=orgUrns.length===1&&hasOrgAdminScope&&hasOrgWriteScope;
+    const companyAuthorConfigured=orgUrns.includes(configuredOrg);
+    const companyReady=personalReady&&companyAuthorConfigured&&(hasOrgWriteScope||grantedScopes.length===0);
     const personalReadbackReady=personalReady&&hasMemberReadScope;
+    const companyAdminReadReady=companyAuthorConfigured&&hasOrgAdminScope&&!companyError;
     const companyReadbackReady=companyReady&&hasOrgReadScope;
     const result={
       ready:personalReady,
@@ -143,12 +147,12 @@ Deno.serve(async(req:Request)=>{
       company_ready:companyReady,
       company_author_urns:orgUrns,
       company_count:orgUrns.length,
-      company_scope_required:companyReady?null:[
-        ...(hasOrgAdminScope?[]:['r_organization_admin']),
-        ...(hasOrgWriteScope?[]:['w_organization_social'])
-      ],
+      company_scope_required:companyReady?null:['w_organization_social'],
+      company_admin_read_ready:companyAdminReadReady,
+      company_admin_read_scope_required:companyAdminReadReady?null:'r_organization_admin',
       company_admin_scope_present:hasOrgAdminScope,
       company_write_scope_present:hasOrgWriteScope,
+      company_author_source:discoveredOrgUrns.includes(configuredOrg)?'live_org_acl':'configured_canonical_urn',
       company_readback_ready:companyReadbackReady,
       company_read_scope_present:hasOrgReadScope,
       company_readback_scope_required:companyReadbackReady?null:'r_organization_social',
