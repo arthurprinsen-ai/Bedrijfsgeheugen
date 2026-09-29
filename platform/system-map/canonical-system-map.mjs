@@ -279,7 +279,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         publisher:'supabase/functions/powerhouse-social-publisher/index.ts',
         setup:'supabase/functions/powerhouse-composio-linkedin-setup/index.ts',
         skill:'.agents/skills/linkedin-composio-publisher/SKILL.md',
-        learning:'brain/learning/2026-09-29-linkedin-production-runtime-authority-v1.json'
+        learning:'brain/learning/2026-09-29-linkedin-production-runtime-authority-v1.json',
+        companyStandardPolicy:'brain/policies/linkedin-company-standard-delivery-v1.json',
+        companyStandardLearning:'brain/learning/2026-09-29-linkedin-company-standard-delivery-v1.json'
       }),
       productionEvidence:Object.freeze({
         runtimeStatus:'ACTIVE',
@@ -293,7 +295,14 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         providerUrnBlocksRepublish:true,
         humanOauthOnlyOnProductionHardBoundary:true,
         noRecoveryAliasProliferation:true,
-        personalAndCompanyCapabilitiesSeparate:true
+        personalAndCompanyCapabilitiesSeparate:true,
+        companyBusinessTopicsOnly:true,
+        personalTopicLeakageBlocked:true,
+        printerStoryFamilyGloballyRetired:true,
+        productionAuthPrecedesChatLocalDiagnostics:true,
+        liveTokenHealthRequired:true,
+        safeAuthSelfHealing:true,
+        explicitUserDeletionAllowsOneNewStoryReplacement:true
       })
     }),
     Object.freeze({

@@ -1,0 +1,44 @@
+{
+  "fingerprint": "linkedin-company|standard-delivery|v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "LINKEDIN_COMPANY_IDENTITY_TOPIC_AND_AUTH_DRIFT",
+  "problem": "A company-page post reused a personal/printer story family and production-vs-chat OAuth state diverged, causing incorrect company content and repeated manual recovery.",
+  "root_cause": "Company topic identity, cross-channel story retirement, production OAuth authority and user-deleted replacement semantics were spread across separate rules instead of one inherited executable contract.",
+  "fix": "Introduce one LinkedIn company standard-delivery policy inherited by chats/agents/schedulers: business-only topic gate, global printer retirement, production-runtime auth authority, safe self-heal, and one new-story replacement after explicit user deletion.",
+  "prevention": [
+    "Reject personal-life topics before company content generation.",
+    "Treat printer as retired across both LinkedIn identities.",
+    "Read production Powerhouse/Composio state before any OAuth diagnosis.",
+    "Live token health outranks ACTIVE metadata.",
+    "Resume the same obligation after auth repair.",
+    "Allow at most one same-day replacement after explicit user deletion and require a new story fingerprint."
+  ],
+  "evidence": {
+    "policy": "brain/policies/linkedin-company-standard-delivery-v1.json",
+    "skill": ".agents/skills/linkedin-composio-publisher/SKILL.md",
+    "agents": "AGENTS.md",
+    "regression": "tests/brain-linkedin-company-standard-delivery-v1.test.mjs",
+    "canonical_author_urn": "urn:li:organization:18234216"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-standard-delivery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-company-standard-delivery-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-standard-delivery-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "LINKEDIN_COMPANY_IDENTITY_TOPIC_AND_AUTH_DRIFT",
+    "scope": "SOCIAL_PUBLICATION_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "linkedin-composio-publisher",
+    "powerhouse-continuity"
+  ]
+}
