@@ -48,4 +48,4 @@ jobs:
       - name: Existing platform adapter regression
         run: node --test tests/brain-platform-adapters.test.mjs
       - name: Daily compound learning regression
-        run: node --test tests/powerhouse-daily-compound-learning-v1.test.mjs
+        run: node --test tests/brain-powerhouse-daily-compound-learning-v1.test.mjs
