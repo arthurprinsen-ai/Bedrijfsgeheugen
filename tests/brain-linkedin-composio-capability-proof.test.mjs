@@ -87,3 +87,14 @@ test('LinkedIn company write readiness is independent from organization ACL read
   assert.match(publisher,/catch\(_organizationReadError\)\{\}/);
   assert.match(publisher,/canonical_org_write_candidate/);
 });
+
+
+test('LinkedIn production setup can create OAuth link and resume the same daily claim',()=>{
+  assert.match(setup,/action==='create_link'/);
+  assert.match(setup,/toolkit_slug=linkedin/);
+  assert.match(setup,/auth_config_id:authConfigId,user_id:USER_ID,alias:ALIAS/);
+  assert.match(setup,/production_workspace:true/);
+  assert.match(setup,/action==='resume'/);
+  assert.match(setup,/linkedin-production-oauth-complete/);
+  assert.match(setup,/powerhouse-social-publisher/);
+});
