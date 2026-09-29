@@ -161,3 +161,18 @@ De final-build authority `tools/site-shell/apply-money-page-order-conversion.mjs
 Fingerprint: `powerhouse-bedrijfslek-product-led-acquisition-v1` revision 2.
 
 De route `/zelfscan` is een standalone product-led acquisitieroute met `zelfscan.html` als enige pagina-authority. De V18-generator mag `/zelfscan` niet overschrijven: `selfscan` hoort niet in `tools/v18-views-lijst.mjs`. Iedere build- of CRO-wijziging die deze route opnieuw door `tools/bouw-v18-views.mjs` laat genereren is een route-owner collision en moet fail-closed blokkeren.
+
+
+## Bedrijfslek as canonical ungated qualification route
+
+Fingerprint: `seo|bedrijfslek|ungated-product-led-qualification|v2`.
+
+Voor generieke MKB-probleem- en homepage-acquisitie geldt `/zelfscan` als de canonieke lage-frictie kwalificatieroute. De route levert eerst inhoudelijke waarde en vraagt pas daarna om een commerciële vervolgstap.
+
+SEO/CRO-regels:
+- geen nieuwe leadgate vóór score, benchmark, quick wins, Mini en relevante challenge-mogelijkheid;
+- geen tweede scan/quiz voor dezelfde intentie zolang `/zelfscan` de intentie al bezit;
+- gebruik organische/sociale instroom om de gesloten product-led loop te voeden;
+- meet minimaal resultaat, Mini-engagement, challenge-share, challenge-complete, checkout-start, paid order en realized revenue;
+- optimalisatie mag de privacy-safe challenge payload of local-only Mini-opslag niet verruimen met PII;
+- een copy/layout-experiment is alleen winnaar wanneer downstream gekwalificeerde order/revenue evidence dit ondersteunt; meer formulierstarts alleen is onvoldoende.
