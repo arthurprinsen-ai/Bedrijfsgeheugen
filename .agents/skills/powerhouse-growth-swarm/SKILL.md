@@ -167,3 +167,18 @@ All changes flow through `config/seo-growth-loop.json`, `config/seo-optimization
 
 ### Behavioral revenue writeback closure
 De fingerprint `powerhouse-behavioral-landing-revenue-v2` is onderdeel van de bestaande Powerhouse authority. Bij materiële wijzigingen moeten runtime-config, deze skill-laag, Brain learning, `docs/brain/component-registry.json`, `platform/system-map/canonical-system-map.mjs`, menselijke change/ledger-documentatie en regressietests in dezelfde delivery-lineage synchroon blijven. Een runtime- of copywijziging zonder deze writeback is niet terminal.
+
+
+## Bedrijfslek product-led acquisition loop — 29 september 2026
+Fingerprint: `powerhouse-bedrijfslek-product-led-acquisition-v1`.
+
+De publieke route `/zelfscan` is voortaan de value-first Bedrijfslek-instap voor de Growth Swarm:
+- geen verplichte naam, e-mail, telefoon of account vóór de uitslag;
+- volledige score, alle benchmarkrijen en drie concrete quick wins direct op het scherm;
+- homepage primary CTA routeert naar Bedrijfslek in plaats van eerst naar een gesprek;
+- na geleverde waarde mag de bezoeker kiezen tussen portaal-demo, direct Control-bestelpad of delen van de score;
+- score/benchmark blijft indicatief; geen financieel resultaat of koopintentie als feit presenteren;
+- `bedrijfslek-resultaat`, deelactie en checkout-start zijn commerciële tussenuitkomsten; paid order en realized revenue blijven terminale north-star outcomes;
+- de final-build authority moet deze route expliciet behouden zodat een latere V18/build-transformatie de acquisition-loop niet terugzet naar een leadgate.
+
+Dit is geen parallelle funnel. De route blijft onderdeel van de bestaande Growth Swarm, Persuasion Revenue Optimizer, SEO Conversion-to-Orders en canonical growth-event lineage.
