@@ -33,7 +33,9 @@ test('Instagram setup selects only live bedrijfsgeheugen.nl identity and ignores
 test('Instagram publisher independently verifies exact canonical provider identity',()=>{
   assert.match(publisher,/instagram-composio-only-canonical-graph-id-v2/);
   assert.match(publisher,/INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen\.nl'/);
-  assert.match(publisher,/INSTAGRAM_CANONICAL_USER_ID='17841446582493753'/);
+  assert.doesNotMatch(publisher,/17841446582493753/);
+  assert.match(publisher,/ig_user_id:'me'/);
+  assert.match(publisher,/ig_user_id:ctx\.providerUserId/);
   assert.match(publisher,/COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED/);
   assert.match(publisher,/canonicalInstagramComposioContext/);
   assert.match(publisher,/INSTAGRAM_GET_USER_INFO/);

@@ -217,7 +217,7 @@ Personal LinkedIn metrics remain a capability gap where the official native app 
 
 Canonical account:
 - Bedrijfsgeheugen `@bedrijfsgeheugen.nl`
-- Instagram Business account ID `17841446582493753`
+- Instagram Business account ID `28537384955950341`
 
 Canonical publisher:
 - BG179 = sole native Instagram publisher.
