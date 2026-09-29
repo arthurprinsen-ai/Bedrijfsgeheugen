@@ -142,6 +142,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-mira-problem-radar",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-mira-problem-radar/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-relationship-public-research",
       "type": "function",
       "authority": "supabase/functions/powerhouse-relationship-public-research/index.ts",
@@ -555,6 +562,20 @@
       "required": true
     },
     {
+      "id": "rpc:powerhouse_materialize_mira_problem_recommendation_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260929205000_powerhouse_mira_public_problem_source_contract_v3.sql",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_materialize_source_backed_channel_candidates_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260929214500_powerhouse_source_backed_channel_selection_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "rpc:powerhouse_prepare_autonomous_outreach_v1",
       "type": "rpc",
       "authority": "supabase/migrations/20260928112500_powerhouse_autonomous_relationship_outreach_v1.sql",
@@ -608,6 +629,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260928103246_powerhouse_relationship_revenue_engine_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-relationship-revenue-engine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_refresh_source_backed_outbound_assurance_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260929222500_powerhouse_source_backed_outbound_loop_assurance_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
       "required": true
     },
     {
@@ -835,6 +863,20 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_mira_problem_lineage_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260929201000_powerhouse_mira_public_complaint_source_loop_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_mira_problem_signals_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260929201000_powerhouse_mira_public_complaint_source_loop_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_obligation_reconciliations",
       "type": "table",
       "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
@@ -846,6 +888,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
       "evidence_contract": "tests/powerhouse-resource-intelligence-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_outbound_source_lineage_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260929211500_powerhouse_source_backed_all_channels_lineage_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
       "required": true
     },
     {

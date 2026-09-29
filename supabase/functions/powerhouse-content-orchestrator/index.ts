@@ -114,7 +114,11 @@ function validPersonalSource(row:any) {
 function recommendationScore(row:any, channel:string) {
   const topic = clean(row?.topic_key).toLowerCase();
   const target = clean(row?.target_channel).toLowerCase();
+  const sourceBacked = row?.evidence?.source_backed === true;
   let score = num(row?.priority) + num(row?.evidence?.commercial_value) / 10;
+  if (sourceBacked && ['linkedin_company','blog'].includes(channel)) score += 500;
+  if (row?.evidence?.source_backed === true) score += 250;
+  if (row?.recommendation_type === 'calendar_seed' || row?.recommendation_type === 'evergreen_no_gap_fallback') score -= 80;
   if (channel === 'blog' && (topic === 'blog' || target === 'blog')) score += 120;
   if (channel === 'linkedin_company' && (topic.includes('linkedin') || target.includes('linkedin') || target.includes('company'))) score += 100;
   if (channel === 'instagram_company' && (target === 'instagram' || topic.includes('instagram'))) score += 120;
@@ -135,9 +139,12 @@ function recommendationEligible(row:any, channel:string) {
   return true;
 }
 function pickRecommendation(recs:any[], channel:string) {
-  return [...(recs || [])]
-    .filter((r)=>recommendationEligible(r,channel))
-    .sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
+  const eligible=[...(recs || [])].filter((r)=>recommendationEligible(r,channel));
+  if (channel==='linkedin_company' || channel==='blog') {
+    const backed=eligible.filter((r)=>r?.evidence?.source_backed===true);
+    if (backed.length) return backed.sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
+  }
+  return eligible.sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
 }
 function personalFinalCopyValid(body:string, sourceText:string) {
   const text=clean(body).toLowerCase();
@@ -209,8 +216,11 @@ Deno.serve(async (req) => {
   if (!expected || req.headers.get('x-powerhouse-token') !== expected) return json({ok:false,error:'UNAUTHORIZED'},401);
   let request:any = {}; try { request = await req.json(); } catch {}
   const runDate = clean(request.runDate) || localDate();
-  let stage = 'load-context';
+  let stage = 'materialize-source-backed-candidates';
   try {
+    const sourceBackedMaterialization=await db.rpc('powerhouse_materialize_source_backed_channel_candidates_v1',{p_date:runDate});
+    if(sourceBackedMaterialization.error) throw new Error('SOURCE_BACKED_CHANNEL_MATERIALIZATION_FAILED:'+sourceBackedMaterialization.error.message);
+    stage = 'load-context';
     const [runResult,recResult,rulesResult,governanceResult,existingResult,obligationsResult,mediaProofResult] = await Promise.all([
       db.from('powerhouse_daily_runs').select('*').eq('run_date',runDate).maybeSingle(),
       db.from('powerhouse_content_recommendations').select('recommendation_id,topic_key,target_channel,recommendation_type,priority,reason,evidence,status').eq('run_date',runDate).order('priority',{ascending:false}).limit(50),

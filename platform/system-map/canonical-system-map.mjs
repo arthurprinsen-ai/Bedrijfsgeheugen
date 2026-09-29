@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-29T16:10:00Z',
+  observedAt:'2026-09-29T19:10:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,45 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'source-backed-outbound-loop-v1',
+      label:'Powerhouse Source-backed Outbound Loop',
+      authority:'supabase+provider-readback',
+      owner:'Powerhouse Growth & Revenue OS',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['public problem signals','SEO/search intent','verified personal truth','account/company triggers','relationship context','reply learning']),
+      outputs:Object.freeze(['channel-native candidates','source-gated email/LinkedIn DM','provider-linked publication/send evidence','outcome/learning writeback']),
+      runtime:Object.freeze({
+        contract:'config/powerhouse-source-backed-channel-contract-v1.json',
+        sourceLineage:'public.powerhouse_outbound_source_lineage_v1',
+        materializer:'public.powerhouse_materialize_source_backed_channel_candidates_v1(date)',
+        sourceGate:'public.powerhouse_require_source_for_direct_outreach_v1()',
+        lineageRefresh:'public.powerhouse_refresh_outbound_source_lineage_v1(date)',
+        orchestrator:'supabase/functions/powerhouse-content-orchestrator/index.ts',
+        channels:Object.freeze(['linkedin_personal','linkedin_company','blog','email','linkedin_dm','instagram_company'])
+      }),
+      productionEvidence:Object.freeze({
+        orchestratorVersion:29,
+        lineageRefreshVerified:true,
+        refreshedLineages:61,
+        tomorrowLinkedinCompanySourceBacked:true,
+        tomorrowBlogSourceBacked:true,
+        directOutreachSourceGateActive:true,
+        instagramSourceRadarSignals:24,
+        instagramSourceRadarEligible:12,
+        observedAt:'2026-09-29T19:10:00Z'
+      }),
+      invariants:Object.freeze({
+        staticCalendarFallbackOnly:true,
+        channelNativeTransformation:true,
+        inventedPersonalExperienceForbidden:true,
+        directOutreachRequiresTraceableTrigger:true,
+        directOutreachRequiresPersonOrCompanyContext:true,
+        providerReadbackRequired:true,
+        outcomeLearningRequired:true,
+        sameSourceLineagePreserved:true
+      })
+    }),
     Object.freeze({
       id:'instagram-live-provider-identity',
       label:'Instagram Live Provider Identity',
@@ -813,6 +852,28 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     inheritedBy:Object.freeze(['all-public-routes','all-current-chats','all-future-chats','all-current-agents','all-future-agents','website-workflows']),
     invariant:'No route-local header/navigation/footer/megamenu geometry fork; every public route inherits one CMS-like canonical chrome.',
     productionReadbackRequired:true
+  }),
+  sourceBackedOutbound:Object.freeze({
+    fingerprint:'powerhouse-source-backed-all-channels-v1',
+    label:'Source-backed outbound loop',
+    status:'ACTIVE_CONTINUOUSLY_ASSURED',
+    loopAssuranceKey:'source-backed-outbound',
+    cadenceMinutes:60,
+    canonicalLineage:'SOURCE -> EVIDENCE -> DEDUPE -> PROBLEM/TRIGGER -> CHANNEL FIT -> CANDIDATE -> IDENTITY/TRUTH GATE -> PUBLISH/SEND -> PROVIDER READBACK -> OUTCOME -> LEARNING -> NEXT SELECTION',
+    channels:Object.freeze(['instagram_company','linkedin_personal','linkedin_company','blog','email','linkedin_dm']),
+    runtimeAuthorities:Object.freeze([
+      'public.powerhouse_outbound_source_lineage_v1',
+      'public.powerhouse_materialize_source_backed_channel_candidates_v1(date)',
+      'public.powerhouse_require_source_for_direct_outreach_v1()',
+      'public.powerhouse_refresh_outbound_source_lineage_v1(date)',
+      'public.powerhouse_refresh_source_backed_outbound_assurance_v1(date)',
+      'supabase/functions/powerhouse-content-orchestrator/index.ts'
+    ]),
+    sourceRule:'Fresh eligible evidence-backed candidates outrank static calendar or evergreen fallback.',
+    personalTruthRule:'External public evidence may select a LinkedIn-personal theme but can never manufacture an Arthur first-person experience.',
+    directOutreachRule:'Email and LinkedIn DM require traceable account/person evidence plus person/company context before send eligibility.',
+    outcomeWriteback:Object.freeze(['social-metrics','email-replies','linkedin-dm-replies','leads','meetings','orders','revenue']),
+    continuousAssurance:Object.freeze({requiredStages:8,scheduler:'powerhouse-outbound-source-lineage-hourly-v1',greenRequiresCurrentRuntime:true})
   }),
   socialPublicationGovernance:Object.freeze({
     fingerprint:'linkedin-company-historical-dedupe-v5',

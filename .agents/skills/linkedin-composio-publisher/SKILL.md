@@ -354,3 +354,9 @@ When the user confirms deletion:
 ### Terminal standard
 
 A company run is terminal only when one correct Bedrijfsgeheugen business post exists with a durable provider URN, or LinkedIn requires explicit human OAuth that cannot be performed autonomously. Internal alias drift, stale connection pointers, content-selection mistakes and readback 403s are self-healed inside the same lineage.
+
+
+## Source-backed all-channel rule — 2026-09-29
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+LinkedIn company publication must prefer current evidence-backed MKB/CEO/MT problems over static calendar seeds. Preserve source URL/hash/problem/trigger lineage through recommendation, final copy, provider post ID and learning. LinkedIn personal remains separately identity-gated: external public evidence may select a theme, but cannot create first-person Arthur claims.

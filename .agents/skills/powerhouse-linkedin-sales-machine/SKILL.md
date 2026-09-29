@@ -123,3 +123,17 @@ Hard runtime contract:
 - geen sales pitch of gefabriceerde feiten in publieke comments;
 - LinkedIn DM blijft `UNAVAILABLE` zolang geen provider-write capability aantoonbaar bestaat; fallback is de bestaande e-mailroute;
 - geen retry-loop op statement timeout; root cause fix + provider/readback verplicht.
+
+
+## Source-backed direct outreach — 2026-09-29
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+LinkedIn DM and email outreach are part of the same Powerhouse source -> evidence -> action -> provider -> reply/outcome -> learning loop.
+
+Hard rules:
+- Never send a DM or email from only a generic persona/calendar. Every action must retain a traceable source/trigger plus person or company context.
+- Allowed upstream evidence includes account-specific public triggers, relationship context, predictive signals, opportunity evidence and canonical problem-radar matches.
+- Never fabricate a relationship, personal observation, trigger or company fact.
+- Deduplicate against prior actions/threads before dispatch.
+- Email replies and LinkedIn outcomes must write back to the exact action/source lineage and update trigger quality, angle, CTA, objection handling, channel fit and revenue-per-send.
+- A source/context failure is fail-closed; do not silently fall back to generic outreach.

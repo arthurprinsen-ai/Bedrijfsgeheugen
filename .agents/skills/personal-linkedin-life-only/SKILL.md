@@ -80,3 +80,9 @@ Hard rules:
 
 This rule is stricter than text-hash/shingle dedupe and overrides the older rotation wording wherever that could be read as allowing reuse of a previously published source.
 
+
+
+## Source-backed topic selection — 2026-09-29
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+Public daily-life/friction evidence may determine which personal-life topic is worth writing about, but it is never proof that Arthur personally experienced it. First-person claims still require verified Arthur source truth. If no verified personal anchor exists, write observationally without inventing experience, or hold the item. Always retain source lineage, dedupe historically, and write engagement/inbound outcomes back to the source/problem/angle.
