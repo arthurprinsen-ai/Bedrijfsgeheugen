@@ -576,6 +576,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         privatePiiIntake:true,
         aggregateLearningContainsPii:false,
         trustedCompanyLogoOnly:true,
+        participantNameVisibleInPdf:true,
+        personalizedPdfFilename:true,
         chatsAndAgentsReuseCanonicalLineage:true
       }),
       productionEvidence:Object.freeze({
