@@ -2,8 +2,8 @@
   "fingerprint": "instagram-canonical-provider-identity-v3",
   "date": "2026-09-29",
   "problem": "Mira Reel was publication-ready but Composio identity preflight used a stale numeric Instagram provider ID.",
-  "root_cause": "A provider-issued numeric ID was treated as permanent publication identity.",
-  "prevention": "Discover providerUserId live with INSTAGRAM_GET_USER_INFO(me), require bedrijfsgeheugen.nl plus BUSINESS/CREATOR, and bind create/publish/readback to the same live ID.",
+  "root_cause": "A provider connection node id and the Instagram Graph user_id were treated as interchangeable publication identity fields.",
+  "prevention": "Resolve INSTAGRAM_GET_USER_INFO(me), read id and user_id separately, require user_id=17841446582493753 plus username=bedrijfsgeheugen.nl and BUSINESS/CREATOR, and keep create/publish/readback on the same canonical connection.",
   "failed_approaches": [
     "Hardcoded historical Graph ID",
     "ACTIVE connection metadata without live provider identity readback"
@@ -18,15 +18,25 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-instagram-composio-canonical-identity-v1.test.mjs",
-      "tests/brain-social-provider-health-preflight-v1.test.mjs"
+      "tests/brain-social-provider-health-preflight-v1.test.mjs",
+      "tests/brain-instagram-provider-id-semantics-v3.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-provider-id-semantics-v3.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-provider-id-semantics-v3.test.mjs"
     ]
   },
   "evidence": {
     "provider_readback": {
       "username": "bedrijfsgeheugen.nl",
       "account_type": "BUSINESS",
-      "current_provider_user_id": "28537384955950341",
-      "observed_at": "2026-09-29T16:15:08Z"
+      "connection_node_id": "28537384955950341",
+      "graph_user_id": "17841446582493753",
+      "live_media_id": "18105956765257858",
+      "live_permalink": "https://www.instagram.com/reel/Dd4MOdTEarq/",
+      "observed_at": "2026-09-29T16:30:06Z"
     },
     "publisher": "supabase/functions/powerhouse-social-publisher/index.ts",
     "config": "config/instagram-canonical-provider-identity-v3.json"
