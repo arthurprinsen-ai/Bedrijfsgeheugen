@@ -104,3 +104,15 @@ Een patroon mag pas van TESTING/CANDIDATE naar PROVEN wanneer:
 - downstream outcome-data beschikbaar is;
 - geen omzet wordt geclaimd zonder waargenomen order/revenue evidence;
 - regressie- en guardrailtests groen blijven.
+
+## Systeemkaart- en documentatieborging
+Deze capability is canoniek zichtbaar als `seo-conversion-orders` in `platform/system-map/canonical-system-map.mjs` en als `CAPABILITY_SEO_CONVERSION_ORDERS` in `docs/brain/component-registry.json`.
+
+Iedere materiële wijziging aan doelstelling, modellen, money-page contract, guardrails, dagelijkse autonomie, outcome-routing of authority moet in dezelfde candidate-lineage ook:
+- deze skill bijwerken;
+- de canonieke systeemkaart bijwerken;
+- Brain learning en menselijke change-documentatie bijwerken;
+- de regressietest `tests/brain-seo-conversion-orders-v1.test.mjs` groen houden;
+- protected merge en relevante productie/provider-readback doorlopen vóór een terminale LIVE-claim.
+
+Een skill-update zonder systeemkaart + learning + documentatie + regressiebewijs is `WRITEBACK_INCOMPLETE`.
