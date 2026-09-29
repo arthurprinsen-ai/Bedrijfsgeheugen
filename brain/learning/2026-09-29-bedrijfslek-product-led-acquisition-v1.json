@@ -32,5 +32,24 @@
   "skill_targets": [
     "powerhouse-growth-swarm",
     "powerhouse-seo-conversion-orders"
-  ]
+  ],
+  "root_cause": [
+    "The selfscan was optimized for early lead capture instead of delivered value.",
+    "The homepage asked for a meeting before visitors experienced the diagnostic product promise."
+  ],
+  "prevention": [
+    "Do not gate the primary promised diagnostic value behind PII.",
+    "Place contact, demo or checkout choices after useful on-screen value.",
+    "Preserve the Bedrijfslek path in final build transforms and regression tests."
+  ],
+  "evidence": {
+    "source_routes": [
+      "/",
+      "/zelfscan"
+    ],
+    "skill": ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+    "build_authority": "tools/site-shell/apply-money-page-order-conversion.mjs",
+    "regression_test": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs",
+    "change_scope": "site/change-scope-bedrijfslek-order-magnet-20260929.json"
+  }
 }
