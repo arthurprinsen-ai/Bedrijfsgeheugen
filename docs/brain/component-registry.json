@@ -1593,7 +1593,11 @@
         "commitment-ladder",
         "choice-architecture"
       ],
-      "autonomy": "contextual evidence-gated page composition with rollback"
+      "autonomy": "contextual evidence-gated page composition with rollback",
+      "chat_agent_inheritance": "commercial-website|orders-first|existing-pages|v1",
+      "current_primary_qualification": "free Frisse Blik 30 minutes",
+      "public_copy_requires_same_lineage_static_i18n": true,
+      "final_build_artifact_authority": "tools/site-shell/apply-money-page-order-conversion.mjs"
     }
   ]
 }
