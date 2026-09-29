@@ -56,7 +56,7 @@ Required closure behavior:
 - Never leave a stale candidate status after production evidence exists.
 - Never create a second proof/store/queue to represent the same runtime truth.
 
-Verified baseline on 2026-09-28: 42,217 graph nodes; 25,164 graph edges; 17,328 company contexts; 2,883 action-layer rows; 12 outcome-memory rows; 17,328 compound-intelligence company rows.
+Verified baseline on 2026-09-28: 42,217 graph nodes; 25,164 graph edges; 17,328 company contexts; 2,883 action-layer rows; 30 outcome-memory rows; 17,328 compound-intelligence company rows.
 
 ## Self-improvement bridge
 
@@ -107,3 +107,7 @@ Required behavior:
 - connect predictions to actions and outcomes so the user can see not only what may happen, but what Powerhouse recommends doing and what happened afterward.
 
 A material intelligence capability is incomplete until its customer-facing projection is implemented where relevant, tested and documented.
+
+## Daily compound-learning feed
+
+Verified runtime outcomes are now captured daily into the existing Outcome Memory before Self-Improvement runs. The canonical authority is `public.powerhouse_run_daily_compound_learning_v1(date)`; it also resolves eligible commercial-progression forecasts from real observed outcomes. Silence is not a negative outcome, synthetic/test events are excluded, and no second outcome or forecast store may be created.
