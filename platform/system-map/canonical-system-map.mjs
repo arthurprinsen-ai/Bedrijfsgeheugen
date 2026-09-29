@@ -544,7 +544,22 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     scope:'cross-date-cross-channel',
     providerCreateConsumesStory:true,
     userReportedDuplicateRetiresStoryFamily:true,
-    knownRetiredExamples:Object.freeze(['printer'])
+    knownRetiredExamples:Object.freeze(['printer','whatsapp-group-chaos']),
+    personalLinkedInDailyCreativeLoop:Object.freeze({
+      fingerprint:'personal-linkedin-daily-creative-loop-v1',
+      owner:'Powerhouse Brain',
+      channel:'linkedin_personal',
+      autonomousDailyTopicChoice:true,
+      candidateMinimum:3,
+      semanticDedupe:true,
+      topicFatiguePenalty:true,
+      explorationRequired:true,
+      outcomeWindows:Object.freeze(['24h','72h','7d']),
+      loop:Object.freeze(['SCAN','CANDIDATES','SEMANTIC_DEDUPE_FATIGUE','RANK','TRUTH_PRIVACY_IDENTITY','GENERATE','FINAL_DUPLICATE_GATE','PUBLISH','PROVIDER_ACK_READBACK','OUTCOME','LEARN','NEXT_DAY_DECISION']),
+      policySource:'brain/policies/personal-linkedin-daily-creative-loop-v1.json',
+      skillSource:'.agents/skills/personal-linkedin-life-only/SKILL.md',
+      chatPreflight:'config/brain-chat-learning-contract.json'
+    })
   }),
   userFacingReportingContract:Object.freeze({
     fingerprint:'delivery|user-facing-reporting|terminal-outcomes-only|v1',
