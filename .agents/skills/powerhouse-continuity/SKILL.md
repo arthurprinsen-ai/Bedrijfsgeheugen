@@ -1429,3 +1429,15 @@ Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
 Fingerprint: `linkedin-company-standard-delivery-v1`.
 
 For Bedrijfsgeheugen LinkedIn recovery, continuity means the same daily company obligation survives content rejection, connection drift and OAuth repair. Company content must remain business/CEO/MT-only, globally retired story families such as `printer` stay retired, production runtime auth is authoritative, and explicit user deletion allows at most one materially different new-story replacement. Never start a parallel publisher, alias lineage, Buffer route or replacement claim to escape a recoverable state.
+
+
+## Product-led growth continuity inheritance
+
+Fingerprint: `growth|product-led-loop|continuity-after-chat-interruption|v1`.
+
+Wanneer een chat of agent verdergaat op Bedrijfslek/growth-werk:
+- hervat vanaf de actuele repository-authority en bestaande outcome lineage;
+- behoud value-before-PII, Mini, teamchallenge, privacy payload, portal/order-handoff en outcome learning als één obligation;
+- een chatwissel of onderbreking mag nooit terugvallen naar advies-only, contact-first of een losse campagne;
+- repository closure omvat minimaal Growth Swarm-skill, SEO/CRO-skill waar relevant, AGENTS inheritance, System Map, Brain learning, human docs, ledger en regression evidence;
+- de owner blijft verantwoordelijk tot deze writeback op protected main aantoonbaar discoverable is.

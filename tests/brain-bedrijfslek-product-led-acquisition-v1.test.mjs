@@ -65,3 +65,19 @@ test('Bedrijfsgeheugen Mini converts diagnosis into action before paid conversio
   assert.match(scan,/voortgang blijft alleen in deze browser bewaard/i);
   assert.match(scan,/borg dit structureel in het portaal/i);
 });
+
+
+test('Bedrijfslek borging projects into skills agents chats and System Map',()=>{
+  const agents=read('AGENTS.md');
+  const growth=read('.agents/skills/powerhouse-growth-swarm/SKILL.md');
+  const seo=read('.agents/skills/powerhouse-seo-conversion-orders/SKILL.md');
+  const continuity=read('.agents/skills/powerhouse-continuity/SKILL.md');
+  const map=read('platform/system-map/canonical-system-map.mjs');
+  const registry=read('docs/brain/component-registry.json');
+  assert.match(agents,/growth\\|bedrijfslek\\|value-first-team-loop\\|v2/);
+  assert.match(growth,/powerhouse-bedrijfslek-product-led-acquisition-v2/);
+  assert.match(seo,/seo\\|bedrijfslek\\|ungated-product-led-qualification\\|v2/);
+  assert.match(continuity,/growth\\|product-led-loop\\|continuity-after-chat-interruption\\|v1/);
+  assert.match(map,/bedrijfslekProductLedGrowth/);
+  assert.match(registry,/powerhouse-bedrijfslek-product-led-acquisition-v2/);
+});
