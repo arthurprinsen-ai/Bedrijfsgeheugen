@@ -6,7 +6,7 @@ create or replace function public.powerhouse_refresh_autonomous_outreach_assuran
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = public, pg_catalog
 as $$
 declare
   v_inputs integer:=0;
