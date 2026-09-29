@@ -76,3 +76,14 @@ test('LinkedIn company Composio publishing is exact-readback and fail-closed',()
   assert.match(publisher,/republish_forbidden:true/);
   assert.match(publisher,/do not fall back to Buffer or issue a replacement post/);
 });
+
+
+test('LinkedIn company write readiness is independent from organization ACL read permission', () => {
+  assert.match(setup,/companyReady=personalReady&&companyAuthorConfigured/);
+  assert.doesNotMatch(setup,/companyReady=orgUrns\.length===1&&hasOrgAdminScope&&hasOrgWriteScope/);
+  assert.match(setup,/company_admin_read_ready:companyAdminReadReady/);
+  assert.match(setup,/company_admin_read_scope_required:companyAdminReadReady\?null:'r_organization_admin'/);
+  assert.match(publisher,/organizationReadVerified=false/);
+  assert.match(publisher,/catch\(_organizationReadError\)\{\}/);
+  assert.match(publisher,/canonical_org_write_candidate/);
+});
