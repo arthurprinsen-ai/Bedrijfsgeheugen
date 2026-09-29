@@ -719,3 +719,20 @@ Alle huidige en toekomstige chats, agents, schedulers en commerciële capabiliti
 - Warm/consented leads, bestaande relaties, open opportunities, klanten en partners mogen autonoom worden opgevolgd binnen bestaande gates.
 - Persoonlijk LinkedIn blijft personal-life-only; Bedrijfsgeheugen-company content hoort op de bedrijfspagina; Instagram blijft Mira-only.
 - Iedere uitvoering schrijft outcome terug tot minimaal reply/meeting/scan/proposal/order/realized revenue en voedt daarna de volgende beslissing.
+
+
+## Truthful Green Assurance — permanent contract
+
+Fingerprint: `powerhouse|truthful-green-assurance|current-evidence-only|v1`.
+
+Voor iedere huidige en toekomstige chat, agent, workflow en assurance-run geldt:
+- groen is een resultaat van actuele evidence, nooit een kleur, label, deploy-ack of handmatige statuswijziging;
+- `GREEN` vereist de volledige relevante keten `trigger → execution → action → external/provider readback → outcome/evidence → learning/writeback`;
+- stale, missing, blocked, non-terminal of onbewezen verplichte schakels houden de betreffende capability niet-groen;
+- historische audit-schuld en retired/optional providers blokkeren alleen wanneer het canonieke contract ze current+required classificeert; historie wordt nooit gewist om groen te maken;
+- provider-neutral capabilities mogen verse evidence van een goedgekeurde alternatieve producer gebruiken;
+- reeds bewezen externe side effects worden nooit opnieuw uitgevoerd voor readback; exact provider identity en dedupe/`republish_forbidden` blijven leidend;
+- herstel uitsluitend via root cause → repair → current readback → canonical evidence → health recompute;
+- structurele wijzigingen worden geborgd in Brain learning, skills, AGENTS/chat-contract, development ledger, documentatie en System Map vóór terminale closure.
+
+Canonieke skill: `.agents/skills/powerhouse-truthful-green-assurance/SKILL.md`.

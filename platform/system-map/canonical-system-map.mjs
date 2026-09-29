@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-29T08:45:00Z',
+  observedAt:'2026-09-29T14:30:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,34 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'truthful-green-assurance',
+      label:'Powerhouse Truthful Green Assurance',
+      authority:'supabase+github',
+      owner:'whole-brain-control-plane',
+      status:'CANONICAL_CONTRACT_ACTIVE',
+      inputs:Object.freeze(['current required source coverage','runtime health','terminal obligations','provider/runtime readback','historical audit evidence']),
+      outputs:Object.freeze(['truthful green/amber/red projection','provider-neutral failover classification','current-vs-historical blocker classification','repair/writeback obligation']),
+      runtime:Object.freeze({
+        truthContract:'config/powerhouse-truth-status-contract.json',
+        continuityPolicy:'brain/policies/powerhouse-agent-continuity-v1.json',
+        skill:'.agents/skills/powerhouse-truthful-green-assurance/SKILL.md',
+        runtimeHealth:'public.powerhouse_one_brain_runtime_health_v1',
+        terminalHealth:'public.powerhouse_terminal_control_plane_health_v1',
+        evidenceHealth:'public.powerhouse_evidence_operating_health_v3',
+        sourceCoverage:'public.powerhouse_evidence_source_coverage_v1'
+      }),
+      invariants:Object.freeze({
+        greenRequiresCurrentRequiredEvidence:true,
+        cosmeticGreenForbidden:true,
+        historicalEvidenceAppendOnly:true,
+        providerNeutralFailoverAllowed:true,
+        singleVendorWholeBrainDependencyDefault:false,
+        provenSideEffectsNeverRepublishedForEvidence:true,
+        healthRecomputedAfterRepair:true,
+        allChatsAgentsInherit:true
+      })
+    }),
     Object.freeze({
       id:'daily-compound-learning',
       label:'Powerhouse Daily Compound Learning',

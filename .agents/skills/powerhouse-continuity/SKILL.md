@@ -1441,3 +1441,18 @@ Wanneer een chat of agent verdergaat op Bedrijfslek/growth-werk:
 - een chatwissel of onderbreking mag nooit terugvallen naar advies-only, contact-first of een losse campagne;
 - repository closure omvat minimaal Growth Swarm-skill, SEO/CRO-skill waar relevant, AGENTS inheritance, System Map, Brain learning, human docs, ledger en regression evidence;
 - de owner blijft verantwoordelijk tot deze writeback op protected main aantoonbaar discoverable is.
+
+
+## Truthful Green Assurance
+
+Fingerprint: `powerhouse|truthful-green-assurance|current-evidence-only|v1`.
+
+- Never turn red/amber into green by status mutation, hiding evidence, deleting history or weakening a gate.
+- Current green requires current required evidence and exact external/provider/runtime readback for the capability being asserted.
+- Historical audit debt remains visible but only blocks current health when the canonical requirement classifier says it is current + required.
+- Provider-neutral capabilities may be satisfied by any approved governed producer with fresh evidence; vendor-specific outages remain vendor-specific unless explicitly required.
+- Recompute health after repair and write the resulting evidence back into the same canonical lineage.
+- For publication lanes, an already-created provider side effect is immutable: reconcile the exact provider id, never republish merely to obtain proof.
+- Every material assurance change must update Brain learning, relevant skills, AGENTS/chat contract, ledger/docs and System Map before terminal closure.
+
+Canonical skill: `.agents/skills/powerhouse-truthful-green-assurance/SKILL.md`.
