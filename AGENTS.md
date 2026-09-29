@@ -719,3 +719,17 @@ Verplicht:
 - herstel bestaande canonical lineage, maak geen parallelle truth/evidence stores;
 - herbereken centrale health na iedere repair;
 - borg iedere materiële assurance-learning in Brain learning, skills, agent-contracts, ledger/docs en System Map.
+
+
+## Commercial email reply closure — verplicht voor alle agents/chats
+Fingerprint: `powerhouse-email-reply-learning-v1`.
+
+Voor iedere agent/chat die commerciële e-mail, Growth & Revenue OS, relationship outreach, Gmail-ingest of revenue learning raakt:
+- `sent` is nooit terminal; provider readback en inbound replies moeten worden meegenomen;
+- replies worden exact-once gekoppeld aan de oorspronkelijke sales action en als outcome/learning teruggeschreven;
+- expliciete opt-out/no-interest-self-recontact activeert suppression en blokkeert toekomstige autonome e-mail vóór provider side-effect;
+- timing/positive/question/actionable objection resulteert alleen in een gededupliceerde contextuele follow-up/nurture wanneer gates dat toestaan;
+- optimalisatie is revenue-first: realized revenue/order > proposal > meeting > positive reply > raw reply-rate;
+- een bestaande cycle/lineage guard wordt nooit verzwakt om een tweede outcome te forceren; gebruik evidence-bound origin lineage;
+- er is exact één commerciële scheduler/owner; geen parallelle Gmail reply cron, inbox-store, CRM, queue of learning store;
+- closure vereist read-after-write op reply-event, suppression/follow-up, outcome, learning en health evidence.

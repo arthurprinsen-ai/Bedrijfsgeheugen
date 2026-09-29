@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-29T14:20:00Z',
+  observedAt:'2026-09-29T15:16:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,44 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'email-reply-revenue-learning-v1',
+      label:'Commercial Email Reply → Revenue Learning',
+      authority:'gmail+supabase',
+      owner:'Powerhouse Growth & Revenue OS / powerhouse-commercial-learning-v1',
+      status:'LIVE_PROVEN_RUNTIME',
+      inputs:Object.freeze(['executed autonomous email actions','Gmail provider readback','inbound replies','sales outcomes','realized revenue']),
+      outputs:Object.freeze(['reply classification','suppression or deduplicated follow-up','sales outcome','revenue-first learning','next-best-action calibration']),
+      runtime:Object.freeze({
+        replies:'public.powerhouse_email_reply_events',
+        suppressions:'public.powerhouse_email_contact_suppressions',
+        learning:'public.powerhouse_email_learning_stats',
+        learningRefresh:'public.powerhouse_refresh_email_learning_stats()',
+        outboundGuard:'public.powerhouse_email_suppression_guard_v1',
+        canonicalOwner:'Powerhouse Growth & Revenue OS',
+        skill:'.agents/skills/powerhouse-relationship-revenue/SKILL.md'
+      }),
+      productionEvidence:Object.freeze({
+        gmailReadbackVerified:true,
+        replyEventsVerified:2,
+        didTelecomClass:'objection_need',
+        didTelecomSuppressed:true,
+        techFestivalClass:'objection_timing',
+        techFestivalNurture:true,
+        parallelReplyCronCount:0,
+        runtimeReadbackAt:'2026-09-29T14:59:12.875008Z'
+      }),
+      invariants:Object.freeze({
+        sentIsNotTerminal:true,
+        providerMessageIdIdempotency:true,
+        suppressionBeforeSideEffect:true,
+        noDuplicateFollowup:true,
+        revenueFirstOptimization:true,
+        noParallelReplyScheduler:true,
+        noParallelCrmOrLearningStore:true,
+        cycleGuardNotWeakened:true
+      })
+    }),
     Object.freeze({
       id:'green-assurance-v1',
       label:'Powerhouse Truthful Green Assurance',

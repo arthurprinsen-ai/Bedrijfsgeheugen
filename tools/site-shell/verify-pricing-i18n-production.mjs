@@ -86,21 +86,11 @@ async function run() {
   try {
     const nonce = encodeURIComponent(process.env.GITHUB_SHA || Date.now());
     await page.goto(baseUrl.replace(/\/$/,'') + '/prijzen?interaction_proof=' + nonce, { waitUntil:'domcontentloaded', timeout:30_000 });
-    // Behavior-first readiness: implementation markers are diagnostic only.
-    // The terminal proof below clicks the actual controls and validates their
-    // visible postconditions, so waiting on a private ready-v3 flag would turn
-    // a healthy UI into a false-red when implementation details drift.
     await page.waitForFunction(() => {
-      return Boolean(
-        document.querySelector('[data-bg-stage="loss"]')
-        && document.querySelector('[data-bg-stage-panel="loss"]')
-        && document.querySelector('[data-bg-price-tab="run"]')
-        && document.querySelector('[data-bg-billing="yearly"]')
-        && document.querySelector('[data-monthly][data-yearly]')
-      );
+      const root = document.documentElement;
+      return root?.dataset?.bgPricingInteractions === 'ready-v3'
+        && Boolean(document.querySelector('[data-bg-stage="loss"]'));
     }, null, { timeout:20_000 });
-
-    const readinessMarker = await page.locator('html').getAttribute('data-bg-pricing-interactions').catch(()=>null);
 
     // Lifecycle toggle must change the actual visible panel.
     // Read geometry directly from the DOM so a missing control fails with explicit state,
@@ -184,7 +174,7 @@ async function run() {
     }
 
     if (errors.length) throw new Error('Browser page errors: ' + JSON.stringify(errors));
-    console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'nl',roundtrip:'nl-en-nl',readiness_marker:readinessMarker||'absent-but-behavior-proven'}));
+    console.log(JSON.stringify({status:'PRICING_I18N_PRODUCTION_BEHAVIOR_PROVEN',url:page.url(),stage:'loss',group:'run',billing:'yearly',locale:'nl',roundtrip:'nl-en-nl'}));
   } finally {
     await browser.close();
   }
