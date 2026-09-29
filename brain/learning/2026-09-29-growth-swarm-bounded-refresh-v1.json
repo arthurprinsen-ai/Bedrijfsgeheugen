@@ -1,0 +1,22 @@
+{
+  "fingerprint": "growth-swarm-bounded-refresh-v1",
+  "date": "2026-09-29",
+  "problem": "Hourly commercial execution timed out because Growth Swarm expanded broad person and company intelligence before selecting commercial candidates.",
+  "root_cause": "Candidate pruning happened after population-wide intelligence expansion.",
+  "prevention": "Build the candidate company set first from fresh triggers, opportunities, predictive signals, scans and outcomes, then enrich only those candidates.",
+  "compiler": {
+    "failure_class": "COMMERCIAL_QUERY_UNBOUNDED_FANOUT",
+    "scope": "GROWTH_SWARM",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-growth-swarm-bounded-refresh-v1.test.mjs",
+      "tests/brain-powerhouse-growth-swarm-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "implementation": "supabase/migrations/20260929165000_growth_swarm_bounded_refresh_v1.sql"
+  }
+}
