@@ -236,3 +236,9 @@ Verplicht:
 - bestaande dedupe, consent, suppression, cooldown, identity en revenue-truth gates blijven intact;
 - population-wide materialisatie via `powerhouse_person_intelligence_v1` of `powerhouse_company_intelligence_v1` vóór candidate pruning is een regressie;
 - commerciële schedulers moeten binnen hun bounded runtime-window eindigen en evidence terugschrijven.
+
+
+## Source-backed outbound convergence — 2026-09-29
+Fingerprint: `powerhouse-source-backed-all-channels-v1`.
+
+Growth Swarm routes the same evidence spine into channel-native actions: company LinkedIn and blog from market/problem evidence; email and LinkedIn DM only from account/person-relevant triggers plus relationship context; personal LinkedIn from public topic evidence only when identity/truth gates permit; Instagram from public daily-life friction. Every send/post preserves source lineage and returns reply, engagement, lead, order and revenue outcomes to prioritization.
