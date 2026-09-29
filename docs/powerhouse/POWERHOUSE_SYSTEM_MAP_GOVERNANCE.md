@@ -116,3 +116,26 @@ When a material capability produces a prediction, recommendation, benchmark, ris
 - a System Map relation from capability to portal surface.
 
 A technically live backend capability with no relevant customer-facing projection is `WRITEBACK_INCOMPLETE`. Do not centralize everything into a generic AI-insights page; place each intelligence signal where it is operationally relevant.
+
+
+## Canonical public website CMS shell
+
+The public website shell is now an explicit Powerhouse control surface rather than page-local presentation.
+
+Canonical geometry:
+- desktop shell/container: 1220px;
+- primary navigation height: 72px;
+- “Meer” mega-menu: centered, max 1190px;
+- solutions mega-menu: 850px;
+- desktop gutter: 20px;
+- mobile gutter: 12px.
+
+Header, navigation, footer and mega-menu must remain pixel-aligned across all public routes. New routes inherit this shell. Route-local geometry overrides are prohibited because they create CMS drift.
+
+Authority:
+- `tools/bouw-v18-production-core.mjs`
+- `tools/site-shell/v18-megamenu-browser-check.mjs`
+- `tests/v18-megamenu-regression-lock.test.mjs`
+- `docs/sitestandaard.md`
+
+The System Map exposes this as `canonicalWebsiteChrome`. Any future sitewide shell migration must update these authorities in one lineage and prove route parity before terminal production status.
