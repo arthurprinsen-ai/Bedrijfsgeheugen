@@ -1,11 +1,51 @@
 {
-  "version": "POWERHOUSE-LEARNING-v1",
-  "id": "2026-09-29-sitewide-canonical-chrome-geometry-v1",
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
   "fingerprint": "website|canonical-chrome|cms-pixel-parity|v1",
-  "observed_at": "2026-09-29T07:15:00Z",
+  "obligation_id": "sitewide-canonical-chrome-geometry-v1",
   "problem": "Public routes could inherit different historical shell dimensions, allowing header, navigation, footer and mega-menu geometry to drift by route.",
   "root_cause": "Multiple generations of site chrome retained different width and height values while the live V18 shell had become the effective production authority.",
-  "decision": "Make V18 production chrome the single geometry authority and enforce route-to-route browser parity.",
+  "fix": "Make the V18 production chrome the single geometry authority, lock canonical dimensions centrally, and enforce route-to-route browser parity.",
+  "failed_approaches": [
+    "Keeping legacy 1120px component geometry alongside the live 1220px V18 shell.",
+    "Fixing individual routes with page-specific header, footer or menu overrides.",
+    "Testing mega-menu contrast and width without also asserting header, navigation and footer parity."
+  ],
+  "prevention": [
+    "Never add route-local geometry overrides for header, navigation, footer or mega-menu.",
+    "All new public routes inherit the canonical shell.",
+    "Representative routes are compared in browser regression checks.",
+    "A geometry contract change requires same-lineage skill, docs, learning and System Map updates."
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_SITE_CHROME_GEOMETRY_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-delivery-website-regression-family.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-delivery-website-regression-family.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "continuity",
+    "system-map-governance"
+  ],
+  "evidence": [
+    "tools/bouw-v18-production-core.mjs",
+    "tools/site-shell/v18-megamenu-browser-check.mjs",
+    "tests/v18-megamenu-regression-lock.test.mjs",
+    "docs/sitestandaard.md",
+    "platform/system-map/canonical-system-map.mjs",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-system-map-governance/SKILL.md"
+  ],
   "contract": {
     "desktop_shell_width_px": 1220,
     "navigation_height_px": 72,
@@ -16,18 +56,5 @@
     "route_tolerance_px": 1,
     "megamenu_tolerance_px": 2
   },
-  "prevention": [
-    "Never add route-local geometry overrides for header, navigation, footer or mega-menu.",
-    "All new public routes inherit the canonical shell.",
-    "Representative routes are compared in browser regression checks.",
-    "A geometry contract change requires same-lineage skill, docs, learning and System Map updates."
-  ],
-  "inherited_by": [
-    "current chats",
-    "future chats",
-    "current agents",
-    "future agents",
-    "website workflows",
-    "Powerhouse System Map"
-  ]
+  "outcome": "ONE_CANONICAL_CMS_LIKE_PUBLIC_CHROME_WITH_SITEWIDE_PIXEL_PARITY"
 }
