@@ -96,3 +96,19 @@ knoppen in plaats van links, omdat de eenpagina-app ermee schakelt.
 Let op: beide controlescripts lezen de bestanden in de repo, niet de gebouwde
 site. Zolang dat zo is, zien ze de schil niet. Ze moeten na de bouwstappen
 draaien.
+
+
+## Canonieke chrome-geometrie — CMS-regel
+
+Sinds 29 september 2026 is de publieke V18-schil één geometrisch CMS-contract. Header, hoofdnavigatie, footer en mega-menu mogen niet per pagina eigen breedtes, hoogtes of horizontale uitlijning krijgen.
+
+Vaste desktopwaarden:
+- shell/container: `1220px`;
+- navigatiehoogte: `72px`;
+- desktop mega-menu “Meer”: maximaal `1190px`, viewport-gecentreerd;
+- oplossingen-mega-menu: `850px`;
+- browserafrondingstolerantie tussen routes: maximaal `1px` voor header/nav/footer en `2px` voor het mega-menu.
+
+Op mobiel wordt dezelfde centrale shell gebruikt met een gutter van `12px`; op grotere viewports is de gutter `20px`. Nieuwe pagina’s erven dit automatisch. Pagina-CSS mag deze waarden niet overschrijven.
+
+De productie-browsergate controleert representatieve routes (`/`, `/wijzigingen`, `/prijzen`, `/product`, `/kennis/`, `/over-ons`) op identieke header-, navigatie-, footer- en mega-menugeometrie. Drift is een releasefout, niet een visuele voorkeur.
