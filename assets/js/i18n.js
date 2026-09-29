@@ -340,17 +340,14 @@
       wrap.className = 'bg-mobile-language';
       wrap.innerHTML = '<span class="bg-mobile-language-label" data-bg-language-label>Language</span>' +
         '<div class="bg-mobile-language-select-wrap">' +
-        '<select class="bg-mobile-language-select" data-bg-language-select aria-label="Language">' +
-        '<option value="nl">Dutch</option><option value="en">English</option></select>' +
-        '<span class="bg-mobile-language-chevron" aria-hidden="true">⌄</span></div>' +
-        '<span class="bg-language-error" data-bg-language-error hidden>Switching language failed. Try again.</span>';
+        '<a class="bg-mobile-language-link" href="' + localizedHref('nl') + '" data-bg-language-option="nl" hreflang="nl">Nederlands</a>' +
+        '<a class="bg-mobile-language-link" href="' + localizedHref('en') + '" data-bg-language-option="en" hreflang="en">English</a></div>';
     } else {
       wrap.className = 'bgkop-language';
-      wrap.innerHTML = '<button type="button" class="bgkop-language-current" data-bg-language-current aria-haspopup="listbox" aria-expanded="false">Taal · NL</button>' +
-        '<div class="bgkop-language-menu" data-bg-language-menu role="listbox" hidden>' +
-        '<button type="button" role="option" data-bg-language-option="nl">Nederlands</button>' +
-        '<button type="button" role="option" data-bg-language-option="en">English</button></div>' +
-        '<span class="bg-language-error" data-bg-language-error hidden>Wisselen mislukt. Probeer opnieuw.</span>';
+      wrap.innerHTML = '<button type="button" class="bgkop-language-current" data-bg-language-current aria-haspopup="menu" aria-expanded="false">Taal · NL</button>' +
+        '<div class="bgkop-language-menu" data-bg-language-menu role="menu" hidden>' +
+        '<a role="menuitem" href="' + localizedHref('nl') + '" data-bg-language-option="nl" hreflang="nl">Nederlands</a>' +
+        '<a role="menuitem" href="' + localizedHref('en') + '" data-bg-language-option="en" hreflang="en">English</a></div>';
     }
     return wrap;
   }
@@ -372,7 +369,7 @@
     for (const mobileHost of mobileHosts) {
       if (mobileHost.querySelector('[data-bg-language-switcher="mobile"]')) continue;
       const control = languageControl('mobile');
-      const auth = mobileHost.querySelector('a[href="/inloggen"], a[href="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
+      const auth = mobileHost.querySelector('a[href$="/inloggen"], a[href$="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
       const cta = mobileHost.querySelector('.bg-mobile-cta, .bg-shared-mobile-cta, .bgkop-mcta');
       mobileHost.insertBefore(control, auth || cta || null);
     }
@@ -399,8 +396,15 @@
     document.addEventListener('click', event => {
       const option = event.target.closest?.('[data-bg-language-option]');
       if (option) {
-        event.preventDefault();
-        setLocale(option.dataset.bgLanguageOption).catch(showLocaleError);
+        const target = normalizeLocale(option.dataset.bgLanguageOption);
+        if (SUPPORTED.has(target)) {
+          try { localStorage.setItem(STORAGE_KEY, target); } catch {}
+          document.cookie = 'bg_locale=' + encodeURIComponent(target) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+        }
+        if (isPortal()) {
+          event.preventDefault();
+          setLocale(target).catch(showLocaleError);
+        }
         return;
       }
       const current = event.target.closest?.('button[data-bg-language-current]');
