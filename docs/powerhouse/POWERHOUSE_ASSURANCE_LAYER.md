@@ -78,3 +78,14 @@ For every structural change:
 `runtime/code -> tests/gates -> deploy/execution -> production/provider readback -> current state -> System Map -> Menselijk Handboek/runbook -> outcome/learning/calibration -> documentation coverage check`
 
 Documentation drift is itself a defect. New production-affecting surfaces must be added to the existing registry contract or CI must fail.
+
+
+## Runtime loop-integrity v3 — 2026-09-29
+
+Fingerprint: `powerhouse|loop-assurance|receipt-bridge|v3`.
+
+The existing `powerhouse-loop-assurance-v2` cron remains the single meta-loop owner and runs every five minutes. It now calls `public.powerhouse_sync_loop_assurance_receipts_v1` before recomputing state.
+
+The bridge is deliberately conservative: it projects only existing cron/runtime truth into stage receipts. It never invents outcome, learning or guard proof. Critical loops with zero fresh stage evidence are RED; partial evidence is AMBER; GREEN requires all required stages fresh.
+
+Fleet truth is exposed by `public.powerhouse_loop_integrity_health_v1`. Open RED/AMBER loops remain canonical `OPERATIONS_ASSURANCE` obligations. This prevents a loop that was once fixed from silently becoming “green by memory” a week later.
