@@ -1,0 +1,28 @@
+{
+  "fingerprint": "bedrijfslek|built-artifact|post-build-regression|v1",
+  "date": "2026-09-29",
+  "problem": "Source-level Bedrijfslek tests could pass while a later website build transformer could still alter the deployed artifact.",
+  "root_cause": "The exact Netlify build-parity job verified generic artifact contracts but did not execute the Bedrijfslek regression after all production transforms.",
+  "prevention": "Run the Bedrijfslek product-led acquisition regression inside the exact Netlify build-parity artifact-verification step, after every production transformer has executed.",
+  "compiler": {
+    "failure_class": "PRODUCTION_ARTIFACT_REGRESSION",
+    "scope": "WEBSITE_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "workflow": ".github/workflows/lane-website.yml",
+    "test": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs",
+    "required_contracts": [
+      "12-question Bedrijfslek survives final build",
+      "no mandatory PII gate",
+      "canonical product/order path survives final build",
+      "V18 selfscan cannot reclaim route ownership"
+    ]
+  }
+}

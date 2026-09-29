@@ -247,7 +247,7 @@ jobs:
           node tools/genereer-sitemap.mjs
           node tools/bouw-release-evidence.mjs
       - name: Verify built artifact contracts
-        run: node --test tests/tabbladen.test.mjs
+        run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
 
   browser:
     needs: [classify, syntax-preflight, preview-ready, netlify-build-parity]

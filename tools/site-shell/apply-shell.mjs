@@ -198,7 +198,11 @@ function eigenHoofd(oud) {
      met precies de twee die er horen te zijn. */
   const scripts = (oud.match(/<script\b[^>]*src="[^"]*"[^>]*><\/script>/gi) || [])
     .filter(tag => TOEGESTANE_SCRIPTS.some(bron => tag.includes(bron)));
-  return { titel: titel && titel[0], desc: desc && desc[0], canon: canon && canon[0], og, tw, data, stijl, koppel, scripts };
+  // First-party interactive page runtimes must opt in explicitly. This keeps the
+  // canonical shell fail-closed for arbitrary inline scripts while preserving
+  // bounded product logic such as the Bedrijfslek engine.
+  const pageRuntime = oud.match(/<script\b[^>]*data-bg-page-runtime=(?:"[^"]*"|'[^']*')[^>]*>[\s\S]*?<\/script>/gi) || [];
+  return { titel: titel && titel[0], desc: desc && desc[0], canon: canon && canon[0], og, tw, data, stijl, koppel, scripts, pageRuntime };
 }
 
 const tekstUit = html => String(html).replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -395,6 +399,14 @@ export function applyCanonicalShell(html, shell, pad, stijlBasis = null) {
   uit = uit.replace('</head>', `${eigenCss}\n${PAGE_SHELL_CSS}\n</head>`);
   uit = ensureKnowledgeNavigation(routerLaatLinksDoor(knoppenNaarLinks(uit)));
   uit = absolutiseerInterneHref(uit);
+  if (eigen.pageRuntime?.length) {
+    for (const runtime of eigen.pageRuntime) {
+      const marker=(runtime.match(/data-bg-page-runtime=(?:"([^"]*)"|'([^']*)')/i)||[])[1] || (runtime.match(/data-bg-page-runtime=(?:"([^"]*)"|'([^']*)')/i)||[])[2] || '';
+      if (!marker || !uit.includes(`data-bg-page-runtime="${marker}"`)) {
+        uit = uit.replace('</body>', runtime + '\n</body>');
+      }
+    }
+  }
   if (metBanner && !uit.includes('id="bgCookie"')) uit = uit.replace('</body>', TOESTEMMINGSBANNER + '\n</body>');
   return markPageSlots(uit);
 }
