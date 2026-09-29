@@ -25,7 +25,7 @@
     "learning",
     "next_selection"
   ],
-  "status": "RUNTIME_IMPLEMENTED_AND_SOURCE_SELECTION_PROVEN",
+  "status": "PRODUCTION_ACTIVATED_SOURCE_TO_SELECTION_AND_OUTCOME_LINEAGE",
   "failure_class": "OUTBOUND_SOURCE_LINEAGE_GAP",
   "evaluation": {
     "historical_replay": [
@@ -73,5 +73,42 @@
       "powerhouse_outbound_source_lineage_v1",
       "powerhouse_sales_actions_source_gate_v1"
     ]
+  },
+  "production_evidence": {
+    "instagram": {
+      "signals_found": 24,
+      "eligible": 12,
+      "next_day_source_backed_winner": true
+    },
+    "linkedin_company": {
+      "next_day_source_backed_recommendation_id": "f206dfeb-1c39-4abb-9911-a3a6b56cfe77",
+      "source_backed_preference_in_orchestrator": true
+    },
+    "blog": {
+      "next_day_source_backed_recommendation_id": "181a725b-2ff5-415a-8970-9535a27adf5b",
+      "source_backed_preference_in_orchestrator": true
+    },
+    "linkedin_personal": {
+      "public_theme_enrichment_requires_verified_personal_truth": true,
+      "invented_first_person_claims_forbidden": true
+    },
+    "email": {
+      "active_rows": 91,
+      "source_context_gate_pass": 91,
+      "source_context_gate_fail": 0
+    },
+    "linkedin_dm": {
+      "active_rows": 243,
+      "source_context_gate_pass": 243,
+      "source_context_gate_fail": 0
+    },
+    "lineage": {
+      "refreshed_rows": 61,
+      "hourly_reconciliation": true
+    },
+    "orchestrator": {
+      "deployed_version": 29,
+      "source_candidate_materialization_before_selection": true
+    }
   }
 }
