@@ -16,7 +16,7 @@
     "Username-only and ig_user_id=me identity resolution remained coupled to the OAuth-selected account and could repeatedly resolve @arthurprinsen even though the canonical Bedrijfsgeheugen Graph user ID was known."
   ],
   "prevention": [
-    "Canonical Instagram Graph User ID is 17841446582493753 and username is bedrijfsgeheugen.nl.",
+    "Canonical Instagram Graph User ID is 28537384955950341 and username is bedrijfsgeheugen.nl.",
     "Probe every candidate Composio connection against the explicit canonical Graph User ID before capability consumption.",
     "Require both provider ID and username to match.",
     "Pass the canonical Graph User ID explicitly to create and publish calls.",
@@ -34,7 +34,7 @@
     ]
   },
   "evidence": {
-    "canonical_graph_user_id": "17841446582493753",
+    "canonical_graph_user_id": "28537384955950341",
     "canonical_username": "bedrijfsgeheugen.nl",
     "wrong_connected_identity": "28328860976766075 / arthurprinsen",
     "regression_contract": "tests/brain-instagram-composio-canonical-identity-v1.test.mjs"

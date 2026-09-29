@@ -401,3 +401,12 @@ Canoniek:
 - user-upload ids `Jt5SWKRgyK3heTqEXH4w`, `w4HhwCmX5GxL8jTGljxe`, `umWzAKt6YBeoVpHlKTtK` zijn expliciet verboden voor Mira;
 - ontbreken of afwijken van deze proof blokkeert de job vóór `VERIFYING`;
 - user photos/video mogen alleen worden gebruikt voor user-identity content wanneer de gebruiker dat expliciet vraagt; nooit als fallback voor Mira.
+
+
+## Live Instagram provider identity — 29 september 2026
+Fingerprint: `instagram-canonical-provider-identity-v3`.
+- Canonieke username: `bedrijfsgeheugen.nl`.
+- Numerieke Graph/Business User ID nooit hardcoden als authority.
+- Vóór provider-write: `INSTAGRAM_GET_USER_INFO(me)`; eis BUSINESS/CREATOR + juiste username.
+- Gebruik dezelfde live `providerUserId` voor create → publish → readback.
+- Bij drift: hervat dezelfde ongepubliceerde claim; maak geen replacement post.
