@@ -84,3 +84,15 @@ Persuasion mag bedrijfscontext, rol, funnelstage en geverifieerde relatie-/trigg
 ## 20/20 terminal proof — 28 september 2026
 Status: `LIVE_PROVEN`.
 The Growth Swarm 20/20 extension is merged through PR #3207 at `46739777d0a5563001a3520e046a29a57b0b9ec8`. Production readback confirms 20/20 executable plays and 8 active persuasion decisions. The Persuasion Revenue Optimizer remains in the canonical chain before provider execution and is measured on terminal commercial outcomes rather than activity volume.
+
+
+## Behavioral landing-page revenue optimization
+Fingerprint: `powerhouse-behavioral-landing-revenue-v2`.
+
+De website is een uitvoerend kanaal van dezelfde Growth Swarm en Persuasion Revenue Optimizer. Geen parallel CRO-systeem.
+
+Powerhouse mag per commerciële pagina autonoom hero, CTA, bewijsvolgorde, bezwaren, risk reversal, section order, progressive disclosure en scan-versus-gesprek kiezen op basis van intentie, funnelstage en gemeten outcomes. De beslisvolgorde blijft: realized revenue -> paid order -> proposal -> meeting -> qualified lead -> CTA progression -> engagement.
+
+De optimizer gebruikt waar passend Cialdini, loss aversion/prospect theory, Fogg, Hick-Hyman, cognitive fluency, commitment ladders, specificity en choice architecture. Persuasion blijft evidence-bounded: geen fake scarcity, fake urgency, fake social proof, hidden cost, confirmshaming of preselected consent.
+
+Elke wijziging loopt via de bestaande `config/seo-growth-loop.json`, `config/seo-optimization-allowlist.json`, protected delivery, productie-readback en outcome learning. Maximaal drie reversibele high-confidence wijzigingen per dagelijkse cyclus. Regressie op trust, accessibility, mobile readability of gekwalificeerde conversie veroorzaakt rollback.
