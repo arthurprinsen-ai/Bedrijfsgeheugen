@@ -27,7 +27,9 @@
     "brain/learning/2026-09-29-instagram-provider-id-drift-v3.json",
     "docs/changes/2026-09-29-instagram-provider-id-drift-v3.md",
     "brain/learning/2026-09-29-live-promotion-governance-closure-v1.json",
-    "brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json"
+    "brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json",
+    "brain/learning/2026-09-29-instagram-live-proven-v1.json",
+    "docs/changes/2026-09-29-instagram-live-proven-v1.md"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -74,7 +76,10 @@
     "deploymentReadyNeverImpliesFunctionalGreen": true,
     "materialLivePromotionAutoWriteback": true,
     "instagramLiveGraphUserIdRuntimeAuthority": true,
-    "instagramObservedNumericIdsAreEvidenceOnly": true
+    "instagramObservedNumericIdsAreEvidenceOnly": true,
+    "instagramPublishedProviderTruthIsTerminal": true,
+    "instagramInternalStateMustConvergeToLiveProven": true,
+    "instagramRepublishForbiddenAfterProviderAck": true
   },
   "lessons": [
     {

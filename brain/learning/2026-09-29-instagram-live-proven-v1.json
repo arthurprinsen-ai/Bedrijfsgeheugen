@@ -1,0 +1,33 @@
+{
+  "fingerprint": "instagram-live-proven-20260929-v1",
+  "date": "2026-09-29",
+  "problem": "Instagram provider publication succeeded while one internal media-job surface still showed REPLACEMENT_REQUIRED and carried stale historical provider-ID evidence.",
+  "root_cause": "Provider truth and internal media-job convergence were separate writeback paths, allowing post-publication state drift after a real provider side effect.",
+  "prevention": "Once provider ack/readback is verified, the provider side effect is terminal. Media job, obligation and channel decision must converge to LIVE_PROVEN/published on the same provider post ID and current provider identity; replacement is forbidden for that daily claim.",
+  "compiler": {
+    "failure_class": "POST_PUBLICATION_STATE_DIVERGENCE",
+    "scope": "INSTAGRAM_PUBLICATION",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-composio-canonical-identity-v1.test.mjs",
+      "tests/brain-social-provider-health-preflight-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "username": "bedrijfsgeheugen.nl",
+    "account_type": "BUSINESS",
+    "provider_user_id": "28537384955950341",
+    "provider_post_id": "18105956765257858",
+    "permalink": "https://www.instagram.com/reel/Dd4MOdTEarq/",
+    "final_media_sha256": "1624616152e89468579fd110db7e68d1900b39bb0309db40acffc7b95000dfa7",
+    "identity_confidence": 0.93,
+    "continuity_confidence": 0.93,
+    "media_job_status": "LIVE_PROVEN",
+    "obligation_status": "LIVE_PROVEN",
+    "channel_state": "published"
+  },
+  "status": "ACTIVE_PREVENTION"
+}
