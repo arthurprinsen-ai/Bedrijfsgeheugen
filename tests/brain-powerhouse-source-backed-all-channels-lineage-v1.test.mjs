@@ -17,3 +17,11 @@ test('all outbound channels share one source/outcome lineage',()=>{
   assert.equal(outbound.cron_jobname,'powerhouse-outbound-source-lineage-hourly-v1');
   assert.deepEqual(outbound.required_stages,['input','decision','action','readback','outcome','measurement','learning','guard']);
 });
+
+test('blog source and SEO keyword must be semantically coherent',()=>{
+  const sql=fs.readFileSync('supabase/migrations/20260929223000_powerhouse_source_backed_blog_semantic_coherence_v1.sql','utf8');
+  assert.ok(sql.includes('semantic_search_match'));
+  assert.ok(sql.includes('shared_problem_token_len_gte_5'));
+  assert.ok(sql.includes("regexp_split_to_table"));
+  assert.ok(sql.includes("lower(z.zoekwoord) like"));
+});
