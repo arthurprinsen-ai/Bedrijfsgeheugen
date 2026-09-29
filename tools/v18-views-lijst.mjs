@@ -25,10 +25,9 @@ export const VIEWS = [
     titel: 'Cases — van vastlopen naar werkend | Bedrijfsgeheugen',
     omschrijving: 'Voorbeelden uit de praktijk: waar mkb-bedrijven op vastliepen en wat er veranderde toen kennis, processen en systemen op orde kwamen.',
     zoekwoord: 'praktijkvoorbeelden digitalisering' },
-  { view: 'selfscan', bestand: 'zelfscan.html', pad: '/zelfscan', naam: 'Zelfscan',
-    titel: 'Gratis zelfscan — waar lekt tijd en kennis weg? | Bedrijfsgeheugen',
-    omschrijving: 'Beantwoord een paar vragen en zie direct waar je organisatie tijd, kennis of grip verliest, met je eerste verbeterprioriteit.',
-    zoekwoord: 'zelfscan digitalisering' },
+  // /zelfscan is now an owned product-led Bedrijfslek experience. It is intentionally
+  // NOT regenerated from the historical V18 embedded selfscan view; the standalone
+  // zelfscan.html is the canonical source and must survive every production build.
   { view: 'frisseblik-scan', bestand: 'frisse-blik.html', pad: '/frisse-blik', naam: 'Frisse blik',
     titel: 'Frisse blik — van eerste gevoel naar verbeteragenda | Bedrijfsgeheugen',
     omschrijving: 'Twaalf dimensies beoordeeld, een businesscase, een benchmark en een volgorde. Verrekend zodra we daarna gaan bouwen.',

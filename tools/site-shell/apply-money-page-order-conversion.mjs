@@ -35,15 +35,18 @@ function replaceAnchorByText(html, textPattern, { href, text, attr }) {
 
 function transformHome(input) {
   let html = String(input);
-  if (/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/zelfscan["']/i.test(html) && /Geen formulier\\. Geen e-mail\\. Geen verplichting\\. Meteen resultaat\\./i.test(html)) return html;
-
   const homeStart = html.indexOf('id="view-home"');
   if (homeStart < 0) throw new Error('money-page conversion: generated homepage view-home not found');
   const homeEnd = html.indexOf('</main>', homeStart);
   if (homeEnd < 0) throw new Error('money-page conversion: generated homepage main boundary not found');
 
   let scope = html.slice(homeStart, homeEnd);
-  const primary = replaceAnchorByText(scope, /^Doe de gratis zelfscan$/i, {
+  if (/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/zelfscan["']/i.test(scope)
+      && /Geen formulier\\. Geen e-mail\\. Geen verplichting\\. Meteen resultaat\\./i.test(scope)) {
+    return html;
+  }
+
+  const primary = replaceAnchorByText(scope, /^(?:Doe de gratis zelfscan|Plan gratis een Frisse Blik(?: →)?)$/i, {
     href: 'https://www.bedrijfsgeheugen.nl/zelfscan',
     text: 'Ontdek gratis waar je bedrijf lekt →',
     attr: 'data-money-primary',
@@ -51,8 +54,8 @@ function transformHome(input) {
   if (!primary.changed) throw new Error('money-page conversion: homepage hero primary CTA anchor not found');
   scope = primary.html;
 
-  const secondary = replaceAnchorByText(scope, /^Bereken je verlies$/i, {
-    href: 'https://www.bedrijfsgeheugen.nl/portal-v2/',
+  const secondary = replaceAnchorByText(scope, /^(?:Bereken je verlies|Bekijk prijzen & aanpak)$/i, {
+    href: 'https://www.bedrijfsgeheugen.nl/product',
     text: 'Bekijk het portaal',
     attr: 'data-money-secondary',
   });
@@ -123,7 +126,29 @@ export async function applyMoneyPageOrderConversion() {
     await writeFile(path, html, 'utf8');
     results.push(path);
   }
-  console.log(`Money-page order conversion applied after final V18 generation: ${results.length} pages`);
+  const finalHome = await readFile('index.html','utf8');
+  const finalHomeStart = finalHome.indexOf('id="view-home"');
+  const finalHomeEnd = finalHome.indexOf('</main>', finalHomeStart);
+  const finalHomeScope = finalHomeStart >= 0 && finalHomeEnd > finalHomeStart
+    ? finalHome.slice(finalHomeStart, finalHomeEnd)
+    : finalHome;
+  if (!/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/zelfscan["']/i.test(finalHomeScope)
+      || !/Geen formulier\\. Geen e-mail\\. Geen verplichting\\. Meteen resultaat\\./i.test(finalHomeScope)) {
+    throw new Error('index.html: FINAL_BEDRIJFSLEK_HOME_ARTIFACT_MISSING');
+  }
+
+  const finalScan = await readFile('zelfscan.html','utf8');
+  const scanGuards = [
+    /Gratis Bedrijfslek/i,
+    /Geen formulier, geen e-mailmuur, geen verkoopgesprek nodig/i,
+    /Drie acties die je morgen kunt nemen/i,
+    /Start met het portaal/i,
+  ];
+  if (scanGuards.some(re => !re.test(finalScan)) || /id=["']scanform["']/i.test(finalScan)) {
+    throw new Error('zelfscan.html: FINAL_BEDRIJFSLEK_SCAN_ARTIFACT_MISSING');
+  }
+
+  console.log(`Money-page order conversion applied after final V18 generation: ${results.length} pages; Bedrijfslek final artifact verified`);
   return results;
 }
 
