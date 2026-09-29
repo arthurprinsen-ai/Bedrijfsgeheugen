@@ -761,3 +761,15 @@ Wanneer een Powerhouse-recovery naar productie is gebracht, geldt voor alle chat
 - hergebruik nooit een historische LIVE/GREEN-status als actuele health zonder nieuwe runtime/provider readback.
 
 Dit valt onder fingerprint `powerhouse|green-assurance|truthful-closed-loop|v1`.
+
+
+## Instagram current-user identity preflight — inherited
+Fingerprint: `instagram-current-user-identity-preflight-v1`.
+
+Alle chats/agents die Instagram-publicatie of herstel raken erven:
+- bepaal canonical Instagram identity via de actuele authenticated connection met `GET_USER_INFO(me)`;
+- behandel provider node `id` en Graph `user_id` als verschillende identifiers;
+- canonical truth is `user_id=17841446582493753`, `username=bedrijfsgeheugen.nl`, `account_type=BUSINESS`;
+- create/publish/readback moeten dezelfde canonical connection gebruiken;
+- schema/ID-drift is een herstelbare pre-provider fout en mag nooit replacement content, Buffer/Make fallback of duplicaatpublicatie veroorzaken;
+- na provider side-effect wordt exact de bestaande media-id gereconcilieerd en `republish_forbidden=true`.
