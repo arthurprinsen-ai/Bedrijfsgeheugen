@@ -1,5 +1,5 @@
 {
-  "version": "POWERHOUSE-TRUTH-STATUS-v1",
+  "version": "POWERHOUSE-TRUTH-STATUS-v1.1",
   "canonical": true,
   "scope": "all-current-and-future-agents-chats-workflows",
   "purpose": "Voorkom dat onbewezen claims als live, klaar, groen, opgelost of geborgd als operationele waarheid worden behandeld.",
@@ -97,5 +97,35 @@
     "user_retry_or_continue_required": false,
     "resume_from_canonical_checkpoint": true,
     "dedupe_side_effects_after_interruption": true
+  },
+  "greenAssurance": {
+    "fingerprint": "powerhouse|truthful-green-assurance|current-evidence-only|v1",
+    "definition": "A status may be green only from current required evidence for the asserted capability, including external/provider/runtime readback where applicable.",
+    "forbidden": [
+      "cosmetic_status_flip",
+      "delete_or_hide_history_to_green",
+      "weaken_required_gate",
+      "treat_optional_vendor_outage_as_whole_brain_failure",
+      "republish_existing_side_effect_for_proof"
+    ],
+    "providerNeutralFailover": {
+      "allowed": true,
+      "requires": [
+        "approved_producer",
+        "fresh_observation",
+        "provenance",
+        "same_capability_contract"
+      ],
+      "singleVendorWholeBrainDependencyDefault": false
+    },
+    "currentHealthScope": {
+      "currentRequiredBlocks": true,
+      "staleRequiredBlocks": true,
+      "missingRequiredBlocks": true,
+      "blockedRequiredBlocks": true,
+      "retiredOptionalHistoricalAuditBlocks": false,
+      "historyRemainsAppendOnly": true
+    },
+    "recomputeAfterRepair": true
   }
 }
