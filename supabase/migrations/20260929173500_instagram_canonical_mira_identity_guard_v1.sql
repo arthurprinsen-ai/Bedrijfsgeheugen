@@ -43,3 +43,6 @@ begin
   new.updated_at:=now();return new;
 end;
 $$;
+
+revoke execute on function public.powerhouse_validate_instagram_media_job_v1() from public,anon,authenticated;
+grant execute on function public.powerhouse_validate_instagram_media_job_v1() to service_role;
