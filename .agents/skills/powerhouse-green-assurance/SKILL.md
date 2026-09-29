@@ -106,3 +106,15 @@ Canonieke shell-integriteit vergelijkt structuur en inhoud, maar routegebonden l
 Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
 
 Green assurance voor publieke websitewijzigingen moet expliciet controleren dat de centrale shell header/footer/megamenu/navigatie én locale-controls bezit; dat NL/EN dezelfde route behoudt; dat i18n-assets versiegebonden zijn; dat exacte main gelijk is aan de productie-deploy; en dat live browser-readback NL→EN→NL op ten minste een money page en een gewone publieke route slaagt. Een groene PR of preview is niet terminal.
+
+
+## Live Assurance governance closure — 2026-09-29
+Fingerprint: `powerhouse|live-assurance-writeback|2026-09-29-v1`.
+
+Na iedere materiële live recovery:
+- schrijf exacte production identity terug naar Brain learning, ledger, menselijke docs en System Map;
+- update relevante skills en AGENTS/chat-contract;
+- voer read-after-write uit op die governance-projections;
+- behandel een exact ready deploy uitsluitend als deploymentbewijs;
+- houd functionele subketens zoals pricing, NL↔EN, content-publicatie en connector-readback onafhankelijk gated;
+- hergebruik nooit historische LIVE/GREEN als actuele health zonder verse provider/runtime readback.
