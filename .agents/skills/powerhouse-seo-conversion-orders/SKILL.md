@@ -130,3 +130,20 @@ All changes flow through `config/seo-growth-loop.json`, `config/seo-optimization
 
 ### Behavioral revenue writeback closure
 De fingerprint `powerhouse-behavioral-landing-revenue-v2` is onderdeel van de bestaande Powerhouse authority. Bij materiële wijzigingen moeten runtime-config, deze skill-laag, Brain learning, `docs/brain/component-registry.json`, `platform/system-map/canonical-system-map.mjs`, menselijke change/ledger-documentatie en regressietests in dezelfde delivery-lineage synchroon blijven. Een runtime- of copywijziging zonder deze writeback is niet terminal.
+
+## Chat- en agent-erfenis — order-first production contract
+Fingerprint: `commercial-website|orders-first|existing-pages|v1`.
+
+Deze skill is bindend voor alle huidige en toekomstige chats, agents, scheduled runs en website-/growth-nodes die commerciële pagina's wijzigen.
+
+Verplicht:
+- bestaande canonieke money page eerst;
+- primaire conversieroute alleen wijzigen op evidence, met gratis Frisse Blik als huidige default kwalificatiestap voor de MKB-money pages;
+- public-copywijzigingen dragen in dezelfde lineage hun Engelse static-i18n cache entries;
+- final build authority `tools/site-shell/apply-money-page-order-conversion.mjs` blijft leidend voor gegenereerde pagina's;
+- protected main + Netlify exact-main + browser/readback zijn nodig voor LIVE;
+- outcomes worden gemeten tot paid order en realized revenue;
+- maximaal drie reversibele evidence-gated optimalisaties per dagelijkse cyclus;
+- geen dark patterns of onbewezen commerciële claims.
+
+Een chat-only instructie is geen borging. De volgende agent moet deze regel uit repository-preflight kunnen ontdekken.
