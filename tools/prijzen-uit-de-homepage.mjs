@@ -9,6 +9,7 @@ import { applyHomepageAutomationLayout } from './fix-homepage-automation-layout.
 import { applyHomepageContextSliderReadability } from './site-shell/fix-homepage-context-slider.mjs';
 import { ensureKnowledgeNavigation, verifyKnowledgeNavigation } from './site-shell/ensure-knowledge-nav.mjs';
 import { applyLedgerPublicationMarkers } from './content-growth/publication-marker-build-guard.mjs';
+import { applyMoneyPageOrderConversion } from './site-shell/apply-money-page-order-conversion.mjs';
 
 const DOEL = 'https://www.bedrijfsgeheugen.nl/prijzen';
 const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
@@ -144,6 +145,9 @@ export async function voerPricingShellPipelineUit(stage = 'all') {
     // authority for publication identity. Restore only identities that already
     // exist in the canonical publication ledger, after every HTML normalizer.
     await applyLedgerPublicationMarkers();
+    // Apply revenue-first CTA/risk-reversal after every V18 generator/normalizer,
+    // so the final deploy artifact cannot silently restore an older conversion path.
+    await applyMoneyPageOrderConversion();
   }
 }
 

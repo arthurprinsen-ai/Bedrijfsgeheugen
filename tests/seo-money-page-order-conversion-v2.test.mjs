@@ -48,3 +48,17 @@ test('paid follow-up is positioned after free qualification rather than before i
   assert.match(ai,/Frisse Blik \(gratis\)[\s\S]{0,250}Bedrijfsgeheugen Scan/i);
   assert.match(pricing,/Begin gratis met een Frisse Blik/i);
 });
+
+
+test('final build authority preserves the order path after V18 regeneration',()=>{
+  const finalizer=readFileSync('tools/site-shell/apply-money-page-order-conversion.mjs','utf8');
+  const pipeline=readFileSync('tools/prijzen-uit-de-homepage.mjs','utf8');
+
+  assert.match(pipeline,/applyMoneyPageOrderConversion/);
+  assert.match(finalizer,/id="view-home"/);
+  assert.match(finalizer,/Doe de gratis zelfscan/);
+  assert.match(finalizer,/Plan gratis een Frisse Blik/);
+  assert.match(finalizer,/product\\.html/);
+  assert.match(finalizer,/data-money-order-contract/);
+  for(const path of moneyPages) assert.ok(finalizer.includes(path), `${path}: missing from finalizer authority`);
+});
