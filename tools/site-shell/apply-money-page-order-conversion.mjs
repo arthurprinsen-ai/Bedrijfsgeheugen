@@ -35,7 +35,7 @@ function replaceAnchorByText(html, textPattern, { href, text, attr }) {
 
 function transformHome(input) {
   let html = String(input);
-  if (/data-money-primary[^>]+href=["']\/zelfscan["']/i.test(html) && /Geen formulier\\. Geen e-mail\\. Geen verplichting\\. Meteen resultaat\\./i.test(html)) return html;
+  if (/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/zelfscan["']/i.test(html) && /Geen formulier\\. Geen e-mail\\. Geen verplichting\\. Meteen resultaat\\./i.test(html)) return html;
 
   const homeStart = html.indexOf('id="view-home"');
   if (homeStart < 0) throw new Error('money-page conversion: generated homepage view-home not found');
@@ -44,7 +44,7 @@ function transformHome(input) {
 
   let scope = html.slice(homeStart, homeEnd);
   const primary = replaceAnchorByText(scope, /^Doe de gratis zelfscan$/i, {
-    href: '/zelfscan',
+    href: 'https://www.bedrijfsgeheugen.nl/zelfscan',
     text: 'Ontdek gratis waar je bedrijf lekt →',
     attr: 'data-money-primary',
   });
@@ -52,7 +52,7 @@ function transformHome(input) {
   scope = primary.html;
 
   const secondary = replaceAnchorByText(scope, /^Bereken je verlies$/i, {
-    href: '/portaal/demo',
+    href: 'https://www.bedrijfsgeheugen.nl/portaal/demo',
     text: 'Bekijk het portaal',
     attr: 'data-money-secondary',
   });
