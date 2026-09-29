@@ -757,3 +757,26 @@ Voor alle huidige en toekomstige chats, agents, skills en website-workflows geld
 Fingerprint: `powerhouse|live-assurance-writeback|2026-09-29-v1`.
 
 Alle chats en agents moeten na een materiële live recovery de terminale productie-identiteit en truth-boundary terugschrijven naar Brain learning, relevante skills, AGENTS/chat-contract, continuity-policy, ledger/docs en System Map, gevolgd door read-after-write. Een ready deploy bewijst deployment; functionele subketens behouden hun eigen bewijs-gates. Historische LIVE/GREEN-status mag nooit als actuele health worden hergebruikt zonder verse readback.
+
+
+## Instagram provider identity — inherited contract
+Fingerprint: `instagram-canonical-provider-identity-v3`.
+
+Alle chats/agents die Instagram publiceren:
+- behandelen `bedrijfsgeheugen.nl` als canonieke accountidentiteit;
+- ontdekken de numerieke Business/Graph user ID live via `INSTAGRAM_GET_USER_INFO(me)`;
+- eisen BUSINESS/CREATOR vóór provider-side effects;
+- gebruiken dezelfde live `providerUserId` voor create → publish → readback;
+- hardcoden geen historische provider-ID als publication authority;
+- hervatten bij drift dezelfde idempotente daily claim en maken nooit een duplicate replacement.
+
+
+### Instagram live-evidence — 29 september 2026
+De herstel-lineage is productie-bewezen op @bedrijfsgeheugen.nl:
+- provider media ID: `18105956765257858`;
+- permalink: `https://www.instagram.com/reel/Dd4MOdTEarq/`;
+- provider account type: BUSINESS;
+- live provider user ID bij terminal readback: `28537384955950341`;
+- media-job terminal state: `LIVE_PROVEN`;
+- published obligations zijn `republish_forbidden=true`.
+Gebruik deze evidence alleen als historische closure; actuele health/identity moet altijd opnieuw provider-side worden gelezen.
