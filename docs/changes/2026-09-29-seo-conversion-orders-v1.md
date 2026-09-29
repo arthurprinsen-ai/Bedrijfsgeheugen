@@ -68,3 +68,16 @@ De conversion-to-orders aanpak is verder uitgerold naar de resterende relevante 
 Deze pagina's sturen primair naar een gratis Frisse Blik van 30 minuten met expliciete risk reversal. Generieke contact-first CTA's zijn op deze routes naar secundair of later in de funnel verschoven. De AI-adoptie authority in `site/seo-order-map.json` is hiermee gelijkgetrokken met de zichtbare primaire conversieroute.
 
 De bestaande regressietest bewaakt nu ook deze tweede golf.
+
+## Build-authority borging
+De V18-build reconstrueert de homepage uit een pinned payload en genereert onder meer de productpagina opnieuw. Daarom is alleen bron-HTML aanpassen onvoldoende als blijvende conversieborging.
+
+De canonieke build sluit nu af met `applyMoneyPageOrderConversion()` vanuit `tools/site-shell/apply-money-page-order-conversion.mjs`. Deze finalizer draait ná de V18 generators, shell-normalisatie, SEO Order Engine en publicatie-markers. Hij:
+- herstelt op de gegenereerde homepage de primaire hero-route naar de gratis Frisse Blik;
+- injecteert op de gegenereerde productpagina een expliciete gratis kwalificatiestap;
+- valideert alle negen priority money pages op Frisse-Blik-primary, expliciete risk reversal en geen generiek contact als primary CTA;
+- markeert het uiteindelijke deploy-artifact met `data-money-order-contract="money-page-order-conversion-v2"`;
+- faalt de build als een latere generator deze commerciële contracten terugdraait.
+
+Dit maakt de gegenereerde deploy-output, en niet alleen de leesbare repository-HTML, onderdeel van de regressiegrens.
+
