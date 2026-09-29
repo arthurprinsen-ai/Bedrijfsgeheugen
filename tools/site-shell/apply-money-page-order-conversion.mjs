@@ -35,7 +35,7 @@ function replaceAnchorByText(html, textPattern, { href, text, attr }) {
 
 function transformHome(input) {
   let html = String(input);
-  if (/data-money-primary[^>]+href=["']\/zelfscan["']/i.test(html) && /Geen formulier\. Geen e-mail\. Meteen resultaat\./i.test(html)) return html;
+  if (/data-money-primary[^>]+href=["']\/zelfscan["']/i.test(html) && /Geen formulier\\. Geen e-mail\\. Geen verplichting\\. Meteen resultaat\\./i.test(html)) return html;
 
   const homeStart = html.indexOf('id="view-home"');
   if (homeStart < 0) throw new Error('money-page conversion: generated homepage view-home not found');
@@ -59,7 +59,7 @@ function transformHome(input) {
   if (!secondary.changed) throw new Error('money-page conversion: homepage hero secondary CTA anchor not found');
   scope = secondary.html;
 
-  const marker = '<p data-money-risk-reversal="true"><strong>Geen formulier. Geen e-mail. Meteen resultaat.</strong> In 3 minuten zie je je Bedrijfslek-score, grootste risico’s en drie concrete acties. Daarna beslis je pas of je verder wilt.</p>';
+  const marker = '<p data-money-risk-reversal="true"><strong>Geen formulier. Geen e-mail. Geen verplichting. Meteen resultaat.</strong> In 3 minuten zie je je Bedrijfslek-score, grootste risico’s en drie concrete acties. Daarna beslis je pas of je verder wilt.</p>';
   const secondaryIndex = scope.indexOf('data-money-secondary');
   const secondaryClose = scope.indexOf('</a>', secondaryIndex);
   if (secondaryClose < 0) throw new Error('money-page conversion: homepage secondary CTA close not found');
