@@ -4,7 +4,7 @@ async function expectVisible(locator, label) {
   if (!await locator.isVisible().catch(()=>false)) throw new Error(label + ' is not visible');
 }
 
-async function getVisibleMobileLanguage(page) {
+async function getVisibleMobileLanguageControl(page, locale) {
   const v18Drawer = page.locator('#v18MobileDrawer').first();
   if (await v18Drawer.count()) {
     const expanded = await v18Drawer.getAttribute('aria-hidden');
@@ -14,8 +14,6 @@ async function getVisibleMobileLanguage(page) {
       await v18Toggle.click();
       await v18Drawer.waitFor({ state:'visible', timeout:5_000 });
     }
-    const select = v18Drawer.locator('[data-bg-language-select]').first();
-    if (await select.isVisible().catch(()=>false)) return select;
   }
 
   const legacyMenu = page.locator('#bgkopMob').first();
@@ -27,35 +25,48 @@ async function getVisibleMobileLanguage(page) {
   const sharedMobileNav = page.locator('#bgSharedMobileNav').first();
   if (await sharedMobileNav.count()) await sharedMobileNav.waitFor({ state:'visible', timeout:5_000 }).catch(()=>{});
 
-  const candidates = [
+  const linkCandidates = [
+    page.locator('#v18MobileDrawer [data-bg-language-option="' + locale + '"]').first(),
+    page.locator('#bgSharedMobileNav [data-bg-language-option="' + locale + '"]').first(),
+    page.locator('#bgkopMob [data-bg-language-option="' + locale + '"]').first(),
+    page.locator('[data-bg-language-option="' + locale + '"]:visible').first(),
+  ];
+  for (const candidate of linkCandidates) {
+    if (await candidate.isVisible().catch(()=>false)) return { kind:'link', locator:candidate };
+  }
+
+  const selectCandidates = [
+    page.locator('#v18MobileDrawer [data-bg-language-select]').first(),
     page.locator('#bgSharedMobileNav [data-bg-language-select]').first(),
     page.locator('#bgkopMob [data-bg-language-select]').first(),
     page.locator('[data-bg-language-select]:visible').first(),
   ];
-  for (const candidate of candidates) {
-    if (await candidate.isVisible().catch(()=>false)) return candidate;
+  for (const candidate of selectCandidates) {
+    if (await candidate.isVisible().catch(()=>false)) return { kind:'select', locator:candidate };
   }
 
   const diagnostics = await page.evaluate(() => ({
     v18Drawer: document.getElementById('v18MobileDrawer')?.getAttribute('aria-hidden') ?? null,
-    v18Selects: document.querySelectorAll('#v18MobileDrawer [data-bg-language-select]').length,
-    legacySelects: document.querySelectorAll('#bgkopMob [data-bg-language-select]').length,
-    sharedSelects: document.querySelectorAll('#bgSharedMobileNav [data-bg-language-select]').length,
-    allSelects: document.querySelectorAll('[data-bg-language-select]').length,
+    languageLinks: document.querySelectorAll('[data-bg-language-option]').length,
+    languageSelects: document.querySelectorAll('[data-bg-language-select]').length,
   }));
-  throw new Error('visible mobile language select is missing after opening mobile navigation: ' + JSON.stringify(diagnostics));
+  throw new Error('visible mobile language control is missing after opening mobile navigation: ' + JSON.stringify(diagnostics));
 }
 
 async function switchPublicLocale(page, locale, expectedPath) {
-  const selector = await getVisibleMobileLanguage(page);
-  await Promise.all([
-    page.waitForURL(url => {
-      const path = new URL(url).pathname.replace(/\/$/, '') || '/';
-      const expected = expectedPath.replace(/\/$/, '') || '/';
-      return path === expected;
-    }, { timeout:20_000 }),
-    selector.selectOption(locale),
-  ]);
+  const control = await getVisibleMobileLanguageControl(page, locale);
+  const navigation = page.waitForURL(url => {
+    const path = new URL(url).pathname.replace(/\/$/, '') || '/';
+    const expected = expectedPath.replace(/\/$/, '') || '/';
+    return path === expected;
+  }, { timeout:20_000 });
+
+  if (control.kind === 'link') {
+    await Promise.all([navigation, control.locator.click()]);
+  } else {
+    await Promise.all([navigation, control.locator.selectOption(locale)]);
+  }
+
   await page.locator('body').waitFor({ state:'visible', timeout:15_000 });
   await page.waitForTimeout(300);
   if ((await page.locator('html').getAttribute('lang')) !== locale) {
