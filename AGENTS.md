@@ -827,3 +827,10 @@ Iedere huidige en toekomstige materiële Powerhouse-capability, workflow, schedu
 - een nieuwe capability zonder Loop Assurance-registratie en evidencecontract is niet production-ready.
 
 Canonieke runtime: `public.powerhouse_loop_assurance_state_v1`, `public.powerhouse_loop_assurance_receipts_v1`, `public.powerhouse_refresh_loop_assurance_v1()`.
+
+
+## Powerhouse loop integrity v3 — inherited
+
+Fingerprint: `powerhouse|loop-assurance|receipt-bridge|v3`.
+
+Every current and future chat/agent inherits the five-minute Powerhouse loop-assurance contract. A scheduler being active is not proof that a business loop is closed. Required loop stages are `input → decision → action → readback → outcome → measurement → learning → guard`; only canonical runtime/provider/cron evidence may satisfy them. Critical loops with zero fresh stage evidence are RED. Partial evidence is AMBER. GREEN requires all required stage evidence fresh. Never synthesize outcome/learning/guard receipts and never weaken immutable obligation identity to force a write.
