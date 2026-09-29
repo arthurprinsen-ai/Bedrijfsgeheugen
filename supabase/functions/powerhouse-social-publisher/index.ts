@@ -499,10 +499,16 @@ async function linkedinCompanyAuthorUrn(db:any):Promise<string>{
   if(urns.length!==1)throw new Error('COMPOSIO_LINKEDIN_COMPANY_AUTHOR_AMBIGUOUS');
   return urns[0];
 }
+function assertLinkedInCompanyContentPolicy(commentary:string){
+  const normalized=clean(commentary).toLowerCase();
+  if(/\bprinters?\b/i.test(normalized))throw new Error('LINKEDIN_COMPANY_RETIRED_STORY_FAMILY:printer');
+}
+
 async function publishLinkedInCompanyViaComposio(db:any,art:any){
   const {apiKey,accountId,userId}=await composioLinkedInCompanyContext(db);
   const author=await linkedinCompanyAuthorUrn(db);
   const commentary=clean(art.body);
+  assertLinkedInCompanyContentPolicy(commentary);
   const created=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary,visibility:'PUBLIC',lifecycleState:'PUBLISHED'});
   const createdData=created?.data||created;
   const postUrn=clean(createdData?.x_restli_id)||deepPickLinkedInPostUrn(createdData);
