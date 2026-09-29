@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse-behavioral-landing-revenue-v2",
+  "date": "2026-09-29",
+  "status": "TESTING",
+  "scope": "WEBSITE_CRO_REVENUE",
+  "failure_class": "LANDING_PAGE_REVENUE_OPTIMIZATION",
+  "root_cause": "Landing-page persuasion models existed partially across SEO and outreach, but page composition, behavioral decisioning, downstream revenue weighting and Powerhouse Brain projection were not one machine-enforced canonical capability.",
+  "decision": "Extend CAPABILITY_SEO_CONVERSION_ORDERS and existing Growth Swarm/Persuasion authority instead of creating a parallel CRO stack.",
+  "prevention": [
+    "All commercial landing-page persuasion must inherit the canonical behavioral revenue skill.",
+    "Page changes must optimize terminal commercial outcomes over raw clicks.",
+    "No dark patterns or unsupported proof.",
+    "Maximum three reversible evidence-gated changes per daily cycle.",
+    "Capability must remain projected in the Brain component registry and inherited by Growth Swarm and Persuasion skills."
+  ],
+  "canonical_runtime": "config/seo-growth-loop.json",
+  "allowlist": "config/seo-optimization-allowlist.json",
+  "brain_component": "CAPABILITY_SEO_CONVERSION_ORDERS",
+  "documentation": "docs/powerhouse/behavioral-landing-revenue-engine-v2.md",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
+    ]
+  },
+  "promotion_rule": "Promote from TESTING only after protected merge, production readback and downstream outcome evidence."
+}
