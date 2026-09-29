@@ -8,3 +8,5 @@ De injector bepaalt nu per bestand de logische route en schrijft symmetrische li
 Bestaande mobiele switchers worden bovendien herschreven in plaats van stil overgeslagen. Daardoor kan een oude foutieve link niet blijven staan.
 
 Terminale waarheid blijft: protected merge → exact production → pricing-interacties → NL→EN→NL browser-readback.
+
+Aanvullend is de publieke runtime nu een tweede guard: iedere NL/EN-anchor wordt op de actuele pagina opnieuw naar de equivalente locale-route gezet. De foutieve legacy fallback-concatenatie is syntactisch hersteld.
