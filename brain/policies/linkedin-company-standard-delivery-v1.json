@@ -1,0 +1,69 @@
+{
+  "version": "linkedin-company-standard-delivery-v1",
+  "status": "ACTIVE",
+  "channel": "linkedin_company",
+  "canonical_author_urn": "urn:li:organization:18234216",
+  "audience": [
+    "owner",
+    "CEO",
+    "MT",
+    "director"
+  ],
+  "allowed_topic_classes": [
+    "execution",
+    "decision_follow_up",
+    "process_friction",
+    "knowledge_flow",
+    "data_ai",
+    "governance",
+    "commercial_performance",
+    "risk",
+    "adoption",
+    "measurable_improvement"
+  ],
+  "forbidden_personal_topic_classes": [
+    "personal_diary",
+    "household_friction",
+    "family_logistics",
+    "private_whatsapp",
+    "personal_app_irritation",
+    "printer_scanner_story"
+  ],
+  "retired_story_families": [
+    "printer",
+    "employee_absence_or_departure__knowledge_only_in_heads"
+  ],
+  "uniqueness": {
+    "cross_channel_history": true,
+    "exact_hash": true,
+    "normalized_hash": true,
+    "semantic_story_family": true,
+    "canonical_story_fingerprint": true,
+    "user_feedback_retires_story_family": true
+  },
+  "auth": {
+    "authority": "production_powerhouse_composio",
+    "chat_local_state_is_diagnostic_only": true,
+    "require_live_token_health": true,
+    "active_metadata_is_not_health": true,
+    "select_company_capability_separately_from_personal": true,
+    "ignore_stale_revoked_wrong_scope_aliases": true,
+    "safe_self_heal_before_human_oauth": true,
+    "human_oauth_only_when_provider_requires_explicit_consent": true,
+    "buffer_fallback": false,
+    "make_fallback": false
+  },
+  "user_deleted_recovery": {
+    "explicit_user_deletion_is_verified_outcome": true,
+    "deleted_story_remains_consumed": true,
+    "max_same_day_replacements": 1,
+    "replacement_requires_new_story_fingerprint": true,
+    "replacement_requires_materially_different_business_topic": true
+  },
+  "terminality": {
+    "durable_provider_urn_required": true,
+    "persist_urn_immediately": true,
+    "republish_after_provider_create": false,
+    "readback_403_is_not_publish_failure": true
+  }
+}
