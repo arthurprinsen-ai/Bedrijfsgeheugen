@@ -51,6 +51,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-email-reply-learning-v1.test.mjs"
     ]
   }
 }
