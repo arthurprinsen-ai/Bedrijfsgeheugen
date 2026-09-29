@@ -58,9 +58,10 @@
     "runtime_view": "public.powerhouse_loop_integrity_health_v1"
   },
   "evidence": [
-    "production Supabase migration applied successfully",
-    "live assurance controller executed after migration",
-    "fleet-level readback returned 12 registered loops with truthful RED/AMBER state",
-    "Powerhouse Assurance, Supabase Security and RLS regression gates passed on PR lineage"
+    "Production Supabase migration powerhouse_loop_assurance_receipt_bridge_v3 applied successfully.",
+    "Production fix powerhouse_loop_assurance_receipt_bridge_v3_fix applied after live record-variable failure detection.",
+    "Production fix powerhouse_loop_assurance_obligation_identity_fix_v3 applied after immutable-obligation guard detection.",
+    "Security hardening powerhouse_loop_assurance_v3_security_hardening applied successfully.",
+    "Live refresh completed and fleet readback reported 12 loops: 0 GREEN, 11 AMBER, 1 RED; incomplete evidence was not promoted to GREEN."
   ]
 }
