@@ -47,6 +47,8 @@ on:
       - 'tools/delivery/**'
       - 'brain/policies/**'
       - 'AGENTS.md'
+      - 'platform/system-map/canonical-system-map.mjs'
+      - 'tools/brain-delivery-system.mjs'
   workflow_dispatch:
     inputs:
       deploy:
