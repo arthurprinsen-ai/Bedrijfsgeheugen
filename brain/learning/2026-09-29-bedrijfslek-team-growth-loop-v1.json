@@ -1,0 +1,17 @@
+{
+  "fingerprint": "bedrijfslek|product-led-growth|team-challenge|v1",
+  "date": "2026-09-29",
+  "principle": "A free diagnostic should turn one completed result into another qualified user before asking for PII.",
+  "implementation": {
+    "loop": [
+      "instant individual value",
+      "shareable score challenge",
+      "colleague completes same scan",
+      "automatic score/risk comparison",
+      "reshare or portal conversion"
+    ],
+    "privacy": "Challenge URL contains only score, risk category and campaign attribution; no name, email or company data.",
+    "conversion": "The portal/order CTA remains visible after the comparison."
+  },
+  "guard": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+}
