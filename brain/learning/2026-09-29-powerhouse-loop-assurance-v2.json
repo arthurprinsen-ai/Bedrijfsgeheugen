@@ -17,5 +17,20 @@
     "missing or stale stage evidence is at least AMBER",
     "missing/inactive scheduler or runtime older than 2x cadence is RED",
     "non-GREEN state becomes canonical OPERATIONS_ASSURANCE work instead of a chat-only warning"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-loop-assurance-v2.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-loop-assurance-v2.test.mjs"
+    ]
+  }
 }
