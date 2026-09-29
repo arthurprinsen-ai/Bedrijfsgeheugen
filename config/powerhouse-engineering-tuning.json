@@ -1,11 +1,11 @@
 {
   "fingerprint": "powerhouse-engineering-tuning-v1",
-  "updated_at": "2026-09-28T18:05:00Z",
-  "max_parallel_packages": 4,
-  "candidate_batch_window_seconds": 20,
+  "updated_at": "2026-09-29T11:28:10.995Z",
+  "max_parallel_packages": 3,
+  "candidate_batch_window_seconds": 30,
   "fast_path_target_seconds": 45,
   "speculative_execution_threshold": 0.75,
-  "source": "baseline",
+  "source": "daily-autonomous-optimizer",
   "safety": {
     "required_release_gate": true,
     "security_gate": true,
