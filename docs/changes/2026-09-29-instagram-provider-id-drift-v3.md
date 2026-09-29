@@ -1,0 +1,5 @@
+# Instagram provider identity drift v3 — 29 september 2026
+
+De publisher gebruikte een historische numerieke Instagram provider-ID. De actieve canonieke verbinding bewijst `bedrijfsgeheugen.nl`, BUSINESS, current provider user ID `28537384955950341`.
+
+Structureel: live `INSTAGRAM_GET_USER_INFO(me)` vóór iedere provider-write; eis juiste username + BUSINESS/CREATOR; bind create → publish → readback aan dezelfde live providerUserId; hervat dezelfde daily claim bij drift.
