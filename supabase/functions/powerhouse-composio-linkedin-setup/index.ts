@@ -94,7 +94,7 @@ Deno.serve(async(req:Request)=>{
     const canonical=healthy.filter(x=>clean(x.account?.alias)==='bedrijfsgeheugen-canonical');
     const selectable=canonical.length===1?canonical:healthy;
     if(selectable.length!==1){
-      const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_LINKEDIN_HEALTHY_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,personal_ready:false,company_ready:false};
+      const result={ready:false,state:'AMBIGUOUS',reason:'COMPOSIO_LINKEDIN_CONNECTION_AMBIGUOUS',api_key_present:true,active_accounts:accounts.length,healthy_accounts:healthy.length,rejected_accounts:rejected,personal_ready:false,company_ready:false};
       await writeState(db,'BLOCKED_AMBIGUOUS',result);return json({ok:true,...result},409);
     }
 
