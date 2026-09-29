@@ -567,12 +567,20 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     productionReadbackRequired:true
   }),
   socialPublicationGovernance:Object.freeze({
-    fingerprint:'powerhouse-global-semantic-example-uniqueness-v4',
-    rule:'Every social post must use a genuinely new underlying story family; paraphrase, channel changes or visual changes do not reset uniqueness.',
-    scope:'cross-date-cross-channel',
+    fingerprint:'linkedin-company-historical-dedupe-v5',
+    rule:'Every social post must use a genuinely new underlying story family; LinkedIn company and personal both require durable historical story fingerprints before provider write.',
+    scope:'cross-date-cross-channel-all-chats-agents',
     providerCreateConsumesStory:true,
     userReportedDuplicateRetiresStoryFamily:true,
-    knownRetiredExamples:Object.freeze(['printer'])
+    canonicalCompanyNormalization:Object.freeze(['urls','hashtags','publication-date-markers','punctuation-formatting-noise','whitespace']),
+    cumulativeGates:Object.freeze(['raw-hash','normalized-hash','shingle-similarity','canonical-story-fingerprint','semantic-story-family']),
+    atomicDailyWriterIsHistoricalNoveltyProof:false,
+    retryReconnectReplacementWriteForbidden:true,
+    runtimeAuthority:'supabase/functions/powerhouse-social-publisher/index.ts',
+    regressionAuthority:'tests/brain-linkedin-company-historical-dedupe-v1.test.mjs',
+    learningAuthority:'brain/learning/2026-09-29-linkedin-company-historical-dedupe-v1.json',
+    skillAuthority:'.agents/skills/linkedin-composio-publisher/SKILL.md',
+    knownRetiredExamples:Object.freeze(['printer','employee_absence_or_departure__knowledge_only_in_heads'])
   }),
   userFacingReportingContract:Object.freeze({
     fingerprint:'delivery|user-facing-reporting|terminal-outcomes-only|v1',
