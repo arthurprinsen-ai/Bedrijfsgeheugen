@@ -141,11 +141,14 @@ async function composioLinkedInCompanyContext(db:any){
       const me=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_MY_INFO',{});
       const personId=deepPickString(me?.data||me,['id']);
       if(!personId||personId!=='N1twnCNCrD')continue;
-      const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
-      const raw=JSON.stringify(companies?.data||companies);
-      const targetOrgId=targetOrg.replace(/^urn:li:organization:/,'');
-      if(!raw.includes(targetOrg) && !raw.includes(targetOrgId))continue;
-      candidates.push({apiKey,accountId,userId,personId,alias:clean(item?.alias),isDefault:item?.is_default===true,createdAt:clean(item?.created_at)});
+      let organizationReadVerified=false;
+      try{
+        const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
+        const raw=JSON.stringify(companies?.data||companies);
+        const targetOrgId=targetOrg.replace(/^urn:li:organization:/,'');
+        organizationReadVerified=raw.includes(targetOrg)||raw.includes(targetOrgId);
+      }catch(_organizationReadError){}
+      candidates.push({apiKey,accountId,userId,personId,alias:clean(item?.alias),isDefault:item?.is_default===true,createdAt:clean(item?.created_at),organizationReadVerified});
     }catch(error){
       lastError=error instanceof Error?error.message:String(error);
     }
@@ -157,12 +160,12 @@ async function composioLinkedInCompanyContext(db:any){
     || Number(b.isDefault)-Number(a.isDefault)
     || b.createdAt.localeCompare(a.createdAt)
   );
-  return {...candidates[0],targetOrg,connection_source:'organization_capability_probe'};
+  return {...candidates[0],targetOrg,connection_source:candidates[0].organizationReadVerified?'organization_capability_probe':'canonical_org_write_candidate'};
 }
 
 async function preflightLinkedInCompanyComposio(db:any){
   const {apiKey,accountId,userId,targetOrg}=await composioLinkedInCompanyContext(db);
-  return {provider:'composio',provider_auth_preflight:'passed',provider_auth_checked_at:new Date().toISOString(),account_id:accountId,organization_urn:targetOrg,organization_capability_verified:true};
+  return {provider:'composio',provider_auth_preflight:'passed',provider_auth_checked_at:new Date().toISOString(),account_id:accountId,organization_urn:targetOrg,organization_capability_verified:true,organization_read_capability_required_for_write:false};
 }
 
 async function preflightLinkedInCompanyViaComposio(db:any){
