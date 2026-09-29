@@ -24,3 +24,5 @@ Promotie van deze learning naar PROVEN vereist productie-readback plus gemeten C
 - Systeemkaart/component-registry bevat `CAPABILITY_SEO_CONVERSION_ORDERS`.
 - Machine-enforcement: `tests/brain-seo-conversion-orders-v1.test.mjs`.
 - Brain-learning: `brain/learning/2026-09-29-seo-conversion-orders-v1.json`.
+
+Scope-contract refreshed after skill/system-map registration so delivery hygiene evaluates the complete canonical change set.
