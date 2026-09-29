@@ -48,7 +48,7 @@ grant select,insert,update on public.powerhouse_mira_problem_lineage_v1 to servi
 
 create or replace function public.powerhouse_materialize_mira_problem_recommendation_v1(p_date date)
 returns jsonb
-language plpgsql security definer set search_path=public,pg_catalog
+language plpgsql security definer set search_path = public, pg_catalog
 as $$
 declare
   s public.powerhouse_mira_problem_signals_v1%rowtype;
@@ -107,7 +107,7 @@ grant execute on function public.powerhouse_materialize_mira_problem_recommendat
 
 create or replace function public.powerhouse_sync_mira_problem_lineage_v1(p_date date)
 returns jsonb
-language plpgsql security definer set search_path=public,pg_catalog
+language plpgsql security definer set search_path = public, pg_catalog
 as $$
 declare w uuid; p text; m jsonb;
 begin
@@ -140,7 +140,7 @@ grant execute on function public.powerhouse_sync_mira_problem_lineage_v1(date) t
 -- Give source-backed Mira problems precedence over static calendar seeds while preserving the immutable winner contract.
 create or replace function public.powerhouse_select_instagram_daily_winner_v1(p_date date)
 returns jsonb
-language plpgsql security definer set search_path=public,pg_catalog
+language plpgsql security definer set search_path = public, pg_catalog
 as $$
 declare v_existing public.powerhouse_instagram_daily_winners_v1%rowtype; v_rec public.powerhouse_content_recommendations%rowtype; v_format text; v_score_version text:='instagram-mira-source-aware-score-v2';
 begin
