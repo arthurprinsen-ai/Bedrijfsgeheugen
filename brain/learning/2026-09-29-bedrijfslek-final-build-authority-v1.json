@@ -20,11 +20,11 @@
   "evidence": {
     "production_sha": "9a78a9679849d0d5e8e68574df4cb2bb8d001794",
     "production_observation": "Netlify was ready on exact main, while live / and /zelfscan still exposed the old conversion experience.",
-    "regression_test": "tests/bedrijfslek-final-build-authority.test.mjs"
+    "regression_test": "tests/brain-bedrijfslek-final-build-authority-v1.test.mjs"
   },
   "evaluation": {
     "historical_replay": [
-      "tests/bedrijfslek-final-build-authority.test.mjs"
+      "tests/brain-bedrijfslek-final-build-authority-v1.test.mjs"
     ]
   },
   "compiler": {
