@@ -87,7 +87,21 @@
     "/exact-online-koppeling",
     "/api-koppeling-laten-maken",
     "/power-bi-implementatie",
-    "/ai-automatisering-mkb"
+    "/ai-automatisering-mkb",
+    "index",
+    "prijzen",
+    "product",
+    "bedrijfsprocessen-automatiseren",
+    "afas-koppeling",
+    "exact-online-koppeling",
+    "api-koppeling-laten-maken",
+    "power-bi-implementatie",
+    "ai-automatisering-mkb",
+    "twinfield-koppeling",
+    "ai-adoptie",
+    "bedrijfsgeheugen",
+    "voor-mkb"
   ],
-  "conversion_path": "free Frisse Blik 30 min -> evidence/fit -> paid Scan or scoped implementation -> outcome learning"
+  "conversion_path": "free Frisse Blik 30 min -> evidence/fit -> paid Scan or scoped implementation -> outcome learning",
+  "last_application_wave": "2026-09-29-money-pages-wave2"
 }

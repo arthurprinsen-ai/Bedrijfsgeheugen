@@ -58,3 +58,13 @@ Tegelijk zijn conversierisico's verwijderd: een betaalde Frisse Blik werd op é�
 
 Regressie: `tests/seo-money-page-order-conversion-v2.test.mjs` borgt de primaire Frisse-Blik-route, risk reversal en de genoemde evidence-safe correcties.
 
+## Money-page conversion wave 2
+De conversion-to-orders aanpak is verder uitgerold naar de resterende relevante bestaande commerciële pagina's:
+- Twinfield-koppeling;
+- AI-adoptie;
+- Bedrijfsgeheugen;
+- Voor MKB.
+
+Deze pagina's sturen primair naar een gratis Frisse Blik van 30 minuten met expliciete risk reversal. Generieke contact-first CTA's zijn op deze routes naar secundair of later in de funnel verschoven. De AI-adoptie authority in `site/seo-order-map.json` is hiermee gelijkgetrokken met de zichtbare primaire conversieroute.
+
+De bestaande regressietest bewaakt nu ook deze tweede golf.
