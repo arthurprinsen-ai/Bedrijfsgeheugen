@@ -248,6 +248,31 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'seo-conversion-orders',
+      label:'SEO Conversion-to-Orders Engine',
+      authority:'github+netlify+supabase',
+      owner:'seo-demand',
+      status:'ACTIVE_EVIDENCE_GATED',
+      inputs:Object.freeze(['Search Console evidence','DataForSEO evidence','production page state','CTA/lead/order/revenue outcomes']),
+      outputs:Object.freeze(['commercial SEO opportunity','bounded reversible money-page change','conversion outcome','learning pattern']),
+      runtime:Object.freeze({
+        skill:'.agents/skills/powerhouse-seo-conversion-orders/SKILL.md',
+        growthLoop:'config/seo-growth-loop.json',
+        allowlist:'config/seo-optimization-allowlist.json',
+        moneyPageAuthority:'site/seo-order-map.json',
+        learning:'brain/learning/2026-09-29-seo-conversion-orders-v1.json'
+      }),
+      invariants:Object.freeze({
+        trafficIsNotTerminalOutcome:true,
+        existingCanonicalMoneyPageFirst:true,
+        maxDailyAutonomousChanges:3,
+        reversibleEvidenceGatedOnly:true,
+        productionReadbackRequired:true,
+        revenueClaimRequiresObservedOutcome:true,
+        noDoorwayThinSpamOrDarkPatterns:true
+      })
+    }),
+    Object.freeze({
       id:'daily-full-connection-enrichment',
       label:'Daily Full Connection Enrichment',
       authority:'supabase',
