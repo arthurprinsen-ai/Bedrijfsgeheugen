@@ -89,3 +89,8 @@ De productie-gate moet lifecycle, plan, billing en NL→EN→NL daadwerkelijk be
 Fingerprint: `i18n|mobile-switcher|same-route-authority|2026-09-29-v1`.
 
 Voor publieke NL/EN-switching geldt permanent: taal wisselen verandert alleen de locale, niet de functionele route. Dus `/x ↔ /en/x`; alleen de homepage gebruikt `/ ↔ /en/`. Build-time injectors moeten route-aware zijn en bestaande stale switchers herschrijven. Production green vereist een echte NL→EN→NL browser-roundtrip.
+
+
+### Runtime guard voor locale-links
+
+Naast build-time route-aware injectie normaliseert de publieke runtime elke taal-link opnieuw naar de equivalente actuele route. Daarmee blijven NL/EN-switches correct wanneer oude DOM-fragmenten of gecachte markup aanwezig zijn. De injector zelf moet vóór promotie syntactisch uitvoerbaar zijn.
