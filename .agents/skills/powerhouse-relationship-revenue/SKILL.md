@@ -121,3 +121,13 @@ Niet-onderhandelbaar:
 - Warm/consented outreach, bestaande relatie/opportunity follow-up, due follow-up en bestaande klant-/partnercontext mogen autonoom worden uitgevoerd wanneer de bestaande gates groen zijn.
 - LinkedIn persoonlijk blijft personal-life-only; commercieel air-cover hoort op de Bedrijfsgeheugen-bedrijfspagina. Instagram blijft Mira-only.
 - Iedere kanaalactie schrijft terug: provider/readback → reply/meeting/scan/proposal/order → realized revenue → learning → volgende prioritering.
+
+
+## Bounded relationship revenue refresh — 29 september 2026
+Fingerprint: `relationship-revenue-bounded-refresh-v1`.
+
+De relationship-engine selecteert eerst actuele kandidaten uit recente runtime-events, open opportunities, recente outcomes en recent bijgewerkte warme relaties. Pas daarna worden relationship score, evidence score, research need en activation readiness berekend.
+
+Population-wide materialisatie van `powerhouse_relationship_revenue_intelligence_v1`, `powerhouse_person_intelligence_v1` of `powerhouse_company_intelligence_v1` vóór candidate pruning is een performance-regressie.
+
+De bestaande harde regels blijven gelden: max 3 acties/30 dagen per persoon, geen generieke pitch, externe outreach alleen via de afzonderlijk geautoriseerde consent/relationship executor, identity/destination verification en realized-revenue truth.
