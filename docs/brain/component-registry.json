@@ -1,6 +1,6 @@
 {
   "registry_version": "brain-components-v1",
-  "generated_at": "2026-09-29T06:05:00Z",
+  "generated_at": "2026-09-29T06:45:00Z",
   "source_authority": "config/powerhouse-runtime-authority.json",
   "source_authority_version": "POWERHOUSE-RUNTIME-AUTHORITY-v1",
   "source_authority_fingerprint": "powerhouse-agent-scheduler-authority-drift-2026-09-17-v1",
@@ -1546,19 +1546,23 @@
     {
       "key": "CAPABILITY_SEO_CONVERSION_ORDERS",
       "id": "seo:conversion-orders-v1",
-      "name": "SEO Conversion-to-Orders Engine v1",
+      "name": "SEO + Behavioral Conversion-to-Orders Engine v2",
       "role": "CORTEX",
       "cortex": "SEO_DEMAND",
-      "authority": "seo_conversion_order_optimization",
+      "authority": "seo_conversion_behavioral_revenue_optimization",
       "inputs": [
         "Evidence",
         "CurrentState",
-        "Outcome"
+        "Outcome",
+        "VisitorContext",
+        "FunnelState"
       ],
       "outputs": [
         "Opportunity",
         "Decision",
-        "Pattern"
+        "Pattern",
+        "ExperienceDecision",
+        "ExperimentOutcome"
       ],
       "status": "active",
       "brain_contract_version": "brain.v1",
@@ -1567,11 +1571,29 @@
         "qualified_leads",
         "orders",
         "realized_revenue",
-        "organic_conversion_rate"
+        "organic_conversion_rate",
+        "paid_orders",
+        "qualified_order_probability",
+        "trust_guardrails"
       ],
       "canonical_skill": ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
       "canonical_runtime": "config/seo-growth-loop.json",
-      "guardrail": "max 3 reversible evidence-gated changes per daily cycle"
+      "guardrail": "max 3 reversible evidence-gated changes per daily cycle; no dark patterns",
+      "linked_capabilities": [
+        "powerhouse-persuasion-revenue-optimizer-v1",
+        "powerhouse-growth-swarm-v1"
+      ],
+      "behavioral_models": [
+        "Cialdini",
+        "loss-aversion",
+        "prospect-theory",
+        "Fogg",
+        "Hick-Hyman",
+        "cognitive-fluency",
+        "commitment-ladder",
+        "choice-architecture"
+      ],
+      "autonomy": "contextual evidence-gated page composition with rollback"
     }
   ]
 }
