@@ -683,3 +683,19 @@ All chats/agents inherit the Bedrijfsgeheugen company-channel contract:
 - an explicitly user-deleted company post may receive one same-day replacement only with a new story fingerprint and a materially different business topic;
 - Buffer/Make are never LinkedIn recovery fallbacks;
 - provider create URN is persisted immediately and prevents duplicate retries.
+
+
+## LinkedIn company standard delivery — inherited
+
+Fingerprint: `linkedin-company-standard-delivery-v1`.
+
+All chats/agents inherit:
+- company LinkedIn uses business/CEO/MT content only; personal-life examples are rejected before generation;
+- `printer` is a globally retired social story family after explicit user duplicate/deletion feedback;
+- historical semantic dedupe runs across channels before every company provider write;
+- production Powerhouse/Composio state is canonical; chat-local connection state is diagnostic only;
+- stale/revoked/wrong-scope aliases are ignored and safe auth repair is autonomous;
+- human OAuth is surfaced only when LinkedIn itself requires explicit consent;
+- an explicitly user-deleted company post may receive one same-day replacement only with a new story fingerprint and materially different business topic;
+- Buffer/Make are never LinkedIn recovery fallbacks;
+- provider create URN is persisted immediately and prevents duplicate retries.
