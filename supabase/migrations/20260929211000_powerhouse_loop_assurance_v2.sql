@@ -70,7 +70,7 @@ begin
 end;
 $$;
 
-revoke all on function public.powerhouse_record_loop_stage_v1(text,text,jsonb,timestamptz) from public, anon, authenticated;
+revoke execute on function public.powerhouse_record_loop_stage_v1(text,text,jsonb,timestamptz) from public, anon, authenticated;
 
 create or replace function public.powerhouse_refresh_loop_assurance_v1(p_now timestamptz default now())
 returns table(out_loop_key text, out_status text, out_reason text)
@@ -238,7 +238,7 @@ begin
 end;
 $$;
 
-revoke all on function public.powerhouse_refresh_loop_assurance_v1(timestamptz) from public, anon, authenticated;
+revoke execute on function public.powerhouse_refresh_loop_assurance_v1(timestamptz) from public, anon, authenticated;
 
 insert into public.powerhouse_loop_assurance_registry_v1
 (loop_key,label,runtime_source,cron_jobname,expected_cadence_minutes,critical,evidence_contract)
