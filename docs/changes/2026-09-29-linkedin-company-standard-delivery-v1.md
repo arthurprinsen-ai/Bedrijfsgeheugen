@@ -16,3 +16,6 @@ Bedrijfsgeheugen LinkedIn now has one inherited delivery contract for content id
 - A successful provider create URN remains the anti-duplicate fence.
 
 This rule is inherited through AGENTS.md, the LinkedIn publication skill, Brain policy/learning and the Powerhouse System Map.
+
+## Final inheritance projection
+The permanent rule is projected into both `AGENTS.md` and `.agents/skills/linkedin-composio-publisher/SKILL.md` under obligation `linkedin-company-standard-delivery-20260929`.
