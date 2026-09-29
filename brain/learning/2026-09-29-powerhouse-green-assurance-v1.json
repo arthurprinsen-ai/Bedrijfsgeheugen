@@ -46,5 +46,17 @@
     "canary": [
       "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
     ]
+  },
+  "root_cause": "Powerhouse health could remain non-green because wiring/activity, provider-specific dependency state, legacy telemetry, required evidence freshness, open terminal obligations and canonical lineage were not evaluated as separate truth dimensions.",
+  "evidence": {
+    "observed": "During assurance, all 32 intelligence layers were wired and all 18 required jobs active while architecture/content health still remained non-green.",
+    "repaired": [
+      "required source freshness restored with truthful readback",
+      "external intelligence made provider-neutral instead of Tavily-single-vendor",
+      "retired Buffer removed from critical green gate",
+      "identified commercial-progression lineage gap repaired",
+      "system-map/agent/skill/truth contracts updated in one canonical lineage"
+    ],
+    "boundary": "This evidence proves the operating rule and applied repairs; it does not claim all future runtime health is permanently green."
   }
 }
