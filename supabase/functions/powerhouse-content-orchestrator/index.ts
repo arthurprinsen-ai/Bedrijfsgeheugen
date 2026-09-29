@@ -114,7 +114,9 @@ function validPersonalSource(row:any) {
 function recommendationScore(row:any, channel:string) {
   const topic = clean(row?.topic_key).toLowerCase();
   const target = clean(row?.target_channel).toLowerCase();
+  const sourceBacked = row?.evidence?.source_backed === true;
   let score = num(row?.priority) + num(row?.evidence?.commercial_value) / 10;
+  if (sourceBacked && ['linkedin_company','blog'].includes(channel)) score += 500;
   if (row?.evidence?.source_backed === true) score += 250;
   if (row?.recommendation_type === 'calendar_seed' || row?.recommendation_type === 'evergreen_no_gap_fallback') score -= 80;
   if (channel === 'blog' && (topic === 'blog' || target === 'blog')) score += 120;
