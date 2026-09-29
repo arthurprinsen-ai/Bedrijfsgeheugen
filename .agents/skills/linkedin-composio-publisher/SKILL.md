@@ -354,3 +354,49 @@ When the user confirms deletion:
 ### Terminal standard
 
 A company run is terminal only when one correct Bedrijfsgeheugen business post exists with a durable provider URN, or LinkedIn requires explicit human OAuth that cannot be performed autonomously. Internal alias drift, stale connection pointers, content-selection mistakes and readback 403s are self-healed inside the same lineage.
+
+
+## Bedrijfsgeheugen company standard delivery (2026-09-29)
+
+Fingerprint: `linkedin-company-standard-delivery-v1`.
+
+Mandatory for every current and future chat, agent, scheduler, watchdog and recovery path that creates or publishes `linkedin_company`.
+
+### Company identity gate
+- classify the channel as `linkedin_company`;
+- reject personal-life anecdotes, household friction, printer/scanner stories, family logistics, private WhatsApp/app irritations and other personal-channel material;
+- select a business-relevant subject for owner/CEO/MT/director audiences: execution, decision follow-up, process friction, knowledge flow, data/AI, governance, commercial performance, risk, adoption or measurable improvement;
+- never transform a rejected personal topic into company copy merely by adding a Bedrijfsgeheugen CTA.
+
+Known globally retired story family: `printer`. It is forbidden on both personal and company LinkedIn unless the user explicitly asks to discuss printers as a new factual business subject.
+
+### Historical novelty gate
+- run complete retained-history comparison across personal + company social history before provider write;
+- treat user deletion/duplicate feedback as authoritative negative evidence;
+- retire the underlying story family, not just exact wording;
+- choose a materially different business topic automatically;
+- never reuse a story by changing hook, CTA, hashtags, URL, examples or sentence order.
+
+### Production auth gate and self-healing
+The production Powerhouse runtime is the authority, not a chat-local connector list.
+For each company run:
+1. read canonical production setup state and the exact daily obligation;
+2. if a durable provider URN already exists, do not republish;
+3. enumerate production LinkedIn connected accounts and select only a canonical identity with organization-write capability;
+4. verify live token health before write; metadata `ACTIVE` alone is insufficient;
+5. ignore stale, revoked, wrong-scope, personal-only and duplicate aliases;
+6. repair existing production auth autonomously when possible and resume the same claim;
+7. only when LinkedIn itself requires fresh human OAuth consent may the run surface one reconnect action;
+8. after reconnect, re-prove provider capability in production runtime and resume the same obligation.
+
+### User-deleted company post recovery
+A user explicitly deleting a company post is a verified outcome, not a readback failure.
+- mark the deleted provider URN as `USER_DELETED`/retired evidence;
+- keep that story family consumed/retired;
+- permit at most one replacement for the same Amsterdam-day company obligation;
+- require a new story fingerprint and full historical uniqueness;
+- never resurrect or reuse the deleted text/topic;
+- persist the replacement provider URN as the terminal daily side effect.
+
+### Terminal standard
+A company run is terminal only when one correct Bedrijfsgeheugen business post exists with a durable provider URN, or LinkedIn requires explicit human OAuth that cannot be performed autonomously. Internal alias drift, stale connection pointers, content-selection mistakes and readback 403s are self-healed inside the same lineage.
