@@ -44,5 +44,11 @@
     "brain/policies/powerhouse-agent-continuity-v1.json"
   ],
   "system_map_target": "platform/system-map/canonical-system-map.mjs",
-  "truth_boundary": "This learning proves the governance and production-identity closure rule; it does not promote any functional subchain without its own current readback."
+  "truth_boundary": "This learning proves the governance and production-identity closure rule; it does not promote any functional subchain without its own current readback.",
+  "explicit_projection_targets": {
+    "chat_contract": "config/brain-chat-learning-contract.json",
+    "continuity_skill": ".agents/skills/powerhouse-continuity/SKILL.md",
+    "status": "PROJECTED_IN_SAME_OBLIGATION",
+    "rule": "future chats and continuity/recovery agents inherit live-promotion governance closure without a repeated user request"
+  }
 }
