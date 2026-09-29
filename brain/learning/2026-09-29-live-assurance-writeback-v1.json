@@ -38,5 +38,22 @@
       "tests/brain-material-writeback-closure-guard.test.mjs"
     ]
   },
-  "truth_boundary": "This record proves governance writeback and historical exact deployment identity; it does not assert future runtime health without fresh readback."
+  "truth_boundary": "This record proves governance writeback and historical exact deployment identity; it does not assert future runtime health without fresh readback.",
+  "root_cause": "The live recovery itself reached production, but its governance projection was not durably present on current main after the earlier documentation PR closed without merge. This created a gap between verified runtime/deployment truth and the canonical reusable knowledge available to future chats and agents.",
+  "evidence": {
+    "prior_pr": 3349,
+    "prior_pr_state": "closed_without_merge",
+    "current_main_before_repair": "448db8bf38a1cab2c28c710ab5ac1c6aeb471f80",
+    "production_identity": {
+      "main": "204269314239ea2cc56a00a0da1ed87a5056415f",
+      "netlify_deploy": "6abbdf73c4c7d80008d9811f",
+      "state": "ready",
+      "context": "production"
+    },
+    "governance_gap_observed": [
+      "live assurance learning file absent on current main",
+      "new live-assurance markers absent from AGENTS/continuity/Green Assurance/System Map on current main"
+    ],
+    "recovery": "Reconstructed the exact prior governance delta from repository history and rebased it onto the latest current main without redesigning or creating a parallel control plane."
+  }
 }
