@@ -153,3 +153,15 @@ Rules:
 - cap autonomous daily SEO/CRO changes at three reversible evidence-gated changes;
 - route measured CTA -> lead -> order -> revenue outcomes back into the same Growth Swarm/Brain learning;
 - raw traffic, impressions and rankings are intermediary evidence, never terminal commercial success.
+
+
+## Behavioral landing-page revenue optimization
+Fingerprint: `powerhouse-behavioral-landing-revenue-v2`.
+
+De website is een uitvoerend kanaal van dezelfde Growth Swarm en Persuasion Revenue Optimizer. Geen parallel CRO-systeem.
+
+Powerhouse mag per commerciële pagina autonoom hero, CTA, bewijsvolgorde, bezwaren, risk reversal, section order, progressive disclosure en scan-versus-gesprek kiezen op basis van intentie, funnelstage en gemeten outcomes. De beslisvolgorde blijft: realized revenue -> paid order -> proposal -> meeting -> qualified lead -> CTA progression -> engagement.
+
+De optimizer gebruikt waar passend Cialdini, loss aversion/prospect theory, Fogg, Hick-Hyman, cognitive fluency, commitment ladders, specificity en choice architecture. Persuasion blijft evidence-bounded: geen fake scarcity, fake urgency, fake social proof, hidden cost, confirmshaming of preselected consent.
+
+Elke wijziging loopt via de bestaande `config/seo-growth-loop.json`, `config/seo-optimization-allowlist.json`, protected delivery, productie-readback en outcome learning. Maximaal drie reversibele high-confidence wijzigingen per dagelijkse cyclus. Regressie op trust, accessibility, mobile readability of gekwalificeerde conversie veroorzaakt rollback.
