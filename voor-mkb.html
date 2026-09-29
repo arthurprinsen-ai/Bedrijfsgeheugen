@@ -212,9 +212,10 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <p class="p-payoff">Minder ruis. Meer <span class="p-mark">resultaat</span>.</p>
     <p class="p-intro">Je bedrijf draait. Maar het draait op mensen die te veel moeten onthouden, op systemen die niet met elkaar praten en op lijstjes die niemand bewaakt. We pakken dat aan waar het het meeste oplevert &mdash; zonder maandenlang traject.</p>
     <div class="p-cta">
-      <a class="btn blauw" href="/contact" onclick="bgEvent('voor-mkb-kennismaking')">Plan een kennismaking &rarr;</a>
-      <a class="btn" href="/frisse-blik">Doe de Frisse blik</a>
+      <a class="btn blauw" data-money-primary href="/frisse-blik" onclick="bgEvent('voor-mkb-frisse-blik')">Check gratis waar jouw bedrijf het meeste laat liggen &rarr;</a>
+      <a class="btn" data-money-secondary href="/prijzen">Bekijk prijzen en aanpak</a>
     </div>
+    <p class="p-intro" style="font-size:.94rem;margin-top:.75rem"><strong>30 minuten, geen verplichting.</strong> We kiezen eerst één probleem met aantoonbare waarde. Pas daarna beslis je of een scan of uitvoering logisch is.</p>
   </div>
   <div class="p-beeld">
     <div class="p-donker">
@@ -268,10 +269,10 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
   </div>
 
   <section class="p-slot">
-    <div><h2>Benieuwd wat er in jouw bedrijf te winnen valt?</h2><p>Begin met de gratis online scan of plan meteen een kennismaking van 30 minuten.</p></div>
+    <div><h2>Benieuwd wat er in jouw bedrijf te winnen valt?</h2><p>Start met een gratis Frisse Blik van 30 minuten. Je krijgt een eerste prioriteit en weet of verder investeren logisch is.</p></div>
     <span style="display:flex;gap:.8rem;flex-wrap:wrap;align-items:center">
-      <a class="btn oranje" href="/contact">Plan een kennismaking &rarr;</a>
-      <a class="btn" style="background:#fff" href="/frisse-blik">Doe eerst de Frisse blik</a>
+      <a class="btn oranje" data-money-primary href="/frisse-blik">Plan de gratis Frisse Blik &rarr;</a>
+      <a class="btn" data-money-secondary style="background:#fff" href="/zelfscan">Doe liever eerst de zelfscan</a>
     </span>
   </section>
 </div></section>
