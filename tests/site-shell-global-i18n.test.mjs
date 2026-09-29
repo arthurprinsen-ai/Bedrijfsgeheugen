@@ -51,8 +51,10 @@ test('global NL/EN runtime and build injector are wired',()=>{
   assert.match(injector,/\.html/);
   assert.match(injector,/v18-mobile-drawer/);
   assert.match(injector,/data-bg-language-switcher="mobile"/);
-  assert.match(injector,/data-bg-language-select/);
-  assert.match(injector,/<option value="en">English<\/option><option value="nl">Dutch<\/option>/);
+  assert.match(injector,/data-bg-language-option="nl"/);
+  assert.match(injector,/data-bg-language-option="en"/);
+  assert.doesNotMatch(injector,/data-bg-language-select/);
+  assert.match(injector,/canonicalRoute\('en',route\)/);
   assert.match(injector,/\/inloggen/);
   assert.match(fn,/runTranslation/);
 });
