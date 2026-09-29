@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-29T07:37:00Z',
+  observedAt:'2026-09-29T08:45:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,50 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'daily-compound-learning',
+      label:'Powerhouse Daily Compound Learning',
+      authority:'supabase+github',
+      owner:'whole-brain-intelligence',
+      status:'LIVE_PROVEN_RUNTIME',
+      inputs:Object.freeze(['verified runtime events','executed actions','existing Outcome Memory','commercial-progression forecasts','forecast calibration']),
+      outputs:Object.freeze(['verified outcomes','action-outcome linkage','forecast resolutions','calibration evidence','daily compound-learning control state']),
+      runtime:Object.freeze({
+        outcomeCandidates:'public.powerhouse_verified_outcome_candidates_v1',
+        capture:'public.powerhouse_capture_verified_outcomes_v1(date)',
+        forecastCandidates:'public.powerhouse_forecast_resolution_candidates_v3',
+        resolver:'public.powerhouse_resolve_forecasts_from_outcomes_v3()',
+        control:'public.powerhouse_daily_compound_learning_control_v1',
+        orchestrator:'public.powerhouse_run_daily_compound_learning_v1(date)',
+        cron:'50 2 * * *',
+        wholeBrainDaily:'.github/workflows/whole-brain-canonical-loop-v2.yml',
+        universalLearningDaily:'.github/workflows/universal-closed-loop-learning.yml'
+      }),
+      productionEvidence:Object.freeze({
+        migrationAppliedVersion:'20260929084144',
+        outcomesBefore:6,
+        salesOutcomesAfter:24,
+        outcomeMemoryAfter:30,
+        insertedOutcomes:18,
+        actionsLinked:3,
+        executedActionOutcomeCoverage:0.4615,
+        forecastsTotal:1223,
+        forecastsResolved:3,
+        forecastResolutionDebt:0,
+        runtimeReadbackAt:'2026-09-29T08:41:57Z'
+      }),
+      invariants:Object.freeze({
+        verifiedOutcomesOnly:true,
+        testAndSyntheticEvidenceExcluded:true,
+        noInventedRevenue:true,
+        silenceIsNotNegativeOutcome:true,
+        noParallelOutcomeStore:true,
+        noParallelForecastStore:true,
+        nextDecisionMustConsumeLearning:true,
+        wholeBrainIntegrityDaily:true,
+        universalClosedLoopDaily:true
+      })
+    }),
     Object.freeze({
       id:'self-improvement-layer',
       label:'Powerhouse Self-Improvement Layer',
@@ -180,7 +224,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         graphEdges:25164,
         companiesInContext:17328,
         actions:2883,
-        outcomeMemories:12,
+        outcomeMemories:30,
         compoundCompanies:17328,
         runtimeReadbackAt:'2026-09-28T17:54:27Z',
         portalContextualProjectionMergeSha:'0b4547f33a74ce911a0d324a53404cff1cc6e737',
