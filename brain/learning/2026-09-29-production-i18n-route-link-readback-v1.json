@@ -1,0 +1,32 @@
+{
+  "fingerprint": "production-i18n-route-link-readback-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production i18n readback still expected the retired mobile select even after public language switching moved to deterministic locale links.",
+  "root_cause": "The production verifier encoded an obsolete UI control shape, so a correct route-driven implementation could fail verification by timeout.",
+  "prevention": [
+    "Production i18n readback must accept the canonical route-driven data-bg-language-option links.",
+    "Verifier keeps legacy select support only as a compatibility fallback.",
+    "NL→EN→NL proof remains same-route and checks html lang after navigation."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-i18n-route-link-readback.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-production-i18n-route-link-readback.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
