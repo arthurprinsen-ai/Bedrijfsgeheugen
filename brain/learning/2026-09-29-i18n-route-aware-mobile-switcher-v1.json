@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "i18n|mobile-switcher|same-route-authority|2026-09-29-v1",
+  "date": "2026-09-29",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production pricing browser proof reached the exact deploy and pricing interactions, but NL→EN navigation timed out because the injected mobile English link on /prijzen still pointed to /en/ instead of /en/prijzen.",
+  "root_cause": "tools/site-shell/apply-i18n.mjs injected one hard-coded mobile language block with href=/ and href=/en/ into all source pages. build-localized-routes rewrote language switchers only inside generated locale directories, while the canonical Dutch unprefixed route continued to serve the root source file. Therefore Dutch non-home routes kept homepage-only language links.",
+  "evidence": {
+    "production_source_snapshot_run": 36586996584,
+    "production_failure": "page.waitForURL timeout during first NL→EN pricing switch",
+    "public_readback": "/prijzen mobile English link resolved to /en/ instead of /en/prijzen",
+    "exact_deploy_precondition": "pricing runtime/content proof had already passed before locale navigation failed"
+  },
+  "prevention": [
+    "The source-level i18n injector must derive the current canonical route from the file path.",
+    "Dutch and English mobile links must target the same logical page: /route ↔ /en/route.",
+    "Existing injected switchers must be rewritten, not merely skipped, so stale homepage-only links cannot survive.",
+    "Generated /en/* inputs must strip the locale prefix before computing targets to prevent /en/en/*.",
+    "Production closure still requires NL→EN→NL browser navigation on pricing plus mandatory public routes."
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_I18N_ROUTE_DRIFT",
+    "scope": "WEBSITE_I18N",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-route-aware-mobile-switcher-v1.test.mjs",
+      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-green-assurance/SKILL.md"
+  ],
+  "truth_boundary": "A route-aware build contract is not production proof until the exact production browser readback passes."
+}
