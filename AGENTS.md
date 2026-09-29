@@ -633,3 +633,16 @@ Canonieke authorities:
 - regression: `tests/brain-linkedin-company-historical-dedupe-v1.test.mjs`.
 
 Deze regel is onderdeel van Powerhouse/One Brain en wordt automatisch geërfd; lokale chatcontext mag hem niet afzwakken of overschrijven.
+
+## LinkedIn production OAuth authority — no chat-session false blockers
+
+Fingerprint: `linkedin-production-runtime-authority-over-chat-session-v1`.
+
+Voor alle huidige en toekomstige chats/agents geldt bij Bedrijfsgeheugen LinkedIn:
+- beschouw een chat-lokale Composio-connection of alias nooit als canonieke productie-authority;
+- lees vóór iedere OAuth-melding of reconnect eerst `linkedin-composio-setup-current-state-v1` uit het canonieke Brain en de actuele `content_publication_obligations` voor datum + kanaal;
+- een duurzaam LinkedIn extern ID/URN of `provider_create_success=true` is terminal publicatiebewijs en zet `republish_forbidden=true`; latere 401/403 mag nooit tot reconnect + replacement post leiden;
+- wanneer de Powerhouse-runtime `ACTIVE` + `company_ready=true` meldt met de canonieke organisatie `urn:li:organization:18234216` en `w_organization_social`, is een fout in de chat-lokale connector uitsluitend lokale credential-divergentie;
+- vraag alleen menselijke OAuth wanneer de productie-runtime zelf géén capability-proven gezonde verbinding heeft en er nog géén provider-side-effect bestaat;
+- na reconnect telt alleen live provider-capability in de productie-runtime als herstelbewijs; een connectorlabel `ACTIVE` is onvoldoende;
+- maak nooit extra aliases of parallelle LinkedIn-writers als herstelmechanisme.

@@ -1,0 +1,59 @@
+{
+  "version": "linkedin-production-runtime-authority-over-chat-session-v1",
+  "date": "2026-09-29",
+  "fingerprint": "linkedin|production-runtime-authority|chat-session-divergence|provider-urn-terminal|v1",
+  "compiler": {
+    "failure_class": "AUTHORITY_DIVERGENCE",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "incident": {
+    "symptom": "A chat-local Composio LinkedIn connection returned REVOKED_ACCESS_TOKEN / insufficient organization scope and was reported as a company-page publishing blocker.",
+    "root_cause": "Chat-local connector state was treated as if it were the canonical Powerhouse production OAuth authority. The production runtime uses a separate capability-proven connected account and had already published the company post.",
+    "consequence": "The user was unnecessarily asked to reconnect LinkedIn and extra aliases risked being created even though production already had a valid organization-scoped connection."
+  },
+  "production_evidence": {
+    "runtime_state_record": "linkedin-composio-setup-current-state-v1",
+    "runtime_status": "ACTIVE",
+    "company_ready": true,
+    "canonical_company_urn": "urn:li:organization:18234216",
+    "required_scopes_present": [
+      "r_organization_admin",
+      "w_organization_social"
+    ],
+    "published_provider_urn": "urn:li:share:7510609161110482944",
+    "republish_forbidden": true
+  },
+  "prevention": [
+    "PRODUCTION_RUNTIME_BEFORE_CHAT_CONNECTOR: read canonical Brain runtime state before reporting OAuth blockers.",
+    "PROVIDER_URN_BEFORE_RECONNECT: inspect the current obligation for a durable provider ID before any reconnect or retry.",
+    "CHAT_SESSION_IS_DIAGNOSTIC_ONLY: a chat-local Composio connection cannot downgrade healthy production capability.",
+    "HUMAN_OAUTH_ONLY_ON_PRODUCTION_HARD_BOUNDARY: request user authorization only when canonical production capability is unavailable and no provider side effect exists.",
+    "NO_ALIAS_PROLIFERATION: do not create extra LinkedIn aliases as a generic recovery mechanism."
+  ],
+  "skill_targets": [
+    ".agents/skills/linkedin-composio-publisher/SKILL.md",
+    "AGENTS.md"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-production-runtime-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-production-runtime-authority-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-production-runtime-authority-v1.test.mjs"
+    ]
+  },
+  "status": "CANDIDATE",
+  "evidence": [
+    "Canonical Brain state linkedin-composio-setup-current-state-v1 was ACTIVE with company_ready=true at the time the chat-local connector reported revoked or insufficient-scope credentials.",
+    "The canonical company organization is urn:li:organization:18234216 and the production account carried r_organization_admin and w_organization_social.",
+    "The 2026-09-29 linkedin_company publication obligation already contained provider_create_success=true and provider URN urn:li:share:7510609161110482944.",
+    "The same obligation records republish_forbidden=true and terminal_provider_side_effect=true, proving that reconnect-driven republication would be unsafe.",
+    "Provider-level evidence therefore demonstrates chat-session credential divergence rather than a production LinkedIn outage."
+  ]
+}
