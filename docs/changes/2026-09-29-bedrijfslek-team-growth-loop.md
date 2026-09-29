@@ -13,3 +13,9 @@ LinkedIn / organisch bereik → gratis Bedrijfslek → directe waarde → teamch
 
 ## Guard
 De bestaande Bedrijfslek product-led acquisition regression borgt challenge_score, challenge_risk, share/completion-events en value-before-PII.
+
+
+## Bedrijfsgeheugen Mini
+Na de diagnose volgt gratis een 7-daagse actielaag. De drie zwakste categorieën worden vertaald naar drie concrete acties. Afvinken wordt uitsluitend lokaal in de browser opgeslagen; er is geen account of leadgate nodig.
+
+Hierdoor wordt de acquisitieketen: diagnose → actie → aantoonbare voortgang → structureel borgen in het betaalde portaal.
