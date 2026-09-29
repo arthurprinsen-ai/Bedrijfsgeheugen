@@ -17,3 +17,5 @@ Production evidence recorded during delivery:
 - Skills, Brain learning, quality surface registry and source registry were updated in the same lineage.
 
 Outcome contract: social metrics, replies, sales outcomes, orders and revenue remain attached to source/action/recommendation lineage and feed subsequent selection.
+
+Delivery metadata readback: PR #3374 is bound to obligation `powerhouse-source-backed-all-channels-v1`, backend implementation lane, with immutable base SHA `5dea11c020209d753d17563a2ba4b31639e0b69f`.
