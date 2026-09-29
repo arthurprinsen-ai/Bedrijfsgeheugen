@@ -81,3 +81,21 @@ De canonieke build sluit nu af met `applyMoneyPageOrderConversion()` vanuit `too
 
 Dit maakt de gegenereerde deploy-output, en niet alleen de leesbare repository-HTML, onderdeel van de regressiegrens.
 
+
+## Behavioral revenue integration
+De conversion-to-orders capability is uitgebreid tot één canonieke behavioral revenue-engine binnen Powerhouse, niet tot een losse CRO-stack.
+
+Dezelfde capability wordt nu expliciet geërfd door:
+- SEO Conversion-to-Orders;
+- Growth Swarm;
+- Persuasion Revenue Optimizer;
+- Powerhouse Brain/component registry;
+- de canonieke systeemkaart.
+
+Powerhouse mag binnen de bestaande evidence-gated autonomie hero/message match, CTA-hiërarchie, bewijsvolgorde, bezwaren, risk reversal, pricing framing, progressive disclosure, commitmentstap en sectievolgorde aanpassen. De optimalisatievolgorde is: gerealiseerde omzet → betaalde orders → gekwalificeerde voorstellen → meetings → leads → CTA-progressie → engagement.
+
+Gebruikte gedragsmodellen zijn onder andere Cialdini, loss aversion/prospect theory, Fogg, Hick-Hyman, cognitive fluency, commitment ladders, specificity en choice architecture.
+
+Guardrails blijven hard: maximaal drie reversibele high-confidence wijzigingen per dagelijkse cyclus; rollback bij regressie op trust, accessibility, mobiele leesbaarheid of gekwalificeerde conversie; geen fake scarcity, fake urgency, fake social proof, hidden costs, confirmshaming of preselected consent.
+
+De canonieke systeemkaartbron en Brain-learning bevatten deze laag nu expliciet, zodat agents en toekomstige optimalisatieruns dezelfde authority en outcome-hiërarchie erven.
