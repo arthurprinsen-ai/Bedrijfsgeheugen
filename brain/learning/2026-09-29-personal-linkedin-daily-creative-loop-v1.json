@@ -1,0 +1,28 @@
+{
+  "id": "2026-09-29-personal-linkedin-daily-creative-loop-v1",
+  "fingerprint": "personal-linkedin-daily-creative-loop-v1",
+  "type": "LEARNING",
+  "status": "PROVEN_RULE",
+  "observed_at": "2026-09-29",
+  "problem": "Personal LinkedIn subject selection was too narrow and risked repeatedly circling the same everyday examples unless the user intervened.",
+  "decision": "Make Powerhouse Brain the daily topic owner and enforce candidate diversity, semantic story-family dedupe, topic fatigue and post-outcome learning.",
+  "evidence": [
+    "Existing personal-linkedin-life-only skill already enforces personal-only identity and semantic example uniqueness.",
+    "Daily Content Publisher is active and already owns daily publication.",
+    "LinkedIn provider create on 2026-09-29 returned urn:li:share:7510601516681064448 for whatsapp-group-chaos."
+  ],
+  "prevention": [
+    "Never require the user to supply the daily personal topic.",
+    "Generate multiple materially distinct candidates before selection.",
+    "A provider-created story family is consumed permanently for semantic dedupe.",
+    "Use performance learning to improve mechanisms, not to repeat a winning storyline."
+  ],
+  "projection": [
+    "skill",
+    "agents",
+    "chat-preflight",
+    "system-map",
+    "human-doc",
+    "daily-executor"
+  ]
+}
