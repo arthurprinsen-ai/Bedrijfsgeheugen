@@ -75,7 +75,7 @@ Verplicht voor iedere huidige en toekomstige chat, agent, skill en workflow die 
 2. behoud één `submission_key` over scan, PDF, portalstate en claim;
 3. sla ingevulde scan- en bedrijfsdata server-side op; browser/localStorage is alleen tijdelijke transport/cache en nooit de enige waarheid;
 4. preprovision het klantportaal onmiddellijk na een geldige, consented scan;
-5. toon bedrijfsnaam altijd; toon klantlogo alleen wanneer het betrouwbaar vanaf het opgegeven/afgeleide bedrijfsdomein komt, anders geen logo-placeholder;
+5. toon deelnemernaam en bedrijfsnaam altijd zichtbaar in de persoonlijke PDF; de bestandsnaam bevat bedrijf + deelnemer; toon klantlogo alleen wanneer het betrouwbaar vanaf het opgegeven/afgeleide bedrijfsdomein komt, anders geen logo-placeholder;
 6. claim na authenticatie exact de bestaande preprovisioned portalstate; nooit een tweede klantrecord of lege nieuwe portalstate aanmaken;
 7. test minimaal persistent scan write, private intake write, portalstate write, identity claim, idempotency en PII-isolatie;
 8. productie is pas groen na runtime readback van de scan-ingest route én bewijs dat dezelfde `submission_key` in portalstate terugkomt;
