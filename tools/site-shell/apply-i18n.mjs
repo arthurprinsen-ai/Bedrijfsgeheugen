@@ -8,6 +8,29 @@ const LINK = `<link rel="stylesheet" href="/assets/i18n.css?v=${I18N_ASSET_VERSI
 const SCRIPT = `<script src="/assets/js/i18n.js?v=${I18N_ASSET_VERSION}" defer data-bg-i18n-asset></script>`;
 const MOBILE_LANGUAGE = '<nav class="bg-mobile-language" data-bg-language-switcher="mobile" data-bg-no-translate aria-label="Language"><span class="bg-mobile-language-label" data-bg-language-label>Language</span><div class="bg-mobile-language-select-wrap"><a class="bg-mobile-language-link" href="/" data-bg-language-option="nl" hreflang="nl">Nederlands</a><a class="bg-mobile-language-link" href="/en/" data-bg-language-option="en" hreflang="en">English</a></div></nav>';
 
+function routeFromFile(file) {
+  let relative = path.relative(ROOT, file).replace(/\\/g,'/');
+  relative = relative.replace(/^(?:nl|en)\//i,'');
+  if (relative === 'index.html') return '/';
+  if (/\/index\.html$/i.test(relative)) relative = relative.replace(/\/index\.html$/i,'');
+  else relative = relative.replace(/\.html$/i,'');
+  return '/' + relative.replace(/^\/+|\/+$/g,'');
+}
+
+function rewriteLanguageLinks(html, file) {
+  const route = routeFromFile(file);
+  const hrefs = {
+    nl: route === '/' ? '/' : route,
+    en: route === '/' ? '/en/' : '/en' + route,
+  };
+  return html.replace(/<a\b[^>]*data-bg-language-option=(["'])(nl|en)\1[^>]*>/gi, tag => {
+    const target = tag.match(/data-bg-language-option=(["'])(nl|en)\1/i)?.[2]?.toLowerCase();
+    if (!target || !hrefs[target]) return tag;
+    if (/\bhref=(["'])[^"']*\1/i.test(tag)) return tag.replace(/\bhref=(["'])[^"']*\1/i, 'href="' + hrefs[target] + '"');
+    return tag.replace(/>$/, ' href="' + hrefs[target] + '">');
+  });
+}
+
 function injectMobileLanguage(html) {
   if (/data-bg-language-switcher="mobile"/.test(html)) return html;
 
@@ -51,6 +74,7 @@ function patch(file) {
     html = html.replace(/<\/head>/i, missing + '\n</head>');
   }
   html = injectMobileLanguage(html);
+  html = rewriteLanguageLinks(html, file);
   if (html !== before) fs.writeFileSync(file,html);
 }
 walk(ROOT);
