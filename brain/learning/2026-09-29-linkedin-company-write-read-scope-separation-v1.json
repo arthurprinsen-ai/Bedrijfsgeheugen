@@ -1,0 +1,18 @@
+{
+  "version": "linkedin-company-write-read-scope-separation-v1",
+  "date": "2026-09-29",
+  "fingerprint": "linkedin|company|oauth|write-read-separation|canonical-org|v1",
+  "incident": {
+    "symptom": "A newly reauthorized LinkedIn token passed member health but company publication was treated as unavailable because LINKEDIN_GET_COMPANY_INFO returned 403.",
+    "root_cause": "The company preflight incorrectly coupled organization write readiness to r_organization_admin/ACL-read capability. LinkedIn write and organization-read capabilities are distinct.",
+    "prior_working_evidence": "Bedrijfsgeheugen previously received a successful LinkedIn provider create URN while exact organization readback remained permission-limited."
+  },
+  "prevention": [
+    "Use canonical organization URN urn:li:organization:18234216 as company author authority unless explicitly configured otherwise.",
+    "Treat LINKEDIN_GET_COMPANY_INFO as optional corroboration, not a company write prerequisite.",
+    "Treat provider create as the authoritative write-capability probe when scope metadata is absent.",
+    "401/REVOKED_ACCESS_TOKEN triggers reauthorization; 403 on organization read alone does not.",
+    "Persist successful create URN immediately and forbid republishing."
+  ],
+  "status": "IMPLEMENTED_PENDING_PRODUCTION_PROOF"
+}
