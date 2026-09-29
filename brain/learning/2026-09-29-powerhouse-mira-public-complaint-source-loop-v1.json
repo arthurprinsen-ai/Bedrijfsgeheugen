@@ -42,5 +42,24 @@
       "research_sources_latest_fetched_at": "2026-09-12",
       "run_date_2026_09_29_winner_type": "calendar_seed"
     }
-  }
+  },
+  "failure_class": "MIRA_PUBLIC_PROBLEM_SOURCE_LINEAGE_GAP",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "MIRA_PUBLIC_PROBLEM_SOURCE_LINEAGE_GAP",
+    "scope": "CONTENT",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "instagram-composio-publisher",
+    "linkedin-composio-publisher",
+    "personal-linkedin-life-only",
+    "powerhouse-growth-swarm"
+  ]
 }
