@@ -1466,3 +1466,13 @@ Bij interruption, chat-streamingverlies, CI-wachttijd of main-drift hervat de ow
 
 ## Live Assurance governance closure
 Een productie-recovery is pas governance-compleet nadat Brain learning, relevante skills, AGENTS/chat-contract, continuity-policy, development ledger, menselijke documentatie en System Map dezelfde truth-boundary bevatten en via read-after-write zijn bevestigd. Exact deploymentbewijs is geen blanket functioneel bewijs.
+
+
+## Live promotion governance closure
+
+Fingerprint: `powerhouse|live-promotion|governance-closure|2026-09-29-v1`.
+
+Continuity ownership bij “zet live” omvat altijd de volledige governance-writeback:
+`protected merge/main → exact productie/provider side effect → capability-readback → outcome-truth → Brain learning → skill/agent/chat projection → ledger/docs → System Map → read-after-write`.
+
+Een ready deploy is uitsluitend deploymentbewijs. Functionele subketens blijven onafhankelijk gated. De volgende chat/agent hervat vanaf deze geschreven staat; de gebruiker hoeft borging/documentatie niet opnieuw te vragen.
