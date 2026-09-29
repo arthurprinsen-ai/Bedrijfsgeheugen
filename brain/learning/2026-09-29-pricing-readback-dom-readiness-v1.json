@@ -1,0 +1,35 @@
+{
+  "fingerprint": "pricing-readback-dom-readiness-20260929-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production readback timed out on an implementation-specific pricing readiness marker even though the required pricing controls were present in the live DOM.",
+  "root_cause": "The verifier coupled production truth to data-bgPricingInteractions=ready-v3 instead of the observable controls and behavior it actually needs to test.",
+  "prevention": [
+    "Production pricing readback gates on actionable DOM controls, not an internal readiness marker.",
+    "The verifier still proves lifecycle, plan-tab and billing behavior by interacting with those controls.",
+    "NL/EN roundtrip remains part of the same functional production proof."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-readback-dom-readiness.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-pricing-readback-dom-readiness.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-pricing-readback-dom-readiness.test.mjs"
+  ],
+  "skill_targets": [
+    "website",
+    "delivery",
+    "continuity"
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "revision": 1
+}
