@@ -412,3 +412,11 @@ Fingerprint: `instagram-canonical-provider-identity-v3`.
 - Gebruik dezelfde selected canonical connection voor identity-check → create → publish → readback.
 - Bij drift: hervat dezelfde ongepubliceerde claim; maak geen replacement post.
 - Live closure: media-id `18105956765257858`, permalink `https://www.instagram.com/reel/Dd4MOdTEarq/`, `republish_forbidden=true`.
+
+## Terminal live closure — 29 september 2026
+Fingerprint: `instagram-live-proven-20260929-v1`.
+- Provider publication is authoritative once provider ack + readback are proven.
+- Internal media-job state must converge to `LIVE_PROVEN`; it may not remain `REPLACEMENT_REQUIRED` after a verified provider side effect.
+- Current canonical evidence: @bedrijfsgeheugen.nl, BUSINESS, provider user id `28537384955950341`, post id `18105956765257858`, permalink `https://www.instagram.com/reel/Dd4MOdTEarq/`.
+- Exact final media SHA-256: `1624616152e89468579fd110db7e68d1900b39bb0309db40acffc7b95000dfa7`; identity confidence 0.93; continuity confidence 0.93.
+- After LIVE_PROVEN only outcome collection/learning is allowed; republish/replacement is forbidden for the same daily claim.
