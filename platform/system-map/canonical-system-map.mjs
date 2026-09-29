@@ -722,7 +722,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     authority:'github+netlify',
     owner:'website-delivery',
     status:'ACTIVE_PROTECTED_CONTRACT',
-    surfaces:Object.freeze(['public-header','primary-navigation','footer','solutions-megamenu','more-megamenu','mobile-navigation']),
+    surfaces:Object.freeze(['public-header','primary-navigation','footer','solutions-megamenu','more-megamenu','mobile-navigation','public-language-switcher']),
+    publicLocaleAuthority:Object.freeze({
+      fingerprint:'powerhouse|public-cms-i18n|shared-shell-same-route|v1',
+      locales:Object.freeze(['nl','en']),
+      dutchCanonical:'unprefixed',
+      englishCanonical:'/en/*',
+      sameRouteInvariant:'/x <-> /en/x; / <-> /en/',
+      buildAuthority:Object.freeze(['tools/site-shell/apply-i18n.mjs','tools/site-shell/build-localized-routes.mjs']),
+      runtimeGuard:'assets/js/i18n.js',
+      cacheRule:'versioned-i18n-assets-required',
+      productionAuthority:'netlify-current-deploy-exact-main',
+      liveReadback:Object.freeze(['pricing-nl-en-nl','systems-nl-en-nl','html-lang','header-footer-language-state'])
+    }),
     geometry:Object.freeze({
       desktopShellWidthPx:1220,
       desktopNavigationHeightPx:72,
