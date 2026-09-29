@@ -175,7 +175,7 @@ declare jid bigint;
 begin
   select jobid into jid from cron.job where jobname='powerhouse-mira-problem-radar-v1';
   if jid is not null then perform cron.unschedule(jid); end if;
-  perform cron.schedule('powerhouse-mira-problem-radar-v1','17 */6 * * *',
+  perform cron.schedule('powerhouse-mira-problem-radar-v1','17 20 * * *',
     $c$select net.http_post(
       url := 'https://adhjwmvyoixzjtmiroln.supabase.co/functions/v1/powerhouse-mira-problem-radar',
       headers := jsonb_build_object('content-type','application/json','x-powerhouse-token',(select decrypted_secret from vault.decrypted_secrets where name='powerhouse_daily_scheduler_token' order by created_at desc limit 1)),
