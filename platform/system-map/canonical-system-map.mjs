@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-29T07:15:00Z',
+  observedAt:'2026-09-29T07:37:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -278,7 +278,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         revenueClaimRequiresObservedOutcome:true,
         noDoorwayThinSpamOrDarkPatterns:true,
         noFakeScarcityUrgencySocialProofHiddenCostsConfirmshamingOrPreselectedConsent:true,
-        oneCanonicalCroRevenueStack:true
+        oneCanonicalCroRevenueStack:true,
+        inheritedByAllChatsAndAgents:true,
+        currentPrimaryQualification:'free Frisse Blik 30 minutes',
+        publicCopyRequiresSameLineageStaticI18n:true,
+        finalBuildArtifactIsAuthority:true
       })
     }),
     Object.freeze({
@@ -388,6 +392,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         netlifyCommitRef:'451c6f40868fb35af77d70f6f6aa0972b324f634'
       }),
       invariants:Object.freeze({
+        netlifyBuildParityProductionEnv:true,
         oneRequiredAuthorityPerPr:true,
         supersededPrRunsCancelled:true,
         affectedLanesOnly:true,

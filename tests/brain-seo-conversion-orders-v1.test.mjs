@@ -104,3 +104,19 @@ test('behavioral revenue writeback stays synchronized',()=>{
     assert.match(skill,/powerhouse-behavioral-landing-revenue-v2/);
   }
 });
+
+
+test('chat and agent order-first inheritance stays canonical',()=>{
+  const agents=readFileSync('AGENTS.md','utf8');
+  const continuity=readFileSync('.agents/skills/powerhouse-continuity/SKILL.md','utf8');
+  const learning=JSON.parse(readFileSync('brain/learning/2026-09-29-seo-conversion-orders-v1.json','utf8'));
+
+  assert.match(agents,/commercial-website\|orders-first\|existing-pages\|v1/);
+  assert.match(agents,/gratis Frisse Blik van 30 minuten/);
+  assert.match(skill,/Chat- en agent-erfenis — order-first production contract/);
+  assert.match(continuity,/Commercial website continuity — order-first inheritance/);
+  assert.match(systemMap,/inheritedByAllChatsAndAgents:true/);
+  assert.match(systemMap,/publicCopyRequiresSameLineageStaticI18n:true/);
+  assert.equal(learning.agent_chat_inheritance?.fingerprint,'commercial-website|orders-first|existing-pages|v1');
+  assert.equal(learning.agent_chat_inheritance?.production_proof?.state,'ready');
+});

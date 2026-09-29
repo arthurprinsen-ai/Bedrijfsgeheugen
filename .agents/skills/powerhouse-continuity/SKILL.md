@@ -1342,6 +1342,18 @@ When Production Source Snapshot reaches the exact-source `@netlify/mcp` fallback
 - persistent authentication failure remains fail-closed;
 - terminal success still requires protected-main/provider identity and canonical browser readback.
 
+## Commercial website continuity — order-first inheritance
+Fingerprint: `commercial-website|orders-first|existing-pages|v1`.
+
+Wanneer een commerciële website-optimalisatie eenmaal als canonical order contract is bewezen:
+- iedere volgende chat/agent hervat vanaf die repository-authority;
+- geen terugval naar generieke contact-first CTA's zonder nieuw gemeten bewijs;
+- geen public-copywijziging zonder dezelfde-lineage static-i18n cache writeback;
+- geen LIVE-claim zonder exact-main Netlify production en functionele browser/readback;
+- een build/deploy/i18n-fout is herstelinput, geen gebruikershandoff;
+- de owner blijft doorwerken tot production green + learning/skill/docs/ledger closure.
+
+Dit contract erft de SEO Conversion-to-Orders skill en geldt ook na chat-interrupties.
 
 ## Canonical public website chrome geometry
 
