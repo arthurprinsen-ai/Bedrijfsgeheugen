@@ -235,8 +235,8 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
       <h3>Wat wil je nu doen?</h3>
       <p style="font-size:.9rem;margin:.2rem 0 .8rem">Je hebt de analyse al. Kies pas daarna of je verder wilt. Bedrijfsgeheugen kan de signalen, acties en voortgang vervolgens blijvend in één portaal zetten.</p>
       <div style="display:flex;gap:.7rem;flex-wrap:wrap">
-        <a class="knopvol" id="orderCta" href="/afsluiten?plan=control&bron=bedrijfslek" style="display:inline-flex;width:auto;text-decoration:none;align-items:center;justify-content:center">Start met het portaal →</a>
-        <a class="btn blauw" href="/portaal/demo">Bekijk eerst het portaal</a>
+        <a class="knopvol" id="orderCta" href="https://www.bedrijfsgeheugen.nl/afsluiten?plan=control&bron=bedrijfslek" style="display:inline-flex;width:auto;text-decoration:none;align-items:center;justify-content:center">Start met het portaal →</a>
+        <a class="btn blauw" href="https://www.bedrijfsgeheugen.nl/portaal/demo">Bekijk eerst het portaal</a>
         <button class="btn" type="button" onclick="deelScore()">Deel mijn score</button>
       </div>
       <p class="privacy" style="margin-top:.9rem">De score is indicatief en gebaseerd op jouw antwoorden. Financiële of benchmarkwaarden zijn geen vastgestelde bedrijfsfeiten.</p>
@@ -423,7 +423,7 @@ function toonScore(){
  var qw='<div class="profkop">Drie acties die je morgen kunt nemen</div>';
  laagste.forEach(function(x,idx){qw+='<div class="quickwin"><b>'+(idx+1)+'. '+DOMEIN[x.cat]+' · '+x.pct+'%</b><span>'+QUICKWIN[x.cat]+'</span><small>Gebaseerd op jouw antwoorden · geen verkoopgesprek nodig</small></div>'});
  document.getElementById('quickwins').innerHTML=qw;
- var oc=document.getElementById('orderCta'); if(oc){oc.href='/afsluiten?plan=control&bron=bedrijfslek&score='+score+'&risico='+encodeURIComponent(laag.cat);}
+ var oc=document.getElementById('orderCta'); if(oc){oc.href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=control&bron=bedrijfslek&score='+score+'&risico='+encodeURIComponent(laag.cat);}
  bgEvent('bedrijfslek-resultaat');
  toon('s-score');
 }
