@@ -40,7 +40,19 @@
       "observed_at": "2026-09-29T16:30:06Z"
     },
     "publisher": "supabase/functions/powerhouse-social-publisher/index.ts",
-    "config": "config/instagram-canonical-provider-identity-v3.json"
+    "config": "config/instagram-canonical-provider-identity-v3.json",
+    "terminal_production": {
+      "edge_function": "powerhouse-social-publisher",
+      "edge_function_version": 84,
+      "main_sha": "8288b2ab5c6d7caa75a0e199d0273386776a66c2",
+      "provider_media_id": "18105956765257858",
+      "provider_username": "bedrijfsgeheugen.nl",
+      "media_product_type": "REELS",
+      "permalink": "https://www.instagram.com/reel/Dd4MOdTEarq/",
+      "provider_readback_verified": true,
+      "republish_forbidden": true,
+      "verified_at": "2026-09-29T16:29:48Z"
+    }
   },
-  "status": "ACTIVE_PREVENTION"
+  "status": "LIVE_PROVEN_PREVENTION"
 }
