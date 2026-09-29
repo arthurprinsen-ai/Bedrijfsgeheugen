@@ -1,0 +1,27 @@
+{
+  "fingerprint": "instagram-runtime-canonical-user-id-v1",
+  "date": "2026-09-29",
+  "problem": "Instagram publication failed after all media gates passed because the publisher queried a stale hardcoded Instagram Business ID.",
+  "root_cause": "Canonical Composio connection had moved to the active bedrijfsgeheugen.nl account with a different provider business user id, while publisher identity preflight still queried the old id.",
+  "prevention": "Resolve identity with ig_user_id=me on the pinned canonical connection, verify username bedrijfsgeheugen.nl, and use the returned provider user id for create/publish/readback.",
+  "compiler": {
+    "failure_class": "PROVIDER_IDENTITY_DRIFT",
+    "scope": "INSTAGRAM_PUBLISHER",
+    "machine_enforceable": true,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-instagram-runtime-canonical-user-id-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-runtime-canonical-user-id-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-runtime-canonical-user-id-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "source": "supabase/functions/powerhouse-social-publisher/index.ts"
+  }
+}
