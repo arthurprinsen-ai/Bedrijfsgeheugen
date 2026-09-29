@@ -21,11 +21,7 @@ const queries=[
  'Nederland klacht parkeerapp zone account betalen parkeren',
  'Nederland forum klacht pakket bezorger niet thuis bezorging app',
  'Nederland klacht abonnement opzeggen app klantenservice chatbot',
- 'Nederland blog digitale frustratie te veel apps schermen bevestigingen',
- 'site:reddit.com Nederland app irritatie wachtwoord parkeren abonnement bezorging',
- 'site:tweakers.net forum app irritatie account inloggen abonnement',
- 'site:radar.avrotros.nl klacht app klantenservice abonnement',
- 'site:kassa.bnnvara.nl klacht app inloggen abonnement bezorging'
+ 'Nederland blog digitale frustratie te veel apps schermen bevestigingen'
 ];
 Deno.serve(async(req:Request)=>{
  if(req.method!=='POST') return json({error:'POST_ONLY'},405);
@@ -36,15 +32,31 @@ Deno.serve(async(req:Request)=>{
  const expected=String((await db.rpc('bg_geheim',{p_naam:'powerhouse_daily_scheduler_token'})).data||'');
  if(!expected||incoming!==expected) return json({error:'UNAUTHORIZED'},401);
  const tavily=String(Deno.env.get('TAVILY_API_KEY')||((await db.rpc('bg_geheim',{p_naam:'TAVILY_API_KEY'})).data||'')).trim();
- if(!tavily) return json({error:'TAVILY_UNAVAILABLE'},503);
+ const [dfsLogin,dfsPassword]=await Promise.all([db.rpc('bg_geheim',{p_naam:'DATAFORSEO_LOGIN'}),db.rpc('bg_geheim',{p_naam:'DATAFORSEO_PASSWORD'})]);
+ const dfsUser=String(dfsLogin.data||'').trim(), dfsPass=String(dfsPassword.data||'').trim();
+ if(!tavily&&!dfsUser) return json({error:'SEARCH_PROVIDER_UNAVAILABLE'},503);
+ const search=async(q:string)=>{
+   if(tavily){
+     const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'general',search_depth:'basic',max_results:6,include_answer:false})});
+     const b:any=await r.json().catch(()=>({}));
+     if(r.ok) return {provider:'tavily',results:(b.results||[]).map((x:any)=>({url:x.url,title:x.title,content:x.content,score:x.score}))};
+     if(r.status!==432 && r.status!==429) throw new Error('TAVILY_'+r.status);
+   }
+   if(dfsUser&&dfsPass){
+     const r=await fetch('https://api.dataforseo.com/v3/serp/google/organic/live/advanced',{method:'POST',headers:{authorization:'Basic '+btoa(dfsUser+':'+dfsPass),'content-type':'application/json'},body:JSON.stringify([{keyword:q,location_code:2528,language_code:'nl',device:'desktop',os:'windows',depth:10}])});
+     const b:any=await r.json().catch(()=>({}));
+     if(!r.ok||Number(b?.status_code||0)!==20000) throw new Error('DATAFORSEO_'+r.status);
+     const items=Array.isArray(b?.tasks?.[0]?.result?.[0]?.items)?b.tasks[0].result[0].items:[];
+     return {provider:'dataforseo',results:items.filter((x:any)=>x.type==='organic'&&x.url).slice(0,6).map((x:any)=>({url:x.url,title:x.title,content:x.description||'',score:1/Math.max(1,Number(x.rank_absolute||10))}))};
+   }
+   return {provider:'none',results:[]};
+ };
  const body=await req.json().catch(()=>({}));
  const runDate=String(body?.runDate||new Date(Date.now()+86400000).toISOString().slice(0,10));
  let stored=0, eligible=0; const seen=new Set<string>(); const errors:string[]=[];
  for(const q of queries){
-  const r=await fetch('https://api.tavily.com/search',{method:'POST',headers:{authorization:'Bearer '+tavily,'content-type':'application/json'},body:JSON.stringify({query:q,topic:'general',search_depth:'basic',max_results:6,include_answer:false})});
-  const b:any=await r.json().catch(()=>({}));
-  if(!r.ok){errors.push(q+':'+r.status);continue}
-  for(const x of (b.results||[])){
+  let sr:any; try{sr=await search(q)}catch(e:any){errors.push(q+':'+String(e?.message||e));continue}
+  for(const x of (sr.results||[])){
    const sourceUrl=String(x.url||'').trim(); if(!sourceUrl||seen.has(sourceUrl)) continue; seen.add(sourceUrl);
    const d=domain(sourceUrl); const title=String(x.title||'').trim(); const excerpt=String(x.content||'').slice(0,1800);
    if(!d||title.length<12) continue;
@@ -58,7 +70,7 @@ Deno.serve(async(req:Request)=>{
    const total=Math.round((recency*.10+personal*.23+complaint*.25+share*.18+originality*.12+evidence*.12)*1000)/1000;
    const hash=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(sourceUrl+'|'+title));
    const sourceHash=[...new Uint8Array(hash)].map(v=>v.toString(16).padStart(2,'0')).join('');
-   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:topic(all),observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72,source_hash:sourceHash,metadata:{query:q,tavily_score:x.score??null,contract:'mira-public-complaint-source-loop-v1'}};
+   const row={source_url:sourceUrl,source_domain:d,source_type:d.includes('reddit')||d.includes('tweakers')?'forum':d.includes('radar')||d.includes('kassa')?'consumer_complaint':'blog_web',title,excerpt,topic_key:topic(all),observed_at:new Date().toISOString(),freshness_score:recency,recognition_score:personal,friction_score:complaint,shareability_score:share,originality_score:originality,evidence_score:evidence,total_score:total,eligible:total>=0.72,source_hash:sourceHash,metadata:{query:q,search_provider:sr.provider,provider_score:x.score??null,contract:'mira-public-complaint-source-loop-v1'}};
    const up=await db.from('powerhouse_mira_problem_signals_v1').upsert(row,{onConflict:'source_url'}); if(up.error){errors.push('upsert:'+up.error.message);continue}
    stored++; if(row.eligible) eligible++;
   }
