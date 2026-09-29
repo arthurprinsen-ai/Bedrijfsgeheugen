@@ -223,3 +223,16 @@ Niet-onderhandelbaar:
 - Warm/consented outreach, bestaande relatie/opportunity follow-up, due follow-up en bestaande klant-/partnercontext mogen autonoom worden uitgevoerd wanneer de bestaande gates groen zijn.
 - LinkedIn persoonlijk blijft personal-life-only; commercieel air-cover hoort op de Bedrijfsgeheugen-bedrijfspagina. Instagram blijft Mira-only.
 - Iedere kanaalactie schrijft terug: provider/readback → reply/meeting/scan/proposal/order → realized revenue → learning → volgende prioritering.
+
+
+## Bounded commercial candidate refresh — 29 september 2026
+Fingerprint: `growth-swarm-bounded-refresh-v1`.
+
+De Growth Swarm mag nooit eerst de volledige relatie-/personenpopulatie materialiseren en daarna pas commerciële kandidaten selecteren.
+
+Verplicht:
+- candidate-first op verse trigger-, opportunity-, predictive-, scan- en outcome-signalen;
+- alleen kandidaatbedrijven/personen verrijken en scoren;
+- bestaande dedupe, consent, suppression, cooldown, identity en revenue-truth gates blijven intact;
+- population-wide materialisatie via `powerhouse_person_intelligence_v1` of `powerhouse_company_intelligence_v1` vóór candidate pruning is een regressie;
+- commerciële schedulers moeten binnen hun bounded runtime-window eindigen en evidence terugschrijven.
