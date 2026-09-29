@@ -227,9 +227,9 @@ begin
       'red',count(*) filter (where s.status='RED')
     ),
     jsonb_build_object('fingerprint','powerhouse-loop-assurance-v2'),
-    case when count(*) filter (where s.status='RED')>0 then 'RED'
-         when count(*) filter (where s.status='AMBER')>0 then 'AMBER'
-         else 'GREEN' end,
+    case when count(*) filter (where s.status='RED')>0 then 'error'
+         when count(*) filter (where s.status='AMBER')>0 then 'observed'
+         else 'closed' end,
     p_now,p_now
   from public.powerhouse_loop_assurance_state_v1 s
   on conflict (dedupe_key) do update
