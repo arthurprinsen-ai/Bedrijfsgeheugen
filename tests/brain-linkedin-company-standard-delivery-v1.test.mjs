@@ -6,6 +6,8 @@ const policy=JSON.parse(fs.readFileSync('brain/policies/linkedin-company-standar
 const skill=fs.readFileSync('.agents/skills/linkedin-composio-publisher/SKILL.md','utf8');
 const agents=fs.readFileSync('AGENTS.md','utf8');
 const publisher=fs.readFileSync('supabase/functions/powerhouse-social-publisher/index.ts','utf8');
+const systemMap=fs.readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
+const brainContract=JSON.parse(fs.readFileSync('config/brain-chat-learning-contract.json','utf8'));
 
 test('company channel rejects personal topics and retires printer globally',()=>{
   assert.equal(policy.channel,'linkedin_company');
@@ -41,4 +43,12 @@ test('runtime publisher blocks retired printer story before provider write',()=>
   const create=publisher.indexOf("LINKEDIN_CREATE_LINKED_IN_POST',{author,commentary");
   assert.ok(guard>0);
   assert.ok(create>guard);
+});
+
+
+test('Brain and System Map inherit the company delivery policy',()=>{
+  assert.equal(brainContract.policy.requireLinkedInCompanyStandardDelivery,true);
+  assert.equal(brainContract.policy.companySocialRejectPersonalTopics,true);
+  assert.match(systemMap,/companyStandardPolicy:'brain\/policies\/linkedin-company-standard-delivery-v1\.json'/);
+  assert.match(systemMap,/printerStoryFamilyGloballyRetired:true/);
 });
