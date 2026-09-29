@@ -1,6 +1,6 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.9",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.8",
   "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|terminal-borging-closure|same-repo-reviewable-writeback|v1.8",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
