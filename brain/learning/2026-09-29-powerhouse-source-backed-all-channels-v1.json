@@ -51,7 +51,8 @@
     "Keep LinkedIn personal first-person claims bound to verified Arthur truth; external complaints may only supply theme evidence.",
     "Require traceable account/person evidence before email or LinkedIn DM can remain send-eligible.",
     "Preserve source/action/recommendation identifiers through provider readback and outcome learning.",
-    "Refresh the universal outbound lineage hourly so engagement, replies, leads, orders and revenue feed the next selection."
+    "Refresh the universal outbound lineage hourly so engagement, replies, leads, orders and revenue feed the next selection.",
+    "Require semantic compatibility before fusing problem evidence with SEO/search evidence."
   ],
   "evidence": {
     "runtime_proof": {
@@ -119,5 +120,16 @@
       "deployed_version": 29,
       "source_candidate_materialization_before_selection": true
     }
+  },
+  "semantic_coherence": {
+    "problem": "The first cross-channel blog materializer could combine the strongest external problem signal with the strongest global SEO keyword even when they described different topics.",
+    "observed_bad_pair": "bedrijfsoverdracht source + afas pocket app koppelen keyword",
+    "fix": "SEO enrichment now requires a shared meaningful problem token (length >= 5) with the selected external problem before it may be attached to the blog candidate.",
+    "production_readback": {
+      "source_title": "Onderzoek: deel ondernemers nog niet bezig met opvolging, kabinet houdt BOR intact",
+      "corrected_keyword": "bedrijfsoverdracht familie",
+      "semantic_search_match": true
+    },
+    "prevention": "Never optimize channel candidates by independently maximizing evidence dimensions and then combining them; require semantic compatibility before cross-source fusion."
   }
 }
