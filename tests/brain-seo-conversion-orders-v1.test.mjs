@@ -56,3 +56,22 @@ test('SEO conversion system map and skill projection stay discoverable',()=>{
   assert.match(skill,/WRITEBACK_INCOMPLETE/);
   assert.match(registry,/CAPABILITY_SEO_CONVERSION_ORDERS/);
 });
+
+
+test('behavioral revenue decision engine is canonical',()=>{
+  const models=new Set(growth.optimization.models||[]);
+  for(const m of ['cialdini-reciprocity','loss-aversion','fogg-behavior-model','hick-hyman-choice-reduction','cognitive-fluency','commitment-ladder','choice-architecture']) assert.ok(models.has(m),`missing ${m}`);
+  const e=growth.optimization.behavioral_decision_engine;
+  assert.match(e.objective,/qualified_order_probability/);
+  assert.equal(e.optimization_metric_order[0],'realized_revenue');
+  assert.equal(e.optimization_metric_order[1],'paid_orders');
+  assert.equal(e.autonomy.no_dark_patterns,true);
+  assert.equal(e.autonomy.rollback_on_guardrail_regression,true);
+});
+
+test('behavioral CRO actions and dark-pattern guards are enforced',()=>{
+  const actions=new Set(allow.allowed_actions||[]);
+  for(const a of ['section-order','proof-placement','trust-block','choice-reduction','commitment-step','loss-gain-framing']) assert.ok(actions.has(a),`missing ${a}`);
+  const blocked=new Set(allow.always_blocked_without_explicit_evidence||[]);
+  for(const b of ['fake-scarcity','fake-urgency','fake-social-proof','hidden-cost','preselected-consent','confirmshaming']) assert.ok(blocked.has(b),`missing ${b}`);
+});
