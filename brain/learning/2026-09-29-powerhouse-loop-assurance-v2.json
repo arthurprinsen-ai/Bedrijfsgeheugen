@@ -1,0 +1,21 @@
+{
+  "fingerprint": "powerhouse-loop-assurance-v2-learning-20260929",
+  "observed_at": "2026-09-29T19:12:00Z",
+  "change_id": "powerhouse-loop-assurance-v2",
+  "problem": "A loop could be fixed at a point in time yet later lose scheduler/runtime/stage continuity without a canonical continuous proof that the loop remained closed.",
+  "root_cause": "Powerhouse Assurance v1 primarily proved repository/registry/parity drift and did not maintain per-loop runtime freshness plus explicit end-to-end closure-stage evidence.",
+  "change": "Added a five-minute Loop Assurance meta-loop over existing runtime truth, scheduler state, eight closure-stage receipts, canonical Brain obligations and CI registration.",
+  "evidence": [
+    "Supabase migration powerhouse_loop_assurance_v2 applied successfully",
+    "pg_cron job powerhouse-loop-assurance-v2 active every five minutes",
+    "first production refresh materialized non-GREEN loops as OPERATIONS_ASSURANCE obligations",
+    "Powerhouse Assurance, RLS, Supabase security/preview and quality surface gates validate the new contracts"
+  ],
+  "learning": "A loop is not CLOSED_GREEN because it worked once. GREEN is a continuously re-proven state requiring current scheduler/runtime authority plus input, decision, action, readback, outcome, measurement, learning and guard evidence.",
+  "prevention": [
+    "future material loops must register in powerhouse/assurance/loop-registry.json",
+    "missing or stale stage evidence is at least AMBER",
+    "missing/inactive scheduler or runtime older than 2x cadence is RED",
+    "non-GREEN state becomes canonical OPERATIONS_ASSURANCE work instead of a chat-only warning"
+  ]
+}
