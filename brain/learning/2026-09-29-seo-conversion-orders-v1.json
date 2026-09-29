@@ -37,7 +37,8 @@
     "Prefer updating the canonical money page over creating another page for the same intent.",
     "Never use doorway pages, scaled thin content, keyword stuffing, link schemes, cloaking or unsupported social proof.",
     "Limit autonomous daily changes to three reversible evidence-gated changes.",
-    "Require production readback and downstream CTA/lead/order/revenue measurement before promoting the learning to PROVEN."
+    "Require production readback and downstream CTA/lead/order/revenue measurement before promoting the learning to PROVEN.",
+    "Keep the canonical system map, skill projection, Brain learning, human documentation and regression test synchronized in the same delivery lineage."
   ],
   "canonical_runtime": "config/seo-growth-loop.json",
   "canonical_allowlist": "config/seo-optimization-allowlist.json",
@@ -58,7 +59,8 @@
     "config/seo-growth-loop.json",
     "config/seo-optimization-allowlist.json",
     "site/seo-order-map.json",
-    "tests/brain-seo-conversion-orders-v1.test.mjs"
+    "tests/brain-seo-conversion-orders-v1.test.mjs",
+    "platform/system-map/canonical-system-map.mjs"
   ],
   "evaluation": {
     "historical_replay": [
@@ -67,5 +69,10 @@
   },
   "test_evidence": [
     "tests/brain-seo-conversion-orders-v1.test.mjs"
+  ],
+  "system_map": "platform/system-map/canonical-system-map.mjs#seo-conversion-orders",
+  "documentation": [
+    "docs/changes/2026-09-29-seo-conversion-orders-v1.md",
+    "docs/development-ledger-events/2026-09-29-seo-conversion-orders-v1.md"
   ]
 }
