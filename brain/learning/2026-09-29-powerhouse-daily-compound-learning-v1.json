@@ -27,7 +27,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/powerhouse-daily-compound-learning-v1.test.mjs"
+      "tests/brain-powerhouse-daily-compound-learning-v1.test.mjs"
     ],
     "canary": [
       "public.powerhouse_run_daily_compound_learning_v1(date)"
@@ -55,7 +55,7 @@
     ".github/workflows/universal-closed-loop-learning.yml",
     "scripts/brain/daily-self-evolution.mjs",
     "platform/system-map/canonical-system-map.mjs",
-    "tests/powerhouse-daily-compound-learning-v1.test.mjs"
+    "tests/brain-powerhouse-daily-compound-learning-v1.test.mjs"
   ],
   "outcome": "VERIFIED_OUTCOME_TO_LEARNING_LOOP_CLOSED_DAILY"
 }
