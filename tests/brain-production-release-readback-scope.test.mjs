@@ -195,3 +195,16 @@ test('approved-central writer is reconciled after proven production and derives 
   assert.match(workflow, /blog\/\*\/index\.html/);
   assert.match(workflow, /action=published/);
 });
+
+
+test('governance-only mixed closure stays non-deployment even with system map and skills', async () => {
+  const workflow = await readFile('.github/workflows/production-release-readback.yml', 'utf8');
+  assert.match(workflow, /governanceOnlyPrefixes/);
+  assert.match(workflow, /platform\/system-map\/canonical-system-map\.mjs/);
+  assert.match(workflow, /tools\/brain-delivery-system\.mjs/);
+  assert.match(workflow, /runtimeChangedPaths=changedPaths\.filter/);
+  assert.match(workflow, /createDeliveryPlan\(\{changedPaths:runtimeChangedPaths/);
+  assert.match(workflow, /runtimeChangedPaths\.some\(path => netlifyRuntimePrefixes/);
+  assert.match(workflow, /browserRequired=websiteRequired \|\| portalRequired \|\| manualReadback/);
+  assert.doesNotMatch(workflow, /browserRequired=websiteRequired \|\| portalRequired \|\| readbackWorkflowChanged/);
+});
