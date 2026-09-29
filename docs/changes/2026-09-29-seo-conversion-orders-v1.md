@@ -99,3 +99,18 @@ Gebruikte gedragsmodellen zijn onder andere Cialdini, loss aversion/prospect the
 Guardrails blijven hard: maximaal drie reversibele high-confidence wijzigingen per dagelijkse cyclus; rollback bij regressie op trust, accessibility, mobiele leesbaarheid of gekwalificeerde conversie; geen fake scarcity, fake urgency, fake social proof, hidden costs, confirmshaming of preselected consent.
 
 De canonieke systeemkaartbron en Brain-learning bevatten deze laag nu expliciet, zodat agents en toekomstige optimalisatieruns dezelfde authority en outcome-hiërarchie erven.
+
+## Chats/agents permanent geborgd
+De live bewezen money-page conversion-aanpak is nu expliciet gepromoveerd tot een repository-native regel voor alle huidige en toekomstige chats en agents.
+
+De inheritance omvat:
+- existing-page-first;
+- gratis Frisse Blik als huidige primaire kwalificatiestap op de MKB-money pages;
+- order/revenue boven traffic;
+- maximaal drie reversibele evidence-gated optimalisaties per dag;
+- NL/EN static-i18n cache in dezelfde lineage bij public-copywijzigingen;
+- final-build enforcement voor gegenereerde pagina's;
+- protected main -> exact-main Netlify -> browser/readback -> outcome learning;
+- geen dark patterns en geen onbewezen revenueclaims.
+
+Productie-evidence van de afgesloten rollout: Netlify deploy `6abb65338413c2000813595f`, state `ready`, production commit_ref `e103bbc49541c70b2fa9e535b7e162fac83893c4`; Production Source Snapshot en Production Release Readback waren groen.
