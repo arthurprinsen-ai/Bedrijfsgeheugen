@@ -29,14 +29,22 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-route-aware-mobile-switcher-v1.test.mjs",
-      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs"
+      "tests/brain-i18n-mobile-injection-idempotence-v1.test.mjs",
+      "tests/brain-apply-i18n-syntax-regression-v1.test.mjs"
     ],
     "canary": [
-      "tools/site-shell/verify-pricing-i18n-production.mjs"
+      "tools/site-shell/verify-pricing-i18n-production.mjs",
+      "tests/brain-apply-i18n-syntax-regression-v1.test.mjs"
     ]
   },
   "skill_targets": [
     ".agents/skills/powerhouse-green-assurance/SKILL.md"
   ],
-  "truth_boundary": "A route-aware build contract is not production proof until the exact production browser readback passes."
+  "truth_boundary": "A route-aware build contract is not production proof until the exact production browser readback passes.",
+  "secondary_failure": {
+    "observed": "A stale literal token survived in the compact-mobile insertion branch and made apply-i18n syntactically invalid.",
+    "root_cause": "The recovery patch changed route authority correctly but left an obsolete MOBILE_LANGUAGE literal embedded in a string concatenation on current main.",
+    "prevention": "A permanent node --check regression now runs against tools/site-shell/apply-i18n.mjs.",
+    "regression": "tests/brain-apply-i18n-syntax-regression-v1.test.mjs"
+  }
 }
