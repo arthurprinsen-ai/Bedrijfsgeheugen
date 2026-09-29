@@ -354,6 +354,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         allowlist:'config/seo-optimization-allowlist.json',
         moneyPageAuthority:'site/seo-order-map.json',
         finalBuildAuthority:'tools/site-shell/apply-money-page-order-conversion.mjs',
+        bedrijfslekStandaloneAuthority:'zelfscan.html',
+        bedrijfslekV18Exclusion:'tools/v18-views-lijst.mjs',
         learning:'brain/learning/2026-09-29-seo-conversion-orders-v1.json'
       }),
       behavioralModels:Object.freeze(['Cialdini','loss-aversion','prospect-theory','Fogg Behavior Model','Hick-Hyman','cognitive-fluency','commitment-ladder','specificity','choice-architecture']),
@@ -373,7 +375,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         inheritedByAllChatsAndAgents:true,
         currentPrimaryQualification:'ungated Bedrijfslek /zelfscan on homepage; Frisse Blik remains contextual on other money pages',
         publicCopyRequiresSameLineageStaticI18n:true,
-        finalBuildArtifactIsAuthority:true
+        finalBuildArtifactIsAuthority:true,
+        bedrijfslekHasSingleRouteOwner:true,
+        v18GeneratorMayOverwriteBedrijfslek:false
       })
     }),
     Object.freeze({
