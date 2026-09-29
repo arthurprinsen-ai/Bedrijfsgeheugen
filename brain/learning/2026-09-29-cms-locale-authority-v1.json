@@ -12,17 +12,17 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/site-shell-cms-i18n-authority.test.mjs"
+      "tests/brain-cms-i18n-authority.test.mjs"
     ],
     "shadow": [
-      "tests/site-shell-cms-i18n-authority.test.mjs"
+      "tests/brain-cms-i18n-authority.test.mjs"
     ],
     "canary": [
-      "tests/site-shell-cms-i18n-authority.test.mjs"
+      "tests/brain-cms-i18n-authority.test.mjs"
     ]
   },
   "test_evidence": [
-    "tests/site-shell-cms-i18n-authority.test.mjs"
+    "tests/brain-cms-i18n-authority.test.mjs"
   ],
   "evidence": {
     "obligation_id": "cms-locale-authority-20260929",
