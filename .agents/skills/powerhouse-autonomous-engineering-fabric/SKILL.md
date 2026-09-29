@@ -36,3 +36,8 @@ It must never auto-weaken Required, security, CodeQL requirements for security-s
 ## Quality behavior
 
 Reuse before create. Prefer existing helpers, components, API patterns, test fixtures and contracts. The code-quality specialist evaluates duplication, architecture consistency, maintainability and design-system consistency before integration. Speed never means bypassing proof; it means removing repeated reasoning, duplicated work, unnecessary CI waves and avoidable merge conflicts.
+
+
+## Assurance integrity
+
+All engineering optimization inherits `powerhouse|truthful-green-assurance|current-evidence-only|v1`: speed, parallelism, retries and provider failover may reduce latency but may never synthesize green, suppress current required defects, erase historical evidence, duplicate provider side effects or weaken readback. Final health is recomputed from canonical current evidence after the repair.
