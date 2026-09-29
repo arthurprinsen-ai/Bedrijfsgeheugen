@@ -777,3 +777,15 @@ Verplicht vóór terminale afronding:
 9. read-after-write op deze governance-artifacts.
 
 Een ready deploy mag nooit als bewijs worden hergebruikt voor een niet-gecontroleerde subketen. Pricing, locale-switching, social, e-mail, connectoren en andere capabilities behouden elk hun eigen evidence-gate.
+
+
+## Instagram canonical provider identity — inherited
+Fingerprint: `instagram-canonical-provider-identity-v3`.
+
+Alle huidige en toekomstige chats/agents die Instagram publiceren, herstellen of controleren erven:
+- resolve canonical identity via `INSTAGRAM_GET_USER_INFO(me)` op de geselecteerde canonical Composio-verbinding;
+- behandel provider node `id=28537384955950341` en Instagram Graph `user_id=17841446582493753` als verschillende identifiers;
+- publication identity vereist Graph `user_id=17841446582493753`, username `bedrijfsgeheugen.nl` en BUSINESS/CREATOR;
+- identity-check, create, publish en readback gebruiken dezelfde canonical connection;
+- provider-ID/schema drift is pre-provider herstelbaar en mag nooit Buffer/Make fallback, replacement content of duplicaatpublicatie veroorzaken;
+- na provider-create met duurzaam media-ID geldt `republish_forbidden=true` en alleen exact-ID reconcile.

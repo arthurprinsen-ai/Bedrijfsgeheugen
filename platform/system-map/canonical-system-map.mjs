@@ -52,11 +52,16 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       productionEvidence:Object.freeze({
         username:'bedrijfsgeheugen.nl',
         accountType:'BUSINESS',
-        observedProviderUserId:'28537384955950341',
+        providerNodeId:'28537384955950341',
+        canonicalGraphUserId:'17841446582493753',
+        liveMediaId:'18105956765257858',
+        livePermalink:'https://www.instagram.com/reel/Dd4MOdTEarq/',
+        providerReadback:true,
         observedAt:'2026-09-29T16:15:08Z'
       }),
       invariants:Object.freeze({
         hardcodedProviderUserIdForbidden:true,
+        nodeIdDistinctFromGraphUserId:true,
         liveProviderIdentityBeforeSideEffect:true,
         sameProviderUserIdForCreatePublishReadback:true,
         sameDailyClaimOnDrift:true
