@@ -7,7 +7,7 @@ create or replace function public.powerhouse_materialize_source_backed_channel_c
 ) returns jsonb
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = public, pg_catalog
 as $$
 declare
   s public.bg_externe_signalen%rowtype;
@@ -155,7 +155,7 @@ create or replace function public.powerhouse_require_source_for_direct_outreach_
 returns trigger
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = public, pg_catalog
 as $$
 declare c text:=lower(coalesce(new.channel,''));
 declare has_source boolean;
