@@ -18,7 +18,12 @@
     "skill": ".agents/skills/linkedin-composio-publisher/SKILL.md",
     "agents": "AGENTS.md",
     "regression": "tests/brain-linkedin-company-standard-delivery-v1.test.mjs",
-    "canonical_author_urn": "urn:li:organization:18234216"
+    "canonical_author_urn": "urn:li:organization:18234216",
+    "inheritance_projection": [
+      "AGENTS.md",
+      ".agents/skills/linkedin-composio-publisher/SKILL.md"
+    ],
+    "final_projection_obligation": "linkedin-company-standard-delivery-20260929"
   },
   "evaluation": {
     "historical_replay": [
