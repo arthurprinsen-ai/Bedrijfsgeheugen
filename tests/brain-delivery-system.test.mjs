@@ -374,3 +374,16 @@ test('opportunity scouting runtime and regressions are backend delivery work', a
     /unclassified delivery path/
   );
 });
+
+
+test('canonical system map is non-executable governance', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({
+    changedPaths:['platform/system-map/canonical-system-map.mjs'],
+    headSha:'abc123def4567890',
+    policy
+  });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), []);
+  assert.deepEqual(plan.nonExecutableSharedPaths, ['platform/system-map/canonical-system-map.mjs']);
+  assert.equal(plan.integration.required, false);
+});
