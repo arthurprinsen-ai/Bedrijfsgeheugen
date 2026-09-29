@@ -106,6 +106,13 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 .teamacties{display:flex;gap:.6rem;flex-wrap:wrap}
 .teamacties .btn{cursor:pointer;background:#fff}
 .teamacties .knopvol{width:auto;padding:.7rem 1rem;font-size:.95rem}
+.miniloop{margin:1.2rem 0;padding:1.15rem;border:1px solid var(--lijn);border-radius:14px;background:#FFFDF5}
+.miniloop h3{font-size:1.15rem;margin:.1rem 0 .35rem}
+.mini-acties{display:grid;gap:.55rem;margin:.85rem 0}
+.mini-actie{display:flex;gap:.7rem;align-items:flex-start;padding:.75rem .85rem;background:#fff;border:1px solid var(--lijn);border-radius:10px}
+.mini-actie input{margin-top:.25rem;transform:scale(1.15)}
+.mini-actie.done span{text-decoration:line-through;color:var(--grijs)}
+.minivoortgang{font-family:'IBM Plex Mono',monospace;font-size:.72rem;color:var(--grijs);margin-top:.55rem}
  /* formulier */
 label.veld{display:block;font-weight:600;font-size:.9rem;margin:1rem 0 .3rem}
 input[type=text],input[type=email],input[type=tel]{width:100%;border:2px solid var(--inkt);border-radius:10px;padding:.75rem .9rem;font:inherit;background:#fff}
@@ -250,6 +257,13 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
       </div>
       <div class="teamvergelijk" id="teamvergelijk"></div>
       <div class="sharestatus" id="teamstatus" aria-live="polite"></div>
+    </div>
+    <div class="miniloop" id="bedrijfsgeheugen-mini">
+      <span class="vraagnr">Gratis Bedrijfsgeheugen Mini · 7 dagen</span>
+      <h3>Niet bewaren. Doe drie kleine acties.</h3>
+      <p style="font-size:.9rem;color:#3C424A;margin:.3rem 0">Je uitslag wordt hieronder vertaald naar drie acties. Vink af wat je deze week doet; voortgang blijft alleen in deze browser bewaard.</p>
+      <div class="mini-acties" id="miniActies"></div>
+      <div class="minivoortgang" id="miniVoortgang">0 van 3 uitgevoerd</div>
     </div>
     <div class="scanscope" style="margin-top:1.4rem">
       <h3>Wat wil je nu doen?</h3>
@@ -448,9 +462,39 @@ function toonScore(){
  var qw='<div class="profkop">Drie acties die je morgen kunt nemen</div>';
  laagste.forEach(function(x,idx){qw+='<div class="quickwin"><b>'+(idx+1)+'. '+DOMEIN[x.cat]+' · '+x.pct+'%</b><span>'+QUICKWIN[x.cat]+'</span><small>Gebaseerd op jouw antwoorden · geen verkoopgesprek nodig</small></div>'});
  document.getElementById('quickwins').innerHTML=qw;
+ renderMini(laagste);
  var oc=document.getElementById('orderCta'); if(oc){oc.href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=control&bron=bedrijfslek&score='+score+'&risico='+encodeURIComponent(laag.cat);}
  bgEvent('bedrijfslek-resultaat');
  toon('s-score');
+}
+function renderMini(acties){
+ var box=document.getElementById('miniActies'); if(!box)return;
+ var state={}; try{state=JSON.parse(localStorage.getItem('bg_bedrijfsgeheugen_mini')||'{}')}catch(e){}
+ box.innerHTML='';
+ acties.slice(0,3).forEach(function(x,idx){
+   var id='mini-'+x.cat;
+   var label=document.createElement('label'); label.className='mini-actie'+(state[id]?' done':'');
+   var cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!state[id]; cb.setAttribute('data-mini-id',id);
+   var span=document.createElement('span'); span.innerHTML='<b>Dag '+(idx+1)+' · '+DOMEIN[x.cat]+'</b><br>'+QUICKWIN[x.cat];
+   cb.onchange=function(){
+     state[id]=cb.checked;
+     try{localStorage.setItem('bg_bedrijfsgeheugen_mini',JSON.stringify(state))}catch(e){}
+     label.classList.toggle('done',cb.checked);
+     updateMiniVoortgang();
+     bgEvent(cb.checked?'bedrijfsgeheugen-mini-action-done':'bedrijfsgeheugen-mini-action-undone');
+   };
+   label.appendChild(cb); label.appendChild(span); box.appendChild(label);
+ });
+ updateMiniVoortgang();
+}
+function updateMiniVoortgang(){
+ var items=[].slice.call(document.querySelectorAll('#miniActies input[type=checkbox]'));
+ var done=items.filter(function(x){return x.checked}).length;
+ var el=document.getElementById('miniVoortgang'); if(el)el.textContent=done+' van '+items.length+' uitgevoerd';
+ if(done===items.length&&items.length){
+   if(el)el.innerHTML='<b>3 van 3 uitgevoerd.</b> Je hebt nu bewezen dat veranderen kan — borg dit structureel in het portaal.';
+   bgEvent('bedrijfsgeheugen-mini-complete');
+ }
 }
 function challengeUrl(){
  if(LAATSTE_SCORE===null)return 'https://www.bedrijfsgeheugen.nl/zelfscan';
