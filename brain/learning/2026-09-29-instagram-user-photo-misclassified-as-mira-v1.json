@@ -13,6 +13,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-instagram-canonical-mira-identity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-instagram-canonical-mira-identity-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-instagram-canonical-mira-identity-v1.test.mjs"
     ]
   },
   "evidence": {
