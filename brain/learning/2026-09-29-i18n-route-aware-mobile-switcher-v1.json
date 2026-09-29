@@ -17,7 +17,9 @@
     "Dutch and English mobile links must target the same logical page: /route ↔ /en/route.",
     "Existing injected switchers must be rewritten, not merely skipped, so stale homepage-only links cannot survive.",
     "Generated /en/* inputs must strip the locale prefix before computing targets to prevent /en/en/*.",
-    "Production closure still requires NL→EN→NL browser navigation on pricing plus mandatory public routes."
+    "Production closure still requires NL→EN→NL browser navigation on pricing plus mandatory public routes.",
+    "The public runtime must normalize every data-bg-language-option anchor to localizedHref(target) so stale DOM links cannot survive.",
+    "The route-aware injector must pass syntax execution before build parity and production promotion."
   ],
   "compiler": {
     "failure_class": "PUBLIC_I18N_ROUTE_DRIFT",
@@ -38,5 +40,6 @@
   "skill_targets": [
     ".agents/skills/powerhouse-green-assurance/SKILL.md"
   ],
-  "truth_boundary": "A route-aware build contract is not production proof until the exact production browser readback passes."
+  "truth_boundary": "A route-aware build contract is not production proof until the exact production browser readback passes.",
+  "revision": 2
 }
