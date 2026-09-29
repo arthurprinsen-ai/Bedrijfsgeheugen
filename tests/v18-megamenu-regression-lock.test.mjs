@@ -67,6 +67,18 @@ test('production readback also rechecks header menu contrast', async () => {
   assert.match(productionReadback, /v18-header-menu-contrast-check\.mjs/);
 });
 
+
+test('public chrome geometry is centrally locked for CMS-like parity', () => {
+  assert.match(core, /v18-canonical-chrome-geometry/);
+  assert.match(core, /--bg-shell-max:1220px/);
+  assert.match(core, /--bg-nav-height:72px/);
+  assert.match(core, /header\.v17-header \.v17-nav/);
+  assert.match(core, /footer\[data-bg-component="footer"\]>\.wrap/);
+  assert.match(browserCheck, /shellGeometry/);
+  assert.match(browserCheck, /nav height must stay 72px/);
+  assert.match(browserCheck, /footer inner width must stay 1220px/);
+});
+
 test('Meer megamenu has one canonical desktop geometry on every public shell', () => {
   assert.match(core, /data-bg-megamenu-root/);
   assert.match(core, /position:fixed!important/);
