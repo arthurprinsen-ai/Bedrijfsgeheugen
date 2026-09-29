@@ -3,7 +3,7 @@ create or replace function public.powerhouse_require_source_for_direct_outreach_
 returns trigger
 language plpgsql
 security definer
-set search_path=public,pg_catalog
+set search_path = public, pg_catalog
 as $$
 declare c text:=lower(coalesce(new.channel,''));
 declare has_source boolean;
@@ -35,3 +35,6 @@ begin
   end if;
   return new;
 end $$;
+
+revoke execute on function public.powerhouse_require_source_for_direct_outreach_v1() from public, anon, authenticated;
+grant execute on function public.powerhouse_require_source_for_direct_outreach_v1() to service_role;
