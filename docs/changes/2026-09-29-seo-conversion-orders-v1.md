@@ -26,3 +26,16 @@ Promotie van deze learning naar PROVEN vereist productie-readback plus gemeten C
 - Brain-learning: `brain/learning/2026-09-29-seo-conversion-orders-v1.json`.
 
 Scope-contract refreshed after skill/system-map registration so delivery hygiene evaluates the complete canonical change set.
+
+## Borgingscorrectie — systeemkaartbron
+De eerdere closure-documentatie verwees al naar `CAPABILITY_SEO_CONVERSION_ORDERS` in het componentregister, maar de bron `platform/system-map/canonical-system-map.mjs` bevatte de capability nog niet expliciet. Dat is nu gecorrigeerd.
+
+De systeemkaart registreert voortaan `seo-conversion-orders` met:
+- de canonieke skill, runtime-config, allowlist, money-page authority en learning;
+- maximaal drie autonome wijzigingen per dagelijkse cyclus;
+- reversible + evidence-gated uitvoering;
+- bestaande money-page eerst;
+- verplichte productie-readback;
+- geen omzetclaim zonder waargenomen outcome.
+
+De regressietest bewaakt nu expliciet dat systeemkaart, skill en componentregister discoverable en synchroon blijven.
