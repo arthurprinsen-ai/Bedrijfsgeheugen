@@ -1,0 +1,42 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|live-assurance-writeback|2026-09-29-v1",
+  "date": "2026-09-29",
+  "status": "ACTIVE_PREVENTION",
+  "context": "Governance closure after live NL/EN route-authority recovery.",
+  "observed": {
+    "production_main": "204269314239ea2cc56a00a0da1ed87a5056415f",
+    "netlify_deploy": "6abbdf73c4c7d80008d9811f",
+    "deploy_state": "ready",
+    "deploy_context": "production",
+    "production_url": "https://www.bedrijfsgeheugen.nl"
+  },
+  "lessons": [
+    "A ready exact production deploy is deployment evidence, not blanket functional evidence for every sub-flow.",
+    "Live recovery is not governance-complete until skills, agent/chat contracts, Brain learning, ledger/docs and System Map contain the same truth-boundary and are read back.",
+    "Historical LIVE/GREEN may never be reused as current health without fresh runtime/provider readback."
+  ],
+  "prevention": [
+    "Persist terminal production identity after each material live recovery.",
+    "Project the same rule into Green Assurance, continuity and AGENTS/chat contract.",
+    "Keep functional sub-gates independent from deploy-state truth.",
+    "Require read-after-write on governance projections."
+  ],
+  "compiler": {
+    "failure_class": "LIVE_GOVERNANCE_DRIFT",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ]
+  },
+  "truth_boundary": "This record proves governance writeback and historical exact deployment identity; it does not assert future runtime health without fresh readback."
+}
