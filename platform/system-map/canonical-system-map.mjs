@@ -356,12 +356,25 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         finalBuildAuthority:'tools/site-shell/apply-money-page-order-conversion.mjs',
         bedrijfslekStandaloneAuthority:'zelfscan.html',
         bedrijfslekV18Exclusion:'tools/v18-views-lijst.mjs',
+        bedrijfslekProductLedGrowth:Object.freeze({
+          route:'/zelfscan',
+          valueBeforePii:true,
+          miniLocalOnly:true,
+          teamChallenge:true,
+          challengePayload:Object.freeze(['score','risk_category','campaign_attribution']),
+          terminalOutcomes:Object.freeze(['paid_order','realized_revenue']),
+          regression:'tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs',
+          learning:'brain/learning/2026-09-29-bedrijfslek-product-led-growth-borging-v2.json'
+        }),
         learning:'brain/learning/2026-09-29-seo-conversion-orders-v1.json'
       }),
       behavioralModels:Object.freeze(['Cialdini','loss-aversion','prospect-theory','Fogg Behavior Model','Hick-Hyman','cognitive-fluency','commitment-ladder','specificity','choice-architecture']),
       optimizationOrder:Object.freeze(['realized revenue','paid orders','qualified proposals','qualified meetings','qualified leads','CTA progression','engagement']),
       invariants:Object.freeze({
         trafficIsNotTerminalOutcome:true,
+        productLedValueBeforePii:true,
+        privacySafeTeamChallenge:true,
+        noParallelBedrijfslekFunnel:true,
         existingCanonicalMoneyPageFirst:true,
         maxDailyAutonomousChanges:3,
         reversibleEvidenceGatedOnly:true,
