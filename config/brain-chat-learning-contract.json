@@ -26,7 +26,8 @@
     "config/instagram-canonical-provider-identity-v3.json",
     "brain/learning/2026-09-29-instagram-provider-id-drift-v3.json",
     "docs/changes/2026-09-29-instagram-provider-id-drift-v3.md",
-    "brain/learning/2026-09-29-live-promotion-governance-closure-v1.json"
+    "brain/learning/2026-09-29-live-promotion-governance-closure-v1.json",
+    "brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -67,7 +68,11 @@
     "livePromotionGovernanceFingerprint": "powerhouse|live-promotion|governance-closure|2026-09-29-v1",
     "readyDeployIsOnlyDeploymentEvidence": true,
     "capabilitySubchainsRemainIndependentlyGated": true,
-    "userMustRepeatBorgRequest": false
+    "userMustRepeatBorgRequest": false,
+    "requireLiveVsFunctionalTruthSeparation": true,
+    "liveVsFunctionalTruthFingerprint": "production|live-ready-vs-functional-green|2026-09-29-v1",
+    "deploymentReadyNeverImpliesFunctionalGreen": true,
+    "materialLivePromotionAutoWriteback": true
   },
   "lessons": [
     {

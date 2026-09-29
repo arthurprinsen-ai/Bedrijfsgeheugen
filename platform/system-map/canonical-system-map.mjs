@@ -128,7 +128,15 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         netlifyState:'ready',
         netlifyContext:'production',
         writebackLearning:'brain/learning/2026-09-29-live-assurance-writeback-v1.json',
-        livePromotionGovernanceClosure:'brain/learning/2026-09-29-live-promotion-governance-closure-v1.json'
+        livePromotionGovernanceClosure:'brain/learning/2026-09-29-live-promotion-governance-closure-v1.json',
+        liveVsFunctionalTruthLearning:'brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json',
+        observedReadyDeploy:Object.freeze({
+          deployId:'6abbdf73c4c7d80008d9811f',
+          commitRef:'204269314239ea2cc56a00a0da1ed87a5056415f',
+          state:'ready',
+          context:'production',
+          publishedAt:'2026-09-29T15:57:21.591Z'
+        })
       }),
       invariants:Object.freeze({
         wiringIsNotGreen:true,
@@ -145,7 +153,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         freshReadbackRequiredForCurrentGreen:true,
         livePromotionGovernanceClosure:true,
         readyDeployIsOnlyDeploymentEvidence:true,
-        capabilitySubchainsIndependentlyGated:true
+        capabilitySubchainsIndependentlyGated:true,
+        deploymentReadyNeverImpliesFunctionalGreen:true,
+        deploymentAndCapabilityTruthSeparated:true
       })
     }),
     Object.freeze({

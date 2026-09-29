@@ -230,7 +230,8 @@
     "brain/learning/2026-09-25-browser-settled-document-request-failure-v1.json",
     "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json",
     "brain/learning/2026-09-29-powerhouse-green-assurance-v1.json",
-    "brain/learning/2026-09-29-live-assurance-writeback-v1.json"
+    "brain/learning/2026-09-29-live-assurance-writeback-v1.json",
+    "brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -558,5 +559,27 @@
     "inherited_by_all_current_and_future_agents_chats": true,
     "user_repeat_request_required": false,
     "learning": "brain/learning/2026-09-29-live-promotion-governance-closure-v1.json"
+  },
+  "live_vs_functional_truth": {
+    "fingerprint": "production|live-ready-vs-functional-green|2026-09-29-v1",
+    "deployment_ready_means": "exact current production provider-side effect exists and is read back",
+    "functional_green_requires": "capability-specific current readback or outcome evidence",
+    "forbidden_inference": "deployment_ready_implies_functional_green",
+    "independently_gated": [
+      "pricing",
+      "public_i18n",
+      "connectors",
+      "content_publication",
+      "social_publication",
+      "business_outcome"
+    ],
+    "automatic_writeback": [
+      "brain_learning",
+      "skills",
+      "agent_chat_contract",
+      "ledger_docs",
+      "system_map"
+    ],
+    "user_reprompt_required": false
   }
 }

@@ -789,3 +789,16 @@ Alle huidige en toekomstige chats/agents die Instagram publiceren, herstellen of
 - identity-check, create, publish en readback gebruiken dezelfde canonical connection;
 - provider-ID/schema drift is pre-provider herstelbaar en mag nooit Buffer/Make fallback, replacement content of duplicaatpublicatie veroorzaken;
 - na provider-create met duurzaam media-ID geldt `republish_forbidden=true` en alleen exact-ID reconcile.
+
+
+## Live deployment truth en functionele truth zijn gescheiden
+
+Fingerprint: `production|live-ready-vs-functional-green|2026-09-29-v1`.
+
+Voor alle huidige en toekomstige agents en chats geldt:
+- `LIVE/DEPLOYMENT_READY` betekent uitsluitend dat de exacte actuele productieversie provider-side bestaat en is teruggelezen;
+- `FUNCTIONAL_GREEN` vereist daarnaast actuele capability-specifieke readback/outcome-evidence;
+- een providerstatus zoals `ready`, `current`, HTTP 2xx, provider-ACK, merge of deploy mag nooit zelfstandig whole-system GREEN opleveren;
+- pricing, NL↔EN, connector-readiness, content/social en business outcomes blijven elk onafhankelijk gated;
+- iedere materiële livegang projecteert automatisch dezelfde learning naar Brain, relevante skills, agent/chat-contract, ledger/docs en System Map;
+- deze borging is standaard uitvoeringsgedrag en vereist geen herhaalde gebruikersprompt.
