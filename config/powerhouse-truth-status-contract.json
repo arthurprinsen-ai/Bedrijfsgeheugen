@@ -140,5 +140,19 @@
     ],
     "inheritedByAllAgentsChats": true,
     "userMustRepeatBorgRequest": false
+  },
+  "productionTruthSeparation": {
+    "fingerprint": "production|live-ready-vs-functional-green|2026-09-29-v1",
+    "deploymentReadyIsNotFunctionalGreen": true,
+    "deploymentReadyEvidence": [
+      "exact_main_identity",
+      "provider_production_state",
+      "provider_readback"
+    ],
+    "functionalGreenEvidence": [
+      "capability_specific_readback",
+      "outcome_or_runtime_evidence"
+    ],
+    "wholeSystemGreenRequiresAllRequiredCapabilities": true
   }
 }

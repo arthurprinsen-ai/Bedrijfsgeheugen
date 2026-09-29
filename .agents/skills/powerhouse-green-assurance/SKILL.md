@@ -132,3 +132,20 @@ Belangrijk:
 - capability-specifieke uitkomsten blijven onafhankelijk gated;
 - de governance-writeback hoort bij dezelfde obligation en mag niet als los vervolgwerk blijven liggen;
 - toekomstige chats/agents voeren deze writeback standaard uit zonder dat de gebruiker opnieuw “borg / leg vast / documenteer” hoeft te zeggen.
+
+
+## Live-ready versus functional green
+
+Fingerprint: `production|live-ready-vs-functional-green|2026-09-29-v1`.
+
+Powerhouse houdt deployment truth en capability truth altijd gescheiden:
+
+- `DEPLOYMENT_READY/LIVE`: exacte actuele main is door de provider als productie gepubliceerd en teruggelezen.
+- `FUNCTIONAL_GREEN`: de relevante capability is daarna ook functioneel via actuele readback/outcome bewezen.
+
+Verboden:
+- Netlify `ready/current` gebruiken als bewijs voor pricing, NL↔EN, connectors, social, content of business outcome.
+- Een merge, provider-ACK of deploy promoveren naar whole-system GREEN.
+- De governance-writeback uitstellen tot de gebruiker opnieuw vraagt om borging.
+
+Iedere materiële live-promotie schrijft in dezelfde obligation-lineage terug naar Brain learning, relevante skills, AGENTS/chat-contract, ledger/docs en System Map.
