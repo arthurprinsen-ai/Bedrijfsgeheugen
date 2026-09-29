@@ -3,7 +3,7 @@ import path from 'node:path';
 
 const ROOT = process.cwd();
 const SKIP = new Set(['node_modules','.git','dist','.netlify']);
-const I18N_ASSET_VERSION = 'cms-i18n-20260929-4';
+const I18N_ASSET_VERSION = 'cms-i18n-20260929-5';
 const LINK = `<link rel="stylesheet" href="/assets/i18n.css?v=${I18N_ASSET_VERSION}" data-bg-i18n-asset>`;
 const SCRIPT = `<script src="/assets/js/i18n.js?v=${I18N_ASSET_VERSION}" defer data-bg-i18n-asset></script>`;
 
