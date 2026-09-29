@@ -39,3 +39,5 @@ header{background:#fff;border-bottom:1px solid var(--line);position:sticky;top:0
 @media print{
   .report-client-logo{max-width:125px;max-height:42px}
 }
+
+.report-person{font-family:"Bricolage Grotesque",sans-serif;font-weight:800;font-size:18px;line-height:1.15;color:#0e2148;margin-bottom:3px}.report-client-page2 .report-person{font-size:16px}
