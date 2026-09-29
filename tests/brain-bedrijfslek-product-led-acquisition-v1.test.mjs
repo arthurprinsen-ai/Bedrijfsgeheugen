@@ -10,6 +10,7 @@ test('Bedrijfslek delivers full value before PII capture',()=>{
   assert.match(scan,/Drie acties die je morgen kunt nemen/i);
   assert.doesNotMatch(scan,/id="scanform"/i);
   assert.match(scan,/Start met het portaal/i);
+  assert.match(scan,/https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//i);
 });
 
 test('homepage and build authority preserve Bedrijfslek as primary acquisition path',()=>{
@@ -17,6 +18,7 @@ test('homepage and build authority preserve Bedrijfslek as primary acquisition p
   const build=read('tools/site-shell/apply-money-page-order-conversion.mjs');
   assert.match(home,/data-money-primary[^>]+href="https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan"/i);
   assert.match(home,/Geen formulier\. Geen e-mail\. Geen verplichting\. Meteen resultaat\./i);
+  assert.match(home,/https:\/\/www\.bedrijfsgeheugen\.nl\/portal-v2\//i);
   assert.match(build,/https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan/);
   assert.match(build,/Ontdek gratis waar je bedrijf lekt/i);
   assert.match(build,/Geen verplichting/i);
