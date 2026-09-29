@@ -176,3 +176,5 @@ Runtime authorities:
 - `supabase/functions/powerhouse-content-orchestrator/index.ts`
 
 Channel boundaries remain hard: public evidence may select a personal-life theme but cannot fabricate an Arthur experience; company/blog prefer current evidence over static seeds; email/LinkedIn DM require a traceable trigger plus person/company context; Instagram remains Mira-only. Provider outcomes and commercial outcomes return to the same lineage.
+
+Continuous assurance authority: `source-backed-outbound`. The hourly scheduler `powerhouse-outbound-source-lineage-hourly-v1` re-proves all eight stages—input, decision, action, readback, outcome, measurement, learning and guard. GREEN requires current runtime evidence plus 8/8 fresh stage receipts.
