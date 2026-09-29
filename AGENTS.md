@@ -761,3 +761,9 @@ Wanneer een Powerhouse-recovery naar productie is gebracht, geldt voor alle chat
 - hergebruik nooit een historische LIVE/GREEN-status als actuele health zonder nieuwe runtime/provider readback.
 
 Dit valt onder fingerprint `powerhouse|green-assurance|truthful-closed-loop|v1`.
+
+
+## Instagram runtime identity inheritance
+Fingerprint: `instagram-runtime-canonical-user-id-v1`.
+
+Alle agents/chats gebruiken voor Instagram uitsluitend de actuele canonical Composio connection voor `bedrijfsgeheugen.nl`; identity wordt runtime via `me` gelezen en de teruggelezen provider user id wordt doorgegeven aan create/publish. Geen stale hardcoded ID, geen fallback naar persoonlijke Instagram, Buffer of Make.
