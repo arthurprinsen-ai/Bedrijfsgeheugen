@@ -9,13 +9,18 @@
     "Apply historical story fingerprints to both linkedin_personal and linkedin_company.",
     "Canonicalize date-varying measured-link noise before company uniqueness reservation.",
     "Fail closed before any provider write when an exact or near-duplicate historical story is detected.",
-    "Preserve the existing atomic claim, capability consumption and provider-side-effect terminality."
+    "Preserve the existing atomic claim, capability consumption and provider-side-effect terminality.",
+    "Project this incident permanently into AGENTS.md, Powerhouse continuity, the LinkedIn publication skill and the canonical System Map so future chats/agents cannot regress."
   ],
   "evidence": {
     "affected_function": "supabase/functions/powerhouse-social-publisher/index.ts",
     "regression": "tests/brain-linkedin-company-historical-dedupe-v1.test.mjs",
     "company_channel": "linkedin_company",
-    "duplicate_gate": "powerhouse_reserve_unique_publication_v1"
+    "duplicate_gate": "powerhouse_reserve_unique_publication_v1",
+    "governance_regression": "tests/brain-social-duplicate-prevention-governance-v1.test.mjs",
+    "retired_story_family": "employee_absence_or_departure__knowledge_only_in_heads",
+    "chat_agent_inheritance": "AGENTS.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
   },
   "evaluation": {
     "historical_replay": [
@@ -37,5 +42,13 @@
   "skill_targets": [
     "linkedin-composio-publisher",
     "powerhouse-continuity"
-  ]
+  ],
+  "governance": {
+    "all_chats_agents_inherit": true,
+    "historical_uniqueness_separate_from_daily_idempotency": true,
+    "user_reported_duplicate_is_negative_evidence": true,
+    "retired_story_families": [
+      "employee_absence_or_departure__knowledge_only_in_heads"
+    ]
+  }
 }
