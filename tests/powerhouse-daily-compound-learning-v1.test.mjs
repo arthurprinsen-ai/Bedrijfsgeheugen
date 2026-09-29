@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import {createDeliveryPlan} from '../tools/brain-delivery-system.mjs';
 
 const migration=fs.readFileSync('supabase/migrations/20260929084144_powerhouse_daily_compound_learning_v1.sql','utf8');
 const whole=fs.readFileSync('.github/workflows/whole-brain-canonical-loop-v2.yml','utf8');
@@ -27,4 +28,14 @@ test('whole-brain and universal learning have a daily schedule',()=>{
 test('compound learning is scheduled before self improvement',()=>{
   assert.match(migration,/powerhouse-daily-compound-learning-v1/);
   assert.match(migration,/'50 2 \* \* \*'/);
+});
+
+test('compound learning regression is classified as backend delivery work',()=>{
+  const policy=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
+  const plan=createDeliveryPlan({
+    changedPaths:['tests/powerhouse-daily-compound-learning-v1.test.mjs'],
+    headSha:'decafbad12345678',
+    policy
+  });
+  assert.deepEqual(plan.lanes.map(lane=>lane.id),['backend']);
 });
