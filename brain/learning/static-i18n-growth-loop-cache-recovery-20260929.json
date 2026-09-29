@@ -1,0 +1,19 @@
+{
+  "fingerprint": "static-i18n|growth-loop-cache-missing|production-build|v1",
+  "date": "2026-09-29",
+  "change": "Add the nine missing deterministic English cache entries required by the static localized-route production build.",
+  "compiler": {
+    "failure_class": "static_i18n_cache_incomplete_blocks_production_build"
+  },
+  "root_cause": "New Dutch growth-loop copy was present in public pages without corresponding deterministic entries in the static English translation cache while production builds require cache completeness and disallow network translation.",
+  "prevention_rule": "Every new public Dutch string that enters the static localized-route build must ship with its deterministic English cache entry in the same lineage before production promotion.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/static-i18n-cache-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "patch": "config/bg-static-i18n-en.d/2026-09-29-growth-loop.json",
+    "builder": "tools/site-shell/build-localized-routes.mjs"
+  }
+}
