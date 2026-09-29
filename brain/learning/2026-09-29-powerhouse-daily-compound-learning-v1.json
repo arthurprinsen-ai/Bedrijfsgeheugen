@@ -30,7 +30,7 @@
       "tests/brain-powerhouse-daily-compound-learning-v1.test.mjs"
     ],
     "canary": [
-      "public.powerhouse_run_daily_compound_learning_v1(date)"
+      "tests/brain-powerhouse-daily-compound-learning-v1.test.mjs"
     ],
     "production_readback": {
       "outcomes_before": 6,
