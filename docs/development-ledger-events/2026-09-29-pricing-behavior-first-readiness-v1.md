@@ -6,3 +6,5 @@
 - Fix: actionable-DOM readiness followed by real lifecycle, group, billing and NL/EN round-trip assertions.
 - Regression: `tests/brain-pricing-behavior-first-readiness-v1.test.mjs`.
 - Truth boundary: marker absence alone may not turn proven behavior red; actual interaction failure remains fail-closed.
+
+- Reconciled-base: `f6ff3b701029dd98e2c8d5579bbeb1932c75edcf`.
