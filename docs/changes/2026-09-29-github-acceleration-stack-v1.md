@@ -12,4 +12,4 @@ The composed stack must reduce unnecessary CI work without weakening Required, s
 
 ## Governance projection
 
-The contract is projected into both delivery skills, Brain learning, the component registry/System Map source and the development ledger. Material future changes must update the same surfaces in one obligation lineage.
+The contract is projected into a dedicated GitHub acceleration skill, Brain learning, the component registry/System Map source and the development ledger. Material future changes must update the same surfaces in one obligation lineage.
