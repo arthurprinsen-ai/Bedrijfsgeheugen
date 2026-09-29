@@ -75,3 +75,32 @@ test('behavioral CRO actions and dark-pattern guards are enforced',()=>{
   const blocked=new Set(allow.always_blocked_without_explicit_evidence||[]);
   for(const b of ['fake-scarcity','fake-urgency','fake-social-proof','hidden-cost','preselected-consent','confirmshaming']) assert.ok(blocked.has(b),`missing ${b}`);
 });
+
+
+test('behavioral revenue writeback stays synchronized',()=>{
+  const systemMap=readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
+  const learning=JSON.parse(readFileSync('brain/learning/2026-09-29-seo-conversion-orders-v1.json','utf8'));
+  const change=readFileSync('docs/changes/2026-09-29-seo-conversion-orders-v1.md','utf8');
+  const ledger=readFileSync('docs/development-ledger-events/2026-09-29-seo-conversion-orders-v1.md','utf8');
+  const architecture=readFileSync('docs/powerhouse/behavioral-landing-revenue-engine-v2.md','utf8');
+
+  assert.match(systemMap,/SEO \+ Behavioral Conversion-to-Orders Engine v2/);
+  assert.match(systemMap,/powerhouse-persuasion-revenue\/SKILL\.md/);
+  assert.match(systemMap,/realized revenue/);
+  assert.equal(learning.behavioral_revenue?.fingerprint,'powerhouse-behavioral-landing-revenue-v2');
+  assert.equal(learning.behavioral_revenue?.dark_patterns_forbidden,true);
+  assert.equal(learning.behavioral_revenue?.max_reversible_changes_per_daily_cycle,3);
+  assert.match(change,/Behavioral revenue integration/);
+  assert.match(ledger,/Behavioral revenue closure/);
+  assert.match(architecture,/Writeback contract/);
+
+  for(const path of [
+    '.agents/skills/powerhouse-seo-conversion-orders/SKILL.md',
+    '.agents/skills/powerhouse-growth-swarm/SKILL.md',
+    '.agents/skills/powerhouse-persuasion-revenue/SKILL.md'
+  ]){
+    const skill=readFileSync(path,'utf8');
+    assert.match(skill,/Behavioral revenue writeback closure/);
+    assert.match(skill,/powerhouse-behavioral-landing-revenue-v2/);
+  }
+});
