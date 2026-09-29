@@ -1,0 +1,45 @@
+{
+  "fingerprint": "linkedin-company|organization-id-normalization|v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "LINKEDIN_COMPANY_ORG_ID_REPRESENTATION_MISMATCH",
+  "problem": "A healthy Bedrijfsgeheugen LinkedIn organization connection was rejected because LINKEDIN_GET_COMPANY_INFO returned organization id 18234216 while the publisher compared only against the full URN urn:li:organization:18234216.",
+  "root_cause": "The company capability selector assumed the provider would serialize organization identity only as a full URN string. Numeric JSON organization ids were not normalized before comparison.",
+  "fix": "Normalize the canonical organization URN to its id component and accept either the full URN or canonical numeric id in organization capability evidence before rejecting a connection.",
+  "prevention": [
+    "Treat LinkedIn organization URN and numeric organization id as equivalent identity representations.",
+    "Do not confuse missing optional readback scope with missing organization write capability.",
+    "Resume the existing daily publication claim after auth recovery; never create a replacement side effect."
+  ],
+  "evidence": {
+    "company_urn": "urn:li:organization:18234216",
+    "company_id": "18234216",
+    "required_scopes": [
+      "r_organization_admin",
+      "w_organization_social"
+    ],
+    "affected_function": "supabase/functions/powerhouse-social-publisher/index.ts",
+    "observed_setup_state": "company_ready=true",
+    "regression": "tests/brain-linkedin-company-org-id-normalization-v1.test.mjs"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-org-id-normalization-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-linkedin-company-org-id-normalization-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-org-id-normalization-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "LINKEDIN_COMPANY_ORG_ID_REPRESENTATION_MISMATCH",
+    "scope": "SOCIAL_PUBLICATION_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "linkedin-composio-publisher",
+    "powerhouse-continuity"
+  ]
+}

@@ -143,7 +143,8 @@ async function composioLinkedInCompanyContext(db:any){
       if(!personId||personId!=='N1twnCNCrD')continue;
       const companies=await composioExecuteArgs(apiKey,accountId,userId,'LINKEDIN_GET_COMPANY_INFO',{role:'ADMINISTRATOR',count:100,start:0,state:'APPROVED'});
       const raw=JSON.stringify(companies?.data||companies);
-      if(!raw.includes(targetOrg))continue;
+      const targetOrgId=targetOrg.replace(/^urn:li:organization:/,'');
+      if(!raw.includes(targetOrg) && !raw.includes(targetOrgId))continue;
       candidates.push({apiKey,accountId,userId,personId,alias:clean(item?.alias),isDefault:item?.is_default===true,createdAt:clean(item?.created_at)});
     }catch(error){
       lastError=error instanceof Error?error.message:String(error);
