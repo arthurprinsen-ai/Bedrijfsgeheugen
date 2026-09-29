@@ -35,11 +35,13 @@
   },
   "evaluation": {
     "historical_replay": [
-      ".agents/skills/powerhouse-green-assurance/SKILL.md",
-      "config/powerhouse-truth-status-contract.json"
+      "tests/development-doc-contract.test.mjs",
+      "tests/brain-chat-learning-complete.test.mjs",
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
     ],
     "canary": [
-      "platform/system-map/canonical-system-map.mjs"
+      "tests/development-doc-contract.test.mjs",
+      "tests/brain-chat-learning-complete.test.mjs"
     ]
   },
   "skill_targets": [
