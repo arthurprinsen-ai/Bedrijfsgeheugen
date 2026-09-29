@@ -1,0 +1,44 @@
+{
+  "fingerprint": "growth|bedrijfslek|value-first-team-loop|v2",
+  "date": "2026-09-29",
+  "status": "CANONICAL",
+  "lesson": "A growth concept is not complete when the page feature is merged. It becomes reusable Powerhouse behavior only after the same product-led loop is projected into agent/chat inheritance, relevant skills, System Map, component registry, human docs, ledger and regression evidence.",
+  "canonical_loop": [
+    "organic reach",
+    "Bedrijfslek",
+    "full value before PII",
+    "Bedrijfsgeheugen Mini",
+    "privacy-safe team challenge",
+    "second qualified user",
+    "internal comparison",
+    "portal/order",
+    "outcome learning"
+  ],
+  "invariants": {
+    "value_before_pii": true,
+    "mini_local_only": true,
+    "challenge_payload": [
+      "score",
+      "risk_category",
+      "campaign_attribution"
+    ],
+    "pii_in_challenge_url": false,
+    "parallel_funnel": false,
+    "terminal_outcomes": [
+      "paid_order",
+      "realized_revenue"
+    ]
+  },
+  "prevention_rule": "Future chats and agents must continue from this repository-backed loop and may not revert to contact-first or advice-only growth without measured evidence and same-lineage governance updates.",
+  "skill_targets": [
+    ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+    ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "evidence": [
+    "AGENTS.md",
+    "platform/system-map/canonical-system-map.mjs",
+    "docs/brain/component-registry.json",
+    "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+  ]
+}
