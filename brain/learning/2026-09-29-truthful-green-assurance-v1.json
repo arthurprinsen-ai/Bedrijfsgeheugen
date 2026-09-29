@@ -1,0 +1,41 @@
+{
+  "fingerprint": "powerhouse|truthful-green-assurance|current-evidence-only|v1",
+  "date": "2026-09-29",
+  "type": "CONTRACT_CHANGE",
+  "status": "CANONICAL_LEARNING",
+  "signal": "System-wide assurance can mix real current blockers, stale provider-specific evidence, historical obligations and incomplete end-outcome proof. Making everything green must never mean cosmetic status mutation.",
+  "prevention": [
+    "green only from current required evidence and exact readback",
+    "repair root cause then recompute health",
+    "preserve historical evidence append-only",
+    "provider-neutral capability may fail over to approved fresh producer",
+    "never republish proven side effects for evidence",
+    "all chats and agents inherit through continuity policy and skill preflight"
+  ],
+  "observed_evidence": {
+    "intelligence_layers_wired": "32/32",
+    "required_jobs_active": "18/18",
+    "architecture_transition": "RED -> AMBER",
+    "structural_lineage_gaps_after_repair": 0,
+    "required_source_stale_after_refresh": 0
+  },
+  "truth_boundary": "This learning records rules and intermediate observed evidence; it does not assert that the entire Powerhouse is currently green.",
+  "skill_targets": [
+    ".agents/skills/powerhouse-truthful-green-assurance/SKILL.md",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-autonomous-engineering-fabric/SKILL.md"
+  ],
+  "system_map": "platform/system-map/canonical-system-map.mjs",
+  "compiler": {
+    "failure_class": "CONTRACT_DRIFT",
+    "scope": "GOVERNANCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-universal-agent-learning-writeback.test.mjs"
+    ]
+  }
+}
