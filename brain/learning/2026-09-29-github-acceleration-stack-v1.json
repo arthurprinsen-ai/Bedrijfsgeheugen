@@ -1,0 +1,52 @@
+{
+  "fingerprint": "github|acceleration-stack|adaptive-one-write-memory-graph|v1",
+  "date": "2026-09-29",
+  "type": "CONTROL_PLANE_COMPOSITION",
+  "status": "PROVEN",
+  "root_cause": "Delivery acceleration had been implemented as several individually proven capabilities. Without a composed closure contract, future agents could optimize one stage locally while omitting another part of the terminal path.",
+  "prevention_rule": "Treat adaptive risk routing, one-write integration, historical pattern memory, dependency propagation, calibration, bounded optimizer handoff and terminal proof/writeback as one composed GitHub acceleration stack.",
+  "enforcement": [
+    ".agents/skills/powerhouse-github-acceleration-stack/SKILL.md",
+    "docs/brain/component-registry.json",
+    "config/powerhouse-adaptive-delivery-v1.json",
+    "tools/delivery/integration-bundle-compiler.mjs",
+    "tools/delivery/delivery-pattern-memory.mjs",
+    "tools/delivery/adaptive-delivery-engine.mjs"
+  ],
+  "proof": {
+    "adaptive_delivery": "PROVEN",
+    "integration_bundle": "LIVE",
+    "delivery_pattern_memory": "PROVEN",
+    "delivery_dependency_graph": "PROVEN",
+    "docs_fast_impact_route": "PROVEN",
+    "source_terminal_main": "fa52dd3de6a14750a5fbf2dc8aaff678346ba12a",
+    "implementation_prs": [
+      3222,
+      3236,
+      3242,
+      3244,
+      3247,
+      3256
+    ]
+  },
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+  ],
+  "evidence": {
+    "tests": [
+      "tests/brain-adaptive-delivery-engine-v1.test.mjs"
+    ]
+  }
+}
