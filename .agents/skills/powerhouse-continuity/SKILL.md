@@ -1341,3 +1341,21 @@ When Production Source Snapshot reaches the exact-source `@netlify/mcp` fallback
 - classify a fallback `401 Unauthorized` as transport credential expiry before treating it as a site/build defect;
 - persistent authentication failure remains fail-closed;
 - terminal success still requires protected-main/provider identity and canonical browser readback.
+
+
+## Canonical public website chrome geometry
+
+Fingerprint: `website|canonical-chrome|cms-pixel-parity|v1`.
+
+For every public Bedrijfsgeheugen website change, chats and agents must treat header, navigation, footer and mega-menu geometry as one shared CMS shell contract, never as page-local styling.
+
+Mandatory:
+- preserve `1220px` desktop shell width and `72px` navigation height unless a deliberate sitewide design migration changes the canonical contract;
+- preserve one shared mega-menu geometry and centering across routes;
+- never fix one route by adding page-specific header/footer/menu width, height, padding or offset overrides;
+- new public routes inherit the same shell automatically;
+- run sitewide browser geometry parity across representative routes before terminal delivery;
+- route drift greater than the canonical browser tolerance is a regression and must block production closure;
+- update the canonical site standard, Brain learning and System Map when this contract changes.
+
+This rule is inherited by all current/future chats, agents and website delivery workflows through Powerhouse.
