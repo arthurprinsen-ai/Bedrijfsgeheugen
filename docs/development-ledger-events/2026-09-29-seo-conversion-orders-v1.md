@@ -33,3 +33,10 @@ Skill/system-map closure:
 - .agents/skills/powerhouse-growth-swarm/SKILL.md
 - docs/brain/component-registry.json -> CAPABILITY_SEO_CONVERSION_ORDERS
 - tests/brain-seo-conversion-orders-v1.test.mjs
+
+Borging correction:
+- detected documentation/source drift: component registry contained `CAPABILITY_SEO_CONVERSION_ORDERS`, while the canonical system-map source lacked the explicit capability node;
+- added `seo-conversion-orders` to `platform/system-map/canonical-system-map.mjs`;
+- extended the canonical skill with mandatory system-map/documentation/writeback closure;
+- extended Brain learning with system-map/documentation references and prevention rule;
+- added regression coverage so this discoverability drift fails tests in future.
