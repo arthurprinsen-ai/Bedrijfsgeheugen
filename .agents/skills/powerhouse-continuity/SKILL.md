@@ -1394,3 +1394,15 @@ Rules:
 - mixed candidates still require normal deployment whenever a true website, portal or Netlify-runtime path is present;
 - trigger-level ignore semantics and internal deployment applicability must stay aligned;
 - governance-only closure terminates on protected-main + non-deployment production truth, never on an invented exact Netlify SHA requirement.
+
+
+## Social duplicate incident inheritance (2026-09-29)
+
+Fingerprint: `powerhouse-social-duplicate-prevention-inheritance-v1`.
+
+Every chat/agent that creates, retries, repairs, schedules or reconciles social content must inherit the same historical uniqueness authority before mutating a provider. Current-state preflight must read the canonical publication history, consumed story fingerprints, retired story families, current claim and provider side-effect evidence.
+
+A daily idempotency key only prevents concurrent/retry duplication of one claim; it does not prove historical novelty. Therefore terminal preflight is:
+`current claim → provider side-effect reconcile → historical text/story-family dedupe → atomic writer claim → provider write → durable provider ID → learning/writeback`.
+
+If a user reports a duplicate that automated history missed, that feedback becomes canonical negative evidence and must be projected into Brain learning, relevant skills, AGENTS inheritance and System Map governance in the same delivery lineage.
