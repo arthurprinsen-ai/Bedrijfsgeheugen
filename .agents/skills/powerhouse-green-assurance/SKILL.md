@@ -99,3 +99,7 @@ Naast build-time route-aware injectie normaliseert de publieke runtime elke taal
 
 Canonieke shell-integriteit vergelijkt structuur en inhoud, maar routegebonden locale-state is geen shell-drift. Bij hashing van gedeelde shellcomponenten moeten uitsluitend de href-waarden van `data-bg-language-option="nl|en"` en hun route-afhankelijke `aria-current` worden genormaliseerd. Andere links, labels, classes, volgorde en markup blijven hash-bepalend. Zo kan `/prijzen ↔ /en/prijzen` correct route-aware zijn zonder een vals mobile-menu drift-alarm te veroorzaken.
 
+### Browser-readback navigation semantics
+
+Een productie-readback van een routewissel bewijst de functionele navigatie zodra de doel-URL en DOM gereed zijn. Wacht bij publieke NL/EN-roundtrips op `domcontentloaded`, niet op volledige `load`: trage niet-kritische assets mogen een correcte locale-navigatie niet als fout classificeren. De verifier blijft daarna expliciet `html[lang]`, zichtbare content en foutmeldingen controleren.
+
