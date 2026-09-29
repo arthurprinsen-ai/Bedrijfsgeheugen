@@ -18,6 +18,13 @@ function beforeFooter(html) {
   return i < 0 ? String(html) : String(html).slice(0, i);
 }
 
+function normalizeRouteScopedComponentHtml(html, name) {
+  if (name !== 'mobile-menu') return String(html);
+  return String(html).replace(/<a\b[^>]*data-bg-language-option=(["'])(?:nl|en)\1[^>]*>/gi, tag =>
+    tag.replace(/\bhref=(["'])[^"']*\1/i, 'href="__BG_LOCALE_ROUTE__"')
+  );
+}
+
 function verifyOne(html, path, expectedCommit, pricing = false) {
   assert.equal(readReleaseMarker(html), expectedCommit, `${path}: release marker wijkt af van productiecommit`);
   for (const text of TRUST) assert.ok(html.includes(text), `${path}: trustbalk mist “${text}”`);
@@ -58,10 +65,12 @@ export function verifyLiveSite({ home, pricing, content, expectedCommit }) {
   const base = new Map();
   for (const p of pages) {
     for (const name of GLOBAL_COMPONENTS) {
-      const hash = componentHash(p.html, name);
+      const hash = componentHash(normalizeRouteScopedComponentHtml(p.html, name), name);
       if (!base.has(name)) base.set(name, hash);
       else assert.equal(hash, base.get(name), `${p.path}: ${name} verschilt live van homepage`);
     }
   }
   return Object.fromEntries(base);
 }
+
+export { normalizeRouteScopedComponentHtml };
