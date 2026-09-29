@@ -646,3 +646,24 @@ Voor alle huidige en toekomstige chats/agents geldt bij Bedrijfsgeheugen LinkedI
 - vraag alleen menselijke OAuth wanneer de productie-runtime zelf géén capability-proven gezonde verbinding heeft en er nog géén provider-side-effect bestaat;
 - na reconnect telt alleen live provider-capability in de productie-runtime als herstelbewijs; een connectorlabel `ACTIVE` is onvoldoende;
 - maak nooit extra aliases of parallelle LinkedIn-writers als herstelmechanisme.
+
+
+## Daily Compound Learning — verplicht voor alle chats, agents en skills
+
+Fingerprint: `powerhouse|daily-compound-learning|all-nodes-inherit|v1`.
+
+De dagelijkse Compound Learning-loop is onderdeel van de ONE BRAIN Constitution en geldt voor **iedere huidige en toekomstige chat, agent, skill, workflow, scheduler en autonome capability**.
+
+Niet-onderhandelbare regels:
+- iedere materiële execution node gebruikt de canonieke keten `observe → context → decide → execute → readback → verified outcome → Outcome Memory → forecast resolution/calibration → learn → next decision`;
+- een chat of agent mag een actie nooit als geleerd resultaat behandelen zonder geverifieerde outcome-evidence;
+- stilte, ontbrekende respons, pending state, dispatch success, HTTP 2xx, commit, merge of deploy-start zijn geen outcome;
+- test-, fixture-, smoke- en synthetic events mogen nooit als bedrijfsresultaat of learning worden geprojecteerd;
+- omzet/realized value mag uitsluitend uit expliciete geverifieerde evidence komen;
+- iedere relevante verified outcome wordt hergebruikt door Company Intelligence, Foresight/Prediction en Self-Improvement; geen node mag een tweede outcome-, forecast- of learningstore starten;
+- vóór materieel werk leest iedere chat/agent de bounded chat-learning preflight plus actuele shared context; na materieel werk schrijft de node outcome, learning, preventie en relevante skill/system-map-projectie terug;
+- `public.powerhouse_run_daily_compound_learning_v1(date)` is de canonieke runtime voor dagelijkse outcome-capture en evidence-backed forecast resolution;
+- Whole Brain Canonical Loop en Universal Closed-loop Learning draaien dagelijks als integriteitscontrole; een node mag die controls niet vervangen door een lokale eigen loop;
+- nieuwe agents en skills erven deze regels automatisch via `AGENTS.md`, `config/brain-chat-learning-contract.json`, canonical skill projection en de System Map.
+
+Definition of Done voor materieel Powerhouse-werk bevat daarom altijd: uitvoering → provider/production readback → verified outcome/value waar beschikbaar → learning/prevention → skill projection → System Map/current-state discoverability. Ontbreekt een schakel, dan is de uitvoering niet terminal groen.

@@ -111,3 +111,19 @@ A material intelligence capability is incomplete until its customer-facing proje
 ## Daily compound-learning feed
 
 Verified runtime outcomes are now captured daily into the existing Outcome Memory before Self-Improvement runs. The canonical authority is `public.powerhouse_run_daily_compound_learning_v1(date)`; it also resolves eligible commercial-progression forecasts from real observed outcomes. Silence is not a negative outcome, synthetic/test events are excluded, and no second outcome or forecast store may be created.
+
+
+## Daily Compound Learning inheritance
+
+Fingerprint: `powerhouse|daily-compound-learning|all-nodes-inherit|v1`.
+
+This skill inherits the canonical daily compound-learning contract. Every material chat/agent execution must:
+- consume bounded shared context and existing learning before acting;
+- preserve one canonical outcome/forecast/learning lineage;
+- treat only verified observed evidence as outcome truth;
+- never convert silence, transport success, synthetic/test events or forecasts into realized outcomes;
+- feed verified outcomes into Company Intelligence, Forecast Calibration and Self-Improvement;
+- write material learning/prevention back so the next chat or agent changes its next decision;
+- remain discoverable through System Map and canonical skill projection.
+
+Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.

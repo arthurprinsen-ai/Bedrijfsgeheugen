@@ -1406,3 +1406,19 @@ A daily idempotency key only prevents concurrent/retry duplication of one claim;
 `current claim → provider side-effect reconcile → historical text/story-family dedupe → atomic writer claim → provider write → durable provider ID → learning/writeback`.
 
 If a user reports a duplicate that automated history missed, that feedback becomes canonical negative evidence and must be projected into Brain learning, relevant skills, AGENTS inheritance and System Map governance in the same delivery lineage.
+
+
+## Daily Compound Learning inheritance
+
+Fingerprint: `powerhouse|daily-compound-learning|all-nodes-inherit|v1`.
+
+This skill inherits the canonical daily compound-learning contract. Every material chat/agent execution must:
+- consume bounded shared context and existing learning before acting;
+- preserve one canonical outcome/forecast/learning lineage;
+- treat only verified observed evidence as outcome truth;
+- never convert silence, transport success, synthetic/test events or forecasts into realized outcomes;
+- feed verified outcomes into Company Intelligence, Forecast Calibration and Self-Improvement;
+- write material learning/prevention back so the next chat or agent changes its next decision;
+- remain discoverable through System Map and canonical skill projection.
+
+Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.

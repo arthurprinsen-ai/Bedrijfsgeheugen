@@ -79,3 +79,19 @@ Structural website-shell changes must therefore:
 - remain discoverable from Powerhouse Control Center / System Map governance.
 
 The current geometry contract is 1220px desktop shell width, 72px navigation height, 1190px maximum centered “Meer” mega-menu and 850px solutions mega-menu, with mobile gutters centrally defined.
+
+
+## Daily Compound Learning inheritance
+
+Fingerprint: `powerhouse|daily-compound-learning|all-nodes-inherit|v1`.
+
+This skill inherits the canonical daily compound-learning contract. Every material chat/agent execution must:
+- consume bounded shared context and existing learning before acting;
+- preserve one canonical outcome/forecast/learning lineage;
+- treat only verified observed evidence as outcome truth;
+- never convert silence, transport success, synthetic/test events or forecasts into realized outcomes;
+- feed verified outcomes into Company Intelligence, Forecast Calibration and Self-Improvement;
+- write material learning/prevention back so the next chat or agent changes its next decision;
+- remain discoverable through System Map and canonical skill projection.
+
+Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.

@@ -14,7 +14,9 @@
     "docs/superpowers/specs/2026-08-28-shared-agent-memory-design.md",
     "brain/learning/2026-09-18-powerhouse-unified-data-intelligence-spine-v1.json",
     "brain/skills/powerhouse-missing-connections-recovery-v1.json",
-    "brain/learning/2026-09-18-missing-connections-recovery-v1.json"
+    "brain/learning/2026-09-18-missing-connections-recovery-v1.json",
+    "brain/learning/2026-09-29-powerhouse-daily-compound-learning-v1.json",
+    "docs/changes/2026-09-29-powerhouse-daily-compound-learning-v1.md"
   ],
   "policy": {
     "fingerprintMatchBeforeMaterialExecution": true,
@@ -30,7 +32,12 @@
     "failClosedOnMissingOrStaleSourceEvidence": true,
     "requireAutomaticSkillProjection": true,
     "skillProjectionFingerprint": "powerhouse-learning-skill-auto-projection-v1",
-    "failClosedOnSkillProjectionDrift": true
+    "failClosedOnSkillProjectionDrift": true,
+    "requireDailyCompoundLearningInheritance": true,
+    "verifiedOutcomeBeforeLearning": true,
+    "silenceIsNeverOutcome": true,
+    "forbidParallelOutcomeForecastLearningStores": true,
+    "requireOutcomeLearningNextDecisionClosure": true
   },
   "lessons": [
     {

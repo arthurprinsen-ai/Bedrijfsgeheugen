@@ -1,0 +1,53 @@
+{
+  "version": "powerhouse-daily-compound-learning-all-node-inheritance-v1",
+  "date": "2026-09-29",
+  "fingerprint": "powerhouse|daily-compound-learning|all-nodes-inherit|v1",
+  "incident": {
+    "symptom": "Daily Compound Learning was live in runtime and core intelligence skills, but explicit inheritance across every present and future chat/agent/skill was not yet encoded in the chat-learning preflight and top-level agent contract.",
+    "root_cause": "Runtime capability closure and universal execution-node inheritance were documented in separate layers without one machine-testable cross-layer contract.",
+    "prior_evidence": "powerhouse-daily-compound-learning-v1 was live on main with verified Outcome Memory, forecast-resolution and daily learning schedules."
+  },
+  "prevention": [
+    "AGENTS.md makes daily compound learning mandatory for every current and future chat, agent, skill, workflow and scheduler.",
+    "brain-chat-learning preflight includes the canonical compound-learning learning and human change record.",
+    "core continuity, Company Intelligence, Foresight, Self-Improvement and System Map skills inherit one shared fingerprint.",
+    "System Map declares agent/chat contracts and next-agent discoverability as runtime invariants.",
+    "Regression test fails if any inheritance link is removed."
+  ],
+  "status": "IMPLEMENTED_PENDING_PROTECTED_MERGE",
+  "obligation_id": "powerhouse-compound-learning-borging-20260929",
+  "compiler": {
+    "failure_class": "KNOWLEDGE_INHERITANCE_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-compound-learning-borging-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-compound-learning-borging-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-continuity",
+    "powerhouse-self-improvement-layer",
+    "powerhouse-company-intelligence-os",
+    "powerhouse-foresight-prediction-intelligence",
+    "powerhouse-system-map-governance"
+  ],
+  "evidence": [
+    "AGENTS.md",
+    "config/brain-chat-learning-contract.json",
+    "platform/system-map/canonical-system-map.mjs",
+    "tests/brain-powerhouse-compound-learning-borging-v1.test.mjs",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-self-improvement-layer/SKILL.md",
+    ".agents/skills/powerhouse-company-intelligence-os/SKILL.md",
+    ".agents/skills/powerhouse-foresight-prediction-intelligence/SKILL.md",
+    ".agents/skills/powerhouse-system-map-governance/SKILL.md"
+  ],
+  "outcome": "ALL_POWERHOUSE_EXECUTION_NODES_INHERIT_DAILY_COMPOUND_LEARNING"
+}

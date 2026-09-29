@@ -104,3 +104,19 @@ Rules:
 - no parallel forecast or calibration store is allowed;
 - forecast-resolution coverage is part of the daily compound-learning control plane;
 - resolved outcomes feed calibration and the next prediction-learning cycle automatically.
+
+
+## Daily Compound Learning inheritance
+
+Fingerprint: `powerhouse|daily-compound-learning|all-nodes-inherit|v1`.
+
+This skill inherits the canonical daily compound-learning contract. Every material chat/agent execution must:
+- consume bounded shared context and existing learning before acting;
+- preserve one canonical outcome/forecast/learning lineage;
+- treat only verified observed evidence as outcome truth;
+- never convert silence, transport success, synthetic/test events or forecasts into realized outcomes;
+- feed verified outcomes into Company Intelligence, Forecast Calibration and Self-Improvement;
+- write material learning/prevention back so the next chat or agent changes its next decision;
+- remain discoverable through System Map and canonical skill projection.
+
+Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
