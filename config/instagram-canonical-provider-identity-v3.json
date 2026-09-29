@@ -1,0 +1,10 @@
+{
+  "version": "instagram-canonical-provider-identity-v3",
+  "username": "bedrijfsgeheugen.nl",
+  "observed_business_user_id": "28537384955950341",
+  "provider": "composio-instagram",
+  "account_type": "BUSINESS",
+  "observed_at": "2026-09-29T16:15:08Z",
+  "rule": "The username is canonical; the numeric provider user ID must be discovered live through INSTAGRAM_GET_USER_INFO with ig_user_id=me on the selected active canonical connection before any provider mutation. Never hardcode a historical Graph ID as publication authority.",
+  "publish_binding": "Use the providerUserId returned by the verified canonical connection for container creation, publish and readback."
+}
