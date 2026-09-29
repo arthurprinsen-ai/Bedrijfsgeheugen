@@ -6,3 +6,5 @@
 - Fix: derive canonical route from each file; preserve same logical page across NL/EN; rewrite stale existing switchers; strip locale directory when computing generated locale targets.
 - Regression: `tests/brain-i18n-route-aware-mobile-switcher-v1.test.mjs`.
 - Terminal requirement: fresh production browser roundtrip.
+
+- Hardening: malformed compact-mobile fallback hersteld; runtime normalizeert publieke locale-links defensief met `localizedHref(target)`.

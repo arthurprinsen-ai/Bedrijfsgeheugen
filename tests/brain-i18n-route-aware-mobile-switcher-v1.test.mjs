@@ -6,6 +6,7 @@ import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
 const script = path.resolve('tools/site-shell/apply-i18n.mjs');
+const runtime = path.resolve('assets/js/i18n.js');
 
 test('apply-i18n injects same-route mobile locale links for Dutch and English pages', () => {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(),'bg-i18n-route-'));
@@ -30,4 +31,12 @@ test('apply-i18n injects same-route mobile locale links for Dutch and English pa
   const home = fs.readFileSync(path.join(dir,'index.html'),'utf8');
   assert.match(home,/href="\/" data-bg-language-option="nl"/);
   assert.match(home,/href="\/en\/" data-bg-language-option="en"/);
+});
+
+
+test('public runtime keeps language anchors on the equivalent current route', () => {
+  const source = fs.readFileSync(runtime,'utf8');
+  assert.match(source,/btn\.setAttribute\('href', localizedHref\(target\)\)/);
+  assert.match(source,/btn\.setAttribute\('hreflang', target\)/);
+  assert.match(source,/btn\.removeAttribute\('aria-current'\)/);
 });

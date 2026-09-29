@@ -283,9 +283,16 @@
 
   function syncControls() {
     document.querySelectorAll('[data-bg-language-option]').forEach(btn => {
-      const selected = btn.dataset.bgLanguageOption === locale;
+      const target = normalizeLocale(btn.dataset.bgLanguageOption);
+      const selected = target === locale;
       btn.setAttribute('aria-selected', String(selected));
       btn.classList.toggle('is-active', selected);
+      if (!isPortal() && btn.tagName === 'A' && SUPPORTED.has(target)) {
+        btn.setAttribute('href', localizedHref(target));
+        btn.setAttribute('hreflang', target);
+        if (selected) btn.setAttribute('aria-current', 'page');
+        else btn.removeAttribute('aria-current');
+      }
     });
     document.querySelectorAll('[data-bg-language-current]').forEach(el => {
       el.textContent = locale === 'nl' ? 'Taal · NL' : 'Language · EN';
