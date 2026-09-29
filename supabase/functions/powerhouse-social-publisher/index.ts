@@ -263,7 +263,6 @@ async function inspectInstagramComposioIdentity(apiKey:string,accountId:string){
   const username=deepPickString(data,['username']).toLowerCase();
   const accountType=deepPickString(data,['account_type']).toUpperCase();
   if(!providerUserId||!providerNodeId||!username)throw new Error('COMPOSIO_INSTAGRAM_IDENTITY_UNREADABLE');
-  if(providerUserId!==INSTAGRAM_CANONICAL_USER_ID)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_ID_MISMATCH');
   if(username!==INSTAGRAM_CANONICAL_USERNAME)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED');
   if(!['BUSINESS','CREATOR','MEDIA_CREATOR'].includes(accountType))throw new Error('COMPOSIO_INSTAGRAM_BUSINESS_OR_CREATOR_REQUIRED');
   return {accountId,providerUserId,providerNodeId,username,accountType};
@@ -277,7 +276,7 @@ async function resolveUniqueInstagramAccount(apiKey:string,active:any[]){
       identities.push({...identity,isDefault:item?.is_default===true,alias:clean(item?.alias)});
     }catch(_error){}
   }
-  const canonical=identities.filter(x=>x.username===INSTAGRAM_CANONICAL_USERNAME&&x.providerUserId===INSTAGRAM_CANONICAL_USER_ID);
+  const canonical=identities.filter(x=>x.username===INSTAGRAM_CANONICAL_USERNAME&&!!x.providerUserId&&['BUSINESS','CREATOR','MEDIA_CREATOR'].includes(x.accountType));
   if(canonical.length===0)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED');
   const providerIds=[...new Set(canonical.map(x=>x.providerUserId))];
   if(providerIds.length!==1)throw new Error('COMPOSIO_INSTAGRAM_CONNECTION_AMBIGUOUS');
