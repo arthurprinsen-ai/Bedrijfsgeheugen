@@ -57,7 +57,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         liveMediaId:'18105956765257858',
         livePermalink:'https://www.instagram.com/reel/Dd4MOdTEarq/',
         providerReadback:true,
-        observedAt:'2026-09-29T16:15:08Z'
+        observedAt:'2026-09-29T16:29:48Z',
+        edgeFunctionVersion:84,
+        protectedMain:'8288b2ab5c6d7caa75a0e199d0273386776a66c2',
+        directProviderReadback:true
       }),
       invariants:Object.freeze({
         hardcodedProviderUserIdForbidden:true,
