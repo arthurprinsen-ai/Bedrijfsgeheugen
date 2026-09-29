@@ -221,6 +221,23 @@
         "learning",
         "guard"
       ]
+    },
+    {
+      "loop_key": "source-backed-outbound",
+      "runtime_source": null,
+      "cron_jobname": "powerhouse-outbound-source-lineage-hourly-v1",
+      "expected_cadence_minutes": 60,
+      "critical": true,
+      "required_stages": [
+        "input",
+        "decision",
+        "action",
+        "readback",
+        "outcome",
+        "measurement",
+        "learning",
+        "guard"
+      ]
     }
   ]
 }
