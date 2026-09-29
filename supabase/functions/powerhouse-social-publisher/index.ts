@@ -256,15 +256,17 @@ async function runLinkedInCockpitAutopilot(db:any){
 
 const INSTAGRAM_CANONICAL_USERNAME='bedrijfsgeheugen.nl';
 async function inspectInstagramComposioIdentity(apiKey:string,accountId:string){
-  const info=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_GET_USER_INFO',{ig_user_id:'me',fields:'id,username,account_type'});
+  const info=await composioExecuteArgsNoUser(apiKey,accountId,'INSTAGRAM_GET_USER_INFO',{ig_user_id:'me',fields:'id,user_id,username,name,account_type'});
   const data=info?.data||info;
-  const providerUserId=deepPickString(data,['id','user_id']);
+  const providerUserId=deepPickString(data,['user_id']);
+  const providerNodeId=deepPickString(data,['id']);
   const username=deepPickString(data,['username']).toLowerCase();
   const accountType=deepPickString(data,['account_type']).toUpperCase();
-  if(!providerUserId||!username)throw new Error('COMPOSIO_INSTAGRAM_IDENTITY_UNREADABLE');
+  if(!providerUserId||!providerNodeId||!username)throw new Error('COMPOSIO_INSTAGRAM_IDENTITY_UNREADABLE');
+  if(providerUserId!==INSTAGRAM_CANONICAL_USER_ID)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_ID_MISMATCH');
   if(username!==INSTAGRAM_CANONICAL_USERNAME)throw new Error('COMPOSIO_INSTAGRAM_CANONICAL_IDENTITY_REQUIRED');
   if(!['BUSINESS','CREATOR','MEDIA_CREATOR'].includes(accountType))throw new Error('COMPOSIO_INSTAGRAM_BUSINESS_OR_CREATOR_REQUIRED');
-  return {accountId,providerUserId,username,accountType};
+  return {accountId,providerUserId,providerNodeId,username,accountType};
 }
 async function resolveUniqueInstagramAccount(apiKey:string,active:any[]){
   const identities:any[]=[];
