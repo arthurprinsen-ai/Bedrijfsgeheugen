@@ -95,3 +95,10 @@ This skill inherits the canonical daily compound-learning contract. Every materi
 - remain discoverable through System Map and canonical skill projection.
 
 Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
+
+
+## Public CMS/i18n topology
+
+Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
+
+De System Map moet de publieke website als één control surface modelleren: `canonicalWebsiteChrome` + `publicLocaleAuthority`. Relaties omvatten site-shell → header/footer/megamenu/navigation → localized-route builder → versioned i18n runtime → Netlify production → live browser readback. Elke structurele wijziging aan deze keten vereist dezelfde-lineage System Map writeback.
