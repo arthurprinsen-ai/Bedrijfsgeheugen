@@ -24,6 +24,7 @@ test('priority money pages use one low-friction conversion path',()=>{
     if(path==='index.html'){
       assert.match(html,/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/zelfscan["']/i,`${path}: homepage primary CTA must lead to the ungated Bedrijfslek`);
       assert.match(html,/Geen formulier\\. Geen e-mail\\. Geen verplichting\\. Meteen resultaat\\./i,`${path}: homepage must explain the ungated value exchange`);
+      assert.match(html,/href=["']https:\/\/www\.bedrijfsgeheugen\.nl\/zelfscan["']/i,`${path}: homepage Bedrijfslek link must be absolute`);
     }else{
       assert.match(html,/data-money-primary[^>]+href=["'](?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/frisse-blik["']/i,`${path}: primary CTA must lead to Frisse Blik`);
       assert.match(html,/geen verplichting/i,`${path}: risk reversal must be explicit`);
