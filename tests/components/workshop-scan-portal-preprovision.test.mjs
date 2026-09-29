@@ -8,7 +8,7 @@ const migration=fs.readFileSync(new URL("../../supabase/migrations/2026092813050
 
 test("workshop submission persists personal intake separately from aggregate scan",()=>{
   assert.match(js,/portal_intake/);
-  for(const key of ["company_name","contact_name","email","employees","sector","region","consent"]) assert.ok(js.includes(key),key);
+  for(const key of ["company_name","contact_name","email","phone","employees","sector","region","consent"]) assert.ok(js.includes(key),key);
   assert.match(edge,/workshop_portal_intakes/);
   assert.match(edge,/preprovisionProjection/);
   assert.match(edge,/privacy_scope:'no_pii'/);
