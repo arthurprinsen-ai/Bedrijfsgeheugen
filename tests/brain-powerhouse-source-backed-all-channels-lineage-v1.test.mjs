@@ -5,4 +5,10 @@ test('all outbound channels share one source/outcome lineage',()=>{
   for(const s of ['powerhouse_content_recommendations','powerhouse_channel_decisions','powerhouse_sales_actions','powerhouse_email_reply_events','powerhouse_sales_outcomes','social_metric_snapshots']) assert.ok(sql.includes(s));
   assert.ok(sql.includes('powerhouse-source-backed-all-channels-v1'));
   assert.ok(sql.includes('powerhouse_refresh_outbound_source_lineage_v1'));
+  const selection=fs.readFileSync('supabase/migrations/20260929214500_powerhouse_source_backed_channel_selection_v1.sql','utf8');
+  const orchestrator=fs.readFileSync('supabase/functions/powerhouse-content-orchestrator/index.ts','utf8');
+  assert.ok(selection.includes('powerhouse_materialize_source_backed_channel_candidates_v1'));
+  assert.ok(selection.includes('powerhouse_sales_actions_source_gate_v1'));
+  assert.ok(orchestrator.includes("row?.evidence?.source_backed === true"));
+  assert.ok(orchestrator.includes('powerhouse_materialize_source_backed_channel_candidates_v1'));
 });
