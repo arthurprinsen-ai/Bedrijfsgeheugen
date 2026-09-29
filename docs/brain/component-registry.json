@@ -1594,13 +1594,31 @@
         "choice-architecture"
       ],
       "autonomy": "contextual evidence-gated page composition with rollback",
-      "chat_agent_inheritance": "commercial-website|orders-first|existing-pages|v1",
+      "chat_agent_inheritance": "commercial-website|orders-first|existing-pages|v1 + growth|bedrijfslek|value-first-team-loop|v2",
       "current_primary_qualification": "ungated Bedrijfslek /zelfscan on homepage; Frisse Blik remains contextual on other money pages",
       "public_copy_requires_same_lineage_static_i18n": true,
       "final_build_artifact_authority": "tools/site-shell/apply-money-page-order-conversion.mjs",
       "bedrijfslek_page_authority": "zelfscan.html",
       "bedrijfslek_v18_exclusion": "tools/v18-views-lijst.mjs",
-      "bedrijfslek_single_route_owner": true
+      "bedrijfslek_single_route_owner": true,
+      "product_led_acquisition": {
+        "fingerprint": "powerhouse-bedrijfslek-product-led-acquisition-v2",
+        "route": "/zelfscan",
+        "value_before_pii": true,
+        "mini_local_only": true,
+        "team_challenge": true,
+        "challenge_payload": [
+          "score",
+          "risk_category",
+          "campaign_attribution"
+        ],
+        "terminal_outcomes": [
+          "paid_order",
+          "realized_revenue"
+        ],
+        "skill": ".agents/skills/powerhouse-growth-swarm/SKILL.md",
+        "regression": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+      }
     }
   ]
 }
