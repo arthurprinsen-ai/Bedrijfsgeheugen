@@ -42,5 +42,25 @@
     "canary": [
       "tests/brain-powerhouse-loop-assurance-v3.test.mjs"
     ]
-  }
+  },
+  "production_readback": {
+    "verified_at": "2026-09-29T19:13:11Z",
+    "controller": "public.powerhouse_refresh_loop_assurance_v1",
+    "scheduler": "powerhouse-loop-assurance-v2",
+    "cadence_minutes": 5,
+    "observed_fleet": {
+      "total": 12,
+      "green": 0,
+      "amber": 11,
+      "red": 1
+    },
+    "assertion": "controller executed successfully and preserved incomplete loop evidence as non-green",
+    "runtime_view": "public.powerhouse_loop_integrity_health_v1"
+  },
+  "evidence": [
+    "production Supabase migration applied successfully",
+    "live assurance controller executed after migration",
+    "fleet-level readback returned 12 registered loops with truthful RED/AMBER state",
+    "Powerhouse Assurance, Supabase Security and RLS regression gates passed on PR lineage"
+  ]
 }
