@@ -36,7 +36,7 @@ export function validateLoopRegistry(registry = {}) {
 
 function main() {
   const here = path.dirname(fileURLToPath(import.meta.url));
-  const root = path.resolve(here, '..');
+  const root = path.resolve(here, '../..');
   const registry = JSON.parse(fs.readFileSync(path.join(root, 'powerhouse/assurance/loop-registry.json'), 'utf8'));
   const result = validateLoopRegistry(registry);
   process.stdout.write(JSON.stringify({ fingerprint: FINGERPRINT, ...result }, null, 2) + '\n');
