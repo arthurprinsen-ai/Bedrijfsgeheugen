@@ -98,6 +98,14 @@ h1,h2,h3{font-family:'Bricolage Grotesque',sans-serif;letter-spacing:-.015em;lin
 .quickwin span{display:block;color:#3C424A;font-size:.9rem;line-height:1.5}
 .quickwin small{display:block;color:var(--grijs);margin-top:.35rem}
 .sharestatus{font-size:.8rem;color:var(--grijs);margin-top:.5rem}
+.teamloop{margin:1.2rem 0;padding:1.15rem;border:2px solid var(--inkt);border-radius:14px;background:#F4F6FF}
+.teamloop h3{font-size:1.15rem;margin:0 0 .35rem}
+.teamloop p{font-size:.9rem;color:#3C424A;margin:.3rem 0 .8rem}
+.teamvergelijk{display:none;margin:.85rem 0 0;padding:.8rem 1rem;border-radius:10px;background:#fff;border:1px solid var(--lijn);font-size:.88rem}
+.teamvergelijk b{color:var(--blauw)}
+.teamacties{display:flex;gap:.6rem;flex-wrap:wrap}
+.teamacties .btn{cursor:pointer;background:#fff}
+.teamacties .knopvol{width:auto;padding:.7rem 1rem;font-size:.95rem}
  /* formulier */
 label.veld{display:block;font-weight:600;font-size:.9rem;margin:1rem 0 .3rem}
 input[type=text],input[type=email],input[type=tel]{width:100%;border:2px solid var(--inkt);border-radius:10px;padding:.75rem .9rem;font:inherit;background:#fff}
@@ -232,6 +240,17 @@ function bgHerkomst(){try{var u=JSON.parse(sessionStorage.getItem('bg_utm')||'{}
     <div id="benchmark"></div>
     <div class="risico"><b>⚠ Jouw grootste risico</b><span id="risicotekst"></span></div>
     <div class="quickwins" id="quickwins"></div>
+    <div class="teamloop" id="teamloop">
+      <span class="vraagnr">De groeilus · zonder formulier</span>
+      <h3>Is dit echt zo? Laat twee collega's dezelfde scan doen.</h3>
+      <p>Een directie ziet vaak iets anders dan operatie of sales. Deel jouw persoonlijke challenge-link. De volgende invuller ziet na afloop direct het verschil met jouw score — zonder account of e-mailadres.</p>
+      <div class="teamacties">
+        <button class="knopvol" type="button" onclick="deelTeam()">Daag mijn MT / collega uit →</button>
+        <button class="btn" type="button" onclick="kopieerTeam()">Kopieer challenge-link</button>
+      </div>
+      <div class="teamvergelijk" id="teamvergelijk"></div>
+      <div class="sharestatus" id="teamstatus" aria-live="polite"></div>
+    </div>
     <div class="scanscope" style="margin-top:1.4rem">
       <h3>Wat wil je nu doen?</h3>
       <p style="font-size:.9rem;margin:.2rem 0 .8rem">Je hebt de analyse al. Kies pas daarna of je verder wilt. Bedrijfsgeheugen kan de signalen, acties en voortgang vervolgens blijvend in één portaal zetten.</p>
@@ -363,6 +382,8 @@ var QUICKWIN={
 
 
 var stap=0, antwoorden=[];
+var LAATSTE_SCORE=null, LAATSTE_RISICO=null;
+var TEAMUITDAGING=(function(){try{var p=new URLSearchParams(location.search);var s=parseInt(p.get('challenge_score')||'',10);var c=p.get('challenge_risk')||'';return Number.isFinite(s)?{score:Math.max(0,Math.min(100,s)),risk:c}:null}catch(e){return null}})();
 function toon(id){document.querySelectorAll('.stapje').forEach(function(s){s.classList.remove('actief')});document.getElementById(id).classList.add('actief');window.scrollTo({top:0,behavior:'smooth'})}
 function ga(n){if(n===1)bgEvent('zelfscan-gestart');stap=n;renderVraag()}
 function renderVraag(){
@@ -385,6 +406,7 @@ function toonScore(){
  var score=Math.round(tot/(VRAGEN.length*3)*100);
  var laag=antwoorden.slice().sort(function(a,b){return a.punten-b.punten})[0];
  document.getElementById('scoregetal').textContent=score;
+ LAATSTE_SCORE=score;
  var c=document.getElementById('cirkel'),d=document.getElementById('duiding');
  if(score>=70){c.style.borderColor='#1F9D55';d.textContent='Sterke basis — met gerichte verbeteringen haal je er nog meer uit.'}
  else if(score>=40){c.style.borderColor='#E8A200';d.textContent='Gemiddeld — je bedrijf werkt, maar leunt op geheugen en handwerk.'}
@@ -420,6 +442,8 @@ function toonScore(){
  var rest=''; dicht.forEach(function(c){ rest+=bmrij(c) }); if(rest){ bm+=rest; }
  document.getElementById('benchmark').innerHTML=bm;
  document.getElementById('risicotekst').textContent=RISICO[laag.cat];
+ LAATSTE_RISICO=laag.cat;
+ toonTeamVergelijking(score,laag.cat);
  var laagste=Object.keys(per).map(function(cat){return {cat:cat,pct:Math.round(per[cat].p/(per[cat].n*3)*100)}}).sort(function(a,b){return a.pct-b.pct}).slice(0,3);
  var qw='<div class="profkop">Drie acties die je morgen kunt nemen</div>';
  laagste.forEach(function(x,idx){qw+='<div class="quickwin"><b>'+(idx+1)+'. '+DOMEIN[x.cat]+' · '+x.pct+'%</b><span>'+QUICKWIN[x.cat]+'</span><small>Gebaseerd op jouw antwoorden · geen verkoopgesprek nodig</small></div>'});
@@ -427,6 +451,40 @@ function toonScore(){
  var oc=document.getElementById('orderCta'); if(oc){oc.href='https://www.bedrijfsgeheugen.nl/afsluiten?plan=control&bron=bedrijfslek&score='+score+'&risico='+encodeURIComponent(laag.cat);}
  bgEvent('bedrijfslek-resultaat');
  toon('s-score');
+}
+function challengeUrl(){
+ if(LAATSTE_SCORE===null)return 'https://www.bedrijfsgeheugen.nl/zelfscan';
+ var u=new URL('https://www.bedrijfsgeheugen.nl/zelfscan');
+ u.searchParams.set('challenge_score',String(LAATSTE_SCORE));
+ if(LAATSTE_RISICO)u.searchParams.set('challenge_risk',LAATSTE_RISICO);
+ u.searchParams.set('utm_source','bedrijfslek');
+ u.searchParams.set('utm_medium','teamchallenge');
+ u.searchParams.set('utm_campaign','mt-loop');
+ return u.toString();
+}
+function toonTeamVergelijking(score,risk){
+ var el=document.getElementById('teamvergelijk'); if(!el)return;
+ if(!TEAMUITDAGING){el.style.display='none';return}
+ var verschil=score-TEAMUITDAGING.score, abs=Math.abs(verschil);
+ var richting=verschil===0?'precies gelijk aan':(verschil>0?'hoger dan':'lager dan');
+ var extra=abs>=15?' <b>Dat verschil is groot genoeg om samen te onderzoeken.</b>':' Jullie beeld ligt redelijk dicht bij elkaar.';
+ var risico=(TEAMUITDAGING.risk&&TEAMUITDAGING.risk!==risk)?' Jullie noemen bovendien een ander grootste risico.':'';
+ el.innerHTML='Jouw score is <b>'+score+'/100</b>: '+abs+' punten '+richting+' de collega die je uitnodigde ('+TEAMUITDAGING.score+'/100).'+extra+risico;
+ el.style.display='block';
+ bgEvent('bedrijfslek-teamchallenge-complete');
+}
+function kopieerTeam(){
+ var url=challengeUrl(), st=document.getElementById('teamstatus');
+ bgEvent('bedrijfslek-teamchallenge-copy');
+ if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(url).then(function(){if(st)st.textContent='Challenge-link gekopieerd.';});return}
+ window.prompt('Kopieer deze challenge-link:',url);
+}
+function deelTeam(){
+ var url=challengeUrl();
+ var txt='Ik heb de gratis Bedrijfslek-scan gedaan. Doe jij hem ook? Dan zien we na 3 minuten of wij hetzelfde bedrijf zien.';
+ bgEvent('bedrijfslek-teamchallenge-share');
+ if(navigator.share){navigator.share({title:'Bedrijfslek — teamchallenge',text:txt,url:url}).catch(function(){});return}
+ kopieerTeam();
 }
 function deelScore(){
  var score=document.getElementById('scoregetal').textContent;
