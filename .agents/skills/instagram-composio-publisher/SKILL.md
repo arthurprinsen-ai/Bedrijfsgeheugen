@@ -420,3 +420,21 @@ Fingerprint: `instagram-live-proven-20260929-v1`.
 - Current canonical evidence: @bedrijfsgeheugen.nl, BUSINESS, provider user id `28537384955950341`, post id `18105956765257858`, permalink `https://www.instagram.com/reel/Dd4MOdTEarq/`.
 - Exact final media SHA-256: `1624616152e89468579fd110db7e68d1900b39bb0309db40acffc7b95000dfa7`; identity confidence 0.93; continuity confidence 0.93.
 - After LIVE_PROVEN only outcome collection/learning is allowed; republish/replacement is forbidden for the same daily claim.
+
+
+## Mira public complaint/source closed loop (2026-09-29)
+
+Fingerprint: `powerhouse-mira-public-complaint-source-loop-v1`.
+
+The canonical upstream for Mira topic selection is public human-problem evidence, not a static content calendar. The loop is:
+
+`public blogs/forums/consumer complaints -> powerhouse_mira_problem_signals_v1 -> scored/deduped private-life problem -> powerhouse_content_recommendations -> immutable powerhouse_instagram_daily_winners_v1 -> OpenArt Mira Reel -> central publisher -> provider readback -> social_posts/social_metric_snapshots -> powerhouse_mira_problem_lineage_v1 -> next ranking`.
+
+Hard rules:
+- Mira stays private/daily-life/human; no forced Bedrijfsgeheugen business bridge or office attribution.
+- Fresh eligible source-backed recommendations rank before static calendar seeds. Calendar seeds are fallback only.
+- Public source evidence must be traceable through source URL/hash, topic, score, recommendation and winner IDs.
+- The same source or topic is blocked for 45 days in this loop.
+- Once a daily winner exists it remains immutable; provider/media recovery must reuse it.
+- Social outcomes and learning write back to the exact source/recommendation/winner lineage.
+- Provider search fallback is bounded Tavily -> DataForSEO; no Make.
