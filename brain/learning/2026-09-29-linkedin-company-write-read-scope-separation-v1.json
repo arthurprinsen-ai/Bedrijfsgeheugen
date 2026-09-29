@@ -14,5 +14,31 @@
     "401/REVOKED_ACCESS_TOKEN triggers reauthorization; 403 on organization read alone does not.",
     "Persist successful create URN immediately and forbid republishing."
   ],
-  "status": "IMPLEMENTED_PENDING_PRODUCTION_PROOF"
+  "status": "IMPLEMENTED_PENDING_PRODUCTION_PROOF",
+  "obligation_id": "linkedin-company-oauth-write-read-separation-20260929",
+  "compiler": {
+    "failure_class": "OAUTH_CAPABILITY_COUPLING_REGRESSION",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-composio-capability-proof.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "linkedin-composio-publisher"
+  ],
+  "evidence": [
+    "supabase/functions/powerhouse-composio-linkedin-setup/index.ts",
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "tests/brain-linkedin-composio-capability-proof.test.mjs",
+    ".agents/skills/linkedin-composio-publisher/SKILL.md"
+  ],
+  "outcome": "COMPANY_WRITE_READ_CAPABILITIES_DECOUPLED"
 }
