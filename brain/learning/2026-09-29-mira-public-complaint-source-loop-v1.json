@@ -1,0 +1,27 @@
+{
+  "fingerprint": "mira-public-complaint-source-loop-v1",
+  "date": "2026-09-29",
+  "root_cause": "Instagram Mira winner selection could still freeze a calendar seed without proving that the topic came from current public human-friction evidence. A generic Instagram research corpus also did not prove the chosen daily story source.",
+  "prevention": [
+    "Use one dedicated canonical public human-problem signal store and lineage.",
+    "Reject support/contact/FAQ pages as complaint evidence unless explicit public complaint language is present.",
+    "Require source_signal_id and source_lineage before daily winner selection.",
+    "Block exact source/hash reuse for 90 days and nearby same-topic repetition while allowing materially new stories.",
+    "Write provider publication, metrics and social-learning evaluation back to the same lineage row."
+  ],
+  "runtime": {
+    "radar": "powerhouse-mira-problem-radar",
+    "signal_store": "powerhouse_mira_problem_signals_v1",
+    "lineage_store": "powerhouse_mira_problem_lineage_v1",
+    "recommendation_type": "source_backed_private_problem",
+    "winner_score_version": "instagram-mira-public-problem-score-v3"
+  },
+  "evidence": {
+    "next_run_date": "2026-09-30",
+    "source_domain": "reddit.com",
+    "topic_key": "bezorging-en-pakketten",
+    "media_job_provider": "openart",
+    "media_job_state": "QUEUED"
+  },
+  "status": "ACTIVE_PREVENTION"
+}
