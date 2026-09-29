@@ -1,6 +1,6 @@
 {
-  "version":"seo-optimization-allowlist-v1",
-  "allowed_actions":[
+  "version": "seo-optimization-allowlist-v1",
+  "allowed_actions": [
     "title-meta",
     "cta-copy-position",
     "internal-link",
@@ -8,9 +8,46 @@
     "supporting-blog-opportunity",
     "cannibalization-proposal",
     "keyword-cluster-expansion",
-    "evidence-gap"
+    "evidence-gap",
+    "serp-snippet",
+    "hero-message-match",
+    "risk-reversal",
+    "proof-block",
+    "faq-objection",
+    "schema-freshness",
+    "conversion-path",
+    "cta-friction-reduction"
   ],
-  "auto_publish_requires":["no-new-factual-claim","evidence-safe","tests-green","preview-green","production-readback-enabled"],
-  "always_blocked_without_explicit_evidence":["testimonial","customer-result","price-change","guarantee","legal-claim","security-certification","rating","review","market-leadership-claim"],
-  "candidate_required_fields":["action","canonical","hypothesis","target_metric","rollback_condition","evidence_refs"]
+  "auto_publish_requires": [
+    "no-new-factual-claim",
+    "evidence-safe",
+    "tests-green",
+    "preview-green",
+    "production-readback-enabled"
+  ],
+  "always_blocked_without_explicit_evidence": [
+    "testimonial",
+    "customer-result",
+    "price-change",
+    "guarantee",
+    "legal-claim",
+    "security-certification",
+    "rating",
+    "review",
+    "market-leadership-claim"
+  ],
+  "candidate_required_fields": [
+    "action",
+    "canonical",
+    "hypothesis",
+    "target_metric",
+    "rollback_condition",
+    "evidence_refs"
+  ],
+  "selection_objective": "qualified lead/order/revenue lift over raw traffic",
+  "change_budget": {
+    "max_auto_changes_per_daily_cycle": 3,
+    "reversible_only": true
+  },
+  "no_change_rule": "If evidence does not support a material user or commercial improvement, publish nothing."
 }

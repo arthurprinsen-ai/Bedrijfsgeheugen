@@ -1,0 +1,71 @@
+{
+  "id": "seo-conversion-orders-v1",
+  "date": "2026-09-29",
+  "status": "TESTING",
+  "area": "SEO_DEMAND",
+  "problem": "Technical SEO is strong, but organic growth was not explicitly optimizing money pages for qualified orders and revenue.",
+  "evidence": {
+    "lighthouse": "homepage SEO 1.00/performance 0.94; process automation SEO 1.00/performance 0.85",
+    "dataforseo_rank_set": "No measurable ranked-keyword set returned for bedrijfsgeheugen.nl in the NL dataset at audit time.",
+    "nl_keyword_baseline": {
+      "bedrijfsprocessen automatiseren": 480,
+      "afas koppeling": 320,
+      "exact online koppeling": 140,
+      "power bi implementatie": 50,
+      "kennisborging": 40,
+      "ai automatisering mkb": 20
+    }
+  },
+  "decision": "Extend the existing canonical SEO Growth Intelligence rather than create a parallel SEO system.",
+  "models": [
+    "search-intent",
+    "JTBD",
+    "PAS",
+    "AIDA",
+    "4P",
+    "risk-reversal",
+    "message-match",
+    "information-scent",
+    "topic-clusters",
+    "E-E-A-T",
+    "conversion-hierarchy",
+    "objection-handling",
+    "outcome-memory"
+  ],
+  "prevention": [
+    "Do not optimize raw traffic without a conversion hypothesis.",
+    "Prefer updating the canonical money page over creating another page for the same intent.",
+    "Never use doorway pages, scaled thin content, keyword stuffing, link schemes, cloaking or unsupported social proof.",
+    "Limit autonomous daily changes to three reversible evidence-gated changes.",
+    "Require production readback and downstream CTA/lead/order/revenue measurement before promoting the learning to PROVEN."
+  ],
+  "canonical_runtime": "config/seo-growth-loop.json",
+  "canonical_allowlist": "config/seo-optimization-allowlist.json",
+  "outcome_router": "BG168 -> BG166 -> BG167",
+  "fingerprint": "seo|conversion-orders|money-page-outcome-loop|v1",
+  "type": "SEO_CONVERSION_PREVENTION",
+  "compiler": {
+    "failure_class": "SEO_GROWTH",
+    "scope": "SEO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Technical SEO was healthy, but autonomous SEO selection did not explicitly combine commercial search intent, conversion friction and expected order value before choosing money-page changes.",
+  "prevention_rule": "Optimize existing canonical money pages for qualified-order outcomes before creating new content; prioritize evidence-backed intent and conversion gaps, cap each daily cycle at three reversible changes, and require measured downstream outcomes before promoting a pattern.",
+  "enforcement": [
+    ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
+    "config/seo-growth-loop.json",
+    "config/seo-optimization-allowlist.json",
+    "site/seo-order-map.json",
+    "tests/brain-seo-conversion-orders-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-seo-conversion-orders-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-seo-conversion-orders-v1.test.mjs"
+  ]
+}

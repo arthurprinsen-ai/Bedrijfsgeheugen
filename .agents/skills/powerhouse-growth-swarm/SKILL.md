@@ -139,3 +139,17 @@ Alle 20 canonieke plays zijn runtime `ACTIVE`. ACTIVE betekent: er bestaat een w
 ## 20/20 terminal proof — 28 september 2026
 Status: `LIVE_PROVEN`.
 PR #3207 is merged to main at `46739777d0a5563001a3520e046a29a57b0b9ec8`. Runtime readback: 20/20 plays ACTIVE, 8 active persuasion decisions, 10 persuasion principles, one canonical commercial scheduler, zero parallel Growth Play schedulers. Recommendation-only completion is forbidden when a safe executor exists.
+
+
+## Organic acquisition / SEO conversion-to-orders
+Fingerprint: `powerhouse-seo-conversion-orders-v1`.
+
+Organic search is a Growth Swarm acquisition lane, not a traffic-only content lane. Reuse `.agents/skills/powerhouse-seo-conversion-orders/SKILL.md` and the canonical SEO Growth Intelligence.
+
+Rules:
+- prioritize search opportunities on qualified-order and revenue potential;
+- update the existing canonical money page before creating a new page for the same intent;
+- use JTBD/PAS/AIDA/4P, risk reversal, message match and objection handling only within evidence/truth guardrails;
+- cap autonomous daily SEO/CRO changes at three reversible evidence-gated changes;
+- route measured CTA -> lead -> order -> revenue outcomes back into the same Growth Swarm/Brain learning;
+- raw traffic, impressions and rankings are intermediary evidence, never terminal commercial success.
