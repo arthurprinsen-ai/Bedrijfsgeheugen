@@ -817,21 +817,21 @@
       "id": "table:public.powerhouse_loop_assurance_receipts_v1",
       "type": "table",
       "authority": "supabase/migrations/20260929211000_powerhouse_loop_assurance_v2.sql",
-      "evidence_contract": "tests/powerhouse-loop-assurance-v2.test.mjs",
+      "evidence_contract": "tests/brain-powerhouse-loop-assurance-v2.test.mjs",
       "required": true
     },
     {
       "id": "table:public.powerhouse_loop_assurance_registry_v1",
       "type": "table",
       "authority": "supabase/migrations/20260929211000_powerhouse_loop_assurance_v2.sql",
-      "evidence_contract": "tests/powerhouse-loop-assurance-v2.test.mjs",
+      "evidence_contract": "tests/brain-powerhouse-loop-assurance-v2.test.mjs",
       "required": true
     },
     {
       "id": "table:public.powerhouse_loop_assurance_state_v1",
       "type": "table",
       "authority": "supabase/migrations/20260929211000_powerhouse_loop_assurance_v2.sql",
-      "evidence_contract": "tests/powerhouse-loop-assurance-v2.test.mjs",
+      "evidence_contract": "tests/brain-powerhouse-loop-assurance-v2.test.mjs",
       "required": true
     },
     {
