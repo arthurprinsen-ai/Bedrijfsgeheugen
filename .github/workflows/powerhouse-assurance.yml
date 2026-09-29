@@ -6,9 +6,11 @@ on:
     paths:
       - 'powerhouse/assurance/**'
       - 'scripts/powerhouse-assurance-check.mjs'
+      - 'scripts/powerhouse-loop-assurance-contract.mjs'
       - 'scripts/brain/powerhouse-quality-intelligence.mjs'
       - 'scripts/brain/quality/**'
       - 'tests/powerhouse-assurance*.test.mjs'
+      - 'tests/powerhouse-loop-assurance-v2.test.mjs'
       - 'tests/brain-quality-intelligence*.test.mjs'
       - 'tests/brain-quality-*.test.mjs'
       - 'portal-v2/**'
@@ -62,6 +64,7 @@ jobs:
           node --test
           tests/powerhouse-assurance.test.mjs
           tests/powerhouse-assurance-delivery-classification.test.mjs
+          tests/powerhouse-loop-assurance-v2.test.mjs
           tests/brain-quality-intelligence.test.mjs
           tests/brain-quality-intelligence-v2.test.mjs
           tests/brain-quality-exploration.test.mjs
@@ -70,6 +73,8 @@ jobs:
           tests/brain-quality-economics.test.mjs
       - name: Powerhouse assurance gate
         run: node scripts/powerhouse-assurance-check.mjs --check
+      - name: Closed-loop integrity registry gate
+        run: node scripts/powerhouse-loop-assurance-contract.mjs --check
       - name: Quality Intelligence deterministic gate
         run: node scripts/brain/powerhouse-quality-intelligence.mjs --check
       - name: Existing Portal V2 protected baseline
