@@ -40,3 +40,5 @@ test('Instagram publisher independently verifies exact canonical provider identi
   assert.match(publisher,/canonicalInstagramComposioContext/);
   assert.match(publisher,/INSTAGRAM_GET_USER_INFO/);
 });
+
+assert.doesNotMatch(publisher ?? p,/INSTAGRAM_CANONICAL_USER_ID/, 'INSTAGRAM_CANONICAL_USER_ID must never remain as an undefined runtime authority');
