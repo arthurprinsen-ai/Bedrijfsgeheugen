@@ -25,7 +25,7 @@
     "learning",
     "next_selection"
   ],
-  "status": "CONTRACT_IMPLEMENTED",
+  "status": "RUNTIME_IMPLEMENTED_AND_SOURCE_SELECTION_PROVEN",
   "failure_class": "OUTBOUND_SOURCE_LINEAGE_GAP",
   "evaluation": {
     "historical_replay": [
@@ -44,5 +44,34 @@
     "linkedin-composio-publisher",
     "personal-linkedin-life-only",
     "powerhouse-growth-swarm"
-  ]
+  ],
+  "root_cause": "The evidence-first selection and learning principle existed in separate channel-specific implementations. Instagram/Mira, company content, personal content, email and LinkedIn DM did not share one enforced source-to-outcome lineage, so static fallbacks or untraceable outreach could still be selected.",
+  "prevention": [
+    "Materialize source-backed candidates before channel selection and rank them ahead of static calendar or evergreen fallbacks.",
+    "Keep LinkedIn personal first-person claims bound to verified Arthur truth; external complaints may only supply theme evidence.",
+    "Require traceable account/person evidence before email or LinkedIn DM can remain send-eligible.",
+    "Preserve source/action/recommendation identifiers through provider readback and outcome learning.",
+    "Refresh the universal outbound lineage hourly so engagement, replies, leads, orders and revenue feed the next selection."
+  ],
+  "evidence": {
+    "runtime_proof": {
+      "outbound_lineages_refreshed": 61,
+      "instagram_signals_stored": 24,
+      "instagram_signals_eligible": 12,
+      "linkedin_dm_source_gate_pass_suggested": 100,
+      "linkedin_dm_source_gate_fail_skipped": 4,
+      "email_source_gate_pass_suggested": 1
+    },
+    "production_candidates": {
+      "linkedin_personal": "verified Arthur source + public theme inspiration only",
+      "linkedin_company": "source_backed_market_problem",
+      "blog": "source_backed_problem_search_intent"
+    },
+    "regression_test": "tests/brain-powerhouse-source-backed-all-channels-lineage-v1.test.mjs",
+    "runtime_surfaces": [
+      "powerhouse-content-orchestrator",
+      "powerhouse_outbound_source_lineage_v1",
+      "powerhouse_sales_actions_source_gate_v1"
+    ]
+  }
 }
