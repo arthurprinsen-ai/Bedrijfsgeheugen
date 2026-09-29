@@ -41,5 +41,39 @@
   ],
   "canonical_runtime": "config/seo-growth-loop.json",
   "canonical_allowlist": "config/seo-optimization-allowlist.json",
-  "outcome_router": "BG168 -> BG166 -> BG167"
+  "outcome_router": "BG168 -> BG166 -> BG167",
+  "fingerprint": "seo|conversion-orders|money-page-outcome-loop|v1",
+  "type": "SEO_CONVERSION_PREVENTION",
+  "compiler": {
+    "failure_class": "SEO_GROWTH",
+    "scope": "SEO",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Technical SEO was healthy, but autonomous SEO selection did not explicitly combine commercial search intent, conversion friction and expected order value before choosing money-page changes.",
+  "prevention_rule": "Optimize existing canonical money pages for qualified-order outcomes before creating new content; prioritize evidence-backed intent and conversion gaps, cap each daily cycle at three reversible changes, and require measured downstream outcomes before promoting a pattern.",
+  "enforcement": [
+    "config/seo-growth-loop.json",
+    "config/seo-optimization-allowlist.json",
+    "site/seo-order-map.json",
+    "tests/seo-growth-*.test.mjs",
+    "tests/seo-order-*.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/seo-growth-*.test.mjs",
+      "tests/seo-order-*.test.mjs"
+    ],
+    "production_outcome": [
+      "primary_cta_click",
+      "lead_outcome",
+      "order_outcome"
+    ]
+  },
+  "test_evidence": [
+    "SEO growth intelligence workflow",
+    "SEO order engine workflow",
+    "Pagina- en SEO-controle"
+  ]
 }
