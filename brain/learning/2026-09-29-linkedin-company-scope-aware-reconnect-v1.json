@@ -1,0 +1,29 @@
+{
+  "version": "1.0.0",
+  "fingerprint": "linkedin-company-scope-aware-reconnect-v1",
+  "date": "2026-09-29",
+  "type": "ERROR_RECOVERY_PREVENTION",
+  "system": "linkedin-company-publication",
+  "signal": "Composio ACTIVE accounts returned LinkedIn REVOKED_ACCESS_TOKEN; a fresh reconnect restored personal profile access but organization ACL remained 403.",
+  "root_cause": [
+    "connector status was treated as provider capability proof",
+    "token health and organization-scope health were not separated",
+    "reconnect used an OAuth auth config without required organization scopes"
+  ],
+  "prevention": [
+    "probe provider token health on exact account",
+    "probe organization ACL capability on exact account",
+    "classify personal-read-success plus organization-ACL-403 as SCOPE_DEFICIENT",
+    "never make a scope-deficient reconnect canonical",
+    "pin company recovery to an organization-capable auth config",
+    "retain one canonical company writer and quarantine stale aliases",
+    "resume the same idempotent daily claim after authorization"
+  ],
+  "canonical_organization": "urn:li:organization:18234216",
+  "forbidden_fallbacks": [
+    "personal-linkedin",
+    "buffer",
+    "make"
+  ],
+  "authority": ".agents/skills/linkedin-composio-publisher/SKILL.md"
+}

@@ -244,3 +244,32 @@ Required machine evidence before dispatch:
 Canonical runtime authority: `supabase/functions/powerhouse-social-publisher/index.ts`.
 Regression authority: `tests/brain-linkedin-company-historical-dedupe-v1.test.mjs`.
 Brain learning: `brain/learning/2026-09-29-linkedin-company-historical-dedupe-v1.json`.
+
+
+## Scope-aware reconnect and auth-config pinning (2026-09-29)
+
+Fingerprint: `linkedin-company-scope-aware-reconnect-v1`.
+
+A Composio connection status of `ACTIVE` is transport metadata only. It is never sufficient proof that the LinkedIn token can publish for the Bedrijfsgeheugen organization.
+
+Required company recovery behavior:
+- treat `REVOKED_ACCESS_TOKEN` as provider truth even when Composio still reports the account as ACTIVE;
+- immediately quarantine that connected account for company publication and never keep retrying it;
+- do not create repeated company aliases against the same inadequate default LinkedIn auth flow;
+- company reconnect is valid only when the exact connected account proves both member identity and organization capability for `urn:li:organization:18234216`;
+- organization capability requires live provider evidence for organization ACL access plus the organization-write scope needed by `LINKEDIN_CREATE_LINKED_IN_POST`;
+- a reconnect that restores `LINKEDIN_GET_MY_INFO` but still returns 403 for `LINKEDIN_GET_COMPANY_INFO` is `SCOPE_DEFICIENT`, not recovered;
+- do not mark a scope-deficient reconnect canonical, do not consume a daily publication claim with it, and do not fall back to the personal identity;
+- the company OAuth/auth-config must be explicitly pinned to organization-capable scopes. Reconnecting an unchanged personal/default auth config does not repair missing organization scopes;
+- if the current connector surface cannot create or select the required organization-capable auth config autonomously, surface exactly one human OAuth/auth-config action, preserve the existing content-ready claim and resume the same lineage immediately after authorization;
+- after a successful organization-capability proof, keep exactly one canonical company connection and remove or quarantine stale company aliases so no second executor can publish the same claim;
+- the daily watchdog must probe provider capability before write and must never infer health from alias, default flag, age, or Composio ACTIVE state alone.
+
+Regression proof:
+- ACTIVE + provider 401 => unhealthy;
+- personal read success + organization ACL 403 => scope-deficient;
+- scope-deficient reconnect cannot become company canonical;
+- stale company aliases cannot execute daily writes;
+- recovery resumes the same idempotent claim and never creates a second post.
+
+Reusable lesson: token health and scope health are different failure domains. The canonical company writer exists only after both are proven live on the exact account used for the organization write.
