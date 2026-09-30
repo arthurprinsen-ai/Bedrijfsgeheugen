@@ -178,11 +178,37 @@ jobs:
               foundation_status="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$foundation_payload")"
               foundation_conclusion="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$foundation_payload")"
               if [ -n "$foundation_id" ] && [ "$foundation_status" = "completed" ]; then
-                [ "$foundation_conclusion" = "success" ] || {
+                if [ "$foundation_conclusion" = "success" ]; then
+                  echo "TERMINAL_BRAIN_FOUNDATION_PROVEN:run=$foundation_id:merge=$MERGE_SHA"
+                  return 0
+                fi
+                if [ "$foundation_conclusion" != "cancelled" ] && [ "$foundation_conclusion" != "skipped" ]; then
                   echo "::error::TERMINAL_BRAIN_FOUNDATION_FAILED:run=$foundation_id:conclusion=$foundation_conclusion:merge=$MERGE_SHA"
                   exit 78
+                fi
+                echo "::notice::TERMINAL_BRAIN_FOUNDATION_SUPERSEDED:run=$foundation_id conclusion=$foundation_conclusion merge=$MERGE_SHA"
+                break
+              fi
+              sleep 5
+            done
+
+            for attempt in $(seq 1 36); do
+              git fetch origin main --no-tags
+              current_main="$(git rev-parse origin/main)"
+              git merge-base --is-ancestor "$MERGE_SHA" "$current_main" || {
+                echo "::error::TERMINAL_BRAIN_DESCENDANT_CONTAINMENT_FAILED:$MERGE_SHA:$current_main"
+                exit 78
+              }
+              descendant_payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/brain-foundation-verify.yml/runs?head_sha=${current_main}&event=push&per_page=20")"
+              descendant_id="$(jq -r --arg sha "$current_main" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$descendant_payload")"
+              descendant_status="$(jq -r --arg sha "$current_main" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$descendant_payload")"
+              descendant_conclusion="$(jq -r --arg sha "$current_main" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$descendant_payload")"
+              if [ -n "$descendant_id" ] && [ "$descendant_status" = "completed" ]; then
+                [ "$descendant_conclusion" = "success" ] || {
+                  echo "::error::TERMINAL_BRAIN_DESCENDANT_FAILED:run=$descendant_id:conclusion=$descendant_conclusion:main=$current_main"
+                  exit 78
                 }
-                echo "TERMINAL_BRAIN_FOUNDATION_PROVEN:run=$foundation_id:merge=$MERGE_SHA"
+                echo "TERMINAL_BRAIN_DESCENDANT_PROVEN:merge=$MERGE_SHA current_main=$current_main run=$descendant_id"
                 return 0
               fi
               sleep 5
