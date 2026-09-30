@@ -16,6 +16,16 @@ const PAD = {
 export const CANONICAL_SHELL_SOURCE = 'over-ons.html';
 const EXTRA_EXCLUDES = new Set(['index.html']);
 const MAPPEN = ['.', 'blog'];
+const EXTRA_PUBLIC_INDEX_PAGES = Object.freeze([
+  'openai-ai-modellen/index.html',
+  'claude-ai-modellen/index.html',
+  'gemini-ai-modellen/index.html',
+  'mistral-ai-modellen/index.html',
+  'amazon-ai-modellen/index.html',
+  'chatgpt-vs-claude/index.html',
+  'chatgpt-vs-gemini/index.html',
+  'claude-vs-gemini/index.html'
+]);
 
 const PAGE_SHELL_CSS = `<style id="canonical-page-shell">
 .paginakop{background:#0a1117;color:#fff;padding:132px 0 62px;position:relative}
@@ -424,7 +434,8 @@ async function publiekePaginas() {
   // kop en voet. Zonder deze regel hield /kennis/ de oude lichte kop, een eigen
   // voet en geen mobiel menu.
   uit.push('kennis/index.html');
-  return uit;
+  uit.push(...EXTRA_PUBLIC_INDEX_PAGES);
+  return [...new Set(uit)];
 }
 
 export async function applyCanonicalShellToAllPages(sourcePath = CANONICAL_SHELL_SOURCE) {

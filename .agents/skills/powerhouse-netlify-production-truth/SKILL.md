@@ -112,3 +112,17 @@ Fingerprint: `netlify-production-build-parity-20260925-v1` revision 2.
 - the exact pricing/i18n/localized-route/sitemap/release-evidence chain.
 
 A parity job that disables a production guard is not parity and may not authorize merge. If Netlify fails after a supposedly green parity run, compare environment flags before changing content or credentials.
+
+
+## Pre-merge build-parity ownership
+
+Fingerprint: `netlify-premerge-build-parity-test-ownership-v1`.
+
+Production build failures that are reproducible from repository state must be prevented before merge.
+
+Required:
+- every committed regression test introduced by a website/recovery lineage is wired into at least one canonical CI workflow;
+- Required test validates the fail-closed static English cache with `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1` before a material full-suite candidate may pass;
+- a missing i18n cache entry is a content/build defect and must be repaired in the same candidate lineage before merge;
+- do not use a production deploy as the first place where deterministic build parity is evaluated;
+- transport/auth recovery and content/build recovery remain separate classifications.

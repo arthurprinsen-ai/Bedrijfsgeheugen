@@ -137,6 +137,16 @@ export function normaliseerHtml(input, bestand) {
 }
 
 const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
+const EXTRA_PUBLIC_INDEX_PAGES = Object.freeze([
+  'openai-ai-modellen/index.html',
+  'claude-ai-modellen/index.html',
+  'gemini-ai-modellen/index.html',
+  'mistral-ai-modellen/index.html',
+  'amazon-ai-modellen/index.html',
+  'chatgpt-vs-claude/index.html',
+  'chatgpt-vs-gemini/index.html',
+  'claude-vs-gemini/index.html'
+]);
 
 export async function normaliseerAllePaginas() {
   await applyCanonicalShellToAllPages();
@@ -146,6 +156,7 @@ export async function normaliseerAllePaginas() {
   for await (const p of glob('*.html')) if (!MAG_NIET.has(p)) bestanden.push(p);
   for await (const p of glob('blog/*/index.html')) bestanden.push(p);
   bestanden.push('blog/index.html');
+  bestanden.push(...EXTRA_PUBLIC_INDEX_PAGES);
 
   let gewijzigd = 0;
   for (const bestand of [...new Set(bestanden)]) {
