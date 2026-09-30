@@ -43,7 +43,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       status:'CANDIDATE_PROTECTED_DELIVERY',
       inputs:Object.freeze(['official provider model/pricing/lifecycle/governance evidence','user goal','task volume and token profile','cost/latency/quality priority','privacy/residency/sovereignty constraints']),
       outputs:Object.freeze(['explainable model shortlist','task-cost estimate','multi-model routing recommendation','qualified lead context','model-intelligence learning']),
-      runtime:Object.freeze({
+      runtime:Object.freeze({providerGovernance:'data/ai-provider-governance-v1.json',
         catalog:'data/ai-model-catalog-v1.json',
         policy:'config/powerhouse-ai-model-intelligence-v1.json',
         publicSurface:'/ai-modelwijzer',
