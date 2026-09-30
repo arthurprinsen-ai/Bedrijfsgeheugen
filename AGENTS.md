@@ -901,3 +901,17 @@ Voor alle huidige en toekomstige chats/agents geldt bij materieel werk:
 - user-facing voortgang blijft compact; technische polling/CI-details worden niet gestreamd als chatlog. De terminale uitkomst volgt zodra bewijs compleet is.
 
 Doel: een chatstream mag wegvallen, maar de obligation en uitvoeringsstaat niet.
+
+
+## Geen blocking wait op remote jobs in de chat
+
+Fingerprint: `powerhouse|chat-response|nonblocking-remote-wait|v1`.
+
+Een chat/agent mag de zichtbare gebruikersrespons niet langdurig blokkeren op CI, Netlify, browserregressie, provider polling of andere remote wachttijd.
+- start geen lange pollinglus binnen één chatturn;
+- schrijf eerst een canoniek checkpoint met actuele obligation, laatste bewezen state en open vervolgactie;
+- remote werk blijft eigendom van dezelfde lineage, maar de zichtbare chatstream is niet de execution lock;
+- bij een volgende capabele run wordt de actuele provider/CI-state opnieuw gelezen en alleen het resterende delta uitgevoerd;
+- de gebruiker hoeft nooit op `Ga door` te drukken om ownership te behouden;
+- platformmeldingen als “onze systemen zijn nog even bezig” of “probeer een sneller model” zijn geen Powerhouse-status en mogen niet als instructie voor herstel worden gebruikt;
+- geen modeldowngrade of versnelling kiezen ten koste van quality/gates enkel om een chat-timeout te vermijden.
