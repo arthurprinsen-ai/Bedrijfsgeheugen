@@ -484,7 +484,17 @@
         "tests/branche-applicaties-integraties.test.mjs",
         "tests/components/",
         ".cache/bg-static-i18n-en",
-        "ai-modelwijzer.html"
+        "ai-modelwijzer.html",
+        "openai-ai-modellen/",
+        "claude-ai-modellen/",
+        "gemini-ai-modellen/",
+        "mistral-ai-modellen/",
+        "amazon-ai-modellen/",
+        "chatgpt-vs-claude/",
+        "chatgpt-vs-gemini/",
+        "claude-vs-gemini/",
+        "data/ai-provider-governance-v1.json",
+        "tests/ai-model-"
       ],
       "requiredContracts": [
         "BG166",
