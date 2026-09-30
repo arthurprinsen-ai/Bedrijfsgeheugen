@@ -22,8 +22,6 @@
   "fix": "Add a bilingual locale/revenue map for all canonical SEO owners, promote AI Modelwijzer as a commercial model-comparison owner, localize English metadata and owner attribution, add production bilingual revenue-link projection, include English canonicals with reciprocal hreflang in sitemap, validate the locale/revenue estate in the Netlify build, create locale/market keyword intelligence in Supabase, and feed that evidence into search/growth intelligence.",
   "evaluation": {
     "historical_replay": [
-      "tests/seo-growth-search-intelligence.test.mjs",
-      "tests/seo-order-link-graph.test.mjs",
       "tests/brain-search-indexing-sitemap-contract.test.mjs"
     ]
   },
