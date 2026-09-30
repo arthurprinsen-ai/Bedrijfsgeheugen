@@ -1,0 +1,33 @@
+{
+  "id": "2026-09-30-seo-locale-html-entity-validation-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|locale-validator|html-entity-semantic-compare|v1",
+  "compiler": {
+    "failure_class": "SEO_LOCALE_VALIDATOR_FALSE_POSITIVE",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Parse5 correctly serializes ampersands in title text and meta attributes as &amp;. The locale validator compared raw serialized strings against unescaped source values, creating false mismatches on English titles and keyword clusters such as M&A and AI Model Comparison & Selector.",
+  "prevention": [
+    "Decode HTML character references before semantic metadata comparison.",
+    "Keep serialization correctness separate from SEO-value correctness.",
+    "Regression coverage includes named and numeric character references."
+  ],
+  "fix": "Decode named and numeric HTML entities in validator attribute/title extraction before comparing against the locale revenue map.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "validator": "tools/seo-order-engine/validate-locales.mjs",
+    "regression": "tests/seo-order-locale-html-entity-validation-v1.test.mjs",
+    "failed_parity_job": "109882851754"
+  },
+  "skill_targets": [
+    "seo-revenue-growth"
+  ]
+}
