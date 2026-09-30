@@ -8,8 +8,8 @@ const html=fs.readFileSync('ai-modelwijzer.html','utf8');
 const governance=JSON.parse(fs.readFileSync('data/ai-provider-governance-v1.json','utf8'));
 
 test('AI Modelwijzer keeps goal, cost and sovereignty contracts',()=>{
-  assert.ok(catalog.models.length>=25);
-  assert.ok(new Set(catalog.models.map(m=>m.provider)).size>=8);
+  assert.ok(catalog.models.length>=100);
+  assert.ok(new Set(catalog.models.map(m=>m.provider)).size>=10);
   assert.equal(config.decision_policy.user_goal_first,true);
   assert.equal(config.decision_policy.no_single_best_model_claim,true);
   assert.match(html,/id="goalInput"/);
@@ -18,7 +18,9 @@ test('AI Modelwijzer keeps goal, cost and sovereignty contracts',()=>{
   assert.match(html,/id="selfHost"/);
   assert.match(html,/id="zdr"/);
   assert.match(html,/id="customerControl"/);
-  assert.ok(governance.providers.length>=9);
+  assert.match(html,/id="providerGovernanceGrid"/);
+  assert.match(html,/data\/ai-provider-governance-v1\.json/);
+  assert.ok(governance.providers.length>=10);
   assert.ok(governance.providers.flatMap(p=>p.paths).length>=15);
   for(const p of governance.providers.flatMap(p=>p.paths)){
     assert.ok(Object.prototype.hasOwnProperty.call(p,'storage_residency'));
