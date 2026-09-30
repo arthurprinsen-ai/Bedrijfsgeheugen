@@ -410,7 +410,8 @@
       const control = languageControl('mobile');
       const auth = mobileHost.querySelector('a[href$="/inloggen"], a[href$="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
       const cta = mobileHost.querySelector('.bg-mobile-cta, .bg-shared-mobile-cta, .bgkop-mcta');
-      mobileHost.insertBefore(control, auth || cta || null);
+      const anchor = [auth, cta].find(node => node && node.parentNode === mobileHost) || null;
+      mobileHost.insertBefore(control, anchor);
     }
 
     syncControls();
@@ -436,19 +437,28 @@
       const target = normalizeLocale(option.dataset.bgLanguageOption);
       if (!SUPPORTED.has(target)) return;
 
-      event.preventDefault();
+      // Public locale options are real anchors. Keep their native navigation
+      // as the source of truth; JavaScript only persists preference and blocks
+      // competing mobile-menu handlers from swallowing the click.
       event.stopImmediatePropagation();
       try { localStorage.setItem(STORAGE_KEY, target); } catch {}
       document.cookie = 'bg_locale=' + encodeURIComponent(target) + '; Path=/; Max-Age=31536000; SameSite=Lax';
 
+      if (!isPortal() && option.tagName === 'A') {
+        const href = option.getAttribute('href') || localizedHref(target);
+        if (!option.getAttribute('href')) option.setAttribute('href', href);
+        closeMenus();
+        return;
+      }
+
+      event.preventDefault();
       if (isPortal()) {
         setLocale(target).catch(showLocaleError);
         return;
       }
 
-      const href = option.getAttribute('href') || localizedHref(target);
       closeMenus();
-      window.location.assign(href);
+      window.location.assign(localizedHref(target));
     }, true);
 
     document.addEventListener('change', event => {
