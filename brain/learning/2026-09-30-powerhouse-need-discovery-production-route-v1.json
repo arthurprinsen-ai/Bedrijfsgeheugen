@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse-need-discovery-production-route-v1",
+  "date": "2026-09-30",
+  "problem": "A transactional website flow linked from a public page was not registered as a functional utility route.",
+  "root_cause": "The technical SEO gate correctly rejected a link whose target was outside the indexable route inventory.",
+  "change": [
+    "Registered /behoeftecheck as a public utility route",
+    "Added noindex,follow to the transactional form"
+  ],
+  "prevention": "Every non-indexable public flow linked from indexable pages must be registered in PUBLIC_UTILITY_ROUTES and carry an explicit robots directive.",
+  "compiler": {
+    "failure_class": "production_readback",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/targeted-website-route-regression.test.mjs"
+    ],
+    "canary": [
+      "tests/targeted-website-route-regression.test.mjs"
+    ]
+  }
+}
