@@ -28,19 +28,13 @@
     "website",
     "sales"
   ],
-  "revision": 2,
+  "revision": 3,
   "evaluation": {
     "historical_replay": [
-      "tests/product-led-home-v1.test.mjs"
-    ],
-    "shadow": [
-      "tests/product-led-home-v1.test.mjs"
-    ],
-    "canary": [
-      "tests/product-led-home-v1.test.mjs"
+      "tests/brain-product-led-home-v1.test.mjs"
     ]
   },
   "test_evidence": [
-    "tests/product-led-home-v1.test.mjs"
+    "tests/brain-product-led-home-v1.test.mjs"
   ]
 }
