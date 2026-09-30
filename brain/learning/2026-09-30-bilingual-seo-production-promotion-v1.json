@@ -1,0 +1,34 @@
+{
+  "id": "2026-09-30-bilingual-seo-production-promotion-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|bilingual|production-promotion|heartbeat|v1",
+  "compiler": {
+    "failure_class": "PRODUCTION_PROMOTION_GAP",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The bilingual SEO architecture was merged to protected main while Netlify production still served an older main SHA. A current-main deployment trigger was therefore required to close the delivery lineage.",
+  "prevention": [
+    "After materially changing public SEO runtime, verify Netlify production commit identity against current protected main.",
+    "If production lags current main, trigger the canonical Production Source Snapshot deployment path instead of treating merge as live.",
+    "Require public production readback before terminal closure."
+  ],
+  "fix": "Add a no-behavior-change Netlify production promotion heartbeat on current main so the canonical production source snapshot deploys and verifies the exact current source.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-search-indexing-sitemap-contract.test.mjs",
+      "tests/brain-production-promotion-observability.test.mjs"
+    ]
+  },
+  "evidence": {
+    "previous_live_sha": "cfdf9bc9b465961dcd00802e7c7e5abf4a877312",
+    "target_base_sha": "7ecefeae5002119121351f9b2907eb6b51453cc8"
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-netlify-production-truth"
+  ]
+}
