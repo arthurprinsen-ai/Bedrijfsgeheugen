@@ -208,6 +208,7 @@ jobs:
           tests/seo-homepage-scroll-story-interaction.test.mjs
           tests/seo-homepage-process-progress.test.mjs
           tests/seo-search-console-revenue-sprint.test.mjs
+          tests/brain-seo-cro-execute-or-explain-v1.test.mjs
           tests/single-obligation-owner-learning.test.mjs
           tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
           tests/social-learning-compatibility.test.mjs
