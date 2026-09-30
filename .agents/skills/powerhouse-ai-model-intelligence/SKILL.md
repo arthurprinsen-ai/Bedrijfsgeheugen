@@ -26,3 +26,28 @@ The advisor is value-first and ungated. Give useful recommendations before askin
 
 ## Powerhouse closure
 Material changes require System Map, Brain learning, human change documentation, regression coverage, protected delivery and production readback.
+
+
+## V2 completeness contract — 30 september 2026
+Fingerprint: `powerhouse|ai-model-intelligence|broad-specialist-coverage|v2`.
+
+The canonical catalog is not a shortlist of chatbots. It must cover decision-relevant model classes across:
+- frontier/general reasoning;
+- economy/high-volume;
+- coding;
+- image generation/editing;
+- realtime/voice;
+- transcription and TTS;
+- OCR/document AI;
+- embeddings/RAG/reranking;
+- moderation/safety;
+- video;
+- open-weight/self-host/private deployments.
+
+Every model record must expose an official provider source, verification date, explicit limitations/less-suitable use cases, deployment path and governance fields for storage residency, inference residency, training, retention, zero-retention and subprocessors. Unknown remains UNKNOWN.
+
+The advisor must use specialist-intent gating: a specialist model may not outrank a general model merely because of speed/cost unless the user's goal actually matches that specialist task.
+
+Public filters must include at least provider, tier, governance profile, modality and task/use case. The public page must display both strengths and limitations.
+
+Coverage is continuously expanded from official sources. “Complete” means the broadest maintained decision catalog with explicit freshness/provenance, not a frozen claim that every model in existence is known forever.

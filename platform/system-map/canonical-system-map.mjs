@@ -65,7 +65,13 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         valueBeforeLeadGate:true,
         noParallelLeadStore:true,
         qualifiedLeadToRevenueLoop:true,
-        protectedDeliveryAndProductionReadbackRequired:true
+        protectedDeliveryAndProductionReadbackRequired:true,
+        specialistIntentGate:true,
+        explicitLimitationsRequired:true,
+        modalityAndTaskFiltersRequired:true,
+        perModelVerificationDateRequired:true,
+        governanceUnknownNeverGreen:true,
+        broadSpecialistCoverage:true
       })
     }),
     Object.freeze({
