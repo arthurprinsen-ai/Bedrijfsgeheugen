@@ -78,6 +78,32 @@ jobs:
           MERGE_SHA: ${{ github.event.pull_request.merge_commit_sha }}
         run: |
           set -euo pipefail
+          git fetch origin main --no-tags
+          changed_paths="$(git diff --name-only "${MERGE_SHA}^1" "${MERGE_SHA}" || true)"
+          governance_only=true
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json)
+                ;;
+              *)
+                governance_only=false
+                break
+                ;;
+            esac
+          done <<< "$changed_paths"
+
+          if [ "$governance_only" = true ]; then
+            observed="$(git rev-parse origin/main)"
+            git merge-base --is-ancestor "$MERGE_SHA" "$observed" || {
+              echo "::error::POST_MERGE_MAIN_CONTAINMENT_FAILED:$MERGE_SHA:$observed"
+              exit 78
+            }
+            echo "production_sha=$observed" >> "$GITHUB_OUTPUT"
+            echo "PRODUCTION_READBACK_NOT_APPLICABLE_NON_RUNTIME:MAIN_CONTAINMENT_NON_RUNTIME:$MERGE_SHA:$observed"
+            exit 0
+          fi
+
           for attempt in $(seq 1 36); do
             if curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/release.json -o /tmp/release.json               && curl --fail --silent --show-error --max-time 10 https://www.bedrijfsgeheugen.nl/ -o /tmp/runtime.html; then
               observed="$(node --input-type=module - <<'NODE'

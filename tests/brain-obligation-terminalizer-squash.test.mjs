@@ -13,3 +13,16 @@ test('terminalizer accepts exact squash-tree equivalence without weakening fail-
   assert.match(yaml,/git merge-base --is-ancestor "\$MERGE_SHA" origin\/main/);
   assert.match(yaml,/merged_lineage_verified:\['ancestor','squash_tree_equivalent'\]\.includes\(lineage\.lineage_mode\)/);
 });
+
+
+test('governance-only merge does not wait for a Netlify website release', () => {
+  const yaml=readFileSync('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  assert.match(yaml,/changed_paths=.*git diff --name-only/);
+  assert.match(yaml,/governance_only=true/);
+  assert.match(yaml,/docs\/\*\|\.agents\/\*\|tests\/\*\|\.github\/\*/);
+  assert.match(yaml,/brain\/learning\/\*\|brain\/policies\/\*/);
+  assert.match(yaml,/tools\/delivery\/\*/);
+  assert.match(yaml,/platform\/system-map\/canonical-system-map\.mjs/);
+  assert.match(yaml,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
+  assert.match(yaml,/PRODUCTION_READBACK_NOT_APPLICABLE_NON_RUNTIME:MAIN_CONTAINMENT_NON_RUNTIME/);
+});
