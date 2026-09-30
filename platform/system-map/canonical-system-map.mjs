@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T09:30:00Z',
+  observedAt:'2026-09-30T19:24:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,17 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'powerhouse-product-led-growth-v1',
+      label:'Powerhouse Product-led Growth Architecture',
+      authority:'github+public-site+growth-evidence',
+      owner:'Powerhouse Growth & Revenue OS',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['public product proposition','existing capabilities','conversion entry points','integration trust','commercial outcomes']),
+      outputs:Object.freeze(['single platform narrative','Intelligence product line','Agents product line','Connect product line','free-to-product conversion path']),
+      runtime:Object.freeze({homepageBuilder:'tools/site-shell/apply-product-led-home.mjs',skill:'skills/powerhouse-product-led-growth.md',regression:'tests/product-led-home-v1.test.mjs',learning:'brain/learning/2026-09-30-powerhouse-product-led-home-v1.json'}),
+      invariants:Object.freeze({onePlatformTaxonomy:true,productBeforeConsultancy:true,freeEntryVisible:true,selfServicePathRequired:true,unverifiedScaleClaimsForbidden:true,bilingualParityRequired:true})
+    }),
     Object.freeze({
       id:'predictive-multi-agent-delivery-scheduler-v1',
       label:'Predictive Multi-Agent Delivery Scheduler',
