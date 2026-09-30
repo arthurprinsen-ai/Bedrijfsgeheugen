@@ -290,6 +290,7 @@ jobs:
           node tools/site-shell/build-localized-routes.mjs
           node tools/genereer-sitemap.mjs
           node tools/bouw-release-evidence.mjs
+          git reset --hard HEAD
 
   backend:
     needs: preflight
