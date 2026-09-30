@@ -13,5 +13,20 @@
     "tools/site-shell/apply-product-led-home.mjs",
     "tests/product-led-home-v1.test.mjs",
     "skills/powerhouse-product-led-growth.md"
-  ]
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "The existing site exposed many strong capabilities, demand-capture pages and consultancy entry points, but the homepage did not roll them up into one immediately legible scalable Powerhouse product architecture.",
+  "compiler": {
+    "failure_class": "PRODUCT_TAXONOMY_FRAGMENTATION",
+    "scope": "PUBLIC_WEBSITE_PRODUCT_LED_GROWTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "growth",
+    "website",
+    "sales"
+  ],
+  "revision": 1
 }
