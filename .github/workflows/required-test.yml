@@ -220,6 +220,7 @@ jobs:
           tests/seo-homepage-process-progress.test.mjs
           tests/seo-search-console-revenue-sprint.test.mjs
           tests/brain-seo-cro-execute-or-explain-v1.test.mjs
+          tests/brain-i18n-production-navigation-readback-v2.test.mjs
           tests/brain-netlify-static-i18n-cache-terminal-v1.test.mjs
           tests/ai-model-seo-cluster-v1.test.mjs
           tests/ai-model-production-hotfix-v1.test.mjs
