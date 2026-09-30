@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "date": "2026-09-30",
+  "fingerprint": "website|i18n|persistent-public-navigation|v1",
+  "compiler": {
+    "failure_class": "PUBLIC_LOCALE_LOST_AFTER_NAVIGATION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1
+  },
+  "root_cause": "The language selector correctly navigated the current public route to /en/*, but ordinary same-origin page and menu links retained their original unprefixed Dutch href values. Navigating after selecting English therefore left the English locale namespace and returned the visitor to Dutch.",
+  "prevention": [
+    "Treat selected locale as a sitewide navigation invariant, not a page-local translation state.",
+    "On English public routes rewrite every eligible same-origin public link to the equivalent /en/* route; on Dutch routes rewrite to the unprefixed canonical route.",
+    "Preserve query strings and hashes.",
+    "Exclude portal, customer portal and technical/API/assets/functions paths from public locale rewriting.",
+    "Normalize dynamically inserted menu/navigation links through the same runtime guard.",
+    "Terminal browser proof must navigate to another public page after language selection and verify that the selected locale persists."
+  ],
+  "evidence": [
+    "assets/js/i18n.js",
+    "tests/brain-i18n-persistent-navigation-v1.test.mjs",
+    "PR #3406",
+    "user screenshot/reference behavior from neno.co"
+  ],
+  "evaluation": {
+    "historical_replay": ["tests/brain-i18n-persistent-navigation-v1.test.mjs"],
+    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"],
+    "production_readback_required": true
+  },
+  "skill_targets": [
+    "powerhouse-production-nl-en-delivery",
+    "powerhouse-continuity",
+    "powerhouse-system-map-governance"
+  ],
+  "skill_projection_required": true
+}
