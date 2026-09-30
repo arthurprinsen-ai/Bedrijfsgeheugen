@@ -1,0 +1,34 @@
+{
+  "id": "2026-09-30-bilingual-seo-revenue-live-promotion-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|bilingual|production-promotion|netlify-transport|v1",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The bilingual SEO architecture reached protected main while Netlify production remained on an older commit because the stored Netlify MCP proxy used by the production snapshot had expired and fallback upload returned HTTP 401.",
+  "prevention": [
+    "Refresh the authorized Netlify transport before an exact-current-main production promotion when the stored proxy is stale.",
+    "A merged SEO architecture is not terminal until production identity and public NL/EN readback are proven.",
+    "Promotion candidates carry Brain learning, ledger and human documentation in the same lineage."
+  ],
+  "fix": "Rotate the server-side Netlify proxy, trigger an exact-current-main production promotion, and verify localized SEO surfaces after deployment.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ]
+  },
+  "evidence": {
+    "target": "https://www.bedrijfsgeheugen.nl",
+    "transport": "netlify-deploy-bridge",
+    "release_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/3488"
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-netlify-production-truth"
+  ]
+}
