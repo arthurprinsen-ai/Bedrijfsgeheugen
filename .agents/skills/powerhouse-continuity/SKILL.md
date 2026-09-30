@@ -1501,6 +1501,23 @@ Voor iedere nieuwe of gewijzigde publieke copy geldt:
 - ontbrekende finale strings gaan naar dezelfde canonical patch authority, nooit naar runtime-only fallback;
 - een Netlify build failure door ontbrekende finale vertaalkeys is recovery-input; dezelfde owner houdt de obligation tot exact-main production + NL/EN public readback groen zijn.
 
+
+## Async workflow continuation
+
+Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
+
+A remote GitHub Actions, Netlify, Supabase, CodeQL or provider job in `queued`, `pending`, `waiting`, `requested` or `in_progress` state is never permission to stop working or hand the task back to the user.
+
+Mandatory:
+- persist a resumable checkpoint before waiting: obligation, exact candidate/head, current main epoch, open gates and next safe action;
+- continue independent work while the remote gate runs;
+- never start a duplicate required run for the same exact head when one is already active;
+- newer main supersedes stale reversible production snapshot/readback work;
+- polling is always bounded by a hard timeout;
+- after interruption, resume from the checkpoint automatically without requiring “ga door”.
+
+The user-facing terminal states remain `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`. A pending workflow is never terminal.
+
 ## Persistent public locale navigation
 
 Fingerprint: `website|i18n|persistent-public-navigation|v1`.
