@@ -1,0 +1,28 @@
+{
+  "id": "2026-09-30-explicit-public-locale-navigation-v2",
+  "fingerprint": "website|i18n|explicit-public-locale-navigation|v2",
+  "type": "RECOVERY",
+  "observed_at": "2026-09-30",
+  "failure_class": "PUBLIC_LOCALE_CLICK_NAVIGATION_DROPPED",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "signal": "Exact-main production deployed successfully and /company-brain passed public route checks, but canonical pricing NL→EN browser roundtrip timed out on the language-option click.",
+  "root_cause": "The public language option persisted locale state but relied on the browser's implicit anchor default after mobile navigation/menu state mutated during the same click. In production that default navigation was not reliable.",
+  "fix": "Public language-option clicks now prevent implicit navigation and explicitly call location.assign() with the canonical localized href after closing menus.",
+  "prevention": [
+    "Never rely on implicit anchor navigation for the public locale switch",
+    "Keep cross-page NL→EN→NL production browser proof fail-closed",
+    "Classify locale-click timeout as runtime interaction defect, not Netlify transport failure"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-persistent-navigation-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "status": "RECOVERY_CANDIDATE"
+}
