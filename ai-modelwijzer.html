@@ -65,6 +65,8 @@
 <label class="check"><input id="euOnly" type="checkbox"> Inferentie aantoonbaar EU</label>
 <label class="check"><input id="selfHost" type="checkbox"> Self-hosting vereist</label>
 <label class="check"><input id="openWeights" type="checkbox"> Open weights vereist</label>
+<label class="check"><input id="zdr" type="checkbox"> Zero Data Retention vereist</label>
+<label class="check"><input id="customerControl" type="checkbox"> Customer-controlled data vereist</label>
 <label class="check"><input id="activeOnly" type="checkbox" checked> Alleen actief/production</label>
 </div>
 <button class="adviceBtn" id="advise">Vergelijk en adviseer →</button>
@@ -80,7 +82,7 @@
 <input id="search" placeholder="Zoek model, provider of toepassing">
 <select id="providerFilter"><option value="">Alle providers</option></select>
 <select id="tierFilter"><option value="">Alle types</option><option value="frontier">Frontier</option><option value="balanced">Balanced</option><option value="economy">Economy</option><option value="local">Local/self-host</option><option value="specialist">Specialist</option><option value="enterprise">Enterprise</option><option value="open-weight">Open-weight</option></select>
-<select id="governanceFilter"><option value="">Alle governanceprofielen</option><option value="eu">EU processing</option><option value="self">Self-host</option><option value="open">Open weights</option></select>
+<select id="governanceFilter"><option value="">Alle governanceprofielen</option><option value="eu">EU processing</option><option value="self">Self-host</option><option value="open">Open weights</option><option value="zdr">Zero Data Retention</option><option value="customer">Customer-controlled sovereignty</option></select>
 </div>
 <div class="modelGrid" id="modelGrid"></div>
 <p class="compareNote">Bronnen zijn leverancier-documentatie. Onbekende waarden worden als onbekend getoond; de Modelwijzer verzint geen residency- of prijsclaim.</p>
@@ -122,7 +124,7 @@
 </main>
 <footer class="footer"><div class="wrap">Bedrijfsgeheugen · AI-gedreven. Menselijk gericht. · <a href="https://www.bedrijfsgeheugen.nl/privacy">Privacy</a> · <a href="https://www.bedrijfsgeheugen.nl/contact">Contact</a></div></footer>
 <script>
-let catalog={models:[]},lastAdvice=null;
+let catalog={models:[]},governance={providers:[]},lastAdvice=null;
 const $=id=>document.getElementById(id);
 const money=n=>n==null?'onbekend':new Intl.NumberFormat('nl-NL',{style:'currency',currency:'USD',maximumFractionDigits:n<10?2:0}).format(n);
 function taskSignal(text){
@@ -151,11 +153,16 @@ function monthlyCost(m){
  const tasks=+$('tasks').value||0, tin=+$('inputTokens').value||0, tout=+$('outputTokens').value||0;
  return tasks*((tin/1e6)*m.input_usd_m+(tout/1e6)*m.output_usd_m);
 }
+function providerPaths(m){return governance.providers.find(p=>p.provider===m.provider)?.paths||[]}
+function supportsZdr(m){return providerPaths(m).some(p=>String(p.zero_data_retention||'').toLowerCase().includes('available')||String(p.zero_data_retention||'').toLowerCase().includes('supported')||p.zero_data_retention==='customer-controlled')}
+function customerControlled(m){return m.self_host&&providerPaths(m).some(p=>p.self_host&&String(p.sovereignty_level||'').includes('customer-controlled'))}
 function governanceBadges(m){
  const b=[];
  b.push(m.eu_processing===true?'<span class="badge good">EU-inferentie optie</span>':m.eu_processing===false?'<span class="badge risk">Geen EU-inferentie in dit pad</span>':'<span class="badge warn">EU-inferentie onbekend</span>');
  if(m.self_host)b.push('<span class="badge good">Self-host mogelijk</span>');
  if(m.open_weights)b.push('<span class="badge good">Open weights</span>');
+ if(supportsZdr(m))b.push('<span class="badge good">ZDR-pad beschikbaar</span>');
+ if(customerControlled(m))b.push('<span class="badge good">Customer-controlled pad</span>');
  b.push('<span class="badge">'+m.jurisdiction+'</span>');
  return b.join('');
 }
@@ -174,6 +181,8 @@ function eligible(m){
  if($('euOnly').checked&&m.eu_processing!==true)return false;
  if($('selfHost').checked&&!m.self_host)return false;
  if($('openWeights').checked&&!m.open_weights)return false;
+ if($('zdr').checked&&!supportsZdr(m))return false;
+ if($('customerControl').checked&&!customerControlled(m))return false;
  if($('activeOnly').checked&&!['active'].includes(m.status))return false;
  return true;
 }
@@ -191,12 +200,22 @@ function advise(){
 }
 function renderModels(){
  const q=$('search').value.toLowerCase(),p=$('providerFilter').value,tier=$('tierFilter').value,g=$('governanceFilter').value;
- const rows=catalog.models.filter(m=>(!q||(m.id+' '+m.provider+' '+m.strengths.join(' ')).toLowerCase().includes(q))&&(!p||m.provider===p)&&(!tier||m.tier===tier)&&(!g||(g==='eu'&&m.eu_processing===true)||(g==='self'&&m.self_host)||(g==='open'&&m.open_weights)));
- $('modelGrid').innerHTML=rows.map(m=>`<article class="model"><h3>${m.id}</h3><div class="meta">${m.provider} · ${m.status} · context ${m.context_k?m.context_k+'k':'n.v.t./onbekend'}</div><div class="badges">${governanceBadges(m)}</div>${['reasoning','code','writing','speed','cost'].map(k=>`<div class="scoreRow"><span>${k}</span><span class="bar"><i style="width:${m.scores[k]*10}%"></i></span><b>${m.scores[k]}</b></div>`).join('')}<div class="price">${m.input_usd_m!=null?`Input ${money(m.input_usd_m)}/M · Output ${money(m.output_usd_m)}/M`:(m.unit_price||'Prijs afhankelijk van deployment')}<br>Deployment: ${m.deployment.join(', ')}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">bron ↗</a></div></article>`).join('');
+ const rows=catalog.models.filter(m=>(!q||(m.id+' '+m.provider+' '+m.strengths.join(' ')).toLowerCase().includes(q))&&(!p||m.provider===p)&&(!tier||m.tier===tier)&&(!g||(g==='eu'&&m.eu_processing===true)||(g==='self'&&m.self_host)||(g==='open'&&m.open_weights)||(g==='zdr'&&supportsZdr(m))||(g==='customer'&&customerControlled(m))));
+ $('modelGrid').innerHTML=rows.map(m=>`<article class="model"><h3>${m.id}</h3><div class="meta">${m.provider} · ${m.status} · context ${m.context_k?m.context_k+'k':'n.v.t./onbekend'}</div><div class="badges">${governanceBadges(m)}</div>${['reasoning','code','writing','speed','cost'].map(k=>`<div class="scoreRow"><span>${k}</span><span class="bar"><i style="width:${m.scores[k]*10}%"></i></span><b>${m.scores[k]}</b></div>`).join('')}<div class="price">Governancepaden: ${providerPaths(m).length||'onbekend'}<br>${m.input_usd_m!=null?`Input ${money(m.input_usd_m)}/M · Output ${money(m.output_usd_m)}/M`:(m.unit_price||'Prijs afhankelijk van deployment')}<br>Deployment: ${m.deployment.join(', ')}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">bron ↗</a></div></article>`).join('');
 }
 async function init(){
- try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}
- catch{try{const r=await fetch('/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
+ try{
+   const [mr,gr]=await Promise.all([
+     fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'no-store'}),
+     fetch('https://www.bedrijfsgeheugen.nl/data/ai-provider-governance-v1.json',{cache:'no-store'})
+   ]);
+   catalog=await mr.json(); governance=await gr.json();
+ } catch {
+   try{
+     const [mr,gr]=await Promise.all([fetch('/data/ai-model-catalog-v1.json',{cache:'no-store'}),fetch('/data/ai-provider-governance-v1.json',{cache:'no-store'})]);
+     catalog=await mr.json(); governance=await gr.json();
+   }catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}
+ }
  $('modelCount').textContent=catalog.models.length;$('providerCount').textContent=new Set(catalog.models.map(m=>m.provider)).size;
  const providers=[...new Set(catalog.models.map(m=>m.provider))].sort();$('providerFilter').innerHTML='<option value="">Alle providers</option>'+providers.map(p=>`<option>${p}</option>`).join('');
  renderModels();
