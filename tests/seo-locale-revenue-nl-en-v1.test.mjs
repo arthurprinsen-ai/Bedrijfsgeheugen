@@ -30,7 +30,7 @@ test('localized builder rewrites same-origin absolute commercial links into sele
   assert.match(source,/applyLocaleRevenueMetadata\(enDoc,'en',route\)/);
   assert.match(source,/bg-keyword-cluster/);
   assert.match(source,/function localizeStructuredData/);
-  assert.match(source,/application\\/ld\\+json/);
+  assert.ok(source.includes('application/ld+json'));
 });
 
 test('sitemap generator includes English pages and hreflang alternates', async()=>{
