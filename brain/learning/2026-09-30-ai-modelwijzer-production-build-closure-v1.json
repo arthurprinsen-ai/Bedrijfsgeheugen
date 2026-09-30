@@ -37,5 +37,18 @@
       "tests/brain-ai-modelwijzer-production-build-v1.test.mjs"
     ]
   },
-  "truth_boundary": "This learning proves the build/prevention contract. It does not claim production is live until exact-main Netlify deployment and public route readback are observed."
+  "truth_boundary": "This learning proves the build/prevention contract. It does not claim production is live until exact-main Netlify deployment and public route readback are observed.",
+  "evidence": {
+    "regression_tests": [
+      "tests/ai-model-advisor-v1.test.mjs",
+      "tests/brain-ai-modelwijzer-production-build-v1.test.mjs"
+    ],
+    "build_contract": [
+      "tools/bouw-v18-chrome.mjs#EIGEN_WERKING",
+      "config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-production.json",
+      ".github/workflows/lane-website.yml#netlify-build-parity"
+    ],
+    "observed_failure": "Current main contained the canonical 103-model Modelwijzer while production remained on an older Netlify commit; delivery preflight also showed the advisor regression was not wired into CI.",
+    "expected_terminal_evidence": "exact-main Netlify ready plus /ai-modelwijzer and /data/ai-model-catalog-v1.json production readback"
+  }
 }
