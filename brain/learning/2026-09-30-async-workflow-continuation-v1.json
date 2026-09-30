@@ -32,5 +32,28 @@
     "observed_in_progress": 10,
     "max_observed_runs_for_single_recent_sha": 13,
     "affected_pr": 3421
+  },
+  "compiler": {
+    "failure_class": "ASYNC_WORKFLOW_WAIT_AND_QUEUE_SUPERSESSION_DEFECT"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "case": "multiple agents produce queued and in_progress CI for different heads",
+        "expected": "owner persists checkpoint and continues independent work without user handoff"
+      },
+      {
+        "case": "same exact head already has an active Required run",
+        "expected": "reuse active run and do not redispatch"
+      },
+      {
+        "case": "newer main exists while older reversible production snapshot is queued",
+        "expected": "older snapshot is superseded and newest main remains authoritative"
+      },
+      {
+        "case": "remote provider poll exceeds bounded runtime",
+        "expected": "persist recoverable state and resume later rather than busy-wait indefinitely"
+      }
+    ]
   }
 }
