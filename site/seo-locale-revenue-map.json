@@ -128,88 +128,6 @@
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/company-brain",
-      "role": "pillar",
-      "funnel_stage": "consider",
-      "revenue_priority": "support",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/company-brain",
-        "primary_keyword": "company brain",
-        "secondary_keywords": [
-          "company brain nederland",
-          "company brain mkb",
-          "ai company brain",
-          "bedrijfsbrein ai"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/company-brain",
-        "primary_keyword": "company brain",
-        "secondary_keywords": [
-          "AI company brain",
-          "company brain for SMEs",
-          "business brain AI"
-        ],
-        "title": "Company Brain for SMEs | Bedrijfsgeheugen",
-        "description": "Build a shared company brain that connects knowledge, decisions, signals and actions so people and AI work from the same context."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/prijzen",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/prijzen",
-        "primary_keyword": "kosten digitalisering mkb",
-        "secondary_keywords": [
-          "prijzen digitalisering mkb",
-          "digitalisering mkb kosten",
-          "kosten automatisering mkb"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/prijzen",
-        "primary_keyword": "digital transformation costs for SMEs",
-        "secondary_keywords": [
-          "SME digital transformation pricing",
-          "business automation costs",
-          "AI transformation pricing"
-        ],
-        "title": "Digital Transformation Pricing for SMEs | Bedrijfsgeheugen",
-        "description": "See practical pricing for digitalisation, automation and AI. Compare what you need now with scalable options for growth and control."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/product",
-      "role": "money",
-      "funnel_stage": "consider",
-      "revenue_priority": "medium",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/product",
-        "primary_keyword": "bedrijfsgeheugen platform",
-        "secondary_keywords": [
-          "bedrijfskennis platform",
-          "bedrijfsinformatie platform",
-          "business operating intelligence"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/product",
-        "primary_keyword": "business knowledge platform",
-        "secondary_keywords": [
-          "company knowledge platform",
-          "business intelligence operating system",
-          "AI company memory"
-        ],
-        "title": "Business Knowledge Platform | Bedrijfsgeheugen",
-        "description": "A company knowledge platform that connects strategy, operations, data, AI and actions in one continuously learning business system."
-      }
-    },
-    {
       "source_route": "https://www.bedrijfsgeheugen.nl/afas-koppeling",
       "role": "money",
       "funnel_stage": "decide",
@@ -264,112 +182,30 @@
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/exact-online-koppeling",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "source_route": "https://www.bedrijfsgeheugen.nl/ai-act",
+      "role": "support",
+      "funnel_stage": "discover",
+      "revenue_priority": "support",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
       "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/exact-online-koppeling",
-        "primary_keyword": "exact online koppeling",
+        "route": "https://www.bedrijfsgeheugen.nl/ai-act",
+        "primary_keyword": "eu ai act mkb",
         "secondary_keywords": [
-          "exact online api koppeling",
-          "exact online koppelen",
-          "exact integratie",
-          "exact online api"
+          "ai act nederland mkb",
+          "eu ai act bedrijf",
+          "ai regelgeving mkb"
         ]
       },
       "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/exact-online-koppeling",
-        "primary_keyword": "Exact Online integration",
+        "route": "https://www.bedrijfsgeheugen.nl/en/ai-act",
+        "primary_keyword": "EU AI Act for SMEs",
         "secondary_keywords": [
-          "Exact Online API integration",
-          "connect Exact Online",
-          "Exact Online API"
+          "EU AI Act small business",
+          "AI Act Netherlands",
+          "AI regulation for business"
         ],
-        "title": "Exact Online Integration & API | Bedrijfsgeheugen",
-        "description": "Connect Exact Online to CRM, webshop, reporting or operational systems with a reliable API integration."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren",
-        "primary_keyword": "bedrijfsprocessen automatiseren",
-        "secondary_keywords": [
-          "processen automatiseren mkb",
-          "bedrijfsprocessen digitaliseren",
-          "werkprocessen automatiseren"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/bedrijfsprocessen-automatiseren",
-        "primary_keyword": "business process automation",
-        "secondary_keywords": [
-          "automate business processes",
-          "SME process automation",
-          "workflow automation for small business"
-        ],
-        "title": "Business Process Automation for SMEs | Bedrijfsgeheugen",
-        "description": "Automate repetitive business processes and connect people, systems and AI around measurable outcomes."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken",
-        "primary_keyword": "api koppeling laten maken",
-        "secondary_keywords": [
-          "api koppeling bouwen",
-          "software koppelen api",
-          "koppeling laten bouwen"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/api-koppeling-laten-maken",
-        "primary_keyword": "custom API integration",
-        "secondary_keywords": [
-          "build API integration",
-          "software API integration",
-          "custom system integration"
-        ],
-        "title": "Custom API Integration | Bedrijfsgeheugen",
-        "description": "Have a practical API integration built between your business systems with clear ownership, monitoring and measurable value."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
-        "primary_keyword": "twinfield koppeling",
-        "secondary_keywords": [
-          "twinfield api koppeling",
-          "twinfield koppelen",
-          "twinfield integratie"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/twinfield-koppeling",
-        "primary_keyword": "Twinfield integration",
-        "secondary_keywords": [
-          "Twinfield API integration",
-          "connect Twinfield",
-          "Twinfield system integration"
-        ],
-        "title": "Twinfield Integration & API | Bedrijfsgeheugen",
-        "description": "Connect Twinfield to the rest of your business systems and remove manual transfers between finance and operations."
+        "title": "EU AI Act for SMEs | Bedrijfsgeheugen",
+        "description": "Understand what the EU AI Act means for your organisation and translate obligations into practical governance and controls."
       }
     },
     {
@@ -400,83 +236,58 @@
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/ai-act",
-      "role": "support",
-      "funnel_stage": "discover",
-      "revenue_priority": "support",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
+      "source_route": "https://www.bedrijfsgeheugen.nl/ai-automatisering-mkb",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/ai-scan",
       "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/ai-act",
-        "primary_keyword": "eu ai act mkb",
+        "route": "https://www.bedrijfsgeheugen.nl/ai-automatisering-mkb",
+        "primary_keyword": "ai automatisering mkb",
         "secondary_keywords": [
-          "ai act nederland mkb",
-          "eu ai act bedrijf",
-          "ai regelgeving mkb"
+          "ai workflow mkb",
+          "ai processen automatiseren",
+          "ai automatisering bedrijf"
         ]
       },
       "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/ai-act",
-        "primary_keyword": "EU AI Act for SMEs",
+        "route": "https://www.bedrijfsgeheugen.nl/en/ai-automatisering-mkb",
+        "primary_keyword": "AI automation for small business",
         "secondary_keywords": [
-          "EU AI Act small business",
-          "AI Act Netherlands",
-          "AI regulation for business"
+          "AI workflow automation",
+          "AI process automation",
+          "AI automation for SMEs"
         ],
-        "title": "EU AI Act for SMEs | Bedrijfsgeheugen",
-        "description": "Understand what the EU AI Act means for your organisation and translate obligations into practical governance and controls."
+        "title": "AI Automation for SMEs | Bedrijfsgeheugen",
+        "description": "Use AI in repeatable workflows and business processes with clear cost, control and measurable outcomes."
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen",
+      "source_route": "https://www.bedrijfsgeheugen.nl/ai-governance",
       "role": "money",
       "funnel_stage": "consider",
       "revenue_priority": "medium",
       "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
       "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen",
-        "primary_keyword": "bedrijfskennis borgen",
+        "route": "https://www.bedrijfsgeheugen.nl/ai-governance",
+        "primary_keyword": "ai governance",
         "secondary_keywords": [
-          "kennis borgen bedrijf",
-          "bedrijfskennis vastleggen",
-          "kennisborging mkb"
+          "ai governance mkb",
+          "ai governance bedrijf",
+          "ai beleid mkb",
+          "ai governance nederland"
         ]
       },
       "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/bedrijfsgeheugen",
-        "primary_keyword": "business knowledge management",
+        "route": "https://www.bedrijfsgeheugen.nl/en/ai-governance",
+        "primary_keyword": "AI governance",
         "secondary_keywords": [
-          "capture business knowledge",
-          "company knowledge retention",
-          "knowledge continuity for SMEs"
+          "AI governance framework",
+          "AI governance for SMEs",
+          "enterprise AI governance"
         ],
-        "title": "Business Knowledge Management for SMEs | Bedrijfsgeheugen",
-        "description": "Capture critical business knowledge and make it usable in daily operations, onboarding, automation and AI."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/blog/",
-      "role": "blog-index",
-      "funnel_stage": "discover",
-      "revenue_priority": "support",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/blog/",
-        "primary_keyword": "digitalisering mkb kennisbank",
-        "secondary_keywords": [
-          "kennisbank digitalisering",
-          "mkb automatisering kennis"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/blog/",
-        "primary_keyword": "digital transformation knowledge base",
-        "secondary_keywords": [
-          "SME automation knowledge base",
-          "AI and digitalisation insights",
-          "business transformation articles"
-        ],
-        "title": "Digital Transformation Knowledge Base | Bedrijfsgeheugen",
-        "description": "Practical articles on digital transformation, AI, automation, data, integrations and business knowledge for SMEs."
+        "title": "AI Governance for SMEs | Bedrijfsgeheugen",
+        "description": "Set practical AI governance for models, data, risk, accountability, EU AI Act obligations and production use."
       }
     },
     {
@@ -507,30 +318,32 @@
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/ai-scan",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
+      "source_route": "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
+      "role": "support",
+      "funnel_stage": "consider",
+      "revenue_priority": "support",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
       "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/ai-scan",
-        "primary_keyword": "ai scan mkb",
+        "route": "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
+        "primary_keyword": "ai modellen vergelijken",
         "secondary_keywords": [
-          "ai scan bedrijf",
-          "ai readiness scan mkb",
-          "ai kansen scan"
+          "ai model vergelijken",
+          "welk ai model",
+          "ai model kiezen",
+          "beste ai model bedrijf"
         ]
       },
       "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/ai-scan",
-        "primary_keyword": "AI readiness assessment",
+        "route": "https://www.bedrijfsgeheugen.nl/en/ai-modelwijzer",
+        "primary_keyword": "AI model comparison",
         "secondary_keywords": [
-          "AI readiness scan",
-          "AI opportunity assessment",
-          "AI maturity scan for SMEs"
+          "AI model selector",
+          "best AI model for business",
+          "enterprise AI model comparison",
+          "compare AI models"
         ],
-        "title": "AI Readiness Assessment for SMEs | Bedrijfsgeheugen",
-        "description": "Identify realistic AI opportunities, risks and priorities before investing in tooling or implementation."
+        "title": "AI Model Comparison & Selector for Business | Bedrijfsgeheugen",
+        "description": "Compare 110 AI models by business goal, quality, cost, speed, privacy, governance and data sovereignty. No technical knowledge required."
       }
     },
     {
@@ -561,30 +374,164 @@
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/ai-governance",
+      "source_route": "https://www.bedrijfsgeheugen.nl/ai-scan",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/ai-scan",
+        "primary_keyword": "ai scan mkb",
+        "secondary_keywords": [
+          "ai scan bedrijf",
+          "ai readiness scan mkb",
+          "ai kansen scan"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/ai-scan",
+        "primary_keyword": "AI readiness assessment",
+        "secondary_keywords": [
+          "AI readiness scan",
+          "AI opportunity assessment",
+          "AI maturity scan for SMEs"
+        ],
+        "title": "AI Readiness Assessment for SMEs | Bedrijfsgeheugen",
+        "description": "Identify realistic AI opportunities, risks and priorities before investing in tooling or implementation."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/api-koppeling-laten-maken",
+        "primary_keyword": "api koppeling laten maken",
+        "secondary_keywords": [
+          "api koppeling bouwen",
+          "software koppelen api",
+          "koppeling laten bouwen"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/api-koppeling-laten-maken",
+        "primary_keyword": "custom API integration",
+        "secondary_keywords": [
+          "build API integration",
+          "software API integration",
+          "custom system integration"
+        ],
+        "title": "Custom API Integration | Bedrijfsgeheugen",
+        "description": "Have a practical API integration built between your business systems with clear ownership, monitoring and measurable value."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/bedrijf-overdraagbaar-maken",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/bedrijf-overdraagbaar-maken",
+        "primary_keyword": "bedrijf overdraagbaar maken",
+        "secondary_keywords": [
+          "bedrijf minder eigenaarafhankelijk",
+          "onderneming overdraagbaar maken",
+          "bedrijf verkoopklaar maken processen"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/bedrijf-overdraagbaar-maken",
+        "primary_keyword": "make a business transferable",
+        "secondary_keywords": [
+          "reduce owner dependency",
+          "prepare business for sale",
+          "business succession processes"
+        ],
+        "title": "Make Your Business Transferable | Bedrijfsgeheugen",
+        "description": "Reduce owner dependency by making knowledge, processes, systems and management information transferable."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen",
       "role": "money",
       "funnel_stage": "consider",
       "revenue_priority": "medium",
       "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
       "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/ai-governance",
-        "primary_keyword": "ai governance mkb",
+        "route": "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen",
+        "primary_keyword": "bedrijfskennis borgen",
         "secondary_keywords": [
-          "ai governance bedrijf",
-          "ai beleid mkb",
-          "ai governance nederland"
+          "kennis borgen bedrijf",
+          "bedrijfskennis vastleggen",
+          "kennisborging mkb"
         ]
       },
       "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/ai-governance",
-        "primary_keyword": "AI governance",
+        "route": "https://www.bedrijfsgeheugen.nl/en/bedrijfsgeheugen",
+        "primary_keyword": "business knowledge management",
         "secondary_keywords": [
-          "AI governance framework",
-          "AI governance for SMEs",
-          "enterprise AI governance"
+          "capture business knowledge",
+          "company knowledge retention",
+          "knowledge continuity for SMEs"
         ],
-        "title": "AI Governance for SMEs | Bedrijfsgeheugen",
-        "description": "Set practical AI governance for models, data, risk, accountability, EU AI Act obligations and production use."
+        "title": "Business Knowledge Management for SMEs | Bedrijfsgeheugen",
+        "description": "Capture critical business knowledge and make it usable in daily operations, onboarding, automation and AI."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/bedrijfsprocessen-automatiseren",
+        "primary_keyword": "bedrijfsprocessen automatiseren",
+        "secondary_keywords": [
+          "processen automatiseren mkb",
+          "bedrijfsprocessen digitaliseren",
+          "werkprocessen automatiseren"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/bedrijfsprocessen-automatiseren",
+        "primary_keyword": "business process automation",
+        "secondary_keywords": [
+          "automate business processes",
+          "SME process automation",
+          "workflow automation for small business"
+        ],
+        "title": "Business Process Automation for SMEs | Bedrijfsgeheugen",
+        "description": "Automate repetitive business processes and connect people, systems and AI around measurable outcomes."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/blog/",
+      "role": "blog-index",
+      "funnel_stage": "discover",
+      "revenue_priority": "support",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/blog/",
+        "primary_keyword": "digitalisering mkb kennisbank",
+        "secondary_keywords": [
+          "kennisbank digitalisering",
+          "mkb automatisering kennis"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/blog/",
+        "primary_keyword": "digital transformation knowledge base",
+        "secondary_keywords": [
+          "SME automation knowledge base",
+          "AI and digitalisation insights",
+          "business transformation articles"
+        ],
+        "title": "Digital Transformation Knowledge Base | Bedrijfsgeheugen",
+        "description": "Practical articles on digital transformation, AI, automation, data, integrations and business knowledge for SMEs."
       }
     },
     {
@@ -615,6 +562,61 @@
       }
     },
     {
+      "source_route": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "role": "pillar",
+      "funnel_stage": "consider",
+      "revenue_priority": "support",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/zelfscan",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/company-brain",
+        "primary_keyword": "company brain",
+        "secondary_keywords": [
+          "company brain nederland",
+          "company brain mkb",
+          "ai company brain",
+          "bedrijfsbrein ai"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/company-brain",
+        "primary_keyword": "company brain",
+        "secondary_keywords": [
+          "AI company brain",
+          "company brain for SMEs",
+          "business brain AI"
+        ],
+        "title": "Company Brain for SMEs | Bedrijfsgeheugen",
+        "description": "Build a shared company brain that connects knowledge, decisions, signals and actions so people and AI work from the same context."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/data-soevereiniteit",
+      "role": "support",
+      "funnel_stage": "consider",
+      "revenue_priority": "support",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/ai-governance",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/data-soevereiniteit",
+        "primary_keyword": "data soevereiniteit",
+        "secondary_keywords": [
+          "soevereine ai",
+          "ai data soevereiniteit",
+          "data soevereiniteit ai"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/data-soevereiniteit",
+        "primary_keyword": "sovereign AI",
+        "secondary_keywords": [
+          "AI data sovereignty",
+          "data sovereignty AI",
+          "private AI for business"
+        ],
+        "title": "Sovereign AI & Data Sovereignty for Business | Bedrijfsgeheugen",
+        "description": "Understand where AI data is processed, stored and controlled. Compare sovereign AI, EU residency and customer-controlled deployment options for business."
+      }
+    },
+    {
       "source_route": "https://www.bedrijfsgeheugen.nl/due-diligence",
       "role": "money",
       "funnel_stage": "decide",
@@ -642,6 +644,34 @@
       }
     },
     {
+      "source_route": "https://www.bedrijfsgeheugen.nl/exact-online-koppeling",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/exact-online-koppeling",
+        "primary_keyword": "exact online koppeling",
+        "secondary_keywords": [
+          "exact online api koppeling",
+          "exact online koppelen",
+          "exact integratie",
+          "exact online api"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/exact-online-koppeling",
+        "primary_keyword": "Exact Online integration",
+        "secondary_keywords": [
+          "Exact Online API integration",
+          "connect Exact Online",
+          "Exact Online API"
+        ],
+        "title": "Exact Online Integration & API | Bedrijfsgeheugen",
+        "description": "Connect Exact Online to CRM, webshop, reporting or operational systems with a reliable API integration."
+      }
+    },
+    {
       "source_route": "https://www.bedrijfsgeheugen.nl/investeerders-ma",
       "role": "money",
       "funnel_stage": "decide",
@@ -666,114 +696,6 @@
         ],
         "title": "M&A Operational Intelligence | Bedrijfsgeheugen",
         "description": "Make hidden knowledge, process and technology dependencies visible before and after an acquisition."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/systemen-koppelen",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/systemen-koppelen",
-        "primary_keyword": "systemen koppelen mkb",
-        "secondary_keywords": [
-          "software systemen koppelen",
-          "bedrijfssoftware koppelen",
-          "systemen integreren mkb"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/systemen-koppelen",
-        "primary_keyword": "business system integration",
-        "secondary_keywords": [
-          "connect business systems",
-          "software integration for SMEs",
-          "system integration small business"
-        ],
-        "title": "Business System Integration for SMEs | Bedrijfsgeheugen",
-        "description": "Connect business systems so data and work move automatically instead of through spreadsheets and manual re-entry."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/webshop-koppeling",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/webshop-koppeling",
-        "primary_keyword": "webshop koppeling mkb",
-        "secondary_keywords": [
-          "webshop koppelen boekhouding",
-          "webshop api koppeling",
-          "webshop systemen koppelen"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/webshop-koppeling",
-        "primary_keyword": "ecommerce integration",
-        "secondary_keywords": [
-          "webshop accounting integration",
-          "ecommerce API integration",
-          "webshop system integration"
-        ],
-        "title": "Ecommerce & Webshop Integration | Bedrijfsgeheugen",
-        "description": "Connect your webshop to finance, CRM, inventory and reporting systems with a reliable integration."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/workshops",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/workshops",
-        "primary_keyword": "ai workshop mkb",
-        "secondary_keywords": [
-          "ai workshop bedrijf",
-          "ai training mkb",
-          "ai workshop organisatie"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/workshops",
-        "primary_keyword": "AI workshop for business",
-        "secondary_keywords": [
-          "AI workshop for SMEs",
-          "AI training for business",
-          "executive AI workshop"
-        ],
-        "title": "AI Workshop for SMEs & Management Teams | Bedrijfsgeheugen",
-        "description": "Turn AI from a broad topic into concrete opportunities, priorities and actions for your management team."
-      }
-    },
-    {
-      "source_route": "https://www.bedrijfsgeheugen.nl/ai-automatisering-mkb",
-      "role": "money",
-      "funnel_stage": "decide",
-      "revenue_priority": "high",
-      "conversion_destination": "https://www.bedrijfsgeheugen.nl/ai-scan",
-      "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/ai-automatisering-mkb",
-        "primary_keyword": "ai automatisering mkb",
-        "secondary_keywords": [
-          "ai workflow mkb",
-          "ai processen automatiseren",
-          "ai automatisering bedrijf"
-        ]
-      },
-      "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/ai-automatisering-mkb",
-        "primary_keyword": "AI automation for small business",
-        "secondary_keywords": [
-          "AI workflow automation",
-          "AI process automation",
-          "AI automation for SMEs"
-        ],
-        "title": "AI Automation for SMEs | Bedrijfsgeheugen",
-        "description": "Use AI in repeatable workflows and business processes with clear cost, control and measurable outcomes."
       }
     },
     {
@@ -831,59 +753,165 @@
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/bedrijf-overdraagbaar-maken",
+      "source_route": "https://www.bedrijfsgeheugen.nl/prijzen",
       "role": "money",
       "funnel_stage": "decide",
       "revenue_priority": "high",
       "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
       "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/bedrijf-overdraagbaar-maken",
-        "primary_keyword": "bedrijf overdraagbaar maken",
+        "route": "https://www.bedrijfsgeheugen.nl/prijzen",
+        "primary_keyword": "kosten digitalisering mkb",
         "secondary_keywords": [
-          "bedrijf minder eigenaarafhankelijk",
-          "onderneming overdraagbaar maken",
-          "bedrijf verkoopklaar maken processen"
+          "prijzen digitalisering mkb",
+          "digitalisering mkb kosten",
+          "kosten automatisering mkb"
         ]
       },
       "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/bedrijf-overdraagbaar-maken",
-        "primary_keyword": "make a business transferable",
+        "route": "https://www.bedrijfsgeheugen.nl/en/prijzen",
+        "primary_keyword": "digital transformation costs for SMEs",
         "secondary_keywords": [
-          "reduce owner dependency",
-          "prepare business for sale",
-          "business succession processes"
+          "SME digital transformation pricing",
+          "business automation costs",
+          "AI transformation pricing"
         ],
-        "title": "Make Your Business Transferable | Bedrijfsgeheugen",
-        "description": "Reduce owner dependency by making knowledge, processes, systems and management information transferable."
+        "title": "Digital Transformation Pricing for SMEs | Bedrijfsgeheugen",
+        "description": "See practical pricing for digitalisation, automation and AI. Compare what you need now with scalable options for growth and control."
       }
     },
     {
-      "source_route": "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
+      "source_route": "https://www.bedrijfsgeheugen.nl/product",
       "role": "money",
       "funnel_stage": "consider",
       "revenue_priority": "medium",
       "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
       "nl": {
-        "route": "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
-        "primary_keyword": "ai modellen vergelijken",
+        "route": "https://www.bedrijfsgeheugen.nl/product",
+        "primary_keyword": "bedrijfsgeheugen platform",
         "secondary_keywords": [
-          "ai model vergelijken",
-          "welk ai model",
-          "ai model kiezen",
-          "beste ai model bedrijf"
+          "bedrijfskennis platform",
+          "bedrijfsinformatie platform",
+          "business operating intelligence"
         ]
       },
       "en": {
-        "route": "https://www.bedrijfsgeheugen.nl/en/ai-modelwijzer",
-        "primary_keyword": "AI model comparison",
+        "route": "https://www.bedrijfsgeheugen.nl/en/product",
+        "primary_keyword": "business knowledge platform",
         "secondary_keywords": [
-          "AI model selector",
-          "best AI model for business",
-          "enterprise AI model comparison",
-          "compare AI models"
+          "company knowledge platform",
+          "business intelligence operating system",
+          "AI company memory"
         ],
-        "title": "AI Model Comparison & Selector for Business | Bedrijfsgeheugen",
-        "description": "Compare 110 AI models by business goal, quality, cost, speed, privacy, governance and data sovereignty. No technical knowledge required."
+        "title": "Business Knowledge Platform | Bedrijfsgeheugen",
+        "description": "A company knowledge platform that connects strategy, operations, data, AI and actions in one continuously learning business system."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/systemen-koppelen",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/systemen-koppelen",
+        "primary_keyword": "systemen koppelen mkb",
+        "secondary_keywords": [
+          "software systemen koppelen",
+          "bedrijfssoftware koppelen",
+          "systemen integreren mkb"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/systemen-koppelen",
+        "primary_keyword": "business system integration",
+        "secondary_keywords": [
+          "connect business systems",
+          "software integration for SMEs",
+          "system integration small business"
+        ],
+        "title": "Business System Integration for SMEs | Bedrijfsgeheugen",
+        "description": "Connect business systems so data and work move automatically instead of through spreadsheets and manual re-entry."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/twinfield-koppeling",
+        "primary_keyword": "twinfield koppeling",
+        "secondary_keywords": [
+          "twinfield api koppeling",
+          "twinfield koppelen",
+          "twinfield integratie"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/twinfield-koppeling",
+        "primary_keyword": "Twinfield integration",
+        "secondary_keywords": [
+          "Twinfield API integration",
+          "connect Twinfield",
+          "Twinfield system integration"
+        ],
+        "title": "Twinfield Integration & API | Bedrijfsgeheugen",
+        "description": "Connect Twinfield to the rest of your business systems and remove manual transfers between finance and operations."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/webshop-koppeling",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/webshop-koppeling",
+        "primary_keyword": "webshop koppeling mkb",
+        "secondary_keywords": [
+          "webshop koppelen boekhouding",
+          "webshop api koppeling",
+          "webshop systemen koppelen"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/webshop-koppeling",
+        "primary_keyword": "ecommerce integration",
+        "secondary_keywords": [
+          "webshop accounting integration",
+          "ecommerce API integration",
+          "webshop system integration"
+        ],
+        "title": "Ecommerce & Webshop Integration | Bedrijfsgeheugen",
+        "description": "Connect your webshop to finance, CRM, inventory and reporting systems with a reliable integration."
+      }
+    },
+    {
+      "source_route": "https://www.bedrijfsgeheugen.nl/workshops",
+      "role": "money",
+      "funnel_stage": "decide",
+      "revenue_priority": "high",
+      "conversion_destination": "https://www.bedrijfsgeheugen.nl/frisse-blik",
+      "nl": {
+        "route": "https://www.bedrijfsgeheugen.nl/workshops",
+        "primary_keyword": "ai workshop mkb",
+        "secondary_keywords": [
+          "ai workshop bedrijf",
+          "ai training mkb",
+          "ai workshop organisatie"
+        ]
+      },
+      "en": {
+        "route": "https://www.bedrijfsgeheugen.nl/en/workshops",
+        "primary_keyword": "AI workshop for business",
+        "secondary_keywords": [
+          "AI workshop for SMEs",
+          "AI training for business",
+          "executive AI workshop"
+        ],
+        "title": "AI Workshop for SMEs & Management Teams | Bedrijfsgeheugen",
+        "description": "Turn AI from a broad topic into concrete opportunities, priorities and actions for your management team."
       }
     }
   ]
