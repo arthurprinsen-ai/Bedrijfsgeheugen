@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|ai-modelwijzer|production-promotion|2026-09-30",
+  "date": "2026-09-30",
+  "status": "ACTIVE",
+  "context": "The current main branch contains the expanded AI Modelwijzer v2 and must be promoted as one exact production lineage.",
+  "root_cause": "Production was still serving an older commit while main already contained the newer AI Modelwijzer, provider governance data, SEO comparison pages and revenue funnel.",
+  "fix": [
+    "Promote exact current main through protected website delivery",
+    "Require exact production readback before LIVE claim"
+  ],
+  "prevention_rules": [
+    "Do not infer production from merged main",
+    "Require Netlify production commit_ref to equal protected main",
+    "Verify the public /ai-modelwijzer after deployment"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md"
+  ],
+  "agent_contract_targets": [
+    "AGENTS.md"
+  ],
+  "system_map_target": "platform/system-map/canonical-system-map.mjs",
+  "truth_boundary": "This learning records the production-promotion contract; LIVE remains false until exact-main Netlify and public page readback are observed.",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "repository_main_before_promotion": "055d82bdf54bdf1ece1b1d74e508b9087f1ea0b2",
+    "prior_netlify_production_commit": "845ba7e7576215777a9fdc9964501dc25cfc8c24",
+    "production_gap_observed": true,
+    "public_surface": "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
+    "required_terminal_evidence": [
+      "protected merge",
+      "Netlify production ready",
+      "commit_ref equals protected main",
+      "public page readback"
+    ]
+  }
+}
