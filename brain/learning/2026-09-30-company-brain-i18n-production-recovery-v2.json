@@ -1,0 +1,37 @@
+{
+  "id": "2026-09-30-company-brain-i18n-production-recovery-v2",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "company-brain|static-i18n|post-transform-cache|v2",
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 2
+  },
+  "root_cause": "Company Brain copy was present in the translation cache only as combined source strings, while the final website shell/build emitted 11 smaller exact fragments. The fail-closed English build correctly rejected those post-transform fragments on current main.",
+  "prevention": [
+    "Validate static i18n against the final post-transform website artifact, not only source-page strings.",
+    "Keep STATIC_I18N_REQUIRE_CACHE fail-closed and repair cache coverage instead of bypassing translation validation.",
+    "When current main advances during recovery, supersede stale candidates and reapply the fix on the latest main epoch."
+  ],
+  "fix": "Add all 11 exact post-transform Company Brain fragments to the canonical static English cache on the current main epoch.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_runs": [
+      "github-actions:36690947075",
+      "github-actions:36691888821"
+    ],
+    "cache": "config/bg-static-i18n-en.d/20260930-company-brain-category-v1.json",
+    "superseded_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/3429"
+  },
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "powerhouse-continuity"
+  ]
+}
