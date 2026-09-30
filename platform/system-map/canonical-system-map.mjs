@@ -50,7 +50,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         leadFunction:'netlify/functions/ai-modelwijzer-lead.mjs',
         skill:'.agents/skills/powerhouse-ai-model-intelligence/SKILL.md',
         learning:'brain/learning/2026-09-30-powerhouse-ai-model-advisor-v1.json',
-        regression:'tests/ai-model-advisor-v1.test.mjs'
+        regression:'tests/ai-model-advisor-v1.test.mjs',
+        dailyAudit:'scripts/brain/ai-model-intelligence-audit.mjs',
+        dailyWorkflow:'.github/workflows/powerhouse-daily-self-evolution.yml'
       }),
       invariants:Object.freeze({
         userGoalFirst:true,
