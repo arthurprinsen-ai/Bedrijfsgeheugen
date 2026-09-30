@@ -245,9 +245,13 @@ jobs:
           node tools/site-shell/pricing-build-integrity.mjs restore
           node tools/site-shell/bedrijfslek-build-integrity.mjs restore
           node tools/normaliseer-site-ui.mjs
+          node tools/seo-order-engine/apply.mjs
+          node tools/seo-order-engine/validate.mjs
           node tools/site-shell/apply-i18n.mjs
           node tools/site-shell/build-localized-routes.mjs
+          node tools/seo-order-engine/apply-revenue-links.mjs
           node tools/genereer-sitemap.mjs
+          node tools/seo-order-engine/validate-locales.mjs
           node tools/bouw-release-evidence.mjs
       - name: Verify built artifact contracts
         run: node --test tests/tabbladen.test.mjs tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs
