@@ -28,11 +28,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+      "tests/brain-production-promotion-observability.test.mjs"
     ],
     "canary": [
-      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
-    ],
-    "premerge_guard": "exact Netlify production build command under production-equivalent fail-closed environment"
+      "tests/brain-production-promotion-observability.test.mjs"
+    ]
   }
 }
