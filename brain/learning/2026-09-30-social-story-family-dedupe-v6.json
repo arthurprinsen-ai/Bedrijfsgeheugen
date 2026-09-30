@@ -1,0 +1,47 @@
+{
+  "id": "2026-09-30-social-story-family-dedupe-v6",
+  "fingerprint": "powerhouse-story-family-overlap-dedupe-v6",
+  "date": "2026-09-30",
+  "scope": [
+    "linkedin_personal",
+    "linkedin_company",
+    "all_social_publishers",
+    "all_chats",
+    "all_agents"
+  ],
+  "incident": {
+    "symptom": "Two personal LinkedIn posts reused the same car/sliding-door/airco anecdote with different wording.",
+    "earlier_publication_date": "2026-09-24",
+    "escaped_publication_date": "2026-09-30",
+    "shared_meaningful_keywords": 16,
+    "prior_keyword_jaccard_approx": 0.165,
+    "overlap_against_smaller_story_approx": 0.372
+  },
+  "root_cause": "Historical duplicate detection over-relied on exact/story fingerprints and Jaccard-style similarity. A longer rewrite diluted Jaccard overlap even while a large fraction of the smaller story was reused.",
+  "fix": {
+    "reservation_function": "public.powerhouse_reserve_unique_publication_v1",
+    "database_backstop": "public.powerhouse_publication_story_family_guard_v2",
+    "rule": "Block at >=10 shared meaningful keywords and overlap coefficient >=0.30, in addition to all prior gates.",
+    "action_on_block": "Select a genuinely different verified source/event/topic; never paraphrase the blocked story."
+  },
+  "canonical_regression_family": [
+    "auto",
+    "elektrische schuifdeur",
+    "airco",
+    "warme lucht",
+    "handmatig openen",
+    "ramen open",
+    "nieuwe routine"
+  ],
+  "evidence": {
+    "production_migration_applied": true,
+    "paraphrase_regression_result": "STORY_FAMILY_DUPLICATE",
+    "provider_write_before_gate": false
+  },
+  "prevention": [
+    "All current and future chats/agents/schedulers/connectors inherit the same database gate.",
+    "User-reported semantic duplicates become permanent regression cases.",
+    "Daily idempotency is not historical uniqueness.",
+    "Application-layer wording changes may never bypass canonical database history."
+  ]
+}
