@@ -7,8 +7,16 @@ function escRe(v){return String(v||'').replace(/[.*+?^$(){}|[\]\\]/g,'\\$&');}
 function attr(tag,name){const m=String(tag||'').match(new RegExp(`\\b${name}=(?:"([^"]*)"|'([^']*)')`,'i'));return m?(m[1]??m[2]??''):'';}
 function headOf(html){return String(html).match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1]||'';}
 function canonicalOf(html){const tag=[...headOf(html).matchAll(/<link\b[^>]*>/gi)].find(m=>/(?:^|\s)canonical(?:\s|$)/i.test(attr(m[0],'rel')))?.[0]||'';return attr(tag,'href');}
-function meta(html,name){const tag=[...headOf(html).matchAll(/<meta\b[^>]*>/gi)].find(m=>String(attr(m[0],'name')).toLowerCase()===String(name).toLowerCase())?.[0]||'';return attr(tag,'content');}
-function titleOf(html){return String(headOf(html).match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]||'').replace(/<[^>]+>/g,'').trim();}
+function meta(html,name){const tag=[...headOf(html).matchAll(/<meta\b[^>]*>/gi)].find(m=>String(attr(m[0],'name')).toLowerCase()===String(name).toLowerCase())?.[0]||'';return decodeHtml(attr(tag,'content'));}
+function decodeHtml(value){
+  return String(value??'')
+    .replace(/&amp;/g,'&')
+    .replace(/&quot;/g,'"')
+    .replace(/&#39;|&apos;/g,"'")
+    .replace(/&lt;/g,'<')
+    .replace(/&gt;/g,'>');
+}
+function titleOf(html){return decodeHtml(String(headOf(html).match(/<title\b[^>]*>([\s\S]*?)<\/title>/i)?.[1]||'').replace(/<[^>]+>/g,'')).trim();}
 function hasHrefLang(html,lang,url){const re=new RegExp(`<link\\b(?=[^>]*rel=(?:"alternate"|'alternate'))(?=[^>]*hreflang=(?:"${escRe(lang)}"|'${escRe(lang)}'))(?=[^>]*href=(?:"${escRe(url)}"|'${escRe(url)}'))[^>]*>`,'i');return re.test(headOf(html));}
 function hasLink(html,url){const q=escRe(url);return new RegExp(`<a\\b[^>]*href=(?:"${q}"|'${q}')`,'i').test(String(html));}
 function localized(source,locale){if(locale==='nl')return source;const path=source.slice(ORIGIN.length)||'/';return ORIGIN+'/en'+(path==='/'?'/':path);}

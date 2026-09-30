@@ -1,0 +1,34 @@
+{
+  "id": "2026-09-30-bilingual-seo-locale-entity-normalization-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|locale-validator|html-entity-normalization|v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The locale SEO validator compared serialized HTML text and meta attribute values directly against semantic keyword/title values. Valid ampersands were serialized as &amp;, creating false title and keyword mismatches in the exact Netlify build.",
+  "prevention": [
+    "Decode standard HTML entities before semantic locale metadata equality checks.",
+    "Keep the SEO locale gate fail-closed on real metadata drift while avoiding serialization-only false positives.",
+    "Exercise locale metadata validation through canonical Brain SEO replay tests."
+  ],
+  "fix": "Normalize title/meta entities in validate-locales.mjs before comparing them to the locale revenue map.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-search-indexing-sitemap-contract.test.mjs",
+      "tests/brain-seo-localized-route-inheritance-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "validator": "tools/seo-order-engine/validate-locales.mjs",
+    "regression": "tests/seo-order-locale-revenue-v1.test.mjs",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/3493"
+  },
+  "skill_targets": [
+    "seo-revenue-growth"
+  ]
+}
