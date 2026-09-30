@@ -3,7 +3,7 @@
 Datum: 30 september 2026
 
 ## Uitbreiding
-De bestaande AI Modelwijzer is uitgebreid van 30 naar 90 modelrecords, met behoud van de negen bestaande providerfamilies.
+De bestaande AI Modelwijzer is uitgebreid van 30 naar 103 modelrecords, met behoud van de negen bestaande providerfamilies.
 
 Nieuwe of veel uitgebreidere modelklassen:
 - frontier/general reasoning;
@@ -41,3 +41,5 @@ De dagelijkse audit controleert nu per model:
 
 ## Delivery lineage
 Obligation: ai-modelwijzer-v2-completeness-2026-09-30 · lane: website · candidate: implementation.
+
+Amazon Nova/Titan-families zijn toegevoegd via officiële AWS Bedrock model- en lifecyclebronnen.
