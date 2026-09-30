@@ -1500,3 +1500,13 @@ Voor iedere nieuwe of gewijzigde publieke copy geldt:
 - `STATIC_I18N_REQUIRE_CACHE=1` blijft fail-closed;
 - ontbrekende finale strings gaan naar dezelfde canonical patch authority, nooit naar runtime-only fallback;
 - een Netlify build failure door ontbrekende finale vertaalkeys is recovery-input; dezelfde owner houdt de obligation tot exact-main production + NL/EN public readback groen zijn.
+
+## Persistent public locale navigation
+
+Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+
+All chats and agents that touch the public website inherit this rule automatically: once the visitor selects English, every eligible same-origin public navigation target must remain under the equivalent `/en/*` route until the visitor explicitly switches back to Dutch. Dutch uses the unprefixed canonical route. Preserve query/hash, normalize links created after load, and exclude portal/customer-portal plus technical/API/assets/functions paths. Never accept “the current page translated correctly” as proof; cross-page navigation through the real menu must be part of terminal browser readback.
+
+Canonical runtime: `assets/js/i18n.js`.
+Regression: `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
+Learning: `brain/learning/2026-09-30-public-i18n-persistent-navigation-v1.json`.
