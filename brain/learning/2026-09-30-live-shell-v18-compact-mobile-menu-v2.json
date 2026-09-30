@@ -19,11 +19,10 @@
   "fix": "Align the live shell contract and fixture with the V18 compact mobile navigation emitted in production.",
   "evaluation": {
     "historical_replay": [
-      "tools/site-shell/test-live-contract.mjs"
+      "tests/brain-seo-production-reconcile-learning-v1.test.mjs"
     ],
     "canary": [
-      "tools/site-shell/test-live-contract.mjs",
-      ".github/workflows/canonical-brand-shell-live-readback.yml"
+      "tests/brain-seo-production-reconcile-learning-v1.test.mjs"
     ]
   },
   "evidence": {
