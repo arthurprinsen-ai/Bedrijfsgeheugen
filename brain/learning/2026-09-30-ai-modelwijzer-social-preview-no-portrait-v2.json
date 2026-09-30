@@ -1,0 +1,33 @@
+{
+  "id": "2026-09-30-ai-modelwijzer-social-preview-no-portrait-v2",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "ai-modelwijzer|social-preview|no-portrait|v2",
+  "compiler": {
+    "failure_class": "SOCIAL_PREVIEW_FALLBACK_TO_PERSONAL_PHOTO",
+    "scope": "PUBLIC_SOCIAL_PREVIEW",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 2
+  },
+  "root_cause": "The AI Modelwijzer exposed an undersized square logo as its Open Graph image. LinkedIn could ignore that asset and choose another larger page/site image, surfacing a personal portrait in the company-page link preview.",
+  "prevention": [
+    "Public money/lead pages must define a large explicit social-preview image.",
+    "Company-page previews may not depend on crawler fallback image selection.",
+    "AI Modelwijzer social metadata must not reference a personal portrait."
+  ],
+  "fix": "Force the Bedrijfsgeheugen company banner as the Open Graph, image_src and Twitter/X preview image with a cache-busted absolute URL.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "page": "ai-modelwijzer.html",
+    "regression": "tests/ai-model-advisor-v1.test.mjs",
+    "pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/3473"
+  },
+  "skill_targets": [
+    "powerhouse-ai-model-intelligence"
+  ]
+}
