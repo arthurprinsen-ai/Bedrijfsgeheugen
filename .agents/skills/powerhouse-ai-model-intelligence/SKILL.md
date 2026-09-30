@@ -71,3 +71,13 @@ Model selection for sensitive data MUST evaluate deployment-path evidence separa
 - sovereignty level.
 
 A provider being European, a model being open-weight, or storage being in the EU never proves EU inference or full sovereignty. The public advisor must surface the matching deployment path and official governance source when available.
+
+
+## Production build invariant — 30 september 2026
+Fingerprint: `powerhouse|ai-modelwijzer|interactive-i18n-ci|v1`.
+
+The public Modelwijzer is an interactive application and MUST remain in the canonical V18 builder's `EIGEN_WERKING` set. It may not be flattened into ordinary content-page composition.
+
+Every user-visible Dutch string introduced on `/ai-modelwijzer` must have a deterministic static-English cache entry before protected promotion. Production/deploy-preview builds run with `STATIC_I18N_REQUIRE_CACHE=1`; a missing translation is a release blocker, not a reason to disable English generation.
+
+`tests/ai-model-advisor-v1.test.mjs` and `tests/brain-ai-modelwijzer-production-build-v1.test.mjs` are required website-lane regressions. A committed Modelwijzer test that is not referenced by CI is a control failure.

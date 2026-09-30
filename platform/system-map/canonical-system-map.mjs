@@ -51,6 +51,9 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         skill:'.agents/skills/powerhouse-ai-model-intelligence/SKILL.md',
         learning:'brain/learning/2026-09-30-powerhouse-ai-model-advisor-v1.json',
         regression:'tests/ai-model-advisor-v1.test.mjs',
+        productionBuildRegression:'tests/brain-ai-modelwijzer-production-build-v1.test.mjs',
+        staticEnglishCache:'config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-production.json',
+        interactiveBuilderAuthority:'tools/bouw-v18-chrome.mjs#EIGEN_WERKING',
         dailyAudit:'scripts/brain/ai-model-intelligence-audit.mjs',
         dailyWorkflow:'.github/workflows/powerhouse-daily-self-evolution.yml'
       }),
@@ -71,7 +74,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         modalityAndTaskFiltersRequired:true,
         perModelVerificationDateRequired:true,
         governanceUnknownNeverGreen:true,
-        broadSpecialistCoverage:true
+        broadSpecialistCoverage:true,
+        interactiveBuildPreserved:true,
+        deterministicEnglishBuildCache:true,
+        modelAdvisorTestsWiredToWebsiteLane:true
       })
     }),
     Object.freeze({
