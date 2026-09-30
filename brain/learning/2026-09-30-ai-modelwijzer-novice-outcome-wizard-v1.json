@@ -20,7 +20,7 @@
   "fix": "Add an outcome-first wizard covering goal, cadence, users, volume, sensitivity, error impact, integration, priority, budget and deployment preference while retaining technical inputs behind an advanced disclosure.",
   "evaluation": {
     "historical_replay": [
-      "tests/ai-model-advisor-v1.test.mjs"
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
     ]
   },
   "evidence": {
