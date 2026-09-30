@@ -164,6 +164,12 @@ jobs:
       - name: Install runtime dependencies for the unwired contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: npm install --prefer-offline --no-audit --no-fund --silent
+      - name: Validate fail-closed static English cache before merge
+        if: steps.integration.outputs.full_shared_suite == 'true'
+        env:
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+        run: node tools/site-shell/build-localized-routes.mjs --validate-cache
       - name: Verify previously unwired test contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
@@ -209,6 +215,9 @@ jobs:
           tests/seo-homepage-process-progress.test.mjs
           tests/seo-search-console-revenue-sprint.test.mjs
           tests/brain-seo-cro-execute-or-explain-v1.test.mjs
+          tests/ai-model-seo-cluster-v1.test.mjs
+          tests/ai-model-production-hotfix-v1.test.mjs
+          tests/ai-model-advisor-v1.test.mjs
           tests/single-obligation-owner-learning.test.mjs
           tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
           tests/social-learning-compatibility.test.mjs
