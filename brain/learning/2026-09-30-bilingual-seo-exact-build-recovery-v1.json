@@ -1,0 +1,39 @@
+{
+  "id": "2026-09-30-bilingual-seo-exact-build-recovery-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|bilingual|exact-production-build-diagnosis|v1",
+  "compiler": {
+    "failure_class": "RECOVERY",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The bilingual SEO revenue architecture is merged, but exact-current-main Netlify builds still fail after the earlier static i18n cache gap was repaired. Generic provider exit-code evidence is insufficient to identify the remaining build-stage failure.",
+  "prevention": [
+    "Before another production promotion, run the exact current production command through protected preflight and capture the first failing stage.",
+    "Do not weaken bilingual SEO, i18n, sitemap or revenue validation gates to obtain a green deployment.",
+    "Only promote after the exact current-main production build command is green."
+  ],
+  "fix": "Trigger exact-current-main build parity with complete recovery closure, then repair the first evidenced failing production stage.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_current_main": "60d2dd4fbcc0f866022062a1f24f58394f95e68b",
+    "failed_deploys": [
+      "6abcfd4fbd2f4816f717bfad",
+      "6abcfdac5f698122195be0a3"
+    ]
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-netlify-production-truth"
+  ]
+}
