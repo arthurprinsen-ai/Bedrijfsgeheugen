@@ -953,6 +953,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       sameRouteInvariant:'/x <-> /en/x; / <-> /en/',
       buildAuthority:Object.freeze(['tools/site-shell/apply-i18n.mjs','tools/site-shell/build-localized-routes.mjs']),
       runtimeGuard:'assets/js/i18n.js',
+      clickOwnership:'window-capture-before-mobile-menu-handlers',
       cacheRule:'versioned-i18n-assets-required',
       navigationPersistence:Object.freeze({
         fingerprint:'website|i18n|persistent-public-navigation|v1',
