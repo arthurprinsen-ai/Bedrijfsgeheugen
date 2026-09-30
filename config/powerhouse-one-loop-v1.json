@@ -226,6 +226,28 @@
         "workflows": true,
         "futureCapabilities": true
       }
+    },
+    "seoCroExecutionContract": {
+      "version": "seo-cro-execute-or-explain-v1",
+      "authority": "config/seo-growth-loop.json",
+      "rule": "material SEO/CRO opportunity must execute or reject with evidence in the same cycle",
+      "terminalStates": [
+        "EXECUTED",
+        "REJECTED_WITH_EVIDENCE"
+      ],
+      "recommendationOnlyForbidden": true,
+      "executeSafeReversibleEvidenceGatedChange": true,
+      "transientDeliveryFailureIsRecovery": true,
+      "inheritance": {
+        "chats": true,
+        "agents": true,
+        "skills": true,
+        "workflows": true,
+        "schedulers": true,
+        "portal": true,
+        "cockpits": true,
+        "futureCapabilities": true
+      }
     }
   }
 }
