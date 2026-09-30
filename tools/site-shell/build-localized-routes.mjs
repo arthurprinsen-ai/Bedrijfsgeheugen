@@ -13,6 +13,7 @@ const ATTRS = new Set(['placeholder','title','aria-label','alt']);
 const TRANSLATION_CACHE_FILE = path.join(ROOT,'config','bg-static-i18n-en.json');
 const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'config','bg-static-i18n-en.d');
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
+const SEO_LOCALE_REVENUE_MAP_FILE = path.join(ROOT,'site','seo-locale-revenue-map.json');
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
   '/zelfscan', '/frisse-blik', '/inloggen', '/aanmelden', '/contact', '/privacy'
@@ -34,6 +35,24 @@ function publicRoutesFromSitemap() {
     }
   } catch {}
   return routes;
+}
+
+let seoLocaleRevenueMapCache = null;
+function seoLocaleRevenueMap() {
+  if (seoLocaleRevenueMapCache) return seoLocaleRevenueMapCache;
+  try {
+    const raw = JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
+    const bySource = new Map();
+    for (const entry of raw?.pages || []) {
+      const source = String(entry?.source_route || '');
+      if (source.startsWith(SITE + '/')) bySource.set(normalizedRoute(source.slice(SITE.length)), entry);
+      else if (source === SITE + '/') bySource.set('/', entry);
+    }
+    seoLocaleRevenueMapCache = { raw, bySource };
+  } catch (error) {
+    throw new Error('SEO_LOCALE_REVENUE_MAP_INVALID: ' + (error?.message || String(error)));
+  }
+  return seoLocaleRevenueMapCache;
 }
 
 function walk(dir, rel='') {
@@ -237,6 +256,61 @@ function rewriteLanguageSwitchers(doc,route,activeLocale) {
   visit(doc);
 }
 
+function textNode(value,parent) {
+  return {nodeName:'#text',value:String(value),parentNode:parent};
+}
+
+function ensureMetaNode(head, predicate, attrs) {
+  let node = findFirst(head,n=>n.tagName==='meta' && predicate(n));
+  if (!node) {
+    node={nodeName:'meta',tagName:'meta',namespaceURI:'http://www.w3.org/1999/xhtml',attrs:[],childNodes:[],parentNode:head};
+    head.childNodes.push(node);
+  }
+  for (const [name,value] of Object.entries(attrs)) setAttr(node,name,value);
+  return node;
+}
+
+function applyLocaleSeoMetadata(doc,locale,route,localizedUrl) {
+  const head=findFirst(doc,n=>n.tagName==='head');
+  const body=findFirst(doc,n=>n.tagName==='body');
+  if(!head) return;
+  const entry=seoLocaleRevenueMap().bySource.get(normalizedRoute(route));
+  const localeSeo=entry?.[locale];
+  if(!localeSeo) return;
+
+  const keyword=String(localeSeo.primary_keyword||'').trim();
+  const title=String(localeSeo.title||'').trim();
+  const description=String(localeSeo.description||'').trim();
+
+  if(title){
+    let titleNode=findFirst(head,n=>n.tagName==='title');
+    if(!titleNode){
+      titleNode={nodeName:'title',tagName:'title',namespaceURI:'http://www.w3.org/1999/xhtml',attrs:[],childNodes:[],parentNode:head};
+      head.childNodes.push(titleNode);
+    }
+    titleNode.childNodes=[textNode(title,titleNode)];
+  }
+  if(description) {
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='description',{name:'description',content:description});
+    ensureMetaNode(head,n=>String(attr(n,'property')||'').toLowerCase()==='og:description',{property:'og:description',content:description});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='twitter:description',{name:'twitter:description',content:description});
+  }
+  if(title) {
+    ensureMetaNode(head,n=>String(attr(n,'property')||'').toLowerCase()==='og:title',{property:'og:title',content:title});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='twitter:title',{name:'twitter:title',content:title});
+  }
+  if(keyword) {
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-keyword-cluster',{name:'bg-keyword-cluster',content:keyword});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-zoekwoord',{name:'bg-zoekwoord',content:keyword});
+    if(body) setAttr(body,'data-bg-keyword-cluster',keyword);
+  }
+  ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-intent-owner',{name:'bg-intent-owner',content:localizedUrl});
+  if(body) {
+    setAttr(body,'data-bg-intent-owner',localizedUrl);
+    setAttr(body,'data-bg-locale-seo','v1');
+  }
+}
+
 function setLocaleMetadata(doc,locale,route,translated=true) {
   const html = findFirst(doc,n=>n.tagName==='html');
   const head = findFirst(doc,n=>n.tagName==='head');
@@ -265,6 +339,8 @@ function setLocaleMetadata(doc,locale,route,translated=true) {
 
   const ogUrl = findFirst(head,n=>n.tagName==='meta' && String(attr(n,'property')||'').toLowerCase()==='og:url');
   if (ogUrl) setAttr(ogUrl,'content',localizedUrl);
+
+  applyLocaleSeoMetadata(doc,locale,route,localizedUrl);
 
   const staticMarker = {
     nodeName:'meta',tagName:'meta',namespaceURI:'http://www.w3.org/1999/xhtml',
