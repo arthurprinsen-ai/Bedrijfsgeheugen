@@ -28,7 +28,7 @@ test('AI Modelwijzer SEO routes keep a visible canonical header',()=>{
   ];
   for(const route of routes){
     const html=fs.readFileSync(route,'utf8');
-    assert.match(html,/<nav\b[^>]*class="[^"]*\bbgkop\b[^"]*"/i,route);
+    assert.match(html,/<header\b[^>]*class="[^"]*\bbg-ai-header\b[^"]*"/i,route);
     assert.match(html,/https:\/\/www\.bedrijfsgeheugen\.nl\/ai-modelwijzer/,route);
   }
 });
