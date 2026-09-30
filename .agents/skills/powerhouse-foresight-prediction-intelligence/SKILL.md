@@ -120,3 +120,17 @@ This skill inherits the canonical daily compound-learning contract. Every materi
 - remain discoverable through System Map and canonical skill projection.
 
 Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
+
+## Foresight as a lead-magnet product (2026-09-30)
+
+Fingerprint: `powerhouse-foresight-lead-magnet-v1`.
+
+Prediction intelligence may be packaged as a public value asset when:
+- each prediction is directional, not guaranteed fact;
+- observable signals and reputable external research are cited;
+- confidence/uncertainty is preserved;
+- predictions are translated into concrete MKB/SME implications and actions;
+- NL and EN variants exist where relevant;
+- engagement and downstream commercial outcomes are written back to the canonical learning loop.
+
+Preferred framing: what changes next + what should you stop doing manually + what to prepare now.
