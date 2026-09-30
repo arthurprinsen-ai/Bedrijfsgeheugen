@@ -46,7 +46,7 @@
   "version": "powerhouse-ai-model-intelligence-v2",
   "coverage_policy": {
     "objective": "broadest decision-relevant model catalog, including frontier, economy, open-weight and specialist modalities",
-    "minimum_seed_models": 100,
+    "minimum_seed_models": 110,
     "required_model_families": [
       "general text/reasoning",
       "coding",
@@ -105,6 +105,10 @@
       "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
       "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
       "https://docs.aws.amazon.com/bedrock/latest/userguide/models-region-compatibility.html"
+    ],
+    "TII/Falcon": [
+      "https://huggingface.co/tiiuae/models",
+      "https://huggingface.co/collections/tiiuae/falcon-h1"
     ]
   }
 }
