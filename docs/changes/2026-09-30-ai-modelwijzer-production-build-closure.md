@@ -21,3 +21,6 @@ Only claim live after protected merge to current main, Netlify `ready` on that m
 
 ## SEO header browser regression
 The full public-page browser sweep found all eight AI-model provider/comparison pages had no visible header at phone, tablet or desktop widths (24 failures). The same terminal lineage now adds a responsive canonical header with absolute Bedrijfsgeheugen links to every route and locks this in `tests/ai-model-seo-cluster-v1.test.mjs`.
+
+## Browser recovery
+De gedeelde visibility-gate vond 24 fouten: 8 AI-model SEO-routes hadden op phone, tablet en desktop geen zichtbare canonieke header. Alle acht routes hebben nu de Bedrijfsgeheugen-header met absolute navigatielinks; de productie-regressie bewaakt dit voortaan.
