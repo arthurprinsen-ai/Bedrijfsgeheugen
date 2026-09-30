@@ -1,0 +1,6 @@
+{
+  "De advisor behandelt EU-verwerking als één constraint. Voor gereguleerde of strategische data kan self-hosting of een customer-controlled cloud-deployment zwaarder wegen dan een kleine benchmarkwinst.": "The advisor treats EU processing as one constraint. For regulated or strategic data, self-hosting or a customer-controlled cloud deployment may matter more than a small benchmark gain.",
+  "-compliance hangt ook af van doel, grondslag, verwerkersafspraken, dataminimalisatie, beveiliging, subprocessors, retentie en jouw concrete implementatie.": "-compliance also depends on purpose, legal basis, processor agreements, data minimization, security, subprocessors, retention and your specific implementation.",
+  "Providernaam alleen zegt te weinig.": "The provider name alone does not tell you enough.",
+  "Bekijk per deploymentpad opslag, inferentie, training, retentie, zero-data-retention, sleutels, private networking en self-hosting.": "For each deployment path, review storage, inference, training, retention, zero-data retention, keys, private networking and self-hosting."
+}

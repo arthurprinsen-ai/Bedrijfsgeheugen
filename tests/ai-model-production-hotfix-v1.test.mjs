@@ -18,3 +18,12 @@ test('AI Modelwijzer v2 labels are present in fail-closed static EN cache',()=>{
    assert.ok(cache[source],`missing translation: ${source}`);
  }
 });
+
+test('AI model SEO cluster pages carry a visible canonical site header',()=>{
+ for(const slug of pages){
+   const html=fs.readFileSync(`${slug}/index.html`,'utf8');
+   assert.match(html,/<header class="bg-ai-cluster-header">/);
+   assert.match(html,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/ai-modelwijzer"/);
+   assert.match(html,/\.bg-ai-cluster-header\{[^}]*display:block[^}]*min-height:/);
+ }
+});
