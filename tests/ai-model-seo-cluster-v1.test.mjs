@@ -23,7 +23,7 @@ test('AI model SEO cluster is substantive, canonical and routes into the Modelwi
 test('AI model SEO cluster has a visible canonical header on every route',()=>{
  for(const path of routes){
    const html=fs.readFileSync(path,'utf8');
-   assert.match(html,/(?:<header\b|<nav class="bgkop"\b)/);
+   assert.match(html,/(?:<header\b|<nav class="bgkop")/);
    assert.match(html,/aria-label="Hoofdnavigatie"/);
    assert.match(html,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/ai-modelwijzer"/);
  }
