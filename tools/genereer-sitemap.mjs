@@ -38,13 +38,12 @@ function alternatePair(url, known) {
   return {nlUrl,enUrl};
 }
 
-export function maakSitemap(urls) {
+export function maakSitemap(urls, alternates = new Map()) {
   const schoon = [...new Set((urls || []).filter(url => String(url).startsWith(`${ORIGIN}/`)))].sort((a, b) => a.localeCompare(b, 'nl'));
-  const known=new Set(schoon);
   const regels = schoon.map(url => {
-    const pair=alternatePair(url,known);
-    const alternates=pair ? `<xhtml:link rel="alternate" hreflang="nl" href="${xmlEscape(pair.nlUrl)}"/><xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(pair.enUrl)}"/><xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(pair.nlUrl)}"/>` : '';
-    return `  <url><loc>${xmlEscape(url)}</loc>${alternates}</url>`;
+    const alt = alternates.get(url) || [];
+    const links = alt.map(item => `<xhtml:link rel="alternate" hreflang="${xmlEscape(item.hreflang)}" href="${xmlEscape(item.href)}"/>`).join('');
+    return `  <url><loc>${xmlEscape(url)}</loc>${links}</url>`;
   });
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${regels.join('\n')}\n</urlset>\n`;
 }
@@ -65,11 +64,22 @@ async function htmlBestanden() {
   const bestanden = [];
   for await (const p of glob('*.html')) if (!isExclude(p)) bestanden.push(p);
   for await (const p of glob('blog/*/index.html')) bestanden.push(p);
-  for await (const p of glob('en/*.html')) bestanden.push(p);
-  for await (const p of glob('en/blog/*/index.html')) bestanden.push(p);
-  for await (const p of glob('en/kennis/index.html')) bestanden.push(p);
+  for await (const p of glob('en/**/*.html')) bestanden.push(p);
   bestanden.push('blog/index.html', 'kennis/index.html', ...AI_MODEL_SEO_PAGES);
   return [...new Set(bestanden)];
+}
+
+function alternateLinks(html) {
+  const out = [];
+  for (const m of String(html).matchAll(/<link\b[^>]*rel=(?:"alternate"|'alternate')[^>]*>/gi)) {
+    const tag=m[0];
+    const href=tag.match(/\bhref=(?:"([^"]*)"|'([^']*)')/i);
+    const lang=tag.match(/\bhreflang=(?:"([^"]*)"|'([^']*)')/i);
+    const valueHref=href?.[1]??href?.[2]??'';
+    const valueLang=lang?.[1]??lang?.[2]??'';
+    if(valueHref.startsWith(`${ORIGIN}/`) && valueLang) out.push({hreflang:valueLang,href:valueHref});
+  }
+  return out;
 }
 
 export async function genereerSitemap(bestand = 'sitemap.xml') {
@@ -79,6 +89,7 @@ export async function genereerSitemap(bestand = 'sitemap.xml') {
   await finalizeSiteContracts();
 
   const urls = [];
+  const alternates = new Map();
   for (const pad of await htmlBestanden()) {
     let html;
     try { html = await readFile(pad, 'utf8'); } catch { continue; }
@@ -86,8 +97,10 @@ export async function genereerSitemap(bestand = 'sitemap.xml') {
     const url = canonical(html);
     if (!url.startsWith(`${ORIGIN}/`)) continue;
     urls.push(url);
+    const links=alternateLinks(html);
+    if(links.length) alternates.set(url,links);
   }
-  const xml = maakSitemap(urls);
+  const xml = maakSitemap(urls,alternates);
   await writeFile(bestand, xml, 'utf8');
   console.log(`Sitemap gegenereerd uit ${new Set(urls).size} actuele canonicals; geen onbewezen lastmod-datums`);
   return xml;
