@@ -1,0 +1,38 @@
+{
+  "id": "2026-09-30-live-shell-v18-compact-mobile-menu-v2",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "production-readback|mobile-menu|v18-compact-shell|v2",
+  "compiler": {
+    "failure_class": "FALSE_RED",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The production build promotes the current V18 compact mobile shell with Oplossingen, Platform, Prijzen, Kennis, Over ons and Meer. The live readback still asserted the superseded component taxonomy and rejected an exact, healthy production deploy.",
+  "prevention": [
+    "Runtime shell assertions must follow the navigation emitted by the production build.",
+    "Production mobile taxonomy changes update the live contract and its negative fixture in the same lineage.",
+    "Exact deploy identity plus direct browser evidence takes precedence while a stale verifier is repaired."
+  ],
+  "fix": "Align the live shell contract and fixture with the V18 compact mobile navigation emitted in production.",
+  "evaluation": {
+    "historical_replay": [
+      "tools/site-shell/test-live-contract.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/test-live-contract.mjs",
+      ".github/workflows/canonical-brand-shell-live-readback.yml"
+    ]
+  },
+  "evidence": {
+    "contract": "tools/site-shell/live-contract.mjs",
+    "fixture": "tools/site-shell/test-live-contract.mjs",
+    "production_navigation": "Oplossingen / Platform / Prijzen / Kennis / Over ons / Meer"
+  },
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "seo-revenue-growth"
+  ]
+}
