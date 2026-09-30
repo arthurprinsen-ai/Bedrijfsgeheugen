@@ -118,3 +118,16 @@ The advisor translates simple answers into an explicit workload profile and show
 Employee count and cadence are decision inputs, not vanity fields: they influence workload scale and therefore cost/throughput trade-offs. High-impact use cases increase the weight of quality/reasoning and require human approval guidance. Personal/customer data increases privacy/residency weighting. Highly confidential data increases customer-controlled/self-host weighting.
 
 The Modelwijzer must never assume a novice knows what they need. “Weet ik niet / adviseer mij” is a valid answer and must still produce a useful, explainable recommendation.
+
+
+## V3 public-copy i18n closure
+
+Fingerprint: `ai-modelwijzer-novice-static-i18n-v1`.
+
+Every public Dutch string added or changed in the novice Modelwijzer flow must receive an exact deterministic English cache entry in the same candidate lineage. Source-level content tests are not enough: final production build parity with `STATIC_I18N_NETWORK=0` and `STATIC_I18N_REQUIRE_CACHE=1` is the acceptance boundary.
+
+Required:
+- cache every visible label, help text, option, CTA and accessibility string introduced by the advisor;
+- validate the final post-shell/public artifact, not only the source page;
+- never weaken fail-closed translation behavior to ship a Modelwijzer feature;
+- if the advisor copy changes after cache generation, reopen the same delivery obligation and repair the cache before production promotion.
