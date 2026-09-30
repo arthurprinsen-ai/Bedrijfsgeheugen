@@ -13,6 +13,7 @@ const ATTRS = new Set(['placeholder','title','aria-label','alt']);
 const TRANSLATION_CACHE_FILE = path.join(ROOT,'config','bg-static-i18n-en.json');
 const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'config','bg-static-i18n-en.d');
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
+const SEO_LOCALE_REVENUE_MAP_FILE = path.join(ROOT,'site','seo-locale-revenue-map.json');
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
   '/zelfscan', '/frisse-blik', '/inloggen', '/aanmelden', '/contact', '/privacy'
@@ -30,10 +31,57 @@ function publicRoutesFromSitemap() {
   try {
     const xml = fs.readFileSync(SITEMAP_FILE,'utf8');
     for (const match of xml.matchAll(/<loc>https:\/\/www\.bedrijfsgeheugen\.nl([^<]*)<\/loc>/g)) {
-      routes.add(normalizedRoute(match[1] || '/'));
+      const route=normalizedRoute(match[1] || '/');
+      if(route==='/en'||route.startsWith('/en/')) continue;
+      routes.add(route);
+    }
+  } catch {}
+  // SEO intent owners are authoritative public routes even when the checked-in
+  // sitemap is older than the current source tree. This prevents a new money
+  // page from missing its /en peer for one deployment cycle.
+  try {
+    const map=JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
+    for(const entry of map?.pages||[]){
+      const source=String(entry?.source_route||'');
+      const absolute=resolveSameOriginAbsolute(source);
+      if(absolute) routes.add(normalizedRoute(absolute.path));
     }
   } catch {}
   return routes;
+}
+
+function loadSeoLocaleRevenueMap() {
+  try {
+    const parsed = JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
+    const bySourceRoute = new Map();
+    for (const entry of parsed?.pages || []) {
+      const source = normalizedRoute(new URL(entry.source_route).pathname);
+      bySourceRoute.set(source,entry);
+    }
+    return { raw: parsed, bySourceRoute };
+  } catch (error) {
+    throw new Error('SEO_LOCALE_REVENUE_MAP_INVALID: ' + (error?.message || String(error)));
+  }
+}
+
+const SEO_LOCALE_REVENUE = loadSeoLocaleRevenueMap();
+
+let seoLocaleRevenueMapCache = null;
+function seoLocaleRevenueMap() {
+  if (seoLocaleRevenueMapCache) return seoLocaleRevenueMapCache;
+  try {
+    const raw = JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
+    const bySource = new Map();
+    for (const entry of raw?.pages || []) {
+      const source = String(entry?.source_route || '');
+      const absolute=resolveSameOriginAbsolute(source);
+      if (absolute) bySource.set(normalizedRoute(absolute.path), entry);
+    }
+    seoLocaleRevenueMapCache = { raw, bySource };
+  } catch (error) {
+    throw new Error('SEO_LOCALE_REVENUE_MAP_INVALID: ' + (error?.message || String(error)));
+  }
+  return seoLocaleRevenueMapCache;
 }
 
 function walk(dir, rel='') {
@@ -200,18 +248,31 @@ function resolveInternal(value,sourceFile) {
   return {path:resolved,suffix};
 }
 
+function resolveSameOriginAbsolute(value) {
+  try {
+    const url = new URL(String(value));
+    if (url.origin !== SITE) return null;
+    return { path: normalizedRoute(url.pathname), suffix: (url.search || '') + (url.hash || '') };
+  } catch {
+    return null;
+  }
+}
+
 function rewriteLinks(doc,sourceFile,locale,aliases) {
   const visit = node => {
     if (node.tagName) {
       for (const a of node.attrs || []) {
         if (!['href','src','action'].includes(a.name)) continue;
-        const resolved = resolveInternal(a.value,sourceFile);
+        const sameOrigin = resolveSameOriginAbsolute(a.value);
+        const resolved = sameOrigin || resolveInternal(a.value,sourceFile);
         if (!resolved) continue;
-        const targetFile = aliases.get(resolved.path);
+        const targetFile = aliases.get(resolved.path) || aliases.get(resolved.path + '.html') || aliases.get(resolved.path + '/');
         if (targetFile) {
           const targetRoute = routeFor(targetFile);
           a.value = canonicalRoute(locale,targetRoute) + resolved.suffix;
-        } else if (!a.value.startsWith('/')) {
+        } else if (sameOrigin && publicRoutes.has(normalizedRoute(resolved.path))) {
+          a.value = canonicalRoute(locale,normalizedRoute(resolved.path)) + resolved.suffix;
+        } else if (!sameOrigin && !a.value.startsWith('/')) {
           a.value = resolved.path + resolved.suffix;
         }
       }
@@ -233,6 +294,163 @@ function rewriteLanguageSwitchers(doc,route,activeLocale) {
       }
     }
     for (const child of node.childNodes || []) visit(child);
+  };
+  visit(doc);
+}
+
+function textNode(value,parent) {
+  return {nodeName:'#text',value:String(value),parentNode:parent};
+}
+
+function ensureMetaNode(head, predicate, attrs) {
+  let node = findFirst(head,n=>n.tagName==='meta' && predicate(n));
+  if (!node) {
+    node={nodeName:'meta',tagName:'meta',namespaceURI:'http://www.w3.org/1999/xhtml',attrs:[],childNodes:[],parentNode:head};
+    head.childNodes.push(node);
+  }
+  for (const [name,value] of Object.entries(attrs)) setAttr(node,name,value);
+  return node;
+}
+
+function applyLocaleSeoMetadata(doc,locale,route,localizedUrl) {
+  const head=findFirst(doc,n=>n.tagName==='head');
+  const body=findFirst(doc,n=>n.tagName==='body');
+  if(!head) return;
+  const map=seoLocaleRevenueMap();
+  const entry=map.bySource.get(normalizedRoute(route));
+  const localeSeo=entry?.[locale] || null;
+
+  // Supporting pages inherit the localized commercial intent owner. This keeps
+  // EN measurement and internal-link attribution on an English keyword cluster
+  // instead of leaking the Dutch cluster into /en/* routes.
+  const existingOwner=body ? String(attr(body,'data-bg-intent-owner')||'').trim() : '';
+  const existingOwnerAbsolute=resolveSameOriginAbsolute(existingOwner);
+  const ownerPath=existingOwnerAbsolute ? normalizedRoute(existingOwnerAbsolute.path) : '';
+  const ownerEntry=ownerPath ? map.bySource.get(ownerPath) : null;
+  const ownerLocaleSeo=ownerEntry?.[locale] || null;
+
+  const keyword=String(localeSeo?.primary_keyword || ownerLocaleSeo?.primary_keyword || '').trim();
+  const title=String(localeSeo?.title||'').trim();
+  const description=String(localeSeo?.description||'').trim();
+
+  if(title){
+    let titleNode=findFirst(head,n=>n.tagName==='title');
+    if(!titleNode){
+      titleNode={nodeName:'title',tagName:'title',namespaceURI:'http://www.w3.org/1999/xhtml',attrs:[],childNodes:[],parentNode:head};
+      head.childNodes.push(titleNode);
+    }
+    titleNode.childNodes=[textNode(title,titleNode)];
+  }
+  if(description) {
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='description',{name:'description',content:description});
+    ensureMetaNode(head,n=>String(attr(n,'property')||'').toLowerCase()==='og:description',{property:'og:description',content:description});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='twitter:description',{name:'twitter:description',content:description});
+  }
+  if(title) {
+    ensureMetaNode(head,n=>String(attr(n,'property')||'').toLowerCase()==='og:title',{property:'og:title',content:title});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='twitter:title',{name:'twitter:title',content:title});
+  }
+  if(keyword) {
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-keyword-cluster',{name:'bg-keyword-cluster',content:keyword});
+    ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-zoekwoord',{name:'bg-zoekwoord',content:keyword});
+    if(body) setAttr(body,'data-bg-keyword-cluster',keyword);
+  }
+  const localizedOwner = entry
+    ? localizedUrl
+    : ownerEntry
+      ? (locale==='en' ? ownerEntry.en.route : ownerEntry.nl.route)
+      : (locale==='en' && existingOwnerAbsolute ? SITE + canonicalRoute('en',ownerPath) : existingOwner || localizedUrl);
+  ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-intent-owner',{name:'bg-intent-owner',content:localizedOwner});
+  if(body) {
+    setAttr(body,'data-bg-intent-owner',localizedOwner);
+    if(keyword) setAttr(body,'data-bg-keyword-cluster',keyword);
+    setAttr(body,'data-bg-locale-seo','v1');
+  }
+}
+
+function setHeadText(head,tagName,value) {
+  const node=findFirst(head,n=>n.tagName===tagName);
+  if(!node) return;
+  node.childNodes=[{nodeName:'#text',value:String(value),parentNode:node}];
+}
+function upsertMeta(head,name,value) {
+  let node=findFirst(head,n=>n.tagName==='meta' && String(attr(n,'name')||'').toLowerCase()===String(name).toLowerCase());
+  if(!node){
+    node={nodeName:'meta',tagName:'meta',namespaceURI:'http://www.w3.org/1999/xhtml',attrs:[],childNodes:[],parentNode:head};
+    head.childNodes.push(node);
+  }
+  setAttr(node,'name',name); setAttr(node,'content',String(value||''));
+}
+function applyLocaleRevenueMetadata(doc,locale,route) {
+  const entry=SEO_LOCALE_REVENUE.bySourceRoute.get(normalizedRoute(route));
+  if(!entry) return;
+  const data=locale==='en'?entry.en:entry.nl;
+  const head=findFirst(doc,n=>n.tagName==='head');
+  const body=findFirst(doc,n=>n.tagName==='body');
+  if(!head||!body) return;
+  if(locale==='en'){
+    if(data?.title) setHeadText(head,'title',data.title);
+    if(data?.description) upsertMeta(head,'description',data.description);
+    if(data?.h1){
+      const h1=findFirst(body,n=>n.tagName==='h1');
+      if(h1) h1.childNodes=[{nodeName:'#text',value:String(data.h1),parentNode:h1}];
+    }
+  }
+  upsertMeta(head,'bg-keyword-cluster',data?.primary_keyword||'');
+  upsertMeta(head,'bg-zoekwoord',data?.primary_keyword||'');
+  upsertMeta(head,'bg-locale-market',locale);
+  setAttr(body,'data-bg-keyword-cluster',data?.primary_keyword||'');
+  setAttr(body,'data-bg-locale-market',locale);
+  if(entry?.source_route){
+    const owner=locale==='en'?entry.en?.route:entry.nl?.route;
+    if(owner) {
+      upsertMeta(head,'bg-intent-owner',owner);
+      setAttr(body,'data-bg-intent-owner',owner);
+    }
+  }
+}
+
+function localizeStructuredData(doc,locale,route,translations) {
+  const localizedUrl=SITE+canonicalRoute(locale,route);
+  const revenue=SEO_LOCALE_REVENUE.bySourceRoute.get(normalizedRoute(route));
+  const localizeString=(value,key='')=>{
+    const text=String(value||'');
+    if(key==='inLanguage') return locale==='en'?'en':'nl-NL';
+    const same=resolveSameOriginAbsolute(text);
+    if(same && publicRoutes.has(normalizedRoute(same.path))) return SITE+canonicalRoute(locale,normalizedRoute(same.path))+same.suffix;
+    if(locale==='en' && translations){
+      const hit=translations.get(normalized(text));
+      if(typeof hit==='string'&&hit.trim()) return hit;
+    }
+    return value;
+  };
+  const walk=(value,key='')=>{
+    if(Array.isArray(value)) return value.map(v=>walk(v,key));
+    if(value&&typeof value==='object'){
+      const next={};
+      for(const [k,v] of Object.entries(value)) next[k]=walk(v,k);
+      if(locale==='en' && next.url===localizedUrl && revenue?.en){
+        if(revenue.en.title && typeof next.name==='string') next.name=revenue.en.title.replace(/\s*\|\s*Bedrijfsgeheugen\s*$/,'');
+        if(revenue.en.description && typeof next.description==='string') next.description=revenue.en.description;
+        if('inLanguage' in next) next.inLanguage='en';
+      }
+      return next;
+    }
+    if(typeof value==='string') return localizeString(value,key);
+    return value;
+  };
+  const visit=node=>{
+    if(node.tagName==='script' && String(attr(node,'type')||'').toLowerCase()==='application/ld+json'){
+      const text=(node.childNodes||[]).filter(x=>x.nodeName==='#text').map(x=>x.value||'').join('').trim();
+      if(text){
+        try{
+          const parsed=JSON.parse(text);
+          const localized=walk(parsed);
+          node.childNodes=[{nodeName:'#text',value:JSON.stringify(localized).replace(/</g,'\\u003c'),parentNode:node}];
+        }catch{}
+      }
+    }
+    for(const child of node.childNodes||[]) visit(child);
   };
   visit(doc);
 }
@@ -265,6 +483,8 @@ function setLocaleMetadata(doc,locale,route,translated=true) {
 
   const ogUrl = findFirst(head,n=>n.tagName==='meta' && String(attr(n,'property')||'').toLowerCase()==='og:url');
   if (ogUrl) setAttr(ogUrl,'content',localizedUrl);
+
+  applyLocaleSeoMetadata(doc,locale,route,localizedUrl);
 
   const staticMarker = {
     nodeName:'meta',tagName:'meta',namespaceURI:'http://www.w3.org/1999/xhtml',
@@ -505,9 +725,16 @@ for (const file of files) {
   rewriteLinks(nlDoc,file,'nl',aliases);
   rewriteLanguageSwitchers(nlDoc,route,'nl');
   setLocaleMetadata(nlDoc,'nl',route,true);
+  applyLocaleRevenueMetadata(nlDoc,'nl',route);
+  localizeStructuredData(nlDoc,'nl',route,translations);
   const nlOut = outputPath('nl',file);
   ensureDir(nlOut);
-  fs.writeFileSync(nlOut,serialize(nlDoc));
+  const nlSerialized=serialize(nlDoc);
+  fs.writeFileSync(nlOut,nlSerialized);
+  // Dutch is canonically served on the unprefixed route. Write the finalized
+  // NL locale metadata back to that public source so the actual canonical page,
+  // not only the legacy /nl artifact, carries reciprocal hreflang and locale SEO.
+  fs.writeFileSync(path.join(ROOT,file),nlSerialized);
 
   const enDoc = parse(sourceHtml);
   const enRefs = collectTranslatables(enDoc);
@@ -520,6 +747,8 @@ for (const file of files) {
   rewriteLinks(enDoc,file,'en',aliases);
   rewriteLanguageSwitchers(enDoc,route,'en');
   setLocaleMetadata(enDoc,'en',route,missingForRoute.length === 0);
+  applyLocaleRevenueMetadata(enDoc,'en',route);
+  localizeStructuredData(enDoc,'en',route,translations);
   const enOut = outputPath('en',file);
   ensureDir(enOut);
   fs.writeFileSync(enOut,serialize(enDoc));

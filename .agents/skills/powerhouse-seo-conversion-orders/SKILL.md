@@ -195,3 +195,30 @@ De route is een acquisitielaag bovenop de bestaande Bedrijfslek-/Frisse-Blik-ket
 
 ### Company Brain production evidence
 Status: `LIVE_PROVEN` op 30 september 2026. Protected main `936ca60ad5c2415ff2372880a61aea5b1d690875`, Netlify deploy `6abcd38195a83a25791474e5`, public route HTTP 200, correcte canonical/titel, mobile 390×844, 0 page errors en 0 failed assets. Een aparte pricing language-switch timeout verandert deze route-specifieke production truth niet. Optimalisatie blijft sturen op paid order en realized revenue.
+
+
+## NL/EN revenue SEO architecture — 30 september 2026
+Fingerprint: `seo|nl-en|keyword-ownership-to-revenue|v1`.
+
+SEO is bilingual but never literal-translation-first. Dutch and English each have their own search-demand evidence, keyword owner, title/H1/message match and revenue path.
+
+Canonical authorities:
+- `site/seo-order-map.json` + `site/seo-order-expansion.json`: source intent owners, CTA and internal-link relationships;
+- `site/seo-locale-revenue-map.json`: NL/EN keyword ownership, English title/H1/description, market evidence and conversion destination;
+- `tools/site-shell/build-localized-routes.mjs`: self-canonical locale output, hreflang pairs, EN on-page metadata and same-origin link localization;
+- `tools/genereer-sitemap.mjs`: final NL + EN canonicals and hreflang sitemap alternates;
+- `tools/seo-order-engine/apply.mjs` + `validate.mjs`: final-build intent, link, structured-data, conversion and locale revenue gates.
+
+Hard rules:
+- one search intent/keyword cluster -> one canonical owner per locale;
+- English keywords are selected from English-market evidence, not Dutch strings translated word-for-word;
+- every indexable NL owner has an `/en/*` pair with self-canonical, `hreflang=nl`, `hreflang=en` and `x-default`;
+- same-origin internal links, including absolute URLs, remain inside the selected locale;
+- revenue-priority support pages may receive/enforce contextual inbound links without being converted into generic money-page templates;
+- every commercial/support owner has a measurable conversion destination;
+- sitemap is generated from final localized HTML and must include English canonicals; no invented `lastmod`;
+- organic optimization order remains realized revenue -> paid orders -> qualified proposals -> qualified meetings -> qualified leads -> CTA progression -> engagement -> traffic/rankings.
+
+Measured demand captured on 30 September 2026 includes NL `ai governance`, `data soevereiniteit`, `bedrijfsprocessen automatiseren`, and EN `AI model comparison`, `AI governance`, `sovereign AI`. High-volatility volume signals must be combined with SERP-intent evidence before scaling.
+
+The AI Modelwijzer owns the model-comparison/selection intent. `/data-soevereiniteit` owns the distinct data-sovereignty/sovereign-AI intent and hands off commercially to AI governance. These pages must not cannibalize `/ai-governance`.

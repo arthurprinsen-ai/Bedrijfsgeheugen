@@ -1,0 +1,99 @@
+{
+  "id": "2026-09-30-bilingual-seo-revenue-architecture-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|nl-en|revenue-ownership|hreflang|v1",
+  "compiler": {
+    "failure_class": "SEO_LOCALE_REVENUE_GAP",
+    "scope": "PUBLIC_WEBSITE_AND_REVENUE_INTELLIGENCE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The website had a sound Dutch SEO/order foundation and generated English routes, but English indexation, market-specific keyword ownership, localized revenue attribution, sitemap hreflang and locale-aware internal revenue linking were not one enforced production contract. The legacy keyword table also used keyword as a single primary key, which cannot represent the same term across multiple languages and markets.",
+  "prevention": [
+    "Treat NL and EN as one bilingual commercial search estate with distinct market-specific keyword research.",
+    "Keep one canonical business intent owner and project localized metadata/landing canonicals from it.",
+    "Generate reciprocal hreflang in page metadata and sitemap after localized routes exist.",
+    "Project supporting-to-money, money-to-cluster and money-to-conversion links in both locales before release evidence.",
+    "Store keyword evidence by locale + market + keyword and prioritize it by search demand, CPC and intent without treating forecast value as realized revenue.",
+    "Close the loop through CTA, lead, proposal, order and realized revenue."
+  ],
+  "fix": "Add a bilingual locale/revenue map for all canonical SEO owners, promote AI Modelwijzer as a commercial model-comparison owner, localize English metadata and owner attribution, add production bilingual revenue-link projection, include English canonicals with reciprocal hreflang in sitemap, validate the locale/revenue estate in the Netlify build, create locale/market keyword intelligence in Supabase, and feed that evidence into search/growth intelligence.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/seo-growth-search-intelligence.test.mjs",
+      "tests/seo-order-link-graph.test.mjs",
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "registry": [
+      "site/seo-order-map.json",
+      "site/seo-order-expansion.json"
+    ],
+    "locale_revenue_map": "site/seo-locale-revenue-map.json",
+    "production_pipeline": [
+      "tools/site-shell/build-localized-routes.mjs",
+      "tools/seo-order-engine/apply-revenue-links.mjs",
+      "tools/genereer-sitemap.mjs",
+      "tools/seo-order-engine/validate-locales.mjs"
+    ],
+    "runtime": [
+      "public.powerhouse_seo_keyword_intelligence_v1",
+      "public.powerhouse_seo_keyword_revenue_priority_v1",
+      "netlify/functions/growth-intelligence-daily.mjs"
+    ],
+    "skill": ".agents/skills/seo-revenue-growth/SKILL.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "measured_market_evidence": [
+    {
+      "locale": "nl",
+      "market": "Netherlands",
+      "keyword": "bedrijfsprocessen automatiseren",
+      "search_volume": 480,
+      "cpc_eur": 14.53
+    },
+    {
+      "locale": "nl",
+      "market": "Netherlands",
+      "keyword": "ai governance",
+      "search_volume": 390,
+      "cpc_eur": 15.86
+    },
+    {
+      "locale": "nl",
+      "market": "Netherlands",
+      "keyword": "data soevereiniteit",
+      "search_volume": 260,
+      "cpc_eur": 6.33
+    },
+    {
+      "locale": "en",
+      "market": "United Kingdom",
+      "keyword": "AI model comparison",
+      "search_volume": 390,
+      "cpc_eur": 3.3
+    },
+    {
+      "locale": "en",
+      "market": "United Kingdom",
+      "keyword": "ai governance",
+      "search_volume": 1300,
+      "cpc_eur": 24.01
+    },
+    {
+      "locale": "en",
+      "market": "United Kingdom",
+      "keyword": "sovereign ai",
+      "search_volume": 2400,
+      "cpc_eur": 13.28
+    }
+  ],
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-system-map-governance",
+    "powerhouse-growth-swarm"
+  ]
+}

@@ -5,6 +5,7 @@ import { inspectBlog } from './blog-contract-v2.mjs';
 import { inspectMoneyPage } from './money-contract-v2.mjs';
 import { hasGrowthMeasurement } from './measurement.mjs';
 import { PUBLIC_PAGE_EXCLUDES } from '../site-shell/contracts.mjs';
+import { loadLocaleRevenueMap, validateLocaleRevenueMap } from './locale-revenue.mjs';
 
 const ORIGIN='https://www.bedrijfsgeheugen.nl';
 const EXCLUDES=new Set([...PUBLIC_PAGE_EXCLUDES,'404.html']);
@@ -72,5 +73,5 @@ async function estatePages(){
   }
   return pages;
 }
-export async function validateSeoOrderEngine(){const registry=await loadRegistry();const pages=await estatePages();const fouten=validateSeoOrderPages(pages,registry);if(fouten.length)throw new Error(`SEO order gate faalt (${fouten.length}):\n- ${fouten.join('\n- ')}`);console.log(`SEO order engine OK: ${pages.length} indexeerbare pagina's; primary/supporting intent ownership, money-v2, blog-v2, growth measurement, linkgraaf, structured data en conversies gecontroleerd`);return {pages:pages.length,money:registry.pages.filter(p=>p.role==='money').length};}
+export async function validateSeoOrderEngine(){const registry=await loadRegistry();const pages=await estatePages();const localeMap=await loadLocaleRevenueMap();const fouten=[...validateSeoOrderPages(pages,registry),...validateLocaleRevenueMap(localeMap,registry)];if(fouten.length)throw new Error(`SEO order gate faalt (${fouten.length}):\n- ${fouten.join('\n- ')}`);console.log(`SEO order engine OK: ${pages.length} indexeerbare pagina's; primary/supporting intent ownership, NL/EN keyword ownership, money-v2, blog-v2, growth measurement, linkgraaf, structured data en conversies gecontroleerd`);return {pages:pages.length,money:registry.pages.filter(p=>p.role==='money').length,localizedOwners:localeMap.pages.length};}
 if(process.argv[1]&&import.meta.url.endsWith(process.argv[1].replace(/\\/g,'/')))await validateSeoOrderEngine();

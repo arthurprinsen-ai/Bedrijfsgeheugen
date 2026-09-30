@@ -50,7 +50,7 @@ export function enrichDeclaredSupportingLinks(input, sourceCanonical, registry){
   let html=String(input);
   if(!sourceCanonical||!sourceCanonical.startsWith(`${ORIGIN}/`)) return html;
   const targets=(registry?.pages||[])
-    .filter(entry=>entry?.role==='money'&&entry.route!==sourceCanonical&&(entry.supporting_routes||[]).includes(sourceCanonical))
+    .filter(entry=>(entry?.role==='money'||entry?.link_priority==='revenue')&&entry.route!==sourceCanonical&&(entry.supporting_routes||[]).includes(sourceCanonical))
     .filter(entry=>!hasVisibleTargetLink(html,entry.route));
   if(!targets.length) return html;
   const links=targets.map(entry=>`<a href="${esc(entry.route)}" data-bg-money-target="${esc(entry.route)}">${esc(relatedLabel(entry))} →</a>`).join('');

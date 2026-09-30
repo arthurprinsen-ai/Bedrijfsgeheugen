@@ -236,7 +236,8 @@
       },
       "supporting_routes": [
         "https://www.bedrijfsgeheugen.nl/ai-act",
-        "https://www.bedrijfsgeheugen.nl/"
+        "https://www.bedrijfsgeheugen.nl/",
+        "https://www.bedrijfsgeheugen.nl/ai-modelwijzer"
       ],
       "schema_type": "Service"
     },

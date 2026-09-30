@@ -53,7 +53,7 @@ export function buildLinkGraph(pages) {
 export function validateMoneyPages(pages, registry) {
   const fouten = [];
   const graph = buildLinkGraph(pages);
-  const money = (registry?.pages || []).filter(entry => entry.role === 'money');
+  const money = (registry?.pages || []).filter(entry => entry.role === 'money' || entry.link_priority === 'revenue');
 
   for (const entry of money) {
     if (!graph.pageMap.has(entry.route)) {
@@ -61,12 +61,12 @@ export function validateMoneyPages(pages, registry) {
       continue;
     }
     const inbound = graph.inbound.get(entry.route) || new Set();
-    if (inbound.size === 0) fouten.push(`${entry.route}: money page is orphan; minimaal één andere indexeerbare pagina moet ernaar linken`);
+    if (inbound.size === 0) fouten.push(`${entry.route}: revenue page is orphan; minimaal één andere indexeerbare pagina moet ernaar linken`);
 
     for (const support of entry.supporting_routes || []) {
       if (!graph.pageMap.has(support)) continue;
       const out = graph.outbound.get(support) || new Set();
-      if (!out.has(entry.route)) fouten.push(`${support}: supporting route mist link naar money page ${entry.route}`);
+      if (!out.has(entry.route)) fouten.push(`${support}: supporting route mist link naar revenue page ${entry.route}`);
     }
   }
 

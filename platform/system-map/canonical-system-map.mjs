@@ -638,6 +638,24 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         growthLoop:'config/seo-growth-loop.json',
         allowlist:'config/seo-optimization-allowlist.json',
         moneyPageAuthority:'site/seo-order-map.json',
+        moneyPageExpansionAuthority:'site/seo-order-expansion.json',
+        localeRevenueAuthority:'site/seo-locale-revenue-map.json',
+        localizedBuildAuthority:'tools/site-shell/build-localized-routes.mjs',
+        sitemapAuthority:'tools/genereer-sitemap.mjs',
+        bilingualRevenueSeo:Object.freeze({
+          fingerprint:'seo|nl-en|keyword-ownership-to-revenue|v1',
+          locales:Object.freeze(['nl','en']),
+          dutchCanonical:'unprefixed',
+          englishCanonical:'/en/*',
+          marketSpecificEnglishKeywords:true,
+          literalTranslationKeywordStrategyForbidden:true,
+          sameOriginLinksPreserveLocale:true,
+          hreflangRequired:Object.freeze(['nl','en','x-default']),
+          sitemapIncludesEnglishCanonicals:true,
+          revenueChain:'query -> canonical owner -> contextual internal links -> CTA -> lead -> proposal -> paid order -> realized revenue',
+          measuredMarkets:Object.freeze(['Netherlands/nl','Netherlands/en','United Kingdom/en','United States/en']),
+          regressions:Object.freeze(['tests/seo-locale-revenue-nl-en-v1.test.mjs','tests/seo-order-link-graph.test.mjs'])
+        }),
         finalBuildAuthority:'tools/site-shell/apply-money-page-order-conversion.mjs',
         bedrijfslekStandaloneAuthority:'zelfscan.html',
         bedrijfslekV18Exclusion:'tools/v18-views-lijst.mjs',
@@ -988,6 +1006,49 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     inheritedBy:Object.freeze(['all-public-routes','all-current-chats','all-future-chats','all-current-agents','all-future-agents','website-workflows']),
     invariant:'No route-local header/navigation/footer/megamenu geometry fork; every public route inherits one CMS-like canonical chrome.',
     productionReadbackRequired:true
+  }),
+  bilingualSeoRevenue:Object.freeze({
+    fingerprint:'seo|nl-en|revenue-ownership|hreflang|v1',
+    label:'Bilingual SEO → revenue intelligence',
+    owner:'seo-revenue-growth',
+    status:'ACTIVE_PROTECTED_CONTRACT',
+    locales:Object.freeze(['nl','en']),
+    dutchCanonical:'unprefixed',
+    englishCanonical:'/en/*',
+    canonicalOwnerRegistry:Object.freeze(['site/seo-order-map.json','site/seo-order-expansion.json']),
+    localeRevenueProjection:'site/seo-locale-revenue-map.json',
+    marketEvidence:Object.freeze({
+      table:'public.powerhouse_seo_keyword_intelligence_v1',
+      priorityView:'public.powerhouse_seo_keyword_revenue_priority_v1',
+      identity:'tenant_id + locale + market + keyword',
+      source:'DataForSEO + Search Console + realized outcomes',
+      forecastIsRevenue:false
+    }),
+    productionPipeline:Object.freeze([
+      'tools/site-shell/build-localized-routes.mjs',
+      'tools/seo-order-engine/apply-revenue-links.mjs',
+      'tools/genereer-sitemap.mjs',
+      'tools/seo-order-engine/validate-locales.mjs'
+    ]),
+    technicalContracts:Object.freeze([
+      'self-canonical-per-locale',
+      'reciprocal-hreflang-nl-en-x-default',
+      'NL-and-EN-sitemap-indexation',
+      'no-legacy-nl-canonicals',
+      'one-keyword-owner-per-locale',
+      'localized-support-owner-inheritance'
+    ]),
+    revenueLoop:'query/market evidence -> canonical intent owner -> localized landing -> internal revenue links -> CTA -> lead -> proposal -> paid order -> realized revenue -> learning -> next SEO action',
+    searchIntelligence:'tools/seo-growth/search-intelligence.mjs',
+    dailyRevenueIntelligence:'netlify/functions/growth-intelligence-daily.mjs',
+    primaryCommercialAsset:Object.freeze({
+      route:'/ai-modelwijzer',
+      nlKeyword:'ai modellen vergelijken',
+      enRoute:'/en/ai-modelwijzer',
+      enKeyword:'AI model comparison'
+    }),
+    failClosedStates:Object.freeze(['KEYWORD_OWNER_COLLISION','LOCALE_PEER_MISSING','HREFLANG_MISMATCH','SITEMAP_LOCALE_GAP','REVENUE_LINK_GAP']),
+    outcomePriority:Object.freeze(['realized_revenue','paid_order','proposal','lead','cta','organic_click','impression'])
   }),
   sourceBackedOutbound:Object.freeze({
     fingerprint:'powerhouse-source-backed-all-channels-v1',

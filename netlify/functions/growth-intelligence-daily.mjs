@@ -14,9 +14,10 @@ function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL
   const upsert=(table,rows,onConflict)=>call(`/${table}?on_conflict=${encodeURIComponent(onConflict)}`,{method:'POST',headers:{Prefer:'resolution=merge-duplicates,return=representation'},body:JSON.stringify(Array.isArray(rows)?rows:[rows])});
   const patch=(table,query,row)=>call(`/${table}?${query}`,{method:'PATCH',headers:{Prefer:'return=representation'},body:JSON.stringify(row)});
   return {
-    async listInputs(){const [signals,keywords,engagement,connections,opportunities,learnings,offers,applications,decisions,obligations,evidence,growthOutcomes,salesOutcomes]=await Promise.all([
+    async listInputs(){const [signals,keywords,bilingualKeywords,engagement,connections,opportunities,learnings,offers,applications,decisions,obligations,evidence,growthOutcomes,salesOutcomes]=await Promise.all([
       read('bg_externe_signalen','select=*&toegestaan=eq.true&order=opgehaald_op.desc&limit=200'),
       read('bg_zoekwoordkansen','select=*&order=kansscore.desc.nullslast&limit=100'),
+      read('powerhouse_seo_keyword_revenue_priority_v1','select=*&order=revenue_opportunity_score.desc&limit=100'),
       read('linkedin_engagement_events','select=*&is_test=eq.false&order=occurred_at.desc&limit=200'),
       read('bg_connecties','select=linkedin_url,naam,bedrijf,rol,prioriteit,status,extra,bijgewerkt_op&order=prioriteit.desc.nullslast&limit=500'),
       read('powerhouse_opportunities','select=*&status=eq.open&order=expected_revenue_value.desc&limit=100'),
@@ -28,7 +29,7 @@ function createRestStore({fetchFn=globalThis.fetch,baseUrl=process.env.BG_SOCIAL
       read('revenue_learning_evidence','select=*&order=evaluated_at.desc.nullslast&limit=500'),
       read('growth_outcomes','select=*&order=occurred_at.desc&limit=500'),
       read('powerhouse_sales_outcomes','select=*&order=occurred_at.desc&limit=500')]);
-      return {signals,keywords,engagement,connections,opportunities,learnings,offers,applications,decisions,obligations,evidence,growthOutcomes,salesOutcomes};},
+      return {signals,keywords,bilingualKeywords,engagement,connections,opportunities,learnings,offers,applications,decisions,obligations,evidence,growthOutcomes,salesOutcomes};},
     upsertOpportunity:r=>upsert('powerhouse_opportunities',r,'opportunity_key'),
     recordDecision:r=>upsert('revenue_learning_decisions',r,'tenant_id,decision_id'),
     recordObligation:r=>upsert('revenue_learning_obligations',r,'tenant_id,obligation_id'),
@@ -48,7 +49,23 @@ function baselineValue(e,metric){const a=e?.attributes||{},m=String(metric||'qua
 export function createGrowthIntelligenceDaily({store,now=()=>new Date()}={}){
   return async()=>{const active=store||createRestStore();const at=now(),atIso=at.toISOString(),day=isoDay(at);const input=await active.listInputs();
     const signals=(input.signals||[]).map(s=>({type:'external_market',quality:n(s.brontrouw||s.vertrouwen)/100||.5,relevance:n(s.relevantie)/100||.5,ref:s.url}));
-    const keywords=(input.keywords||[]).slice(0,20).map(s=>({type:'search',quality:Math.min(1,n(s.kansscore)/100||.5),relevance:Math.min(1,Math.log10(n(s.zoekvolume)+1)/5),ref:`search:${s.zoekwoord}`}));
+    const bilingual=(input.bilingualKeywords||[]).map(s=>({
+      zoekwoord:s.keyword,
+      zoekvolume:s.search_volume,
+      cpc:s.cpc_eur,
+      kansscore:s.revenue_opportunity_score,
+      locale:s.locale,
+      market:s.market,
+      canonical_owner:s.canonical_owner,
+      conversion_destination:s.conversion_destination,
+      bron:s.source||'dataforseo'
+    }));
+    const seenKeywords=new Set();
+    const keywordRows=[...bilingual,...(input.keywords||[])].filter(k=>{
+      const key=`${String(k.locale||'nl').toLowerCase()}|${String(k.market||'Netherlands').toLowerCase()}|${String(k.zoekwoord||'').toLowerCase()}`;
+      if(seenKeywords.has(key))return false;seenKeywords.add(key);return true;
+    }).sort((a,b)=>n(b.kansscore)-n(a.kansscore));
+    const keywords=keywordRows.slice(0,30).map(s=>({type:'search',quality:Math.min(1,n(s.kansscore)/130||.5),relevance:Math.min(1,Math.log10(n(s.zoekvolume)+1)/5),ref:`search:${s.locale||'nl'}:${s.market||'Netherlands'}:${s.zoekwoord}`}));
     const engagement=(input.engagement||[]).map(s=>({type:'engagement',quality:s.engagement_type==='dm'?1:.7,relevance:.8,ref:s.event_key}));
     const convergence=evidenceConvergence([...signals,...keywords,...engagement]);
     let graphEntities=0,graphRelations=0,whitespaceRecords=0;
@@ -59,7 +76,7 @@ export function createGrowthIntelligenceDaily({store,now=()=>new Date()}={}){
       for(const e of (input.engagement||[]).filter(x=>String(x.company_name||'').toLowerCase()===company.toLowerCase()&&x.content_key).slice(0,10)){await active.recordBrain(buildRelationshipRecord({fromType:'company',fromKey:company,toType:'content',toKey:e.content_key,relation:'engaged_with',confidence:e.engagement_type==='dm'?1:.75,evidenceRefs:[e.event_key],observedAt:e.occurred_at||atIso,reviewAt:new Date(at.getTime()+90*86400000).toISOString()}));graphRelations++;}
     }
 
-    for(const k of (input.keywords||[]).slice(0,20)){const q=String(k.zoekwoord||''),tokens=q.toLowerCase().split(/\s+/).filter(x=>x.length>2);const matching=(input.signals||[]).filter(s=>{const text=[s.titel,s.samenvatting,s.onderwerp].filter(Boolean).join(' ').toLowerCase();return tokens.some(t=>text.includes(t));});const supply=Math.min(100,matching.length*20),ws=whitespaceScore({searchDemand:n(k.kansscore),observedSupply:supply,evidenceQuality:matching.length?matching.reduce((a,s)=>a+(n(s.vertrouwen||s.brontrouw)/100||.5),0)/matching.length:convergence.score,commercialFit:.75});const refs=uniq([`search:${q}`,...matching.map(s=>s.url)]);await active.recordBrain(brainEntity({id:`entity:market-whitespace:${slug(q)}`,subject:`market-topic:${slug(q)}`,payload:{entity_type:'market_whitespace',fact_status:'MIXED',query:q,search_demand:n(k.kansscore),observed_supply_count:matching.length,observed_supply_domains:uniq(matching.map(s=>s.domein)),whitespace:ws,review_at:new Date(at.getTime()+30*86400000).toISOString()},evidenceIds:refs,at:atIso}));graphEntities++;whitespaceRecords++;await active.recordBrain(buildRelationshipRecord({fromType:'search_term',fromKey:q,toType:'market_whitespace',toKey:q,relation:'indicates_gap',confidence:ws.score,evidenceRefs:refs,observedAt:atIso,reviewAt:new Date(at.getTime()+30*86400000).toISOString()}));graphRelations++;}
+    for(const k of keywordRows.slice(0,30)){const q=String(k.zoekwoord||''),tokens=q.toLowerCase().split(/\s+/).filter(x=>x.length>2);const matching=(input.signals||[]).filter(s=>{const text=[s.titel,s.samenvatting,s.onderwerp].filter(Boolean).join(' ').toLowerCase();return tokens.some(t=>text.includes(t));});const supply=Math.min(100,matching.length*20),ws=whitespaceScore({searchDemand:n(k.kansscore),observedSupply:supply,evidenceQuality:matching.length?matching.reduce((a,s)=>a+(n(s.vertrouwen||s.brontrouw)/100||.5),0)/matching.length:convergence.score,commercialFit:.75});const refs=uniq([`search:${q}`,...matching.map(s=>s.url)]);await active.recordBrain(brainEntity({id:`entity:market-whitespace:${slug(q)}`,subject:`market-topic:${slug(q)}`,payload:{entity_type:'market_whitespace',fact_status:'MIXED',query:q,locale:k.locale||'nl',market:k.market||'Netherlands',canonical_owner:k.canonical_owner||null,conversion_destination:k.conversion_destination||null,search_volume:n(k.zoekvolume),cpc:n(k.cpc),search_demand:n(k.kansscore),observed_supply_count:matching.length,observed_supply_domains:uniq(matching.map(s=>s.domein)),whitespace:ws,review_at:new Date(at.getTime()+30*86400000).toISOString()},evidenceIds:refs,at:atIso}));graphEntities++;whitespaceRecords++;await active.recordBrain(buildRelationshipRecord({fromType:'search_term',fromKey:q,toType:'market_whitespace',toKey:q,relation:'indicates_gap',confidence:ws.score,evidenceRefs:refs,observedAt:atIso,reviewAt:new Date(at.getTime()+30*86400000).toISOString()}));graphRelations++;}
 
     const byCompany=new Map();for(const e of input.engagement||[]){if(!e.company_name)continue;const key=e.company_name.trim(),x=byCompany.get(key)||{events:0,latest:e.occurred_at};x.events++;if(String(e.occurred_at)>String(x.latest))x.latest=e.occurred_at;byCompany.set(key,x);}
     const existingByCompany=new Map((input.opportunities||[]).filter(o=>o.company_key).map(o=>[String(o.company_key).toLowerCase(),o]));const scored=[];
