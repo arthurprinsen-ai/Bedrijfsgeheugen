@@ -36,3 +36,10 @@ test('accepted website baseline includes Company Brain route',()=>{
   const baseline=JSON.parse(fs.readFileSync('site/accepted-baseline.json','utf8'));
   assert.ok(baseline.routes.some(r=>r.route==='/company-brain' && r.file==='company-brain.html'));
 });
+
+
+test('delivery classifier recognizes the new public page',()=>{
+  const delivery=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
+  const website=delivery.lanes.find(lane=>lane.id==='website');
+  assert.ok(website?.paths.includes('company-brain.html'));
+});
