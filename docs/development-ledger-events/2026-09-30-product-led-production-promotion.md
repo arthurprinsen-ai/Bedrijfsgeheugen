@@ -9,3 +9,4 @@
 - CI coverage: `tests/product-led-home-v1.test.mjs` is now wired into the canonical Required test workflow.
 - Confirmed root cause: `apply-product-led-home.mjs` referenced retired `prototype-v18-stable.html`; canonical premerge parity omitted the product-led step and therefore missed the Netlify failure.
 - Fix: target only `index.html`, use full canonical URLs, and execute the product-led step in Required test premerge build parity.
+- Delivery refresh: final seven-path promotion scope published before terminal CI.
