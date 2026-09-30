@@ -25,6 +25,31 @@
       "schema_type": "WebPage"
     },
     {
+      "route": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "role": "category-pillar",
+      "presentation": "native",
+      "primary_intent": "company brain",
+      "primary_keyword": "company brain",
+      "secondary_keywords": [
+        "company brain nederland",
+        "company brain mkb",
+        "ai company brain",
+        "bedrijfsbrein ai"
+      ],
+      "funnel_stage": "consider",
+      "primary_cta": {
+        "action": "zelfscan",
+        "url": "https://www.bedrijfsgeheugen.nl/zelfscan"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen",
+        "https://www.bedrijfsgeheugen.nl/product",
+        "https://www.bedrijfsgeheugen.nl/frisse-blik"
+      ],
+      "schema_type": "WebPage",
+      "positioning": "Een Company Brain is waar Bedrijfsgeheugen begint; Bedrijfsgeheugen verbindt context met impact, uitvoering, resultaat en leren."
+    },
+    {
       "route": "https://www.bedrijfsgeheugen.nl/prijzen",
       "role": "money",
       "presentation": "native",

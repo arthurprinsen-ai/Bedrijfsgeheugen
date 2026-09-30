@@ -127,3 +127,12 @@ This skill inherits the canonical daily compound-learning contract. Every materi
 - remain discoverable through System Map and canonical skill projection.
 
 Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
+
+
+## Product-market category projection — Company Brain
+Fingerprint: `company-intelligence|company-brain-category-projection|v1`.
+
+Powerhouse projecteert de publieke categorie `Company Brain` als acquisitiesignaal naar dezelfde Company Intelligence OS; er ontstaat geen apart brein of parallelle memory/decision/action-loop. De semantische mapping is:
+`Company Brain / knowledge-context → signals → impact → decision → action → observed outcome → learning`.
+
+De publieke hoofdclaim **Een Company Brain is waar Bedrijfsgeheugen begint** beschrijft dus de productarchitectuur: context is een inputlaag, niet de terminale capability. Company-Brain-intentie, CTA-progressie, scanuitkomst, lead/proposal/order en gerealiseerde omzet moeten als één lineage terugstromen naar bestaande evidence, outcome memory en compound learning. Verkeer zonder downstream outcome mag nooit als bewezen commerciële waarde worden opgeslagen.

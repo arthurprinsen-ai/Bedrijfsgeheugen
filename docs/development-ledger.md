@@ -344,3 +344,16 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Regression gates:** `brain/economics/management-accounting-intelligence.test.mjs` en `portal-v2/modules/management-accounting-intelligence.test.mjs`.
 - **Owner:** Impact/Value Intelligence + Portal/Executive Cockpit.
 - **Reusable lesson:** stuur niet op losse KPI's; verbind workforce, productiviteit, operatie, commercie, marge, cash, kapitaal en waarde in één evidence-backed graph en laat alleen expliciet bewezen benchmarkgaps automatisch doorwerken naar roadmapprioriteit.
+
+
+## 2026-09-30 — IMPROVEMENT — Company Brain category capture to revenue
+- **Fingerprint:** `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1`.
+- **Signal:** “Company Brain” is becoming category language while Bedrijfsgeheugen already implements a broader context → impact → action → outcome → learning loop.
+- **Decision:** do not rename the product; own the category query with `/company-brain` and position it as the starting layer of Bedrijfsgeheugen.
+- **Public claim:** “Een Company Brain is waar Bedrijfsgeheugen begint.”
+- **Product principle:** “Weten → Zien → Begrijpen → Doen → Leren.”
+- **Acquisition:** category page routes to the existing ungated Bedrijfslek self-scan and existing Frisse Blik; no parallel funnel.
+- **Revenue contract:** rank/traffic/click/scan are intermediate; terminal learning requires qualified lead/proposal/paid order/realized revenue evidence.
+- **Powerhouse projection:** SEO Conversion-to-Orders, Company Intelligence OS, AGENTS, System Map and Brain component registry inherit the same rule.
+- **Regression:** `tests/company-brain-category-positioning-v1.test.mjs`.
+- **Prevention:** no duplicate Company-Brain intent page, no product rename, no unsupported competitor claims, no traffic-as-revenue.

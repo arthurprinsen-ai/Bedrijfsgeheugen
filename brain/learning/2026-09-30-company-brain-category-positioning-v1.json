@@ -1,0 +1,39 @@
+{
+  "id": "2026-09-30-company-brain-category-positioning-v1",
+  "fingerprint": "commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1",
+  "type": "IMPROVEMENT",
+  "observed_at": "2026-09-30",
+  "signal": "The market increasingly uses Company Brain as category language; Bedrijfsgeheugen already contains a broader closed-loop execution proposition but the website did not own that comparison explicitly.",
+  "decision": "Use Company Brain as a distinct acquisition/search category, never as a product rename.",
+  "canonical_claim": "Een Company Brain is waar Bedrijfsgeheugen begint.",
+  "product_loop": [
+    "Weten",
+    "Zien",
+    "Begrijpen",
+    "Doen",
+    "Leren"
+  ],
+  "acquisition_owner": "https://www.bedrijfsgeheugen.nl/company-brain",
+  "conversion_route": "https://www.bedrijfsgeheugen.nl/zelfscan",
+  "terminal_outcomes": [
+    "paid_order",
+    "realized_revenue"
+  ],
+  "guardrails": [
+    "no duplicate intent page",
+    "no invented competitor claims",
+    "no traffic-as-revenue",
+    "no parallel funnel",
+    "no product rename"
+  ],
+  "projection": [
+    "homepage",
+    "seo-order-map",
+    "SEO Conversion-to-Orders skill",
+    "Company Intelligence OS skill",
+    "AGENTS.md",
+    "Powerhouse System Map",
+    "Brain component registry"
+  ],
+  "learning_rule": "Category traffic is only useful when downstream progression to qualified lead, proposal, paid order and realized revenue is measured and fed back into the existing Powerhouse learning loop."
+}

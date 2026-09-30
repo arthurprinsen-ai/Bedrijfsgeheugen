@@ -607,7 +607,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
           regression:'tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs',
           learning:'brain/learning/2026-09-29-bedrijfslek-product-led-growth-borging-v2.json'
         }),
-        learning:'brain/learning/2026-09-29-seo-conversion-orders-v1.json'
+        learning:'brain/learning/2026-09-29-seo-conversion-orders-v1.json',
+        companyBrainCategory:Object.freeze({route:'/company-brain',role:'category-acquisition-entry',claim:'Een Company Brain is waar Bedrijfsgeheugen begint.',conversion:'/zelfscan',terminalOutcomes:Object.freeze(['paid_order','realized_revenue']),learning:'brain/learning/2026-09-30-company-brain-category-positioning-v1.json'})
       }),
       behavioralModels:Object.freeze(['Cialdini','loss-aversion','prospect-theory','Fogg Behavior Model','Hick-Hyman','cognitive-fluency','commitment-ladder','specificity','choice-architecture']),
       optimizationOrder:Object.freeze(['realized revenue','paid orders','qualified proposals','qualified meetings','qualified leads','CTA progression','engagement']),
@@ -631,7 +632,10 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         publicCopyRequiresSameLineageStaticI18n:true,
         finalBuildArtifactIsAuthority:true,
         bedrijfslekHasSingleRouteOwner:true,
-        v18GeneratorMayOverwriteBedrijfslek:false
+        v18GeneratorMayOverwriteBedrijfslek:false,
+        companyBrainIsCategoryNotProductRename:true,
+        companyBrainCanonicalOwner:'/company-brain',
+        companyBrainMeasuredToRevenue:true
       })
     }),
     Object.freeze({

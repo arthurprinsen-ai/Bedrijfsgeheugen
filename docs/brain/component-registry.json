@@ -1618,6 +1618,17 @@
         ],
         "skill": ".agents/skills/powerhouse-growth-swarm/SKILL.md",
         "regression": "tests/brain-bedrijfslek-product-led-acquisition-v1.test.mjs"
+      },
+      "company_brain_category_capture": {
+        "fingerprint": "seo|company-brain|category-capture-to-revenue|v1",
+        "canonical_owner": "https://www.bedrijfsgeheugen.nl/company-brain",
+        "category_not_product_rename": true,
+        "conversion_route": "https://www.bedrijfsgeheugen.nl/zelfscan",
+        "terminal_outcomes": [
+          "paid_order",
+          "realized_revenue"
+        ],
+        "system_map_projection": "seo-conversion-orders.runtime.companyBrainCategory"
       }
     },
     {
