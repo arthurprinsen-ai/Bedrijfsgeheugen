@@ -46,5 +46,10 @@
     "The sixth action remains prepared for the next valid run because the daily send cap is five.",
     "Brain failure registry, canonical Brain learning and Loop Assurance were updated with the prevention contract.",
     "Growth & Revenue OS automation now includes mandatory transport self-heal."
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-outbound-self-heal-v1.test.mjs"
+    ]
+  }
 }
