@@ -71,3 +71,18 @@ Model selection for sensitive data MUST evaluate deployment-path evidence separa
 - sovereignty level.
 
 A provider being European, a model being open-weight, or storage being in the EU never proves EU inference or full sovereignty. The public advisor must surface the matching deployment path and official governance source when available.
+
+
+## Falcon/TII coverage contract — 30 september 2026
+Fingerprint: `powerhouse|ai-model-intelligence|falcon-selfhost-sovereignty|v1`.
+
+TII/Falcon is a required open-weight/self-host provider family in the canonical model catalog. Falcon must never disappear from model discovery merely because it has no single canonical managed-API price.
+
+For Falcon and comparable open-weight families:
+- represent self-host, customer-cloud and on-prem as deployment paths rather than pretending one provider-hosted API is canonical;
+- customer-controlled storage/inference only means the customer can choose and operate that boundary; it does not imply that every Falcon deployment runs in the EU;
+- managed-hosting price, retention, subprocessors and residency remain provider-dependent until an official hosting path is selected;
+- official TII and official TII Hugging Face sources are authoritative for family/model existence;
+- public recommendations must explain that sovereignty comes from the selected deployment path, not from the model name or provider nationality.
+
+Regression coverage must keep at least one current Falcon reasoning/general model and one specialist Falcon model represented, with explicit source and governance evidence.
