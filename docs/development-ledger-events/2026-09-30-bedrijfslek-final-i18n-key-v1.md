@@ -2,7 +2,7 @@
 
 **Date:** 2026-09-30  
 **Fingerprint:** `website|static-i18n|bedrijfslek-final-artifact-key|v1`  
-**Base main:** `46b8805af668f485fe196584b8b56d4808eaaac7`
+**Base main:** `46b8805af668f485fe196584b8b56d4808eaaac7`\n**Synced main:** `936ca60ad5c2415ff2372880a61aea5b1d690875`
 
 Exacte productiebron is door alle finale website-transforms gehaald. Company Brain-copy was volledig gedekt. De enige resterende fail-closed static-i18n miss was:
 
