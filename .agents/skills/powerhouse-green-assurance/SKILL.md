@@ -188,3 +188,15 @@ Required:
 - then require the expected `html[lang]` value and visible localized content;
 - keep the readback fail-closed on wrong route, missing language state, Dutch copy on the English route, or visible runtime translation failure;
 - a full-load timeout after correct DOM-ready navigation is verifier noise, not evidence that the locale switch itself failed.
+
+
+## Runtime asset cache rotation after public navigation fixes
+
+Fingerprint: `i18n-runtime-cache-bust-v1`.
+
+When a production-critical public runtime asset changes behavior, the canonical HTML reference must rotate its versioned URL in the same recovery lineage. A source-level JavaScript fix without a new asset version is not sufficient production evidence because CDN/browser caches can keep serving the previous behavior.
+
+For public i18n:
+- every behavioral change to `assets/js/i18n.js` requires a matching `I18N_ASSET_VERSION` rotation in `tools/site-shell/apply-i18n.mjs`;
+- production readback must prove the HTML references the rotated asset and the NL→EN→NL interaction works;
+- do not classify repeated old behavior as a new runtime defect until cache identity has been disproven.
