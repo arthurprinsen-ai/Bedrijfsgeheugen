@@ -37,6 +37,13 @@
       "required": true
     },
     {
+      "id": "function:commercial-lead-ingest",
+      "type": "function",
+      "authority": "supabase/functions/commercial-lead-ingest/index.ts",
+      "evidence_contract": "tests/brain-powerhouse-need-discovery-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:content-operations",
       "type": "function",
       "authority": "supabase/functions/content-operations/index.ts",
@@ -251,6 +258,13 @@
       "type": "netlify_function",
       "authority": "netlify/functions/meta-instagram-token-refresh.mjs",
       "evidence_contract": "tests/brain-instagram-meta-oauth-onboarding.test.mjs",
+      "required": true
+    },
+    {
+      "id": "netlify_function:need-discovery",
+      "type": "netlify_function",
+      "authority": "netlify/functions/need-discovery.mjs",
+      "evidence_contract": "tests/brain-powerhouse-need-discovery-v1.test.mjs",
       "required": true
     },
     {
@@ -489,6 +503,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260928162600_powerhouse_growth_plays_20of20_persuasion_extension_v1.sql",
       "evidence_contract": "tests/brain-powerhouse-growth-plays-20of20-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_apply_need_discovery_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260930202000_powerhouse_need_discovery_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-need-discovery-v1.test.mjs",
       "required": true
     },
     {
@@ -888,6 +909,13 @@
       "type": "table",
       "authority": "supabase/migrations/20260929201000_powerhouse_mira_public_complaint_source_loop_v1.sql",
       "evidence_contract": "tests/brain-powerhouse-mira-public-complaint-source-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_need_discovery_events_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20260930202000_powerhouse_need_discovery_v1.sql",
+      "evidence_contract": "tests/brain-powerhouse-need-discovery-v1.test.mjs",
       "required": true
     },
     {

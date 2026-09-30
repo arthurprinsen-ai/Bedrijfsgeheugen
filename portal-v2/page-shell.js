@@ -21,10 +21,12 @@ import { mountPowerhouseObservability } from './modules/powerhouse-observability
 import { mountTrustedAdvisorAssurance } from './trusted-advisor-assurance.js';
 import { mountBusinessContextWorkspace } from './modules/business-context-workspace.js';
 import { mountContextualForesight } from './foresight-context-ui.js';
+import { mountNeedDiscovery } from './modules/need-discovery.js';
 
 const COPY = {
   overzicht:['Overzicht','De centrale cockpit met gezondheid, voortgang, kansen, risico’s, acties en impact.'],
   profiel:['Profiel per onderdeel','Bekijk de actuele stand per bedrijfsdomein, inclusief onderbouwing, risico’s en aanbevolen vervolgstappen.'],
+  'sales-intelligence':['Sales Intelligence & behoefte','Zie wat de klant aantoonbaar wil bereiken, welk probleem en effect zijn bevestigd, welke vraag nu volgt en wanneer een aanbod past.'],
   'data-ai':['Data en AI','Breng bronnen, datakwaliteit, AI-kansen en uitvoerbare verbeteringen samen.'],
   'trust-center':['AI Trust Center','Controleer waarop Powerhouse vertrouwt: bronnen, actualiteit, bewijs, onzekerheid, verificatie en audittrail.'],
   'ai-scan':['AI-scan: kansenkaart','Prioriteer AI-kansen op waarde, haalbaarheid, risico en benodigde data.'],
@@ -82,7 +84,7 @@ const COPY = {
   audittrail:['Audittrail','Maak besluiten, acties, wijzigingen en bewijs terugvindbaar in één traceerbare keten.']
 };
 
-const BRAIN_PAGES=new Set(['bronnenstatus','datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
+const BRAIN_PAGES=new Set(['sales-intelligence','bronnenstatus','datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center','actieve-acties','recovery-obligations','outcomes-evidence','learning-writeback','self-heal','audittrail']);
 const COMPANY_INPUT_PAGES=new Set(['profiel','gegevens-invullen','ingevulde-gegevens']);
 const ENTREPRENEUR_DATA_PAGES=new Set(['ondernemersdata','wet-regelgeving','arbeidsmarkt-personeel','subsidies-regelingen','economie-branche-actueel','ai-technologie-actueel','deadlines','bronnenbibliotheek']);
 const FUNCTIONAL_SUITE_PAGES=new Set(listFunctionalSuitePages());
@@ -278,6 +280,7 @@ export function openPortalPage(pageId){
   else if(ENTREPRENEUR_DATA_PAGES.has(pageId)){native.innerHTML='';mountEntrepreneurIntelligence(native,{pageId,openPage:openPortalPage});}
   else if(pageId==='koppelingen'){native.innerHTML='';mountConnectorWizard(native);}
   else if(pageId==='powerhouse-control-center'){native.innerHTML='';mountPowerhouseObservability(native,{domainState:portalContext.domainState});}
+  else if(pageId==='sales-intelligence'){native.innerHTML='';mountNeedDiscovery(native,{state:portalStateSnapshot()});}
   else if(pageId==='bedrijfssituatie'){native.innerHTML='';mountBusinessContextWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,onUpdated:()=>requestAnimationFrame(()=>openPortalPage('bedrijfssituatie'))});}
   else if(pageId==='taken-werkstromen')mountDeliveryWorkspace(native,{domainState:portalContext.domainState,openPage:openPortalPage,title:view.title,description:view.description});
   else if(COMPANY_INPUT_PAGES.has(pageId)&&contract?.legacyCapability)renderCompanyWorkspace(native,contract,view,pageId);

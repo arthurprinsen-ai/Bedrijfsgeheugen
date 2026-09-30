@@ -54,6 +54,29 @@ const COMPANY_FORMATS=['carousel','case_proof','diagnostic'];
 const EXPERIMENT_FAMILIES=['standup_recognition','latent_problem_activation','diagnostic_fomo','proof_case','carousel_practical','seo_opportunity','offer_ladder','authority_contrarian','category_entry_point','mental_availability','social_proof','loss_framing','friction_reduction','distinctive_asset'];
 const AWARENESS_STAGES=['UNAWARE','PROBLEM_AWARE','SOLUTION_AWARE','PRODUCT_AWARE','MOST_AWARE'];
 
+function needDiscoveryLayer(opportunity={}){
+  const fields=[
+    ['goal',opportunity.desiredResult||opportunity.goal,'Wat wil je de komende zes maanden concreet verbeteren?'],
+    ['situation',opportunity.currentApproach||opportunity.situation,'Hoe regelen jullie dit nu, en met hoeveel mensen?'],
+    ['problem',opportunity.problemExample||opportunity.pain,'Wanneer liep dit voor het laatst mis, en wat gebeurde er toen?'],
+    ['impact',opportunity.businessImpact||opportunity.impact,'Wat kost dit aan tijd, geld, klanten of afhankelijkheid van jou?'],
+    ['urgency',opportunity.urgency,'Waarom wil je dit nu oplossen, en wat gebeurt er als je niets verandert?'],
+    ['value',opportunity.successMetric||opportunity.value,'Wat moet er aantoonbaar beter zijn om een investering te rechtvaardigen?'],
+    ['decision',opportunity.decisionProcess,'Wie beslist hierover, en wanneer moet een volgende stap duidelijk zijn?']
+  ];
+  const next=fields.find(([,value])=>!String(value||'').trim());
+  const problemConfirmed=Boolean(String(fields[2][1]||'').trim());
+  const impactConfirmed=Boolean(String(fields[3][1]||'').trim());
+  const urgencyConfirmed=Boolean(String(fields[4][1]||'').trim());
+  return {
+    discoveryStage:next?.[0]||'complete',
+    discoveryQuestion:next?.[2]||'Welke concrete vervolgstap wil je nu afspreken?',
+    discoveryObjective:'surface_problem_then_let_audience_or_buyer_articulate_need',
+    offerGate:problemConfirmed&&impactConfirmed&&urgencyConfirmed?'qualified_conversation':'discover_before_offer',
+    discoveryGuardrail:'engagement_is_interest_not_confirmed_need'
+  };
+}
+
 function awarenessStage(opportunity={}){
   const explicit=String(opportunity.awarenessStage||'').toUpperCase();
   if(AWARENESS_STAGES.includes(explicit))return explicit;
@@ -94,10 +117,12 @@ function stableIndex(value,length){
 
 export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=''}={}){
   const identity=`${seed}:${opportunity.topic||''}:${opportunity.pain||''}:${mode}`;
+  const discovery=needDiscoveryLayer(opportunity);
   if(channel==='linkedin_personal'){
     return {
       channel,
       mode,
+      ...discovery,
       ...buildActivationLayer(identity,opportunity,channel),
       textType:'observational_business_standup',
       format:'text_story',
@@ -117,6 +142,7 @@ export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=
     return {
       channel,
       mode,
+      ...discovery,
       ...buildActivationLayer(identity,opportunity,channel),
       textType:'search_demand_to_problem_activation',
       format:'seo_article',
@@ -133,6 +159,7 @@ export function buildCreativeRecipe({channel,opportunity={},mode='EXPLORE',seed=
   return {
     channel:channel||'linkedin_company',
     mode,
+    ...discovery,
     ...buildActivationLayer(identity,opportunity,channel||'linkedin_company'),
     textType:'proof_led_business_education',
     format:COMPANY_FORMATS[stableIndex(identity,COMPANY_FORMATS.length)],

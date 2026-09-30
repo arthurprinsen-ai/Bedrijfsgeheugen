@@ -121,6 +121,14 @@ Deno.serve(async(req:Request)=>{
     const apiKey=await secret(db,'COMPOSIO_API_KEY');
     if(!apiKey)throw new Error('COMPOSIO_API_KEY_MISSING');
     const accountId=await resolveGmail(db,apiKey);
+    const {error:needDiscoveryError}=await db.rpc('powerhouse_apply_need_discovery_v1');
+    if(needDiscoveryError && clean(needDiscoveryError.code)!=='PGRST202'){
+      await db.from('bg_gezondheid').insert({
+        gemeten_op:now,onderdeel:'powerhouse-need-discovery',soort:'commercial-decision',
+        status:'waarschuwing',detail:'Need-discovery enrichment unavailable; direct send remains evidence-bounded.',
+        gegevens:{contract:'powerhouse-need-discovery-v1',error:clean(needDiscoveryError.message).slice(0,300)}
+      });
+    }
 
     const {data:actions,error}=await db.from('powerhouse_sales_actions')
       .select('action_id,dedupe_key,person_key,company_key,person_name,company_name,message_draft,evidence,status,priority')

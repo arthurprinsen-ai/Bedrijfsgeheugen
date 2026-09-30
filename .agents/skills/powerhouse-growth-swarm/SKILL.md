@@ -242,3 +242,26 @@ Verplicht:
 Fingerprint: `powerhouse-source-backed-all-channels-v1`.
 
 Growth Swarm routes the same evidence spine into channel-native actions: company LinkedIn and blog from market/problem evidence; email and LinkedIn DM only from account/person-relevant triggers plus relationship context; personal LinkedIn from public topic evidence only when identity/truth gates permit; Instagram from public daily-life friction. Every send/post preserves source lineage and returns reply, engagement, lead, order and revenue outcomes to prioritization.
+
+## Value-asset comment funnel (2026-09-30)
+
+Fingerprint: `powerhouse-value-asset-comment-funnel-v1`.
+
+Powerhouse treats useful free assets as revenue plays, not vanity engagement:
+public signal/research -> high-utility asset -> single-language LinkedIn post -> comment-intent token -> canonical DM delivery -> relationship enrichment -> qualified follow-up -> meeting/proposal/order -> realized revenue -> learning.
+
+Preferred asset classes:
+- numbered practical playbooks/checklists;
+- automation/use-case libraries;
+- ROI/cost calculators;
+- benchmarks/scorecards;
+- prediction/foresight briefs;
+- governance/privacy/risk guides;
+- role/department AI stacks and decision maps.
+
+Hard rules:
+- solve a concrete user problem before selling the portal;
+- every asset may carry a subtle portal/scan path, but the post remains value-first;
+- comments are not the success metric; qualified conversations, meetings, proposals, orders and revenue are;
+- all new asset/post families pass global historical semantic dedupe;
+- campaign learning re-scores audience, hook, language, keyword, completion, reply and revenue outcome.

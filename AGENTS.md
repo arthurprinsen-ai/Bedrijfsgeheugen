@@ -982,3 +982,25 @@ All current and future chats, agents, SEO/content/website nodes inherit:
 - every commercial/support SEO change declares a conversion destination and measures through paid order and realized revenue;
 - production builds run SEO apply + validate before static locale generation and regenerate sitemap from final localized HTML;
 - missing English metadata, locale-link leakage, hreflang failure, orphan revenue pages, keyword collisions or missing conversion destination are release-blocking.
+
+## Lead-magnet operating contract — value first, revenue closed loop
+
+Fingerprint: `powerhouse-lead-magnet-operating-contract-v1`.
+
+Every current and future chat/agent that creates a free guide, PDF, calculator, checklist, benchmark, prediction brief or other value asset for Bedrijfsgeheugen must:
+- design around a concrete user job-to-be-done, not around explaining the portal;
+- create NL and EN asset variants when both markets are targeted, while keeping one language per LinkedIn post;
+- never reuse a post story/angle solely by translating it;
+- use a short intent token in comments and record it as a canonical commercial signal;
+- deliver through the canonical LinkedIn/DM authority after live capability proof;
+- write post -> comment -> asset delivery -> reply -> meeting -> proposal -> order -> realized revenue into the shared Powerhouse loop;
+- treat predictions as sourced directional foresight with uncertainty;
+- optimize from qualified-commercial outcomes, not likes/comments alone;
+- prefer a portfolio of genuinely different utility assets over repeated PDF giveaways with superficial rewrites.
+
+
+## Behoefteanalyse vóór iedere commerciële vervolgstap
+
+Fingerprint: `powerhouse-need-discovery-v1`.
+
+Website, posts, blogs, e-mail, echte LinkedIn-DM, verkoopgesprekken en Portal V2 gebruiken één gedeelde fasering: gewenst resultaat → huidige aanpak → concreet probleem → zakelijke impact → urgentie → gewenste waarde → besluitvorming → vervolgstap. Directe interacties stellen één logische vraag per beurt en leggen het antwoord vast in de woorden van de klant. Likes, kliks, opens en algemene engagement bevestigen geen probleem, impact, urgentie, budget of koopintentie. Een aanbod mag pas worden gekozen wanneer probleem, impact en urgentie expliciet zijn bevestigd. Alle uitkomsten lopen terug via reply → gesprek → scan → voorstel → betaalde order → gerealiseerde omzet → learning. Canonieke skill: `.agents/skills/powerhouse-need-discovery/SKILL.md`.

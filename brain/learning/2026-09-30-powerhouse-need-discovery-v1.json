@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse-need-discovery-v1",
+  "date": "2026-09-30",
+  "problem": "Commercial messages could choose persuasion and channel without first maintaining a shared, explicit customer-need state.",
+  "root_cause": "Interest signals, trigger evidence and buyer-confirmed need were represented in separate layers, so a click or public signal could advance messaging without a consistent discovery stage.",
+  "change": [
+    "Added one shared need-discovery engine and contract",
+    "Added website progressive capture",
+    "Added database event/profile and prepared-action enrichment",
+    "Applied the next-question function immediately before autonomous email selection",
+    "Added post/blog discovery objectives",
+    "Added Portal V2 Sales Intelligence projection",
+    "Added agent skill and universal contract"
+  ],
+  "prevention": "No commercial node may treat engagement as a confirmed need. Offer eligibility requires buyer-confirmed problem, impact and urgency.",
+  "outcome_path": [
+    "reply",
+    "confirmed_problem",
+    "confirmed_impact",
+    "qualified_conversation",
+    "meeting",
+    "scan",
+    "proposal",
+    "paid_order",
+    "realized_revenue"
+  ],
+  "compiler": {
+    "failure_class": "commercial_need_state_fragmentation",
+    "scope": "COMMERCIAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-need-discovery-v1.test.mjs"
+    ]
+  }
+}
