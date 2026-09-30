@@ -1,0 +1,39 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "status": "ACTIVE",
+  "date": "2026-09-30",
+  "fingerprint": "website|i18n|explicit-language-option-navigation|v1",
+  "compiler": {
+    "failure_class": "PUBLIC_LOCALE_CLICK_NAVIGATION_TIMEOUT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "signal": "Exact-main production was READY and affected route readback passed, but the click-driven NL→EN production canary timed out waiting for /en/prijzen.",
+  "root_cause": "The public language-option handler persisted locale state but deliberately left navigation to the browser's default anchor behavior. In the mobile navigation surface, other delegated menu handlers can tear down/close the menu during the same click, so default navigation was not a deterministic transition owner.",
+  "fix": "Intercept every supported language-option click and route it through the canonical setLocale(target) owner. Public setLocale explicitly performs location.assign(localizedHref(target)); portal behavior remains in-place translation. Semantic hrefs remain for no-JS/SEO.",
+  "evidence": {
+    "production_sha": "94c6474bd511e3031e3603f4c773777e94e3ea56",
+    "production_deploy": "6abcd140f1058f000872d54a",
+    "production_readback_run": 36694042477,
+    "failed_canary": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "failed_step": "Verify pricing interactions and English route in production"
+  },
+  "prevention": [
+    "One executable owner for language-option navigation.",
+    "Never depend on default anchor navigation after a delegated mobile-menu click.",
+    "Retain real hrefs for semantics/no-JS while JS uses explicit locale transition ownership.",
+    "Production closure requires real-control click NL→EN→NL readback."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-persistent-navigation-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
+    "production_readback_required": true
+  }
+}

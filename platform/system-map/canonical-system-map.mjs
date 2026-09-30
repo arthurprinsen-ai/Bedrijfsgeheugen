@@ -936,6 +936,15 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       sameRouteInvariant:'/x <-> /en/x; / <-> /en/',
       buildAuthority:Object.freeze(['tools/site-shell/apply-i18n.mjs','tools/site-shell/build-localized-routes.mjs']),
       runtimeGuard:'assets/js/i18n.js',
+      explicitLanguageOptionNavigation:Object.freeze({
+        fingerprint:'website|i18n|explicit-language-option-navigation|v1',
+        runtimeOwner:'assets/js/i18n.js',
+        eventPolicy:'prevent-default-then-setLocale',
+        publicTransition:'setLocale -> location.assign(localizedHref)',
+        semanticHrefRetained:true,
+        defaultAnchorIsRuntimeAuthority:false,
+        productionCanary:'tools/site-shell/verify-pricing-i18n-production.mjs'
+      }),
       cacheRule:'versioned-i18n-assets-required',
       productionAuthority:'netlify-current-deploy-exact-main',
       liveReadback:Object.freeze(['pricing-nl-en-nl','systems-nl-en-nl','html-lang','header-footer-language-state'])

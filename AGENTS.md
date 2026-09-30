@@ -901,3 +901,15 @@ Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales-
 Fingerprint: `website|static-i18n|post-shell-final-string-coverage|v1`.
 
 Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen controleren de Engelse static-i18n authority niet alleen op broncopy maar op de finale post-shell/build-output. Shellprojectie, CRO-finalizers, breadcrumbs, aria-labels en tekstsplitsing kunnen nieuwe exacte strings creëren. `STATIC_I18N_REQUIRE_CACHE=1` blijft fail-closed; runtime translation vervangt geen ontbrekende statische production key. Een i18n-buildfout wordt in dezelfde obligation gerepareerd en opnieuw gepromoveerd tot NL én EN publiek terugleesbaar zijn.
+
+
+## Explicit public language-option navigation
+
+Fingerprint: `website|i18n|explicit-language-option-navigation|v1`.
+
+Voor alle huidige en toekomstige chats/agents geldt aanvullend op de publieke locale-persistentie:
+- een klik op Nederlands/English heeft één runtime-owner: `assets/js/i18n.js`;
+- JavaScript-enabled language controls vertrouwen niet op browser-default anchor navigation; de handler blokkeert de default en routeert via de canonieke `setLocale(...) → location.assign(localizedHref(...))`-keten;
+- het semantische `href` blijft aanwezig voor no-JS/SEO, maar is geen runtime-authority;
+- menu teardown, delegated handlers of dynamische shellmutaties mogen een taalkeuze nooit annuleren;
+- terminal bewijs blijft click-driven: echte language control → URL-wijziging → `html[lang]` → cross-page locale-persistentie → terugschakelen.
