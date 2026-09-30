@@ -109,14 +109,14 @@ function upsertNamedMetaHtml(html,name,value){
   if(!value) return html;
   const escapedName=regexEscape(name);
   const tag='<meta name="'+htmlEscapeAttr(name)+'" content="'+htmlEscapeAttr(value)+'">';
-  const re=new RegExp('<meta\\\\b(?=[^>]*\\\\bname=(?:"'+escapedName+'"|\\''+escapedName+'\\'))[^>]*>','i');
+  const re=new RegExp('<meta\\b(?=[^>]*\\bname="'+escapedName+'")[^>]*>','i');
   return re.test(html) ? html.replace(re,tag) : html.replace(/<\/head>/i,tag+'\\n</head>');
 }
 function upsertPropertyMetaHtml(html,property,value){
   if(!value) return html;
   const escaped=regexEscape(property);
   const tag='<meta property="'+htmlEscapeAttr(property)+'" content="'+htmlEscapeAttr(value)+'">';
-  const re=new RegExp('<meta\\\\b(?=[^>]*\\\\bproperty=(?:"'+escaped+'"|\\''+escaped+'\\'))[^>]*>','i');
+  const re=new RegExp('<meta\\b(?=[^>]*\\bproperty="'+escaped+'")[^>]*>','i');
   return re.test(html) ? html.replace(re,tag) : html.replace(/<\/head>/i,tag+'\\n</head>');
 }
 function setBodyDataAttr(html,name,value){
@@ -124,7 +124,7 @@ function setBodyDataAttr(html,name,value){
   const escapedName=regexEscape(name);
   const attrText=name+'="'+htmlEscapeAttr(value)+'"';
   return html.replace(/<body\b([^>]*)>/i,(full,attrs)=>{
-    const re=new RegExp('\\\\s'+escapedName+'=(?:"[^"]*"|\\'[^\\']*\\')','i');
+    const re=new RegExp('\\s'+escapedName+'="[^"]*"','i');
     const next=re.test(attrs) ? attrs.replace(re,' '+attrText) : attrs+' '+attrText;
     return '<body'+next+'>';
   });
