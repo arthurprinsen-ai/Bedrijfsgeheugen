@@ -24,3 +24,9 @@ test('portal and technical endpoints stay outside public locale rewriting', () =
   assert.match(source,/'\/api\/'/);
   assert.match(source,/'\/assets\/'/);
 });
+
+
+test('public language-option clicks explicitly navigate after mobile menu close', () => {
+  const source = fs.readFileSync(runtime,'utf8');
+  assert.match(source,/event\.preventDefault\(\);\s*const href = option\.getAttribute\('href'\) \|\| localizedHref\(target\);\s*closeMenus\(\);\s*location\.assign\(href\);/s);
+});
