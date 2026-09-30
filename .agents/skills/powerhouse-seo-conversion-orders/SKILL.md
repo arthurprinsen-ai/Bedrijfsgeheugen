@@ -176,3 +176,18 @@ SEO/CRO-regels:
 - meet minimaal resultaat, Mini-engagement, challenge-share, challenge-complete, checkout-start, paid order en realized revenue;
 - optimalisatie mag de privacy-safe challenge payload of local-only Mini-opslag niet verruimen met PII;
 - een copy/layout-experiment is alleen winnaar wanneer downstream gekwalificeerde order/revenue evidence dit ondersteunt; meer formulierstarts alleen is onvoldoende.
+
+
+## Company Brain category capture — 30 september 2026
+Fingerprint: `seo|company-brain|category-capture-to-revenue|v1`.
+
+`Company Brain` is een aparte categorie-/zoekintentie en wordt canoniek bediend door `/company-brain`. Het is **geen hernoeming van Bedrijfsgeheugen** en mag geen parallel product of tweede funnel worden.
+
+Vaste positionering:
+- categorieclaim: **Een Company Brain is waar Bedrijfsgeheugen begint.**
+- onderscheid: Company Brain = gedeelde kennis/context; Bedrijfsgeheugen = context + signalen + impact + beslissing + actie + resultaat + leren;
+- merkbelofte blijft: **Uit hoofden, in je bedrijf. En dan werkend.**
+- productprincipe: **Weten → Zien → Begrijpen → Doen → Leren.**
+- Powerhouse is de onderliggende intelligence- en uitvoeringsmotor, niet het klantmerk dat de Company-Brain-categorie moet vervangen.
+
+De route is een acquisitielaag bovenop de bestaande Bedrijfslek-/Frisse-Blik-keten. Meet tot `paid_order` en `realized_revenue`; verkeer, ranking, clicks en scans zijn alleen tussenmetrics. Search Console/DataForSEO en echte conversie-uitkomsten bepalen toekomstige copy/CRO-wijzigingen. Geen duplicate Company-Brain-pagina's zolang deze canonical owner bestaat.

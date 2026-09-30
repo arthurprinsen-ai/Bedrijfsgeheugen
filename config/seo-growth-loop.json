@@ -257,6 +257,21 @@
       ],
       "transient_ci_or_tool_failure_is_recovery_not_rejection": true,
       "operator_output": "executed change plus production/readback state, or evidence-backed non-execution reason"
+    },
+    "category_capture": {
+      "company_brain": {
+        "fingerprint": "seo|company-brain|category-capture-to-revenue|v1",
+        "canonical_owner": "https://www.bedrijfsgeheugen.nl/company-brain",
+        "brand_positioning": "Een Company Brain is waar Bedrijfsgeheugen begint.",
+        "product_rename_forbidden": true,
+        "category_role": "acquisition-entry",
+        "conversion_route": "https://www.bedrijfsgeheugen.nl/zelfscan",
+        "terminal_outcomes": [
+          "paid_order",
+          "realized_revenue"
+        ],
+        "evidence_policy": "measure search, engagement, selfscan progression, qualified lead, proposal, paid order and realized revenue; do not infer demand or revenue from traffic alone"
+      }
     }
   },
   "failure_policy": {
