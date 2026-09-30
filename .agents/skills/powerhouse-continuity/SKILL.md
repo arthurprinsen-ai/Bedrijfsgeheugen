@@ -1517,3 +1517,13 @@ Mandatory:
 - after interruption, resume from the checkpoint automatically without requiring “ga door”.
 
 The user-facing terminal states remain `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`. A pending workflow is never terminal.
+
+## Persistent public locale navigation
+
+Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+
+All chats and agents that touch the public website inherit this rule automatically: once the visitor selects English, every eligible same-origin public navigation target must remain under the equivalent `/en/*` route until the visitor explicitly switches back to Dutch. Dutch uses the unprefixed canonical route. Preserve query/hash, normalize links created after load, and exclude portal/customer-portal plus technical/API/assets/functions paths. Never accept “the current page translated correctly” as proof; cross-page navigation through the real menu must be part of terminal browser readback.
+
+Canonical runtime: `assets/js/i18n.js`.
+Regression: `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
+Learning: `brain/learning/2026-09-30-public-i18n-persistent-navigation-v1.json`.

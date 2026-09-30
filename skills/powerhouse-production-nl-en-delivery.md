@@ -32,3 +32,19 @@ A language change is not LIVE_BEWEZEN until all applicable checks are true:
 
 ## Queue discipline
 Production snapshot work is coalesced to the latest canonical main candidate. Do not create parallel deploy lineages for the same obligation. A stale or obsolete candidate must not outrank the current protected main.
+
+## Persistent locale navigation
+
+Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+
+The selected public-site locale is a session-wide navigation invariant, not a page-local toggle.
+
+- English public state means every eligible same-origin public page link resolves to the equivalent `/en/*` route.
+- Dutch public state means every eligible same-origin public page link resolves to the unprefixed Dutch route.
+- Query strings and hashes are preserved.
+- Portal/klantportaal routes and technical paths such as `/api/`, `/.netlify/`, `/assets/` and `/functions/` are excluded.
+- Dynamically inserted menu/navigation links must be normalized as well as the initial DOM.
+- A visible English selector followed by a Dutch destination is a release-blocking i18n regression.
+- Regression authority: `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
+- Runtime guard: `assets/js/i18n.js`.
+- Terminal proof must include selecting English, navigating to another public page through the actual menu/link surface, observing English there, then switching back to Dutch and navigating again.
