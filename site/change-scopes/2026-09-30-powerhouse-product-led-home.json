@@ -1,0 +1,18 @@
+{
+  "routes": [
+    "/"
+  ],
+  "change_class": "approved-content-change",
+  "preserve": [
+    "seo",
+    "navigation",
+    "required-anchors",
+    "assets",
+    "analytics",
+    "security",
+    "portal",
+    "brain"
+  ],
+  "reason": "Make the existing Powerhouse platform immediately understandable as one scalable product with three product lines, while preserving existing routes, SEO, navigation, analytics and the portal.",
+  "approved_baseline": "site/accepted-baseline.json"
+}
