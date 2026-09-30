@@ -3,7 +3,7 @@ import { GLOBAL_COMPONENTS, componentHash, verifyPageShell } from './contracts.m
 import { readReleaseMarker } from './release-marker.mjs';
 
 const TRUST = ['Vaste prijs, geen uurtje-factuurtje', 'In twee weken draaiend', 'Voor het Nederlandse mkb'];
-const MOBILE = ['Oplossingen', 'Koppelingen', 'Kennis', 'Het bedrijfsgeheugen'];
+const MOBILE = ['Oplossingen', 'Platform', 'Prijzen', 'Kennis', 'Over ons', 'Meer'];
 const CONTACT = ['mailto:arthur@bedrijfsgeheugen.nl', 'tel:+31627483345', 'ma–vr 08:00–18:00'];
 const PRICING = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'];
 

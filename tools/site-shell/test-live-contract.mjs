@@ -3,7 +3,7 @@ import { ensureReleaseMarker, readReleaseMarker } from './release-marker.mjs';
 import { verifyLiveSite } from './live-contract.mjs';
 
 const COMMIT = '0123456789abcdef0123456789abcdef01234567';
-const shell = ({ pricing = false, extraBeforeFooter = '', mobile = 'Oplossingen Koppelingen Kennis Het bedrijfsgeheugen' } = {}) => ensureReleaseMarker(`<!doctype html><html><head></head><body>
+const shell = ({ pricing = false, extraBeforeFooter = '', mobile = 'Oplossingen Platform Prijzen Kennis Over ons Meer' } = {}) => ensureReleaseMarker(`<!doctype html><html><head></head><body>
 <div class="bg-uniform-trust" data-bg-component="trustbar">Vaste prijs, geen uurtje-factuurtje · In twee weken draaiend · Voor het Nederlandse mkb</div>
 <header class="v17-header" data-bg-component="header"><nav>hoofdmenu</nav></header>
 <aside class="v18-mobile-drawer" data-bg-component="mobile-menu">${mobile}</aside>
@@ -36,7 +36,7 @@ assert.throws(() => verifyLiveSite({
 assert.throws(() => verifyLiveSite({
   home,
   pricing,
-  content: shell({ mobile: 'Oplossingen Koppelingen Het bedrijfsgeheugen' }),
+  content: shell({ mobile: 'Oplossingen Platform Kennis Over ons Meer' }),
   expectedCommit: COMMIT
 }), /mobiel menu mist/i);
 
