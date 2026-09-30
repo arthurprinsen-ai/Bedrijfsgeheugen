@@ -14,11 +14,14 @@
     "missing_cache_entries": 16,
     "missing_sources_include": [
       "AI Modelwijzer governance copy",
-      "knowledge-retention blog SVG/text labels"
+      "knowledge-retention blog SVG/text labels",
+      "Company Brain category and conversion copy"
     ],
     "rebased_to_latest_main": true,
     "prior_missing_cache_entries": 16,
-    "note": "Recovery is bound to the latest protected main and exact build parity remains the oracle for any additional cache gaps."
+    "note": "Recovery is bound to the latest protected main and exact build parity remains the oracle for any additional cache gaps.",
+    "additional_company_brain_cache_entries": 11,
+    "total_missing_cache_entries_recovered": 27
   },
   "prevention": [
     "Treat static i18n cache completeness as part of production truth.",
