@@ -15,3 +15,7 @@ Materieel werk wordt opgesplitst in begrensde, hervatbare batches. Voor en na ex
 
 ## Grenzen
 Dit kan een netwerk- of appstream-onderbreking zelf niet fysiek uitsluiten. De borging voorkomt dat zo'n onderbreking leidt tot verloren werk, dubbele handelingen of een vergeten obligation.
+
+
+## Systeemkaart-borging
+De capability is geregistreerd als `chat-stream-resilience-v1` in de canonieke Powerhouse System Map. Daarmee is de relatie tussen chats/agents, execution-resilience, continuity-skill, checkpoints, readback en terminal outcome expliciet discoverable voor volgende nodes en control surfaces.

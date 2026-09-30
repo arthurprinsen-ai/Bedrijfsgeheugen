@@ -224,3 +224,17 @@ Governance invariants:
 - no second CRM, lead store, outcome store or learning loop is introduced.
 
 The capability is structurally registered in the canonical System Map. Production status remains evidence-gated by protected merge, exact-main Netlify deployment and public functional readback.
+
+
+## Chat & Agent Stream Resilience
+
+Fingerprint: `powerhouse|chat-stream-resilience|bounded-checkpointed-resume|v1`.
+
+De Systeemkaart bevat `chat-stream-resilience-v1` als actieve reliability-capability. Deze capability verbindt:
+`chat/agent obligation → bounded execution batch → canonical checkpoint → provider/repository side effect → readback → remaining-delta resume → terminal outcome`.
+
+Alle chats en agents erven dit automatisch via `AGENTS.md`, `config/powerhouse-execution-resilience-v1.json` en `.agents/skills/powerhouse-continuity/SKILL.md`.
+
+Een UI-, netwerk-, tool- of modelstream-onderbreking verandert geen task ownership. De volgende capabele node leest het laatste bewezen checkpoint, controleert onzekere side-effects vóór replay en hervat alleen wat nog ontbreekt. Een gebruiker hoeft de opdracht of `ga door` niet opnieuw te geven.
+
+Control surfaces/charts die execution health tonen, mogen een stream-interruption daarom niet als terminal failure of task completion projecteren; de canonieke toestand blijft `RECOVERY_REQUIRED` totdat outcome of harde grens is bewezen.

@@ -23,3 +23,13 @@ test('stream loss never requires blind replay or user continue',()=>{
   assert.match(contract.chat_stream_resilience?.requirements?.join(' ')||'',/do not require the user to repeat continue/i);
   assert.match(skill,/read back uncertain side effects before replay/i);
 });
+
+
+test('System Map exposes stream resilience as a canonical Powerhouse capability',async()=>{
+  const map=await readFile('platform/system-map/canonical-system-map.mjs','utf8');
+  const docs=await readFile('docs/powerhouse/POWERHOUSE_SYSTEM_MAP_GOVERNANCE.md','utf8');
+  assert.match(map,/id:'chat-stream-resilience-v1'/);
+  assert.match(map,/continuousChatStreamNotRequired:true/);
+  assert.match(map,/readbackBeforeReplayAfterInterruption:true/);
+  assert.match(docs,/Chat & Agent Stream Resilience/);
+});
