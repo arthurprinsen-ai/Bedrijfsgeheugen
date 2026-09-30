@@ -1,0 +1,16 @@
+{
+  "event_id": "2026-09-30-chat-stream-resilience-bounded-checkpoint-v1",
+  "event_type": "CONTRACT_CHANGE",
+  "observed_at": "2026-09-30T11:09:00+02:00",
+  "fingerprint": "powerhouse|chat-stream-resilience|bounded-checkpointed-resume|v1",
+  "summary": "Bound material chat/agent execution into resumable checkpointed batches and require readback-before-replay after stream interruption.",
+  "status": "CANDIDATE",
+  "scopes": [
+    "agents",
+    "chats",
+    "Powerhouse Brain",
+    "continuity skill",
+    "execution resilience"
+  ],
+  "prevention": "continuous UI streaming is never required for task ownership or completion"
+}

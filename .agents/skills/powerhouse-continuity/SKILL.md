@@ -1502,18 +1502,18 @@ Voor iedere nieuwe of gewijzigde publieke copy geldt:
 - een Netlify build failure door ontbrekende finale vertaalkeys is recovery-input; dezelfde owner houdt de obligation tot exact-main production + NL/EN public readback groen zijn.
 
 
-## Async workflow continuation
+## Bounded chat-stream execution
 
-Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
+Fingerprint: `powerhouse|chat-stream-resilience|bounded-checkpointed-resume|v1`.
 
-A remote GitHub Actions, Netlify, Supabase, CodeQL or provider job in `queued`, `pending`, `waiting`, `requested` or `in_progress` state is never permission to stop working or hand the task back to the user.
+For any material multi-step chat/agent run:
+- split execution into bounded idempotent batches;
+- persist a canonical checkpoint before/after material provider or repository side effects;
+- never depend on one continuous response stream to retain task ownership;
+- after `Streaming onderbroken`, reconnect, timeout or model interruption, resume from the last verified checkpoint;
+- always read back uncertain side effects before replay;
+- never ask the user to repeat `ga door` merely because the UI stream broke;
+- keep user-visible progress short and separate from internal CI/provider polling;
+- the terminal response remains outcome-based, not stream-based.
 
-Mandatory:
-- persist a resumable checkpoint before waiting: obligation, exact candidate/head, current main epoch, open gates and next safe action;
-- continue independent work while the remote gate runs;
-- never start a duplicate required run for the same exact head when one is already active;
-- newer main supersedes stale reversible production snapshot/readback work;
-- polling is always bounded by a hard timeout;
-- after interruption, resume from the checkpoint automatically without requiring “ga door”.
-
-The user-facing terminal states remain `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`. A pending workflow is never terminal.
+This is an execution-resilience rule, not a UI guarantee: platform/network interruptions may still occur, but they must not cause lost obligations, duplicate work or restart-from-zero behavior.

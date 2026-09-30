@@ -1,0 +1,24 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-09-30",
+  "fingerprint": "powerhouse|chat-stream-resilience|bounded-checkpointed-resume|v1",
+  "problem": "A long-running chat showed 'Streaming onderbroken. Wachten op het volledige bericht…', making it appear that execution had stopped and risking loss of continuity.",
+  "root_cause": "Material work could span too much uninterrupted chat/tool execution without a user-visible terminal outcome and without sufficiently frequent canonical checkpoints.",
+  "prevention": [
+    "execute material work in bounded resumable batches",
+    "checkpoint before and after material external side effects",
+    "read back uncertain side effects before replay after a stream break",
+    "resume from canonical state without requiring the user to say continue again",
+    "separate compact user-facing progress from internal CI/provider polling"
+  ],
+  "applies_to": [
+    "all_current_and_future_chats",
+    "all_current_and_future_agents",
+    "all_material_workflows"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md"
+  ],
+  "machine_contract": "config/powerhouse-execution-resilience-v1.json"
+}

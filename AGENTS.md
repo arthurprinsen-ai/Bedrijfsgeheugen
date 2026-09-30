@@ -135,32 +135,15 @@ Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
 
 
-## Async continuation — workflows mogen een agent nooit laten wachten
-
-Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
-
-Voor alle huidige en toekomstige chats, agents en delivery-nodes geldt aanvullend:
-- een GitHub Actions-run, Netlify-build, Supabase-job, CodeQL-analyse of andere externe workflow met status `queued`, `pending`, `waiting`, `requested` of `in_progress` is **nooit** een reden om de agent in chat te laten wachten of de uitvoering te laten eindigen;
-- vóór iedere remote write wordt fan-out voorspeld; writes voor één obligation worden gebundeld zodat één head zo weinig mogelijk workflows triggert;
-- exact dezelfde head krijgt maximaal één actieve run per verplichte workflow; duplicaten worden niet opnieuw gedispatched;
-- nieuwere `main` supersedeert oudere nog niet terminale productie-snapshot/readback runs wanneer die oudere run geen unieke onomkeerbare side-effect meer hoeft af te ronden;
-- lange provider-polls hebben een harde timeout en leveren daarna een herstelbare state op; geen onbegrensd pollen of wachten;
-- de agent bewaart een checkpoint met obligation, exacte candidate/head, huidige main, open gates en eerstvolgende herstelactie zodat een volgende execution-node direct kan hervatten;
-- tijdens remote wachttijd gaat de owner door met werk dat niet van die gate afhangt;
-- een status als `pending` of `in_progress` is interne uitvoeringsstaat en wordt niet als gebruikersuitkomst gerapporteerd;
-- wanneer meerdere agents tegelijk bouwen, blijft één obligation één executable candidate houden.
-
-Operationeel doel: **geen chat of agent mag nog “blijven hangen” op een workflowjob**.
-
 ## GitHub Actions queue-pressure governor — verplicht vóór repositorymutaties
 
 Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
 
 Iedere chat, agent, workflow en recovery-node leest vóór een materiële GitHub-write, commitreeks, workflow-dispatch, retry, reconcile of recoveryactie de actuele Actions-druk én voorspelt hoeveel nieuwe runs de actie kan veroorzaken.
 
-- soft pressure: 8 actieve of 5 queued runs; geen optionele workflows, writes bundelen en exact-head werk hergebruiken;
-- hard circuit: 12 actieve of 8 queued runs; geen nieuw recovery- of optioneel CI-werk;
-- maximaal 3 voorspelde nieuwe runs per actie; boven dat budget eerst scope verkleinen, bundelen of fan-out verwijderen;
+- soft pressure: 12 actieve of 10 queued runs; geen optionele workflows, writes bundelen en exact-head werk hergebruiken;
+- hard circuit: 20 actieve of 20 queued runs; geen nieuw recovery- of optioneel CI-werk;
+- maximaal 6 voorspelde nieuwe runs per actie; boven dat budget eerst scope verkleinen, bundelen of fan-out verwijderen;
 - één obligation = één canonieke executable PR; queue/cancel/main-drift is nooit reden voor een duplicate PR;
 - één PR/head krijgt nooit bewust een tweede actieve Required- of BRAIN-run;
 - borging/documentatie/learning/skill-writes van één obligation worden waar veilig vóór remote CI gebundeld;
@@ -901,3 +884,20 @@ Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales-
 Fingerprint: `website|static-i18n|post-shell-final-string-coverage|v1`.
 
 Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen controleren de Engelse static-i18n authority niet alleen op broncopy maar op de finale post-shell/build-output. Shellprojectie, CRO-finalizers, breadcrumbs, aria-labels en tekstsplitsing kunnen nieuwe exacte strings creëren. `STATIC_I18N_REQUIRE_CACHE=1` blijft fail-closed; runtime translation vervangt geen ontbrekende statische production key. Een i18n-buildfout wordt in dezelfde obligation gerepareerd en opnieuw gepromoveerd tot NL én EN publiek terugleesbaar zijn.
+
+
+## Chat/stream-resilience — geen verloren uitvoering
+
+Fingerprint: `powerhouse|chat-stream-resilience|bounded-checkpointed-resume|v1`.
+
+Voor alle huidige en toekomstige chats/agents geldt bij materieel werk:
+- voer lange taken uit in **begrensde, hervatbare stappen** in plaats van één lange ononderbroken uitvoeringsfase;
+- schrijf vóór en na iedere materiële externe side-effect een canoniek checkpoint met obligation/candidate, reeds bewezen side-effects en eerstvolgende veilige stap;
+- voorkom lange stille toolketens: bundel alleen stappen die atomair bij elkaar horen; checkpoint daarna voordat de volgende batch start;
+- behandel client/UI-signalen zoals `Streaming onderbroken`, netwerkverlies, model-/tool-timeout of sessieonderbreking nooit als annulering of completion;
+- bij hervatting: lees eerst het laatste checkpoint en provider/readback-evidence, dedupe reeds uitgevoerde side-effects en voer alleen het resterende delta uit;
+- de gebruiker hoeft niet opnieuw `ga door`, `zet live`, `borg` of dezelfde opdracht te sturen;
+- als de UI-stream wegvalt terwijl de backend-side-effect mogelijk al is uitgevoerd, is **readback vóór replay** verplicht om duplicaten te voorkomen;
+- user-facing voortgang blijft compact; technische polling/CI-details worden niet gestreamd als chatlog. De terminale uitkomst volgt zodra bewijs compleet is.
+
+Doel: een chatstream mag wegvallen, maar de obligation en uitvoeringsstaat niet.
