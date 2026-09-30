@@ -102,3 +102,9 @@ Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
 Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
 
 De System Map moet de publieke website als één control surface modelleren: `canonicalWebsiteChrome` + `publicLocaleAuthority`. Relaties omvatten site-shell → header/footer/megamenu/navigation → localized-route builder → versioned i18n runtime → Netlify production → live browser readback. Elke structurele wijziging aan deze keten vereist dezelfde-lineage System Map writeback.
+
+## Locale persistence relationship
+
+Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+
+The canonical System Map relation for public localization is now explicit: selected locale → public link normalizer → same-route locale URL → page navigation → locale-preserving dynamic menu links → Netlify production → browser roundtrip evidence. Any change to public navigation, menu generation or i18n runtime must preserve this relation and update the System Map in the same lineage when the relation changes.
