@@ -901,3 +901,14 @@ Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales-
 Fingerprint: `website|static-i18n|post-shell-final-string-coverage|v1`.
 
 Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen controleren de Engelse static-i18n authority niet alleen op broncopy maar op de finale post-shell/build-output. Shellprojectie, CRO-finalizers, breadcrumbs, aria-labels en tekstsplitsing kunnen nieuwe exacte strings creëren. `STATIC_I18N_REQUIRE_CACHE=1` blijft fail-closed; runtime translation vervangt geen ontbrekende statische production key. Een i18n-buildfout wordt in dezelfde obligation gerepareerd en opnieuw gepromoveerd tot NL én EN publiek terugleesbaar zijn.
+
+
+## Explicit public locale navigation — inherited
+Fingerprint: `website|i18n|explicit-public-locale-navigation|v2`.
+
+Voor alle huidige en toekomstige chats/agents geldt aanvullend:
+- publieke taalkeuze mag niet vertrouwen op browser-default-navigatie nadat een mobiel/menu-control zichzelf sluit;
+- een klik op `[data-bg-language-option]` buiten portalroutes voert expliciet `location.assign(href)` uit naar de canonieke locale-route;
+- de actieve locale blijft sitebreed persistent; English gebruikt `/en/*`, Nederlands onprefixte canonieke routes;
+- terminale i18n-proof vereist een echte browserroundtrip NL → EN → NL op productie, inclusief navigatie naar een andere publieke pagina;
+- een timeout op de locale-switch is een runtime-interactiedefect, niet een Netlify-transportdefect.
