@@ -10,3 +10,4 @@
 - Confirmed root cause: `apply-product-led-home.mjs` referenced retired `prototype-v18-stable.html`; canonical premerge parity omitted the product-led step and therefore missed the Netlify failure.
 - Fix: target only `index.html`, use full canonical URLs, and execute the product-led step in Required test premerge build parity.
 - Delivery refresh: final seven-path promotion scope published before terminal CI.
+- Final candidate refresh: canonical Brain regression path is now classified and included in the seven-path scope.
