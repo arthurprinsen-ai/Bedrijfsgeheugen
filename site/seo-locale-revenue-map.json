@@ -14,6 +14,10 @@
     "en_secondary": {
       "country": "United Kingdom",
       "language": "en"
+    },
+    "en_tertiary": {
+      "country": "United States",
+      "language": "en"
     }
   },
   "measured_keyword_evidence": [
@@ -97,6 +101,43 @@
       "cpc_eur": 13.28,
       "competition": "LOW",
       "measured_at": "2026-09-30"
+    },
+    {
+      "keyword": "ai model comparison",
+      "locale": "en",
+      "market": "United States",
+      "search_volume": 1300,
+      "cpc_eur": 5.8,
+      "competition": "LOW",
+      "measured_at": "2026-09-30"
+    },
+    {
+      "keyword": "ai governance",
+      "locale": "en",
+      "market": "United States",
+      "search_volume": 5400,
+      "cpc_eur": 36.6,
+      "competition": "MEDIUM",
+      "measured_at": "2026-09-30"
+    },
+    {
+      "keyword": "company brain",
+      "locale": "en",
+      "market": "United States",
+      "search_volume": 210,
+      "cpc_eur": 9.98,
+      "competition": "LOW",
+      "measured_at": "2026-09-30"
+    },
+    {
+      "keyword": "sovereign ai",
+      "locale": "en",
+      "market": "United States",
+      "search_volume": 27100,
+      "cpc_eur": 13.78,
+      "competition": "LOW",
+      "measured_at": "2026-09-30",
+      "note": "highly volatile 2026 monthly series; use SERP-intent evidence before scaling"
     }
   ],
   "pages": [
@@ -232,7 +273,8 @@
           "enterprise AI adoption"
         ],
         "title": "AI Adoption for SMEs | Bedrijfsgeheugen",
-        "description": "Move from isolated AI experiments to practical adoption with governance, use cases, data and measurable business outcomes."
+        "description": "Move from isolated AI experiments to practical adoption with governance, use cases, data and measurable business outcomes.",
+        "h1": "AI adoption for SMEs"
       }
     },
     {
@@ -287,7 +329,8 @@
           "enterprise AI governance"
         ],
         "title": "AI Governance for SMEs | Bedrijfsgeheugen",
-        "description": "Set practical AI governance for models, data, risk, accountability, EU AI Act obligations and production use."
+        "description": "Set practical AI governance for models, data, risk, accountability, EU AI Act obligations and production use.",
+        "h1": "AI governance for business"
       }
     },
     {
@@ -314,7 +357,8 @@
           "AI rollout for SMEs"
         ],
         "title": "AI Implementation for SMEs | Bedrijfsgeheugen",
-        "description": "Implement AI around real business outcomes with the right models, data, governance, workflows and adoption."
+        "description": "Implement AI around real business outcomes with the right models, data, governance, workflows and adoption.",
+        "h1": "AI implementation for SMEs"
       }
     },
     {
@@ -343,7 +387,8 @@
           "compare AI models"
         ],
         "title": "AI Model Comparison & Selector for Business | Bedrijfsgeheugen",
-        "description": "Compare 110 AI models by business goal, quality, cost, speed, privacy, governance and data sovereignty. No technical knowledge required."
+        "description": "Compare 110 AI models by business goal, quality, cost, speed, privacy, governance and data sovereignty. No technical knowledge required.",
+        "h1": "AI model comparison for business"
       }
     },
     {
@@ -505,7 +550,8 @@
           "workflow automation for small business"
         ],
         "title": "Business Process Automation for SMEs | Bedrijfsgeheugen",
-        "description": "Automate repetitive business processes and connect people, systems and AI around measurable outcomes."
+        "description": "Automate repetitive business processes and connect people, systems and AI around measurable outcomes.",
+        "h1": "Business process automation for SMEs"
       }
     },
     {
@@ -586,7 +632,8 @@
           "business brain AI"
         ],
         "title": "Company Brain for SMEs | Bedrijfsgeheugen",
-        "description": "Build a shared company brain that connects knowledge, decisions, signals and actions so people and AI work from the same context."
+        "description": "Build a shared company brain that connects knowledge, decisions, signals and actions so people and AI work from the same context.",
+        "h1": "Build a Company Brain for people and AI"
       }
     },
     {
@@ -613,7 +660,8 @@
           "private AI for business"
         ],
         "title": "Sovereign AI & Data Sovereignty for Business | Bedrijfsgeheugen",
-        "description": "Understand where AI data is processed, stored and controlled. Compare sovereign AI, EU residency and customer-controlled deployment options for business."
+        "description": "Understand where AI data is processed, stored and controlled. Compare sovereign AI, EU residency and customer-controlled deployment options for business.",
+        "h1": "Sovereign AI and data sovereignty"
       }
     },
     {
@@ -913,6 +961,22 @@
         "title": "AI Workshop for SMEs & Management Teams | Bedrijfsgeheugen",
         "description": "Turn AI from a broad topic into concrete opportunities, priorities and actions for your management team."
       }
+    }
+  ],
+  "serp_intent_evidence": [
+    {
+      "keyword": "ai model comparison",
+      "market": "United Kingdom",
+      "observed_at": "2026-09-30",
+      "intent": "comparison/tool",
+      "evidence": "Top organic result is a side-by-side model comparison tool; PAA asks how to compare AI models."
+    },
+    {
+      "keyword": "sovereign ai",
+      "market": "United Kingdom",
+      "observed_at": "2026-09-30",
+      "intent": "definition/strategy/infrastructure",
+      "evidence": "SERP and AI overview focus on independent development/deployment/governance, infrastructure, data residency and organizational/national control."
     }
   ]
 }
