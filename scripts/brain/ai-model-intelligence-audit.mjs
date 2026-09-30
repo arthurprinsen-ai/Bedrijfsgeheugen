@@ -31,7 +31,7 @@ const report={
   checked_at:now.toISOString(),
   verified_at:catalog.verified_at,
   stale_after_days:staleAfter,
-  state:(missingSource.length||missingJurisdiction.length||missingVerifiedAt.length||staleModels.length||missingLimitations.length||missingGovernance.length||Object.values(classCoverage).some(v=>!v)||catalog.models.length<80)?'REFRESH_REQUIRED':'FRESH',
+  state:(missingSource.length||missingJurisdiction.length||missingVerifiedAt.length||staleModels.length||missingLimitations.length||missingGovernance.length||Object.values(classCoverage).some(v=>!v)||catalog.models.length<100)?'REFRESH_REQUIRED':'FRESH',
   model_count:catalog.models.length,
   provider_count:providers.length,
   providers,
