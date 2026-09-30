@@ -1517,3 +1517,10 @@ For any material multi-step chat/agent run:
 - the terminal response remains outcome-based, not stream-based.
 
 This is an execution-resilience rule, not a UI guarantee: platform/network interruptions may still occur, but they must not cause lost obligations, duplicate work or restart-from-zero behavior.
+
+
+## Non-blocking remote wait
+
+Fingerprint: `powerhouse|chat-response|nonblocking-remote-wait|v1`.
+
+Do not hold one visible chat turn open while waiting on CI, Netlify, browser regressions or provider polling. Persist a checkpoint, release the response path, and let the next capable run reconcile current state and continue the same obligation. A user-facing “Ga door” action must never be required to preserve task ownership. Platform busy/slow-model UI is transport feedback, not canonical delivery state.
