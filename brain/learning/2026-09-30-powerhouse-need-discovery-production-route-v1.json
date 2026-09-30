@@ -22,5 +22,10 @@
     "canary": [
       "tests/brain-powerhouse-need-discovery-v1.test.mjs"
     ]
-  }
+  },
+  "evidence": [
+    "Pagina- en SEO-controle succeeds with /behoeftecheck registered as a public utility route",
+    "The form page declares noindex,follow and keeps the canonical /behoeftecheck URL",
+    "Exact Netlify production build parity and immutable preview are required before promotion"
+  ]
 }
