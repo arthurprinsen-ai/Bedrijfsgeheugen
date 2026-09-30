@@ -4,17 +4,46 @@
   "observed_at": "2026-09-30T09:10:00+02:00",
   "problem": "Generic AI-model comparison pages are too shallow for business decisions and become stale quickly.",
   "decision": "Create one canonical Model Advisor that combines goal-fit, workload cost, provider lifecycle, provenance, governance and data-sovereignty evidence, and routes optional qualified leads into the existing commercial outcome loop.",
-  "prevention": [
+  "surfaces": [
+    "/ai-modelwijzer",
+    "public.powerhouse_ai_model_registry",
+    "public.powerhouse_ai_model_source_watch",
+    "Powerhouse System Map"
+  ],
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE",
+  "context": "AI model selection must combine workload fit, current provider evidence, price, lifecycle, governance and data sovereignty instead of generic benchmark ranking.",
+  "root_cause": "Generic comparison content becomes stale and can recommend technically strong models that violate workload economics or governance constraints.",
+  "prevention_rules": [
     "UNKNOWN governance is never GREEN",
     "Official source + verification date required for price/lifecycle",
     "No lead gate before useful advice",
     "No parallel CRM or revenue store",
     "Model changes enter as candidates until verified"
   ],
-  "surfaces": [
-    "/ai-modelwijzer",
-    "public.powerhouse_ai_model_registry",
-    "public.powerhouse_ai_model_source_watch",
-    "Powerhouse System Map"
-  ]
+  "skill_targets": [
+    ".agents/skills/powerhouse-ai-model-advisor/SKILL.md"
+  ],
+  "agent_contract_targets": [
+    "AGENTS.md"
+  ],
+  "system_map_target": "platform/system-map/canonical-system-map.mjs",
+  "compiler": {
+    "failure_class": "MODEL_ADVISOR_STALE_OR_UNGOVERNED",
+    "scope": "DECISION_INTELLIGENCE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/ai-modelwijzer-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/ai-modelwijzer-v1.test.mjs"
+    ]
+  },
+  "truth_boundary": "Recommendation scores are workload-fit heuristics; pricing, lifecycle and governance become decision evidence only when backed by current official-source verification."
 }
