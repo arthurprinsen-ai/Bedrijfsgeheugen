@@ -19,3 +19,5 @@ De regel is vastgelegd in AGENTS, continuity skill, NL/EN delivery skill, System
 
 ## Terminal bewijs
 Voor LIVE_BEWEZEN moet productie aantonen: taal kiezen → via de echte navigatie een andere pagina openen → dezelfde taal blijft actief → terugschakelen → opnieuw navigeren → Nederlands blijft actief. Alleen de huidige pagina correct vertalen is niet voldoende.
+
+Canonical recovery lineage: PR #3414 supersedes #3412, #3416 and #3420 for the same obligation.
