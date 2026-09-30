@@ -17,13 +17,8 @@
     "prior_keyword_jaccard_approx": 0.165,
     "overlap_against_smaller_story_approx": 0.372
   },
-  "root_cause": "Historical duplicate detection over-relied on exact/story fingerprints and Jaccard-style similarity. A longer rewrite diluted Jaccard overlap even while a large fraction of the smaller story was reused.",
-  "fix": {
-    "reservation_function": "public.powerhouse_reserve_unique_publication_v1",
-    "database_backstop": "public.powerhouse_publication_story_family_guard_v2",
-    "rule": "Block at >=10 shared meaningful keywords and overlap coefficient >=0.30, in addition to all prior gates.",
-    "action_on_block": "Select a genuinely different verified source/event/topic; never paraphrase the blocked story."
-  },
+  "root_cause": "Historical duplicate detection over-relied on exact/story fingerprints and Jaccard similarity; a longer rewrite diluted Jaccard even while a large fraction of the smaller story was reused.",
+  "fix": "Add a keyword overlap-coefficient gate and a database trigger backstop before any social provider write.",
   "canonical_regression_family": [
     "auto",
     "elektrische schuifdeur",
@@ -43,5 +38,31 @@
     "User-reported semantic duplicates become permanent regression cases.",
     "Daily idempotency is not historical uniqueness.",
     "Application-layer wording changes may never bypass canonical database history."
-  ]
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "SOCIAL_STORY_FAMILY_DUPLICATE_ESCAPE",
+  "problem": "A rewritten personal LinkedIn anecdote reused the same car/sliding-door/airco story and escaped the historical uniqueness gate.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-social-duplicate-prevention-governance-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "SOCIAL_STORY_FAMILY_DUPLICATE_ESCAPE",
+    "scope": "SOCIAL_PUBLICATION_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "linkedin-composio-publisher",
+    "personal-linkedin-life-only",
+    "powerhouse-continuity"
+  ],
+  "governance": {
+    "all_chats_agents_inherit": true,
+    "database_backstop_required": true,
+    "same_story_rewrite_is_duplicate": true,
+    "user_reported_duplicate_is_negative_evidence": true
+  }
 }
