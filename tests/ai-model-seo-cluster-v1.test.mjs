@@ -12,6 +12,8 @@ test('AI model SEO cluster is substantive, canonical and routes into the Modelwi
    const html=fs.readFileSync(path,'utf8');
    assert.match(html,/<link rel="canonical" href="https:\/\/www\.bedrijfsgeheugen\.nl\//);
    assert.match(html,/Open de AI Modelwijzer/);
+   assert.match(html,/<header\b[^>]*class="[^"]*bg-ai-header/);
+   assert.match(html,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/ai-modelwijzer"/);
    assert.match(html,/Dataresidentie/);
    assert.match(html,/Data-soevereiniteit/);
    assert.ok(html.length>6000,`${path} must not be thin content`);
