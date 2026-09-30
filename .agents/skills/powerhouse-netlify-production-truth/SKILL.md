@@ -143,3 +143,21 @@ Required recovery pattern:
 - keep deployment transport/auth recovery separate from build-content recovery.
 
 A production build failure caused by an incomplete static i18n cache is a build-content defect, not a Netlify credential defect. Repeated deploy retries without completing the cache are prohibited.
+
+
+## Explicit public locale navigation
+
+Fingerprint: `website|i18n|explicit-public-locale-navigation|v2`.
+
+When the public language control is activated:
+- persist the target locale;
+- prevent implicit/default link navigation;
+- resolve the canonical localized href;
+- close menus;
+- explicitly navigate with `location.assign(href)`.
+
+Reason: mobile navigation may close or mutate its host during the same click. Relying on the browser's default anchor action after that mutation is not production-safe.
+
+Regression authority: `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
+Production canary: `tools/site-shell/verify-pricing-i18n-production.mjs`.
+Terminal proof remains exact-main Netlify production plus successful NL → EN → NL browser roundtrip.
