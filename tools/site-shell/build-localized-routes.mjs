@@ -324,7 +324,8 @@ function applyLocaleSeoMetadata(doc,locale,route,localizedUrl) {
   // EN measurement and internal-link attribution on an English keyword cluster
   // instead of leaking the Dutch cluster into /en/* routes.
   const existingOwner=body ? String(attr(body,'data-bg-intent-owner')||'').trim() : '';
-  const ownerPath=existingOwner.startsWith(SITE) ? normalizedRoute(existingOwner.slice(SITE.length)) : '';
+  const existingOwnerAbsolute=resolveSameOriginAbsolute(existingOwner);
+  const ownerPath=existingOwnerAbsolute ? normalizedRoute(existingOwnerAbsolute.path) : '';
   const ownerEntry=ownerPath ? map.bySource.get(ownerPath) : null;
   const ownerLocaleSeo=ownerEntry?.[locale] || null;
 
