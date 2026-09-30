@@ -25,7 +25,10 @@
     "MATERIAL_WORK_IS_BOUNDED_AND_CHECKPOINTED",
     "NO_TASK_OWNERSHIP_DEPENDS_ON_CONTINUOUS_CHAT_STREAM",
     "READBACK_BEFORE_REPLAY_AFTER_STREAM_LOSS",
-    "USER_NEVER_HAS_TO_REPEAT_CONTINUE_AFTER_STREAM_INTERRUPTION"
+    "USER_NEVER_HAS_TO_REPEAT_CONTINUE_AFTER_STREAM_INTERRUPTION",
+    "NO_BLOCKING_CHAT_WAIT_FOR_REMOTE_JOBS",
+    "USER_CONTINUE_BUTTON_NEVER_REQUIRED_FOR_TASK_OWNERSHIP",
+    "PLATFORM_BUSY_UI_IS_NOT_CANONICAL_DELIVERY_STATE"
   ],
   "interruption_classes": [
     "NETWORK_DISCONNECT",
@@ -167,5 +170,21 @@
     ],
     "user_visible_progress_rule": "Keep progress compact; do not stream internal CI/provider polling as a long-running chat log.",
     "limitation": "The application or network may still interrupt a visible stream; resilience guarantees continuity and deduped resume, not transport uptime."
+  },
+  "nonblocking_remote_wait": {
+    "required": true,
+    "fingerprint": "powerhouse|chat-response|nonblocking-remote-wait|v1",
+    "blocking_wait_forbidden_for": [
+      "ci",
+      "netlify",
+      "browser_regression",
+      "provider_polling",
+      "remote_gate"
+    ],
+    "checkpoint_before_release": true,
+    "resume_from_canonical_state": true,
+    "user_continue_required": false,
+    "platform_busy_ui_is_not_delivery_state": true,
+    "quality_downgrade_to_avoid_timeout_forbidden": true
   }
 }
