@@ -359,7 +359,7 @@ function applyLocaleSeoMetadata(doc,locale,route,localizedUrl) {
     ? localizedUrl
     : ownerEntry
       ? (locale==='en' ? ownerEntry.en.route : ownerEntry.nl.route)
-      : (locale==='en' && existingOwner.startsWith(SITE) ? SITE + '/en' + (existingOwner.slice(SITE.length)==='/'?'/':existingOwner.slice(SITE.length)) : existingOwner || localizedUrl);
+      : (locale==='en' && existingOwnerAbsolute ? SITE + canonicalRoute('en',ownerPath) : existingOwner || localizedUrl);
   ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-intent-owner',{name:'bg-intent-owner',content:localizedOwner});
   if(body) {
     setAttr(body,'data-bg-intent-owner',localizedOwner);
