@@ -43,3 +43,7 @@ assert.ok(html.includes('id="deploymentPreference"'));
 assert.ok(html.includes('function simpleProfile()'));
 assert.ok(html.includes('Je hoeft geen modelnamen, tokens of technische termen te kennen'));
 assert.ok(html.includes('Eenmalig of terugkerend?'));
+
+assert.ok(html.includes('banner-li-bedrijf.jpg?v=ai-modelwijzer-no-portrait-20260930'));
+assert.ok(!html.includes('og:image" content="https://www.bedrijfsgeheugen.nl/assets/merk/logo-merk.png"'));
+assert.ok(html.includes('twitter:card" content="summary_large_image"'));
