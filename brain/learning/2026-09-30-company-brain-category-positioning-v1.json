@@ -36,29 +36,16 @@
     "Brain component registry"
   ],
   "learning_rule": "Category traffic is only useful when downstream progression to qualified lead, proposal, paid order and realized revenue is measured and fed back into the existing Powerhouse learning loop.",
-  "status": "TESTING",
-  "area": "SEO_DEMAND",
-  "problem": "The market increasingly uses Company Brain as category language while Bedrijfsgeheugen previously did not own that intent explicitly.",
-  "root_cause": "The public proposition described knowledge, signals, impact, actions and learning, but category-level Company Brain demand was not mapped to a canonical acquisition owner and order outcome loop.",
-  "prevention_rule": "Treat Company Brain as category/search acquisition language, keep Bedrijfsgeheugen as the brand, use one canonical /company-brain owner, and measure the route through paid order and realized revenue.",
   "compiler": {
-    "failure_class": "SEO_GROWTH",
-    "scope": "SEO",
+    "failure_class": "OPPORTUNITY",
+    "scope": "COMMERCIAL",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "enforcement": [
-    "company-brain.html",
-    "tools/bouw-v18-ai-ecosysteem.mjs",
-    "AGENTS.md",
-    ".agents/skills/powerhouse-seo-conversion-orders/SKILL.md",
-    "platform/system-map/canonical-system-map.mjs",
-    "tests/company-brain-category-positioning-v1.test.mjs"
-  ],
   "evaluation": {
     "historical_replay": [
-      "tests/company-brain-category-positioning-v1.test.mjs"
+      "tests/brain-company-brain-category-positioning-v1.test.mjs"
     ]
   }
 }
