@@ -8,3 +8,4 @@
 - Public UI impact: none.
 
 - Delivery-event refresh: scope metadata and terminal writer lease re-bound to the final recovery head before rerunning Required test.
+- Delivery note: rerun uses a fresh synchronize event so the machine-readable scope reflects all four recovery files.
