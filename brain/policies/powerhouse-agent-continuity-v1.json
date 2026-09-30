@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_AGENT_CONTINUITY_CONTRACT",
-  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.8",
-  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|terminal-borging-closure|same-repo-reviewable-writeback|v1.8",
+  "version": "POWERHOUSE-AGENT-CONTINUITY-v1.9",
+  "fingerprint": "powerhouse|agent-continuity|no-restart-from-scratch|intrinsic-loop-nodes|fast-continuation|resumable-execution|no-pending-final-output|terminal-user-handoff-dashboard-writeback|queue-pressure-governor|async-nonblocking-workflow-continuation|terminal-borging-closure|same-repo-reviewable-writeback|v1.9",
   "status": "ACTIVE",
   "scope": "all current and future material Bedrijfsgeheugen Powerhouse agents, chats, workflows and autonomously built capabilities",
   "purpose": "Ensure every material autonomous change becomes a documented, registered, resumable and reusable part of the same Powerhouse so every following agent can continue from current truth instead of reconstructing the system from scratch, including after network, streaming, session, tool, worker or model interruptions. Chats and agents are intrinsic execution nodes inside that same canonical loop, never authorities or brains beside it.",
@@ -50,7 +50,11 @@
     "HEALTH_MUST_RECOMPUTE_AFTER_REPAIR",
     "LIVE_PROMOTION_REQUIRES_GOVERNANCE_WRITEBACK",
     "READY_DEPLOY_IS_NOT_ALL_CAPABILITIES_GREEN",
-    "CAPABILITY_READBACK_REMAINS_INDEPENDENT"
+    "CAPABILITY_READBACK_REMAINS_INDEPENDENT",
+    "REMOTE_WORKFLOW_WAIT_IS_NEVER_AGENT_IDLE",
+    "PENDING_EXTERNAL_JOB_REQUIRES_CHECKPOINT_AND_CONTINUATION",
+    "NEWER_MAIN_SUPERSEDES_STALE_REVERSIBLE_PRODUCTION_WAIT",
+    "BOUNDED_PROVIDER_POLLING_ONLY"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -231,7 +235,8 @@
     "brain/learning/2026-09-25-production-readback-safe-supersession-v1.json",
     "brain/learning/2026-09-29-powerhouse-green-assurance-v1.json",
     "brain/learning/2026-09-29-live-assurance-writeback-v1.json",
-    "brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json"
+    "brain/learning/2026-09-29-live-ready-vs-functional-green-v1.json",
+    "brain/learning/2026-09-30-async-workflow-continuation-v1.json"
   ],
   "skill_discovery": {
     "required": true,
@@ -581,5 +586,33 @@
       "system_map"
     ],
     "user_reprompt_required": false
+  },
+  "async_workflow_continuation_rule": {
+    "required": true,
+    "fingerprint": "delivery|async-continuation|nonblocking-workflow-wait|v1",
+    "waiting_states": [
+      "queued",
+      "pending",
+      "waiting",
+      "requested",
+      "in_progress"
+    ],
+    "principle": "A remote workflow wait is execution state, never a reason for a chat or agent to idle, stop, or hand ownership back to the user.",
+    "required_behavior": [
+      "persist exact obligation, candidate head, main epoch, open gates and next safe action before remote waiting",
+      "continue independent root-cause, regression, documentation, writeback or recovery preparation while a remote gate runs",
+      "reuse one active required workflow per exact head instead of redispatching duplicates",
+      "supersede stale reversible production snapshot/readback work when a newer main is authoritative",
+      "bound all provider and workflow polling with hard timeouts",
+      "resume automatically from the canonical checkpoint after interruption"
+    ],
+    "forbidden_behavior": [
+      "busy-wait in chat for workflow completion",
+      "end a user response because CI is pending",
+      "blindly redispatch the same required workflow",
+      "hold newer production work behind stale reversible snapshots",
+      "unbounded polling"
+    ],
+    "terminal_rule": "Only verified terminal outcome or BLOCKED_HARD_BOUNDARY may end ownership."
   }
 }

@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T07:10:00Z',
+  observedAt:'2026-09-30T08:47:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,30 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'async-delivery-continuation-v1',
+      label:'Async Delivery Continuation & Queue Supersession',
+      authority:'github+powerhouse-canonical-checkpoint',
+      owner:'whole-brain-reliability',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['open obligation','exact candidate head','current main epoch','GitHub/Netlify/Supabase workflow state']),
+      outputs:Object.freeze(['resumable checkpoint','deduplicated required runs','bounded polling','stale reversible run supersession']),
+      runtime:Object.freeze({
+        policy:'brain/policies/powerhouse-agent-continuity-v1.json',
+        agentContract:'AGENTS.md',
+        skill:'.agents/skills/powerhouse-continuity/SKILL.md',
+        productionSnapshot:'.github/workflows/production-source-snapshot.yml',
+        requiredGate:'.github/workflows/required-test.yml',
+        learning:'brain/learning/2026-09-30-async-workflow-continuation-v1.json'
+      }),
+      invariants:Object.freeze({
+        remoteWaitNeverMeansAgentIdle:true,
+        duplicateRequiredRunForbidden:true,
+        boundedPollingRequired:true,
+        checkpointBeforeWait:true,
+        staleReversibleProductionWaitSupersededByNewerMain:true
+      })
+    }),
     Object.freeze({
       id:'ai-model-intelligence-advisor-v1',
       label:'AI Model Intelligence & Advisor',

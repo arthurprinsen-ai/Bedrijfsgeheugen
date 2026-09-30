@@ -1,0 +1,36 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "1.0",
+  "fingerprint": "delivery|async-continuation|nonblocking-workflow-wait|v1",
+  "observed_at": "2026-09-30T08:47:00Z",
+  "problem": "Concurrent agents can trigger overlapping GitHub, Netlify and Supabase work. Agents then idle on queued/running jobs, newer main revisions appear, and the original delivery loops re-enter waiting or recovery instead of progressing.",
+  "root_cause": [
+    "Remote workflow state was treated as a conversational wait point instead of durable asynchronous execution state.",
+    "Production source snapshots used non-cancelling global concurrency, allowing stale reversible runs to queue behind newer main.",
+    "Some required jobs had no explicit job timeout.",
+    "PR metadata errors could fail admission after expensive external preview work had already started."
+  ],
+  "fix": [
+    "Make remote waiting non-blocking for every chat/agent and require a resumable checkpoint.",
+    "Supersede stale reversible Production Source Snapshot runs with cancel-in-progress.",
+    "Bound production snapshot and Required test jobs to 20 minutes.",
+    "Require one active required workflow per exact candidate head and automatic resume after interruption."
+  ],
+  "prevention": [
+    "Never use pending/queued/in_progress as a terminal user-facing state.",
+    "Do not redispatch a required run when the exact head already has one active.",
+    "Batch repository writes before CI to reduce fan-out.",
+    "Prefer latest-authoritative-main supersession for reversible production waiting work."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ],
+  "evidence": {
+    "observed_recent_workflow_sample": 100,
+    "observed_pending": 4,
+    "observed_in_progress": 10,
+    "max_observed_runs_for_single_recent_sha": 13,
+    "affected_pr": 3421
+  }
+}
