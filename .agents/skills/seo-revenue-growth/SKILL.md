@@ -218,3 +218,36 @@ Niet-onderhandelbaar:
 - Warm/consented outreach, bestaande relatie/opportunity follow-up, due follow-up en bestaande klant-/partnercontext mogen autonoom worden uitgevoerd wanneer de bestaande gates groen zijn.
 - LinkedIn persoonlijk blijft personal-life-only; commercieel air-cover hoort op de Bedrijfsgeheugen-bedrijfspagina. Instagram blijft Mira-only.
 - Iedere kanaalactie schrijft terug: provider/readback → reply/meeting/scan/proposal/order → realized revenue → learning → volgende prioritering.
+
+
+## Execute-or-explain terminal contract
+
+Fingerprint: `seo-cro-execute-or-explain-v1`.
+
+Every material SEO/CRO opportunity discovered by a daily run must terminate in the same cycle as exactly one of:
+
+- `EXECUTED`: a bounded, reversible, evidence-gated change was implemented through the canonical protected delivery lineage and then carried through production readback; or
+- `REJECTED_WITH_EVIDENCE`: no material write is allowed, with a persisted reason code and the exact missing/contradicting evidence.
+
+An operator-facing recommendation without either terminal state is a contract failure.
+
+Allowed rejection reason codes:
+- `INSUFFICIENT_SEARCH_EVIDENCE`
+- `INSUFFICIENT_CONVERSION_EVIDENCE`
+- `CANONICAL_OWNER_ALREADY_SERVES_INTENT`
+- `CANNIBALIZATION_RISK`
+- `EXPECTED_ORDER_VALUE_TOO_LOW`
+- `GUARDRAIL_OR_TRUST_RISK`
+- `HUMAN_AUTHORITY_REQUIRED`
+- `NO_SAFE_REVERSIBLE_CHANGE`
+
+For `REJECTED_WITH_EVIDENCE`, persist:
+1. opportunity/query and canonical owner;
+2. evidence inspected and freshness;
+3. exact reason code;
+4. exact evidence missing or conflicting;
+5. what observable condition would make the opportunity executable in a later cycle.
+
+Do not use CI/tool/transient delivery failures as rejection reasons. They are recovery work and must remain in the same execution lineage.
+
+When evidence supports one or more safe changes, execute up to the configured daily maximum rather than merely describing them. The operator report must state what was changed and the measured/readback state; if no change was made, it must state the evidence-backed reason why.

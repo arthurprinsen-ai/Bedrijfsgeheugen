@@ -226,6 +226,37 @@
         "raw_scroll_depth",
         "time_on_page_without_downstream_value"
       ]
+    },
+    "daily_terminal_contract": {
+      "version": "seo-cro-execute-or-explain-v1",
+      "material_opportunity_requires_terminal_state": true,
+      "terminal_states": [
+        "EXECUTED",
+        "REJECTED_WITH_EVIDENCE"
+      ],
+      "recommendation_only_is_contract_failure": true,
+      "execute_when_safe_reversible_evidence_gated_change_exists": true,
+      "max_changes_per_cycle": 3,
+      "rejection_reason_codes": [
+        "INSUFFICIENT_SEARCH_EVIDENCE",
+        "INSUFFICIENT_CONVERSION_EVIDENCE",
+        "CANONICAL_OWNER_ALREADY_SERVES_INTENT",
+        "CANNIBALIZATION_RISK",
+        "EXPECTED_ORDER_VALUE_TOO_LOW",
+        "GUARDRAIL_OR_TRUST_RISK",
+        "HUMAN_AUTHORITY_REQUIRED",
+        "NO_SAFE_REVERSIBLE_CHANGE"
+      ],
+      "rejection_evidence_required": [
+        "opportunity_or_query",
+        "canonical_owner",
+        "evidence_inspected_and_freshness",
+        "reason_code",
+        "missing_or_conflicting_evidence",
+        "future_execution_condition"
+      ],
+      "transient_ci_or_tool_failure_is_recovery_not_rejection": true,
+      "operator_output": "executed change plus production/readback state, or evidence-backed non-execution reason"
     }
   },
   "failure_policy": {
