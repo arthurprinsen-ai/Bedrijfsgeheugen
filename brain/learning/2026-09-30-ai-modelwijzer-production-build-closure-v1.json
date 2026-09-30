@@ -9,20 +9,23 @@
     "The Modelwijzer was not classified as EIGEN_WERKING in the V18 page builder, so a production build could rewrite an interactive application as a generic content page.",
     "The static English translation cache had no deterministic entries for the new Modelwijzer copy while production requires STATIC_I18N_REQUIRE_CACHE=1.",
     "tests/ai-model-advisor-v1.test.mjs was committed but not referenced by any workflow, causing delivery-test-coverage-guard to fail.",
-    "The eight AI-model SEO cluster pages were standalone documents without any header/nav element, so the all-public-page browser visibility gate correctly rejected them across phone/tablet/desktop."
+    "The eight AI-model SEO cluster pages were standalone documents without any header/nav element, so the all-public-page browser visibility gate correctly rejected them across phone/tablet/desktop.",
+    "The eight SEO intent pages were published as standalone content without a visible canonical site header, which failed phone/tablet/desktop visibility checks."
   ],
   "fix": [
     "Preserve ai-modelwijzer.html as EIGEN_WERKING in the canonical V18 builder.",
     "Commit a complete Modelwijzer English cache patch.",
     "Wire both Modelwijzer regressions into the canonical website lane.",
-    "Add a lightweight canonical Bedrijfsgeheugen header with absolute links to all eight AI-model SEO pages and lock it with the SEO-cluster regression."
+    "Add a lightweight canonical Bedrijfsgeheugen header with absolute links to all eight AI-model SEO pages and lock it with the SEO-cluster regression.",
+    "Project a visible canonical Bedrijfsgeheugen header with absolute navigation URLs onto every AI Modelwijzer SEO intent page."
   ],
   "prevention_rules": [
     "Interactive acquisition tools must be registered in the canonical builder before production promotion.",
     "New public Dutch copy must include deterministic English cache coverage in the same lineage.",
     "Every committed regression test must be executed by at least one CI workflow.",
     "A ready older Netlify deploy is not proof that current main is live.",
-    "Every public SEO landing page must expose a visible header/nav element at phone, tablet and desktop widths."
+    "Every public SEO landing page must expose a visible header/nav element at phone, tablet and desktop widths.",
+    "Every indexable AI Modelwijzer SEO route must pass the canonical visible-header browser contract on phone, tablet and desktop."
   ],
   "skill_targets": [
     ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md"
@@ -50,13 +53,15 @@
     "candidate_repairs": [
       "tools/bouw-v18-chrome.mjs registers ai-modelwijzer.html as EIGEN_WERKING.",
       "config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-production.json provides deterministic English build coverage.",
-      ".github/workflows/lane-website.yml executes tests/ai-model-advisor-v1.test.mjs and tests/brain-ai-modelwijzer-production-build-v1.test.mjs."
+      ".github/workflows/lane-website.yml executes tests/ai-model-advisor-v1.test.mjs and tests/brain-ai-modelwijzer-production-build-v1.test.mjs.",
+      "Eight Modelwijzer SEO routes contain nav.bgkop canonical header markup and the production regression asserts it."
     ],
     "verification_boundary": "Candidate build and CI evidence must be green before merge; production remains unproven until exact-main Netlify ready state and public route readback.",
     "browser_regression": {
       "observed": "standalone-visibility-check reported 24 header visibility failures across 8 AI-model SEO routes x 3 viewports",
       "repair": "all eight routes now include header.bg-ai-header and aria-label=Hoofdnavigatie",
       "regression": "tests/ai-model-seo-cluster-v1.test.mjs"
-    }
+    },
+    "browser_failure": "Required website browser gate reported 24 header visibility failures across 8 AI Modelwijzer SEO routes x 3 viewports."
   }
 }
