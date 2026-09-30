@@ -31,3 +31,15 @@ assert.ok(catalog.models.some(m=>m.id==='mistral-ocr-4.0'));
 assert.ok(catalog.models.some(m=>m.id==='gpt-realtime-2.1'));
 assert.ok(catalog.models.some(m=>m.self_host===true));
 console.log('ai-model-advisor-v1 ok');
+
+assert.ok(html.includes('id="cadence"'));
+assert.ok(html.includes('id="people"'));
+assert.ok(html.includes('id="volume"'));
+assert.ok(html.includes('id="dataSensitivity"'));
+assert.ok(html.includes('id="errorImpact"'));
+assert.ok(html.includes('id="integration"'));
+assert.ok(html.includes('id="budget"'));
+assert.ok(html.includes('id="deploymentPreference"'));
+assert.ok(html.includes('function simpleProfile()'));
+assert.ok(html.includes('Je hoeft geen modelnamen, tokens of technische termen te kennen'));
+assert.ok(html.includes('Eenmalig of terugkerend?'));
