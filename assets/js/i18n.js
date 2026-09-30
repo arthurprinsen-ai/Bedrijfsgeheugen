@@ -443,6 +443,13 @@
         if (isPortal()) {
           event.preventDefault();
           setLocale(target).catch(showLocaleError);
+          return;
+        }
+        if (SUPPORTED.has(target)) {
+          event.preventDefault();
+          const href = option.getAttribute('href') || localizedHref(target);
+          closeMenus();
+          location.assign(href);
         }
         return;
       }
