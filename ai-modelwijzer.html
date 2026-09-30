@@ -121,10 +121,15 @@
 <details><summary>Kan één workflow meerdere modellen gebruiken?</summary><p>Ja. Vaak is routing economisch beter: een klein model doet standaardwerk, een sterker model behandelt moeilijke gevallen en een specialistisch model doet bijvoorbeeld OCR of reranking.</p></details>
 </div>
 </div></section>
+<section class="section" id="provider-governance"><div class="wrap">
+  <div class="sectionHead"><div><span class="ey">Deployment governance</span><h2>Waar draait je model — en wie houdt de controle?</h2><p>Providernaam alleen zegt te weinig. Bekijk per deploymentpad opslag, inferentie, training, retentie, zero-data-retention, sleutels, private networking en self-hosting.</p></div></div>
+  <div id="providerGovernanceGrid" class="modelGrid" data-bg-no-translate></div>
+  <p class="source">Governancevelden zijn deployment- en contractafhankelijk. Onbekend blijft onbekend; controleer de officiële bron vóór gevoelige productie-inzet.</p>
+</div></section>
 </main>
 <footer class="footer"><div class="wrap">Bedrijfsgeheugen · AI-gedreven. Menselijk gericht. · <a href="https://www.bedrijfsgeheugen.nl/privacy">Privacy</a> · <a href="https://www.bedrijfsgeheugen.nl/contact">Contact</a></div></footer>
 <script>
-let catalog={models:[]},lastAdvice=null;
+let catalog={models:[]},providerGovernance={providers:[]},lastAdvice=null;
 const $=id=>document.getElementById(id);
 const money=n=>n==null?'onbekend':new Intl.NumberFormat('nl-NL',{style:'currency',currency:'USD',maximumFractionDigits:n<10?2:0}).format(n);
 function taskSignal(text){
@@ -181,6 +186,34 @@ function governanceBadges(m){
  b.push('<span class="badge">'+m.jurisdiction+'</span>');
  return b.join('');
 }
+function providerRecord(name){return (providerGovernance.providers||[]).find(p=>p.provider===name)||null;}
+function bestGovernancePath(m){
+ const p=providerRecord(m.provider); if(!p?.paths?.length)return null;
+ if($('selfHost').checked){const x=p.paths.find(x=>x.self_host===true);if(x)return x;}
+ if($('euOnly').checked){
+   const x=p.paths.find(x=>/europe|eu|customer-controlled/i.test(String(x.inference_residency||''))||/eu|customer-controlled/i.test(String(x.sovereignty_level||'')));
+   if(x)return x;
+ }
+ return p.paths[0];
+}
+function governancePathHtml(m){
+ const g=bestGovernancePath(m);
+ if(!g)return '<div class="badge warn">Deployment-governance: nog niet afzonderlijk geverifieerd</div>';
+ const val=x=>x==null?'onbekend':String(x);
+ return '<div class="why"><strong>Deploymentpad:</strong> '+g.label+
+   '<br><strong>Opslag:</strong> '+val(g.storage_residency)+
+   '<br><strong>Inferentie:</strong> '+val(g.inference_residency)+
+   '<br><strong>Training:</strong> '+val(g.training_on_api_data)+
+   '<br><strong>Retentie:</strong> '+val(g.default_content_retention)+
+   '<br><strong>ZDR:</strong> '+val(g.zero_data_retention)+
+   '<br><strong>Soevereiniteit:</strong> '+val(g.sovereignty_level)+
+   ' · <a href="'+g.source+'" target="_blank" rel="noopener">governancebron ↗</a></div>';
+}
+function renderProviderGovernance(){
+ const holder=$('providerGovernanceGrid'); if(!holder)return;
+ holder.innerHTML=(providerGovernance.providers||[]).map(p=>'<article class="model"><h3>'+p.provider+'</h3><div class="meta">Jurisdictie: '+p.provider_jurisdiction+' · '+p.paths.length+' deploymentpad(en)</div>'+
+ p.paths.map(x=>'<div class="price"><strong>'+x.label+'</strong><br>Opslag: '+(x.storage_residency??'onbekend')+'<br>Inferentie: '+(x.inference_residency??'onbekend')+'<br>Training: '+(x.training_on_api_data??'onbekend')+'<br>Retentie: '+(x.default_content_retention??'onbekend')+'<br>ZDR: '+(x.zero_data_retention??'onbekend')+'<br>CMK: '+(x.customer_managed_keys??'onbekend')+'<br>Private network: '+(x.private_networking??'onbekend')+'<br>Soevereiniteit: '+(x.sovereignty_level??'onbekend')+'<br><a href="'+x.source+'" target="_blank" rel="noopener">officiële bron ↗</a></div>').join('')+'</article>').join('');
+}
 function why(m,text){
  const sig=taskSignal(text), reasons=[];
  if(sig.code&&m.scores.code>=9)reasons.push('sterk voor coding');
@@ -205,7 +238,7 @@ function advise(){
  const ranked=catalog.models.filter(eligible).map(m=>({...m,_score:scoreModel(m,text,priority),_cost:monthlyCost(m)})).sort((a,b)=>b._score-a._score).slice(0,3);
  const holder=$('recommendations');
  if(!ranked.length){holder.innerHTML='<div class="rec"><h3>Geen model voldoet aan alle harde filters.</h3><p class="why">Versoepel één constraint of kies een self-host/cloudpad dat nog niet volledig in het register is geverifieerd.</p></div>';$('route').innerHTML='<h3>Fail-closed</h3><p>De advisor gaat geen residency- of governance-eigenschap verzinnen om toch een uitkomst te tonen.</p>';$('result').classList.add('on');return;}
- holder.innerHTML=ranked.map((m,i)=>`<article class="rec"><div class="recHead"><span class="rank">${i+1}</span><div><h3>${m.id}</h3><div class="provider">${m.provider} · ${m.tier} · ${m.status}</div></div></div><div class="badges">${governanceBadges(m)}</div><p class="why">${why(m,text)}</p><div class="money">${m._cost==null?(m.unit_price||'Prijsstructuur niet token-based'):`${money(m._cost)} / maand indicatief`}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">Officiële bron ↗</a></div></article>`).join('');
+ holder.innerHTML=ranked.map((m,i)=>`<article class="rec"><div class="recHead"><span class="rank">${i+1}</span><div><h3>${m.id}</h3><div class="provider">${m.provider} · ${m.tier} · ${m.status}</div></div></div><div class="badges">${governanceBadges(m)}</div><p class="why">${why(m,text)}</p>${governancePathHtml(m)}<div class="money">${m._cost==null?(m.unit_price||'Prijsstructuur niet token-based'):`${money(m._cost)} / maand indicatief`}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">Officiële bron ↗</a></div></article>`).join('');
  const cheap=[...catalog.models].filter(m=>eligible(m)&&m.input_usd_m!=null).sort((a,b)=>(monthlyCost(a)??1e9)-(monthlyCost(b)??1e9))[0];
  $('route').innerHTML=`<h3>Slimme routing</h3><p>Voor veel bedrijfsworkflows hoeft niet ieder verzoek naar het sterkste model. Gebruik <strong>${cheap?.id||ranked[0].id}</strong> voor standaardgevallen en escaleer moeilijke uitzonderingen naar <strong>${ranked[0].id}</strong>. Zo optimaliseer je op kosten per gerealiseerde taak in plaats van op één benchmark.</p><p><strong>Governance:</strong> controleer vóór productie opslag, inferentie, retentie, subprocessors en contractuele scope voor jouw gekozen deploymentpad.</p>`;
  lastAdvice={model:ranked[0].id,goal:text};
@@ -230,10 +263,11 @@ function renderModels(){
 }
 async function init(){
  try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}
- catch{try{const r=await fetch('/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
+ catch{try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'reload'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
+ try{const g=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-provider-governance-v1.json',{cache:'no-store'});providerGovernance=await g.json();}catch{providerGovernance={providers:[]};}
  $('modelCount').textContent=catalog.models.length;$('providerCount').textContent=new Set(catalog.models.map(m=>m.provider)).size;
  const providers=[...new Set(catalog.models.map(m=>m.provider))].sort();$('providerFilter').innerHTML='<option value="">Alle providers</option>'+providers.map(p=>`<option>${p}</option>`).join('');
- renderModels();
+ renderModels();renderProviderGovernance();
 }
 $('advise').addEventListener('click',advise);
 ['search','providerFilter','tierFilter','governanceFilter','modalityFilter','taskFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderModels));
