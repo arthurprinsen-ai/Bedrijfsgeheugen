@@ -26,7 +26,7 @@
     },
     {
       "route": "https://www.bedrijfsgeheugen.nl/company-brain",
-      "role": "category-pillar",
+      "role": "pillar",
       "presentation": "native",
       "primary_intent": "company brain",
       "primary_keyword": "company brain",
