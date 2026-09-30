@@ -1,0 +1,30 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const catalog=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
+const config=JSON.parse(fs.readFileSync('config/powerhouse-ai-model-intelligence-v1.json','utf8'));
+const html=fs.readFileSync('ai-modelwijzer.html','utf8');
+
+test('AI Modelwijzer keeps goal, cost and sovereignty contracts',()=>{
+  assert.ok(catalog.models.length>=25);
+  assert.ok(new Set(catalog.models.map(m=>m.provider)).size>=8);
+  assert.equal(config.decision_policy.user_goal_first,true);
+  assert.equal(config.decision_policy.no_single_best_model_claim,true);
+  assert.match(html,/id="goalInput"/);
+  assert.match(html,/Dataresidentie ≠ data-soevereiniteit/);
+  assert.match(html,/id="euOnly"/);
+  assert.match(html,/id="selfHost"/);
+  for(const m of catalog.models){
+    assert.match(String(m.source||''),/^https:\/\//);
+    assert.ok(m.jurisdiction);
+    assert.ok(Object.prototype.hasOwnProperty.call(m,'eu_processing'));
+    assert.ok(Object.prototype.hasOwnProperty.call(m,'eu_storage'));
+    assert.ok(Object.prototype.hasOwnProperty.call(m,'self_host'));
+  }
+});
+
+test('catalog evidence is freshness bounded',()=>{
+  const ageDays=(Date.now()-new Date(catalog.verified_at+'T00:00:00Z'))/86400000;
+  assert.ok(ageDays<=14,'catalog must be refreshed within 14 days');
+});
