@@ -9,6 +9,7 @@ const AI_MODEL_SEO_PAGES = Object.freeze([
   'claude-ai-modellen/index.html',
   'gemini-ai-modellen/index.html',
   'mistral-ai-modellen/index.html',
+  'amazon-ai-modellen/index.html',
   'chatgpt-vs-claude/index.html',
   'chatgpt-vs-gemini/index.html',
   'claude-vs-gemini/index.html'
