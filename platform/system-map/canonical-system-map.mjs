@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T09:22:00Z',
+  observedAt:'2026-09-30T09:30:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -40,10 +40,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Predictive Multi-Agent Delivery Scheduler',
       authority:'github+canonical-delivery-policy',
       owner:'whole-brain-reliability',
-      status:'CANDIDATE_PROTECTED_DELIVERY',
+      status:'ACTIVE_PROVEN',
       inputs:Object.freeze(['obligation','candidate head','main epoch','changed paths','conflict contracts','mutable resources','active candidates','queue pressure','predicted fan-out']),
       outputs:Object.freeze(['parallel-build decision','canonical writer decision','terminal serialization decision','resumable async checkpoint']),
       runtime:Object.freeze({scheduler:'tools/delivery/predictive-controller.mjs#planConcurrentAgentWork',checkpoint:'POWERHOUSE-ASYNC-CHECKPOINT-v1',policy:'brain/policies/powerhouse-agent-continuity-v1.json'}),
+      productionEvidence:Object.freeze({mergeSha:'c2188fde24f7d51c194acd1c7c0d093b7ceb316e',requiredTest:'success',skillProjection:'success',canonicalTerminalizerRunId:36696171917,canonicalTerminalizerConclusion:'success',productionMode:'MAIN_CONTAINMENT_NON_RUNTIME'}),
       invariants:Object.freeze({oneObligationOneWriter:true,nonConflictingParallelBuild:true,serializeOnlyTerminalOverlap:true,predictFanoutBeforeWrite:true,remoteWaitNeverMeansStop:true})
     }),
     Object.freeze({

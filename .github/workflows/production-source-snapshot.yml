@@ -43,6 +43,7 @@ on:
       - '.github/**'
       - 'brain/learning/**'
       - 'config/delivery-prevention-rules.json'
+      - 'config/powerhouse-agent-delivery-scheduler-v1.json'
       - 'tools/site-shell/verify-targeted-website-routes.mjs'
       - 'tools/delivery/**'
       - 'brain/policies/**'
