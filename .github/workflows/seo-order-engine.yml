@@ -63,6 +63,6 @@ jobs:
         with:
           node-version: '24'
       - name: SEO order contracts
-        run: node --test tests/seo-order-*.test.mjs
+        run: node --test tests/seo-order-*.test.mjs tests/seo-locale-revenue-*.test.mjs
       - name: SEO growth contracts
         run: node --test tests/seo-growth-*.test.mjs
