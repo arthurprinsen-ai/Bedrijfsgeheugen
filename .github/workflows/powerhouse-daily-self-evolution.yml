@@ -21,6 +21,8 @@ on:
       - 'config/powerhouse-ai-model-intelligence-v1.json'
       - 'scripts/brain/ai-model-intelligence-audit.mjs'
       - 'tests/ai-model-intelligence-freshness-v1.test.mjs'
+      - 'tests/ai-model-advisor-v1.test.mjs'
+      - 'tests/ai-model-seo-cluster-v1.test.mjs'
 
 permissions:
   contents: read
@@ -47,7 +49,7 @@ jobs:
         run: node --test tests/brain-self-improvement-layer-v1.test.mjs
       - name: Verify AI model intelligence freshness
         run: |
-          node --test tests/ai-model-intelligence-freshness-v1.test.mjs
+          node --test tests/ai-model-advisor-v1.test.mjs tests/ai-model-intelligence-freshness-v1.test.mjs tests/ai-model-seo-cluster-v1.test.mjs
           node scripts/brain/ai-model-intelligence-audit.mjs
       - name: Build universal chat-agent-skill snapshot
         run: node scripts/brain/daily-self-evolution.mjs
