@@ -26,3 +26,13 @@ test('governance-only merge does not wait for a Netlify website release', () => 
   assert.match(yaml,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
   assert.match(yaml,/PRODUCTION_READBACK_NOT_APPLICABLE_NON_RUNTIME:MAIN_CONTAINMENT_NON_RUNTIME/);
 });
+
+
+test('governance-only terminal closure accepts merge-SHA Brain evidence without waiting on superseded foundation run', () => {
+  const yaml=readFileSync('.github/workflows/obligation-terminal-closure.yml','utf8');
+  assert.match(yaml,/governance_only=true/);
+  assert.match(yaml,/whole-brain-canonical-loop-v2\.yml powerhouse-skill-projection\.yml/);
+  assert.match(yaml,/TERMINAL_GOVERNANCE_BRAIN_EVIDENCE_PROVEN/);
+  assert.match(yaml,/git merge-base --is-ancestor "\$MERGE_SHA" "\$current_main"/);
+  assert.match(yaml,/TERMINAL_GOVERNANCE_BRAIN_EVIDENCE_MISSING/);
+});
