@@ -1,5 +1,5 @@
 {
-  "version": 3,
+  "version": 4,
   "pages": [
     {
       "route": "https://www.bedrijfsgeheugen.nl/ai-implementeren",
@@ -66,9 +66,10 @@
     {
       "route": "https://www.bedrijfsgeheugen.nl/ai-governance",
       "role": "money",
-      "primary_intent": "ai governance mkb",
-      "primary_keyword": "ai governance mkb",
+      "primary_intent": "ai governance",
+      "primary_keyword": "ai governance",
       "secondary_keywords": [
+        "ai governance mkb",
         "ai governance bedrijf",
         "ai beleid mkb",
         "ai governance nederland"
@@ -296,7 +297,7 @@
     },
     {
       "route": "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
-      "role": "money",
+      "role": "support",
       "presentation": "native",
       "primary_intent": "ai model kiezen voor bedrijf",
       "primary_keyword": "ai modellen vergelijken",
@@ -317,6 +318,29 @@
         "https://www.bedrijfsgeheugen.nl/ai-implementeren",
         "https://www.bedrijfsgeheugen.nl/business-case-ai",
         "https://www.bedrijfsgeheugen.nl/ai-adoptie"
+      ],
+      "schema_type": "WebPage",
+      "link_priority": "revenue"
+    },
+    {
+      "route": "https://www.bedrijfsgeheugen.nl/data-soevereiniteit",
+      "role": "support",
+      "link_priority": "revenue",
+      "primary_intent": "data soevereiniteit en sovereign ai",
+      "primary_keyword": "data soevereiniteit",
+      "secondary_keywords": [
+        "soevereine ai",
+        "ai data soevereiniteit",
+        "data soevereiniteit ai"
+      ],
+      "funnel_stage": "consider",
+      "primary_cta": {
+        "action": "ai-governance",
+        "url": "https://www.bedrijfsgeheugen.nl/ai-governance"
+      },
+      "supporting_routes": [
+        "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
+        "https://www.bedrijfsgeheugen.nl/ai-act"
       ],
       "schema_type": "WebPage"
     }
