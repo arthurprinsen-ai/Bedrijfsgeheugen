@@ -1030,6 +1030,15 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       'tools/genereer-sitemap.mjs',
       'tools/seo-order-engine/validate-locales.mjs'
     ]),
+    staticEnglishCache:Object.freeze({
+      requiredInProduction:true,
+      authority:'config/bg-static-i18n-en.json + config/bg-static-i18n-en.d/*.json',
+      exactSourceStringRequired:true,
+      validator:'node tools/site-shell/build-localized-routes.mjs --validate-cache',
+      failClosedState:'STATIC_I18N_CACHE_INCOMPLETE',
+      dutchFallbackOnEnglishProduction:false,
+      learning:'brain/learning/2026-09-30-seo-static-i18n-cache-complete-v1.json'
+    }),
     technicalContracts:Object.freeze([
       'self-canonical-per-locale',
       'reciprocal-hreflang-nl-en-x-default',
