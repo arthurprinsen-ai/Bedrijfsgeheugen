@@ -29,5 +29,11 @@
     "Validate static English coverage against final post-shell build output, not only source HTML",
     "Keep STATIC_I18N_REQUIRE_CACHE=1 fail-closed",
     "Do not claim LIVE until exact-main deploy and NL/EN public readback are green"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "I18N",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  }
 }
