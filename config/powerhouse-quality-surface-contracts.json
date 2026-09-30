@@ -205,6 +205,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:ai-modelwijzer-lead",
+      "type": "netlify_function",
+      "authority": "netlify/functions/ai-modelwijzer-lead.mjs",
+      "evidence_contract": "tests/ai-model-advisor-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:checkout-create",
       "type": "netlify_function",
       "authority": "netlify/functions/checkout-create.mjs",
