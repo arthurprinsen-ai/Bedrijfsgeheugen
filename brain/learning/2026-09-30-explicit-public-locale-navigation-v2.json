@@ -24,5 +24,27 @@
       "tools/site-shell/verify-pricing-i18n-production.mjs"
     ]
   },
-  "status": "RECOVERY_CANDIDATE"
+  "status": "RECOVERY_CANDIDATE",
+  "compiler": {
+    "failure_class": "PUBLIC_LOCALE_CLICK_NAVIGATION_DROPPED",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "exact_main_before_fix": "936ca60ad5c2415ff2372880a61aea5b1d690875",
+    "netlify_deploy_id": "6abcd38195a83a25791474e5",
+    "company_brain_public_route": {
+      "status": 200,
+      "canonical": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "mobile": true,
+      "desktop": true,
+      "page_errors": 0,
+      "failed_assets": 0
+    },
+    "failed_canary": "tools/site-shell/verify-pricing-i18n-production.mjs",
+    "observed_failure": "page.waitForURL timeout during NL→EN public language click on /prijzen",
+    "regression": "tests/brain-i18n-persistent-navigation-v1.test.mjs"
+  }
 }
