@@ -360,3 +360,21 @@ A company run is terminal only when one correct Bedrijfsgeheugen business post e
 Fingerprint: `powerhouse-source-backed-all-channels-v1`.
 
 LinkedIn company publication must prefer current evidence-backed MKB/CEO/MT problems over static calendar seeds. Preserve source URL/hash/problem/trigger lineage through recommendation, final copy, provider post ID and learning. LinkedIn personal remains separately identity-gated: external public evidence may select a theme, but cannot create first-person Arthur claims.
+
+## Story-family overlap duplicate prevention v6 (2026-09-30)
+
+Fingerprint: `powerhouse-story-family-overlap-dedupe-v6`.
+
+Incident regression: the personal LinkedIn posts about the broken electric sliding door + warm airco + manual door/windows-open routine were published twice with materially different wording. The existing source/story fingerprint and Jaccard checks did not recognize the second rewrite as the same human story.
+
+Permanent rules:
+- exact raw hash, normalized hash, shingle similarity, canonical story fingerprint, keyword Jaccard and **keyword overlap coefficient** are cumulative gates;
+- when at least 10 meaningful keywords overlap and the overlap coefficient against the smaller story is >= 0.30, the candidate is `STORY_FAMILY_DUPLICATE`;
+- duplicate protection is database-enforced by `powerhouse_reserve_unique_publication_v1` plus the fail-closed trigger `powerhouse_publication_story_family_guard_v2`;
+- every current/future chat, agent, scheduler, recovery path and connector must pass this same database authority before any provider write;
+- a duplicate candidate is discarded and replaced by a genuinely different verified source/event/topic; rewriting the same anecdote is forbidden;
+- the consumed regression family `auto + elektrische schuifdeur + airco + warme lucht + handmatig openen/ramen open + nieuwe routine` may never be reused as a new post.
+
+Regression authority: `tests/brain-social-duplicate-prevention-governance-v1.test.mjs`.
+Source-controlled database authority: `supabase/migrations/20260930071500_powerhouse_story_family_overlap_guard_v6.sql`.
+Brain learning: `brain/learning/2026-09-30-social-story-family-dedupe-v6.json`.
