@@ -910,8 +910,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       buildAuthority:Object.freeze(['tools/site-shell/apply-i18n.mjs','tools/site-shell/build-localized-routes.mjs']),
       runtimeGuard:'assets/js/i18n.js',
       cacheRule:'versioned-i18n-assets-required',
+      navigationPersistence:Object.freeze({
+        fingerprint:'website|i18n|persistent-public-navigation|v1',
+        selectedLocalePersistsAcrossPublicNavigation:true,
+        englishTargets:'/en/*',
+        dutchTargets:'unprefixed',
+        preserves:Object.freeze(['query','hash']),
+        dynamicLinksIncluded:true,
+        excludedPrefixes:Object.freeze(['/api/','/.netlify/','/assets/','/functions/','/portal','/klantportaal']),
+        regression:'tests/brain-i18n-persistent-navigation-v1.test.mjs',
+        learning:'brain/learning/2026-09-30-public-i18n-persistent-navigation-v1.json'
+      }),
       productionAuthority:'netlify-current-deploy-exact-main',
-      liveReadback:Object.freeze(['pricing-nl-en-nl','systems-nl-en-nl','html-lang','header-footer-language-state'])
+      liveReadback:Object.freeze(['pricing-nl-en-nl','systems-nl-en-nl','cross-page-locale-persistence','html-lang','header-footer-language-state'])
     }),
     geometry:Object.freeze({
       desktopShellWidthPx:1220,
