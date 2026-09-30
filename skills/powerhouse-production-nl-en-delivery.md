@@ -32,3 +32,22 @@ A language change is not LIVE_BEWEZEN until all applicable checks are true:
 
 ## Queue discipline
 Production snapshot work is coalesced to the latest canonical main candidate. Do not create parallel deploy lineages for the same obligation. A stale or obsolete candidate must not outrank the current protected main.
+
+
+## Terminale gebruikersafronding: vijf expliciete bewijsstappen
+Fingerprint: `delivery|terminal-live-handoff|main-netlify-browser-live|v1`.
+
+Iedere website-afronding scheidt strikt:
+1. **MAIN** — wijziging staat op protected `main`;
+2. **NETLIFY PRODUCTION** — Netlify bevestigt `ready` / `production`;
+3. **WEBSITE READBACK** — de productie-URL is functioneel gecontroleerd;
+4. **LIVE** — het gevraagde gedrag is aantoonbaar zichtbaar/werkend op productie;
+5. **BORGING** — relevante skills, agents/chats, Brain learning, ledger, documentatie en System Map/control surfaces zijn bijgewerkt en teruggelezen.
+
+Regels:
+- `main` alleen is nooit LIVE-bewijs;
+- een ready deploy zonder functionele readback is deploymentbewijs, geen functioneel LIVE-bewijs;
+- vóór een herhaalde opdracht "zet live" wordt eerst actuele productie gereconcilieerd;
+- als het gevraagde gedrag al functioneel live is, start geen nieuwe featureontwikkeling, vervangende PR of dubbele deploy-lineage;
+- ontbrekende writeback heet dan `BORGING_PENDING`: post-live closure, geen nieuwe ontwikkeling;
+- de terminale gebruikersmelding bevat expliciet: **MAIN ✓ | NETLIFY PRODUCTION ✓ | WEBSITE READBACK ✓ | LIVE ✓ | BORGING ✓**; gebruik `NVT` indien werkelijk niet van toepassing.
