@@ -1,6 +1,6 @@
 import { readFile, writeFile } from 'node:fs/promises';
 
-const files = ['index.html','prototype-v18-stable.html'];
+const files = ['index.html'];
 const marker = 'data-bg-product-led-home-v1';
 
 const section = `
@@ -46,19 +46,19 @@ const section = `
         <span class="pgl-card-kicker">Zien &amp; begrijpen</span>
         <h3>Powerhouse Intelligence</h3>
         <p>Brengt bedrijfsdata, kennis, benchmarks en externe signalen samen tot één actueel beeld van wat er speelt en waar de grootste kans ligt.</p>
-        <a href="/product">Bekijk Intelligence →</a>
+        <a href="https://www.bedrijfsgeheugen.nl/product">Bekijk Intelligence →</a>
       </article>
       <article class="pgl-card">
         <span class="pgl-card-kicker">Beslissen &amp; doen</span>
         <h3>Powerhouse Agents</h3>
         <p>Zet inzichten om in concrete acties voor sales, operations, finance, HR en management — binnen duidelijke guardrails en met bewijs van wat er is gebeurd.</p>
-        <a href="/ai-ecosysteem">Bekijk Agents →</a>
+        <a href="https://www.bedrijfsgeheugen.nl/ai-ecosysteem">Bekijk Agents →</a>
       </article>
       <article class="pgl-card">
         <span class="pgl-card-kicker">Verbinden &amp; automatiseren</span>
         <h3>Powerhouse Connect</h3>
         <p>Laat AFAS, Exact, Microsoft 365 en andere systemen samenwerken, zodat informatie één keer wordt vastgelegd en daarna doorstroomt.</p>
-        <a href="/systemen-koppelen">Bekijk Connect →</a>
+        <a href="https://www.bedrijfsgeheugen.nl/systemen-koppelen">Bekijk Connect →</a>
       </article>
     </div>
 
@@ -77,7 +77,7 @@ const section = `
     </div>
 
     <div class="pgl-actions">
-      <a class="pgl-btn" href="/zelfscan">Start gratis met je Bedrijfslek-scan →</a>
+      <a class="pgl-btn" href="https://www.bedrijfsgeheugen.nl/zelfscan">Start gratis met je Bedrijfslek-scan →</a>
       <a class="pgl-btn secondary" href="/product">Bekijk Powerhouse</a>
     </div>
   </div>
