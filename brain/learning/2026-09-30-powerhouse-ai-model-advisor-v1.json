@@ -39,10 +39,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/ai-modelwijzer-v1.test.mjs"
-    ],
-    "canary": [
-      "tests/ai-modelwijzer-v1.test.mjs"
+      "tests/brain-ai-modelwijzer-v1.test.mjs"
     ]
   },
   "truth_boundary": "Recommendation scores are workload-fit heuristics; pricing, lifecycle and governance become decision evidence only when backed by current official-source verification."
