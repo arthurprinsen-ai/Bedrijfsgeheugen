@@ -79,6 +79,9 @@ before insert on public.powerhouse_publication_uniqueness_v1
 for each row
 execute function public.powerhouse_publication_story_family_guard_v2();
 
+REVOKE EXECUTE ON FUNCTION public.powerhouse_publication_story_family_guard_v2() FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_publication_story_family_guard_v2() TO service_role;
+
 create or replace function public.powerhouse_reserve_unique_publication_v1(
   p_publication_date date,
   p_channel text,
@@ -281,4 +284,7 @@ begin
     'best_historical_match',v_best_key
   );
 end;
-$$;
+$;
+
+REVOKE EXECUTE ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric,text) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_reserve_unique_publication_v1(date,text,text,numeric,text) TO service_role;
