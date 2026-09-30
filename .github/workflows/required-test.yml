@@ -157,6 +157,27 @@ jobs:
           if (!tests.length) process.exit(0);
           execFileSync('node', ['--test', ...tests], { stdio: 'inherit' });
           NODE
+      - name: Diagnose exact Netlify production build on recovery branch
+        if: github.head_ref == 'recovery/netlify-current-main-build-v1'
+        run: |
+          npm install --ignore-scripts --no-audit --no-fund
+          node tools/site-shell/pricing-build-integrity.mjs capture
+          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          node tools/prijzen-uit-de-homepage.mjs
+          node tools/normaliseer-site-ui.mjs
+          node tools/site-shell/pricing-build-integrity.mjs restore
+          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
+          STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 node tools/site-shell/apply-i18n.mjs
+          STATIC_I18N_NETWORK=0 STATIC_I18N_REQUIRE_CACHE=1 node tools/site-shell/build-localized-routes.mjs
+          node tools/genereer-sitemap.mjs
+          node tools/bouw-release-evidence.mjs
+
       - name: Enforce material writeback closure
         run: node scripts/brain/material-writeback-closure-guard.mjs "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify material writeback closure regression
