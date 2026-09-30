@@ -3,7 +3,6 @@
   "AI Model Advisor · actuele modelintelligence": "AI Model Advisor · current model intelligence",
   "Welk AI-model past bij": "Which AI model fits",
   "wat jij wilt doen?": "what you want to do?",
-  "Vergelijk modellen niet alleen op benchmarks, maar op jouw echte taak: kwaliteit, snelheid, context, API-kosten, privacy, data-opslag, data-soevereiniteit, EU-opties, self-hosting en governance.": "Compare models not only on benchmarks, but on your actual task: quality, speed, context, API cost, privacy, data storage, data sovereignty, EU options, self-hosting and governance.",
   "Taakgestuurd advies": "Task-driven advice",
   "Kosten per workload": "Cost per workload",
   "Data & governance": "Data & governance",
@@ -38,7 +37,6 @@
   "Alle leveranciers": "All providers",
   "Alle statussen": "All statuses",
   "Actief": "Active",
-  "Alle data-opties": "All data options",
   "EU/soevereiniteit relevant": "EU/sovereignty relevant",
   "Model": "Model",
   "Status": "Status",
@@ -83,5 +81,8 @@
   "Zakelijk e-mailadres": "Business email address",
   "AI Modelwijzer": "AI Model Guide",
   "Frisse blik →": "Fresh perspective →",
-  "Preview": "Preview"
+  "Preview": "Preview",
+  "Welk AI-model past bij wat jij wilt doen?": "Which AI model fits what you want to do?",
+  "Vergelijk modellen niet alleen op benchmarks, maar op jouw echte taak: kwaliteit, snelheid, context, API-kosten, privacy, gegevensopslag, data-soevereiniteit, EU-opties, self-hosting en governance.": "Compare models not only on benchmarks, but on your actual task: quality, speed, context, API cost, privacy, data storage, data sovereignty, EU options, self-hosting and governance.",
+  "Alle opslag- en regio-opties": "All storage and region options"
 }
