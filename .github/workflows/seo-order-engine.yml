@@ -8,6 +8,11 @@ on:
       - feat/seo-to-order-intelligence-loop-final-20260905
     paths:
       - 'site/seo-order-map.json'
+      - 'site/seo-order-expansion.json'
+      - 'site/seo-locale-revenue-map.json'
+      - 'tools/genereer-sitemap.mjs'
+      - 'tools/site-shell/build-localized-routes.mjs'
+      - 'netlify.toml'
       - 'tools/seo-order-engine/**'
       - 'tools/seo-growth/**'
       - 'netlify/functions/growth-event.mjs'
@@ -20,6 +25,11 @@ on:
   pull_request:
     paths:
       - 'site/seo-order-map.json'
+      - 'site/seo-order-expansion.json'
+      - 'site/seo-locale-revenue-map.json'
+      - 'tools/genereer-sitemap.mjs'
+      - 'tools/site-shell/build-localized-routes.mjs'
+      - 'netlify.toml'
       - 'tools/seo-order-engine/**'
       - 'tools/seo-growth/**'
       - 'netlify/functions/growth-event.mjs'
