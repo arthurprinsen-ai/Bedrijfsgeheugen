@@ -848,3 +848,19 @@ Alle huidige en toekomstige chats en agents erven aanvullend:
 
 De op 30 september 2026 vastgelegde referentie-evidence is exact-main/Netlify commit `9ae500bb184c5e36053c7ca64fb2d51bea070d9c` met een live fleet van 13 actieve loops: 2 GREEN, 11 AMBER, 0 RED.
 
+## Social story-family duplicate prevention — all chats and agents
+
+Fingerprint: `social|story-family-overlap|all-chat-agent-inheritance|v1`.
+
+All current and future chats, agents, schedulers, recovery workers and social connectors inherit the same fail-closed historical uniqueness authority before any social provider write.
+
+Mandatory invariants:
+- daily idempotency/single-writer protection is not historical uniqueness;
+- exact hash, normalized hash, story fingerprint, shingle similarity, keyword Jaccard and keyword overlap coefficient are cumulative;
+- `powerhouse_reserve_unique_publication_v1` is the canonical reservation gate;
+- `powerhouse_publication_story_family_guard_v2` is the database backstop and cannot be bypassed by application, chat or connector code;
+- a blocked story family must be replaced by a genuinely different source/event/topic, never by rewritten copy;
+- user-reported semantic duplicates are authoritative escaped-defect evidence and become permanent regression cases;
+- canonical 2026-09-30 regression: auto + elektrische schuifdeur + airco + warme lucht + handmatig openen/ramen open + nieuwe routine.
+
+Every material social-publishing change must update the relevant skill, Brain learning, chat/agent contract, development ledger and System Map in the same lineage.

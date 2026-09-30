@@ -86,3 +86,16 @@ This rule is stricter than text-hash/shingle dedupe and overrides the older rota
 Fingerprint: `powerhouse-source-backed-all-channels-v1`.
 
 Public daily-life/friction evidence may determine which personal-life topic is worth writing about, but it is never proof that Arthur personally experienced it. First-person claims still require verified Arthur source truth. If no verified personal anchor exists, write observationally without inventing experience, or hold the item. Always retain source lineage, dedupe historically, and write engagement/inbound outcomes back to the source/problem/angle.
+
+## Personal LinkedIn story-family overlap guard v2 (2026-09-30)
+
+Fingerprint: `personal-linkedin-story-family-overlap-v2`.
+
+A verified personal source can be factually true and still be ineligible because its underlying story was already consumed. For personal LinkedIn:
+- a published anecdote is permanently consumed as a story family;
+- source rotation may never return to an already-published anecdote;
+- same objects + same event + same lived sequence + same conclusion/routine count as the same story even when phrasing is new;
+- the database story-family overlap gate is mandatory before provider write;
+- on `STORY_FAMILY_DUPLICATE`, choose a different verified personal event rather than paraphrasing.
+
+Canonical regression family now also includes the car incident: broken electric sliding door, warm airco, manual door/windows-open workaround and adaptation to the new routine.

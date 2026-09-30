@@ -178,3 +178,19 @@ Runtime authorities:
 Channel boundaries remain hard: public evidence may select a personal-life theme but cannot fabricate an Arthur experience; company/blog prefer current evidence over static seeds; email/LinkedIn DM require a traceable trigger plus person/company context; Instagram remains Mira-only. Provider outcomes and commercial outcomes return to the same lineage.
 
 Continuous assurance authority: `source-backed-outbound`. The hourly scheduler `powerhouse-outbound-source-lineage-hourly-v1` re-proves all eight stages—input, decision, action, readback, outcome, measurement, learning and guard. GREEN requires current runtime evidence plus 8/8 fresh stage receipts.
+
+## Social historical story-family uniqueness v6 — 30 september 2026
+
+The System Map now contains `social-story-family-uniqueness-v6` as a fail-closed social-publication authority.
+
+Canonical chain:
+
+`candidate → exact/normalized hash → story fingerprint → shingle similarity → keyword Jaccard → keyword overlap coefficient → database reservation/backstop → provider write`.
+
+Authority:
+- `public.powerhouse_reserve_unique_publication_v1`
+- `public.powerhouse_publication_story_family_guard_v2`
+- `public.powerhouse_publication_uniqueness_v1`
+- `supabase/functions/powerhouse-social-publisher/index.ts`
+
+All chats, agents, schedulers and connectors consume the same canonical history. A rewritten version of a consumed anecdote is never a new story. The car/electric-sliding-door/airco incident from 24/30 September 2026 is the permanent regression case.

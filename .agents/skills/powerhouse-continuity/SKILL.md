@@ -1476,3 +1476,16 @@ Continuity ownership bij “zet live” omvat altijd de volledige governance-wri
 `protected merge/main → exact productie/provider side effect → capability-readback → outcome-truth → Brain learning → skill/agent/chat projection → ledger/docs → System Map → read-after-write`.
 
 Een ready deploy is uitsluitend deploymentbewijs. Functionele subketens blijven onafhankelijk gated. De volgende chat/agent hervat vanaf deze geschreven staat; de gebruiker hoeft borging/documentatie niet opnieuw te vragen.
+
+## Social story-family guard inheritance (2026-09-30)
+
+Fingerprint: `powerhouse-social-story-family-guard-inheritance-v1`.
+
+Every current/new/resumed chat or agent that can influence social content must inherit the canonical historical uniqueness state before generation, retry, scheduling or publication. Local conversation context, a new prompt, a different agent or rewritten copy never resets consumed story history.
+
+Mandatory:
+- call the canonical database uniqueness authority before provider side effects;
+- treat `STORY_FAMILY_DUPLICATE` as a candidate rejection, not as a recoverable wording problem;
+- continue the same daily obligation by selecting a genuinely different verified source/event/topic;
+- never create a parallel dedupe memory or chat-local exception;
+- preserve the 2026-09-30 car/sliding-door/airco incident as a permanent escaped-defect regression.

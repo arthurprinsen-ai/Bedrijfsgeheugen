@@ -28,3 +28,16 @@ test('canonical system map exposes the upgraded social publication authority',()
   assert.match(systemMap,/employee_absence_or_departure__knowledge_only_in_heads/);
   assert.match(systemMap,/tests\/brain-linkedin-company-historical-dedupe-v1\.test\.mjs/);
 });
+
+test('story-family overlap v6 is inherited and system-mapped',()=>{
+  const personal=fs.readFileSync('.agents/skills/personal-linkedin-life-only/SKILL.md','utf8');
+  assert.match(linkedin,/powerhouse-story-family-overlap-dedupe-v6/);
+  assert.match(linkedin,/powerhouse_publication_story_family_guard_v2/);
+  assert.match(linkedin,/at least 10 meaningful keywords overlap/i);
+  assert.match(personal,/personal-linkedin-story-family-overlap-v2/);
+  assert.match(agents,/social\|story-family-overlap\|all-chat-agent-inheritance\|v1/);
+  assert.match(agents,/database backstop and cannot be bypassed/i);
+  assert.match(systemMap,/id:'social-story-family-uniqueness-v6'/);
+  assert.match(systemMap,/backstop:'public\.powerhouse_publication_story_family_guard_v2'/);
+  assert.match(systemMap,/paraphraseRegressionBlocked:true/);
+});

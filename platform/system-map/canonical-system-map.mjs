@@ -36,6 +36,42 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'social-story-family-uniqueness-v6',
+      label:'Social Historical Story-Family Uniqueness v6',
+      authority:'supabase',
+      owner:'social-publication-authority',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['final social candidate','retained publication history','canonical story fingerprint','meaningful-keyword set']),
+      outputs:Object.freeze(['UNIQUE_RESERVED','STORY_FAMILY_DUPLICATE','provider-write fence']),
+      runtime:Object.freeze({
+        reservation:'public.powerhouse_reserve_unique_publication_v1',
+        backstop:'public.powerhouse_publication_story_family_guard_v2',
+        history:'public.powerhouse_publication_uniqueness_v1',
+        publisher:'supabase/functions/powerhouse-social-publisher/index.ts',
+        skill:'.agents/skills/linkedin-composio-publisher/SKILL.md',
+        personalSkill:'.agents/skills/personal-linkedin-life-only/SKILL.md',
+        regression:'tests/brain-social-duplicate-prevention-governance-v1.test.mjs',
+        learning:'brain/learning/2026-09-30-social-story-family-dedupe-v6.json'
+      }),
+      productionEvidence:Object.freeze({
+        escapedDefect:'2026-09-24 vs 2026-09-30 personal LinkedIn car/sliding-door/airco story',
+        sharedMeaningfulKeywords:16,
+        priorJaccardApprox:0.165,
+        observedOverlapAgainstSmallerStoryApprox:0.372,
+        paraphraseRegressionBlocked:true,
+        regressionResult:'STORY_FAMILY_DUPLICATE',
+        observedAt:'2026-09-30T07:15:00+02:00'
+      }),
+      invariants:Object.freeze({
+        databaseEnforced:true,
+        applicationBypassForbidden:true,
+        storyRewriteIsNotNovelty:true,
+        overlapCoefficientGate:true,
+        userReportedDuplicateBecomesRegression:true,
+        consumedStoryFamilyNeverReactivatedByRewording:true
+      })
+    }),
+    Object.freeze({
       id:'source-backed-outbound-loop-v1',
       label:'Powerhouse Source-backed Outbound Loop',
       authority:'supabase+provider-readback',
