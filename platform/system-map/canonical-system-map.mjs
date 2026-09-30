@@ -79,7 +79,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       authority:'github+official-provider-evidence+supabase-commercial-outcomes',
       owner:'Powerhouse Growth & Revenue OS / whole-brain-intelligence',
       status:'CANDIDATE_PROTECTED_DELIVERY',
-      inputs:Object.freeze(['official provider model/pricing/lifecycle/governance evidence','user goal','task volume and token profile','cost/latency/quality priority','privacy/residency/sovereignty constraints']),
+      inputs:Object.freeze(['official provider model/pricing/lifecycle/governance evidence','plain-language business outcome','one-off vs recurring cadence','number of users/employees','estimated workload volume','data sensitivity','error impact','integration pattern','budget','cost/latency/quality priority','privacy/residency/sovereignty constraints']),
       outputs:Object.freeze(['explainable model shortlist','task-cost estimate','multi-model routing recommendation','qualified lead context','model-intelligence learning']),
       runtime:Object.freeze({providerGovernance:'data/ai-provider-governance-v1.json',
         catalog:'data/ai-model-catalog-v1.json',
@@ -110,7 +110,12 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         perModelVerificationDateRequired:true,
         governanceUnknownNeverGreen:true,
         broadSpecialistCoverage:true,
-        falconOpenWeightCoverageRequired:true
+        falconOpenWeightCoverageRequired:true,
+        noviceOutcomeFirstWizard:true,
+        unknownAnswerStillActionable:true,
+        employeeAndCadenceScaleCost:true,
+        errorImpactDrivesHumanControl:true,
+        plainLanguageRecommendationRequired:true
       })
     }),
     Object.freeze({
