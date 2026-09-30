@@ -85,3 +85,5 @@ Every user-visible Dutch string introduced on `/ai-modelwijzer` must have a dete
 
 ## SEO cluster visibility invariant
 All public AI-model provider/comparison pages must include a visible canonical Bedrijfsgeheugen header/navigation element on phone, tablet and desktop. Standalone SEO pages without a header are a release blocker even when their content, canonicals and Modelwijzer links are correct.
+
+Every indexable AI Modelwijzer SEO intent route must expose a visible canonical Bedrijfsgeheugen header and pass the shared phone/tablet/desktop visibility gate. Standalone SEO content without the global header is not production-ready.
