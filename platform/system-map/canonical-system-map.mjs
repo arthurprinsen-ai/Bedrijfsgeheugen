@@ -636,7 +636,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         v18GeneratorMayOverwriteBedrijfslek:false,
         companyBrainIsCategoryNotProductRename:true,
         companyBrainCanonicalOwner:'/company-brain',
-        companyBrainMeasuredToRevenue:true
+        companyBrainMeasuredToRevenue:true,
+        staticI18nPostShellFinalArtifactCoverageRequired:true
       })
     }),
     Object.freeze({
