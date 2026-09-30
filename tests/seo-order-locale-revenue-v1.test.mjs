@@ -22,7 +22,9 @@ test('AI Modelwijzer owns commercial model-comparison intent in both languages',
   assert.equal(page.en.primary_keyword,'AI model comparison');
   assert.ok(page.en.secondary_keywords.includes('AI model selector'));
   assert.equal(page.en.route,ORIGIN+'/en/ai-modelwijzer');
-  assert.equal(page.revenue_priority,'medium');
+  assert.equal(page.role,'support');
+  assert.equal(page.revenue_priority,'support');
+  assert.equal(page.conversion_destination,ORIGIN+'/frisse-blik');
 });
 
 test('measured keyword evidence contains revenue-signalling NL and EN demand', async()=>{
