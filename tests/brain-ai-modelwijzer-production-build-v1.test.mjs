@@ -19,3 +19,16 @@ test('canonical website lane executes Modelwijzer regressions',()=>{
   assert.match(workflow,/tests\/ai-model-advisor-v1\.test\.mjs/);
   assert.match(workflow,/tests\/brain-ai-modelwijzer-production-build-v1\.test\.mjs/);
 });
+
+test('AI Modelwijzer SEO routes keep a visible canonical header',()=>{
+  const routes=[
+    'openai-ai-modellen/index.html','claude-ai-modellen/index.html','gemini-ai-modellen/index.html',
+    'mistral-ai-modellen/index.html','amazon-ai-modellen/index.html','chatgpt-vs-claude/index.html',
+    'chatgpt-vs-gemini/index.html','claude-vs-gemini/index.html'
+  ];
+  for(const route of routes){
+    const html=fs.readFileSync(route,'utf8');
+    assert.match(html,/<nav\b[^>]*class="[^"]*\bbgkop\b[^"]*"/i,route);
+    assert.match(html,/https:\/\/www\.bedrijfsgeheugen\.nl\/ai-modelwijzer/,route);
+  }
+});
