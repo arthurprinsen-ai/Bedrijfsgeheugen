@@ -1630,6 +1630,26 @@
         ],
         "system_map_projection": "seo-conversion-orders.runtime.companyBrainCategory",
         "static_i18n_post_shell_final_artifact_coverage_required": true
+      },
+      "locale_revenue_seo": {
+        "fingerprint": "seo|nl-en|keyword-ownership-to-revenue|v1",
+        "authority": "site/seo-locale-revenue-map.json",
+        "locales": [
+          "nl",
+          "en"
+        ],
+        "english_keyword_strategy": "market-specific evidence, not literal translation",
+        "hreflang": [
+          "nl",
+          "en",
+          "x-default"
+        ],
+        "english_sitemap": true,
+        "locale_preserving_internal_links": true,
+        "revenue_outcomes": [
+          "paid_order",
+          "realized_revenue"
+        ]
       }
     },
     {
