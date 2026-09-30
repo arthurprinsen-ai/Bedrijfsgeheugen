@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T05:15:00Z',
+  observedAt:'2026-09-29T19:10:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -958,3 +958,35 @@ export const POWERHOUSE_LOOP_ASSURANCE_V3 = Object.freeze({
   criticalZeroEvidence:'RED',
   truthRule:'No synthetic outcome, learning or guard evidence; GREEN requires fresh proof for every required stage.'
 });
+
+export const POWERHOUSE_LOOP_ASSURANCE_TERMINAL_LIVE_CLOSURE_V1 = Object.freeze({
+  fingerprint:'powerhouse|loop-assurance|terminal-live-closure|2026-09-30-v1',
+  status:'LIVE_WITH_TRUTHFUL_AMBER_FLEET',
+  inheritedBy:Object.freeze(['all-current-chats','all-future-chats','all-current-agents','all-future-agents']),
+  dynamicRegistry:true,
+  exactGreenRule:'8/8 fresh required stage evidence',
+  historicalGreenReusable:false,
+  protectedMain:'9ae500bb184c5e36053c7ca64fb2d51bea070d9c',
+  netlify:Object.freeze({
+    state:'ready',
+    commitRef:'9ae500bb184c5e36053c7ca64fb2d51bea070d9c',
+    publishedAt:'2026-09-29T19:31:30.436Z'
+  }),
+  productionReadback:Object.freeze({
+    observedAt:'2026-09-29T19:31:53.360061Z',
+    totalLoops:13,
+    greenLoops:2,
+    amberLoops:11,
+    redLoops:0,
+    fullyEvidencedLoops:2,
+    greenLoopKeys:Object.freeze(['autonomous-outreach','source-backed-outbound'])
+  }),
+  closureArtifacts:Object.freeze([
+    'brain/learning/2026-09-30-powerhouse-loop-assurance-terminal-live-closure-v1.json',
+    'docs/development-ledger-events/2026-09-30-powerhouse-loop-assurance-terminal-live-closure-v1.md',
+    'docs/changes/2026-09-30-powerhouse-loop-assurance-terminal-live-closure-v1.md',
+    '.agents/skills/powerhouse-green-assurance/SKILL.md',
+    'AGENTS.md'
+  ])
+});
+
