@@ -312,6 +312,20 @@ function ensureMetaNode(head, predicate, attrs) {
   return node;
 }
 
+function removeElementById(doc,id) {
+  const node=findFirst(doc,n=>String(attr(n,'id')||'')===String(id));
+  const parent=node?.parentNode;
+  if(!node||!parent||!Array.isArray(parent.childNodes)) return false;
+  parent.childNodes=parent.childNodes.filter(child=>child!==node);
+  return true;
+}
+
+function enforceStaticLocaleTitleOwnership(doc) {
+  // Localized pages are real static canonicals. A legacy SPA tab-title script
+  // must never overwrite their SEO title after the browser executes JavaScript.
+  return removeElementById(doc,'bg-tabtitel');
+}
+
 function applyLocaleSeoMetadata(doc,locale,route,localizedUrl) {
   const head=findFirst(doc,n=>n.tagName==='head');
   const body=findFirst(doc,n=>n.tagName==='body');
@@ -722,6 +736,7 @@ for (const file of files) {
   const route = routeFor(file);
 
   const nlDoc = parse(sourceHtml);
+  enforceStaticLocaleTitleOwnership(nlDoc);
   rewriteLinks(nlDoc,file,'nl',aliases);
   rewriteLanguageSwitchers(nlDoc,route,'nl');
   setLocaleMetadata(nlDoc,'nl',route,true);
@@ -737,6 +752,7 @@ for (const file of files) {
   fs.writeFileSync(path.join(ROOT,file),nlSerialized);
 
   const enDoc = parse(sourceHtml);
+  enforceStaticLocaleTitleOwnership(enDoc);
   const enRefs = collectTranslatables(enDoc);
   const missingForRoute = translations
     ? applyTranslations(enRefs,translations,{allowMissing:!productionTranslationRequired})

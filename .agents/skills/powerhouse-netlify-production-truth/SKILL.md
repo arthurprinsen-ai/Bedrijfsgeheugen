@@ -153,3 +153,33 @@ When the public language control is activated: persist the target locale, preven
 Regression: `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
 Production canary: `tools/site-shell/verify-pricing-i18n-production.mjs`.
 Terminal proof: exact-main Netlify production plus successful NL → EN → NL browser roundtrip.
+
+
+## Independent public-browser fallback readback
+
+Fingerprint: `production-readback|independent-browser-fallback|zenrows-v1`.
+
+Native browser/tool access to `bedrijfsgeheugen.nl` is not itself a production health oracle. If the default public browser cannot open the domain, Powerhouse must continue the same terminal readback through an independent external browser/fetch provider instead of stopping or reporting only Netlify provider readiness.
+
+Canonical fallback order:
+1. default public browser/readback;
+2. independent ZenRows browser or JS-rendered scrape against the public custom domain;
+3. exact Netlify production/deploy URL readback as provider-correlated fallback;
+4. provider state only is insufficient for functional closure.
+
+For SEO/indexation checks, independent public readback must inspect the actually served response and, where JavaScript can mutate state, both:
+- raw server HTML; and
+- JS-rendered browser state.
+
+Required SEO proof for bilingual money/support pages includes:
+- reachable public URL;
+- correct `html[lang]`;
+- self-canonical;
+- reciprocal `hreflang=nl`, `en`, `x-default`;
+- intended title after JavaScript execution;
+- intended description and keyword/intent-owner markers;
+- sitemap membership for both locale canonicals and reciprocal sitemap hreflang.
+
+A JS-rendered title that differs from raw HTML is a runtime SEO defect, not a successful readback. Legacy SPA title mutators such as `#bg-tabtitel` may not overwrite static localized canonical titles.
+
+When a native browser is blocked but ZenRows succeeds, the ZenRows result is valid independent public-browser evidence and must be used instead of claiming that public readback is unavailable.
