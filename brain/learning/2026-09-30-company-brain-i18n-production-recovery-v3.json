@@ -1,0 +1,38 @@
+{
+  "id": "2026-09-30-company-brain-i18n-production-recovery-v3",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "company-brain|current-main|static-i18n-cache|v3",
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 3
+  },
+  "root_cause": "Concurrent Company Brain and AI Modelwijzer changes were merged on moving main epochs. Production therefore built a combination that had not been re-proven as one exact candidate, exposing post-transform static-English cache gaps after merge.",
+  "prevention": [
+    "Re-prove the exact current-main combination after concurrent public-site changes.",
+    "Keep exact post-transform translation fragments in the canonical static cache.",
+    "Supersede stale recovery PRs rather than merging them across a moved main epoch."
+  ],
+  "fix": "Apply the exact Company Brain fragment translations on current main and run the canonical premerge production-build parity before the next production promotion.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_production_runs": [
+      "github-actions:36690947075",
+      "github-actions:36691888821",
+      "github-actions:36692293571"
+    ],
+    "base_sha": "77e08f3ede16e4e2b1f3b064addf7c93f3d5bfb3",
+    "cache": "config/bg-static-i18n-en.d/20260930-company-brain-category-v1.json"
+  },
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "powerhouse-continuity"
+  ]
+}
