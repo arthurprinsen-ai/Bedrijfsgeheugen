@@ -205,6 +205,13 @@
       "required": true
     },
     {
+      "id": "netlify_function:ai-model-advisor-lead",
+      "type": "netlify_function",
+      "authority": "netlify/functions/ai-model-advisor-lead.mjs",
+      "evidence_contract": "tests/ai-modelwijzer-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:checkout-create",
       "type": "netlify_function",
       "authority": "netlify/functions/checkout-create.mjs",
@@ -776,6 +783,27 @@
       "type": "table",
       "authority": "supabase/migrations/20260917154000_production_schema_replay_parity_v1.sql",
       "evidence_contract": "tests/supabase-production-schema-replay-parity-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_ai_model_advisor_events",
+      "type": "table",
+      "authority": "supabase/migrations/20260930090500_powerhouse_ai_model_intelligence_v1.sql",
+      "evidence_contract": "tests/ai-modelwijzer-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_ai_model_registry",
+      "type": "table",
+      "authority": "supabase/migrations/20260930090500_powerhouse_ai_model_intelligence_v1.sql",
+      "evidence_contract": "tests/ai-modelwijzer-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_ai_model_source_watch",
+      "type": "table",
+      "authority": "supabase/migrations/20260930090500_powerhouse_ai_model_intelligence_v1.sql",
+      "evidence_contract": "tests/ai-modelwijzer-v1.test.mjs",
       "required": true
     },
     {
