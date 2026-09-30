@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-29T19:10:00Z',
+  observedAt:'2026-09-30T07:10:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,39 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'ai-model-intelligence-advisor-v1',
+      label:'AI Model Intelligence & Advisor',
+      authority:'github+official-provider-evidence+supabase-commercial-outcomes',
+      owner:'Powerhouse Growth & Revenue OS / whole-brain-intelligence',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['official provider model/pricing/lifecycle/governance evidence','user goal','task volume and token profile','cost/latency/quality priority','privacy/residency/sovereignty constraints']),
+      outputs:Object.freeze(['explainable model shortlist','task-cost estimate','multi-model routing recommendation','qualified lead context','model-intelligence learning']),
+      runtime:Object.freeze({
+        catalog:'data/ai-model-catalog-v1.json',
+        policy:'config/powerhouse-ai-model-intelligence-v1.json',
+        publicSurface:'/ai-modelwijzer',
+        leadFunction:'netlify/functions/ai-modelwijzer-lead.mjs',
+        skill:'.agents/skills/powerhouse-ai-model-intelligence/SKILL.md',
+        learning:'brain/learning/2026-09-30-powerhouse-ai-model-advisor-v1.json',
+        regression:'tests/ai-model-advisor-v1.test.mjs',
+        dailyAudit:'scripts/brain/ai-model-intelligence-audit.mjs',
+        dailyWorkflow:'.github/workflows/powerhouse-daily-self-evolution.yml'
+      }),
+      invariants:Object.freeze({
+        userGoalFirst:true,
+        noUniversalBestModelClaim:true,
+        dataResidencyIsNotSovereignty:true,
+        storageAndInferenceResidencySeparated:true,
+        providerJurisdictionExplicit:true,
+        officialSourceFirst:true,
+        unknownIsNotGuaranteed:true,
+        valueBeforeLeadGate:true,
+        noParallelLeadStore:true,
+        qualifiedLeadToRevenueLoop:true,
+        protectedDeliveryAndProductionReadbackRequired:true
+      })
+    }),
     Object.freeze({
       id:'social-story-family-uniqueness-v6',
       label:'Social Historical Story-Family Uniqueness v6',

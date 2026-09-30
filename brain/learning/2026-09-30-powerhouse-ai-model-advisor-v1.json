@@ -1,0 +1,13 @@
+{
+  "id": "powerhouse-ai-model-advisor-v1",
+  "date": "2026-09-30",
+  "status": "candidate",
+  "learning": "AI-model comparison is a decision capability, not a static article. The canonical unit is user goal + hard governance constraints + cost-per-task + explainable alternatives.",
+  "prevention": [
+    "Do not collapse EU storage into EU inference or sovereignty.",
+    "Do not optimize for benchmark ranking alone.",
+    "Do not use stale model names or prices without official-source freshness.",
+    "Do not gate the first useful recommendation behind lead capture."
+  ],
+  "next_decision": "Route model/provider questions through the canonical AI Model Intelligence catalog and advisor surface."
+}
