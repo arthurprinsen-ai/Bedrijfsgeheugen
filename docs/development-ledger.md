@@ -373,3 +373,11 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Action:** bounded website promotion candidate with explicit closure evidence.
 - **Terminal gate:** Netlify production identity + public `/company-brain` readback; merge is not sufficient.
 - **Prevention:** every material public promotion includes Brain learning, activity ledger and human documentation in the same candidate.
+
+
+## 2026-09-30 — RECOVERY — Company Brain Netlify build + shell
+- **Fingerprint:** `production|company-brain-netlify-build-recovery|v1`.
+- **Observed:** both Git-linked and exact-source Netlify promotion builds failed after the Company Brain merge; public-page CI also reported an i18n runtime insertion error, one inbound link and prohibited wording.
+- **Root cause addressed:** custom page header competed with canonical shell ownership; the new category literal was not guaranteed in the static EN cache; category authority linking was too weak.
+- **Fix:** canonical shell only, completed Company Brain i18n patch, clean copy, contextual inbound links from Bedrijfsgeheugen and AI-ecosysteem.
+- **Terminal proof required:** successful Netlify build + live route readback; repository state alone is non-terminal.
