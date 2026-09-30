@@ -251,3 +251,37 @@ For `REJECTED_WITH_EVIDENCE`, persist:
 Do not use CI/tool/transient delivery failures as rejection reasons. They are recovery work and must remain in the same execution lineage.
 
 When evidence supports one or more safe changes, execute up to the configured daily maximum rather than merely describing them. The operator report must state what was changed and the measured/readback state; if no change was made, it must state the evidence-backed reason why.
+
+
+## Bilingual SEO revenue architecture — 30 september 2026
+
+Fingerprint: `seo|nl-en|revenue-ownership|hreflang|v1`.
+
+The public website is one commercial search system across Dutch and English, not a Dutch SEO estate with translated copies added later.
+
+Canonical rules:
+- Dutch canonicals remain unprefixed. English canonicals use `/en/*`.
+- Every indexable NL route that is part of the public localized estate must have an EN peer with self-canonical, reciprocal `hreflang="nl"`, `hreflang="en"` and `x-default` to Dutch.
+- The production sitemap must contain both NL and EN canonicals and reciprocal xhtml hreflang entries. Legacy `/nl/*` URLs never enter the sitemap.
+- English SEO keywords are researched and owned independently; never mechanically translate Dutch target keywords and assume equivalent demand.
+- `site/seo-order-map.json` + `site/seo-order-expansion.json` remain the canonical intent-owner registry. `site/seo-locale-revenue-map.json` is the bilingual market/metadata/revenue projection of those owners and must have exactly one entry per registry owner.
+- Every NL and EN primary/secondary keyword has one owner. Cross-page collisions fail closed. Supporting pages inherit the localized commercial owner instead of creating parallel keyword ownership.
+- High-value English owners must have market-specific title, description and keyword metadata. Supporting English pages inherit the EN owner/cluster for attribution even when their visible copy is a normal translation.
+- Internal links are revenue architecture, not link-count SEO. Related support routes link to their canonical money owner; money owners link to relevant cluster pages and the next commercial destination. The same graph is projected to `/en/*`.
+- The production chain is: localized pages → bilingual revenue-link projection → sitemap generation → bilingual SEO/revenue validation → release evidence.
+- Search intelligence maps Dutch and English queries back to one canonical business intent owner while preserving the actual localized landing canonical and localized keyword cluster for attribution.
+- Market evidence must be keyed by `locale + market + keyword`; a single keyword primary key is insufficient for multilingual SEO. Canonical runtime authority is `public.powerhouse_seo_keyword_intelligence_v1` with the revenue-priority projection `public.powerhouse_seo_keyword_revenue_priority_v1`.
+- DataForSEO/GSC demand signals are diagnostics and prioritization evidence. They become commercial truth only after the closed loop records landing → CTA → lead → meeting/proposal → paid order → realized revenue.
+- Revenue opportunity scoring may prioritize CPC, search volume and intent, but it may not fabricate demand or treat forecast value as realized revenue.
+- The Modelwijzer is a canonical commercial intent owner for Dutch `ai modellen vergelijken` and English `AI model comparison`; it must route to implementation/governance/data-sovereignty/pricing/commercial next steps rather than terminate as an isolated tool.
+- Every material keyword/metadata/internal-link change must preserve cannibalization ownership, protected delivery, exact-main production identity, public readback and outcome writeback.
+
+Measured seed evidence from 30 September 2026:
+- NL `bedrijfsprocessen automatiseren`: 480 monthly searches, CPC €14.53.
+- NL `ai governance`: 390 monthly searches, CPC €15.86.
+- NL `data soevereiniteit`: 260 monthly searches, CPC €6.33.
+- EN/UK `AI model comparison`: 390 monthly searches, CPC €3.30.
+- EN/UK `ai governance`: 1,300 monthly searches, CPC €24.01.
+- EN/UK `sovereign ai`: 2,400 monthly searches, CPC €13.28.
+
+These are dated market observations, not guaranteed future volumes. Refresh them through the canonical DataForSEO evidence path and learn from realized commercial outcomes.
