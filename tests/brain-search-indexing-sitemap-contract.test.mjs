@@ -27,3 +27,24 @@ test('sitemap generator excludes noindex and only emits final canonical URLs', a
   assert.match(source, /const url = canonical\(html\)/);
   assert.match(source, /if \(!url\.startsWith\(\x60\$\{ORIGIN\}\//);
 });
+
+
+test('website lane mirrors the full bilingual Netlify SEO pipeline', async () => {
+  const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
+  const ordered=[
+    'node tools/seo-order-engine/apply.mjs',
+    'node tools/seo-order-engine/validate.mjs',
+    'node tools/site-shell/apply-i18n.mjs',
+    'node tools/site-shell/build-localized-routes.mjs',
+    'node tools/seo-order-engine/apply-revenue-links.mjs',
+    'node tools/genereer-sitemap.mjs',
+    'node tools/seo-order-engine/validate-locales.mjs',
+    'node tools/bouw-release-evidence.mjs'
+  ];
+  let cursor=-1;
+  for(const step of ordered){
+    const next=workflow.indexOf(step,cursor+1);
+    assert.ok(next>cursor, `website build parity must include ordered step: ${step}`);
+    cursor=next;
+  }
+});
