@@ -1,0 +1,23 @@
+{
+  "id": "2026-09-30-company-brain-live-build-recovery-v1",
+  "fingerprint": "production|company-brain-netlify-build-recovery|v1",
+  "type": "RECOVERY",
+  "observed_at": "2026-09-30",
+  "failure_class": "DELIVERY",
+  "scope": "GENERAL",
+  "machine_enforceable": false,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "The Company Brain page introduced a new translatable literal that was not guaranteed in the static English cache and used a custom header that conflicted with the canonical shell/i18n runtime. The SEO readback also found only one inbound link and prohibited wording.",
+  "fix": "Use the canonical shell instead of a custom header, complete the static translation cache for the category term and recovery copy, remove the prohibited wording, and add two contextual inbound links from existing authority pages.",
+  "prevention": [
+    "Every new public route must use canonical shell ownership",
+    "Every new visible literal must be present in the static English cache before production",
+    "New category pillars require at least three contextual inbound links before live promotion"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-brain-category-positioning-v1.test.mjs"
+    ]
+  }
+}
