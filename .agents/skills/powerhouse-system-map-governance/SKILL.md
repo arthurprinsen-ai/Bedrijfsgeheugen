@@ -102,3 +102,9 @@ Canonical runtime: `public.powerhouse_run_daily_compound_learning_v1(date)`.
 Fingerprint: `powerhouse|public-cms-i18n|shared-shell-same-route|v1`.
 
 De System Map moet de publieke website als één control surface modelleren: `canonicalWebsiteChrome` + `publicLocaleAuthority`. Relaties omvatten site-shell → header/footer/megamenu/navigation → localized-route builder → versioned i18n runtime → Netlify production → live browser readback. Elke structurele wijziging aan deze keten vereist dezelfde-lineage System Map writeback.
+
+
+## Terminal Live Handoff als control-surface status
+Fingerprint: `powerhouse|system-map|terminal-live-handoff-visibility|v1`.
+
+Iedere chart, dashboard of control surface die website-delivery toont, gebruikt de keten **MAIN → NETLIFY PRODUCTION → WEBSITE READBACK → LIVE → BORGING**. `LIVE` staat voor functioneel bewezen productie; `BORGING` staat voor skill/agent-chat/Brain/ledger/docs/System Map writeback. Als LIVE al groen is en alleen BORGING nog openstaat, toon dit als post-live closure en start geen nieuwe delivery-lineage.
