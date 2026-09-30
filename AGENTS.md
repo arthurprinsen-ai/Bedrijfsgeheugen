@@ -922,3 +922,23 @@ Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen contr
 Fingerprint: `website|i18n|persistent-public-navigation|v1`.
 
 Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: een gekozen publieke taal blijft actief over alle interne paginanavigatie. English betekent dat alle in aanmerking komende same-origin publieke links naar de equivalente `/en/*` route wijzen; Nederlands gebruikt de onprefixte canonieke route. Query/hash blijven behouden. Portal/klantportaal en technische paden (`/api/`, `/.netlify/`, `/assets/`, `/functions/`) worden niet herschreven. Ook dynamisch aangemaakte menu- en navigatielinks vallen onder deze regel. “De huidige pagina is Engels” is geen terminal bewijs: browser-readback moet taalkeuze → navigatie naar andere pagina → taal blijft gelijk → terugschakelen → opnieuw navigeren aantonen.
+
+
+## Commercial outbound transport self-heal — inherited
+
+Fingerprint: `commercial|outbound-transport-self-heal|gmail-linkedin-dm|v1`.
+
+Alle huidige en toekomstige chats/agents die commerciële e-mail, LinkedIn-DM of provider-outreach raken lezen en volgen `skills/powerhouse-commercial-outbound-self-heal.md`.
+
+Niet-onderhandelbaar:
+- herstelbare connector-/transportfouten zijn nooit terminale `error`;
+- provider-project/connection consistency wordt vóór iedere write geverifieerd;
+- Composio MCP word-id/alias en raw API connected-account id mogen nooit door elkaar worden gebruikt;
+- direct Composio execute gebruikt actuele/pinned toolversion, vereiste top-level user/entity identity en volledige structured error serialization;
+- `[object Object]` als provider-error is een regressie;
+- bij ontbrekende server-side Gmail maar beschikbare canonieke Gmail-connector mag dezelfde sales-action lineage veilig fallback gebruiken;
+- provider message/thread IDs worden read-after-write teruggeschreven vóór `done`;
+- daglimiet, suppression, cooldown, consent/existing-relationship, dedupe en republish-forbidden blijven harde gates;
+- LinkedIn-DM is alleen toegestaan via een echte geverifieerde send-DM capability; post/comment is nooit DM-fallback;
+- ontbrekende DM-capability mag alleen naar bestaande geautoriseerde e-mailrelatie fallbacken wanneer een geldig e-mailadres bekend is;
+- iedere fout schrijft root cause → fix → prevention naar Brain failure registry, learning en Loop Assurance.
