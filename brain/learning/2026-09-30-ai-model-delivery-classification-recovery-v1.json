@@ -1,0 +1,84 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|ai-modelwijzer|delivery-path-classification|2026-09-30-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE",
+  "context": "The AI Modelwijzer capability introduced new public data and diagnostic tool paths. The central delivery classifier did not recognize all of those paths, so protected Required delivery failed even though the capability and preview were otherwise valid.",
+  "root_cause": "New capability-specific public data/tool paths were added without simultaneously extending the canonical BRAIN-DELIVERY-v2 website path classifier.",
+  "fix": [
+    "Classify data/ai-model-* as website delivery.",
+    "Classify tools/ai-model-intelligence-* as website delivery.",
+    "Classify tools/ai-modelwijzer-* as website delivery.",
+    "Add regression coverage that fails if these paths become unclassified.",
+    "Run all committed AI Modelwijzer regression files from the canonical website lane so the delivery-test coverage guard is satisfied.",
+    "Add every new Modelwijzer governance sentence to the deterministic static English cache before protected production build.",
+    "Add the canonical visible Bedrijfsgeheugen header to all eight AI provider/comparison SEO pages."
+  ],
+  "prevention_rules": [
+    "Every new public capability must register all new executable/data/tool path prefixes in the canonical delivery classifier in the same change lineage.",
+    "An unclassified delivery path is a fail-closed defect and must never be bypassed.",
+    "Capability tests and preview success do not replace Required admission.",
+    "Every committed AI Modelwijzer regression test must be wired into a canonical CI lane in the same lineage.",
+    "Public Modelwijzer copy changes must update the static English translation cache in the same candidate; missing cache entries remain fail-closed.",
+    "Standalone public AI SEO pages must carry a visible canonical site header at phone, tablet and desktop widths."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md"
+  ],
+  "agent_contract_targets": [
+    "config/brain-delivery-system.json"
+  ],
+  "system_map_target": "platform/system-map/canonical-system-map.mjs",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-delivery-classification-v1.test.mjs"
+    ]
+  },
+  "truth_boundary": "This learning proves delivery classification behavior only; it does not by itself assert production deployment or live runtime correctness.",
+  "evidence": {
+    "failed_required_run": "36686629555",
+    "failure_fingerprint": "unclassified delivery path",
+    "unclassified_paths": [
+      "ai-modelwijzer.html",
+      "data/ai-model-catalog.json",
+      "tests/ai-modelwijzer-v1.test.mjs",
+      "tools/ai-modelwijzer-netlify-build-check.mjs"
+    ],
+    "recovered_contract": "config/brain-delivery-system.json",
+    "regression": "tests/brain-ai-model-delivery-classification-v1.test.mjs",
+    "admission_after_fix": "Required hygiene admission succeeded on recovery PR #3402",
+    "uncovered_tests_repaired": [
+      "tests/ai-model-advisor-v1.test.mjs",
+      "tests/ai-model-production-hotfix-v1.test.mjs",
+      "tests/ai-model-seo-cluster-v1.test.mjs"
+    ],
+    "ci_authority": ".github/workflows/lane-website.yml",
+    "i18n_build_failure": {
+      "missing_count": 4,
+      "cache_patch": "config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-governance-copy.json",
+      "contract": "STATIC_I18N_REQUIRE_CACHE=1"
+    },
+    "visibility_recovery": {
+      "failing_pages": [
+        "/openai-ai-modellen",
+        "/amazon-ai-modellen",
+        "/claude-ai-modellen",
+        "/gemini-ai-modellen",
+        "/mistral-ai-modellen",
+        "/chatgpt-vs-claude",
+        "/chatgpt-vs-gemini",
+        "/claude-vs-gemini"
+      ],
+      "observed_failures": 24,
+      "regression": "tests/ai-model-production-hotfix-v1.test.mjs"
+    }
+  }
+}
