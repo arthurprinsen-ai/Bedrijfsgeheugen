@@ -16,19 +16,16 @@
     "A CI-coverage repair is itself a material Powerhouse change and must carry Brain learning, ledger evidence and human documentation in the same lineage.",
     "Do not bypass the delivery-test-coverage guard or mark an unexecuted regression test as proven."
   ],
-  "fix": "The canonical website baseline lane now executes tests/ai-model-advisor-v1.test.mjs, tests/ai-model-production-hotfix-v1.test.mjs and tests/ai-model-seo-cluster-v1.test.mjs.",
+  "fix": "The canonical website baseline lane now executes tests/ai-model-advisor-v1.test.mjs, tests/ai-model-production-hotfix-v1.test.mjs and tests/ai-model-seo-cluster-v1.test.mjs; the Brain learning canonicalization contract replays the canonical brain-ai-model-intelligence regression.",
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-test-coverage-guard.test.mjs",
-      "tests/ai-model-advisor-v1.test.mjs",
-      "tests/ai-model-production-hotfix-v1.test.mjs",
-      "tests/ai-model-seo-cluster-v1.test.mjs"
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
     ],
     "shadow": [
-      ".github/workflows/lane-website.yml"
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
     ],
     "canary": [
-      "Required test / website lane"
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
     ]
   },
   "evidence": {
