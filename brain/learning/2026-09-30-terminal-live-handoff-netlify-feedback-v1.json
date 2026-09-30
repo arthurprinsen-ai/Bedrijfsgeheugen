@@ -17,5 +17,30 @@
     "skills/powerhouse-production-nl-en-delivery.md"
   ],
   "charts_and_control_surfaces": "Delivery charts must expose all five dimensions and may not equate main/deploy/live.",
-  "terminal_user_format": "MAIN ✓ | NETLIFY PRODUCTION ✓ | WEBSITE READBACK ✓ | LIVE ✓ | BORGING ✓"
+  "terminal_user_format": "MAIN ✓ | NETLIFY PRODUCTION ✓ | WEBSITE READBACK ✓ | LIVE ✓ | BORGING ✓",
+  "status": "ACTIVE_PREVENTION",
+  "evidence": {
+    "observed_rule": "Production may already be functionally visible while chat reports only main or continues closure work.",
+    "truth_boundary": "This learning separates repository, provider, functional and governance closure states."
+  },
+  "compiler": {
+    "failure_class": "FALSE_GREEN",
+    "scope": "PRODUCTION_TRUTH",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-terminal-user-handoff-dashboard-writeback-v1.test.mjs"
+    ]
+  },
+  "agent_contract_targets": [
+    "AGENTS.md",
+    "brain/policies/powerhouse-agent-continuity-v1.json"
+  ],
+  "system_map_target": "platform/system-map/canonical-system-map.mjs"
 }
