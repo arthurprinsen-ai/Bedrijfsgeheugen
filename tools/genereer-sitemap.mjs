@@ -26,10 +26,27 @@ function isExclude(pad) {
   return EXCLUDES.has(pad) || /^shell-gate-.*\.html$/i.test(pad);
 }
 
+function alternatePair(url, known) {
+  const value=String(url);
+  if(!value.startsWith(ORIGIN + '/')) return null;
+  const path=value.slice(ORIGIN.length) || '/';
+  const isEn=path==='/en' || path==='/en/' || path.startsWith('/en/');
+  const nlPath=isEn ? (path==='/en'||path==='/en/' ? '/' : path.slice(3)) : path;
+  const nlUrl=ORIGIN + (nlPath || '/');
+  const enUrl=ORIGIN + '/en' + (nlPath==='/' ? '/' : nlPath);
+  if(!known.has(nlUrl) || !known.has(enUrl)) return null;
+  return {nlUrl,enUrl};
+}
+
 export function maakSitemap(urls) {
   const schoon = [...new Set((urls || []).filter(url => String(url).startsWith(`${ORIGIN}/`)))].sort((a, b) => a.localeCompare(b, 'nl'));
-  const regels = schoon.map(url => `  <url><loc>${xmlEscape(url)}</loc></url>`);
-  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${regels.join('\n')}\n</urlset>\n`;
+  const known=new Set(schoon);
+  const regels = schoon.map(url => {
+    const pair=alternatePair(url,known);
+    const alternates=pair ? `<xhtml:link rel="alternate" hreflang="nl" href="${xmlEscape(pair.nlUrl)}"/><xhtml:link rel="alternate" hreflang="en" href="${xmlEscape(pair.enUrl)}"/><xhtml:link rel="alternate" hreflang="x-default" href="${xmlEscape(pair.nlUrl)}"/>` : '';
+    return `  <url><loc>${xmlEscape(url)}</loc>${alternates}</url>`;
+  });
+  return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${regels.join('\n')}\n</urlset>\n`;
 }
 
 function noindex(html) {
@@ -48,6 +65,9 @@ async function htmlBestanden() {
   const bestanden = [];
   for await (const p of glob('*.html')) if (!isExclude(p)) bestanden.push(p);
   for await (const p of glob('blog/*/index.html')) bestanden.push(p);
+  for await (const p of glob('en/*.html')) bestanden.push(p);
+  for await (const p of glob('en/blog/*/index.html')) bestanden.push(p);
+  for await (const p of glob('en/kennis/index.html')) bestanden.push(p);
   bestanden.push('blog/index.html', 'kennis/index.html', ...AI_MODEL_SEO_PAGES);
   return [...new Set(bestanden)];
 }
