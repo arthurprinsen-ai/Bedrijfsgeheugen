@@ -1,0 +1,50 @@
+name: AI Model Intelligence
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ai-modelwijzer.html'
+      - 'data/ai-model-catalog-v1.json'
+      - 'data/ai-provider-governance-v1.json'
+      - 'config/powerhouse-ai-model-intelligence-v1.json'
+      - 'openai-ai-modellen/**'
+      - 'claude-ai-modellen/**'
+      - 'gemini-ai-modellen/**'
+      - 'mistral-ai-modellen/**'
+      - 'amazon-ai-modellen/**'
+      - 'chatgpt-vs-claude/**'
+      - 'chatgpt-vs-gemini/**'
+      - 'claude-vs-gemini/**'
+      - 'tests/ai-model-advisor-v1.test.mjs'
+      - 'tests/ai-model-production-hotfix-v1.test.mjs'
+      - 'tests/ai-model-seo-cluster-v1.test.mjs'
+      - '.github/workflows/ai-model-intelligence.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ai-modelwijzer.html'
+      - 'data/ai-model-catalog-v1.json'
+      - 'data/ai-provider-governance-v1.json'
+      - 'config/powerhouse-ai-model-intelligence-v1.json'
+      - 'openai-ai-modellen/**'
+      - 'claude-ai-modellen/**'
+      - 'gemini-ai-modellen/**'
+      - 'mistral-ai-modellen/**'
+      - 'amazon-ai-modellen/**'
+      - 'chatgpt-vs-claude/**'
+      - 'chatgpt-vs-gemini/**'
+      - 'claude-vs-gemini/**'
+      - '.github/workflows/ai-model-intelligence.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: AI Model Intelligence contracts
+        run: node --test tests/ai-model-advisor-v1.test.mjs tests/ai-model-production-hotfix-v1.test.mjs tests/ai-model-seo-cluster-v1.test.mjs
