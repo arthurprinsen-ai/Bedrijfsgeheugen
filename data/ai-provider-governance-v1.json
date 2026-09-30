@@ -1,0 +1,291 @@
+{
+  "version": "ai-provider-governance-v2",
+  "verified_at": "2026-09-30",
+  "principle": "Data residency, inference residency and data sovereignty are distinct. Values are deployment-path-specific; unknown remains unknown.",
+  "providers": [
+    {
+      "provider": "OpenAI",
+      "provider_jurisdiction": "US",
+      "paths": [
+        {
+          "id": "openai-api-global",
+          "label": "OpenAI API — global/default",
+          "storage_residency": "provider-controlled; endpoint/feature dependent",
+          "inference_residency": "global/provider-controlled",
+          "training_on_api_data": "no by default",
+          "default_content_retention": "abuse-monitoring logs up to 30 days by default",
+          "zero_data_retention": "available for eligible customers/endpoints",
+          "customer_managed_keys": "feature/plan dependent",
+          "private_networking": "feature/plan dependent",
+          "self_host": false,
+          "sovereignty_level": "managed-non-sovereign",
+          "source": "https://developers.openai.com/api/docs/guides/your-data"
+        },
+        {
+          "id": "openai-api-eu",
+          "label": "OpenAI API — EU data residency",
+          "storage_residency": "Europe for eligible project data/features",
+          "inference_residency": "Europe for eligible models and processing modes",
+          "training_on_api_data": "no by default",
+          "default_content_retention": "subject to eligible endpoint/data-control rules",
+          "zero_data_retention": "available for eligible customers/endpoints",
+          "customer_managed_keys": "feature/plan dependent",
+          "private_networking": "feature/plan dependent",
+          "self_host": false,
+          "sovereignty_level": "regional-managed",
+          "source": "https://developers.openai.com/api/docs/guides/your-data"
+        },
+        {
+          "id": "openai-gpt-oss-selfhost",
+          "label": "OpenAI gpt-oss — self-host/customer cloud",
+          "storage_residency": "customer-controlled",
+          "inference_residency": "customer-controlled",
+          "training_on_api_data": "not applicable to self-hosted inference",
+          "default_content_retention": "customer-controlled",
+          "zero_data_retention": "customer-controlled",
+          "customer_managed_keys": "customer-controlled",
+          "private_networking": "customer-controlled",
+          "self_host": true,
+          "sovereignty_level": "customer-controlled",
+          "source": "https://developers.openai.com/api/docs/models/gpt-oss-120b"
+        }
+      ]
+    },
+    {
+      "provider": "Anthropic",
+      "provider_jurisdiction": "US",
+      "paths": [
+        {
+          "id": "anthropic-api",
+          "label": "Claude Platform API",
+          "storage_residency": "US by default unless otherwise agreed",
+          "inference_residency": "may occur in US, Europe, Asia or Australia",
+          "training_on_api_data": "no by default for commercial/API data",
+          "default_content_retention": "inputs/outputs deleted within 30 days by default",
+          "zero_data_retention": "available by agreement for eligible APIs",
+          "customer_managed_keys": null,
+          "private_networking": null,
+          "self_host": false,
+          "sovereignty_level": "managed-non-sovereign",
+          "source": "https://privacy.claude.com/en/articles/7996868-how-long-do-you-store-my-organization-s-data"
+        },
+        {
+          "id": "anthropic-cloud-partners",
+          "label": "Claude via AWS / Google Cloud / Microsoft Foundry",
+          "storage_residency": "cloud/provider configuration dependent",
+          "inference_residency": "region and service dependent",
+          "training_on_api_data": "commercial terms/provider path dependent",
+          "default_content_retention": "provider path dependent",
+          "zero_data_retention": "provider path dependent",
+          "customer_managed_keys": "cloud path dependent",
+          "private_networking": "cloud path dependent",
+          "self_host": false,
+          "sovereignty_level": "regional-managed",
+          "source": "https://docs.anthropic.com/en/docs/about-claude/models"
+        }
+      ]
+    },
+    {
+      "provider": "Google",
+      "provider_jurisdiction": "US",
+      "paths": [
+        {
+          "id": "gemini-developer-paid",
+          "label": "Gemini Developer API — paid",
+          "storage_residency": "service/feature dependent",
+          "inference_residency": "service/provider controlled",
+          "training_on_api_data": "paid prompts/responses not used to improve products",
+          "default_content_retention": "feature dependent; some features retain data",
+          "zero_data_retention": "possible only with compatible configuration/features",
+          "customer_managed_keys": null,
+          "private_networking": null,
+          "self_host": false,
+          "sovereignty_level": "managed-non-sovereign",
+          "source": "https://ai.google.dev/gemini-api/docs/data-logging"
+        },
+        {
+          "id": "vertex-ai-gemini",
+          "label": "Gemini on Vertex AI",
+          "storage_residency": "selected region / feature dependent",
+          "inference_residency": "selected supported region / feature dependent",
+          "training_on_api_data": "not used to train without permission",
+          "default_content_retention": "feature/config dependent",
+          "zero_data_retention": "configurable with feature restrictions",
+          "customer_managed_keys": "available for supported Vertex AI resources",
+          "private_networking": "available for supported Vertex AI configurations",
+          "self_host": false,
+          "sovereignty_level": "regional-managed",
+          "source": "https://cloud.google.com/vertex-ai/generative-ai/docs/learn/data-governance"
+        }
+      ]
+    },
+    {
+      "provider": "Mistral AI",
+      "provider_jurisdiction": "EU/France",
+      "paths": [
+        {
+          "id": "mistral-api-eu",
+          "label": "Mistral API — default EU",
+          "storage_residency": "EU by default",
+          "inference_residency": "EU/default service path; verify feature-specific subprocessors",
+          "training_on_api_data": "contract/service dependent; verify current terms",
+          "default_content_retention": "service/feature dependent",
+          "zero_data_retention": "supported for eligible paid stateless API calls",
+          "customer_managed_keys": null,
+          "private_networking": "enterprise/deployment dependent",
+          "self_host": false,
+          "sovereignty_level": "eu-managed",
+          "source": "https://docs.mistral.ai/deployment/laplateforme/data_residency"
+        },
+        {
+          "id": "mistral-selfhost",
+          "label": "Mistral open-weight — self-host/customer cloud",
+          "storage_residency": "customer-controlled",
+          "inference_residency": "customer-controlled",
+          "training_on_api_data": "not applicable to self-hosted inference",
+          "default_content_retention": "customer-controlled",
+          "zero_data_retention": "customer-controlled",
+          "customer_managed_keys": "customer-controlled",
+          "private_networking": "customer-controlled",
+          "self_host": true,
+          "sovereignty_level": "customer-controlled",
+          "source": "https://docs.mistral.ai/models"
+        }
+      ]
+    },
+    {
+      "provider": "xAI",
+      "provider_jurisdiction": "US",
+      "paths": [
+        {
+          "id": "xai-api",
+          "label": "xAI API",
+          "storage_residency": "provider-controlled",
+          "inference_residency": "provider-controlled",
+          "training_on_api_data": "never without explicit permission",
+          "default_content_retention": "30 days by default",
+          "zero_data_retention": "available at team level where supported",
+          "customer_managed_keys": null,
+          "private_networking": null,
+          "self_host": false,
+          "sovereignty_level": "managed-non-sovereign",
+          "source": "https://docs.x.ai/developers/faq/security"
+        }
+      ]
+    },
+    {
+      "provider": "DeepSeek",
+      "provider_jurisdiction": "China",
+      "paths": [
+        {
+          "id": "deepseek-api",
+          "label": "DeepSeek API",
+          "storage_residency": "not established in current technical API evidence",
+          "inference_residency": "not established in current technical API evidence",
+          "training_on_api_data": null,
+          "default_content_retention": "Responses API is stateless; automatic context cache can persist hours to days; files can be retained by user configuration",
+          "zero_data_retention": "not established as a provider-wide contractual control in current technical evidence",
+          "customer_managed_keys": null,
+          "private_networking": null,
+          "self_host": false,
+          "sovereignty_level": "managed-verify-before-sensitive-use",
+          "source": "https://api-docs.deepseek.com/api/create-response/"
+        }
+      ]
+    },
+    {
+      "provider": "Cohere",
+      "provider_jurisdiction": "Canada",
+      "paths": [
+        {
+          "id": "cohere-managed",
+          "label": "Cohere managed API",
+          "storage_residency": "plan/deployment dependent",
+          "inference_residency": "plan/deployment dependent",
+          "training_on_api_data": null,
+          "default_content_retention": null,
+          "zero_data_retention": "enterprise/deployment dependent",
+          "customer_managed_keys": "deployment dependent",
+          "private_networking": "deployment dependent",
+          "self_host": false,
+          "sovereignty_level": "managed-verify",
+          "source": "https://cohere.com/security"
+        },
+        {
+          "id": "cohere-private",
+          "label": "Cohere private / Model Vault deployment",
+          "storage_residency": "customer/cloud-path controlled",
+          "inference_residency": "customer/cloud-path controlled",
+          "training_on_api_data": "deployment dependent",
+          "default_content_retention": "deployment dependent",
+          "zero_data_retention": "deployment dependent",
+          "customer_managed_keys": "deployment dependent",
+          "private_networking": "deployment dependent",
+          "self_host": true,
+          "sovereignty_level": "customer-controlled-or-regional",
+          "source": "https://cohere.com/model-vault"
+        }
+      ]
+    },
+    {
+      "provider": "Meta",
+      "provider_jurisdiction": "US",
+      "paths": [
+        {
+          "id": "llama-selfhost",
+          "label": "Llama open-weight — self-host/customer cloud",
+          "storage_residency": "customer-controlled",
+          "inference_residency": "customer-controlled",
+          "training_on_api_data": "not applicable to customer-run inference",
+          "default_content_retention": "customer-controlled",
+          "zero_data_retention": "customer-controlled",
+          "customer_managed_keys": "customer-controlled",
+          "private_networking": "customer-controlled",
+          "self_host": true,
+          "sovereignty_level": "customer-controlled",
+          "source": "https://www.llama.com/"
+        }
+      ]
+    },
+    {
+      "provider": "Alibaba/Qwen",
+      "provider_jurisdiction": "China",
+      "paths": [
+        {
+          "id": "qwen-selfhost",
+          "label": "Qwen open-weight — self-host/customer cloud",
+          "storage_residency": "customer-controlled",
+          "inference_residency": "customer-controlled",
+          "training_on_api_data": "not applicable to customer-run inference",
+          "default_content_retention": "customer-controlled",
+          "zero_data_retention": "customer-controlled",
+          "customer_managed_keys": "customer-controlled",
+          "private_networking": "customer-controlled",
+          "self_host": true,
+          "sovereignty_level": "customer-controlled",
+          "source": "https://qwenlm.github.io/"
+        }
+      ]
+    },
+    {
+      "provider": "Amazon",
+      "provider_jurisdiction": "US",
+      "paths": [
+        {
+          "id": "amazon-bedrock-regional",
+          "label": "Amazon Bedrock — regional inference",
+          "storage_residency": "AWS service and selected region dependent",
+          "inference_residency": "selected supported AWS region / inference profile dependent",
+          "training_on_api_data": "verify current Bedrock service and model-provider terms",
+          "default_content_retention": "service and feature dependent",
+          "zero_data_retention": "service/model/configuration dependent",
+          "customer_managed_keys": "available for supported AWS resources/configurations",
+          "private_networking": "AWS PrivateLink/VPC options depend on service/configuration",
+          "self_host": false,
+          "sovereignty_level": "regional-managed",
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/models-region-compatibility.html"
+        }
+      ]
+    }
+  ]
+}
