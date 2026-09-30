@@ -1490,6 +1490,18 @@ Mandatory:
 - never create a parallel dedupe memory or chat-local exception;
 - preserve the 2026-09-30 car/sliding-door/airco incident as a permanent escaped-defect regression.
 
+## Static i18n final-artifact coverage — Company Brain recovery
+Fingerprint: `website|static-i18n|post-shell-final-string-coverage|v1`.
+
+Voor iedere nieuwe of gewijzigde publieke copy geldt:
+- een source-level vertaalpatch is niet voldoende bewijs;
+- canonical shell, CRO/finalizers en andere build-transforms mogen tekstnodes splitsen of nieuwe aria-/UI-strings toevoegen;
+- static-i18n coverage wordt daarom tegen het **finale post-shell build-artifact** gecontroleerd vóór Netlify-promotie;
+- `STATIC_I18N_REQUIRE_CACHE=1` blijft fail-closed;
+- ontbrekende finale strings gaan naar dezelfde canonical patch authority, nooit naar runtime-only fallback;
+- een Netlify build failure door ontbrekende finale vertaalkeys is recovery-input; dezelfde owner houdt de obligation tot exact-main production + NL/EN public readback groen zijn.
+
+
 ## Async workflow continuation
 
 Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.

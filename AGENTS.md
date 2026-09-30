@@ -135,8 +135,6 @@ Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
 
 
-
-
 ## Async continuation — workflows mogen een agent nooit laten wachten
 
 Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
@@ -148,11 +146,11 @@ Voor alle huidige en toekomstige chats, agents en delivery-nodes geldt aanvullen
 - nieuwere `main` supersedeert oudere nog niet terminale productie-snapshot/readback runs wanneer die oudere run geen unieke onomkeerbare side-effect meer hoeft af te ronden;
 - lange provider-polls hebben een harde timeout en leveren daarna een herstelbare state op; geen onbegrensd pollen of wachten;
 - de agent bewaart een checkpoint met obligation, exacte candidate/head, huidige main, open gates en eerstvolgende herstelactie zodat een volgende execution-node direct kan hervatten;
-- tijdens remote wachttijd gaat de owner door met werk dat niet van die gate afhangt: root-cause analyse, regressietests, writeback, documentatie, impactcontrole of voorbereiding van de volgende veilige stap;
-- een status als `pending` of `in_progress` is interne uitvoeringsstaat en wordt niet als gebruikersuitkomst gerapporteerd; alleen terminale productie/outcome-evidence of een echte `BLOCKED_HARD_BOUNDARY` mag de uitvoering afsluiten;
-- wanneer meerdere agents tegelijk bouwen, blijft één obligation één executable candidate houden. Nieuwe, niet-conflicterende obligations mogen parallel werken, maar mogen geen gedeelde workflowqueue als globale mutex gebruiken.
+- tijdens remote wachttijd gaat de owner door met werk dat niet van die gate afhangt;
+- een status als `pending` of `in_progress` is interne uitvoeringsstaat en wordt niet als gebruikersuitkomst gerapporteerd;
+- wanneer meerdere agents tegelijk bouwen, blijft één obligation één executable candidate houden.
 
-Operationeel doel: **geen chat of agent mag nog “blijven hangen” op een workflowjob**. Queue-druk wordt door de control-plane opgelost via deduplicatie, supersession, bounded polling en hervatbare checkpoints, niet door menselijke wachttijd.
+Operationeel doel: **geen chat of agent mag nog “blijven hangen” op een workflowjob**.
 
 ## GitHub Actions queue-pressure governor — verplicht vóór repositorymutaties
 
@@ -898,3 +896,8 @@ Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales-
 - Powerhouse blijft de onderliggende intelligence- en uitvoeringsmotor;
 - commerciële optimalisatie eindigt niet op ranking/traffic/scan maar op gekwalificeerde lead → voorstel → betaalde order → gerealiseerde omzet → learning;
 - iedere nieuwe Company-Brain-kans hergebruikt de bestaande Bedrijfslek, Frisse Blik, Growth Swarm, SEO Order Engine, Outcome Memory en Compound Learning; geen parallel CRM, funnel, publisher of learning-store.
+
+## Public copy static-i18n final-artifact gate
+Fingerprint: `website|static-i18n|post-shell-final-string-coverage|v1`.
+
+Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen controleren de Engelse static-i18n authority niet alleen op broncopy maar op de finale post-shell/build-output. Shellprojectie, CRO-finalizers, breadcrumbs, aria-labels en tekstsplitsing kunnen nieuwe exacte strings creëren. `STATIC_I18N_REQUIRE_CACHE=1` blijft fail-closed; runtime translation vervangt geen ontbrekende statische production key. Een i18n-buildfout wordt in dezelfde obligation gerepareerd en opnieuw gepromoveerd tot NL én EN publiek terugleesbaar zijn.

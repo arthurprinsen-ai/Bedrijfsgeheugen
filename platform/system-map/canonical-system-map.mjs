@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T08:47:00Z',
+  observedAt:'2026-09-30T07:10:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -40,7 +40,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Async Delivery Continuation & Queue Supersession',
       authority:'github+powerhouse-canonical-checkpoint',
       owner:'whole-brain-reliability',
-      status:'CANDIDATE_PROTECTED_DELIVERY',
+      status:'ACTIVE_FAIL_CLOSED',
       inputs:Object.freeze(['open obligation','exact candidate head','current main epoch','GitHub/Netlify/Supabase workflow state']),
       outputs:Object.freeze(['resumable checkpoint','deduplicated required runs','bounded polling','stale reversible run supersession']),
       runtime:Object.freeze({
@@ -49,6 +49,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         skill:'.agents/skills/powerhouse-continuity/SKILL.md',
         productionSnapshot:'.github/workflows/production-source-snapshot.yml',
         requiredGate:'.github/workflows/required-test.yml',
+        recoverySupervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
         learning:'brain/learning/2026-09-30-async-workflow-continuation-v1.json'
       }),
       invariants:Object.freeze({
@@ -56,6 +57,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         duplicateRequiredRunForbidden:true,
         boundedPollingRequired:true,
         checkpointBeforeWait:true,
+        requiredOnlyOpenPrRecovery:true,
         staleReversibleProductionWaitSupersededByNewerMain:true
       })
     }),
@@ -660,7 +662,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         v18GeneratorMayOverwriteBedrijfslek:false,
         companyBrainIsCategoryNotProductRename:true,
         companyBrainCanonicalOwner:'/company-brain',
-        companyBrainMeasuredToRevenue:true
+        companyBrainMeasuredToRevenue:true,
+        staticI18nPostShellFinalArtifactCoverageRequired:true
       })
     }),
     Object.freeze({
