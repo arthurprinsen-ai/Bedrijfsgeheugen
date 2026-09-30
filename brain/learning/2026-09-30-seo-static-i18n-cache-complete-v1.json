@@ -8,15 +8,16 @@
     "scope": "PUBLIC_WEBSITE",
     "machine_enforceable": true,
     "security_sensitive": false,
-    "repeat_count": 1
+    "repeat_count": 2
   },
-  "root_cause": "The bilingual SEO implementation added and recomposed visible Dutch strings after the last complete English cache snapshot. Production and deploy previews require a complete committed cache, so the localized build correctly failed closed on 23 missing exact source strings.",
+  "root_cause": "The bilingual SEO implementation added and recomposed visible Dutch strings at two stages: source HTML and late SEO/order enrichment. Production requires a complete committed English cache for the final built estate, so source-only cache validation found the first 23 gaps while exact Netlify build parity exposed 9 additional late-generated strings.",
   "prevention": [
     "Every visible source-string change on localized public routes must update the committed English translation cache in the same candidate.",
-    "Validate the exact final source strings with build-localized-routes --validate-cache before protected merge.",
+    "Validate source cache completeness before merge and run the exact Netlify production build parity because late SEO/order enrichment can create additional exact strings after source validation.",
+    "Cache the exact final string emitted by the production build, including generated headings, comparison copy, support handoffs and CTA labels.",
     "Never bypass STATIC_I18N_REQUIRE_CACHE or allow Dutch fallback on English production pages."
   ],
-  "fix": "Add the 23 exact missing Modelwijzer, governance, CTA, footer and Company Brain strings to the canonical English cache patch and preserve the fail-closed production gate.",
+  "fix": "Add all 32 observed missing exact strings to the canonical English cache patch: 23 source strings plus 9 late SEO/order-enrichment strings, while preserving the fail-closed production and build-parity gates.",
   "evaluation": {
     "historical_replay": [
       "tests/brain-i18n-persistent-navigation-v1.test.mjs"
@@ -26,7 +27,11 @@
     "cache_patch": "config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-seo-revenue-v1.json",
     "builder": "tools/site-shell/build-localized-routes.mjs",
     "build_config": "netlify.toml",
-    "prior_failure": "STATIC_I18N_CACHE_INCOMPLETE: 23 missing translation(s)"
+    "prior_failure": "STATIC_I18N_CACHE_INCOMPLETE: 23 missing translation(s)",
+    "prior_failures": [
+      "STATIC_I18N_CACHE_INCOMPLETE: 23 missing translation(s)",
+      "STATIC_I18N_CACHE_INCOMPLETE: 9 missing translation(s) after late SEO/order enrichment"
+    ]
   },
   "skill_targets": [
     "seo-revenue-growth",
