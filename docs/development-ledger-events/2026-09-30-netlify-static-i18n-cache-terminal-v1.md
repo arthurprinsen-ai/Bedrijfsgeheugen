@@ -7,3 +7,5 @@
 - Fail-closed `STATIC_I18N_REQUIRE_CACHE=1` preserved.
 - Netlify production-truth skill updated so whole-current-main cache completeness is required before promotion.
 - Existing SEO/CRO execute-or-explain One Brain inheritance remains authoritative for chats, agents, skills, workflows, schedulers and future capabilities.
+
+- Exact merged-main reproof added after concurrent protected-main movement; production promotion is re-authorized only after the final merged-main source itself passes production build parity.
