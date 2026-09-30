@@ -135,6 +135,25 @@ Materiële uitkomsten zijn minimaal: `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 Een nieuwe of toekomstige agent is niet production-ready als shared-context read, outcome-obligation compliance of material-outcome writeback ontbreekt.
 
 
+
+
+## Async continuation — workflows mogen een agent nooit laten wachten
+
+Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
+
+Voor alle huidige en toekomstige chats, agents en delivery-nodes geldt aanvullend:
+- een GitHub Actions-run, Netlify-build, Supabase-job, CodeQL-analyse of andere externe workflow met status `queued`, `pending`, `waiting`, `requested` of `in_progress` is **nooit** een reden om de agent in chat te laten wachten of de uitvoering te laten eindigen;
+- vóór iedere remote write wordt fan-out voorspeld; writes voor één obligation worden gebundeld zodat één head zo weinig mogelijk workflows triggert;
+- exact dezelfde head krijgt maximaal één actieve run per verplichte workflow; duplicaten worden niet opnieuw gedispatched;
+- nieuwere `main` supersedeert oudere nog niet terminale productie-snapshot/readback runs wanneer die oudere run geen unieke onomkeerbare side-effect meer hoeft af te ronden;
+- lange provider-polls hebben een harde timeout en leveren daarna een herstelbare state op; geen onbegrensd pollen of wachten;
+- de agent bewaart een checkpoint met obligation, exacte candidate/head, huidige main, open gates en eerstvolgende herstelactie zodat een volgende execution-node direct kan hervatten;
+- tijdens remote wachttijd gaat de owner door met werk dat niet van die gate afhangt: root-cause analyse, regressietests, writeback, documentatie, impactcontrole of voorbereiding van de volgende veilige stap;
+- een status als `pending` of `in_progress` is interne uitvoeringsstaat en wordt niet als gebruikersuitkomst gerapporteerd; alleen terminale productie/outcome-evidence of een echte `BLOCKED_HARD_BOUNDARY` mag de uitvoering afsluiten;
+- wanneer meerdere agents tegelijk bouwen, blijft één obligation één executable candidate houden. Nieuwe, niet-conflicterende obligations mogen parallel werken, maar mogen geen gedeelde workflowqueue als globale mutex gebruiken.
+
+Operationeel doel: **geen chat of agent mag nog “blijven hangen” op een workflowjob**. Queue-druk wordt door de control-plane opgelost via deduplicatie, supersession, bounded polling en hervatbare checkpoints, niet door menselijke wachttijd.
+
 ## GitHub Actions queue-pressure governor — verplicht vóór repositorymutaties
 
 Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`.
