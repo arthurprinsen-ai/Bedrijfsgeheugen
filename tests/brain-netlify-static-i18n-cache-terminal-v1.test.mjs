@@ -23,9 +23,10 @@ test('current-main static i18n terminal recovery preserves fail-closed cache com
     'kwetsbaar',
     'waar staat wat?',
     'wie houdt het actueel?',
-    'wie kan het vinden?'
+    'wie kan het vinden?',
+    'Bedrijfslek built-artifact contract: exact Netlify build must preserve this value-first route.'
   ];
-  assert.equal(required.length,16);
+  assert.equal(required.length,17);
   for(const source of required){
     assert.equal(typeof cache[source],'string',`missing translation: ${source}`);
     assert.ok(cache[source].trim().length>0,`empty translation: ${source}`);
