@@ -483,7 +483,8 @@
         "automotive-software-koppelen.html",
         "tests/branche-applicaties-integraties.test.mjs",
         "tests/components/",
-        ".cache/bg-static-i18n-en"
+        ".cache/bg-static-i18n-en",
+        "ai-modelwijzer.html"
       ],
       "requiredContracts": [
         "BG166",
