@@ -57,6 +57,7 @@ jobs:
       risk_level: ${{ steps.integration.outputs.risk }}
       full_shared_suite: ${{ steps.integration.outputs.full_shared_suite }}
       affected_capabilities: ${{ steps.integration.outputs.capabilities_json }}
+      netlify_build_required: ${{ steps.scope.outputs.netlify_build_required }}
     steps:
       - uses: actions/checkout@v5
         with:
@@ -125,13 +126,16 @@ jobs:
           const changedPaths=execFileSync('git',['diff','--name-only',`${comparisonBaseSha}...${context.changeHeadSha}`],{encoding:'utf8'}).split(/\r?\n/).filter(Boolean);
           const labels=JSON.parse(process.env.PR_LABELS_JSON || '[]');
           const metadata={expectedPaths:metadataAuthority.expectedPaths,maxFiles:metadataAuthority.maxFiles};
+          const netlifyBuildPrefixes=['components/','assets/','pages/','site/','blog/','kennis/','portal/','portal-next/','portal-v2/','netlify/functions/','tools/site-shell/'];
+          const netlifyBuildExact=new Set(['netlify.toml','_redirects','_headers','index.html','klantportaal.html','package.json','package-lock.json']);
+          const netlifyBuildRequired=changedPaths.some(path=>netlifyBuildExact.has(path)||netlifyBuildPrefixes.some(prefix=>path.startsWith(prefix)));
           const hygiene=evaluateBranchHygiene({changedPaths,metadata,labels});
           if(!hygiene.ok) throw new Error(`Branch hygiene blocked delivery: ${JSON.stringify(hygiene)}`);
           const policy=JSON.parse(await readFile('config/brain-delivery-system.json','utf8'));
           const plan=createDeliveryPlan({changedPaths,headSha:context.candidateSha,policy});
           const suites=deriveRequiredTestSuites({lanes:plan.lanes.map(lane=>lane.id)});
           for(const lane of ['backend','portal','website','automation']) await appendFile(process.env.GITHUB_OUTPUT,`${lane}=${suites[lane]}\n`);
-          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\n`);
+          await appendFile(process.env.GITHUB_OUTPUT,`base_sha=${comparisonBaseSha}\nchange_head_sha=${context.changeHeadSha}\ncandidate_sha=${context.candidateSha}\npr_number=${context.prNumber}\nnetlify_build_required=${netlifyBuildRequired}\n`);
           console.log(JSON.stringify({context,metadataAuthority,comparisonBaseSha,changedPaths,hygiene,lanes:plan.lanes.map(lane=>lane.id),suites},null,2));
           NODE
       - id: integration

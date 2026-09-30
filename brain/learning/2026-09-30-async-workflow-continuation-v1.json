@@ -8,19 +8,22 @@
     "Remote workflow state was treated as a conversational wait point instead of durable asynchronous execution state.",
     "Production source snapshots used non-cancelling global concurrency, allowing stale reversible runs to queue behind newer main.",
     "Some required jobs had no explicit job timeout.",
-    "PR metadata errors could fail admission after expensive external preview work had already started."
+    "PR metadata errors could fail admission after expensive external preview work had already started.",
+    "Required test coupled exact Netlify production-build parity to full_shared_suite, so control-plane-only changes still spent time rebuilding the entire site."
   ],
   "fix": [
     "Make remote waiting non-blocking for every chat/agent and require a resumable checkpoint.",
     "Supersede stale reversible Production Source Snapshot runs with cancel-in-progress.",
     "Bound production snapshot and Required test jobs to 20 minutes.",
-    "Require one active required workflow per exact candidate head and automatic resume after interruption."
+    "Require one active required workflow per exact candidate head and automatic resume after interruption.",
+    "Gate exact Netlify production-build parity on actual Netlify-hosted runtime/build paths rather than generic shared-suite classification."
   ],
   "prevention": [
     "Never use pending/queued/in_progress as a terminal user-facing state.",
     "Do not redispatch a required run when the exact head already has one active.",
     "Batch repository writes before CI to reduce fan-out.",
-    "Prefer latest-authoritative-main supersession for reversible production waiting work."
+    "Prefer latest-authoritative-main supersession for reversible production waiting work.",
+    "Control-plane-only policy/skill/workflow changes must not run full Netlify build parity unless a deploy-relevant path changed."
   ],
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -31,7 +34,8 @@
     "observed_pending": 4,
     "observed_in_progress": 10,
     "max_observed_runs_for_single_recent_sha": 13,
-    "affected_pr": 3421
+    "affected_pr": 3421,
+    "netlify_build_scope_gate": "required-test derives netlify_build_required from deploy-relevant changed paths"
   },
   "compiler": {
     "failure_class": "ASYNC_WORKFLOW_WAIT_AND_QUEUE_SUPERSESSION_DEFECT"
@@ -53,6 +57,10 @@
       {
         "case": "remote provider poll exceeds bounded runtime",
         "expected": "persist recoverable state and resume later rather than busy-wait indefinitely"
+      },
+      {
+        "case": "only AGENTS/.github/Brain policy/learning/docs change",
+        "expected": "Required test skips exact Netlify build parity while retaining delivery-control-plane tests"
       }
     ]
   }

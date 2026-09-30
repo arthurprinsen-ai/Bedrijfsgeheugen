@@ -10,3 +10,5 @@ Implementation in this lineage:
 - AGENTS.md, the canonical continuity policy, continuity skill, Brain learning and System Map all carry the same invariant.
 
 This prevents a queued or running workflow from becoming a conversational stop condition. Pending is internal state, not a user handoff.
+
+Additional optimization: `Required test` now derives `netlify_build_required` from actual Netlify-hosted runtime/build paths. Control-plane-only changes no longer execute the full deterministic site build merely because they require the shared governance suite.
