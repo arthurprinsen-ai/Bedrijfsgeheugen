@@ -141,22 +141,6 @@ jobs:
         run: node tools/delivery/integration-bundle-compiler.mjs --base "${{ steps.scope.outputs.base_sha }}" --head "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify adaptive and integration compiler regressions
         run: node --test tests/brain-adaptive-delivery-engine-v1.test.mjs tests/brain-integration-bundle-compiler-v1.test.mjs
-      - name: Fail fast on incomplete integration closure
-        if: steps.integration.outputs.closure_ready != 'true'
-        run: |
-          echo "::error::INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
-          exit 78
-      - name: Execute fast impact quality gate
-        if: steps.integration.outputs.full_shared_suite == 'false'
-        env:
-          TESTS_JSON: ${{ steps.integration.outputs.tests_json }}
-        run: |
-          node --input-type=module - <<'NODE'
-          import { execFileSync } from 'node:child_process';
-          const tests = JSON.parse(process.env.TESTS_JSON || '[]');
-          if (!tests.length) process.exit(0);
-          execFileSync('node', ['--test', ...tests], { stdio: 'inherit' });
-          NODE
       - name: Diagnose exact Netlify production build on recovery branch
         if: github.head_ref == 'recovery/netlify-current-main-build-v1'
         run: |
@@ -178,6 +162,22 @@ jobs:
           node tools/genereer-sitemap.mjs
           node tools/bouw-release-evidence.mjs
 
+      - name: Fail fast on incomplete integration closure
+        if: steps.integration.outputs.closure_ready != 'true'
+        run: |
+          echo "::error::INTEGRATION_BUNDLE_CLOSURE_INCOMPLETE"
+          exit 78
+      - name: Execute fast impact quality gate
+        if: steps.integration.outputs.full_shared_suite == 'false'
+        env:
+          TESTS_JSON: ${{ steps.integration.outputs.tests_json }}
+        run: |
+          node --input-type=module - <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          const tests = JSON.parse(process.env.TESTS_JSON || '[]');
+          if (!tests.length) process.exit(0);
+          execFileSync('node', ['--test', ...tests], { stdio: 'inherit' });
+          NODE
       - name: Enforce material writeback closure
         run: node scripts/brain/material-writeback-closure-guard.mjs "${{ steps.scope.outputs.base_sha }}" "${{ steps.scope.outputs.change_head_sha }}"
       - name: Verify material writeback closure regression
