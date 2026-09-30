@@ -210,6 +210,7 @@ jobs:
           tests/netlify-identity-recovery-build.test.mjs
           tests/netlify-identity-recovery-flow.test.mjs
           tests/seo-homepage-context-slider-contract.test.mjs
+          tests/product-led-home-v1.test.mjs
           tests/delivery-een-portaal.test.mjs
           tests/klantportaal-demostand.test.mjs
           tests/klantportaal-tekenen-via-supabase.test.mjs
