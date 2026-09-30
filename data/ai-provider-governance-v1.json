@@ -286,6 +286,26 @@
           "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/models-region-compatibility.html"
         }
       ]
+    },
+    {
+      "provider": "TII/Falcon",
+      "provider_jurisdiction": "UAE",
+      "paths": [
+        {
+          "id": "falcon-selfhost",
+          "label": "Falcon open-weight — self-host/customer cloud",
+          "storage_residency": "customer-controlled",
+          "inference_residency": "customer-controlled",
+          "training_on_api_data": "not applicable to customer-run inference",
+          "default_content_retention": "customer-controlled",
+          "zero_data_retention": "customer-controlled",
+          "customer_managed_keys": "customer-controlled",
+          "private_networking": "customer-controlled",
+          "self_host": true,
+          "sovereignty_level": "customer-controlled",
+          "source": "https://huggingface.co/tiiuae/models"
+        }
+      ]
     }
   ]
 }
