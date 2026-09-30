@@ -6,3 +6,5 @@
 - Fix: add `tests/brain-product-led-home-v1.test.mjs` and bind the product-led learning record to that canonical replay.
 - Prevention: every new machine-enforceable Brain learning must reference an existing `tests/brain-*.test.mjs` historical replay before terminal delivery.
 - Public UI impact: none.
+
+- Delivery-event refresh: scope metadata and terminal writer lease re-bound to the final recovery head before rerunning Required test.
