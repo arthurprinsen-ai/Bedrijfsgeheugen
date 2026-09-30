@@ -1,0 +1,41 @@
+{
+  "id": "2026-09-30-ai-modelwijzer-i18n-build-v1",
+  "fingerprint": "powerhouse|ai-modelwijzer|static-i18n-cache|build-closure|v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "RUNTIME_INVARIANT",
+  "problem": "The complete AI Modelwijzer v2 passed content/governance checks but Netlify production builds failed with exit code 2.",
+  "root_cause": "Four current Dutch governance strings were not present as exact keys in the fail-closed static English translation cache. Similar or combined translations existed, but build-localized-routes requires exact source-string coverage when STATIC_I18N_REQUIRE_CACHE=1.",
+  "fix": "Add the four exact source strings to the canonical Modelwijzer v2 static i18n cache and regression-test their presence.",
+  "prevention": [
+    "Every new or changed public Dutch string introduced on Modelwijzer governance surfaces must have an exact static English cache entry in the same lineage.",
+    "Similar wording is not accepted as cache coverage because the translator keys exact normalized source strings.",
+    "Keep production translation generation fail-closed when network translation is disabled."
+  ],
+  "evidence": {
+    "failed_deploy": "6abcc19ae53c41d96cfe3268",
+    "failed_build": "6abcc198e53c41d96cfe3266",
+    "diagnostic_pr": 3401,
+    "cache": "config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-v2.json",
+    "regression": "tests/brain-ai-modelwijzer-i18n-build-v1.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "RUNTIME_INVARIANT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-modelwijzer-i18n-build-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ai-modelwijzer-i18n-build-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-ai-model-intelligence",
+    "powerhouse-production-nl-en-delivery",
+    "powerhouse-system-map-governance"
+  ]
+}
