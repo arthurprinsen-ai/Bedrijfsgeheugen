@@ -107,6 +107,7 @@
       "https://docs.aws.amazon.com/bedrock/latest/userguide/models-region-compatibility.html"
     ],
     "TII/Falcon": [
+      "https://www.tii.ae/news/middle-easts-leading-ai-powerhouse-tii-launches-two-new-ai-models-falcon-arabic-first-arabic",
       "https://huggingface.co/tiiuae/models",
       "https://huggingface.co/collections/tiiuae/falcon-h1"
     ]
