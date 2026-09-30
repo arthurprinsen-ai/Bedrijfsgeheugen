@@ -3,6 +3,7 @@ import { spawnSync } from 'node:child_process';
 const steps = [
   ['tools/site-shell/pricing-build-integrity.mjs','capture'],
   ['tools/site-shell/bedrijfslek-build-integrity.mjs','capture'],
+  ['tools/site-shell/ai-modelwijzer-build-integrity.mjs','capture'],
   ['tools/bouw-powerhouse-auth.mjs'],
   ['tools/bouw-kennisindex.mjs'],
   ['tools/bouw-v18-production.mjs'],
@@ -13,6 +14,7 @@ const steps = [
   ['tools/normaliseer-site-ui.mjs'],
   ['tools/site-shell/pricing-build-integrity.mjs','restore'],
   ['tools/site-shell/bedrijfslek-build-integrity.mjs','restore'],
+  ['tools/site-shell/ai-modelwijzer-build-integrity.mjs','restore'],
   ['tools/site-shell/apply-i18n.mjs'],
   ['tools/site-shell/build-localized-routes.mjs'],
   ['tools/genereer-sitemap.mjs'],
