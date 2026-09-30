@@ -35,3 +35,5 @@ jobs:
           STATIC_I18N_REQUIRE_CACHE: "1"
           STATIC_I18N_NETWORK: "0"
         run: node tools/site-shell/build-localized-routes.mjs --validate-cache
+      - name: Full Netlify build probe
+        run: node tools/ai-modelwijzer-netlify-build-check.mjs
