@@ -2,11 +2,12 @@
   "fingerprint": "product-led-production-promotion-lag-20260930-v1",
   "status": "ACTIVE_PREVENTION",
   "problem": "The product-led Powerhouse homepage had merged to protected main while Netlify production still served an older commit_ref.",
-  "root_cause": "A website runtime change reached protected main without a fresh successful Netlify production build becoming current; production truth therefore lagged repository truth.",
+  "root_cause": "Netlify executed the full production build and failed because apply-product-led-home.mjs still targeted obsolete prototype-v18-stable.html, while the premerge parity build did not execute that product-led build step and therefore produced a false green.",
   "prevention": [
-    "Every product-led homepage runtime change must end with a fresh Netlify production build from the exact protected-main lineage.",
+    "The product-led build step targets only current canonical artifacts and never assumes retired prototype files exist.",
+    "Every homepage runtime change must execute apply-product-led-home.mjs inside the canonical premerge Netlify-parity build.",
     "A production promotion is incomplete until Netlify commit_ref contains the merged homepage change and the public homepage exposes Powerhouse Intelligence, Powerhouse Agents and Powerhouse Connect.",
-    "Use a bounded redeploy heartbeat only to retrigger the provider when repository truth is ahead of production truth."
+    "Repository truth and production truth are never treated as equal without provider and browser readback."
   ],
   "evaluation": {
     "historical_replay": [
@@ -31,5 +32,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 2
+  "revision": 3
 }
