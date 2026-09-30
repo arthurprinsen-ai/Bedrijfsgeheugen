@@ -37,5 +37,17 @@
     "canary": [
       "tests/brain-ai-model-intelligence-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "repository_main_before_promotion": "055d82bdf54bdf1ece1b1d74e508b9087f1ea0b2",
+    "prior_netlify_production_commit": "845ba7e7576215777a9fdc9964501dc25cfc8c24",
+    "production_gap_observed": true,
+    "public_surface": "https://www.bedrijfsgeheugen.nl/ai-modelwijzer",
+    "required_terminal_evidence": [
+      "protected merge",
+      "Netlify production ready",
+      "commit_ref equals protected main",
+      "public page readback"
+    ]
   }
 }
