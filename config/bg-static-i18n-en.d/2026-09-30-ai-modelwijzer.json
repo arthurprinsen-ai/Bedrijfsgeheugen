@@ -93,5 +93,9 @@
   "Ja. Vaak is routing economisch beter: een klein model doet standaardwerk, een sterker model behandelt moeilijke gevallen en een specialistisch model doet bijvoorbeeld OCR of reranking.": "Yes. Routing is often more economical: a small model handles standard work, a stronger model handles difficult cases, and a specialist model can perform OCR or reranking.",
   "Vergelijking tussen de huidige situatie en de situatie met ai modelwijzer 2026": "Comparison between the current situation and the situation with AI Model Advisor 2026",
   "Vergelijk concrete modellen en deploymentopties in de": "Compare concrete models and deployment options in the",
-  ", inclusief EU-verwerking, self-hosting en providerjurisdictie.": ", including EU processing, self-hosting and provider jurisdiction."
+  ", inclusief EU-verwerking, self-hosting en providerjurisdictie.": ", including EU processing, self-hosting and provider jurisdiction.",
+  "Zero Data Retention vereist": "Zero Data Retention required",
+  "Customer-controlled data vereist": "Customer-controlled data required",
+  "Zero Data Retention": "Zero Data Retention",
+  "Customer-controlled sovereignty": "Customer-controlled sovereignty"
 }
