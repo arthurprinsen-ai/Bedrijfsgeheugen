@@ -2,7 +2,7 @@
   "version": "ai-model-catalog-v1",
   "verified_at": "2026-09-30",
   "currency": "USD",
-  "scope_note": "Catalog focuses on decision-relevant production and specialist models. Provider catalogs change continuously; official source URLs are retained per model and lifecycle freshness is a hard recommendation factor.",
+  "scope_note": "Decision-relevant current production, preview and specialist models. Official provider sources are retained per model. The catalog is expanded continuously and does not claim to contain every historical or niche model worldwide.",
   "governance_dimensions": [
     "provider_jurisdiction",
     "storage_residency",
@@ -47,10 +47,10 @@
       "provider": "OpenAI",
       "tier": "frontier",
       "status": "active",
-      "input_usd_m": 5,
-      "output_usd_m": 25,
-      "cached_input_usd_m": 0.5,
-      "context_k": 1000,
+      "input_usd_m": 10,
+      "output_usd_m": 50,
+      "cached_input_usd_m": 1,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -78,17 +78,17 @@
       "deployment": [
         "OpenAI API"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-astra"
     },
     {
       "id": "gpt-6-sol",
       "provider": "OpenAI",
       "tier": "balanced",
       "status": "active",
-      "input_usd_m": 1,
-      "output_usd_m": 5,
-      "cached_input_usd_m": 0.1,
-      "context_k": 1000,
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": 0.2,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -117,17 +117,17 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-sol"
     },
     {
       "id": "gpt-6-luna",
       "provider": "OpenAI",
       "tier": "economy",
       "status": "active",
-      "input_usd_m": 0.05,
-      "output_usd_m": 0.25,
-      "cached_input_usd_m": 0.005,
-      "context_k": 1000,
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.5,
+      "cached_input_usd_m": 0.01,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
@@ -156,7 +156,7 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+      "source": "https://developers.openai.com/api/docs/models/gpt-6-luna"
     },
     {
       "id": "gpt-5.6-sol",
@@ -166,15 +166,16 @@
       "input_usd_m": 4,
       "output_usd_m": 20,
       "cached_input_usd_m": 0.4,
-      "context_k": 400,
+      "context_k": 1050,
       "modalities": [
         "text",
         "vision"
       ],
       "strengths": [
-        "cybersecurity",
+        "professional work",
         "coding",
-        "reasoning"
+        "reasoning",
+        "agents"
       ],
       "scores": {
         "reasoning": 9,
@@ -193,7 +194,7 @@
       "deployment": [
         "OpenAI API"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-sol"
     },
     {
       "id": "claude-opus-5-5",
@@ -438,87 +439,6 @@
         "Vertex AI"
       ],
       "source": "https://ai.google.dev/gemini-api/docs/gemini-3"
-    },
-    {
-      "id": "gemini-3.1-flash-lite",
-      "provider": "Google",
-      "tier": "economy",
-      "status": "preview",
-      "input_usd_m": 0.25,
-      "output_usd_m": 1.5,
-      "cached_input_usd_m": null,
-      "context_k": 1000,
-      "modalities": [
-        "text",
-        "vision",
-        "audio",
-        "video"
-      ],
-      "strengths": [
-        "high volume",
-        "multimodal extraction",
-        "classification",
-        "routing"
-      ],
-      "scores": {
-        "reasoning": 7,
-        "code": 7,
-        "writing": 7,
-        "speed": 10,
-        "cost": 10,
-        "vision": 9,
-        "agents": 7
-      },
-      "eu_processing": true,
-      "eu_storage": true,
-      "open_weights": false,
-      "self_host": false,
-      "jurisdiction": "US",
-      "deployment": [
-        "Gemini API",
-        "Vertex AI"
-      ],
-      "source": "https://ai.google.dev/gemini-api/docs/gemini-3"
-    },
-    {
-      "id": "gemini-2.5-flash-lite",
-      "provider": "Google",
-      "tier": "economy",
-      "status": "active",
-      "input_usd_m": 0.1,
-      "output_usd_m": 0.4,
-      "cached_input_usd_m": null,
-      "context_k": 1000,
-      "modalities": [
-        "text",
-        "vision",
-        "audio",
-        "video"
-      ],
-      "strengths": [
-        "at-scale processing",
-        "classification",
-        "summaries"
-      ],
-      "scores": {
-        "reasoning": 7,
-        "code": 7,
-        "writing": 7,
-        "speed": 10,
-        "cost": 10,
-        "vision": 9,
-        "agents": 7
-      },
-      "eu_processing": true,
-      "eu_storage": true,
-      "open_weights": false,
-      "self_host": false,
-      "jurisdiction": "US",
-      "deployment": [
-        "Gemini API",
-        "Vertex AI"
-      ],
-      "source": "https://ai.google.dev/gemini-api/docs/pricing"
     },
     {
       "id": "mistral-medium-3-5",
@@ -1203,6 +1123,278 @@
         "cloud providers"
       ],
       "source": "https://qwenlm.github.io/"
+    },
+    {
+      "id": "gpt-6.1-sol",
+      "provider": "OpenAI",
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": 0.1,
+      "context_k": 1050,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "complex coding",
+        "computer use",
+        "professional work",
+        "agents"
+      ],
+      "scores": {
+        "reasoning": 10,
+        "code": 10,
+        "writing": 9,
+        "speed": 8,
+        "cost": 7,
+        "vision": 9,
+        "agents": 10
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+    },
+    {
+      "id": "gpt-5.6-terra",
+      "provider": "OpenAI",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": 2,
+      "output_usd_m": 12,
+      "cached_input_usd_m": 0.2,
+      "context_k": 1050,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "balanced professional work",
+        "reasoning",
+        "coding",
+        "agents"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 9,
+        "speed": 8,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-terra"
+    },
+    {
+      "id": "gpt-5.6-luna",
+      "provider": "OpenAI",
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": 0.2,
+      "output_usd_m": 1.2,
+      "cached_input_usd_m": 0.02,
+      "context_k": 1050,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "cost-sensitive workloads",
+        "high volume",
+        "classification",
+        "summarization"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 7,
+        "writing": 8,
+        "speed": 10,
+        "cost": 10,
+        "vision": 8,
+        "agents": 8
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source": "https://developers.openai.com/api/docs/models/gpt-5.6-luna"
+    },
+    {
+      "id": "gpt-oss-120b",
+      "provider": "OpenAI",
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": 131,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "open-weight reasoning",
+        "self-hosting",
+        "fine-tuning",
+        "agents"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 8,
+        "speed": 6,
+        "cost": 8,
+        "vision": 1,
+        "agents": 9
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "US",
+      "deployment": [
+        "self-host",
+        "customer-controlled cloud"
+      ],
+      "source": "https://developers.openai.com/api/docs/models/gpt-oss-120b"
+    },
+    {
+      "id": "gpt-oss-20b",
+      "provider": "OpenAI",
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": 131,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "low latency local inference",
+        "self-hosting",
+        "fine-tuning",
+        "specialized workloads"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 7,
+        "speed": 9,
+        "cost": 9,
+        "vision": 1,
+        "agents": 8
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "US",
+      "deployment": [
+        "self-host",
+        "customer-controlled cloud"
+      ],
+      "source": "https://developers.openai.com/api/docs/models/gpt-oss-20b"
+    },
+    {
+      "id": "gemini-3.8-flash",
+      "provider": "Google",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": 0.75,
+      "output_usd_m": 3.75,
+      "cached_input_usd_m": 0.075,
+      "context_k": 1048,
+      "modalities": [
+        "text",
+        "vision",
+        "audio",
+        "video",
+        "pdf"
+      ],
+      "strengths": [
+        "long-horizon coding",
+        "autonomous agents",
+        "multimodal enterprise workflows",
+        "large context"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 10,
+        "writing": 9,
+        "speed": 9,
+        "cost": 9,
+        "vision": 10,
+        "agents": 10
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Vertex AI"
+      ],
+      "source": "https://ai.google.dev/gemini-api/docs/models/gemini-3.8-flash"
+    },
+    {
+      "id": "gemini-3.7-flash",
+      "provider": "Google",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision",
+        "audio",
+        "video"
+      ],
+      "strengths": [
+        "coding",
+        "agentic workflows",
+        "multimodal processing"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 9,
+        "writing": 8,
+        "speed": 9,
+        "cost": 8,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Vertex AI"
+      ],
+      "source": "https://ai.google.dev/gemini-api/docs/models"
     }
   ]
 }
