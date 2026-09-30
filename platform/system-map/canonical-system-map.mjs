@@ -36,6 +36,30 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'chat-stream-resilience-v1',
+      label:'Chat & Agent Stream Resilience',
+      authority:'powerhouse-execution-resilience+canonical-checkpoint',
+      owner:'whole-brain-reliability',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['material chat/agent obligation','last verified checkpoint','side-effect evidence','interruption signal']),
+      outputs:Object.freeze(['bounded resumable batches','durable checkpoint','readback-before-replay','remaining-delta resume','terminal outcome']),
+      runtime:Object.freeze({
+        contract:'config/powerhouse-execution-resilience-v1.json',
+        agentContract:'AGENTS.md',
+        skill:'.agents/skills/powerhouse-continuity/SKILL.md',
+        learning:'brain/learning/2026-09-30-chat-stream-resilience-bounded-checkpoint-v1.json',
+        regression:'tests/brain-chat-stream-resilience-bounded-checkpoint-v1.test.mjs'
+      }),
+      invariants:Object.freeze({
+        continuousChatStreamNotRequired:true,
+        boundedCheckpointedExecution:true,
+        checkpointBeforeAndAfterMaterialSideEffects:true,
+        readbackBeforeReplayAfterInterruption:true,
+        userContinueRepeatNotRequired:true,
+        resumeOnlyRemainingDelta:true
+      })
+    }),
+    Object.freeze({
       id:'async-delivery-continuation-v1',
       label:'Async Delivery Continuation & Queue Supersession',
       authority:'github+powerhouse-canonical-checkpoint',

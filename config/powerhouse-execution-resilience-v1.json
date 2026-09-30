@@ -1,7 +1,7 @@
 {
   "type": "POWERHOUSE_EXECUTION_RESILIENCE_CONTRACT",
-  "version": "1.0.0",
-  "fingerprint": "powerhouse-execution-resilience-v1",
+  "version": "1.1.0",
+  "fingerprint": "powerhouse-execution-resilience-v1.1",
   "status": "ACTIVE",
   "scope": [
     "all_current_and_future_chats",
@@ -21,7 +21,14 @@
     "IDEMPOTENT_OR_DEDUPED_SIDE_EFFECTS",
     "BOUNDED_RETRY_WITH_NEW_EVIDENCE",
     "TERMINAL_STATUS_REQUIRES_VERIFIED_OUTCOME_OR_HARD_BOUNDARY",
-    "RECOVERY_WRITES_BACK_LEARNING"
+    "RECOVERY_WRITES_BACK_LEARNING",
+    "MATERIAL_WORK_IS_BOUNDED_AND_CHECKPOINTED",
+    "NO_TASK_OWNERSHIP_DEPENDS_ON_CONTINUOUS_CHAT_STREAM",
+    "READBACK_BEFORE_REPLAY_AFTER_STREAM_LOSS",
+    "USER_NEVER_HAS_TO_REPEAT_CONTINUE_AFTER_STREAM_INTERRUPTION",
+    "NO_BLOCKING_CHAT_WAIT_FOR_REMOTE_JOBS",
+    "USER_CONTINUE_BUTTON_NEVER_REQUIRED_FOR_TASK_OWNERSHIP",
+    "PLATFORM_BUSY_UI_IS_NOT_CANONICAL_DELIVERY_STATE"
   ],
   "interruption_classes": [
     "NETWORK_DISCONNECT",
@@ -108,7 +115,8 @@
     "RESUME_ONLY_REMAINING_STEPS",
     "VERIFY_OUTCOME",
     "WRITEBACK_INCIDENT_RECOVERY_AND_PREVENTION",
-    "REFRESH_SHARED_TEAM_CONTEXT"
+    "REFRESH_SHARED_TEAM_CONTEXT",
+    "CHECKPOINT_BEFORE_NEXT_MATERIAL_BATCH"
   ],
   "resume_contract": [
     "read canonical current state",
@@ -146,5 +154,37 @@
     "brain/learning/execution-resilience-2026-09-17.json"
   ],
   "runtime_helper": "brain/guards/execution-resilience.mjs",
-  "regression_test": "tests/execution-resilience-guard.test.mjs"
+  "regression_test": "tests/execution-resilience-guard.test.mjs",
+  "chat_stream_resilience": {
+    "required": true,
+    "fingerprint": "powerhouse|chat-stream-resilience|bounded-checkpointed-resume|v1",
+    "strategy": "BOUNDED_CHECKPOINTED_EXECUTION",
+    "requirements": [
+      "split material work into bounded resumable batches",
+      "checkpoint before and after material external side effects",
+      "persist already-proven side effects and next safe action",
+      "after stream interruption read canonical state before continuing",
+      "read back uncertain side effects before replay",
+      "resume only remaining delta",
+      "do not require the user to repeat continue/live/borg because the stream broke"
+    ],
+    "user_visible_progress_rule": "Keep progress compact; do not stream internal CI/provider polling as a long-running chat log.",
+    "limitation": "The application or network may still interrupt a visible stream; resilience guarantees continuity and deduped resume, not transport uptime."
+  },
+  "nonblocking_remote_wait": {
+    "required": true,
+    "fingerprint": "powerhouse|chat-response|nonblocking-remote-wait|v1",
+    "blocking_wait_forbidden_for": [
+      "ci",
+      "netlify",
+      "browser_regression",
+      "provider_polling",
+      "remote_gate"
+    ],
+    "checkpoint_before_release": true,
+    "resume_from_canonical_state": true,
+    "user_continue_required": false,
+    "platform_busy_ui_is_not_delivery_state": true,
+    "quality_downgrade_to_avoid_timeout_forbidden": true
+  }
 }
