@@ -144,6 +144,7 @@ Required recovery pattern:
 
 A production build failure caused by an incomplete static i18n cache is a build-content defect, not a Netlify credential defect. Repeated deploy retries without completing the cache are prohibited.
 
+
 ## Explicit public locale navigation
 
 Fingerprint: `website|i18n|explicit-public-locale-navigation|v2`.

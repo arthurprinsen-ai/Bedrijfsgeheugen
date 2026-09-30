@@ -52,7 +52,7 @@ jobs:
           fi
           echo "LINEAGE_MODE=$lineage_mode" >> "$GITHUB_ENV"
           git merge-base --is-ancestor "$MERGE_SHA" origin/main
-          PR_BODY="$PR_BODY" CANDIDATE_SHA="$CANDIDATE_SHA" MERGE_SHA="$MERGE_SHA" PR_NUMBER="$PR_NUMBER" node --input-type=module - <<'NODE'
+          PR_BODY="$PR_BODY" CANDIDATE_SHA="$CANDIDATE_SHA" MERGE_SHA="$MERGE_SHA" PR_NUMBER="$PR_NUMBER" LINEAGE_MODE="$lineage_mode" node --input-type=module - <<'NODE'
           import { writeFileSync, readFileSync } from 'node:fs';
           import { validateMachineReadablePrBody } from './tools/delivery/github-delivery-state-machine.mjs';
           const policy=JSON.parse(readFileSync('config/powerhouse-delivery-hygiene-v1.json','utf8'));
@@ -164,6 +164,7 @@ jobs:
               skill_projection:true
             }
           };
+          if(!evidence.checks.merged_lineage_verified) throw new Error('MERGED_LINEAGE_NOT_VERIFIED');
           if(!evidence.checks.learning_projection) throw new Error('LEARNING_PROJECTION_NOT_READY');
           writeFileSync('.artifacts/obligation-terminal-evidence.json',JSON.stringify(evidence,null,2));
           console.log(JSON.stringify(evidence,null,2));

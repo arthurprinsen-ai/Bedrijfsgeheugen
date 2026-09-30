@@ -1,3 +1,7 @@
+## Terminal closure heeft één eigenaar
+
+Voor `Writer-Lease-State: TERMINAL_DELIVERY` is `Powerhouse Obligation Terminalizer` de enige automatische post-merge owner. Start geen tweede terminal-closure lineage voor dezelfde obligation. Governance-only scheduler/System Map/delivery-classifier wijzigingen starten geen Netlify productiesnapshot of productie-readback; runtimewijzigingen behouden alle normale productie-evidence.
+
 ## Predictive multi-agent delivery scheduler — verplicht vóór iedere write
 
 Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1`.
@@ -922,6 +926,27 @@ Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen contr
 Fingerprint: `website|i18n|persistent-public-navigation|v1`.
 
 Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: een gekozen publieke taal blijft actief over alle interne paginanavigatie. English betekent dat alle in aanmerking komende same-origin publieke links naar de equivalente `/en/*` route wijzen; Nederlands gebruikt de onprefixte canonieke route. Query/hash blijven behouden. Portal/klantportaal en technische paden (`/api/`, `/.netlify/`, `/assets/`, `/functions/`) worden niet herschreven. Ook dynamisch aangemaakte menu- en navigatielinks vallen onder deze regel. “De huidige pagina is Engels” is geen terminal bewijs: browser-readback moet taalkeuze → navigatie naar andere pagina → taal blijft gelijk → terugschakelen → opnieuw navigeren aantonen.
+
+
+## Commercial outbound transport self-heal — inherited
+
+Fingerprint: `commercial|outbound-transport-self-heal|gmail-linkedin-dm|v1`.
+
+Alle huidige en toekomstige chats/agents die commerciële e-mail, LinkedIn-DM of provider-outreach raken lezen en volgen `skills/powerhouse-commercial-outbound-self-heal.md`.
+
+Niet-onderhandelbaar:
+- herstelbare connector-/transportfouten zijn nooit terminale `error`;
+- provider-project/connection consistency wordt vóór iedere write geverifieerd;
+- Composio MCP word-id/alias en raw API connected-account id mogen nooit door elkaar worden gebruikt;
+- direct Composio execute gebruikt actuele/pinned toolversion, vereiste top-level user/entity identity en volledige structured error serialization;
+- `[object Object]` als provider-error is een regressie;
+- bij ontbrekende server-side Gmail maar beschikbare canonieke Gmail-connector mag dezelfde sales-action lineage veilig fallback gebruiken;
+- provider message/thread IDs worden read-after-write teruggeschreven vóór `done`;
+- daglimiet, suppression, cooldown, consent/existing-relationship, dedupe en republish-forbidden blijven harde gates;
+- LinkedIn-DM is alleen toegestaan via een echte geverifieerde send-DM capability; post/comment is nooit DM-fallback;
+- ontbrekende DM-capability mag alleen naar bestaande geautoriseerde e-mailrelatie fallbacken wanneer een geldig e-mailadres bekend is;
+- iedere fout schrijft root cause → fix → prevention naar Brain failure registry, learning en Loop Assurance.
+
 
 ## Explicit public locale navigation — inherited
 Fingerprint: `website|i18n|explicit-public-locale-navigation|v2`.

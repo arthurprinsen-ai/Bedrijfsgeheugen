@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T09:22:00Z',
+  observedAt:'2026-09-30T09:30:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -40,10 +40,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Predictive Multi-Agent Delivery Scheduler',
       authority:'github+canonical-delivery-policy',
       owner:'whole-brain-reliability',
-      status:'CANDIDATE_PROTECTED_DELIVERY',
+      status:'ACTIVE_PROVEN',
       inputs:Object.freeze(['obligation','candidate head','main epoch','changed paths','conflict contracts','mutable resources','active candidates','queue pressure','predicted fan-out']),
       outputs:Object.freeze(['parallel-build decision','canonical writer decision','terminal serialization decision','resumable async checkpoint']),
       runtime:Object.freeze({scheduler:'tools/delivery/predictive-controller.mjs#planConcurrentAgentWork',checkpoint:'POWERHOUSE-ASYNC-CHECKPOINT-v1',policy:'brain/policies/powerhouse-agent-continuity-v1.json'}),
+      productionEvidence:Object.freeze({mergeSha:'c2188fde24f7d51c194acd1c7c0d093b7ceb316e',requiredTest:'success',skillProjection:'success',canonicalTerminalizerRunId:36696171917,canonicalTerminalizerConclusion:'success',productionMode:'MAIN_CONTAINMENT_NON_RUNTIME'}),
       invariants:Object.freeze({oneObligationOneWriter:true,nonConflictingParallelBuild:true,serializeOnlyTerminalOverlap:true,predictFanoutBeforeWrite:true,remoteWaitNeverMeansStop:true})
     }),
     Object.freeze({
@@ -646,7 +647,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
           learning:'brain/learning/2026-09-29-bedrijfslek-product-led-growth-borging-v2.json'
         }),
         learning:'brain/learning/2026-09-29-seo-conversion-orders-v1.json',
-        companyBrainCategory:Object.freeze({route:'/company-brain',role:'category-acquisition-entry',claim:'Een Company Brain is waar Bedrijfsgeheugen begint.',conversion:'/zelfscan',terminalOutcomes:Object.freeze(['paid_order','realized_revenue']),learning:'brain/learning/2026-09-30-company-brain-category-positioning-v1.json'})
+        companyBrainCategory:Object.freeze({route:'/company-brain',role:'category-acquisition-entry',status:'LIVE_PROVEN',claim:'Een Company Brain is waar Bedrijfsgeheugen begint.',conversion:'/zelfscan',terminalOutcomes:Object.freeze(['paid_order','realized_revenue']),learning:'brain/learning/2026-09-30-company-brain-category-positioning-v1.json',productionEvidence:Object.freeze({protectedMain:'936ca60ad5c2415ff2372880a61aea5b1d690875',netlifyDeployId:'6abcd38195a83a25791474e5',httpStatus:200,canonical:'/company-brain',mobileViewport:'390x844',pageErrors:0,failedAssets:0})})
       }),
       behavioralModels:Object.freeze(['Cialdini','loss-aversion','prospect-theory','Fogg Behavior Model','Hick-Hyman','cognitive-fluency','commitment-ladder','specificity','choice-architecture']),
       optimizationOrder:Object.freeze(['realized revenue','paid orders','qualified proposals','qualified meetings','qualified leads','CTA progression','engagement']),
@@ -1083,3 +1084,32 @@ export const POWERHOUSE_LOOP_ASSURANCE_TERMINAL_LIVE_CLOSURE_V1 = Object.freeze(
   ])
 });
 
+
+export const COMMERCIAL_OUTBOUND_SELF_HEAL_V1 = Object.freeze({
+  fingerprint:'commercial|outbound-transport-self-heal|gmail-linkedin-dm|v1',
+  owner:'powerhouse-commercial-learning-v1',
+  salesActionAuthority:'public.powerhouse_sales_actions',
+  outcomeAuthority:'public.powerhouse_sales_outcomes',
+  failureAuthority:'public.brain_failure_registry',
+  assuranceLoop:'autonomous-outreach',
+  providerPreflight:Object.freeze({
+    sameProviderProjectRequired:true,
+    activeConnectionRequired:true,
+    mcpWordIdIsRawApiConnectedAccountId:false,
+    directExecuteRequiresEntityIdentity:true,
+    literalLatestVersionForbidden:true,
+    structuredProviderErrorRequired:true
+  }),
+  recovery:Object.freeze({
+    recoverableTransportErrorTerminal:false,
+    gmailFallback:'canonical active Gmail connector in same sales-action lineage',
+    preserve:Object.freeze(['daily-send-cap','suppression','cooldown','consent-or-existing-relationship','dedupe','republish-forbidden']),
+    providerMessageThreadReadbackRequired:true
+  }),
+  linkedinDm:Object.freeze({
+    failClosedWithoutTrueSendCapability:true,
+    postOrCommentIsDm:false,
+    authorizedEmailFallbackWhenKnownAddress:true
+  }),
+  referenceIncident:'2026-09-30'
+});

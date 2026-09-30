@@ -9,7 +9,8 @@
     "Remote workflow waiting behaved too synchronously.",
     "System Map writeback could wake unrelated platform suites.",
     "Stale production snapshots could queue behind newer main.",
-    "The post-merge obligation terminalizer unconditionally waited for a Netlify website release even when a merged obligation changed only governance and delivery-control-plane files."
+    "The post-merge obligation terminalizer unconditionally waited for a Netlify website release even when a merged obligation changed only governance and delivery-control-plane files.",
+    "Two automatic post-merge terminal-closure workflows could run for the same TERMINAL_DELIVERY writer lease, producing duplicate work and a false red when the slower legacy closure observed a still-running critical gate."
   ],
   "prevention": [
     "Predict conflict/capacity/fan-out before each write.",
@@ -19,7 +20,9 @@
     "Supersede stale reversible production snapshot work.",
     "Do not wake Business OS or portal native tests for System Map-only writeback.",
     "For governance-only/control-plane merges, terminal production proof is current-main containment; do not poll Netlify for a deployment that is not applicable.",
-    "Scope the scheduler config itself to the automation lane so governance tuning cannot fan out into portal or website release lanes."
+    "Scope the scheduler config itself to the automation lane so governance tuning cannot fan out into portal or website release lanes.",
+    "Use Powerhouse Obligation Terminalizer as the single automatic owner for TERMINAL_DELIVERY writer leases; keep Obligation Terminal Closure as manual/legacy fallback for non-lease lineages.",
+    "Do not trigger production source snapshot or production release readback for scheduler config, System Map or delivery-classifier-only governance changes."
   ],
   "skill_targets": [
     ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
@@ -42,6 +45,12 @@
     ]
   },
   "evidence": {
-    "terminalizer_non_runtime_readback": "MAIN_CONTAINMENT_NON_RUNTIME"
+    "terminalizer_non_runtime_readback": "MAIN_CONTAINMENT_NON_RUNTIME",
+    "scheduler_merge_sha": "c2188fde24f7d51c194acd1c7c0d093b7ceb316e",
+    "canonical_terminalizer_run_id": 36696171917,
+    "canonical_terminalizer_conclusion": "success",
+    "canonical_terminalizer_production_mode": "MAIN_CONTAINMENT_NON_RUNTIME",
+    "duplicate_legacy_closure_run_id": 36696171864,
+    "duplicate_legacy_closure_conclusion": "failure"
   }
 }

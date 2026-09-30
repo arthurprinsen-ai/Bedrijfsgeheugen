@@ -191,3 +191,7 @@ Vaste positionering:
 - Powerhouse is de onderliggende intelligence- en uitvoeringsmotor, niet het klantmerk dat de Company-Brain-categorie moet vervangen.
 
 De route is een acquisitielaag bovenop de bestaande Bedrijfslek-/Frisse-Blik-keten. Meet tot `paid_order` en `realized_revenue`; verkeer, ranking, clicks en scans zijn alleen tussenmetrics. Search Console/DataForSEO en echte conversie-uitkomsten bepalen toekomstige copy/CRO-wijzigingen. Geen duplicate Company-Brain-pagina's zolang deze canonical owner bestaat.
+
+
+### Company Brain production evidence
+Status: `LIVE_PROVEN` op 30 september 2026. Protected main `936ca60ad5c2415ff2372880a61aea5b1d690875`, Netlify deploy `6abcd38195a83a25791474e5`, public route HTTP 200, correcte canonical/titel, mobile 390×844, 0 page errors en 0 failed assets. Een aparte pricing language-switch timeout verandert deze route-specifieke production truth niet. Optimalisatie blijft sturen op paid order en realized revenue.
