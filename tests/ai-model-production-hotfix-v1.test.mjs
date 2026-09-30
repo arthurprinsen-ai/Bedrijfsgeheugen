@@ -18,3 +18,13 @@ test('AI Modelwijzer v2 labels are present in fail-closed static EN cache',()=>{
    assert.ok(cache[source],`missing translation: ${source}`);
  }
 });
+
+test('AI model cluster index pages are owned by the canonical shell projection',()=>{
+ const shell=fs.readFileSync('tools/site-shell/apply-shell.mjs','utf8');
+ const normalize=fs.readFileSync('tools/normaliseer-site-ui.mjs','utf8');
+ for(const slug of pages){
+   const file=slug+'/index.html';
+   assert.ok(shell.includes(file),file+' missing from canonical shell discovery');
+   assert.ok(normalize.includes(file),file+' missing from canonical normalization discovery');
+ }
+});
