@@ -13,7 +13,7 @@
   "failure_class": "AI_MODEL_INTELLIGENCE_STALE_OR_GOVERNANCE_MISCLASSIFICATION",
   "problem": "AI model recommendations can become wrong when pricing/lifecycle data is stale or when residency is incorrectly treated as sovereignty.",
   "evaluation": {
-    "regressions": [
+    "historical_replay": [
       "tests/ai-model-advisor-v1.test.mjs",
       "tests/ai-model-intelligence-freshness-v1.test.mjs"
     ]
