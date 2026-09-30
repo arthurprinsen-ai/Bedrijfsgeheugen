@@ -35,5 +35,27 @@ jobs:
           STATIC_I18N_REQUIRE_CACHE: "1"
           STATIC_I18N_NETWORK: "0"
         run: node tools/site-shell/build-localized-routes.mjs --validate-cache
+      - name: Exact Netlify production build
+        env:
+          STATIC_I18N_REQUIRE_CACHE: "1"
+          STATIC_I18N_NETWORK: "0"
+          NODE_OPTIONS: "--max-old-space-size=2048"
+        run: >
+          node tools/site-shell/pricing-build-integrity.mjs capture &&
+          node tools/site-shell/bedrijfslek-build-integrity.mjs capture &&
+          node tools/bouw-powerhouse-auth.mjs &&
+          node tools/bouw-kennisindex.mjs &&
+          node tools/bouw-v18-production.mjs &&
+          node tools/apply-tabbladen.mjs &&
+          node tools/bouw-v18-views.mjs &&
+          node tools/bouw-v18-chrome-alles.mjs &&
+          node tools/prijzen-uit-de-homepage.mjs &&
+          node tools/normaliseer-site-ui.mjs &&
+          node tools/site-shell/pricing-build-integrity.mjs restore &&
+          node tools/site-shell/bedrijfslek-build-integrity.mjs restore &&
+          node tools/site-shell/apply-i18n.mjs &&
+          node tools/site-shell/build-localized-routes.mjs &&
+          node tools/genereer-sitemap.mjs &&
+          node tools/bouw-release-evidence.mjs
       - name: Full Netlify build probe
         run: node tools/ai-modelwijzer-netlify-build-check.mjs
