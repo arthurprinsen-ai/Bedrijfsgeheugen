@@ -175,3 +175,16 @@ Voor Loop Assurance geldt aanvullend:
 - terminale closure vereist exact-main productie-readback plus Brain learning, skill/agent/chat-projectie, ledger/docs en System Map read-after-write;
 - actuele productie-evidence bij deze closure: main en Netlify exact op `9ae500bb184c5e36053c7ca64fb2d51bea070d9c`; live fleet 13 loops, 2 GREEN, 11 AMBER, 0 RED.
 
+
+
+## Browser navigation readback
+
+Fingerprint: `i18n-production-navigation-readback-20260930-v1`.
+
+For public locale switches, the functional acceptance boundary is the correct target route plus a usable localized DOM. Do not couple success to every non-critical resource finishing the full browser `load` event.
+
+Required:
+- wait for the exact target pathname with `domcontentloaded`;
+- then require the expected `html[lang]` value and visible localized content;
+- keep the readback fail-closed on wrong route, missing language state, Dutch copy on the English route, or visible runtime translation failure;
+- a full-load timeout after correct DOM-ready navigation is verifier noise, not evidence that the locale switch itself failed.
