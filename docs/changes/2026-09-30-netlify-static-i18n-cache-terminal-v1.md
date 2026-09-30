@@ -17,3 +17,7 @@ De ontbrekende strings kwamen uit:
 
 ## Terminal criterium
 Protected merge → exact current-main production build → Netlify ready/production → exact commit identity → browser/readback groen.
+
+
+## Exact merged-main reproof
+After concurrent protected-main movement, terminal closure must re-run the exact production build against the final merged-main source. This successor binds the recovery to main `77e08f3ede16e4e2b1f3b064addf7c93f3d5bfb3` before another production promotion.
