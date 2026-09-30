@@ -28,5 +28,19 @@
     "website",
     "sales"
   ],
-  "revision": 1
+  "revision": 2,
+  "evaluation": {
+    "historical_replay": [
+      "tests/product-led-home-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/product-led-home-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/product-led-home-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/product-led-home-v1.test.mjs"
+  ]
 }
