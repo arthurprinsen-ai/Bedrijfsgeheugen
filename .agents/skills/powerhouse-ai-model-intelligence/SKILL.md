@@ -81,3 +81,7 @@ The public Modelwijzer is an interactive application and MUST remain in the cano
 Every user-visible Dutch string introduced on `/ai-modelwijzer` must have a deterministic static-English cache entry before protected promotion. Production/deploy-preview builds run with `STATIC_I18N_REQUIRE_CACHE=1`; a missing translation is a release blocker, not a reason to disable English generation.
 
 `tests/ai-model-advisor-v1.test.mjs` and `tests/brain-ai-modelwijzer-production-build-v1.test.mjs` are required website-lane regressions. A committed Modelwijzer test that is not referenced by CI is a control failure.
+
+
+## SEO cluster visibility invariant
+All public AI-model provider/comparison pages must include a visible canonical Bedrijfsgeheugen header/navigation element on phone, tablet and desktop. Standalone SEO pages without a header are a release blocker even when their content, canonicals and Modelwijzer links are correct.
