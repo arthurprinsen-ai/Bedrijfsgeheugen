@@ -427,32 +427,36 @@
   function bindControlEvents() {
     if (controlsBound) return;
     controlsBound = true;
+
+    // Language selection owns the click before any mobile-menu capture handlers.
+    // This prevents menu teardown/drilldown listeners from swallowing the route switch.
+    window.addEventListener('click', event => {
+      const option = event.target.closest?.('[data-bg-language-option]');
+      if (!option) return;
+      const target = normalizeLocale(option.dataset.bgLanguageOption);
+      if (!SUPPORTED.has(target)) return;
+
+      event.preventDefault();
+      event.stopImmediatePropagation();
+      try { localStorage.setItem(STORAGE_KEY, target); } catch {}
+      document.cookie = 'bg_locale=' + encodeURIComponent(target) + '; Path=/; Max-Age=31536000; SameSite=Lax';
+
+      if (isPortal()) {
+        setLocale(target).catch(showLocaleError);
+        return;
+      }
+
+      const href = option.getAttribute('href') || localizedHref(target);
+      closeMenus();
+      window.location.assign(href);
+    }, true);
+
     document.addEventListener('change', event => {
       const select = event.target.closest?.('[data-bg-language-select]');
       if (!select) return;
       setLocale(select.value).catch(showLocaleError);
     });
     document.addEventListener('click', event => {
-      const option = event.target.closest?.('[data-bg-language-option]');
-      if (option) {
-        const target = normalizeLocale(option.dataset.bgLanguageOption);
-        if (SUPPORTED.has(target)) {
-          try { localStorage.setItem(STORAGE_KEY, target); } catch {}
-          document.cookie = 'bg_locale=' + encodeURIComponent(target) + '; Path=/; Max-Age=31536000; SameSite=Lax';
-        }
-        if (isPortal()) {
-          event.preventDefault();
-          setLocale(target).catch(showLocaleError);
-          return;
-        }
-        if (SUPPORTED.has(target)) {
-          event.preventDefault();
-          const href = option.getAttribute('href') || localizedHref(target);
-          closeMenus();
-          location.assign(href);
-        }
-        return;
-      }
       const current = event.target.closest?.('button[data-bg-language-current]');
       if (current) {
         event.preventDefault();
