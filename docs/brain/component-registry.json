@@ -1,6 +1,6 @@
 {
   "registry_version": "brain-components-v1",
-  "generated_at": "2026-09-29T14:20:00Z",
+  "generated_at": "2026-09-30T09:30:00+02:00",
   "source_authority": "config/powerhouse-runtime-authority.json",
   "source_authority_version": "POWERHOUSE-RUNTIME-AUTHORITY-v1",
   "source_authority_fingerprint": "powerhouse-agent-scheduler-authority-drift-2026-09-17-v1",
@@ -1640,6 +1640,29 @@
         "Pattern"
       ],
       "status": "active",
+      "brain_contract_version": "brain.v1"
+    },
+    {
+      "key": "CAPABILITY_AI_MODEL_ADVISOR",
+      "id": 990301,
+      "name": "AI Model Advisor + Model Intelligence",
+      "role": "CORTEX",
+      "cortex": "DECISION_INTELLIGENCE",
+      "authority": "ai_model_recommendation_governance",
+      "inputs": [
+        "Goal",
+        "Workload",
+        "ProviderEvidence",
+        "GovernanceConstraint"
+      ],
+      "outputs": [
+        "Recommendation",
+        "CostEstimate",
+        "GovernanceEvidence",
+        "QualifiedLead",
+        "Outcome"
+      ],
+      "status": "candidate",
       "brain_contract_version": "brain.v1"
     }
   ]

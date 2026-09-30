@@ -36,6 +36,17 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'ai-model-advisor-v1',
+      label:'AI Model Advisor + Model Intelligence',
+      authority:'supabase+official-provider-sources',
+      owner:'Powerhouse Growth & Revenue OS',
+      status:'CANDIDATE',
+      inputs:Object.freeze(['user goal','workload volume','quality/cost/speed priority','data-residency requirement','official provider model/pricing/governance evidence']),
+      outputs:Object.freeze(['ranked task-fit models','multi-model routing option','workload cost estimate','governance/data-sovereignty caveats','qualified lead/outcome lineage']),
+      runtime:Object.freeze({publicSurface:'/ai-modelwijzer',registry:'public.powerhouse_ai_model_registry',sourceWatch:'public.powerhouse_ai_model_source_watch',freshness:'public.powerhouse_ai_model_freshness_v1',leadRoute:'/api/ai-model-advisor-lead',browserCatalog:'data/ai-model-catalog.json',skill:'.agents/skills/powerhouse-ai-model-advisor/SKILL.md',regression:'tests/ai-modelwijzer-v1.test.mjs',learning:'brain/learning/2026-09-30-powerhouse-ai-model-advisor-v1.json'}),
+      invariants:Object.freeze({unknownGovernanceIsNeverGreen:true,officialSourceRequiredForPriceAndLifecycle:true,usefulAdviceBeforeLeadGate:true,retiredModelsNotRecommendedByDefault:true,noParallelLeadOrRevenueStore:true,outcomeLearningToPaidOrderAndRevenue:true})
+    }),
+    Object.freeze({
       id:'ai-model-intelligence-advisor-v1',
       label:'AI Model Intelligence & Advisor',
       authority:'github+official-provider-evidence+supabase-commercial-outcomes',

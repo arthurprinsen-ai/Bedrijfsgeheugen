@@ -1,13 +1,20 @@
 {
-  "id": "powerhouse-ai-model-advisor-v1",
-  "date": "2026-09-30",
-  "status": "candidate",
-  "learning": "AI-model comparison is a decision capability, not a static article. The canonical unit is user goal + hard governance constraints + cost-per-task + explainable alternatives.",
+  "id": "2026-09-30-powerhouse-ai-model-advisor-v1",
+  "fingerprint": "powerhouse|ai-model-advisor|goal-cost-governance-revenue-loop|v1",
+  "observed_at": "2026-09-30T09:10:00+02:00",
+  "problem": "Generic AI-model comparison pages are too shallow for business decisions and become stale quickly.",
+  "decision": "Create one canonical Model Advisor that combines goal-fit, workload cost, provider lifecycle, provenance, governance and data-sovereignty evidence, and routes optional qualified leads into the existing commercial outcome loop.",
   "prevention": [
-    "Do not collapse EU storage into EU inference or sovereignty.",
-    "Do not optimize for benchmark ranking alone.",
-    "Do not use stale model names or prices without official-source freshness.",
-    "Do not gate the first useful recommendation behind lead capture."
+    "UNKNOWN governance is never GREEN",
+    "Official source + verification date required for price/lifecycle",
+    "No lead gate before useful advice",
+    "No parallel CRM or revenue store",
+    "Model changes enter as candidates until verified"
   ],
-  "next_decision": "Route model/provider questions through the canonical AI Model Intelligence catalog and advisor surface."
+  "surfaces": [
+    "/ai-modelwijzer",
+    "public.powerhouse_ai_model_registry",
+    "public.powerhouse_ai_model_source_watch",
+    "Powerhouse System Map"
+  ]
 }
