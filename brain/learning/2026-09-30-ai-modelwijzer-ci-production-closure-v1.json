@@ -1,0 +1,53 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|ai-modelwijzer|ci-production-exact-build-closure|2026-09-30",
+  "date": "2026-09-30",
+  "status": "ACTIVE",
+  "context": "AI Modelwijzer v2 was merged while three committed regression tests had no CI owner and the exact fail-closed production build exposed untranslated governance strings. Production therefore could not be proven on exact main.",
+  "root_cause": [
+    "Model-intelligence regressions were committed without a canonical workflow owner.",
+    "Static English translation coverage was tested incompletely before the production build transformed the full public estate.",
+    "The standalone exact-build probe did not provide the release source SHA required by release-evidence generation.",
+    "The eight AI-model SEO routes were substantive but lacked a visible global header, which failed browser visibility checks on desktop, tablet and phone."
+  ],
+  "prevention_rules": [
+    "Every committed AI Modelwijzer regression is owned by the canonical AI Model Intelligence workflow.",
+    "The workflow reproduces the exact Netlify production build with STATIC_I18N_REQUIRE_CACHE=1.",
+    "The build probe binds COMMIT_REF to the exact candidate head SHA.",
+    "New governance copy must be present in the deterministic English cache before promotion.",
+    "LIVE requires Netlify ready with commit_ref equal to protected main plus public readback.",
+    "Every AI-model SEO route must expose a visible Bedrijfsgeheugen header and absolute canonical navigation links; the SEO cluster regression asserts this."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md"
+  ],
+  "agent_contract_targets": [
+    "AGENTS.md"
+  ],
+  "system_map_target": "platform/system-map/canonical-system-map.mjs",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ]
+  },
+  "truth_boundary": "This learning closes CI/build evidence gaps; it does not claim production is live until exact-main Netlify and public readback are verified.",
+  "evidence": {
+    "regression_tests": [
+      "tests/ai-model-advisor-v1.test.mjs",
+      "tests/ai-model-production-hotfix-v1.test.mjs",
+      "tests/ai-model-seo-cluster-v1.test.mjs"
+    ],
+    "exact_build_observation": "The canonical production build completed 112/112 static NL+EN routes with 0 untranslated refs after the governance cache fix; release evidence then required explicit exact candidate COMMIT_REF.",
+    "prior_production_state": "Netlify production was still on commit 845ba7e7576215777a9fdc9964501dc25cfc8c24 while protected main had AI Modelwijzer v2.",
+    "terminal_requirement": "Required test green + protected merge + Netlify ready with commit_ref equal to protected main + public Modelwijzer readback.",
+    "browser_visibility_repair": "24 visibility findings mapped exactly to eight AI-model SEO routes across desktop/tablet/phone; all eight now include the visible bg-ai-header and absolute Bedrijfsgeheugen navigation."
+  }
+}

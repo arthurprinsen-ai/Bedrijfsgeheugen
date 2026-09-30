@@ -1,0 +1,37 @@
+name: AI Model Intelligence
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ai-modelwijzer.html'
+      - 'data/ai-model-catalog-v1.json'
+      - 'data/ai-provider-governance-v1.json'
+      - 'config/powerhouse-ai-model-intelligence-v1.json'
+      - 'netlify/functions/ai-modelwijzer-lead.mjs'
+      - 'tests/ai-model-advisor-v1.test.mjs'
+      - 'tests/ai-model-production-hotfix-v1.test.mjs'
+      - 'tests/ai-model-seo-cluster-v1.test.mjs'
+      - '.github/workflows/ai-model-intelligence.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: Model intelligence regression
+        run: node --test tests/ai-model-advisor-v1.test.mjs tests/ai-model-production-hotfix-v1.test.mjs tests/ai-model-seo-cluster-v1.test.mjs
+      - name: Exact production build
+        env:
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+          NODE_OPTIONS: '--max-old-space-size=2048'
+          COMMIT_REF: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: node tools/site-shell/pricing-build-integrity.mjs capture && node tools/site-shell/bedrijfslek-build-integrity.mjs capture && node tools/bouw-powerhouse-auth.mjs && node tools/bouw-kennisindex.mjs && node tools/bouw-v18-production.mjs && node tools/apply-tabbladen.mjs && node tools/bouw-v18-views.mjs && node tools/bouw-v18-chrome-alles.mjs && node tools/prijzen-uit-de-homepage.mjs && node tools/normaliseer-site-ui.mjs && node tools/site-shell/pricing-build-integrity.mjs restore && node tools/site-shell/bedrijfslek-build-integrity.mjs restore && node tools/site-shell/apply-i18n.mjs && node tools/site-shell/build-localized-routes.mjs && node tools/genereer-sitemap.mjs && node tools/bouw-release-evidence.mjs
