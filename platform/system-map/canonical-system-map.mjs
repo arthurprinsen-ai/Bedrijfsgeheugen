@@ -646,7 +646,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
           learning:'brain/learning/2026-09-29-bedrijfslek-product-led-growth-borging-v2.json'
         }),
         learning:'brain/learning/2026-09-29-seo-conversion-orders-v1.json',
-        companyBrainCategory:Object.freeze({route:'/company-brain',role:'category-acquisition-entry',claim:'Een Company Brain is waar Bedrijfsgeheugen begint.',conversion:'/zelfscan',terminalOutcomes:Object.freeze(['paid_order','realized_revenue']),learning:'brain/learning/2026-09-30-company-brain-category-positioning-v1.json'})
+        companyBrainCategory:Object.freeze({route:'/company-brain',role:'category-acquisition-entry',status:'LIVE_PROVEN',claim:'Een Company Brain is waar Bedrijfsgeheugen begint.',conversion:'/zelfscan',terminalOutcomes:Object.freeze(['paid_order','realized_revenue']),learning:'brain/learning/2026-09-30-company-brain-category-positioning-v1.json',productionEvidence:Object.freeze({protectedMain:'936ca60ad5c2415ff2372880a61aea5b1d690875',netlifyDeployId:'6abcd38195a83a25791474e5',httpStatus:200,canonical:'/company-brain',mobileViewport:'390x844',pageErrors:0,failedAssets:0})})
       }),
       behavioralModels:Object.freeze(['Cialdini','loss-aversion','prospect-theory','Fogg Behavior Model','Hick-Hyman','cognitive-fluency','commitment-ladder','specificity','choice-architecture']),
       optimizationOrder:Object.freeze(['realized revenue','paid orders','qualified proposals','qualified meetings','qualified leads','CTA progression','engagement']),

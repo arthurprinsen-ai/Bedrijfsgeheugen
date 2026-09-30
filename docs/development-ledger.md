@@ -392,3 +392,12 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Regression gate:** `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
 - **Owner:** Website/UX + Powerhouse continuity + System Map governance.
 - **Reusable lesson:** locale is sitewide navigatiestatus; een correcte taal op alleen de huidige pagina is geen voldoende i18n-bewijs.
+
+
+## 2026-09-30 — PRODUCTION_PROMOTION — Company Brain LIVE_PROVEN
+- **Fingerprint:** `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1`.
+- **Protected main:** `936ca60ad5c2415ff2372880a61aea5b1d690875`.
+- **Netlify deploy:** `6abcd38195a83a25791474e5`, ready/current, exact commit_ref, published 2026-09-30T09:19:11.017Z.
+- **Public proof:** `https://www.bedrijfsgeheugen.nl/company-brain` HTTP 200; canonical/title correct; mobile 390×844; 0 page errors; 0 failed assets.
+- **Boundary:** later pricing NL/EN switch timeout is a separate obligation.
+- **Status:** `LIVE_PROVEN`.
