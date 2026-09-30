@@ -1,0 +1,1208 @@
+{
+  "version": "ai-model-catalog-v1",
+  "verified_at": "2026-09-30",
+  "currency": "USD",
+  "scope_note": "Catalog focuses on decision-relevant production and specialist models. Provider catalogs change continuously; official source URLs are retained per model and lifecycle freshness is a hard recommendation factor.",
+  "governance_dimensions": [
+    "provider_jurisdiction",
+    "storage_residency",
+    "inference_residency",
+    "subprocessors",
+    "training_on_customer_data",
+    "retention",
+    "zero_data_retention",
+    "customer_managed_keys",
+    "private_networking",
+    "self_hosting",
+    "open_weights",
+    "auditability",
+    "model_lifecycle",
+    "license",
+    "EU_AI_Act",
+    "GDPR/DPA"
+  ],
+  "task_dimensions": [
+    "reasoning",
+    "coding",
+    "writing",
+    "research",
+    "RAG",
+    "OCR",
+    "vision",
+    "audio",
+    "video",
+    "classification",
+    "summarization",
+    "translation",
+    "agents",
+    "tool_use",
+    "structured_output",
+    "low_latency",
+    "high_volume",
+    "local_private"
+  ],
+  "models": [
+    {
+      "id": "gpt-6-astra",
+      "provider": "OpenAI",
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": 5,
+      "output_usd_m": 25,
+      "cached_input_usd_m": 0.5,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "complex reasoning",
+        "advanced coding",
+        "agents",
+        "research"
+      ],
+      "scores": {
+        "reasoning": 10,
+        "code": 10,
+        "writing": 9,
+        "speed": 6,
+        "cost": 3,
+        "vision": 9,
+        "agents": 10
+      },
+      "eu_processing": false,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+    },
+    {
+      "id": "gpt-6-sol",
+      "provider": "OpenAI",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": 1,
+      "output_usd_m": 5,
+      "cached_input_usd_m": 0.1,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "knowledge work",
+        "coding",
+        "analysis",
+        "agents"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 9,
+        "speed": 8,
+        "cost": 8,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API",
+        "Amazon Bedrock"
+      ],
+      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+    },
+    {
+      "id": "gpt-6-luna",
+      "provider": "OpenAI",
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": 0.05,
+      "output_usd_m": 0.25,
+      "cached_input_usd_m": 0.005,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "classification",
+        "summarization",
+        "high volume",
+        "routing"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 7,
+        "writing": 7,
+        "speed": 10,
+        "cost": 10,
+        "vision": 8,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API",
+        "Amazon Bedrock"
+      ],
+      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+    },
+    {
+      "id": "gpt-5.6-sol",
+      "provider": "OpenAI",
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": 4,
+      "output_usd_m": 20,
+      "cached_input_usd_m": 0.4,
+      "context_k": 400,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "cybersecurity",
+        "coding",
+        "reasoning"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 8,
+        "speed": 7,
+        "cost": 4,
+        "vision": 8,
+        "agents": 9
+      },
+      "eu_processing": false,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+    },
+    {
+      "id": "claude-opus-5-5",
+      "provider": "Anthropic",
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": 4,
+      "output_usd_m": 20,
+      "cached_input_usd_m": 0.2,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "complex coding",
+        "long-running agents",
+        "professional judgment",
+        "document creation"
+      ],
+      "scores": {
+        "reasoning": 10,
+        "code": 10,
+        "writing": 10,
+        "speed": 7,
+        "cost": 5,
+        "vision": 9,
+        "agents": 10
+      },
+      "eu_processing": false,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source": "https://www.anthropic.com/claude/opus"
+    },
+    {
+      "id": "claude-sonnet-5-5",
+      "provider": "Anthropic",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": 0.2,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "coding",
+        "documents",
+        "spreadsheets",
+        "design",
+        "everyday agents"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 10,
+        "writing": 10,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": false,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source": "https://www.anthropic.com/claude-sonnet-5-5"
+    },
+    {
+      "id": "claude-sonnet-5",
+      "provider": "Anthropic",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": null,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "agentic coding",
+        "tool use",
+        "knowledge work"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 9,
+        "speed": 8,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": false,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source": "https://www.anthropic.com/news/claude-sonnet-5"
+    },
+    {
+      "id": "claude-opus-5",
+      "provider": "Anthropic",
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": 5,
+      "output_usd_m": 25,
+      "cached_input_usd_m": 0.5,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "advanced software engineering",
+        "agents",
+        "professional work"
+      ],
+      "scores": {
+        "reasoning": 10,
+        "code": 10,
+        "writing": 9,
+        "speed": 6,
+        "cost": 4,
+        "vision": 9,
+        "agents": 10
+      },
+      "eu_processing": false,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source": "https://www.anthropic.com/news/claude-opus-5"
+    },
+    {
+      "id": "claude-haiku-4-5",
+      "provider": "Anthropic",
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": 1,
+      "output_usd_m": 5,
+      "cached_input_usd_m": null,
+      "context_k": 200,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "customer service",
+        "low latency",
+        "pair programming",
+        "high volume"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 8,
+        "writing": 8,
+        "speed": 10,
+        "cost": 8,
+        "vision": 8,
+        "agents": 8
+      },
+      "eu_processing": false,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud"
+      ],
+      "source": "https://www.anthropic.com/news/claude-haiku-4-5"
+    },
+    {
+      "id": "gemini-3.1-pro-preview",
+      "provider": "Google",
+      "tier": "frontier",
+      "status": "preview",
+      "input_usd_m": 2,
+      "output_usd_m": 12,
+      "cached_input_usd_m": null,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision",
+        "audio",
+        "video"
+      ],
+      "strengths": [
+        "multimodal reasoning",
+        "large context",
+        "research",
+        "complex analysis"
+      ],
+      "scores": {
+        "reasoning": 10,
+        "code": 9,
+        "writing": 9,
+        "speed": 7,
+        "cost": 6,
+        "vision": 10,
+        "agents": 9
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Vertex AI"
+      ],
+      "source": "https://ai.google.dev/gemini-api/docs/gemini-3"
+    },
+    {
+      "id": "gemini-3.1-flash-lite",
+      "provider": "Google",
+      "tier": "economy",
+      "status": "preview",
+      "input_usd_m": 0.25,
+      "output_usd_m": 1.5,
+      "cached_input_usd_m": null,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision",
+        "audio",
+        "video"
+      ],
+      "strengths": [
+        "high volume",
+        "multimodal extraction",
+        "classification",
+        "routing"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 7,
+        "writing": 7,
+        "speed": 10,
+        "cost": 10,
+        "vision": 9,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Vertex AI"
+      ],
+      "source": "https://ai.google.dev/gemini-api/docs/gemini-3"
+    },
+    {
+      "id": "gemini-2.5-flash-lite",
+      "provider": "Google",
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.4,
+      "cached_input_usd_m": null,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision",
+        "audio",
+        "video"
+      ],
+      "strengths": [
+        "at-scale processing",
+        "classification",
+        "summaries"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 7,
+        "writing": 7,
+        "speed": 10,
+        "cost": 10,
+        "vision": 9,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Vertex AI"
+      ],
+      "source": "https://ai.google.dev/gemini-api/docs/pricing"
+    },
+    {
+      "id": "mistral-medium-3-5",
+      "provider": "Mistral AI",
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": 1.5,
+      "output_usd_m": 7.5,
+      "cached_input_usd_m": 0.15,
+      "context_k": 256,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "agents",
+        "coding",
+        "multimodal",
+        "EU-first enterprise"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 8,
+        "speed": 8,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host",
+        "cloud partners"
+      ],
+      "source": "https://docs.mistral.ai/inference/pricing"
+    },
+    {
+      "id": "mistral-large-3",
+      "provider": "Mistral AI",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": 0.5,
+      "output_usd_m": 1.5,
+      "cached_input_usd_m": 0.05,
+      "context_k": 256,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "general reasoning",
+        "multimodal",
+        "open-weight deployment"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 8,
+        "writing": 8,
+        "speed": 8,
+        "cost": 9,
+        "vision": 9,
+        "agents": 8
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host",
+        "cloud partners"
+      ],
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "id": "mistral-small-4",
+      "provider": "Mistral AI",
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": 0.15,
+      "output_usd_m": 0.6,
+      "cached_input_usd_m": 0.015,
+      "context_k": 256,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "reasoning",
+        "coding",
+        "cost-efficient agents",
+        "self-hosting"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 8,
+        "speed": 9,
+        "cost": 10,
+        "vision": 8,
+        "agents": 8
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host"
+      ],
+      "source": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03"
+    },
+    {
+      "id": "ministral-3-14b",
+      "provider": "Mistral AI",
+      "tier": "local",
+      "status": "active",
+      "input_usd_m": 0.2,
+      "output_usd_m": 0.2,
+      "cached_input_usd_m": 0.02,
+      "context_k": 256,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "local deployment",
+        "edge/private workloads",
+        "cost control"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 7,
+        "writing": 7,
+        "speed": 9,
+        "cost": 10,
+        "vision": 8,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host"
+      ],
+      "source": "https://docs.mistral.ai/models/ministral-3-14b-25-12"
+    },
+    {
+      "id": "ministral-3-8b",
+      "provider": "Mistral AI",
+      "tier": "local",
+      "status": "active",
+      "input_usd_m": 0.15,
+      "output_usd_m": 0.15,
+      "cached_input_usd_m": 0.015,
+      "context_k": 256,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "edge",
+        "private inference",
+        "classification"
+      ],
+      "scores": {
+        "reasoning": 6,
+        "code": 6,
+        "writing": 7,
+        "speed": 10,
+        "cost": 10,
+        "vision": 7,
+        "agents": 6
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host"
+      ],
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "id": "ministral-3-3b",
+      "provider": "Mistral AI",
+      "tier": "local",
+      "status": "active",
+      "input_usd_m": 0.1,
+      "output_usd_m": 0.1,
+      "cached_input_usd_m": 0.01,
+      "context_k": 256,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "on-device",
+        "routing",
+        "classification",
+        "private edge"
+      ],
+      "scores": {
+        "reasoning": 5,
+        "code": 5,
+        "writing": 6,
+        "speed": 10,
+        "cost": 10,
+        "vision": 7,
+        "agents": 5
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host"
+      ],
+      "source": "https://docs.mistral.ai/models/ministral-3-3b-25-12"
+    },
+    {
+      "id": "codestral",
+      "provider": "Mistral AI",
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": 0.3,
+      "output_usd_m": 0.9,
+      "cached_input_usd_m": 0.03,
+      "context_k": 256,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "code completion",
+        "software engineering",
+        "FIM"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 9,
+        "writing": 5,
+        "speed": 9,
+        "cost": 9,
+        "vision": 1,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source": "https://docs.mistral.ai/inference/pricing"
+    },
+    {
+      "id": "mistral-ocr-4-1",
+      "provider": "Mistral AI",
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "unit_price": "$4 / 1000 pages",
+      "modalities": [
+        "document",
+        "vision"
+      ],
+      "strengths": [
+        "OCR",
+        "document structure",
+        "bounding boxes",
+        "document extraction"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 1,
+        "speed": 9,
+        "cost": 9,
+        "vision": 10,
+        "agents": 4
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source": "https://docs.mistral.ai/models/ocr-4-1"
+    },
+    {
+      "id": "grok-4.7",
+      "provider": "xAI",
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": 2,
+      "output_usd_m": 6,
+      "cached_input_usd_m": 0.5,
+      "context_k": 500,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "coding",
+        "reasoning",
+        "tool calling"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 8,
+        "speed": 8,
+        "cost": 7,
+        "vision": 8,
+        "agents": 9
+      },
+      "eu_processing": false,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "xAI API"
+      ],
+      "source": "https://docs.x.ai/developers/models"
+    },
+    {
+      "id": "grok-4.6",
+      "provider": "xAI",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": 2,
+      "output_usd_m": 6,
+      "cached_input_usd_m": 0.5,
+      "context_k": 500,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "reasoning",
+        "tool use",
+        "coding"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 8,
+        "speed": 8,
+        "cost": 7,
+        "vision": 6,
+        "agents": 9
+      },
+      "eu_processing": false,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "xAI API"
+      ],
+      "source": "https://docs.x.ai/developers/pricing"
+    },
+    {
+      "id": "deepseek-flash",
+      "provider": "DeepSeek",
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": 0.3,
+      "output_usd_m": 1.2,
+      "cached_input_usd_m": 0.006,
+      "context_k": 1000,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "low-cost reasoning",
+        "large context",
+        "high volume"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 7,
+        "speed": 9,
+        "cost": 10,
+        "vision": 8,
+        "agents": 8
+      },
+      "eu_processing": false,
+      "eu_storage": false,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "China",
+      "deployment": [
+        "DeepSeek API"
+      ],
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/"
+    },
+    {
+      "id": "deepseek-v4-pro",
+      "provider": "DeepSeek",
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": 1.32,
+      "output_usd_m": 3.96,
+      "cached_input_usd_m": 0.044,
+      "context_k": 1000,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "reasoning",
+        "coding",
+        "large context"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 8,
+        "speed": 7,
+        "cost": 9,
+        "vision": 2,
+        "agents": 8
+      },
+      "eu_processing": false,
+      "eu_storage": false,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "China",
+      "deployment": [
+        "DeepSeek API"
+      ],
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/"
+    },
+    {
+      "id": "command-a-plus",
+      "provider": "Cohere",
+      "tier": "enterprise",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "enterprise RAG",
+        "private deployment",
+        "business workflows"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 7,
+        "writing": 8,
+        "speed": 8,
+        "cost": 6,
+        "vision": 2,
+        "agents": 8
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": true,
+      "jurisdiction": "Canada",
+      "deployment": [
+        "Cohere",
+        "Model Vault",
+        "private deployment"
+      ],
+      "source": "https://docs.cohere.com/docs/how-does-cohere-pricing-work"
+    },
+    {
+      "id": "command-a",
+      "provider": "Cohere",
+      "tier": "enterprise",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "enterprise generation",
+        "RAG",
+        "tool use"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 7,
+        "writing": 8,
+        "speed": 8,
+        "cost": 7,
+        "vision": 2,
+        "agents": 8
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": true,
+      "jurisdiction": "Canada",
+      "deployment": [
+        "Cohere",
+        "Model Vault",
+        "private deployment"
+      ],
+      "source": "https://docs.cohere.com/docs/how-does-cohere-pricing-work"
+    },
+    {
+      "id": "embed-4",
+      "provider": "Cohere",
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "unit_price": "Model Vault from $4/hour",
+      "modalities": [
+        "embedding"
+      ],
+      "strengths": [
+        "semantic search",
+        "multilingual embeddings",
+        "RAG"
+      ],
+      "scores": {
+        "reasoning": 1,
+        "code": 1,
+        "writing": 1,
+        "speed": 9,
+        "cost": 7,
+        "vision": 4,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": true,
+      "jurisdiction": "Canada",
+      "deployment": [
+        "Cohere",
+        "Model Vault",
+        "private deployment"
+      ],
+      "source": "https://cohere.com/pricing"
+    },
+    {
+      "id": "rerank-4-pro",
+      "provider": "Cohere",
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "unit_price": "Model Vault from $5/hour",
+      "modalities": [
+        "rerank"
+      ],
+      "strengths": [
+        "search relevance",
+        "RAG reranking",
+        "enterprise retrieval"
+      ],
+      "scores": {
+        "reasoning": 1,
+        "code": 1,
+        "writing": 1,
+        "speed": 9,
+        "cost": 7,
+        "vision": 1,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": true,
+      "jurisdiction": "Canada",
+      "deployment": [
+        "Cohere",
+        "Model Vault",
+        "private deployment"
+      ],
+      "source": "https://cohere.com/pricing"
+    },
+    {
+      "id": "llama-open-weight",
+      "provider": "Meta",
+      "tier": "open-weight",
+      "status": "provider-dependent",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "self-hosting",
+        "sovereign deployment",
+        "customization"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 8,
+        "speed": 7,
+        "cost": 7,
+        "vision": 5,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "US",
+      "deployment": [
+        "self-host",
+        "EU cloud",
+        "on-prem"
+      ],
+      "source": "https://www.llama.com/"
+    },
+    {
+      "id": "qwen-open-weight",
+      "provider": "Alibaba/Qwen",
+      "tier": "open-weight",
+      "status": "provider-dependent",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "open-weight deployment",
+        "multilingual",
+        "coding"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 8,
+        "speed": 8,
+        "cost": 8,
+        "vision": 8,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "China",
+      "deployment": [
+        "self-host",
+        "cloud providers"
+      ],
+      "source": "https://qwenlm.github.io/"
+    }
+  ]
+}
