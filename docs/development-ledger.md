@@ -365,3 +365,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Root cause:** the website delivery lane enumerates top-level public HTML routes explicitly; the newly created category owner was not yet registered there.
 - **Fix:** register `company-brain.html` in the existing website lane and bind it into the Company Brain historical replay regression.
 - **Prevention:** every new top-level public HTML route must update the existing delivery classifier in the same candidate before CI admission.
+
+## 2026-09-30 — RECOVERY — Persistent public locale navigation v1
+- **Fingerprint:** `website|i18n|persistent-public-navigation|v1`.
+- **Signal:** de actuele pagina schakelde naar English, maar een volgende gewone interne menu-/paginalink kon terugkeren naar Nederlands.
+- **Impact:** taalkeuze was niet sitebreed persistent en de publieke CMS-shell leverde een inconsistente tweetalige journey.
+- **Root cause:** same-route locale switching bestond, maar ordinary same-origin public hrefs bleven onprefixte Dutch routes.
+- **Final fix:** `assets/js/i18n.js` normaliseert eligible public links naar de actieve locale, bewaart query/hash, sluit technische/portal-paden uit en verwerkt dynamisch toegevoegde navigatie.
+- **Regression gate:** `tests/brain-i18n-persistent-navigation-v1.test.mjs` plus borgingtest `tests/brain-i18n-persistent-navigation-borging-v1.test.mjs`.
+- **Owner:** Website/UX + Powerhouse continuity + System Map governance.
+- **Reusable lesson:** locale is sitewide navigatiestatus; een correcte taal op alleen de huidige pagina is geen voldoende i18n-bewijs.
