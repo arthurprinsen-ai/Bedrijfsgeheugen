@@ -17,10 +17,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/targeted-website-route-regression.test.mjs"
+      "tests/brain-powerhouse-need-discovery-v1.test.mjs"
     ],
     "canary": [
-      "tests/targeted-website-route-regression.test.mjs"
+      "tests/brain-powerhouse-need-discovery-v1.test.mjs"
     ]
   }
 }
