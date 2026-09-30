@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>AI Modelwijzer 2026 — vergelijk AI-modellen op taak, kosten, privacy en data-soevereiniteit | Bedrijfsgeheugen</title>
-<meta name="description" content="Vergelijk actuele AI-modellen van OpenAI, Claude, Gemini, Mistral, Grok, DeepSeek, Cohere, Llama en Qwen. Krijg modeladvies op taak, kosten, snelheid, privacy, governance en data-soevereiniteit.">
+<title>AI Modelwijzer 2026 | Vergelijk AI-modellen | Bedrijfsgeheugen</title>
+<meta name="description" content="Vergelijk AI-modellen op taak, kosten, snelheid, privacy, governance en data-soevereiniteit. Krijg direct een passend modeladvies.">
 <meta name="bg-zoekwoord" content="AI modellen vergelijken">
 <link rel="canonical" href="https://www.bedrijfsgeheugen.nl/ai-modelwijzer">
 <meta property="og:type" content="website">
@@ -65,6 +65,8 @@
 <label class="check"><input id="euOnly" type="checkbox"> Inferentie aantoonbaar EU</label>
 <label class="check"><input id="selfHost" type="checkbox"> Self-hosting vereist</label>
 <label class="check"><input id="openWeights" type="checkbox"> Open weights vereist</label>
+<label class="check"><input id="zdr" type="checkbox"> Zero Data Retention vereist</label>
+<label class="check"><input id="customerControl" type="checkbox"> Customer-controlled data vereist</label>
 <label class="check"><input id="activeOnly" type="checkbox" checked> Alleen actief/production</label>
 </div>
 <button class="adviceBtn" id="advise">Vergelijk en adviseer →</button>
@@ -80,9 +82,7 @@
 <input id="search" placeholder="Zoek model, provider of toepassing">
 <select id="providerFilter"><option value="">Alle providers</option></select>
 <select id="tierFilter"><option value="">Alle types</option><option value="frontier">Frontier</option><option value="balanced">Balanced</option><option value="economy">Economy</option><option value="local">Local/self-host</option><option value="specialist">Specialist</option><option value="enterprise">Enterprise</option><option value="open-weight">Open-weight</option></select>
-<select id="governanceFilter"><option value="">Alle governanceprofielen</option><option value="eu">EU processing</option><option value="storageeu">EU storage</option><option value="self">Self-host</option><option value="open">Open weights</option></select>
-<select id="modalityFilter"><option value="">Alle modalities</option><option value="text">Tekst</option><option value="vision">Vision</option><option value="image">Image generatie</option><option value="audio">Audio / voice</option><option value="video">Video</option><option value="document">Document / OCR</option><option value="code">Code</option></select>
-<select id="taskFilter"><option value="">Alle doeleinden</option><option value="coding">Programmeren</option><option value="reasoning">Complex redeneren</option><option value="writing">Schrijven</option><option value="agents">Agents / tools</option><option value="high volume">Hoog volume</option><option value="ocr">OCR / documenten</option><option value="embedding">RAG / embeddings</option><option value="transcription">Transcriptie</option><option value="image generation">Afbeeldingen</option><option value="video generation">Video</option><option value="moderation">Moderatie / safety</option><option value="self-host">Self-host / soevereiniteit</option></select>
+<select id="governanceFilter"><option value="">Alle governanceprofielen</option><option value="eu">EU processing</option><option value="self">Self-host</option><option value="open">Open weights</option><option value="zdr">Zero Data Retention</option><option value="customer">Customer-controlled sovereignty</option></select>
 </div>
 <div class="modelGrid" id="modelGrid"></div>
 <p class="compareNote">Bronnen zijn leverancier-documentatie. Onbekende waarden worden als onbekend getoond; de Modelwijzer verzint geen residency- of prijsclaim.</p>
@@ -101,7 +101,7 @@
 <div class="gov"><h3>7. Sleutels & netwerk</h3><p>Customer-managed keys, private networking, IAM, auditlogs en tenant-isolatie bepalen hoeveel technische controle je werkelijk hebt.</p></div>
 <div class="gov"><h3>8. Lifecycle & lock-in</h3><p>Deprecated modellen, API-wijzigingen, licenties en portability horen mee te wegen in architectuur- en continuïteitsrisico.</p></div>
 </div>
-<div class="callout"><b>Dataresidentie ≠ data-soevereiniteit.</b> De advisor behandelt EU-verwerking als één constraint. Voor gereguleerde of strategische data kan self-hosting of een customer-controlled cloud-deployment zwaarder wegen dan een kleine benchmarkwinst.</div>
+<div class="callout"><b>Dataresidentie ≠ data-soevereiniteit.</b> De advisor behandelt EU-verwerking als één constraint. Voor gereguleerde of bedrijfskritische data kan self-hosting of een customer-controlled cloud-deployment zwaarder wegen dan een kleine benchmarkwinst.</div>
 </div></section>
 
 <section class="section"><div class="wrap">
@@ -116,7 +116,7 @@
 <div class="faq">
 <details><summary>Wat is het beste AI-model?</summary><p>Dat bestaat niet als universele keuze. Een model kan sterker zijn in complexe coding, maar economisch onlogisch voor classificatie op grote volumes. De Modelwijzer optimaliseert op jouw taak en constraints.</p></details>
 <details><summary>Waarom kijk je naar kosten per taak en niet alleen naar tokenprijs?</summary><p>Een goedkoper model kan meer retries of extra tokens nodig hebben. Een duurder model kan juist in één run klaar zijn. De huidige calculator is een transparante tokenbasis; de Powerhouse-loop kan dit later kalibreren met echte taakuitkomsten.</p></details>
-<details><summary>Is een model met EU data residency automatisch AVG-proof?</summary><p>Nee. AVG-compliance hangt ook af van doel, grondslag, verwerkersafspraken, dataminimalisatie, beveiliging, subprocessors, retentie en jouw concrete implementatie.</p></details>
+<details><summary>Is een model met EU data residency automatisch AVG-proof?</summary><p>Nee. AVG-compliance hangt ook af van doel, grondslag, verwerkersafspraken, dataminimalisatie, beveiliging, subprocessors, retentie en jouw concrete invoering.</p></details>
 <details><summary>Waarom staan previewmodellen lager?</summary><p>Preview kan prima zijn voor experimenten, maar lifecycle- en stabiliteitsrisico zijn relevant voor productie. De ranking past daarom een beperkte previewstraf toe.</p></details>
 <details><summary>Kan één workflow meerdere modellen gebruiken?</summary><p>Ja. Vaak is routing economisch beter: een klein model doet standaardwerk, een sterker model behandelt moeilijke gevallen en een specialistisch model doet bijvoorbeeld OCR of reranking.</p></details>
 </div>
@@ -124,23 +124,16 @@
 </main>
 <footer class="footer"><div class="wrap">Bedrijfsgeheugen · AI-gedreven. Menselijk gericht. · <a href="https://www.bedrijfsgeheugen.nl/privacy">Privacy</a> · <a href="https://www.bedrijfsgeheugen.nl/contact">Contact</a></div></footer>
 <script>
-let catalog={models:[]},lastAdvice=null;
+let catalog={models:[]},governance={providers:[]},lastAdvice=null;
 const $=id=>document.getElementById(id);
 const money=n=>n==null?'onbekend':new Intl.NumberFormat('nl-NL',{style:'currency',currency:'USD',maximumFractionDigits:n<10?2:0}).format(n);
 function taskSignal(text){
  const t=text.toLowerCase();
- const signal={reasoning:0,code:0,writing:0,vision:0,agents:0,cost:0,speed:0,audio:0,ocr:0,embedding:0,imagegen:0,video:0,moderation:0,local:0};
+ const signal={reasoning:0,code:0,writing:0,vision:0,agents:0,cost:0,speed:0};
  if(/code|program|software|debug|refactor|api|sql|python|dax|power bi/.test(t)) signal.code+=4;
  if(/complex|redene|analyse|strategie|research|onderzoek|jurid|contract|beslis/.test(t)) signal.reasoning+=4;
  if(/schrijf|tekst|document|offerte|mail|blog|samenvat|vertaal|slides|spreadsheet/.test(t)) signal.writing+=3;
- if(/beeld|afbeeld|foto|scan|pdf|document uitle/.test(t)) signal.vision+=3;
- if(/audio|spraak|voice|stem|transcrib|transcript|gesprek/.test(t)) signal.audio+=5;
- if(/ocr|factuur|scan|pdf uitle|document extract/.test(t)) signal.ocr+=5;
- if(/embedding|rag|semantic|vector|kennisbank|retrieval/.test(t)) signal.embedding+=5;
- if(/afbeelding gener|image gener|beeld gener|foto maken/.test(t)) signal.imagegen+=6;
- if(/video gener|video maken|video edit/.test(t)) signal.video+=6;
- if(/moderatie|moderation|safety|jailbreak|toxisch/.test(t)) signal.moderation+=6;
- if(/self.host|on.prem|soeverein|eigen cloud|eigen gpu|lokaal draaien/.test(t)) signal.local+=6;
+ if(/beeld|afbeeld|foto|video|scan|ocr|pdf|document uitle/.test(t)) signal.vision+=3;
  if(/agent|tool|workflow|autonoom|browser|computer/.test(t)) signal.agents+=4;
  if(/goedkoop|kosten|budget|volume|duizend|miljoen/.test(t)) signal.cost+=3;
  if(/snel|realtime|latency|direct/.test(t)) signal.speed+=3;
@@ -152,20 +145,7 @@ function scoreModel(m,text,priority){
  const weights={quality:{reasoning:4,code:3,writing:2},cost:{cost:8,speed:1},speed:{speed:8,cost:2},privacy:{cost:1},balanced:{reasoning:2,code:2,writing:1,cost:2,speed:1}}[priority]||{};
  for(const [k,w] of Object.entries(weights)) score+=(m.scores[k]||0)*w;
  if(priority==='privacy'){score+=(m.eu_processing===true?28:0)+(m.self_host?32:0)+(m.open_weights?15:0); if(m.jurisdiction==='EU/France')score+=12;}
- const strengths=(m.strengths||[]).join(' ').toLowerCase();
- const mods=(m.modalities||[]).join(' ').toLowerCase();
- if(s.audio) score+=(mods.includes('audio')?55:-35);
- if(s.ocr) score+=(strengths.includes('ocr')||mods.includes('document')?60:-30);
- if(s.embedding) score+=(strengths.includes('embedding')||strengths.includes('semantic')||strengths.includes('rag')?60:-35);
- if(s.imagegen) score+=(strengths.includes('image generation')?65:-40);
- if(s.video) score+=(strengths.includes('video generation')||mods.includes('video')?65:-40);
- if(s.moderation) score+=(strengths.includes('moderation')||strengths.includes('safety')?65:-40);
- if(s.local) score+=(m.self_host?60:-30);
- const specialist=/(embedding|moderation|transcription|text-to-speech|speech-to-text|image generation|video generation|ocr)/.test(strengths);
- const specialistIntent=s.audio||s.ocr||s.embedding||s.imagegen||s.video||s.moderation;
- if(specialist&&!specialistIntent)score-=45;
  if(m.status==='preview')score-=8;
- if(m.status==='retired'||m.status==='deprecated')score-=80;
  return score;
 }
 function monthlyCost(m){
@@ -173,11 +153,16 @@ function monthlyCost(m){
  const tasks=+$('tasks').value||0, tin=+$('inputTokens').value||0, tout=+$('outputTokens').value||0;
  return tasks*((tin/1e6)*m.input_usd_m+(tout/1e6)*m.output_usd_m);
 }
+function providerPaths(m){return governance.providers.find(p=>p.provider===m.provider)?.paths||[]}
+function supportsZdr(m){return providerPaths(m).some(p=>String(p.zero_data_retention||'').toLowerCase().includes('available')||String(p.zero_data_retention||'').toLowerCase().includes('supported')||p.zero_data_retention==='customer-controlled')}
+function customerControlled(m){return m.self_host&&providerPaths(m).some(p=>p.self_host&&String(p.sovereignty_level||'').includes('customer-controlled'))}
 function governanceBadges(m){
  const b=[];
  b.push(m.eu_processing===true?'<span class="badge good">EU-inferentie optie</span>':m.eu_processing===false?'<span class="badge risk">Geen EU-inferentie in dit pad</span>':'<span class="badge warn">EU-inferentie onbekend</span>');
  if(m.self_host)b.push('<span class="badge good">Self-host mogelijk</span>');
  if(m.open_weights)b.push('<span class="badge good">Open weights</span>');
+ if(supportsZdr(m))b.push('<span class="badge good">ZDR-pad beschikbaar</span>');
+ if(customerControlled(m))b.push('<span class="badge good">Customer-controlled pad</span>');
  b.push('<span class="badge">'+m.jurisdiction+'</span>');
  return b.join('');
 }
@@ -196,6 +181,8 @@ function eligible(m){
  if($('euOnly').checked&&m.eu_processing!==true)return false;
  if($('selfHost').checked&&!m.self_host)return false;
  if($('openWeights').checked&&!m.open_weights)return false;
+ if($('zdr').checked&&!supportsZdr(m))return false;
+ if($('customerControl').checked&&!customerControlled(m))return false;
  if($('activeOnly').checked&&!['active'].includes(m.status))return false;
  return true;
 }
@@ -212,31 +199,29 @@ function advise(){
  $('result').classList.add('on');$('result').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
 function renderModels(){
- const q=$('search').value.toLowerCase(),p=$('providerFilter').value,tier=$('tierFilter').value,g=$('governanceFilter').value,mod=$('modalityFilter').value,task=$('taskFilter').value;
- const rows=catalog.models.filter(m=>{
-   const hay=(m.id+' '+m.provider+' '+(m.strengths||[]).join(' ')+' '+(m.limitations||[]).join(' ')+' '+(m.modalities||[]).join(' ')).toLowerCase();
-   const taskHay=((m.strengths||[]).join(' ')+' '+(m.tier||'')+' '+(m.self_host?' self-host':'')).toLowerCase();
-   return (!q||hay.includes(q))&&(!p||m.provider===p)&&(!tier||m.tier===tier)
-     &&(!g||(g==='eu'&&m.eu_processing===true)||(g==='storageeu'&&m.eu_storage===true)||(g==='self'&&m.self_host)||(g==='open'&&m.open_weights))
-     &&(!mod||(m.modalities||[]).includes(mod)||(mod==='image'&&(m.strengths||[]).join(' ').toLowerCase().includes('image generation')))
-     &&(!task||taskHay.includes(task));
- });
- $('modelGrid').innerHTML=rows.map(m=>{
-   const gov=m.governance||{};
-   const unknowns=['storage_residency','inference_residency','training_on_customer_data','retention','zero_data_retention','subprocessors'].filter(k=>!gov[k]||String(gov[k]).toLowerCase().includes('unknown')||String(gov[k]).toLowerCase().includes('verify'));
-   return `<article class="model"><h3>${m.id}</h3><div class="meta">${m.provider} · ${m.status} · context ${m.context_k?m.context_k+'k':'n.v.t./onbekend'} · ${(m.modalities||[]).join(', ')}</div><div class="badges">${governanceBadges(m)}</div>${['reasoning','code','writing','speed','cost'].map(k=>`<div class="scoreRow"><span>${k}</span><span class="bar"><i style="width:${m.scores[k]*10}%"></i></span><b>${m.scores[k]}</b></div>`).join('')}<div class="price">${m.input_usd_m!=null?`Input ${money(m.input_usd_m)}/M · Output ${money(m.output_usd_m)}/M`:(m.unit_price||'Prijs: actuele endpoint/contractprijs controleren')}<br>Deployment: ${(m.deployment||[]).join(', ')||'onbekend'}</div><p class="why"><strong>Sterk:</strong> ${(m.strengths||[]).join(' · ')||'nog te classificeren'}</p><p class="why"><strong>Minder geschikt / valkuilen:</strong> ${(m.limitations||[]).join(' · ')||'geen specifieke beperking vastgelegd'}</p><p class="why"><strong>Governance:</strong> opslag=${gov.storage_residency||'onbekend'} · inferentie=${gov.inference_residency||'onbekend'} · training=${gov.training_on_customer_data||'onbekend'} · retentie=${gov.retention||'onbekend'}</p>${unknowns.length?`<div class="badge warn">${unknowns.length} governancevelden te verifiëren</div>`:''}<div class="source"><a href="${m.source}" target="_blank" rel="noopener">officiële bron ↗</a> · gecontroleerd ${m.verified_at||catalog.verified_at}</div></article>`;
- }).join('');
- $('modelCount').textContent=rows.length===catalog.models.length?catalog.models.length:`${rows.length}/${catalog.models.length}`;
+ const q=$('search').value.toLowerCase(),p=$('providerFilter').value,tier=$('tierFilter').value,g=$('governanceFilter').value;
+ const rows=catalog.models.filter(m=>(!q||(m.id+' '+m.provider+' '+m.strengths.join(' ')).toLowerCase().includes(q))&&(!p||m.provider===p)&&(!tier||m.tier===tier)&&(!g||(g==='eu'&&m.eu_processing===true)||(g==='self'&&m.self_host)||(g==='open'&&m.open_weights)||(g==='zdr'&&supportsZdr(m))||(g==='customer'&&customerControlled(m))));
+ $('modelGrid').innerHTML=rows.map(m=>`<article class="model"><h3>${m.id}</h3><div class="meta">${m.provider} · ${m.status} · context ${m.context_k?m.context_k+'k':'n.v.t./onbekend'}</div><div class="badges">${governanceBadges(m)}</div>${['reasoning','code','writing','speed','cost'].map(k=>`<div class="scoreRow"><span>${k}</span><span class="bar"><i style="width:${m.scores[k]*10}%"></i></span><b>${m.scores[k]}</b></div>`).join('')}<div class="price">Governancepaden: ${providerPaths(m).length||'onbekend'}<br>${m.input_usd_m!=null?`Input ${money(m.input_usd_m)}/M · Output ${money(m.output_usd_m)}/M`:(m.unit_price||'Prijs afhankelijk van deployment')}<br>Deployment: ${m.deployment.join(', ')}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">bron ↗</a></div></article>`).join('');
 }
 async function init(){
- try{const r=await fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}
- catch{try{const r=await fetch('/data/ai-model-catalog-v1.json',{cache:'no-store'});catalog=await r.json();}catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}}
+ try{
+   const [mr,gr]=await Promise.all([
+     fetch('https://www.bedrijfsgeheugen.nl/data/ai-model-catalog-v1.json',{cache:'no-store'}),
+     fetch('https://www.bedrijfsgeheugen.nl/data/ai-provider-governance-v1.json',{cache:'no-store'})
+   ]);
+   catalog=await mr.json(); governance=await gr.json();
+ } catch {
+   try{
+     const [mr,gr]=await Promise.all([fetch('/data/ai-model-catalog-v1.json',{cache:'no-store'}),fetch('/data/ai-provider-governance-v1.json',{cache:'no-store'})]);
+     catalog=await mr.json(); governance=await gr.json();
+   }catch(e){$('modelGrid').innerHTML='<p>Modelregister kon niet worden geladen.</p>';return}
+ }
  $('modelCount').textContent=catalog.models.length;$('providerCount').textContent=new Set(catalog.models.map(m=>m.provider)).size;
  const providers=[...new Set(catalog.models.map(m=>m.provider))].sort();$('providerFilter').innerHTML='<option value="">Alle providers</option>'+providers.map(p=>`<option>${p}</option>`).join('');
  renderModels();
 }
 $('advise').addEventListener('click',advise);
-['search','providerFilter','tierFilter','governanceFilter','modalityFilter','taskFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderModels));
+['search','providerFilter','tierFilter','governanceFilter'].forEach(id=>$(id).addEventListener(id==='search'?'input':'change',renderModels));
 $('leadForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('email').value.trim(),status=$('leadStatus');status.textContent='Opslaan…';const advice=lastAdvice||{model:'not-selected',goal:$('goalInput').value.trim()};const idempotencyKey='ai-modelwijzer:'+email.toLowerCase()+':'+advice.model;try{const r=await fetch('https://www.bedrijfsgeheugen.nl/api/ai-modelwijzer-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,model:advice.model,goal:advice.goal,idempotencyKey})});const j=await r.json();status.textContent=j.ok?'Opgeslagen. Je modelkeuze zit nu in de vervolgstap.':'Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}catch{status.textContent='Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}});
 init();
 </script>
