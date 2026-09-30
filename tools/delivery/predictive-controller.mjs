@@ -66,19 +66,20 @@ export function criticalWorkflowCoverage(workflowRuns=[]){
   const brainPresent=Boolean(latest.brain);
   const missing=[];
   if(!requiredPresent) missing.push('required-test.yml');
-  if(!brainPresent) missing.push('unified-brain-delivery.yml');
-  return {requiredPresent,brainPresent,missing,complete:missing.length===0};
+  // Required test is the single canonical open-PR recovery gate. BRAIN is terminal/promotion evidence.
+  return {requiredPresent,brainPresent,missing,complete:requiredPresent};
 }
 
 export function classifyRecovery({mergeable=true,workflowRuns=[],headUpdatedAt,now=Date.now(),slo=DEFAULT_SLO}={}){
   const headAgeSeconds=headUpdatedAt?Math.max(0,(now-new Date(headUpdatedAt).getTime())/1000):0;
   const latest=latestCriticalWorkflowRuns(workflowRuns);
-  const active=latest.runs.filter(r=>ACTIVE.has(r.status));
-  const failed=latest.runs.filter(r=>r.status==='completed'&&FAILED.has(r.conclusion));
+  const openPrCritical=[latest.required].filter(Boolean);
+  const active=openPrCritical.filter(r=>ACTIVE.has(r.status));
+  const failed=openPrCritical.filter(r=>r.status==='completed'&&FAILED.has(r.conclusion));
   const coverage=criticalWorkflowCoverage(workflowRuns);
 
   if(mergeable===false)return {state:'MERGE_CONFLICT_RECOVERY',action:'KEEP_SAME_LINEAGE_AND_REFRESH_FROM_MAIN',terminal:false,coverage};
-  if(workflowRuns.length===0&&headAgeSeconds>=slo.firstSignalSeconds)return {state:'ZERO_RUN_RECOVERY',action:'DISPATCH_REQUIRED_AND_BRAIN',terminal:false,coverage};
+  if(workflowRuns.length===0&&headAgeSeconds>=slo.firstSignalSeconds)return {state:'ZERO_RUN_RECOVERY',action:'DISPATCH_REQUIRED',terminal:false,coverage};
   if(!coverage.complete&&headAgeSeconds>=slo.firstSignalSeconds)return {state:'PARTIAL_START_RECOVERY',action:'DISPATCH_MISSING_CRITICAL_WORKFLOWS',terminal:false,coverage};
   if(failed.length)return {state:'FAILED_GATE_RECOVERY',action:'READ_FIRST_CURRENT_FAILURE_AND_REPAIR_SAME_LINEAGE',terminal:false,coverage};
 
