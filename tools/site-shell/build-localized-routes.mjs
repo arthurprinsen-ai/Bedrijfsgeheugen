@@ -378,6 +378,10 @@ function applyLocaleRevenueMetadata(doc,locale,route) {
   if(locale==='en'){
     if(data?.title) setHeadText(head,'title',data.title);
     if(data?.description) upsertMeta(head,'description',data.description);
+    if(data?.h1){
+      const h1=findFirst(body,n=>n.tagName==='h1');
+      if(h1) h1.childNodes=[{nodeName:'#text',value:String(data.h1),parentNode:h1}];
+    }
   }
   upsertMeta(head,'bg-keyword-cluster',data?.primary_keyword||'');
   upsertMeta(head,'bg-zoekwoord',data?.primary_keyword||'');
