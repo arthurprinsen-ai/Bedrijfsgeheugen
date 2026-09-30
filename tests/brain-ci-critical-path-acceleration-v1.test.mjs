@@ -40,3 +40,18 @@ test('CI intelligence telemetry is registered and measures queue, execution and 
   assert.match(collector, /queue_wait_seconds_avg/);
   assert.match(collector, /workflow_fanout_per_sha_p95/);
 });
+
+
+test('broad platform changes do not fan out into unrelated Business OS and portal-native workflows', async () => {
+  const [foundation, portal] = await Promise.all([
+    read('.github/workflows/business-os-foundation.yml'),
+    read('.github/workflows/portal-native-regression-tests.yml'),
+  ]);
+  assert.doesNotMatch(foundation, /- 'platform\/\*\*'/);
+  assert.match(foundation, /platform\/contracts\/\*\*/);
+  assert.match(foundation, /platform\/events\/\*\*/);
+  assert.match(foundation, /platform\/integrations\/\*\*/);
+  assert.match(foundation, /platform\/read-models\/\*\*/);
+  assert.doesNotMatch(portal, /- 'platform\/\*\*'/);
+  assert.match(portal, /platform\/read-models\/portal-server-state\.mjs/);
+});

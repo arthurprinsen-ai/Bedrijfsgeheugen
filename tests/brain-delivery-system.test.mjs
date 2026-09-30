@@ -112,6 +112,13 @@ test('schema domains can conflict without touching the same file', async () => {
   assert.deepEqual(deriveConflictContracts(['integrations/dataforseo/contracts/search.schema.json'], policy), ['dataforseo-contract']);
 });
 
+
+test('AGENTS contract changes are automation-scoped instead of four-lane runtime fan-out', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({ changedPaths:['AGENTS.md'], headSha:'a11ce1234567890b', policy });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
+});
+
 test('shared contract changes fan out to every affected governance lane without one release candidate', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({ changedPaths:['config/outcome-obligations.json'], headSha:'1234567890abcdef', policy });
@@ -386,4 +393,24 @@ test('canonical system map is non-executable governance', async () => {
   assert.deepEqual(plan.lanes.map(lane => lane.id), []);
   assert.deepEqual(plan.nonExecutableSharedPaths, ['platform/system-map/canonical-system-map.mjs']);
   assert.equal(plan.integration.required, false);
+});
+
+test('delivery-control workflow edits stay in control-plane lanes without portal or website fan-out', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({
+    changedPaths:[
+      '.github/workflows/business-os-foundation.yml',
+      '.github/workflows/portal-native-regression-tests.yml',
+      '.github/workflows/production-source-snapshot.yml',
+      '.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
+      '.github/workflows/required-test.yml',
+      'AGENTS.md',
+      'tests/brain-ci-critical-path-acceleration-v1.test.mjs',
+      'tests/brain-delivery-system.test.mjs',
+      'tools/brain-delivery-system.mjs'
+    ],
+    headSha:'c0ffee1234567890',
+    policy
+  });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation','backend']);
 });

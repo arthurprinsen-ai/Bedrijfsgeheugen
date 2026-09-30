@@ -28,7 +28,7 @@ jobs:
           node-version: '22'
       - name: Verify recovery controller
         run: node --test tests/delivery-powerhouse-supervisor.test.mjs
-      - name: Recover exact-head critical delivery workflows
+      - name: Recover exact-head canonical Required gate
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           ACTIVE_RUN_CIRCUIT_BREAKER: '12'
@@ -185,22 +185,15 @@ jobs:
               fi
               gh workflow run required-test.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
             }
-            dispatch_brain(){
-              active="$(active_for_pr unified-brain-delivery.yml)"
-              if [ "$active" -gt 0 ]; then
-                echo "::notice::PR#$number Unified Brain Delivery already active; duplicate dispatch suppressed."
-                return 0
-              fi
-              gh workflow run unified-brain-delivery.yml --ref main -f pr_number="$number" -f base_sha="$base" -f head_sha="$head" -f candidate_branch="$branch"
-            }
+            # Required test is the canonical open-PR recovery heartbeat.
+            # Unified Brain Delivery is terminal/promotion evidence and is intentionally
+            # not auto-dispatched here; doing so duplicates expensive lane work.
             case "$state" in
               ZERO_RUN_RECOVERY)
                 dispatch_required || true
-                dispatch_brain || true
                 ;;
               PARTIAL_START_RECOVERY)
                 jq -e '.coverage.missing | index("required-test.yml")' <<<"$decision" >/dev/null && dispatch_required || true
-                jq -e '.coverage.missing | index("unified-brain-delivery.yml")' <<<"$decision" >/dev/null && dispatch_brain || true
                 ;;
               STALE_QUEUE_RECOVERY)
                 jq -r '.staleRunIds[]?' <<<"$decision" |

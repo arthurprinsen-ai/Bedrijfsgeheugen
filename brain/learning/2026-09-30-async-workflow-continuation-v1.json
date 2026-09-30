@@ -1,0 +1,67 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "1.0",
+  "fingerprint": "delivery|async-continuation|nonblocking-workflow-wait|v1",
+  "observed_at": "2026-09-30T08:47:00Z",
+  "problem": "Concurrent agents can trigger overlapping GitHub, Netlify and Supabase work. Agents then idle on queued/running jobs, newer main revisions appear, and the original delivery loops re-enter waiting or recovery instead of progressing.",
+  "root_cause": [
+    "Remote workflow state was treated as a conversational wait point instead of durable asynchronous execution state.",
+    "Production source snapshots used non-cancelling global concurrency, allowing stale reversible runs to queue behind newer main.",
+    "Some required jobs had no explicit job timeout.",
+    "PR metadata errors could fail admission after expensive external preview work had already started.",
+    "Required test coupled exact Netlify production-build parity to full_shared_suite, so control-plane-only changes still spent time rebuilding the entire site.",
+    "AGENTS.md was treated as generic executable shared state, which activated backend, portal, website and automation lanes even when only the agent/delivery contract changed.",
+    "Specific control-plane workflow files were still falling through the generic .github/workflows shared-path classifier, reactivating portal and website lanes."
+  ],
+  "fix": [
+    "Make remote waiting non-blocking for every chat/agent and require a resumable checkpoint.",
+    "Supersede stale reversible Production Source Snapshot runs with cancel-in-progress.",
+    "Bound production snapshot and Required test jobs to 20 minutes.",
+    "Require one active required workflow per exact candidate head and automatic resume after interruption.",
+    "Gate exact Netlify production-build parity on actual Netlify-hosted runtime/build paths rather than generic shared-suite classification.",
+    "Classify AGENTS.md as automation-scoped control-plane work so it no longer fabricates portal/website runtime scope.",
+    "Scope business-os-foundation, portal-native-regression-tests and production-source-snapshot workflow-definition changes to the automation control plane."
+  ],
+  "prevention": [
+    "Never use pending/queued/in_progress as a terminal user-facing state.",
+    "Do not redispatch a required run when the exact head already has one active.",
+    "Batch repository writes before CI to reduce fan-out.",
+    "Prefer latest-authoritative-main supersession for reversible production waiting work.",
+    "Control-plane-only policy/skill/workflow changes must not run full Netlify build parity unless a deploy-relevant path changed.",
+    "Agent-contract documentation must use scoped control-plane classification; generic shared-path fan-out is reserved for contracts that truly affect every runtime lane.",
+    "A workflow-definition edit must declare its narrow control-plane lane when the workflow itself does not alter the corresponding runtime surface."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ],
+  "evidence": {
+    "observed_recent_workflow_sample": 100,
+    "observed_pending": 4,
+    "observed_in_progress": 10,
+    "max_observed_runs_for_single_recent_sha": 13,
+    "affected_pr": 3421,
+    "netlify_build_scope_gate": "required-test derives netlify_build_required from deploy-relevant changed paths",
+    "agents_lane_scope": "AGENTS.md -> automation via SCOPED_CONTROL_PLANE_LANES",
+    "control_plane_lane_projection": "current PR change set resolves to automation+backend only; portal/website fan-out is forbidden"
+  },
+  "compiler": {
+    "failure_class": "QUEUE_STALL",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-agent-continuity-contract.test.mjs",
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs",
+      "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs",
+      "tests/brain-delivery-system.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-agent-continuity-contract.test.mjs",
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
+    ]
+  }
+}

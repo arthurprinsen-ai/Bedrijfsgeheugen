@@ -8,10 +8,11 @@ test('zero-run head becomes recoverable after first-signal SLO',()=>{
   assert.equal(r.state,'ZERO_RUN_RECOVERY');
 });
 
-test('partial start dispatches only missing critical workflow',()=>{
+test('open-PR recovery is complete when Required is active even if BRAIN is absent',()=>{
   const runs=[{name:'Required test',status:'in_progress',updated_at:'2026-09-18T08:01:50Z'}];
-  assert.deepEqual(criticalWorkflowCoverage(runs).missing,['unified-brain-delivery.yml']);
-  assert.equal(classifyRecovery({workflowRuns:runs,headUpdatedAt:'2026-09-18T08:00:00Z',now:Date.parse('2026-09-18T08:02:00Z')}).state,'PARTIAL_START_RECOVERY');
+  assert.deepEqual(criticalWorkflowCoverage(runs).missing,[]);
+  assert.equal(criticalWorkflowCoverage(runs).complete,true);
+  assert.equal(classifyRecovery({workflowRuns:runs,headUpdatedAt:'2026-09-18T08:00:00Z',now:Date.parse('2026-09-18T08:02:00Z')}).state,'HEALTHY_PROGRESS');
 });
 
 test('stale queued exact-head work is recoverable from run progress timestamps',()=>{
@@ -50,10 +51,10 @@ test('failed gate is not auto-hidden or bypassed',()=>{
   assert.match(r.action,/READ_FIRST_CURRENT_FAILURE/);
 });
 
-test('supervisor reuses Required and BRAIN, cancels only stale queued work and never weakens gates',()=>{
+test('supervisor recovers Required without auto-dispatching duplicate BRAIN work',()=>{
   const yaml=fs.readFileSync('.github/workflows/powerhouse-delivery-recovery-supervisor.yml','utf8');
   assert.match(yaml,/workflow run required-test\.yml/);
-  assert.match(yaml,/workflow run unified-brain-delivery\.yml/);
+  assert.doesNotMatch(yaml,/workflow run unified-brain-delivery\.yml/);
   assert.match(yaml,/STALE_QUEUE_RECOVERY/);
   assert.match(yaml,/staleRunIds/);
   assert.match(yaml,/LONG_RUNNING_OBSERVE/);
@@ -74,7 +75,8 @@ test('supervisor is bounded and cannot amplify an Actions queue storm',()=>{
   assert.match(yaml,/RECOVERY_PR_BUDGET_EXHAUSTED/);
   assert.match(yaml,/active_for_pr/);
   assert.match(yaml,/duplicate dispatch suppressed/);
-  assert.match(yaml,/pulls\?state=open|workflow run required-test\.yml|workflow run unified-brain-delivery\.yml/i);
+  assert.match(yaml,/pulls\?state=open|workflow run required-test\.yml/i);
+  assert.doesNotMatch(yaml,/workflow run unified-brain-delivery\.yml/);
 });
 
 
@@ -106,10 +108,10 @@ test('newest critical attempt supersedes older cancelled history on the same exa
   assert.equal(r.state,'HEALTHY_PROGRESS');
 });
 
-test('non-critical stale queue does not trigger critical delivery redispatch',()=>{
+test('non-critical stale BRAIN queue does not trigger Required redispatch',()=>{
   const runs=[
     {id:51,name:'Required test',status:'completed',conclusion:'success',updated_at:'2026-09-18T08:04:00Z'},
-    {id:52,name:'BRAIN delivery PR #2063 abc',status:'completed',conclusion:'success',updated_at:'2026-09-18T08:04:01Z'},
+    {id:52,name:'BRAIN delivery PR #2063 abc',status:'queued',updated_at:'2026-09-18T07:00:00Z'},
     {id:53,name:'Some expensive optional workflow',status:'queued',updated_at:'2026-09-18T07:00:00Z'}
   ];
   const r=classifyRecovery({workflowRuns:runs,headUpdatedAt:'2026-09-18T07:00:00Z',now:Date.parse('2026-09-18T08:05:00Z')});

@@ -4,7 +4,10 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'platform/**'
+      - 'platform/contracts/**'
+      - 'platform/events/**'
+      - 'platform/integrations/**'
+      - 'platform/read-models/**'
       - 'netlify/functions/monitor.mjs'
       - 'tests/canonical-*.test.mjs'
       - 'tests/source-adapters.test.mjs'
