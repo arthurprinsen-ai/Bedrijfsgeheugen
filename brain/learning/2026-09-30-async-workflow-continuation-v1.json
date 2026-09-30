@@ -42,34 +42,21 @@
     "agents_lane_scope": "AGENTS.md -> automation via SCOPED_CONTROL_PLANE_LANES"
   },
   "compiler": {
-    "failure_class": "ASYNC_WORKFLOW_WAIT_AND_QUEUE_SUPERSESSION_DEFECT"
+    "failure_class": "QUEUE_STALL",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "case": "multiple agents produce queued and in_progress CI for different heads",
-        "expected": "owner persists checkpoint and continues independent work without user handoff"
-      },
-      {
-        "case": "same exact head already has an active Required run",
-        "expected": "reuse active run and do not redispatch"
-      },
-      {
-        "case": "newer main exists while older reversible production snapshot is queued",
-        "expected": "older snapshot is superseded and newest main remains authoritative"
-      },
-      {
-        "case": "remote provider poll exceeds bounded runtime",
-        "expected": "persist recoverable state and resume later rather than busy-wait indefinitely"
-      },
-      {
-        "case": "only AGENTS/.github/Brain policy/learning/docs change",
-        "expected": "Required test skips exact Netlify build parity while retaining delivery-control-plane tests"
-      },
-      {
-        "case": "AGENTS.md-only contract change",
-        "expected": "delivery plan activates automation lane only, never portal or website"
-      }
+      "tests/brain-agent-continuity-contract.test.mjs",
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs",
+      "tests/brain-delivery-control-plane-scale-supersession-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-agent-continuity-contract.test.mjs",
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs"
     ]
   }
 }
