@@ -34,5 +34,17 @@
     "powerhouse-ai-model-intelligence",
     "powerhouse-system-map-governance",
     "powerhouse-seo-conversion-orders"
-  ]
+  ],
+  "fingerprint": "ai-model-intelligence|goal-cost-governance-sovereignty|v1",
+  "root_cause": "Model choice, price freshness, lifecycle state and sovereignty constraints were not represented by one canonical evidence-backed decision contract, which allowed stale or oversimplified recommendations and treated residency as if it implied sovereignty.",
+  "fix": "Use one provider-source-backed model catalog and a user-goal-first advisor that separates workload fit, cost, storage residency, inference residency, provider jurisdiction, self-hosting and lifecycle; bind material changes to Brain replay/shadow/canary tests.",
+  "evidence": {
+    "catalog": "data/ai-model-catalog-v1.json",
+    "policy": "config/powerhouse-ai-model-intelligence-v1.json",
+    "public_surface": "ai-modelwijzer.html",
+    "lead_runtime": "netlify/functions/ai-modelwijzer-lead.mjs",
+    "skill": ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md",
+    "regression": "tests/brain-ai-model-intelligence-v1.test.mjs",
+    "freshness_audit": "scripts/brain/ai-model-intelligence-audit.mjs"
+  }
 }
