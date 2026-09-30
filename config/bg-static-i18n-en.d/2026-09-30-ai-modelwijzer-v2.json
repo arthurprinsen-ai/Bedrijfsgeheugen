@@ -1,0 +1,23 @@
+{
+  "EU storage": "EU storage",
+  "Alle modalities": "All modalities",
+  "Tekst": "Text",
+  "Vision": "Vision",
+  "Image generatie": "Image generation",
+  "Audio / voice": "Audio / voice",
+  "Video": "Video",
+  "Document / OCR": "Document / OCR",
+  "Code": "Code",
+  "Alle doeleinden": "All use cases",
+  "Programmeren": "Coding",
+  "Complex redeneren": "Complex reasoning",
+  "Schrijven": "Writing",
+  "Agents / tools": "Agents / tools",
+  "Hoog volume": "High volume",
+  "OCR / documenten": "OCR / documents",
+  "RAG / embeddings": "RAG / embeddings",
+  "Transcriptie": "Transcription",
+  "Afbeeldingen": "Images",
+  "Moderatie / safety": "Moderation / safety",
+  "Self-host / soevereiniteit": "Self-host / sovereignty"
+}
