@@ -1,0 +1,16 @@
+{
+  "event_id": "2026-09-30-terminal-live-handoff-netlify-feedback-v1",
+  "event_type": "CONTRACT_CHANGE",
+  "observed_at": "2026-09-30T11:01:00+02:00",
+  "fingerprint": "delivery|terminal-live-handoff|main-netlify-browser-live|v1",
+  "summary": "Separate MAIN, Netlify production, website readback, LIVE and BORGING; prevent redevelopment when production behavior is already proven.",
+  "changed_surfaces": [
+    "skills",
+    "agents/chats",
+    "Powerhouse Brain",
+    "System Map governance",
+    "charts/control surfaces",
+    "human documentation"
+  ],
+  "status": "CANDIDATE"
+}
