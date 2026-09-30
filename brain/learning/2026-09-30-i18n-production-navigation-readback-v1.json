@@ -1,0 +1,33 @@
+{
+  "fingerprint":"i18n-production-navigation-readback-20260930-v1",
+  "date":"2026-09-30",
+  "type":"PRODUCTION_READBACK_RECOVERY",
+  "failure_class":"PRODUCTION_READBACK_FULL_LOAD_FALSE_NEGATIVE",
+  "root_cause":[
+    "The production locale verifier waited for the full browser load event after a correct locale navigation.",
+    "Non-critical resources could keep the full load event open even though the target route and localized DOM were already correct."
+  ],
+  "evidence":{
+    "production_sha":"936ca60ad5c2415ff2372880a61aea5b1d690875",
+    "provider_identity_proven":true,
+    "pricing_content_proven":true,
+    "readback_failure":"page.waitForURL timeout while waiting for load",
+    "verifier":"tools/site-shell/verify-pricing-i18n-production.mjs"
+  },
+  "prevention":[
+    "Locale navigation waits for exact pathname with waitUntil=domcontentloaded.",
+    "After navigation, the verifier still requires html[lang], localized visible content and absence of visible translation failure.",
+    "Do not classify a full-load timeout as a locale defect when DOM-ready route evidence is correct."
+  ],
+  "evaluation":{
+    "historical_replay":["tests/brain-i18n-production-navigation-readback-v2.test.mjs"],
+    "canary":["tests/brain-i18n-production-navigation-readback-v2.test.mjs"]
+  },
+  "compiler":{
+    "failure_class":"PRODUCTION_READBACK_FULL_LOAD_FALSE_NEGATIVE",
+    "scope":"RUNTIME",
+    "machine_enforceable":true,
+    "security_sensitive":false
+  },
+  "status":"ACTIVE_PREVENTION"
+}
