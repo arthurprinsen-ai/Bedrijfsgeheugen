@@ -296,3 +296,5 @@ Fingerprint: `seo|nl-en|static-i18n-cache-complete|v1`.
 - Run the canonical localized-route cache validation before protected merge. Missing translations are a production blocker, never a deploy-time surprise.
 - SEO title, description, H1, CTA, governance copy, footer copy and commercial handoff copy are all inside this contract.
 - A Netlify build failure caused by `STATIC_I18N_CACHE_INCOMPLETE` must be repaired at the source cache and then replayed through protected delivery; never disable the cache gate or silently fall back to Dutch on English routes.
+
+- Locale/revenue validators compare semantic metadata values after HTML entity decoding. Serialized HTML such as `&amp;` is not a keyword/title mismatch with source value `&`; gates must fail on semantic drift, not encoding representation.
