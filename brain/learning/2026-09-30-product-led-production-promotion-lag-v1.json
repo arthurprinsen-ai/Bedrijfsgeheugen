@@ -11,6 +11,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-production-promotion-observability.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-promotion-observability.test.mjs"
     ]
   },
   "test_evidence": [
@@ -28,5 +31,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 2
 }
