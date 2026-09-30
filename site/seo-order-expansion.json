@@ -18,7 +18,8 @@
       },
       "supporting_routes": [
         "https://www.bedrijfsgeheugen.nl/ai-adoptie",
-        "https://www.bedrijfsgeheugen.nl/ai-governance"
+        "https://www.bedrijfsgeheugen.nl/ai-governance",
+        "https://www.bedrijfsgeheugen.nl/ai-modelwijzer"
       ],
       "schema_type": "Service"
     },
@@ -81,7 +82,8 @@
       },
       "supporting_routes": [
         "https://www.bedrijfsgeheugen.nl/ai-act",
-        "https://www.bedrijfsgeheugen.nl/data-soevereiniteit"
+        "https://www.bedrijfsgeheugen.nl/data-soevereiniteit",
+        "https://www.bedrijfsgeheugen.nl/ai-modelwijzer"
       ],
       "schema_type": "Service"
     },
@@ -102,7 +104,8 @@
       },
       "supporting_routes": [
         "https://www.bedrijfsgeheugen.nl/ai-implementeren",
-        "https://www.bedrijfsgeheugen.nl/ai-poc"
+        "https://www.bedrijfsgeheugen.nl/ai-poc",
+        "https://www.bedrijfsgeheugen.nl/ai-modelwijzer"
       ],
       "schema_type": "Service"
     },
