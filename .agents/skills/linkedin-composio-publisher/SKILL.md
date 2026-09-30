@@ -378,3 +378,16 @@ Permanent rules:
 Regression authority: `tests/brain-social-duplicate-prevention-governance-v1.test.mjs`.
 Source-controlled database authority: `supabase/migrations/20260930071500_powerhouse_story_family_overlap_guard_v6.sql`.
 Brain learning: `brain/learning/2026-09-30-social-story-family-dedupe-v6.json`.
+
+## Lead-magnet language routing and comment-intent capture (2026-09-30)
+
+Fingerprint: `powerhouse-linkedin-lead-magnet-language-routing-v1`.
+
+For LinkedIn lead-magnet campaigns:
+- use one language per post; do not stack Dutch + English copies in the same post;
+- keep the downloadable value asset available in both NL and EN when internationally relevant;
+- a translated post is not a new story and may not bypass semantic duplicate prevention;
+- route the delivered asset by known commenter/profile/conversation language, otherwise ask one minimal language choice in DM;
+- use short intent tokens tied to the asset, such as `100`, `50`, `ROI`, `2027`, `STACK`, `SAFE`;
+- every comment-intent event enters the canonical relationship/revenue loop and records post, keyword, language, delivery, reply, meeting/proposal/order and realized revenue;
+- LinkedIn publication remains Composio-only. Buffer and Make remain forbidden publication fallbacks.
