@@ -17,3 +17,12 @@ test('localized commercial routes no longer hit commercial-signal rejection befo
   const classifyIndex=source.indexOf('classifyCanonical(sourceCanonical,registry)', sourceIndex);
   assert.ok(sourceIndex >= 0 && classifyIndex > sourceIndex);
 });
+
+
+test('static localized canonicals remove the legacy SPA tab-title mutator before browser execution', () => {
+  const source=fs.readFileSync('tools/site-shell/build-localized-routes.mjs','utf8');
+  assert.match(source,/function enforceStaticLocaleTitleOwnership/);
+  assert.match(source,/removeElementById\(doc,'bg-tabtitel'\)/);
+  assert.match(source,/const nlDoc = parse\(sourceHtml\);\s+enforceStaticLocaleTitleOwnership\(nlDoc\)/);
+  assert.match(source,/const enDoc = parse\(sourceHtml\);\s+enforceStaticLocaleTitleOwnership\(enDoc\)/);
+});
