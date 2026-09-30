@@ -269,7 +269,7 @@ jobs:
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
       - name: Run exact Netlify production build parity before merge
-        if: steps.integration.outputs.full_shared_suite == 'true'
+        if: steps.scope.outputs.netlify_build_required == 'true'
         env:
           COMMIT_REF: ${{ steps.scope.outputs.change_head_sha }}
           CONTEXT: production
