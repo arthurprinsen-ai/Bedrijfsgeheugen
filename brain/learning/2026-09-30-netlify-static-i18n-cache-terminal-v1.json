@@ -9,7 +9,7 @@
     "Repeated Netlify promotion therefore reached the build stage but could not become terminal production."
   ],
   "evidence": {
-    "production_main": "9031a7e54e16aaf452a9b4b09e4693c752a9121e",
+    "production_main": "77e08f3ede16e4e2b1f3b064addf7c93f3d5bfb3",
     "production_command_reproduced": true,
     "missing_cache_entries": 16,
     "missing_sources_include": [
@@ -19,15 +19,17 @@
     ],
     "rebased_to_latest_main": true,
     "prior_missing_cache_entries": 16,
-    "note": "Recovery is bound to the latest protected main and exact build parity remains the oracle for any additional cache gaps.",
+    "note": "Final merge commit contained concurrent Company Brain recovery work that was not present in the candidate head; exact merged-main build must be re-proven before production promotion.",
     "additional_company_brain_cache_entries": 11,
-    "total_missing_cache_entries_recovered": 27
+    "total_missing_cache_entries_recovered": 27,
+    "post_merge_race_detected": true
   },
   "prevention": [
     "Treat static i18n cache completeness as part of production truth.",
     "Validate the entire current-main public route set after final build transforms, not only files changed by the immediate candidate.",
     "Never disable STATIC_I18N_REQUIRE_CACHE to make production pass.",
-    "Classify incomplete cache as build-content recovery, separate from Netlify transport/auth recovery."
+    "Classify incomplete cache as build-content recovery, separate from Netlify transport/auth recovery.",
+    "After concurrent main movement, re-prove the exact final merged-main production build before terminal promotion."
   ],
   "compiler": {
     "failure_class": "STATIC_I18N_CACHE_INCOMPLETE_ON_CURRENT_MAIN",
