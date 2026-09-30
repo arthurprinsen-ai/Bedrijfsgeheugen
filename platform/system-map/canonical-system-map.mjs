@@ -1072,6 +1072,26 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     outcomeWriteback:Object.freeze(['social-metrics','email-replies','linkedin-dm-replies','leads','meetings','orders','revenue']),
     continuousAssurance:Object.freeze({requiredStages:8,scheduler:'powerhouse-outbound-source-lineage-hourly-v1',greenRequiresCurrentRuntime:true})
   }),
+  needDiscovery:Object.freeze({
+    fingerprint:'powerhouse-need-discovery-v1',
+    label:'Powerhouse Need Discovery',
+    authority:'github+supabase',
+    owner:'powerhouse-commercial-learning-v1',
+    status:'CANDIDATE',
+    stages:Object.freeze(['goal','situation','problem','impact','urgency','value','decision','next_step']),
+    channels:Object.freeze(['website','linkedin_company','blog','email','linkedin_dm','sales_conversation','portal']),
+    runtime:Object.freeze({
+      engine:'brain/revenue/need-discovery.mjs',
+      contract:'config/powerhouse-need-discovery-v1.json',
+      events:'public.powerhouse_need_discovery_events_v1',
+      profiles:'public.powerhouse_need_discovery_profiles_v1',
+      actionEnrichment:'public.powerhouse_apply_need_discovery_v1()',
+      website:'https://www.bedrijfsgeheugen.nl/behoeftecheck',
+      portal:'/portal-v2/?page=sales-intelligence'
+    }),
+    invariant:'Engagement is interest only. An offer requires a buyer-confirmed problem, impact and urgency.',
+    outcomeLoop:Object.freeze(['reply','confirmed_problem','confirmed_impact','qualified_conversation','meeting','scan','proposal','paid_order','realized_revenue','learning'])
+  }),
   socialPublicationGovernance:Object.freeze({
     fingerprint:'linkedin-company-historical-dedupe-v5',
     rule:'Every social post must use a genuinely new underlying story family; LinkedIn company and personal both require durable historical story fingerprints before provider write.',

@@ -1,0 +1,76 @@
+{
+  "fingerprint": "powerhouse-need-discovery-v1",
+  "effective_date": "2026-09-30",
+  "method": "SPIN-inspired evidence-bounded discovery",
+  "stages": [
+    {
+      "key": "goal",
+      "field": "desired_result",
+      "question_nl": "Wat wil je de komende zes maanden concreet verbeteren?"
+    },
+    {
+      "key": "situation",
+      "field": "current_approach",
+      "question_nl": "Hoe regelen jullie dit nu, en met hoeveel mensen?"
+    },
+    {
+      "key": "problem",
+      "field": "problem_example",
+      "question_nl": "Wanneer liep dit voor het laatst mis, en wat gebeurde er toen?"
+    },
+    {
+      "key": "impact",
+      "field": "business_impact",
+      "question_nl": "Wat kost dit aan tijd, geld, klanten of afhankelijkheid van jou?"
+    },
+    {
+      "key": "urgency",
+      "field": "urgency",
+      "question_nl": "Waarom wil je dit nu oplossen, en wat gebeurt er als je niets verandert?"
+    },
+    {
+      "key": "value",
+      "field": "success_metric",
+      "question_nl": "Wat moet er aantoonbaar beter zijn om een investering te rechtvaardigen?"
+    },
+    {
+      "key": "decision",
+      "field": "decision_process",
+      "question_nl": "Wie beslist hierover, en wanneer moet een volgende stap duidelijk zijn?"
+    }
+  ],
+  "channels": {
+    "website": "progressive question flow; capture answers and consented contact in canonical commercial lead storage",
+    "posts": "surface one recognizable problem or consequence; invite an answer; never infer a buyer need from a like",
+    "email": "ask one contextual question per turn; next question follows the latest verified answer",
+    "linkedin_dm": "same question logic as email; true DM capability, identity, consent, suppression and dedupe remain mandatory",
+    "portal": "show confirmed goal, problem, impact, urgency, decision owner, next question and downstream outcome",
+    "sales_conversation": "listen, reflect the buyer's words, confirm understanding, then propose only when impact and urgency are explicit"
+  },
+  "offer_gate": {
+    "discover": "no offer",
+    "diagnose": "no offer; develop the problem",
+    "develop_need": "quantify consequence and value",
+    "qualified_conversation": "Frisse blik",
+    "proposal_ready": "Frisse Blik Scan or portal based on one-time versus continuous need"
+  },
+  "truth_rules": [
+    "unknown stays unknown",
+    "likes, clicks and opens are interest signals, not confirmed needs",
+    "never fabricate urgency, impact, authority, budget or intent",
+    "one question per direct message",
+    "record the buyer's own words",
+    "every action returns outcome and learning"
+  ],
+  "outcome_path": [
+    "reply",
+    "confirmed_problem",
+    "confirmed_impact",
+    "qualified_conversation",
+    "meeting",
+    "scan",
+    "proposal",
+    "paid_order",
+    "realized_revenue"
+  ]
+}

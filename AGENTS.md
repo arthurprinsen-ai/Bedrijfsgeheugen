@@ -997,3 +997,10 @@ Every current and future chat/agent that creates a free guide, PDF, calculator, 
 - treat predictions as sourced directional foresight with uncertainty;
 - optimize from qualified-commercial outcomes, not likes/comments alone;
 - prefer a portfolio of genuinely different utility assets over repeated PDF giveaways with superficial rewrites.
+
+
+## Behoefteanalyse vóór iedere commerciële vervolgstap
+
+Fingerprint: `powerhouse-need-discovery-v1`.
+
+Website, posts, blogs, e-mail, echte LinkedIn-DM, verkoopgesprekken en Portal V2 gebruiken één gedeelde fasering: gewenst resultaat → huidige aanpak → concreet probleem → zakelijke impact → urgentie → gewenste waarde → besluitvorming → vervolgstap. Directe interacties stellen één logische vraag per beurt en leggen het antwoord vast in de woorden van de klant. Likes, kliks, opens en algemene engagement bevestigen geen probleem, impact, urgentie, budget of koopintentie. Een aanbod mag pas worden gekozen wanneer probleem, impact en urgentie expliciet zijn bevestigd. Alle uitkomsten lopen terug via reply → gesprek → scan → voorstel → betaalde order → gerealiseerde omzet → learning. Canonieke skill: `.agents/skills/powerhouse-need-discovery/SKILL.md`.
