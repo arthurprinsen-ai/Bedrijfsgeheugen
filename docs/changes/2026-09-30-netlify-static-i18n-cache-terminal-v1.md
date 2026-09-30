@@ -21,3 +21,12 @@ Protected merge → exact current-main production build → Netlify ready/produc
 
 ## Exact merged-main reproof
 After concurrent protected-main movement, terminal closure must re-run the exact production build against the final merged-main source. This successor binds the recovery to main `77e08f3ede16e4e2b1f3b064addf7c93f3d5bfb3` before another production promotion.
+
+
+## Finale residual: Bedrijfslek build-artifact label
+
+Op protected main `46b8805af668f485fe196584b8b56d4808eaaac7` is het exacte productie-artifact na alle shell-, CRO-, Bedrijfslek- en i18n-transforms opnieuw geaudit. Company Brain was volledig gedekt; er resteerde nog exact één statische vertaalkey:
+
+`Bedrijfslek built-artifact contract: exact Netlify build must preserve this value-first route.`
+
+Deze gegenereerde value-first route-marker is aan de canonieke fail-closed cache toegevoegd en aan de regressietest gebonden. De acceptatie blijft: **0 missing keys → protected merge → exact-main Netlify ready → publieke NL/EN readback groen**.

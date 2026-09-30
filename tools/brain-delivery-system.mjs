@@ -10,6 +10,10 @@ function matches(path, patterns = []) { return patterns.some(pattern => pattern.
 
 const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'AGENTS.md': 'automation',
+  'brain/policies/powerhouse-agent-continuity-v1.json': 'automation',
+  'tools/delivery/predictive-controller.mjs': 'automation',
+  'tests/brain-predictive-multi-agent-delivery-scheduler-v1.test.mjs': 'automation',
+  'config/powerhouse-agent-delivery-scheduler-v1.json': 'automation',
   'config/brain-delivery-system.json': 'backend',
   'scripts/brain/autonomous-engineering-fabric-v3.mjs': 'automation',
   'config/powerhouse-autonomous-engineering-fabric-v3.json': 'automation',
@@ -19,11 +23,13 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
   'tools/delivery/ci-calibration-engine.mjs': 'backend',
   'tests/brain-autonomous-engineering-fabric-v3.test.mjs': 'automation',
   'tests/brain-ci-calibration-engine-v1.test.mjs': 'backend',
-  'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend'
+  'tests/brain-ci-calibration-wiring-v1.test.mjs': 'backend',
+  'tests/brain-obligation-terminalizer-squash.test.mjs': 'automation'
 });
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/production-source-snapshot.yml': 'automation',
+  '.github/workflows/powerhouse-obligation-terminalizer.yml': 'automation',
   '.github/workflows/powerhouse-delivery-recovery-supervisor.yml': 'automation',
   '.github/workflows/portal-native-regression-tests.yml': 'automation',
   '.github/workflows/business-os-foundation.yml': 'automation',

@@ -54,7 +54,12 @@
     "REMOTE_WORKFLOW_WAIT_IS_NEVER_AGENT_IDLE",
     "PENDING_EXTERNAL_JOB_REQUIRES_CHECKPOINT_AND_CONTINUATION",
     "NEWER_MAIN_SUPERSEDES_STALE_REVERSIBLE_PRODUCTION_WAIT",
-    "BOUNDED_PROVIDER_POLLING_ONLY"
+    "BOUNDED_PROVIDER_POLLING_ONLY",
+    "PREDICT_BEFORE_AGENT_WRITE",
+    "ONE_OBLIGATION_ONE_ACTIVE_WRITER",
+    "NONCONFLICTING_AGENTS_MAY_BUILD_IN_PARALLEL",
+    "CHECKPOINT_BEFORE_REMOTE_WAIT",
+    "LATEST_MAIN_SUPERSEDES_STALE_REVERSIBLE_PRODUCTION_WAIT"
   ],
   "mandatory_preflight": [
     "read canonical Powerhouse system contract",
@@ -614,5 +619,23 @@
       "unbounded polling"
     ],
     "terminal_rule": "Only verified terminal outcome or BLOCKED_HARD_BOUNDARY may end ownership."
+  },
+  "predictive_multi_agent_scheduler": {
+    "required": true,
+    "fingerprint": "powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1",
+    "authority": "tools/delivery/predictive-controller.mjs#planConcurrentAgentWork",
+    "decisions": [
+      "BUILD_PARALLEL",
+      "PARK_BEHIND_CANONICAL_WRITER",
+      "SERIALIZE_TERMINAL_LANDING",
+      "BATCH_BEFORE_MUTATION",
+      "PARALLEL_BUDGET_FULL"
+    ],
+    "checkpoint_contract": "POWERHOUSE-ASYNC-CHECKPOINT-v1",
+    "terminal_writer_rule": "Exactly one active writer per obligation may mutate the canonical candidate. Other agents checkpoint and continue non-conflicting work.",
+    "parallel_rule": "Different obligations may build concurrently when changed paths, conflict contracts and mutable resources do not overlap and queue pressure stays within forecast limits.",
+    "landing_rule": "Only the short overlapping terminal landing boundary is serialized.",
+    "remote_wait_rule": "queued, pending, waiting, requested and in_progress are asynchronous states; persist checkpoint, continue independent work, and resume automatically.",
+    "production_supersession_rule": "A newer authoritative main supersedes stale reversible production snapshot/readback work; never supersede irreversible side effects or required security/quality evidence."
   }
 }

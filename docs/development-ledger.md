@@ -383,6 +383,16 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **System Map:** SEO Conversion-to-Orders records `staticI18nPostShellFinalArtifactCoverageRequired`.
 - **Terminal gate:** successful protected-main build/deploy plus public NL and EN readback; merge/build-start is not completion.
 
+## 2026-09-30 — RECOVERY — Persistent public locale navigation v1
+- **Fingerprint:** `website|i18n|persistent-public-navigation|v1`.
+- **Signal:** de actuele pagina schakelde naar English, maar een volgende gewone interne menu-/paginalink kon terugkeren naar Nederlands.
+- **Impact:** taalkeuze was niet sitebreed persistent en de publieke CMS-shell leverde een inconsistente tweetalige journey.
+- **Root cause:** same-route locale switching bestond, maar ordinary same-origin public hrefs bleven onprefixte Dutch routes.
+- **Final fix:** `assets/js/i18n.js` normaliseert eligible public links naar de actieve locale, bewaart query/hash, sluit technische/portal-paden uit en verwerkt dynamisch toegevoegde navigatie.
+- **Regression gate:** `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
+- **Owner:** Website/UX + Powerhouse continuity + System Map governance.
+- **Reusable lesson:** locale is sitewide navigatiestatus; een correcte taal op alleen de huidige pagina is geen voldoende i18n-bewijs.
+
 
 ## 2026-09-30 — PRODUCTION_PROMOTION — Company Brain LIVE_PROVEN
 - **Fingerprint:** `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1`.
