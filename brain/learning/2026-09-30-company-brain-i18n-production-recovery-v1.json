@@ -1,0 +1,36 @@
+{
+  "id": "2026-09-30-company-brain-i18n-production-recovery-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "company-brain|static-i18n|production-build-cache|v1",
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "A Company Brain content change introduced 11 exact text fragments that were not added to the fail-closed static English translation cache. The AI Modelwijzer Falcon merge then triggered a current-main production build and exposed the latent cache gap.",
+  "prevention": [
+    "Every public-copy change that can be fragmented by final shell or build transforms must add exact post-transform strings to the static English cache before merge.",
+    "Production build parity remains fail-closed on STATIC_I18N_CACHE_INCOMPLETE.",
+    "A downstream feature must not inherit an unrelated current-main translation defect."
+  ],
+  "fix": "Add the 11 exact Company Brain strings to config/bg-static-i18n-en.d/20260930-company-brain-category-v1.json and redeploy current main without weakening STATIC_I18N_REQUIRE_CACHE.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_production_run": "github-actions:36690947075",
+    "failed_pr_preflight": "github-actions:36690887423",
+    "cache": "config/bg-static-i18n-en.d/20260930-company-brain-category-v1.json",
+    "recovery_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/3429"
+  },
+  "skill_targets": [
+    "powerhouse-netlify-production-truth",
+    "powerhouse-continuity",
+    "powerhouse-ai-model-intelligence"
+  ]
+}
