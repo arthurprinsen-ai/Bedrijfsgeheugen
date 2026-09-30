@@ -10,6 +10,7 @@
   "prevention": [
     "Wire every committed regression test into a canonical workflow.",
     "Validate static English cache pre-merge with STATIC_I18N_NETWORK=0 and STATIC_I18N_REQUIRE_CACHE=1.",
+    "Run the exact Netlify production build command before merge after source-sensitive regressions have completed, so build transforms cannot corrupt their test fixtures.",
     "Repair missing cache entries in the same candidate lineage before merge.",
     "Keep transport/auth failures separate from build-content failures."
   ],
@@ -27,13 +28,11 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/delivery-test-coverage-guard.test.mjs"
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
     ],
     "canary": [
-      "tests/ai-model-advisor-v1.test.mjs",
-      "tests/ai-model-production-hotfix-v1.test.mjs",
-      "tests/ai-model-seo-cluster-v1.test.mjs"
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
     ],
-    "premerge_guard": "node tools/site-shell/build-localized-routes.mjs --validate-cache"
+    "premerge_guard": "exact Netlify production build command under production-equivalent fail-closed environment"
   }
 }
