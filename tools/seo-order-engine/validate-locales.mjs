@@ -3,8 +3,20 @@ import { loadRegistry, ORIGIN } from './registry.mjs';
 
 const MAP_PATH='site/seo-locale-revenue-map.json';
 
-function escRe(v){return String(v||'').replace(/[.*+?^$(){}|[\]\\]/g,'\\$&');}
-function attr(tag,name){const m=String(tag||'').match(new RegExp(`\\b${name}=(?:"([^"]*)"|'([^']*)')`,'i'));return m?(m[1]??m[2]??''):'';}
+function escRe(v){return String(v||'').replace(/[.*+?^$(){}|[\]\\]/g,'\\function escRe(v){return String(v||'').replace(/[.*+?^$(){}|[\]\\]/g,'\\$&');}
+');}
+export function decodeHtmlEntities(value){
+  return String(value??'')
+    .replace(/&#x([0-9a-f]+);/gi,(_,hex)=>String.fromCodePoint(Number.parseInt(hex,16)))
+    .replace(/&#([0-9]+);/g,(_,dec)=>String.fromCodePoint(Number.parseInt(dec,10)))
+    .replace(/&amp;/gi,'&')
+    .replace(/&quot;/gi,'"')
+    .replace(/&#39;|&apos;/gi,"'")
+    .replace(/&lt;/gi,'<')
+    .replace(/&gt;/gi,'>')
+    .replace(/&nbsp;/gi,' ');
+}
+function attr(tag,name){const m=String(tag||'').match(new RegExp(`\\b${name}=(?:"([^"]*)"|'([^']*)')`,'i'));return decodeHtmlEntities(m?(m[1]??m[2]??''):'');}
 function headOf(html){return String(html).match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1]||'';}
 function canonicalOf(html){const tag=[...headOf(html).matchAll(/<link\b[^>]*>/gi)].find(m=>/(?:^|\s)canonical(?:\s|$)/i.test(attr(m[0],'rel')))?.[0]||'';return attr(tag,'href');}
 function meta(html,name){const tag=[...headOf(html).matchAll(/<meta\b[^>]*>/gi)].find(m=>String(attr(m[0],'name')).toLowerCase()===String(name).toLowerCase())?.[0]||'';return attr(tag,'content');}
