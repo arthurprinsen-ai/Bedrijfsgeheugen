@@ -304,13 +304,21 @@ function applyLocaleSeoMetadata(doc,locale,route,localizedUrl) {
   const head=findFirst(doc,n=>n.tagName==='head');
   const body=findFirst(doc,n=>n.tagName==='body');
   if(!head) return;
-  const entry=seoLocaleRevenueMap().bySource.get(normalizedRoute(route));
-  const localeSeo=entry?.[locale];
-  if(!localeSeo) return;
+  const map=seoLocaleRevenueMap();
+  const entry=map.bySource.get(normalizedRoute(route));
+  const localeSeo=entry?.[locale] || null;
 
-  const keyword=String(localeSeo.primary_keyword||'').trim();
-  const title=String(localeSeo.title||'').trim();
-  const description=String(localeSeo.description||'').trim();
+  // Supporting pages inherit the localized commercial intent owner. This keeps
+  // EN measurement and internal-link attribution on an English keyword cluster
+  // instead of leaking the Dutch cluster into /en/* routes.
+  const existingOwner=body ? String(attr(body,'data-bg-intent-owner')||'').trim() : '';
+  const ownerPath=existingOwner.startsWith(SITE) ? normalizedRoute(existingOwner.slice(SITE.length)) : '';
+  const ownerEntry=ownerPath ? map.bySource.get(ownerPath) : null;
+  const ownerLocaleSeo=ownerEntry?.[locale] || null;
+
+  const keyword=String(localeSeo?.primary_keyword || ownerLocaleSeo?.primary_keyword || '').trim();
+  const title=String(localeSeo?.title||'').trim();
+  const description=String(localeSeo?.description||'').trim();
 
   if(title){
     let titleNode=findFirst(head,n=>n.tagName==='title');
@@ -334,9 +342,15 @@ function applyLocaleSeoMetadata(doc,locale,route,localizedUrl) {
     ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-zoekwoord',{name:'bg-zoekwoord',content:keyword});
     if(body) setAttr(body,'data-bg-keyword-cluster',keyword);
   }
-  ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-intent-owner',{name:'bg-intent-owner',content:localizedUrl});
+  const localizedOwner = entry
+    ? localizedUrl
+    : ownerEntry
+      ? (locale==='en' ? ownerEntry.en.route : ownerEntry.nl.route)
+      : (locale==='en' && existingOwner.startsWith(SITE) ? SITE + '/en' + (existingOwner.slice(SITE.length)==='/'?'/':existingOwner.slice(SITE.length)) : existingOwner || localizedUrl);
+  ensureMetaNode(head,n=>String(attr(n,'name')||'').toLowerCase()==='bg-intent-owner',{name:'bg-intent-owner',content:localizedOwner});
   if(body) {
-    setAttr(body,'data-bg-intent-owner',localizedUrl);
+    setAttr(body,'data-bg-intent-owner',localizedOwner);
+    if(keyword) setAttr(body,'data-bg-keyword-cluster',keyword);
     setAttr(body,'data-bg-locale-seo','v1');
   }
 }
