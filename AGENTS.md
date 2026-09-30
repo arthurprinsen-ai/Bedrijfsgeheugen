@@ -922,3 +922,13 @@ Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen contr
 Fingerprint: `website|i18n|persistent-public-navigation|v1`.
 
 Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: een gekozen publieke taal blijft actief over alle interne paginanavigatie. English betekent dat alle in aanmerking komende same-origin publieke links naar de equivalente `/en/*` route wijzen; Nederlands gebruikt de onprefixte canonieke route. Query/hash blijven behouden. Portal/klantportaal en technische paden (`/api/`, `/.netlify/`, `/assets/`, `/functions/`) worden niet herschreven. Ook dynamisch aangemaakte menu- en navigatielinks vallen onder deze regel. “De huidige pagina is Engels” is geen terminal bewijs: browser-readback moet taalkeuze → navigatie naar andere pagina → taal blijft gelijk → terugschakelen → opnieuw navigeren aantonen.
+
+## Explicit public locale navigation — inherited
+Fingerprint: `website|i18n|explicit-public-locale-navigation|v2`.
+
+Voor alle huidige en toekomstige chats/agents geldt aanvullend:
+- publieke taalkeuze vertrouwt niet op browser-default-navigatie nadat een mobiel/menu-control zichzelf sluit;
+- een klik op `[data-bg-language-option]` buiten portalroutes voert expliciet `location.assign(href)` uit naar de canonieke locale-route;
+- de actieve locale blijft sitebreed persistent; English gebruikt `/en/*`, Nederlands onprefixte canonieke routes;
+- terminale i18n-proof vereist een echte browserroundtrip NL → EN → NL op productie, inclusief navigatie naar een andere publieke pagina;
+- een timeout op de locale-switch is een runtime-interactiedefect, niet een Netlify-transportdefect.
