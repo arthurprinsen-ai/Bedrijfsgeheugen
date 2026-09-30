@@ -1,7 +1,7 @@
 {
   "id": "powerhouse-ai-model-advisor-v1",
   "date": "2026-09-30",
-  "status": "candidate",
+  "status": "ACTIVE_PREVENTION",
   "learning": "AI-model comparison is a decision capability, not a static article. The canonical unit is user goal + hard governance constraints + cost-per-task + explainable alternatives.",
   "prevention": [
     "Do not collapse EU storage into EU inference or sovereignty.",
@@ -9,5 +9,42 @@
     "Do not use stale model names or prices without official-source freshness.",
     "Do not gate the first useful recommendation behind lead capture."
   ],
-  "next_decision": "Route model/provider questions through the canonical AI Model Intelligence catalog and advisor surface."
+  "next_decision": "Route model/provider questions through the canonical AI Model Intelligence catalog and advisor surface.",
+  "failure_class": "AI_MODEL_INTELLIGENCE_STALE_OR_GOVERNANCE_MISCLASSIFICATION",
+  "problem": "AI model recommendations can become wrong when pricing/lifecycle data is stale or when residency is incorrectly treated as sovereignty.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "AI_MODEL_INTELLIGENCE_STALE_OR_GOVERNANCE_MISCLASSIFICATION",
+    "scope": "AI_MODEL_DECISION_INTELLIGENCE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-ai-model-intelligence",
+    "powerhouse-system-map-governance",
+    "powerhouse-seo-conversion-orders"
+  ],
+  "fingerprint": "ai-model-intelligence|goal-cost-governance-sovereignty|v1",
+  "root_cause": "Model choice, price freshness, lifecycle state and sovereignty constraints were not represented by one canonical evidence-backed decision contract, which allowed stale or oversimplified recommendations and treated residency as if it implied sovereignty.",
+  "fix": "Use one provider-source-backed model catalog and a user-goal-first advisor that separates workload fit, cost, storage residency, inference residency, provider jurisdiction, self-hosting and lifecycle; bind material changes to Brain replay/shadow/canary tests.",
+  "evidence": {
+    "catalog": "data/ai-model-catalog-v1.json",
+    "policy": "config/powerhouse-ai-model-intelligence-v1.json",
+    "public_surface": "ai-modelwijzer.html",
+    "lead_runtime": "netlify/functions/ai-modelwijzer-lead.mjs",
+    "skill": ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md",
+    "regression": "tests/brain-ai-model-intelligence-v1.test.mjs",
+    "freshness_audit": "scripts/brain/ai-model-intelligence-audit.mjs"
+  }
 }
