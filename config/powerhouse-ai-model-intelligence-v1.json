@@ -14,7 +14,8 @@
     "lifecycle_check": true,
     "pricing_check": true,
     "residency_check": true,
-    "sovereignty_check": true
+    "sovereignty_check": true,
+    "stale_record_policy": "Per-model verified_at and official source are authoritative; stale/unknown governance does not become a positive suitability signal."
   },
   "decision_policy": {
     "user_goal_first": true,
@@ -23,7 +24,9 @@
     "cost_per_task_over_token_price": true,
     "privacy_constraints_can_exclude": true,
     "preview_penalty": true,
-    "stale_data_penalty": true
+    "stale_data_penalty": true,
+    "specialist_intent_gate": true,
+    "explicit_limitations": true
   },
   "seo": {
     "primary_intent": "AI modellen vergelijken",
@@ -39,5 +42,64 @@
     ]
   },
   "revenue_loop": "search intent -> advisor use -> recommendation -> optional email capture -> qualified lead -> Bedrijfslek/Frisse Blik -> proposal/order -> realized revenue -> learning",
-  "system_map_node": "ai-model-intelligence-advisor-v1"
+  "system_map_node": "ai-model-intelligence-advisor-v1",
+  "version": "powerhouse-ai-model-intelligence-v2",
+  "coverage_policy": {
+    "objective": "broadest decision-relevant model catalog, including frontier, economy, open-weight and specialist modalities",
+    "minimum_seed_models": 80,
+    "required_model_families": [
+      "general text/reasoning",
+      "coding",
+      "image generation/editing",
+      "realtime/voice",
+      "transcription",
+      "TTS",
+      "OCR/document AI",
+      "embeddings/RAG",
+      "moderation/safety",
+      "video",
+      "open-weight/self-host"
+    ],
+    "include_lifecycle_context": true,
+    "explicit_limitations_required": true,
+    "governance_unknown_is_not_green": true,
+    "source_per_model_required": true,
+    "verified_at_per_model_required": true,
+    "continuous_expansion": true
+  },
+  "provider_sources": {
+    "OpenAI": [
+      "https://developers.openai.com/api/docs/models",
+      "https://developers.openai.com/api/docs/models/all",
+      "https://openai.com/api/pricing/"
+    ],
+    "Anthropic": [
+      "https://docs.anthropic.com/en/docs/about-claude/model-deprecations",
+      "https://docs.anthropic.com/en/docs/about-claude/models"
+    ],
+    "Google": [
+      "https://ai.google.dev/gemini-api/docs/models",
+      "https://ai.google.dev/gemini-api/docs/pricing"
+    ],
+    "Mistral AI": [
+      "https://docs.mistral.ai/models",
+      "https://mistral.ai/pricing"
+    ],
+    "xAI": [
+      "https://docs.x.ai/developers/models",
+      "https://docs.x.ai/developers/release-notes"
+    ],
+    "Cohere": [
+      "https://docs.cohere.com/v1/changelog"
+    ],
+    "DeepSeek": [
+      "https://api-docs.deepseek.com/quick_start/pricing"
+    ],
+    "Meta": [
+      "official Meta/Llama model and license sources; exact deployment pricing is provider-specific"
+    ],
+    "Alibaba/Qwen": [
+      "official Qwen model/license sources; deployment pricing is provider-specific"
+    ]
+  }
 }
