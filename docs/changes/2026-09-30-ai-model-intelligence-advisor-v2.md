@@ -38,3 +38,6 @@ De dagelijkse audit controleert nu per model:
 - storage + inference governancevelden;
 - minimale specialistische class coverage;
 - minimaal 80 records.
+
+## Delivery lineage
+Obligation: ai-modelwijzer-v2-completeness-2026-09-30 · lane: website · candidate: implementation.
