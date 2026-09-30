@@ -17,3 +17,7 @@ Production was still serving an older Netlify commit. The new Modelwijzer had th
 
 ## Terminal condition
 Only claim live after protected merge to current main, Netlify `ready` on that main lineage, and public `/ai-modelwijzer` plus model catalog readback.
+
+
+## SEO header browser regression
+The full public-page browser sweep found all eight AI-model provider/comparison pages had no visible header at phone, tablet or desktop widths (24 failures). The same terminal lineage now adds a responsive canonical header with absolute Bedrijfsgeheugen links to every route and locks this in `tests/ai-model-seo-cluster-v1.test.mjs`.
