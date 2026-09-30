@@ -4,6 +4,15 @@ import { finalizeSiteContracts } from './site-shell/finalize-site-contracts.mjs'
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 const EXCLUDES = new Set([...PUBLIC_PAGE_EXCLUDES, '404.html']);
+const AI_MODEL_SEO_PAGES = Object.freeze([
+  'openai-ai-modellen/index.html',
+  'claude-ai-modellen/index.html',
+  'gemini-ai-modellen/index.html',
+  'mistral-ai-modellen/index.html',
+  'chatgpt-vs-claude/index.html',
+  'chatgpt-vs-gemini/index.html',
+  'claude-vs-gemini/index.html'
+]);
 
 const xmlEscape = value => String(value)
   .replace(/&/g, '&amp;')
@@ -38,7 +47,7 @@ async function htmlBestanden() {
   const bestanden = [];
   for await (const p of glob('*.html')) if (!isExclude(p)) bestanden.push(p);
   for await (const p of glob('blog/*/index.html')) bestanden.push(p);
-  bestanden.push('blog/index.html', 'kennis/index.html');
+  bestanden.push('blog/index.html', 'kennis/index.html', ...AI_MODEL_SEO_PAGES);
   return [...new Set(bestanden)];
 }
 
