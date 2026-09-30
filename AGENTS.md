@@ -834,3 +834,20 @@ Canonieke runtime: `public.powerhouse_loop_assurance_state_v1`, `public.powerhou
 Fingerprint: `powerhouse|loop-assurance|receipt-bridge|v3`.
 
 Every current and future chat/agent inherits the five-minute Powerhouse loop-assurance contract. A scheduler being active is not proof that a business loop is closed. Required loop stages are `input → decision → action → readback → outcome → measurement → learning → guard`; only canonical runtime/provider/cron evidence may satisfy them. Critical loops with zero fresh stage evidence are RED. Partial evidence is AMBER. GREEN requires all required stage evidence fresh. Never synthesize outcome/learning/guard receipts and never weaken immutable obligation identity to force a write.
+
+## Social story-family duplicate prevention — all chats and agents
+
+Fingerprint: `social|story-family-overlap|all-chat-agent-inheritance|v1`.
+
+All current and future chats, agents, schedulers, recovery workers and social connectors inherit the same fail-closed historical uniqueness authority before any social provider write.
+
+Mandatory invariants:
+- daily idempotency/single-writer protection is not historical uniqueness;
+- exact hash, normalized hash, story fingerprint, shingle similarity, keyword Jaccard and keyword overlap coefficient are cumulative;
+- `powerhouse_reserve_unique_publication_v1` is the canonical reservation gate;
+- `powerhouse_publication_story_family_guard_v2` is the database backstop and cannot be bypassed by application, chat or connector code;
+- a blocked story family must be replaced by a genuinely different source/event/topic, never by rewritten copy;
+- user-reported semantic duplicates are authoritative escaped-defect evidence and become permanent regression cases;
+- canonical 2026-09-30 regression: auto + elektrische schuifdeur + airco + warme lucht + handmatig openen/ramen open + nieuwe routine.
+
+Every material social-publishing change must update the relevant skill, Brain learning, chat/agent contract, development ledger and System Map in the same lineage.
