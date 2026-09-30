@@ -1,0 +1,44 @@
+{
+  "fingerprint": "netlify-static-i18n-cache-terminal-20260930-v1",
+  "date": "2026-09-30",
+  "type": "PRODUCTION_BUILD_RECOVERY",
+  "failure_class": "STATIC_I18N_CACHE_INCOMPLETE_ON_CURRENT_MAIN",
+  "root_cause": [
+    "Current main introduced translatable public copy that was not fully represented in the fail-closed static English cache.",
+    "The first AI Modelwijzer recovery covered its intended v2 labels but did not prove whole-current-main cache completeness after all final build transforms.",
+    "Repeated Netlify promotion therefore reached the build stage but could not become terminal production."
+  ],
+  "evidence": {
+    "production_main": "88634abdb4ec4e7e9933692464150e395866274b",
+    "production_command_reproduced": true,
+    "missing_cache_entries": 16,
+    "missing_sources_include": [
+      "AI Modelwijzer governance copy",
+      "knowledge-retention blog SVG/text labels"
+    ],
+    "rebased_to_latest_main": true,
+    "prior_missing_cache_entries": 16,
+    "note": "Recovery rebased onto the newest protected main so exact build parity can discover any additional cache gaps introduced after the original 16-entry diagnosis."
+  },
+  "prevention": [
+    "Treat static i18n cache completeness as part of production truth.",
+    "Validate the entire current-main public route set after final build transforms, not only files changed by the immediate candidate.",
+    "Never disable STATIC_I18N_REQUIRE_CACHE to make production pass.",
+    "Classify incomplete cache as build-content recovery, separate from Netlify transport/auth recovery."
+  ],
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE_ON_CURRENT_MAIN",
+    "scope": "NETLIFY_PRODUCTION",
+    "machine_enforceable": true,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-static-i18n-cache-terminal-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-netlify-static-i18n-cache-terminal-v1.test.mjs"
+    ]
+  }
+}

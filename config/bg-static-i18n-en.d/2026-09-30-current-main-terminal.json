@@ -1,0 +1,18 @@
+{
+  "-compliance hangt ook af van doel, grondslag, verwerkersafspraken, dataminimalisatie, beveiliging, subprocessors, retentie en jouw concrete implementatie.": "-compliance also depends on purpose, legal basis, processor agreements, data minimization, security, subprocessors, retention and your specific implementation.",
+  "Bekijk per deploymentpad opslag, inferentie, training, retentie, zero-data-retention, sleutels, private networking en self-hosting.": "For each deployment path, review storage, inference, training, retention, zero-data retention, keys, private networking and self-hosting.",
+  "De advisor behandelt EU-verwerking als één constraint. Voor gereguleerde of strategische data kan self-hosting of een customer-controlled cloud-deployment zwaarder wegen dan een kleine benchmarkwinst.": "The advisor treats EU processing as one constraint. For regulated or strategic data, self-hosting or a customer-controlled cloud deployment can weigh more heavily than a small benchmark gain.",
+  "Drie onderdelen van duurzame kennisborging": "Three components of sustainable knowledge retention",
+  "Kennis in hoofd": "Knowledge in one person's head",
+  "Onderhoud": "Maintenance",
+  "Providernaam alleen zegt te weinig.": "Provider name alone tells you too little.",
+  "Structuur": "Structure",
+  "Toegang": "Access",
+  "Van kennis in één hoofd naar geborgde bedrijfskennis": "From knowledge in one person's head to knowledge embedded in the organization",
+  "Vindbaar + actueel + bruikbaar": "Findable + current + usable",
+  "geborgd in de organisatie": "embedded in the organization",
+  "kwetsbaar": "vulnerable",
+  "waar staat wat?": "where is what?",
+  "wie houdt het actueel?": "who keeps it up to date?",
+  "wie kan het vinden?": "who can find it?"
+}
