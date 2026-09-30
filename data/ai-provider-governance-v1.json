@@ -1,5 +1,5 @@
 {
-  "version": "ai-provider-governance-v1",
+  "version": "ai-provider-governance-v2",
   "verified_at": "2026-09-30",
   "principle": "Data residency, inference residency and data sovereignty are distinct. Values are deployment-path-specific; unknown remains unknown.",
   "providers": [
@@ -264,6 +264,26 @@
           "self_host": true,
           "sovereignty_level": "customer-controlled",
           "source": "https://qwenlm.github.io/"
+        }
+      ]
+    },
+    {
+      "provider": "Amazon",
+      "provider_jurisdiction": "US",
+      "paths": [
+        {
+          "id": "amazon-bedrock-regional",
+          "label": "Amazon Bedrock — regional inference",
+          "storage_residency": "AWS service and selected region dependent",
+          "inference_residency": "selected supported AWS region / inference profile dependent",
+          "training_on_api_data": "verify current Bedrock service and model-provider terms",
+          "default_content_retention": "service and feature dependent",
+          "zero_data_retention": "service/model/configuration dependent",
+          "customer_managed_keys": "available for supported AWS resources/configurations",
+          "private_networking": "AWS PrivateLink/VPC options depend on service/configuration",
+          "self_host": false,
+          "sovereignty_level": "regional-managed",
+          "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/models-region-compatibility.html"
         }
       ]
     }
