@@ -39,5 +39,24 @@
   },
   "skill_targets": [
     ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
-  ]
+  ],
+  "evidence": {
+    "regression_tests": [
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs"
+    ],
+    "escaped_incident": {
+      "pr": 3444,
+      "terminal_closure_run": 36696171864,
+      "terminalizer_run": 36696171917
+    },
+    "observed_exact_merge_brain_run": {
+      "run": 36696171507,
+      "conclusion": "cancelled"
+    },
+    "observed_descendant_brain_run": {
+      "run": 36696259736,
+      "conclusion": "success"
+    },
+    "false_terminal_evidence_prevented": "merged_lineage_verified=false is now terminal-blocking"
+  }
 }
