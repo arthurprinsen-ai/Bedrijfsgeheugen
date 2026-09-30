@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T07:10:00Z',
+  observedAt:'2026-09-30T09:22:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,17 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'predictive-multi-agent-delivery-scheduler-v1',
+      label:'Predictive Multi-Agent Delivery Scheduler',
+      authority:'github+canonical-delivery-policy',
+      owner:'whole-brain-reliability',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['obligation','candidate head','main epoch','changed paths','conflict contracts','mutable resources','active candidates','queue pressure','predicted fan-out']),
+      outputs:Object.freeze(['parallel-build decision','canonical writer decision','terminal serialization decision','resumable async checkpoint']),
+      runtime:Object.freeze({scheduler:'tools/delivery/predictive-controller.mjs#planConcurrentAgentWork',checkpoint:'POWERHOUSE-ASYNC-CHECKPOINT-v1',policy:'brain/policies/powerhouse-agent-continuity-v1.json'}),
+      invariants:Object.freeze({oneObligationOneWriter:true,nonConflictingParallelBuild:true,serializeOnlyTerminalOverlap:true,predictFanoutBeforeWrite:true,remoteWaitNeverMeansStop:true})
+    }),
     Object.freeze({
       id:'async-delivery-continuation-v1',
       label:'Async Delivery Continuation & Queue Supersession',

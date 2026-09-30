@@ -482,3 +482,11 @@ Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
 The current queue-pressure authority is deliberately strict: soft pressure at 8 active or 5 queued runs, hard circuit at 12 active or 8 queued runs, and at most 3 projected new runs for one mutation. These values must match `brain/policies/powerhouse-agent-continuity-v1.json#queue_pressure_governor`; documentation drift is a control-plane defect.
 
 A queued/running remote gate never makes the owning chat or agent idle. Persist a checkpoint, continue independent work, reuse the active exact-head run, and resume terminal delivery automatically. Newer authoritative main may supersede stale reversible production waits; never use this rule to bypass required quality/security gates.
+
+## Predictive multi-agent scheduler
+
+Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1`.
+
+Before every material write, predict obligation ownership, path/contract/resource overlap, current queue pressure and projected workflow fan-out. Same obligation has exactly one active writer. Different non-conflicting obligations build in parallel. Serialize only the shortest overlapping terminal landing boundary.
+
+Remote workflow states are asynchronous continuation states, never chat wait points. Persist `POWERHOUSE-ASYNC-CHECKPOINT-v1`, continue independent work, reuse the exact-head single-flight CI, and resume automatically without asking the user to continue.

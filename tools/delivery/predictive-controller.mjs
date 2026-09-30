@@ -103,3 +103,97 @@ export function classifyRecovery({mergeable=true,workflowRuns=[],headUpdatedAt,n
 
   return {state:'HEALTHY_PROGRESS',action:'CONTINUE',terminal:false,coverage};
 }
+
+
+export const AGENT_DELIVERY_DEFAULTS = Object.freeze({
+  maxParallelNonConflicting: 6,
+  terminalWritersPerObligation: 1,
+  checkpointRequiredBeforeRemoteWait: true
+});
+
+const normalizeSet = values => new Set((values ?? []).map(value => String(value).trim()).filter(Boolean));
+const intersects = (a,b) => {
+  const left=normalizeSet(a), right=normalizeSet(b);
+  for(const value of left) if(right.has(value)) return true;
+  return false;
+};
+
+export function planConcurrentAgentWork({
+  obligationId='',
+  currentHead='',
+  currentMain='',
+  activeCandidates=[],
+  changedPaths=[],
+  conflictContracts=[],
+  mutableResources=[],
+  queue={},
+  projectedNewRuns=0,
+  terminalIntent=false,
+  limits=AGENT_DELIVERY_DEFAULTS
+}={}){
+  const pressure=assessQueuePressure({...queue,projectedNewRuns});
+  const sameObligation=activeCandidates.filter(candidate =>
+    obligationId && String(candidate.obligationId||'')===String(obligationId)
+  );
+  const competingWriter=sameObligation.find(candidate =>
+    candidate.active !== false &&
+    candidate.headSha &&
+    candidate.headSha !== currentHead
+  );
+  const conflicts=activeCandidates.filter(candidate => {
+    if(candidate.active===false) return false;
+    return intersects(changedPaths,candidate.changedPaths) ||
+      intersects(conflictContracts,candidate.conflictContracts) ||
+      intersects(mutableResources,candidate.mutableResources);
+  });
+  if(competingWriter) return Object.freeze({
+    state:'PARK_BEHIND_CANONICAL_WRITER',
+    action:'CHECKPOINT_AND_CONTINUE_NONCONFLICTING_WORK',
+    canMutateCandidate:false,canContinueIndependentWork:true,
+    canonicalWriter:competingWriter,pressure,reason:'ONE_OBLIGATION_ONE_ACTIVE_WRITER'
+  });
+  if(terminalIntent && conflicts.length) return Object.freeze({
+    state:'SERIALIZE_TERMINAL_LANDING',
+    action:'CHECKPOINT_AND_WAIT_FOR_CONFLICTING_LANDING_WHILE_CONTINUING_INDEPENDENT_WORK',
+    canMutateCandidate:false,canContinueIndependentWork:true,
+    conflicts,pressure,reason:'OVERLAPPING_TERMINAL_RESOURCE'
+  });
+  if(pressure.state==='CIRCUIT_OPEN'||pressure.state==='PROJECTED_OVERLOAD') return Object.freeze({
+    state:'BATCH_BEFORE_MUTATION',
+    action:'REDUCE_FANOUT_REUSE_ACTIVE_RUNS_AND_CONTINUE_LOCAL_WORK',
+    canMutateCandidate:false,canContinueIndependentWork:true,
+    pressure,reason:'PREDICTED_QUEUE_OVERLOAD'
+  });
+  const parallelActive=activeCandidates.filter(candidate=>candidate.active!==false).length;
+  if(parallelActive>=limits.maxParallelNonConflicting) return Object.freeze({
+    state:'PARALLEL_BUDGET_FULL',
+    action:'CHECKPOINT_AND_CONTINUE_NONMUTATING_WORK',
+    canMutateCandidate:false,canContinueIndependentWork:true,
+    pressure,reason:'PARALLEL_AGENT_BUDGET'
+  });
+  return Object.freeze({
+    state:'BUILD_PARALLEL',
+    action:'MUTATE_OWN_CANDIDATE_AND_REUSE_SINGLE_FLIGHT_CI',
+    canMutateCandidate:true,canContinueIndependentWork:true,
+    pressure,currentMain,reason:'NO_CONFLICT_AND_CAPACITY_AVAILABLE'
+  });
+}
+
+export function buildResumableCheckpoint({
+  obligationId,candidateHead,mainEpoch,openGates=[],nextSafeAction,
+  alreadyProvenSideEffects=[],owner='agent',now=new Date().toISOString()
+}={}){
+  if(!obligationId||!candidateHead||!mainEpoch||!nextSafeAction) throw new Error('CHECKPOINT_IDENTITY_INCOMPLETE');
+  return Object.freeze({
+    version:'POWERHOUSE-ASYNC-CHECKPOINT-v1',
+    obligation_id:String(obligationId),
+    candidate_head:String(candidateHead),
+    main_epoch:String(mainEpoch),
+    owner:String(owner),
+    open_gates:[...new Set(openGates.map(String))],
+    already_proven_side_effects:[...new Set(alreadyProvenSideEffects.map(String))],
+    next_safe_action:String(nextSafeAction),
+    observed_at:String(now),
+    terminal:false
+  });
+}

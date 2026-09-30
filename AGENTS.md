@@ -1,3 +1,18 @@
+## Predictive multi-agent delivery scheduler — verplicht vóór iedere write
+
+Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1`.
+
+Iedere chat/agent voorspelt vóór een repository- of providerwrite wat de write raakt en hoeveel werk hij veroorzaakt via `tools/delivery/predictive-controller.mjs#planConcurrentAgentWork`.
+
+- één obligation = één actieve writer/candidate-head; andere agents muteren die head niet;
+- verschillende obligations bouwen parallel zolang changed paths, conflict contracts en mutable resources niet overlappen;
+- alleen de korte overlappende terminal landing wordt geserialiseerd;
+- queue pressure en voorspelde fan-out worden vóór de write beoordeeld; bij overbelasting bundelen/hergebruiken in plaats van meer workflows starten;
+- vóór externe wait wordt een `POWERHOUSE-ASYNC-CHECKPOINT-v1` vastgelegd met obligation, exact head, main epoch, open gates, bewezen side effects en volgende veilige actie;
+- `queued`, `pending`, `waiting`, `requested`, `in_progress` betekenen nooit stop: ga door met onafhankelijk werk en hervat automatisch;
+- nieuwere authoritative main supersedeert stale omkeerbare production snapshot/readback work; nooit onomkeerbare side effects of verplichte security/quality evidence;
+- geen agent vraagt de gebruiker om “ga door” om niet-terminale delivery te vervolgen.
+
 # Bedrijfsgeheugen — Agent Development Contract
 
 Dit bestand is de eerste bron die iedere agent moet lezen voordat code, content, automatisering, connectors, Netlify, GitHub of portalgedrag wordt gewijzigd.

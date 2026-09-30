@@ -1,0 +1,47 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "1.0",
+  "fingerprint": "powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1",
+  "observed_at": "2026-09-30T09:22:00Z",
+  "problem": "Concurrent agents could mutate one candidate while CI was running, causing head thrash, restarted workflows, main drift and apparent chat stalls.",
+  "root_cause": [
+    "Concurrency admission happened mainly after mutation instead of predictively before mutation.",
+    "Remote workflow waiting behaved too synchronously.",
+    "System Map writeback could wake unrelated platform suites.",
+    "Stale production snapshots could queue behind newer main.",
+    "The post-merge obligation terminalizer unconditionally waited for a Netlify website release even when a merged obligation changed only governance and delivery-control-plane files."
+  ],
+  "prevention": [
+    "Predict conflict/capacity/fan-out before each write.",
+    "Exactly one active writer per obligation.",
+    "Build non-conflicting obligations in parallel; serialize only terminal overlap.",
+    "Checkpoint before remote wait and continue independent work.",
+    "Supersede stale reversible production snapshot work.",
+    "Do not wake Business OS or portal native tests for System Map-only writeback.",
+    "For governance-only/control-plane merges, terminal production proof is current-main containment; do not poll Netlify for a deployment that is not applicable.",
+    "Scope the scheduler config itself to the automation lane so governance tuning cannot fan out into portal or website release lanes."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "CONCURRENCY_STALL",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-predictive-multi-agent-delivery-scheduler-v1.test.mjs",
+      "tests/brain-actions-queue-storm-guard-v1.test.mjs",
+      "tests/brain-delivery-system.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-predictive-multi-agent-delivery-scheduler-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "terminalizer_non_runtime_readback": "MAIN_CONTAINMENT_NON_RUNTIME"
+  }
+}
