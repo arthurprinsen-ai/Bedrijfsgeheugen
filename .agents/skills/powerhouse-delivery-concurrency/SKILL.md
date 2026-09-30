@@ -490,3 +490,10 @@ Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacit
 Before every material write, predict obligation ownership, path/contract/resource overlap, current queue pressure and projected workflow fan-out. Same obligation has exactly one active writer. Different non-conflicting obligations build in parallel. Serialize only the shortest overlapping terminal landing boundary.
 
 Remote workflow states are asynchronous continuation states, never chat wait points. Persist `POWERHOUSE-ASYNC-CHECKPOINT-v1`, continue independent work, reuse the exact-head single-flight CI, and resume automatically without asking the user to continue.
+
+
+## Governance-only terminal Brain evidence
+
+Fingerprint: `delivery|terminal-closure|governance-brain-evidence|v1`.
+
+For governance/control-plane-only merges, terminal closure must not wait on a Brain-foundation run that was cancelled only because a newer main superseded the merge SHA. Exact-head Required/CodeQL remain mandatory. Brain evidence may be satisfied by a successful exact-merge push run of Whole Brain Canonical Loop v2 or Powerhouse Skill Projection plus proof that the merge SHA is contained in current main. Runtime-affecting changes keep the stricter production/Brain path.
