@@ -19,5 +19,9 @@
   "Transcriptie": "Transcription",
   "Afbeeldingen": "Images",
   "Moderatie / safety": "Moderation / safety",
-  "Self-host / soevereiniteit": "Self-host / sovereignty"
+  "Self-host / soevereiniteit": "Self-host / sovereignty",
+  "Deployment governance": "Deployment governance",
+  "Waar draait je model — en wie houdt de controle?": "Where does your model run — and who keeps control?",
+  "Providernaam alleen zegt te weinig. Bekijk per deploymentpad opslag, inferentie, training, retentie, zero-data-retention, sleutels, private networking en self-hosting.": "A provider name alone says too little. Compare storage, inference, training, retention, zero-data retention, keys, private networking and self-hosting for each deployment path.",
+  "Governancevelden zijn deployment- en contractafhankelijk. Onbekend blijft onbekend; controleer de officiële bron vóór gevoelige productie-inzet.": "Governance fields depend on deployment and contract terms. Unknown stays unknown; check the official source before sensitive production use."
 }
