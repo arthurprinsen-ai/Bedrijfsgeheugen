@@ -10,9 +10,9 @@
     "specialist_coverage": "partial"
   },
   "change": {
-    "minimum_seed_models": 80,
-    "current_seed_models": 90,
-    "provider_families": 9,
+    "minimum_seed_models": 100,
+    "current_seed_models": 103,
+    "provider_families": 10,
     "added_classes": [
       "image generation/editing",
       "realtime/voice",
@@ -22,7 +22,8 @@
       "embeddings/RAG",
       "moderation/safety",
       "video",
-      "open-weight/self-host"
+      "open-weight/self-host",
+      "cloud-native Amazon Nova/Titan multimodal, voice, image/video and embeddings"
     ],
     "filters": [
       "provider",
