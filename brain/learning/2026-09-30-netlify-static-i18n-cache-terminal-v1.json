@@ -9,7 +9,7 @@
     "Repeated Netlify promotion therefore reached the build stage but could not become terminal production."
   ],
   "evidence": {
-    "production_main": "88634abdb4ec4e7e9933692464150e395866274b",
+    "production_main": "9031a7e54e16aaf452a9b4b09e4693c752a9121e",
     "production_command_reproduced": true,
     "missing_cache_entries": 16,
     "missing_sources_include": [
@@ -18,7 +18,7 @@
     ],
     "rebased_to_latest_main": true,
     "prior_missing_cache_entries": 16,
-    "note": "Recovery rebased onto the newest protected main so exact build parity can discover any additional cache gaps introduced after the original 16-entry diagnosis."
+    "note": "Recovery is bound to the latest protected main and exact build parity remains the oracle for any additional cache gaps."
   },
   "prevention": [
     "Treat static i18n cache completeness as part of production truth.",
