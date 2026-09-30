@@ -11,3 +11,4 @@
 - Fix: target only `index.html`, use full canonical URLs, and execute the product-led step in Required test premerge build parity.
 - Delivery refresh: final seven-path promotion scope published before terminal CI.
 - Final candidate refresh: canonical Brain regression path is now classified and included in the seven-path scope.
+- Residual build failure: fail-closed static i18n exposed uncached `Powerhouse closed loop` and standalone `Intelligence`; the flow now reuses canonical `Powerhouse Intelligence` and removes the redundant aria-only translation dependency.
