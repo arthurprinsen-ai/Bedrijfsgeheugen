@@ -64,5 +64,24 @@
       "failed_assets": 0
     },
     "note": "A separate site-wide pricing locale-switch readback timed out after Company Brain route verification had already passed; that unrelated timeout does not invalidate the route-specific Company Brain production proof."
-  }
+  },
+  "root_cause": "The market-category opportunity was implemented correctly, but terminal truth initially lagged because production build/readback was blocked by final-artifact static-i18n gaps and later a separate site-wide pricing locale-switch timeout. Route-specific production proof had to be separated from unrelated global readback failures.",
+  "evidence": {
+    "protected_main": "936ca60ad5c2415ff2372880a61aea5b1d690875",
+    "netlify_deploy_id": "6abcd38195a83a25791474e5",
+    "exact_commit_ref": true,
+    "production_state": "ready/current",
+    "public_route_http_status": 200,
+    "public_canonical": "https://www.bedrijfsgeheugen.nl/company-brain",
+    "public_title": "Company Brain voor het MKB | Bedrijfsgeheugen",
+    "mobile_viewport": "390x844",
+    "page_errors": 0,
+    "failed_assets": 0
+  },
+  "prevention": [
+    "Treat final post-shell static i18n coverage as part of release truth.",
+    "Require route-specific HTTP/canonical/title/mobile/assets readback before LIVE_PROVEN.",
+    "Do not let an unrelated site-wide readback failure erase already-proven route-specific production truth; keep obligations separated by affected surface.",
+    "Keep Company Brain as a category owner feeding the existing Bedrijfslek/Frisse Blik/order/revenue loop."
+  ]
 }
