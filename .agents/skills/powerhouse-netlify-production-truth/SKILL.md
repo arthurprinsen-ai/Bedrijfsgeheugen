@@ -143,3 +143,21 @@ Required recovery pattern:
 - keep deployment transport/auth recovery separate from build-content recovery.
 
 A production build failure caused by an incomplete static i18n cache is a build-content defect, not a Netlify credential defect. Repeated deploy retries without completing the cache are prohibited.
+
+
+## Final-artifact zero-missing gate after candidate drift
+
+Fingerprint: `netlify-static-i18n-final-artifact-zero-missing-20260930-v2`.
+
+A static-i18n recovery is not complete because a known list of strings was added. The oracle is the **exact candidate-head final artifact after every production build transform**.
+
+Mandatory:
+- execute the production command chain through canonical shell, commercial finalizers, Bedrijfslek restore, i18n injection and the localized-route selection;
+- derive the full translatable set from that final artifact using the same semantics as `build-localized-routes.mjs`;
+- require **zero missing static English keys** before production promotion;
+- rerun the zero-missing audit after any rebase, main-sync, conflict resolution or transformer/copy change;
+- treat stale wording variants as non-evidence: a translation for “Dat is waardevol…” does not satisfy the live final string “Dat helpt…”;
+- include generated build-artifact contract labels, aria/title/alt text and value-first route markers in the same deterministic cache;
+- never weaken `STATIC_I18N_REQUIRE_CACHE=1` or enable runtime/network translation to pass production.
+
+Canonical regression: `tests/brain-netlify-static-i18n-cache-terminal-v1.test.mjs`.

@@ -17,3 +17,12 @@ De ontbrekende strings kwamen uit:
 
 ## Terminal criterium
 Protected merge → exact current-main production build → Netlify ready/production → exact commit identity → browser/readback groen.
+
+
+## Tweede productie-replay: resterende exacte keys
+
+De eerste recovery sloot de bekende lijst, maar de exacte production-source replay op protected main `77e08f3ede16e4e2b1f3b064addf7c93f3d5bfb3` vond na alle finale buildtransforms nog **2** ontbrekende keys:
+1. de actuele Company Brain-zin **“Dat helpt, maar context alleen verandert nog niets in je bedrijf…”**; de cache bevatte nog de oudere variant **“Dat is waardevol…”**;
+2. **“Bedrijfslek built-artifact contract: exact Netlify build must preserve this value-first route.”**
+
+Beide finale keys zijn aan de canonieke cache toegevoegd. De permanente acceptatieregel is aangescherpt van “bekende missing keys aanwezig” naar **exact final artifact = zero missing keys**, opnieuw uit te voeren na iedere sync/rebase of buildtransform-wijziging. Totaal herstelde keys binnen deze production-recovery: **29**.

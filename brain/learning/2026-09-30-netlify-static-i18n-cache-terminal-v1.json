@@ -9,7 +9,7 @@
     "Repeated Netlify promotion therefore reached the build stage but could not become terminal production."
   ],
   "evidence": {
-    "production_main": "9031a7e54e16aaf452a9b4b09e4693c752a9121e",
+    "production_main": "77e08f3ede16e4e2b1f3b064addf7c93f3d5bfb3",
     "production_command_reproduced": true,
     "missing_cache_entries": 16,
     "missing_sources_include": [
@@ -19,15 +19,22 @@
     ],
     "rebased_to_latest_main": true,
     "prior_missing_cache_entries": 16,
-    "note": "Recovery is bound to the latest protected main and exact build parity remains the oracle for any additional cache gaps.",
+    "note": "Exact production-source replay after all final build transforms found two residual missing keys. The prior cache contained a stale Company Brain wording variant and did not include the Bedrijfslek built-artifact label.",
     "additional_company_brain_cache_entries": 11,
-    "total_missing_cache_entries_recovered": 27
+    "total_missing_cache_entries_recovered": 29,
+    "second_pass_exact_production_source_replayed": true,
+    "second_pass_missing_cache_entries": 2,
+    "second_pass_missing_sources": [
+      "current Company Brain final paragraph variant: Dat helpt, maar context alleen...",
+      "Bedrijfslek built-artifact value-first route contract label"
+    ]
   },
   "prevention": [
     "Treat static i18n cache completeness as part of production truth.",
     "Validate the entire current-main public route set after final build transforms, not only files changed by the immediate candidate.",
     "Never disable STATIC_I18N_REQUIRE_CACHE to make production pass.",
-    "Classify incomplete cache as build-content recovery, separate from Netlify transport/auth recovery."
+    "Classify incomplete cache as build-content recovery, separate from Netlify transport/auth recovery.",
+    "After every candidate sync/rebase or final build-transform change, rerun the exact final-artifact zero-missing audit before production promotion."
   ],
   "compiler": {
     "failure_class": "STATIC_I18N_CACHE_INCOMPLETE_ON_CURRENT_MAIN",
@@ -35,7 +42,7 @@
     "machine_enforceable": true,
     "security_sensitive": false
   },
-  "status": "ACTIVE_PREVENTION",
+  "status": "ACTIVE_PREVENTION_FINAL_ARTIFACT_ZERO_MISSING",
   "evaluation": {
     "historical_replay": [
       "tests/brain-netlify-static-i18n-cache-terminal-v1.test.mjs"

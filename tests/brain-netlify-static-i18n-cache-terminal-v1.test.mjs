@@ -23,9 +23,11 @@ test('current-main static i18n terminal recovery preserves fail-closed cache com
     'kwetsbaar',
     'waar staat wat?',
     'wie houdt het actueel?',
-    'wie kan het vinden?'
+    'wie kan het vinden?',
+    'Dat helpt, maar context alleen verandert nog niets in je bedrijf. Bedrijfsgeheugen koppelt die context aan wat er buiten en binnen verandert, wat geraakt wordt, welke actie nodig is en wat het resultaat daarvan was.',
+    'Bedrijfslek built-artifact contract: exact Netlify build must preserve this value-first route.'
   ];
-  assert.equal(required.length,16);
+  assert.equal(required.length,18);
   for(const source of required){
     assert.equal(typeof cache[source],'string',`missing translation: ${source}`);
     assert.ok(cache[source].trim().length>0,`empty translation: ${source}`);
@@ -40,5 +42,7 @@ test('Netlify production truth skill forbids deploy retry as cache recovery',()=
   assert.match(skill,/netlify-static-i18n-cache-terminal-20260930-v1/);
   assert.match(skill,/Repeated deploy retries without completing the cache are prohibited/);
   assert.match(skill,/exact current-main production command chain/i);
+  assert.match(skill,/netlify-static-i18n-final-artifact-zero-missing-20260930-v2/);
+  assert.match(skill,/zero missing static English keys/i);
   assert.match(skill,/every translatable string selected by the canonical localized-route builder/i);
 });

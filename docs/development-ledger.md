@@ -381,3 +381,12 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Root cause addressed:** custom page header competed with canonical shell ownership; the new category literal was not guaranteed in the static EN cache; category authority linking was too weak.
 - **Fix:** canonical shell only, completed Company Brain i18n patch, clean copy, contextual inbound links from Bedrijfsgeheugen and AI-ecosysteem.
 - **Terminal proof required:** successful Netlify build + live route readback; repository state alone is non-terminal.
+
+
+## 2026-09-30 — RECOVERY — Static i18n final-artifact zero-missing v2
+- **Fingerprint:** `website|static-i18n|final-artifact-zero-missing|v2`.
+- **Production evidence:** exact production-source replay of protected main `77e08f3ede16e4e2b1f3b064addf7c93f3d5bfb3` after all build transforms.
+- **Root cause:** two residual final-artifact strings were still uncovered: the current Company Brain “Dat helpt…” paragraph variant and the Bedrijfslek build-artifact value-first contract label. A stale earlier Company Brain wording in cache created false confidence.
+- **Fix:** add both exact keys to the canonical append-only static English cache; extend the canonical regression; make zero missing keys on exact final candidate output mandatory after every sync/rebase/transform.
+- **Guard:** `STATIC_I18N_REQUIRE_CACHE=1` remains fail-closed; no runtime/network-translation bypass.
+- **Terminal:** protected merge → exact-main Netlify production → public NL/EN readback.

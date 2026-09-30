@@ -879,3 +879,20 @@ Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales-
 - Powerhouse blijft de onderliggende intelligence- en uitvoeringsmotor;
 - commerciële optimalisatie eindigt niet op ranking/traffic/scan maar op gekwalificeerde lead → voorstel → betaalde order → gerealiseerde omzet → learning;
 - iedere nieuwe Company-Brain-kans hergebruikt de bestaande Bedrijfslek, Frisse Blik, Growth Swarm, SEO Order Engine, Outcome Memory en Compound Learning; geen parallel CRM, funnel, publisher of learning-store.
+
+
+## Public-site final-artifact i18n zero-missing inheritance
+
+Fingerprint: `website|static-i18n|final-artifact-zero-missing|v2`.
+
+Voor alle huidige en toekomstige chats/agents die publieke websitecopy, shell, CRO/finalizers, breadcrumbs, aria/title/alt-labels of buildtransforms wijzigen:
+- broncopy of een eerder groen cachelijstje is nooit terminal bewijs;
+- bouw eerst de exacte candidate-head door alle finale productie-transforms;
+- vergelijk daarna de volledige finale translatable set met de statische Engelse cache en eis **0 ontbrekende keys**;
+- herhaal dit na iedere rebase/main-sync/conflictoplossing of copy-/transformwijziging;
+- stale varianten tellen niet als dekking voor de actuele finale tekst;
+- generated build-artifact contract labels vallen onder dezelfde fail-closed dekking;
+- `STATIC_I18N_REQUIRE_CACHE=1` blijft aan en mag nooit worden omzeild;
+- pas na protected merge → exact-main Netlify ready → publieke NL/EN readback mag LIVE worden geclaimd.
+
+Deze regel is onderdeel van de bestaande Company Brain/Powerhouse delivery lineage en creëert geen parallelle i18n- of deployauthority.
