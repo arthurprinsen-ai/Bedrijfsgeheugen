@@ -1,0 +1,35 @@
+{
+  "id": "2026-09-30-seo-static-i18n-cache-complete-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|nl-en|static-i18n-cache-complete|v1",
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE",
+    "scope": "PUBLIC_WEBSITE",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The bilingual SEO implementation added and recomposed visible Dutch strings after the last complete English cache snapshot. Production and deploy previews require a complete committed cache, so the localized build correctly failed closed on 23 missing exact source strings.",
+  "prevention": [
+    "Every visible source-string change on localized public routes must update the committed English translation cache in the same candidate.",
+    "Validate the exact final source strings with build-localized-routes --validate-cache before protected merge.",
+    "Never bypass STATIC_I18N_REQUIRE_CACHE or allow Dutch fallback on English production pages."
+  ],
+  "fix": "Add the 23 exact missing Modelwijzer, governance, CTA, footer and Company Brain strings to the canonical English cache patch and preserve the fail-closed production gate.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-persistent-navigation-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "cache_patch": "config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-seo-revenue-v1.json",
+    "builder": "tools/site-shell/build-localized-routes.mjs",
+    "build_config": "netlify.toml",
+    "prior_failure": "STATIC_I18N_CACHE_INCOMPLETE: 23 missing translation(s)"
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-system-map-governance"
+  ]
+}
