@@ -9,7 +9,7 @@
     "Repeated Netlify promotion therefore reached the build stage but could not become terminal production."
   ],
   "evidence": {
-    "production_main": "e9a5b779311afb038e75efa8298997732fbf93cd",
+    "production_main": "9031a7e54e16aaf452a9b4b09e4693c752a9121e",
     "production_command_reproduced": true,
     "missing_cache_entries": 16,
     "missing_sources_include": [
@@ -19,7 +19,7 @@
     ],
     "rebased_to_latest_main": true,
     "prior_missing_cache_entries": 16,
-    "note": "Recovery reconciled onto current protected main e9a5b779311afb038e75efa8298997732fbf93cd; exact build parity remains the oracle for any additional cache gaps.",
+    "note": "Recovery reconciled onto newest protected main 9031a7e54e16aaf452a9b4b09e4693c752a9121e; exact build parity remains the oracle for any additional cache gaps.",
     "additional_company_brain_cache_entries": 11,
     "total_missing_cache_entries_recovered": 27
   },
