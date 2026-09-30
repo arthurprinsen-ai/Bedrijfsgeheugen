@@ -864,3 +864,9 @@ Mandatory invariants:
 - canonical 2026-09-30 regression: auto + elektrische schuifdeur + airco + warme lucht + handmatig openen/ramen open + nieuwe routine.
 
 Every material social-publishing change must update the relevant skill, Brain learning, chat/agent contract, development ledger and System Map in the same lineage.
+
+## Persistent public language navigation
+
+Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+
+Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: een gekozen publieke taal blijft actief over alle interne paginanavigatie. English betekent dat alle in aanmerking komende same-origin publieke links naar de equivalente `/en/*` route wijzen; Nederlands gebruikt de onprefixte canonieke route. Query/hash blijven behouden. Portal/klantportaal en technische paden (`/api/`, `/.netlify/`, `/assets/`, `/functions/`) worden niet herschreven. Ook dynamisch aangemaakte menu- en navigatielinks vallen onder deze regel. “De huidige pagina is Engels” is geen terminal bewijs: browser-readback moet taalkeuze → navigatie naar andere pagina → taal blijft gelijk → terugschakelen → opnieuw navigeren aantonen.
