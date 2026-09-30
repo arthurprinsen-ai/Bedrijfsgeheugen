@@ -884,3 +884,9 @@ Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales-
 Fingerprint: `website|static-i18n|post-shell-final-string-coverage|v1`.
 
 Alle huidige en toekomstige chats/agents die publieke websitecopy wijzigen controleren de Engelse static-i18n authority niet alleen op broncopy maar op de finale post-shell/build-output. Shellprojectie, CRO-finalizers, breadcrumbs, aria-labels en tekstsplitsing kunnen nieuwe exacte strings creëren. `STATIC_I18N_REQUIRE_CACHE=1` blijft fail-closed; runtime translation vervangt geen ontbrekende statische production key. Een i18n-buildfout wordt in dezelfde obligation gerepareerd en opnieuw gepromoveerd tot NL én EN publiek terugleesbaar zijn.
+
+## Persistent public language navigation
+
+Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+
+Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: een gekozen publieke taal blijft actief over alle interne paginanavigatie. English betekent dat alle in aanmerking komende same-origin publieke links naar de equivalente `/en/*` route wijzen; Nederlands gebruikt de onprefixte canonieke route. Query/hash blijven behouden. Portal/klantportaal en technische paden (`/api/`, `/.netlify/`, `/assets/`, `/functions/`) worden niet herschreven. Ook dynamisch aangemaakte menu- en navigatielinks vallen onder deze regel. “De huidige pagina is Engels” is geen terminal bewijs: browser-readback moet taalkeuze → navigatie naar andere pagina → taal blijft gelijk → terugschakelen → opnieuw navigeren aantonen.
