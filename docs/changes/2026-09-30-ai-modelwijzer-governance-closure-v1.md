@@ -16,3 +16,6 @@ The initial AI Modelwijzer delivery was merged while several governance gates we
 
 ## Terminal condition
 This recovery may only become LIVE_PROVEN after protected merge, Netlify production on the exact current main revision, public readback of the Modelwijzer and model catalog, and a non-mutating readback of the lead endpoint.
+
+## Current-head reconciliation
+The recovery lineage also absorbed the official-source model refresh and deployment-specific provider governance/sovereignty registry before terminal validation. All final gates therefore run against that current head rather than the earlier catalog snapshot.
