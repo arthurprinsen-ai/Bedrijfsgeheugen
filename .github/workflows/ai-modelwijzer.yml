@@ -1,0 +1,39 @@
+name: AI Modelwijzer
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'ai-modelwijzer.html'
+      - 'assets/js/ai-model-catalog.js'
+      - 'assets/js/ai-modelwijzer.mjs'
+      - 'data/ai-model-catalog.json'
+      - 'netlify/functions/ai-model-advisor-lead.mjs'
+      - 'supabase/migrations/*ai_model_intelligence*'
+      - 'tests/ai-modelwijzer-v1.test.mjs'
+      - '.agents/skills/powerhouse-ai-model-advisor/**'
+      - 'platform/system-map/canonical-system-map.mjs'
+      - 'docs/brain/component-registry.json'
+      - '.github/workflows/ai-modelwijzer.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Install dependencies
+        run: npm install --ignore-scripts --no-audit --no-fund
+      - name: AI Modelwijzer contracts
+        run: node --test tests/ai-modelwijzer-v1.test.mjs
+      - name: Validate static i18n cache
+        env:
+          STATIC_I18N_REQUIRE_CACHE: "1"
+          STATIC_I18N_NETWORK: "0"
+        run: node tools/site-shell/build-localized-routes.mjs --validate-cache
+      - name: Full Netlify build probe
+        run: node tools/ai-modelwijzer-netlify-build-check.mjs

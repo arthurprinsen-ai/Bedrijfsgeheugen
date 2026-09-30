@@ -41,7 +41,7 @@ export const HERO_URL = '/assets/hero-shanghai-v2.mp4';
 // eigen opmaak staan, want die stuurt het tonen en verbergen van stappen
 export const EIGEN_WERKING = new Set([
   'zelfscan.html', 'ai-scan.html', 'monitor.html', 'benchmark.html', 'afmaakindex.html',
-  'frisse-blik.html', 'wijzigingen.html', 'wijzigingen-uitgelegd.html',
+  'frisse-blik.html', 'ai-modelwijzer.html', 'wijzigingen.html', 'wijzigingen-uitgelegd.html',
   'ai-capability-model.html', 'due-diligence.html', 'offerte.html', 'brochure.html'
 ]);
 
