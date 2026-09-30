@@ -1,0 +1,43 @@
+{
+  "fingerprint": "delivery|product-led-home-production-promotion|v1",
+  "observed_at": "2026-09-30T21:55:00+02:00",
+  "type": "PREVENTION",
+  "problem": "A protected-main product-led homepage change was merged while Netlify production remained on an older commit, so code truth and production truth diverged.",
+  "decision": "When production lags protected main, create one bounded promotion candidate that forces a fresh Netlify build and cannot close until provider commit_ref and public content readback both match the promoted lineage.",
+  "prevention": [
+    "Never treat merge-to-main as production completion.",
+    "A redeploy heartbeat must preserve the canonical Netlify build chain, including apply-product-led-home.mjs.",
+    "Promotion closure requires provider commit_ref plus public homepage content evidence."
+  ],
+  "evidence": [
+    "netlify.toml",
+    "tests/brain-product-led-production-promotion-v1.test.mjs",
+    "docs/changes/2026-09-30-product-led-production-promotion.md",
+    "docs/development-ledger-events/2026-09-30-product-led-production-promotion.md"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Netlify did not automatically promote the merged product-led homepage lineage, leaving production on an older commit.",
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "website",
+    "delivery"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-product-led-production-promotion-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-product-led-production-promotion-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-product-led-production-promotion-v1.test.mjs"
+  ]
+}
