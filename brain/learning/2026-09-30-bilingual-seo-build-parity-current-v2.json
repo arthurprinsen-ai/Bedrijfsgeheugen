@@ -1,0 +1,33 @@
+{
+  "id": "2026-09-30-bilingual-seo-build-parity-current-v2",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|bilingual|current-main-build-parity|v2",
+  "compiler": {
+    "failure_class": "PRODUCTION_BUILD_FAILURE",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 2
+  },
+  "root_cause": "Protected main still fails the Netlify site build after the first static-English cache repair. The exact merged current-main combination must be reproduced premerge to expose the remaining build-stage failure.",
+  "prevention": [
+    "Reproduce the exact merged main state with the canonical Netlify parity command before another production promotion.",
+    "Do not infer a provider build failure from a predecessor PR head because concurrent merges can alter final build inputs.",
+    "Keep recovery closure evidence in the same candidate."
+  ],
+  "fix": "Force exact-current-main Netlify build parity in this recovery branch, repair the concrete failing stage, then repromote only after parity is green.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "base_sha": "60d2dd4fbcc0f866022062a1f24f58394f95e68b",
+    "failed_deploy": "6abcfdac5f698122195be0a3"
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-netlify-production-truth"
+  ]
+}
