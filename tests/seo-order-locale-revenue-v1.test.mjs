@@ -69,3 +69,12 @@ test('revenue linker projects localized inbound, cluster and conversion links',a
   assert.match(source,/data-bg-money-route/);
   assert.match(source,/for\(const locale of \['nl','en'\]\)/);
 });
+
+
+test('HTML entity serialization does not create false locale SEO mismatches',async()=>{
+  const source=await readFile('tools/seo-order-engine/validate-locales.mjs','utf8');
+  assert.match(source,/function decodeHtml/);
+  assert.match(source,/replace\(\/&amp;\/g,'&'\)/);
+  const map=JSON.parse(await readFile('site/seo-locale-revenue-map.json','utf8'));
+  assert.ok(map.pages.some(x=>String(x.en?.title||'').includes('&')));
+});
