@@ -285,3 +285,14 @@ Measured seed evidence from 30 September 2026:
 - EN/UK `sovereign ai`: 2,400 monthly searches, CPC €13.28.
 
 These are dated market observations, not guaranteed future volumes. Refresh them through the canonical DataForSEO evidence path and learn from realized commercial outcomes.
+
+
+### Static English cache is a release contract
+
+Fingerprint: `seo|nl-en|static-i18n-cache-complete|v1`.
+
+- Every new or changed visible Dutch string on an indexable public route must have a committed English cache entry before merge when production uses `STATIC_I18N_REQUIRE_CACHE=1`.
+- A translated component fragment is not sufficient when the localized builder sees a combined source string; cache the exact source string emitted by final source HTML.
+- Run the canonical localized-route cache validation before protected merge. Missing translations are a production blocker, never a deploy-time surprise.
+- SEO title, description, H1, CTA, governance copy, footer copy and commercial handoff copy are all inside this contract.
+- A Netlify build failure caused by `STATIC_I18N_CACHE_INCOMPLETE` must be repaired at the source cache and then replayed through protected delivery; never disable the cache gate or silently fall back to Dutch on English routes.
