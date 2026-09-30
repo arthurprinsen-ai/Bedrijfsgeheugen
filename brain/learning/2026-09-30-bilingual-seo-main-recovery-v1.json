@@ -23,7 +23,7 @@
     "historical_replay": [
       "tests/brain-search-indexing-sitemap-contract.test.mjs",
       "tests/brain-seo-localized-route-inheritance-v1.test.mjs",
-      "tests/brain-seo-validator-registry-contract.test.mjs"
+      "tests/brain-seo-revenue-learning-v1.test.mjs"
     ]
   },
   "evidence": {
