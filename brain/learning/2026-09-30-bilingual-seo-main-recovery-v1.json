@@ -1,0 +1,37 @@
+{
+  "id": "2026-09-30-bilingual-seo-main-recovery-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|bilingual|post-merge-recovery|v1",
+  "compiler": {
+    "failure_class": "CONCURRENT_SEO_LINEAGE_MERGED_WITH_RED_GATES",
+    "scope": "WEBSITE_BUILD",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Concurrent edits on the same SEO branch accumulated overlapping locale/revenue implementations. The merged lineage exposed contract mismatches in trailing-slash locale pairing, direct sitemap helper behavior, test syntax, quality-surface registration and preview/production pipeline parity.",
+  "prevention": [
+    "After concurrent SEO writers converge, re-read the exact branch head before merge and collapse duplicate implementations rather than assuming earlier branch state.",
+    "Locale route pairing preserves canonical trailing-slash semantics.",
+    "Sitemap helpers and production generation share the same reciprocal hreflang contract.",
+    "New Netlify functions and database tables are registered in the quality-surface registry in the same lineage.",
+    "Deploy-preview and production build pipelines remain byte-for-byte equivalent for SEO stages."
+  ],
+  "fix": "Repair locale pairing/tests, register new surfaces, keep preview and production SEO pipelines aligned, then prove current main through protected recovery delivery.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-search-indexing-sitemap-contract.test.mjs",
+      "tests/brain-seo-localized-route-inheritance-v1.test.mjs",
+      "tests/brain-seo-validator-registry-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "superseded_merge": "af866d11e7caab220390dcf73cfe5afcfabf6bc6",
+    "recovery_branch": "recovery/seo-nl-en-revenue-main-v1"
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-continuity"
+  ]
+}
