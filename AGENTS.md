@@ -865,6 +865,21 @@ Mandatory invariants:
 
 Every material social-publishing change must update the relevant skill, Brain learning, chat/agent contract, development ledger and System Map in the same lineage.
 
+
+## Company Brain category positioning — permanent commercial contract
+Fingerprint: `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1`.
+
+Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales- en productnodes:
+- `Company Brain` is categorie-/zoektaal en acquisitie-ingang, niet de merknaam of productnaam;
+- de canonieke eigenaar is `https://www.bedrijfsgeheugen.nl/company-brain`; geen duplicate intent-route;
+- canonieke categoriezin: **Een Company Brain is waar Bedrijfsgeheugen begint.**
+- canoniek onderscheid: Company Brain ontsluit kennis/context; Bedrijfsgeheugen verbindt context met signalen, impact, beslissing, actie, resultaat en leren;
+- merkbelofte: **Uit hoofden, in je bedrijf. En dan werkend.**
+- productprincipe: **Weten → Zien → Begrijpen → Doen → Leren.**
+- Powerhouse blijft de onderliggende intelligence- en uitvoeringsmotor;
+- commerciële optimalisatie eindigt niet op ranking/traffic/scan maar op gekwalificeerde lead → voorstel → betaalde order → gerealiseerde omzet → learning;
+- iedere nieuwe Company-Brain-kans hergebruikt de bestaande Bedrijfslek, Frisse Blik, Growth Swarm, SEO Order Engine, Outcome Memory en Compound Learning; geen parallel CRM, funnel, publisher of learning-store.
+
 ## Persistent public language navigation
 
 Fingerprint: `website|i18n|persistent-public-navigation|v1`.
