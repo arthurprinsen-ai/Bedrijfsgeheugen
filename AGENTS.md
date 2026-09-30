@@ -879,3 +879,9 @@ Voor alle huidige en toekomstige chats, agents, website-, SEO-, content-, sales-
 - Powerhouse blijft de onderliggende intelligence- en uitvoeringsmotor;
 - commerciële optimalisatie eindigt niet op ranking/traffic/scan maar op gekwalificeerde lead → voorstel → betaalde order → gerealiseerde omzet → learning;
 - iedere nieuwe Company-Brain-kans hergebruikt de bestaande Bedrijfslek, Frisse Blik, Growth Swarm, SEO Order Engine, Outcome Memory en Compound Learning; geen parallel CRM, funnel, publisher of learning-store.
+
+## Persistent public language navigation
+
+Fingerprint: `website|i18n|persistent-public-navigation|v1`.
+
+Voor alle huidige en toekomstige chats, agents, skills en website-workflows geldt: een gekozen publieke taal blijft actief over alle interne paginanavigatie. English betekent dat alle in aanmerking komende same-origin publieke links naar de equivalente `/en/*` route wijzen; Nederlands gebruikt de onprefixte canonieke route. Query/hash blijven behouden. Portal/klantportaal en technische paden (`/api/`, `/.netlify/`, `/assets/`, `/functions/`) worden niet herschreven. Ook dynamisch aangemaakte menu- en navigatielinks vallen onder deze regel. “De huidige pagina is Engels” is geen terminal bewijs: browser-readback moet taalkeuze → navigatie naar andere pagina → taal blijft gelijk → terugschakelen → opnieuw navigeren aantonen.
