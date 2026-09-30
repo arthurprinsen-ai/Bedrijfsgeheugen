@@ -1,0 +1,41 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|ai-modelwijzer|production-build-closure|2026-09-30-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE",
+  "context": "The 103-model AI Modelwijzer was present on main but production remained on an older deploy because the new interactive page was not fully integrated with the canonical site build and CI coverage contracts.",
+  "root_cause": [
+    "The Modelwijzer was not classified as EIGEN_WERKING in the V18 page builder, so a production build could rewrite an interactive application as a generic content page.",
+    "The static English translation cache had no deterministic entries for the new Modelwijzer copy while production requires STATIC_I18N_REQUIRE_CACHE=1.",
+    "tests/ai-model-advisor-v1.test.mjs was committed but not referenced by any workflow, causing delivery-test-coverage-guard to fail."
+  ],
+  "fix": [
+    "Preserve ai-modelwijzer.html as EIGEN_WERKING in the canonical V18 builder.",
+    "Commit a complete Modelwijzer English cache patch.",
+    "Wire both Modelwijzer regressions into the canonical website lane."
+  ],
+  "prevention_rules": [
+    "Interactive acquisition tools must be registered in the canonical builder before production promotion.",
+    "New public Dutch copy must include deterministic English cache coverage in the same lineage.",
+    "Every committed regression test must be executed by at least one CI workflow.",
+    "A ready older Netlify deploy is not proof that current main is live."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md"
+  ],
+  "system_map_target": "platform/system-map/canonical-system-map.mjs",
+  "compiler": {
+    "failure_class": "MODEL_ADVISOR_PRODUCTION_BUILD_REGRESSION",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-modelwijzer-production-build-v1.test.mjs"
+    ]
+  },
+  "truth_boundary": "This learning proves the build/prevention contract. It does not claim production is live until exact-main Netlify deployment and public route readback are observed."
+}
