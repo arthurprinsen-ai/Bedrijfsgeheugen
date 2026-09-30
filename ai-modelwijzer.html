@@ -64,7 +64,7 @@
 <div class="checks">
 <label class="check"><input id="euOnly" type="checkbox"> Inferentie aantoonbaar EU</label>
 <label class="check"><input id="selfHost" type="checkbox"> Self-hosting vereist</label>
-<label class="check"><input id="openWeights" type="checkbox"> Open weights vereist</label>
+<label class="check"><input id="openWeights" type="checkbox"> Open weights vereist</label><label class="check"><input id="zdr" type="checkbox"> Zero Data Retention vereist</label><label class="check"><input id="customerControl" type="checkbox"> Customer-controlled data vereist</label>
 <label class="check"><input id="activeOnly" type="checkbox" checked> Alleen actief/production</label>
 </div>
 <button class="adviceBtn" id="advise">Vergelijk en adviseer →</button>
@@ -80,7 +80,7 @@
 <input id="search" placeholder="Zoek model, provider of toepassing">
 <select id="providerFilter"><option value="">Alle providers</option></select>
 <select id="tierFilter"><option value="">Alle types</option><option value="frontier">Frontier</option><option value="balanced">Balanced</option><option value="economy">Economy</option><option value="local">Local/self-host</option><option value="specialist">Specialist</option><option value="enterprise">Enterprise</option><option value="open-weight">Open-weight</option></select>
-<select id="governanceFilter"><option value="">Alle governanceprofielen</option><option value="eu">EU processing</option><option value="storageeu">EU storage</option><option value="self">Self-host</option><option value="open">Open weights</option></select>
+<select id="governanceFilter"><option value="">Alle governanceprofielen</option><option value="eu">EU processing</option><option value="storageeu">EU storage</option><option value="self">Self-host</option><option value="open">Open weights</option><option value="zdr">Zero Data Retention</option><option value="customer">Customer-controlled sovereignty</option></select>
 <select id="modalityFilter"><option value="">Alle modalities</option><option value="text">Tekst</option><option value="vision">Vision</option><option value="image">Image generatie</option><option value="audio">Audio / voice</option><option value="video">Video</option><option value="document">Document / OCR</option><option value="code">Code</option></select>
 <select id="taskFilter"><option value="">Alle doeleinden</option><option value="coding">Programmeren</option><option value="reasoning">Complex redeneren</option><option value="writing">Schrijven</option><option value="agents">Agents / tools</option><option value="high volume">Hoog volume</option><option value="ocr">OCR / documenten</option><option value="embedding">RAG / embeddings</option><option value="transcription">Transcriptie</option><option value="image generation">Afbeeldingen</option><option value="video generation">Video</option><option value="moderation">Moderatie / safety</option><option value="self-host">Self-host / soevereiniteit</option></select>
 </div>
@@ -183,10 +183,15 @@ function governanceBadges(m){
  b.push(m.eu_processing===true?'<span class="badge good">EU-inferentie optie</span>':m.eu_processing===false?'<span class="badge risk">Geen EU-inferentie in dit pad</span>':'<span class="badge warn">EU-inferentie onbekend</span>');
  if(m.self_host)b.push('<span class="badge good">Self-host mogelijk</span>');
  if(m.open_weights)b.push('<span class="badge good">Open weights</span>');
+ if(supportsZdr(m))b.push('<span class="badge good">ZDR-pad beschikbaar</span>');
+ if(customerControlled(m))b.push('<span class="badge good">Customer-controlled pad</span>');
  b.push('<span class="badge">'+m.jurisdiction+'</span>');
  return b.join('');
 }
 function providerRecord(name){return (providerGovernance.providers||[]).find(p=>p.provider===name)||null;}
+function providerPaths(m){return providerRecord(m.provider)?.paths||[];}
+function supportsZdr(m){return providerPaths(m).some(p=>{const z=String(p.zero_data_retention??'').toLowerCase();return z.includes('available')||z.includes('supported')||z==='customer-controlled'||z.includes('eligible');});}
+function customerControlled(m){return providerPaths(m).some(p=>p.self_host===true&&String(p.sovereignty_level||'').includes('customer-controlled'));}
 function bestGovernancePath(m){
  const p=providerRecord(m.provider); if(!p?.paths?.length)return null;
  if($('selfHost').checked){const x=p.paths.find(x=>x.self_host===true);if(x)return x;}
@@ -229,6 +234,8 @@ function eligible(m){
  if($('euOnly').checked&&m.eu_processing!==true)return false;
  if($('selfHost').checked&&!m.self_host)return false;
  if($('openWeights').checked&&!m.open_weights)return false;
+ if($('zdr').checked&&!supportsZdr(m))return false;
+ if($('customerControl').checked&&!customerControlled(m))return false;
  if($('activeOnly').checked&&!['active'].includes(m.status))return false;
  return true;
 }
@@ -250,7 +257,7 @@ function renderModels(){
    const hay=(m.id+' '+m.provider+' '+(m.strengths||[]).join(' ')+' '+(m.limitations||[]).join(' ')+' '+(m.modalities||[]).join(' ')).toLowerCase();
    const taskHay=((m.strengths||[]).join(' ')+' '+(m.tier||'')+' '+(m.self_host?' self-host':'')).toLowerCase();
    return (!q||hay.includes(q))&&(!p||m.provider===p)&&(!tier||m.tier===tier)
-     &&(!g||(g==='eu'&&m.eu_processing===true)||(g==='storageeu'&&m.eu_storage===true)||(g==='self'&&m.self_host)||(g==='open'&&m.open_weights))
+     &&(!g||(g==='eu'&&m.eu_processing===true)||(g==='storageeu'&&m.eu_storage===true)||(g==='self'&&m.self_host)||(g==='open'&&m.open_weights)||(g==='zdr'&&supportsZdr(m))||(g==='customer'&&customerControlled(m)))
      &&(!mod||(m.modalities||[]).includes(mod)||(mod==='image'&&(m.strengths||[]).join(' ').toLowerCase().includes('image generation')))
      &&(!task||taskHay.includes(task));
  });
