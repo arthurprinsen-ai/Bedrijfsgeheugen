@@ -1,0 +1,17 @@
+{
+  "fingerprint": "growth|powerhouse-product-led-architecture|v1",
+  "observed_at": "2026-09-30T21:24:00+02:00",
+  "type": "IMPROVEMENT",
+  "problem": "The public site exposed many capabilities and consultancy entry points but did not make Powerhouse legible as one scalable product platform quickly enough.",
+  "decision": "Use a single platform narrative with Intelligence, Agents and Connect as the three public product lines and expose the closed-loop operating model plus existing-system compatibility directly after the hero.",
+  "prevention": [
+    "Do not introduce standalone public capabilities that create a second product taxonomy.",
+    "Keep free entry and product demonstration visible before higher-touch sales.",
+    "Do not use unverified customer or scale claims as social proof."
+  ],
+  "evidence": [
+    "tools/site-shell/apply-product-led-home.mjs",
+    "tests/product-led-home-v1.test.mjs",
+    "skills/powerhouse-product-led-growth.md"
+  ]
+}
