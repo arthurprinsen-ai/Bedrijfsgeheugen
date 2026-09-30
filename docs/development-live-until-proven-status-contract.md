@@ -56,3 +56,18 @@ De technische waarheid blijft fail-closed en volledig bewijsbaar, maar de chat i
 De gebruiker krijgt standaard pas bericht bij een terminale uitkomst. Alleen een bewezen `BLOCKED_HARD_BOUNDARY` mag eerder eigenaarschap teruggeven, en dan uitsluitend met de minimaal vereiste externe actie. Technische diagnostiek wordt alleen op expliciet verzoek in de chat uitgewerkt.
 
 Dit vervangt de eerdere ruimte om tijdens uitvoering tussentijdse delivery-status te tonen.
+
+
+## Expliciete terminale terugkoppeling
+Fingerprint: `delivery|terminal-live-handoff|main-netlify-browser-live|v1`.
+
+Iedere materiële website-afronding rapporteert afzonderlijk:
+- `MAIN`;
+- `NETLIFY_PRODUCTION`;
+- `WEBSITE_READBACK`;
+- `LIVE`;
+- `BORGING`.
+
+Functioneel bewezen productie kan `LIVE=true` zijn terwijl alleen governance-writeback nog wordt afgerond; dat heet `BORGING_PENDING`, nooit "nog aan het ontwikkelen". Een nieuwe opdracht "zet live" begint daarom met productie-reconciliatie. Als het gewenste gedrag al live is, mag geen nieuwe feature-implementatie, parallelle PR of onnodige redeploy worden gestart.
+
+Terminale vorm: **MAIN ✓ | NETLIFY PRODUCTION ✓ | WEBSITE READBACK ✓ | LIVE ✓ | BORGING ✓**.
