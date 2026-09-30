@@ -6,3 +6,4 @@
 - Action: bounded Netlify redeploy heartbeat in `netlify.toml` om een verse production build te forceren.
 - Verification contract: Netlify production commit_ref moet de merged product-led lineage bevatten en de publieke homepage moet Intelligence, Agents en Connect tonen.
 - Prevention: repository truth en production truth worden niet meer als gelijk behandeld zonder provider- en browser-readback.
+- CI coverage: `tests/product-led-home-v1.test.mjs` is now wired into the canonical Required test workflow.
