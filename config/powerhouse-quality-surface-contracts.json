@@ -980,6 +980,13 @@
       "authority": "supabase/migrations/20260920101730_saas_checkout_entitlements_20260920.sql",
       "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
       "required": true
+    },
+    {
+      "id": "netlify_function:ai-modelwijzer-lead",
+      "type": "netlify_function",
+      "authority": "netlify/functions/ai-modelwijzer-lead.mjs",
+      "evidence_contract": "tests/ai-model-advisor-v1.test.mjs",
+      "required": true
     }
   ]
 }
