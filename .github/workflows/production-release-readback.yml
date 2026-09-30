@@ -12,10 +12,13 @@ on:
       - '.github/**'
       - 'brain/learning/**'
       - 'config/delivery-prevention-rules.json'
+      - 'config/powerhouse-agent-delivery-scheduler-v1.json'
       - 'tools/site-shell/verify-targeted-website-routes.mjs'
       - 'tools/delivery/**'
       - 'brain/policies/**'
       - 'AGENTS.md'
+      - 'platform/system-map/canonical-system-map.mjs'
+      - 'tools/brain-delivery-system.mjs'
   workflow_dispatch:
 
 concurrency:
@@ -55,6 +58,7 @@ jobs:
           const governanceOnlyExact=new Set([
             'AGENTS.md',
             'config/delivery-prevention-rules.json',
+            'config/powerhouse-agent-delivery-scheduler-v1.json',
             'platform/system-map/canonical-system-map.mjs',
             'tools/brain-delivery-system.mjs',
             'tools/site-shell/verify-targeted-website-routes.mjs',

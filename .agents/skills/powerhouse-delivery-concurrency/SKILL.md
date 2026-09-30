@@ -490,3 +490,13 @@ Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacit
 Before every material write, predict obligation ownership, path/contract/resource overlap, current queue pressure and projected workflow fan-out. Same obligation has exactly one active writer. Different non-conflicting obligations build in parallel. Serialize only the shortest overlapping terminal landing boundary.
 
 Remote workflow states are asynchronous continuation states, never chat wait points. Persist `POWERHOUSE-ASYNC-CHECKPOINT-v1`, continue independent work, reuse the exact-head single-flight CI, and resume automatically without asking the user to continue.
+
+
+## Single automatic terminal closure + no-op production trigger rule
+
+Fingerprint: `delivery|terminal-closure-single-owner|governance-noop-production|v1`.
+
+- A merged PR with `Writer-Lease-State: TERMINAL_DELIVERY` has exactly one automatic post-merge owner: `Powerhouse Obligation Terminalizer`.
+- `Obligation Terminal Closure` is fallback/manual for lineages not owned by that terminal writer lease; it must not race the canonical terminalizer.
+- Governance-only scheduler config, System Map and delivery-classifier changes must not start Netlify production snapshot/readback.
+- Runtime, website, portal, Netlify-function or Supabase-function changes keep their normal production/provider proof.

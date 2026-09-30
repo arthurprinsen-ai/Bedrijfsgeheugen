@@ -208,3 +208,18 @@ test('governance-only mixed closure stays non-deployment even with system map an
   assert.match(workflow, /browserRequired=websiteRequired \|\| portalRequired \|\| manualReadback/);
   assert.doesNotMatch(workflow, /browserRequired=websiteRequired \|\| portalRequired \|\| readbackWorkflowChanged/);
 });
+
+
+test('scheduler governance changes do not start production snapshot or release readback', async () => {
+  const [release,snapshot] = await Promise.all([
+    readFile('.github/workflows/production-release-readback.yml','utf8'),
+    readFile('.github/workflows/production-source-snapshot.yml','utf8'),
+  ]);
+  for (const path of [
+    'config/powerhouse-agent-delivery-scheduler-v1.json',
+    'platform/system-map/canonical-system-map.mjs',
+    'tools/brain-delivery-system.mjs',
+  ]) assert.ok(release.includes(path), path);
+  assert.ok(snapshot.includes('config/powerhouse-agent-delivery-scheduler-v1.json'));
+  assert.match(release,/governanceOnlyExact[\s\S]*config\/powerhouse-agent-delivery-scheduler-v1\.json/);
+});

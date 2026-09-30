@@ -1,3 +1,7 @@
+## Terminal closure heeft één eigenaar
+
+Voor `Writer-Lease-State: TERMINAL_DELIVERY` is `Powerhouse Obligation Terminalizer` de enige automatische post-merge owner. Start geen tweede terminal-closure lineage voor dezelfde obligation. Governance-only scheduler/System Map/delivery-classifier wijzigingen starten geen Netlify productiesnapshot of productie-readback; runtimewijzigingen behouden alle normale productie-evidence.
+
 ## Predictive multi-agent delivery scheduler — verplicht vóór iedere write
 
 Fingerprint: `powerhouse|multi-agent-delivery-scheduler|predict-conflict-capacity-before-write|v1`.

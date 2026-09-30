@@ -26,3 +26,11 @@ test('governance-only merge does not wait for a Netlify website release', () => 
   assert.match(yaml,/git merge-base --is-ancestor "\$MERGE_SHA" "\$observed"/);
   assert.match(yaml,/PRODUCTION_READBACK_NOT_APPLICABLE_NON_RUNTIME:MAIN_CONTAINMENT_NON_RUNTIME/);
 });
+
+
+test('legacy terminal closure defers TERMINAL_DELIVERY writer leases to the canonical terminalizer', () => {
+  const legacy=readFileSync('.github/workflows/obligation-terminal-closure.yml','utf8');
+  const canonical=readFileSync('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  assert.match(legacy,/!contains\(github\.event\.pull_request\.body, 'Writer-Lease-State: TERMINAL_DELIVERY'\)/);
+  assert.match(canonical,/contains\(github\.event\.pull_request\.body, 'Writer-Lease-State: TERMINAL_DELIVERY'\)/);
+});
