@@ -20,6 +20,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-seo-production-reconcile-learning-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-seo-production-reconcile-learning-v1.test.mjs"
     ]
   },
   "evidence": {
