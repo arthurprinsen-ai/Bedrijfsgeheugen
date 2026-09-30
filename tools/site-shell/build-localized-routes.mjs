@@ -32,7 +32,20 @@ function publicRoutesFromSitemap() {
   try {
     const xml = fs.readFileSync(SITEMAP_FILE,'utf8');
     for (const match of xml.matchAll(/<loc>https:\/\/www\.bedrijfsgeheugen\.nl([^<]*)<\/loc>/g)) {
-      routes.add(normalizedRoute(match[1] || '/'));
+      const route=normalizedRoute(match[1] || '/');
+      if(route==='/en'||route.startsWith('/en/')) continue;
+      routes.add(route);
+    }
+  } catch {}
+  // SEO intent owners are authoritative public routes even when the checked-in
+  // sitemap is older than the current source tree. This prevents a new money
+  // page from missing its /en peer for one deployment cycle.
+  try {
+    const map=JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
+    for(const entry of map?.pages||[]){
+      const source=String(entry?.source_route||'');
+      if(source===SITE+'/') routes.add('/');
+      else if(source.startsWith(SITE+'/')) routes.add(normalizedRoute(source.slice(SITE.length)));
     }
   } catch {}
   return routes;
