@@ -37,5 +37,18 @@
       "tests/brain-ai-modelwijzer-production-build-v1.test.mjs"
     ]
   },
-  "truth_boundary": "This learning proves the build/prevention contract. It does not claim production is live until exact-main Netlify deployment and public route readback are observed."
+  "truth_boundary": "This learning proves the build/prevention contract. It does not claim production is live until exact-main Netlify deployment and public route readback are observed.",
+  "evidence": {
+    "observed_failures": [
+      "V18 builder EIGEN_WERKING did not include ai-modelwijzer.html on protected main before this recovery.",
+      "Production static i18n is fail-closed with STATIC_I18N_REQUIRE_CACHE=1.",
+      "Required-test preflight rejected the candidate when the semantic learning lacked this evidence field."
+    ],
+    "candidate_repairs": [
+      "tools/bouw-v18-chrome.mjs registers ai-modelwijzer.html as EIGEN_WERKING.",
+      "config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-production.json provides deterministic English build coverage.",
+      ".github/workflows/lane-website.yml executes tests/ai-model-advisor-v1.test.mjs and tests/brain-ai-modelwijzer-production-build-v1.test.mjs."
+    ],
+    "verification_boundary": "Candidate build and CI evidence must be green before merge; production remains unproven until exact-main Netlify ready state and public route readback."
+  }
 }
