@@ -194,3 +194,33 @@ Authority:
 - `supabase/functions/powerhouse-social-publisher/index.ts`
 
 All chats, agents, schedulers and connectors consume the same canonical history. A rewritten version of a consumed anecdote is never a new story. The car/electric-sliding-door/airco incident from 24/30 September 2026 is the permanent regression case.
+
+
+## AI Model Intelligence & Advisor v1 — 30 september 2026
+
+Fingerprint: `powerhouse|ai-model-intelligence|goal-cost-governance-sovereignty|v1`.
+
+De AI Modelwijzer is een canonieke Powerhouse-capability en geen losse vergelijkingsblog. De capability koppelt actuele officiële provider-evidence aan een user-goal-first beslislaag en aan de bestaande commerciële outcome-lineage.
+
+Canonical chain:
+
+`official provider evidence → normalized model catalog → user goal + hard constraints → explainable shortlist → task-cost estimate → model-routing alternative → value-first public result → optional qualified lead → order/revenue outcome → learning`.
+
+Authorities:
+- modeldata: `data/ai-model-catalog-v1.json`;
+- decision/governance policy: `config/powerhouse-ai-model-intelligence-v1.json`;
+- public decision surface: `/ai-modelwijzer`;
+- commercial write: `netlify/functions/ai-modelwijzer-lead.mjs` via the existing `_commercial-lead.mjs` lineage;
+- skill: `.agents/skills/powerhouse-ai-model-intelligence/SKILL.md`;
+- regression: `tests/ai-model-advisor-v1.test.mjs`.
+
+Governance invariants:
+- there is no universal “best model” verdict; fit starts from the user's job-to-be-done;
+- storage residency, inference residency, provider jurisdiction, subprocessors and deployment control are separate fields;
+- “EU data residency” is never treated as synonymous with full data sovereignty;
+- unknown or stale evidence is shown as unknown and cannot silently pass a hard privacy/sovereignty filter;
+- self-host/open-weight paths are explicit and do not imply equal managed-service pricing;
+- the first useful recommendation is ungated; lead capture follows value delivery;
+- no second CRM, lead store, outcome store or learning loop is introduced.
+
+The capability is structurally registered in the canonical System Map. Production status remains evidence-gated by protected merge, exact-main Netlify deployment and public functional readback.
