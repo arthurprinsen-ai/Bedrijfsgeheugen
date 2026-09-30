@@ -1,0 +1,45 @@
+{
+  "id": "ai-modelwijzer-ci-coverage-closure-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "ai-modelwijzer|ci-test-ownership|material-writeback|v1",
+  "compiler": {
+    "failure_class": "AI_MODEL_CI_TESTS_UNOWNED",
+    "scope": "AI_MODEL_DELIVERY",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Three committed AI Modelwijzer regression tests existed in the repository but were not executed by any canonical CI workflow. The delivery coverage guard therefore correctly blocked terminal closure after the Modelwijzer implementation had already reached main.",
+  "prevention": [
+    "Every committed AI Modelwijzer regression test must be owned by the canonical website lane or another explicit required workflow.",
+    "A CI-coverage repair is itself a material Powerhouse change and must carry Brain learning, ledger evidence and human documentation in the same lineage.",
+    "Do not bypass the delivery-test-coverage guard or mark an unexecuted regression test as proven."
+  ],
+  "fix": "The canonical website baseline lane now executes tests/ai-model-advisor-v1.test.mjs, tests/ai-model-production-hotfix-v1.test.mjs and tests/ai-model-seo-cluster-v1.test.mjs.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/delivery-test-coverage-guard.test.mjs",
+      "tests/ai-model-advisor-v1.test.mjs",
+      "tests/ai-model-production-hotfix-v1.test.mjs",
+      "tests/ai-model-seo-cluster-v1.test.mjs"
+    ],
+    "shadow": [
+      ".github/workflows/lane-website.yml"
+    ],
+    "canary": [
+      "Required test / website lane"
+    ]
+  },
+  "evidence": {
+    "workflow": ".github/workflows/lane-website.yml",
+    "blocked_run": "github-actions:36686745189",
+    "recovery_pr": "https://github.com/arthurprinsen-ai/Bedrijfsgeheugen/pull/3409",
+    "guard": "tests/delivery-test-coverage-guard.test.mjs"
+  },
+  "skill_targets": [
+    "powerhouse-ai-model-intelligence",
+    "powerhouse-continuity",
+    "powerhouse-delivery-concurrency"
+  ]
+}
