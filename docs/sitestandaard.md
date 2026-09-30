@@ -96,3 +96,11 @@ knoppen in plaats van links, omdat de eenpagina-app ermee schakelt.
 Let op: beide controlescripts lezen de bestanden in de repo, niet de gebouwde
 site. Zolang dat zo is, zien ze de schil niet. Ze moeten na de bouwstappen
 draaien.
+
+## Sitebrede taalpersistentie
+
+De taalkeuze is onderdeel van de gedeelde CMS/site-shell en geldt sitebreed. De publieke canonieke routeparen zijn `/x ↔ /en/x` en `/ ↔ /en/`. Na keuze voor English blijven alle gewone interne publieke links Engels, inclusief links uit het mobiele menu of later in de DOM geplaatste navigatie. Na keuze voor Nederlands worden dezelfde routes weer onprefixte Nederlandse URLs. Querystrings en hashes blijven intact; portal-, klantportaal-, API-, Netlify-, assets- en functions-routes zijn uitgezonderd.
+
+Technische owner: `assets/js/i18n.js`.
+Regressiegate: `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
+Productiebewijs vereist een echte cross-page NL→EN→andere pagina→EN→NL→andere pagina→NL flow.
