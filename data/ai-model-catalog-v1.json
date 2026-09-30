@@ -1,8 +1,8 @@
 {
-  "version": "ai-model-catalog-v1",
+  "version": "ai-model-catalog-v2",
   "verified_at": "2026-09-30",
   "currency": "USD",
-  "scope_note": "Catalog focuses on decision-relevant production and specialist models. Provider catalogs change continuously; official source URLs are retained per model and lifecycle freshness is a hard recommendation factor.",
+  "scope_note": "Decision catalog covering frontier, economy, open-weight and specialist models across text, image, audio, realtime, OCR, embeddings, moderation and video. Unknown governance fields remain UNKNOWN. Catalog is refreshed from official-provider sources and is designed for continuous expansion rather than a fixed shortlist.",
   "governance_dimensions": [
     "provider_jurisdiction",
     "storage_residency",
@@ -78,7 +78,21 @@
       "deployment": [
         "OpenAI API"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "gpt-6-sol",
@@ -117,7 +131,21 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "gpt-6-luna",
@@ -156,7 +184,21 @@
         "OpenAI API",
         "Amazon Bedrock"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "gpt-5.6-sol",
@@ -193,7 +235,21 @@
       "deployment": [
         "OpenAI API"
       ],
-      "source": "https://developers.openai.com/api/docs/pricing?tab=suite"
+      "source": "https://developers.openai.com/api/docs/pricing?tab=suite",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "claude-opus-5-5",
@@ -234,7 +290,21 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/claude/opus"
+      "source": "https://www.anthropic.com/claude/opus",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "claude-sonnet-5-5",
@@ -276,7 +346,21 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/claude-sonnet-5-5"
+      "source": "https://www.anthropic.com/claude-sonnet-5-5",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "claude-sonnet-5",
@@ -316,7 +400,21 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/news/claude-sonnet-5"
+      "source": "https://www.anthropic.com/news/claude-sonnet-5",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "claude-opus-5",
@@ -356,7 +454,21 @@
         "Google Cloud",
         "Microsoft Foundry"
       ],
-      "source": "https://www.anthropic.com/news/claude-opus-5"
+      "source": "https://www.anthropic.com/news/claude-opus-5",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "claude-haiku-4-5",
@@ -396,7 +508,21 @@
         "AWS",
         "Google Cloud"
       ],
-      "source": "https://www.anthropic.com/news/claude-haiku-4-5"
+      "source": "https://www.anthropic.com/news/claude-haiku-4-5",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "gemini-3.1-pro-preview",
@@ -437,7 +563,21 @@
         "Gemini API",
         "Vertex AI"
       ],
-      "source": "https://ai.google.dev/gemini-api/docs/gemini-3"
+      "source": "https://ai.google.dev/gemini-api/docs/gemini-3",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "gemini-3.1-flash-lite",
@@ -478,7 +618,21 @@
         "Gemini API",
         "Vertex AI"
       ],
-      "source": "https://ai.google.dev/gemini-api/docs/gemini-3"
+      "source": "https://ai.google.dev/gemini-api/docs/gemini-3",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "gemini-2.5-flash-lite",
@@ -518,7 +672,21 @@
         "Gemini API",
         "Vertex AI"
       ],
-      "source": "https://ai.google.dev/gemini-api/docs/pricing"
+      "source": "https://ai.google.dev/gemini-api/docs/pricing",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "mistral-medium-3-5",
@@ -558,7 +726,21 @@
         "self-host",
         "cloud partners"
       ],
-      "source": "https://docs.mistral.ai/inference/pricing"
+      "source": "https://docs.mistral.ai/inference/pricing",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "mistral-large-3",
@@ -597,7 +779,21 @@
         "self-host",
         "cloud partners"
       ],
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "mistral-small-4",
@@ -636,7 +832,21 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03"
+      "source": "https://docs.mistral.ai/getting-started/models/compare?models=mistral-small-4-0-26-03",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "ministral-3-14b",
@@ -674,7 +884,21 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/models/ministral-3-14b-25-12"
+      "source": "https://docs.mistral.ai/models/ministral-3-14b-25-12",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "ministral-3-8b",
@@ -712,7 +936,21 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/models"
+      "source": "https://docs.mistral.ai/models",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "ministral-3-3b",
@@ -751,7 +989,21 @@
         "Mistral API",
         "self-host"
       ],
-      "source": "https://docs.mistral.ai/models/ministral-3-3b-25-12"
+      "source": "https://docs.mistral.ai/models/ministral-3-3b-25-12",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "codestral",
@@ -787,7 +1039,21 @@
       "deployment": [
         "Mistral API"
       ],
-      "source": "https://docs.mistral.ai/inference/pricing"
+      "source": "https://docs.mistral.ai/inference/pricing",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "mistral-ocr-4-1",
@@ -826,7 +1092,21 @@
       "deployment": [
         "Mistral API"
       ],
-      "source": "https://docs.mistral.ai/models/ocr-4-1"
+      "source": "https://docs.mistral.ai/models/ocr-4-1",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "grok-4.7",
@@ -863,7 +1143,21 @@
       "deployment": [
         "xAI API"
       ],
-      "source": "https://docs.x.ai/developers/models"
+      "source": "https://docs.x.ai/developers/models",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "grok-4.6",
@@ -899,7 +1193,21 @@
       "deployment": [
         "xAI API"
       ],
-      "source": "https://docs.x.ai/developers/pricing"
+      "source": "https://docs.x.ai/developers/pricing",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "deepseek-flash",
@@ -936,7 +1244,21 @@
       "deployment": [
         "DeepSeek API"
       ],
-      "source": "https://api-docs.deepseek.com/quick_start/pricing/"
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU storage not documented for this path",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "deepseek-v4-pro",
@@ -972,7 +1294,21 @@
       "deployment": [
         "DeepSeek API"
       ],
-      "source": "https://api-docs.deepseek.com/quick_start/pricing/"
+      "source": "https://api-docs.deepseek.com/quick_start/pricing/",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU storage not documented for this path",
+        "inference_residency": "no EU processing in this listed path",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "command-a-plus",
@@ -1010,7 +1346,21 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://docs.cohere.com/docs/how-does-cohere-pricing-work"
+      "source": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "command-a",
@@ -1048,7 +1398,21 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://docs.cohere.com/docs/how-does-cohere-pricing-work"
+      "source": "https://docs.cohere.com/docs/how-does-cohere-pricing-work",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "embed-4",
@@ -1087,7 +1451,21 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://cohere.com/pricing"
+      "source": "https://cohere.com/pricing",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "rerank-4-pro",
@@ -1126,7 +1504,21 @@
         "Model Vault",
         "private deployment"
       ],
-      "source": "https://cohere.com/pricing"
+      "source": "https://cohere.com/pricing",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "llama-open-weight",
@@ -1164,7 +1556,21 @@
         "EU cloud",
         "on-prem"
       ],
-      "source": "https://www.llama.com/"
+      "source": "https://www.llama.com/",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     },
     {
       "id": "qwen-open-weight",
@@ -1202,7 +1608,3206 @@
         "self-host",
         "cloud providers"
       ],
-      "source": "https://qwenlm.github.io/"
+      "source": "https://qwenlm.github.io/",
+      "limitations": [],
+      "governance": {
+        "storage_residency": "EU option documented",
+        "inference_residency": "EU option documented",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
+    },
+    {
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": 2,
+      "output_usd_m": 10,
+      "cached_input_usd_m": 0.1,
+      "context_k": 1050,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "complex coding",
+        "computer use",
+        "professional work",
+        "agents"
+      ],
+      "limitations": [
+        "higher cost than Luna",
+        "EU residency availability depends on processing mode"
+      ],
+      "scores": {
+        "reasoning": 10,
+        "code": 10,
+        "writing": 9,
+        "speed": 8,
+        "cost": 8,
+        "vision": 9,
+        "agents": 10
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "US and EU data residency documented",
+        "inference_residency": "US/EU options documented; fast mode excludes EU residency",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-6.1-sol",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/gpt-6.1-sol"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "highest-quality image generation",
+        "image editing"
+      ],
+      "limitations": [
+        "not a general reasoning model",
+        "usage priced by image/token metrics"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 6,
+        "cost": 4,
+        "vision": 10,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-image-2.5-sunburst",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "fast image generation",
+        "image editing",
+        "high-volume creative"
+      ],
+      "limitations": [
+        "not for text reasoning"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 9,
+        "cost": 8,
+        "vision": 9,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-image-2.5-flare",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "image generation",
+        "image editing"
+      ],
+      "limitations": [
+        "not for general text workflows"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 7,
+        "cost": 6,
+        "vision": 9,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-image-2",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/gpt-image-2"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "natural realtime voice",
+        "interruptible conversations",
+        "voice agents"
+      ],
+      "limitations": [
+        "realtime cost model differs from text token pricing"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 4,
+        "writing": 7,
+        "speed": 10,
+        "cost": 5,
+        "vision": 1,
+        "agents": 8
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-live-1",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio",
+        "vision"
+      ],
+      "strengths": [
+        "realtime reasoning",
+        "tool-using voice agents"
+      ],
+      "limitations": [
+        "not intended for cheap offline batch"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 6,
+        "writing": 7,
+        "speed": 10,
+        "cost": 5,
+        "vision": 7,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-realtime-2.1",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio",
+        "vision"
+      ],
+      "strengths": [
+        "lower-cost realtime agents",
+        "voice automation"
+      ],
+      "limitations": [
+        "lower ceiling than full realtime model"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 5,
+        "writing": 6,
+        "speed": 10,
+        "cost": 8,
+        "vision": 7,
+        "agents": 8
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-realtime-2.1-mini",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "audio"
+      ],
+      "strengths": [
+        "streaming speech-to-speech translation"
+      ],
+      "limitations": [
+        "single-purpose translation model"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 4,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-realtime-translate",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "audio"
+      ],
+      "strengths": [
+        "low-latency speech-to-text",
+        "realtime transcription"
+      ],
+      "limitations": [
+        "transcription only"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-live-transcribe",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "audio"
+      ],
+      "strengths": [
+        "streaming speech-to-text"
+      ],
+      "limitations": [
+        "transcription only"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-realtime-whisper",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "audio input/output via chat completions",
+        "voice workflows"
+      ],
+      "limitations": [
+        "specialized audio path"
+      ],
+      "scores": {
+        "reasoning": 6,
+        "code": 3,
+        "writing": 6,
+        "speed": 9,
+        "cost": 5,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-audio-1.5",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "semantic search",
+        "RAG",
+        "embeddings"
+      ],
+      "limitations": [
+        "no generative output"
+      ],
+      "scores": {
+        "reasoning": 1,
+        "code": 2,
+        "writing": 1,
+        "speed": 9,
+        "cost": 7,
+        "vision": 1,
+        "agents": 1
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "text-embedding-3-large",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/text-embedding-3-large"
+    },
+    {
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "cost-efficient embeddings",
+        "RAG",
+        "semantic search"
+      ],
+      "limitations": [
+        "no generative output"
+      ],
+      "scores": {
+        "reasoning": 1,
+        "code": 2,
+        "writing": 1,
+        "speed": 10,
+        "cost": 9,
+        "vision": 1,
+        "agents": 1
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "text-embedding-3-small",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": 0,
+      "output_usd_m": 0,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "text moderation",
+        "image moderation",
+        "safety classification"
+      ],
+      "limitations": [
+        "not a generative model"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 1,
+        "speed": 10,
+        "cost": 10,
+        "vision": 8,
+        "agents": 1
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "OpenAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "omni-moderation-latest",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/guides/moderation"
+    },
+    {
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "self-hosted reasoning",
+        "private deployment",
+        "data sovereignty"
+      ],
+      "limitations": [
+        "infrastructure burden",
+        "no managed vision/audio in self-hosted base"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 8,
+        "speed": 6,
+        "cost": 8,
+        "vision": 1,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "deployment-controlled",
+      "deployment": [
+        "self-host",
+        "customer cloud"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "controlled by chosen deployment",
+        "inference_residency": "controlled by chosen deployment",
+        "training_on_customer_data": "deployment-controlled",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-oss-120b",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "low-latency self-hosting",
+        "edge/private inference"
+      ],
+      "limitations": [
+        "lower quality ceiling than larger frontier models"
+      ],
+      "scores": {
+        "reasoning": 6,
+        "code": 7,
+        "writing": 7,
+        "speed": 9,
+        "cost": 9,
+        "vision": 1,
+        "agents": 6
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "deployment-controlled",
+      "deployment": [
+        "self-host",
+        "customer cloud"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "controlled by chosen deployment",
+        "inference_residency": "controlled by chosen deployment",
+        "training_on_customer_data": "deployment-controlled",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gpt-oss-20b",
+      "provider": "OpenAI",
+      "source": "https://developers.openai.com/api/docs/models/all"
+    },
+    {
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "general knowledge work",
+        "reasoning",
+        "writing"
+      ],
+      "limitations": [
+        "verify current pricing before cost-sensitive deployment"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 8,
+        "writing": 10,
+        "speed": 8,
+        "cost": 6,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "claude-fable-5",
+      "provider": "Anthropic",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+    },
+    {
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "complex reasoning",
+        "coding",
+        "long-running agents"
+      ],
+      "limitations": [
+        "older than Opus 5; evaluate migration path"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 9,
+        "speed": 6,
+        "cost": 6,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "claude-opus-4-8",
+      "provider": "Anthropic",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+    },
+    {
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "complex reasoning",
+        "coding"
+      ],
+      "limitations": [
+        "older lifecycle generation"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 9,
+        "speed": 6,
+        "cost": 6,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "claude-opus-4-7",
+      "provider": "Anthropic",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+    },
+    {
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "complex reasoning",
+        "coding"
+      ],
+      "limitations": [
+        "older lifecycle generation"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 9,
+        "speed": 6,
+        "cost": 6,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "claude-opus-4-6",
+      "provider": "Anthropic",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+    },
+    {
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "coding",
+        "knowledge work",
+        "agents"
+      ],
+      "limitations": [
+        "older than Sonnet 5"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 9,
+        "writing": 9,
+        "speed": 8,
+        "cost": 6,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "claude-sonnet-4-6",
+      "provider": "Anthropic",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+    },
+    {
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "coding",
+        "writing",
+        "agents"
+      ],
+      "limitations": [
+        "retirement window is nearer than newer Sonnet versions"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 9,
+        "writing": 9,
+        "speed": 8,
+        "cost": 6,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Claude Platform",
+        "AWS",
+        "Google Cloud",
+        "Microsoft Foundry"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "claude-sonnet-4-5-20250929",
+      "provider": "Anthropic",
+      "source": "https://docs.anthropic.com/en/docs/about-claude/model-deprecations"
+    },
+    {
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "long-horizon software engineering",
+        "autonomous agents",
+        "enterprise workflows"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 8,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.8-flash",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "low-latency voice agents"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 6,
+        "writing": 7,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.8-live",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "voice agents with deeper reasoning"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 7,
+        "writing": 7,
+        "speed": 9,
+        "cost": 7,
+        "vision": 1,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.8-live-extended-thinking",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "studio-grade text-to-speech",
+        "voice replication"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 6,
+        "speed": 9,
+        "cost": 7,
+        "vision": 1,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.8-flash-tts",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "high-volume text-to-speech",
+        "voice agent cascades"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 5,
+        "speed": 10,
+        "cost": 10,
+        "vision": 1,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.8-flash-lite-tts",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "complex coding",
+        "agentic workflows"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 9,
+        "writing": 8,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.7-flash",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "general multimodal work",
+        "agents"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 8,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.6-flash",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "agentic coding",
+        "high-scale workflows"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 9,
+        "writing": 8,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.5-flash",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "high-throughput low-cost tasks"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 6,
+        "code": 7,
+        "writing": 7,
+        "speed": 10,
+        "cost": 10,
+        "vision": 9,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.5-flash-lite",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "image generation",
+        "image editing"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 4,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.1-flash-image",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "low-latency image generation"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 3,
+        "speed": 10,
+        "cost": 10,
+        "vision": 9,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.1-flash-lite-image",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "high-quality image generation"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 4,
+        "code": 1,
+        "writing": 5,
+        "speed": 7,
+        "cost": 7,
+        "vision": 9,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3-pro-image",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "preview",
+      "status": "preview",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "fast frontier general work"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 9,
+        "writing": 8,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3-flash-preview",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "preview",
+      "status": "preview",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "audio"
+      ],
+      "strengths": [
+        "realtime speech translation"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 4,
+        "code": 1,
+        "writing": 5,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.5-live-translate-preview",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "preview",
+      "status": "preview",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio",
+        "vision"
+      ],
+      "strengths": [
+        "realtime voice/video agents"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 5,
+        "writing": 6,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.1-flash-live-preview",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "preview",
+      "status": "preview",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "text-to-speech"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 5,
+        "speed": 9,
+        "cost": 7,
+        "vision": 1,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.1-flash-tts-preview",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "preview",
+      "status": "preview",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image",
+        "video"
+      ],
+      "strengths": [
+        "video generation",
+        "video editing"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 5,
+        "code": 2,
+        "writing": 5,
+        "speed": 8,
+        "cost": 7,
+        "vision": 9,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-omni-1.1-flash",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "audio"
+      ],
+      "strengths": [
+        "speech-to-text",
+        "diarization"
+      ],
+      "limitations": [
+        "verify exact endpoint pricing and regional processing for production"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 4,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 3
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Gemini API",
+        "Google Cloud/Vertex AI where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "gemini-3.5-transcribe",
+      "provider": "Google",
+      "source": "https://ai.google.dev/gemini-api/docs/models"
+    },
+    {
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "multimodal agents",
+        "coding",
+        "enterprise workflows"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 9,
+        "writing": 8,
+        "speed": 7,
+        "cost": 8,
+        "vision": 9,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "mistral-medium-3.5",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "document",
+        "image"
+      ],
+      "strengths": [
+        "OCR",
+        "document structure"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 2,
+        "speed": 9,
+        "cost": 8,
+        "vision": 9,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "mistral-ocr-4.0",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "document",
+        "image"
+      ],
+      "strengths": [
+        "OCR",
+        "document AI"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 2,
+        "speed": 8,
+        "cost": 8,
+        "vision": 9,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "mistral-ocr-3",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "multilingual TTS",
+        "voice cloning"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 5,
+        "speed": 8,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "voxtral-tts",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "audio"
+      ],
+      "strengths": [
+        "speech transcription"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 3,
+        "speed": 10,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "voxtral-mini-transcribe-2",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "audio"
+      ],
+      "strengths": [
+        "realtime transcription",
+        "self-hostable audio"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 3,
+        "speed": 10,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host/customer cloud"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "controlled by deployment when self-hosted",
+        "inference_residency": "controlled by deployment when self-hosted",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "voxtral-mini-transcribe-realtime",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "audio understanding",
+        "instruction following"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 6,
+        "code": 4,
+        "writing": 6,
+        "speed": 8,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host/customer cloud"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "controlled by deployment when self-hosted",
+        "inference_residency": "controlled by deployment when self-hosted",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "voxtral-small",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "code"
+      ],
+      "strengths": [
+        "code embeddings",
+        "code retrieval"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 4,
+        "writing": 1,
+        "speed": 10,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "codestral-embed",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "code"
+      ],
+      "strengths": [
+        "embeddings",
+        "semantic retrieval"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 3,
+        "writing": 1,
+        "speed": 10,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "mistral-embed",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision"
+      ],
+      "strengths": [
+        "multimodal moderation",
+        "safety"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 3,
+        "code": 1,
+        "writing": 2,
+        "speed": 10,
+        "cost": 8,
+        "vision": 9,
+        "agents": 5
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host/customer cloud"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "controlled by deployment when self-hosted",
+        "inference_residency": "controlled by deployment when self-hosted",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "shieldstral-1",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "moderation",
+        "jailbreak detection"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 4,
+        "code": 1,
+        "writing": 2,
+        "speed": 10,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "mistral-moderation-2",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "code"
+      ],
+      "strengths": [
+        "Lean 4 formal proofs",
+        "formal verification"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 10,
+        "writing": 3,
+        "speed": 6,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host/customer cloud"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "controlled by deployment when self-hosted",
+        "inference_residency": "controlled by deployment when self-hosted",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "leanstral-1.5",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "long-context open-weight text",
+        "reasoning"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 7,
+        "speed": 7,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host/customer cloud"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "controlled by deployment when self-hosted",
+        "inference_residency": "controlled by deployment when self-hosted",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "zai-glm-5.3",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "long-context open-weight text"
+      ],
+      "limitations": [
+        "verify exact hosted-vs-self-host license and pricing for chosen deployment"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 7,
+        "speed": 7,
+        "cost": 8,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "EU/France",
+      "deployment": [
+        "Mistral API",
+        "self-host/customer cloud"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "controlled by deployment when self-hosted",
+        "inference_residency": "controlled by deployment when self-hosted",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "zai-glm-5.2",
+      "provider": "Mistral AI",
+      "source": "https://docs.mistral.ai/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "audio"
+      ],
+      "strengths": [
+        "speech-to-text"
+      ],
+      "limitations": [
+        "US provider; verify regional/data controls"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "xAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "grok-voice-transcribe-2.0",
+      "provider": "xAI",
+      "source": "https://docs.x.ai/developers/release-notes"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "image generation",
+        "image editing"
+      ],
+      "limitations": [
+        "per-image pricing; governance differs from text API"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 9,
+        "cost": 7,
+        "vision": 9,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "xAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "grok-imagine-image-2.0",
+      "provider": "xAI",
+      "source": "https://docs.x.ai/developers/models"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "video"
+      ],
+      "strengths": [
+        "video generation"
+      ],
+      "limitations": [
+        "per-second pricing; not a general language model"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 7,
+        "cost": 5,
+        "vision": 8,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "xAI API"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "grok-imagine-video",
+      "provider": "xAI",
+      "source": "https://docs.x.ai/developers/models"
+    },
+    {
+      "tier": "frontier",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "multilingual enterprise generation",
+        "private deployment"
+      ],
+      "limitations": [
+        "verify exact price/deployment contract"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 7,
+        "writing": 9,
+        "speed": 7,
+        "cost": 6,
+        "vision": 1,
+        "agents": 7
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "Canada",
+      "deployment": [
+        "Cohere API",
+        "private enterprise deployment"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "command-a-plus-05-2026",
+      "provider": "Cohere",
+      "source": "https://docs.cohere.com/v1/changelog"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "enterprise reasoning",
+        "RAG"
+      ],
+      "limitations": [
+        "older generation; verify current lifecycle"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 7,
+        "writing": 8,
+        "speed": 6,
+        "cost": 6,
+        "vision": 1,
+        "agents": 7
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "Canada",
+      "deployment": [
+        "Cohere API",
+        "private deployment where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "command-a-reasoning-08-2025",
+      "provider": "Cohere",
+      "source": "https://docs.cohere.com/v1/changelog"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "multilingual embeddings",
+        "semantic search"
+      ],
+      "limitations": [
+        "embedding only"
+      ],
+      "scores": {
+        "reasoning": 1,
+        "code": 1,
+        "writing": 1,
+        "speed": 10,
+        "cost": 8,
+        "vision": 1,
+        "agents": 1
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "Canada",
+      "deployment": [
+        "Cohere API",
+        "private deployment where supported"
+      ],
+      "source_type": "official-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "unknown",
+        "inference_residency": "unknown",
+        "training_on_customer_data": "verify current product/contract",
+        "retention": "verify current product/contract",
+        "zero_data_retention": "verify current product/contract",
+        "subprocessors": "verify current provider list",
+        "dpa": "verify current product/contract",
+        "cmk": "verify current product/contract",
+        "private_networking": "verify current product/contract"
+      },
+      "id": "embed-multilingual-v3.0",
+      "provider": "Cohere",
+      "source": "https://docs.cohere.com/v1/changelog"
     }
-  ]
+  ],
+  "coverage": {
+    "model_count": 90,
+    "provider_count": 9,
+    "current_scope": [
+      "Alibaba/Qwen",
+      "Anthropic",
+      "Cohere",
+      "DeepSeek",
+      "Google",
+      "Meta",
+      "Mistral AI",
+      "OpenAI",
+      "xAI"
+    ],
+    "expansion_queue": [
+      "Amazon Nova",
+      "Microsoft Phi",
+      "NVIDIA Nemotron",
+      "Moonshot Kimi direct",
+      "Z.ai GLM direct",
+      "Perplexity/Sonar",
+      "IBM Granite",
+      "AI21 Jamba",
+      "Stability AI",
+      "Black Forest Labs",
+      "Runway",
+      "ElevenLabs",
+      "AssemblyAI"
+    ],
+    "policy": "Add a model when it is materially distinct for a user decision. Keep retired/deprecated models for migration context. Never infer governance."
+  }
 }
