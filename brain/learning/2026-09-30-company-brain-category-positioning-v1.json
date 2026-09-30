@@ -47,5 +47,22 @@
     "historical_replay": [
       "tests/brain-company-brain-category-positioning-v1.test.mjs"
     ]
+  },
+  "production": {
+    "status": "LIVE_PROVEN",
+    "protected_main": "936ca60ad5c2415ff2372880a61aea5b1d690875",
+    "netlify_deploy_id": "6abcd38195a83a25791474e5",
+    "deployed_commit_ref": "936ca60ad5c2415ff2372880a61aea5b1d690875",
+    "published_at": "2026-09-30T09:19:11.017Z",
+    "public_route": "https://www.bedrijfsgeheugen.nl/company-brain",
+    "public_readback": {
+      "status": 200,
+      "canonical": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "title": "Company Brain voor het MKB | Bedrijfsgeheugen",
+      "mobile_viewport": "390x844",
+      "page_errors": 0,
+      "failed_assets": 0
+    },
+    "note": "A separate site-wide pricing locale-switch readback timed out after Company Brain route verification had already passed; that unrelated timeout does not invalidate the route-specific Company Brain production proof."
   }
 }

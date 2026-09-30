@@ -63,3 +63,13 @@ test('static i18n patch covers final post-shell Company Brain strings',()=>{
   ];
   for(const source of required) assert.ok(typeof patch[source]==='string' && patch[source].trim(), 'missing static translation: '+source);
 });
+
+
+test('Company Brain production evidence is recorded as LIVE_PROVEN',()=>{
+  const learning=JSON.parse(fs.readFileSync('brain/learning/2026-09-30-company-brain-category-positioning-v1.json','utf8'));
+  assert.equal(learning.production?.status,'LIVE_PROVEN');
+  assert.equal(learning.production?.public_readback?.status,200);
+  assert.equal(learning.production?.public_readback?.canonical,'https://www.bedrijfsgeheugen.nl/company-brain');
+  const map=fs.readFileSync('platform/system-map/canonical-system-map.mjs','utf8');
+  assert.match(map,/companyBrainCategory:Object\.freeze\(\{route:'\/company-brain',role:'category-acquisition-entry',status:'LIVE_PROVEN'/);
+});

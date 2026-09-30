@@ -382,3 +382,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Skill/chat prevention:** Powerhouse Continuity and AGENTS now require post-shell final-artifact i18n coverage before promotion.
 - **System Map:** SEO Conversion-to-Orders records `staticI18nPostShellFinalArtifactCoverageRequired`.
 - **Terminal gate:** successful protected-main build/deploy plus public NL and EN readback; merge/build-start is not completion.
+
+
+## 2026-09-30 — PRODUCTION_PROMOTION — Company Brain LIVE_PROVEN
+- **Fingerprint:** `commercial-positioning|company-brain-to-bedrijfsgeheugen|orders-loop|v1`.
+- **Protected main:** `936ca60ad5c2415ff2372880a61aea5b1d690875`.
+- **Netlify production deploy:** `6abcd38195a83a25791474e5`, state `ready/current`, commit_ref exact gelijk aan protected main, gepubliceerd op 2026-09-30T09:19:11.017Z.
+- **Public route proof:** `https://www.bedrijfsgeheugen.nl/company-brain` gaf HTTP 200; canonical `/company-brain`; titel `Company Brain voor het MKB | Bedrijfsgeheugen`; mobiele readback 390×844; geen page errors; geen failed assets.
+- **Commercial path:** Company Brain → bestaande ungated `/zelfscan` → bestaande Frisse Blik/orderroute → paid order → realized revenue → learning.
+- **Boundary:** de algemene pricing NL/EN browser-readback time-outte ná groene Company Brain routeverificatie. Dit is een aparte bestaande site-brede i18n-obligation en geen Company Brain runtime-fout.
+- **Terminal status:** `LIVE_PROVEN` voor Company Brain category acquisition.
