@@ -1,0 +1,63 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|loop-assurance|terminal-live-closure|2026-09-30-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE",
+  "context": "Loop Assurance v3 is protected on main and exact-main is live on Netlify. The live five-minute controller now re-proves loop closure continuously and automatically includes newly registered loops.",
+  "root_cause": [
+    "Previous assurance could prove scheduler/runtime activity without guaranteeing fresh evidence for every closed-loop stage.",
+    "Historical green state could therefore outlive the evidence that originally justified it."
+  ],
+  "fix": [
+    "Require fresh stage evidence for input, decision, action, readback, outcome, measurement, learning and guard.",
+    "Keep incomplete loops non-green and materialize assurance obligations.",
+    "Use dynamic active registry membership so newly registered loops enter assurance automatically."
+  ],
+  "prevention_rules": [
+    "Historical LIVE/GREEN is never reusable without fresh runtime/provider readback.",
+    "A new active loop is automatically governed by Loop Assurance.",
+    "Deployment truth and business/capability truth remain separate.",
+    "Terminal closure includes Brain learning, skill, agent/chat contract, ledger/docs and System Map read-after-write."
+  ],
+  "production_readback": {
+    "protected_main": "9ae500bb184c5e36053c7ca64fb2d51bea070d9c",
+    "netlify_state": "ready",
+    "netlify_commit_ref": "9ae500bb184c5e36053c7ca64fb2d51bea070d9c",
+    "netlify_published_at": "2026-09-29T19:31:30.436Z",
+    "loop_integrity_observed_at": "2026-09-29T19:31:53.360061Z",
+    "fleet": {
+      "total": 13,
+      "green": 2,
+      "amber": 11,
+      "red": 0,
+      "fully_evidenced": 2
+    },
+    "green_loops": [
+      "autonomous-outreach",
+      "source-backed-outbound"
+    ],
+    "assertion": "The assurance controller is live, fail-closed and dynamically includes the current active loop registry."
+  },
+  "compiler": {
+    "failure_class": "LOOP_INTEGRITY_REGRESSION",
+    "scope": "CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-loop-assurance-v3.test.mjs"
+    ],
+    "canary": [
+      "tests/supabase-powerhouse-loop-assurance-v3.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Protected merge to main succeeded.",
+    "Netlify current production deploy is ready on the exact main commit.",
+    "Live Supabase aggregate health returned 13 active loops with 2 GREEN, 11 AMBER and 0 RED.",
+    "Autonomous outreach and source-backed outbound both reported 8/8 fresh stages."
+  ]
+}

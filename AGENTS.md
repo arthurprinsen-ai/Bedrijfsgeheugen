@@ -834,3 +834,17 @@ Canonieke runtime: `public.powerhouse_loop_assurance_state_v1`, `public.powerhou
 Fingerprint: `powerhouse|loop-assurance|receipt-bridge|v3`.
 
 Every current and future chat/agent inherits the five-minute Powerhouse loop-assurance contract. A scheduler being active is not proof that a business loop is closed. Required loop stages are `input → decision → action → readback → outcome → measurement → learning → guard`; only canonical runtime/provider/cron evidence may satisfy them. Critical loops with zero fresh stage evidence are RED. Partial evidence is AMBER. GREEN requires all required stage evidence fresh. Never synthesize outcome/learning/guard receipts and never weaken immutable obligation identity to force a write.
+
+## Loop Assurance terminale closure — inherited
+
+Fingerprint: `powerhouse|loop-assurance|terminal-live-closure|2026-09-30-v1`.
+
+Alle huidige en toekomstige chats en agents erven aanvullend:
+- actieve loops worden dynamisch uit de centrale registry geassured; geen handmatige allowlist per nieuwe loop;
+- `GREEN` vereist 8/8 verse stage-evidence; historische GREEN/LIVE-status is nooit herbruikbaar zonder actuele readback;
+- een merge, scheduler-run, provider-ACK of deployment-ready status is nooit zelfstandig closed-loop bewijs;
+- terminale Powerhouse-closure schrijft in dezelfde lineage terug naar Brain learning, relevante skill(s), AGENTS/chat-contract, append-only ledger, menselijke documentatie en System Map;
+- productie-identiteit en runtime-health worden na writeback opnieuw gelezen voordat terminale afronding is toegestaan.
+
+De op 30 september 2026 vastgelegde referentie-evidence is exact-main/Netlify commit `9ae500bb184c5e36053c7ca64fb2d51bea070d9c` met een live fleet van 13 actieve loops: 2 GREEN, 11 AMBER, 0 RED.
+

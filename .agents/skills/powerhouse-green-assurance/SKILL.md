@@ -163,3 +163,15 @@ Publieke pagina's kunnen meerdere mobile-nav hosts bevatten. De i18n build mag d
 Fingerprint: `powerhouse|loop-assurance|receipt-bridge|v3`.
 
 Before calling a loop GREEN, read `public.powerhouse_loop_integrity_health_v1` and the per-loop assurance state. The five-minute assurance owner projects only canonical cron/runtime evidence into receipts. It does not manufacture outcome, learning or guard proof. For critical loops, zero fresh stage evidence is RED, not indefinite AMBER. Preserve `brain_obligations` immutable identity during recovery.
+
+## Terminal live closure — 2026-09-30
+
+Fingerprint: `powerhouse|loop-assurance|terminal-live-closure|2026-09-30-v1`.
+
+Voor Loop Assurance geldt aanvullend:
+- actieve registry-membership is dynamisch; nieuw geregistreerde loops vallen automatisch onder assurance;
+- `GREEN` is uitsluitend geldig bij 8/8 verse stage-evidence;
+- historical GREEN/LIVE vervalt als actuele evidence ontbreekt;
+- terminale closure vereist exact-main productie-readback plus Brain learning, skill/agent/chat-projectie, ledger/docs en System Map read-after-write;
+- actuele productie-evidence bij deze closure: main en Netlify exact op `9ae500bb184c5e36053c7ca64fb2d51bea070d9c`; live fleet 13 loops, 2 GREEN, 11 AMBER, 0 RED.
+
