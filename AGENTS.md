@@ -968,3 +968,17 @@ Alle huidige en toekomstige chats/agents erven:
 - concurrerende menuhandlers mogen de locale-switch niet onderscheppen;
 - SEO/no-JS hrefs blijven geldig;
 - iedere gedragswijziging aan publieke i18n-runtime roteert de assetversie en vereist verse productie NL→EN→NL-readback.
+
+
+## Bilingual SEO revenue inheritance — 30 september 2026
+Fingerprint: `seo|nl-en|keyword-ownership-to-revenue|v1`.
+
+All current and future chats, agents, SEO/content/website nodes inherit:
+- inspect `site/seo-order-map.json`, `site/seo-order-expansion.json` and `site/seo-locale-revenue-map.json` before creating or retargeting an indexable page;
+- one keyword/search-intent owner per locale; no cannibalising duplicate page;
+- English SEO uses English-market demand/SERP intent, never automatic literal keyword translation;
+- every NL canonical owner has a self-canonical English `/en/*` pair with nl/en/x-default hreflang;
+- internal same-origin links preserve the selected locale, including absolute links;
+- every commercial/support SEO change declares a conversion destination and measures through paid order and realized revenue;
+- production builds run SEO apply + validate before static locale generation and regenerate sitemap from final localized HTML;
+- missing English metadata, locale-link leakage, hreflang failure, orphan revenue pages, keyword collisions or missing conversion destination are release-blocking.
