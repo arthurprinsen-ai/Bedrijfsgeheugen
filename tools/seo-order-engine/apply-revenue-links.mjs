@@ -4,7 +4,7 @@ import { loadRegistry, ORIGIN } from './registry.mjs';
 const LOCALE_MAP_PATH='site/seo-locale-revenue-map.json';
 
 function attr(tag,name){
-  const m=String(tag||'').match(new RegExp('\\b'+name+'=(?:"([^"]*)"|\\'([^\\']*)\\')','i'));
+  const m=String(tag||'').match(new RegExp(`\\b${name}=(?:"([^"]*)"|'([^']*)')`,'i'));
   return m ? (m[1] ?? m[2] ?? '') : '';
 }
 function headOf(html){return String(html).match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1]||'';}
@@ -18,7 +18,7 @@ function noindex(html){
 }
 function esc(v){return String(v??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
 function reEsc(v){return String(v||'').replace(/[.*+?^$(){}|[\]\\]/g,'\\$&');}
-function hasLink(html,url){return new RegExp('<a\\b[^>]*href=(?:"'+reEsc(url)+'"|\\''+reEsc(url)+'\\')','i').test(String(html));}
+function hasLink(html,url){const q=reEsc(url);return new RegExp(`<a\\b[^>]*href=(?:"${q}"|'${q}')`,'i').test(String(html));}
 function localizedUrl(source,locale){
   if(locale==='nl') return source;
   const path=source.slice(ORIGIN.length)||'/';
