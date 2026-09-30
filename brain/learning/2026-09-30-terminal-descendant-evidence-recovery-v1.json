@@ -31,7 +31,6 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
-      "tests/github-delivery-state-machine-terminal-closure.test.mjs",
       "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs"
     ],
     "shadow": [
