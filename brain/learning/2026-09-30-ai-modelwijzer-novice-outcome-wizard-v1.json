@@ -1,0 +1,36 @@
+{
+  "id": "2026-09-30-ai-modelwijzer-novice-outcome-wizard-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "ai-modelwijzer|novice|outcome-cadence-scale-risk|v1",
+  "compiler": {
+    "failure_class": "NOVICE_DECISION_FRICTION",
+    "scope": "PUBLIC_ADVISOR",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "The public advisor started with technical workload concepts such as tasks per month, tokens and governance toggles, forcing non-experts to understand implementation details before the business problem was understood.",
+  "prevention": [
+    "Start with ordinary business outcomes and usage context rather than model names or token terminology.",
+    "Convert cadence and number of users into an estimated workload when volume is unknown.",
+    "Use data sensitivity and error impact to adjust quality, governance and human-control guidance.",
+    "Allow an understandable unknown/default answer for every technical decision."
+  ],
+  "fix": "Add an outcome-first wizard covering goal, cadence, users, volume, sensitivity, error impact, integration, priority, budget and deployment preference while retaining technical inputs behind an advanced disclosure.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/ai-model-advisor-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "public_surface": "ai-modelwijzer.html",
+    "regression": "tests/ai-model-advisor-v1.test.mjs",
+    "skill": ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md",
+    "system_map": "platform/system-map/canonical-system-map.mjs"
+  },
+  "skill_targets": [
+    "powerhouse-ai-model-intelligence",
+    "powerhouse-system-map-governance"
+  ]
+}
