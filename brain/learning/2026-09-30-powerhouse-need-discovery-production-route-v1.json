@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse-need-discovery-production-route-v1",
+  "date": "2026-09-30",
+  "problem": "A transactional website flow linked from a public page was not registered as a functional utility route.",
+  "root_cause": "The technical SEO gate correctly rejected a link whose target was outside the indexable route inventory.",
+  "change": [
+    "Registered /behoeftecheck as a public utility route",
+    "Added noindex,follow to the transactional form"
+  ],
+  "prevention": "Every non-indexable public flow linked from indexable pages must be registered in PUBLIC_UTILITY_ROUTES and carry an explicit robots directive.",
+  "compiler": {
+    "failure_class": "production_readback",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-powerhouse-need-discovery-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-powerhouse-need-discovery-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Pagina- en SEO-controle succeeds with /behoeftecheck registered as a public utility route",
+    "The form page declares noindex,follow and keeps the canonical /behoeftecheck URL",
+    "Exact Netlify production build parity and immutable preview are required before promotion"
+  ]
+}
