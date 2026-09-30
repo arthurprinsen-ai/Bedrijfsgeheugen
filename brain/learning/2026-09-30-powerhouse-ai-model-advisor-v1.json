@@ -1,7 +1,7 @@
 {
   "id": "powerhouse-ai-model-advisor-v1",
   "date": "2026-09-30",
-  "status": "candidate",
+  "status": "ACTIVE_PREVENTION",
   "learning": "AI-model comparison is a decision capability, not a static article. The canonical unit is user goal + hard governance constraints + cost-per-task + explainable alternatives.",
   "prevention": [
     "Do not collapse EU storage into EU inference or sovereignty.",
@@ -9,5 +9,25 @@
     "Do not use stale model names or prices without official-source freshness.",
     "Do not gate the first useful recommendation behind lead capture."
   ],
-  "next_decision": "Route model/provider questions through the canonical AI Model Intelligence catalog and advisor surface."
+  "next_decision": "Route model/provider questions through the canonical AI Model Intelligence catalog and advisor surface.",
+  "failure_class": "AI_MODEL_INTELLIGENCE_STALE_OR_GOVERNANCE_MISCLASSIFICATION",
+  "problem": "AI model recommendations can become wrong when pricing/lifecycle data is stale or when residency is incorrectly treated as sovereignty.",
+  "evaluation": {
+    "regressions": [
+      "tests/ai-model-advisor-v1.test.mjs",
+      "tests/ai-model-intelligence-freshness-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "AI_MODEL_INTELLIGENCE_STALE_OR_GOVERNANCE_MISCLASSIFICATION",
+    "scope": "AI_MODEL_DECISION_INTELLIGENCE",
+    "machine_enforceable": true,
+    "security_sensitive": true,
+    "repeat_count": 1
+  },
+  "skill_targets": [
+    "powerhouse-ai-model-intelligence",
+    "powerhouse-system-map-governance",
+    "powerhouse-seo-conversion-orders"
+  ]
 }
