@@ -978,5 +978,10 @@
       "intent": "definition/strategy/infrastructure",
       "evidence": "SERP and AI overview focus on independent development/deployment/governance, infrastructure, data residency and organizational/national control."
     }
-  ]
+  ],
+  "production_refresh": {
+    "requested_at": "2026-09-30T12:05:00+02:00",
+    "reason": "promote bilingual SEO revenue architecture to exact-main production",
+    "contract": "seo|nl-en|revenue-ownership|hreflang|v1"
+  }
 }
