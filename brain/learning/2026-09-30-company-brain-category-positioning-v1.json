@@ -47,5 +47,41 @@
     "historical_replay": [
       "tests/brain-company-brain-category-positioning-v1.test.mjs"
     ]
-  }
+  },
+  "production": {
+    "status": "LIVE_PROVEN",
+    "protected_main": "936ca60ad5c2415ff2372880a61aea5b1d690875",
+    "netlify_deploy_id": "6abcd38195a83a25791474e5",
+    "deployed_commit_ref": "936ca60ad5c2415ff2372880a61aea5b1d690875",
+    "published_at": "2026-09-30T09:19:11.017Z",
+    "public_route": "https://www.bedrijfsgeheugen.nl/company-brain",
+    "public_readback": {
+      "status": 200,
+      "canonical": "https://www.bedrijfsgeheugen.nl/company-brain",
+      "title": "Company Brain voor het MKB | Bedrijfsgeheugen",
+      "mobile_viewport": "390x844",
+      "page_errors": 0,
+      "failed_assets": 0
+    },
+    "note": "A later site-wide pricing locale-switch readback timeout is a separate obligation and does not invalidate the route-specific Company Brain proof."
+  },
+  "root_cause": "The category acquisition surface became technically live only after final-artifact static-i18n gaps were recovered; later generic site readback failure came from the separate pricing locale switch. Route-specific evidence must be separated from unrelated site-wide obligations.",
+  "evidence": {
+    "protected_main": "936ca60ad5c2415ff2372880a61aea5b1d690875",
+    "netlify_deploy_id": "6abcd38195a83a25791474e5",
+    "exact_commit_ref": true,
+    "production_state": "ready/current",
+    "public_route_http_status": 200,
+    "public_canonical": "https://www.bedrijfsgeheugen.nl/company-brain",
+    "public_title": "Company Brain voor het MKB | Bedrijfsgeheugen",
+    "mobile_viewport": "390x844",
+    "page_errors": 0,
+    "failed_assets": 0
+  },
+  "prevention": [
+    "Validate final post-shell static i18n coverage before production promotion.",
+    "Require route-specific HTTP/canonical/title/mobile/assets readback before LIVE_PROVEN.",
+    "Keep unrelated site-wide readback failures as separate obligations instead of erasing already-proven route truth.",
+    "Keep Company Brain inside the existing Bedrijfslek/Frisse Blik/order/revenue loop."
+  ]
 }
