@@ -4,7 +4,7 @@ import { ORIGIN } from './registry.mjs';
 function norm(value){return String(value??'').trim().toLocaleLowerCase('en-US');}
 function expectedEnRoute(source){
   const url=new URL(source);
-  const path=url.pathname==='/'?'/':url.pathname.replace(/\/$/,'');
+  const path=url.pathname||'/';
   return path==='/' ? `${ORIGIN}/en/` : `${ORIGIN}/en${path}`;
 }
 
