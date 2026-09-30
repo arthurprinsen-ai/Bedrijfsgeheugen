@@ -378,7 +378,8 @@
       const control = languageControl('mobile');
       const auth = mobileHost.querySelector('a[href$="/inloggen"], a[href$="/login"], .bg-mobile-auth, .bg-shared-mobile-auth');
       const cta = mobileHost.querySelector('.bg-mobile-cta, .bg-shared-mobile-cta, .bgkop-mcta');
-      mobileHost.insertBefore(control, auth || cta || null);
+      const anchor = [auth, cta].find(el => el && el.parentNode === mobileHost) || null;
+      mobileHost.insertBefore(control, anchor);
     }
 
     syncControls();
