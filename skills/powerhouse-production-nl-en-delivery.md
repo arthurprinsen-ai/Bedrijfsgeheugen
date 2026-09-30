@@ -48,3 +48,15 @@ The selected public-site locale is a session-wide navigation invariant, not a pa
 - Regression authority: `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
 - Runtime guard: `assets/js/i18n.js`.
 - Terminal proof must include selecting English, navigating to another public page through the actual menu/link surface, observing English there, then switching back to Dutch and navigating again.
+
+
+## Public locale click ownership
+
+Fingerprint: `i18n-window-capture-navigation-v1`.
+
+The public language choice owns its click before mobile-navigation capture handlers:
+- `assets/js/i18n.js` listens for `[data-bg-language-option]` at `window` capture phase;
+- the language handler prevents the default event, stops competing handlers, persists locale state and performs the canonical same-route navigation;
+- SEO/no-JS `href` values remain present and route-correct;
+- menu teardown/drilldown handlers may never be the authority for locale selection;
+- every behavior change rotates the i18n asset version and must pass click-driven production NL→EN→NL readback.

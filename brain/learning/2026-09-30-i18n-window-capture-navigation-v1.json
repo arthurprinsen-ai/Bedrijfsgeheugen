@@ -1,0 +1,35 @@
+{
+  "fingerprint":"i18n-window-capture-navigation-v1",
+  "date":"2026-09-30",
+  "type":"PRODUCTION_LOCALE_NAVIGATION_RECOVERY",
+  "failure_class":"MOBILE_MENU_CAPTURE_PRECEDED_LOCALE_NAVIGATION_OWNER",
+  "root_cause":[
+    "The public locale handler ran in document bubbling phase while the V18 mobile drilldown owns a document capture-phase click handler.",
+    "The language option therefore did not own the event ordering and production NL→EN click readback could time out even though href and source runtime were correct."
+  ],
+  "evidence":{
+    "production_exact_main_proven":true,
+    "english_route_exists_and_is_english":true,
+    "pricing_content_proven":true,
+    "repeated_failure":"click-driven production verifier timed out waiting for /en/prijzen",
+    "competing_handler":"assets/js/v18-mobile-drilldown.js document capture listener"
+  },
+  "prevention":[
+    "Handle [data-bg-language-option] at window capture phase before document/mobile-menu capture handlers.",
+    "Prevent default and stop competing handlers, then explicitly navigate to the canonical localized href.",
+    "Keep SEO/no-JS hrefs intact.",
+    "Rotate the i18n asset version for every public navigation behavior change.",
+    "Require live click-driven NL→EN→NL readback before functional green."
+  ],
+  "evaluation":{
+    "historical_replay":["tests/brain-i18n-persistent-navigation-v1.test.mjs"],
+    "canary":["tests/brain-i18n-persistent-navigation-v1.test.mjs"]
+  },
+  "compiler":{
+    "failure_class":"MOBILE_MENU_CAPTURE_PRECEDED_LOCALE_NAVIGATION_OWNER",
+    "scope":"PUBLIC_I18N_RUNTIME",
+    "machine_enforceable":true,
+    "security_sensitive":false
+  },
+  "status":"ACTIVE_PREVENTION"
+}

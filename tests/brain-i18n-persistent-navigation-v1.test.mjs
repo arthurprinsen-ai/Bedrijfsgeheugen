@@ -26,7 +26,9 @@ test('portal and technical endpoints stay outside public locale rewriting', () =
 });
 
 
-test('public language-option clicks explicitly navigate after mobile menu close', () => {
+test('public language-option clicks own navigation before mobile menu capture handlers', () => {
   const source = fs.readFileSync(runtime,'utf8');
-  assert.match(source,/event\.preventDefault\(\);\s*const href = option\.getAttribute\('href'\) \|\| localizedHref\(target\);\s*closeMenus\(\);\s*location\.assign\(href\);/s);
+  const apply = fs.readFileSync(path.resolve('tools/site-shell/apply-i18n.mjs'),'utf8');
+  assert.match(source,/window\.addEventListener\('click',[\s\S]*\[data-bg-language-option\][\s\S]*event\.preventDefault\(\)[\s\S]*event\.stopImmediatePropagation\(\)[\s\S]*window\.location\.assign\(href\)[\s\S]*, true\);/);
+  assert.match(apply,/cms-i18n-20260930-2/);
 });

@@ -956,3 +956,15 @@ Voor alle huidige en toekomstige chats/agents geldt aanvullend:
 - de actieve locale blijft sitebreed persistent; English gebruikt `/en/*`, Nederlands onprefixte canonieke routes;
 - terminale i18n-proof vereist een echte browserroundtrip NL → EN → NL op productie, inclusief navigatie naar een andere publieke pagina;
 - een timeout op de locale-switch is een runtime-interactiedefect, niet een Netlify-transportdefect.
+
+
+## Public locale click ownership — inherited
+
+Fingerprint: `i18n-window-capture-navigation-v1`.
+
+Alle huidige en toekomstige chats/agents erven:
+- publieke taalkeuze is eigenaar van de klik vóór mobiele menu-/drilldown-handlers;
+- taalopties worden op `window` capture afgehandeld en navigeren expliciet naar dezelfde functionele route in de gekozen locale;
+- concurrerende menuhandlers mogen de locale-switch niet onderscheppen;
+- SEO/no-JS hrefs blijven geldig;
+- iedere gedragswijziging aan publieke i18n-runtime roteert de assetversie en vereist verse productie NL→EN→NL-readback.
