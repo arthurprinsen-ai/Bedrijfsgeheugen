@@ -33,3 +33,12 @@ test('System Map exposes stream resilience as a canonical Powerhouse capability'
   assert.match(map,/readbackBeforeReplayAfterInterruption:true/);
   assert.match(docs,/Chat & Agent Stream Resilience/);
 });
+
+
+test('remote jobs never require a blocking chat turn or user continue button',async()=>{
+  const contract=JSON.parse(await readFile('config/powerhouse-execution-resilience-v1.json','utf8'));
+  assert.equal(contract.nonblocking_remote_wait?.required,true);
+  assert.equal(contract.nonblocking_remote_wait?.user_continue_required,false);
+  assert.equal(contract.nonblocking_remote_wait?.platform_busy_ui_is_not_delivery_state,true);
+  assert.match((await readFile('AGENTS.md','utf8')),/NO blocking wait|Geen blocking wait/i);
+});
