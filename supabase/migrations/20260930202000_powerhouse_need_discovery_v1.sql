@@ -44,7 +44,7 @@ grant select on public.powerhouse_need_discovery_profiles_v1 to service_role;
 
 create or replace function public.powerhouse_need_discovery_context_v1(
   p_subject_key text,p_evidence jsonb default '{}'::jsonb
-) returns jsonb language sql stable security definer set search_path=pg_catalog,public as $$
+) returns jsonb language sql stable security definer set search_path = pg_catalog, public as $$
 with profile as (
   select * from public.powerhouse_need_discovery_profiles_v1 where subject_key=p_subject_key
 ), merged as (
@@ -86,7 +86,7 @@ revoke execute on function public.powerhouse_need_discovery_context_v1(text,json
 grant execute on function public.powerhouse_need_discovery_context_v1(text,jsonb) to service_role;
 
 create or replace function public.powerhouse_apply_need_discovery_v1()
-returns jsonb language plpgsql security definer set search_path=pg_catalog,public as $$
+returns jsonb language plpgsql security definer set search_path = pg_catalog, public as $$
 declare v_updated integer:=0;
 begin
   with contexts as (
