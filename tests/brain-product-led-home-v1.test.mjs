@@ -27,6 +27,9 @@ test('product-led homepage links use full canonical URLs', () => {
     'https://www.bedrijfsgeheugen.nl/systemen-koppelen',
     'https://www.bedrijfsgeheugen.nl/zelfscan',
   ]) assert.ok(apply.includes(`href="${href}"`), `missing canonical href: ${href}`);
+  assert.doesNotMatch(apply,/href="\//);
+  assert.doesNotMatch(apply,/Powerhouse closed loop/);
+  assert.match(apply,/Context[\s\S]*Powerhouse Intelligence[\s\S]*Beslissing/);
 });
 
 test('growth skill preserves product-led architecture', () => {
