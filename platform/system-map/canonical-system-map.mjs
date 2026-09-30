@@ -71,7 +71,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         modalityAndTaskFiltersRequired:true,
         perModelVerificationDateRequired:true,
         governanceUnknownNeverGreen:true,
-        broadSpecialistCoverage:true
+        broadSpecialistCoverage:true,
+        falconOpenWeightCoverageRequired:true
       })
     }),
     Object.freeze({
