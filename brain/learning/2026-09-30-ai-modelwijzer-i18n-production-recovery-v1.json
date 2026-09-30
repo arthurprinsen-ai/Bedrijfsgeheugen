@@ -1,0 +1,46 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "powerhouse|ai-modelwijzer|static-i18n-production-recovery|2026-09-30",
+  "date": "2026-09-30",
+  "status": "ACTIVE",
+  "context": "The AI Modelwijzer production build failed closed because four newly introduced Dutch strings were absent from the deterministic English translation cache.",
+  "root_cause": "The Modelwijzer content evolved after the earlier translation cache update, but the static-English cache contract was not updated in the same lineage.",
+  "fix": [
+    "Add the four missing Modelwijzer strings to the deterministic English cache",
+    "Re-run exact Netlify build parity before production promotion"
+  ],
+  "prevention_rules": [
+    "Every new public Modelwijzer string must be added to static English cache in the same candidate",
+    "Netlify build parity remains fail-closed on missing translations"
+  ],
+  "evidence": {
+    "failed_build_fingerprint": "STATIC_I18N_CACHE_INCOMPLETE",
+    "missing_string_count": 4,
+    "cache_file": "config/bg-static-i18n-en.d/2026-09-30-ai-modelwijzer-v2.json",
+    "public_surface": "https://www.bedrijfsgeheugen.nl/ai-modelwijzer"
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-ai-model-intelligence/SKILL.md"
+  ],
+  "agent_contract_targets": [
+    "AGENTS.md"
+  ],
+  "system_map_target": "platform/system-map/canonical-system-map.mjs",
+  "truth_boundary": "The translation cache repair is not LIVE until exact-main Netlify production and public page readback are observed."
+}
