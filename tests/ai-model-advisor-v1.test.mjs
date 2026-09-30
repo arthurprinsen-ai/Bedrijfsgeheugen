@@ -9,8 +9,8 @@ assert.ok(html.includes('id="goalInput"'));
 assert.ok(html.includes('id="modelGrid"'));
 assert.ok(html.includes('Data-soevereiniteit'));
 assert.ok(html.includes('/api/ai-modelwijzer-lead'));
-assert.ok(catalog.models.length>=80);
-assert.ok(new Set(catalog.models.map(m=>m.provider)).size>=9);
+assert.ok(catalog.models.length>=100);
+assert.ok(new Set(catalog.models.map(m=>m.provider)).size>=10);
 for (const m of catalog.models) {
   assert.ok(m.id && m.provider && m.source);
   assert.ok(m.scores && typeof m.scores.cost==='number');
@@ -18,7 +18,7 @@ for (const m of catalog.models) {
   assert.ok('self_host' in m && 'jurisdiction' in m);
   assert.ok(Array.isArray(m.limitations));
   assert.ok(m.governance && 'storage_residency' in m.governance && 'inference_residency' in m.governance);
-  assert.ok(m.verified_at && m.source_type==='official-provider');
+  assert.ok(m.verified_at && ['official-provider','official-cloud-provider'].includes(m.source_type));
 }
 assert.equal(config.decision_policy.user_goal_first,true);
 assert.equal(config.decision_policy.no_single_best_model_claim,true);
