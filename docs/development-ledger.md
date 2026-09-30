@@ -381,3 +381,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Root cause addressed:** custom page header competed with canonical shell ownership; the new category literal was not guaranteed in the static EN cache; category authority linking was too weak.
 - **Fix:** canonical shell only, completed Company Brain i18n patch, clean copy, contextual inbound links from Bedrijfsgeheugen and AI-ecosysteem.
 - **Terminal proof required:** successful Netlify build + live route readback; repository state alone is non-terminal.
+
+## 2026-09-30 — RECOVERY — Persistent public locale navigation v1
+- **Fingerprint:** `website|i18n|persistent-public-navigation|v1`.
+- **Signal:** de actuele pagina schakelde naar English, maar een volgende gewone interne menu-/paginalink kon terugkeren naar Nederlands.
+- **Impact:** taalkeuze was niet sitebreed persistent en de publieke CMS-shell leverde een inconsistente tweetalige journey.
+- **Root cause:** same-route locale switching bestond, maar ordinary same-origin public hrefs bleven onprefixte Dutch routes.
+- **Final fix:** `assets/js/i18n.js` normaliseert eligible public links naar de actieve locale, bewaart query/hash, sluit technische/portal-paden uit en verwerkt dynamisch toegevoegde navigatie.
+- **Regression gate:** `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
+- **Owner:** Website/UX + Powerhouse continuity + System Map governance.
+- **Reusable lesson:** locale is sitewide navigatiestatus; een correcte taal op alleen de huidige pagina is geen voldoende i18n-bewijs.
