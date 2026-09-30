@@ -4,8 +4,8 @@ import fs from 'node:fs';
 
 test('AI model catalog v2 is fresh, source-backed, broad and governance-explicit',()=>{
  const c=JSON.parse(fs.readFileSync('data/ai-model-catalog-v1.json','utf8'));
- assert.ok(c.models.length>=80);
- assert.ok(new Set(c.models.map(m=>m.provider)).size>=9);
+ assert.ok(c.models.length>=100);
+ assert.ok(new Set(c.models.map(m=>m.provider)).size>=10);
  for(const m of c.models){
    assert.match(m.source,/^https:\/\//);
    assert.ok(m.jurisdiction);
