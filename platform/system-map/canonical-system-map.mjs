@@ -1083,3 +1083,32 @@ export const POWERHOUSE_LOOP_ASSURANCE_TERMINAL_LIVE_CLOSURE_V1 = Object.freeze(
   ])
 });
 
+
+export const COMMERCIAL_OUTBOUND_SELF_HEAL_V1 = Object.freeze({
+  fingerprint:'commercial|outbound-transport-self-heal|gmail-linkedin-dm|v1',
+  owner:'powerhouse-commercial-learning-v1',
+  salesActionAuthority:'public.powerhouse_sales_actions',
+  outcomeAuthority:'public.powerhouse_sales_outcomes',
+  failureAuthority:'public.brain_failure_registry',
+  assuranceLoop:'autonomous-outreach',
+  providerPreflight:Object.freeze({
+    sameProviderProjectRequired:true,
+    activeConnectionRequired:true,
+    mcpWordIdIsRawApiConnectedAccountId:false,
+    directExecuteRequiresEntityIdentity:true,
+    literalLatestVersionForbidden:true,
+    structuredProviderErrorRequired:true
+  }),
+  recovery:Object.freeze({
+    recoverableTransportErrorTerminal:false,
+    gmailFallback:'canonical active Gmail connector in same sales-action lineage',
+    preserve:Object.freeze(['daily-send-cap','suppression','cooldown','consent-or-existing-relationship','dedupe','republish-forbidden']),
+    providerMessageThreadReadbackRequired:true
+  }),
+  linkedinDm:Object.freeze({
+    failClosedWithoutTrueSendCapability:true,
+    postOrCommentIsDm:false,
+    authorizedEmailFallbackWhenKnownAddress:true
+  }),
+  referenceIncident:'2026-09-30'
+});
