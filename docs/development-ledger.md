@@ -374,10 +374,11 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Terminal gate:** Netlify production identity + public `/company-brain` readback; merge is not sufficient.
 - **Prevention:** every material public promotion includes Brain learning, activity ledger and human documentation in the same candidate.
 
-
-## 2026-09-30 — RECOVERY — Company Brain Netlify build + shell
-- **Fingerprint:** `production|company-brain-netlify-build-recovery|v1`.
-- **Observed:** both Git-linked and exact-source Netlify promotion builds failed after the Company Brain merge; public-page CI also reported an i18n runtime insertion error, one inbound link and prohibited wording.
-- **Root cause addressed:** custom page header competed with canonical shell ownership; the new category literal was not guaranteed in the static EN cache; category authority linking was too weak.
-- **Fix:** canonical shell only, completed Company Brain i18n patch, clean copy, contextual inbound links from Bedrijfsgeheugen and AI-ecosysteem.
-- **Terminal proof required:** successful Netlify build + live route readback; repository state alone is non-terminal.
+## 2026-09-30 — RECOVERY — Company Brain static i18n final-artifact coverage
+- **Fingerprint:** `website|static-i18n|post-shell-final-string-coverage|v1`.
+- **Signal:** exact-main Netlify deploys `6abcc8e43755c1132dfb791f` and `6abcc939f771a22b21c16fb6` failed during build after the Company Brain merge.
+- **Root cause:** source-level translation coverage did not equal final-artifact coverage; canonical shell/CRO transforms split or added exact translatable strings while `STATIC_I18N_REQUIRE_CACHE=1` correctly remained fail-closed.
+- **Fix:** add every missing final Company Brain string to the canonical static English patch and bind regression to the existing Company Brain Brain-test.
+- **Skill/chat prevention:** Powerhouse Continuity and AGENTS now require post-shell final-artifact i18n coverage before promotion.
+- **System Map:** SEO Conversion-to-Orders records `staticI18nPostShellFinalArtifactCoverageRequired`.
+- **Terminal gate:** successful protected-main build/deploy plus public NL and EN readback; merge/build-start is not completion.
