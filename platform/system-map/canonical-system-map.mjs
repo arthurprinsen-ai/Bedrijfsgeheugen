@@ -36,6 +36,32 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'async-delivery-continuation-v1',
+      label:'Async Delivery Continuation & Queue Supersession',
+      authority:'github+powerhouse-canonical-checkpoint',
+      owner:'whole-brain-reliability',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['open obligation','exact candidate head','current main epoch','GitHub/Netlify/Supabase workflow state']),
+      outputs:Object.freeze(['resumable checkpoint','deduplicated required runs','bounded polling','stale reversible run supersession']),
+      runtime:Object.freeze({
+        policy:'brain/policies/powerhouse-agent-continuity-v1.json',
+        agentContract:'AGENTS.md',
+        skill:'.agents/skills/powerhouse-continuity/SKILL.md',
+        productionSnapshot:'.github/workflows/production-source-snapshot.yml',
+        requiredGate:'.github/workflows/required-test.yml',
+        recoverySupervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
+        learning:'brain/learning/2026-09-30-async-workflow-continuation-v1.json'
+      }),
+      invariants:Object.freeze({
+        remoteWaitNeverMeansAgentIdle:true,
+        duplicateRequiredRunForbidden:true,
+        boundedPollingRequired:true,
+        checkpointBeforeWait:true,
+        requiredOnlyOpenPrRecovery:true,
+        staleReversibleProductionWaitSupersededByNewerMain:true
+      })
+    }),
+    Object.freeze({
       id:'ai-model-intelligence-advisor-v1',
       label:'AI Model Intelligence & Advisor',
       authority:'github+official-provider-evidence+supabase-commercial-outcomes',
