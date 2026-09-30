@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T07:10:00Z',
+  observedAt:'2026-09-30T08:15:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -905,8 +905,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       buildAuthority:Object.freeze(['tools/site-shell/apply-i18n.mjs','tools/site-shell/build-localized-routes.mjs']),
       runtimeGuard:'assets/js/i18n.js',
       cacheRule:'versioned-i18n-assets-required',
+      navigationPersistence:Object.freeze({
+        fingerprint:'website|i18n|persistent-public-navigation|v1',
+        selectedLocalePersistsAcrossPublicNavigation:true,
+        englishTargets:'/en/*',
+        dutchTargets:'unprefixed',
+        preserves:Object.freeze(['query','hash']),
+        dynamicLinksIncluded:true,
+        excludedPrefixes:Object.freeze(['/api/','/.netlify/','/assets/','/functions/','/portal','/klantportaal']),
+        regression:'tests/brain-i18n-persistent-navigation-v1.test.mjs',
+        learning:'brain/learning/2026-09-30-public-i18n-persistent-navigation-v1.json'
+      }),
       productionAuthority:'netlify-current-deploy-exact-main',
-      liveReadback:Object.freeze(['pricing-nl-en-nl','systems-nl-en-nl','html-lang','header-footer-language-state'])
+      liveReadback:Object.freeze(['pricing-nl-en-nl','systems-nl-en-nl','cross-page-locale-persistence','html-lang','header-footer-language-state'])
     }),
     geometry:Object.freeze({
       desktopShellWidthPx:1220,
