@@ -2,12 +2,13 @@
   "fingerprint": "product-led-production-promotion-lag-20260930-v1",
   "status": "ACTIVE_PREVENTION",
   "problem": "The product-led Powerhouse homepage had merged to protected main while Netlify production still served an older commit_ref.",
-  "root_cause": "Netlify executed the full production build and failed because apply-product-led-home.mjs still targeted obsolete prototype-v18-stable.html, while the premerge parity build did not execute that product-led build step and therefore produced a false green.",
+  "root_cause": "Netlify executed the full production build and first failed because apply-product-led-home.mjs targeted obsolete prototype-v18-stable.html. After parity was made exact, fail-closed i18n correctly exposed two uncached product-led strings ('Powerhouse closed loop' and standalone 'Intelligence'). Earlier premerge parity omitted the product-led build step and therefore could not expose either defect.",
   "prevention": [
     "The product-led build step targets only current canonical artifacts and never assumes retired prototype files exist.",
-    "Every homepage runtime change must execute apply-product-led-home.mjs inside the canonical premerge Netlify-parity build.",
-    "A production promotion is incomplete until Netlify commit_ref contains the merged homepage change and the public homepage exposes Powerhouse Intelligence, Powerhouse Agents and Powerhouse Connect.",
-    "Repository truth and production truth are never treated as equal without provider and browser readback."
+    "Every homepage runtime change executes apply-product-led-home.mjs inside the canonical premerge Netlify-parity build using the same command order as netlify.toml.",
+    "Product-led copy must either have static NL/EN cache coverage or reuse already-canonical translated product labels; accessibility-only text may not create an untracked translation dependency.",
+    "All generated HTML links use full canonical https://www.bedrijfsgeheugen.nl/ URLs.",
+    "A production promotion is incomplete until Netlify commit_ref contains the merged homepage change and the public homepage exposes Powerhouse Intelligence, Powerhouse Agents and Powerhouse Connect."
   ],
   "evaluation": {
     "historical_replay": [
@@ -32,5 +33,5 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 3
+  "revision": 4
 }
