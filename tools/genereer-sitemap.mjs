@@ -3,6 +3,7 @@ import { PUBLIC_PAGE_EXCLUDES } from './site-shell/contracts.mjs';
 import { finalizeSiteContracts } from './site-shell/finalize-site-contracts.mjs';
 
 const ORIGIN = 'https://www.bedrijfsgeheugen.nl';
+const LOCALE_REVENUE_MAP_FILE = 'site/seo-locale-revenue-map.json';
 const EXCLUDES = new Set([...PUBLIC_PAGE_EXCLUDES, '404.html']);
 const AI_MODEL_SEO_PAGES = Object.freeze([
   'openai-ai-modellen/index.html',
@@ -91,11 +92,118 @@ function alternateLinks(html) {
   return out;
 }
 
+function htmlEscapeAttr(value){
+  return String(value??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function replaceTitle(html,value){
+  if(!value) return html;
+  const safe=String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return /<title\b[^>]*>[\s\S]*?<\/title>/i.test(html)
+    ? html.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i,`<title>${safe}</title>`)
+    : html.replace(/<\/head>/i,`<title>${safe}</title>\n</head>`);
+}
+function upsertNamedMetaHtml(html,name,value){
+  if(!value) return html;
+  const escapedName=String(name).replace(/[.*+?^$(){}|[\]\\]/g,'\\function alternateLinks(html) {
+  const out = [];
+  for (const m of String(html).matchAll(/<link\b[^>]*rel=(?:"alternate"|'alternate')[^>]*>/gi)) {
+    const tag=m[0];
+    const href=tag.match(/\bhref=(?:"([^"]*)"|'([^']*)')/i);
+    const lang=tag.match(/\bhreflang=(?:"([^"]*)"|'([^']*)')/i);
+    const valueHref=href?.[1]??href?.[2]??'';
+    const valueLang=lang?.[1]??lang?.[2]??'';
+    if(valueHref.startsWith(`${ORIGIN}/`) && valueLang) out.push({hreflang:valueLang,href:valueHref});
+  }
+  return out;
+}
+');
+  const tag=`<meta name="${htmlEscapeAttr(name)}" content="${htmlEscapeAttr(value)}">`;
+  const re=new RegExp(`<meta\\b(?=[^>]*\\bname=(?:"${escapedName}"|'${escapedName}'))[^>]*>`,'i');
+  return re.test(html) ? html.replace(re,tag) : html.replace(/<\/head>/i,tag+'\n</head>');
+}
+function upsertPropertyMetaHtml(html,property,value){
+  if(!value) return html;
+  const escaped=String(property).replace(/[.*+?^$(){}|[\]\\]/g,'\\function alternateLinks(html) {
+  const out = [];
+  for (const m of String(html).matchAll(/<link\b[^>]*rel=(?:"alternate"|'alternate')[^>]*>/gi)) {
+    const tag=m[0];
+    const href=tag.match(/\bhref=(?:"([^"]*)"|'([^']*)')/i);
+    const lang=tag.match(/\bhreflang=(?:"([^"]*)"|'([^']*)')/i);
+    const valueHref=href?.[1]??href?.[2]??'';
+    const valueLang=lang?.[1]??lang?.[2]??'';
+    if(valueHref.startsWith(`${ORIGIN}/`) && valueLang) out.push({hreflang:valueLang,href:valueHref});
+  }
+  return out;
+}
+');
+  const tag=`<meta property="${htmlEscapeAttr(property)}" content="${htmlEscapeAttr(value)}">`;
+  const re=new RegExp(`<meta\\b(?=[^>]*\\bproperty=(?:"${escaped}"|'${escaped}'))[^>]*>`,'i');
+  return re.test(html) ? html.replace(re,tag) : html.replace(/<\/head>/i,tag+'\n</head>');
+}
+function setBodyDataAttr(html,name,value){
+  if(!value) return html;
+  const escapedName=String(name).replace(/[.*+?^$(){}|[\]\\]/g,'\\function alternateLinks(html) {
+  const out = [];
+  for (const m of String(html).matchAll(/<link\b[^>]*rel=(?:"alternate"|'alternate')[^>]*>/gi)) {
+    const tag=m[0];
+    const href=tag.match(/\bhref=(?:"([^"]*)"|'([^']*)')/i);
+    const lang=tag.match(/\bhreflang=(?:"([^"]*)"|'([^']*)')/i);
+    const valueHref=href?.[1]??href?.[2]??'';
+    const valueLang=lang?.[1]??lang?.[2]??'';
+    if(valueHref.startsWith(`${ORIGIN}/`) && valueLang) out.push({hreflang:valueLang,href:valueHref});
+  }
+  return out;
+}
+');
+  const attrText=`${name}="${htmlEscapeAttr(value)}"`;
+  return html.replace(/<body\b([^>]*)>/i,(full,attrs)=>{
+    const re=new RegExp(`\\s${escapedName}=(?:"[^"]*"|'[^']*')`,'i');
+    const next=re.test(attrs) ? attrs.replace(re,' '+attrText) : attrs+' '+attrText;
+    return '<body'+next+'>';
+  });
+}
+async function enforceFinalLocalizedRevenueMetadata(){
+  let map;
+  try{map=JSON.parse(await readFile(LOCALE_REVENUE_MAP_FILE,'utf8'));}catch(error){
+    throw new Error('SEO_LOCALE_REVENUE_MAP_FINALIZER_INVALID: '+(error?.message||String(error)));
+  }
+  const byEn=new Map((map.pages||[]).map(row=>[row?.en?.route,row]).filter(([url])=>Boolean(url)));
+  let changed=0,checked=0;
+  for await(const pad of glob('en/**/*.html')){
+    let html; try{html=await readFile(pad,'utf8');}catch{continue;}
+    const url=canonical(html);
+    const row=byEn.get(url);
+    if(!row?.en) continue;
+    checked++;
+    const before=html;
+    html=replaceTitle(html,row.en.title);
+    html=upsertNamedMetaHtml(html,'description',row.en.description);
+    html=upsertPropertyMetaHtml(html,'og:title',row.en.title);
+    html=upsertPropertyMetaHtml(html,'og:description',row.en.description);
+    html=upsertNamedMetaHtml(html,'twitter:title',row.en.title);
+    html=upsertNamedMetaHtml(html,'twitter:description',row.en.description);
+    html=upsertNamedMetaHtml(html,'bg-keyword-cluster',row.en.primary_keyword);
+    html=upsertNamedMetaHtml(html,'bg-zoekwoord',row.en.primary_keyword);
+    html=upsertNamedMetaHtml(html,'bg-intent-owner',row.en.route);
+    html=setBodyDataAttr(html,'data-bg-keyword-cluster',row.en.primary_keyword);
+    html=setBodyDataAttr(html,'data-bg-intent-owner',row.en.route);
+    html=setBodyDataAttr(html,'data-bg-locale-seo','v1');
+    if(html!==before){await writeFile(pad,html,'utf8');changed++;}
+  }
+  console.log('SEO_FINAL_LOCALE_METADATA',JSON.stringify({checked,changed}));
+  return {checked,changed};
+}
+
 export async function genereerSitemap(bestand = 'sitemap.xml') {
   // Dit is de eerste stap ná alle late website-writers. Dwing hier eerst het
   // definitieve outputcontract af, zodat sitemap, UI- en SEO-gates exact de
   // HTML controleren die Netlify daarna publiceert.
   await finalizeSiteContracts();
+  // Some final shell/page-policy transforms legitimately rewrite generic SEO
+  // metadata. Re-assert the market-specific EN owner metadata after those
+  // transforms, before sitemap/readback validation. This is the terminal SEO
+  // metadata authority, not a validator exception.
+  await enforceFinalLocalizedRevenueMetadata();
 
   const urls = [];
   const alternates = new Map();
