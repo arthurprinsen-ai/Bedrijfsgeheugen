@@ -86,3 +86,35 @@ For Falcon and comparable open-weight families:
 - public recommendations must explain that sovereignty comes from the selected deployment path, not from the model name or provider nationality.
 
 Regression coverage must keep at least one current Falcon reasoning/general model and one specialist Falcon model represented, with explicit source and governance evidence.
+
+
+## V3 novice outcome-first advisor contract — 30 september 2026
+Fingerprint: `powerhouse|ai-model-intelligence|novice-outcome-volume-risk|v3`.
+
+The public Modelwijzer must work for a visitor who does not know model names, tokens, context windows, APIs or hosting terminology.
+
+The primary path MUST start with ordinary business questions, in this order:
+- desired business outcome / job-to-be-done;
+- one-off, periodic, daily or continuous use;
+- number of users/employees involved;
+- approximate workload/volume, with a safe estimate option;
+- data sensitivity (public, internal, personal/customer, highly confidential);
+- consequence if the AI is wrong;
+- interaction/deployment pattern (chat, office work, API, agents/workflow);
+- priority (quality, cost, speed, privacy/control, balanced);
+- approximate monthly budget;
+- cloud/EU/customer-controlled preference.
+
+Technical token and governance controls remain available as an advanced path, never as the first hurdle.
+
+The advisor translates simple answers into an explicit workload profile and shows that profile back to the visitor before/with the recommendation. Recommendations must explain in plain language:
+1. what to start with;
+2. why it fits the user's goal and scale;
+3. indicative monthly workload/cost;
+4. when to use a cheaper fallback versus a stronger model;
+5. what human control is needed when errors have high impact;
+6. what data/privacy controls must be checked.
+
+Employee count and cadence are decision inputs, not vanity fields: they influence workload scale and therefore cost/throughput trade-offs. High-impact use cases increase the weight of quality/reasoning and require human approval guidance. Personal/customer data increases privacy/residency weighting. Highly confidential data increases customer-controlled/self-host weighting.
+
+The Modelwijzer must never assume a novice knows what they need. “Weet ik niet / adviseer mij” is a valid answer and must still produce a useful, explainable recommendation.
