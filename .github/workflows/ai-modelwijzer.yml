@@ -37,6 +37,7 @@ jobs:
         run: node tools/site-shell/build-localized-routes.mjs --validate-cache
       - name: Exact Netlify production build
         env:
+          COMMIT_REF: ${{ github.event.pull_request.head.sha }}
           STATIC_I18N_REQUIRE_CACHE: "1"
           STATIC_I18N_NETWORK: "0"
           NODE_OPTIONS: "--max-old-space-size=2048"
