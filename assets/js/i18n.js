@@ -35,6 +35,37 @@
     return pathname.replace(/\/+/g,'/') + location.search + location.hash;
   };
 
+  // Keep the chosen public-site language across navigation. Static /en/* routes
+  // are the public locale authority, so every same-origin public link follows
+  // the active locale instead of falling back to an unprefixed Dutch route.
+  const NON_PAGE_PREFIXES = ['/api/','/.netlify/','/assets/','/functions/'];
+  function localizedInternalHref(href, target) {
+    const raw = String(href || '').trim();
+    if (!raw || raw[0] === '#' || /^(?:mailto:|tel:|sms:|javascript:|data:|blob:)/i.test(raw)) return raw;
+    let url;
+    try { url = new URL(raw, location.href); } catch { return raw; }
+    if (url.origin !== location.origin) return raw;
+    const lowerPath = url.pathname.toLowerCase();
+    if (NON_PAGE_PREFIXES.some(prefix => lowerPath.startsWith(prefix))) return raw;
+    const stripped = url.pathname.replace(/^\/(nl|en)(?=\/|$)/i,'') || '/';
+    if (stripped.startsWith('/portal') || stripped.startsWith('/klantportaal')) return raw;
+    url.pathname = (normalizeLocale(target) === 'en'
+      ? '/en' + (stripped === '/' ? '/' : stripped)
+      : (stripped === '/' ? '/' : stripped)).replace(/\/+/g,'/');
+    return url.pathname + url.search + url.hash;
+  }
+
+  function syncInternalLinks(root=document) {
+    if (isPortal()) return;
+    const host = root && root.querySelectorAll ? root : document;
+    host.querySelectorAll('a[href]').forEach(link => {
+      if (link.matches('[data-bg-language-option],[data-bg-locale-fixed]')) return;
+      const current = link.getAttribute('href');
+      const localized = localizedInternalHref(current, locale);
+      if (localized && localized !== current) link.setAttribute('href', localized);
+    });
+  }
+
   const CORE_EN = new Map([
     ['Ontdekken','Discover'],['Oplossingen','Solutions'],['Platform','Platform'],['Prijzen','Pricing'],['Cases','Cases'],
     ['Kennis & bedrijf','Knowledge & business'],['Kennis','Knowledge'],['Over ons','About us'],['Meer','More'],
@@ -305,6 +336,7 @@
       if (select.value !== locale) select.value = locale;
       select.setAttribute('aria-label', 'Language');
     });
+    syncInternalLinks(document);
   }
 
   async function setLocale(next) {
@@ -439,6 +471,7 @@
       }
       if (!roots.size) return;
       mountControl();
+      roots.forEach(root => syncInternalLinks(root));
       if (locale !== 'en') return;
       clearTimeout(mutationTimer);
       mutationTimer = setTimeout(()=>{
