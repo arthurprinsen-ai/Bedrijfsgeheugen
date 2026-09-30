@@ -1,0 +1,35 @@
+{
+  "fingerprint": "public-i18n-native-navigation-20260930-v1",
+  "status": "ACTIVE_PREVENTION",
+  "problem": "Production locale readback timed out on the NL→EN pricing switch even though the target /en/prijzen route existed and the rest of the production deployment was exact.",
+  "root_cause": "Public language anchors were intercepted and converted into imperative window.location navigation while mobile-menu handlers and DOM remounts operated on the same click. The i18n mount also attempted insertBefore with nested descendants, which could throw NotFoundError.",
+  "prevention": [
+    "Public locale choices remain ordinary anchors and native browser navigation is authoritative.",
+    "The capture listener may persist locale preference and stop competing handlers, but must not prevent the anchor default action.",
+    "Dynamic language controls only insert before nodes that are direct children of their host.",
+    "Any i18n runtime change bumps the versioned asset URL to defeat stale CDN/browser caches."
+  ],
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "website",
+    "delivery"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-public-i18n-native-navigation-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-public-i18n-native-navigation-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-public-i18n-native-navigation-v1.test.mjs"
+  ]
+}
