@@ -1,0 +1,23 @@
+{
+  "id": "2026-09-30-company-brain-production-promotion-v1",
+  "fingerprint": "delivery|company-brain-production-promotion|v1",
+  "type": "RECOVERY",
+  "observed_at": "2026-09-30",
+  "signal": "The merged Company Brain positioning was not yet reflected by the current Netlify production deploy.",
+  "decision": "Force a bounded website promotion from current protected main and verify the public category route before claiming LIVE.",
+  "failure_class": "DELIVERY",
+  "scope": "GENERAL",
+  "machine_enforceable": false,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-brain-category-positioning-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Production promotion must carry closure evidence in the same candidate",
+    "Never equate merge with live",
+    "Require browser/public readback before terminal claim"
+  ]
+}

@@ -365,3 +365,11 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Root cause:** the website delivery lane enumerates top-level public HTML routes explicitly; the newly created category owner was not yet registered there.
 - **Fix:** register `company-brain.html` in the existing website lane and bind it into the Company Brain historical replay regression.
 - **Prevention:** every new top-level public HTML route must update the existing delivery classifier in the same candidate before CI admission.
+
+
+## 2026-09-30 — RECOVERY — Company Brain production promotion trigger
+- **Fingerprint:** `delivery|company-brain-production-promotion|v1`.
+- **Reason:** repository/main contained the category positioning while Netlify production still exposed an older commit.
+- **Action:** bounded website promotion candidate with explicit closure evidence.
+- **Terminal gate:** Netlify production identity + public `/company-brain` readback; merge is not sufficient.
+- **Prevention:** every material public promotion includes Brain learning, activity ledger and human documentation in the same candidate.
