@@ -226,6 +226,7 @@ jobs:
           tests/ai-model-seo-cluster-v1.test.mjs
           tests/ai-model-production-hotfix-v1.test.mjs
           tests/ai-model-advisor-v1.test.mjs
+          tests/brain-ai-modelwijzer-novice-i18n-v1.test.mjs
           tests/brain-netlify-premerge-build-parity-v1.test.mjs
           tests/single-obligation-owner-learning.test.mjs
           tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
