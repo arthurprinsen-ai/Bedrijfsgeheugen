@@ -43,8 +43,8 @@ function publicRoutesFromSitemap() {
     const map=JSON.parse(fs.readFileSync(SEO_LOCALE_REVENUE_MAP_FILE,'utf8'));
     for(const entry of map?.pages||[]){
       const source=String(entry?.source_route||'');
-      if(source===SITE+'/') routes.add('/');
-      else if(source.startsWith(SITE+'/')) routes.add(normalizedRoute(source.slice(SITE.length)));
+      const absolute=resolveSameOriginAbsolute(source);
+      if(absolute) routes.add(normalizedRoute(absolute.path));
     }
   } catch {}
   return routes;
@@ -74,8 +74,8 @@ function seoLocaleRevenueMap() {
     const bySource = new Map();
     for (const entry of raw?.pages || []) {
       const source = String(entry?.source_route || '');
-      if (source.startsWith(SITE + '/')) bySource.set(normalizedRoute(source.slice(SITE.length)), entry);
-      else if (source === SITE + '/') bySource.set('/', entry);
+      const absolute=resolveSameOriginAbsolute(source);
+      if (absolute) bySource.set(normalizedRoute(absolute.path), entry);
     }
     seoLocaleRevenueMapCache = { raw, bySource };
   } catch (error) {
