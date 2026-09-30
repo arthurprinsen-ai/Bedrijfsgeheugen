@@ -95,69 +95,36 @@ function alternateLinks(html) {
 function htmlEscapeAttr(value){
   return String(value??'').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
 }
+function regexEscape(value){
+  return String(value||'').replace(/[.*+?^()$|[\]{}\\]/g,'\\$&');
+}
 function replaceTitle(html,value){
   if(!value) return html;
   const safe=String(value).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   return /<title\b[^>]*>[\s\S]*?<\/title>/i.test(html)
-    ? html.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i,`<title>${safe}</title>`)
-    : html.replace(/<\/head>/i,`<title>${safe}</title>\n</head>`);
+    ? html.replace(/<title\b[^>]*>[\s\S]*?<\/title>/i,\`<title>\${safe}</title>\`)
+    : html.replace(/<\/head>/i,\`<title>\${safe}</title>\n</head>\`);
 }
 function upsertNamedMetaHtml(html,name,value){
   if(!value) return html;
-  const escapedName=String(name).replace(/[.*+?^$(){}|[\]\\]/g,'\\function alternateLinks(html) {
-  const out = [];
-  for (const m of String(html).matchAll(/<link\b[^>]*rel=(?:"alternate"|'alternate')[^>]*>/gi)) {
-    const tag=m[0];
-    const href=tag.match(/\bhref=(?:"([^"]*)"|'([^']*)')/i);
-    const lang=tag.match(/\bhreflang=(?:"([^"]*)"|'([^']*)')/i);
-    const valueHref=href?.[1]??href?.[2]??'';
-    const valueLang=lang?.[1]??lang?.[2]??'';
-    if(valueHref.startsWith(`${ORIGIN}/`) && valueLang) out.push({hreflang:valueLang,href:valueHref});
-  }
-  return out;
-}
-');
-  const tag=`<meta name="${htmlEscapeAttr(name)}" content="${htmlEscapeAttr(value)}">`;
-  const re=new RegExp(`<meta\\b(?=[^>]*\\bname=(?:"${escapedName}"|'${escapedName}'))[^>]*>`,'i');
-  return re.test(html) ? html.replace(re,tag) : html.replace(/<\/head>/i,tag+'\n</head>');
+  const escapedName=regexEscape(name);
+  const tag=\`<meta name="\${htmlEscapeAttr(name)}" content="\${htmlEscapeAttr(value)}">\`;
+  const re=new RegExp(\`<meta\\\\b(?=[^>]*\\\\bname=(?:"\${escapedName}"|'\${escapedName}'))[^>]*>\`,'i');
+  return re.test(html) ? html.replace(re,tag) : html.replace(/<\/head>/i,tag+'\\n</head>');
 }
 function upsertPropertyMetaHtml(html,property,value){
   if(!value) return html;
-  const escaped=String(property).replace(/[.*+?^$(){}|[\]\\]/g,'\\function alternateLinks(html) {
-  const out = [];
-  for (const m of String(html).matchAll(/<link\b[^>]*rel=(?:"alternate"|'alternate')[^>]*>/gi)) {
-    const tag=m[0];
-    const href=tag.match(/\bhref=(?:"([^"]*)"|'([^']*)')/i);
-    const lang=tag.match(/\bhreflang=(?:"([^"]*)"|'([^']*)')/i);
-    const valueHref=href?.[1]??href?.[2]??'';
-    const valueLang=lang?.[1]??lang?.[2]??'';
-    if(valueHref.startsWith(`${ORIGIN}/`) && valueLang) out.push({hreflang:valueLang,href:valueHref});
-  }
-  return out;
-}
-');
-  const tag=`<meta property="${htmlEscapeAttr(property)}" content="${htmlEscapeAttr(value)}">`;
-  const re=new RegExp(`<meta\\b(?=[^>]*\\bproperty=(?:"${escaped}"|'${escaped}'))[^>]*>`,'i');
-  return re.test(html) ? html.replace(re,tag) : html.replace(/<\/head>/i,tag+'\n</head>');
+  const escaped=regexEscape(property);
+  const tag=\`<meta property="\${htmlEscapeAttr(property)}" content="\${htmlEscapeAttr(value)}">\`;
+  const re=new RegExp(\`<meta\\\\b(?=[^>]*\\\\bproperty=(?:"\${escaped}"|'\${escaped}'))[^>]*>\`,'i');
+  return re.test(html) ? html.replace(re,tag) : html.replace(/<\/head>/i,tag+'\\n</head>');
 }
 function setBodyDataAttr(html,name,value){
   if(!value) return html;
-  const escapedName=String(name).replace(/[.*+?^$(){}|[\]\\]/g,'\\function alternateLinks(html) {
-  const out = [];
-  for (const m of String(html).matchAll(/<link\b[^>]*rel=(?:"alternate"|'alternate')[^>]*>/gi)) {
-    const tag=m[0];
-    const href=tag.match(/\bhref=(?:"([^"]*)"|'([^']*)')/i);
-    const lang=tag.match(/\bhreflang=(?:"([^"]*)"|'([^']*)')/i);
-    const valueHref=href?.[1]??href?.[2]??'';
-    const valueLang=lang?.[1]??lang?.[2]??'';
-    if(valueHref.startsWith(`${ORIGIN}/`) && valueLang) out.push({hreflang:valueLang,href:valueHref});
-  }
-  return out;
-}
-');
-  const attrText=`${name}="${htmlEscapeAttr(value)}"`;
+  const escapedName=regexEscape(name);
+  const attrText=\`\${name}="\${htmlEscapeAttr(value)}"\`;
   return html.replace(/<body\b([^>]*)>/i,(full,attrs)=>{
-    const re=new RegExp(`\\s${escapedName}=(?:"[^"]*"|'[^']*')`,'i');
+    const re=new RegExp(\`\\\\s\${escapedName}=(?:"[^"]*"|'[^']*')\`,'i');
     const next=re.test(attrs) ? attrs.replace(re,' '+attrText) : attrs+' '+attrText;
     return '<body'+next+'>';
   });
