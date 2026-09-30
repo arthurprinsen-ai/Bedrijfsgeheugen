@@ -62,8 +62,8 @@ const section = `
       </article>
     </div>
 
-    <div class="pgl-flow" aria-label="Powerhouse closed loop">
-      <span>Data</span><i>→</i><span>Context</span><i>→</i><span>Intelligence</span><i>→</i><span>Beslissing</span><i>→</i><span>Actie</span><i>→</i><span>Bewijs</span><i>→</i><span>Leren</span>
+    <div class="pgl-flow">
+      <span>Data</span><i>→</i><span>Context</span><i>→</i><span>Powerhouse Intelligence</span><i>→</i><span>Beslissing</span><i>→</i><span>Actie</span><i>→</i><span>Bewijs</span><i>→</i><span>Leren</span>
     </div>
 
     <div class="pgl-trust">
@@ -78,7 +78,7 @@ const section = `
 
     <div class="pgl-actions">
       <a class="pgl-btn" href="https://www.bedrijfsgeheugen.nl/zelfscan">Start gratis met je Bedrijfslek-scan →</a>
-      <a class="pgl-btn secondary" href="/product">Bekijk Powerhouse</a>
+      <a class="pgl-btn secondary" href="https://www.bedrijfsgeheugen.nl/product">Bekijk Powerhouse</a>
     </div>
   </div>
 </section>`;
