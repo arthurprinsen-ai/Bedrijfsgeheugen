@@ -729,7 +729,12 @@ for (const file of files) {
   localizeStructuredData(nlDoc,'nl',route,translations);
   const nlOut = outputPath('nl',file);
   ensureDir(nlOut);
-  fs.writeFileSync(nlOut,serialize(nlDoc));
+  const nlSerialized=serialize(nlDoc);
+  fs.writeFileSync(nlOut,nlSerialized);
+  // Dutch is canonically served on the unprefixed route. Write the finalized
+  // NL locale metadata back to that public source so the actual canonical page,
+  // not only the legacy /nl artifact, carries reciprocal hreflang and locale SEO.
+  fs.writeFileSync(path.join(ROOT,file),nlSerialized);
 
   const enDoc = parse(sourceHtml);
   const enRefs = collectTranslatables(enDoc);
