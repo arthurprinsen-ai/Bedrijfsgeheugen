@@ -46,7 +46,7 @@
   "version": "powerhouse-ai-model-intelligence-v2",
   "coverage_policy": {
     "objective": "broadest decision-relevant model catalog, including frontier, economy, open-weight and specialist modalities",
-    "minimum_seed_models": 80,
+    "minimum_seed_models": 100,
     "required_model_families": [
       "general text/reasoning",
       "coding",
@@ -100,6 +100,11 @@
     ],
     "Alibaba/Qwen": [
       "official Qwen model/license sources; deployment pricing is provider-specific"
+    ],
+    "Amazon": [
+      "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "https://docs.aws.amazon.com/bedrock/latest/userguide/models-region-compatibility.html"
     ]
   }
 }
