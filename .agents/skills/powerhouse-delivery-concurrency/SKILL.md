@@ -474,3 +474,11 @@ CI Calibration remains read-only and has no repository mutation authority. The A
 - Downward/defensive tuning remains metric-derived and bounded to the existing tuning allowlist.
 - Calibration observations remain non-persistent signals.
 - Every persistent tuning change still requires the existing protected optimizer PR and all Required/security/exact-SHA/production gates.
+
+## Non-blocking remote gate rule
+
+Fingerprint: `delivery|async-continuation|nonblocking-workflow-wait|v1`.
+
+The current queue-pressure authority is deliberately strict: soft pressure at 8 active or 5 queued runs, hard circuit at 12 active or 8 queued runs, and at most 3 projected new runs for one mutation. These values must match `brain/policies/powerhouse-agent-continuity-v1.json#queue_pressure_governor`; documentation drift is a control-plane defect.
+
+A queued/running remote gate never makes the owning chat or agent idle. Persist a checkpoint, continue independent work, reuse the active exact-head run, and resume terminal delivery automatically. Newer authoritative main may supersede stale reversible production waits; never use this rule to bypass required quality/security gates.

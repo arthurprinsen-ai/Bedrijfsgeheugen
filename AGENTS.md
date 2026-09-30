@@ -160,9 +160,9 @@ Fingerprint: `github|actions-queue-pressure-governor|predict-before-dispatch|v1`
 
 Iedere chat, agent, workflow en recovery-node leest vóór een materiële GitHub-write, commitreeks, workflow-dispatch, retry, reconcile of recoveryactie de actuele Actions-druk én voorspelt hoeveel nieuwe runs de actie kan veroorzaken.
 
-- soft pressure: 12 actieve of 10 queued runs; geen optionele workflows, writes bundelen en exact-head werk hergebruiken;
-- hard circuit: 20 actieve of 20 queued runs; geen nieuw recovery- of optioneel CI-werk;
-- maximaal 6 voorspelde nieuwe runs per actie; boven dat budget eerst scope verkleinen, bundelen of fan-out verwijderen;
+- soft pressure: 8 actieve of 5 queued runs; geen optionele workflows, writes bundelen en exact-head werk hergebruiken;
+- hard circuit: 12 actieve of 8 queued runs; geen nieuw recovery- of optioneel CI-werk;
+- maximaal 3 voorspelde nieuwe runs per actie; boven dat budget eerst scope verkleinen, bundelen of fan-out verwijderen;
 - één obligation = één canonieke executable PR; queue/cancel/main-drift is nooit reden voor een duplicate PR;
 - één PR/head krijgt nooit bewust een tweede actieve Required- of BRAIN-run;
 - borging/documentatie/learning/skill-writes van één obligation worden waar veilig vóór remote CI gebundeld;
