@@ -170,33 +170,6 @@ jobs:
           STATIC_I18N_NETWORK: '0'
           STATIC_I18N_REQUIRE_CACHE: '1'
         run: node tools/site-shell/build-localized-routes.mjs --validate-cache
-      - name: Run exact Netlify production build parity before merge
-        if: steps.integration.outputs.full_shared_suite == 'true'
-        env:
-          COMMIT_REF: ${{ steps.scope.outputs.change_head_sha }}
-          CONTEXT: production
-          DEPLOY_ID: required-premerge-production-build
-          STATIC_I18N_NETWORK: '0'
-          STATIC_I18N_REQUIRE_CACHE: '1'
-          STATIC_I18N_CONCURRENCY: '1'
-        run: |
-          set -euo pipefail
-          node tools/site-shell/pricing-build-integrity.mjs capture
-          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
-          node tools/bouw-powerhouse-auth.mjs
-          node tools/bouw-kennisindex.mjs
-          node tools/bouw-v18-production.mjs
-          node tools/apply-tabbladen.mjs
-          node tools/bouw-v18-views.mjs
-          node tools/bouw-v18-chrome-alles.mjs
-          node tools/prijzen-uit-de-homepage.mjs
-          node tools/site-shell/pricing-build-integrity.mjs restore
-          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
-          node tools/normaliseer-site-ui.mjs
-          node tools/site-shell/apply-i18n.mjs
-          node tools/site-shell/build-localized-routes.mjs
-          node tools/genereer-sitemap.mjs
-          node tools/bouw-release-evidence.mjs
       - name: Verify previously unwired test contracts
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: >-
@@ -245,6 +218,7 @@ jobs:
           tests/ai-model-seo-cluster-v1.test.mjs
           tests/ai-model-production-hotfix-v1.test.mjs
           tests/ai-model-advisor-v1.test.mjs
+          tests/brain-netlify-premerge-build-parity-v1.test.mjs
           tests/single-obligation-owner-learning.test.mjs
           tests/site-shell-homepage-context-slider-navigation-resilience.test.mjs
           tests/social-learning-compatibility.test.mjs
@@ -289,6 +263,33 @@ jobs:
       - name: Verify Autonomous Engineering Fabric v3 authority contract
         if: steps.integration.outputs.full_shared_suite == 'true'
         run: node scripts/brain/autonomous-engineering-fabric-v3.mjs --check
+      - name: Run exact Netlify production build parity before merge
+        if: steps.integration.outputs.full_shared_suite == 'true'
+        env:
+          COMMIT_REF: ${{ steps.scope.outputs.change_head_sha }}
+          CONTEXT: production
+          DEPLOY_ID: required-premerge-production-build
+          STATIC_I18N_NETWORK: '0'
+          STATIC_I18N_REQUIRE_CACHE: '1'
+          STATIC_I18N_CONCURRENCY: '1'
+        run: |
+          set -euo pipefail
+          node tools/site-shell/pricing-build-integrity.mjs capture
+          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          node tools/prijzen-uit-de-homepage.mjs
+          node tools/site-shell/pricing-build-integrity.mjs restore
+          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
+          node tools/normaliseer-site-ui.mjs
+          node tools/site-shell/apply-i18n.mjs
+          node tools/site-shell/build-localized-routes.mjs
+          node tools/genereer-sitemap.mjs
+          node tools/bouw-release-evidence.mjs
 
   backend:
     needs: preflight
