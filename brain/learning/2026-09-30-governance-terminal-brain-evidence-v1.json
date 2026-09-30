@@ -1,0 +1,34 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "1.0",
+  "fingerprint": "delivery|terminal-closure|governance-brain-evidence|v1",
+  "observed_at": "2026-09-30T09:31:00Z",
+  "problem": "A governance-only merged obligation could fail terminal closure after all exact-head gates were green because its merge-SHA Brain Foundation push run was cancelled by a newer main commit.",
+  "root_cause": [
+    "Terminal closure treated one specific merge-SHA Brain Foundation run as the only fallback evidence even for non-runtime governance changes.",
+    "Concurrent main movement can legitimately cancel that push run although the merge remains contained in current main and other exact-merge Brain verification succeeded."
+  ],
+  "prevention": [
+    "For governance-only changes, accept successful exact-merge Whole Brain Canonical Loop v2 or Powerhouse Skill Projection as Brain evidence.",
+    "Require current-main containment before accepting descendant governance evidence.",
+    "Keep Required and CodeQL exact-head gates mandatory; do not weaken runtime-affecting closure."
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ],
+  "compiler": {
+    "failure_class": "TERMINAL_CLOSURE_SUPERSESSION_STALL",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-obligation-terminalizer-squash.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-obligation-terminalizer-squash.test.mjs"
+    ]
+  }
+}
