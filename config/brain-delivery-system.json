@@ -483,7 +483,11 @@
         "automotive-software-koppelen.html",
         "tests/branche-applicaties-integraties.test.mjs",
         "tests/components/",
-        ".cache/bg-static-i18n-en"
+        ".cache/bg-static-i18n-en",
+        "ai-modelwijzer.html",
+        "data/ai-model-catalog.json",
+        "tests/ai-modelwijzer-v1.test.mjs",
+        "tools/ai-modelwijzer-netlify-build-check.mjs"
       ],
       "requiredContracts": [
         "BG166",
