@@ -1,0 +1,44 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "1.0",
+  "fingerprint": "delivery|terminal-descendant-evidence|superseded-brain-run|v1",
+  "observed_at": "2026-09-30T09:34:00Z",
+  "problem": "A merged obligation could fail terminal closure when its exact merge Brain foundation run was cancelled by newer main, while terminalizer could emit LIVE_BEWEZEN with merged_lineage_verified=false.",
+  "root_cause": [
+    "Cancelled superseded Brain evidence was treated as a genuine gate failure.",
+    "GITHUB_ENV does not propagate to processes inside the same shell step, so LINEAGE_MODE became unknown.",
+    "Terminalizer did not reject a false merged_lineage_verified boolean."
+  ],
+  "fix": [
+    "Allow descendant Brain proof only for cancelled/skipped exact runs after merge containment in current main.",
+    "Keep genuine exact Brain failures fail-closed.",
+    "Pass LINEAGE_MODE directly into the same Node invocation.",
+    "Reject LIVE evidence when merged lineage verification is false.",
+    "Scope terminalizer workflow changes to automation delivery."
+  ],
+  "prevention": [
+    "Supersession may replace only reversible cancelled/skipped evidence, never genuine failing quality evidence.",
+    "Terminal status requires every mandatory evidence boolean true.",
+    "Same-step shell state is passed directly rather than via GITHUB_ENV."
+  ],
+  "compiler": {
+    "failure_class": "TERMINAL_CLOSURE",
+    "scope": "GITHUB",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs",
+      "tests/github-delivery-state-machine-terminal-closure.test.mjs",
+      "tests/brain-terminal-brain-gate-trigger-parity-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-terminal-descendant-evidence-recovery-v1.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    ".agents/skills/powerhouse-delivery-concurrency/SKILL.md"
+  ]
+}
