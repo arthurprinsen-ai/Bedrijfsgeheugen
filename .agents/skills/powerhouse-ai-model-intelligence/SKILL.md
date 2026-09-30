@@ -51,3 +51,23 @@ The advisor must use specialist-intent gating: a specialist model may not outran
 Public filters must include at least provider, tier, governance profile, modality and task/use case. The public page must display both strengths and limitations.
 
 Coverage is continuously expanded from official sources. “Complete” means the broadest maintained decision catalog with explicit freshness/provenance, not a frozen claim that every model in existence is known forever.
+
+
+## Provider/deployment governance authority
+Fingerprint: `powerhouse|ai-model-governance|deployment-path-not-provider-label|v1`.
+
+Canonical source: `data/ai-provider-governance-v1.json`.
+
+Model selection for sensitive data MUST evaluate deployment-path evidence separately from model quality:
+- storage residency;
+- inference residency;
+- provider jurisdiction;
+- customer-data training policy;
+- default retention;
+- zero-data-retention availability;
+- customer-managed keys;
+- private networking;
+- self-host/customer-cloud availability;
+- sovereignty level.
+
+A provider being European, a model being open-weight, or storage being in the EU never proves EU inference or full sovereignty. The public advisor must surface the matching deployment path and official governance source when available.
