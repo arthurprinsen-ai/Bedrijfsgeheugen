@@ -1628,7 +1628,8 @@
           "paid_order",
           "realized_revenue"
         ],
-        "system_map_projection": "seo-conversion-orders.runtime.companyBrainCategory"
+        "system_map_projection": "seo-conversion-orders.runtime.companyBrainCategory",
+        "static_i18n_post_shell_final_artifact_coverage_required": true
       }
     },
     {

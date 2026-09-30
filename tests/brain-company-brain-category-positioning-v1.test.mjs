@@ -43,3 +43,21 @@ test('delivery classifier recognizes the new public page',()=>{
   const website=delivery.lanes.find(lane=>lane.id==='website');
   assert.ok(website?.paths.includes('company-brain.html'));
 });
+
+test('static i18n patch covers final post-shell Company Brain strings',()=>{
+  const patch=JSON.parse(fs.readFileSync('config/bg-static-i18n-en.d/20260930-company-brain-category-v1.json','utf8'));
+  const required=[
+    'Vergelijking tussen de huidige situatie en de situatie met company brain voor het mkb',
+    'Bekijk het platform',
+    'De categorie Company Brain draait om één gedeelde context voor mensen en AI.',
+    'Dat is waardevol, maar context alleen verandert nog niets in je bedrijf. Bedrijfsgeheugen koppelt die context aan wat er buiten en binnen verandert, wat geraakt wordt, welke actie nodig is en wat het resultaat daarvan was.',
+    'Company Brain',
+    'Dit is het productprincipe achter Bedrijfsgeheugen.',
+    'Het brein is niet het eindpunt; het is de basis voor betere uitvoering.',
+    'Als signalen, besluiten en kennis niet doorstromen naar uitvoering, blijft een deel van de waarde van je systemen en mensen onbenut.',
+    'Daarom stuurt Bedrijfsgeheugen niet op meer documenten of meer AI-antwoorden, maar op aantoonbare acties en uitkomsten.',
+    "Je krijgt direct je score, grootste risico's en drie concrete acties.",
+    'Geen formulier vooraf.'
+  ];
+  for(const source of required) assert.ok(typeof patch[source]==='string' && patch[source].trim(), 'missing static translation: '+source);
+});

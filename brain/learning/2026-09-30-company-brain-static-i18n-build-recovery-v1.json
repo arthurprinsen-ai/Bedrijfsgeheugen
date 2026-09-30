@@ -1,0 +1,33 @@
+{
+  "id": "2026-09-30-company-brain-static-i18n-build-recovery-v1",
+  "fingerprint": "website|static-i18n|post-shell-final-string-coverage|v1",
+  "type": "RECOVERY",
+  "observed_at": "2026-09-30",
+  "signal": "Netlify exact-main builds for the merged Company Brain category failed after source-level implementation had already passed repository syntax and governance checks.",
+  "root_cause": "The static English cache patch covered source-level strings but final canonical-shell/CRO transforms split or introduced exact translatable strings that were not present in the cache. STATIC_I18N_REQUIRE_CACHE=1 correctly failed closed.",
+  "decision": "Add all missing final-artifact strings to the canonical Company Brain i18n patch and make post-shell final-artifact translation coverage a permanent chat/agent continuity rule.",
+  "failure_class": "I18N",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "evidence": {
+    "failed_netlify_deploys": [
+      "6abcc8e43755c1132dfb791f",
+      "6abcc939f771a22b21c16fb6"
+    ],
+    "exact_main_at_failure": "88634abdb4ec4e7e9933692464150e395866274b",
+    "local_production_source_replay": "Build reached build-localized-routes after all prior V18/shell/CRO steps; post-shell string audit found missing Company Brain translations.",
+    "missing_final_strings_count": 11
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-company-brain-category-positioning-v1.test.mjs"
+    ]
+  },
+  "prevention": [
+    "Validate static English coverage against final post-shell build output, not only source HTML",
+    "Keep STATIC_I18N_REQUIRE_CACHE=1 fail-closed",
+    "Do not claim LIVE until exact-main deploy and NL/EN public readback are green"
+  ]
+}
