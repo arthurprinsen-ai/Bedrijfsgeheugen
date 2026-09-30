@@ -23,7 +23,8 @@
     "docs/growth-revenue-os-architecture.md",
     "docs/superpowers/skills/",
     "package.json",
-    "docs/self-healing-agents.md"
+    "docs/self-healing-agents.md",
+    "docs/sitestandaard.md"
   ],
   "nonExecutableSharedPaths": [
     "docs/brain/component-registry.json",
