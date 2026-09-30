@@ -1,0 +1,37 @@
+{
+  "id": "2026-09-30-ai-modelwijzer-v2-delivery-classification",
+  "fingerprint": "powerhouse|ai-modelwijzer-v2|delivery-classification|v1",
+  "status": "ACTIVE_PREVENTION",
+  "failure_class": "CLASSIFIER_GAP",
+  "problem": "The 103-model AI Modelwijzer merged to main, but production readback failed before deployment because its public root page, comparison clusters and model catalog were not classified by the delivery control plane.",
+  "root_cause": "The Modelwijzer v2 content expansion added new public routes and a public data authority without extending the website-lane path registry in config/brain-delivery-system.json.",
+  "fix": "Register the AI Modelwijzer root, comparison/provider clusters and canonical model catalog in the website lane and lock the complete set with a Brain delivery regression.",
+  "prevention": [
+    "Every new public root route or public route family must be classified in the same candidate that creates it.",
+    "Public static data authorities consumed by a website surface must have an explicit delivery lane.",
+    "Production readback must stay fail-closed on unclassified paths."
+  ],
+  "evidence": {
+    "failed_main_sha": "603667db730e2bced1e3739ff6a9f8e0faa50f61",
+    "failed_run": "36685178738",
+    "policy": "config/brain-delivery-system.json",
+    "regression": "tests/brain-ai-modelwijzer-v2-delivery-classification.test.mjs"
+  },
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-modelwijzer-v2-delivery-classification.test.mjs"
+    ]
+  },
+  "skill_targets": [
+    "powerhouse-delivery-concurrency",
+    "powerhouse-ai-model-intelligence",
+    "powerhouse-system-map-governance"
+  ]
+}
