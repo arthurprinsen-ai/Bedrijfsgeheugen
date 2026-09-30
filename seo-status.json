@@ -1,5 +1,5 @@
 {
- "bijgewerkt": "2026-09-24",
+ "bijgewerkt": "2026-09-30",
  "zoekwoorden": [
   {
    "zoekwoord": "afas koppeling",
@@ -109,6 +109,13 @@
   {
    "zoekwoord": "business case ai mkb",
    "pagina": "/business-case-ai",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "company brain",
+   "pagina": "/company-brain",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
