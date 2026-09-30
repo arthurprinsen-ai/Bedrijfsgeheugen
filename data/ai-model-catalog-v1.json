@@ -4777,13 +4777,706 @@
       "id": "embed-multilingual-v3.0",
       "provider": "Cohere",
       "source": "https://docs.cohere.com/v1/changelog"
+    },
+    {
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision",
+        "video"
+      ],
+      "strengths": [
+        "simple automation",
+        "document processing",
+        "customer support",
+        "multimodal analysis"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 6,
+        "writing": 7,
+        "speed": 9,
+        "cost": 9,
+        "vision": 8,
+        "agents": 7
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-nova-2-lite",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "speech-to-speech",
+        "realtime voice conversations"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 6,
+        "code": 2,
+        "writing": 6,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 7
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-nova-2-sonic",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "frontier",
+      "status": "legacy",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision",
+        "video"
+      ],
+      "strengths": [
+        "complex reasoning",
+        "agentic workflows",
+        "model distillation"
+      ],
+      "limitations": [
+        "legacy lifecycle in Bedrock; verify successor before new production use"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 8,
+        "writing": 8,
+        "speed": 6,
+        "cost": 4,
+        "vision": 9,
+        "agents": 9
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "id": "amazon-nova-premier",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision",
+        "video"
+      ],
+      "strengths": [
+        "balanced multimodal work",
+        "document analysis",
+        "visual Q&A"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 7,
+        "writing": 8,
+        "speed": 8,
+        "cost": 7,
+        "vision": 9,
+        "agents": 7
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-nova-pro",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "vision",
+        "video"
+      ],
+      "strengths": [
+        "low-cost multimodal work",
+        "document analysis",
+        "visual Q&A"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 6,
+        "code": 5,
+        "writing": 7,
+        "speed": 9,
+        "cost": 9,
+        "vision": 8,
+        "agents": 6
+      },
+      "eu_processing": true,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "EU regions documented among supported Bedrock regions; exact profile must be selected",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-nova-lite",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "fast text processing",
+        "summarization",
+        "translation",
+        "classification"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 5,
+        "code": 5,
+        "writing": 6,
+        "speed": 10,
+        "cost": 10,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-nova-micro",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "specialist",
+      "status": "legacy",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "audio"
+      ],
+      "strengths": [
+        "speech-to-speech",
+        "realtime multilingual voice"
+      ],
+      "limitations": [
+        "legacy lifecycle in Bedrock; prefer current Sonic generation where applicable"
+      ],
+      "scores": {
+        "reasoning": 5,
+        "code": 2,
+        "writing": 6,
+        "speed": 10,
+        "cost": 7,
+        "vision": 1,
+        "agents": 6
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "id": "amazon-nova-sonic",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image",
+        "video"
+      ],
+      "strengths": [
+        "multimodal embeddings",
+        "search",
+        "retrieval"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 1,
+        "code": 1,
+        "writing": 1,
+        "speed": 9,
+        "cost": 8,
+        "vision": 8,
+        "agents": 1
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-nova-multimodal-embeddings",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "specialist",
+      "status": "legacy",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "image generation",
+        "image editing",
+        "watermarking"
+      ],
+      "limitations": [
+        "legacy lifecycle in listed Bedrock version; verify current image-generation successor"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 7,
+        "cost": 6,
+        "vision": 9,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "id": "amazon-nova-canvas",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "specialist",
+      "status": "legacy",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image",
+        "video"
+      ],
+      "strengths": [
+        "video generation",
+        "camera motion controls"
+      ],
+      "limitations": [
+        "legacy lifecycle in listed Bedrock version; verify current video-generation successor"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 6,
+        "cost": 5,
+        "vision": 9,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-lifecycle-legacy.html",
+      "id": "amazon-nova-reel",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "text embeddings",
+        "retrieval",
+        "configurable dimensions"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 1,
+        "code": 1,
+        "writing": 1,
+        "speed": 10,
+        "cost": 8,
+        "vision": 1,
+        "agents": 1
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-titan-text-embeddings-v2",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "image generation",
+        "image editing",
+        "watermarking"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 2,
+        "code": 1,
+        "writing": 2,
+        "speed": 7,
+        "cost": 6,
+        "vision": 9,
+        "agents": 2
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-titan-image-generator-g1-v2",
+      "provider": "Amazon"
+    },
+    {
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text",
+        "image"
+      ],
+      "strengths": [
+        "multimodal embeddings",
+        "search",
+        "recommendations"
+      ],
+      "limitations": [
+        "verify exact regional availability and pricing for chosen Bedrock endpoint"
+      ],
+      "scores": {
+        "reasoning": 1,
+        "code": 1,
+        "writing": 1,
+        "speed": 9,
+        "cost": 8,
+        "vision": 8,
+        "agents": 1
+      },
+      "eu_processing": null,
+      "eu_storage": null,
+      "open_weights": false,
+      "self_host": false,
+      "jurisdiction": "US",
+      "deployment": [
+        "Amazon Bedrock"
+      ],
+      "source_type": "official-cloud-provider",
+      "verified_at": "2026-09-30",
+      "governance": {
+        "storage_residency": "AWS region/deployment dependent",
+        "inference_residency": "AWS region/deployment dependent",
+        "training_on_customer_data": "verify current Bedrock/Amazon model contract",
+        "retention": "verify current Bedrock service terms",
+        "zero_data_retention": "verify current service configuration",
+        "subprocessors": "AWS/service dependent",
+        "dpa": "AWS contract dependent",
+        "cmk": "service/configuration dependent",
+        "private_networking": "AWS networking options dependent"
+      },
+      "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
+      "id": "amazon-titan-multimodal-embeddings-g1",
+      "provider": "Amazon"
     }
   ],
   "coverage": {
-    "model_count": 90,
-    "provider_count": 9,
+    "model_count": 103,
+    "provider_count": 10,
     "current_scope": [
       "Alibaba/Qwen",
+      "Amazon",
       "Anthropic",
       "Cohere",
       "DeepSeek",
@@ -4794,7 +5487,6 @@
       "xAI"
     ],
     "expansion_queue": [
-      "Amazon Nova",
       "Microsoft Phi",
       "NVIDIA Nemotron",
       "Moonshot Kimi direct",
