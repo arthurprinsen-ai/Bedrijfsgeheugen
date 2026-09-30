@@ -1,0 +1,25 @@
+{
+  "id": "2026-09-30-explicit-public-locale-navigation-v2",
+  "fingerprint": "website|i18n|explicit-public-locale-navigation|v2",
+  "type": "RECOVERY",
+  "observed_at": "2026-09-30",
+  "failure_class": "PUBLIC_LOCALE_CLICK_NAVIGATION_DROPPED",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "root_cause": "Public language options persisted locale state but relied on the browser's implicit anchor default after mobile menu state mutated during the same click.",
+  "fix": "Public language-option clicks prevent implicit navigation, close menus and call location.assign() with the canonical localized href.",
+  "prevention": [
+    "Never rely on implicit anchor navigation for the public locale switch",
+    "Keep cross-page NL→EN→NL production browser proof fail-closed",
+    "Classify locale-click timeout as runtime interaction defect, not Netlify transport failure"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-i18n-persistent-navigation-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ]
+  },
+  "status": "RECOVERY_CANDIDATE"
+}
