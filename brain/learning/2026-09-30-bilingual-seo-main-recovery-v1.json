@@ -21,9 +21,9 @@
   "fix": "Repair locale pairing/tests, register new surfaces, keep preview and production SEO pipelines aligned, then prove current main through protected recovery delivery.",
   "evaluation": {
     "historical_replay": [
-      "tests/seo-growth-search-intelligence.test.mjs",
-      "tests/seo-order-link-graph.test.mjs",
-      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+      "tests/brain-search-indexing-sitemap-contract.test.mjs",
+      "tests/brain-seo-localized-route-inheritance-v1.test.mjs",
+      "tests/brain-seo-validator-registry-contract.test.mjs"
     ]
   },
   "evidence": {
