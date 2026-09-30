@@ -23,11 +23,17 @@
     "assets/js/i18n.js",
     "tests/brain-i18n-persistent-navigation-v1.test.mjs",
     "PR #3406",
-    "user screenshot/reference behavior from neno.co"
+    "user screenshot/reference behavior from neno.co",
+    "rebase onto current main after concurrent AI Modelwijzer promotion",
+    "delivery classification repaired for docs/sitestandaard.md"
   ],
   "evaluation": {
-    "historical_replay": ["tests/brain-i18n-persistent-navigation-v1.test.mjs"],
-    "canary": ["tools/site-shell/verify-pricing-i18n-production.mjs"],
+    "historical_replay": [
+      "tests/brain-i18n-persistent-navigation-v1.test.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/verify-pricing-i18n-production.mjs"
+    ],
     "production_readback_required": true
   },
   "skill_targets": [
@@ -35,5 +41,6 @@
     "powerhouse-continuity",
     "powerhouse-system-map-governance"
   ],
-  "skill_projection_required": true
+  "skill_projection_required": true,
+  "revision": 2
 }
