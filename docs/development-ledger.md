@@ -344,3 +344,13 @@ Supported material outcome types are `ERROR`, `RECOVERY`, `IMPROVEMENT`, `OPPORT
 - **Regression gates:** `brain/economics/management-accounting-intelligence.test.mjs` en `portal-v2/modules/management-accounting-intelligence.test.mjs`.
 - **Owner:** Impact/Value Intelligence + Portal/Executive Cockpit.
 - **Reusable lesson:** stuur niet op losse KPI's; verbind workforce, productiviteit, operatie, commercie, marge, cash, kapitaal en waarde in één evidence-backed graph en laat alleen expliciet bewezen benchmarkgaps automatisch doorwerken naar roadmapprioriteit.
+
+## 2026-09-30 — RECOVERY — Persistent public locale navigation v1
+- **Fingerprint:** `website|i18n|persistent-public-navigation|v1`.
+- **Signal:** de actuele pagina schakelde naar English, maar een volgende gewone interne menu-/paginalink kon terugkeren naar Nederlands.
+- **Impact:** taalkeuze was niet sitebreed persistent en de publieke CMS-shell leverde een inconsistente tweetalige journey.
+- **Root cause:** same-route locale switching bestond, maar ordinary same-origin public hrefs bleven onprefixte Dutch routes.
+- **Final fix:** `assets/js/i18n.js` normaliseert eligible public links naar de actieve locale, bewaart query/hash, sluit technische/portal-paden uit en verwerkt dynamisch toegevoegde navigatie.
+- **Regression gate:** `tests/brain-i18n-persistent-navigation-v1.test.mjs` plus borgingtest `tests/brain-i18n-persistent-navigation-borging-v1.test.mjs`.
+- **Owner:** Website/UX + Powerhouse continuity + System Map governance.
+- **Reusable lesson:** locale is sitewide navigatiestatus; een correcte taal op alleen de huidige pagina is geen voldoende i18n-bewijs.
