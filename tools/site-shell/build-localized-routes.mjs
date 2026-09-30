@@ -410,6 +410,51 @@ function applyLocaleRevenueMetadata(doc,locale,route) {
   }
 }
 
+function localizeStructuredData(doc,locale,route,translations) {
+  const localizedUrl=SITE+canonicalRoute(locale,route);
+  const revenue=SEO_LOCALE_REVENUE.bySourceRoute.get(normalizedRoute(route));
+  const localizeString=(value,key='')=>{
+    const text=String(value||'');
+    if(key==='inLanguage') return locale==='en'?'en':'nl-NL';
+    const same=resolveSameOriginAbsolute(text);
+    if(same && publicRoutes.has(normalizedRoute(same.path))) return SITE+canonicalRoute(locale,normalizedRoute(same.path))+same.suffix;
+    if(locale==='en' && translations){
+      const hit=translations.get(normalized(text));
+      if(typeof hit==='string'&&hit.trim()) return hit;
+    }
+    return value;
+  };
+  const walk=(value,key='')=>{
+    if(Array.isArray(value)) return value.map(v=>walk(v,key));
+    if(value&&typeof value==='object'){
+      const next={};
+      for(const [k,v] of Object.entries(value)) next[k]=walk(v,k);
+      if(locale==='en' && next.url===localizedUrl && revenue?.en){
+        if(revenue.en.title && typeof next.name==='string') next.name=revenue.en.title.replace(/\s*\|\s*Bedrijfsgeheugen\s*$/,'');
+        if(revenue.en.description && typeof next.description==='string') next.description=revenue.en.description;
+        if('inLanguage' in next) next.inLanguage='en';
+      }
+      return next;
+    }
+    if(typeof value==='string') return localizeString(value,key);
+    return value;
+  };
+  const visit=node=>{
+    if(node.tagName==='script' && String(attr(node,'type')||'').toLowerCase()==='application/ld+json'){
+      const text=(node.childNodes||[]).filter(x=>x.nodeName==='#text').map(x=>x.value||'').join('').trim();
+      if(text){
+        try{
+          const parsed=JSON.parse(text);
+          const localized=walk(parsed);
+          node.childNodes=[{nodeName:'#text',value:JSON.stringify(localized).replace(/</g,'\\u003c'),parentNode:node}];
+        }catch{}
+      }
+    }
+    for(const child of node.childNodes||[]) visit(child);
+  };
+  visit(doc);
+}
+
 function setLocaleMetadata(doc,locale,route,translated=true) {
   const html = findFirst(doc,n=>n.tagName==='html');
   const head = findFirst(doc,n=>n.tagName==='head');
@@ -681,6 +726,7 @@ for (const file of files) {
   rewriteLanguageSwitchers(nlDoc,route,'nl');
   setLocaleMetadata(nlDoc,'nl',route,true);
   applyLocaleRevenueMetadata(nlDoc,'nl',route);
+  localizeStructuredData(nlDoc,'nl',route,translations);
   const nlOut = outputPath('nl',file);
   ensureDir(nlOut);
   fs.writeFileSync(nlOut,serialize(nlDoc));
@@ -697,6 +743,7 @@ for (const file of files) {
   rewriteLanguageSwitchers(enDoc,route,'en');
   setLocaleMetadata(enDoc,'en',route,missingForRoute.length === 0);
   applyLocaleRevenueMetadata(enDoc,'en',route);
+  localizeStructuredData(enDoc,'en',route,translations);
   const enOut = outputPath('en',file);
   ensureDir(enOut);
   fs.writeFileSync(enOut,serialize(enDoc));
