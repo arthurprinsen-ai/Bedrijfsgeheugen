@@ -946,3 +946,13 @@ Niet-onderhandelbaar:
 - LinkedIn-DM is alleen toegestaan via een echte geverifieerde send-DM capability; post/comment is nooit DM-fallback;
 - ontbrekende DM-capability mag alleen naar bestaande geautoriseerde e-mailrelatie fallbacken wanneer een geldig e-mailadres bekend is;
 - iedere fout schrijft root cause → fix → prevention naar Brain failure registry, learning en Loop Assurance.
+
+## Explicit public locale navigation — inherited
+Fingerprint: `website|i18n|explicit-public-locale-navigation|v2`.
+
+Voor alle huidige en toekomstige chats/agents geldt aanvullend:
+- publieke taalkeuze vertrouwt niet op browser-default-navigatie nadat een mobiel/menu-control zichzelf sluit;
+- een klik op `[data-bg-language-option]` buiten portalroutes voert expliciet `location.assign(href)` uit naar de canonieke locale-route;
+- de actieve locale blijft sitebreed persistent; English gebruikt `/en/*`, Nederlands onprefixte canonieke routes;
+- terminale i18n-proof vereist een echte browserroundtrip NL → EN → NL op productie, inclusief navigatie naar een andere publieke pagina;
+- een timeout op de locale-switch is een runtime-interactiedefect, niet een Netlify-transportdefect.
