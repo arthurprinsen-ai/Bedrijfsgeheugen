@@ -5469,11 +5469,408 @@
       "source": "https://docs.aws.amazon.com/bedrock/latest/userguide/model-cards-amazon.html",
       "id": "amazon-titan-multimodal-embeddings-g1",
       "provider": "Amazon"
+    },
+    {
+      "id": "falcon-h1-0.5b-instruct",
+      "provider": "TII/Falcon",
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "local inference",
+        "edge experimentation",
+        "low-resource self-hosting"
+      ],
+      "scores": {
+        "reasoning": 5,
+        "code": 5,
+        "writing": 5,
+        "speed": 10,
+        "cost": 10,
+        "vision": 1,
+        "agents": 4
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "UAE",
+      "deployment": [
+        "self-host",
+        "customer cloud",
+        "on-prem"
+      ],
+      "unit_price": "self-host / hosting-provider cost",
+      "source": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "limitations": [
+        "managed API pricing and residency depend on the chosen hosting path",
+        "verify license terms for the intended commercial deployment"
+      ],
+      "governance": {
+        "storage_residency": "customer-controlled when self-hosted",
+        "inference_residency": "customer-controlled when self-hosted",
+        "training_on_customer_data": "not applicable to customer-run inference",
+        "retention": "customer-controlled",
+        "zero_data_retention": "customer-controlled",
+        "subprocessors": "customer-controlled for self-host; hosting-provider dependent otherwise",
+        "dpa": "deployment-provider dependent",
+        "cmk": "customer-controlled / hosting-provider dependent",
+        "private_networking": "customer-controlled / hosting-provider dependent"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
+    },
+    {
+      "id": "falcon-h1-1.5b-instruct",
+      "provider": "TII/Falcon",
+      "tier": "economy",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "multilingual",
+        "local inference",
+        "efficient self-hosting"
+      ],
+      "scores": {
+        "reasoning": 6,
+        "code": 6,
+        "writing": 6,
+        "speed": 10,
+        "cost": 10,
+        "vision": 1,
+        "agents": 5
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "UAE",
+      "deployment": [
+        "self-host",
+        "customer cloud",
+        "on-prem"
+      ],
+      "unit_price": "self-host / hosting-provider cost",
+      "source": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "limitations": [
+        "managed API pricing and residency depend on the chosen hosting path",
+        "verify license terms for the intended commercial deployment"
+      ],
+      "governance": {
+        "storage_residency": "customer-controlled when self-hosted",
+        "inference_residency": "customer-controlled when self-hosted",
+        "training_on_customer_data": "not applicable to customer-run inference",
+        "retention": "customer-controlled",
+        "zero_data_retention": "customer-controlled",
+        "subprocessors": "customer-controlled for self-host; hosting-provider dependent otherwise",
+        "dpa": "deployment-provider dependent",
+        "cmk": "customer-controlled / hosting-provider dependent",
+        "private_networking": "customer-controlled / hosting-provider dependent"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
+    },
+    {
+      "id": "falcon-h1-3b-instruct",
+      "provider": "TII/Falcon",
+      "tier": "balanced",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "multilingual",
+        "reasoning",
+        "coding",
+        "efficient self-hosting"
+      ],
+      "scores": {
+        "reasoning": 7,
+        "code": 7,
+        "writing": 7,
+        "speed": 9,
+        "cost": 9,
+        "vision": 1,
+        "agents": 6
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "UAE",
+      "deployment": [
+        "self-host",
+        "customer cloud",
+        "on-prem"
+      ],
+      "unit_price": "self-host / hosting-provider cost",
+      "source": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "limitations": [
+        "managed API pricing and residency depend on the chosen hosting path",
+        "verify license terms for the intended commercial deployment"
+      ],
+      "governance": {
+        "storage_residency": "customer-controlled when self-hosted",
+        "inference_residency": "customer-controlled when self-hosted",
+        "training_on_customer_data": "not applicable to customer-run inference",
+        "retention": "customer-controlled",
+        "zero_data_retention": "customer-controlled",
+        "subprocessors": "customer-controlled for self-host; hosting-provider dependent otherwise",
+        "dpa": "deployment-provider dependent",
+        "cmk": "customer-controlled / hosting-provider dependent",
+        "private_networking": "customer-controlled / hosting-provider dependent"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
+    },
+    {
+      "id": "falcon-h1-7b-instruct",
+      "provider": "TII/Falcon",
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "multilingual",
+        "reasoning",
+        "coding",
+        "self-hosting"
+      ],
+      "scores": {
+        "reasoning": 8,
+        "code": 8,
+        "writing": 8,
+        "speed": 8,
+        "cost": 8,
+        "vision": 1,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "UAE",
+      "deployment": [
+        "self-host",
+        "customer cloud",
+        "on-prem"
+      ],
+      "unit_price": "self-host / hosting-provider cost",
+      "source": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "limitations": [
+        "managed API pricing and residency depend on the chosen hosting path",
+        "verify license terms for the intended commercial deployment"
+      ],
+      "governance": {
+        "storage_residency": "customer-controlled when self-hosted",
+        "inference_residency": "customer-controlled when self-hosted",
+        "training_on_customer_data": "not applicable to customer-run inference",
+        "retention": "customer-controlled",
+        "zero_data_retention": "customer-controlled",
+        "subprocessors": "customer-controlled for self-host; hosting-provider dependent otherwise",
+        "dpa": "deployment-provider dependent",
+        "cmk": "customer-controlled / hosting-provider dependent",
+        "private_networking": "customer-controlled / hosting-provider dependent"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
+    },
+    {
+      "id": "falcon-h1-34b-instruct",
+      "provider": "TII/Falcon",
+      "tier": "open-weight",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "reasoning",
+        "multilingual",
+        "coding",
+        "sovereign deployment"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 8,
+        "writing": 8,
+        "speed": 6,
+        "cost": 6,
+        "vision": 1,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "UAE",
+      "deployment": [
+        "self-host",
+        "customer cloud",
+        "on-prem"
+      ],
+      "unit_price": "self-host / hosting-provider cost",
+      "source": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "limitations": [
+        "managed API pricing and residency depend on the chosen hosting path",
+        "verify license terms for the intended commercial deployment"
+      ],
+      "governance": {
+        "storage_residency": "customer-controlled when self-hosted",
+        "inference_residency": "customer-controlled when self-hosted",
+        "training_on_customer_data": "not applicable to customer-run inference",
+        "retention": "customer-controlled",
+        "zero_data_retention": "customer-controlled",
+        "subprocessors": "customer-controlled for self-host; hosting-provider dependent otherwise",
+        "dpa": "deployment-provider dependent",
+        "cmk": "customer-controlled / hosting-provider dependent",
+        "private_networking": "customer-controlled / hosting-provider dependent"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
+    },
+    {
+      "id": "falcon-h1r-7b",
+      "provider": "TII/Falcon",
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "text"
+      ],
+      "strengths": [
+        "reasoning",
+        "math",
+        "coding",
+        "self-hosting"
+      ],
+      "scores": {
+        "reasoning": 9,
+        "code": 8,
+        "writing": 7,
+        "speed": 7,
+        "cost": 8,
+        "vision": 1,
+        "agents": 7
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "UAE",
+      "deployment": [
+        "self-host",
+        "customer cloud",
+        "on-prem"
+      ],
+      "unit_price": "self-host / hosting-provider cost",
+      "source": "https://huggingface.co/collections/tiiuae/falcon-h1",
+      "limitations": [
+        "managed API pricing and residency depend on the chosen hosting path",
+        "verify license terms for the intended commercial deployment"
+      ],
+      "governance": {
+        "storage_residency": "customer-controlled when self-hosted",
+        "inference_residency": "customer-controlled when self-hosted",
+        "training_on_customer_data": "not applicable to customer-run inference",
+        "retention": "customer-controlled",
+        "zero_data_retention": "customer-controlled",
+        "subprocessors": "customer-controlled for self-host; hosting-provider dependent otherwise",
+        "dpa": "deployment-provider dependent",
+        "cmk": "customer-controlled / hosting-provider dependent",
+        "private_networking": "customer-controlled / hosting-provider dependent"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
+    },
+    {
+      "id": "falcon-ocr",
+      "provider": "TII/Falcon",
+      "tier": "specialist",
+      "status": "active",
+      "input_usd_m": null,
+      "output_usd_m": null,
+      "cached_input_usd_m": null,
+      "context_k": null,
+      "modalities": [
+        "vision",
+        "text"
+      ],
+      "strengths": [
+        "OCR",
+        "document extraction",
+        "local/private deployment"
+      ],
+      "scores": {
+        "reasoning": 4,
+        "code": 2,
+        "writing": 3,
+        "speed": 8,
+        "cost": 9,
+        "vision": 9,
+        "agents": 3
+      },
+      "eu_processing": true,
+      "eu_storage": true,
+      "open_weights": true,
+      "self_host": true,
+      "jurisdiction": "UAE",
+      "deployment": [
+        "self-host",
+        "customer cloud",
+        "on-prem"
+      ],
+      "unit_price": "self-host / hosting-provider cost",
+      "source": "https://huggingface.co/tiiuae/Falcon-OCR",
+      "limitations": [
+        "managed API pricing and residency depend on the chosen hosting path",
+        "verify license terms for the intended commercial deployment"
+      ],
+      "governance": {
+        "storage_residency": "customer-controlled when self-hosted",
+        "inference_residency": "customer-controlled when self-hosted",
+        "training_on_customer_data": "not applicable to customer-run inference",
+        "retention": "customer-controlled",
+        "zero_data_retention": "customer-controlled",
+        "subprocessors": "customer-controlled for self-host; hosting-provider dependent otherwise",
+        "dpa": "deployment-provider dependent",
+        "cmk": "customer-controlled / hosting-provider dependent",
+        "private_networking": "customer-controlled / hosting-provider dependent"
+      },
+      "verified_at": "2026-09-30",
+      "source_type": "official-provider"
     }
   ],
   "coverage": {
-    "model_count": 103,
-    "provider_count": 10,
+    "model_count": 110,
+    "provider_count": 11,
     "current_scope": [
       "Alibaba/Qwen",
       "Amazon",
@@ -5484,6 +5881,7 @@
       "Meta",
       "Mistral AI",
       "OpenAI",
+      "TII/Falcon",
       "xAI"
     ],
     "expansion_queue": [
