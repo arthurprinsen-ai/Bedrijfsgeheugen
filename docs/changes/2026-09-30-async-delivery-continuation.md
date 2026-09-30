@@ -12,3 +12,5 @@ Implementation in this lineage:
 This prevents a queued or running workflow from becoming a conversational stop condition. Pending is internal state, not a user handoff.
 
 Additional optimization: `Required test` now derives `netlify_build_required` from actual Netlify-hosted runtime/build paths. Control-plane-only changes no longer execute the full deterministic site build merely because they require the shared governance suite.
+
+Lane reduction: `AGENTS.md` is now explicitly automation-scoped in the delivery planner. An agent-contract-only change therefore no longer fabricates website and portal lanes; true cross-runtime contracts remain shared and still fan out when necessary.

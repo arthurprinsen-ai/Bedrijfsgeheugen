@@ -112,6 +112,13 @@ test('schema domains can conflict without touching the same file', async () => {
   assert.deepEqual(deriveConflictContracts(['integrations/dataforseo/contracts/search.schema.json'], policy), ['dataforseo-contract']);
 });
 
+
+test('AGENTS contract changes are automation-scoped instead of four-lane runtime fan-out', async () => {
+  const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
+  const plan = createDeliveryPlan({ changedPaths:['AGENTS.md'], headSha:'a11ce1234567890b', policy });
+  assert.deepEqual(plan.lanes.map(lane => lane.id), ['automation']);
+});
+
 test('shared contract changes fan out to every affected governance lane without one release candidate', async () => {
   const policy = JSON.parse(await readFile('config/brain-delivery-system.json', 'utf8'));
   const plan = createDeliveryPlan({ changedPaths:['config/outcome-obligations.json'], headSha:'1234567890abcdef', policy });

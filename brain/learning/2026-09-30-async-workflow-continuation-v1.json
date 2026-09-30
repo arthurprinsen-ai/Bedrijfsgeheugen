@@ -9,21 +9,24 @@
     "Production source snapshots used non-cancelling global concurrency, allowing stale reversible runs to queue behind newer main.",
     "Some required jobs had no explicit job timeout.",
     "PR metadata errors could fail admission after expensive external preview work had already started.",
-    "Required test coupled exact Netlify production-build parity to full_shared_suite, so control-plane-only changes still spent time rebuilding the entire site."
+    "Required test coupled exact Netlify production-build parity to full_shared_suite, so control-plane-only changes still spent time rebuilding the entire site.",
+    "AGENTS.md was treated as generic executable shared state, which activated backend, portal, website and automation lanes even when only the agent/delivery contract changed."
   ],
   "fix": [
     "Make remote waiting non-blocking for every chat/agent and require a resumable checkpoint.",
     "Supersede stale reversible Production Source Snapshot runs with cancel-in-progress.",
     "Bound production snapshot and Required test jobs to 20 minutes.",
     "Require one active required workflow per exact candidate head and automatic resume after interruption.",
-    "Gate exact Netlify production-build parity on actual Netlify-hosted runtime/build paths rather than generic shared-suite classification."
+    "Gate exact Netlify production-build parity on actual Netlify-hosted runtime/build paths rather than generic shared-suite classification.",
+    "Classify AGENTS.md as automation-scoped control-plane work so it no longer fabricates portal/website runtime scope."
   ],
   "prevention": [
     "Never use pending/queued/in_progress as a terminal user-facing state.",
     "Do not redispatch a required run when the exact head already has one active.",
     "Batch repository writes before CI to reduce fan-out.",
     "Prefer latest-authoritative-main supersession for reversible production waiting work.",
-    "Control-plane-only policy/skill/workflow changes must not run full Netlify build parity unless a deploy-relevant path changed."
+    "Control-plane-only policy/skill/workflow changes must not run full Netlify build parity unless a deploy-relevant path changed.",
+    "Agent-contract documentation must use scoped control-plane classification; generic shared-path fan-out is reserved for contracts that truly affect every runtime lane."
   ],
   "skill_targets": [
     ".agents/skills/powerhouse-continuity/SKILL.md",
@@ -35,7 +38,8 @@
     "observed_in_progress": 10,
     "max_observed_runs_for_single_recent_sha": 13,
     "affected_pr": 3421,
-    "netlify_build_scope_gate": "required-test derives netlify_build_required from deploy-relevant changed paths"
+    "netlify_build_scope_gate": "required-test derives netlify_build_required from deploy-relevant changed paths",
+    "agents_lane_scope": "AGENTS.md -> automation via SCOPED_CONTROL_PLANE_LANES"
   },
   "compiler": {
     "failure_class": "ASYNC_WORKFLOW_WAIT_AND_QUEUE_SUPERSESSION_DEFECT"
@@ -61,6 +65,10 @@
       {
         "case": "only AGENTS/.github/Brain policy/learning/docs change",
         "expected": "Required test skips exact Netlify build parity while retaining delivery-control-plane tests"
+      },
+      {
+        "case": "AGENTS.md-only contract change",
+        "expected": "delivery plan activates automation lane only, never portal or website"
       }
     ]
   }
