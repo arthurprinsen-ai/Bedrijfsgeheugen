@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
 const routes=[
- 'openai-ai-modellen/index.html','claude-ai-modellen/index.html','gemini-ai-modellen/index.html','mistral-ai-modellen/index.html',
+ 'openai-ai-modellen/index.html','amazon-ai-modellen/index.html','claude-ai-modellen/index.html','gemini-ai-modellen/index.html','mistral-ai-modellen/index.html',
  'chatgpt-vs-claude/index.html','chatgpt-vs-gemini/index.html','claude-vs-gemini/index.html'
 ];
 
