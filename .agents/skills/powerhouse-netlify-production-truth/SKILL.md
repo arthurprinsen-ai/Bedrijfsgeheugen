@@ -126,3 +126,20 @@ Required:
 - a missing i18n cache entry is a content/build defect and must be repaired in the same candidate lineage before merge;
 - do not use a production deploy as the first place where deterministic build parity is evaluated;
 - transport/auth recovery and content/build recovery remain separate classifications.
+
+
+## Static i18n cache completeness is part of production truth
+
+Fingerprint: `netlify-static-i18n-cache-terminal-20260930-v1`.
+
+When `STATIC_I18N_REQUIRE_CACHE=1`, every translatable string selected by the canonical localized-route builder must exist in the merged static English cache before production promotion.
+
+Required recovery pattern:
+- reproduce the exact current-main production command chain locally or in CI;
+- derive missing strings from the same public-route selection and translation semantics as `tools/site-shell/build-localized-routes.mjs`;
+- add only the missing cache entries; never disable `STATIC_I18N_REQUIRE_CACHE` or enable network translation in production to bypass the gate;
+- include new strings introduced indirectly by shared shell/build transforms and SVG/text content that the compiler actually traverses;
+- run the production-equivalent cache validation before allowing another Netlify promotion;
+- keep deployment transport/auth recovery separate from build-content recovery.
+
+A production build failure caused by an incomplete static i18n cache is a build-content defect, not a Netlify credential defect. Repeated deploy retries without completing the cache are prohibited.
