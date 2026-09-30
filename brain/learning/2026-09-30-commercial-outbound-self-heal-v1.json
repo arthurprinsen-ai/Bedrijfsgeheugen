@@ -1,0 +1,55 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "fingerprint": "commercial|outbound-transport-self-heal|gmail-linkedin-dm|v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE",
+  "context": "Commercial autonomous email delivery failed despite valid sales actions. The failure was recovered the same day and the transport contract was tightened.",
+  "root_cause": [
+    "The configured Gmail identifier belonged to a different Composio/MCP environment than the server-side Composio API key project.",
+    "Direct Composio execution required top-level user/entity identity in addition to connected_account_id.",
+    "Provider error serialization collapsed structured errors into [object Object], hiding the actionable root cause."
+  ],
+  "fix": [
+    "Require provider-project and active-connection consistency before outbound writes.",
+    "Use the current pinned/default direct-execute contract and required top-level user/entity identity.",
+    "Persist full structured provider errors.",
+    "When server-side Gmail is unavailable but the canonical Gmail connector is available, recover within the same sales-action lineage and write provider message/thread IDs back."
+  ],
+  "prevention_rules": [
+    "A recoverable commercial transport/configuration failure is not terminal error.",
+    "Never treat an MCP word-id or alias as a raw Composio API connected-account ID without same-project verification.",
+    "Never retry after a possible external side effect until provider readback proves whether delivery occurred.",
+    "Preserve daily send cap, suppression, cooldown, relationship/consent, dedupe and republish-forbidden during recovery.",
+    "LinkedIn DM stays fail-closed unless a true send-DM capability is verified."
+  ],
+  "runtime_readback": {
+    "recovered_on": "2026-09-30",
+    "emails_sent_and_provider_verified": 5,
+    "deferred_due_to_daily_cap": 1,
+    "daily_send_cap": 5,
+    "deferred_action_id": "34e9322e-63cf-45fe-b01e-e6ed4e4e167c",
+    "supabase_edge_function": "powerhouse-autonomous-outreach",
+    "edge_function_version": 8,
+    "brain_failure_fingerprint": "commercial-email-composio-cross-project-account-mismatch-v1",
+    "brain_record": "commercial-outreach-self-heal-2026-09-30-v1"
+  },
+  "compiler": {
+    "failure_class": "COMMERCIAL_OUTBOUND_TRANSPORT_MISMATCH",
+    "scope": "COMMERCIAL_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "Five original sales actions are status done with verified Gmail provider message/thread IDs.",
+    "The sixth action remains prepared for the next valid run because the daily send cap is five.",
+    "Brain failure registry, canonical Brain learning and Loop Assurance were updated with the prevention contract.",
+    "Growth & Revenue OS automation now includes mandatory transport self-heal."
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-outbound-self-heal-v1.test.mjs"
+    ]
+  }
+}
