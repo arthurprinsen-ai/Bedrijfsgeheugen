@@ -32,3 +32,10 @@ A language change is not LIVE_BEWEZEN until all applicable checks are true:
 
 ## Queue discipline
 Production snapshot work is coalesced to the latest canonical main candidate. Do not create parallel deploy lineages for the same obligation. A stale or obsolete candidate must not outrank the current protected main.
+
+
+## Explicit language-option navigation
+
+Fingerprint: `website|i18n|explicit-language-option-navigation|v1`.
+
+Public language-option clicks are owned by `assets/js/i18n.js`: intercept the click, route through `setLocale(target)`, and let the public branch perform explicit `location.assign(localizedHref(target))`. Keep the href for semantic/no-JS behavior, but never use default anchor navigation as production runtime proof. The production canary must click the real control and observe the expected URL + `html[lang]`.

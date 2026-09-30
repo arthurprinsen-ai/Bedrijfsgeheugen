@@ -436,14 +436,11 @@
       const option = event.target.closest?.('[data-bg-language-option]');
       if (option) {
         const target = normalizeLocale(option.dataset.bgLanguageOption);
-        if (SUPPORTED.has(target)) {
-          try { localStorage.setItem(STORAGE_KEY, target); } catch {}
-          document.cookie = 'bg_locale=' + encodeURIComponent(target) + '; Path=/; Max-Age=31536000; SameSite=Lax';
-        }
-        if (isPortal()) {
-          event.preventDefault();
-          setLocale(target).catch(showLocaleError);
-        }
+        // Own language-option navigation explicitly. Mobile menu teardown and
+        // delegated click handlers must never be able to cancel the browser's
+        // default anchor navigation after a user chooses a locale.
+        event.preventDefault();
+        if (SUPPORTED.has(target)) setLocale(target).catch(showLocaleError);
         return;
       }
       const current = event.target.closest?.('button[data-bg-language-current]');

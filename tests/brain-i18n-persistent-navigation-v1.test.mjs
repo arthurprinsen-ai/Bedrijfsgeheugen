@@ -24,3 +24,11 @@ test('portal and technical endpoints stay outside public locale rewriting', () =
   assert.match(source,/'\/api\/'/);
   assert.match(source,/'\/assets\/'/);
 });
+
+
+test('language-option clicks use explicit locale navigation instead of default anchor navigation', () => {
+  const source = fs.readFileSync(runtime,'utf8');
+  assert.match(source,/const option = event\.target\.closest\?\.\('\[data-bg-language-option\]'\)/);
+  assert.match(source,/event\.preventDefault\(\);[\s\S]{0,220}setLocale\(target\)\.catch\(showLocaleError\)/);
+  assert.match(source,/location\.assign\(localizedHref\(normalized\)\)/);
+});

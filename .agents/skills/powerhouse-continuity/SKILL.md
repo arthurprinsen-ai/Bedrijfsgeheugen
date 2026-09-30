@@ -1517,3 +1517,10 @@ Mandatory:
 - after interruption, resume from the checkpoint automatically without requiring “ga door”.
 
 The user-facing terminal states remain `LIVE_BEWEZEN`, `ROLLED_BACK_GREEN` or evidenced `BLOCKED_HARD_BOUNDARY`. A pending workflow is never terminal.
+
+
+## Public locale click ownership
+
+Fingerprint: `website|i18n|explicit-language-option-navigation|v1`.
+
+A visible public language option is an executable navigation control. Its JS path must explicitly prevent default navigation and call the canonical locale transition owner, which then performs `location.assign(localizedHref(target))` on public pages. Do not rely on default anchor navigation after mobile-menu teardown. Production closure requires the existing click-driven NL→EN→NL browser canary.
