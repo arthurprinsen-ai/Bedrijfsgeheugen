@@ -402,6 +402,7 @@ test('delivery-control workflow edits stay in control-plane lanes without portal
       '.github/workflows/business-os-foundation.yml',
       '.github/workflows/portal-native-regression-tests.yml',
       '.github/workflows/production-source-snapshot.yml',
+      '.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
       '.github/workflows/required-test.yml',
       'AGENTS.md',
       'tests/brain-ci-critical-path-acceleration-v1.test.mjs',
