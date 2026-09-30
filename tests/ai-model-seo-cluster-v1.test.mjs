@@ -19,3 +19,12 @@ test('AI model SEO cluster is substantive, canonical and routes into the Modelwi
  const sitemapSource=fs.readFileSync('tools/genereer-sitemap.mjs','utf8');
  for(const path of routes) assert.ok(sitemapSource.includes(path));
 });
+
+test('AI model SEO cluster has a visible canonical header on every route',()=>{
+ for(const path of routes){
+   const html=fs.readFileSync(path,'utf8');
+   assert.match(html,/<header class="bg-ai-header">/);
+   assert.match(html,/aria-label="Hoofdnavigatie"/);
+   assert.match(html,/href="https:\/\/www\.bedrijfsgeheugen\.nl\/ai-modelwijzer"/);
+ }
+});
