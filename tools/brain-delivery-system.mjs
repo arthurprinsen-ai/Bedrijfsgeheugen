@@ -23,6 +23,9 @@ const SCOPED_CONTROL_PLANE_LANES = Object.freeze({
 });
 
 const SCOPED_WORKFLOW_LANES = Object.freeze({
+  '.github/workflows/production-source-snapshot.yml': 'automation',
+  '.github/workflows/portal-native-regression-tests.yml': 'automation',
+  '.github/workflows/business-os-foundation.yml': 'automation',
   '.github/workflows/approved-central-blog.yml': 'automation',
   '.github/workflows/powerhouse-assurance.yml': 'backend',
   '.github/workflows/powerhouse-quality-intelligence.yml': 'backend',
