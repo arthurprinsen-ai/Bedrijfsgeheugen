@@ -1,0 +1,21 @@
+{
+  "type": "POWERHOUSE_LEARNING",
+  "version": "v1",
+  "date": "2026-09-30",
+  "fingerprint": "delivery|terminal-live-handoff|main-netlify-browser-live|v1",
+  "problem": "Production could already be visible and working while chat reported only main or continued delivery work, creating ambiguity about whether development was still needed.",
+  "root_cause": "Repository state, Netlify deployment state, functional website state and governance closure were collapsed into one concept.",
+  "prevention": [
+    "report MAIN, NETLIFY_PRODUCTION, WEBSITE_READBACK, LIVE and BORGING separately",
+    "reconcile current production before reacting to a repeated live request",
+    "when requested behavior is already live, do not start new development/PR/deploy solely because closure metadata is incomplete",
+    "classify remaining skills/agents/chats/Brain/docs/ledger/System Map work as BORGING_PENDING"
+  ],
+  "skill_targets": [
+    ".agents/skills/powerhouse-terminal-live-handoff/SKILL.md",
+    ".agents/skills/powerhouse-system-map-governance/SKILL.md",
+    "skills/powerhouse-production-nl-en-delivery.md"
+  ],
+  "charts_and_control_surfaces": "Delivery charts must expose all five dimensions and may not equate main/deploy/live.",
+  "terminal_user_format": "MAIN ✓ | NETLIFY PRODUCTION ✓ | WEBSITE READBACK ✓ | LIVE ✓ | BORGING ✓"
+}
