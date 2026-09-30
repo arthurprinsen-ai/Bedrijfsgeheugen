@@ -19,3 +19,7 @@ Dit kan een netwerk- of appstream-onderbreking zelf niet fysiek uitsluiten. De b
 
 ## Systeemkaart-borging
 De capability is geregistreerd als `chat-stream-resilience-v1` in de canonieke Powerhouse System Map. Daarmee is de relatie tussen chats/agents, execution-resilience, continuity-skill, checkpoints, readback en terminal outcome expliciet discoverable voor volgende nodes en control surfaces.
+
+
+## Geen blocking chat-wait op remote werk
+Naast stream-herstel geldt nu ook dat CI-, Netlify-, browser- en provider-wachttijden de zichtbare chatturn niet langdurig mogen vasthouden. Powerhouse schrijft een checkpoint, behoudt ownership in de canonieke lineage en hervat vanuit actuele state. De gebruiker hoeft nooit een `Ga door`-knop te gebruiken om de taak levend te houden. Platformmeldingen over drukte of een sneller model zijn geen delivery-status.
