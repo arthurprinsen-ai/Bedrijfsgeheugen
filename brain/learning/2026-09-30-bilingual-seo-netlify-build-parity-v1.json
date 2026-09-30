@@ -1,0 +1,33 @@
+{
+  "id": "2026-09-30-bilingual-seo-netlify-build-parity-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "seo|bilingual|netlify-build-parity|v1",
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "Netlify production executed the full bilingual SEO build pipeline while the GitHub website build-parity lane still ran the older shorter pipeline. A production-only failure could therefore merge without the exact build command having been proven in CI.",
+  "prevention": [
+    "Website premerge build parity must execute the same SEO-order, locale, revenue-link, sitemap and locale-validation stages as Netlify production.",
+    "Changes to the production build command update the website parity workflow and its Brain regression in the same lineage.",
+    "Production promotion is retriggered only after exact build parity is green."
+  ],
+  "fix": "Extend the website lane production-build-parity sequence to the exact bilingual SEO Netlify stages and add a Brain regression that enforces their order.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-search-indexing-sitemap-contract.test.mjs"
+    ]
+  },
+  "evidence": {
+    "failed_netlify_deploy": "6abcfcde992ecd176ef25a99",
+    "failed_build": "6abcfcdd992ecd176ef25a97"
+  },
+  "skill_targets": [
+    "seo-revenue-growth",
+    "powerhouse-netlify-production-truth"
+  ]
+}
