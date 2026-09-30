@@ -28,5 +28,13 @@
     "website",
     "sales"
   ],
-  "revision": 1
+  "revision": 3,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-product-led-home-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-product-led-home-v1.test.mjs"
+  ]
 }
