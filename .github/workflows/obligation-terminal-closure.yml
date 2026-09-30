@@ -156,6 +156,21 @@ jobs:
           }
 
           require_required_or_descendant
+
+          changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
+          governance_only=true
+          while IFS= read -r path; do
+            [ -z "$path" ] && continue
+            case "$path" in
+              docs/*|.agents/*|tests/*|.github/*|brain/learning/*|brain/policies/*|tools/delivery/*|AGENTS.md|platform/system-map/canonical-system-map.mjs|tools/brain-delivery-system.mjs|config/powerhouse-agent-delivery-scheduler-v1.json)
+                ;;
+              *)
+                governance_only=false
+                break
+                ;;
+            esac
+          done <<< "$changed_files"
+
           require_brain_evidence() {
             brain_payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/unified-brain-delivery.yml/runs?head_sha=${HEAD_SHA}&per_page=50")"
             brain_id="$(jq -r --arg sha "$HEAD_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$brain_payload")"
@@ -170,6 +185,31 @@ jobs:
                 echo "::error::TERMINAL_CRITICAL_GATE_FAILED:BRAIN:run=$brain_id:conclusion=$brain_conclusion:head=$HEAD_SHA"
                 exit 78
               fi
+            fi
+
+            # Governance/control-plane merges do not need a deploy-coupled Brain
+            # foundation run tied forever to a superseded main SHA. Accept a
+            # successful whole-brain or skill-projection push run for the exact
+            # merge SHA, then rely on main containment + exact-head gates.
+            if [ "$governance_only" = "true" ]; then
+              for workflow in whole-brain-canonical-loop-v2.yml powerhouse-skill-projection.yml; do
+                payload="$(gh api "repos/${GITHUB_REPOSITORY}/actions/workflows/${workflow}/runs?head_sha=${MERGE_SHA}&event=push&per_page=50")"
+                run_id="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .id // empty' <<<"$payload")"
+                status="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .status // empty' <<<"$payload")"
+                conclusion="$(jq -r --arg sha "$MERGE_SHA" '[.workflow_runs[] | select(.head_sha==$sha)] | sort_by(.created_at) | last | .conclusion // empty' <<<"$payload")"
+                if [ -n "$run_id" ] && [ "$status" = "completed" ] && [ "$conclusion" = "success" ]; then
+                  git fetch origin main --no-tags
+                  current_main="$(git rev-parse origin/main)"
+                  git merge-base --is-ancestor "$MERGE_SHA" "$current_main" || {
+                    echo "::error::TERMINAL_GOVERNANCE_MAIN_CONTAINMENT_FAILED:$MERGE_SHA:$current_main"
+                    exit 78
+                  }
+                  echo "TERMINAL_GOVERNANCE_BRAIN_EVIDENCE_PROVEN:workflow=$workflow run=$run_id merge=$MERGE_SHA current_main=$current_main"
+                  return 0
+                fi
+              done
+              echo "::error::TERMINAL_GOVERNANCE_BRAIN_EVIDENCE_MISSING:merge=$MERGE_SHA"
+              exit 78
             fi
 
             for attempt in $(seq 1 180); do
@@ -193,7 +233,6 @@ jobs:
 
           require_brain_evidence
 
-          changed_files="$(gh api --paginate "repos/${GITHUB_REPOSITORY}/pulls/${PR_NUMBER}/files?per_page=100" --jq '.[].filename')"
           if grep -Eq '(\.(js|mjs|cjs|ts|tsx)$|^package(-lock)?\.json$|^\.github/workflows/powerhouse-codeql\.yml$|^\.github/workflows/obligation-terminal-closure\.yml$)' <<<"$changed_files"; then
             require_workflow "powerhouse-codeql.yml" "Powerhouse-CodeQL"
           else
