@@ -44,6 +44,7 @@ jobs:
     needs: hygiene
     if: needs.hygiene.outputs.admitted == 'true'
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     outputs:
       backend: ${{ steps.scope.outputs.backend }}
       portal: ${{ steps.scope.outputs.portal }}
@@ -328,6 +329,7 @@ jobs:
     if: always()
     needs: [hygiene, preflight, backend, portal, automation, website]
     runs-on: ubuntu-latest
+    timeout-minutes: 20
     env:
       HYGIENE: ${{ needs.hygiene.result }}
       ADMITTED: ${{ needs.hygiene.outputs.admitted }}
