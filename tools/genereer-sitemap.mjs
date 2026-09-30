@@ -40,8 +40,17 @@ function alternatePair(url, known) {
 
 export function maakSitemap(urls, alternates = new Map()) {
   const schoon = [...new Set((urls || []).filter(url => String(url).startsWith(`${ORIGIN}/`)))].sort((a, b) => a.localeCompare(b, 'nl'));
+  const known = new Set(schoon);
   const regels = schoon.map(url => {
-    const alt = alternates.get(url) || [];
+    let alt = alternates.get(url) || [];
+    if (!alt.length) {
+      const pair = alternatePair(url, known);
+      if (pair) alt = [
+        { hreflang:'nl', href:pair.nlUrl },
+        { hreflang:'en', href:pair.enUrl },
+        { hreflang:'x-default', href:pair.nlUrl }
+      ];
+    }
     const links = alt.map(item => `<xhtml:link rel="alternate" hreflang="${xmlEscape(item.hreflang)}" href="${xmlEscape(item.href)}"/>`).join('');
     return `  <url><loc>${xmlEscape(url)}</loc>${links}</url>`;
   });
