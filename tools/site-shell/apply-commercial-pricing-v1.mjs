@@ -194,6 +194,8 @@ function englishPage(){
     ['4. Daarna door met SaaS','4. Continue with SaaS'],
     ['Na oplevering loopt je abonnement door als je dat kiest.','After delivery your subscription continues if you choose.'],
     ['Wat past bij mij?','What fits me?'],
+    ['Gebruik drie keuzes en bekijk daarna een echt pakketadvies met uitleg.','Use three choices and then view a real plan recommendation with an explanation.'],
+    ['Bekijk mijn pakket →','View my plan →'],
     ['Gebruik drie keuzes om snel naar het logischste startpunt te gaan.','Use three choices to find the most logical starting point.'],
     ['1. Aantal medewerkers','1. Number of employees'],
     ['2. Belangrijkste doel','2. Main goal'],
