@@ -136,3 +136,5 @@
 })();
 
 /* footer-legal-pages-20261001-trigger */
+
+/* footer-legal-pages-20261001-trigger-v2 */
