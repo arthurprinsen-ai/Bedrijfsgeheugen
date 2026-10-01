@@ -170,3 +170,10 @@ body[data-bg-route="/en/prijzen"] main .pcard .price{min-height:1.5em}
   body[data-bg-route="/prijzen"] main .pcard .price,
   body[data-bg-route="/en/prijzen"] main .pcard .price{min-height:0}
 }
+
+/* Site-wide professional surface hygiene — consolidated 2026-10-01 */
+body[data-bg-route] main :where(.modelGrid,.recommendations,.bg-revenue-links__items):empty{display:none!important}
+body[data-bg-route] main .bg-revenue-links + .bg-revenue-links{display:none!important}
+body[data-bg-route] main :where(section,article,div)[data-bg-empty-shell="true"]{display:none!important}
+body[data-bg-route] main :where(.btn,.cta,.bgkop-cta,.bgkop-mcta,.bgvoet-knop){min-height:46px;align-items:center;justify-content:center}
+body[data-bg-route] main :where(.card,.paneel,.kaart,.pcard,.service,.model,.mwGov){min-width:0}
