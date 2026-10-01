@@ -19,12 +19,18 @@
       "head_sha": "dbd8eb01ee19e44031234bfe639f99133377a6eb",
       "state": "ready"
     },
-    "outcome": "Netlify preview build recovered after synchronizing the portal candidate with current main."
+    "outcome": "Netlify deploy preview recovered, PR #3530 merged, and production deploy 6abe4c249f07cb0008e14578 published exact main SHA 4a4f1f3d8deb9aed23b0a168dd0140b04dce803d. Follow-up readback fixes align tests with the canonical sidebar and harden immutable navigation.",
+    "production_readback": {
+      "deploy_id": "6abe4c249f07cb0008e14578",
+      "commit_ref": "4a4f1f3d8deb9aed23b0a168dd0140b04dce803d",
+      "context": "production",
+      "state": "ready"
+    }
   },
   "evaluation": {
     "historical_replay": [
-      "Prior head 198f32dd08e1830573560c84c86bd2ea934eded3: Netlify deploy-preview failed during site build.",
-      "Synchronized head dbd8eb01ee19e44031234bfe639f99133377a6eb: Netlify deploy-preview 6abe4b27e2105d00089a241d reached ready."
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs",
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
     ]
   }
 }
