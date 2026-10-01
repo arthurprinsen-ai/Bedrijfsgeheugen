@@ -313,9 +313,16 @@ jobs:
           cat /tmp/bg-local-site.log || true
           echo "::error::Exact local website candidate did not become reachable on /, /ai-act and /benchmark within 20 seconds. See /tmp/bg-local-site.log output above."
           exit 1
+      - name: Cache shared Playwright Chromium
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-chromium-1.55.0-${{ runner.os }}
       - name: Install shared website browser runtime
-        run: |
-          PLAYWRIGHT_PACKAGE=playwright@1.55.0 bash tools/ci/install-chromium.sh
+        env:
+          PLAYWRIGHT_PACKAGE: playwright@1.55.0
+          PLAYWRIGHT_SKIP_DEPS: '1'
+        run: bash tools/ci/install-chromium.sh
       - name: Verify high-risk full website regression contracts
         if: needs.classify.outputs.risk_lane == 'high-risk'
         run: >-
