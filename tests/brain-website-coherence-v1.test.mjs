@@ -53,9 +53,10 @@ test('product proposition is contextual rather than internal implementation copy
   assert.match(finalizer,/\/portaal-demo/);
 });
 
-test('product proposition is inserted after the actual product hero',()=>{
-  assert.match(finalizer,/class=.*pr-hero/);
-  assert.match(finalizer,/const hero=html\.match/);
+test('product proposition is inserted after the actual first product section',()=>{
+  assert.match(finalizer,/const mainStart=html\.search/);
+  assert.match(finalizer,/const firstSection=afterMain\.match/);
+  assert.match(finalizer,/firstSection\[0\]\.length/);
 });
 
 test('package advisor and professional portal demo are real routes',()=>{
@@ -83,7 +84,7 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
 
 
 test('product page keeps one primary hero and embeds Powerhouse model in context',()=>{
-  const productTruth=finalizer.match(/const productTruth=\`([\\s\\S]*?)\`;/);
+  const productTruth=finalizer.match(/const productTruth=\`([\s\S]*?)\`;/);
   assert.ok(productTruth,'canonical Dutch product truth block must exist');
   assert.doesNotMatch(productTruth[1],/POWERHOUSE · HET ACTUELE PRODUCT/);
   assert.doesNotMatch(productTruth[1],/Website en portaal spreken nu dezelfde taal/);
@@ -105,3 +106,21 @@ test('final pixel polish locks pricing, header and responsive portal geometry',(
   assert.match(portalCss,/brainflow \.brainnode:last-child\{grid-column:1\/-1\}/);
   assert.match(portalCss,/\.kpis\{grid-template-columns:1fr!important\}/);
 });
+
+test('terminal product hero visibility is enforced independently of compositor classes',()=>{
+  assert.match(finalizer,/ensureProductHeroVisibility/);
+  assert.match(finalizer,/bg-product-hero-visibility-invariant/);
+  assert.match(finalizer,/visibility:visible!important/);
+  assert.match(finalizer,/opacity:1!important/);
+});
+
+test('key route metadata survives terminal build',()=>{
+  assert.match(finalizer,/\/pakketadvies/);
+  assert.match(finalizer,/Welk Powerhouse-pakket past bij mij\?/);
+  assert.match(finalizer,/Interactieve Powerhouse portaal-demo/);
+  assert.match(finalizer,/Kosten digitalisering mkb \| Powerhouse prijzen/);
+  assert.match(finalizer,/ensureRouteMetadata/);
+  assert.match(finalizer,/og:title/);
+  assert.match(finalizer,/twitter:title/);
+});
+
