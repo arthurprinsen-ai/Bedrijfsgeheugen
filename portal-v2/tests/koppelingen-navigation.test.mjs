@@ -7,10 +7,13 @@ import { dirname, resolve } from 'node:path';
 const here=dirname(fileURLToPath(import.meta.url));
 const index=readFileSync(resolve(here,'../index.html'),'utf8');
 const shell=readFileSync(resolve(here,'../page-shell.js'),'utf8');
+const navigation=readFileSync(resolve(here,'../navigation-model.js'),'utf8');
 const app=readFileSync(resolve(here,'../app.js'),'utf8');
 
 test('Koppelingen is expliciet bereikbaar vanuit de Portal V2 shell',()=>{
-  assert.match(shell,/data-pv-global-page="koppelingen">Koppelingen</);
+  assert.match(navigation,/label:'Data & koppelingen'/);
+  assert.match(navigation,/label:'Koppelingen',target:'koppelingen'/);
+  assert.match(shell,/pageId==='koppelingen'/);
   assert.match(index,/data-open-page="koppelingen"><i>∞<\/i>Koppelingen beheren/);
   assert.match(index,/data-open-page="koppelingen"><i>⌘<\/i>Koppeling bouwen/);
   assert.match(app,/querySelectorAll\('\[data-open-page\]'\)/);
