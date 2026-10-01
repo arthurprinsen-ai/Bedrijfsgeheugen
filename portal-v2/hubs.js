@@ -8,8 +8,8 @@ const PORTAL_CORE = Object.freeze([
   'wijzigingen','advies','offerte','roadmap','uitvoeringsladder','taken-werkstromen',
   'os:impact-engine','os:scenario-simulator','os:next-best-actions','os:monitoring-learning','os:evidence-health','os:capability-graph'
 ]);
-const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','data-ai-passport','trust-center']);
-const TASKS = Object.freeze(['actieve-acties','taken-werkstromen','roadmap','advies','outcomes-evidence','wijzigingen','os:next-best-actions']);
+const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','data-ai-passport','trust-center','datahubstatus','brain-verwerking','agentstatus','os:evidence-health','os:capability-graph']);
+const TASKS = Object.freeze(['actieve-acties','taken-werkstromen','roadmap','advies','recovery-obligations','outcomes-evidence','wijzigingen','os:next-best-actions','os:monitoring-learning']);
 const MORE = Object.freeze(['gebruikers','documenten','instellingen','billing','frisse-blik','audit','compliance-governance']);
 
 const entry=(id,label,target=id)=>Object.freeze({id,label,target});
@@ -58,14 +58,7 @@ export function groupedHubPages(hubId){
       })
     }));
   }
-  if(hubId==='portal') return DESKTOP_NAV_GROUPS.map(group=>({
-    id:group.id,
-    label:group.label,
-    pages:group.pages.map(page=>{
-      const target=findPage(page.target);
-      return {...page,sectionId:target?.sectionId||null,target:page.target};
-    })
-  })).filter(group=>group.pages.length);
+  if(hubId==='portal') return listPortalGroups();
   const allowed=new Set(hubPages(hubId));
   return listPortalGroups().map(group=>({
     ...group,
