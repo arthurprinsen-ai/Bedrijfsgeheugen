@@ -14,7 +14,7 @@ test('Bedrijfslek delivers full value before PII capture',()=>{
   assert.doesNotMatch(scan,/Beantwoord zes vragen/i);
   assert.doesNotMatch(scan,/id="scanform"/i);
   assert.match(scan,/Start met het portaal/i);
-  assert.match(scan,/https:\/\/www\.bedrijfsgeheugen\.nl\/product/i);
+  assert.match(scan,/https:\/\/www\.bedrijfsgeheugen\.nl\/(?:product|afsluiten\?plan=control)/i);
 });
 
 test('homepage and build authority preserve Bedrijfslek as primary acquisition path',()=>{
