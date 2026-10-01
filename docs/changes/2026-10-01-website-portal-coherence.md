@@ -42,3 +42,6 @@ Live screenshot review exposed presentation and journey defects that were not co
 
 ### Acceptance
 The website is not considered coherent when only the copy matches. Header/footer, hero hierarchy, CTA geometry, routing, product taxonomy, portal demonstration and AI discovery must all agree.
+
+## Self-playing interaction and whitespace recovery
+Live screenshot review showed three remaining classes of visual regression: duplicated revenue handoff blocks, generic CSS class collisions that produced empty-looking governance cards, and interaction that required a click before anything happened. The recovery namespaces page-specific components, collapses repeated handoffs, moves the Powerhouse proposition into the existing product hero, and makes the product/portal demonstrations self-playing while preserving manual control and reduced-motion accessibility.
