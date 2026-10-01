@@ -171,7 +171,11 @@ function mountDesktopProjectNavigation(){
 }
 function markNavigationControls(){
  const desktop=[...document.querySelectorAll('.nav button')];
- DESKTOP_NAV_ITEMS.forEach((item,index)=>{if(desktop[index])desktop[index].dataset.navTarget=item.target});
+ DESKTOP_NAV_ITEMS.forEach((item,index)=>{
+   const button=desktop[index];if(!button)return;
+   button.dataset.navTarget=item.target;
+   button.innerHTML=`<span class="ico">${item.icon||'•'}</span>${item.label}`;
+ });
  const mobile=[...document.querySelectorAll('.mobilebar button')];
  const icons={overview:'⌂',project:'▣','data-ai':'✦',tasks:'✓',more:'☰'};
  PORTAL_NAV_ITEMS.forEach((item,index)=>{if(mobile[index]){mobile[index].dataset.mobileNav=item.id;mobile[index].innerHTML=`${icons[item.id]||'•'}<br>${item.label}`;}});
