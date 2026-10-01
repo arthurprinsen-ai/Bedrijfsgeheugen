@@ -15,3 +15,7 @@ The product-truth source regression was narrowed to the actual rendered product-
 ## Replay assertion closure v2
 
 The historical replay now matches the actual finalizer implementation: it extracts the `productTruth` template literal correctly and verifies insertion via `mainStart` and `firstSection` rather than obsolete hero-specific variables.
+
+## Final mobile cascade correction
+
+The browser evidence showed the remaining 287.34px header height was caused by CSS precedence, not spacing: `topbar-actions.css` kept `.actionrow` on `display:flex!important`. The <=430px portal polish now explicitly uses `display:grid!important` with `minmax(0,1fr) auto`, keeping Bedrijfsgeheugen AI and Periode on one compact row.
