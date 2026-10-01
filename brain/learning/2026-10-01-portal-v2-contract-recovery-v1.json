@@ -1,0 +1,25 @@
+{
+  "fingerprint": "portal-v2|navigation-hubs|required-tests|contract-drift|20261001",
+  "obligation_id": "portal-v2-contract-recovery-20261001",
+  "compiler": {
+    "failure_class": "PORTAL_CONTRACT_DRIFT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "Recent Portal V2 navigation simplification narrowed hub capability sets and switched the full-menu grouping away from the canonical page registry, while required tests still enforce complete Data & AI, Tasks and operating-system coverage plus canonical desktop navigation items.",
+  "prevention_rule": "Portal navigation may simplify labels and presentation, but hub capability coverage, full-menu completeness and operating-system routes must continue to derive from canonical page and navigation registries.",
+  "regression_contract": "Portal V2 required tests must prove complete hub coverage, canonical desktop navigation routing, full-menu registry coverage and operating-system route reachability before merge.",
+  "evidence": {
+    "tests": [
+      "tests/brain-portal-v2-navigation-contract-recovery.test.mjs"
+    ],
+    "outcome": "Portal V2 Tests run 36861757680 passed after restoring canonical hub capability coverage. The dedicated Brain regression test now locks complete Data & AI/Actions coverage, full-menu completeness and canonical desktop navigation routing."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-navigation-contract-recovery.test.mjs"
+    ]
+  }
+}

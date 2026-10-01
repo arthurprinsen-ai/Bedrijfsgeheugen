@@ -1,0 +1,26 @@
+{
+  "fingerprint": "powerhouse|portal-v2|external-intelligence|missing-identity-bearer|v1",
+  "obligation_id": "portal-source-api-auth-401-20261001",
+  "compiler": {
+    "failure_class": "PORTAL_PROTECTED_API_IDENTITY_BEARER_MISSING"
+  },
+  "root_cause": "Portal V2 external intelligence called /api/portal-ondernemersdata without the Netlify Identity bearer token while the server-side function authenticates with getUser(). Same-origin credentials alone do not satisfy that contract.",
+  "prevention_rule": "Every protected Portal V2 browser request whose Netlify function uses getUser() must reuse the active portal identity JWT and send Authorization: Bearer <jwt>; service-role credentials remain server-side.",
+  "regression_contract": "portal-v2/tests/entrepreneur-intelligence-auth.test.mjs must verify the bearer header and customer-safe 401 handling before protected merge.",
+  "evidence": {
+    "tests": [
+      "Portal V2 Tests",
+      "Required test"
+    ],
+    "changed_paths": [
+      "portal-v2/modules/entrepreneur-intelligence.js",
+      "portal-v2/tests/entrepreneur-intelligence-auth.test.mjs"
+    ],
+    "outcome": "External-intelligence requests now use the same identity-token contract as the existing protected Portal V2 state route."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-source-auth.test.mjs"
+    ]
+  }
+}
