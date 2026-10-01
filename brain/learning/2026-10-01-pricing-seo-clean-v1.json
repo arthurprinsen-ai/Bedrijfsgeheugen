@@ -1,0 +1,14 @@
+{
+  "id": "pricing-seo-clean-v1",
+  "date": "2026-10-01",
+  "fingerprint": "pricing|seo|money-page|internal-link|brand-language|v1",
+  "obligation_id": "pricing-seo-clean-20261001",
+  "problem": "The pricing money page failed SEO diagnostics on the target keyword, internal pillar backlink, title length and forbidden brand language.",
+  "root_cause": "The new commercial pricing source and final composer were updated for packaging without re-running the existing money-page SEO contract.",
+  "fix": "Use the target keyword in a shorter title, add the canonical pillar backlink, remove forbidden strategic wording, and preserve the backlink in the final pricing composer.",
+  "prevention": [
+    "Any pricing rewrite must pass the money-page SEO diagnostic before merge.",
+    "Source HTML and final build composer must preserve the same canonical internal pillar backlink.",
+    "Pricing copy must remain compliant with the brand-language denylist."
+  ]
+}
