@@ -38,7 +38,7 @@ test('customer portal routes canonicalize to Portal V2 except the preserved IJss
   assert.match(redirects, /\/klantportaal\s+\/portaal\s+301!/);
   assert.match(redirects, /\/klantportaal\s+klant=ijsselmonde\s+\/portal-v2\/legacy\/ijsselmonde\/klantportaal\.html\s+200!/);
   assert.doesNotMatch(redirects, /^\/klantportaal\.html\s+.*\s+200!$/m);
-  assert.match(product, /href="\/portaal\/demo"/);
+  assert.match(product, /href="\/portaal-demo"/);
   assert.doesNotMatch(product, /href="\/klantportaal\?klant=demo"/);
   assert.match(homepage, /location\.replace\('\/portal-v2\/' \+ h\)/);
 });
