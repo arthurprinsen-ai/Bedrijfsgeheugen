@@ -139,3 +139,29 @@ body[data-bg-route] main .bg-revenue-links + .bg-revenue-links{display:none!impo
 body[data-bg-route] main :where(section,article,div)[data-bg-empty-shell="true"]{display:none!important}
 body[data-bg-route] main :where(.btn,.cta,.bgkop-cta,.bgkop-mcta,.bgvoet-knop){min-height:46px;align-items:center;justify-content:center}
 body[data-bg-route] main :where(.card,.paneel,.kaart,.pcard,.service,.model,.mwGov){min-width:0}
+
+
+/* Product primary hero must remain visibly rendered after every compositor/finalizer pass. */
+body[data-bg-route="/product"] .pr-hero,
+body[data-bg-route="/en/product"] .pr-hero{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+  content-visibility:visible!important;
+}
+body[data-bg-route="/product"] .pr-hero .pr-hero-grid,
+body[data-bg-route="/en/product"] .pr-hero .pr-hero-grid{
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+}
+body[data-bg-route="/product"] .pr-hero h1,
+body[data-bg-route="/en/product"] .pr-hero h1{
+  display:block!important;
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+  clip:auto!important;
+  clip-path:none!important;
+}
