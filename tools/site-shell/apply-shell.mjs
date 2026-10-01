@@ -14,7 +14,7 @@ const PAD = {
 };
 
 export const CANONICAL_SHELL_SOURCE = 'over-ons.html';
-const EXTRA_EXCLUDES = new Set(['index.html']);
+const EXTRA_EXCLUDES = new Set(['index.html', 'pakketadvies.html', 'portaal-demo.html']);
 const MAPPEN = ['.', 'blog'];
 const EXTRA_PUBLIC_INDEX_PAGES = Object.freeze([
   'openai-ai-modellen/index.html',
