@@ -45,7 +45,7 @@ test('portal-v2 serves the approved SaaS desktop dashboard composition', async (
   await expect(page.getByText('Grip op je bedrijf. Ruimte om te groeien.', { exact: true })).toBeVisible();
   await expect(page.locator('.sidebar')).toBeVisible();
   await expect(page.locator('.kpi')).toHaveCount(5);
-  await expect(page.getByRole('heading', { name: /Het brein van je bedrijf/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Zo werkt Powerhouse in je bedrijf/ })).toBeVisible();
   await expect(page.locator('.brainflow .brainnode')).toHaveCount(5);
   await expect(page.locator('.brainnode[data-stage="sources"]')).toBeVisible();
   await expect(page.locator('.brainnode[data-stage="datahub"]')).toBeVisible();
@@ -81,7 +81,7 @@ test('portal-v2 uses a vertical SaaS brain and card-first CSRD on a phone withou
 
   await expect(page.locator('.sidebar')).toBeHidden();
   await expect(page.locator('.mobilebar')).toBeVisible();
-  await expect(page.getByRole('heading', { name: /Het brein van je bedrijf/ })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Zo werkt Powerhouse in je bedrijf/ })).toBeVisible();
   await expect(page.locator('.brainflow .brainnode')).toHaveCount(5);
 
   const mobileFlow = await page.locator('.brainflow .brainnode').evaluateAll(nodes => nodes.map(node => {
