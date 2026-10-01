@@ -741,12 +741,6 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         portalVisualsContainerBounded:true,
         canonicalProductLines:Object.freeze(['Powerhouse Intelligence','Powerhouse Agents','Powerhouse Connect']),
         aiDiscoveryPreserved:true,
-        contextualPowerhouseNarrative:true,
-        onePrimaryHeroPerPage:true,
-        noRepeatedRevenueBlocks:true,
-        noEmptyVisualShells:true,
-        interactiveMeansSelfPlaying:true,
-        reducedMotionRespected:true,
         contactRoute:'/contact',
         productionReadbackRequired:true
       })
