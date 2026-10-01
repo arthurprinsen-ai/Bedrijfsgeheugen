@@ -1,0 +1,46 @@
+{
+  "fingerprint": "commercial|pricing-saas-consulting-portal-parity|v2",
+  "observed_at": "2026-10-01T06:40:00+02:00",
+  "type": "IMPROVEMENT",
+  "problem": "Pricing, checkout and portal entitlement truth were split across different package names and commercial models, making it possible for website promises and runtime access to drift.",
+  "root_cause": "The public pricing page evolved faster than the canonical SaaS plan and entitlement model, while consulting offers were not modeled alongside SaaS as one commercial catalog.",
+  "decision": "Use one four-tier SaaS model (Starter, Pro, Groei, Enterprise) plus a separate consulting/workshop ladder, and project exact package limits into checkout and Portal V2 from server-side entitlements.",
+  "prevention": [
+    "Every public SaaS promise must map to a canonical entitlement or explicit service inclusion.",
+    "Checkout plan codes must match active self-serve plan codes.",
+    "Portal V2 must show the authenticated organisation's package and effective limits from /api/portal-entitlements.",
+    "Consulting may grant temporary SaaS access, but does not silently change subscription truth.",
+    "Workshop or scan credit toward Build is a commercial rule and must remain explicit rather than hidden discount logic."
+  ],
+  "evidence": [
+    "config/powerhouse-commercial-catalog-v2.json",
+    "prijzen.html",
+    "afsluiten.html",
+    "portal-v2/commercial-entitlements.js",
+    "platform/saas/entitlement-policy.mjs",
+    "tests/brain-commercial-pricing-portal-v2.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "COMMERCIAL_ENTITLEMENT_DRIFT",
+    "scope": "PRICING_CHECKOUT_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "growth",
+    "website",
+    "sales",
+    "portal"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pricing-portal-v2.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-commercial-pricing-portal-v2.test.mjs"
+  ]
+}
