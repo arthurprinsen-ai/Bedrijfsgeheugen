@@ -20,5 +20,6 @@
     "historical_replay": [
       "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
     ]
-  }
+  },
+  "status": "ACTIVE_PREVENTION"
 }
