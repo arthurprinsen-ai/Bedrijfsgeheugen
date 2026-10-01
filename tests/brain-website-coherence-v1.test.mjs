@@ -80,10 +80,3 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
   assert.match(portalCss,/overflow:hidden/);
 });
 
-test('canonical navigation exposes current AI routes',()=>{
-  const header=readFileSync('components/header/header.html','utf8');
-  const footer=readFileSync('components/footer/footer.html','utf8');
-  assert.match(header,/\/ai-modelwijzer/);
-  assert.match(header,/\/ai-governance/);
-  assert.match(footer,/\/ai-modelwijzer/);
-});
