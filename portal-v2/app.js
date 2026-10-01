@@ -10,6 +10,7 @@ import { mountGlobalActions } from './global-actions-ui.js';
 import { applyCustomerBranding } from './customer-branding.js';
 import { applyOverviewDashboard } from './modules/overview.js';
 import { renderProjectOverview } from './project-overview.js';
+import { fetchPortalPlan, applyPlanAccess, minPlanForPage, planAllowsPage } from './plan-access.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -32,6 +33,7 @@ let selection={source:'documenten',module:'inzicht'};
 let previewMode=true;
 let runtime=null;
 let activeProjectGroup='project-overview';
+let portalSubscription=null;
 
 function el(id){return document.getElementById(id)}
 function selectedSource(){return SOURCES.find(x=>x[0]===selection.source)}
@@ -92,7 +94,23 @@ function drawFlow(flow){
 }
 function render(){const flow=deriveFlowState({source:selection.source,module:selection.module,runtime,preview:previewMode});renderFocus();renderCopy(flow);requestAnimationFrame(()=>drawFlow(flow))}
 
-function openProjectPage(pageId){closeHub();navigatePortal(pageId);}
+function gatedOpenPage(pageId){
+ if(portalSubscription?.plan && !planAllowsPage(portalSubscription.plan,pageId)){
+   location.href=`https://www.bedrijfsgeheugen.nl/prijzen#saas?upgrade=${encodeURIComponent(minPlanForPage(pageId))}`;
+   return;
+ }
+ openPortalPage(pageId);
+}
+function openProjectPage(pageId){
+ if(portalSubscription && !document.documentElement.classList.contains('portal-entitlements-loading')){
+   const probe=document.querySelector(`[data-page="${pageId}"],[data-nav-target="${pageId}"],[data-open-page="${pageId}"]`);
+   if(probe?.dataset.planAccess==='upgrade'){
+     location.href=`https://www.bedrijfsgeheugen.nl/prijzen#saas?upgrade=${encodeURIComponent(minPlanForPage(pageId))}`;
+     return;
+   }
+ }
+ closeHub();navigatePortal(pageId);
+}
 function renderProjectContext(groups){
  const wrap=document.createElement('div');wrap.className='projectcontext';
  const tabs=document.createElement('div');tabs.className='projecttabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Jouw project');
@@ -179,6 +197,23 @@ function ensureNavigationStyles(){
  const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css';document.head.appendChild(style);
 }
 
+document.documentElement.classList.add('portal-entitlements-loading');
+fetchPortalPlan().then(subscription=>{
+ portalSubscription=subscription;
+ applyPlanAccess(document,subscription);
+ const requestedPage=new URL(location.href).searchParams.get('page');
+ if(subscription?.plan && requestedPage && !planAllowsPage(subscription.plan,requestedPage)){
+   location.assign('https://www.bedrijfsgeheugen.nl/prijzen#saas');
+   return;
+ }
+ if(subscription?.plan){
+   const host=document.querySelector('.portal-topbar,.topbar,.sidebar')||document.body;
+   if(!document.getElementById('portalPlanBadge')){
+     const badge=document.createElement('a');badge.id='portalPlanBadge';badge.className='portal-plan-badge';badge.href='https://www.bedrijfsgeheugen.nl/prijzen#saas';badge.textContent=`Pakket: ${subscription.planName}`;host.appendChild(badge);
+   }
+ }
+}).catch(()=>null).finally(()=>document.documentElement.classList.remove('portal-entitlements-loading'));
+
 const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
 configurePortalShell({domainState:portalDomainState});
@@ -186,7 +221,7 @@ portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},us
 portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
 mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();mountDesktopProjectNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
- openPage:openPortalPage,
+ openPage:gatedOpenPage,
  openHub,
  closeHub,
  showOverview:()=>{closePortalPage();closeHub()}
