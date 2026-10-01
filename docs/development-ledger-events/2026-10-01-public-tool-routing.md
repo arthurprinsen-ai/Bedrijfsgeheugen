@@ -5,6 +5,6 @@ The package advisor and interactive portal demo already existed in the accepted 
 Recovery:
 - /pakketadvies -> /pakketadvies.html (200 rewrite)
 - /portaal-demo -> /portaal-demo.html (200 rewrite)
-- regression test added in tests/public-tool-routes.test.mjs
+- regression remains covered by the canonical website coherence suite
 
 Production closure requires merge, Netlify production deployment and live readback of both clean URLs.
