@@ -1,0 +1,9 @@
+{
+  "version": "PORTAL-SOURCE-AUTH-401-LEARNING-v1",
+  "date": "2026-10-01",
+  "problem": "Portal V2 external intelligence called /api/portal-ondernemersdata without the Netlify Identity bearer token while the server-side function requires getUser().",
+  "root_cause": "The external-intelligence client used only Accept and same-origin credentials; Netlify Identity authentication is bearer-token based for this function.",
+  "correction": "Acquire the active Netlify Identity JWT through the existing portal identity widget and send Authorization: Bearer <jwt> on the source API request.",
+  "regression_guard": "portal-v2/tests/entrepreneur-intelligence-auth.test.mjs verifies the Authorization header and hides raw 401 status text from users.",
+  "reuse_rule": "Protected Portal V2 APIs that call getUser() must use the same bearer-token contract as portal-state rather than relying on cookies alone."
+}
