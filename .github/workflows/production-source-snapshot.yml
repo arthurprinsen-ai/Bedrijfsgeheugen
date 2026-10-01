@@ -306,8 +306,9 @@ jobs:
                 && grep -q '>Pro<' /tmp/prijzen.html \
                 && grep -q '>Groei<' /tmp/prijzen.html \
                 && grep -q '>Enterprise<' /tmp/prijzen.html \
-                && grep -q 'data-tab="saas"' /tmp/prijzen.html \
-                && grep -q 'data-tab="consulting"' /tmp/prijzen.html \
+                && grep -q 'data-bg-commercial-pricing-v1' /tmp/prijzen.html \
+                && grep -q 'id="saas"' /tmp/prijzen.html \
+                && grep -q 'id="expertise"' /tmp/prijzen.html \
                 && grep -q 'Directie &amp; AI Workshop\|Directie & AI Workshop' /tmp/prijzen.html \
                 && grep -q 'Bedrijfsgeheugen Scan' /tmp/prijzen.html \
                 && grep -q 'Build Sprint' /tmp/prijzen.html \
