@@ -2,6 +2,7 @@
   "version": "POWERHOUSE-LEARNING-v1",
   "date": "2026-10-01",
   "topic": "delivery-single-flight",
+  "fingerprint": "github-delivery|overlapping-ci-wip|single-flight-v1",
   "problem": "Overlapping delivery candidates could enter expensive CI concurrently, creating queueing, main drift and repeated recovery work.",
   "decision": "Set max executable overlapping candidates to one while preserving parallelism for unrelated conflict contracts.",
   "expected_effect": [
@@ -9,5 +10,17 @@
     "less main drift",
     "fewer duplicated recovery PRs",
     "faster terminal delivery"
-  ]
+  ],
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ci-admission-single-flight.test.mjs"
+    ]
+  }
 }
