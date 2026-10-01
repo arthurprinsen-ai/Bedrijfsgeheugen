@@ -1,4 +1,5 @@
 import { findPage, listPortalGroups } from './page-registry.js';
+import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 import { nativePageContent } from './native-pages.js';
 import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
@@ -148,13 +149,13 @@ function ensureShell(){
   if(root) return root;
   root=document.createElement('div');
   root.id='portalView';root.className='portalview';root.setAttribute('aria-hidden','true');
-  root.innerHTML=`<div class="pvbackdrop" data-close></div><section class="pvpanel" role="dialog" aria-modal="true" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Sluiten">×</button></header><nav class="pvglobalnav" aria-label="Algemene portaalnavigatie"><button type="button" data-pv-global-page="overzicht">Overzicht</button><button type="button" data-pv-global-page="profiel">Organisatie</button><button type="button" data-pv-global-page="cijfers-maatstaven">Cijfers</button><button type="button" data-pv-global-page="data-ai">Data & AI</button><button type="button" data-pv-global-page="koppelingen">Koppelingen</button><button type="button" data-pv-global-page="strategiemodellen">Strategie</button><button type="button" data-pv-global-page="advies">Advies</button><button type="button" data-pv-global-page="roadmap">Roadmap</button><button type="button" data-pv-global-page="actueel-houden">Actueel houden</button><button type="button" data-pv-global-page="ondernemersdata">Actueel & extern</button></nav><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"></div></div></section>`;
+  root.innerHTML=`<section class="pvpanel" role="region" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Terug naar overzicht">← <span>Overzicht</span></button></header><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"></div></div></section>`;
   document.body.appendChild(root);
-  root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',closePortalPage));
-  root.querySelectorAll('[data-pv-global-page]').forEach(btn=>btn.addEventListener('click',()=>{
-    const target=btn.dataset.pvGlobalPage;
-    if(target==='overzicht'){closePortalPage();globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview'));return;}
-    openPortalPage(target);
+  root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>{
+    closePortalPage();
+    const url=new URL(location.href);url.searchParams.delete('page');url.searchParams.delete('hub');
+    history.pushState({portalTarget:'overzicht'},'',`${url.pathname}${url.search}${url.hash}`);
+    globalThis.dispatchEvent?.(new PopStateEvent('popstate',{state:{portalTarget:'overzicht'}}));
   }));
   return root;
 }
@@ -259,17 +260,25 @@ function renderAiCapabilitiesWorkspace(native,contract,view){
 }
 
 export function openPortalPage(pageId){
+  if(typeof location!=='undefined'){
+    const url=new URL(location.href);
+    const currentPage=url.searchParams.get('page'),currentHub=url.searchParams.get('hub');
+    if(currentPage!==pageId||currentHub){
+      url.searchParams.delete('hub');url.searchParams.set('page',pageId);
+      history.pushState({portalTarget:pageId},'',`${url.pathname}${url.search}${url.hash}`);
+      globalThis.dispatchEvent?.(new PopStateEvent('popstate',{state:{portalTarget:pageId}}));
+      return true;
+    }
+  }
   const view=pagePresentation(pageId);if(!view)return false;
   const root=ensureShell();
   root.classList.toggle('impact-mode',pageId==='csrd-impact');
-  // De kicker hoort bij de pagina, niet bij de zijbalkgroep: de indeling van de
-  // zijbalk mag veranderen zonder dat een breinpagina zijn kop kwijtraakt.
-  root.querySelector('#pvKicker').textContent=BRAIN_PAGES.has(pageId)?'Brein & Powerhouse':'Portal V2';
+  const navigationGroup=DESKTOP_NAV_GROUPS.find(group=>group.target===pageId||group.pages?.some(page=>page.target===pageId));
+  root.querySelector('#pvKicker').textContent=navigationGroup?.label||'Bedrijfsgeheugen';
   root.querySelector('#pvTitle').textContent=view.title;
   root.querySelector('#pvDescription').textContent=view.description;
   root.querySelector('#pvStatus').textContent=view.evidenceLabel;
   root.dataset.pageId=pageId;
-  root.querySelectorAll('[data-pv-global-page]').forEach(btn=>btn.classList.toggle('active',btn.dataset.pvGlobalPage===pageId));
   const native=root.querySelector('#pvNative');
   const contract=getCapabilityContract(pageId);
   if(pageId==='csrd-impact'){
@@ -334,16 +343,6 @@ export function enhancePortalShell(){
   ensureStylesheet('./business-context.css');
   ensureStylesheet('./company-intelligence-context.css');
   document.addEventListener('keydown',e=>{if(e.key==='Escape')closePortalPage()});
-
-  bindTextButton('.nav button','csrd','csrd-impact');
-  bindTextButton('.nav button','bedrijfsgezondheid','profiel');
-  bindTextButton('.nav button','strategie','strategie-naar-maandagochtend');
-  bindTextButton('.nav button','processen','profiel');
-  bindTextButton('.nav button','kennis','documenten');
-  bindTextButton('.nav button','data & koppelingen','koppelingen');
-  bindTextButton('.nav button','ai & insights','brain-verwerking');
-  bindTextButton('.nav button','acties & impact','actieve-acties');
-  bindTextButton('.nav button','rapportages','audit');
 
   bindTextButton('.quick button','koppelingen','koppelingen');
   bindTextButton('.quick button','koppeling bouwen','koppelingen');

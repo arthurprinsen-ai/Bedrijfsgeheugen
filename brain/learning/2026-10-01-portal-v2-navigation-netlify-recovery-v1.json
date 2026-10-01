@@ -1,0 +1,30 @@
+{
+  "fingerprint": "powerhouse|portal-v2-navigation-polish|netlify-preview-main-drift|v1",
+  "obligation_id": "portal-v2-navigation-polish-20261001",
+  "compiler": {
+    "failure_class": "NETLIFY_PREVIEW_STALE_BASE_AND_CLOSURE_INCOMPLETE"
+  },
+  "root_cause": "The Portal V2 candidate diverged from current main while Netlify production/build contracts had advanced. The stale candidate preview failed its build and Required test also lacked same-lineage closure artifacts.",
+  "prevention_rule": "Before a material Portal V2 promotion, synchronize the single candidate head with current main, bind PR metadata to the authoritative base, require exact-head Netlify preview evidence, and carry Brain learning, development ledger, and human change documentation in the same lineage.",
+  "regression_contract": "Portal V2 Tests plus exact-head Netlify Deploy Preview and Required test must pass before protected merge; parent navigation and expanded navigation derive from the same canonical taxonomy.",
+  "evidence": {
+    "tests": [
+      "Portal V2 Tests",
+      "Portal parity gate",
+      "Powerhouse Assurance",
+      "Powerhouse CodeQL"
+    ],
+    "netlify_preview": {
+      "deploy_id": "6abe4b27e2105d00089a241d",
+      "head_sha": "dbd8eb01ee19e44031234bfe639f99133377a6eb",
+      "state": "ready"
+    },
+    "outcome": "Netlify preview build recovered after synchronizing the portal candidate with current main."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Prior head 198f32dd08e1830573560c84c86bd2ea934eded3: Netlify deploy-preview failed during site build.",
+      "Synchronized head dbd8eb01ee19e44031234bfe639f99133377a6eb: Netlify deploy-preview 6abe4b27e2105d00089a241d reached ready."
+    ]
+  }
+}
