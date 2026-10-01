@@ -7,3 +7,4 @@
 - Change: added a deterministic final English residual cleanup pass and regression coverage.
 - Expected production effect: `/en/prijzen` renders commercial SaaS and consulting copy fully in English.
 - Verification required: protected merge, exact-main Netlify production deploy, public readback of `/en/prijzen`.
+- Final root cause: `en/prijzen.html` inherited the commercial-pricing marker before the English composer ran, so the composer returned early. Guard changed to skip only the Dutch canonical source; English is always rebuilt deterministically.
