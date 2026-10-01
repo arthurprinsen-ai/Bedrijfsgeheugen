@@ -19,3 +19,5 @@
 @media(max-width:1120px){[data-bg-component="footer"] .bgvoet-net{grid-template-columns:1.4fr 1fr 1fr;gap:1.4rem}}
 @media(max-width:760px){[data-bg-component="footer"] .bgvoet-net{grid-template-columns:1fr 1fr}}
 @media(max-width:560px){[data-bg-component="footer"] .bgvoet-net{grid-template-columns:1fr}}
+
+[data-bg-component="footer"] .bgvoet-juridisch{display:flex;flex-wrap:wrap;gap:.4rem 1rem}
