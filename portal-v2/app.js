@@ -1,7 +1,7 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
 import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
-import { DESKTOP_NAV_ITEMS, PORTAL_NAV_ITEMS } from './navigation-model.js';
+import { DESKTOP_NAV_GROUPS, PORTAL_NAV_ITEMS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
 import { groupedHubPages, hubDefinition } from './hubs.js';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
@@ -169,16 +169,22 @@ function mountDesktopProjectNavigation(){
  }
  nav.after(section);
 }
-function markNavigationControls(){
- const desktop=[...document.querySelectorAll('.nav button')];
- DESKTOP_NAV_ITEMS.forEach((item,index)=>{
-   const button=desktop[index];if(!button)return;
+function mountCanonicalDesktopNavigation(){
+ const nav=document.querySelector('.sidebar .nav');if(!nav)return;
+ nav.innerHTML='';
+ for(const item of DESKTOP_NAV_GROUPS){
+   const button=document.createElement('button');
+   button.type='button';
    button.dataset.navTarget=item.target;
-   button.innerHTML=`<span class="ico">${item.icon||'•'}</span>${item.label}`;
- });
+   button.dataset.navGroup=item.id;
+   button.innerHTML=`<span class="ico">${item.icon}</span><span>${item.label}</span>`;
+   nav.appendChild(button);
+ }
+}
+function markNavigationControls(){
  const mobile=[...document.querySelectorAll('.mobilebar button')];
  const icons={overview:'⌂',project:'▣','data-ai':'✦',tasks:'✓',more:'☰'};
- PORTAL_NAV_ITEMS.forEach((item,index)=>{if(mobile[index]){mobile[index].dataset.mobileNav=item.id;mobile[index].innerHTML=`${icons[item.id]||'•'}<br>${item.label}`;}});
+ PORTAL_NAV_ITEMS.forEach((item,index)=>{if(mobile[index]){mobile[index].dataset.mobileNav=item.id;mobile[index].innerHTML=`${icons[item.id]||'•'}<br>${item.label}`; }});
 }
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
@@ -223,7 +229,7 @@ const portalDomainState=createPortalDomainState(portalStateClient);
 configurePortalShell({domainState:portalDomainState});
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
 portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();markNavigationControls();mountDesktopProjectNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();markNavigationControls();mountDesktopProjectNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
  openPage:gatedOpenPage,
  openHub,
