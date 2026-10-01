@@ -314,9 +314,10 @@ jobs:
           BASELINE_URL: https://www.bedrijfsgeheugen.nl
           ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: node tools/site-shell/verify-targeted-website-routes.mjs
-      - name: Verify all public pages are visibly rendered
+      - name: Verify affected public pages are visibly rendered
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
+          UI_VR_ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: timeout --signal=TERM --kill-after=15s 9m node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify every header menu panel is readable
         if: needs.classify.outputs.risk_lane == 'high-risk'
