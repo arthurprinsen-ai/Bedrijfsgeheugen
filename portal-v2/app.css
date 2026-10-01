@@ -53,3 +53,11 @@
 .dnavrijuit{display:block;margin-top:.7rem}
 .dnavertaal{margin:.3rem 0 0;padding-left:1.1rem;font-size:.84rem;line-height:1.6}
 @media(max-width:640px){.wzform,.dnabieb{grid-template-columns:1fr}}
+
+/* SaaS entitlement UI */
+.plan-locked{position:relative;opacity:.62!important}
+.plan-locked::after{content:"Upgrade";margin-left:auto;font-size:.67rem;font-weight:800;letter-spacing:.02em;background:#fff3b0;color:#5a4300;border:1px solid #ecd35b;border-radius:999px;padding:2px 7px}
+button.plan-locked,a.plan-locked{cursor:pointer}
+html[data-portal-plan="starter"] .plan-locked:hover,
+html[data-portal-plan="pro"] .plan-locked:hover,
+html[data-portal-plan="groei"] .plan-locked:hover{opacity:.82!important}
