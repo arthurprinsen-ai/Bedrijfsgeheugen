@@ -21,3 +21,10 @@
 - Candidate: PR #3573.
 - Correction: repaired the template-literal regex and replaced obsolete `pr-hero` / `const hero` assertions with the current `mainStart` / `firstSection` insertion contract.
 - Purpose: keep learning canonicalization fail-closed without false negatives from stale implementation details.
+
+## Final mobile cascade correction
+
+- Visual evidence: 390px viewport still measured topbar 287.34px.
+- Root cause: `.actionrow` remained `display:flex!important` from `topbar-actions.css`; grid-template alone had no effect.
+- Correction: explicitly set `display:grid!important` at <=430px, with AI and Periode in the same row.
+- Verification contract: `tests/integration/portal-v2-mobile-shell.spec.js` requires topbar <260px after async hydration.

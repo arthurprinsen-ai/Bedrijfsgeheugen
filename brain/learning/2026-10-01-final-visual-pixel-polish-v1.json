@@ -1,6 +1,6 @@
 {
   "fingerprint": "website|visual-pixel-polish|pricing-header-portal-responsive|20261001",
-  "observed_at": "2026-10-01T16:39:00+02:00",
+  "observed_at": "2026-10-01T16:40:00+02:00",
   "type": "PREVENTION",
   "problem": "The final website pass still allowed uneven pricing CTA geometry, variable header height, empty section whitespace and portal visual models that could feel oversized or escape their cards at narrower widths. Post-merge browser readback also exposed a hydrated mobile topbar regression at 287.34px and a preview assertion still pinned to superseded proposition copy.",
   "root_cause": "Functional and content parity were already covered, but the final responsive geometry contract was only partially encoded in CSS and regression tests. A later-loaded <=430px portal-polish rule overrode the compact two-column action row, while the preview workflow still grepped legacy copy.",
@@ -14,7 +14,8 @@
     "At <=430px the hydrated action row remains minmax(0,1fr) + auto instead of stacking every action vertically.",
     "Portal live-preview assertions check the canonical 'Zo werkt Powerhouse in je bedrijf' wording rather than superseded copy.",
     "Source-level proposition tests inspect the rendered product-truth constant, not legacy-cleanup regex literals.",
-    "Replay assertions must match the actual finalizer implementation shape: productTruth is a template literal and product insertion is anchored to mainStart/firstSection rather than obsolete pr-hero variables."
+    "Replay assertions must match the actual finalizer implementation shape: productTruth is a template literal and product insertion is anchored to mainStart/firstSection rather than obsolete pr-hero variables.",
+    "The <=430px compact action-row contract explicitly sets display:grid!important because topbar-actions.css otherwise wins the cascade with display:flex!important after hydration."
   ],
   "evidence": [
     "assets/site-coherence-v1.css",
@@ -28,7 +29,7 @@
     "failure_class": "PRESENTATION_CONTRACT_GAP",
     "scope": "WEBSITE",
     "machine_enforceable": true,
-    "repeat_count": 3,
+    "repeat_count": 4,
     "security_sensitive": false
   },
   "test_evidence": [
