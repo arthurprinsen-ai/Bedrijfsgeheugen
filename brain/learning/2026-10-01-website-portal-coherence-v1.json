@@ -3,20 +3,21 @@
   "observed_at": "2026-10-01T10:02:00+02:00",
   "type": "PREVENTION",
   "problem": "Nieuwe/commerciële pagina's en Portal V2 konden inhoudelijk en visueel uit elkaar lopen. Generieke selectors zoals .card, .flow, .step en .cta werden door de globale schil overschreven; contact-links konden naar de homepage-hash gaan.",
-  "root_cause": "Meerdere build-composers schreven na elkaar HTML en CSS zonder een terminale route-scoped coherence pass. Product- en portalwaarheid hadden daarnaast geen laatste visuele parity-laag.",
-  "decision": "Voeg een terminale website coherence-pass toe, scope paginafixes op data-bg-route, normaliseer contactrouting, projecteer de actuele Powerhouse-productarchitectuur op /product en laad een laatste Portal V2 parity stylesheet.",
+  "root_cause": "Meerdere build-composers schreven na elkaar HTML en CSS zonder een terminale route-scoped coherence pass. Product- en portalwaarheid hadden daarnaast geen laatste visuele parity-laag. De pricing-composer verving daarnaast de hero-structuur zonder de bestaande UI visual-regression contracthooks te behouden.",
+  "decision": "Voeg een terminale website coherence-pass toe, scope paginafixes op data-bg-route, normaliseer contactrouting, projecteer de actuele Powerhouse-productarchitectuur op /product en laad een laatste Portal V2 parity stylesheet. Pricing behoudt voortaan expliciet de canonieke hero-hooks voor visuele regressie.",
   "prevention": [
     "Voer finalize-website-coherence-v1.mjs uit in production en deploy-preview.",
     "Gebruik route-scoped overrides voor legacy generieke classnamen.",
     "Blokkeer contact-hashnavigatie.",
     "Behoud één producttaxonomie: Intelligence, Agents, Connect.",
-    "Test pricing, AI ecosystem, integrations, product and portal parity."
+    "Test pricing, AI ecosystem, integrations, product and portal parity.",
+    "Behoud op /prijzen de UI-contracthooks .held[data-bg-component=\"hero\"], .bgkruim en .pil."
   ],
   "evidence": [
     "tools/site-shell/finalize-website-coherence-v1.mjs",
     "assets/site-coherence-v1.css",
     "portal-v2/site-parity-v1.css",
-    "tests/website-coherence-v1.test.mjs"
+    "tests/brain-website-coherence-v1.test.mjs"
   ],
   "status": "ACTIVE_PREVENTION",
   "compiler": {
@@ -32,7 +33,7 @@
     "pricing",
     "navigation"
   ],
-  "revision": 1,
+  "revision": 2,
   "evaluation": {
     "historical_replay": [
       "tests/brain-website-coherence-v1.test.mjs"
