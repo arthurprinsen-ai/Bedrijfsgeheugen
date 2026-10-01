@@ -12,3 +12,5 @@
 - Learning: `brain/learning/2026-10-01-website-portal-coherence-v1.json`.
 - Skill: `skills/website-portal-coherence.md`.
 - Terminal condition: protected merge to main, Netlify exact-main production deployment and public readback on pricing, product, AI ecosystem, systems integrations, contact and Portal V2.
+
+- Follow-up: deploy-preview browser regression found `/prijzen` missing three canonical hero hooks on all seven protected viewports. Recovery restores those hooks in the composer and adds a Brain regression assertion; the visual gate remains fail-closed.
