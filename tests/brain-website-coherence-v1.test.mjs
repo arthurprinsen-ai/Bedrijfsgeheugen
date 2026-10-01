@@ -80,3 +80,13 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
   assert.match(portalCss,/overflow:hidden/);
 });
 
+
+
+test('product page keeps one primary hero and embeds Powerhouse model in context',()=>{
+  assert.doesNotMatch(finalizer,/POWERHOUSE · HET ACTUELE PRODUCT/);
+  assert.doesNotMatch(finalizer,/Website en portaal spreken nu dezelfde taal/);
+  assert.match(finalizer,/ZO WERKT POWERHOUSE/);
+  assert.match(finalizer,/Eén platform\. Drie lagen die samenwerken\./);
+  assert.match(finalizer,/legacySection/);
+  assert.match(finalizer,/firstSection/);
+});
