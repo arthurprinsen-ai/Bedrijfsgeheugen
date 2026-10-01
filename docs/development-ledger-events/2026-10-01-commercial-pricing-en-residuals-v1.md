@@ -7,3 +7,5 @@
 - Change: added a deterministic final English residual cleanup pass and regression coverage.
 - Expected production effect: `/en/prijzen` renders commercial SaaS and consulting copy fully in English.
 - Verification required: protected merge, exact-main Netlify production deploy, public readback of `/en/prijzen`.
+- Follow-up root cause: `apply-commercial-pricing-v1.mjs` returned early when the pricing marker already existed.
+- Follow-up fix: remove the early-return and re-render NL/EN commercial pricing on every build.
