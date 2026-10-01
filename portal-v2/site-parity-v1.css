@@ -44,3 +44,33 @@ body{background:#f5f7fb}
 .main :where(.legacy-page,.legacy-surface,.v2visualgrid){max-width:100%!important;overflow:hidden!important}
 .main :where(.adoption-curve,.maturity-curve,.technology-adoption){max-width:100%!important;overflow:hidden!important}
 .main :where(.adoption-curve svg,.maturity-curve svg,.technology-adoption svg){width:100%!important;height:auto!important;max-height:420px!important}
+
+
+/* Final responsive portal polish — 2026-10-01 */
+.topbar{min-height:76px!important;padding-top:14px!important;padding-bottom:14px!important;gap:16px!important}
+.topbar :where(button,select,input){min-height:42px}
+.dashboard,.lower,.executive-glance,.kpis,.activities{min-width:0}
+.main :where(.brainlayout,.brainflow,.brainselectors,.flowexplain,.v2visualgrid,.model-card){min-width:0!important;max-width:100%!important}
+.main :where(.brainlayout,.v2visual,.legacy-visual,.model-card){overflow:hidden!important}
+.main :where(.v2visual svg,.legacy-visual svg,.model-card svg,.adoption-curve svg,.maturity-curve svg,.technology-adoption svg){
+  width:100%!important;height:auto!important;max-height:380px!important
+}
+.card:empty,.legacy-surface:empty,.v2visual:empty{display:none!important}
+
+@media(max-width:1180px){
+  .topbar{min-height:72px!important}
+  .main :where(.v2visual svg,.legacy-visual svg,.model-card svg,.adoption-curve svg,.maturity-curve svg,.technology-adoption svg){max-height:340px!important}
+}
+@media(max-width:900px){
+  .topbar{min-height:68px!important;padding-top:12px!important;padding-bottom:12px!important}
+  .brainflow{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+  .brainflow .brainnode:last-child{grid-column:1/-1}
+  .main :where(.v2visual svg,.legacy-visual svg,.model-card svg,.adoption-curve svg,.maturity-curve svg,.technology-adoption svg){max-height:300px!important}
+}
+@media(max-width:640px){
+  .topbar{min-height:64px!important;padding-top:10px!important;padding-bottom:10px!important}
+  .brainflow{grid-template-columns:1fr!important}
+  .brainflow .brainnode:last-child{grid-column:auto}
+  .kpis{grid-template-columns:1fr!important}
+  .main :where(.v2visual svg,.legacy-visual svg,.model-card svg,.adoption-curve svg,.maturity-curve svg,.technology-adoption svg){max-height:260px!important}
+}
