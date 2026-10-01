@@ -20,8 +20,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "production footer from main commit 664231ce0566d7a0d6ec3d02d6d97a0b71704976",
-      "absence of the three target HTML files on that same main revision"
+      "tests/technical-seo-gate.test.mjs",
+      "tests/site-shell-public-route-inventory.test.mjs"
     ]
   }
 }
