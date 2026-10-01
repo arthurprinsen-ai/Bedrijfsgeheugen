@@ -107,3 +107,28 @@ body[data-bg-route="/en/systemen-koppelen"] main :where(.cards,.grid,.koppelinge
   body[data-bg-route="/en/ai-ecosysteem"] main .flow{grid-template-columns:1fr!important}
   .bg-product-truth-v1{padding:54px 16px}
 }
+/* Professional parity hardening — 2026-10-01 */
+body[data-bg-route="/prijzen"] main .pcard,
+body[data-bg-route="/prijzen"] main .service,
+body[data-bg-route="/en/prijzen"] main .pcard,
+body[data-bg-route="/en/prijzen"] main .service{display:flex!important;flex-direction:column!important;height:100%!important}
+body[data-bg-route="/prijzen"] main .pcard .cta,
+body[data-bg-route="/prijzen"] main .service .cta,
+body[data-bg-route="/en/prijzen"] main .pcard .cta,
+body[data-bg-route="/en/prijzen"] main .service .cta{margin-top:auto!important;min-height:50px!important;display:flex!important;align-items:center!important;justify-content:center!important}
+body[data-bg-route="/prijzen"] main .plans,
+body[data-bg-route="/prijzen"] main .services,
+body[data-bg-route="/en/prijzen"] main .plans,
+body[data-bg-route="/en/prijzen"] main .services{align-items:stretch!important}
+.bg-product-model{margin-top:22px;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch}
+.bg-product-model>i{font-style:normal;color:var(--bg-yellow);font-size:1.4rem;display:grid;place-items:center}
+.bg-product-node{min-width:0;padding:16px;border-radius:16px;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.055)}
+.bg-product-node small{display:grid;place-items:center;width:26px;height:26px;border-radius:50%;background:rgba(255,232,107,.14);color:var(--bg-yellow);font-weight:900;margin-bottom:10px}
+.bg-product-node b{display:block;font-size:1rem}.bg-product-node span{display:block;margin-top:4px;font-size:.82rem;color:#c7d2e8;line-height:1.45}
+.bg-product-node.accent{background:rgba(255,232,107,.12);border-color:rgba(255,232,107,.45)}
+.bg-product-ai-links{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,.14)}
+.bg-product-ai-links b{margin-right:4px}.bg-product-ai-links a{color:#fff;text-decoration:none;border-bottom:1px solid rgba(255,255,255,.35);font-size:.9rem}
+.bg-product-ai-links a:hover{border-color:var(--bg-yellow);color:var(--bg-yellow)}
+.bgkop :where(a,button){min-height:44px}
+.bgkop :where(a[href*="inlog"],a[href*="login"],a[href*="aanmeld"],a[href*="signup"],.bgkop-cta){display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:900px){.bg-product-model{grid-template-columns:1fr}.bg-product-model>i{transform:rotate(90deg);height:18px}}
