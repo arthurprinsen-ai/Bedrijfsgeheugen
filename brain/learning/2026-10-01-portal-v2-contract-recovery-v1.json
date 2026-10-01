@@ -18,14 +18,11 @@
       "tests/portal-v2-operating-system-routing.test.mjs",
       "tests/portal-v2-topbar-actions.test.mjs"
     ],
-    "outcome": "Portal V2 Tests run 36861757680 passed after restoring canonical hub capability coverage, desktop navigation items and full-menu registry coverage."
+    "outcome": "Portal V2 Tests run 36861757680 passed after restoring canonical hub capability coverage, desktop navigation items and full-menu registry coverage. Canonical learning replay uses the approved Brain portal-capability parity test."
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-v2-hubs.test.mjs",
-      "tests/portal-v2-navigation-contract.test.mjs",
-      "tests/portal-v2-operating-system-routing.test.mjs",
-      "tests/portal-v2-topbar-actions.test.mjs"
+      "tests/brain-pricing-full-portal-capability-parity-v1.test.mjs"
     ]
   }
 }
