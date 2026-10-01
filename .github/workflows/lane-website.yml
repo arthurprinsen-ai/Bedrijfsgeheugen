@@ -332,6 +332,7 @@ jobs:
       - name: Verify all public pages are visibly rendered
         env:
           UI_VR_BASE_URL: ${{ needs.preview-ready.outputs.base_url }}
+          UI_VR_ENFORCED_ROUTES_JSON: ${{ needs.classify.outputs.routes }}
         run: timeout --signal=TERM --kill-after=15s 9m node tools/site-shell/standalone-visibility-check.mjs
       - name: Verify every header menu panel is readable
         if: needs.classify.outputs.risk_lane == 'high-risk'
