@@ -31,7 +31,8 @@ function metGegevens(html) {
 const OVERSLAAN = new Set([
   'index.html', 'prototype-v18-stable.html', 'prijzen.html', 'cases.html',
   'index-oud.html',
-  'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html'
+  'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html',
+  'pakketadvies.html', 'portaal-demo.html'
 ]);
 
 // de pagina's die de v18-build zelf schrijft dragen de schil al

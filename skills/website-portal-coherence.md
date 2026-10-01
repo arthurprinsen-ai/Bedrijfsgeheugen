@@ -14,3 +14,12 @@ Voorkom dat nieuw gegenereerde pagina's, pricing, het openbare Powerhouse-produc
 
 ## Preventie
 Bij nieuwe publieke pagina's of globale styles moet de regressietest `tests/brain-website-coherence-v1.test.mjs` blijven slagen. Geen LIVE-claim zonder main/deploy parity en publieke readback van minimaal /prijzen, /product, /ai-ecosysteem, /systemen-koppelen, /contact en /portal-v2/.
+## Professional public-surface invariant
+- Public copy describes customer value; never expose internal synchronization, build, parity or implementation language as hero/proposition copy.
+- A second architecture/proposition section may supplement a page, but must sit inside the page narrative after its primary hero and may never look like a second site header.
+- Pricing recommendation controls must resolve to an actual recommendation experience, not silently degrade to a generic contact page.
+- Cards in the same commercial comparison row use equal-height structure and a shared CTA baseline.
+- Public portal demos are isolated demonstration surfaces. Customer/runtime portal pages are not used as a sales demo when their state, legacy visuals or customer navigation can leak through.
+- Every visual model is container-bounded on desktop and mobile; SVG/canvas/media may never escape its card.
+- Intelligence, Agents and Connect are the canonical product lines. AI Modelwijzer, AI Capability Model and AI Governance remain discoverable from canonical navigation or a directly related product surface.
+- Contact always resolves to /contact; generated and runtime CTAs are subject to the same route rule.

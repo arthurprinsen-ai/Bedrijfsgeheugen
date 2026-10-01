@@ -36,3 +36,11 @@ body{background:#f5f7fb}
   .brainflow{grid-template-columns:1fr!important}
   .kpis{grid-template-columns:1fr 1fr!important}
 }
+
+/* Prevent legacy/demo visual models from escaping their cards. */
+.main :where(svg,canvas,img,video){max-width:100%!important}
+.main :where(.v2visual,.legacy-visual,.model-card,.card){min-width:0!important;overflow:hidden}
+.main :where(.v2visual svg,.legacy-visual svg,.model-card svg){width:100%!important;height:auto!important;max-height:430px!important;overflow:hidden!important}
+.main :where(.legacy-page,.legacy-surface,.v2visualgrid){max-width:100%!important;overflow:hidden!important}
+.main :where(.adoption-curve,.maturity-curve,.technology-adoption){max-width:100%!important;overflow:hidden!important}
+.main :where(.adoption-curve svg,.maturity-curve svg,.technology-adoption svg){width:100%!important;height:auto!important;max-height:420px!important}
