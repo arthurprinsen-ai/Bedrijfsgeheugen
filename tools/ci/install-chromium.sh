@@ -36,6 +36,7 @@ set -euo pipefail
 PLAYWRIGHT_PACKAGE="${PLAYWRIGHT_PACKAGE:-@playwright/test@1.55.0}"
 PLAYWRIGHT_CLI="${PLAYWRIGHT_CLI:-npx playwright}"
 POGINGEN="${POGINGEN:-3}"
+PLAYWRIGHT_SKIP_DEPS="${PLAYWRIGHT_SKIP_DEPS:-0}"
 
 verwijder_overbodige_apt_bronnen() {
   local bron
@@ -56,7 +57,12 @@ fi
 verwijder_overbodige_apt_bronnen
 
 for poging in $(seq 1 "$POGINGEN"); do
-  if $PLAYWRIGHT_CLI install --with-deps chromium; then
+  if [ "$PLAYWRIGHT_SKIP_DEPS" = "1" ]; then
+    install_cmd="$PLAYWRIGHT_CLI install chromium"
+  else
+    install_cmd="$PLAYWRIGHT_CLI install --with-deps chromium"
+  fi
+  if eval "$install_cmd"; then
     echo "Chromium geïnstalleerd (poging $poging)."
     exit 0
   fi
