@@ -126,7 +126,7 @@
     var bar=document.createElement('div');
     bar.setAttribute('data-bg-legal-links','1');
     bar.className='bg-legal-footer';
-    bar.innerHTML='<a href="/gebruiksvoorwaarden">Algemene gebruiksvoorwaarden</a><a href="/privacy">Privacybeleid</a><a href="/cookiebeleid">Cookiebeleid</a><a href="/systeemstatus">Systeemstatus</a>';
+    bar.innerHTML='<a href="https://www.bedrijfsgeheugen.nl/gebruiksvoorwaarden">Algemene gebruiksvoorwaarden</a><a href="https://www.bedrijfsgeheugen.nl/privacy">Privacybeleid</a><a href="https://www.bedrijfsgeheugen.nl/cookiebeleid">Cookiebeleid</a><a href="https://www.bedrijfsgeheugen.nl/systeemstatus">Systeemstatus</a>';
     var style=document.createElement('style');
     style.textContent='.bg-legal-footer{display:flex;gap:1.1rem;flex-wrap:wrap;align-items:center;border-top:1px solid rgba(20,23,26,.12);padding:1.05rem 0 1.15rem;margin-top:.35rem;font-size:.82rem}.bgvoet .bg-legal-footer{border-top-color:rgba(255,255,255,.14)}.bg-legal-footer a{color:inherit!important;text-decoration:none!important;opacity:.78}.bg-legal-footer a:hover,.bg-legal-footer a:focus-visible{opacity:1;text-decoration:underline!important}@media(max-width:640px){.bg-legal-footer{gap:.65rem 1rem;font-size:.78rem}}';
     document.head.appendChild(style);
