@@ -137,6 +137,17 @@ function setHeadText(html,tagRe,replacement){
   return tagRe.test(html)?html.replace(tagRe,replacement):html.replace(/<\/head>/i,replacement+'\n</head>');
 }
 
+function ensureProductHeroVisibility(html,route){
+  if(route!=='/product' && route!=='/en/product') return html;
+  const invariant='<style id="bg-product-hero-visibility-invariant">body[data-bg-route="/product"] main>section:first-of-type,body[data-bg-route="/en/product"] main>section:first-of-type,body[data-bg-route="/product"] main>section:first-of-type>*,body[data-bg-route="/en/product"] main>section:first-of-type>*{display:block!important;visibility:visible!important;opacity:1!important;transform:none!important;content-visibility:visible!important}body[data-bg-route="/product"] main h1:first-of-type,body[data-bg-route="/en/product"] main h1:first-of-type{display:block!important;visibility:visible!important;opacity:1!important;transform:none!important;clip:auto!important;clip-path:none!important}</style>';
+  if(!html.includes('bg-product-hero-visibility-invariant')) html=html.replace(/<\/head>/i,invariant+'\n</head>');
+  html=html.replace(/<h1\b([^>]*)>/i,(m,attrs)=>{
+    const cleaned=attrs.replace(/\sstyle=("[^"]*"|'[^']*')/i,'');
+    return '<h1'+cleaned+' style="display:block!important;visibility:visible!important;opacity:1!important;transform:none!important;clip:auto!important;clip-path:none!important">';
+  });
+  return html;
+}
+
 function ensureBedrijfslekProductCta(html,route){
   if(route!=='/zelfscan') return html;
   return html
@@ -186,6 +197,7 @@ for(const path of [...new Set(files)]){
   next=ensureStyle(next);
   next=ensureProductTruth(next,route);
   next=ensureRouteMetadata(next,route);
+  next=ensureProductHeroVisibility(next,route);
   next=ensureBedrijfslekProductCta(next,route);
   failKnownBroken(next,path);
   if(next!==html){await writeFile(path,next,'utf8');changed++}
