@@ -22,5 +22,12 @@
     "historical_replay": [
       "tests/brain-ci-admission-single-flight.test.mjs"
     ]
-  }
+  },
+  "root_cause": "The admission WIP budget allowed up to three executable candidates that shared the same conflict contracts, so multiple recovery and website candidates could simultaneously enter expensive CI and repeatedly invalidate each other as main advanced.",
+  "prevention_rule": "For candidates that overlap on explicit delivery conflict contracts, admit only one executable candidate into expensive CI at a time; unrelated candidates may continue in parallel.",
+  "evidence": [
+    "config/powerhouse-delivery-hygiene-v1.json:wip.maxExecutable=1",
+    "tests/brain-ci-admission-single-flight.test.mjs",
+    "2026-10-01 observed concurrent website/recovery CI pressure"
+  ]
 }
