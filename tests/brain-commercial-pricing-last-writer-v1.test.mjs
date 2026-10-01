@@ -37,3 +37,11 @@ test('pricing source closes SEO diagnostics and final composer preserves backlin
   assert.ok(!pricing.toLowerCase().includes('strategisch'));
   assert.ok(!pricing.toLowerCase().includes('strategische'));
 });
+
+test('final pricing composer preserves visual regression hero contract', async()=>{
+  const renderer=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  assert.ok(renderer.includes('class="hero held" data-bg-component="hero"'));
+  assert.ok(renderer.includes('class="bgkruim"'));
+  assert.ok(renderer.includes('class="pil"'));
+});
+
