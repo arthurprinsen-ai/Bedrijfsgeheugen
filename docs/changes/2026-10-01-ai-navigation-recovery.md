@@ -4,4 +4,3 @@ The canonical website navigation again exposes the AI Modelwijzer and AI Governa
 
 This corrects a regression where the pages still existed but became hard to discover after the website/portal coherence work. Static English translations are included in the same delivery so the bilingual build remains fail-closed.
 
-The package-advice and interactive portal-demo routes also have explicit .html → clean URL redirects.
