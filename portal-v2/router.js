@@ -1,4 +1,4 @@
-import { mobileTarget, navigationUrl } from './navigation-model.js';
+import { mobileTarget, navigationUrl, DESKTOP_NAV_GROUPS } from './navigation-model.js';
 
 let route={target:'overzicht'};
 let handlers={openPage:null,openHub:null,closeHub:null,showOverview:null};
@@ -16,13 +16,17 @@ function readTargetFromLocation(){
 }
 
 function updateActiveState(target){
+  const groupForTarget=DESKTOP_NAV_GROUPS.find(group=>group.target===target||group.pages?.some(page=>page.target===target));
   document.querySelectorAll('[data-nav-target]').forEach(button=>{
-    const active=button.dataset.navTarget===target;
+    const active=groupForTarget?button.dataset.navGroup===groupForTarget.id:button.dataset.navTarget===target;
     button.classList.toggle('active',active);
     if(active) button.setAttribute('aria-current','page'); else button.removeAttribute('aria-current');
   });
   document.querySelectorAll('[data-mobile-nav]').forEach(button=>{
-    const active=mobileTarget(button.dataset.mobileNav)===target;
+    const mapped=mobileTarget(button.dataset.mobileNav);
+    const active=mapped===target
+      || (mapped==='hub:data-ai'&&['data','ai'].includes(groupForTarget?.id))
+      || (mapped==='hub:tasks'&&groupForTarget?.id==='actions');
     button.classList.toggle('active',active);
     if(active) button.setAttribute('aria-current','page'); else button.removeAttribute('aria-current');
   });
