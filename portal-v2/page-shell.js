@@ -150,7 +150,12 @@ function ensureShell(){
   root.id='portalView';root.className='portalview';root.setAttribute('aria-hidden','true');
   root.innerHTML=`<section class="pvpanel" role="region" aria-labelledby="pvTitle"><header class="pvhead"><div><span class="pvkicker" id="pvKicker">Portal V2</span><h2 id="pvTitle">Onderdeel</h2><p id="pvDescription"></p></div><button class="pvclose" type="button" data-close aria-label="Terug naar overzicht">← <span>Overzicht</span></button></header><div class="pvbody"><div class="pvstatus"><span class="pvdot"></span><strong id="pvStatus"></strong></div><div class="pvnative" id="pvNative"></div></div></section>`;
   document.body.appendChild(root);
-  root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>{closePortalPage();globalThis.dispatchEvent?.(new CustomEvent('bg:portal-overview'));}));
+  root.querySelectorAll('[data-close]').forEach(btn=>btn.addEventListener('click',()=>{
+    closePortalPage();
+    const url=new URL(location.href);url.searchParams.delete('page');url.searchParams.delete('hub');
+    history.pushState({portalTarget:'overzicht'},'',`${url.pathname}${url.search}${url.hash}`);
+    globalThis.dispatchEvent?.(new PopStateEvent('popstate',{state:{portalTarget:'overzicht'}}));
+  }));
   return root;
 }
 
@@ -254,6 +259,16 @@ function renderAiCapabilitiesWorkspace(native,contract,view){
 }
 
 export function openPortalPage(pageId){
+  if(typeof location!=='undefined'){
+    const url=new URL(location.href);
+    const currentPage=url.searchParams.get('page'),currentHub=url.searchParams.get('hub');
+    if(currentPage!==pageId||currentHub){
+      url.searchParams.delete('hub');url.searchParams.set('page',pageId);
+      history.pushState({portalTarget:pageId},'',`${url.pathname}${url.search}${url.hash}`);
+      globalThis.dispatchEvent?.(new PopStateEvent('popstate',{state:{portalTarget:pageId}}));
+      return true;
+    }
+  }
   const view=pagePresentation(pageId);if(!view)return false;
   const root=ensureShell();
   root.classList.toggle('impact-mode',pageId==='csrd-impact');
