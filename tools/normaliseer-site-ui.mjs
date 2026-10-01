@@ -88,6 +88,28 @@ function heeftElementMetKlasse(html, klasse) {
   return re.test(String(html));
 }
 
+function ensurePubliekeSeoBasis(input, bestand) {
+  let html = String(input);
+  const head = html.match(/<head\b[^>]*>([\s\S]*?)<\/head>/i)?.[1] || '';
+  const robots = [...head.matchAll(/<meta\b[^>]*name=(?:"robots"|'robots')[^>]*>/gi)];
+  if (robots.length === 0) {
+    html = html.replace('</head>', '<meta name="robots" content="index,follow">\n</head>');
+  }
+  if (bestand !== 'index.html') {
+    const body = html.match(/<body\b[^>]*>([\s\S]*?)<\/body>/i)?.[1] || '';
+    const hasBreadcrumb = /<(?:nav|ol)\b[^>]*(?:aria-label=(?:"Kruimelpad"|'Kruimelpad')|class=(?:"[^"]*\bbgkruim\b[^"]*"|'[^']*\bbgkruim\b[^']*'))[^>]*>/i.test(body);
+    if (!hasBreadcrumb) {
+      const h1 = html.match(/<h1\b[^>]*>([\s\S]*?)<\/h1>/i);
+      const title = html.match(/<title\b[^>]*>([\s\S]*?)<\/title>/i);
+      const raw = (h1?.[1] || title?.[1] || bestand.replace(/\.html$/,'')).replace(/<[^>]+>/g,' ').replace(/\s+/g,' ').trim();
+      const label = raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+      const breadcrumb = '<nav class="bgkruim" aria-label="Kruimelpad"><a href="https://www.bedrijfsgeheugen.nl/">Home</a><span aria-hidden="true">›</span><span aria-current="page">'+label+'</span></nav>';
+      html = html.replace(/<main\b([^>]*)>/i, '<main$1>'+breadcrumb);
+    }
+  }
+  return html;
+}
+
 function markeerPricingTools(input) {
   let html = input;
   html = html.replace(/<section\b(?![^>]*data-bg-component)([^>]*\bclass="[^"]*\bbg-pricing-tools\b[^"]*"[^>]*)>/i,
@@ -128,6 +150,7 @@ export function normaliseerHtml(input, bestand) {
   html = ensureTrustBar(html);
   html = ensureFooterContact(html);
   html = ensureBrandShellCss(html);
+  html = ensurePubliekeSeoBasis(html, bestand);
   html = ensureReleaseMarker(html);
   html = markPageSlots(html);
   html = absolutiseerInterneHref(html);
