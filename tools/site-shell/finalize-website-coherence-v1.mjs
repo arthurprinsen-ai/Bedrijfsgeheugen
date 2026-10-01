@@ -137,6 +137,13 @@ function setHeadText(html,tagRe,replacement){
   return tagRe.test(html)?html.replace(tagRe,replacement):html.replace(/<\/head>/i,replacement+'\n</head>');
 }
 
+function ensureBedrijfslekProductCta(html,route){
+  if(route!=='/zelfscan') return html;
+  return html
+    .replace(/href=(["'])\/product\1/gi,'href=$1https://www.bedrijfsgeheugen.nl/product$1')
+    .replace(/href=(["'])https:\/\/bedrijfsgeheugen\.nl\/product\1/gi,'href=$1https://www.bedrijfsgeheugen.nl/product$1');
+}
+
 function ensureRouteMetadata(html,route){
   const meta=routeMetadata.get(route);
   if(!meta) return html;
@@ -179,6 +186,7 @@ for(const path of [...new Set(files)]){
   next=ensureStyle(next);
   next=ensureProductTruth(next,route);
   next=ensureRouteMetadata(next,route);
+  next=ensureBedrijfslekProductCta(next,route);
   failKnownBroken(next,path);
   if(next!==html){await writeFile(path,next,'utf8');changed++}
 }
