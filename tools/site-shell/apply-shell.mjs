@@ -171,7 +171,7 @@ export const CONSENT_DEFAULT = '<script>window.dataLayer=window.dataLayer||[];fu
    korte tekst zonder titel en knoppen naast elkaar (135 in plaats van 374 px hoog),
    zodat de banner de h1 niet bedekt (standalone-visibility-check, 390x844). */
 export const TOESTEMMINGSBANNER = `<style id="bg-toestemmingsbanner">
-#bgCookie{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:99999;max-width:660px;margin:0 auto;background:#fff;color:#16213e;border:1px solid #e4e4ec;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.20);padding:1.15rem 1.25rem;font:400 .92rem/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:none}
+#bgCookie{position:fixed;left:1rem;right:1rem;bottom:1rem;z-index:50;max-width:660px;margin:0 auto;background:#fff;color:#16213e;border:1px solid #e4e4ec;border-radius:14px;box-shadow:0 12px 44px rgba(0,0,0,.20);padding:1.15rem 1.25rem;font:400 .92rem/1.55 system-ui,-apple-system,'Segoe UI',Roboto,Arial,sans-serif;display:none}
 #bgCookie.bgShow{display:block}
 #bgCookie h4{margin:0 0 .45rem;font-size:1.02rem;font-weight:700}
 #bgCookie p{margin:0}
