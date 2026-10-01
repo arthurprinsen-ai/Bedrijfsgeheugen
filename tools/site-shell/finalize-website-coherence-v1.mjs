@@ -120,6 +120,37 @@ function ensureProductTruth(html,route){
   return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
 }
 
+const routeMetadata=new Map([
+  ['/prijzen',{title:'Kosten digitalisering mkb | Powerhouse prijzen',description:'Vergelijk Powerhouse SaaS, workshops, scans en begeleiding. Transparante prijzen, mogelijkheden en een direct pakketadvies voor het mkb.'}],
+  ['/pakketadvies',{title:'Welk Powerhouse-pakket past bij mij? | Bedrijfsgeheugen',description:'Krijg een passend Powerhouse-pakketadvies op basis van organisatiegrootte, doel en gewenste aanpak.'}],
+  ['/portaal-demo',{title:'Interactieve Powerhouse portaal-demo | Bedrijfsgeheugen',description:'Bekijk interactief hoe Powerhouse Intelligence, Agents en Connect samenwerken van signaal naar actie en resultaat.'}],
+  ['/contact',{title:'Contact — even bellen of appen | Bedrijfsgeheugen',description:'Neem direct contact op over kennisborging, automatisering, koppelingen, data en AI voor het mkb.'}],
+  ['/product',{title:'Bedrijfsgeheugen platform voor het mkb | Bedrijfsgeheugen',description:'Powerhouse brengt Intelligence, Agents en Connect samen: van bedrijfscontext en besluitvorming naar actie in je bestaande systemen.'}],
+  ['/en/prijzen',{title:'SME digitalisation costs | Powerhouse pricing',description:'Compare Powerhouse SaaS, workshops, scans and expert support with transparent pricing and a direct plan recommendation.'}],
+  ['/en/pakketadvies',{title:'Which Powerhouse plan fits me? | Bedrijfsgeheugen',description:'Get a Powerhouse plan recommendation based on organisation size, goal and preferred way of working.'}],
+  ['/en/portaal-demo',{title:'Interactive Powerhouse portal demo | Bedrijfsgeheugen',description:'See how Powerhouse Intelligence, Agents and Connect work together from signal to action and measurable outcome.'}],
+  ['/en/contact',{title:'Contact | Bedrijfsgeheugen',description:'Contact Bedrijfsgeheugen directly about knowledge continuity, automation, integrations, data and AI.'}],
+  ['/en/product',{title:'Bedrijfsgeheugen platform for SMEs | Powerhouse',description:'Powerhouse combines Intelligence, Agents and Connect: from company context and decisions to action in your existing systems.'}]
+]);
+
+function setHeadText(html,tagRe,replacement){
+  return tagRe.test(html)?html.replace(tagRe,replacement):html.replace(/<\/head>/i,replacement+'\n</head>');
+}
+
+function ensureRouteMetadata(html,route){
+  const meta=routeMetadata.get(route);
+  if(!meta) return html;
+  const canonical='https://www.bedrijfsgeheugen.nl'+route;
+  html=setHeadText(html,/<title>[\s\S]*?<\/title>/i,`<title>${meta.title}</title>`);
+  html=setHeadText(html,/<meta\b[^>]*name=(["'])description\1[^>]*>/i,`<meta name="description" content="${meta.description.replace(/"/g,'&quot;')}">`);
+  html=setHeadText(html,/<link\b[^>]*rel=(["'])canonical\1[^>]*>/i,`<link rel="canonical" href="${canonical}">`);
+  html=setHeadText(html,/<meta\b[^>]*property=(["'])og:title\1[^>]*>/i,`<meta property="og:title" content="${meta.title.replace(/"/g,'&quot;')}">`);
+  html=setHeadText(html,/<meta\b[^>]*property=(["'])og:description\1[^>]*>/i,`<meta property="og:description" content="${meta.description.replace(/"/g,'&quot;')}">`);
+  html=setHeadText(html,/<meta\b[^>]*name=(["'])twitter:title\1[^>]*>/i,`<meta name="twitter:title" content="${meta.title.replace(/"/g,'&quot;')}">`);
+  html=setHeadText(html,/<meta\b[^>]*name=(["'])twitter:description\1[^>]*>/i,`<meta name="twitter:description" content="${meta.description.replace(/"/g,'&quot;')}">`);
+  return html;
+}
+
 function failKnownBroken(html,path){
   const bad=[
     /href=(["'])#contact\1/i,
@@ -147,6 +178,7 @@ for(const path of [...new Set(files)]){
   next=markRoute(next,route);
   next=ensureStyle(next);
   next=ensureProductTruth(next,route);
+  next=ensureRouteMetadata(next,route);
   failKnownBroken(next,path);
   if(next!==html){await writeFile(path,next,'utf8');changed++}
 }
