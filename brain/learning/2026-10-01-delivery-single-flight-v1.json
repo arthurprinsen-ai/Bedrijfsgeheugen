@@ -1,0 +1,13 @@
+{
+  "version": "POWERHOUSE-LEARNING-v1",
+  "date": "2026-10-01",
+  "topic": "delivery-single-flight",
+  "problem": "Overlapping delivery candidates could enter expensive CI concurrently, creating queueing, main drift and repeated recovery work.",
+  "decision": "Set max executable overlapping candidates to one while preserving parallelism for unrelated conflict contracts.",
+  "expected_effect": [
+    "one conflicting candidate in expensive CI at a time",
+    "less main drift",
+    "fewer duplicated recovery PRs",
+    "faster terminal delivery"
+  ]
+}
