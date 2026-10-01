@@ -20,8 +20,8 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/technical-seo-gate.test.mjs",
-      "tests/site-shell-public-route-inventory.test.mjs"
+      "tests/brain-footer-legal-production-core-v1.test.mjs",
+      "tests/brain-public-i18n-static-route-authority-v1.test.mjs"
     ]
   }
 }
