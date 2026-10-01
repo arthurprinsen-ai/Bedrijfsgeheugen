@@ -441,3 +441,9 @@
 # production recovery diagnostic: bilingual-seo-netlify-parity-20260930-v1
 
 # production redeploy heartbeat: product-led-home-live-20260930-v1
+
+[[redirects]]
+  from = "/ai-modelwijzer.html"
+  to = "/ai-modelwijzer"
+  status = 301
+  force = true
