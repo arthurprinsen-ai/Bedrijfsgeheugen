@@ -4,10 +4,10 @@
   "type": "PREVENTION",
   "problem": "Purpose-built package-advisor and portal-demo pages were initially outside the canonical shell pipeline and therefore failed the site-wide footer/header contract.",
   "root_cause": "The recovery pages were excluded from apply-shell and UI normalization to protect their interactive runtimes, but those runtimes were already explicitly preserved by data-bg-page-runtime.",
-  "decision": "Keep the two pages out of the legacy V18 rewrite, but allow canonical shell projection and UI normalization. Classify both routes as website delivery paths and keep them noindex utility surfaces.",
+  "decision": "Keep the two pages out of the legacy V18 rewrite, but allow canonical shell projection and UI normalization. Classify both routes as website delivery paths, keep their runtimes explicit, and expose them as real indexable customer journeys with crawlable inbound links.",
   "prevention": [
     "Interactive public tools must use data-bg-page-runtime so canonical shell projection can preserve behavior.",
-    "Utility pages may be excluded from SEO ownership without being excluded from canonical header/footer projection.",
+    "New customer-facing routes must participate in canonical shell, sitemap and internal-link contracts unless they are explicitly private.",
     "Every new top-level HTML route must be classified in the website delivery lane before promotion."
   ],
   "evidence": [
