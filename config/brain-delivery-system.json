@@ -498,7 +498,9 @@
         "data/ai-provider-governance-v1.json",
         "data/ai-model-catalog-v1.json",
         "config/powerhouse-ai-model-intelligence-v1.json",
-        "tests/ai-model-"
+        "tests/ai-model-",
+        "pakketadvies.html",
+        "portaal-demo.html"
       ],
       "requiredContracts": [
         "BG166",
