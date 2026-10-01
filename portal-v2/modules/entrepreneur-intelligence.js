@@ -1,4 +1,5 @@
 import { REGELGEVING, CATEGORIEEN, komendeMijlpalen } from '../regelgeving.js';
+import { ensureIdentityWidget } from '../portal-state.js';
 
 const esc=value=>String(value??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 const arr=value=>Array.isArray(value)?value:[];
@@ -95,9 +96,19 @@ function renderView(pageId,data){
   return shell(view.title,view.subtitle,`${nav()}${section(view.title,content,'Voor deze selectie zijn nu geen actuele records beschikbaar.')}`);
 }
 
-async function load(fetchImpl=globalThis.fetch){
-  const response=await fetchImpl('/api/portal-ondernemersdata',{headers:{accept:'application/json'},credentials:'same-origin'});
-  if(!response.ok)throw new Error(`Bron-API gaf status ${response.status}`);
+export async function entrepreneurAuthHeaders(identityProvider=ensureIdentityWidget){
+  const headers={accept:'application/json'};
+  const identity=await identityProvider().catch(()=>null);
+  let token='';
+  try{token=await identity?.currentUser?.()?.jwt?.()||'';}catch{}
+  if(token)headers.authorization=`Bearer ${token}`;
+  return headers;
+}
+export async function loadEntrepreneurData(fetchImpl=globalThis.fetch,identityProvider=ensureIdentityWidget){
+  const headers=await entrepreneurAuthHeaders(identityProvider);
+  const response=await fetchImpl('/api/portal-ondernemersdata',{headers,credentials:'same-origin'});
+  if(response.status===401)throw new Error('Je sessie is verlopen. Log opnieuw in om actuele brondata te laden.');
+  if(!response.ok)throw new Error('Actuele brondata is tijdelijk niet beschikbaar.');
   return response.json();
 }
 
@@ -111,7 +122,7 @@ export function mountEntrepreneurIntelligence(root,{pageId='ondernemersdata',ope
   const run=async(force=false)=>{
     root.innerHTML=loading(view);bind();
     try{
-      const data=await load(fetchImpl);
+      const data=await loadEntrepreneurData(fetchImpl);
       root.innerHTML=renderView(pageId,data);
       bind();
       if(force)root.querySelector('[data-ei-refresh]')?.focus();
