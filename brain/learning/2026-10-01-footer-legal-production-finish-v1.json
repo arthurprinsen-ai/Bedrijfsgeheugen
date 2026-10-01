@@ -1,0 +1,26 @@
+{
+  "fingerprint": "website|footer|legal-links-production-finish|20261001",
+  "obligation_id": "footer-legal-production-finish-20261001",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The original footer PR became unmergeable after main advanced. Reapplying only the required deltas on current main exposed two additional delivery gates: relative internal linking for /pakketadvies and a section-bounded product rewrite to preserve the real H1 during build-time transformations.",
+  "prevention_rule": "When a website PR becomes stale or conflicted, rebuild the smallest delta on current main, preserve existing production-authority changes, use relative internal links for SEO-owned routes, and keep build-time section rewrites bounded to one section.",
+  "evidence": {
+    "tests": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs",
+      "tests/site-shell-public-route-inventory.test.mjs"
+    ],
+    "expected": "footer legal/status links remain in the production build while /pakketadvies is internally linked and the product H1 is preserved"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+    ]
+  },
+  "status": "ACTIVE_PREVENTION"
+}
