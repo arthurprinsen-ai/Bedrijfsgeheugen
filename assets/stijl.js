@@ -134,3 +134,5 @@
   }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureLegalFooter,{once:true});else ensureLegalFooter();
 })();
+
+/* footer-legal-pages-20261001-trigger */
