@@ -221,12 +221,15 @@ function englishPage(){
   ];
   for(const [from,to] of replacements) html=html.split(from).join(to);
   const residuals=[
+    ['Directie &amp; AI Workshop','Executive &amp; AI Workshop'],
     ['Directie & AI Workshop','Executive & AI Workshop'],
+    ['Forbereiding &amp; analyse','Preparation &amp; analysis'],
     ['Voorbereiding & analyse','Preparation & analysis'],
-    ['Bedrijfsgeheugen Scan','Bedrijfsgeheugen Scan'],
+    ['For organisaties die willen automatiseren en opschalen.','For organisations that want to automate and scale.'],
+    ['Integrations met jouw systemen','Integrations with your systems'],
     ['Integraties met jouw systemen','Integrations with your systems'],
-    ['De betaalde waarde van een Executive & AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive & AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
-    ['De betaalde waarde van een Directie & AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive & AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
+    ['De betaalde waarde van een Directie &amp; AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive &amp; AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
+    ['De betaalde waarde van een Executive &amp; AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive &amp; AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
     ['Tijdens de uitvoering krijg je Pro- of Growth access.','During delivery you receive Pro or Growth access.'],
     ['Tijdens de uitvoering krijg je Pro- of Groei-toegang.','During delivery you receive Pro or Growth access.'],
     ['maand','month'],
