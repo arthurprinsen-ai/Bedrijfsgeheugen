@@ -33,9 +33,11 @@ test('website lane keeps targeted route visibility for every change and broad br
   assert.match(website, /verify-targeted-website-routes\.mjs/);
   const visibilityStart = website.indexOf('      - name: Verify affected public pages are visibly rendered');
   assert.notEqual(visibilityStart, -1);
-  const broadStart = website.indexOf('      - name: Verify broad high-risk browser contracts', visibilityStart);
+  const nextStepStart = website.indexOf('      - name: Verify every header menu panel is readable', visibilityStart);
+  assert.notEqual(nextStepStart, -1);
+  const broadStart = website.indexOf('      - name: Verify broad high-risk browser contracts', nextStepStart);
   assert.notEqual(broadStart, -1);
-  const visibility = website.slice(visibilityStart, broadStart);
+  const visibility = website.slice(visibilityStart, nextStepStart);
   assert.match(visibility, /UI_VR_ROUTES_JSON:\s*\$\{\{ needs\.classify\.outputs\.routes \}\}/);
   assert.doesNotMatch(visibility, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
   const broad = website.slice(broadStart);
