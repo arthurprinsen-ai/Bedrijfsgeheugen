@@ -28,3 +28,5 @@ test('canonical footer component mirrors the same legal link set', () => {
     assert.ok(footerComponent.includes(href), href);
   }
 });
+
+// footer production lineage recheck
