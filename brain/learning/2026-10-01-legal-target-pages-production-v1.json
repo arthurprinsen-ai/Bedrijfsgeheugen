@@ -1,0 +1,27 @@
+{
+  "fingerprint": "website|legal-target-pages|production-completeness|20261001",
+  "obligation_id": "legal-target-pages-production-20261001",
+  "compiler": {
+    "failure_class": "DELIVERY_COMPLETENESS_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The footer links were promoted to production in PR #3579 while the three linked root pages were not part of that candidate, leaving production navigation ahead of its destination content.",
+  "prevention_rule": "A public navigation change is complete only when every new internal destination exists in the same current-main lineage, has canonical metadata, is covered by static i18n, and is classified in the website delivery lane before promotion.",
+  "evidence": {
+    "tests": [
+      "Required test integration bundle",
+      "Pagina- en SEO-controle",
+      "Canonical brand shell contract"
+    ],
+    "outcome": "PR #3581 adds /gebruiksvoorwaarden, /cookiebeleid and /systeemstatus as canonical root pages, completes their English translation cache and classifies all three as website delivery paths."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "production footer from main commit 664231ce0566d7a0d6ec3d02d6d97a0b71704976",
+      "absence of the three target HTML files on that same main revision"
+    ]
+  }
+}
