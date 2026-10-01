@@ -3,12 +3,13 @@
   "observed_at": "2026-10-01T09:06:00+02:00",
   "type": "PREVENTION",
   "problem": "The English commercial pricing page could remain partially Dutch after ordered string replacements.",
-  "root_cause": "The localized English route already carried the commercial-pricing marker before the English composer ran, so the composer returned early; earlier ordered replacements could also leave mixed-language residuals.",
-  "decision": "Only the Dutch canonical route may short-circuit when the commercial-pricing marker exists. The English route is always rebuilt deterministically, then a residual-cleanup pass runs.",
+  "root_cause": "The localized English route already carried the commercial-pricing marker before the English composer ran, so the composer returned early. After that was fixed, ordered replacements and HTML escaping could still create transformed residuals, including doubled whitespace in the 30-days credit sentence.",
+  "decision": "Only the Dutch canonical route may short-circuit on the commercial-pricing marker. English is always rebuilt deterministically, normalized after HTML escaping/partial replacements, whitespace-tolerant for the credit rule, and fails closed on known Dutch residuals.",
   "prevention": [
     "English commercial pricing output must not retain known Dutch residual phrases after the primary replacement pass.",
     "Residual cleanup runs after primary translations so transformed phrase fragments are also normalized.",
-    "Never allow the localized English pricing route to skip its terminal English renderer merely because the canonical pricing marker already exists."
+    "Never allow the localized English pricing route to skip its terminal English renderer merely because the canonical pricing marker already exists.",
+    "Treat whitespace introduced by token-level translation as untrusted; terminal commercial copy normalization must tolerate repeated whitespace."
   ],
   "compiler": {
     "failure_class": "PRICING_EN_RESIDUAL_COPY",
@@ -23,7 +24,7 @@
     "website",
     "i18n"
   ],
-  "revision": 2,
+  "revision": 3,
   "evaluation": {
     "historical_replay": [
       "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
