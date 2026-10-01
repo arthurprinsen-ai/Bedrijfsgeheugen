@@ -53,9 +53,12 @@ test('product proposition is contextual rather than internal implementation copy
   assert.match(finalizer,/\/portaal-demo/);
 });
 
-test('product proposition is inserted after the actual product hero',()=>{
-  assert.match(finalizer,/class=.*pr-hero/);
-  assert.match(finalizer,/const hero=html\.match/);
+test('product proposition is composed into the existing product hero',()=>{
+  const product=readFileSync('product.html','utf8');
+  assert.match(product,/class="pr-hero"/);
+  assert.match(product,/class="pr-powerhouse"/);
+  assert.match(finalizer,/Remove any older standalone injection/);
+  assert.doesNotMatch(product,/data-bg-product-truth-v1/);
 });
 
 test('package advisor and professional portal demo are real routes',()=>{
