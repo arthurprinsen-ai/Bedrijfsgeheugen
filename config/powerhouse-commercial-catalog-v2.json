@@ -1,0 +1,224 @@
+{
+  "version": "POWERHOUSE-COMMERCIAL-CATALOG-v2",
+  "currency": "EUR",
+  "vat": "exclusive",
+  "saas": [
+    {
+      "code": "starter",
+      "name": "Starter",
+      "monthly_price_cents": 9900,
+      "direct_checkout": true,
+      "recommended": false,
+      "employee_range": "3–15 medewerkers",
+      "promise": "Ideaal om te starten met inzicht en de eerste acties.",
+      "entitlements": {
+        "seats": 5,
+        "data_sources": 2,
+        "documents": 25,
+        "refresh_minutes": 1440,
+        "ai_questions_month": 50,
+        "automations": 0,
+        "ai_automations": 0,
+        "intelligence_core": true,
+        "forecasting": false,
+        "scenario_analysis": false,
+        "agent_mode": "recommend",
+        "approval_workflows": false,
+        "audit_trail": false,
+        "sso": false,
+        "organisations": 1,
+        "external_signal_scan": "daily",
+        "senior_advisory_minutes_month": 0,
+        "executive_summary": "monthly",
+        "custom_domain": false,
+        "model_choice": false,
+        "sla": "email"
+      }
+    },
+    {
+      "code": "pro",
+      "name": "Pro",
+      "monthly_price_cents": 29900,
+      "direct_checkout": true,
+      "recommended": true,
+      "employee_range": "15–100 medewerkers",
+      "promise": "De complete basis voor groei, sturing en uitvoering.",
+      "entitlements": {
+        "seats": 25,
+        "data_sources": 10,
+        "documents": 500,
+        "refresh_minutes": 60,
+        "ai_questions_month": 200,
+        "automations": 5,
+        "ai_automations": 2,
+        "intelligence_core": true,
+        "forecasting": true,
+        "scenario_analysis": true,
+        "agent_mode": "approval_required",
+        "approval_workflows": true,
+        "audit_trail": true,
+        "sso": false,
+        "organisations": 1,
+        "external_signal_scan": "daily",
+        "senior_advisory_minutes_month": 0,
+        "executive_summary": "monthly",
+        "due_diligence": true,
+        "custom_domain": false,
+        "model_choice": false,
+        "sla": "priority_email"
+      }
+    },
+    {
+      "code": "groei",
+      "name": "Groei",
+      "monthly_price_cents": 74900,
+      "direct_checkout": true,
+      "recommended": false,
+      "employee_range": "60–150 medewerkers of meerdere locaties",
+      "promise": "Voor organisaties die willen automatiseren en opschalen.",
+      "entitlements": {
+        "seats": 75,
+        "data_sources": 25,
+        "documents": 2500,
+        "refresh_minutes": 15,
+        "ai_questions_month": 750,
+        "automations": 12,
+        "ai_automations": 6,
+        "intelligence_core": true,
+        "forecasting": true,
+        "scenario_analysis": true,
+        "agent_mode": "approval_required",
+        "approval_workflows": true,
+        "audit_trail": true,
+        "sso": false,
+        "organisations": 3,
+        "external_signal_scan": "daily",
+        "senior_advisory_minutes_month": 60,
+        "executive_summary": "daily",
+        "monthly_review": true,
+        "custom_domain": false,
+        "model_choice": true,
+        "sla": "priority"
+      }
+    },
+    {
+      "code": "enterprise",
+      "name": "Enterprise",
+      "monthly_price_cents": null,
+      "direct_checkout": false,
+      "recommended": false,
+      "employee_range": "Grotere organisaties",
+      "promise": "Volledig afgestemd op jouw organisatie en eisen.",
+      "entitlements": {
+        "seats": 9999,
+        "data_sources": 999,
+        "documents": 999999,
+        "refresh_minutes": 0,
+        "ai_questions_month": 999999,
+        "automations": 999,
+        "ai_automations": 999,
+        "intelligence_core": true,
+        "forecasting": true,
+        "scenario_analysis": true,
+        "agent_mode": "guardrailed_autonomous",
+        "approval_workflows": true,
+        "audit_trail": true,
+        "sso": true,
+        "organisations": 25,
+        "external_signal_scan": "custom",
+        "senior_advisory_minutes_month": 240,
+        "executive_summary": "custom",
+        "monthly_review": true,
+        "custom_domain": true,
+        "model_choice": true,
+        "sla": "enterprise",
+        "security_governance_review": true
+      }
+    }
+  ],
+  "consulting": [
+    {
+      "code": "frisse-blik",
+      "name": "Frisse Blik",
+      "price_cents": 0,
+      "billing": "one_off",
+      "duration": "30 minuten",
+      "promise": "Korte kennismaking en waardecheck. Vrijblijvend.",
+      "includes": [
+        "Jouw situatie en doelen",
+        "Kansen en quick wins",
+        "Advies over volgende stap"
+      ],
+      "portal_access": null
+    },
+    {
+      "code": "directie-ai-workshop",
+      "name": "Directie & AI Workshop",
+      "price_cents": 195000,
+      "billing": "one_off",
+      "duration": "1 dagdeel",
+      "promise": "Van visie naar concrete prioriteiten.",
+      "includes": [
+        "Voorbereiding & analyse",
+        "3 uur workshop met MT",
+        "Kansenkaart en top 5 prioriteiten",
+        "30-dagen actieplan"
+      ],
+      "portal_access": "pro_temporarily"
+    },
+    {
+      "code": "bedrijfsscan",
+      "name": "Bedrijfsgeheugen Scan",
+      "price_cents": 295000,
+      "billing": "one_off",
+      "duration": "eenmalig",
+      "promise": "Diepgaande analyse met concrete roadmap.",
+      "includes": [
+        "Benchmark met jouw sector",
+        "Analyse processen, data en AI",
+        "Business case en prioriteiten",
+        "90-dagen roadmap",
+        "Beslismemo voor directie"
+      ],
+      "portal_access": "growth_temporarily"
+    },
+    {
+      "code": "build-sprint",
+      "name": "Build Sprint",
+      "price_cents": 1450000,
+      "billing": "from_one_off",
+      "duration": "vanaf",
+      "promise": "Eén concreet verbetertraject van inzicht naar uitvoering.",
+      "includes": [
+        "Proces, data, AI en dashboards",
+        "Integraties met jouw systemen",
+        "Testen en adoptie",
+        "Oplevering en overdracht"
+      ],
+      "portal_access": "pro_or_growth_temporarily"
+    },
+    {
+      "code": "fractional-lead",
+      "name": "Transformation / Fractional Lead",
+      "price_cents": 295000,
+      "billing": "from_monthly",
+      "duration": "per maand",
+      "promise": "Strategische begeleiding en blijvende versnelling.",
+      "includes": [
+        "Senior begeleiding op directieniveau",
+        "Sturingsritme en roadmap",
+        "Governance en risicobeheersing",
+        "Coördinatie leveranciers en teams",
+        "Monitoring van resultaten"
+      ],
+      "portal_access": "pro_or_growth_scope"
+    }
+  ],
+  "commercial_rules": {
+    "credit_workshop_scan_to_build": true,
+    "temporary_portal_access": true,
+    "saas_continues_after_delivery_by_choice": true,
+    "existing_customer_preferred_rates": true,
+    "no_double_payment": "Waarde van workshop of scan kan bij een Build Sprint worden verrekend wanneer scope en timing aansluiten."
+  }
+}
