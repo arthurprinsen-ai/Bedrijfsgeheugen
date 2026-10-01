@@ -23,3 +23,8 @@ Bij nieuwe publieke pagina's of globale styles moet de regressietest `tests/brai
 - Every visual model is container-bounded on desktop and mobile; SVG/canvas/media may never escape its card.
 - Intelligence, Agents and Connect are the canonical product lines. AI Modelwijzer, AI Capability Model and AI Governance remain discoverable from canonical navigation or a directly related product surface.
 - Contact always resolves to /contact; generated and runtime CTAs are subject to the same route rule.
+
+## Global discovery invariant
+- AI-modelwijzer and AI-governance are canonical Kennis destinations and must remain visible in desktop navigation, mobile navigation and the footer.
+- A product-page link is not a substitute for global discoverability.
+- Canonical Netlify routes for conversion tools may occur only once; overlapping recovery branches must be deduplicated before promotion.
