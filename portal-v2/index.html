@@ -16,7 +16,7 @@
 <link rel="stylesheet" href="./csrd-mobile-saas.css">
 <link rel="stylesheet" href="./mobile-responsive.css">
 <link rel="stylesheet" href="./topbar-actions.css">
-<link rel="stylesheet" href="./site-parity-v1.css?v=20261001">
+<link rel="stylesheet" href="./site-parity-v1.css?v=20261001">\n<link rel="stylesheet" href="./portal-polish.css?v=20261001-1">
 </head>
 <body>
 <div class="app">
@@ -43,7 +43,17 @@
   <div class="welcome"><h1>Welkom terug, Arthur</h1><p>Grip op je bedrijf. Ruimte om te groeien.</p></div>
   <div class="topactions">
    <div class="searchrow"><input class="search" placeholder="⌕  Zoek in kennis, processen, data, systemen..."><button class="smallbtn topaction-icon" id="portalNotifications" type="button" aria-label="Meldingen" aria-haspopup="dialog" aria-controls="portalNotificationsPanel" aria-expanded="false">🔔</button><button class="smallbtn topaction-icon" id="portalHelp" type="button" aria-label="Help en ondersteuning" aria-haspopup="dialog" aria-controls="portalHelpPanel" aria-expanded="false">?</button><button class="smallbtn topaction-icon" id="portalAccount" type="button" aria-label="Accountmenu" aria-haspopup="dialog" aria-controls="portalAccountPanel" aria-expanded="false">AP</button></div>
-   <div class="actionrow"><button class="smallbtn ai">✦ Vraag het Bedrijfsgeheugen AI</button><button class="smallbtn">Periode: Mei 2025⌄</button></div>
+   <div class="actionrow"><button class="smallbtn ai" id="portalAskAi" type="button" aria-haspopup="dialog" aria-controls="portalAskAiDialog">✦ Vraag Bedrijfsgeheugen AI</button><label class="period-control" for="portalPeriod"><span>Periode</span><select id="portalPeriod" aria-label="Kies rapportageperiode"><option value="2025-05" selected>Mei 2025</option><option value="2025-04">April 2025</option><option value="2025-03">Maart 2025</option><option value="2025-q1">Q1 2025</option><option value="2025-ytd">2025 YTD</option></select></label></div>
+  </div>
+ </section>
+
+ <section class="executive-glance" aria-label="Managementoverzicht">
+  <article class="glance-hero"><div><span class="glance-kicker">Vandaag</span><h2>Je bedrijf in één oogopslag</h2><p>Gezondheid, aandacht en de eerstvolgende acties — zonder eerst door het portaal te hoeven zoeken.</p></div><div class="glance-score"><span>Bedrijfsgezondheid</span><strong>72<small>/100</small></strong><em>▲ 4 deze maand</em></div></article>
+  <div class="glance-grid">
+    <article class="glance-card attention"><span>Aandacht</span><strong>Kennisborging</strong><p>Score 61/100 · daalt deze maand. Finance is de eerste plek om te borgen.</p><button type="button" data-open-page="profiel">Bekijk oorzaak →</button></article>
+    <article class="glance-card action"><span>Vandaag doen</span><strong>Automatiseer offerteproces</strong><p>Hoogste prioriteit op basis van huidige aanbevelingen.</p><button type="button" data-open-page="actieve-acties">Open actie →</button></article>
+    <article class="glance-card opportunity"><span>Kans</span><strong>320 uur/maand</strong><p>Indicatieve automatiseringskans uit het huidige overzicht.</p><button type="button" data-open-page="businesscase">Bekijk businesscase →</button></article>
+    <article class="glance-card progress"><span>Voortgang</span><strong>23 afgerond</strong><p>6 nu · 8 volgende · 14 gepland.</p><button type="button" data-open-page="roadmap">Open roadmap →</button></article>
   </div>
  </section>
 
@@ -107,5 +117,12 @@
 <nav class="mobilebar"><button class="active">⌂<br>Overzicht</button><button>▣<br>Portaal</button><button>✦<br>Data & AI</button><button>✓<br>Taken</button><button id="mobileMore">☰<br>Meer</button></nav>
 <script type="module" src="./app.js"></script>
 <script type="module" src="./topbar-actions.js"></script>
+<dialog id="portalAskAiDialog" class="portal-ai-dialog" aria-labelledby="portalAskAiTitle">
+ <form method="dialog" class="portal-ai-dialog-head"><div><span>BEDRIJFSGEHEUGEN AI</span><h2 id="portalAskAiTitle">Wat wil je weten?</h2></div><button value="cancel" aria-label="Sluiten">×</button></form>
+ <p>Vraag direct naar je bedrijf, acties, risico’s, kennis, processen of data. Het antwoord gebruikt alleen beschikbare portaalcontext.</p>
+ <div class="portal-ai-compose"><input id="portalAskAiInput" maxlength="500" placeholder="Bijv. wat moet ik vandaag als eerste verbeteren?"><button id="portalAskAiSend" type="button">Vraag AI →</button></div>
+ <div id="portalAskAiAnswer" class="portal-ai-answer" aria-live="polite"></div>
+</dialog>
+<script type="module" src="./portal-polish.js?v=20261001-1"></script>
 </body>
 </html>
