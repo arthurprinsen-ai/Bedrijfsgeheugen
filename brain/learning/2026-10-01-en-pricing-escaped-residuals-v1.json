@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing|english|escaped-residuals|v1",
+  "observed_at": "2026-10-01T10:05:00+02:00",
+  "type": "PREVENTION",
+  "problem": "HTML escaping and replacement order left a small set of Dutch fragments in the English pricing page.",
+  "root_cause": "Some strings were escaped to &amp; before translation, while a generic Voor→For replacement ran before a more specific phrase.",
+  "decision": "Apply a final post-render residual pass for escaped entities and post-generic phrase forms.",
+  "prevention": [
+    "Translate escaped forms in the final pass.",
+    "Translate specific post-generic forms after broad replacements."
+  ],
+  "compiler": {
+    "failure_class": "EN_PRICING_ESCAPED_RESIDUALS",
+    "scope": "PUBLIC_EN_PRICING",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "skill_targets": [
+    "pricing",
+    "website",
+    "i18n"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+  ]
+}
