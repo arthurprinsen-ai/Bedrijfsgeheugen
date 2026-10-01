@@ -9,7 +9,7 @@ const PORTAL_CORE = Object.freeze([
   'os:impact-engine','os:scenario-simulator','os:next-best-actions','os:monitoring-learning','os:evidence-health','os:capability-graph'
 ]);
 const DATA_AI = Object.freeze(['data-ai','koppelingen','ai-scan','ai-capabilities','data-ai-passport','trust-center']);
-const TASKS = Object.freeze(['actieve-acties','taken-werkstromen','roadmap','advies','outcomes-evidence','wijzigingen','os:next-best-actions']);
+const TASKS = Object.freeze(['actieve-acties','taken-werkstromen','roadmap','advies','outcomes-evidence','wijzigingen']);
 const MORE = Object.freeze(['gebruikers','documenten','instellingen','billing','frisse-blik','audit','compliance-governance']);
 
 const entry=(id,label,target=id)=>Object.freeze({id,label,target});
@@ -74,6 +74,10 @@ export function groupedHubPages(hubId){
 }
 
 export function unassignedPortalPages(){
-  const assigned=new Set(Object.values(HUB_DEFINITIONS).flatMap(hub=>hub.pages));
+  // The full portal catalogue is a catch-all discovery surface, not a curated customer hub.
+  // Only the focused hubs count as an assignment for navigation simplicity.
+  const assigned=new Set(Object.entries(HUB_DEFINITIONS)
+    .filter(([id])=>id!=='portal')
+    .flatMap(([,hub])=>hub.pages));
   return allPageIds().filter(id=>!assigned.has(id));
 }
