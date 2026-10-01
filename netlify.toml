@@ -367,6 +367,19 @@
   status = 301
   force = true
 
+
+[[redirects]]
+  from = "/pakketadvies.html"
+  to = "/pakketadvies"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/portaal-demo.html"
+  to = "/portaal-demo"
+  status = 301
+  force = true
+
 [[redirects]]
   from = "/prijzen.html"
   to = "/prijzen"
