@@ -10,3 +10,5 @@ The first English cleanup still left mixed-language phrases such as workshop lab
 
 ## Prevention
 The renderer now has a terminal residual pass, and regression coverage checks the critical English phrases so mixed-language pricing copy cannot silently return.
+## Final root cause correction
+The localized English route already contains the pricing marker after route generation. The English composer must therefore rebuild `/en/prijzen` even when that marker is present; only the Dutch canonical route may short-circuit on the marker.
