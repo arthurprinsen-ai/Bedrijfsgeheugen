@@ -26,10 +26,11 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/final-site-navigation-contract.test.mjs"
+      "tests/brain-website-coherence-v1.test.mjs"
     ]
   },
   "test_evidence": [
+    "tests/brain-website-coherence-v1.test.mjs",
     "tests/final-site-navigation-contract.test.mjs",
     "tests/site-shell-public-route-inventory.test.mjs"
   ]
