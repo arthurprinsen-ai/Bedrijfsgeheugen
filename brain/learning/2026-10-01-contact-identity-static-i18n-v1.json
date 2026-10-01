@@ -23,7 +23,11 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tools/site-shell/build-localized-routes.mjs --validate-cache"
+      "tests/brain-website-coherence-v1.test.mjs"
     ]
-  }
+  },
+  "test_evidence": [
+    "tools/site-shell/build-localized-routes.mjs --validate-cache",
+    "tests/brain-website-coherence-v1.test.mjs"
+  ]
 }
