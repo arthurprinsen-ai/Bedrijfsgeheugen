@@ -197,6 +197,17 @@ details p{margin-top:.6rem;font-size:.92rem;color:#3C424A}
   .mock-twee{grid-template-columns:1fr}
 }
 @media(max-width:620px){.bouwstenen{grid-template-columns:repeat(2,1fr)}.k5,.stappen,.prijzen{grid-template-columns:1fr}}
+
+.pr-powerhouse{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.65rem;margin:1.2rem 0 0}
+.pr-powerhouse>div{border:1px solid var(--lijn);background:#fff;border-radius:12px;padding:.8rem .85rem;min-width:0}
+.pr-powerhouse small{display:block;color:#C2410C;font-size:.64rem;font-weight:800;text-transform:uppercase;letter-spacing:.06em}
+.pr-powerhouse b{display:block;font-size:.86rem;margin:.18rem 0;color:var(--inkt)}
+.pr-powerhouse span{display:block;color:var(--grijs);font-size:.72rem;line-height:1.4}
+.pr-loop{display:flex;gap:.45rem;align-items:center;flex-wrap:wrap;margin-top:.75rem;font-size:.72rem;font-weight:800;color:var(--grijs)}
+.pr-loop i{font-style:normal;color:var(--blauw)}
+.mock [data-demo-pulse]{transition:opacity .22s,transform .22s,background-color .22s}
+.mock [data-demo-pulse].is-live{transform:translateY(-1px);background:#fff7c8}
+@media(max-width:720px){.pr-powerhouse{grid-template-columns:1fr}}
 </style>
 
 <link rel="stylesheet" href="/assets/kop.css?v=0466dd43">
@@ -241,6 +252,12 @@ details p{margin-top:.6rem;font-size:.92rem;color:#3C424A}
       <li>Van strategie naar resultaat, elke dag</li>
     </ul>
     <p class="pr-tekst">Kennisborging in het mkb strandt bijna altijd op hetzelfde: wat besloten is staat in een presentatie, wat er gebeurt staat in een ander systeem, en wat iemand weet staat nergens. Het portaal zet die drie aan elkaar — bovenop de AFAS, Exact of Microsoft 365 die je al hebt. Gebouwd voor organisaties van 3 tot 250 medewerkers, en het groeit met je mee.</p>
+    <div class="pr-powerhouse" aria-label="Powerhouse werkt in drie lagen">
+      <div><small>Zien &amp; begrijpen</small><b>Powerhouse Intelligence</b><span>Maakt van data, kennis en signalen actuele context en prioriteiten.</span></div>
+      <div><small>Beslissen &amp; uitvoeren</small><b>Powerhouse Agents</b><span>Zet inzicht om in taken, workflows, eigenaarschap en bewijs.</span></div>
+      <div><small>Verbinden &amp; automatiseren</small><b>Powerhouse Connect</b><span>Voert uit in AFAS, Exact, Microsoft 365, CRM, webshop en API’s.</span></div>
+    </div>
+    <div class="pr-loop" aria-label="Van bron tot lerende bedrijfsvoering"><span>Bronnen</span><i>→</i><span>Context</span><i>→</i><span>Actie</span><i>→</i><span>Bewijs</span><i>→</i><span>Leren</span></div>
     <div class="pr-cta">
       <a class="btn blauw" data-money-primary href="/frisse-blik">Plan gratis een Frisse Blik →</a>
       <a class="btn wit" data-money-secondary href="/portaal-demo">Bekijk eerst het portaal</a>
@@ -264,13 +281,13 @@ details p{margin-top:.6rem;font-size:.92rem;color:#3C424A}
           <div><strong>Goedemorgen, Sanne</strong><small>Dit is de situatie van vandaag.</small></div>
           <div class="mock-pillen"><span>Alle afdelingen</span><span>12 mei</span></div>
         </div>
-        <div class="mock-cijfers">
+        <div class="mock-cijfers" data-demo-zone="metrics">
           <div><small>KPI's in beeld</small><b>86%</b><i>▲ 8% vs vorige maand</i></div>
           <div><small>Acties op schema</small><b>74%</b><i>▲ 12% vs vorige maand</i></div>
           <div><small>Signalen nieuw</small><b>12</b><i>▲ 3 nieuw</i></div>
           <div><small>Documenten actueel</small><b>92%</b><i>▲ 6%</i></div>
         </div>
-        <div class="mock-twee">
+        <div class="mock-twee" data-demo-zone="priorities">
           <div class="mock-kaart">
             <p class="mock-t">Prioriteiten deze maand</p>
             <div class="mock-rij"><span>Omzetgroei<em>Actief op 7 acties</em></span><div class="mock-bar"><i style="width:78%"></i></div></div>
@@ -284,7 +301,7 @@ details p{margin-top:.6rem;font-size:.92rem;color:#3C424A}
             <a class="mock-link" href="/portaal-demo">Bekijk roadmap →</a>
           </div>
         </div>
-        <div class="mock-twee">
+        <div class="mock-twee" data-demo-zone="signals">
           <div class="mock-kaart">
             <p class="mock-t">Recente signalen</p>
             <div class="mock-sig"><span>Prijsstijging leveranciers</span><em>Financiën</em><i>2u</i></div>
@@ -533,5 +550,22 @@ if(k&&m){k.addEventListener('click',function(){var o=m.hasAttribute('hidden');if
     <span class="bgvoet-links"><a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a><a href="tel:+31627483345">06 2748 3345</a></span>
   </div>
 </div></footer>
-</body>
+<script data-bg-page-runtime="product-autoplay-v1">
+(function(){
+  const zones=[...document.querySelectorAll('.mock [data-demo-zone]')];
+  if(!zones.length||matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+  let i=0,t;
+  function play(){
+    zones.forEach((z,n)=>z.classList.toggle('is-live',n===i));
+    const target=zones[i].querySelector('.mock-kaart,.mock-cijfers>div,.mock-sig')||zones[i];
+    target.setAttribute('data-demo-pulse','1'); target.classList.add('is-live');
+    setTimeout(()=>target.classList.remove('is-live'),700);
+    i=(i+1)%zones.length;
+  }
+  play(); t=setInterval(play,2400);
+  const mock=document.querySelector('.mock');
+  mock?.addEventListener('mouseenter',()=>clearInterval(t));
+  mock?.addEventListener('mouseleave',()=>{clearInterval(t);t=setInterval(play,2400)});
+})();
+</script></body>
 </html>
