@@ -47,6 +47,36 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       invariants:Object.freeze({onePlatformTaxonomy:true,productBeforeConsultancy:true,freeEntryVisible:true,selfServicePathRequired:true,unverifiedScaleClaimsForbidden:true,bilingualParityRequired:true})
     }),
     Object.freeze({
+      id:'commercial-packaging-entitlements-v1',
+      label:'Commercial Packaging & Entitlement Parity',
+      authority:'github+supabase+public-site+portal-runtime',
+      owner:'Powerhouse Growth & Revenue OS',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['commercial offer catalog','SaaS plan entitlements','consulting access rules','public pricing routes','checkout plan code']),
+      outputs:Object.freeze(['Starter/Pro/Groei/Enterprise pricing','consulting/workshop offers','portal package gating','checkout parity','production pricing proof']),
+      runtime:Object.freeze({
+        catalog:'config/commercial-offers-v1.json',
+        pricingComposer:'tools/site-shell/apply-commercial-pricing-v1.mjs',
+        publicPricing:'/prijzen',
+        publicPricingEn:'/en/prijzen',
+        portalAccess:'portal-v2/plan-access.js',
+        entitlementApi:'netlify/functions/portal-entitlements.mjs',
+        checkout:'netlify/functions/checkout-create.mjs',
+        skill:'skills/powerhouse-commercial-packaging.md',
+        regression:'tests/brain-commercial-pricing-last-writer-v1.test.mjs',
+        productionProof:'.github/workflows/production-source-snapshot.yml'
+      }),
+      invariants:Object.freeze({
+        oneCommercialTruth:true,
+        publicFeatureRequiresEntitlementTruth:true,
+        cleanRouteIsProductionAuthority:true,
+        nlEnParityRequired:true,
+        legacyControlScaleNotPublicPackages:true,
+        consultingTemporaryAccessExplicit:true,
+        productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'predictive-multi-agent-delivery-scheduler-v1',
       label:'Predictive Multi-Agent Delivery Scheduler',
       authority:'github+canonical-delivery-policy',
