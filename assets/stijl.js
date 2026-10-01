@@ -115,3 +115,28 @@
   }
 })();
 (function(){function n(r){(r||document).querySelectorAll('a[href="#contact"],a[href="/#contact"],a[href="https://www.bedrijfsgeheugen.nl/#contact"]').forEach(function(a){a.setAttribute('href','/contact');});}if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){n(document);},{once:true});else n(document);})();
+
+
+/* Canonieke juridische/status-links onderaan iedere publieke footer. */
+(function(){
+  function ensureLegalFooter(){
+    if(document.querySelector('[data-bg-legal-links="1"]'))return;
+    var footer=document.querySelector('footer.bgvoet')||document.querySelector('footer');
+    if(!footer)return;
+    var bar=document.createElement('div');
+    bar.setAttribute('data-bg-legal-links','1');
+    bar.className='bg-legal-footer';
+    bar.innerHTML='<div class="bg-legal-footer-in"><a href="https://www.bedrijfsgeheugen.nl/gebruiksvoorwaarden">Algemene gebruiksvoorwaarden</a><a href="https://www.bedrijfsgeheugen.nl/privacy">Privacybeleid</a><a href="https://www.bedrijfsgeheugen.nl/cookiebeleid">Cookiebeleid</a><a href="https://www.bedrijfsgeheugen.nl/systeemstatus">Systeemstatus</a></div>';
+    var style=document.createElement('style');
+    style.textContent='.bg-legal-footer{background:#fbfaf7;color:#5c646e;border-top:1px solid #dcdfe6;border-bottom:1px solid #dcdfe6}.bg-legal-footer-in{max-width:1120px;margin:0 auto;padding:1.05rem 1.5rem;display:flex;gap:1.1rem;flex-wrap:wrap;align-items:center;font:500 .82rem/1.4 system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif}.bg-legal-footer a{color:#5c646e!important;text-decoration:none!important}.bg-legal-footer a:hover,.bg-legal-footer a:focus-visible{color:#14171a!important;text-decoration:underline!important}@media(max-width:640px){.bg-legal-footer-in{gap:.65rem 1rem;font-size:.78rem}}';
+    document.head.appendChild(style);
+    footer.insertAdjacentElement('afterend',bar);
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ensureLegalFooter,{once:true});else ensureLegalFooter();
+})();
+
+
+
+
+
+/* footer-legal-production-recheck */
