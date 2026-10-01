@@ -2,18 +2,23 @@
   "fingerprint": "website|footer|legal-links-inside-canonical-footer|20261001",
   "obligation_id": "footer-legal-links-inside-footer-20261001",
   "compiler": {
-    "failure_class": "CLASSIFIER_GAP",
-    "scope": "WEBSITE",
+    "failure_class": "DELIVERY",
+    "scope": "CI",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "root_cause": "The legal links were added after the closing footer tag, while the production shell renders the canonical footer component itself.",
-  "prevention_rule": "Footer requirements belong inside the canonical footer component so shell projection preserves them across public pages.",
+  "root_cause": "The source footer was corrected, but the Netlify production build restores the homepage from a pinned V18 payload before later shell projection. That pinned production artifact still contained the old footer, so production readback correctly showed no legal/status links.",
+  "prevention_rule": "Customer-visible footer changes must be applied at the actual production build authority. For the current site that means the pinned V18 production-core projection plus the reusable footer component; source-only footer edits are not sufficient.",
   "evidence": {
-    "tests": ["tests/brain-website-coherence-v1.test.mjs"]
+    "tests": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+    ],
+    "expected": "production build authority contains and preserves all four footer legal/status links"
   },
   "evaluation": {
-    "historical_replay": ["tests/brain-website-coherence-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
+    ]
   }
 }
