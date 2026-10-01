@@ -136,7 +136,7 @@ export function normaliseerHtml(input, bestand) {
   return html;
 }
 
-const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html', 'portaal-demo.html']);
+const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
 const EXTRA_PUBLIC_INDEX_PAGES = Object.freeze([
   'openai-ai-modellen/index.html',
   'claude-ai-modellen/index.html',
@@ -164,9 +164,9 @@ export async function normaliseerAllePaginas() {
     if (!html.includes('<body')) continue;
 
     let voorbereid = normaliseerHtml(html, bestand);
-    if (bestand === 'pakketadvies.html' && !voorbereid.includes('data-bg-component="mobile-menu"')) {
+    if (['pakketadvies.html','portaal-demo.html'].includes(bestand) && !voorbereid.includes('data-bg-component="mobile-menu"')) {
       const mobielMenu = extractComponent(canonicalSource, 'mobile-menu');
-      if (!mobielMenu) throw new Error('pakketadvies.html: canonical mobile-menu ontbreekt in bron');
+      if (!mobielMenu) throw new Error(`${bestand}: canonical mobile-menu ontbreekt in bron`);
       const mainStart = voorbereid.search(/<main\b/i);
       voorbereid = mainStart >= 0
         ? voorbereid.slice(0, mainStart) + mobielMenu + '\n' + voorbereid.slice(mainStart)
