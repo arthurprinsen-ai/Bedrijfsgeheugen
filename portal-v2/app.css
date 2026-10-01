@@ -61,3 +61,5 @@ button.plan-locked,a.plan-locked{cursor:pointer}
 html[data-portal-plan="starter"] .plan-locked:hover,
 html[data-portal-plan="pro"] .plan-locked:hover,
 html[data-portal-plan="groei"] .plan-locked:hover{opacity:.82!important}
+.portal-plan-badge{display:inline-flex;align-items:center;gap:6px;margin:8px 12px;padding:7px 10px;border-radius:999px;background:#fff4bf;color:#0b2445!important;border:1px solid #ead15b;font-size:.75rem;font-weight:800;text-decoration:none}
+.portal-plan-badge:hover{background:#ffe86b}
