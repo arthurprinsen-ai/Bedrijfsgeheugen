@@ -1,0 +1,19 @@
+{
+  "fingerprint": "website|footer|legal-links-inside-canonical-footer|20261001",
+  "obligation_id": "footer-legal-links-inside-footer-20261001",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "root_cause": "The legal links were added after the closing footer tag, while the production shell renders the canonical footer component itself.",
+  "prevention_rule": "Footer requirements belong inside the canonical footer component so shell projection preserves them across public pages.",
+  "evidence": {
+    "tests": ["tests/brain-website-coherence-v1.test.mjs"]
+  },
+  "evaluation": {
+    "historical_replay": ["tests/brain-website-coherence-v1.test.mjs"]
+  }
+}
