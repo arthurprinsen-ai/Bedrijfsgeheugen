@@ -32,3 +32,8 @@ test('English pricing route is always recomposed even when commercial marker alr
   const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
   assert.ok(source.includes("if(locale==='nl' && html.includes('data-bg-commercial-pricing-v1'))return;"));
 });
+
+test('English pricing final residual pass handles escaped entities and generic-before-specific order', async()=>{
+  const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  for(const token of ['Directie &amp; AI Workshop','Preparation &amp; analysis','For organisations that want to automate and scale.','The paid value of an Executive &amp; AI Workshop']) assert.ok(source.includes(token), token);
+});
