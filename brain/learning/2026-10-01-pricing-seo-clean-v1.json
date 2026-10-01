@@ -22,5 +22,11 @@
     "historical_replay": [
       "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
     ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+    ],
+    "expected_outcome": "Pricing source and final composer satisfy the SEO money-page contract without forbidden brand language."
   }
 }
