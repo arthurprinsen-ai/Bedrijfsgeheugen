@@ -28,3 +28,18 @@ html,body{font-size:14px}
   .sidebar{display:flex!important}
   .app{display:grid!important;grid-template-columns:210px minmax(0,1fr)!important}
 }
+
+
+/* Mobile shell compactness contract — 390px readback must stay <260px after hydration. */
+@media(max-width:430px){
+  .topbar{gap:6px!important;padding-top:6px!important;padding-bottom:6px!important;margin-bottom:10px!important}
+  .welcome h1{font-size:24px!important;line-height:1.05!important}
+  .welcome p{display:none!important}
+  .topactions{gap:6px!important}
+  .topactions .searchrow{gap:6px!important}
+  .topactions .searchrow .search,
+  .topactions .searchrow>.smallbtn,
+  .topactions .actionrow>.smallbtn,
+  .period-control{height:40px!important;min-height:40px!important}
+  .topactions .searchrow>.smallbtn{width:40px!important;min-width:40px!important}
+}
