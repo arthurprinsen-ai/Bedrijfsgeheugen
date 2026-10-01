@@ -20,8 +20,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "Before fix: /api/portal-ondernemersdata returned 401 because the request contained no Authorization bearer token.",
-      "After fix: the client obtains the current Netlify Identity JWT and attaches it to the protected source-data request."
+      "tests/brain-portal-source-auth.test.mjs"
     ]
   }
 }
