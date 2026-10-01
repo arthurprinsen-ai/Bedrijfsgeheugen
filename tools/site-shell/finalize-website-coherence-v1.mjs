@@ -34,9 +34,9 @@ function ensureStyle(html){
 const productTruth=`
 <section class="bg-product-truth-v1" data-bg-product-truth-v1 aria-labelledby="bg-product-truth-title">
   <div class="bg-product-truth-wrap">
-    <span class="bg-product-truth-kicker">POWERHOUSE · HET ACTUELE PRODUCT</span>
-    <h2 id="bg-product-truth-title">Van losse informatie naar een bedrijf dat zichzelf beter bestuurt.</h2>
-    <p class="bg-product-truth-lead">Powerhouse brengt drie dingen samen die in veel organisaties los van elkaar staan: begrijpen wat er speelt, besluiten wat er moet gebeuren en het vervolgens ook uitvoeren in de systemen die je al gebruikt.</p>
+    <span class="bg-product-truth-kicker">ZO WERKT POWERHOUSE</span>
+    <h2 id="bg-product-truth-title">Eén platform. Drie lagen die samenwerken.</h2>
+    <p class="bg-product-truth-lead">Je ziet wat er speelt, zet inzicht om in concrete acties en voert die uit in de systemen die je al gebruikt. Intelligence, Agents en Connect vormen samen één gesloten werklijn van bron tot resultaat.</p>
     <div class="bg-product-truth-grid">
       <article><span>Zien &amp; begrijpen</span><h3>Powerhouse Intelligence</h3><p>Bedrijfsdata, kennis, benchmarks en externe signalen worden samengebracht tot actuele context, prioriteiten en managementinformatie.</p></article>
       <article><span>Beslissen &amp; uitvoeren</span><h3>Powerhouse Agents</h3><p>Inzichten worden vertaald naar taken, workflows en acties met eigenaarschap, goedkeuringen, bewijs en terugkoppeling.</p></article>
@@ -64,9 +64,9 @@ const productTruth=`
 const productTruthEn=`
 <section class="bg-product-truth-v1" data-bg-product-truth-v1 aria-labelledby="bg-product-truth-title">
   <div class="bg-product-truth-wrap">
-    <span class="bg-product-truth-kicker">POWERHOUSE · THE CURRENT PRODUCT</span>
-    <h2 id="bg-product-truth-title">From scattered information to a company that can steer itself better.</h2>
-    <p class="bg-product-truth-lead">Powerhouse brings together three things that are often disconnected: understanding what is happening, deciding what needs to happen and actually executing it in the systems you already use.</p>
+    <span class="bg-product-truth-kicker">HOW POWERHOUSE WORKS</span>
+    <h2 id="bg-product-truth-title">One platform. Three layers working together.</h2>
+    <p class="bg-product-truth-lead">See what is happening, turn insight into concrete actions and execute them in the systems you already use. Intelligence, Agents and Connect form one closed workflow from source to outcome.</p>
     <div class="bg-product-truth-grid">
       <article><span>See &amp; understand</span><h3>Powerhouse Intelligence</h3><p>Company data, knowledge, benchmarks and external signals become current context, priorities and management intelligence.</p></article>
       <article><span>Decide &amp; execute</span><h3>Powerhouse Agents</h3><p>Insights become tasks, workflows and actions with ownership, approvals, evidence and outcome readback.</p></article>
@@ -92,15 +92,30 @@ const productTruthEn=`
 </section>`;
 
 function ensureProductTruth(html,route){
-  if(!['/product','/en/product'].includes(route) || html.includes('data-bg-product-truth-v1')) return html;
+  if(!['/product','/en/product'].includes(route)) return html;
   const section=route==='/en/product'?productTruthEn:productTruth;
-  const hero=html.match(/<section\b[^>]*class=(["'])[^"']*\bpr-hero\b[^"']*\1[^>]*>[\s\S]*?<\/section>/i);
-  if(hero){
-    const at=(hero.index||0)+hero[0].length;
+
+  // Never create a second hero. The build pipeline can rewrite /product before this
+  // finalizer runs, so anchor the Powerhouse model inside the customer narrative.
+  // Prefer replacing the legacy "website/portal parity" implementation section.
+  const legacySection=/<section\b[^>]*>[\s\S]{0,2500}?(?:Website en portaal spreken nu dezelfde taal\.|Website and portal now speak the same language\.)[\s\S]*?<\/section>/i;
+  if(legacySection.test(html)){
+    return html.replace(legacySection,section);
+  }
+
+  // Remove an older injected truth block before relocating it.
+  html=html.replace(/<section\b[^>]*data-bg-product-truth-v1[^>]*>[\s\S]*?<\/section>/i,'');
+
+  // Put the model after the actual page hero, whatever class the build produced.
+  const mainStart=html.search(/<main\b[^>]*>/i);
+  if(mainStart<0) return html;
+  const afterMain=html.slice(mainStart);
+  const firstSection=afterMain.match(/<section\b[^>]*>[\s\S]*?<\/section>/i);
+  if(firstSection){
+    const at=mainStart+(firstSection.index||0)+firstSection[0].length;
     return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
   }
   const main=html.match(/<main\b[^>]*>/i);
-  if(!main) return html;
   const at=(main.index||0)+main[0].length;
   return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
 }
