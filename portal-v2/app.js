@@ -1,7 +1,7 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
 import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
-import { DESKTOP_NAV_GROUPS, PORTAL_NAV_ITEMS } from './navigation-model.js';
+import { DESKTOP_NAV_ITEMS, PORTAL_NAV_ITEMS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
 import { groupedHubPages, hubDefinition } from './hubs.js';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
@@ -172,7 +172,7 @@ function mountDesktopProjectNavigation(){
 function mountCanonicalDesktopNavigation(){
  const nav=document.querySelector('.sidebar .nav');if(!nav)return;
  nav.innerHTML='';
- for(const item of DESKTOP_NAV_GROUPS){
+ for(const item of DESKTOP_NAV_ITEMS){
    const button=document.createElement('button');
    button.type='button';
    button.dataset.navTarget=item.target;
