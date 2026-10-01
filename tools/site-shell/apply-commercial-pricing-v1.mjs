@@ -236,6 +236,15 @@ function englishPage(){
     ['groei-toegang','Growth access']
   ];
   for(const [from,to] of residuals) html=html.split(from).join(to);
+  const finalResiduals=[
+    ['Directie &amp; AI Workshop','Executive &amp; AI Workshop'],
+    ['Voorbereiding &amp; analyse','Preparation &amp; analysis'],
+    ['Integraties met jouw systemen','Integrations with your systems'],
+    ['For organisaties die willen automatiseren en opschalen.','For organisations that want to automate and scale.'],
+    ['De betaalde waarde van een Executive &amp; AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive &amp; AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
+    ['De betaalde waarde van een Directie &amp; AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive &amp; AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.']
+  ];
+  for(const [from,to] of finalResiduals) html=html.split(from).join(to);
   html=html
     .replaceAll('https://www.bedrijfsgeheugen.nl/afsluiten','https://www.bedrijfsgeheugen.nl/en/afsluiten')
     .replaceAll('https://www.bedrijfsgeheugen.nl/contact','https://www.bedrijfsgeheugen.nl/en/contact')
