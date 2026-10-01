@@ -1,0 +1,51 @@
+name: Diagnose Netlify build
+
+on:
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CONTEXT: deploy-preview
+      STATIC_I18N_NETWORK: "0"
+      STATIC_I18N_REQUIRE_CACHE: "1"
+      NODE_OPTIONS: --max-old-space-size=2048
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22.12.0"
+          cache: npm
+      - name: Install dependencies
+        run: npm install --no-audit --no-fund
+      - name: Run exact Netlify deploy-preview build
+        shell: bash
+        run: |
+          set -o pipefail
+          node tools/site-shell/pricing-build-integrity.mjs capture
+          node tools/site-shell/bedrijfslek-build-integrity.mjs capture
+          node tools/bouw-powerhouse-auth.mjs
+          node tools/bouw-kennisindex.mjs
+          node tools/bouw-v18-production.mjs
+          node tools/site-shell/apply-product-led-home.mjs
+          node tools/apply-tabbladen.mjs
+          node tools/bouw-v18-views.mjs
+          node tools/bouw-v18-chrome-alles.mjs
+          node tools/prijzen-uit-de-homepage.mjs
+          node tools/site-shell/pricing-build-integrity.mjs restore
+          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
+          node tools/normaliseer-site-ui.mjs
+          node tools/seo-order-engine/apply.mjs
+          node tools/seo-order-engine/validate.mjs
+          node tools/site-shell/apply-i18n.mjs
+          node tools/site-shell/build-localized-routes.mjs
+          node tools/site-shell/apply-commercial-pricing-v1.mjs
+          node tools/seo-order-engine/apply-revenue-links.mjs
+          node tools/site-shell/finalize-website-coherence-v1.mjs
+          node tools/genereer-sitemap.mjs
+          node tools/seo-order-engine/validate-locales.mjs
+          node tools/bouw-release-evidence.mjs
