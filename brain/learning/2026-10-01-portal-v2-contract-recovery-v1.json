@@ -17,11 +17,12 @@
       "tests/portal-v2-navigation-contract.test.mjs",
       "tests/portal-v2-operating-system-routing.test.mjs",
       "tests/portal-v2-topbar-actions.test.mjs"
-    ]
+    ],
+    "canonical_replay": "tests/brain-portal-v2-navigation-contract-replay.test.mjs"
   },
   "evaluation": {
     "historical_replay": [
-      "Required test run 36860623961 failed five Portal V2 contract assertions after navigation simplification."
+      "tests/brain-portal-v2-navigation-contract-replay.test.mjs"
     ]
   }
 }
