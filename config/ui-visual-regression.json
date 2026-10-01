@@ -61,9 +61,7 @@
     {
       "route": "/prijzen",
       "required": [
-        "main [data-bg-commercial-pricing-v1] .hero h1",
-        "main [data-bg-commercial-pricing-v1] .hero p",
-        "main [data-bg-commercial-pricing-v1] .choice"
+        "main [data-bg-commercial-pricing-v1] .hero h1"
       ],
       "protectedPairs": [],
       "interactions": []
