@@ -59,7 +59,8 @@ test('single browser job retains targeted, visibility, and high-risk contracts w
 
   assert.match(browser, /needs:\s*\[classify, syntax-preflight, preview-ready, netlify-build-parity\]/);
   assert.match(browser, /name: Verify affected routes on desktop and mobile/);
-  assert.match(browser, /name: Verify all public pages are visibly rendered/);
+  assert.match(browser, /name: Verify affected public pages are visibly rendered/);
+  assert.match(browser, /UI_VR_ROUTES_JSON:\s*\$\{\{ needs\.classify\.outputs\.routes \}\}/);
   assert.match(browser, /Verify broad high-risk browser contracts/);
   assert.match(browser, /BASE_URL:\s*\$\{\{ needs\.preview-ready\.outputs\.base_url \}\}/);
   assert.match(browser, /name: Build and serve exact local candidate only when Netlify preview is unavailable/);
