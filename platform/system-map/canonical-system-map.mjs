@@ -47,6 +47,35 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       invariants:Object.freeze({onePlatformTaxonomy:true,productBeforeConsultancy:true,freeEntryVisible:true,selfServicePathRequired:true,unverifiedScaleClaimsForbidden:true,bilingualParityRequired:true})
     }),
     Object.freeze({
+      id:'powerhouse-commercial-catalog-v2',
+      label:'Powerhouse SaaS + Consulting Commercial Architecture',
+      authority:'github+supabase+netlify+portal-entitlements',
+      owner:'Powerhouse Growth & Revenue OS',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['canonical SaaS package definition','consulting/workshop offer definition','subscription state','tenant entitlement state']),
+      outputs:Object.freeze(['public pricing','self-serve checkout','Portal V2 effective package surface','server-side capacity and automation policy','upgrade path']),
+      runtime:Object.freeze({
+        catalog:'config/powerhouse-commercial-catalog-v2.json',
+        pricing:'/prijzen',
+        checkout:'/afsluiten',
+        checkoutFunction:'netlify/functions/checkout-create.mjs',
+        entitlementApi:'netlify/functions/portal-entitlements.mjs',
+        entitlementPolicy:'platform/saas/entitlement-policy.mjs',
+        portalProjection:'portal-v2/commercial-entitlements.js',
+        regression:'tests/brain-commercial-pricing-portal-v2.test.mjs',
+        learning:'brain/learning/2026-10-01-commercial-pricing-portal-parity-v2.json'
+      }),
+      invariants:Object.freeze({
+        oneCommercialCatalog:true,
+        publicPromiseRequiresEntitlementOrExplicitServiceInclusion:true,
+        checkoutPlanMatchesCanonicalPlan:true,
+        authenticatedPortalShowsEffectivePlan:true,
+        serverSideEntitlementsAuthoritative:true,
+        consultingTemporaryAccessDoesNotMutateSubscriptionTruth:true,
+        bilingualParityRequired:true
+      })
+    }),
+    Object.freeze({
       id:'predictive-multi-agent-delivery-scheduler-v1',
       label:'Predictive Multi-Agent Delivery Scheduler',
       authority:'github+canonical-delivery-policy',
