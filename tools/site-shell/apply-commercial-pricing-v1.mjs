@@ -246,7 +246,6 @@ function englishPage(){
 async function apply(path,locale='nl'){
  try{await access(path)}catch{return}
  let html=await readFile(path,'utf8');
- if(html.includes('data-bg-commercial-pricing-v1'))return;
  const start=html.search(/<main\b[^>]*>/i), end=html.search(/<\/main>/i);
  if(start<0||end<0)throw new Error('Pricing page missing main: '+path);
  const openEnd=html.indexOf('>',start)+1;
