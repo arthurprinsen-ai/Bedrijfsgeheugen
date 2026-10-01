@@ -27,3 +27,5 @@
 - Production evidence: hydrated topbar measured 287.34px at 390×844; contract is <260px.
 - Correction: hide welcome subtitle on <=430px, reduce heading and control heights, and tighten vertical gaps/padding.
 - Functional controls remain present; the Playwright mobile-shell contract remains unchanged and fail-closed.
+
+- Live Preview parity follow-up: the exact mobile rewrite passed; two remaining failures were stale heading assertions. Both now validate the canonical heading “Zo werkt Powerhouse in je bedrijf”.
