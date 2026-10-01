@@ -69,7 +69,7 @@ function page(){
  </style>
  <div class="hero"><div class="wrap"><p><b>POWERHOUSE PRIJZEN</b></p><h1>Kies software of expertise.<br><em>Combineer wanneer het nodig is.</em></h1><p>Powerhouse is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.</p><div class="choice"><a class="on" href="#saas">Powerhouse SaaS</a><a class="off" href="#expertise">Consulting & workshops</a></div></div></div>
  <div class="wrap">
- <section class="sec" id="saas"><h2>Powerhouse SaaS</h2><p class="sub">Eén platform. Vier niveaus. Altijd op- en downgradebaar.</p><div class="plans">${renderSaas()}</div><div class="included"><span>✓ Powerhouse Intelligence</span><span>✓ Powerhouse Agents</span><span>✓ Powerhouse Connect</span><span>✓ Rolgebaseerde acties</span><span>✓ NL / EN</span><span>✓ Security & privacy</span></div></section>
+ <section class="sec" id="saas"><h2>Powerhouse SaaS</h2><p class="sub">Eén platform. Vier niveaus. Altijd op- en downgradebaar. <a href="https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/">Lees ook: wat kost digitalisering voor het MKB?</a></p><div class="plans">${renderSaas()}</div><div class="included"><span>✓ Powerhouse Intelligence</span><span>✓ Powerhouse Agents</span><span>✓ Powerhouse Connect</span><span>✓ Rolgebaseerde acties</span><span>✓ NL / EN</span><span>✓ Security & privacy</span></div></section>
  <section class="sec"><h2>Wat groeit mee met je abonnement?</h2><p class="sub">De kern blijft gelijk; capaciteit, actualiteit, automatisering en governance groeien mee.</p><div class="tablebox"><table><thead><tr><th></th>${catalog.saas.map(p=>`<th>${esc(p.name)}</th>`).join('')}</tr></thead><tbody>${renderMatrix()}</tbody></table></div></section>
  <section class="sec" id="expertise"><h2>Liever eerst samen scherpstellen of versnellen?</h2><p class="sub">Onze workshops en trajecten helpen je om snel de juiste keuzes te maken en direct impact te realiseren.</p><div class="services">${renderServices()}</div></section>
  <section class="sec"><div class="bundle"><h2>Combineer zonder dubbel te betalen</h2><p>${esc(catalog.commercial_rules.credit_rule)} ${esc(catalog.commercial_rules.temporary_access_rule)}</p><div class="flow"><div><b>1. Workshop of scan</b>Breng kansen en prioriteiten in kaart.</div><div><b>2. Waarde wordt verrekend</b>De kosten tellen mee bij een aansluitende Build Sprint.</div><div><b>3. Tijdelijke portaltoegang</b>Tijdens de uitvoering krijg je Pro- of Groei-toegang.</div><div><b>4. Daarna door met SaaS</b>Na oplevering loopt je abonnement door als je dat kiest.</div></div></div></section>
@@ -208,6 +208,7 @@ function englishPage(){
     ['Begin klein. Bewijs waarde. Schaal alleen op als het werkt.','Start small. Prove value. Scale only when it works.'],
     ['Start gratis gesprek','Start a free conversation'],
     ['Rolgebaseerde acties','Role-based actions'],
+    ['Lees ook: wat kost digitalisering voor het MKB?','Read also: what does digital transformation cost for SMEs?'],
     ['Tot ','Up to '],
     ['Voor organisaties die willen automatiseren en opschalen.','For organisations that want to automate and scale.'],
     ['Grotere organisaties','Larger organisations'],
