@@ -1,5 +1,7 @@
-# Footer legal links inside canonical footer — 1 oktober 2026
+# Footer legal links inside production footer — 1 oktober 2026
 
-Obligation: `footer-legal-links-inside-footer-20261001`
+Obligation: `footer-legal-production-core-20261001`
 
-Productiereadback liet zien dat de vier juridische/statuslinks niet in de zichtbare footer stonden. De oorzaak was dat ze als sibling na `</footer>` waren toegevoegd. Herstel: de links zijn in de canonical `bgvoet-onder` opgenomen op de homepage en canonical shell source, en in het legacy footerfragment.
+Productiereadback liet zien dat de vier juridische/statuslinks nog steeds niet zichtbaar waren. De echte oorzaak is dat `tools/bouw-v18-production-core.mjs` tijdens iedere Netlify-build `index.html` opnieuw opbouwt uit de pinned V18-payload en daarmee bronfooterwijzigingen overschrijft.
+
+Herstel: de vier links worden nu direct in die productieprojectie toegevoegd én in de canonical footercomponent gespiegeld. `tests/brain-footer-legal-production-core-v1.test.mjs` borgt beide kanten van het contract.
