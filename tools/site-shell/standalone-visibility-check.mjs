@@ -59,6 +59,42 @@ async function openReachable(page, url) {
   throw last || new Error(`Could not load ${url}`);
 }
 
+async function baselineAlsoFails(route, viewport, reason) {
+  if (!baselineUrl || baselineUrl === baseUrl) return false;
+  const browser = await chromium.launch({ headless: true });
+  const context = await browser.newContext({ viewport: { width: viewport.width, height: viewport.height } });
+  const page = await context.newPage();
+  try {
+    const url = new URL(route, baselineUrl.endsWith('/') ? baselineUrl : `${baselineUrl}/`).href;
+    try {
+      await openReachable(page, url);
+      await waitForFontsBounded(page);
+      await sleep(150);
+    } catch (error) {
+      return reason.startsWith('HTTP ') || reason.includes('Could not load');
+    }
+    const state = await page.evaluate(() => {
+      const inspect = selector => {
+        const el = document.querySelector(selector);
+        if (!el) return { present: false };
+        const r = el.getBoundingClientRect();
+        const s = getComputedStyle(el);
+        return { present: true, width: r.width, height: r.height, display: s.display, visibility: s.visibility, opacity: Number(s.opacity) };
+      };
+      return { header: inspect('header, nav.bgkop, .v17-header'), h1: inspect('main h1'), main: inspect('main') };
+    });
+    const m=reason.match(/^(header|main|h1) is not visibly rendered$/);
+    if(m){
+      const item=state[m[1]];
+      return !item.present || item.width < 1 || item.height < 1 || item.display === 'none' || item.visibility === 'hidden' || item.opacity <= 0;
+    }
+    return false;
+  } finally {
+    await context.close().catch(()=>{});
+    await browser.close().catch(()=>{});
+  }
+}
+
 async function waitForFontsBounded(page) {
   await page.evaluate(async timeoutMs => {
     if (!document.fonts?.ready) return;
