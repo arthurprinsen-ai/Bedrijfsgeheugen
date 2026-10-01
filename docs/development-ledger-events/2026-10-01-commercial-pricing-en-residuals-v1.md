@@ -8,3 +8,4 @@
 - Expected production effect: `/en/prijzen` renders commercial SaaS and consulting copy fully in English.
 - Verification required: protected merge, exact-main Netlify production deploy, public readback of `/en/prijzen`.
 - Final root cause: `en/prijzen.html` inherited the commercial-pricing marker before the English composer ran, so the composer returned early. Guard changed to skip only the Dutch canonical source; English is always rebuilt deterministically.
+- Final hardening: HTML escaping and token replacements could create transformed residuals and doubled whitespace (`30  days`). The English renderer now normalizes those forms and fails closed on known Dutch fragments.
