@@ -5,7 +5,7 @@ import {
   CONTEXT_CSS, CONTEXT_JS, rolblok
 } from './v18-modules.mjs';
 import {
-  ensureTrustBar, ensureFooterContact, ensureBrandShellCss, markPageSlots
+  ensureTrustBar, ensureFooterContact, ensureBrandShellCss, markPageSlots, extractComponent
 } from './site-shell/components.mjs';
 import { applyCanonicalShellToAllPages, projectGlobalComponents } from './site-shell/apply-shell.mjs';
 import { ensureReleaseMarker } from './site-shell/release-marker.mjs';
@@ -163,7 +163,15 @@ export async function normaliseerAllePaginas() {
     let html; try { html = await readFile(bestand, 'utf8'); } catch { continue; }
     if (!html.includes('<body')) continue;
 
-    const voorbereid = normaliseerHtml(html, bestand);
+    let voorbereid = normaliseerHtml(html, bestand);
+    if (bestand === 'pakketadvies.html' && !voorbereid.includes('data-bg-component="mobile-menu"')) {
+      const mobielMenu = extractComponent(canonicalSource, 'mobile-menu');
+      if (!mobielMenu) throw new Error('pakketadvies.html: canonical mobile-menu ontbreekt in bron');
+      const mainStart = voorbereid.search(/<main\b/i);
+      voorbereid = mainStart >= 0
+        ? voorbereid.slice(0, mainStart) + mobielMenu + '\n' + voorbereid.slice(mainStart)
+        : voorbereid.replace('</body>', mobielMenu + '\n</body>');
+    }
     let metMerkcomponenten;
     try {
       metMerkcomponenten = bestand === 'over-ons.html'
