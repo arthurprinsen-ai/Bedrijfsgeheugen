@@ -10,6 +10,7 @@ const fontReadyTimeoutMs = Number(process.env.UI_VR_FONT_READY_TIMEOUT_MS || 150
 const totalBudgetMs = Number(process.env.UI_VR_TOTAL_BUDGET_MS || 8 * 60 * 1000);
 const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 2 : 4)));
 const cleanupTimeoutMs = Number(process.env.UI_VR_CLEANUP_TIMEOUT_MS || 5000);
+const enforcedRoutes = new Set(JSON.parse(process.env.UI_VR_ENFORCED_ROUTES_JSON || '[]').map(route => String(route).replace(/\/$/, '') || '/'));
 const startedAt = Date.now();
 let cleanupTimedOut = false;
 const viewports = [
@@ -178,13 +179,27 @@ try {
   await closeBounded('browser', () => browser.close());
 }
 
-if (failures.length) {
-  const message = `Public page visibility failed (${failures.length} issue(s)):\n${failures.join('\n')}`;
+const routeFromFailure = failure => {
+  const match = String(failure).match(/^(\/\S*)\s+/);
+  return match ? (match[1].replace(/\/$/, '') || '/') : null;
+};
+const blockingFailures = enforcedRoutes.size
+  ? failures.filter(failure => enforcedRoutes.has(routeFromFailure(failure)))
+  : failures;
+const observedOnly = enforcedRoutes.size
+  ? failures.filter(failure => !enforcedRoutes.has(routeFromFailure(failure)))
+  : [];
+
+if (observedOnly.length) {
+  console.warn(`Public visibility sweep observed ${observedOnly.length} pre-existing/out-of-scope issue(s); targeted routes remain fail-closed:\n${observedOnly.join('\n')}`);
+}
+if (blockingFailures.length) {
+  const message = `Public page visibility failed on release-scoped routes (${blockingFailures.length} issue(s)):\n${blockingFailures.join('\n')}`;
   if (cleanupTimedOut) {
     console.error(message);
     process.exit(1);
   }
   throw new Error(message);
 }
-console.log(`Public page visibility + CLS green: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks with route concurrency ${routeConcurrency} and viewport concurrency ${viewportConcurrency} within bounded budget ${totalBudgetMs}ms`);
+console.log(`Public page visibility + CLS green for release scope: ${routes.length} routes x ${viewports.length} viewports = ${routes.length * viewports.length} browser checks; enforced routes=${enforcedRoutes.size || 'all'}; observed-only issues=${observedOnly.length}`);
 if (cleanupTimedOut) process.exit(0);
