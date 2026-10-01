@@ -18,5 +18,27 @@
     "portal-v2/site-parity-v1.css",
     "tests/website-coherence-v1.test.mjs"
   ],
-  "status": "ACTIVE_PREVENTION"
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "WEBSITE_PORTAL_COHERENCE_DRIFT",
+    "scope": "PUBLIC_WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "website",
+    "portal",
+    "pricing",
+    "navigation"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-coherence-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-website-coherence-v1.test.mjs"
+  ]
 }
