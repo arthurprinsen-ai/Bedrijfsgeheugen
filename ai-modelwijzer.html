@@ -139,7 +139,7 @@
 </details>
 
 <button class="adviceBtn" id="advise">Geef mij een begrijpelijk advies →</button>
-<div class="micro">De wijzer maakt eerst een praktische shortlist. Daarna kun je de technische details, brondata en governance per model bekijken. Kosten blijven indicatief: werkelijk gebruik, retries, tooling en contractprijzen kunnen afwijken.</div>
+<div class="micro">De wijzer maakt eerst een praktische shortlist en adviseert daarna ook of één model genoeg is of dat een <strong>modelmix met routering</strong> slimmer is: licht/goedkoop voor standaardwerk, zwaarder alleen bij complexiteit of risico. Kosten blijven indicatief: werkelijk gebruik, retries, tooling en contractprijzen kunnen afwijken.</div>
 <div class="result" id="result"><div class="resultTop"><div class="recommendations" id="recommendations"></div><aside class="route" id="route"></aside></div></div>
 </div>
 </section>
@@ -352,12 +352,25 @@ function advise(){
  const selected=[...document.querySelectorAll('.goalCard.active')].map(x=>x.dataset.goal).join(' ');
  const text=($('goalInput').value.trim()+' '+selected+' '+profile.extra).trim();
  const priority=$('priority').value;
- const ranked=catalog.models.filter(eligible).map(m=>({...m,_score:scoreModel(m,text,priority),_cost:monthlyCost(m)})).sort((a,b)=>b._score-a._score).slice(0,3);
+ const allRanked=catalog.models.filter(eligible).map(m=>({...m,_score:scoreModel(m,text,priority),_cost:monthlyCost(m)})).sort((a,b)=>b._score-a._score);
+ const ranked=allRanked.slice(0,3);
  const holder=$('recommendations');
  if(!ranked.length){holder.innerHTML='<div class="rec"><h3>Geen model voldoet aan alle harde filters.</h3><p class="why">Versoepel één constraint of kies een self-host/cloudpad dat nog niet volledig in het register is geverifieerd.</p></div>';$('route').innerHTML='<h3>Fail-closed</h3><p>De advisor gaat geen residency- of governance-eigenschap verzinnen om toch een uitkomst te tonen.</p>';$('result').classList.add('on');return;}
  holder.innerHTML=ranked.map((m,i)=>`<article class="rec"><div class="recHead"><span class="rank">${i+1}</span><div><h3>${m.id}</h3><div class="provider">${m.provider} · ${m.tier} · ${m.status}</div></div></div><div class="badges">${governanceBadges(m)}</div><p class="why">${why(m,text)}</p>${governancePathHtml(m)}<div class="money">${m._cost==null?(m.unit_price||'Prijsstructuur niet token-based'):`${money(m._cost)} / maand indicatief`}</div><div class="source"><a href="${m.source}" target="_blank" rel="noopener">Officiële bron ↗</a></div></article>`).join('');
- const cheap=[...catalog.models].filter(m=>eligible(m)&&m.input_usd_m!=null).sort((a,b)=>(monthlyCost(a)??1e9)-(monthlyCost(b)??1e9))[0];
- $('route').innerHTML=`<h3>Wat betekent dit voor jou?</h3><p><strong>Gebruik:</strong> ongeveer ${profile.estimated.toLocaleString('nl-NL')} taken per maand. ${profile.cadence==='continuous'?'Dit is een doorlopend proces; betrouwbaarheid, capaciteit en kosten tellen dus zwaar mee.':profile.cadence==='once'?'Dit is vooral een eenmalige/af-en-toe taak; eenvoud en kwaliteit wegen zwaarder dan schaal.':'Dit is terugkerend gebruik; kosten per succesvolle taak worden belangrijk.'}</p><p><strong>Praktische aanpak:</strong> gebruik <strong>${cheap?.id||ranked[0].id}</strong> voor eenvoudige standaardtaken en <strong>${ranked[0].id}</strong> voor moeilijke of risicovolle gevallen. Je hoeft dus niet alles met één duur model te doen.</p><p><strong>Controle:</strong> ${profile.impact==='high'?'Laat een mens kritieke uitkomsten goedkeuren voordat ze een klant, betaling of besluit raken.':'Automatiseer pas volledig nadat je een set echte voorbeelden hebt getest.'}</p><p><strong>Data:</strong> ${profile.sensitivity==='strategic'?'kies bij voorkeur een customer-controlled/eigen deploymentpad en leg retentie en toegang contractueel vast.':profile.sensitivity==='personal'?'controleer EU-verwerking, retentie, training op klantdata en verwerkersafspraken vóór productie.':'controleer het gekozen deploymentpad zodra interne bedrijfsdata wordt gebruikt.'}</p>`;
+ const top=ranked[0];
+ const qualityFloor=Math.max(1,top._score*.68);
+ const lightCandidates=allRanked.filter(m=>m._cost!=null&&m._score>=qualityFloor);
+ const light=(lightCandidates.sort((a,b)=>(a._cost??1e9)-(b._cost??1e9))[0])||top;
+ const escalation=ranked.find(m=>m.id!==light.id)||top;
+ const routingUseful=profile.cadence==='continuous'||profile.cadence==='daily'||profile.estimated>=1000||profile.people>=30||priority==='cost'||profile.impact==='high';
+ const routeTitle=routingUseful?'Advies: modelmix + slimme routering':'Advies: één model kan, modelmix blijft optioneel';
+ const routeLogic=routingUseful
+   ?`Laat <strong>${light.id}</strong> standaardverzoeken afhandelen. Routeer alleen door naar <strong>${escalation.id}</strong> wanneer de taak complex, foutgevoelig, lang, ambigu of bedrijfskritisch is. Bij hoge impact blijft menselijke goedkeuring de laatste stap.`
+   :`Start met <strong>${top.id}</strong>. Als volume of kosten later oplopen, kun je standaardwerk naar <strong>${light.id}</strong> routeren en <strong>${top.id}</strong> alleen voor de moeilijke gevallen houden.`;
+ const costLine=(light._cost!=null&&top._cost!=null&&light.id!==top.id)
+   ?`Indicatief kost het lichte pad ${money(light._cost)} per maand versus ${money(top._cost)} als alles via het zwaarste aanbevolen model loopt. Werkelijke besparing hangt af van het percentage verzoeken dat kan worden afgehandeld zonder escalatie.`
+   :'Kostenbesparing hangt af van taakverdeling, tokengebruik en providerprijzen; de Modelwijzer toont daarom geen fictief besparingspercentage.';
+ $('route').innerHTML=`<h3>${routeTitle}</h3><p><strong>Gebruik:</strong> ongeveer ${profile.estimated.toLocaleString('nl-NL')} taken per maand. ${profile.cadence==='continuous'?'Dit is een doorlopend proces; betrouwbaarheid, capaciteit en kosten tellen dus zwaar mee.':profile.cadence==='once'?'Dit is vooral een eenmalige/af-en-toe taak; eenvoud en kwaliteit wegen zwaarder dan schaal.':'Dit is terugkerend gebruik; kosten per succesvolle taak worden belangrijk.'}</p><p><strong>Modelrouter:</strong> ${routeLogic}</p><p><strong>Waarom:</strong> een goedkoper/licht model kan het grootste deel van repetitief werk doen; zwaardere modellen worden alleen ingezet waar extra reasoning, kwaliteit of risicobeheersing waarde toevoegt.</p><p><strong>Kosten:</strong> ${costLine}</p><p><strong>Controle:</strong> ${profile.impact==='high'?'Laat een mens kritieke uitkomsten goedkeuren voordat ze een klant, betaling of besluit raken.':'Automatiseer pas volledig nadat je een set echte voorbeelden hebt getest.'}</p><p><strong>Data:</strong> ${profile.sensitivity==='strategic'?'kies bij voorkeur een customer-controlled/eigen deploymentpad en leg retentie en toegang contractueel vast.':profile.sensitivity==='personal'?'controleer EU-verwerking, retentie, training op klantdata en verwerkersafspraken vóór productie.':'controleer het gekozen deploymentpad zodra interne bedrijfsdata wordt gebruikt.'}</p>`;
  lastAdvice={model:ranked[0].id,goal:text};
  $('result').classList.add('on');$('result').scrollIntoView({behavior:'smooth',block:'nearest'});
 }
