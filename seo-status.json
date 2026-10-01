@@ -1,5 +1,5 @@
 {
- "bijgewerkt": "2026-09-24",
+ "bijgewerkt": "2026-10-01",
  "zoekwoorden": [
   {
    "zoekwoord": "afas koppeling",
@@ -30,7 +30,7 @@
    "type": "cluster"
   },
   {
-   "zoekwoord": "ai governance mkb",
+   "zoekwoord": "ai governance",
    "pagina": "/ai-governance",
    "bestaat": true,
    "claimt": true,
@@ -39,6 +39,13 @@
   {
    "zoekwoord": "ai implementatie mkb",
    "pagina": "/ai-implementeren",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "ai modellen vergelijken",
+   "pagina": "/ai-modelwijzer",
    "bestaat": true,
    "claimt": true,
    "type": "cluster"
@@ -114,6 +121,20 @@
    "type": "cluster"
   },
   {
+   "zoekwoord": "company brain",
+   "pagina": "/company-brain",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
+   "zoekwoord": "data soevereiniteit",
+   "pagina": "/data-soevereiniteit",
+   "bestaat": true,
+   "claimt": true,
+   "type": "cluster"
+  },
+  {
    "zoekwoord": "digitalisering mkb",
    "pagina": "/",
    "bestaat": true,
@@ -152,7 +173,7 @@
    "zoekwoord": "kosten digitalisering mkb",
    "pagina": "/prijzen",
    "bestaat": true,
-   "claimt": true,
+   "claimt": false,
    "type": "cluster"
   },
   {
