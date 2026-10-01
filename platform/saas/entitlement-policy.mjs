@@ -56,12 +56,7 @@ export function planRuntimePolicy(record){
     recoveryWorkspaceAccess:Boolean(e.intelligence_core),
     maWorkspaceAccess:Boolean(e.intelligence_core),
     portfolioWorkspaceAccess:Boolean(e.intelligence_core),
-    maxUsers:Number(e.users||0),
     maxDataSources:Number(e.data_sources||0),
-    maxDocuments:Number(e.documents||0),
-    maxAiRequestsMonth:Number(e.ai_requests_month||0),
-    maxAutomations:Number(e.automations||0),
-    approvalWorkflows:Boolean(e.approval_workflows),
     refreshMinutes:Number(e.refresh_minutes||0),
     externalSignalScan:e.external_signal_scan||null,
     forecasting:Boolean(e.forecasting),
@@ -74,6 +69,21 @@ export function planRuntimePolicy(record){
   });
 }
 
+
+export function planCapacityPolicy(record){
+  const normalized=normalizeEntitlementRecord(record);
+  if(!normalized)return null;
+  const e=normalized.entitlements;
+  return Object.freeze({
+    planCode:normalized.planCode,
+    status:normalized.status,
+    maxUsers:Number(e.users||0),
+    maxDocuments:Number(e.documents||0),
+    maxAiRequestsMonth:Number(e.ai_requests_month||0),
+    maxAutomations:Number(e.automations||0),
+    approvalWorkflows:Boolean(e.approval_workflows)
+  });
+}
 
 export function enforceRefreshPolicy(policy,requestedRefreshMinutes){
   if(!policy){
