@@ -1,0 +1,36 @@
+{
+  "fingerprint": "website|global-ai-discovery|canonical-shell|20261001",
+  "observed_at": "2026-10-01T14:18:00Z",
+  "type": "PREVENTION",
+  "problem": "Important AI pages remained discoverable from product content but were missing from the canonical global Kennis navigation and footer; overlapping route recovery also left duplicate rewrites on main.",
+  "root_cause": "Product-level discovery was restored before the canonical shell source was updated, while concurrent route recovery merged the same clean-route rules twice.",
+  "decision": "Make AI Modelwijzer and AI Governance canonical navigation entries in desktop, mobile and footer; keep component mirrors aligned; enforce unique conversion rewrites.",
+  "prevention": [
+    "AI Modelwijzer and AI Governance remain globally discoverable from the canonical Kennis navigation.",
+    "Canonical shell source and header/footer component mirrors must carry the same global destinations.",
+    "Conversion-critical Netlify rewrite rules must be unique."
+  ],
+  "evidence": [
+    "over-ons.html",
+    "components/header/header.html",
+    "components/footer/footer.html",
+    "_redirects",
+    "config/bg-static-i18n-en.d/2026-10-01-professional-parity-tools.json",
+    "tests/brain-global-ai-discovery.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "DISCOVERY_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-global-ai-discovery.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-global-ai-discovery.test.mjs"
+  ]
+}
