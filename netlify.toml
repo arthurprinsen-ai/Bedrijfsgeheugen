@@ -49,6 +49,42 @@
   status = 301
   force = true
 
+
+# Publieke juridische/statusroutes. Bronbestanden staan onder /pages zodat de
+# website-delivery lane ze eenduidig classificeert; bezoekers houden schone URLs.
+[[redirects]]
+  from = "/gebruiksvoorwaarden"
+  to = "/pages/gebruiksvoorwaarden.html"
+  status = 200
+
+[[redirects]]
+  from = "/cookiebeleid"
+  to = "/pages/cookiebeleid.html"
+  status = 200
+
+[[redirects]]
+  from = "/systeemstatus"
+  to = "/pages/systeemstatus.html"
+  status = 200
+
+[[redirects]]
+  from = "/gebruiksvoorwaarden.html"
+  to = "/gebruiksvoorwaarden"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/cookiebeleid.html"
+  to = "/cookiebeleid"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/systeemstatus.html"
+  to = "/systeemstatus"
+  status = 301
+  force = true
+
 # .html-varianten netjes doorsturen naar de schone URL (voorkomt duplicate content)
 [[redirects]]
   from = "/excel-als-crm.html"
@@ -364,19 +400,6 @@
 [[redirects]]
   from = "/oplossingen.html"
   to = "/oplossingen"
-  status = 301
-  force = true
-
-
-[[redirects]]
-  from = "/pakketadvies.html"
-  to = "/pakketadvies"
-  status = 301
-  force = true
-
-[[redirects]]
-  from = "/portaal-demo.html"
-  to = "/portaal-demo"
   status = 301
   force = true
 
