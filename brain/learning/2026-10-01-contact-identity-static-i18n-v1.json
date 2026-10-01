@@ -1,0 +1,29 @@
+{
+  "fingerprint": "website|contact-identity|static-i18n-cache|20261001",
+  "observed_at": "2026-10-01T13:24:00Z",
+  "type": "PREVENTION",
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "problem": "A customer-facing contact identity correction introduced Dutch strings that were not yet present in the fail-closed English translation cache, causing Netlify production builds to stop before publication.",
+  "root_cause": "The content correction and the static English cache were changed in separate lineages.",
+  "decision": "Every public NL copy change on a localized route must add the exact new visible string variants to the static English cache in the same candidate.",
+  "prevention": [
+    "Public localized content and static English cache change atomically.",
+    "STATIC_I18N_REQUIRE_CACHE remains enabled; never bypass the fail-closed guard.",
+    "Production promotion must not be retried until the deterministic cache gap is repaired."
+  ],
+  "evidence": [
+    "contact.html",
+    "config/bg-static-i18n-en.d/2026-10-01-professional-parity-tools.json"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tools/site-shell/build-localized-routes.mjs --validate-cache"
+    ]
+  }
+}
