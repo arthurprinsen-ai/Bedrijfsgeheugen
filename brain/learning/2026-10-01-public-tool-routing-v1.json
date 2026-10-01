@@ -11,7 +11,8 @@
   ],
   "evidence": [
     "_redirects",
-    "tests/public-tool-routes.test.mjs"
+    "pakketadvies.html",
+    "portaal-demo.html"
   ],
   "compiler": {
     "failure_class": "ROUTING_CONTRACT_GAP",
@@ -22,7 +23,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/public-tool-routes.test.mjs"
+      "tests/brain-website-coherence-v1.test.mjs"
     ]
-  }
+  },
+  "test_evidence": [
+    "tests/brain-website-coherence-v1.test.mjs"
+  ]
 }
