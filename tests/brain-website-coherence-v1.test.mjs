@@ -34,3 +34,10 @@ test('final coherence pass runs in production and deploy preview builds',()=>{
   const uses=netlify.match(/finalize-website-coherence-v1\.mjs/g)||[];
   assert.ok(uses.length>=2);
 });
+
+test('pricing composer preserves canonical visual-regression hero hooks',()=>{
+  const pricing=readFileSync('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  assert.match(pricing,/class="hero held" data-bg-component="hero"/);
+  assert.match(pricing,/class="bgkruim"/);
+  assert.match(pricing,/class="choice pil"/);
+});
