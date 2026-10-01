@@ -10,6 +10,7 @@ import { mountGlobalActions } from './global-actions-ui.js';
 import { applyCustomerBranding } from './customer-branding.js';
 import { applyOverviewDashboard } from './modules/overview.js';
 import { renderProjectOverview } from './project-overview.js';
+import { fetchPortalPlan, applyPlanAccess, minPlanForPage } from './plan-access.js';
 
 const SOURCES=[
  ['systemen','◫','Systemen','ERP, CRM, finance, e-mail, HR'],
@@ -32,6 +33,7 @@ let selection={source:'documenten',module:'inzicht'};
 let previewMode=true;
 let runtime=null;
 let activeProjectGroup='project-overview';
+let portalSubscription=null;
 
 function el(id){return document.getElementById(id)}
 function selectedSource(){return SOURCES.find(x=>x[0]===selection.source)}
@@ -92,7 +94,16 @@ function drawFlow(flow){
 }
 function render(){const flow=deriveFlowState({source:selection.source,module:selection.module,runtime,preview:previewMode});renderFocus();renderCopy(flow);requestAnimationFrame(()=>drawFlow(flow))}
 
-function openProjectPage(pageId){closeHub();navigatePortal(pageId);}
+function openProjectPage(pageId){
+ if(portalSubscription && !document.documentElement.classList.contains('portal-entitlements-loading')){
+   const probe=document.querySelector(`[data-page="${pageId}"],[data-nav-target="${pageId}"],[data-open-page="${pageId}"]`);
+   if(probe?.dataset.planAccess==='upgrade'){
+     location.href=`https://www.bedrijfsgeheugen.nl/prijzen#saas?upgrade=${encodeURIComponent(minPlanForPage(pageId))}`;
+     return;
+   }
+ }
+ closeHub();navigatePortal(pageId);
+}
 function renderProjectContext(groups){
  const wrap=document.createElement('div');wrap.className='projectcontext';
  const tabs=document.createElement('div');tabs.className='projecttabs';tabs.setAttribute('role','tablist');tabs.setAttribute('aria-label','Jouw project');
@@ -178,6 +189,12 @@ function ensureNavigationStyles(){
  if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')==='./navigation.css'))return;
  const style=document.createElement('link');style.rel='stylesheet';style.href='./navigation.css';document.head.appendChild(style);
 }
+
+document.documentElement.classList.add('portal-entitlements-loading');
+fetchPortalPlan().then(subscription=>{
+ portalSubscription=subscription;
+ applyPlanAccess(document,subscription);
+}).catch(()=>null).finally(()=>document.documentElement.classList.remove('portal-entitlements-loading'));
 
 const portalStateClient=createPortalStateClient();
 const portalDomainState=createPortalDomainState(portalStateClient);
