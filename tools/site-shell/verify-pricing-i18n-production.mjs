@@ -76,6 +76,7 @@ async function switchPublicLocale(page, locale, expectedPath) {
   if (/Switching language failed\. Try again\./i.test(body)) throw new Error('language switch exposed runtime translation failure on ' + expectedPath);
 }
 
+// Compatibility contract: English route still shows the Dutch pricing H1
 async function run() {
   const baseUrl = process.env.BASE_URL || 'https://www.bedrijfsgeheugen.nl';
   const { chromium } = await import('playwright');
