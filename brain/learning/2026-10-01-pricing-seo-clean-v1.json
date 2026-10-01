@@ -10,5 +10,17 @@
     "Any pricing rewrite must pass the money-page SEO diagnostic before merge.",
     "Source HTML and final build composer must preserve the same canonical internal pillar backlink.",
     "Pricing copy must remain compliant with the brand-language denylist."
-  ]
+  ],
+  "compiler": {
+    "failure_class": "SEO_CONTRACT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+    ]
+  }
 }
