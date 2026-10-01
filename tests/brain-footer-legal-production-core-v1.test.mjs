@@ -30,3 +30,5 @@ test('canonical footer component mirrors the same legal link set', () => {
 });
 
 // footer production lineage recheck
+
+// footer production metadata recheck
