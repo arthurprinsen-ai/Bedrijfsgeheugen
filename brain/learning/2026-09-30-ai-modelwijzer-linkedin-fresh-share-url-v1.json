@@ -1,0 +1,32 @@
+{
+  "id": "2026-09-30-ai-modelwijzer-linkedin-fresh-share-url-v1",
+  "date": "2026-09-30",
+  "status": "ACTIVE_PREVENTION",
+  "fingerprint": "linkedin|link-preview-cache|fresh-share-url|ai-modelwijzer",
+  "compiler": {
+    "failure_class": "LINKEDIN_PAGE_URL_PREVIEW_CACHE",
+    "scope": "SOCIAL_DISTRIBUTION",
+    "machine_enforceable": true,
+    "security_sensitive": false,
+    "repeat_count": 1
+  },
+  "root_cause": "LinkedIn can reuse cached link-preview metadata for the same shared page URL across newly created posts, so correcting the page metadata alone does not guarantee a fresh preview.",
+  "prevention": [
+    "When a cached social preview is materially wrong, use a fresh share URL path with its own og:url and explicit company-only social image.",
+    "Do not rely on query-string cache busting for the shared page URL.",
+    "The share URL may redirect humans to the canonical page after crawlers read the social metadata."
+  ],
+  "fix": "Create /ai-modelwijzer-linkedin-2026 as a dedicated share URL with company-only Open Graph metadata and immediate human redirect to the canonical Modelwijzer.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-ai-model-intelligence-v1.test.mjs"
+    ]
+  },
+  "evidence": {
+    "share_page": "ai-modelwijzer-linkedin-2026.html",
+    "route": "_redirects"
+  },
+  "skill_targets": [
+    "powerhouse-ai-model-intelligence"
+  ]
+}
