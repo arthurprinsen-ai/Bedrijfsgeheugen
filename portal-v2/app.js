@@ -201,6 +201,11 @@ document.documentElement.classList.add('portal-entitlements-loading');
 fetchPortalPlan().then(subscription=>{
  portalSubscription=subscription;
  applyPlanAccess(document,subscription);
+ const requestedPage=new URL(location.href).searchParams.get('page');
+ if(subscription?.plan && requestedPage && !planAllowsPage(subscription.plan,requestedPage)){
+   location.assign('https://www.bedrijfsgeheugen.nl/prijzen#saas');
+   return;
+ }
  if(subscription?.plan){
    const host=document.querySelector('.portal-topbar,.topbar,.sidebar')||document.body;
    if(!document.getElementById('portalPlanBadge')){
