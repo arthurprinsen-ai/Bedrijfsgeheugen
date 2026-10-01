@@ -54,8 +54,9 @@ test('product proposition is contextual rather than internal implementation copy
 });
 
 test('product proposition is inserted after the actual product hero',()=>{
-  assert.match(finalizer,/class=.*pr-hero/);
-  assert.match(finalizer,/const hero=html\.match/);
+  assert.match(finalizer,/const mainStart=html\.search/);
+  assert.match(finalizer,/const firstSection=afterMain\.match/);
+  assert.match(finalizer,/firstSection\[0\]\.length/);
 });
 
 test('package advisor and professional portal demo are real routes',()=>{
@@ -83,7 +84,7 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
 
 
 test('product page keeps one primary hero and embeds Powerhouse model in context',()=>{
-  const productTruth=finalizer.match(/const productTruth=\`([\\s\\S]*?)\`;/);
+  const productTruth=finalizer.match(/const productTruth=\`([\s\S]*?)\`;/);
   assert.ok(productTruth,'canonical Dutch product truth block must exist');
   assert.doesNotMatch(productTruth[1],/POWERHOUSE · HET ACTUELE PRODUCT/);
   assert.doesNotMatch(productTruth[1],/Website en portaal spreken nu dezelfde taal/);
