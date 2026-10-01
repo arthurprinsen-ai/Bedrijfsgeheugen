@@ -22,3 +22,8 @@ test('pricing integrity and production proof enforce the new commercial surface'
   assert.ok(workflow.includes('data-tab="consulting"'));
   assert.ok(browser.includes('COMMERCIAL_PRICING_I18N_PRODUCTION_PROVEN'));
 });
+
+test('English pricing composer removes residual Dutch commercial copy', async()=>{
+  const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  for(const token of ['Executive & AI Workshop','Preparation & analysis','Integrations with your systems','During delivery you receive Pro or Growth access.','Growth access']) assert.ok(source.includes(token), token);
+});
