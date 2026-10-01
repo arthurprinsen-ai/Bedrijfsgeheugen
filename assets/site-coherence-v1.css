@@ -1,0 +1,109 @@
+:root{
+  --bg-navy:#0e2148;--bg-ink:#14171a;--bg-blue:#2742d6;--bg-yellow:#ffe86b;
+  --bg-orange:#ff4f17;--bg-paper:#fbfaf7;--bg-line:#dcdfe6;--bg-muted:#5c646e;
+}
+html,body{max-width:100%;overflow-x:clip}
+body[data-bg-route] main{isolation:isolate}
+body[data-bg-route] main :where(img,svg,video,canvas){max-width:100%}
+body[data-bg-route] main :where(.wrap,.container,.inner){min-width:0}
+
+/* Contact is a real route, never a homepage hash. */
+a[href="#contact"],a[href="/#contact"],a[href="https://www.bedrijfsgeheugen.nl/#contact"]{display:none!important}
+
+/* Pricing: use the same brand system and prevent generic CTA/card rules from winning. */
+body[data-bg-route="/prijzen"] main [data-bg-commercial-pricing-v1],
+body[data-bg-route="/en/prijzen"] main [data-bg-commercial-pricing-v1]{font-family:'Instrument Sans',system-ui,sans-serif;color:var(--bg-ink)}
+body[data-bg-route="/prijzen"] main .hero,
+body[data-bg-route="/en/prijzen"] main .hero{background:linear-gradient(135deg,#fff 38%,#eef3ff 72%,#fff8ce)!important}
+body[data-bg-route="/prijzen"] main .grid4,
+body[data-bg-route="/en/prijzen"] main .grid4{gap:18px!important}
+body[data-bg-route="/prijzen"] main .plan,
+body[data-bg-route="/en/prijzen"] main .plan,
+body[data-bg-route="/prijzen"] main .service,
+body[data-bg-route="/en/prijzen"] main .service{
+  border:1px solid var(--bg-line)!important;border-radius:20px!important;box-shadow:0 14px 38px rgba(14,33,72,.08)!important;background:#fff!important
+}
+body[data-bg-route="/prijzen"] main .plan.featured,
+body[data-bg-route="/en/prijzen"] main .plan.featured{border:2px solid var(--bg-yellow)!important;transform:translateY(-4px)}
+body[data-bg-route="/prijzen"] main .ribbon,
+body[data-bg-route="/en/prijzen"] main .ribbon{background:var(--bg-yellow)!important;color:#111!important}
+body[data-bg-route="/prijzen"] main .cta,
+body[data-bg-route="/en/prijzen"] main .cta{background:#fff!important;color:var(--bg-navy)!important;border:1.5px solid var(--bg-navy)!important;border-radius:11px!important}
+body[data-bg-route="/prijzen"] main .featured .cta,
+body[data-bg-route="/prijzen"] main .cta.primary,
+body[data-bg-route="/en/prijzen"] main .featured .cta,
+body[data-bg-route="/en/prijzen"] main .cta.primary{background:var(--bg-yellow)!important;border-color:var(--bg-yellow)!important;color:#111!important}
+body[data-bg-route="/prijzen"] main .tabs button.active,
+body[data-bg-route="/en/prijzen"] main .tabs button.active{background:var(--bg-navy)!important;color:#fff!important}
+body[data-bg-route="/prijzen"] main .grid5,
+body[data-bg-route="/en/prijzen"] main .grid5{grid-template-columns:repeat(auto-fit,minmax(205px,1fr))!important;gap:16px!important}
+body[data-bg-route="/prijzen"] main .fit,
+body[data-bg-route="/en/prijzen"] main .fit{box-shadow:0 14px 38px rgba(14,33,72,.07)}
+body[data-bg-route="/prijzen"] main .fit button,
+body[data-bg-route="/en/prijzen"] main .fit button{background:var(--bg-yellow)!important;color:#111!important;border:1px solid #111!important}
+body[data-bg-route="/prijzen"] main .sectionhead h2,
+body[data-bg-route="/en/prijzen"] main .sectionhead h2{letter-spacing:-.035em}
+
+/* AI ecosystem: namespace collisions from old global .flow/.card/.step rules must never collapse the design. */
+body[data-bg-route="/ai-ecosysteem"] main .hero-grid,
+body[data-bg-route="/en/ai-ecosysteem"] main .hero-grid{display:grid!important;grid-template-columns:minmax(0,.92fr) minmax(0,1.08fr)!important;gap:42px!important;align-items:center!important}
+body[data-bg-route="/ai-ecosysteem"] main .brain,
+body[data-bg-route="/en/ai-ecosysteem"] main .brain{width:100%!important;max-width:none!important;min-height:0!important}
+body[data-bg-route="/ai-ecosysteem"] main .flow,
+body[data-bg-route="/en/ai-ecosysteem"] main .flow{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:9px!important;width:100%!important}
+body[data-bg-route="/ai-ecosysteem"] main .flow>div,
+body[data-bg-route="/en/ai-ecosysteem"] main .flow>div{width:auto!important;min-width:0!important;height:auto!important}
+body[data-bg-route="/ai-ecosysteem"] main .cards,
+body[data-bg-route="/en/ai-ecosysteem"] main .cards{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;align-items:stretch!important}
+body[data-bg-route="/ai-ecosysteem"] main .card,
+body[data-bg-route="/en/ai-ecosysteem"] main .card{width:auto!important;max-width:none!important;min-height:0!important}
+body[data-bg-route="/ai-ecosysteem"] main .chain,
+body[data-bg-route="/en/ai-ecosysteem"] main .chain{display:grid!important;grid-template-columns:repeat(7,minmax(0,1fr))!important;width:100%!important}
+body[data-bg-route="/ai-ecosysteem"] main .step,
+body[data-bg-route="/en/ai-ecosysteem"] main .step{width:auto!important;max-width:none!important;height:auto!important;min-height:108px!important}
+body[data-bg-route="/ai-ecosysteem"] main .cta,
+body[data-bg-route="/en/ai-ecosysteem"] main .cta{width:100%!important;max-width:none!important}
+
+/* System integrations: keep copy and cards on a full content canvas instead of a narrow left rail. */
+body[data-bg-route="/systemen-koppelen"] main .wrap,
+body[data-bg-route="/en/systemen-koppelen"] main .wrap{width:min(1180px,calc(100% - 44px))!important;max-width:1180px!important;margin-inline:auto!important}
+body[data-bg-route="/systemen-koppelen"] main :where(.cards,.grid,.koppelingen,.integraties),
+body[data-bg-route="/en/systemen-koppelen"] main :where(.cards,.grid,.koppelingen,.integraties){min-width:0!important;max-width:none!important}
+
+/* Product page: canonical website↔portal truth. */
+.bg-product-truth-v1{padding:74px 22px;background:linear-gradient(135deg,#0b1732,#122a58);color:#fff}
+.bg-product-truth-wrap{max-width:1180px;margin:0 auto}
+.bg-product-truth-kicker{font:700 12px/1.2 'IBM Plex Mono',monospace;letter-spacing:.12em;color:var(--bg-yellow)}
+.bg-product-truth-v1 h2{max-width:900px;margin:14px 0 14px;color:#fff;font-size:clamp(2.2rem,5vw,4.5rem);line-height:1;letter-spacing:-.055em}
+.bg-product-truth-lead{max-width:780px;margin:0 0 32px;color:#d7dfef;font-size:1.12rem}
+.bg-product-truth-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.bg-product-truth-grid article{padding:24px;border:1px solid rgba(255,255,255,.16);border-radius:20px;background:rgba(255,255,255,.06)}
+.bg-product-truth-grid article>span{font-size:12px;text-transform:uppercase;letter-spacing:.08em;color:var(--bg-yellow);font-weight:800}
+.bg-product-truth-grid h3{margin:8px 0 10px;color:#fff;font-size:1.45rem}
+.bg-product-truth-grid p{margin:0;color:#d7dfef}
+.bg-product-truth-loop{display:flex;flex-wrap:wrap;gap:8px 11px;align-items:center;margin-top:20px;padding:16px 18px;border-radius:14px;background:rgba(255,255,255,.07)}
+.bg-product-truth-loop i{font-style:normal;color:var(--bg-yellow)}
+.bg-product-truth-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
+.bg-product-truth-actions a{display:inline-flex;align-items:center;justify-content:center;padding:12px 16px;border:1px solid rgba(255,255,255,.45);border-radius:11px;color:#fff;text-decoration:none;font-weight:800}
+.bg-product-truth-actions a.primary{background:var(--bg-yellow);border-color:var(--bg-yellow);color:#111}
+
+@media(max-width:900px){
+  body[data-bg-route="/ai-ecosysteem"] main .hero-grid,
+  body[data-bg-route="/en/ai-ecosysteem"] main .hero-grid{grid-template-columns:1fr!important}
+  body[data-bg-route="/ai-ecosysteem"] main .cards,
+  body[data-bg-route="/en/ai-ecosysteem"] main .cards{grid-template-columns:1fr 1fr!important}
+  body[data-bg-route="/ai-ecosysteem"] main .chain,
+  body[data-bg-route="/en/ai-ecosysteem"] main .chain{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+  .bg-product-truth-grid{grid-template-columns:1fr}
+}
+@media(max-width:640px){
+  body[data-bg-route="/prijzen"] main .plan.featured,
+  body[data-bg-route="/en/prijzen"] main .plan.featured{transform:none}
+  body[data-bg-route="/ai-ecosysteem"] main .cards,
+  body[data-bg-route="/en/ai-ecosysteem"] main .cards,
+  body[data-bg-route="/ai-ecosysteem"] main .chain,
+  body[data-bg-route="/en/ai-ecosysteem"] main .chain,
+  body[data-bg-route="/ai-ecosysteem"] main .flow,
+  body[data-bg-route="/en/ai-ecosysteem"] main .flow{grid-template-columns:1fr!important}
+  .bg-product-truth-v1{padding:54px 16px}
+}

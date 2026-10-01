@@ -1,0 +1,38 @@
+:root{--saas-accent:#2742d6;--saas-navy:#0e2148;--saas-yellow:#ffe86b;--saas-orange:#ff4f17;--saas-ink:#14171a;--saas-paper:#fbfaf7}
+html,body{max-width:100%;overflow-x:clip}
+body{background:#f5f7fb}
+.app{min-height:100vh}
+.sidebar{background:linear-gradient(180deg,#0b1732,#0e2148)!important;color:#fff!important}
+.sidebar .brand,.sidebar .nav button,.sidebar .profile{color:#fff!important}
+.sidebar .nav button.active{background:rgba(255,232,107,.16)!important;color:#fff!important}
+.sidebar .nav button.active .ico{color:var(--saas-yellow)!important}
+.sidebar .scan{background:var(--saas-yellow)!important;color:#111!important;border:0!important}
+.sidebar .scan button{background:#111!important;color:#fff!important;border-radius:10px!important}
+.main{min-width:0!important}
+.topbar{background:#fff;border-bottom:1px solid #e2e6ee}
+.welcome h1{color:var(--saas-navy);letter-spacing:-.035em}
+.card,.kpi{border:1px solid #e1e6ef!important;box-shadow:0 10px 30px rgba(14,33,72,.06)!important;border-radius:18px!important}
+.braincard{overflow:hidden}
+.brainflow{grid-template-columns:repeat(5,minmax(0,1fr))!important}
+.brainnode{min-width:0!important}
+.brainnode[data-stage="brain"],.brainnode[data-stage="powerhouse"]{border-color:#c9d4ff!important}
+.brainnode[data-stage="powerhouse"]{background:#fff9d7!important}
+.braincapchip{border-radius:999px!important}
+.smallbtn.ai{background:var(--saas-navy)!important;color:#fff!important}
+.portal-plan-badge{background:var(--saas-yellow)!important;color:#111!important;border:0!important}
+.quick button{min-width:0}
+.mobilebar{border-top:1px solid #dfe4ec!important}
+.mobilebar button.active{color:var(--saas-accent)!important}
+@media(max-width:1180px){
+  .dashboard{grid-template-columns:1fr!important}
+  .right{display:grid!important;grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:14px!important}
+}
+@media(max-width:900px){
+  .right{grid-template-columns:1fr!important}
+  .brainflow{grid-template-columns:1fr 1fr!important}
+  .topbar{align-items:flex-start!important}
+}
+@media(max-width:640px){
+  .brainflow{grid-template-columns:1fr!important}
+  .kpis{grid-template-columns:1fr 1fr!important}
+}

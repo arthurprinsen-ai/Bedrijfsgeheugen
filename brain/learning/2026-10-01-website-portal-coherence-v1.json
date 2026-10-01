@@ -1,0 +1,44 @@
+{
+  "fingerprint": "website|portal|coherence|css-collision|routing|20261001",
+  "observed_at": "2026-10-01T10:02:00+02:00",
+  "type": "PREVENTION",
+  "problem": "Nieuwe/commerciële pagina's en Portal V2 konden inhoudelijk en visueel uit elkaar lopen. Generieke selectors zoals .card, .flow, .step en .cta werden door de globale schil overschreven; contact-links konden naar de homepage-hash gaan.",
+  "root_cause": "Meerdere build-composers schreven na elkaar HTML en CSS zonder een terminale route-scoped coherence pass. Product- en portalwaarheid hadden daarnaast geen laatste visuele parity-laag.",
+  "decision": "Voeg een terminale website coherence-pass toe, scope paginafixes op data-bg-route, normaliseer contactrouting, projecteer de actuele Powerhouse-productarchitectuur op /product en laad een laatste Portal V2 parity stylesheet.",
+  "prevention": [
+    "Voer finalize-website-coherence-v1.mjs uit in production en deploy-preview.",
+    "Gebruik route-scoped overrides voor legacy generieke classnamen.",
+    "Blokkeer contact-hashnavigatie.",
+    "Behoud één producttaxonomie: Intelligence, Agents, Connect.",
+    "Test pricing, AI ecosystem, integrations, product and portal parity."
+  ],
+  "evidence": [
+    "tools/site-shell/finalize-website-coherence-v1.mjs",
+    "assets/site-coherence-v1.css",
+    "portal-v2/site-parity-v1.css",
+    "tests/website-coherence-v1.test.mjs"
+  ],
+  "status": "ACTIVE_PREVENTION",
+  "compiler": {
+    "failure_class": "WEBSITE_PORTAL_COHERENCE_DRIFT",
+    "scope": "PUBLIC_WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "skill_targets": [
+    "website",
+    "portal",
+    "pricing",
+    "navigation"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-coherence-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-website-coherence-v1.test.mjs"
+  ]
+}
