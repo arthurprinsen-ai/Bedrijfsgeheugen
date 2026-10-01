@@ -1,4 +1,5 @@
 import { allPageIds, listPortalGroups, findPage } from './page-registry.js';
+import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 
 const PORTAL_CORE = Object.freeze([
   'overzicht','profiel','data-ai','ai-scan','kansenkaart','csrd-impact','gegevens-invullen','ingevulde-gegevens','businesscase',
@@ -12,69 +13,6 @@ const TASKS = Object.freeze(['taken-werkstromen','actieve-acties','roadmap','rec
 const MORE = Object.freeze(['gebruikers','documenten','instellingen','billing','frisse-blik','audit','audittrail','compliance-governance','compliance-command-center','learning-writeback','self-heal']);
 
 const entry=(id,label,target=id)=>Object.freeze({id,label,target});
-const PORTAL_NAV_GROUPS = Object.freeze([
-  Object.freeze({id:'overview',label:'Overzicht',pages:Object.freeze([
-    entry('overview-home','Overzicht','overzicht'),
-    entry('overview-advice','Advies','advies'),
-    entry('overview-conclusion','Eindconclusie','eindconclusie')
-  ])}),
-  Object.freeze({id:'csrd',label:'CSRD & Impact',pages:Object.freeze([
-    entry('csrd-main','CSRD & Impact','csrd-impact'),
-    entry('csrd-compliance','Compliance & governance','compliance-governance'),
-    entry('csrd-command','Compliance overzicht','compliance-command-center')
-  ])}),
-  Object.freeze({id:'health',label:'Bedrijfsgezondheid',pages:Object.freeze([
-    entry('health-profile','Bedrijfsprofiel','profiel'),
-    entry('health-context','Bedrijfssituatie','bedrijfssituatie'),
-    entry('health-kpis','Cijfers & maatstaven','cijfers-maatstaven'),
-    entry('health-value','Waarde & financiering','waarde-financiering'),
-    entry('health-businesscase','Businesscase','businesscase')
-  ])}),
-  Object.freeze({id:'strategy',label:'Strategie & uitvoering',pages:Object.freeze([
-    entry('strategy-monday','Strategie naar uitvoering','strategie-naar-maandagochtend'),
-    entry('strategy-dna-nav','Strategy DNA','strategy-dna'),
-    entry('strategy-models','Strategiemodellen','strategiemodellen'),
-    entry('strategy-canvases','Canvassen','canvassen'),
-    entry('strategy-roadmap','Roadmap','roadmap')
-  ])}),
-  Object.freeze({id:'processes',label:'Processen & organisatie',pages:Object.freeze([
-    entry('process-workflows','Taken & werkstromen','taken-werkstromen'),
-    entry('process-people','Mensen & rollen','mensen'),
-    entry('process-current','Actueel houden','actueel-houden'),
-    entry('process-changes','Wijzigingen','wijzigingen')
-  ])}),
-  Object.freeze({id:'knowledge',label:'Kennis',pages:Object.freeze([
-    entry('knowledge-docs','Documenten','documenten'),
-    entry('knowledge-research','Onderzoek','onderzoek'),
-    entry('knowledge-sources','Bronnenbibliotheek','bronnenbibliotheek')
-  ])}),
-  Object.freeze({id:'data',label:'Data & koppelingen',pages:Object.freeze([
-    entry('data-overview','Data & AI','data-ai'),
-    entry('data-links','Koppelingen','koppelingen'),
-    entry('data-passport','Data & AI Passport','data-ai-passport'),
-    entry('data-status','Datahubstatus','datahubstatus')
-  ])}),
-  Object.freeze({id:'ai',label:'AI & Insights',pages:Object.freeze([
-    entry('ai-opportunities','AI-kansen','ai-scan'),
-    entry('ai-capabilities-nav','AI-capabilities','ai-capabilities'),
-    entry('ai-trust','AI Trust Center','trust-center'),
-    entry('ai-external','AI & technologie actueel','ai-technologie-actueel')
-  ])}),
-  Object.freeze({id:'actions',label:'Acties & impact',pages:Object.freeze([
-    entry('actions-active','Actieve acties','actieve-acties'),
-    entry('actions-impact','Impact & waarde','os:impact-engine'),
-    entry('actions-outcomes','Outcomes & bewijs','outcomes-evidence'),
-    entry('actions-next','Volgende beste acties','os:next-best-actions')
-  ])}),
-  Object.freeze({id:'reports',label:'Rapportages & beheer',pages:Object.freeze([
-    entry('reports-audit','Audit & rapportage','audit'),
-    entry('reports-users','Gebruikers','gebruikers'),
-    entry('reports-settings','Instellingen','instellingen'),
-    entry('reports-billing','Facturen & abonnement','billing'),
-    entry('reports-scan','Frisse Blik Scan','frisse-blik')
-  ])})
-]);
-
 export const PROJECT_GROUPS = Object.freeze([
   Object.freeze({id:'project-overview',label:'Overzicht',pages:Object.freeze([])}),
   Object.freeze({id:'commercial',label:'Commercieel',pages:Object.freeze([
@@ -120,7 +58,7 @@ export function groupedHubPages(hubId){
       })
     }));
   }
-  if(hubId==='portal') return PORTAL_NAV_GROUPS.map(group=>({
+  if(hubId==='portal') return DESKTOP_NAV_GROUPS.map(group=>({
     id:group.id,
     label:group.label,
     pages:group.pages.map(page=>{
