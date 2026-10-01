@@ -26,17 +26,18 @@ test('public route inventory de-duplicates and normalizes absolute/relative URLs
   assert.deepEqual(routesFromSitemap(xml, 'https://www.bedrijfsgeheugen.nl'), ['/ai-act', '/prijzen']);
 });
 
-test('website lane can never skip the all-public-pages visibility gate', async () => {
+test('website lane always verifies affected public routes with the visibility gate', async () => {
   const workflow = await readFile('.github/workflows/lane-website.yml', 'utf8');
-  const marker = '- name: Verify all public pages are visibly rendered';
+  const marker = '- name: Verify affected public pages are visibly rendered';
   const start = workflow.indexOf(marker);
-  assert.notEqual(start, -1, 'all-public-pages visibility step must exist in website lane');
+  assert.notEqual(start, -1, 'affected-route visibility step must exist in website lane');
   const tail = workflow.slice(start);
   const nextStep = tail.indexOf('\n      - name:', marker.length);
   const step = nextStep === -1 ? tail : tail.slice(0, nextStep);
   assert.doesNotMatch(step, /menu_only/, 'visibility crawl must not be bypassed for menu-only changes');
-  assert.doesNotMatch(step, /\n\s+if:/, 'visibility crawl must remain unconditional inside the browser job');
-  assert.match(step, /standalone-visibility-check\.mjs/, 'visibility crawl must execute the full public-page checker');
+  assert.doesNotMatch(step, /\n\s+if:/, 'affected-route visibility crawl must remain unconditional inside the browser job');
+  assert.match(step, /UI_VR_ROUTES_JSON/, 'visibility crawl must receive the classified affected routes');
+  assert.match(step, /standalone-visibility-check\.mjs/, 'visibility crawl must execute the public-page checker');
   assert.match(workflow, /\n  browser:\n\s+needs: \[classify, syntax-preflight, preview-ready, netlify-build-parity\]/, 'shared browser job must wait for syntax preflight and the exact deploy preview');
 });
 
