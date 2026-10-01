@@ -28,3 +28,9 @@
 - Root cause: `.actionrow` remained `display:flex!important` from `topbar-actions.css`; grid-template alone had no effect.
 - Correction: explicitly set `display:grid!important` at <=430px, with AI and Periode in the same row.
 - Verification contract: `tests/integration/portal-v2-mobile-shell.spec.js` requires topbar <260px after async hydration.
+
+## Latest-main mobile closure
+
+- Rebased mobile compactness correction onto the current main epoch.
+- Exact preview mobile-shell test: passed on the prior candidate.
+- Remaining parity failures were stale heading assertions only; assertions now use “Zo werkt Powerhouse in je bedrijf”.
