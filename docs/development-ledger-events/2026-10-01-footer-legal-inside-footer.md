@@ -11,3 +11,5 @@ PR-scope na automatische opschoning exact gelijkgetrokken met de 14 werkelijke g
 Release-lane contracttest gelijkgetrokken met route-scoped visibility; brede high-risk browsercontracten blijven afzonderlijk fail-closed.
 
 Browser-runtime regressietest toegevoegd en PR-scope exact bijgewerkt naar de actuele gewijzigde bestanden.
+
+CI-trigger-budgetcontract bijgewerkt voor de route-scoped visibility-gate; brede high-risk browserchecks blijven apart verplicht.
