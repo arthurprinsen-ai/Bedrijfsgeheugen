@@ -26,17 +26,18 @@ test('required test is a stable aggregator and preserves the protected test cont
   assert.doesNotMatch(required, /make-cost-governor-policy\.test\.mjs/);
 });
 
-test('website lane keeps targeted proof for normal changes and broad visibility for high-risk changes', () => {
+test('website lane keeps targeted route visibility for every change and broad browser contracts for high-risk changes', () => {
   const website = readFileSync('.github/workflows/lane-website.yml', 'utf8');
   assert.match(website, /classifyWebsiteRelease/);
   assert.match(website, /\n  browser:/);
   assert.match(website, /verify-targeted-website-routes\.mjs/);
-  const visibilityStart = website.indexOf('      - name: Verify all public pages are visibly rendered');
+  const visibilityStart = website.indexOf('      - name: Verify affected public pages are visibly rendered');
   assert.notEqual(visibilityStart, -1);
   const broadStart = website.indexOf('      - name: Verify broad high-risk browser contracts', visibilityStart);
   assert.notEqual(broadStart, -1);
   const visibility = website.slice(visibilityStart, broadStart);
-  assert.match(visibility, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
+  assert.match(visibility, /UI_VR_ROUTES_JSON:\s*\$\{\{ needs\.classify\.outputs\.routes \}\}/);
+  assert.doesNotMatch(visibility, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
   const broad = website.slice(broadStart);
   assert.match(broad, /if:\s*needs\.classify\.outputs\.risk_lane == 'high-risk'/);
 });
