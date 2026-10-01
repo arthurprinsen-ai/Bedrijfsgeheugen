@@ -1,6 +1,6 @@
 {
   "fingerprint": "website|footer|legal-links-inside-canonical-footer|20261001",
-  "obligation_id": "footer-legal-links-inside-footer-20261001",
+  "obligation_id": "footer-legal-production-core-20261001",
   "compiler": {
     "failure_class": "CLASSIFIER_GAP",
     "scope": "WEBSITE",
@@ -8,12 +8,17 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "root_cause": "The legal links were added after the closing footer tag, while the production shell renders the canonical footer component itself.",
-  "prevention_rule": "Footer requirements belong inside the canonical footer component so shell projection preserves them across public pages.",
+  "root_cause": "The Netlify build restores index.html from the pinned compressed V18 payload in tools/bouw-v18-production-core.mjs before projecting the site-wide shell. Footer edits made only in repository HTML or a sibling after </footer> were therefore overwritten before production.",
+  "prevention_rule": "Any customer-visible global footer contract must be projected in the pinned V18 production build path and mirrored in the canonical footer component, then verified by production HTML readback.",
   "evidence": {
-    "tests": ["tests/brain-website-coherence-v1.test.mjs"]
+    "tests": [
+      "tests/brain-footer-legal-production-core-v1.test.mjs"
+    ],
+    "outcome": "Production HTML readback after PR #3550 proved that repository footer edits alone did not survive the pinned V18 build path."
   },
   "evaluation": {
-    "historical_replay": ["tests/brain-website-coherence-v1.test.mjs"]
+    "historical_replay": [
+      "tests/brain-footer-legal-production-core-v1.test.mjs"
+    ]
   }
 }
