@@ -24,10 +24,10 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/final-site-navigation-contract.test.mjs"
+      "tests/brain-production-route-body-readiness-retry-v1.test.mjs"
     ]
   },
   "test_evidence": [
-    "tests/final-site-navigation-contract.test.mjs"
+    "tests/brain-production-route-body-readiness-retry-v1.test.mjs"
   ]
 }
