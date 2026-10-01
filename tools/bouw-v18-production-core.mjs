@@ -16,6 +16,14 @@ const EXPECTED_HTML_SHA256 = 'be938e95870994b89773d141a400318a1be3eac4829d69aac6
 // Stond eerder op een pexels-bestand; die werd bij elke build teruggezet.
 const HERO_URL = '/assets/openart-hero-iphone-safe-v1.mp4';
 const HERO_ORIGIN = 'https://www.bedrijfsgeheugen.nl';
+const LEGAL_FOOTER_LINKS = `<span class="bg-footer-legal-links"><a href="https://www.bedrijfsgeheugen.nl/gebruiksvoorwaarden">Algemene gebruiksvoorwaarden</a><a href="https://www.bedrijfsgeheugen.nl/privacy">Privacybeleid</a><a href="https://www.bedrijfsgeheugen.nl/cookiebeleid">Cookiebeleid</a><a href="https://www.bedrijfsgeheugen.nl/systeemstatus">Systeemstatus</a></span>`;
+const LEGAL_FOOTER_STYLE = `<style id="bg-footer-legal-links-contract">
+footer[data-bg-component="footer"] .legal{gap:.65rem 1.25rem;align-items:center;flex-wrap:wrap}
+footer[data-bg-component="footer"] .bg-footer-legal-links{display:flex;flex-wrap:wrap;gap:.35rem 1rem}
+footer[data-bg-component="footer"] .bg-footer-legal-links a{color:inherit;text-decoration:none}
+footer[data-bg-component="footer"] .bg-footer-legal-links a:hover{color:#fff;text-decoration:underline}
+@media(max-width:760px){footer[data-bg-component="footer"] .bg-footer-legal-links{width:100%}}
+</style>`;
 const sha256 = value => createHash('sha256').update(value).digest('hex');
 
 const parts = await Promise.all(FILES.map(path => readFile(path, 'utf8')));
@@ -40,6 +48,20 @@ html = html.replace(/<button[^>]*id="heroVideoFallback"[^>]*>[\s\S]*?<\/button>\
 html = html.replace(/<script id="v18-4-video-controller">[\s\S]*?<\/script>\s*/, '');
 html = html.replace(/<style id="v18-10-video-fix">[\s\S]*?<\/style>\s*<script id="v18-10-video-controller">[\s\S]*?<\/script>\s*/, '');
 html = html.replace(/<script id="v18-stable-video-controller">[\s\S]*?<\/script>\s*/, '');
+
+// De pinned V18-payload is de echte productiebron voor de homepage en dus ook
+// voor de sitebrede footer. Repository-HTML wordt vóór publicatie hiermee
+// overschreven; juridische links moeten daarom hier in de canonical payload-
+// projectie worden geborgd in plaats van alleen in index.html/over-ons.html.
+if (!html.includes('class="bg-footer-legal-links"')) {
+  const before = html;
+  html = html.replace(
+    /(<div class="legal">[\s\S]*?<span>Voor het Nederlandse mkb · kennis · processen · systemen · AI<\/span>)(<\/div>)/,
+    `$1${LEGAL_FOOTER_LINKS}$2`
+  );
+  if (html === before) throw new Error('V18 canonical footer legal-link insertion point not found');
+}
+if (!html.includes('id="bg-footer-legal-links-contract"')) html = html.replace('</head>', `${LEGAL_FOOTER_STYLE}\n</head>`);
 
 html = html.replace('url("https://images.pexels.com/videos/35402271/pexels-photo-35402271.jpeg?auto=compress&cs=tinysrgb&w=1920") center/cover no-repeat', 'linear-gradient(rgba(10,17,23,1),rgba(10,17,23,1)) center/cover no-repeat');
 html = html.replace('url("https://images.pexels.com/photos/3182812/pexels-photo-3182812.jpeg?auto=compress&cs=tinysrgb&w=1600") center/cover no-repeat', 'linear-gradient(rgba(10,17,23,1),rgba(10,17,23,1)) center/cover no-repeat');
