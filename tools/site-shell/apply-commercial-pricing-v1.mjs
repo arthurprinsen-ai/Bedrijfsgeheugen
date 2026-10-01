@@ -221,6 +221,10 @@ function englishPage(){
   ];
   for(const [from,to] of replacements) html=html.split(from).join(to);
   const residuals=[
+    ['For organisaties die willen automatiseren en opschalen.','For organisations that want to automate and scale.'],
+    ['Directie &amp; AI Workshop','Executive &amp; AI Workshop'],
+    ['De betaalde waarde van een Executive &amp; AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive &amp; AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
+    ['De betaalde waarde van een Directie &amp; AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive &amp; AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
     ['Directie & AI Workshop','Executive & AI Workshop'],
     ['Voorbereiding & analyse','Preparation & analysis'],
     ['Bedrijfsgeheugen Scan','Bedrijfsgeheugen Scan'],
