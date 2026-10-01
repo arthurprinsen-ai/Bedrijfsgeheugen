@@ -78,15 +78,155 @@ function page(){
  <div class="closing"><div class="wrap"><h2>Begin klein. Bewijs waarde. Schaal alleen op als het werkt.</h2><div><a class="cta" href="https://www.bedrijfsgeheugen.nl/afsluiten?plan=starter">Start gratis gesprek →</a></div></div></div>
  </section>`;
 }
-async function apply(path){
+function englishPage(){
+  let html=page();
+  const replacements=[
+    ['POWERHOUSE PRIJZEN','POWERHOUSE PRICING'],
+    ['Kies software of expertise.','Choose software or expertise.'],
+    ['Combineer wanneer het nodig is.','Combine them when needed.'],
+    ['Powerhouse is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.','Powerhouse is available as software (SaaS), consulting & workshops, or both. Choose what fits your organisation, pace and ambition.'],
+    ['Consulting & workshops','Consulting & workshops'],
+    ['Eén platform. Vier niveaus. Altijd op- en downgradebaar.','One platform. Four levels. Upgrade or downgrade at any time.'],
+    ['Meest gekozen','Most popular'],
+    ['Voor ','For '],
+    ['Op maat','Custom'],
+    ['/ maand','/ month'],
+    ['gebruikers','users'],
+    ['onbeperkt','unlimited'],
+    ['Onbeperkt','Unlimited'],
+    ['integraties','integrations'],
+    ['documenten','documents'],
+    ['Elke 15 min','Every 15 min'],
+    ['Elk uur','Every hour'],
+    ['Dagelijks','Daily'],
+    ['datarefresh','data refresh'],
+    ['AI-vragen / maand','AI requests / month'],
+    ['Automatiseringen op maat','Custom automations'],
+    ['automatiseringen','automations'],
+    ['Goedkeuringen & workflows','Approvals & workflows'],
+    ['SSO / werkaccount','SSO / work account'],
+    ['Plan enterprise gesprek','Schedule enterprise call'],
+    ['Start Groei','Start Growth'],
+    ['Groei','Growth'],
+    ['Start met inzicht en de eerste acties.','Start with insight and your first actions.'],
+    ['De complete basis voor groei, sturing en uitvoering.','The complete foundation for growth, steering and execution.'],
+    ['Voor organisaties die willen automatiseren en opschalen.','For organisations that want to automate and scale.'],
+    ['Volledig afgestemd op jouw organisatie en eisen.','Fully aligned with your organisation and requirements.'],
+    ['60–150 of meerdere locaties','60–150 employees or multiple locations'],
+    ['Grotere organisaties','Larger organisations'],
+    ['Powerhouse Intelligence basis','Powerhouse Intelligence core'],
+    ['Bedrijfsprofiel & benchmark','Company profile & benchmark'],
+    ['Maandelijks veranderoverzicht','Monthly change overview'],
+    ['Basis actielijst','Basic action list'],
+    ['E-mail support','Email support'],
+    ['Alles uit Starter','Everything in Starter'],
+    ['Uurlijkse datarefresh','Hourly data refresh'],
+    ['Goedkeuringen & eigenaren','Approvals & owners'],
+    ["Uitvoerings-thema's",'Execution themes'],
+    ['Due diligence & exit modules','Due diligence & exit modules'],
+    ['Alles uit Pro','Everything in Pro'],
+    ['Data refresh elke 15 minuten','Data refresh every 15 minutes'],
+    ['AI in 6 automatiseringen','AI in 6 automations'],
+    ['Dagelijkse management summary','Daily management summary'],
+    ['Maandelijkse executive review','Monthly executive review'],
+    ['Onbeperkt binnen afgesproken fair use','Unlimited within agreed fair use'],
+    ['Onbeperkt integraties','Unlimited integrations'],
+    ['Eigen domein & branding','Custom domain & branding'],
+    ['Eigen AI key / model optioneel','Own AI key / model optional'],
+    ['On-demand datarefresh','On-demand data refresh'],
+    ['Security & governance review','Security & governance review'],
+    ['Wat groeit mee met je abonnement?','What scales with your subscription?'],
+    ['De kern blijft gelijk; capaciteit, actualiteit, automatisering en governance groeien mee.','The core stays the same; capacity, freshness, automation and governance scale with your plan.'],
+    ['Gebruikers','Users'],
+    ['Integraties','Integrations'],
+    ['Datarefresh','Data refresh'],
+    ['Documenten','Documents'],
+    ['Automatiseringen','Automations'],
+    ['SSO / eigen domein','SSO / custom domain'],
+    ['Menselijke review','Human review'],
+    ['uur / mnd','hour / month'],
+    ['Liever eerst samen scherpstellen of versnellen?','Prefer to sharpen the plan or accelerate together first?'],
+    ['Onze workshops en trajecten helpen je om snel de juiste keuzes te maken en direct impact te realiseren.','Our workshops and delivery engagements help you make the right choices quickly and create impact immediately.'],
+    ['Frisse Blik','Fresh Perspective'],
+    ['Directie & AI Workshop','Executive & AI Workshop'],
+    ['Transformation / Fractional Lead','Transformation / Fractional Lead'],
+    ['eenmalig','one-off'],
+    ['Vanaf ','From '],
+    ['30 minuten','30 minutes'],
+    ['Korte kennismaking','Short introduction'],
+    ['Jouw situatie en doelen','Your situation and goals'],
+    ['Kansen en quick wins','Opportunities and quick wins'],
+    ['Advies over volgende stap','Advice on the next step'],
+    ['Voorbereiding & analyse','Preparation & analysis'],
+    ['3 uur workshop met MT/directie','3-hour workshop with leadership'],
+    ['Kansenkaart en top 5 prioriteiten','Opportunity map and top 5 priorities'],
+    ['30 dagen actieplan','30-day action plan'],
+    ['Benchmark met jouw sector','Benchmark against your sector'],
+    ['Analyse processen, data en AI','Analysis of processes, data and AI'],
+    ['Businesscase en prioriteiten','Business case and priorities'],
+    ['90 dagen roadmap','90-day roadmap'],
+    ['Beslismemo voor directie','Decision memo for leadership'],
+    ['Proces, data, AI en dashboards','Process, data, AI and dashboards'],
+    ['Integraties met jouw systemen','Integrations with your systems'],
+    ['Testen en adoptie','Testing and adoption'],
+    ['Oplevering en overdracht','Delivery and handover'],
+    ['Senior begeleiding op directieniveau','Senior guidance at leadership level'],
+    ['Sturingsritme en roadmap','Operating cadence and roadmap'],
+    ['Governance en risicobeheersing','Governance and risk management'],
+    ['Coördinatie leveranciers en teams','Coordination of vendors and teams'],
+    ['Monitoring van resultaten','Monitoring outcomes'],
+    ['dagen ',' days '],
+    ['-toegang',' access'],
+    ['Plan een Fresh Perspective','Schedule a Fresh Perspective'],
+    ['Plan een Frisse Blik','Schedule a Fresh Perspective'],
+    ['Bespreek ','Discuss '],
+    ['Combineer zonder dubbel te betalen','Combine without paying twice'],
+    ['De betaalde waarde van een Executive & AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 dagen start.','The paid value of an Executive & AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
+    ['De betaalde waarde van een Directie & AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 dagen start.','The paid value of an Executive & AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
+    ['Workshop- en scantrajecten krijgen tijdelijke portaltoegang op het aangegeven niveau.','Workshop and scan engagements include temporary portal access at the stated plan level.'],
+    ['1. Workshop of scan','1. Workshop or scan'],
+    ['Breng kansen en prioriteiten in kaart.','Map opportunities and priorities.'],
+    ['2. Waarde wordt verrekend','2. Value is credited'],
+    ['De kosten tellen mee bij een aansluitende Build Sprint.','The cost is credited toward a follow-on Build Sprint.'],
+    ['3. Tijdelijke portaltoegang','3. Temporary portal access'],
+    ['Tijdens de uitvoering krijg je Pro- of Growth-toegang.','During delivery you receive Pro or Growth access.'],
+    ['Tijdens de uitvoering krijg je Pro- of Groei-toegang.','During delivery you receive Pro or Growth access.'],
+    ['4. Daarna door met SaaS','4. Continue with SaaS'],
+    ['Na oplevering loopt je abonnement door als je dat kiest.','After delivery your subscription continues if you choose.'],
+    ['Wat past bij mij?','What fits me?'],
+    ['Gebruik drie keuzes om snel naar het logischste startpunt te gaan.','Use three choices to find the most logical starting point.'],
+    ['1. Aantal medewerkers','1. Number of employees'],
+    ['2. Belangrijkste doel','2. Main goal'],
+    ['3. Hoe aanpakken?','3. How do you want to proceed?'],
+    ['Inzicht','Insight'],
+    ['Automatiseren','Automate'],
+    ['Versnellen met experts','Accelerate with experts'],
+    ['Zelf met software','Self-service software'],
+    ['Samen met experts','Together with experts'],
+    ['Volledig begeleid','Fully guided'],
+    ['Bekijk mijn pakket','See my package'],
+    ['Begin klein. Bewijs waarde. Schaal alleen op als het werkt.','Start small. Prove value. Scale only when it works.'],
+    ['Start gratis gesprek','Start a free conversation'],
+    ['Rolgebaseerde acties','Role-based actions']
+  ];
+  for(const [from,to] of replacements) html=html.split(from).join(to);
+  html=html
+    .replaceAll('https://www.bedrijfsgeheugen.nl/afsluiten','https://www.bedrijfsgeheugen.nl/en/afsluiten')
+    .replaceAll('https://www.bedrijfsgeheugen.nl/contact','https://www.bedrijfsgeheugen.nl/en/contact')
+    .replaceAll('https://www.bedrijfsgeheugen.nl/frisse-blik','https://www.bedrijfsgeheugen.nl/en/frisse-blik');
+  return html;
+}
+
+async function apply(path,locale='nl'){
  try{await access(path)}catch{return}
  let html=await readFile(path,'utf8');
  if(html.includes('data-bg-commercial-pricing-v1'))return;
  const start=html.search(/<main\b[^>]*>/i), end=html.search(/<\/main>/i);
  if(start<0||end<0)throw new Error('Pricing page missing main: '+path);
  const openEnd=html.indexOf('>',start)+1;
- html=html.slice(0,openEnd)+'\n'+page()+'\n'+html.slice(end);
+ html=html.slice(0,openEnd)+'\n'+(locale==='en'?englishPage():page())+'\n'+html.slice(end);
  await writeFile(path,html,'utf8');
  console.log('commercial pricing applied',path);
 }
-await apply('prijzen.html');
+await apply('prijzen.html','nl');
+await apply('en/prijzen.html','en');
