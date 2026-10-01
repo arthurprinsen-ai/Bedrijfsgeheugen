@@ -45,7 +45,7 @@ test('pricing composer preserves canonical visual-regression hero hooks',()=>{
 
 test('product proposition is contextual rather than internal implementation copy',()=>{
   assert.doesNotMatch(finalizer,/Website en portaal vertellen voortaan exact hetzelfde verhaal/);
-  assert.match(finalizer,/Van losse informatie naar een bedrijf dat zichzelf beter bestuurt/);
+  assert.match(finalizer,/Eén platform\. Drie lagen die samenwerken\./);
   assert.match(finalizer,/Powerhouse Intelligence/);
   assert.match(finalizer,/Powerhouse Agents/);
   assert.match(finalizer,/Powerhouse Connect/);
@@ -54,8 +54,9 @@ test('product proposition is contextual rather than internal implementation copy
 });
 
 test('product proposition is inserted after the actual product hero',()=>{
-  assert.match(finalizer,/class=.*pr-hero/);
-  assert.match(finalizer,/const hero=html\.match/);
+  assert.match(finalizer,/const mainStart=html\.search/);
+  assert.match(finalizer,/const firstSection=afterMain\.match/);
+  assert.match(finalizer,/firstSection\[0\]\.length/);
 });
 
 test('package advisor and professional portal demo are real routes',()=>{
