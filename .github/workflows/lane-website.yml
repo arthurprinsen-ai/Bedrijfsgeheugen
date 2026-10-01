@@ -238,13 +238,14 @@ jobs:
           node tools/bouw-powerhouse-auth.mjs
           node tools/bouw-kennisindex.mjs
           node tools/bouw-v18-production.mjs
+          node tools/site-shell/apply-product-led-home.mjs
           node tools/apply-tabbladen.mjs
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
           node tools/prijzen-uit-de-homepage.mjs
+          node tools/normaliseer-site-ui.mjs
           node tools/site-shell/pricing-build-integrity.mjs restore
           node tools/site-shell/bedrijfslek-build-integrity.mjs restore
-          node tools/normaliseer-site-ui.mjs
           node tools/seo-order-engine/apply.mjs
           node tools/seo-order-engine/validate.mjs
           node tools/site-shell/apply-i18n.mjs
@@ -278,15 +279,18 @@ jobs:
           DEPLOY_ID: required-browser-local
         run: |
           npm install --no-audit --no-fund --silent
+          node tools/site-shell/pricing-build-integrity.mjs capture
           node tools/site-shell/bedrijfslek-build-integrity.mjs capture
           node tools/bouw-powerhouse-auth.mjs
           node tools/bouw-kennisindex.mjs
           node tools/bouw-v18-production.mjs
+          node tools/site-shell/apply-product-led-home.mjs
           node tools/apply-tabbladen.mjs
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
           node tools/prijzen-uit-de-homepage.mjs
           node tools/normaliseer-site-ui.mjs
+          node tools/site-shell/pricing-build-integrity.mjs restore
           node tools/site-shell/bedrijfslek-build-integrity.mjs restore
           node tools/seo-order-engine/apply.mjs
           node tools/seo-order-engine/validate.mjs
