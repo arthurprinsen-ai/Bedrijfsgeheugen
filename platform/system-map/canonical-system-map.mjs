@@ -713,6 +713,39 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'website-portal-professional-parity',
+      label:'Website ↔ Portal Professional Parity',
+      authority:'github+netlify',
+      owner:'website-portal-coherence',
+      status:'ACTIVE_EVIDENCE_GATED',
+      inputs:Object.freeze(['accepted website baseline','canonical header/footer','Powerhouse product taxonomy','pricing catalog','portal visual contract']),
+      outputs:Object.freeze(['contextual public proposition','package recommendation journey','isolated portal demo','bounded portal visuals','canonical AI discovery']),
+      runtime:Object.freeze({
+        finalizer:'tools/site-shell/finalize-website-coherence-v1.mjs',
+        pricing:'tools/site-shell/apply-commercial-pricing-v1.mjs',
+        websiteStyle:'assets/site-coherence-v1.css',
+        portalStyle:'portal-v2/site-parity-v1.css',
+        packageAdvisor:'/pakketadvies',
+        publicPortalDemo:'/portaal-demo',
+        skill:'skills/website-portal-coherence.md',
+        regression:'tests/brain-website-coherence-v1.test.mjs',
+        learning:'brain/learning/2026-10-01-website-portal-coherence-v1.json'
+      }),
+      invariants:Object.freeze({
+        customerValueCopyOnly:true,
+        internalParityLanguagePubliclyForbidden:true,
+        onePrimaryHeroPerPage:true,
+        packageFinderReturnsRealAdvice:true,
+        comparisonCtasShareBaseline:true,
+        publicDemoSeparatedFromCustomerRuntime:true,
+        portalVisualsContainerBounded:true,
+        canonicalProductLines:Object.freeze(['Powerhouse Intelligence','Powerhouse Agents','Powerhouse Connect']),
+        aiDiscoveryPreserved:true,
+        contactRoute:'/contact',
+        productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'daily-full-connection-enrichment',
       label:'Daily Full Connection Enrichment',
       authority:'supabase',
