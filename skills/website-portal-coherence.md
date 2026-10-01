@@ -13,4 +13,4 @@ Voorkom dat nieuw gegenereerde pagina's, pricing, het openbare Powerhouse-produc
 - Productie en deploy-preview voeren exact dezelfde coherence-pass uit.
 
 ## Preventie
-Bij nieuwe publieke pagina's of globale styles moet de regressietest `tests/website-coherence-v1.test.mjs` blijven slagen. Geen LIVE-claim zonder main/deploy parity en publieke readback van minimaal /prijzen, /product, /ai-ecosysteem, /systemen-koppelen, /contact en /portal-v2/.
+Bij nieuwe publieke pagina's of globale styles moet de regressietest `tests/brain-website-coherence-v1.test.mjs` blijven slagen. Geen LIVE-claim zonder main/deploy parity en publieke readback van minimaal /prijzen, /product, /ai-ecosysteem, /systemen-koppelen, /contact en /portal-v2/.
