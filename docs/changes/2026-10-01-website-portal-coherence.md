@@ -45,3 +45,7 @@ The website is not considered coherent when only the copy matches. Header/footer
 
 ## Self-playing interaction and whitespace recovery
 Live screenshot review showed three remaining classes of visual regression: duplicated revenue handoff blocks, generic CSS class collisions that produced empty-looking governance cards, and interaction that required a click before anything happened. The recovery namespaces page-specific components, collapses repeated handoffs, moves the Powerhouse proposition into the existing product hero, and makes the product/portal demonstrations self-playing while preserving manual control and reduced-motion accessibility.
+
+## CI build-parity recovery
+The website release lane and Required preflight now execute the same terminal build stages as Netlify, including product-led home composition, commercial pricing composition, revenue links, i18n/localized routes and the final website coherence pass. This prevents browser regression checks from validating an intermediate build instead of the production artifact.
+
