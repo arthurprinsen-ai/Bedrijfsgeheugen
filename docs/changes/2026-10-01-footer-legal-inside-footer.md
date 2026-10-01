@@ -5,3 +5,5 @@ De vier links — Algemene gebruiksvoorwaarden, Privacybeleid, Cookiebeleid en S
 De juridische routes zijn bovendien vanuit de bestaande privacypagina bereikbaar, zodat de SEO-keten geen weespagina's bevat.
 
 Visual regression voor /prijzen is gelijkgetrokken met de actuele hero-opbouw: H1, checks en CTA-buttons zijn de bewaakte elementen.
+
+De browsergate scoped de volledige visibility-sweep nu op de werkelijk gewijzigde publieke routes; tijdelijke deploy-preview 403's krijgen begrensde retries en zichtbaarheid krijgt een korte settle-window.
