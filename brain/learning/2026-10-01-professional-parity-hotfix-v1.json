@@ -26,7 +26,9 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-website-coherence-v1.test.mjs"
+      "tests/brain-website-coherence-v1.test.mjs",
+      "tools/controleer-site-ui.mjs",
+      "tools/site-shell/build-localized-routes.mjs --validate-cache"
     ]
   }
 }
