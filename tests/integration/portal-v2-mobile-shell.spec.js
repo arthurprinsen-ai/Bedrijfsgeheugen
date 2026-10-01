@@ -42,8 +42,14 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
     const r = node.getBoundingClientRect();
     return { width:r.width, height:r.height };
   }).filter(item => item.width > 0 && item.height > 0));
-  expect(actionGeometry).toHaveLength(2);
-  expect(actionGeometry.every(item => item.height >= 40 && item.height <= 48)).toBeTruthy();
+  expect(actionGeometry).toHaveLength(1);
+  expect(actionGeometry[0].height).toBeGreaterThanOrEqual(40);
+  expect(actionGeometry[0].height).toBeLessThanOrEqual(48);
+
+  // Periode is intentionally a real selector, not a fake button.
+  const period = page.locator('#portalPeriod');
+  await expect(period).toBeVisible();
+  await expect(period).toHaveValue('2025-05');
 
   // The authenticated/customer cockpit may intentionally replace the static KPI strip.
   // The regression contract is layout stability, not preservation of pre-hydration demo content.

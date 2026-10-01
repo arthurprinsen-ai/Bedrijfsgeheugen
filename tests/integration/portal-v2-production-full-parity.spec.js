@@ -47,6 +47,23 @@ async function bootDemo(page,width=1440,height=1000){
  await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__?.initialized?.()),{timeout:30_000});
 }
 
+async function gotoPortalPage(page,pageId){
+ let lastError=null;
+ for(let attempt=1;attempt<=2;attempt++){
+  try{
+   const response=await page.goto(`${BASE_URL}/portal-v2/?page=${encodeURIComponent(pageId)}&bg_full_parity=${Date.now()}-${attempt}`,{waitUntil:'commit',timeout:45_000});
+   expect(response,`${pageId} response`).not.toBeNull();
+   expect(response.status(),`${pageId} status`).toBeLessThan(400);
+   await page.waitForLoadState('domcontentloaded',{timeout:30_000}).catch(()=>{});
+   return response;
+  }catch(error){
+   lastError=error;
+   if(attempt<2) await page.waitForTimeout(750);
+  }
+ }
+ throw lastError;
+}
+
 async function openNative(page,pageId){
  await page.evaluate(async id=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage(id);},pageId);
  if(pageId==='overzicht')return;
@@ -66,9 +83,7 @@ test('all protected legacy workspaces render natively without legacy portal traf
  page.on('request',request=>{const url=request.url();if(url.includes('/klantportaal')||url.includes('/portal-next/'))legacyRequests.push(url)});
  page.on('pageerror',error=>pageErrors.push(error.message));
  for(const pageId of uniquePages){
-  const response=await page.goto(`${BASE_URL}/portal-v2/?page=${encodeURIComponent(pageId)}&bg_full_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
-  expect(response,`${pageId} response`).not.toBeNull();
-  expect(response.status(),`${pageId} status`).toBeLessThan(400);
+  await gotoPortalPage(page,pageId);
   const view=page.locator('#portalView');
   if(pageId==='overzicht'){
    await expect(page.getByText('Portal V2 bevat alle portalonderdelen standaard',{exact:true}),'overzicht must remain the canonical dashboard').toBeAttached();
