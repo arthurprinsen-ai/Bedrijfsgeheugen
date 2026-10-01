@@ -239,4 +239,6 @@ async function apply(path,locale='nl'){
  console.log('commercial pricing applied',path);
 }
 await apply('prijzen.html','nl');
+await apply('prijzen/index.html','nl');
 await apply('en/prijzen.html','en');
+await apply('en/prijzen/index.html','en');
