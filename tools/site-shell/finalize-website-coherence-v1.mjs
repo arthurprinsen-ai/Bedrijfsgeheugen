@@ -98,7 +98,10 @@ function ensureProductTruth(html,route){
   // Never create a second hero. The build pipeline can rewrite /product before this
   // finalizer runs, so anchor the Powerhouse model inside the customer narrative.
   // Prefer replacing the legacy "website/portal parity" implementation section.
-  const legacySection=/<section\b[^>]*>[\s\S]{0,2500}?(?:Website en portaal spreken nu dezelfde taal\.|Website and portal now speak the same language\.)[\s\S]*?<\/section>/i;
+  // Keep the match inside one section. The previous broad expression could start
+  // at the page hero and consume the real H1 when the legacy phrase appeared in
+  // a later section after build-time transformations.
+  const legacySection=/<section\b[^>]*>(?:(?!<section\b)[\s\S]){0,2500}?(?:Website en portaal spreken nu dezelfde taal\.|Website and portal now speak the same language\.)(?:(?!<section\b)[\s\S])*?<\/section>/i;
   if(legacySection.test(html)){
     return html.replace(legacySection,section);
   }
