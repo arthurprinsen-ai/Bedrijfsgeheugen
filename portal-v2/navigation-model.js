@@ -11,7 +11,7 @@ export const DESKTOP_NAV_ITEMS = Object.freeze([
   Object.freeze({ id:'csrd-impact', target:'csrd-impact' }),
   Object.freeze({ id:'health', target:'profiel' }),
   Object.freeze({ id:'strategy', target:'strategie-naar-maandagochtend' }),
-  Object.freeze({ id:'processes', target:'profiel' }),
+  Object.freeze({ id:'processes', target:'taken-werkstromen' }),
   Object.freeze({ id:'knowledge', target:'documenten' }),
   Object.freeze({ id:'data', target:'koppelingen' }),
   Object.freeze({ id:'ai', target:'brain-verwerking' }),
