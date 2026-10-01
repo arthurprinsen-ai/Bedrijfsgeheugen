@@ -21,3 +21,9 @@
 - Candidate: PR #3573.
 - Correction: repaired the template-literal regex and replaced obsolete `pr-hero` / `const hero` assertions with the current `mainStart` / `firstSection` insertion contract.
 - Purpose: keep learning canonicalization fail-closed without false negatives from stale implementation details.
+
+## Mobile production compactness closure
+
+- Production evidence: hydrated topbar measured 287.34px at 390×844; contract is <260px.
+- Correction: hide welcome subtitle on <=430px, reduce heading and control heights, and tighten vertical gaps/padding.
+- Functional controls remain present; the Playwright mobile-shell contract remains unchanged and fail-closed.
