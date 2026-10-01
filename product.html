@@ -80,6 +80,15 @@ footer a{color:#fff}
 .band-checks{display:flex;gap:1.6rem;flex-wrap:wrap;margin-top:1.2rem;font-size:.9rem;opacity:.95}
 .band-checks span::before{content:"✓ ";font-weight:800}
 @media(max-width:900px){.vertrouwen{grid-template-columns:repeat(2,1fr)}}
+
+/* Product hero visibility invariant: survives reveal/compositor state on all viewports. */
+.pr-hero,.pr-hero .pr-hero-grid,.pr-hero h1{
+  visibility:visible!important;
+  opacity:1!important;
+  transform:none!important;
+}
+.pr-hero{display:block!important;content-visibility:visible!important}
+.pr-hero h1{display:block!important;clip:auto!important;clip-path:none!important}
 </style>
 <style>
 .pr-hero{padding:2rem 0 3rem}
