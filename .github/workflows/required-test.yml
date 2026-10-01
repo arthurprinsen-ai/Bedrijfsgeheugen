@@ -301,7 +301,9 @@ jobs:
           node tools/seo-order-engine/validate.mjs
           node tools/site-shell/apply-i18n.mjs
           node tools/site-shell/build-localized-routes.mjs
+          node tools/site-shell/apply-commercial-pricing-v1.mjs
           node tools/seo-order-engine/apply-revenue-links.mjs
+          node tools/site-shell/finalize-website-coherence-v1.mjs
           node tools/genereer-sitemap.mjs
           node tools/seo-order-engine/validate-locales.mjs
           node tools/bouw-release-evidence.mjs
