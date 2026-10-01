@@ -132,3 +132,10 @@ body[data-bg-route="/en/prijzen"] main .services{align-items:stretch!important}
 .bgkop :where(a,button){min-height:44px}
 .bgkop :where(a[href*="inlog"],a[href*="login"],a[href*="aanmeld"],a[href*="signup"],.bgkop-cta){display:inline-flex;align-items:center;justify-content:center}
 @media(max-width:900px){.bg-product-model{grid-template-columns:1fr}.bg-product-model>i{transform:rotate(90deg);height:18px}}
+
+/* Site-wide professional surface hygiene — 2026-10-01 */
+body[data-bg-route] main :where(.modelGrid,.recommendations,.bg-revenue-links__items):empty{display:none!important}
+body[data-bg-route] main .bg-revenue-links + .bg-revenue-links{display:none!important}
+body[data-bg-route] main :where(section,article,div)[data-bg-empty-shell="true"]{display:none!important}
+body[data-bg-route] main :where(.btn,.cta,.bgkop-cta,.bgkop-mcta,.bgvoet-knop){min-height:46px;align-items:center;justify-content:center}
+body[data-bg-route] main :where(.card,.paneel,.kaart,.pcard,.service,.model,.mwGov){min-width:0}
