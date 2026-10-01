@@ -24,7 +24,8 @@ test('heavy website verification is owned by the canonical website lane, not dup
   }
   const lane = await workflow('lane-website.yml');
   assert.match(lane, /Run exact Netlify production build command/);
-  assert.match(lane, /Verify all public pages are visibly rendered/);
+  assert.match(lane, /Verify affected public pages are visibly rendered/);
+  assert.match(lane, /UI_VR_ROUTES_JSON/);
   assert.match(lane, /Verify broad high-risk browser contracts/);
 });
 
