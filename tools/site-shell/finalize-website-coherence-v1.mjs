@@ -53,12 +53,35 @@ const productTruth=`
   </div>
 </section>`;
 
+const productTruthEn=`
+<section class="bg-product-truth-v1" data-bg-product-truth-v1 aria-labelledby="bg-product-truth-title">
+  <div class="bg-product-truth-wrap">
+    <span class="bg-product-truth-kicker">POWERHOUSE · THE CURRENT PRODUCT</span>
+    <h2 id="bg-product-truth-title">Website and portal now tell exactly the same product story.</h2>
+    <p class="bg-product-truth-lead">Powerhouse is one platform with three product lines. The website only sells capabilities that exist in the portal, and the active plan determines what is available.</p>
+    <div class="bg-product-truth-grid">
+      <article><span>See &amp; understand</span><h3>Powerhouse Intelligence</h3><p>Company data, knowledge, benchmarks and external signals become current context, priorities and management intelligence.</p></article>
+      <article><span>Decide &amp; execute</span><h3>Powerhouse Agents</h3><p>Insights become tasks, workflows and actions with ownership, approvals, evidence and outcome readback.</p></article>
+      <article><span>Connect &amp; automate</span><h3>Powerhouse Connect</h3><p>AFAS, Exact, Microsoft 365, webshops, CRM and APIs connect to the same data and execution layer.</p></article>
+    </div>
+    <div class="bg-product-truth-loop" aria-label="Powerhouse closed loop">
+      <b>Data</b><i>→</i><b>Context</b><i>→</i><b>Intelligence</b><i>→</i><b>Decision</b><i>→</i><b>Action</b><i>→</i><b>Evidence</b><i>→</i><b>Learning</b>
+    </div>
+    <div class="bg-product-truth-actions">
+      <a class="primary" href="https://www.bedrijfsgeheugen.nl/en/prijzen">View plans →</a>
+      <a href="https://www.bedrijfsgeheugen.nl/portal-v2/">View the portal</a>
+      <a href="https://www.bedrijfsgeheugen.nl/en/systemen-koppelen">View integrations</a>
+    </div>
+  </div>
+</section>`;
+
 function ensureProductTruth(html,route){
-  if(route!=='/product' || html.includes('data-bg-product-truth-v1')) return html;
+  if(!['/product','/en/product'].includes(route) || html.includes('data-bg-product-truth-v1')) return html;
   const m=html.match(/<main\b[^>]*>/i);
   if(!m) return html;
   const at=(m.index||0)+m[0].length;
-  return html.slice(0,at)+'\n'+productTruth+'\n'+html.slice(at);
+  const section=route==='/en/product'?productTruthEn:productTruth;
+  return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
 }
 
 function failKnownBroken(html,path){
