@@ -1,0 +1,18 @@
+{
+  "id": "footer-legal-pages-20261001",
+  "date": "2026-10-01",
+  "type": "website-learning",
+  "change": "Added a canonical legal/status footer strip with absolute production URLs and created dedicated public pages for terms, cookies and system status.",
+  "reason": "Footer legal/status links must be consistently available across public pages without duplicating footer markup per page.",
+  "implementation": [
+    "assets/stijl.js injects the legal strip sitewide when absent",
+    "assets/blok-voet.html and index.html contain the canonical strip directly",
+    "legal/status documents live under pages/ for delivery classification",
+    "netlify.toml exposes clean public URLs"
+  ],
+  "safeguards": [
+    "privacy remains on /privacy",
+    "all newly added href attributes use full production URLs",
+    "system status performs bounded browser-side checks only"
+  ]
+}
