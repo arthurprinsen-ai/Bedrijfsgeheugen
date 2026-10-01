@@ -5,40 +5,27 @@ import {entitlementAllows,enforceAgentMode,enforceConnectorRefreshPolicy,enforce
 import {billingReadiness,requireBillingReady} from '../platform/saas/billing-readiness.mjs';
 import {canAgentExecute} from '../platform/agents/agent-work.mjs';
 
-test('pricing communicates equal intelligence and self-serve tiers',async()=>{
+test('pricing exposes canonical Starter Pro Groei and Enterprise tiers',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
-  assert.match(html,/dezelfde kernintelligentie/i);
-  assert.match(html,/\/afsluiten\?plan=control/);
-  assert.match(html,/\/afsluiten\?plan=scale/);
-  assert.match(html,/Enterprise[^]*Bespreek Enterprise/);
+  for(const token of ['Starter','€ 99','Pro','€ 299','Groei','€ 749','Enterprise','Op maat']) assert.ok(html.includes(token),token);
+  for(const plan of ['starter','pro','groei']) assert.match(html,new RegExp('https://www\\.bedrijfsgeheugen\\.nl/afsluiten\\?plan='+plan));
+  assert.match(html,/Powerhouse SaaS/);
+  assert.match(html,/Consulting & workshops/);
 });
 
-
-test('pricing mirrors the Portal business-context model instead of treating Scale as a company phase',async()=>{
+test('pricing package contents match the commercial capacity contract',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
-  for(const label of [
-    'Start &amp; validatie','Validatie &amp; eerste tractie','Snelle groei / opschalen','Professionaliseren',
-    'Volwassen &amp; stabiel','Stagnatie','Verlies &amp; herstel','Acute continuïteit',
-    'Financiering ophalen','Bedrijf kopen','Bedrijf verkopen','Post-merger integratie','Bedrijfsopvolging',
-    'MBO / MBI','Internationaliseren','Herstructureren','Investeerder / portfolio',
-    'Omzetgroei','Meer winst','Cash beschermen','Groei zonder extra FTE','Ondernemingswaarde verhogen',
-    'Verkoop voorbereiden','Risico verlagen'
-  ]) assert.ok(html.includes(label),label);
-  assert.match(html,/Je bedrijfsfase is niet je abonnement/i);
-  assert.match(html,/Primaire bedrijfsfase/i);
-  assert.match(html,/Wat speelt daarnaast/i);
-  assert.match(html,/Wat wil je bereiken\\?/i);
-  assert.match(html,/aria-label=\"Ondernemersdoelen\"/i);
+  for(const token of [
+    'Tot 5 gebruikers','2 integraties','Nachtelijke data refresh','50 AI-vragen / maand',
+    'Tot 25 gebruikers','10 integraties','Uurlijkse data refresh','AI copilot: 200 vragen / maand',
+    'Tot 75 gebruikers','25 integraties','Data refresh elke 15 minuten','12 automatiseringen','6 AI-automatiseringen','750 AI-vragen / maand',
+    'SSO / werkaccount','Audit trail & export','On-demand data refresh','Enterprise support (SLA)'
+  ]) assert.ok(html.includes(token),token);
 });
 
-test('pricing tier copy matches canonical entitlement semantics',async()=>{
+test('consulting offers and SaaS combination rule are explicit',async()=>{
   const html=await readFile(new URL('../prijzen.html',import.meta.url),'utf8');
-  assert.match(html,/Forecasting en scenarioanalyse op dagelijkse data/i);
-  assert.match(html,/Forecasting en scenarioanalyse op uuractuele data/i);
-  assert.match(html,/Audittrail op acties en goedkeuringen/i);
-  assert.match(html,/SSO, meerdere organisaties en strengere governance/i);
-  assert.match(html,/Volledig · dagelijkse data/i);
-  assert.match(html,/Volledig · uuractuele data/i);
+  for(const token of ['Directie & AI Workshop','€ 1.950','Bedrijfsgeheugen Scan','€ 2.950','Vanaf € 14.500','Transformation / Fractional Lead','Combineer zonder dubbel te betalen','tijdelijk Pro toegang','tijdelijk Groei toegang']) assert.ok(html.includes(token),token);
 });
 
 test('checkout backend trusts canonical plans and direct-checkout entitlement',async()=>{
@@ -50,16 +37,12 @@ test('checkout backend trusts canonical plans and direct-checkout entitlement',a
 });
 
 
-test('yearly pricing is carried from pricing page through checkout and billed as ten monthly fees per year',async()=>{
-  const [pricing,checkoutPage,backend]=await Promise.all([
-    readFile(new URL('../prijzen.html',import.meta.url),'utf8'),
+test('yearly checkout remains ten monthly fees with the new plans',async()=>{
+  const [checkoutPage,backend]=await Promise.all([
     readFile(new URL('../afsluiten.html',import.meta.url),'utf8'),
     readFile(new URL('../netlify/functions/checkout-create.mjs',import.meta.url),'utf8')
   ]);
-  assert.match(pricing,/searchParams\.set\('billing',billing\)/);
-  assert.match(checkoutPage,/name="billing_cycle"/);
-  assert.match(checkoutPage,/q\.get\('billing'\)==='yearly'/);
-  assert.match(backend,/billing_cycle/);
+  for(const token of ["starter:{","pro:{","groei:{","yearly:'€ 990'","yearly:'€ 2.990'","yearly:'€ 7.490'"]) assert.ok(checkoutPage.includes(token),token);
   assert.match(backend,/monthly_price_cents\)\*10/);
   assert.match(backend,/billingCycle==='yearly'\?'year':'month'/);
   assert.match(backend,/metadata\[billing_cycle\]/);
