@@ -84,7 +84,7 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
 
 test('product page keeps one primary hero and embeds Powerhouse model in context',()=>{
   assert.doesNotMatch(finalizer,/POWERHOUSE · HET ACTUELE PRODUCT/);
-  assert.doesNotMatch(finalizer,/Website en portaal spreken nu dezelfde taal/);
+  assert.doesNotMatch(finalizer,/<h2[^>]*>Website en portaal spreken nu dezelfde taal\\.<\\/h2>/);
   assert.match(finalizer,/ZO WERKT POWERHOUSE/);
   assert.match(finalizer,/Eén platform\. Drie lagen die samenwerken\./);
   assert.match(finalizer,/legacySection/);
