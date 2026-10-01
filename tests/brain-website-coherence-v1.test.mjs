@@ -45,7 +45,7 @@ test('pricing composer preserves canonical visual-regression hero hooks',()=>{
 
 test('product proposition is contextual rather than internal implementation copy',()=>{
   assert.doesNotMatch(finalizer,/Website en portaal vertellen voortaan exact hetzelfde verhaal/);
-  assert.match(finalizer,/Van losse informatie naar een bedrijf dat zichzelf beter bestuurt/);
+  assert.match(finalizer,/Eén platform\. Drie lagen die samenwerken\./);
   assert.match(finalizer,/Powerhouse Intelligence/);
   assert.match(finalizer,/Powerhouse Agents/);
   assert.match(finalizer,/Powerhouse Connect/);
@@ -53,10 +53,10 @@ test('product proposition is contextual rather than internal implementation copy
   assert.match(finalizer,/\/portaal-demo/);
 });
 
-test('product proposition is inserted after the actual first product section',()=>{
+test('product proposition is inserted after the first actual main section',()=>{
   assert.match(finalizer,/const mainStart=html\.search/);
   assert.match(finalizer,/const firstSection=afterMain\.match/);
-  assert.match(finalizer,/firstSection\[0\]\.length/);
+  assert.match(finalizer,/return html\.slice\(0,at\)\+'\\n'\+section\+'\\n'\+html\.slice\(at\)/);
 });
 
 test('package advisor and professional portal demo are real routes',()=>{
@@ -84,7 +84,7 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
 
 
 test('product page keeps one primary hero and embeds Powerhouse model in context',()=>{
-  const productTruth=finalizer.match(/const productTruth=\`([\s\S]*?)\`;/);
+  const productTruth=finalizer.match(/const productTruth=`([\s\S]*?)`;/);
   assert.ok(productTruth,'canonical Dutch product truth block must exist');
   assert.doesNotMatch(productTruth[1],/POWERHOUSE · HET ACTUELE PRODUCT/);
   assert.doesNotMatch(productTruth[1],/Website en portaal spreken nu dezelfde taal/);
