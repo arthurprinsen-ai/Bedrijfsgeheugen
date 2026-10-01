@@ -11,3 +11,4 @@ Use this skill for pricing, packaging, checkout, consulting bundles and Portal V
 6. Consulting packages state temporary portal plan and duration where included.
 7. A commercial change is incomplete until pricing, checkout, portal access, server-side plan data, tests and production readback agree.
 8. Legacy Control and Scale are not public offers.
+9. The public pricing surface is canonical in `prijzen.html` before build transforms; build-integrity and production gates must assert the SaaS + consulting surface, never legacy Control/Scale markers.
