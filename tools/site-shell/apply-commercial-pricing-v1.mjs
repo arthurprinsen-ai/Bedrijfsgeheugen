@@ -242,7 +242,7 @@ function englishPage(){
   html=html
     .replaceAll('Voorbereiding &amp; analyse','Preparation &amp; analysis')
     .replaceAll('Forbereiding &amp; analyse','Preparation &amp; analysis')
-    .replace(/De betaalde waarde van een (?:Directie|Executive) &amp; AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start\./g,'The paid value of an Executive &amp; AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.');
+    .replace(/De betaalde waarde van een (?:Directie|Executive) &amp; AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30\s+days start\./g,'The paid value of an Executive &amp; AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.');
   for(const token of ['Voorbereiding','De betaalde waarde','met jouw systemen','organisaties die willen','Tijdens de uitvoering krijg je']){
     if(html.includes(token)) throw new Error('EN_PRICING_RESIDUAL:'+token);
   }
