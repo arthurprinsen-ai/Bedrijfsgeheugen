@@ -85,7 +85,7 @@ const productTruthEn=`
     </div>
     <div class="bg-product-truth-actions">
       <a class="primary" href="https://www.bedrijfsgeheugen.nl/en/prijzen">View plans →</a>
-      <a href="https://www.bedrijfsgeheugen.nl/portal-v2/">View interactive portal demo</a>
+      <a href="https://www.bedrijfsgeheugen.nl/portaal-demo">View interactive portal demo</a>
       <a href="https://www.bedrijfsgeheugen.nl/en/systemen-koppelen">View integrations</a>
     </div>
   </div>
@@ -93,10 +93,15 @@ const productTruthEn=`
 
 function ensureProductTruth(html,route){
   if(!['/product','/en/product'].includes(route) || html.includes('data-bg-product-truth-v1')) return html;
-  const m=html.match(/<main\b[^>]*>/i);
-  if(!m) return html;
-  const at=(m.index||0)+m[0].length;
   const section=route==='/en/product'?productTruthEn:productTruth;
+  const hero=html.match(/<section\b[^>]*class=(["'])[^"']*\bpr-hero\b[^"']*\1[^>]*>[\s\S]*?<\/section>/i);
+  if(hero){
+    const at=(hero.index||0)+hero[0].length;
+    return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
+  }
+  const main=html.match(/<main\b[^>]*>/i);
+  if(!main) return html;
+  const at=(main.index||0)+main[0].length;
   return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
 }
 
