@@ -1,4 +1,5 @@
 import { findPage, listPortalGroups } from './page-registry.js';
+import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 import { nativePageContent } from './native-pages.js';
 import { pageVisual } from './page-visuals.js';
 import { mountAskPortal } from './ask-portal.js';
@@ -272,9 +273,8 @@ export function openPortalPage(pageId){
   const view=pagePresentation(pageId);if(!view)return false;
   const root=ensureShell();
   root.classList.toggle('impact-mode',pageId==='csrd-impact');
-  // De kicker hoort bij de pagina, niet bij de zijbalkgroep: de indeling van de
-  // zijbalk mag veranderen zonder dat een breinpagina zijn kop kwijtraakt.
-  root.querySelector('#pvKicker').textContent=BRAIN_PAGES.has(pageId)?'Brein & Powerhouse':'Portal V2';
+  const navigationGroup=DESKTOP_NAV_GROUPS.find(group=>group.target===pageId||group.pages?.some(page=>page.target===pageId));
+  root.querySelector('#pvKicker').textContent=navigationGroup?.label||'Bedrijfsgeheugen';
   root.querySelector('#pvTitle').textContent=view.title;
   root.querySelector('#pvDescription').textContent=view.description;
   root.querySelector('#pvStatus').textContent=view.evidenceLabel;
