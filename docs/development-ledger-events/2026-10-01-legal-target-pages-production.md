@@ -9,3 +9,5 @@ Herstel: PR #3581 levert de drie ontbrekende doelpagina's, de volledige Engelse 
 Producthero-zichtbaarheid is als releaseblokker hersteld op NL en EN zodat de bestaande browsergate weer groen kan bewijzen.
 
 Chromium-runtime in de website-lane gebruikt nu browsercache en slaat herhaalde apt dependency-installatie over op de voorbereide GitHub runner.
+
+Superseding candidate #3586 is the sole active legal-target-pages candidate; obsolete #3581 is closed before admission rerun.
