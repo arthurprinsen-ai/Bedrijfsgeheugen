@@ -132,3 +132,41 @@ body[data-bg-route="/en/prijzen"] main .services{align-items:stretch!important}
 .bgkop :where(a,button){min-height:44px}
 .bgkop :where(a[href*="inlog"],a[href*="login"],a[href*="aanmeld"],a[href*="signup"],.bgkop-cta){display:inline-flex;align-items:center;justify-content:center}
 @media(max-width:900px){.bg-product-model{grid-template-columns:1fr}.bg-product-model>i{transform:rotate(90deg);height:18px}}
+
+
+/* Final visual pixel polish — 2026-10-01 */
+.bgkop{min-height:72px}
+.bgkop :where(a,button){min-height:46px}
+body[data-bg-route] main :where(section,.sec):empty,
+body[data-bg-route] main :where(section,.sec)[data-bg-empty-shell="true"]{display:none!important}
+
+body[data-bg-route="/prijzen"] main :where(.plans,.services),
+body[data-bg-route="/en/prijzen"] main :where(.plans,.services){align-items:stretch!important}
+body[data-bg-route="/prijzen"] main :where(.pcard,.service),
+body[data-bg-route="/en/prijzen"] main :where(.pcard,.service){min-width:0!important;height:100%!important}
+body[data-bg-route="/prijzen"] main :where(.pcard,.service) .cta,
+body[data-bg-route="/en/prijzen"] main :where(.pcard,.service) .cta{
+  width:100%!important;height:52px!important;min-height:52px!important;max-height:52px!important;
+  padding:0 14px!important;line-height:1.15!important
+}
+body[data-bg-route="/prijzen"] main .pcard h3,
+body[data-bg-route="/en/prijzen"] main .pcard h3{min-height:2.6em}
+body[data-bg-route="/prijzen"] main .pcard .aud,
+body[data-bg-route="/en/prijzen"] main .pcard .aud{min-height:1.5em}
+body[data-bg-route="/prijzen"] main .pcard .price,
+body[data-bg-route="/en/prijzen"] main .pcard .price{min-height:1.5em}
+
+@media(max-width:900px){
+  .bgkop{min-height:66px}
+  body[data-bg-route="/prijzen"] main :where(.pcard,.service) .cta,
+  body[data-bg-route="/en/prijzen"] main :where(.pcard,.service) .cta{height:50px!important;min-height:50px!important;max-height:50px!important}
+}
+@media(max-width:640px){
+  .bgkop{min-height:62px}
+  body[data-bg-route="/prijzen"] main .pcard h3,
+  body[data-bg-route="/en/prijzen"] main .pcard h3,
+  body[data-bg-route="/prijzen"] main .pcard .aud,
+  body[data-bg-route="/en/prijzen"] main .pcard .aud,
+  body[data-bg-route="/prijzen"] main .pcard .price,
+  body[data-bg-route="/en/prijzen"] main .pcard .price{min-height:0}
+}
