@@ -49,9 +49,10 @@ html = html.replace(/<script id="v18-4-video-controller">[\s\S]*?<\/script>\s*/,
 html = html.replace(/<style id="v18-10-video-fix">[\s\S]*?<\/style>\s*<script id="v18-10-video-controller">[\s\S]*?<\/script>\s*/, '');
 html = html.replace(/<script id="v18-stable-video-controller">[\s\S]*?<\/script>\s*/, '');
 
-// The pinned V18 payload regenerates index.html during every Netlify build.
-// Put the legal/status links into that actual production footer so they survive
-// regeneration and are inherited by the site-wide shell.
+// De pinned V18-payload is de echte productiebron voor de homepage en dus ook
+// voor de sitebrede footer. Repository-HTML wordt vóór publicatie hiermee
+// overschreven; juridische links moeten daarom hier in de canonical payload-
+// projectie worden geborgd in plaats van alleen in index.html/over-ons.html.
 if (!html.includes('class="bg-footer-legal-links"')) {
   const before = html;
   html = html.replace(
@@ -195,5 +196,3 @@ html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${product
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
 console.log(`Accepted historical V18 production homepage restored from pinned payload: ${EXPECTED_HTML_SHA256}`);
-
-/* footer-legal-live-v3-recheck-2 */
