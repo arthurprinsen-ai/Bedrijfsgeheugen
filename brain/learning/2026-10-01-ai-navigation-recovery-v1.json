@@ -1,0 +1,35 @@
+{
+  "fingerprint": "website|navigation|ai-discovery|recovery|20261001",
+  "observed_at": "2026-10-01T14:28:00+02:00",
+  "type": "PREVENTION",
+  "problem": "AI Modelwijzer and AI Governance remained available as pages but had disappeared from canonical site navigation, making them hard to discover after the website/portal coherence recovery.",
+  "root_cause": "The earlier recovery restored AI discovery inside the product proposition but not in the global canonical Kennis navigation.",
+  "decision": "Restore AI Modelwijzer and AI Governance to desktop/mobile Kennis navigation and the footer, with explicit fail-closed English translations.",
+  "prevention": [
+    "Canonical navigation changes must preserve current AI discovery routes.",
+    "Header/footer route recovery must include desktop and mobile variants.",
+    "Any new canonical navigation copy must be added to the static English cache in the same change."
+  ],
+  "evidence": [
+    "components/header/header.html",
+    "components/footer/footer.html",
+    "config/bg-static-i18n-en.d/2026-10-01-professional-parity-tools.json"
+  ],
+  "compiler": {
+    "failure_class": "NAVIGATION_DISCOVERY_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-coherence-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-website-coherence-v1.test.mjs",
+    "tests/final-site-navigation-contract.test.mjs",
+    "tests/site-shell-public-route-inventory.test.mjs"
+  ]
+}
