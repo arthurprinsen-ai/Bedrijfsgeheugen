@@ -62,8 +62,8 @@
       "route": "/prijzen",
       "required": [
         "main [data-bg-commercial-pricing-v1] .hero h1",
-        "main [data-bg-commercial-pricing-v1] #saas .plans",
-        "main [data-bg-commercial-pricing-v1] #expertise .services"
+        "main [data-bg-commercial-pricing-v1] .hero p",
+        "main [data-bg-commercial-pricing-v1] .choice"
       ],
       "protectedPairs": [],
       "interactions": []
