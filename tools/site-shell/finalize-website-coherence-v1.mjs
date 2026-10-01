@@ -126,11 +126,11 @@ const routeMetadata=new Map([
   ['/portaal-demo',{title:'Interactieve Powerhouse portaal-demo | Bedrijfsgeheugen',description:'Bekijk interactief hoe Powerhouse Intelligence, Agents en Connect samenwerken van signaal naar actie en resultaat.'}],
   ['/contact',{title:'Contact — even bellen of appen | Bedrijfsgeheugen',description:'Neem direct contact op over kennisborging, automatisering, koppelingen, data en AI voor het mkb.'}],
   ['/product',{title:'Bedrijfsgeheugen platform voor het mkb | Bedrijfsgeheugen',description:'Powerhouse brengt Intelligence, Agents en Connect samen: van bedrijfscontext en besluitvorming naar actie in je bestaande systemen.'}],
-  ['/en/prijzen',{title:'SME digitalisation costs | Powerhouse pricing',description:'Compare Powerhouse SaaS, workshops, scans and expert support with transparent pricing and a direct plan recommendation.'}],
+  ['/en/prijzen',{title:'Digital Transformation Pricing for SMEs | Bedrijfsgeheugen',description:'See practical pricing for digitalisation, automation and AI. Compare what you need now with scalable options for growth and control.'}],
   ['/en/pakketadvies',{title:'Which Powerhouse plan fits me? | Bedrijfsgeheugen',description:'Get a Powerhouse plan recommendation based on organisation size, goal and preferred way of working.'}],
   ['/en/portaal-demo',{title:'Interactive Powerhouse portal demo | Bedrijfsgeheugen',description:'See how Powerhouse Intelligence, Agents and Connect work together from signal to action and measurable outcome.'}],
   ['/en/contact',{title:'Contact | Bedrijfsgeheugen',description:'Contact Bedrijfsgeheugen directly about knowledge continuity, automation, integrations, data and AI.'}],
-  ['/en/product',{title:'Bedrijfsgeheugen platform for SMEs | Powerhouse',description:'Powerhouse combines Intelligence, Agents and Connect: from company context and decisions to action in your existing systems.'}]
+  ['/en/product',{title:'Business Knowledge Platform | Bedrijfsgeheugen',description:'A company knowledge platform that connects strategy, operations, data, AI and actions in one continuously learning business system.'}]
 ]);
 
 function setHeadText(html,tagRe,replacement){
