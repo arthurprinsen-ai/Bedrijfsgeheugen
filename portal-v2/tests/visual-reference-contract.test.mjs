@@ -16,12 +16,12 @@ const requiredVisualMarkers = [
   'Processen',
   'Data & systemen',
   'AI-volwassenheid',
-  'Het brein van je bedrijf',
+  'Zo werkt Powerhouse in je bedrijf',
   'Bronnen',
-  'Datahub',
-  'AI Brain',
-  'Powerhouse',
-  'Acties & outcomes',
+  'Powerhouse Connect',
+  'Powerhouse Intelligence',
+  'Powerhouse Agents',
+  'Resultaat & leren',
   'AI Management Summary',
   'Aanbevelingen',
   'Snelle links',
@@ -38,9 +38,9 @@ test('portal-v2 keeps the approved dashboard composition intact', () => {
   }
 });
 
-test('preview state is explicit and never presented as production evidence', () => {
-  assert.ok(html.includes('Preview'));
-  assert.ok(html.includes('geen productieclaim'));
+test('interactive example state is explicit and never masquerades as live evidence', () => {
+  assert.ok(html.includes('Interactief voorbeeld'));
+  assert.ok(html.includes('Klik door bron, inzicht, actie en resultaat.'));
   assert.equal(/class="livepill">\s*●\s*Live\b/.test(html), false);
 });
 
