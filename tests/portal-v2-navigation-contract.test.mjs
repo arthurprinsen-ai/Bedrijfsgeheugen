@@ -16,7 +16,7 @@ test('desktop navigation uses the same explicit routing model rather than decora
   assert.equal(DESKTOP_NAV_ITEMS.length, 10);
   assert.ok(DESKTOP_NAV_ITEMS.every(item=>item.target), 'every desktop item needs an explicit target');
   assert.match(app, /dataset\.navTarget/);
-  assert.match(app, /DESKTOP_NAV_ITEMS/);
+  assert.match(app, /DESKTOP_NAV_GROUPS/);
   assert.match(app, /desktop-project-nav/);
 });
 
