@@ -24,10 +24,10 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/website-release-risk.test.mjs"
+      "tests/brain-website-coherence-v1.test.mjs"
     ]
   },
   "test_evidence": [
-    "tests/website-release-risk.test.mjs"
+    "tests/brain-website-coherence-v1.test.mjs"
   ]
 }
