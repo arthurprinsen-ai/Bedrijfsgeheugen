@@ -14,3 +14,6 @@ Live screenshots showed repeated “Gerelateerde oplossing” cards, empty-looki
 
 ## Acceptance
 One primary hero, no empty cards, no large blank dynamic surfaces, one contextual commercial handoff, and self-playing interaction that demonstrates how Bedrijfsgeheugen/Powerhouse works.
+
+## Portal routing drift found during verification
+The full portal suite exposed five existing contract failures: Data & AI missed runtime/Brain routes, Actions missed recovery/monitoring routes, desktop navigation did not consume the canonical explicit item model, and the full menu was derived from a reduced desktop grouping instead of the complete page registry. The recovery keeps one portal shell and restores these routes in the existing hubs.
