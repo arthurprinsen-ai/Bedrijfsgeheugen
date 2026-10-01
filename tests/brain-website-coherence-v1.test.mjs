@@ -106,3 +106,21 @@ test('final pixel polish locks pricing, header and responsive portal geometry',(
   assert.match(portalCss,/brainflow \.brainnode:last-child\{grid-column:1\/-1\}/);
   assert.match(portalCss,/\.kpis\{grid-template-columns:1fr!important\}/);
 });
+
+test('terminal product hero visibility is enforced independently of compositor classes',()=>{
+  assert.match(finalizer,/ensureProductHeroVisibility/);
+  assert.match(finalizer,/bg-product-hero-visibility-invariant/);
+  assert.match(finalizer,/visibility:visible!important/);
+  assert.match(finalizer,/opacity:1!important/);
+});
+
+test('key route metadata survives terminal build',()=>{
+  assert.match(finalizer,/\/pakketadvies/);
+  assert.match(finalizer,/Welk Powerhouse-pakket past bij mij\?/);
+  assert.match(finalizer,/Interactieve Powerhouse portaal-demo/);
+  assert.match(finalizer,/Kosten digitalisering mkb \| Powerhouse prijzen/);
+  assert.match(finalizer,/ensureRouteMetadata/);
+  assert.match(finalizer,/og:title/);
+  assert.match(finalizer,/twitter:title/);
+});
+

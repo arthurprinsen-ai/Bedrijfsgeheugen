@@ -1,0 +1,32 @@
+{
+  "fingerprint": "website|public-route-metadata|terminal-build|parity|20261001",
+  "observed_at": "2026-10-01T15:14:00+02:00",
+  "type": "PREVENTION",
+  "problem": "Live pricing, package-advisor and portal-demo metadata diverged from their page content after terminal build transforms. Utility pages inherited the Over ons title and pricing exposed an older title.",
+  "root_cause": "Canonical shell and commercial build stages could rewrite head metadata after the source HTML had already been corrected.",
+  "decision": "Make the terminal website coherence finalizer authoritative for route-level title, description, canonical, Open Graph and Twitter metadata on key public product and conversion routes.",
+  "prevention": [
+    "Key route metadata is asserted after all shell, locale and commercial page transforms.",
+    "Page-specific utility routes must never inherit template-page titles.",
+    "SEO/social metadata must describe the same proposition visible in the page body."
+  ],
+  "compiler": {
+    "failure_class": "BUILD_ORDER_METADATA_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-coherence-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "tools/site-shell/finalize-website-coherence-v1.mjs",
+    "tests/brain-website-coherence-v1.test.mjs"
+  ],
+  "test_evidence": [
+    "tests/brain-website-coherence-v1.test.mjs"
+  ]
+}

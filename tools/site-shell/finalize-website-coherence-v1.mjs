@@ -120,6 +120,55 @@ function ensureProductTruth(html,route){
   return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
 }
 
+const routeMetadata=new Map([
+  ['/prijzen',{title:'Kosten digitalisering mkb | Powerhouse prijzen',description:'Vergelijk Powerhouse SaaS, workshops, scans en begeleiding. Transparante prijzen, mogelijkheden en een direct pakketadvies voor het mkb.'}],
+  ['/pakketadvies',{title:'Welk Powerhouse-pakket past bij mij? | Bedrijfsgeheugen',description:'Krijg een passend Powerhouse-pakketadvies op basis van organisatiegrootte, doel en gewenste aanpak.'}],
+  ['/portaal-demo',{title:'Interactieve Powerhouse portaal-demo | Bedrijfsgeheugen',description:'Bekijk interactief hoe Powerhouse Intelligence, Agents en Connect samenwerken van signaal naar actie en resultaat.'}],
+  ['/contact',{title:'Contact — even bellen of appen | Bedrijfsgeheugen',description:'Neem direct contact op over kennisborging, automatisering, koppelingen, data en AI voor het mkb.'}],
+  ['/product',{title:'Bedrijfsgeheugen platform voor het mkb | Bedrijfsgeheugen',description:'Powerhouse brengt Intelligence, Agents en Connect samen: van bedrijfscontext en besluitvorming naar actie in je bestaande systemen.'}],
+  ['/en/prijzen',{title:'Digital Transformation Pricing for SMEs | Bedrijfsgeheugen',description:'See practical pricing for digitalisation, automation and AI. Compare what you need now with scalable options for growth and control.'}],
+  ['/en/pakketadvies',{title:'Which Powerhouse plan fits me? | Bedrijfsgeheugen',description:'Get a Powerhouse plan recommendation based on organisation size, goal and preferred way of working.'}],
+  ['/en/portaal-demo',{title:'Interactive Powerhouse portal demo | Bedrijfsgeheugen',description:'See how Powerhouse Intelligence, Agents and Connect work together from signal to action and measurable outcome.'}],
+  ['/en/contact',{title:'Contact | Bedrijfsgeheugen',description:'Contact Bedrijfsgeheugen directly about knowledge continuity, automation, integrations, data and AI.'}],
+  ['/en/product',{title:'Business Knowledge Platform | Bedrijfsgeheugen',description:'A company knowledge platform that connects strategy, operations, data, AI and actions in one continuously learning business system.'}]
+]);
+
+function setHeadText(html,tagRe,replacement){
+  return tagRe.test(html)?html.replace(tagRe,replacement):html.replace(/<\/head>/i,replacement+'\n</head>');
+}
+
+function ensureProductHeroVisibility(html,route){
+  if(route!=='/product' && route!=='/en/product') return html;
+  const invariant='<style id="bg-product-hero-visibility-invariant">body[data-bg-route="/product"] main>section:first-of-type,body[data-bg-route="/en/product"] main>section:first-of-type,body[data-bg-route="/product"] main>section:first-of-type>*,body[data-bg-route="/en/product"] main>section:first-of-type>*{display:block!important;visibility:visible!important;opacity:1!important;transform:none!important;content-visibility:visible!important}body[data-bg-route="/product"] main h1:first-of-type,body[data-bg-route="/en/product"] main h1:first-of-type{display:block!important;visibility:visible!important;opacity:1!important;transform:none!important;clip:auto!important;clip-path:none!important}</style>';
+  if(!html.includes('bg-product-hero-visibility-invariant')) html=html.replace(/<\/head>/i,invariant+'\n</head>');
+  html=html.replace(/<h1\b([^>]*)>/i,(m,attrs)=>{
+    const cleaned=attrs.replace(/\sstyle=("[^"]*"|'[^']*')/i,'');
+    return '<h1'+cleaned+' style="display:block!important;visibility:visible!important;opacity:1!important;transform:none!important;clip:auto!important;clip-path:none!important">';
+  });
+  return html;
+}
+
+function ensureBedrijfslekProductCta(html,route){
+  if(route!=='/zelfscan') return html;
+  return html
+    .replace(/href=(["'])\/product\1/gi,'href=$1https://www.bedrijfsgeheugen.nl/product$1')
+    .replace(/href=(["'])https:\/\/bedrijfsgeheugen\.nl\/product\1/gi,'href=$1https://www.bedrijfsgeheugen.nl/product$1');
+}
+
+function ensureRouteMetadata(html,route){
+  const meta=routeMetadata.get(route);
+  if(!meta) return html;
+  const canonical='https://www.bedrijfsgeheugen.nl'+route;
+  html=setHeadText(html,/<title>[\s\S]*?<\/title>/i,`<title>${meta.title}</title>`);
+  html=setHeadText(html,/<meta\b[^>]*name=(["'])description\1[^>]*>/i,`<meta name="description" content="${meta.description.replace(/"/g,'&quot;')}">`);
+  html=setHeadText(html,/<link\b[^>]*rel=(["'])canonical\1[^>]*>/i,`<link rel="canonical" href="${canonical}">`);
+  html=setHeadText(html,/<meta\b[^>]*property=(["'])og:title\1[^>]*>/i,`<meta property="og:title" content="${meta.title.replace(/"/g,'&quot;')}">`);
+  html=setHeadText(html,/<meta\b[^>]*property=(["'])og:description\1[^>]*>/i,`<meta property="og:description" content="${meta.description.replace(/"/g,'&quot;')}">`);
+  html=setHeadText(html,/<meta\b[^>]*name=(["'])twitter:title\1[^>]*>/i,`<meta name="twitter:title" content="${meta.title.replace(/"/g,'&quot;')}">`);
+  html=setHeadText(html,/<meta\b[^>]*name=(["'])twitter:description\1[^>]*>/i,`<meta name="twitter:description" content="${meta.description.replace(/"/g,'&quot;')}">`);
+  return html;
+}
+
 function failKnownBroken(html,path){
   const bad=[
     /href=(["'])#contact\1/i,
@@ -147,6 +196,9 @@ for(const path of [...new Set(files)]){
   next=markRoute(next,route);
   next=ensureStyle(next);
   next=ensureProductTruth(next,route);
+  next=ensureRouteMetadata(next,route);
+  next=ensureProductHeroVisibility(next,route);
+  next=ensureBedrijfslekProductCta(next,route);
   failKnownBroken(next,path);
   if(next!==html){await writeFile(path,next,'utf8');changed++}
 }
