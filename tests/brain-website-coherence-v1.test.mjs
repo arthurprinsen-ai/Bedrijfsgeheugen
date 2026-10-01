@@ -80,3 +80,37 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
   assert.match(portalCss,/overflow:hidden/);
 });
 
+
+
+test('product proposition lives in one hero and not a second standalone hero',()=>{
+  const product=readFileSync('product.html','utf8');
+  assert.equal((product.match(/data-bg-product-truth-v1/g)||[]).length,0);
+  assert.match(product,/Powerhouse Intelligence/);
+  assert.match(product,/Powerhouse Agents/);
+  assert.match(product,/Powerhouse Connect/);
+  assert.match(product,/class="pr-powerhouse"/);
+});
+
+test('Modelwijzer avoids generic governance class collisions and explains Powerhouse context',()=>{
+  const html=readFileSync('ai-modelwijzer.html','utf8');
+  assert.doesNotMatch(html,/class="gov"/);
+  assert.match(html,/class="mwGov"/);
+  assert.match(html,/mw-powerhouse-flow/);
+  assert.match(html,/modelwijzer-flow-autoplay-v1/);
+});
+
+test('self-playing product and portal flows are present with reduced-motion guard',()=>{
+  const product=readFileSync('product.html','utf8');
+  const demo=readFileSync('portaal-demo.html','utf8');
+  assert.match(product,/product-autoplay-v1/);
+  assert.match(product,/prefers-reduced-motion/);
+  assert.match(demo,/setInterval/);
+  assert.match(demo,/prefers-reduced-motion/);
+});
+
+test('revenue-link compiler collapses repeated related-solution blocks',()=>{
+  const src=readFileSync('tools/seo-order-engine/apply-revenue-links.mjs','utf8');
+  assert.match(src,/function normalizeRevenueBlocks/);
+  assert.match(src,/Verder in Powerhouse/);
+  assert.match(src,/page\.html=normalizeRevenueBlocks/);
+});
