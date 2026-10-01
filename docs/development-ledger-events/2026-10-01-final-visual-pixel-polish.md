@@ -15,3 +15,9 @@
 - Preview contract: replaced stale “Het brein van je bedrijf” grep with canonical “Zo werkt Powerhouse in je bedrijf”.
 - Regression hygiene: product-truth test now scopes legacy-copy assertions to the rendered product block.
 - Follow-up candidate: PR #3568.
+
+## Replay assertion closure
+
+- Historical replay had two stale source assumptions: an over-escaped product-truth regex and a retired `pr-hero` insertion hook.
+- Corrected to parse the real `productTruth` template literal and validate `mainStart` / `firstSection` insertion.
+- Candidate: PR #3571.
