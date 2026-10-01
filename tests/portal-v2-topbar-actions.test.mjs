@@ -43,12 +43,13 @@ test('portal route is registered in the quality surface registry',()=>{
 });
 
 
-test('full portal hamburger exposes all registered pages through one canonical menu',()=>{
+test('full portal hamburger expands the same canonical customer navigation taxonomy',()=>{
  assert.match(html,/id=["']portalFullMenuToggle["']/);
  assert.match(app,/portalFullMenuToggle/);
  assert.match(app,/navigatePortal\('hub:portal'\)/);
  assert.match(hubs,/pages:Object\.freeze\(allPageIds\(\)\)/);
- assert.match(hubs,/if\(hubId==='portal'\) return listPortalGroups\(\)/);
+ assert.match(hubs,/if\(hubId==='portal'\) return DESKTOP_NAV_GROUPS\.map/);
+ assert.doesNotMatch(hubs,/if\(hubId==='portal'\) return listPortalGroups\(\)/);
  assert.match(navigation,/id:'more', label:'Meer', target:'hub:portal'/);
  assert.match(navigationCss,/\.portal-hamburger\{display:inline-flex/);
  assert.match(navigationCss,/\.allpages \.groups\{grid-template-columns:1fr!important/);
