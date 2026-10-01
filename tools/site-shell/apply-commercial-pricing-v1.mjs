@@ -207,7 +207,17 @@ function englishPage(){
     ['Bekijk mijn pakket','See my package'],
     ['Begin klein. Bewijs waarde. Schaal alleen op als het werkt.','Start small. Prove value. Scale only when it works.'],
     ['Start gratis gesprek','Start a free conversation'],
-    ['Rolgebaseerde acties','Role-based actions']
+    ['Rolgebaseerde acties','Role-based actions'],
+    ['Tot ','Up to '],
+    ['Voor organisaties die willen automatiseren en opschalen.','For organisations that want to automate and scale.'],
+    ['Grotere organisaties','Larger organisations'],
+    ['AI-vragen','AI requests'],
+    ['uur / mnd','hour / month'],
+    ['4 uur / mnd','4 hours / month'],
+    ['1 uur / mnd','1 hour / month'],
+    ['30 dagen pro-toegang','30 days Pro access'],
+    ['30 dagen groei-toegang','30 days Growth access'],
+    ['60 dagen pro-toegang','60 days Pro access']
   ];
   for(const [from,to] of replacements) html=html.split(from).join(to);
   html=html
