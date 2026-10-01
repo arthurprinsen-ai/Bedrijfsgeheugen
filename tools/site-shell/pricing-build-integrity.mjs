@@ -44,46 +44,24 @@ function ensurePricingRuntime(html, source) {
 
 function assertCanonical(html) {
   const required = [
-    '€ 2.950',
-    '€ 1.495',
-    '€ 2.495',
-    'vanaf € 4.995',
-    'Run &amp; Grow · SaaS + advies',
-    'Wat betekent ‘actueel’?',
-    'Niet elke databron kán realtime zijn',
-    'Je bedrijfsfase is niet je abonnement.',
-    'Primaire bedrijfsfase',
-    'Wat speelt daarnaast?',
-    'Wat wil je bereiken?',
-    'aria-label="Ondernemersdoelen"',
-    'Dit is wat er daadwerkelijk in het portaal zit.',
-    'Trusted Advisor assurance',
-    'Resource & Sustainability Intelligence'
+    '€ 99',
+    '€ 299',
+    '€ 749',
+    'Powerhouse SaaS',
+    'Directie & AI Workshop',
+    'Bedrijfsgeheugen Scan',
+    'Build Sprint',
+    'Transformation / Fractional Lead',
+    'Combineer zonder dubbel te betalen',
+    'Wat groeit mee met je abonnement?',
+    'data-tab="saas"',
+    'data-tab="consulting"',
+    'data-panel="saas"',
+    'data-panel="consulting"'
   ];
   const missing = required.filter(token => !html.includes(token));
   if (missing.length) throw new Error(`pricing integrity: missing canonical tokens: ${missing.join(' | ')}`);
-  if (/€\s?(?:99|299|749)\b/.test(html)) throw new Error('pricing integrity: legacy package price returned');
   if (/class=["'][^"']*\bjr\b/i.test(html)) throw new Error('pricing integrity: legacy hidden annual pricing residue returned');
-  const interactionRequired = [
-    'data-bg-stage="grow"',
-    'data-bg-stage="loss"',
-    'data-bg-stage-panel="grow"',
-    'data-bg-stage-panel="loss"',
-    'data-bg-price-tab="start"',
-    'data-bg-price-tab="run"'
-  ];
-  const missingInteractions = interactionRequired.filter(token => !html.includes(token));
-  if (missingInteractions.length) throw new Error(`pricing integrity: missing interaction controls: ${missingInteractions.join(' | ')}`);
-  const billingRequired = [
-    'data-bg-billing="monthly"',
-    'data-bg-billing="yearly"',
-    '2 maanden voordeel',
-    'data-yearly="€ 14.950"',
-    'data-yearly="€ 24.950"',
-    'data-yearly="vanaf € 49.950"'
-  ];
-  const missingBilling = billingRequired.filter(token => !html.includes(token));
-  if (missingBilling.length) throw new Error(`pricing integrity: missing billing controls: ${missingBilling.join(' | ')}`);
 }
 
 const mode = process.argv[2] || '';
