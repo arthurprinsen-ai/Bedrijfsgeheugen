@@ -53,9 +53,10 @@ test('product proposition is contextual rather than internal implementation copy
   assert.match(finalizer,/\/portaal-demo/);
 });
 
-test('product proposition is inserted after the actual product hero',()=>{
-  assert.match(finalizer,/class=.*pr-hero/);
-  assert.match(finalizer,/const hero=html\.match/);
+test('product proposition is inserted after the actual first product section',()=>{
+  assert.match(finalizer,/const mainStart=html\.search/);
+  assert.match(finalizer,/const firstSection=afterMain\.match/);
+  assert.match(finalizer,/firstSection\[0\]\.length/);
 });
 
 test('package advisor and professional portal demo are real routes',()=>{
