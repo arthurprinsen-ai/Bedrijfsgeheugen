@@ -19,3 +19,7 @@ The historical replay now matches the actual finalizer implementation: it extrac
 ## Final mobile cascade correction
 
 The browser evidence showed the remaining 287.34px header height was caused by CSS precedence, not spacing: `topbar-actions.css` kept `.actionrow` on `display:flex!important`. The <=430px portal polish now explicitly uses `display:grid!important` with `minmax(0,1fr) auto`, keeping Bedrijfsgeheugen AI and Periode on one compact row.
+
+## Latest-main mobile closure
+
+After main advanced again, the compact mobile Portal V2 correction was rebased onto the current main epoch. Exact preview verification had already shown the 390×844 mobile rewrite passing; deterministic parity was updated to the canonical “Zo werkt Powerhouse in je bedrijf” heading.
