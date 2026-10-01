@@ -25,6 +25,114 @@ jobs:
     timeout-minutes: 20
     steps:
       - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Bepaal gewijzigde publieke routes
+        id: seo_scope
+        shell: bash
+        run: |
+          set -euo pipefail
+          urls=""
+          base="${{ github.event.pull_request.base.sha }}"
+          head="${{ github.event.pull_request.head.sha }}"
+          while IFS= read -r file; do
+            if [[ "$file" != */* && "$file" == *.html ]]; then
+              stem="${file%.html}"
+              [[ "$stem" == "index" ]] && url="/" || url="/$stem"
+              urls+="$url"      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - name: Production build — Powerhouse auth
+        run: node tools/bouw-powerhouse-auth.mjs
+      - name: Production build — Kennisindex
+        run: node tools/bouw-kennisindex.mjs
+      - name: Production build — V18 + canonical shell
+        run: node tools/bouw-v18-production.mjs
+      - name: Production build — tabbladen
+        run: node tools/apply-tabbladen.mjs
+      - name: Production build — V18 views
+        run: node tools/bouw-v18-views.mjs
+      - name: Production build — V18 chrome
+        run: node tools/bouw-v18-chrome-alles.mjs
+      - name: Production build — pricing rewrite
+        run: BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+      - name: Production build — canonical policy + SEO enrichment
+        run: BG_PRICING_STAGE=all node tools/prijzen-uit-de-homepage.mjs
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Playwright installeren
+        run: |
+          pip install --quiet playwright
+          PLAYWRIGHT_PACKAGE=none PLAYWRIGHT_CLI=playwright bash tools/ci/install-chromium.sh
+      - name: Pagina's controleren
+        run: python .github/scripts/paginacontrole.py
+      - name: SEO en interne links controleren
+        env:
+          SEO_SCOPE_URLS: ${{ steps.seo_scope.outputs.urls }}
+        run: python .github/scripts/seocontrole.py
+      - name: Diagnoserapport bewaren
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagina-seo-diagnose
+          if-no-files-found: warn
+          retention-days: 1
+          path: |
+            rapport.md
+            seo-rapport.md
+\n'
+            elif [[ "$file" =~ ^blog/([^/]+)/index\.html$ ]]; then
+              urls+="/blog/${BASH_REMATCH[1]}/"      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm install
+      - name: Production build — Powerhouse auth
+        run: node tools/bouw-powerhouse-auth.mjs
+      - name: Production build — Kennisindex
+        run: node tools/bouw-kennisindex.mjs
+      - name: Production build — V18 + canonical shell
+        run: node tools/bouw-v18-production.mjs
+      - name: Production build — tabbladen
+        run: node tools/apply-tabbladen.mjs
+      - name: Production build — V18 views
+        run: node tools/bouw-v18-views.mjs
+      - name: Production build — V18 chrome
+        run: node tools/bouw-v18-chrome-alles.mjs
+      - name: Production build — pricing rewrite
+        run: BG_PRICING_STAGE=rewrite node tools/prijzen-uit-de-homepage.mjs
+      - name: Production build — canonical policy + SEO enrichment
+        run: BG_PRICING_STAGE=all node tools/prijzen-uit-de-homepage.mjs
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Playwright installeren
+        run: |
+          pip install --quiet playwright
+          PLAYWRIGHT_PACKAGE=none PLAYWRIGHT_CLI=playwright bash tools/ci/install-chromium.sh
+      - name: Pagina's controleren
+        run: python .github/scripts/paginacontrole.py
+      - name: SEO en interne links controleren
+        run: python .github/scripts/seocontrole.py
+      - name: Diagnoserapport bewaren
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: pagina-seo-diagnose
+          if-no-files-found: warn
+          retention-days: 1
+          path: |
+            rapport.md
+            seo-rapport.md
+\n'
+            fi
+          done < <(git diff --name-only "$base...$head")
+          {
+            echo "urls<<EOF"
+            printf '%s' "$urls"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
       - uses: actions/setup-node@v4
         with:
           node-version: 24
