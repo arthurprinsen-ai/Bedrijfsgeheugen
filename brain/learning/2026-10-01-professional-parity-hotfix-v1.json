@@ -18,16 +18,15 @@
     "config/brain-delivery-system.json"
   ],
   "compiler": {
-    "failure_class": "canonical-shell-bypass-on-interactive-public-tool"
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
-      {
-        "scenario": "package advisor and portal demo bypass canonical shell",
-        "before": "footer/header contract failed because bespoke pages were excluded from shell projection",
-        "after": "pages remain protected from legacy V18 rewrite but pass through canonical shell and UI normalizer",
-        "expected": "site-wide header, trust bar, mobile menu, footer and contact contract remain identical while page runtime stays interactive"
-      }
+      "tests/brain-website-coherence-v1.test.mjs"
     ]
   }
 }
