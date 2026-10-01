@@ -1,0 +1,35 @@
+{
+  "fingerprint": "pricing|clean-route|terminal-writer|v1",
+  "observed_at": "2026-10-01T09:03:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The canonical commercial pricing content existed in prijzen.html and the Netlify build was green, but the public clean URL /prijzen still served a stale generated prijzen/index.html.",
+  "root_cause": "The commercial pricing composer ran after localized clean-route generation and only rewrote .html sources, leaving clean-route index files stale.",
+  "decision": "The terminal pricing composer must rewrite both source .html files and the public clean-route index files for NL and EN, and visual/production gates must assert the final composed surface.",
+  "prevention": [
+    "Every terminal public-page composer must write the actual clean route served by Netlify.",
+    "Pricing visual regression selectors must match the final composed DOM rather than legacy hero classes.",
+    "Production readback must assert the final composed marker data-bg-commercial-pricing-v1 on /prijzen."
+  ],
+  "compiler": {
+    "failure_class": "PUBLIC_CLEAN_ROUTE_STALE_WRITER",
+    "scope": "PRICING_NL_EN",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "skill_targets": [
+    "pricing",
+    "website",
+    "delivery"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+  ]
+}
