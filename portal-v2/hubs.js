@@ -1,6 +1,5 @@
 import { allPageIds, listPortalGroups, findPage } from './page-registry.js';
 import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
-import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 
 const PORTAL_CORE = Object.freeze([
   'overzicht','profiel','data-ai','ai-scan','kansenkaart','csrd-impact','gegevens-invullen','ingevulde-gegevens','businesscase',
