@@ -74,6 +74,17 @@ async function waitForFontsBounded(page) {
 }
 
 async function loadPublicRoutes() {
+  const scopedRaw = String(process.env.UI_VR_ROUTES_JSON || '').trim();
+  if (scopedRaw) {
+    let scoped;
+    try { scoped = JSON.parse(scopedRaw); } catch (error) {
+      throw new Error(`UI_VR_ROUTES_JSON is invalid JSON: ${error?.message || error}`);
+    }
+    if (!Array.isArray(scoped) || scoped.length === 0) throw new Error('UI_VR_ROUTES_JSON must contain at least one route');
+    const routes = [...new Set(scoped.map(value => String(value || '').trim()).filter(Boolean).map(route => route.startsWith('/') ? route : `/${route}`))];
+    if (!routes.length) throw new Error('UI_VR_ROUTES_JSON did not contain usable routes');
+    return routes;
+  }
   const sitemapUrl = new URL('/sitemap.xml', baseUrl).href;
   const response = await fetch(sitemapUrl, { redirect: 'follow', signal: AbortSignal.timeout(navigationTimeoutMs) });
   if (!response.ok) throw new Error(`Public route inventory unavailable: HTTP ${response.status} ${sitemapUrl}`);
