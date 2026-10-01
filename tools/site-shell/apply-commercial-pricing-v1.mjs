@@ -67,7 +67,7 @@ function page(){
  @media(max-width:1000px){.plans{grid-template-columns:repeat(2,1fr)}.services{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:1fr 1fr}.finder{grid-template-columns:1fr 1fr}}
  @media(max-width:640px){.plans,.services,.flow,.finder{grid-template-columns:1fr}.hero{padding-top:42px}.choice{flex-direction:column}.closing .wrap{display:block}}
  </style>
- <div class="hero"><div class="wrap"><p><b>POWERHOUSE PRIJZEN</b></p><h1>Kies software of expertise.<br><em>Combineer wanneer het nodig is.</em></h1><p>Powerhouse is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.</p><div class="choice"><a class="on" href="#saas">Powerhouse SaaS</a><a class="off" href="#expertise">Consulting & workshops</a></div></div></div>
+ <div class="hero held" data-bg-component="hero"><div class="wrap"><p class="bgkruim"><a href="https://www.bedrijfsgeheugen.nl/">Bedrijfsgeheugen</a> / Prijzen</p><p class="pil"><b>POWERHOUSE PRIJZEN</b></p><h1>Kies software of expertise.<br><em>Combineer wanneer het nodig is.</em></h1><p>Powerhouse is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.</p><div class="choice"><a class="on" href="#saas">Powerhouse SaaS</a><a class="off" href="#expertise">Consulting & workshops</a></div></div></div>
  <div class="wrap">
  <section class="sec" id="saas"><h2>Powerhouse SaaS</h2><p class="sub">Eén platform. Vier niveaus. Altijd op- en downgradebaar. <a href="https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/">Lees ook: wat kost digitalisering voor het MKB?</a></p><div class="plans">${renderSaas()}</div><div class="included"><span>✓ Powerhouse Intelligence</span><span>✓ Powerhouse Agents</span><span>✓ Powerhouse Connect</span><span>✓ Rolgebaseerde acties</span><span>✓ NL / EN</span><span>✓ Security & privacy</span></div></section>
  <section class="sec"><h2>Wat groeit mee met je abonnement?</h2><p class="sub">De kern blijft gelijk; capaciteit, actualiteit, automatisering en governance groeien mee.</p><div class="tablebox"><table><thead><tr><th></th>${catalog.saas.map(p=>`<th>${esc(p.name)}</th>`).join('')}</tr></thead><tbody>${renderMatrix()}</tbody></table></div></section>
@@ -82,6 +82,7 @@ function englishPage(){
   let html=page();
   const replacements=[
     ['POWERHOUSE PRIJZEN','POWERHOUSE PRICING'],
+    [' / Prijzen',' / Pricing'],
     ['Kies software of expertise.','Choose software or expertise.'],
     ['Combineer wanneer het nodig is.','Combine them when needed.'],
     ['Powerhouse is er als software (SaaS), als consulting & workshops, of allebei. Zo kies je wat past bij jouw organisatie, tempo en ambitie.','Powerhouse is available as software (SaaS), consulting & workshops, or both. Choose what fits your organisation, pace and ambition.'],
