@@ -195,4 +195,5 @@ html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${product
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
 console.log(`Accepted historical V18 production homepage restored from pinned payload: ${EXPECTED_HTML_SHA256}`);
-/* footer-legal-live-v3-recheck */
+
+/* footer-legal-live-v3-recheck-2 */
