@@ -1,0 +1,35 @@
+{
+  "fingerprint": "pricing|visual-regression|required-selector-drift|v1",
+  "observed_at": "2026-10-01T10:24:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The canonical pricing composer changed the hero markup, while the visual regression registry still required the removed breadcrumb and pill selectors. The browser gate therefore failed although the rendered pricing page itself passed visibility, CLS and affected-route checks.",
+  "root_cause": "The visual regression registry duplicated structural assumptions from an older pricing implementation instead of tracking stable elements owned by the current commercial pricing composer.",
+  "decision": "Protect the current pricing contract with stable selectors for the canonical hero heading, pricing tabs and plan cards, and assert those selectors against prijzen.html in the Brain regression suite.",
+  "prevention": [
+    "Pricing visual regression selectors must reference current canonical commercial markup.",
+    "A Brain test must fail when the registry and canonical pricing source drift apart.",
+    "Do not use removed decorative elements such as .bgkruim or .pil as required pricing invariants."
+  ],
+  "compiler": {
+    "failure_class": "CI",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "skill_targets": [
+    "website",
+    "pricing",
+    "quality"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-coherence-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-website-coherence-v1.test.mjs"
+  ]
+}
