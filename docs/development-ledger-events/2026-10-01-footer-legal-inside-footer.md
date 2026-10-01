@@ -7,3 +7,5 @@ Productiereadback na PR #3550 liet zien dat de vier juridische/statuslinks nog s
 Herstel: de vier links worden nu direct in die production-core in de echte `<div class="legal">` van de V18-footer geïnjecteerd. De canonical footercomponent bevat dezelfde links en een dedicated Brain-regressietest bewaakt beide bronnen.
 
 PR-scope na automatische opschoning exact gelijkgetrokken met de 14 werkelijke gewijzigde bestanden; pricing-drift blijft buiten deze candidate.
+
+Release-lane contracttest gelijkgetrokken met route-scoped visibility; brede high-risk browsercontracten blijven afzonderlijk fail-closed.
