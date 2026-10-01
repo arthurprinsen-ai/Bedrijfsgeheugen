@@ -2,16 +2,19 @@
   "fingerprint": "website|context|motion|empty-shells|repetition|20261001",
   "observed_at": "2026-10-01T14:13:00+02:00",
   "type": "PREVENTION",
-  "problem": "Live website screenshots showed repeated commercial handoff blocks, empty-looking governance cards, large unused white surfaces and interactions that only changed after a click. The product page also showed a standalone Powerhouse proposition directly above an existing platform hero.",
-  "root_cause": "Generic CSS class names collided with global styles, revenue-link enrichment appended one block per commercial owner instead of composing one contextual handoff, and product truth was injected as an extra section instead of being composed into the page's existing narrative. Interactive demos were implemented as click-only state switches.",
-  "decision": "Namespace page-specific visual components, collapse revenue handoffs per page, enforce one primary hero, weave Intelligence/Agents/Connect into page context, and make meaningful demos self-playing with manual controls and prefers-reduced-motion support.",
+  "problem": "Live website screenshots showed repeated commercial handoff blocks, empty-looking governance cards, large unused white surfaces and interactions that only changed after a click. The product page also showed a standalone Powerhouse proposition directly above an existing platform hero. Full-suite verification also exposed drift between the portal's canonical hub/navigation contracts and its current runtime wiring.",
+  "root_cause": "Generic CSS class names collided with global styles, revenue-link enrichment appended one block per commercial owner instead of composing one contextual handoff, and product truth was injected as an extra section instead of being composed into the page's existing narrative. Interactive demos were implemented as click-only state switches. The desktop runtime used the group model where the canonical explicit item model was required, while Data & AI / Actions hubs omitted registered Brain, recovery and OS routes.",
+  "decision": "Namespace page-specific visual components, collapse revenue handoffs per page, enforce one primary hero, weave Intelligence/Agents/Connect into page context, and make meaningful demos self-playing with manual controls and prefers-reduced-motion support. Restore the canonical flat desktop routing model, expose all registered pages through the full-menu hub, and include Brain/recovery/OS routes in their existing hubs rather than creating parallel navigation.",
   "prevention": [
     "One primary hero per public page; product architecture belongs inside the page narrative.",
     "Generic component names such as .gov are forbidden on complex public tools when they can collide with global styling.",
     "A page may render at most one contextual revenue-handoff block.",
     "Empty dynamic shells must not reserve visible space.",
     "Public interactions labeled interactive must visibly demonstrate state changes without a first click and still remain manually controllable.",
-    "Meaningful motion must respect prefers-reduced-motion."
+    "Meaningful motion must respect prefers-reduced-motion.",
+    "Portal desktop and mobile controls must resolve through canonical explicit routing models.",
+    "The full portal menu must expose the complete registered page estate.",
+    "Brain, recovery and operating-system routes belong in existing Data & AI / Actions hubs rather than parallel shells."
   ],
   "evidence": [
     "ai-modelwijzer.html",
@@ -21,7 +24,13 @@
     "tools/seo-order-engine/apply-revenue-links.mjs",
     "tools/site-shell/finalize-website-coherence-v1.mjs",
     "skills/website-portal-coherence.md",
-    "platform/system-map/canonical-system-map.mjs"
+    "platform/system-map/canonical-system-map.mjs",
+    "portal-v2/hubs.js",
+    "portal-v2/app.js",
+    "tests/portal-v2-hubs.test.mjs",
+    "tests/portal-v2-navigation-contract.test.mjs",
+    "tests/portal-v2-operating-system-routing.test.mjs",
+    "tests/portal-v2-topbar-actions.test.mjs"
   ],
   "compiler": {
     "failure_class": "PRESENTATION_CONTRACT_GAP",
