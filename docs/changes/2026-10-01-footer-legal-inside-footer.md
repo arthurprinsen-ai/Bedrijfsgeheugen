@@ -1,3 +1,3 @@
-# Wijziging: juridische links staan nu in de footer
+# Wijziging: juridische links in de echte productiefooter
 
-De footer bevat nu zichtbaar en rechtstreeks: Algemene gebruiksvoorwaarden, Privacybeleid, Cookiebeleid en Systeemstatus. De links staan in de canonical footer zelf zodat de shell-projectie ze sitebreed meeneemt.
+De vier links — Algemene gebruiksvoorwaarden, Privacybeleid, Cookiebeleid en Systeemstatus — worden nu in de footer van de pinned V18-productiebuild geplaatst. Daarmee overleven ze de Netlify-build die de homepage en sitebrede shell opnieuw opbouwt. De gedeelde footercomponent is hiermee gelijkgetrokken.
