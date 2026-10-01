@@ -1,6 +1,6 @@
 {
   "fingerprint": "website|footer|legal-links-inside-canonical-footer|20261001",
-  "obligation_id": "footer-legal-production-core-20261001",
+  "obligation_id": "footer-legal-links-inside-footer-20261001",
   "compiler": {
     "failure_class": "CLASSIFIER_GAP",
     "scope": "WEBSITE",
