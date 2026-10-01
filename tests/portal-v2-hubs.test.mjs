@@ -17,12 +17,14 @@ test('Project hub exposes the existing native project capabilities', () => {
   for(const id of ['offerte','waarde-financiering','koppelingen','taken-werkstromen','documenten','wijzigingen','gebruikers']) assert.ok(pages.includes(id), id);
 });
 
-test('Data & AI hub exposes source, connector, AI and Brain capabilities', () => {
+test('Data & AI hub exposes customer-facing data and AI capabilities without internal runtime pages', () => {
   const pages=hubPages('data-ai');
-  for(const id of ['data-ai','koppelingen','ai-scan','ai-capabilities','datahubstatus','brain-verwerking','agentstatus']) assert.ok(pages.includes(id), id);
+  for(const id of ['data-ai','koppelingen','ai-scan','ai-capabilities','data-ai-passport','trust-center']) assert.ok(pages.includes(id), id);
+  for(const id of ['datahubstatus','brain-verwerking','agentstatus','powerhouse-control-center']) assert.equal(pages.includes(id),false,id);
 });
 
-test('Taken hub exposes execution, roadmap, recovery and outcomes', () => {
+test('Acties hub exposes customer execution, roadmap and outcomes without recovery internals', () => {
   const pages=hubPages('tasks');
-  for(const id of ['taken-werkstromen','actieve-acties','roadmap','recovery-obligations','outcomes-evidence']) assert.ok(pages.includes(id), id);
+  for(const id of ['taken-werkstromen','actieve-acties','roadmap','advies','outcomes-evidence']) assert.ok(pages.includes(id), id);
+  assert.equal(pages.includes('recovery-obligations'),false,'recovery-obligations');
 });
