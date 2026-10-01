@@ -1,24 +1,25 @@
 {
   "fingerprint": "website|footer|legal-links-inside-canonical-footer|20261001",
-  "obligation_id": "footer-legal-production-core-20261001",
+  "obligation_id": "footer-legal-links-inside-footer-20261001",
   "compiler": {
-    "failure_class": "CLASSIFIER_GAP",
-    "scope": "WEBSITE",
+    "failure_class": "DELIVERY",
+    "scope": "CI",
     "machine_enforceable": true,
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "root_cause": "The Netlify build regenerates index.html from the pinned compressed V18 payload in tools/bouw-v18-production-core.mjs before projecting the site-wide shell. Repository footer edits were therefore overwritten during production build.",
-  "prevention_rule": "Footer requirements must be encoded in both the canonical footer component and the pinned V18 production builder that regenerates the homepage before shell projection.",
+  "root_cause": "The source footer was corrected, but the Netlify production build restores the homepage from a pinned V18 payload before later shell projection. That pinned production artifact still contained the old footer, so production readback correctly showed no legal/status links.",
+  "prevention_rule": "Customer-visible footer changes must be applied at the actual production build authority. For the current site that means the pinned V18 production-core projection plus the reusable footer component; source-only footer edits are not sufficient.",
   "evidence": {
     "tests": [
-      "tests/brain-footer-legal-production-core-v1.test.mjs"
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
     ],
-    "outcome": "Production readback after the previous deploy showed the four requested links absent. This candidate injects them in the actual V18 production builder and mirrors the same contract in the canonical footer component."
+    "expected": "production build authority contains and preserves all four footer legal/status links"
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-footer-legal-production-core-v1.test.mjs"
+      "tests/brain-netlify-premerge-build-parity-v1.test.mjs"
     ]
-  }
+  },
+  "status": "ACTIVE_PREVENTION"
 }
