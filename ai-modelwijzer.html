@@ -52,6 +52,13 @@
 .section:has(#modelGrid:empty) .compareNote{margin-top:0}
 @media(max-width:980px){.mwGovGrid{grid-template-columns:1fr 1fr}}
 @media(max-width:650px){.mwGovGrid{grid-template-columns:1fr}}
+
+.mw-powerhouse-flow{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr) auto minmax(0,1fr);gap:10px;align-items:stretch;margin-top:18px}
+.mw-powerhouse-flow>div{background:#fff;border:1px solid var(--line);border-radius:15px;padding:16px;transition:.25s;min-width:0}
+.mw-powerhouse-flow>div.is-live{border-color:var(--blue);box-shadow:0 0 0 3px var(--blue2);transform:translateY(-3px)}
+.mw-powerhouse-flow small{display:grid;place-items:center;width:25px;height:25px;border-radius:50%;background:var(--yellow);font-weight:800;margin-bottom:8px}
+.mw-powerhouse-flow b,.mw-powerhouse-flow span{display:block}.mw-powerhouse-flow span{font-size:.78rem;color:var(--muted);margin-top:4px}.mw-powerhouse-flow>i{display:grid;place-items:center;font-style:normal;color:var(--blue);font-weight:800}
+@media(max-width:900px){.mw-powerhouse-flow{grid-template-columns:1fr}.mw-powerhouse-flow>i{transform:rotate(90deg);height:14px}}
 </style>
 <script type="application/ld+json">{"@context":"https://schema.org","@graph":[{"@type":"WebApplication","name":"Bedrijfsgeheugen AI Modelwijzer","url":"https://www.bedrijfsgeheugen.nl/ai-modelwijzer","applicationCategory":"BusinessApplication","operatingSystem":"Web","description":"Vergelijk AI-modellen op taak, kosten, kwaliteit, privacy, governance en data-soevereiniteit."},{"@type":"FAQPage","mainEntity":[{"@type":"Question","name":"Wat is het beste AI-model?","acceptedAnswer":{"@type":"Answer","text":"Er is geen universeel beste AI-model. De beste keuze hangt af van taak, kwaliteit, volume, snelheid, governance, privacy, dataresidentie en kosten."}},{"@type":"Question","name":"Is EU data residency hetzelfde als data-soevereiniteit?","acceptedAnswer":{"@type":"Answer","text":"Nee. Dataresidentie beschrijft waar data wordt opgeslagen of verwerkt. Data-soevereiniteit omvat daarnaast onder meer providerjurisdictie, subprocessors, contractuele controle, sleutelbeheer en de mogelijkheid om in eigen cloud of on-premise te draaien."}}]}]}</script>
 </head>
@@ -151,6 +158,19 @@
 <div class="result" id="result"><div class="resultTop"><div class="recommendations" id="recommendations"></div><aside class="route" id="route"></aside></div></div>
 </div>
 </section>
+
+<section class="section"><div class="wrap">
+  <div class="eyebrow">Waar je advies in Powerhouse landt</div>
+  <h2>Een modelkeuze is pas waardevol als hij onderdeel wordt van het werk.</h2>
+  <p class="sectionLead">De Modelwijzer levert de keuzecriteria. Powerhouse gebruikt die vervolgens in dezelfde lus: begrijpen wat er nodig is, een passende agent of workflow kiezen, uitvoeren in je systemen en het resultaat terugmeten.</p>
+  <div class="mw-powerhouse-flow" aria-label="Powerhouse modelkeuze flow">
+    <div data-mw-flow="0"><small>1</small><b>Modelwijzer</b><span>Taak, kosten, privacy en governance.</span></div>
+    <i>→</i><div data-mw-flow="1"><small>2</small><b>Intelligence</b><span>Zet de keuze in bedrijfscontext.</span></div>
+    <i>→</i><div data-mw-flow="2"><small>3</small><b>Agents</b><span>Voert taken en workflows uit.</span></div>
+    <i>→</i><div data-mw-flow="3"><small>4</small><b>Connect</b><span>Werkt met AFAS, Exact, M365 en API's.</span></div>
+    <i>→</i><div data-mw-flow="4"><small>5</small><b>Leren</b><span>Meet kwaliteit, kosten en resultaat.</span></div>
+  </div>
+</div></section>
 
 <section class="section"><div class="wrap">
 <div class="eyebrow">Volledig register</div><h2>Vergelijk modellen naast elkaar</h2>
@@ -418,4 +438,6 @@ $('advise').addEventListener('click',advise);
 $('leadForm').addEventListener('submit',async e=>{e.preventDefault();const email=$('email').value.trim(),status=$('leadStatus');status.textContent='Opslaan…';const advice=lastAdvice||{model:'not-selected',goal:$('goalInput').value.trim()};const idempotencyKey='ai-modelwijzer:'+email.toLowerCase()+':'+advice.model;try{const r=await fetch('https://www.bedrijfsgeheugen.nl/api/ai-modelwijzer-lead',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,model:advice.model,goal:advice.goal,idempotencyKey})});const j=await r.json();status.textContent=j.ok?'Opgeslagen. Je modelkeuze zit nu in de vervolgstap.':'Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}catch{status.textContent='Opslaan lukte niet. Gebruik de Bedrijfslek of contactroute.';}});
 init();
 </script>
-</body></html>
+<script data-bg-page-runtime="modelwijzer-flow-autoplay-v1">
+(function(){const nodes=[...document.querySelectorAll('[data-mw-flow]')];if(!nodes.length||matchMedia('(prefers-reduced-motion: reduce)').matches)return;let i=0;function step(){nodes.forEach((n,x)=>n.classList.toggle('is-live',x===i));i=(i+1)%nodes.length}step();setInterval(step,2200)})();
+</script></body></html>
