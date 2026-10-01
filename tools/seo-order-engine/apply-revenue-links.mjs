@@ -33,6 +33,29 @@ function ensureStyle(html){
   const style='<style id="bg-revenue-links-style">.bg-revenue-links{max-width:1120px;margin:2rem auto 3rem;padding:1.2rem 1.35rem;border:1px solid #dcdfe6;border-radius:16px;background:#fff}.bg-revenue-links h2{margin:0 0 .35rem;font-size:clamp(1.15rem,3vw,1.55rem)}.bg-revenue-links p{margin:.15rem 0 .9rem;color:#5c646e}.bg-revenue-links__items{display:flex;gap:.65rem;flex-wrap:wrap}.bg-revenue-links a{display:inline-flex;min-height:44px;align-items:center;padding:.65rem .9rem;border-radius:10px;border:1px solid #2742d6;color:#2742d6!important;font-weight:700;text-decoration:none}.bg-revenue-links a[data-bg-revenue-cta]{background:#2742d6;color:#fff!important}</style>';
   return html.replace(/<\/head>/i,style+'\n</head>');
 }
+
+function normalizeRevenueBlocks(input){
+  let html=String(input);
+  const re=/<section\b[^>]*class=(["'])[^"']*\bbg-revenue-links\b[^"']*\1[^>]*>[\s\S]*?<\/section>/gi;
+  const blocks=[...html.matchAll(re)];
+  if(blocks.length<=1) return html;
+  const anchors=[];
+  const seen=new Set();
+  for(const block of blocks){
+    for(const a of block[0].matchAll(/<a\b[^>]*href=(["'])([^"']+)\1[^>]*>[\s\S]*?<\/a>/gi)){
+      const key=a[2];
+      if(seen.has(key)) continue;
+      seen.add(key);
+      anchors.push(a[0]);
+    }
+  }
+  const en=/\blang=(["'])en\1/i.test(html)||/\/en\//i.test(canonicalOf(html));
+  const merged='<section class="bg-revenue-links" data-bg-revenue-links="v2"><h2>'+(en?'Continue in Powerhouse':'Verder in Powerhouse')+'</h2><p>'+(en?'Choose the next step that fits what you are viewing now.':'Kies de vervolgstap die past bij wat je op deze pagina bekijkt.')+'</p><div class="bg-revenue-links__items">'+anchors.join('')+'</div></section>';
+  let first=true;
+  html=html.replace(re,()=>{if(first){first=false;return merged}return ''});
+  return html;
+}
+
 async function htmlPaths(){
   const out=[];
   for await(const p of glob('*.html')) out.push(p);
@@ -103,6 +126,7 @@ export async function applyRevenueLinks(){
     }
   }
   for(const page of pages.values()){
+    page.html=normalizeRevenueBlocks(page.html);
     const original=await readFile(page.path,'utf8');
     if(page.html!==original){await writeFile(page.path,page.html,'utf8');changed++;}
   }
