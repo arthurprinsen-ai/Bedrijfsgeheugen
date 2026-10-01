@@ -90,3 +90,16 @@ test('product page keeps one primary hero and embeds Powerhouse model in context
   assert.match(finalizer,/legacySection/);
   assert.match(finalizer,/firstSection/);
 });
+
+
+test('final pixel polish locks pricing, header and responsive portal geometry',()=>{
+  const portalCss=readFileSync('portal-v2/site-parity-v1.css','utf8');
+  assert.match(css,/Final visual pixel polish/);
+  assert.match(css,/\.bgkop\{min-height:72px\}/);
+  assert.match(css,/height:52px!important/);
+  assert.match(css,/section,\.sec\):empty/);
+  assert.match(portalCss,/Final responsive portal polish/);
+  assert.match(portalCss,/max-height:380px/);
+  assert.match(portalCss,/brainflow \.brainnode:last-child\{grid-column:1\/-1\}/);
+  assert.match(portalCss,/\.kpis\{grid-template-columns:1fr!important\}/);
+});
