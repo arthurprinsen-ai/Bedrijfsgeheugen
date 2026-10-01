@@ -90,3 +90,14 @@ test('product page keeps one primary hero and embeds Powerhouse model in context
   assert.match(finalizer,/legacySection/);
   assert.match(finalizer,/firstSection/);
 });
+
+
+test('key route metadata survives terminal build',()=>{
+  assert.match(finalizer,/\/pakketadvies/);
+  assert.match(finalizer,/Welk Powerhouse-pakket past bij mij\?/);
+  assert.match(finalizer,/Interactieve Powerhouse portaal-demo/);
+  assert.match(finalizer,/Kosten digitalisering mkb \| Powerhouse prijzen/);
+  assert.match(finalizer,/ensureRouteMetadata/);
+  assert.match(finalizer,/og:title/);
+  assert.match(finalizer,/twitter:title/);
+});
