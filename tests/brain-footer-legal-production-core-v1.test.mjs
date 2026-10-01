@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 
 const core = readFileSync('tools/bouw-v18-production-core.mjs','utf8');
 const footer = readFileSync('components/footer/footer.html','utf8');
+const contracts = readFileSync('tools/site-shell/contracts.mjs','utf8');
 
 const links = [
   ['Algemene gebruiksvoorwaarden','https://www.bedrijfsgeheugen.nl/gebruiksvoorwaarden'],
@@ -26,5 +27,11 @@ test('canonical footer component mirrors the same legal/status contract', () => 
   for (const [label, href] of links) {
     assert.ok(footer.includes(label), `footer component missing ${label}`);
     assert.ok(footer.includes(href), `footer component missing ${href}`);
+  }
+});
+
+test('legal/status destinations are recognized as public utility routes', () => {
+  for (const route of ['/gebruiksvoorwaarden','/cookiebeleid','/systeemstatus']) {
+    assert.ok(contracts.includes(route), `public utility route missing ${route}`);
   }
 });
