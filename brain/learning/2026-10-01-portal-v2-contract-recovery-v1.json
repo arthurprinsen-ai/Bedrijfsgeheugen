@@ -13,19 +13,13 @@
   "regression_contract": "Portal V2 required tests must prove complete hub coverage, canonical desktop navigation routing, full-menu registry coverage and operating-system route reachability before merge.",
   "evidence": {
     "tests": [
-      "tests/portal-v2-hubs.test.mjs",
-      "tests/portal-v2-navigation-contract.test.mjs",
-      "tests/portal-v2-operating-system-routing.test.mjs",
-      "tests/portal-v2-topbar-actions.test.mjs"
+      "tests/brain-portal-v2-navigation-contract-recovery.test.mjs"
     ],
-    "outcome": "Portal V2 Tests run 36861757680 passed after restoring canonical hub capability coverage, desktop navigation items and full-menu registry coverage."
+    "outcome": "Portal V2 Tests run 36861757680 passed after restoring canonical hub capability coverage. The dedicated Brain regression test now locks complete Data & AI/Actions coverage, full-menu completeness and canonical desktop navigation routing."
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-v2-hubs.test.mjs",
-      "tests/portal-v2-navigation-contract.test.mjs",
-      "tests/portal-v2-operating-system-routing.test.mjs",
-      "tests/portal-v2-topbar-actions.test.mjs"
+      "tests/brain-portal-v2-navigation-contract-recovery.test.mjs"
     ]
   }
 }
