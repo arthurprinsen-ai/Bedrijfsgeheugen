@@ -41,3 +41,49 @@ test('pricing composer preserves canonical visual-regression hero hooks',()=>{
   assert.match(pricing,/class="bgkruim"/);
   assert.match(pricing,/class="choice pil"/);
 });
+
+
+test('product proposition is contextual rather than internal implementation copy',()=>{
+  assert.doesNotMatch(finalizer,/Website en portaal vertellen voortaan exact hetzelfde verhaal/);
+  assert.match(finalizer,/Van losse informatie naar een bedrijf dat zichzelf beter bestuurt/);
+  assert.match(finalizer,/Powerhouse Intelligence/);
+  assert.match(finalizer,/Powerhouse Agents/);
+  assert.match(finalizer,/Powerhouse Connect/);
+  assert.match(finalizer,/\/ai-modelwijzer/);
+  assert.match(finalizer,/\/portaal-demo/);
+});
+
+test('product proposition is inserted after the actual product hero',()=>{
+  assert.match(finalizer,/class=.*pr-hero/);
+  assert.match(finalizer,/const hero=html\.match/);
+});
+
+test('package advisor and professional portal demo are real routes',()=>{
+  const pricing=readFileSync('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  const advisor=readFileSync('pakketadvies.html','utf8');
+  const demo=readFileSync('portaal-demo.html','utf8');
+  assert.match(pricing,/\/pakketadvies\?/);
+  assert.match(pricing,/id="pkgGo"/);
+  assert.match(advisor,/PAKKETADVIES/);
+  assert.match(advisor,/Powerhouse Intelligence|Intelligence/);
+  assert.match(demo,/INTERACTIEVE PORTAAL-DEMO/);
+  assert.match(demo,/Powerhouse Agents/);
+  assert.match(demo,/Powerhouse Connect/);
+});
+
+test('pricing CTAs and portal visuals are layout-contained',()=>{
+  const pricing=readFileSync('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  const portalCss=readFileSync('portal-v2/site-parity-v1.css','utf8');
+  assert.match(pricing,/display:flex;flex-direction:column;height:100%/);
+  assert.match(pricing,/min-height:50px/);
+  assert.match(portalCss,/max-height:430px/);
+  assert.match(portalCss,/overflow:hidden/);
+});
+
+test('canonical navigation exposes current AI routes',()=>{
+  const header=readFileSync('components/header/header.html','utf8');
+  const footer=readFileSync('components/footer/footer.html','utf8');
+  assert.match(header,/\/ai-modelwijzer/);
+  assert.match(header,/\/ai-governance/);
+  assert.match(footer,/\/ai-modelwijzer/);
+});
