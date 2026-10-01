@@ -220,6 +220,22 @@ function englishPage(){
     ['60 dagen pro-toegang','60 days Pro access']
   ];
   for(const [from,to] of replacements) html=html.split(from).join(to);
+  const residuals=[
+    ['Directie & AI Workshop','Executive & AI Workshop'],
+    ['Voorbereiding & analyse','Preparation & analysis'],
+    ['Bedrijfsgeheugen Scan','Bedrijfsgeheugen Scan'],
+    ['Integraties met jouw systemen','Integrations with your systems'],
+    ['De betaalde waarde van een Executive & AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive & AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
+    ['De betaalde waarde van een Directie & AI Workshop of Bedrijfsgeheugen Scan wordt verrekend met een aansluitende Build Sprint wanneer die binnen 30 days start.','The paid value of an Executive & AI Workshop or Bedrijfsgeheugen Scan is credited toward a Build Sprint that starts within 30 days.'],
+    ['Tijdens de uitvoering krijg je Pro- of Growth access.','During delivery you receive Pro or Growth access.'],
+    ['Tijdens de uitvoering krijg je Pro- of Groei-toegang.','During delivery you receive Pro or Growth access.'],
+    ['maand','month'],
+    ['pro access','Pro access'],
+    ['groei access','Growth access'],
+    ['pro-toegang','Pro access'],
+    ['groei-toegang','Growth access']
+  ];
+  for(const [from,to] of residuals) html=html.split(from).join(to);
   html=html
     .replaceAll('https://www.bedrijfsgeheugen.nl/afsluiten','https://www.bedrijfsgeheugen.nl/en/afsluiten')
     .replaceAll('https://www.bedrijfsgeheugen.nl/contact','https://www.bedrijfsgeheugen.nl/en/contact')
