@@ -12,13 +12,18 @@ test('canonical pricing source contains SaaS and consulting offers before build 
 });
 
 test('pricing integrity and production proof enforce the new commercial surface', async()=>{
-  const [integrity,workflow,browser]=await Promise.all([
+  const [integrity,workflow,browser,composer,visual]=await Promise.all([
     readFile('tools/site-shell/pricing-build-integrity.mjs','utf8'),
     readFile('.github/workflows/production-source-snapshot.yml','utf8'),
-    readFile('tools/site-shell/verify-pricing-i18n-production.mjs','utf8')
+    readFile('tools/site-shell/verify-pricing-i18n-production.mjs','utf8'),
+    readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8'),
+    readFile('config/ui-visual-regression.json','utf8')
   ]);
   for(const token of ['€ 99','€ 299','€ 749','Directie & AI Workshop','Combineer zonder dubbel te betalen']) assert.ok(integrity.includes(token));
   assert.ok(workflow.includes('COMMERCIAL_PRICING_PRODUCTION_CONTENT_PROVEN'));
-  assert.ok(workflow.includes('data-tab="consulting"'));
+  assert.ok(workflow.includes('data-bg-commercial-pricing-v1'));
+  assert.ok(composer.includes("apply('prijzen/index.html','nl')"));
+  assert.ok(composer.includes("apply('en/prijzen/index.html','en')"));
+  assert.ok(visual.includes('[data-bg-commercial-pricing-v1]'));
   assert.ok(browser.includes('COMMERCIAL_PRICING_I18N_PRODUCTION_PROVEN'));
 });
