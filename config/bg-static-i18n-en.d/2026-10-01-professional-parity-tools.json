@@ -51,5 +51,9 @@
   ". Weet je nog niet welk niveau past?": ". Not sure which level fits yet?",
   "De wijzer maakt eerst een praktische shortlist en adviseert daarna ook of één model genoeg is of dat een": "The guide first creates a practical shortlist and then also advises whether one model is enough or whether a",
   "modelmix met routering": "model mix with routing",
-  "slimmer is: licht/goedkoop voor standaardwerk, zwaarder alleen bij complexiteit of risico. Kosten blijven indicatief: werkelijk gebruik, retries, tooling en contractprijzen kunnen afwijken.": "is smarter: lightweight/low-cost for standard work, heavier models only for complexity or risk. Costs remain indicative: actual usage, retries, tooling and contract pricing may vary."
+  "slimmer is: licht/goedkoop voor standaardwerk, zwaarder alleen bij complexiteit of risico. Kosten blijven indicatief: werkelijk gebruik, retries, tooling en contractprijzen kunnen afwijken.": "is smarter: lightweight/low-cost for standard work, heavier models only for complexity or risk. Costs remain indicative: actual usage, retries, tooling and contract pricing may vary.",
+  "AI-modelwijzer": "AI model guide",
+  "AI-governance": "AI governance",
+  "Vergelijk modellen op taak, kosten, governance en data": "Compare models by task, cost, governance and data",
+  "Rollen, kaders en controle rond AI-gebruik": "Roles, guardrails and control for AI use"
 }
