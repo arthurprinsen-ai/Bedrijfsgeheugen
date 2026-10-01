@@ -8,7 +8,7 @@ const canonicalOrigin = 'https://www.bedrijfsgeheugen.nl';
 const navigationTimeoutMs = Number(process.env.UI_VR_NAVIGATION_TIMEOUT_MS || 8000);
 const fontReadyTimeoutMs = Number(process.env.UI_VR_FONT_READY_TIMEOUT_MS || 1500);
 const totalBudgetMs = Number(process.env.UI_VR_TOTAL_BUDGET_MS || 8 * 60 * 1000);
-const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 2 : 4)));
+const routeConcurrency = Math.max(1, Number(process.env.UI_VR_ROUTE_CONCURRENCY || (baseUrl.includes('deploy-preview-') ? 1 : 4)));
 const cleanupTimeoutMs = Number(process.env.UI_VR_CLEANUP_TIMEOUT_MS || 5000);
 const startedAt = Date.now();
 let cleanupTimedOut = false;
@@ -50,7 +50,8 @@ function assertBudget(route, viewport) {
 async function openReachable(page, url) {
   let last;
   const transientStatuses = new Set([403, 408, 425, 429, 500, 502, 503, 504]);
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  const maxAttempts = baseUrl.includes('deploy-preview-') ? 6 : 3;
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
     try {
       const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: navigationTimeoutMs });
       const status = response?.status() ?? null;
@@ -58,7 +59,7 @@ async function openReachable(page, url) {
       last = new Error(`HTTP ${status ?? 'no-response'} ${url}`);
       if (status && !transientStatuses.has(status)) break;
     } catch (error) { last = error; }
-    if (attempt < 3) await sleep(750 * attempt);
+    if (attempt < maxAttempts) await sleep((baseUrl.includes('deploy-preview-') ? 1500 : 750) * attempt);
   }
   throw last || new Error(`Could not load ${url}`);
 }
@@ -124,6 +125,17 @@ try {
             try {
               await openReachable(page, url);
               await waitForFontsBounded(page);
+              // Give progressive-enhancement/reveal code a bounded window to settle.
+              // We still fail if core content is not visibly rendered after this window.
+              try {
+                await page.waitForFunction(() => {
+                  const el = document.querySelector('main h1');
+                  if (!el) return false;
+                  const r = el.getBoundingClientRect();
+                  const s = getComputedStyle(el);
+                  return r.width >= 1 && r.height >= 1 && s.display !== 'none' && s.visibility !== 'hidden' && Number(s.opacity) > 0;
+                }, null, { timeout: 2000 });
+              } catch {}
               await sleep(150);
               const state = await page.evaluate(() => {
                 const inspect = selector => {
