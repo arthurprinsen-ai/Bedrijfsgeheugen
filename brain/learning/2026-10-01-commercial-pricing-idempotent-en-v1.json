@@ -1,0 +1,34 @@
+{
+  "fingerprint": "pricing|composer|idempotent-en|v1",
+  "observed_at": "2026-10-01T09:17:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The English pricing route could keep stale partially translated pricing when the composer skipped pages that already contained the pricing marker.",
+  "root_cause": "The pricing composer treated the presence of data-bg-commercial-pricing-v1 as proof that the current locale output was already canonical, so EN could retain an earlier transformed page.",
+  "decision": "Always replace the pricing page main content from the canonical locale renderer on every build for both NL and EN.",
+  "prevention": [
+    "Pricing generation must be idempotent and locale-authoritative.",
+    "Presence of a prior pricing marker is never sufficient to skip locale regeneration."
+  ],
+  "compiler": {
+    "failure_class": "PRICING_LOCALE_STALE_MARKER",
+    "scope": "PUBLIC_PRICING_BUILD",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "status": "ACTIVE_PREVENTION",
+  "skill_targets": [
+    "pricing",
+    "website",
+    "i18n"
+  ],
+  "revision": 1,
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+    ]
+  },
+  "test_evidence": [
+    "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
+  ]
+}
