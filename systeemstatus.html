@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Systeemstatus — Bedrijfsgeheugen</title>
+<meta name="description" content="Live controle van de belangrijkste publieke onderdelen van Bedrijfsgeheugen.">
+<link rel="canonical" href="https://www.bedrijfsgeheugen.nl/systeemstatus">
+<link rel="stylesheet" href="https://www.bedrijfsgeheugen.nl/assets/stijl.css">
+<link rel="stylesheet" href="https://www.bedrijfsgeheugen.nl/assets/kop.css">
+<style>
+:root{--papier:#FBFAF7;--inkt:#14171A;--blauw:#2742D6;--lijn:#DCDFE6;--grijs:#5C646E}
+*{box-sizing:border-box}body{margin:0;background:var(--papier);color:var(--inkt);font:16px/1.7 system-ui,-apple-system,"Segoe UI",Roboto,Arial,sans-serif}
+.legal-wrap{max-width:900px;margin:0 auto;padding:56px 24px 72px}.legal-home{display:inline-flex;margin-bottom:32px;font-weight:700;color:var(--blauw);text-decoration:none}
+.legal-eyebrow{font-size:.76rem;letter-spacing:.12em;text-transform:uppercase;font-weight:800;color:#C2410C}.legal-wrap h1{font-size:clamp(2.2rem,5vw,4rem);line-height:1.04;margin:.5rem 0 1rem}
+.legal-intro{font-size:1.12rem;color:#3C424A;max-width:720px;margin:0 0 2rem}.legal-card{background:#fff;border:1px solid var(--lijn);border-radius:18px;padding:28px 30px;margin:18px 0}
+.legal-card h2{margin:0 0 .6rem;font-size:1.35rem}.legal-card p,.legal-card li{color:#3C424A}.legal-card ul{padding-left:1.25rem}.legal-meta{font-size:.88rem;color:var(--grijs);margin-top:2rem}
+.legal-footer{background:#14171A;color:#C8CBD2;padding:32px 24px}.legal-footer-in{max-width:1120px;margin:0 auto;display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}.legal-footer a{color:#fff}
+.bg-legal-footer{background:#FBFAF7;color:#5C646E;border-top:1px solid #DCDFE6;border-bottom:1px solid #DCDFE6}.bg-legal-footer-in{max-width:1120px;margin:0 auto;padding:1.05rem 1.5rem;display:flex;gap:1.1rem;flex-wrap:wrap;font-size:.82rem}.bg-legal-footer a{color:#5C646E;text-decoration:none}
+</style>
+</head>
+<body>
+<main class="legal-wrap">
+<a class="legal-home" href="https://www.bedrijfsgeheugen.nl/">← Bedrijfsgeheugen.nl</a>
+<div class="legal-eyebrow">Beschikbaarheid</div>
+<h1>Systeemstatus</h1>
+<p class="legal-intro">Live controle van de belangrijkste publieke onderdelen van Bedrijfsgeheugen.</p>
+<section class="legal-card"><h2>Actuele status</h2><p>Deze pagina controleert vanuit je browser of de belangrijkste publieke onderdelen bereikbaar zijn.</p>
+<div id="statusRows" style="display:grid;gap:10px;margin-top:18px">
+<div data-url="https://www.bedrijfsgeheugen.nl/" style="display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-top:1px solid #DCDFE6"><strong>Website</strong><span>Controleren…</span></div>
+<div data-url="https://www.bedrijfsgeheugen.nl/product" style="display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-top:1px solid #DCDFE6"><strong>Portaalpagina</strong><span>Controleren…</span></div>
+<div data-url="https://www.bedrijfsgeheugen.nl/zelfscan" style="display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-top:1px solid #DCDFE6"><strong>Zelfscan</strong><span>Controleren…</span></div>
+<div data-url="https://www.bedrijfsgeheugen.nl/frisse-blik" style="display:flex;justify-content:space-between;gap:16px;padding:13px 0;border-top:1px solid #DCDFE6"><strong>Frisse blik</strong><span>Controleren…</span></div>
+</div></section>
+<section class="legal-card"><h2>Storing melden</h2><p>Werkt een onderdeel niet of zie je iets dat niet klopt? Mail naar <a href="mailto:arthur@bedrijfsgeheugen.nl">arthur@bedrijfsgeheugen.nl</a> en vermeld welke pagina of functie het betreft.</p></section>
+<p class="legal-meta">Laatst bijgewerkt: 1 oktober 2026.</p>
+</main>
+<footer class="legal-footer"><div class="legal-footer-in"><span>© 2026 Bedrijfsgeheugen.nl</span><span><a href="https://www.bedrijfsgeheugen.nl/contact">Contact</a></span></div></footer>
+<div class="bg-legal-footer" data-bg-legal-links="1"><div class="bg-legal-footer-in">
+<a href="https://www.bedrijfsgeheugen.nl/gebruiksvoorwaarden">Algemene gebruiksvoorwaarden</a>
+<a href="https://www.bedrijfsgeheugen.nl/privacy">Privacybeleid</a>
+<a href="https://www.bedrijfsgeheugen.nl/cookiebeleid">Cookiebeleid</a>
+<a href="https://www.bedrijfsgeheugen.nl/systeemstatus">Systeemstatus</a>
+</div></div>
+<script>
+(async function(){
+ const rows=[...document.querySelectorAll('#statusRows [data-url]')];
+ for(const row of rows){
+   const out=row.querySelector('span');
+   try{
+     const controller=new AbortController();const timer=setTimeout(()=>controller.abort(),6000);
+     const r=await fetch(row.dataset.url,{method:'GET',cache:'no-store',signal:controller.signal});
+     clearTimeout(timer);
+     out.textContent=r.ok?'Beschikbaar':'Probleem gedetecteerd';
+     out.style.fontWeight='700';
+     out.style.color=r.ok?'#166534':'#B42318';
+   }catch(e){out.textContent='Niet bereikbaar';out.style.fontWeight='700';out.style.color='#B42318';}
+ }
+})();</script>
+<script src="https://www.bedrijfsgeheugen.nl/assets/stijl.js" defer></script>
+</body>
+</html>
