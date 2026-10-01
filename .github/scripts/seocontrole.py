@@ -325,7 +325,10 @@ def main():
 
     for url, p in sorted(P.items()):
         naam = os.path.basename(p['bestand'])[:-5]
-        if naam in GEEN_LINKEIS:
+        # noindex utility/conversion routes are intentionally not SEO entry points.
+        # They may be reached from conversion flows without needing crawl-authority targets,
+        # so they must not fail the orphan-page gate.
+        if naam in GEEN_LINKEIS or 'noindex' in p['ruw']:
             continue
         n_in = len(inkomend[url])
         if n_in == 0:
