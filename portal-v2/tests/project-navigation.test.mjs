@@ -8,7 +8,7 @@ test('mobile navigation has exactly one Project entry between Overview and Data 
     ['overview','Overzicht'],
     ['project','Project'],
     ['data-ai','Data & AI'],
-    ['tasks','Taken'],
+    ['tasks','Acties'],
     ['more','Meer']
   ]);
   assert.equal(mobileTarget('project'),'hub:project');
