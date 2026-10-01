@@ -13,3 +13,5 @@ Release-lane contracttest gelijkgetrokken met route-scoped visibility; brede hig
 Browser-runtime regressietest toegevoegd en PR-scope exact bijgewerkt naar de actuele gewijzigde bestanden.
 
 CI-trigger-budgetcontract bijgewerkt voor de route-scoped visibility-gate; brede high-risk browserchecks blijven apart verplicht.
+
+Baselinecontracten voor affected-route visibility en begrensde Netlify-preview retries bijgewerkt; scope exact 21 bestanden.
