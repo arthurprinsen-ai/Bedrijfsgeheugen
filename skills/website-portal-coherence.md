@@ -23,3 +23,10 @@ Bij nieuwe publieke pagina's of globale styles moet de regressietest `tests/brai
 - Every visual model is container-bounded on desktop and mobile; SVG/canvas/media may never escape its card.
 - Intelligence, Agents and Connect are the canonical product lines. AI Modelwijzer, AI Capability Model and AI Governance remain discoverable from canonical navigation or a directly related product surface.
 - Contact always resolves to /contact; generated and runtime CTAs are subject to the same route rule.
+
+## Self-playing interaction invariant
+- “Interactief” op publieke pagina’s betekent zichtbaar gedrag zonder dat de bezoeker eerst hoeft te klikken: een relevante flow beweegt of wisselt zelfstandig en blijft handmatig bedienbaar.
+- Respecteer `prefers-reduced-motion`; automatische beweging stopt of blijft statisch voor bezoekers die minder beweging vragen.
+- Interactie is inhoudelijk: beweging toont de gesloten Powerhouse-lus of een concrete productflow en is nooit decoratieve animatie zonder betekenis.
+- Publieke pagina’s hebben maximaal één primaire hero. Productlijnen, Agents, Intelligence en Connect worden in de context van die pagina verweven in plaats van als losse tweede propositie erboven of eronder te worden geplakt.
+- Geen lege kaarten, lege dynamische grids, grote nutteloze witruimtes of herhaalde “Gerelateerde oplossing”-blokken. Meerdere commerciële vervolgstappen worden gebundeld in één contextueel Powerhouse-vervolgblok.
