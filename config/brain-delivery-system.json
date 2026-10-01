@@ -500,7 +500,10 @@
         "config/powerhouse-ai-model-intelligence-v1.json",
         "tests/ai-model-",
         "pakketadvies.html",
-        "portaal-demo.html"
+        "portaal-demo.html",
+        "gebruiksvoorwaarden.html",
+        "cookiebeleid.html",
+        "systeemstatus.html"
       ],
       "requiredContracts": [
         "BG166",
