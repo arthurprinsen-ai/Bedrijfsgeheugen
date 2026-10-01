@@ -92,17 +92,10 @@ const productTruthEn=`
 </section>`;
 
 function ensureProductTruth(html,route){
-  if(!['/product','/en/product'].includes(route) || html.includes('data-bg-product-truth-v1')) return html;
-  const section=route==='/en/product'?productTruthEn:productTruth;
-  const hero=html.match(/<section\b[^>]*class=(["'])[^"']*\bpr-hero\b[^"']*\1[^>]*>[\s\S]*?<\/section>/i);
-  if(hero){
-    const at=(hero.index||0)+hero[0].length;
-    return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
-  }
-  const main=html.match(/<main\b[^>]*>/i);
-  if(!main) return html;
-  const at=(main.index||0)+main[0].length;
-  return html.slice(0,at)+'\n'+section+'\n'+html.slice(at);
+  if(!['/product','/en/product'].includes(route)) return html;
+  // Product proposition now lives inside the canonical product hero.
+  // Remove any older standalone injection so a page can never have two competing heroes.
+  return String(html).replace(/<section class="bg-product-truth-v1"[^>]*data-bg-product-truth-v1[\s\S]*?<\/section>\s*/gi,'');
 }
 
 function failKnownBroken(html,path){
