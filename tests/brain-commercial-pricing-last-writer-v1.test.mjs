@@ -27,3 +27,13 @@ test('English pricing composer removes residual Dutch commercial copy', async()=
   const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
   for(const token of ['Executive & AI Workshop','Preparation & analysis','Integrations with your systems','During delivery you receive Pro or Growth access.','Growth access']) assert.ok(source.includes(token), token);
 });
+
+test('pricing source closes SEO diagnostics and final composer preserves backlink', async()=>{
+  const pricing=await readFile('prijzen.html','utf8');
+  const renderer=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  assert.ok(pricing.includes('<title>Kosten digitalisering MKB | Powerhouse prijzen</title>'));
+  assert.ok(pricing.includes('https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/'));
+  assert.ok(renderer.includes('https://www.bedrijfsgeheugen.nl/blog/wat-kost-digitalisering-mkb/'));
+  assert.ok(!pricing.toLowerCase().includes('strategisch'));
+  assert.ok(!pricing.toLowerCase().includes('strategische'));
+});
