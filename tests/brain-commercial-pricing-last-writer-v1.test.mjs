@@ -1,0 +1,24 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+
+test('canonical pricing source contains SaaS and consulting offers before build transforms', async()=>{
+  const html=await readFile('prijzen.html','utf8');
+  for(const token of ['Powerhouse SaaS','Starter','Pro','Groei','Enterprise','Directie & AI Workshop','Bedrijfsgeheugen Scan','Build Sprint','Transformation / Fractional Lead','Combineer zonder dubbel te betalen']){
+    assert.ok(html.includes(token), 'missing '+token);
+  }
+  assert.match(html,/data-tab="saas"/);
+  assert.match(html,/data-tab="consulting"/);
+});
+
+test('pricing integrity and production proof enforce the new commercial surface', async()=>{
+  const [integrity,workflow,browser]=await Promise.all([
+    readFile('tools/site-shell/pricing-build-integrity.mjs','utf8'),
+    readFile('.github/workflows/production-source-snapshot.yml','utf8'),
+    readFile('tools/site-shell/verify-pricing-i18n-production.mjs','utf8')
+  ]);
+  for(const token of ['€ 99','€ 299','€ 749','Directie & AI Workshop','Combineer zonder dubbel te betalen']) assert.ok(integrity.includes(token));
+  assert.ok(workflow.includes('COMMERCIAL_PRICING_PRODUCTION_CONTENT_PROVEN'));
+  assert.ok(workflow.includes('data-tab="consulting"'));
+  assert.ok(browser.includes('COMMERCIAL_PRICING_I18N_PRODUCTION_PROVEN'));
+});
