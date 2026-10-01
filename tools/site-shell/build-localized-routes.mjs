@@ -14,6 +14,7 @@ const TRANSLATION_CACHE_FILE = path.join(ROOT,'config','bg-static-i18n-en.json')
 const TRANSLATION_CACHE_PATCH_DIR = path.join(ROOT,'config','bg-static-i18n-en.d');
 const SITEMAP_FILE = path.join(ROOT,'sitemap.xml');
 const SEO_LOCALE_REVENUE_MAP_FILE = path.join(ROOT,'site','seo-locale-revenue-map.json');
+const LOCALIZED_ROUTE_EXCLUDES = new Set(['/pakketadvies','/portaal-demo']);
 const ESSENTIAL_ROUTES = new Set([
   '/', '/oplossingen', '/platform', '/prijzen', '/cases', '/kennis', '/over-ons',
   '/zelfscan', '/frisse-blik', '/inloggen', '/aanmelden', '/contact', '/privacy'
@@ -697,7 +698,7 @@ async function translateAll(strings) {
 
 const discoveredFiles = walk(ROOT).sort();
 const publicRoutes = publicRoutesFromSitemap();
-const files = discoveredFiles.filter(file => publicRoutes.has(normalizedRoute(routeFor(file))));
+const files = discoveredFiles.filter(file => publicRoutes.has(normalizedRoute(routeFor(file))) && !LOCALIZED_ROUTE_EXCLUDES.has(normalizedRoute(routeFor(file))));
 const aliases = routeAliases(files);
 if (!files.length) throw new Error('No public HTML files selected for localized build');
 console.log('STATIC_I18N_SCOPE',JSON.stringify({discovered:discoveredFiles.length,public:files.length}));
