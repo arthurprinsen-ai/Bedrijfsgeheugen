@@ -3,11 +3,12 @@
   "observed_at": "2026-10-01T09:06:00+02:00",
   "type": "PREVENTION",
   "problem": "The English commercial pricing page could remain partially Dutch after ordered string replacements.",
-  "root_cause": "Earlier replacements changed parts of phrases before longer Dutch phrases were evaluated, leaving mixed-language residuals.",
-  "decision": "Run a deterministic residual-cleanup pass after the primary English pricing replacements and guard the residual translations in regression tests.",
+  "root_cause": "The localized English route already carried the commercial-pricing marker before the English composer ran, so the composer returned early; earlier ordered replacements could also leave mixed-language residuals.",
+  "decision": "Only the Dutch canonical route may short-circuit when the commercial-pricing marker exists. The English route is always rebuilt deterministically, then a residual-cleanup pass runs.",
   "prevention": [
     "English commercial pricing output must not retain known Dutch residual phrases after the primary replacement pass.",
-    "Residual cleanup runs after primary translations so transformed phrase fragments are also normalized."
+    "Residual cleanup runs after primary translations so transformed phrase fragments are also normalized.",
+    "Never allow the localized English pricing route to skip its terminal English renderer merely because the canonical pricing marker already exists."
   ],
   "compiler": {
     "failure_class": "PRICING_EN_RESIDUAL_COPY",
@@ -22,7 +23,7 @@
     "website",
     "i18n"
   ],
-  "revision": 1,
+  "revision": 2,
   "evaluation": {
     "historical_replay": [
       "tests/brain-commercial-pricing-last-writer-v1.test.mjs"
