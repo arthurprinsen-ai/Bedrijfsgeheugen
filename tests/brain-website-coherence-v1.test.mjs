@@ -83,10 +83,12 @@ test('pricing CTAs and portal visuals are layout-contained',()=>{
 
 
 test('product page keeps one primary hero and embeds Powerhouse model in context',()=>{
-  assert.doesNotMatch(finalizer,/POWERHOUSE · HET ACTUELE PRODUCT/);
-  assert.doesNotMatch(finalizer,/Website en portaal spreken nu dezelfde taal/);
-  assert.match(finalizer,/ZO WERKT POWERHOUSE/);
-  assert.match(finalizer,/Eén platform\. Drie lagen die samenwerken\./);
+  const productTruth=finalizer.match(/const productTruth=\`([\\s\\S]*?)\`;/);
+  assert.ok(productTruth,'canonical Dutch product truth block must exist');
+  assert.doesNotMatch(productTruth[1],/POWERHOUSE · HET ACTUELE PRODUCT/);
+  assert.doesNotMatch(productTruth[1],/Website en portaal spreken nu dezelfde taal/);
+  assert.match(productTruth[1],/ZO WERKT POWERHOUSE/);
+  assert.match(productTruth[1],/Eén platform\. Drie lagen die samenwerken\./);
   assert.match(finalizer,/legacySection/);
   assert.match(finalizer,/firstSection/);
 });
