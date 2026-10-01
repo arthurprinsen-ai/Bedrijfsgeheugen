@@ -91,7 +91,7 @@ jobs:
           node --check /tmp/portal-v2.js
           node --check /tmp/portal-v2-parity-engine.js
           grep -q 'Welkom terug, Arthur' /tmp/portal-v2.html
-          grep -q 'Het brein van je bedrijf' /tmp/portal-v2.html
+          grep -q 'Zo werkt Powerhouse in je bedrijf' /tmp/portal-v2.html
           grep -q 'AI Management Summary' /tmp/portal-v2.html
           grep -q 'Powerhouse' /tmp/portal-v2.html
           grep -q 'Alle portalpagina’s' /tmp/portal-v2.html
