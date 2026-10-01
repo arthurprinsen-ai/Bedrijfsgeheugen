@@ -14,3 +14,4 @@ Voorkom dat nieuw gegenereerde pagina's, pricing, het openbare Powerhouse-produc
 
 ## Preventie
 Bij nieuwe publieke pagina's of globale styles moet de regressietest `tests/brain-website-coherence-v1.test.mjs` blijven slagen. Geen LIVE-claim zonder main/deploy parity en publieke readback van minimaal /prijzen, /product, /ai-ecosysteem, /systemen-koppelen, /contact en /portal-v2/.
+- Visual regression registry selectors must track stable canonical markup, not decorative legacy elements. For pricing, protect the current hero heading, SaaS/consulting tabs and plan cards; the Brain regression test enforces registry/source parity.
