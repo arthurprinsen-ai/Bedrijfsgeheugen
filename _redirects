@@ -60,3 +60,6 @@
 /scan  /pages/scan.html  200
 /scan/  /pages/scan.html  200
 /zelfscan.html  /zelfscan  301!
+# Public conversion/demo tools use clean URLs.
+/pakketadvies  /pakketadvies.html  200
+/portaal-demo  /portaal-demo.html  200
