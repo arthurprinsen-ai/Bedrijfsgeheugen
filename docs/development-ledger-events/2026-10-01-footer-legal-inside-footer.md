@@ -9,3 +9,5 @@ Herstel: de vier links worden nu direct in die production-core in de echte `<div
 PR-scope na automatische opschoning exact gelijkgetrokken met de 14 werkelijke gewijzigde bestanden; pricing-drift blijft buiten deze candidate.
 
 Release-lane contracttest gelijkgetrokken met route-scoped visibility; brede high-risk browsercontracten blijven afzonderlijk fail-closed.
+
+Browser-runtime regressietest toegevoegd en PR-scope exact bijgewerkt naar de actuele gewijzigde bestanden.
