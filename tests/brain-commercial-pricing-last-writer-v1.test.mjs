@@ -25,7 +25,7 @@ test('pricing integrity and production proof enforce the new commercial surface'
 
 test('English pricing composer removes residual Dutch commercial copy', async()=>{
   const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
-  for(const token of ['Executive & AI Workshop','Preparation & analysis','Integrations with your systems','During delivery you receive Pro or Growth access.','Growth access']) assert.ok(source.includes(token), token);
+  for(const token of ['Executive &amp; AI Workshop','Preparation &amp; analysis','For organisations that want to automate and scale.','Integrations with your systems','During delivery you receive Pro or Growth access.','Growth access']) assert.ok(source.includes(token), token);
 });
 
 test('English pricing composer does not skip already-marked localized output', async()=>{
