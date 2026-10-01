@@ -11,8 +11,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22.12.0'
-          cache: npm
-      - run: npm ci --ignore-scripts
+      - run: npm install --ignore-scripts
       - name: Run Netlify build command and capture log
         shell: bash
         run: |
