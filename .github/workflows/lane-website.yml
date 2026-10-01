@@ -249,7 +249,9 @@ jobs:
           node tools/seo-order-engine/validate.mjs
           node tools/site-shell/apply-i18n.mjs
           node tools/site-shell/build-localized-routes.mjs
+          node tools/site-shell/apply-commercial-pricing-v1.mjs
           node tools/seo-order-engine/apply-revenue-links.mjs
+          node tools/site-shell/finalize-website-coherence-v1.mjs
           node tools/genereer-sitemap.mjs
           node tools/seo-order-engine/validate-locales.mjs
           node tools/bouw-release-evidence.mjs
@@ -284,8 +286,17 @@ jobs:
           node tools/bouw-v18-views.mjs
           node tools/bouw-v18-chrome-alles.mjs
           node tools/prijzen-uit-de-homepage.mjs
-          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
           node tools/normaliseer-site-ui.mjs
+          node tools/site-shell/bedrijfslek-build-integrity.mjs restore
+          node tools/seo-order-engine/apply.mjs
+          node tools/seo-order-engine/validate.mjs
+          node tools/site-shell/apply-i18n.mjs
+          node tools/site-shell/build-localized-routes.mjs
+          node tools/site-shell/apply-commercial-pricing-v1.mjs
+          node tools/seo-order-engine/apply-revenue-links.mjs
+          node tools/site-shell/finalize-website-coherence-v1.mjs
+          node tools/genereer-sitemap.mjs
+          node tools/seo-order-engine/validate-locales.mjs
           node tools/bouw-release-evidence.mjs
           nohup python3 tools/ci/serve-clean-urls.py --port 4173 --bind 127.0.0.1 >/tmp/bg-local-site.log 2>&1 &
           for attempt in $(seq 1 20); do
