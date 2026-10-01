@@ -16,4 +16,5 @@ Bedrijfsgeheugen now has a terminal public-site coherence pass after all other w
 ## Regression
 `tests/brain-website-coherence-v1.test.mjs` protects routing, route-scoped layout guards, product taxonomy, portal parity and build inclusion.
 
-Delivery metadata and closure evidence are part of the same ten-file obligation scope.
+## Pricing visual-contract recovery
+The commercial pricing composer now preserves the canonical hero hooks used by the browser regression suite: `.held[data-bg-component="hero"]`, `.bgkruim` and `.pil`. This keeps the new pricing design compatible with the site-wide visual contract instead of weakening the regression gate.
