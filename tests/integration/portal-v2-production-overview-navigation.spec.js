@@ -23,18 +23,22 @@ test('V2 overview exposes legacy company-state and adoption surfaces',async({pag
   expect([0,1]).toContain(profileKnown);
 });
 
-test('general menu remains available on opened V2 pages',async({page})=>{
+test('canonical sidebar remains available and preserves parent context on opened V2 pages',async({page})=>{
   await bootDemo(page);
   await page.evaluate(async()=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage('profiel');});
   const portal=page.locator('#portalView');
   await expect(portal).toHaveAttribute('data-page-id','profiel');
-  const nav=portal.locator('.pvglobalnav');
+
+  const nav=page.locator('.sidebar .nav');
   await expect(nav).toBeVisible();
-  for(const label of ['Overzicht','Organisatie','Cijfers','Data & AI','Strategie','Advies','Roadmap','Actueel houden']){
+  for(const label of ['Overzicht','CSRD & Impact','Bedrijfsgezondheid','Strategie & uitvoering','Processen & organisatie','Kennis','Data & koppelingen','AI & Insights','Acties & impact','Rapportages & beheer']){
     await expect(nav.getByRole('button',{name:label,exact:true})).toHaveCount(1);
   }
-  await expect(nav.getByRole('button',{name:'Organisatie',exact:true})).toHaveClass(/active/);
-  await nav.getByRole('button',{name:'Roadmap',exact:true}).click();
+  await expect(nav.getByRole('button',{name:'Bedrijfsgezondheid',exact:true})).toHaveClass(/active/);
+  await expect(portal.locator('#pvKicker')).toHaveText('Bedrijfsgezondheid');
+
+  await page.evaluate(async()=>{const module=await import('/portal-v2/page-shell.js');module.openPortalPage('roadmap');});
   await expect(portal).toHaveAttribute('data-page-id','roadmap');
-  await expect(nav.getByRole('button',{name:'Roadmap',exact:true})).toHaveClass(/active/);
+  await expect(nav.getByRole('button',{name:'Strategie & uitvoering',exact:true})).toHaveClass(/active/);
+  await expect(portal.locator('#pvKicker')).toHaveText('Strategie & uitvoering');
 });
