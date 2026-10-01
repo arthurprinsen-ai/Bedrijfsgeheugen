@@ -94,3 +94,10 @@ test('product page keeps one primary hero and embeds Powerhouse model in context
   assert.match(finalizer,/legacySection/);
   assert.match(finalizer,/firstSection/);
 });
+
+test('product hero has an explicit visibility fail-safe',()=>{
+  assert.match(css,/data-bg-route="\\/product"[\\s\\S]*?\\.pr-hero/);
+  assert.match(css,/data-bg-route="\\/en\\/product"[\\s\\S]*?\\.pr-hero/);
+  assert.match(css,/visibility:visible!important/);
+  assert.match(css,/opacity:1!important/);
+});
