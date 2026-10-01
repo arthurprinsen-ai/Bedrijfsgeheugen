@@ -32,3 +32,9 @@ test('English pricing composer does not skip already-marked localized output', a
   const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
   assert.ok(source.includes("locale==='nl' && html.includes('data-bg-commercial-pricing-v1')"));
 });
+
+test('English pricing build fails closed on Dutch residuals', async()=>{
+  const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  assert.ok(source.includes('EN_PRICING_RESIDUAL'));
+  for(const token of ['Voorbereiding','De betaalde waarde','met jouw systemen','organisaties die willen','Tijdens de uitvoering krijg je']) assert.ok(source.includes(token), token);
+});
