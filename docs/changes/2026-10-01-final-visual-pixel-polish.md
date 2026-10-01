@@ -15,3 +15,7 @@ The product-truth source regression was narrowed to the actual rendered product-
 ## Replay assertion closure v2
 
 The historical replay now matches the actual finalizer implementation: it extracts the `productTruth` template literal correctly and verifies insertion via `mainStart` and `firstSection` rather than obsolete hero-specific variables.
+
+## Mobile production compactness closure
+
+The exact 390×844 production readback still measured the hydrated Portal V2 topbar at 287.34px. The <=430px shell now hides the non-essential welcome subtitle, uses a 24px title, reduces utility controls to 40px and tightens header gaps/padding while preserving search, actions and the period selector.
