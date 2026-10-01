@@ -7,6 +7,9 @@ const css=readFileSync('assets/site-coherence-v1.css','utf8');
 const portal=readFileSync('portal-v2/index.html','utf8');
 const netlify=readFileSync('netlify.toml','utf8');
 
+// Functional contracts beat legacy CSS-class names: the product may evolve its
+// hero markup as long as one primary hero and the contextual Powerhouse model remain.
+
 test('contact navigation is repaired centrally',()=>{
   assert.match(finalizer,/fixContactLinks/);
   assert.match(finalizer,/\/#contact/);
