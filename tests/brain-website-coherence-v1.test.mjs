@@ -96,8 +96,8 @@ test('product page keeps one primary hero and embeds Powerhouse model in context
 });
 
 test('product hero has an explicit visibility fail-safe',()=>{
-  assert.match(css,/data-bg-route="\\/product"[\\s\\S]*?\\.pr-hero/);
-  assert.match(css,/data-bg-route="\\/en\\/product"[\\s\\S]*?\\.pr-hero/);
-  assert.match(css,/visibility:visible!important/);
-  assert.match(css,/opacity:1!important/);
+  assert.ok(css.includes('body[data-bg-route="/product"] .pr-hero'));
+  assert.ok(css.includes('body[data-bg-route="/en/product"] .pr-hero'));
+  assert.ok(css.includes('visibility:visible!important'));
+  assert.ok(css.includes('opacity:1!important'));
 });
