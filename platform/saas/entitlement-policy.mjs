@@ -56,7 +56,12 @@ export function planRuntimePolicy(record){
     recoveryWorkspaceAccess:Boolean(e.intelligence_core),
     maWorkspaceAccess:Boolean(e.intelligence_core),
     portfolioWorkspaceAccess:Boolean(e.intelligence_core),
+    maxSeats:Number(e.seats||0),
     maxDataSources:Number(e.data_sources||0),
+    maxDocuments:Number(e.documents||0),
+    maxAiQuestionsMonth:Number(e.ai_questions_month||0),
+    maxAutomations:Number(e.automations||0),
+    maxAiAutomations:Number(e.ai_automations||0),
     refreshMinutes:Number(e.refresh_minutes||0),
     externalSignalScan:e.external_signal_scan||null,
     forecasting:Boolean(e.forecasting),
@@ -65,6 +70,12 @@ export function planRuntimePolicy(record){
     organisations:Number(e.organisations||0),
     sso:Boolean(e.sso),
     auditTrail:Boolean(e.audit_trail),
+    approvalWorkflows:Boolean(e.approval_workflows),
+    customDomain:Boolean(e.custom_domain),
+    modelChoice:Boolean(e.model_choice),
+    executiveSummary:e.executive_summary||null,
+    monthlyReview:Boolean(e.monthly_review),
+    sla:e.sla||null,
     seniorAdvisoryMinutesMonth:Number(e.senior_advisory_minutes_month||0)
   });
 }
