@@ -140,3 +140,5 @@
 /* footer-legal-pages-20261001-trigger-v2 */
 
 /* footer-legal-pages-20261001-trigger-v3 */
+
+/* footer-legal-pages-20261001-trigger-v4 */
