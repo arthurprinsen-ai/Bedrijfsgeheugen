@@ -34,3 +34,20 @@ test('final coherence pass runs in production and deploy preview builds',()=>{
   const uses=netlify.match(/finalize-website-coherence-v1\.mjs/g)||[];
   assert.ok(uses.length>=2);
 });
+
+
+test('pricing visual regression contract follows the canonical commercial pricing markup',()=>{
+  const registry=JSON.parse(readFileSync('config/ui-visual-regression.json','utf8'));
+  const pricing=registry.pages.find(page=>page.route==='/prijzen');
+  assert.ok(pricing);
+  assert.deepEqual(pricing.required,[
+    'main .hero[data-bg-component="hero"] h1',
+    'main .hero[data-bg-component="hero"] .tabs',
+    'main #prijzen-pakketten .plan'
+  ]);
+  const pricingHtml=readFileSync('prijzen.html','utf8');
+  assert.match(pricingHtml,/class="hero held" data-bg-component="hero"/);
+  assert.match(pricingHtml,/class="tabs"/);
+  assert.match(pricingHtml,/id="prijzen-pakketten"/);
+  assert.match(pricingHtml,/class="plan/);
+});
