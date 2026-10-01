@@ -27,3 +27,11 @@ test('English pricing composer removes residual Dutch commercial copy', async()=
   const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
   for(const token of ['Executive & AI Workshop','Preparation & analysis','Integrations with your systems','During delivery you receive Pro or Growth access.','Growth access']) assert.ok(source.includes(token), token);
 });
+
+test('commercial pricing composer always rewrites the pricing main for NL and EN', async()=>{
+  const source=await readFile('tools/site-shell/apply-commercial-pricing-v1.mjs','utf8');
+  assert.doesNotMatch(source,/includes\('data-bg-commercial-pricing-v1'\)\)return/);
+  assert.match(source,/locale==='en'\?englishPage\(\):page\(\)/);
+  assert.match(source,/await apply\('prijzen\.html','nl'\)/);
+  assert.match(source,/await apply\('en\/prijzen\.html','en'\)/);
+});
