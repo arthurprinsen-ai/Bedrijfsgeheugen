@@ -97,7 +97,7 @@ test('exact-candidate fallback never bypasses full visibility and CLS quality ga
   assert.match(visibilityCheck, /const runViewport = async viewport =>/);
   assert.match(visibilityCheck, /await Promise\.all\(viewports\.slice\(viewportIndex, viewportIndex \+ viewportConcurrency\)\.map\(runViewport\)\)/);
   assert.match(visibilityCheck, /UI_VR_ROUTE_CONCURRENCY/);
-  assert.match(visibilityCheck, /baseUrl\.includes\('deploy-preview-'\) \? 2 : 4/);
+  assert.match(visibilityCheck, /baseUrl\.includes\('deploy-preview-'\) \? 1 : 4/);
   assert.match(visibilityCheck, /await Promise\.all\(Array\.from\(\{ length: workerCount \}/);
   assert.match(visibilityCheck, /for \(let routeIndex = workerIndex; routeIndex < routes\.length; routeIndex \+= workerCount\)/);
   assert.match(visibilityCheck, /const route = routes\[routeIndex\]/);
@@ -146,7 +146,7 @@ test('governance and delivery policy changes stay control-plane without website 
 
 test('Netlify deploy-preview visibility crawl applies bounded provider backpressure recovery', () => {
   assert.match(visibilityCheck, /new Set\(\[403, 408, 425, 429, 500, 502, 503, 504\]\)/);
-  assert.match(visibilityCheck, /for \(let attempt = 1; attempt <= 3; attempt\+\+\)/);
+  assert.match(visibilityCheck, /const maxAttempts = baseUrl\.includes\('deploy-preview-'\) \? 6 : 3/);\n  assert.match(visibilityCheck, /attempt <= maxAttempts/);
   assert.match(visibilityCheck, /if \(status && !transientStatuses\.has\(status\)\) break/);
-  assert.match(visibilityCheck, /await sleep\(750 \* attempt\)/);
+  assert.match(visibilityCheck, /baseUrl\.includes\('deploy-preview-'\) \? 1500 : 750/);
 });
