@@ -7,7 +7,7 @@
   "prevention_rule": "Before an approved central blog candidate is eligible for merge, all newly introduced translatable public strings must have a deterministic English cache patch; never publish NL-only content into the bilingual route set.",
   "evaluation": {
     "historical_replay": [
-      "tests/brain-static-i18n-translation-cache.test.mjs"
+      "tests/brain-static-i18n-production-cache-completeness-v1.test.mjs"
     ]
   },
   "evidence": [
