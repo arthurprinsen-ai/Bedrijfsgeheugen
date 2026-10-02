@@ -1,0 +1,22 @@
+{
+  "fingerprint": "approved-blog|i18n-generated-fragments|v1",
+  "compiler": {
+    "failure_class": "STATIC_I18N_POST_TRANSFORM_FRAGMENT_GAP"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "source": "github-actions",
+        "run_id": 37032998930,
+        "observed": "Preflight cache validation passed before build transforms, but the exact production-parity build generated 12 additional translatable fragments and failed closed.",
+        "root_cause_confirmed": true,
+        "prevention_verified": "Add the exact 12 post-transform fragments to the existing deterministic patch cache and keep STATIC_I18N_REQUIRE_CACHE=1."
+      }
+    ]
+  },
+  "root_cause": "SEO/site build transforms split and synthesize visible text after the initial cache-validation phase. The first recovery covered source strings but not all post-transform fragments used by the exact production build.",
+  "prevention_rule": "For generated public content, translation recovery must be validated against the full production build, not only pre-transform cache validation. Any newly surfaced fragment must be added to the same canonical deterministic cache.",
+  "evidence": [
+    "Required test run 37032998930 reported STATIC_I18N_CACHE_INCOMPLETE with exactly 12 missing post-transform strings."
+  ]
+}
