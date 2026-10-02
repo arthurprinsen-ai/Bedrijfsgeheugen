@@ -20,11 +20,41 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
   <aside class="side">
     <div class="brand">Bedrijfs<b>geheugen</b> CMS</div>
     <h3>Website</h3>
-    <button data-area="">Alles</button><button data-area="seo">SEO & metadata</button><button data-area="navigation">Navigatie & menu</button><button data-area="hero">Hero</button><button data-area="content">Content & secties</button><button data-area="pricing">Prijzen & pakketten</button><button data-area="forms">Formulieren</button><button data-area="footer">Footer & legal</button>
+    <button data-area="">Alles</button>
+    <button data-area="pages">Pagina's & routes</button>
+    <button data-area="seo">SEO & metadata</button>
+    <button data-area="navigation">Navigatie & megamenu</button>
+    <button data-area="header">Header</button>
+    <button data-area="hero">Hero</button>
+    <button data-area="content">Content & secties</button>
+    <button data-area="cta">CTA's & buttons</button>
+    <button data-area="pricing">Prijzen & pakketten</button>
+    <button data-area="products">Producten & proposities</button>
+    <button data-area="forms">Formulieren & intake</button>
+    <button data-area="blog">Blog & kennis</button>
+    <button data-area="media">Media & afbeeldingen</button>
+    <button data-area="translations">NL / EN vertalingen</button>
+    <button data-area="footer">Footer & legal</button>
     <h3>Portaal</h3>
-    <button data-area="portal-navigation">Navigatie</button><button data-area="portal-copy">Teksten & uitleg</button><button data-area="portal-cards">Kaarten & KPI-labels</button><button data-area="portal-upsell">Upsell & CTA</button>
+    <button data-area="portal-navigation">Navigatie & menu</button>
+    <button data-area="portal-dashboard">Dashboard & overzicht</button>
+    <button data-area="portal-copy">Teksten & uitleg</button>
+    <button data-area="portal-cards">Kaarten & KPI's</button>
+    <button data-area="portal-modules">Modules & capabilities</button>
+    <button data-area="portal-models">Modellen & canvassen</button>
+    <button data-area="portal-actions">Acties & workflows</button>
+    <button data-area="portal-ai">AI & prompts</button>
+    <button data-area="portal-forms">Invoer & formulieren</button>
+    <button data-area="portal-empty">Empty states & meldingen</button>
+    <button data-area="portal-upsell">Upsell & CTA</button>
+    <button data-area="portal-billing">Pakketten & billing</button>
     <h3>Gedeeld</h3>
-    <button data-area="brand">Merk</button><button data-area="contact">Contact</button><button data-area="media">Media & links</button><button data-area="settings">Instellingen</button>
+    <button data-area="brand">Merk & tone of voice</button>
+    <button data-area="contact">Contactgegevens</button>
+    <button data-area="design">Design tokens</button>
+    <button data-area="links">Links & redirects</button>
+    <button data-area="legal">Legal & compliance</button>
+    <button data-area="settings">Globale instellingen</button>
     <h3>Systeem</h3>
     <button id="newItemBtn">＋ Nieuw element</button><button id="logoutBtn">Uitloggen</button>
   </aside>
@@ -48,7 +78,7 @@ button,input,select,textarea{font:inherit}.shell{display:grid;grid-template-colu
           <div class="twocol"><label>Surface<select id="surface"><option value="website">Website</option><option value="portal">Portaal</option><option value="shared">Gedeeld</option></select></label><label>Taal<select id="locale"><option value="nl-NL">Nederlands</option><option value="en-US">English</option></select></label></div>
           <div class="twocol"><label>Route<input id="route" placeholder="/prijzen of *"></label><label>Gebied<input id="area" placeholder="pricing, hero, footer..."></label></div>
           <label>Unieke sleutel<input id="elementKey" placeholder="website.prijzen.hero.title"></label>
-          <div class="twocol"><label>Type<select id="elementType"><option value="text">Tekst</option><option value="link">Link</option><option value="image">Afbeelding</option><option value="meta">Meta</option><option value="html">HTML-blok</option><option value="attribute">Attribuut</option><option value="toggle">Zichtbaarheid</option><option value="structured">Structured data</option></select></label><label>Volgorde<input id="sortOrder" type="number" value="0"></label></div>
+          <div class="twocol"><label>Type<select id="elementType"><option value="text">Tekst</option><option value="link">Link</option><option value="image">Afbeelding</option><option value="meta">Meta</option><option value="html">HTML-blok</option><option value="attribute">Attribuut</option><option value="toggle">Zichtbaarheid</option></select></label><label>Volgorde<input id="sortOrder" type="number" value="0"></label></div>
           <label>CSS-selector<input id="selector" placeholder="#hero h1, .pricing-card:nth-of-type(1) h3"></label>
           <label>Content (JSON)<textarea id="content">{}</textarea></label>
           <div class="note">Voorbeelden: tekst <code>{"text":"..."}</code>, link <code>{"text":"...","href":"/contact"}</code>, afbeelding <code>{"src":"/img/x.jpg","alt":"..."}</code>, meta <code>{"content":"..."}</code>, HTML <code>{"html":"<p>...</p>"}</code>.</div>
