@@ -35,6 +35,11 @@ test('CMS authority exposes only published content publicly',()=>{
   assert.match(edge,/cms_content_revisions/);
 });
 
+test('CMS source files contain real line breaks, not escaped line-break artifacts',()=>{
+  assert.doesNotMatch(read('cms.html'),/noindex,nofollow\">\\\\n<meta/);
+  assert.doesNotMatch(read('supabase/functions/portal-state-eu/index.ts'),/;\\\\n\s+if\(action/);
+});
+
 test('CMS runtime and admin surface are wired into the build',()=>{
   const runtime=read('assets/cms-runtime.js');
   const admin=read('assets/cms-admin.js');
@@ -44,4 +49,11 @@ test('CMS runtime and admin surface are wired into the build',()=>{
   assert.match(admin,/\/api\/cms-admin/);
   assert.match(admin,/startPick/);
   assert.match(toml,/apply-cms-runtime\.mjs/);
+});
+
+test('CMS admin route is excluded from public shell projection',()=>{
+  const contracts=read('tools/site-shell/contracts.mjs');
+  const normalizer=read('tools/normaliseer-site-ui.mjs');
+  assert.match(contracts,/PUBLIC_PAGE_EXCLUDES[\s\S]*'cms\.html'/);
+  assert.match(normalizer,/MAG_NIET[\s\S]*'cms\.html'/);
 });

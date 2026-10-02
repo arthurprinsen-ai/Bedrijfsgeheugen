@@ -136,7 +136,7 @@ export function normaliseerHtml(input, bestand) {
   return html;
 }
 
-const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html']);
+const MAG_NIET = new Set(['index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html', 'klantportaal-demo.html', 'klant-login.html', 'cms.html']);
 const EXTRA_PUBLIC_INDEX_PAGES = Object.freeze([
   'openai-ai-modellen/index.html',
   'claude-ai-modellen/index.html',

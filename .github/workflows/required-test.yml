@@ -192,6 +192,7 @@ jobs:
           tests/brain-autonomous-engineering-fabric-v3.test.mjs
           tests/brain-standalone-visibility-boundedness-v1.test.mjs
           tests/customer-portal-auth-race.test.mjs
+          tests/cms-website-portal-v1.test.mjs
           tests/daily-cost-optimizer.test.mjs
           tests/data-ai-passport.test.mjs
           tests/eu-ai-act-audit-report.test.mjs

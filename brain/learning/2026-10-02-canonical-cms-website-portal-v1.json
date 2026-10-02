@@ -1,0 +1,28 @@
+{
+  "fingerprint": "website|cms|canonical-content-authority|20261002",
+  "obligation_id": "cms-website-portal-20261002-v1",
+  "compiler": {
+    "failure_class": "CMS_AUTHORITY_AND_BUILD_ISOLATION_GAP",
+    "scope": "WEBSITE_PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "root_cause": "Website- en portaalcontent stonden verspreid over statische HTML, portal renderers en specifieke datatabellen zonder één generieke beheerlaag. De eerste CMS-promotie liet daarnaast zien dat nieuwe admin-surfaces expliciet uit publieke shell-projectie en in quality/delivery registries moeten worden opgenomen.",
+  "prevention_rule": "Nieuwe website- of portaalelementen die redactioneel beheerbaar moeten zijn, krijgen één canonieke CMS-key, surface, locale, route, area, type en selector/content-contract. Publieke levering leest uitsluitend published CMS-versies via de gecontroleerde gateway; browserrollen krijgen geen directe tabelrechten. De CMS-adminroute blijft uitgesloten van publieke shell-, sitemap- en SEO-projectie. Nieuwe CMS-surfaces moeten tegelijk quality-evidence, delivery-classificatie en regressietests krijgen.",
+  "evidence": {
+    "tests": [
+      "tests/cms-website-portal-v1.test.mjs",
+      "Powerhouse CodeQL",
+      "Powerhouse Quality Intelligence Surface Gate",
+      "Supabase PR Preview Contract",
+      "Required test"
+    ],
+    "outcome": "Een centrale Supabase CMS-authority, versie/revisiemodel, adminwerkplek, live element-picker, public read-only runtime en gecontroleerde Netlify/Supabase gateways zijn toegevoegd voor website, portaal en gedeelde content. Bootstrap-content blijft draft totdat expliciet gepubliceerd."
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/cms-website-portal-v1.test.mjs"
+    ]
+  }
+}
