@@ -140,3 +140,7 @@
 
 
 /* footer-legal-production-recheck */
+
+
+/* Canonical CMS runtime — published content only. */
+(function(){if(document.querySelector('script[data-bg-cms-runtime]'))return;var s=document.createElement('script');s.src='/assets/cms-runtime.js';s.defer=true;s.setAttribute('data-bg-cms-runtime','1');document.head.appendChild(s);})();
