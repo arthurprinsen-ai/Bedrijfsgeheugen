@@ -59,8 +59,14 @@ def updates(s):
  href=f"/blog/{s['slug']}/"; text=INDEX.read_text(encoding='utf-8')
  if href not in text:
   plain=re.sub(r'<[^>]+>',' ',render(s['blogtext'])); plain=re.sub(r'\s+',' ',html.unescape(plain)).strip(); teaser=plain[:180].rsplit(' ',1)[0]+'…'; card=f'  <a class="kaart" href="{href}"><span class="tag">Kennisborging</span><h2>{html.escape(s["title"])}</h2><p>{html.escape(teaser)}</p><span class="lees">Lees het artikel &rarr;</span><span class="datum">{dt.date.today().strftime("%d-%m-%Y")} &middot; nieuw</span></a>\n\n'; marker='<div class="artikelen">\n'
-  if marker not in text:fail('Blogindex mist artikelen-marker')
-  INDEX.write_text(text.replace(marker,marker+'\n'+card,1),encoding='utf-8')
+  literal_marker='<div class="artikelen">\\n'
+  if marker in text:
+   INDEX.write_text(text.replace(marker,marker+'\n'+card,1),encoding='utf-8')
+  elif literal_marker in text:
+   normalized='<div class="artikelen">\n'
+   INDEX.write_text(text.replace(literal_marker,normalized+'\n'+card,1),encoding='utf-8')
+  else:
+   fail('Blogindex mist artikelen-marker')
  sm=SITEMAP.read_text(encoding='utf-8'); full='https://www.bedrijfsgeheugen.nl'+href
  if full not in sm:
   if '</urlset>' not in sm:fail('sitemap.xml mist </urlset>')
