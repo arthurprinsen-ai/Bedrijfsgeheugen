@@ -1,0 +1,12 @@
+{
+  "version": "development-ledger-event-v1",
+  "occurred_at": "2026-10-02T15:22:00Z",
+  "obligation_id": "powerhouse-principle-regression-v1",
+  "lane": "content/blog",
+  "event": "recovery_patch",
+  "changed_paths": [
+    "scripts/publish_approved_blog.py"
+  ],
+  "cause": "exact blog index marker representation drift",
+  "expected_terminal": "protected merge -> exact approved blog render -> Netlify/public readback -> content loop reconciliation"
+}
