@@ -1,0 +1,22 @@
+{
+  "fingerprint": "ci-coverage|cms-website-portal-v1|unwired-test-v1",
+  "compiler": {
+    "failure_class": "CI_TEST_COVERAGE_DRIFT"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "source": "github-actions",
+        "run_id": 37032367527,
+        "observed": "Required test failed because tests/cms-website-portal-v1.test.mjs was committed but not executed by any workflow.",
+        "root_cause_confirmed": true,
+        "prevention_verified": "The exact test is added to the canonical Required test full shared suite so every committed contract remains exercised in CI."
+      }
+    ]
+  },
+  "root_cause": "The CMS contract test landed on main without an execution reference in any GitHub Actions workflow, violating the delivery-test-coverage guard.",
+  "prevention_rule": "Every committed *.test.mjs must be referenced by at least one canonical workflow in the same lineage as the feature or recovery that introduces it.",
+  "evidence": [
+    "Required test run 37032367527 failed delivery-test-coverage-guard.test.mjs on tests/cms-website-portal-v1.test.mjs."
+  ]
+}
