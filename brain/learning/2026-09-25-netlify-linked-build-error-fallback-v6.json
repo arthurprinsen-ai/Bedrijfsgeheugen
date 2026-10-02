@@ -1,0 +1,20 @@
+{
+  "fingerprint": "delivery-netlify-linked-build-error-fallback-v6",
+  "status": "ACTIVE_PREVENTION",
+  "date": "2026-09-25",
+  "failure_class": "LINKED_NETLIFY_BUILD_ERROR_PREMATURE_TERMINAL_FAILURE",
+  "root_cause": "Git-linked Netlify build errors terminated Production Source Snapshot before its existing authenticated exact-source fallback was attempted.",
+  "fix": "Log the linked build error, set linked_fallback=true, continue to canonical exact-source upload, then retain provider-ready + exact production SHA + browser readback gates.",
+  "compiler": {
+    "failure_class": "LINKED_NETLIFY_BUILD_ERROR_PREMATURE_TERMINAL_FAILURE",
+    "scope": "POWERHOUSE_DELIVERY_NETLIFY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-netlify-linked-build-error-fallback-v6.test.mjs"
+    ]
+  }
+}
