@@ -1,6 +1,5 @@
 {
   "fingerprint": "approved-central-blog|2026-10-02|bedrijfsoverdracht-familie|publication-v1",
-  "failure_class": "CONTENT_DELIVERY",
   "scope": "WEBSITE",
   "machine_enforceable": true,
   "repeat_count": 1,
@@ -16,5 +15,8 @@
     "Approved central blog workflow run 37028746616 rendered the exact sealed source hash 55ac50396d57675be1e6d7ffa76e1731ccac3738bd321520cbb8fb77ecbef868.",
     "Candidate commit 4de3908e74354a9f35f5276872dd7bf4948b923f changed exactly the article, blog index, RSS and sitemap before closure artifacts.",
     "Canonical source content id: powerhouse:2026-10-02:blog:31261a79-0f79-46d2-b9f0-0aa308e77bfc."
-  ]
+  ],
+  "compiler": {
+    "failure_class": "CONTENT_DELIVERY"
+  }
 }
