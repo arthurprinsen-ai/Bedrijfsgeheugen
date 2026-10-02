@@ -1,9 +1,9 @@
 {
   "version": 2,
-  "slug": "bedrijfsgeheugen-en-kennisverlies-voorkom-verrassingen",
-  "reason": "powerhouse-blog-content-addressed-recovery-v1",
-  "requested_date": "2026-09-17",
-  "bron_content_id": "powerhouse:2026-09-17:blog:2f916b134c57",
-  "approved_source_hash": "aff445fc5c0bf96d7954dda5af5ec6c660ffcbec93a6a7b510ddc18112f38dcc",
-  "retrigger_nonce": "content-ready-preserve-main-fb0c1684dc9697df55ec831ff4dff70c126ce46c"
+  "slug": "bedrijfsoverdracht-aan-familie-wat-je-moet-regelen-en-waarom-het-meest",
+  "reason": "powerhouse-principle-regression-content-closure-20261002",
+  "requested_date": "2026-10-02",
+  "bron_content_id": "powerhouse:2026-10-02:blog:regression-closure",
+  "approved_source_hash": "runtime-approved-central-blog",
+  "retrigger_nonce": "principle-regression-20261002-blog-closure-v1"
 }
