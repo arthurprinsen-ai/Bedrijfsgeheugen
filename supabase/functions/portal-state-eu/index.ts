@@ -14,7 +14,8 @@ Deno.serve(async(req:Request)=>{
   let body:any; try{body=await req.json()}catch{return json({error:'INVALID_JSON'},400)}
   const action=String(body?.action||'');
   const tenantId=String(body?.tenantId||'').trim();
-  const CMS_ACTIONS=new Set(['cms_public','cms_admin_list','cms_admin_save','cms_admin_publish','cms_admin_archive']);\n  if(action!=='control_plane_cockpit'&&!CMS_ACTIONS.has(action)&&!tenantId)return json({error:'INVALID_REQUEST'},400);
+  const CMS_ACTIONS=new Set(['cms_public','cms_admin_list','cms_admin_save','cms_admin_publish','cms_admin_archive']);
+  if(action!=='control_plane_cockpit'&&!CMS_ACTIONS.has(action)&&!tenantId)return json({error:'INVALID_REQUEST'},400);
   const url=Deno.env.get('SUPABASE_URL'); const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
