@@ -14,10 +14,99 @@ Deno.serve(async(req:Request)=>{
   let body:any; try{body=await req.json()}catch{return json({error:'INVALID_JSON'},400)}
   const action=String(body?.action||'');
   const tenantId=String(body?.tenantId||'').trim();
-  if(action!=='control_plane_cockpit'&&!tenantId)return json({error:'INVALID_REQUEST'},400);
+  const CMS_ACTIONS=new Set(['cms_public','cms_admin_list','cms_admin_save','cms_admin_publish','cms_admin_archive']);\n  if(action!=='control_plane_cockpit'&&!CMS_ACTIONS.has(action)&&!tenantId)return json({error:'INVALID_REQUEST'},400);
   const url=Deno.env.get('SUPABASE_URL'); const key=Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
   if(!url||!key)return json({error:'SERVER_CONFIG'},500);
   const client=createClient(url,key,{auth:{persistSession:false,autoRefreshToken:false}});
+
+  if(action==='cms_public'){
+    const cmsSurface=String(body?.surface||'website').trim();
+    const cmsLocale=String(body?.locale||'nl-NL').trim();
+    const cmsRoute=String(body?.route||'/').trim()||'/';
+    if(!['website','portal'].includes(cmsSurface))return json({error:'INVALID_CMS_SURFACE'},400);
+    if(!['nl-NL','en-US'].includes(cmsLocale))return json({error:'INVALID_CMS_LOCALE'},400);
+    const {data,error}=await client.from('cms_content_items')
+      .select('id,surface,locale,route,area,element_key,element_type,selector,content,sort_order,version,updated_at,published_at')
+      .eq('status','published')
+      .eq('locale',cmsLocale)
+      .in('surface',['shared',cmsSurface])
+      .in('route',['*',cmsRoute])
+      .order('sort_order',{ascending:true})
+      .order('element_key',{ascending:true});
+    if(error)return json({error:'CMS_PUBLIC_READ_FAILED'},500);
+    return json({items:Array.isArray(data)?data:[],surface:cmsSurface,locale:cmsLocale,route:cmsRoute,generatedAt:new Date().toISOString()});
+  }
+
+  if(action==='cms_admin_list'){
+    const cmsSurface=String(body?.surface||'').trim();
+    const cmsLocale=String(body?.locale||'').trim();
+    const cmsRoute=String(body?.route||'').trim();
+    let query=client.from('cms_content_items').select('*').order('surface').order('route').order('area').order('sort_order').order('element_key');
+    if(cmsSurface)query=query.eq('surface',cmsSurface);
+    if(cmsLocale)query=query.eq('locale',cmsLocale);
+    if(cmsRoute)query=query.eq('route',cmsRoute);
+    const {data,error}=await query.limit(5000);
+    if(error)return json({error:'CMS_ADMIN_LIST_FAILED'},500);
+    return json({items:Array.isArray(data)?data:[],generatedAt:new Date().toISOString()});
+  }
+
+  if(action==='cms_admin_save'){
+    const item=body?.item&&typeof body.item==='object'&&!Array.isArray(body.item)?body.item:null;
+    if(!item)return json({error:'INVALID_CMS_ITEM'},400);
+    const cmsSurface=String(item.surface||'').trim();
+    const cmsLocale=String(item.locale||'nl-NL').trim();
+    const cmsRoute=String(item.route||'*').trim()||'*';
+    const elementKey=String(item.element_key||'').trim();
+    const elementType=String(item.element_type||'text').trim();
+    const area=String(item.area||'content').trim()||'content';
+    const selector=item.selector==null?null:String(item.selector).trim();
+    const content=item.content&&typeof item.content==='object'&&!Array.isArray(item.content)?item.content:{};
+    const actor=String(body?.actor||'cms-admin').trim().slice(0,320);
+    if(!['website','portal','shared'].includes(cmsSurface)||!['nl-NL','en-US'].includes(cmsLocale)||!elementKey)return json({error:'INVALID_CMS_ITEM'},400);
+    if(!['text','html','link','image','meta','attribute','toggle','structured'].includes(elementType))return json({error:'INVALID_CMS_ELEMENT_TYPE'},400);
+    const {data:existing,error:existingError}=await client.from('cms_content_items')
+      .select('*').eq('surface',cmsSurface).eq('locale',cmsLocale).eq('route',cmsRoute).eq('element_key',elementKey).maybeSingle();
+    if(existingError)return json({error:'CMS_EXISTING_READ_FAILED'},500);
+    const version=Number(existing?.version||0)+1;
+    const now=new Date().toISOString();
+    const next={
+      surface:cmsSurface,locale:cmsLocale,route:cmsRoute,area,element_key:elementKey,element_type:elementType,
+      selector,content,status:String(item.status||existing?.status||'draft')==='published'?'draft':String(item.status||existing?.status||'draft'),
+      sort_order:Number.isFinite(Number(item.sort_order))?Number(item.sort_order):Number(existing?.sort_order||0),
+      version,updated_at:now,updated_by:actor,
+      published_at:existing?.published_at||null
+    };
+    if(!['draft','archived'].includes(next.status))next.status='draft';
+    const {data:saved,error:saveError}=await client.from('cms_content_items')
+      .upsert(next,{onConflict:'surface,locale,route,element_key'}).select('*').single();
+    if(saveError)return json({error:'CMS_SAVE_FAILED'},500);
+    const changeKind=existing?'save':'create';
+    const {error:revisionError}=await client.from('cms_content_revisions').insert({
+      item_id:saved.id,version:saved.version,snapshot:saved,change_kind:changeKind,changed_by:actor
+    });
+    if(revisionError)return json({error:'CMS_REVISION_WRITE_FAILED'},500);
+    return json({item:saved});
+  }
+
+  if(action==='cms_admin_publish'||action==='cms_admin_archive'){
+    const id=String(body?.id||'').trim();
+    const actor=String(body?.actor||'cms-admin').trim().slice(0,320);
+    if(!id)return json({error:'INVALID_CMS_ID'},400);
+    const {data:existing,error:readError}=await client.from('cms_content_items').select('*').eq('id',id).maybeSingle();
+    if(readError)return json({error:'CMS_ITEM_READ_FAILED'},500);
+    if(!existing)return json({error:'CMS_ITEM_NOT_FOUND'},404);
+    const now=new Date().toISOString();
+    const nextStatus=action==='cms_admin_publish'?'published':'archived';
+    const version=Number(existing.version||0)+1;
+    const patch={status:nextStatus,version,updated_at:now,updated_by:actor,published_at:nextStatus==='published'?now:existing.published_at};
+    const {data:saved,error:updateError}=await client.from('cms_content_items').update(patch).eq('id',id).select('*').single();
+    if(updateError)return json({error:'CMS_STATUS_UPDATE_FAILED'},500);
+    const {error:revisionError}=await client.from('cms_content_revisions').insert({
+      item_id:saved.id,version:saved.version,snapshot:saved,change_kind:nextStatus==='published'?'publish':'archive',changed_by:actor
+    });
+    if(revisionError)return json({error:'CMS_REVISION_WRITE_FAILED'},500);
+    return json({item:saved});
+  }
 
   if(action==='control_plane_cockpit'){
     const {data:obligations,error:obligationError}=await client
