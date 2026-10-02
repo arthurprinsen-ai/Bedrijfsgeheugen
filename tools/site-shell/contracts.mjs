@@ -5,7 +5,7 @@ export const PUBLIC_UTILITY_ROUTES = new Set(['/inloggen', '/behoeftecheck', '/g
 export const PUBLIC_PAGE_EXCLUDES = new Set([
   'index-oud.html', 'prototype-v18-stable.html', 'klantportaal.html',
   'klantportaal-demo.html', 'klant-login.html', 'klantenportaal-selftest.html',
-  'klantenportaal-test.html', 'inloggen.html',
+  'klantenportaal-test.html', 'inloggen.html', 'cms.html',
   // Tijdelijke canonical-shell diagnoseartefacten worden tijdens CI in de
   // workspace geschreven. Ze zijn geen deploybare publieke routes en mogen
   // daarom nooit in sitemap-, UI- of globale shell-hashinventarissen vallen.
