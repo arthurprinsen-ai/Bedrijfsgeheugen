@@ -13,22 +13,8 @@
     "GitHub Actions run 37026137254 failed at Seal or render exact approved article with Blogindex mist artikelen-marker."
   ],
   "evaluation": {
-    "observed_failure": "The exact approved article reached deterministic rendering, then failed before writing because the blog index marker representation differed from the publisher's exact expected representation.",
-    "why_recoverable": "The canonical queue, approval, source hash, slug and article body were valid; the failure was isolated to deterministic index insertion.",
-    "chosen_fix": "Normalize the historical literal backslash-n marker in blog/index.html to the canonical real newline while leaving the deterministic publisher contract unchanged.",
-    "alternatives_rejected": [
-      "Broad fuzzy marker matching in the publisher, because that weakens fail-closed behavior.",
-      "Direct publication bypassing protected GitHub delivery.",
-      "Creating another parallel publication owner."
-    ],
     "historical_replay": [
-      {
-        "source": "github-actions",
-        "run_id": 37026137254,
-        "observed": "Exact approved article reached deterministic rendering and failed with Blogindex mist artikelen-marker.",
-        "root_cause_confirmed": true,
-        "prevention_verified": "Normalize only the proven literal backslash-n marker to the canonical real-newline marker; all other unknown structures remain fail-closed."
-      }
+      "tests/brain-daily-blog-versiebeheer-recovery-v1.test.mjs"
     ]
   },
   "compiler": {
