@@ -206,7 +206,8 @@
         ".github/workflows/daily-blog-publisher.yml",
         ".github/workflows/content-growth-learning.yml",
         ".github/workflows/daily-blog-live-watchdog.yml",
-        ".github/workflows/content-growth-ci.yml"
+        ".github/workflows/content-growth-ci.yml",
+        "scripts/publish_approved_blog.py"
       ]
     },
     {
@@ -309,7 +310,8 @@
         "tests/saas-",
         "tests/linkedin-cockpit-",
         "scripts/opportunity/",
-        "tests/opportunity-"
+        "tests/opportunity-",
+        "scripts/publish_approved_blog.py"
       ],
       "requiredContracts": [
         "BG166",
@@ -503,7 +505,8 @@
         "portaal-demo.html",
         "gebruiksvoorwaarden.html",
         "cookiebeleid.html",
-        "systeemstatus.html"
+        "systeemstatus.html",
+        "scripts/publish_approved_blog.py"
       ],
       "requiredContracts": [
         "BG166",
