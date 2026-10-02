@@ -1,0 +1,16 @@
+{
+  "fingerprint": "approved-blog-i18n|2026-10-02|static-cache-completeness-v1",
+  "compiler": {
+    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE"
+  },
+  "root_cause": "The approved Dutch blog introduced 68 new public strings while production validation requires complete pre-approved English cache coverage for every sitemap-visible route.",
+  "prevention_rule": "Before an approved central blog candidate is eligible for merge, all newly introduced translatable public strings must have a deterministic English cache patch; never publish NL-only content into the bilingual route set.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-static-i18n-translation-cache.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Required Test for approved blog candidate reported STATIC_I18N_CACHE_INCOMPLETE with exactly 68 missing strings on 2026-10-02."
+  ]
+}
