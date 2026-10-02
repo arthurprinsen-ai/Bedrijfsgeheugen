@@ -50,3 +50,10 @@ test('CMS runtime and admin surface are wired into the build',()=>{
   assert.match(admin,/startPick/);
   assert.match(toml,/apply-cms-runtime\.mjs/);
 });
+
+test('CMS admin route is excluded from public shell projection',()=>{
+  const contracts=read('tools/site-shell/contracts.mjs');
+  const normalizer=read('tools/normaliseer-site-ui.mjs');
+  assert.match(contracts,/PUBLIC_PAGE_EXCLUDES[\s\S]*'cms\.html'/);
+  assert.match(normalizer,/MAG_NIET[\s\S]*'cms\.html'/);
+});
