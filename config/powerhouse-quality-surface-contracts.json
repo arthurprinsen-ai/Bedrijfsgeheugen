@@ -233,6 +233,20 @@
       "required": true
     },
     {
+      "id": "netlify_function:cms-admin",
+      "type": "netlify_function",
+      "authority": "netlify/functions/cms-admin.mjs",
+      "evidence_contract": "tests/cms-website-portal-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "netlify_function:cms-public",
+      "type": "netlify_function",
+      "authority": "netlify/functions/cms-public.mjs",
+      "evidence_contract": "tests/cms-website-portal-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "netlify_function:growth-intelligence-daily",
       "type": "netlify_function",
       "authority": "netlify/functions/growth-intelligence-daily.mjs",
@@ -814,6 +828,20 @@
       "required": true
     },
     {
+      "id": "table:public.cms_content_items",
+      "type": "table",
+      "authority": "supabase/migrations/20261002180500_canonical_cms_website_portal_v1.sql",
+      "evidence_contract": "tests/cms-website-portal-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.cms_content_revisions",
+      "type": "table",
+      "authority": "supabase/migrations/20261002180500_canonical_cms_website_portal_v1.sql",
+      "evidence_contract": "tests/cms-website-portal-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_compliance_evidence_v1",
       "type": "table",
       "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
@@ -1031,4 +1059,4 @@
       "required": true
     }
   ]
-}
+}\n
