@@ -1,0 +1,14 @@
+{
+  "version": "approved-blog-index-marker-recovery-v1",
+  "date": "2026-10-02",
+  "fingerprint": "approved-blog-index-marker-representation-drift",
+  "symptom": "Approved central blog render failed with 'Blogindex mist artikelen-marker' although the articles container exists.",
+  "root_cause": "blog/index.html contains a literal backslash-n immediately after the articles container in the current production source, while the deterministic publisher only accepted a real newline.",
+  "fix": "Accept exactly two known marker representations: real newline and literal backslash-n. Continue to fail closed for every other structure.",
+  "regression_guard": "Never broaden to fuzzy insertion; the writer must still find the exact articles container and publish through the protected lane.",
+  "evidence": {
+    "workflow_run": 37026408785,
+    "job_id": 110902063203,
+    "slug": "bedrijfsoverdracht-aan-familie-wat-je-moet-regelen-en-waarom-het-meest"
+  }
+}
