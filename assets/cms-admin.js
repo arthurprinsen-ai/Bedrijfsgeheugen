@@ -129,7 +129,7 @@ function bind(){
   $('#clearBtn').addEventListener('click',function(){selectItem(null)});$('#newItemBtn').addEventListener('click',function(){selectItem(null);window.scrollTo({top:0,behavior:'smooth'})});
   ['surfaceFilter','localeFilter','statusFilter','searchFilter'].forEach(function(id){$('#'+id).addEventListener(id==='searchFilter'?'input':'change',renderList)});
   $$('[data-area]').forEach(function(b){b.addEventListener('click',function(){$$('[data-area]').forEach(function(x){x.classList.remove('active')});b.classList.add('active');activeArea=b.dataset.area||'';renderList()})});
-  $('#loadPreviewBtn').addEventListener('click',function(){var v=$('#previewUrl').value.trim()||'/';if(!v.startsWith('/'))v='/'+v;$('#previewFrame').src=v});$('#pickBtn').addEventListener('click',startPick);
+  $('#loadPreviewBtn').addEventListener('click',function(){var raw=$('#previewUrl').value.trim()||'/';try{var u=new URL(raw,location.origin);if(u.origin!==location.origin||!['http:','https:'].includes(u.protocol))throw new Error('Alleen pagina’s op bedrijfsgeheugen.nl zijn toegestaan.');$('#previewFrame').contentWindow.location.replace(u.pathname+u.search+u.hash)}catch(e){toast(e.message||'Ongeldige previewroute')}});$('#pickBtn').addEventListener('click',startPick);
 }
 async function enter(u){
   if(!u){$('#authGate').classList.remove('hidden');$('#app').classList.add('hidden');return}
