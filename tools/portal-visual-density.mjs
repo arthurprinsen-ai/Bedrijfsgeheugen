@@ -21,8 +21,8 @@ const report=[];
 for(const [pageName,route] of pages){
   for(const [vpName,viewport] of viewports){
     const page=await browser.newPage({viewport});
-    await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
-    await page.waitForTimeout(600);
+    await page.goto(base+route,{waitUntil:'domcontentloaded',timeout:45000});
+    await page.waitForTimeout(1200);
     const file=path.join(out,`${pageName}-${vpName}.png`);
     await page.screenshot({path:file,fullPage:true});
     const metrics=await page.evaluate(({vpName})=>{
