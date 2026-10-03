@@ -1,0 +1,50 @@
+name: Website Cross-Browser Screenshot Assurance
+
+on:
+  pull_request:
+    paths:
+      - '*.html'
+      - 'assets/**'
+      - 'blog/**'
+      - 'en/**'
+      - 'kennis/**'
+      - 'site/**'
+      - 'config/powerhouse-website-cross-browser-assurance-v1.json'
+      - 'tools/site-shell/**'
+      - '.github/workflows/website-cross-browser-screenshot-assurance.yml'
+  schedule:
+    - cron: '20 6 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  cross-browser-screenshots:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Contract regression
+        run: node --test tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs
+      - name: Install Playwright engines
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Run production cross-browser screenshot assurance
+        env:
+          BASE_URL: https://www.bedrijfsgeheugen.nl
+          WEBSITE_ASSURANCE_CONTRACT: config/powerhouse-website-cross-browser-assurance-v1.json
+          OUT_DIR: .artifacts/website-cross-browser-assurance
+        run: node tools/site-shell/website-cross-browser-assurance.mjs
+      - name: Upload screenshots and report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: website-cross-browser-assurance-${{ github.run_id }}
+          path: .artifacts/website-cross-browser-assurance
+          if-no-files-found: error
+          retention-days: 30
