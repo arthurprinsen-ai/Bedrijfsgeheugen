@@ -37,3 +37,14 @@ test('website assurance is scheduled daily and keeps evidence',()=>{
   assert.match(workflow,/chromium firefox webkit/);
   assert.match(workflow,/retention-days: 30/);
 });
+
+test('website cross-browser assurance stays classified in website delivery lane',()=>{
+  const policy=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
+  const website=policy.lanes.find(lane=>lane.id==='website');
+  for(const path of [
+    '.github/workflows/website-cross-browser-screenshot-assurance.yml',
+    'config/powerhouse-website-cross-browser-assurance-v1.json',
+    'tools/site-shell/website-cross-browser-assurance.mjs',
+    'tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs'
+  ]) assert.ok(website.paths.some(prefix=>path===prefix||path.startsWith(prefix)),path);
+});
