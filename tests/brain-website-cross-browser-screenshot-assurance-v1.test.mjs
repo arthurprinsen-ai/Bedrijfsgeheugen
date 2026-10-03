@@ -28,7 +28,7 @@ test('website assurance exercises interactions',()=>{
   const ids=new Set(contract.interactions.map(item=>item.id));
   for(const id of ['mobile-menu','desktop-menu','language-switch'])assert.ok(ids.has(id),id);
   assert.ok(runner.includes('aria-expanded'));
-  assert.ok(runner.includes('aria-controls'));
+  assert.ok(runner.includes('#bgSharedMobileNav'));
 });
 
 test('website assurance is scheduled daily and keeps evidence',()=>{
@@ -76,4 +76,11 @@ test('critical screenshot matrix uses canonical product route and real controls'
   assert.ok(runner.includes('#bgSharedMobileNav'));
   assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
   assert.ok(runner.includes('clsEntries'));
+});
+
+test('pull requests test exact preview while schedule tests production',()=>{
+  assert.match(workflow,/deploy-preview-\$\{PR_NUMBER\}--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(workflow,/github\.event_name == 'pull_request'/);
+  assert.match(workflow,/https:\/\/www\.bedrijfsgeheugen\.nl/);
+  assert.match(workflow,/Wait for exact candidate preview/);
 });
