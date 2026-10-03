@@ -153,7 +153,7 @@ function personalFinalCopyValid(body:string, evidence:any) {
   const text=clean(body).toLowerCase();
   const source=clean(evidence?.source_text).toLowerCase();
   const hasFirstPerson=/\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(body);
-  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|bedrijven|management|ondernemer|organisatie|proces|digitalisering|consultancy|consultant|klant|opdrachtgever|mkb|sales|lead|omzet|offerte|strategie|business|propositie|dienstverlening|dashboard|governance|roadmap|stakeholder|\bai\b|data/i.test(body);
+  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|bedrijven|management|ondernemer|organisatie|proces|digitalisering|consultancy|consultant|klant|opdrachtgever|mkb|sales|lead|omzet|offerte|strategie|business|propositie|dienstverlening|dashboard|governance|roadmap|stakeholder|data-platform|datawarehouse/i.test(body);
   if (evidence?.observational_personal_theme_verified === true) {
     const dailyLife=/\b(thuis|telefoon|app|wandeling|winkel|boodschappen|supermarkt|auto|fiets|trein|school|sport|weekend|vakantie|keuken|straat|buurt|regen|pakket|bezorging|scherm|offline)\b/i.test(body);
     return !hasFirstPerson && dailyLife && noBusinessBridge;
