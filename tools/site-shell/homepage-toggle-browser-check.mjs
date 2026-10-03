@@ -6,11 +6,31 @@ if (!baseUrl) throw new Error('UI_VR_BASE_URL ontbreekt');
 const browser = await chromium.launch({ headless: true });
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 
+async function clickStableTab(selector) {
+  const tab = page.locator(selector);
+  await tab.waitFor({ state: 'visible', timeout: 30000 });
+
+  let lastError;
+  for (let attempt = 1; attempt <= 3; attempt++) {
+    await tab.evaluate(el => el.scrollIntoView({ block: 'center', inline: 'center', behavior: 'instant' }));
+    await page.waitForTimeout(250);
+    try {
+      await tab.click({ timeout: 8000 });
+      return;
+    } catch (error) {
+      lastError = error;
+      if (attempt === 3) break;
+      await page.waitForTimeout(250 * attempt);
+    }
+  }
+  throw lastError;
+}
+
 try {
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle', timeout: 90000 });
   await page.waitForSelector('#homepage-expertise-tab', { state: 'visible', timeout: 30000 });
 
-  await page.click('#homepage-expertise-tab');
+  await clickStableTab('#homepage-expertise-tab');
   await page.waitForFunction(() => document.querySelector('#homepage-expertise-tab')?.getAttribute('aria-selected') === 'true');
 
   const expertise = await page.evaluate(() => {
@@ -43,7 +63,7 @@ try {
     throw new Error(`Expertise-panel niet zichtbaar na klik: ${JSON.stringify(expertise)}`);
   }
 
-  await page.click('#homepage-platform-tab');
+  await clickStableTab('#homepage-platform-tab');
   await page.waitForFunction(() => document.querySelector('#homepage-platform-tab')?.getAttribute('aria-selected') === 'true');
   const restored = await page.evaluate(() => {
     const platform = document.querySelector('#homepage-platform-panel');
