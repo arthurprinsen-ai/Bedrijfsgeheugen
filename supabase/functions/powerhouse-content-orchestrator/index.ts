@@ -104,9 +104,12 @@ function composioFallbackEligible(error:any){
 function validPersonalSource(row:any) {
   const e = row?.evidence || {};
   const lineage = Array.isArray(e.source_lineage) ? e.source_lineage.length > 0 : !!e.source_lineage;
-  return row?.target_channel === 'linkedin_personal' && e.identity_contract === PERSONAL_CONTRACT && e.identity_gate_version === PERSONAL_GATE
-    && e.personal_truth_verified === true && !!clean(e.content_id) && lineage && e.arthur_anchor_verified === true
-    && e.first_person_claims_verified === true && e.personal_life_topic === true && e.business_topic === false
+  const eligibleStatus = ['suggested','accepted'].includes(clean(row?.status));
+  const truthMode = e.personal_truth_verified === true && e.arthur_anchor_verified === true && e.first_person_claims_verified === true;
+  const observationalMode = e.observational_personal_theme_verified === true && e.public_theme_source_verified === true && e.first_person_claims_present === false;
+  return eligibleStatus && row?.target_channel === 'linkedin_personal' && e.identity_contract === PERSONAL_CONTRACT && e.identity_gate_version === PERSONAL_GATE
+    && !!clean(e.content_id) && lineage && (truthMode || observationalMode)
+    && e.personal_life_topic === true && e.business_topic === false
     && (e.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY || e.personal_life_only_verified === true)
     && e.corporate_voice === false && e.company_page_interchangeable === false && e.forced_business_moral === false
     && (e.sensitive_private_detail !== true || e.sensitive_private_approval === true);
@@ -146,13 +149,17 @@ function pickRecommendation(recs:any[], channel:string) {
   }
   return eligible.sort((a,b)=>recommendationScore(b,channel)-recommendationScore(a,channel))[0] || null;
 }
-function personalFinalCopyValid(body:string, sourceText:string) {
+function personalFinalCopyValid(body:string, evidence:any) {
   const text=clean(body).toLowerCase();
-  const source=clean(sourceText).toLowerCase();
-  const hasFirstPerson=/\bik\b|\bmijn\b|\bme\b/.test(text);
+  const source=clean(evidence?.source_text).toLowerCase();
+  const hasFirstPerson=/\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(body);
+  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|bedrijven|management|ondernemer|organisatie|proces|digitalisering|consultancy|consultant|klant|opdrachtgever|mkb|sales|lead|omzet|offerte|strategie|business|propositie|dienstverlening|dashboard|governance|roadmap|stakeholder|data-platform|datawarehouse/i.test(body);
+  if (evidence?.observational_personal_theme_verified === true) {
+    const dailyLife=/\b(thuis|telefoon|app|wandeling|winkel|boodschappen|supermarkt|auto|fiets|trein|school|sport|weekend|vakantie|keuken|straat|buurt|regen|pakket|bezorging|scherm|offline)\b/i.test(body);
+    return !hasFirstPerson && dailyLife && noBusinessBridge;
+  }
   const anchors=['printer','08:07','08:10','cyaan'].filter(x=>source.includes(x));
   const preserved=anchors.length===0 || anchors.filter(x=>text.includes(x)).length>=Math.min(2,anchors.length);
-  const noBusinessBridge=!/bedrijfsgeheugen|bedrijf|bedrijven|management|ondernemer|organisatie|proces|digitalisering|consultancy|consultant|klant|opdrachtgever|mkb|sales|lead|omzet|offerte|strategie|business|propositie|dienstverlening|dashboard|governance|roadmap|stakeholder|\bai\b|data/i.test(body);
   return hasFirstPerson && preserved && noBusinessBridge;
 }
 function hardBoundary(channel:string, reason?:string) {
@@ -197,9 +204,14 @@ function plannedDecision(channel:string, recs:any[], personalSource:any, instagr
     rationale:`Evidence-bound decision via recommendation ${rec.recommendation_id}.`,scheduled_hour_local:channel==='blog'?12:channel==='instagram_company'?18:13,
     content_brief:clean(rec.reason),capability_state:'READY',capability_reason:null,decision_source:'deterministic-recommendation-policy',fallback_recommendation_id:rec.recommendation_id };
 }
-function shouldPreserveExisting(row:any) {
+function shouldPreserveExisting(row:any, channel:string, personalSource:any) {
   if (!row) return false;
   const evidence=row.delivery_evidence||{};
+  const personalNoGapReopen = channel === 'linkedin_personal'
+    && clean(row.state) === 'skipped'
+    && !!personalSource
+    && (clean(evidence.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(evidence.invalid_candidate));
+  if (personalNoGapReopen) return false;
   return COVERED_STATES.has(clean(row.state))
     || evidence.republish_forbidden === true
     || evidence.possible_provider_side_effect === true
@@ -258,9 +270,11 @@ Deno.serve(async (req) => {
     stage = 'reconcile-decisions';
     for (const channel of CHANNELS) {
       const previous:any = existingByChannel.get(channel);
-      if (shouldPreserveExisting(previous)) continue;
+      if (shouldPreserveExisting(previous,channel,personalSource)) continue;
       const decision:any = plannedDecision(channel,recs,personalSource,instagramProof);
-      const stale = previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
+      const personalNoGapReopen = channel === 'linkedin_personal' && clean(previous?.state) === 'skipped' && !!personalSource
+        && (clean(previous?.delivery_evidence?.no_publish_reason) === 'NO_ELIGIBLE_CONTENT' || !!clean(previous?.delivery_evidence?.invalid_candidate));
+      const stale = personalNoGapReopen || previous?.delivery_evidence?.stale_delivery_ref === true || clean(previous?.delivery_evidence?.error) === 'PROVIDER_RECORD_MISSING';
       const hour = String(decision.scheduled_hour_local).padStart(2,'0');
       const evidence = { ...(stale?{}:(previous?.delivery_evidence||{})), content_brief:decision.content_brief,decision_engine:VERSION,decision_source:decision.decision_source,
         capability_state:decision.capability_state,capability_reason:decision.capability_reason,executor_capabilities,
@@ -322,8 +336,11 @@ Deno.serve(async (req) => {
       if(linkError) throw new Error('COMPANY_TRACKING_LINK_WRITE_FAILED');
     }
     const artifactTool = { name:'content_artifact',description:'Definitieve kanaaleigen content',input_schema:{type:'object',additionalProperties:false,properties:{title:{type:'string'},body:{type:'string'},cta:{type:'string'},hook_type:{type:'string'},focus_keyword:{type:'string'},meta_description:{type:'string'}},required:['title','body','cta','hook_type','focus_keyword','meta_description']}};
+    const personalObservational = pending.channel==='linkedin_personal' && personalSource?.evidence?.observational_personal_theme_verified === true;
     const system = pending.channel==='linkedin_personal'
-      ? `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn vanuit zijn persoonlijke leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen. Toegestaan: gezin, kinderen/school, hockey/sport, reizen/vakantie, auto/vervoer, huis/tuin, consumententechniek, boodschappen, familie/generaties, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Een persoonlijke anekdote mag nooit als brug naar business dienen. Verzin geen ervaring.`
+      ? (personalObservational
+        ? `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn als herkenbare observatie uit het dagelijks leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. Gebruik source_text alleen als feitelijke inspiratie. Gebruik GEEN ik/mijn/mij/me-vorm, suggereer niet dat Arthur dit zelf heeft meegemaakt en verzin geen persoonlijke ervaring. Toegestaan: telefoon/schermtijd, huis, vervoer, boodschappen, sport, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Schrijf menselijk, concreet en met lichte humor waar passend.`
+        : `Schrijf uitsluitend voor Arthur persoonlijk LinkedIn vanuit zijn persoonlijke leven. Policy ${PERSONAL_LIFE_ONLY_POLICY}. De uiteindelijke tekst MOET expliciet in de ik-vorm een concrete gebeurtenis uit source_text vertellen. Toegestaan: gezin, kinderen/school, hockey/sport, reizen/vakantie, auto/vervoer, huis/tuin, consumententechniek, boodschappen, familie/generaties, vrije tijd, dagelijkse routines/frustraties en menselijke observaties. Verboden: bedrijven, klanten, MKB, consultancy, opdrachten, bedrijfsprocessen, organisatie-AI/digitalisering, Bedrijfsgeheugen, sales/leads/offertes, cases, thought leadership, zakelijke lessen of een zakelijke moraal. Een persoonlijke anekdote mag nooit als brug naar business dienen. Verzin geen ervaring.`)
       : pending.channel==='linkedin_company'
       ? 'Schrijf uitsluitend voor de Bedrijfsgeheugen-bedrijfspagina: een zakelijk MKB-probleem, concrete diagnose of bewijsgerichte observatie. Gebruik nooit persoonlijke dagboek-/huiselijke content of Arthur-ervaring als company copy. Neem de opgegeven tracking_url letterlijk op in de body. Verzin geen cases, cijfers, quotes of ervaringen.'
       : pending.channel==='instagram_company' ? 'Schrijf Mira daily-life caption passend bij de reeds bewezen finale media. Geen interne kantoorproblemen of geforceerde businessmoraal.'
@@ -350,14 +367,18 @@ Deno.serve(async (req) => {
       artifact=await callComposioArtifact(db,generationModel,system,artifactInput,pending.channel==='blog'?4800:2600);
     }
     let bodyText = clean(artifact.body);
-    if (pending.channel==='linkedin_personal' && !personalFinalCopyValid(bodyText,clean(personalSource?.evidence?.source_text))) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
+    if (pending.channel==='linkedin_personal' && !personalFinalCopyValid(bodyText,personalSource?.evidence||{})) throw new Error('PERSONAL_FINAL_COPY_TRUTH_INVARIANT_FAILED');
     if (pending.channel==='linkedin_company') {
       if (!companyTrackingUrl || !bodyText.includes(companyTrackingUrl)) bodyText=`${bodyText}\n\n${companyTrackingUrl}`;
       if (/printer|08:07|08:10|cyaan/i.test(bodyText) && clean(recommendation?.topic_key).toLowerCase().includes('linkedin_personal')) throw new Error('COMPANY_PERSONAL_CONTENT_LEAK_BLOCKED');
     }
     const finalTextHash = await digest(bodyText);
     const personalEvidence = pending.channel==='linkedin_personal' ? {...(personalSource.evidence||{}),content_id:clean(personalSource.evidence?.content_id)||`${runDate}:linkedin_personal`,calendar_date:runDate,
-      channel_id:PERSONAL_CHANNEL,channel_kind:'linkedin_personal',identity_contract:PERSONAL_CONTRACT,identity_gate_version:PERSONAL_GATE,personal_truth_verified:true,
+      channel_id:PERSONAL_CHANNEL,channel_kind:'linkedin_personal',identity_contract:PERSONAL_CONTRACT,identity_gate_version:PERSONAL_GATE,
+      personal_truth_verified:personalSource.evidence?.personal_truth_verified===true,
+      observational_personal_theme_verified:personalSource.evidence?.observational_personal_theme_verified===true,
+      public_theme_source_verified:personalSource.evidence?.public_theme_source_verified===true,
+      first_person_claims_present:personalSource.evidence?.first_person_claims_present===false?false:true,
       personal_life_only_policy:PERSONAL_LIFE_ONLY_POLICY,personal_life_only_verified:true,
       prediction_lineage_present:true,prior_prediction_decision_id:`decision:${runDate}:linkedin_personal`,publication_intent:'publish',final_text_hash:finalTextHash} : null;
     const instagramEvidence = pending.channel==='instagram_company' ? {...instagramProof,exact_final_media_proven:true,final_media_sha256:instagramProof.final_media_sha256,media_url:instagramProof.media_url,mira_gate_passed:true} : null;

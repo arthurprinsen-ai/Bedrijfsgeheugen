@@ -1,0 +1,37 @@
+{
+  "fingerprint": "linkedin-personal|daily-no-gap|observational-fallback|20261003-v1",
+  "observed_at": "2026-10-03T10:34:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The personal LinkedIn daily obligation ended as SKIPPED/NO_ELIGIBLE_CONTENT after the fallback selected the already-consumed printer story family. A later compliant replacement recommendation could not recover the day because the orchestrator treated skipped as terminal and only accepted verified first-person personal sources.",
+  "root_cause": "Three contracts drifted apart: legacy no-gap rotation reused historical personal artifacts; the identity/truth policy correctly forbade semantic story-family reuse; and the orchestrator preserved skipped state while requiring first-person truth. Multiple active LinkedIn connections also made provider account selection less deterministic. A fourth defect let skipped recommendations remain eligible for personal-source ranking, allowing a higher-priority rejected source to resurrect.",
+  "decision": "Never recycle historical personal anecdotes to satisfy cadence. When no genuinely unused verified personal event exists, use a fresh source-backed everyday-life observation with no first-person claim, no business bridge and full lineage. A personal NO_ELIGIBLE_CONTENT skip is recoverable whenever such a compliant source becomes available. Personal provider resolution must prefer the canonical personal LinkedIn connection.",
+  "prevention": [
+    "Historical generated personal artifacts are ineligible as no-gap fallback sources.",
+    "Observational fallback requires a fresh source URL, source lineage, personal-life topic and zero first-person experience claims.",
+    "Semantic/story-family uniqueness remains mandatory before provider write.",
+    "SKIPPED/NO_ELIGIBLE_CONTENT is not terminal for the daily personal obligation when a compliant new source exists.",
+    "The orchestrator, pre-publish gate and publisher share the same truth-mode distinction.",
+    "LinkedIn personal connection resolution prefers linkedin-personal-canonical-current and still verifies the actual member ID.",
+    "Personal-source ranking must filter to status suggested/accepted before priority scoring; skipped/blocked/rejected recommendations are permanently ineligible for that run."
+  ],
+  "compiler": {
+    "failure_class": "LINKEDIN_PERSONAL_NO_GAP_POLICY_DRIFT",
+    "scope": "AUTOMATION",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "supabase/functions/powerhouse-content-orchestrator/index.ts",
+    "supabase/functions/bg-pre-publish-review/index.ts",
+    "supabase/functions/powerhouse-social-publisher/index.ts",
+    "supabase/migrations/20261003105500_linkedin_personal_no_gap_observational_v2.sql",
+    "tests/brain-linkedin-personal-no-gap-observational-v1.test.mjs",
+    "supabase/functions/powerhouse-content-orchestrator/index.ts#validPersonalSource"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-personal-no-gap-observational-v1.test.mjs"
+    ]
+  }
+}
