@@ -12,3 +12,4 @@ Use this skill for pricing, packaging, checkout, consulting bundles and Portal V
 7. A commercial change is incomplete until pricing, checkout, portal access, server-side plan data, tests and production readback agree.
 8. Legacy Control and Scale are not public offers.
 9. The public pricing surface is canonical in `prijzen.html` before build transforms; build-integrity and production gates must assert the SaaS + consulting surface, never legacy Control/Scale markers.
+10. Public pricing closure is proven on the actual clean routes (`prijzen/index.html` and `en/prijzen/index.html`), not only on source `.html` files; the terminal composer owns all four pricing artifacts.
