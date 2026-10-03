@@ -240,6 +240,11 @@ def main():
     template = re.sub(r'<link rel="preload" as="style" href="https://fonts\\.googleapis\\.com[^"]*">\\n?', '', template)
     template = re.sub(r'<link href="https://fonts\\.googleapis\\.com[^"]*" rel="stylesheet">\\n?', '', template)
     template = re.sub(r'<script data-goatcounter="[^"]+" async src="https://gc\\.zgo\\.at/count\\.js"></script>\\n?', '', template)
+    template = re.sub(r'<script src="/assets/stijl\\.js" defer></script>\\n?', '', template)
+    template = template.replace(
+        '<span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/privacy">Privacyverklaring</a><a href="/contact">Contact</a></span>',
+        '<span class="bgvoet-links"><span>&copy; 2026 Bedrijfsgeheugen.nl</span><a href="/gebruiksvoorwaarden">Algemene gebruiksvoorwaarden</a><a href="/privacy">Privacyverklaring</a><a href="/cookiebeleid">Cookiebeleid</a><a href="/systeemstatus">Systeemstatus</a><a href="/contact">Contact</a></span>'
+    )
     template = replace_one(template, r"<title>.*?</title>", f"<title>{title}</title>", "title")
     template = replace_one(
         template,
