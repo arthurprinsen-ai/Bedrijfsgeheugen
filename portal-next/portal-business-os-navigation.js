@@ -22,7 +22,7 @@ function makeGroup(){
 }
 
 export function mountBusinessOsNavigation(){
-  for(const nav of document.querySelectorAll('[data-portal-nav-tree],#portalMobileNav')){
+  for(const nav of document.querySelectorAll('.sidebar .nav,#portalMobileNav')){
     if(nav.querySelector('.portal-nav-group--business-os'))continue;
     nav.prepend(makeGroup());
   }
