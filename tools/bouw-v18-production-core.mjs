@@ -33,12 +33,8 @@ if (sha256(base64) !== EXPECTED_BASE64_SHA256) throw new Error(`V18 payload inte
 let html = gunzipSync(Buffer.from(base64, 'base64')).toString('utf8');
 if (sha256(html) !== EXPECTED_HTML_SHA256) throw new Error(`V18 HTML integrity mismatch: ${sha256(html)}`);
 
-
 // Canonical navigation contract: "Platform" is the product proposition.
-// The pinned V18 payload can contain a historical mobile link to
-// /bedrijfsgeheugen. Match the whole anchor because the label may contain
-// presentational spans/icons, then only repair anchors whose visible text is
-// exactly "Platform".
+// Repair the historical pinned mobile route before generated HTML is written.
 let platformRouteRepairs = 0;
 html = html.replace(
   /<a\b[^>]*\bhref=(["'])(?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/bedrijfsgeheugen\1[^>]*>[\s\S]*?<\/a>/gi,
