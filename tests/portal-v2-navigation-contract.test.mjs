@@ -1,33 +1,38 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
-import { PORTAL_NAV_ITEMS, DESKTOP_NAV_ITEMS } from '../portal-v2/navigation-model.js';
+import { PORTAL_NAV_ITEMS, DESKTOP_NAV_GROUPS } from '../portal-v2/navigation-model.js';
+import { allPageIds } from '../portal-v2/page-registry.js';
 
 const app = fs.readFileSync('portal-v2/app.js','utf8');
+const html = fs.readFileSync('portal-v2/index.html','utf8');
+const router = fs.readFileSync('portal-v2/router.js','utf8');
 
-test('all five mobile nav items are real routed controls', () => {
-  assert.deepEqual(PORTAL_NAV_ITEMS.map(item=>item.id), ['overview','project','data-ai','tasks','more']);
-  assert.equal(PORTAL_NAV_ITEMS.find(item=>item.id==='project')?.target,'hub:project');
-  assert.match(app, /dataset\.mobileNav/);
-  assert.match(app, /bindPortalNavigation/);
+test('desktop and compact layouts use one complete canonical navigation tree', () => {
+  const registered=new Set(allPageIds());
+  const canonical=new Set(DESKTOP_NAV_GROUPS.flatMap(group=>group.pages.map(page=>page.target)).filter(target=>!target.startsWith('hub:')));
+  for(const id of registered) assert.ok(canonical.has(id), id);
+  assert.ok(DESKTOP_NAV_GROUPS.some(group=>group.pages.some(page=>page.target==='hub:project')));
+  assert.ok(PORTAL_NAV_ITEMS.length>=registered.size);
+  assert.match(app,/portal-single-navigation/);
+  assert.doesNotMatch(app,/dataset\.mobileNav/);
+  assert.doesNotMatch(html,/class="mobilebar"/);
+  assert.doesNotMatch(router,/data-mobile-nav/);
 });
 
-test('desktop navigation uses the same explicit routing model rather than decorative buttons', () => {
-  assert.equal(DESKTOP_NAV_ITEMS.length, 10);
-  assert.ok(DESKTOP_NAV_ITEMS.every(item=>item.target), 'every desktop item needs an explicit target');
-  assert.match(app, /dataset\.navTarget/);
-  assert.match(app, /DESKTOP_NAV_GROUPS/);
-  assert.match(app, /desktop-project-nav/);
+test('canonical sidebar routes each page directly instead of activating a second group menu', () => {
+  assert.match(app,/dataset\.navTarget=page\.target/);
+  assert.match(app,/dataset\.navPage=page\.id/);
+  assert.match(router,/button\.dataset\.navTarget===target/);
 });
 
-test('mobile navigation keeps 44px touch target baseline', () => {
-  const css = [
-    fs.readFileSync('portal-v2/app.css','utf8'),
-    fs.readFileSync('portal-v2/navigation.css','utf8')
-  ].join('\n');
-  assert.match(css, /\.mobilebar[\s\S]*?button[\s\S]*?min-height:\s*44px/);
+test('responsive hamburger is only the compact rendering of the same full tree', () => {
+  const css = fs.readFileSync('portal-v2/navigation.css','utf8');
+  assert.match(html, /id="portalFullMenuToggle"/);
+  assert.match(css,/\.portal-hamburger\{display:none\}/);
+  assert.match(css,/@media\(max-width:1180px\)\{\.portal-hamburger\{display:inline-flex\}\}/);
+  assert.match(css,/\.mobilebar\{display:none!important\}/);
 });
-
 
 test('customer portal routes canonicalize to Portal V2 except the preserved IJsselmonde legacy portal', () => {
   const redirects = fs.readFileSync('_redirects','utf8');
@@ -43,24 +48,10 @@ test('customer portal routes canonicalize to Portal V2 except the preserved IJss
   assert.match(homepage, /location\.replace\('\/portal-v2\/' \+ h\)/);
 });
 
-
 test('portal boot preserves explicit page and hub deep links while overview remains the default', () => {
-  const router = fs.readFileSync('portal-v2/router.js','utf8');
   assert.match(router, /return params\.get\('page'\) \|\| 'overzicht'/);
   assert.match(router, /const initialTarget=readTargetFromLocation\(\)/);
   assert.match(router, /history\.replaceState\(\{portalTarget:initialTarget\},'',navigationUrl\(initialTarget\)\)/);
   assert.match(router, /applyTarget\(initialTarget\)/);
   assert.doesNotMatch(router, /history\.replaceState\(\{portalTarget:'overzicht'\}/);
-});
-
-
-test('left-top hamburger is the single canonical full-menu entry and floating menu is removed', () => {
-  const html = fs.readFileSync('portal-v2/index.html','utf8');
-  const css = fs.readFileSync('portal-v2/navigation.css','utf8');
-  assert.match(html, /id="portalFullMenuToggle"/);
-  assert.match(html, /aria-controls="allPages"/);
-  assert.doesNotMatch(html, /id="portalMainMenu"/);
-  assert.doesNotMatch(html, /id="showPages"/);
-  assert.match(css, /\.portal-hamburger\{display:inline-flex;/);
-  assert.doesNotMatch(css, /\.portal-hamburger\{display:none;/);
 });
