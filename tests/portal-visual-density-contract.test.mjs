@@ -22,3 +22,5 @@ test('visual regression harness captures desktop tablet mobile',()=>{
   const harness=fs.readFileSync('tools/portal-visual-density.mjs','utf8');
   for(const marker of ['1440,height:900','1024,height:768','390,height:844','page.screenshot','horizontal overflow','CSRD visual','brain image']) assert.ok(harness.includes(marker),marker);
 });
+
+// Delivery metadata refresh: portal visual-density recovery candidate.
