@@ -1,24 +1,29 @@
 {
-  "version": "wet-dba-static-i18n-cache-recovery-v1",
-  "date": "2026-10-03",
-  "obligation_id": "static-i18n-wet-dba-cache-20261003-v1",
+  "fingerprint": "website|i18n|wet-dba|static-cache-recovery|20261003-v1",
+  "observed_at": "2026-10-03T09:36:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The daily Wet DBA blog reached main without the deterministic English cache entries required by the static locale build, causing STATIC_I18N_CACHE_INCOMPLETE and blocking unrelated website delivery.",
+  "root_cause": "The blog publication path committed new translatable Dutch copy without committing the matching append-only static English cache patch before merge.",
+  "decision": "Treat translation-cache completeness as part of the same publication artifact. Recover the 66 missing entries and retain an executable historical replay for this incident dataset.",
+  "prevention": [
+    "A Dutch public route is not delivery-complete while required static English cache entries are missing.",
+    "The exact historical set of 66 missing Wet DBA strings is retained as an append-only cache patch.",
+    "Executable replay verifies count, representative mappings and non-empty translated values."
+  ],
   "compiler": {
-    "failure_class": "STATIC_I18N_CACHE_INCOMPLETE"
+    "failure_class": "STATIC_I18N_CACHE_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   },
+  "evidence": [
+    "config/bg-static-i18n-en.d/2026-10-03-wet-dba-blog.json",
+    "tests/brain-wet-dba-static-i18n-cache.test.mjs"
+  ],
   "evaluation": {
     "historical_replay": [
-      {
-        "source": "netlify-build-and-local-node22-replay",
-        "observed": "build-localized-routes.mjs failed closed with STATIC_I18N_CACHE_INCOMPLETE for the newly merged Wet DBA blog",
-        "root_cause_confirmed": true,
-        "prevention_verified": "Append-only English cache patch supplies the exact missing strings; protected premerge Netlify parity must pass before merge."
-      }
+      "tests/brain-wet-dba-static-i18n-cache.test.mjs"
     ]
-  },
-  "root_cause": "The 2026-10-03 blog was merged without its deterministic English translation cache patch.",
-  "prevention_rule": "Every new public NL blog article must ship its deterministic static-i18n English cache in the same delivery lineage before production.",
-  "evidence": [
-    "Netlify deploy 6ac0af4a58aa221a74cc8098 failed build",
-    "local Node 22 reproduction returned STATIC_I18N_CACHE_INCOMPLETE"
-  ]
+  }
 }
