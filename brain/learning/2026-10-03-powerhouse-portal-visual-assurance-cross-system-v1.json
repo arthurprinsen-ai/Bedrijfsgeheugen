@@ -1,0 +1,24 @@
+{
+  "fingerprint": "powerhouse-portal-visual-assurance-cross-system-v1",
+  "compiler": {
+    "failure_class": "VISUAL_ASSURANCE_NOT_CROSS_SYSTEM_DURABLE"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Portal density regression passed 9/9 production screenshots on 2026-10-03.",
+      "Prior implementation stored evidence primarily in GitHub artifacts; cross-system authority was then projected into the existing Supabase loop assurance and Notion verified state.",
+      "Daily production execution now prevents a one-time green screenshot from becoming permanent truth."
+    ]
+  },
+  "root_cause": "A screenshot gate can be technically correct but operationally incomplete if GitHub, Supabase assurance state and human-readable Notion architecture do not share one stable identity.",
+  "prevention": "Use loop_key portal-visual-density and fingerprint portal-visual-density-oversized-responsive-cascade-v1 across GitHub contract/workflow, Supabase assurance/quality registries and Notion verified state.",
+  "evidence": {
+    "github": ".github/workflows/portal-visual-density.yml",
+    "supabase": [
+      "public.powerhouse_loop_assurance_registry_v1",
+      "public.powerhouse_loop_assurance_receipts_v1",
+      "public.powerhouse_quality_events"
+    ],
+    "notion": "Portal V2 visual regression — canonical route authority"
+  }
+}
