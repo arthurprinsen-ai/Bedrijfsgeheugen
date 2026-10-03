@@ -1,0 +1,25 @@
+{
+  "fingerprint": "linkedin-personal|dual-truth|terminal-reconciliation|20261003-v1",
+  "observed_at": "2026-10-03T17:20:00+02:00",
+  "type": "PREVENTION",
+  "problem": "After restoring personal LinkedIn publication, database identity triggers and the reconciler still assumed personal content always required first-person verified truth. The obligation also retained an obsolete LinkedIn permalink after a new provider URN was created.",
+  "root_cause": "The personal-channel truth model evolved in Edge Functions before all database guards and reconciliation paths were updated. Evidence merging also preserved stale transport fields from the rejected historical post.",
+  "decision": "Make verified first-person personal truth and verified source-backed observational personal-life content two explicit valid truth modes across pre-publish review, artifact trigger, obligation trigger and reconciliation. Derive canonical LinkedIn permalinks from the exact provider URN.",
+  "prevention": [
+    "All personal LinkedIn enforcement layers must recognize the same two truth modes.",
+    "Observational mode requires public source verification, personal-life topic, no first-person experience claim, no business topic and no corporate voice.",
+    "Consumer-tech words such as AI are not automatically business content in observational daily-life posts; business blocking remains based on actual business context.",
+    "A new LinkedIn provider URN must replace stale canonical/public/readback URLs.",
+    "Terminal publication evidence is provider create acknowledgement plus exact public copy proof; ACL-limited structured post reads may remain permission-limited."
+  ],
+  "evidence": [
+    "supabase/functions/bg-pre-publish-review/index.ts",
+    "supabase/migrations/20261003152500_linkedin_personal_dual_truth_terminal_v1.sql",
+    "tests/brain-linkedin-personal-dual-truth-terminal-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-personal-dual-truth-terminal-v1.test.mjs"
+    ]
+  }
+}
