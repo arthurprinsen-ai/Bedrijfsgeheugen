@@ -343,7 +343,8 @@
         "tools/customer-portal-",
         "tools/fix-netlify-identity-",
         "netlify/functions/portaalvraag.mjs",
-        "netlify/functions/portal-state.mjs"
+        "netlify/functions/portal-state.mjs",
+        "tools/portal-visual-density.mjs"
       ],
       "requiredContracts": [
         "BG166",

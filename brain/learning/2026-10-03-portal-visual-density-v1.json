@@ -1,0 +1,34 @@
+{
+  "id": "portal-visual-density-20261003-v1",
+  "observed_at": "2026-10-03T07:12:00Z",
+  "problem": "Portal visualisations and illustrations could dominate the viewport and push actionable information below the fold; visual regression tooling was initially unclassified in delivery.",
+  "root_causes": [
+    "CSRD and Business Brain visuals used oversized fixed dimensions",
+    "compact CSRD overrides loaded before dynamically appended base CSS",
+    "visual regression harness initially used the wrong Playwright viewport option",
+    "production readback could not classify tools/portal-visual-density.mjs"
+  ],
+  "prevention": [
+    "capture overview, csrd-impact and data-ai at 1440x900, 1024x768 and 390x844",
+    "assert horizontal overflow and maximum visual dimensions",
+    "load compact CSRD overrides after base styles",
+    "classify the visual-density harness in the portal delivery lane"
+  ],
+  "evidence": {
+    "liveProductionDeploy": "6ac0a94207c0820008381755",
+    "liveProductionCommit": "e65fe29d3693e1ce480e9ac90ce244ebcf266c40",
+    "screenshotCount": 9,
+    "liveResult": "PASS"
+  },
+  "fingerprint": "portal-visual-density-oversized-responsive-cascade-v1",
+  "compiler": {
+    "failure_class": "PORTAL_VISUAL_DENSITY_REGRESSION"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Replayed overview, csrd-impact and data-ai at 1440x900, 1024x768 and 390x844.",
+      "Original mobile harness defect reproduced because viewportSize did not change Playwright viewport.",
+      "Production replay passed with 9 screenshots, 0px horizontal overflow, CSRD world 320px desktop/tablet and hidden on mobile."
+    ]
+  }
+}
