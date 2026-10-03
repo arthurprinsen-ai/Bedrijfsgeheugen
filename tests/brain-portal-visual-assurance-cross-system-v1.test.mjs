@@ -13,6 +13,9 @@ test('Powerhouse portal visual assurance is one cross-system contract',()=>{
   assert.equal(contract.authority.supabase_registry,'public.powerhouse_loop_assurance_registry_v1');
   assert.equal(contract.authority.supabase_receipts,'public.powerhouse_loop_assurance_receipts_v1');
   assert.equal(contract.authority.supabase_quality,'public.powerhouse_quality_events');
+  assert.equal(contract.authority.supabase_runtime_source,null);
+  assert.equal(contract.authority.supabase_receipt_mode,'explicit_external_test_evidence');
+  assert.equal(contract.authority.supabase_guard_requires_pass,true);
   assert.equal(contract.authority.notion_state,'Portal V2 visual regression — canonical route authority');
 
   assert.equal(contract.routes.length,3);
