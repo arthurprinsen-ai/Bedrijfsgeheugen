@@ -20,5 +20,15 @@
   "evidence": [
     "assets/js/menu.js",
     "https://www.bedrijfsgeheugen.nl/product"
-  ]
+  ],
+  "evaluation": {
+    "production_readback": [
+      "https://www.bedrijfsgeheugen.nl/",
+      "https://www.bedrijfsgeheugen.nl/product"
+    ],
+    "regression_contract": [
+      "Platform-labelled navigation anchors resolve to /product",
+      "Late CMS/navigation mutations cannot restore /bedrijfsgeheugen for Platform"
+    ]
+  }
 }
