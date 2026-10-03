@@ -1,0 +1,39 @@
+{
+  "fingerprint": "website|navigation|platform|final-product-route|20261003",
+  "observed_at": "2026-10-03T09:02:00+02:00",
+  "type": "PREVENTION",
+  "problem": "Production readback after the runtime repair still exposed a stale mobile V18 Platform anchor to /bedrijfsgeheugen in final generated HTML.",
+  "root_cause": "The pinned V18 payload contains a historical mobile Platform href and is projected late in the build. A runtime-only repair did not make the generated artifact itself canonical.",
+  "decision": "Make the final navigation contract the last authority: normalize every visible Platform anchor to https://www.bedrijfsgeheugen.nl/product and fail verification if any final shell differs.",
+  "prevention": [
+    "Final generated desktop and mobile Platform anchors always resolve to /product.",
+    "Pinned or legacy shell payloads cannot reintroduce /bedrijfsgeheugen for the Platform label after finalization.",
+    "The final navigation regression test contains the historical mobile drift and requires both Platform anchors to resolve to /product."
+  ],
+  "compiler": {
+    "failure_class": "FINAL_NAVIGATION_ROUTE_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tools/site-shell/finalize-site-contracts.mjs",
+    "tests/final-site-navigation-contract.test.mjs",
+    "https://www.bedrijfsgeheugen.nl/product"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "The pinned V18 mobile drawer contained Platform -> /bedrijfsgeheugen while the desktop route resolved to /product.",
+      "The final navigation contract now rewrites the stale mobile href before publication and verifies all Platform anchors."
+    ],
+    "production_readback": [
+      "https://www.bedrijfsgeheugen.nl/",
+      "https://www.bedrijfsgeheugen.nl/product"
+    ],
+    "regression_contract": [
+      "Every visible Platform anchor in final shell HTML resolves to https://www.bedrijfsgeheugen.nl/product",
+      "Final verification fails closed on any Platform destination drift"
+    ]
+  }
+}
