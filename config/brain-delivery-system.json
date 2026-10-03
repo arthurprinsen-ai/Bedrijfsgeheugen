@@ -508,7 +508,10 @@
         "workshops.html",
         "zakelijke-dienstverlening-software-koppelen.html",
         "zelfscan.html",
-        "zorg-software-koppelen.html"
+        "zorg-software-koppelen.html",
+        ".github/workflows/website-cross-browser-screenshot-assurance.yml",
+        "config/powerhouse-website-cross-browser-assurance-v1.json",
+        "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
       ],
       "requiredContracts": [
         "BG166",
