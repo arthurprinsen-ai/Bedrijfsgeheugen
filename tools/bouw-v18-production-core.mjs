@@ -35,15 +35,21 @@ if (sha256(html) !== EXPECTED_HTML_SHA256) throw new Error(`V18 HTML integrity m
 
 
 // Canonical navigation contract: "Platform" is the product proposition.
-// The pinned V18 payload still contains a historical mobile link to
-// /bedrijfsgeheugen. Repair that source before the generated homepage is
-// written so desktop and mobile both emit /product without runtime dependence.
+// The pinned V18 payload can contain a historical mobile link to
+// /bedrijfsgeheugen. Match the whole anchor because the label may contain
+// presentational spans/icons, then only repair anchors whose visible text is
+// exactly "Platform".
 let platformRouteRepairs = 0;
 html = html.replace(
-  /(<a\b[^>]*href=["'])\/bedrijfsgeheugen(["'][^>]*>\s*Platform\s*<\/a>)/gi,
-  (_match, before, after) => {
+  /<a\b[^>]*\bhref=(["'])(?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/bedrijfsgeheugen\1[^>]*>[\s\S]*?<\/a>/gi,
+  anchor => {
+    const visibleLabel = anchor.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (visibleLabel.toLowerCase() !== 'platform') return anchor;
     platformRouteRepairs += 1;
-    return before + '/product' + after;
+    return anchor.replace(
+      /href=(["'])(?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/bedrijfsgeheugen\1/i,
+      'href=$1/product$1'
+    );
   }
 );
 if (platformRouteRepairs < 1) throw new Error('Canonical mobile Platform route repair point not found');
