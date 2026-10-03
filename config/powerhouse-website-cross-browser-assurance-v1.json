@@ -8,8 +8,11 @@
       "chromium"
     ],
     "viewports": [
+      "small-mobile",
       "mobile",
-      "desktop"
+      "tablet",
+      "desktop",
+      "wide-desktop"
     ],
     "assertions": [
       "http_ok",
@@ -29,9 +32,11 @@
       "webkit"
     ],
     "viewports": [
+      "small-mobile",
       "mobile",
       "tablet",
-      "desktop"
+      "desktop",
+      "wide-desktop"
     ],
     "routes": [
       "/",
@@ -62,12 +67,23 @@
     "desktop": {
       "width": 1440,
       "height": 900
+    },
+    "small-mobile": {
+      "width": 320,
+      "height": 568
+    },
+    "wide-desktop": {
+      "width": 1920,
+      "height": 1080
     }
   },
   "thresholds": {
     "horizontal_overflow_px": 4,
     "min_main_text_chars": 80,
-    "max_cls": 0.1
+    "max_cls": 0.1,
+    "min_touch_target_px": 40,
+    "max_heading_width_ratio": 1,
+    "max_media_viewport_height_ratio": 1.5
   },
   "interactions": [
     {
@@ -121,6 +137,21 @@
     "mobile_and_desktop_required_for_all_routes",
     "chromium_firefox_webkit_required_for_critical_matrix",
     "no_tolerance_widening_to_hide_structural_mismatch",
-    "daily_production_run_required"
+    "daily_production_run_required",
+    "visual_quality_is_a_release_requirement",
+    "small_mobile_and_wide_desktop_are_required_edge_viewports",
+    "visual_failures_must_be_fixed_not_hidden"
+  ],
+  "visual_quality_assertions": [
+    "no_overlapping_visible_text_or_controls",
+    "no_clipped_visible_text",
+    "no_horizontal_overflow",
+    "images_and_video_fit_viewport",
+    "interactive_controls_have_usable_touch_targets",
+    "primary_buttons_are_not_truncated",
+    "fixed_or_sticky_navigation_does_not_cover_main_heading",
+    "critical_cards_do_not_exceed_viewport_width",
+    "body_text_remains_readable",
+    "screenshots_are_retained_for_visual_review"
   ]
 }
