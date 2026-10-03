@@ -33,6 +33,23 @@ if (sha256(base64) !== EXPECTED_BASE64_SHA256) throw new Error(`V18 payload inte
 let html = gunzipSync(Buffer.from(base64, 'base64')).toString('utf8');
 if (sha256(html) !== EXPECTED_HTML_SHA256) throw new Error(`V18 HTML integrity mismatch: ${sha256(html)}`);
 
+// Canonical navigation contract: "Platform" is the product proposition.
+// Repair the historical pinned mobile route before generated HTML is written.
+let platformRouteRepairs = 0;
+html = html.replace(
+  /<a\b[^>]*\bhref=(["'])(?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/bedrijfsgeheugen\1[^>]*>[\s\S]*?<\/a>/gi,
+  anchor => {
+    const visibleLabel = anchor.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim();
+    if (visibleLabel.toLowerCase() !== 'platform') return anchor;
+    platformRouteRepairs += 1;
+    return anchor.replace(
+      /href=(["'])(?:https:\/\/www\.bedrijfsgeheugen\.nl)?\/bedrijfsgeheugen\1/i,
+      'href=$1/product$1'
+    );
+  }
+);
+if (platformRouteRepairs < 1) throw new Error('Canonical mobile Platform route repair point not found');
+
 const resourceHints = `<link rel="dns-prefetch" href="//videos.pexels.com">\n<link rel="preconnect" href="${HERO_ORIGIN}">`;
 if (!html.includes(`rel="preconnect" href="${HERO_ORIGIN}"`)) {
   html = html.replace('</head>', `${resourceHints}\n</head>`);
