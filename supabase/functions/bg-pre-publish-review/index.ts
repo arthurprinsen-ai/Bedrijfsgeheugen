@@ -78,7 +78,10 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(body.publication_intent === 'publish', 'PUBLICATION_INTENT_REQUIRED', 'publication_intent=publish ontbreekt.');
   require(clean(body.final_text_hash) === finalHash, 'FINAL_TEXT_HASH_MISMATCH', 'Final-text hash is niet exact gebonden aan de beoordeelde tekst.');
   if (body.sensitive_private_detail === true && body.sensitive_private_approval !== true) out.push({ code: 'SENSITIVE_PRIVATE_DETAIL_BLOCK', message: 'Privé/sensitief detail vereist exacte goedkeuring.' });
-  if (businessSignal(text)) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
+  const businessBlocked = observationalMode
+    ? /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text)
+    : businessSignal(text);
+  if (businessBlocked) out.push({ code: 'FINAL_TEXT_BUSINESS_SIGNAL_BLOCK', message: 'Uiteindelijke tekst bevat zakelijke/Bedrijfsgeheugen-signalen.' });
   if (consultantVoiceSignal(text)) out.push({ code: 'FINAL_TEXT_CONSULTANT_VOICE_BLOCK', message: 'Uiteindelijke tekst klinkt als consultant/thought-leadership of forceert een zakelijke moraal.' });
   return out;
 }
