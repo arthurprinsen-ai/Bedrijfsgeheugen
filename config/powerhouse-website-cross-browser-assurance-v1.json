@@ -37,7 +37,7 @@
       "/",
       "/prijzen",
       "/hoe-het-werkt",
-      "/platform",
+      "/product",
       "/frisse-blik",
       "/pakketadvies",
       "/contact",
@@ -79,25 +79,21 @@
       ],
       "viewport": "mobile",
       "selectorCandidates": [
-        "[data-bg-mobile-menu-toggle]",
-        "[aria-controls='bg-nav-drawer']",
-        ".v17-menu-toggle",
-        ".bg-menu-toggle"
+        "#bgkopKnop"
       ],
-      "assert": "menu_panel_visible"
+      "assert": "mobile_panel_visible"
     },
     {
-      "id": "more-menu",
+      "id": "desktop-menu",
       "routes": [
         "/",
         "/prijzen"
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        "[data-bg-menu-trigger='more']",
-        "[data-bg-menu-trigger]"
+        ".bgkop-trig"
       ],
-      "assert": "controlled_panel_visible"
+      "assert": "desktop_panel_visible"
     },
     {
       "id": "language-switch",
@@ -108,10 +104,9 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        "a[hreflang='en']",
-        "a[href^='/en']"
+        "button[data-bg-language-current]"
       ],
-      "assert": "same_route_english_or_en_home"
+      "assert": "english_target_visible"
     }
   ],
   "rules": [

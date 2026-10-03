@@ -26,9 +26,9 @@ test('website assurance checks responsive failures instead of screenshot-only de
 
 test('website assurance exercises interactions',()=>{
   const ids=new Set(contract.interactions.map(item=>item.id));
-  for(const id of ['mobile-menu','more-menu','language-switch'])assert.ok(ids.has(id),id);
+  for(const id of ['mobile-menu','desktop-menu','language-switch'])assert.ok(ids.has(id),id);
   assert.ok(runner.includes('aria-expanded'));
-  assert.ok(runner.includes('aria-controls'));
+  assert.ok(runner.includes('#bgSharedMobileNav'));
 });
 
 test('website assurance is scheduled daily and keeps evidence',()=>{
@@ -53,4 +53,34 @@ test('platform aliases resolve to canonical product routes',()=>{
   const netlify=fs.readFileSync('netlify.toml','utf8');
   assert.match(netlify,/from = "\/platform"[\s\S]*?to = "\/product"[\s\S]*?status = 301/);
   assert.match(netlify,/from = "\/en\/platform"[\s\S]*?to = "\/en\/product"[\s\S]*?status = 301/);
+});
+
+
+test('shared header reserves final i18n and mobile menu geometry before JavaScript',()=>{
+  const header=fs.readFileSync('components/header/header.html','utf8');
+  const css=fs.readFileSync('components/header/header.css','utf8');
+  assert.match(header,/data-bg-language-switcher="desktop"/);
+  assert.match(header,/id="bgkopKnop"[^>]*aria-controls="bgSharedMobileNav"/);
+  assert.match(header,/bg-mobile-menu-label">Menu</);
+  assert.match(header,/bg-mobile-menu-icon/);
+  assert.match(css,/\.bgkop-knop\{[^}]*min-width:72px;[^}]*height:44px/);
+});
+
+test('critical screenshot matrix uses canonical product route and real controls',()=>{
+  assert.ok(contract.screenshot_matrix.routes.includes('/product'));
+  assert.ok(!contract.screenshot_matrix.routes.includes('/platform'));
+  const byId=Object.fromEntries(contract.interactions.map(item=>[item.id,item]));
+  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#bgkopKnop']);
+  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['.bgkop-trig']);
+  assert.deepEqual(byId['language-switch'].selectorCandidates,['button[data-bg-language-current]']);
+  assert.ok(runner.includes('#bgSharedMobileNav'));
+  assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
+  assert.ok(runner.includes('clsEntries'));
+});
+
+test('pull requests test exact preview while schedule tests production',()=>{
+  assert.match(workflow,/deploy-preview-\$\{PR_NUMBER\}--bedrijfsgeheugen\.netlify\.app/);
+  assert.match(workflow,/github\.event_name == 'pull_request'/);
+  assert.match(workflow,/https:\/\/www\.bedrijfsgeheugen\.nl/);
+  assert.match(workflow,/Wait for exact candidate preview/);
 });

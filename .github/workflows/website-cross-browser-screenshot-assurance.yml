@@ -34,9 +34,35 @@ jobs:
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium firefox webkit
-      - name: Run production cross-browser screenshot assurance
+      - name: Resolve candidate browser target
+        id: target
         env:
-          BASE_URL: https://www.bedrijfsgeheugen.nl
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          if [ "$EVENT_NAME" = "pull_request" ]; then
+            echo "base_url=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_OUTPUT"
+          else
+            echo "base_url=https://www.bedrijfsgeheugen.nl" >> "$GITHUB_OUTPUT"
+          fi
+      - name: Wait for exact candidate preview
+        if: github.event_name == 'pull_request'
+        env:
+          BASE_URL: ${{ steps.target.outputs.base_url }}
+        run: |
+          for attempt in $(seq 1 40); do
+            code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$BASE_URL/" || true)"
+            if [ "$code" = "200" ]; then
+              echo "Candidate preview is reachable."
+              exit 0
+            fi
+            sleep 5
+          done
+          echo "::error::Exact candidate preview did not become reachable."
+          exit 1
+      - name: Run cross-browser screenshot assurance
+        env:
+          BASE_URL: ${{ steps.target.outputs.base_url }}
           WEBSITE_ASSURANCE_CONTRACT: config/powerhouse-website-cross-browser-assurance-v1.json
           OUT_DIR: .artifacts/website-cross-browser-assurance
         run: node tools/site-shell/website-cross-browser-assurance.mjs

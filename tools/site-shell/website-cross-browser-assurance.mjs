@@ -50,7 +50,8 @@ async function inspect(page){
       linkCount:document.querySelectorAll('a[href]').length,
       buttonCount:document.querySelectorAll('button').length,
       lang:document.documentElement.lang||null,
-      cls:Number(window.__bgWebsiteCls||0)
+      cls:Number(window.__bgWebsiteCls||0),
+      clsEntries:(window.__bgWebsiteClsEntries||[]).slice(0,20)
     };
   });
 }
@@ -58,9 +59,28 @@ async function inspect(page){
 async function installCls(page){
   await page.addInitScript(()=>{
     window.__bgWebsiteCls=0;
+    window.__bgWebsiteClsEntries=[];
+    const selectorFor=node=>{
+      if(!node||node.nodeType!==1)return null;
+      if(node.id)return '#'+CSS.escape(node.id);
+      const cls=[...node.classList||[]].slice(0,3).map(c=>'.'+CSS.escape(c)).join('');
+      return node.tagName.toLowerCase()+cls;
+    };
     try{
       new PerformanceObserver(list=>{
-        for(const entry of list.getEntries())if(!entry.hadRecentInput)window.__bgWebsiteCls+=entry.value;
+        for(const entry of list.getEntries()){
+          if(entry.hadRecentInput)continue;
+          window.__bgWebsiteCls+=entry.value;
+          window.__bgWebsiteClsEntries.push({
+            value:entry.value,
+            startTime:entry.startTime,
+            sources:[...(entry.sources||[])].map(source=>({
+              selector:selectorFor(source.node),
+              previousRect:source.previousRect?{x:source.previousRect.x,y:source.previousRect.y,width:source.previousRect.width,height:source.previousRect.height}:null,
+              currentRect:source.currentRect?{x:source.currentRect.x,y:source.currentRect.y,width:source.currentRect.width,height:source.currentRect.height}:null
+            }))
+          });
+        }
       }).observe({type:'layout-shift',buffered:true});
     }catch{}
   });
@@ -126,27 +146,44 @@ async function checkOne({browserName,browser,viewportName,route,screenshotAlways
 async function runInteraction(browserName,browser,interaction,route){
   const viewportName=interaction.viewport;
   const context=await browser.newContext({viewport:contract.viewports[viewportName]});
-  const page=await context.newPage();await gotoSettled(page,base+route);
+  const page=await context.newPage();
+  await gotoSettled(page,base+route);
   const found=await page.evaluate(candidates=>candidates.find(selector=>document.querySelector(selector))||null,interaction.selectorCandidates);
   const violations=[];
   if(!found){violations.push(`interaction trigger missing: ${interaction.id}`);}
-  else{
+  else if(interaction.assert==='mobile_panel_visible'){
     const trigger=page.locator(found).first();
-    const before=await trigger.getAttribute('aria-expanded').catch(()=>null);
-    const controls=await trigger.getAttribute('aria-controls').catch(()=>null);
     await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(250);
-    if(interaction.assert==='menu_panel_visible'||interaction.assert==='controlled_panel_visible'){
-      const after=await trigger.getAttribute('aria-expanded').catch(()=>null);
-      if(before==='false'&&after!=='true')violations.push(`aria-expanded did not open (${before}->${after})`);
-      if(controls){
-        const panel=page.locator('#'+controls);
-        if(await panel.count()===0||!(await panel.first().isVisible().catch(()=>false)))violations.push(`controlled panel #${controls} not visible`);
-      } else if(after!=='true') violations.push('no aria-controls and trigger not expanded');
+    const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
+    if(expanded!=='true')violations.push(`mobile menu did not expand: ${expanded}`);
+    const panel=page.locator('#bgSharedMobileNav');
+    if(await panel.count()===0)violations.push('mobile panel #bgSharedMobileNav missing');
+    else{
+      const hidden=await panel.getAttribute('aria-hidden').catch(()=>null);
+      const visible=await panel.isVisible().catch(()=>false);
+      if(hidden!=='false'||!visible)violations.push(`mobile panel not visible (aria-hidden=${hidden}, visible=${visible})`);
     }
-    if(interaction.assert==='same_route_english_or_en_home'){
-      const href=await trigger.getAttribute('href').catch(()=>null);
-      if(!href||!(/(^|\/)en(\/|$)/.test(href)))violations.push(`language switch target not English: ${href}`);
+  }else if(interaction.assert==='desktop_panel_visible'){
+    const trigger=page.locator(found).first();
+    await trigger.hover().catch(error=>violations.push(`hover failed: ${error.message}`));
+    await sleep(180);
+    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " bgkop-groep ")][1]');
+    const panel=group.locator('.bgkop-paneel').first();
+    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop dropdown panel not visible after hover');
+  }else if(interaction.assert==='english_target_visible'){
+    const trigger=page.locator(found).first();
+    await trigger.click().catch(error=>violations.push(`language trigger click failed: ${error.message}`));
+    await sleep(180);
+    const option=page.locator('a[data-bg-language-option="en"]:visible').first();
+    if(await option.count()===0)violations.push('visible English language option missing');
+    else{
+      const href=await option.getAttribute('href').catch(()=>null);
+      const expected=route==='/'?'/en/':'/en'+route;
+      let actual=null;try{actual=new URL(href,base).pathname}catch{}
+      const normalizedActual=actual&&actual.length>1?actual.replace(/\/$/,''):actual;
+      const normalizedExpected=expected.length>1?expected.replace(/\/$/,''):expected;
+      if(normalizedActual!==normalizedExpected)violations.push(`language target mismatch: ${actual} != ${expected}`);
     }
   }
   const screenshotPath=path.join(out,`${violations.length?'FAIL-':''}${browserName}-${viewportName}-interaction-${interaction.id}-${slug(route)}.png`);

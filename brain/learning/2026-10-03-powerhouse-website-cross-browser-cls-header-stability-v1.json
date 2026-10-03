@@ -1,0 +1,36 @@
+{
+  "fingerprint": "powerhouse-website-cross-browser-cls-header-stability-v1",
+  "observed_at": "2026-10-03T15:55:00Z",
+  "type": "REPAIR",
+  "problem": "The first structural cross-browser production audit returned 73 failures across 247 public routes, 592 render checks and 24 interactions.",
+  "root_cause": "The failures collapsed into shared causes: late desktop language-control insertion changed header geometry after first paint; the mobile menu button changed markup and dimensions after JavaScript; the critical matrix used /platform instead of canonical /product; interaction probes targeted superseded or hidden controls.",
+  "decision": "Reserve final header geometry in canonical HTML/CSS, use canonical product route, test the real mobile/desktop/language controls, and capture CLS source nodes for any remaining layout shift.",
+  "prevention": [
+    "Desktop language control is present in canonical header HTML before first paint.",
+    "Mobile Menu control starts with its final 72x44 pill geometry and final child markup.",
+    "PR assurance targets the exact Netlify candidate preview; scheduled assurance targets production.",
+    "CLS evidence includes source selectors and rectangles.",
+    "Canonical screenshot matrix uses /product; /platform remains redirect-contract coverage only."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_CROSS_BROWSER_LAYOUT_SHIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "baseline_run": 37133905331,
+    "baseline_artifact": 11278726034,
+    "baseline_routes": 247,
+    "baseline_render_checks": 592,
+    "baseline_interactions": 24,
+    "baseline_failures": 73,
+    "cls_failures": 42
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}
