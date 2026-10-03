@@ -1,0 +1,39 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+
+const contract=JSON.parse(fs.readFileSync('config/powerhouse-website-cross-browser-assurance-v1.json','utf8'));
+const workflow=fs.readFileSync('.github/workflows/website-cross-browser-screenshot-assurance.yml','utf8');
+const runner=fs.readFileSync('tools/site-shell/website-cross-browser-assurance.mjs','utf8');
+
+test('website assurance covers all public routes and critical screenshots',()=>{
+  assert.equal(contract.version,'POWERHOUSE-WEBSITE-CROSS-BROWSER-ASSURANCE-v1');
+  assert.deepEqual(contract.all_route_sweep.browsers,['chromium']);
+  assert.deepEqual(contract.all_route_sweep.viewports,['mobile','desktop']);
+  assert.ok(contract.screenshot_matrix.routes.length>=12);
+  assert.deepEqual(contract.screenshot_matrix.browsers,['chromium','firefox','webkit']);
+  assert.deepEqual(contract.screenshot_matrix.viewports,['mobile','tablet','desktop']);
+  assert.ok(contract.rules.includes('all_sitemap_routes_must_be_swept'));
+  assert.ok(contract.rules.includes('failure_screenshot_required'));
+});
+
+test('website assurance checks responsive failures instead of screenshot-only decoration',()=>{
+  for(const marker of ['horizontal overflow','broken images','page errors','failed core requests','CLS','main missing/not visible','h1 missing/not visible']) assert.ok(runner.includes(marker),marker);
+  assert.ok(runner.includes('page.screenshot'));
+  assert.ok(runner.includes('sitemap.xml'));
+  assert.ok(runner.includes("start+=30"));
+});
+
+test('website assurance exercises interactions',()=>{
+  const ids=new Set(contract.interactions.map(item=>item.id));
+  for(const id of ['mobile-menu','more-menu','language-switch'])assert.ok(ids.has(id),id);
+  assert.ok(runner.includes('aria-expanded'));
+  assert.ok(runner.includes('aria-controls'));
+});
+
+test('website assurance is scheduled daily and keeps evidence',()=>{
+  assert.match(workflow,/schedule:/);
+  assert.match(workflow,/cron: '20 6 \* \* \*'/);
+  assert.match(workflow,/chromium firefox webkit/);
+  assert.match(workflow,/retention-days: 30/);
+});
