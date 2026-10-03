@@ -2,7 +2,8 @@
 'use strict';
 var items=[],selected=null,activeArea='',picking=false;
 var $=function(s,r){return (r||document).querySelector(s)};
-var $$=function(s,r){return [...(r||document).querySelectorAll(s)]};
+var $=function(s,r){return [...(r||document).querySelectorAll(s)]};
+function on(s,event,handler){var el=$(s);if(el)el.addEventListener(event,handler);return el}
 function toast(msg){var old=$('.toast');if(old)old.remove();var d=document.createElement('div');d.className='toast';d.textContent=msg;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
 function user(){try{return window.netlifyIdentity?.currentUser?.()||null}catch{return null}}
 async function headers(){var u=user();if(!u)return{};try{var t=await u.jwt();return t?{authorization:'Bearer '+t}:{}}catch{return{}}}
@@ -124,12 +125,12 @@ async function changeStatus(action){
   catch(err){toast(err.message||String(err))}
 }
 function bind(){
-  $('#loginBtn').addEventListener('click',function(){window.netlifyIdentity?.open?.()});$('#logoutBtn').addEventListener('click',function(){window.netlifyIdentity?.logout?.()});
-  $('#refreshBtn').addEventListener('click',function(){apiList().catch(function(e){toast(e.message)})});$('#editor').addEventListener('submit',save);$('#publishBtn').addEventListener('click',function(){changeStatus('publish')});$('#archiveBtn').addEventListener('click',function(){changeStatus('archive')});
-  $('#clearBtn').addEventListener('click',function(){selectItem(null)});$('#newItemBtn').addEventListener('click',function(){selectItem(null);window.scrollTo({top:0,behavior:'smooth'})});
-  ['surfaceFilter','localeFilter','statusFilter','searchFilter'].forEach(function(id){$('#'+id).addEventListener(id==='searchFilter'?'input':'change',renderList)});
-  $$('[data-area]').forEach(function(b){b.addEventListener('click',function(){$$('[data-area]').forEach(function(x){x.classList.remove('active')});b.classList.add('active');activeArea=b.dataset.area||'';renderList()})});
-  $('#loadPreviewBtn').addEventListener('click',function(){var raw=$('#previewUrl').value.trim()||'/';try{var u=new URL(raw,location.origin);if(u.origin!==location.origin||!['http:','https:'].includes(u.protocol))throw new Error('Alleen pagina’s op bedrijfsgeheugen.nl zijn toegestaan.');$('#previewFrame').contentWindow.location.replace(u.pathname+u.search+u.hash)}catch(e){toast(e.message||'Ongeldige previewroute')}});$('#pickBtn').addEventListener('click',startPick);
+  on('#loginBtn','click',function(){window.netlifyIdentity?.open?.()});on('#logoutBtn','click',function(){window.netlifyIdentity?.logout?.()});
+  on('#refreshBtn','click',function(){apiList().catch(function(e){toast(e.message)})});on('#editor','submit',save);on('#publishBtn','click',function(){changeStatus('publish')});on('#archiveBtn','click',function(){changeStatus('archive')});
+  on('#clearBtn','click',function(){selectItem(null)});on('#newItemBtn','click',function(){selectItem(null);window.scrollTo({top:0,behavior:'smooth'})});
+  ['surfaceFilter','localeFilter','statusFilter','searchFilter'].forEach(function(id){on('#'+id,id==='searchFilter'?'input':'change',renderList)});
+  $('[data-area]').forEach(function(b){b.addEventListener('click',function(){$('[data-area]').forEach(function(x){x.classList.remove('active')});b.classList.add('active');activeArea=b.dataset.area||'';renderList()})});
+  on('#loadPreviewBtn','click',function(){var input=$('#previewUrl'),frame=$('#previewFrame');var raw=input?input.value.trim()||'/':'/';try{var u=new URL(raw,location.origin);if(u.origin!==location.origin||!['http:','https:'].includes(u.protocol))throw new Error('Alleen pagina’s op bedrijfsgeheugen.nl zijn toegestaan.');if(frame?.contentWindow)frame.contentWindow.location.replace(u.pathname+u.search+u.hash)}catch(e){toast(e.message||'Ongeldige previewroute')}});on('#pickBtn','click',startPick);
 }
 async function enter(u){
   if(!u){$('#authGate').classList.remove('hidden');$('#app').classList.add('hidden');return}
