@@ -32,3 +32,14 @@ test('visual assurance sync uses one existing Powerhouse scheduler',()=>{
   assert.match(migration,/powerhouse_daily_scheduler_token/);
   assert.match(migration,/cron_jobname='powerhouse-portal-visual-assurance-sync-v1'/);
 });
+
+
+test('visual assurance sync quality surfaces are registered',()=>{
+  const registry=JSON.parse(fs.readFileSync('config/powerhouse-quality-surface-contracts.json','utf8'));
+  const byId=new Map(registry.surfaces.map(surface=>[surface.id,surface]));
+  for(const id of ['function:powerhouse-visual-assurance-sync','rpc:powerhouse_refresh_loop_assurance_v1']){
+    assert.ok(byId.has(id),id);
+    assert.equal(byId.get(id).evidence_contract,'tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs');
+  }
+  assert.equal(byId.get('rpc:bg_geheim').evidence_contract,'tests/brain-content-closed-loop-contract.test.mjs');
+});

@@ -198,6 +198,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-visual-assurance-sync",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-visual-assurance-sync/index.ts",
+      "evidence_contract": "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:resource-usage-eu",
       "type": "function",
       "authority": "supabase/functions/resource-usage-eu/index.ts",
@@ -671,6 +678,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260928123500_powerhouse_growth_swarm_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_refresh_loop_assurance_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20260929212500_powerhouse_loop_assurance_v3.sql",
+      "evidence_contract": "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs",
       "required": true
     },
     {
