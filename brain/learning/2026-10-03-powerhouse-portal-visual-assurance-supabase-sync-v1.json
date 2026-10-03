@@ -18,6 +18,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
     ]
   },
   "evidence": [
