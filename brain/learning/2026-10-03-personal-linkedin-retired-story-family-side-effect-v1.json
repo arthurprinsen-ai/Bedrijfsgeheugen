@@ -1,0 +1,24 @@
+{
+  "fingerprint": "personal-linkedin-retired-story-family-side-effect-v1",
+  "scope": "SOCIAL",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "The rotating personal-source fallback selected the explicitly retired printer story family even though earlier provider-confirmed publications and user feedback had already made that semantic family negative evidence. Daily quota pressure incorrectly outranked story-family retirement.",
+  "proven_fix": "The exact duplicate provider post urn:li:share:7512044095591170048 was deleted with provider acknowledgement, the recommendation and artifact were marked wrong-match/republish-forbidden, rematching was attempted against remaining verified personal sources, and the day closed as evidence-backed NO_ELIGIBLE_CONTENT.",
+  "prevention_rule": "Explicit retired story-family evidence permanently outranks rotating-source reuse and publication quota pressure. Before publication authority is issued, exact hash, normalized hash, near-duplicate, semantic/story-family and provider-history evidence must all pass. Wrong match must rematch or produce evidenced NO_ELIGIBLE_CONTENT.",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-auth-preflight-resumable-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "Removed provider post: urn:li:share:7512044095591170048.",
+    "Provider delete acknowledgement returned deleted=true with HTTP 204.",
+    "Current canonical Powerhouse recommendation was marked skipped and republish-forbidden.",
+    "Rematch result was NO_ELIGIBLE_CONTENT because the remaining verified personal source families were already provider-confirmed or explicitly retired."
+  ],
+  "compiler": {
+    "failure_class": "SOCIAL_DUPLICATE_SIDE_EFFECT"
+  }
+}
