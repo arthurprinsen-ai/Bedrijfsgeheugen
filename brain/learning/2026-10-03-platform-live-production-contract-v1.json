@@ -20,7 +20,7 @@
   },
   "evidence": [
     "tools/site-shell/live-contract.mjs",
-    "tests/platform-live-production-contract.test.mjs",
+    "tests/final-site-navigation-contract.test.mjs",
     "PR #3619"
   ],
   "evaluation": {
