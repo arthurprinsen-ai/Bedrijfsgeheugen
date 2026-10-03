@@ -113,3 +113,27 @@ on conflict (tenant_id,family_key) do update
 set normalized_example=excluded.normalized_example,
     reason=excluded.reason,
     evidence=excluded.evidence;
+
+
+insert into public.powerhouse_retired_story_families_v1(
+  tenant_id,family_key,channel_scope,normalized_example,reason,evidence
+) values (
+  'canonical',
+  'personal_printer_when_in_a_hurry',
+  'linkedin_personal',
+  public.powerhouse_normalize_publication_text_v1(
+    'Om 08:07 moest ik snel iets zwart-wit printen. De printer begon eerst met onderhoud en blokkeerde daarna op bijna lege cyaan. Ik stond hardop met het apparaat te redeneren en concludeerde dat de printer altijd wint.'
+  ),
+  'USER_RETIRED_STORY_FAMILY',
+  jsonb_build_object(
+    'reported_at','2026-09-29',
+    'confirmed_regression_at','2026-10-03',
+    'source','user_feedback_plus_provider_side_effect',
+    'provider_post_id_removed','urn:li:share:7512044095591170048',
+    'rule','retired story family permanently overrides source rotation and daily quota pressure'
+  )
+)
+on conflict (tenant_id,family_key) do update
+set normalized_example=excluded.normalized_example,
+    reason=excluded.reason,
+    evidence=excluded.evidence;
