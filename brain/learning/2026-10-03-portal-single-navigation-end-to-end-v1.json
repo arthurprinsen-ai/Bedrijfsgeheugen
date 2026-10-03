@@ -1,0 +1,17 @@
+{
+  "fingerprint": "portal|navigation|single-authority|end-to-end|v1",
+  "date": "2026-10-03",
+  "type": "PORTAL_UX_PREVENTION",
+  "status": "CANDIDATE",
+  "root_cause": "Portal-next exposed multiple navigation authorities at the same time: a primary sidebar, a separate all-pages navigation layer and a reduced mobile shortcut navigation. This fragmented the user journey and made page discovery inconsistent.",
+  "prevention_rule": "All registered portal pages must be rendered from PORTAL_SECTIONS through one canonical navigation builder. Desktop uses that tree directly in the sidebar; mobile may only render the same tree responsively. No second desktop drawer, shortcut nav or separately mounted legacy page library may become an active navigation authority.",
+  "evidence": {
+    "tests": [
+      "tests/portal-next-single-navigation.test.mjs",
+      "tests/portal-next-complete-navigation.test.mjs",
+      "tests/portal-next-navigation-parity.test.mjs",
+      "tests/integration/portal-next-live.spec.js"
+    ],
+    "expected": "exactly one canonical page registry and navigation authority across desktop and mobile"
+  }
+}
