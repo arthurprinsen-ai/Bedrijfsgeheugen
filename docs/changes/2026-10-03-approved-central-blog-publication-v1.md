@@ -9,3 +9,5 @@ The sealed central article **Wet DBA: wat betekent dit voor zelfstandigen?** is 
 - Structured-data proof: FAQPage with 2 Question entities
 
 The candidate changes the article, blog index, RSS and sitemap as one material unit and carries the required learning, ledger and human change evidence in the same lineage. It must not be called published until the protected merge is complete, Netlify exposes the exact merged production identity, the public URL and canonical are verified, and the content obligation is reconciled back to canonical state.
+
+Admission metadata was normalized to one immediate predecessor so the same canonical recovery lineage can pass the delivery-hygiene contract.
