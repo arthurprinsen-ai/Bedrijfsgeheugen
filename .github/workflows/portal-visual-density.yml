@@ -4,9 +4,13 @@ on:
   pull_request:
     paths:
       - 'portal-v2/**'
+      - 'config/powerhouse-portal-visual-assurance-v1.json'
       - 'tools/portal-visual-density.mjs'
       - 'tests/portal-visual-density-contract.test.mjs'
+      - 'tests/portal-visual-density-delivery-classification.test.mjs'
       - '.github/workflows/portal-visual-density.yml'
+  schedule:
+    - cron: '45 5 * * *'
   workflow_dispatch:
 
 jobs:
@@ -18,24 +22,27 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - name: Contract test
-        run: node --test tests/portal-visual-density-contract.test.mjs
+      - name: Contract tests
+        run: node --test tests/portal-visual-density-contract.test.mjs tests/portal-visual-density-delivery-classification.test.mjs
       - name: Install screenshot browser
         run: |
           npm install --no-save playwright@1.55.0
           npx playwright install --with-deps chromium
-      - name: Serve repository
+      - name: Serve repository for PR evidence
+        if: github.event_name == 'pull_request'
         run: |
           python3 -m http.server 4173 >/tmp/portal-http.log 2>&1 &
           echo $! > /tmp/portal-http.pid
       - name: Capture and measure portal
         env:
-          BASE_URL: http://127.0.0.1:4173
+          BASE_URL: ${{ github.event_name == 'pull_request' && 'http://127.0.0.1:4173' || 'https://www.bedrijfsgeheugen.nl' }}
+          VISUAL_ASSURANCE_CONTRACT: config/powerhouse-portal-visual-assurance-v1.json
         run: node tools/portal-visual-density.mjs
       - name: Upload visual evidence
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: portal-visual-density
+          name: portal-visual-density-${{ github.run_id }}
           path: .artifacts/portal-visual-density
           if-no-files-found: error
+          retention-days: 30

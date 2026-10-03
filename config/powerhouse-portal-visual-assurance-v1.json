@@ -1,0 +1,78 @@
+{
+  "version": "POWERHOUSE-PORTAL-VISUAL-ASSURANCE-v1",
+  "fingerprint": "portal-visual-density-oversized-responsive-cascade-v1",
+  "loop_key": "portal-visual-density",
+  "owner": "powerhouse-terminal-delivery",
+  "authority": {
+    "github_workflow": ".github/workflows/portal-visual-density.yml",
+    "github_harness": "tools/portal-visual-density.mjs",
+    "supabase_registry": "public.powerhouse_loop_assurance_registry_v1",
+    "supabase_receipts": "public.powerhouse_loop_assurance_receipts_v1",
+    "supabase_quality": "public.powerhouse_quality_events",
+    "notion_state": "Portal V2 visual regression — canonical route authority",
+    "supabase_runtime_source": null,
+    "supabase_receipt_mode": "explicit_external_test_evidence",
+    "supabase_guard_requires_pass": true
+  },
+  "cadence": {
+    "production": "daily",
+    "freshness_minutes": 1440
+  },
+  "routes": [
+    {
+      "id": "overview",
+      "path": "/portal-v2/?page=overview"
+    },
+    {
+      "id": "csrd-impact",
+      "path": "/portal-v2/?page=csrd-impact"
+    },
+    {
+      "id": "data-ai",
+      "path": "/portal-v2/?page=data-ai"
+    }
+  ],
+  "viewports": [
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "tablet",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    }
+  ],
+  "thresholds": {
+    "horizontal_overflow_px": 2,
+    "csrd_world_max_height_px": 340,
+    "desktop_tablet_score_meter_max_px": 112,
+    "mobile_score_meter_max_px": 92,
+    "brain_core_max_height_px": 260,
+    "brain_image_desktop_tablet_max_height_px": 96,
+    "brain_image_mobile_max_height_px": 100,
+    "mobile_csrd_world_must_be_hidden": true
+  },
+  "stages": [
+    "input",
+    "decision",
+    "action",
+    "readback",
+    "outcome",
+    "measurement",
+    "learning",
+    "guard"
+  ],
+  "rules": [
+    "fail_closed_on_threshold_breach",
+    "no_tolerance_widening_to_hide_structural_mismatch",
+    "production_evidence_expires",
+    "screenshots_and_metrics_are_required_evidence"
+  ]
+}
