@@ -57,7 +57,7 @@ test('essential interactions have keyboard/reduced-motion/mobile equivalents', (
   assert.match(js, /metaKey \|\| event.ctrlKey/);
   assert.match(css, /prefers-reduced-motion:reduce/);
   assert.match(workspaceCss, /focus-visible/);
-  assert.match(html, /class="mobile-nav"/);
+  assert.doesNotMatch(html, /class="mobile-nav"/);
   assert.match(html, /aria-label="Zoek of vraag Bedrijfsgeheugen"/);
-  assert.match(js, /label === 'AI'/);
+  assert.doesNotMatch(js, /mountPortalLibrary\(\);/);
 });
