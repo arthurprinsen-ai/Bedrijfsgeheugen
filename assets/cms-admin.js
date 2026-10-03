@@ -2,7 +2,7 @@
 'use strict';
 var items=[],selected=null,activeArea='',picking=false;
 var $=function(s,r){return (r||document).querySelector(s)};
-var $=function(s,r){return [...(r||document).querySelectorAll(s)]};
+var $$=function(s,r){return [...(r||document).querySelectorAll(s)]};
 function on(s,event,handler){var el=$(s);if(el)el.addEventListener(event,handler);return el}
 function toast(msg){var old=$('.toast');if(old)old.remove();var d=document.createElement('div');d.className='toast';d.textContent=msg;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
 function user(){try{return window.netlifyIdentity?.currentUser?.()||null}catch{return null}}
