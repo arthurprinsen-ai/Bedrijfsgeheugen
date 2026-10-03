@@ -20,7 +20,7 @@ const failures=[];
 const report=[];
 for(const [pageName,route] of pages){
   for(const [vpName,viewport] of viewports){
-    const page=await browser.newPage({viewportSize:viewport});
+    const page=await browser.newPage({viewport});
     await page.goto(base+route,{waitUntil:'networkidle',timeout:45000});
     await page.waitForTimeout(600);
     const file=path.join(out,`${pageName}-${vpName}.png`);
