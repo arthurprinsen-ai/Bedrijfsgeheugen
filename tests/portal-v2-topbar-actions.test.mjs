@@ -50,7 +50,9 @@ test('full portal hamburger expands the same canonical customer navigation taxon
  assert.match(hubs,/pages:Object\.freeze\(allPageIds\(\)\)/);
  assert.match(hubs,/if\(hubId==='portal'\) return DESKTOP_NAV_GROUPS\.map/);
  assert.doesNotMatch(hubs,/if\(hubId==='portal'\) return listPortalGroups\(\)/);
- assert.match(navigation,/id:'more', label:'Meer', target:'hub:portal'/);
- assert.match(navigationCss,/\.portal-hamburger\{display:inline-flex/);
+ assert.match(navigation,/listPortalGroups\(\)/);
+ assert.match(navigation,/target:'hub:project'/);
+ assert.match(navigationCss,/\.portal-hamburger\{display:none\}/);
+ assert.match(navigationCss,/@media\(max-width:1180px\)\{\.portal-hamburger\{display:inline-flex!important\}\}/);
  assert.match(navigationCss,/\.allpages \.groups\{grid-template-columns:1fr!important/);
 });
