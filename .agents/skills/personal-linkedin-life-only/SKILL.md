@@ -99,3 +99,20 @@ A verified personal source can be factually true and still be ineligible because
 - on `STORY_FAMILY_DUPLICATE`, choose a different verified personal event rather than paraphrasing.
 
 Canonical regression family now also includes the car incident: broken electric sliding door, warm airco, manual door/windows-open workaround and adaptation to the new routine.
+
+
+## Daily no-gap observational fallback — 2026-10-03
+
+Fingerprint: `personal-linkedin-no-gap-observational-v2`.
+
+Daily cadence may never be satisfied by recycling a historical personal anecdote. Historical generated artifacts are not an eligible fallback source because they can inherit an already-consumed story family.
+
+When no genuinely unused verified Arthur personal event is available:
+- select a fresh, source-backed everyday-life theme that has not previously been used on the personal channel;
+- write observationally, with no `ik/mijn/mij/me` claims and no implication that Arthur personally experienced the event;
+- keep the topic strictly daily-life/personal and non-commercial;
+- preserve source URL, source lineage, calendar date and prediction lineage;
+- run the same global text/story-family uniqueness gate before provider write;
+- never accept `NO_ELIGIBLE_CONTENT` / `SKIPPED` as a successful terminal outcome for the daily personal-channel obligation while a compliant observational source exists.
+
+LinkedIn account resolution must prefer the canonical personal connection independently of company/org connections. A revoked or organization-oriented active token may not become the personal publication authority merely because it resolves the same member identity.
