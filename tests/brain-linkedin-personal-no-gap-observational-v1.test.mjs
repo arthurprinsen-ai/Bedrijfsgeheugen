@@ -24,6 +24,7 @@ assert.match(publisher,/observationalMode/);
 assert.match(publisher,/observational_personal_theme_verified:sourceEvidence\.observational_personal_theme_verified===true/);
 
 assert.match(orchestrator,/observationalMode/);
+assert.match(orchestrator,/eligibleStatus = \['suggested','accepted'\]/);
 assert.match(orchestrator,/personalNoGapReopen/);
 assert.match(orchestrator,/observational_personal_theme_verified/);
 assert.match(orchestrator,/Gebruik GEEN ik\/mijn\/mij\/me-vorm/);
