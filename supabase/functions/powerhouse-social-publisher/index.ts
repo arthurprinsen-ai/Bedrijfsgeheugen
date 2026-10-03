@@ -83,16 +83,19 @@ async function composioLinkedInContext(db:any){
 
   const candidates:any[]=[];
   const seen=new Set<string>();
-  const addCandidate=(accountId:string,userId:string,source:string)=>{
+  const addCandidate=(accountId:string,userId:string,source:string,alias='',isDefault=false,createdAt='')=>{
     const id=clean(accountId);const uid=clean(userId);
     if(!id||!uid||seen.has(id))return;
-    seen.add(id);candidates.push({accountId:id,userId:uid,source});
+    seen.add(id);candidates.push({accountId:id,userId:uid,source,alias:clean(alias),isDefault,createdAt:clean(createdAt)});
   };
 
-  addCandidate(clean(state?.connected_account_id),stateUserId,'setup_state');
+  addCandidate(clean(state?.connected_account_id),stateUserId,'setup_state',clean(state?.alias));
+
+  const personalPinned=clean(await secret(db,'COMPOSIO_LINKEDIN_PERSONAL_CONNECTED_ACCOUNT_ID'));
+  if(personalPinned)addCandidate(personalPinned,stateUserId,'personal_pinned_secret','linkedin-personal-canonical-current');
 
   const pinned=clean(await secret(db,'COMPOSIO_LINKEDIN_CONNECTED_ACCOUNT_ID'));
-  if(pinned)addCandidate(pinned,stateUserId,'pinned_secret');
+  if(pinned)addCandidate(pinned,stateUserId,'legacy_pinned_secret');
 
   try{
     const response=await fetch(`${COMPOSIO_BASE}/connected_accounts?toolkit_slugs=linkedin&statuses=ACTIVE&account_type=ALL&limit=50`,{headers:{'x-api-key':apiKey}});
@@ -101,10 +104,24 @@ async function composioLinkedInContext(db:any){
       const items=Array.isArray(body?.items)?body.items:Array.isArray(body?.data?.items)?body.data.items:Array.isArray(body?.data)?body.data:[];
       for(const item of items){
         if(clean(item?.status).toUpperCase()!=='ACTIVE'||item?.is_disabled===true)continue;
-        addCandidate(clean(item?.id||item?.connected_account_id),clean(item?.user_id),'active_discovery');
+        addCandidate(clean(item?.id||item?.connected_account_id),clean(item?.user_id),'active_discovery',clean(item?.alias),item?.is_default===true,clean(item?.created_at));
       }
     }
   }catch(_error){}
+
+  candidates.sort((a:any,b:any)=>{
+    const score=(x:any)=>{
+      const alias=clean(x.alias).toLowerCase();
+      if(alias==='linkedin-personal-canonical-current')return 100;
+      if(alias.includes('personal-canonical'))return 90;
+      if(x.source==='personal_pinned_secret')return 85;
+      if(alias.includes('personal'))return 75;
+      if(x.source==='setup_state')return 50;
+      if(alias.includes('company')||alias.includes('org'))return 10;
+      return 30;
+    };
+    return score(b)-score(a)||b.createdAt.localeCompare(a.createdAt);
+  });
 
   let lastError='';
   for(const candidate of candidates){
@@ -1180,7 +1197,7 @@ Deno.serve(async (req) => {
         const exactReadbackVerified=direct.provider_truth_verified===true;
         const providerCreateProven=direct.provider_create_success===true&&/^urn:li:(ugcPost|share):[A-Za-z0-9_-]+$/.test(clean(direct.provider_post_id));
         if(!providerCreateProven)throw new Error('LINKEDIN_PERSONAL_PROVIDER_CREATE_NOT_PROVEN');
-        const evidence={...gatePassedEvidence,...direct,provider_publication_ack_verified:true,pre_publish_gate:'passed',final_text_hash:textHash,personal_truth_verified:true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
+        const sourceEvidence=row.delivery_evidence?.identity_gate_evidence||art.generation_evidence?.identity_gate_evidence||{}; const evidence={...gatePassedEvidence,...direct,provider_publication_ack_verified:true,pre_publish_gate:'passed',final_text_hash:textHash,personal_truth_verified:sourceEvidence.personal_truth_verified===true,observational_personal_theme_verified:sourceEvidence.observational_personal_theme_verified===true,transport_contract:'linkedin-composio-direct-v2',buffer_dependency:false,republish_forbidden:true,publication_authority:{capability_id:capability.capabilityId,policy_version:capability.policyVersion,issued:true,consumed:true}};
         await db.from('powerhouse_channel_decisions').update({state:'published',delivery_ref:direct.provider_post_id,delivery_evidence:evidence,updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await db.from('powerhouse_content_artifacts').update({status:'published',updated_at:new Date().toISOString()}).eq('run_date',runDate).eq('channel',row.channel);
         await recordObligation(db,runDate,row.channel,'PUBLISHED',direct.provider_post_id,evidence,exactReadbackVerified?'Collect LinkedIn outcome metrics and feed learning loop.':'Collect outcome metrics; exact API readback is optional after provider create acknowledgement and must never trigger republish.',null);
