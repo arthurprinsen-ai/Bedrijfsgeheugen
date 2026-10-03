@@ -17,6 +17,10 @@ test('Powerhouse portal visual assurance is one cross-system contract',()=>{
   assert.equal(contract.authority.supabase_receipt_mode,'explicit_external_test_evidence');
   assert.equal(contract.authority.supabase_guard_requires_pass,true);
   assert.equal(contract.authority.notion_state,'Portal V2 visual regression — canonical route authority');
+  assert.equal(contract.authority.supabase_sync_function,'powerhouse-visual-assurance-sync');
+  assert.equal(contract.authority.supabase_sync_cron,'powerhouse-portal-visual-assurance-sync-v1');
+  assert.equal(contract.authority.notion_verified_state_page_id,'3deda36a-ac8a-8106-909c-c74f4185942e');
+  assert.equal(contract.authority.notion_system_map_page_id,'3dcda36a-ac8a-8152-be3d-edbb32b06239');
 
   assert.equal(contract.routes.length,3);
   assert.equal(contract.viewports.length,3);
