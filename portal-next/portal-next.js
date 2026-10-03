@@ -133,6 +133,6 @@ function bind(){
  document.querySelectorAll('[data-mobile-route]').forEach(button=>button.addEventListener('click',()=>{const label=button.dataset.mobileRoute;if(label === 'AI')openAiPanel();else setCurrentRoute(label)}));
  const search=document.getElementById('globalSearch');document.addEventListener('keydown',event=>{if((event.metaKey || event.ctrlKey)&&event.key.toLowerCase()==='k'){event.preventDefault();search?.focus()}if(event.key==='Escape'){closeLegacyWorkspace();closeAiPanel();if(currentRoute!=='Overzicht')setCurrentRoute('Overzicht')}});
  search?.addEventListener('keydown',event=>{if(event.key==='Enter'){const q=search.value.toLocaleLowerCase('nl');const match=Object.keys(WORKSPACES).find(label=>label.toLocaleLowerCase('nl').includes(q));if(match)setCurrentRoute(match);else openAiPanel()}});
- window.addEventListener('resize',()=>renderPortalFlow(document.getElementById('brain-cockpit'),runtimeState));bindBusinessGraph();bindAi();mountPortalLibrary();
+ window.addEventListener('resize',()=>renderPortalFlow(document.getElementById('brain-cockpit'),runtimeState));bindBusinessGraph();bindAi();
 }
 if(typeof document!=='undefined'){bind();renderCockpit();renderRoute('Overzicht')}
