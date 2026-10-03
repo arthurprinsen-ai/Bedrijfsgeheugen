@@ -1,0 +1,29 @@
+{
+  "fingerprint": "website|browser|homepage-toggle|stability|20261003-v1",
+  "observed_at": "2026-10-03T10:38:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The protected website browser lane repeatedly failed while clicking the homepage Platform/Expertise tabs because sticky shell elements and a floating aside intercepted the pointer after automatic scrolling.",
+  "root_cause": "The browser contract relied on Playwright's default scroll-to-click behavior while the page still had moving/sticky geometry. That could position the target underneath the fixed header or floating UI even though the tab itself remained valid.",
+  "decision": "Preserve a real physical click but make it deterministic: center the tab in the viewport, allow layout to settle, retry at most three times, and never use force-click.",
+  "prevention": [
+    "Homepage toggle browser checks center the target before every physical click.",
+    "Retries are bounded to three attempts with short stabilization delays.",
+    "force:true is prohibited so genuine overlay/interactability defects still fail closed."
+  ],
+  "compiler": {
+    "failure_class": "BROWSER_INTERACTION_FLAKE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tools/site-shell/homepage-toggle-browser-check.mjs",
+    "tests/brain-homepage-toggle-browser-stability.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-homepage-toggle-browser-stability.test.mjs"
+    ]
+  }
+}
