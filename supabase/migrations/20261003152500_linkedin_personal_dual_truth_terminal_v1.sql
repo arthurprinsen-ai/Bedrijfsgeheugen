@@ -343,3 +343,7 @@ begin
   );
 end;
 $function$;
+
+-- Fail-closed execution boundary for SECURITY DEFINER reconciler.
+revoke execute on function public.powerhouse_reconcile_content_outcomes_v1(date) from public, anon, authenticated;
+grant execute on function public.powerhouse_reconcile_content_outcomes_v1(date) to service_role, postgres;
