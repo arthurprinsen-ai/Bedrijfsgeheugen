@@ -100,6 +100,43 @@ def first_plain_paragraph(body):
             return plain
     return ""
 
+def faq_items(data):
+    blocks = [x.strip() for x in re.split(r"\n\s*\n", data.get("body") or "") if x.strip()]
+    items = []
+    for i, block in enumerate(blocks):
+        if not block.startswith("## "):
+            continue
+        heading = re.sub(r"\*\*([^*]+)\*\*", r"\1", block[3:]).strip()
+        answer = ""
+        for nxt in blocks[i + 1:]:
+            if nxt.startswith("#"):
+                break
+            if nxt == "---":
+                continue
+            plain = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"\1", nxt)
+            plain = re.sub(r"\*\*([^*]+)\*\*", r"\1", plain)
+            plain = re.sub(r"\s+", " ", plain).strip()
+            if plain:
+                answer = plain
+                break
+        if heading and answer:
+            question = heading if heading.endswith("?") else f"Wat betekent {heading.lower()}?"
+            items.append((question, answer[:700]))
+        if len(items) == 3:
+            break
+    if not items:
+        lead = first_plain_paragraph(data.get("body") or "")
+        focus = seo_focus(data)
+        items = [(f"Wat betekent {focus} in de praktijk?", lead[:700] or f"{focus} vraagt om een beoordeling van de feitelijke situatie.")]
+    return items
+
+def faq_html(data):
+    rows = ['<section class="faq-blok" aria-labelledby="faq-title"><h2 id="faq-title">Veelgestelde vragen</h2>']
+    for question, answer in faq_items(data):
+        rows.append(f'<div class="faq-item"><h3>{html.escape(question)}</h3><p>{html.escape(answer)}</p></div>')
+    rows.append("</section>")
+    return "\n".join(rows)
+
 def functional_figures(focus):
     f = html.escape(focus)
     return f"""
@@ -267,20 +304,10 @@ def main():
                 "mainEntity": [
                     {
                         "@type": "Question",
-                        "name": f"Wat betekent {focus_plain} in de praktijk?",
-                        "acceptedAnswer": {
-                            "@type": "Answer",
-                            "text": first_plain_paragraph(data["body"])[:500],
-                        },
-                    },
-                    {
-                        "@type": "Question",
-                        "name": f"Waar moet je bij {focus_plain} op letten?",
-                        "acceptedAnswer": {
-                            "@type": "Answer",
-                            "text": "Kijk naar de feitelijke situatie, leg afspraken vast, beoordeel het risico en bewaar bewijs van de gemaakte keuzes.",
-                        },
-                    },
+                        "name": question,
+                        "acceptedAnswer": {"@type": "Answer", "text": answer},
+                    }
+                    for question, answer in faq_items(data)
                 ],
             },
             {
@@ -312,6 +339,7 @@ def main():
         f'<h1>{title}</h1><div class="artikelmeta"><span>{business_date[8:10]}-{business_date[5:7]}-{business_date[:4]}</span>'
         f' · <span>Arthur Prinsen</span></div></div>'
         + body_html(data)
+        + faq_html(data)
         + "</article>"
     )
     template = replace_one(template, r'<article class="artikel">.*?</article>', article, "article")
