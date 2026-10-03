@@ -1,0 +1,26 @@
+{
+  "fingerprint": "website|navigation|platform|live-production-contract|20261003-v1",
+  "observed_at": "2026-10-03T09:30:00+02:00",
+  "type": "PREVENTION",
+  "problem": "Platform routing was protected at generation and final-build time, but the canonical live-production shell readback did not explicitly assert the deployed Platform href.",
+  "root_cause": "The live shell contract verified labels, shell hashes and release markers but treated the Platform label as presence-only.",
+  "decision": "Promote Platform -> /product to a live production invariant on every shell page, requiring both desktop and mobile anchors and rejecting stale, external or missing targets.",
+  "prevention": [
+    "Every live shell readback verifies at least two visible Platform anchors.",
+    "Every live Platform target must resolve on the canonical origin to /product.",
+    "A stale /bedrijfsgeheugen target now fails the production readback.",
+    "The unit regression proves canonical, stale and missing-counterpart cases."
+  ],
+  "compiler": {
+    "failure_class": "LIVE_NAVIGATION_ROUTE_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 3,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tools/site-shell/live-contract.mjs",
+    "tests/platform-live-production-contract.test.mjs",
+    "PR #3619"
+  ]
+}
