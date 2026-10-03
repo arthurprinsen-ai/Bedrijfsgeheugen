@@ -344,7 +344,9 @@
         "tools/fix-netlify-identity-",
         "netlify/functions/portaalvraag.mjs",
         "netlify/functions/portal-state.mjs",
-        "tools/portal-visual-density.mjs"
+        "tools/portal-visual-density.mjs",
+        "config/powerhouse-portal-visual-assurance-v1.json",
+        ".github/workflows/portal-visual-density.yml"
       ],
       "requiredContracts": [
         "BG166",
