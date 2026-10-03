@@ -181,6 +181,11 @@ def main():
     focus = html.escape(focus_plain, quote=True)
     canonical = data["canonical_url"]
     template = TEMPLATE.read_text(encoding="utf-8")
+    # Daily article pages must not inherit render-blocking third-party analytics/font calls.
+    # The site shell remains intact; typography falls back to the existing local/system stack.
+    template = re.sub(r'<!-- Google tag \(gtag\.js\) -->.*?</script>', '', template, count=1, flags=re.S)
+    template = re.sub(r'<script>\s*window\.dataLayer.*?</script>', '', template, count=1, flags=re.S)
+    template = re.sub(r'<link[^>]+(?:fonts\.googleapis\.com|fonts\.gstatic\.com)[^>]*>\s*', '', template, flags=re.I)
     template = replace_one(template, r"<title>.*?</title>", f"<title>{title}</title>", "title")
     template = replace_one(
         template,
