@@ -1,0 +1,31 @@
+{
+  "fingerprint": "website|browser|deploy-preview|transient-403-retry|20261003-v1",
+  "observed_at": "2026-10-03T17:25:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The full public-page browser sweep intermittently failed on a single Netlify deploy-preview route with HTTP 403 while surrounding routes and viewports remained healthy.",
+  "root_cause": "The visibility check treated deploy-preview traffic with the same short three-attempt retry window as production, even though Netlify preview infrastructure can transiently return 403 under a large route sweep.",
+  "decision": "Keep production strict at three attempts, but give deploy-preview URLs five bounded attempts with increasing backoff. Persistent 403 responses still fail closed.",
+  "prevention": [
+    "Deploy-preview transient 403/429/5xx responses receive a bounded five-attempt retry budget.",
+    "Production keeps the original three-attempt budget.",
+    "Non-transient HTTP failures still stop immediately.",
+    "A persistent 403 still fails the browser contract."
+  ],
+  "compiler": {
+    "failure_class": "DEPLOY_PREVIEW_TRANSIENT_ACCESS",
+    "scope": "WEBSITE_TEST_INFRA",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tools/site-shell/visibility-retry-policy.mjs",
+    "tools/site-shell/standalone-visibility-check.mjs",
+    "tests/brain-deploy-preview-visibility-retry.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-deploy-preview-visibility-retry.test.mjs"
+    ]
+  }
+}
