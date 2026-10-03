@@ -3,6 +3,34 @@
    no-JS navigatie; op mobiel bouwen we daar een duidelijke drill-down laag
    bovenop met grote touch-targets en een herkenbare Menu-pill. */
 (function () {
+  /* Canonical route contract: every navigation link labelled "Platform" must
+     open the product/platform proposition, never the explanatory
+     /bedrijfsgeheugen page. Keep this guard active because CMS/navigation
+     overlays can be applied after the static shell has loaded. */
+  function repairPlatformLinks(root) {
+    var scope = root && root.querySelectorAll ? root : document;
+    Array.prototype.forEach.call(scope.querySelectorAll('a[href]'), function (a) {
+      if (String(a.textContent || '').trim().toLowerCase() !== 'platform') return;
+      var raw = String(a.getAttribute('href') || '').trim();
+      try {
+        var url = new URL(raw, location.origin);
+        if (url.origin === location.origin && url.pathname.replace(/\/$/, '') === '/bedrijfsgeheugen') {
+          a.setAttribute('href', '/product');
+        }
+      } catch (e) {}
+    });
+  }
+
+  repairPlatformLinks(document);
+  if (document.documentElement) {
+    var platformLinkObserver = new MutationObserver(function (mutations) {
+      var needsRepair = mutations.some(function (m) {
+        return m.type === 'childList' || (m.type === 'attributes' && m.attributeName === 'href');
+      });
+      if (needsRepair) repairPlatformLinks(document);
+    });
+    platformLinkObserver.observe(document.documentElement, { childList: true, subtree: true, attributes: true, attributeFilter: ['href'] });
+  }
   /* Homepage hero-video: browsers (met name iOS/Safari) kunnen een geldige
      muted autoplay alsnog onderbreken na page restore, visibility changes of
      een trage externe media response. Maak starten daarom idempotent en
