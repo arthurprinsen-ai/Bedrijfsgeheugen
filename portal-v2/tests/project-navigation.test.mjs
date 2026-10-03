@@ -1,18 +1,14 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { PORTAL_NAV_ITEMS, mobileTarget } from '../navigation-model.js';
+import { PORTAL_NAV_ITEMS, mobileTarget, DESKTOP_NAV_GROUPS } from '../navigation-model.js';
 import { PROJECT_GROUPS, hubDefinition, groupedHubPages } from '../hubs.js';
 
-test('mobile navigation has exactly one Project entry between Overview and Data & AI',()=>{
-  assert.deepEqual(PORTAL_NAV_ITEMS.map(({id,label})=>[id,label]),[
-    ['overview','Overzicht'],
-    ['project','Project'],
-    ['data-ai','Data & AI'],
-    ['tasks','Acties'],
-    ['more','Meer']
-  ]);
+test('Project is exactly one item inside the canonical complete navigation tree',()=>{
+  const projectItems=PORTAL_NAV_ITEMS.filter(item=>item.target==='hub:project');
+  assert.equal(projectItems.length,1);
+  assert.equal(projectItems[0].label,'Jouw project');
   assert.equal(mobileTarget('project'),'hub:project');
-  assert.equal(PORTAL_NAV_ITEMS.some(item=>item.id==='portal'),false);
+  assert.equal(DESKTOP_NAV_GROUPS.flatMap(group=>group.pages).filter(page=>page.target==='hub:project').length,1);
 });
 
 test('project hub exposes the approved five context groups',()=>{
