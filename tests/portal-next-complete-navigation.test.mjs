@@ -11,11 +11,13 @@ test('portal-next loads complete navigation layer',()=>{
   assert.match(loader,/portal-navigation-complete\.css/);
 });
 
-test('mobile has a real hamburger drawer with full portal navigation',()=>{
-  for(const token of ['mobileMenuToggle','portalMobileDrawer','portalMobileNav','data-portal-page']) assert.match(js,new RegExp(token));
+test('desktop and mobile use the same canonical portal navigation tree',()=>{
+  for(const token of ['mobileMenuToggle','portalMobileDrawer','portalMobileNav','data-portal-page','buildGroupedNav']) assert.match(js,new RegExp(token));
+  assert.match(js,/buildGroupedNav\(nav\)/);
+  assert.doesNotMatch(js,/mountDesktopDrawer\(\);/);
+  assert.doesNotMatch(js,/portal-all-pages-trigger.*Alle pagina’s/);
   assert.match(css,/@media\(max-width:980px\)/);
   assert.match(css,/\.portal-mobile-menu-toggle/);
-  assert.match(css,/\.portal-mobile-drawer/);
 });
 
 test('all mapped portal pages are rendered as primary navigable pages',()=>{
