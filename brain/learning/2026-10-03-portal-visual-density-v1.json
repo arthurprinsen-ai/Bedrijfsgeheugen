@@ -19,5 +19,16 @@
     "liveProductionCommit": "e65fe29d3693e1ce480e9ac90ce244ebcf266c40",
     "screenshotCount": 9,
     "liveResult": "PASS"
+  },
+  "fingerprint": "portal-visual-density-oversized-responsive-cascade-v1",
+  "compiler": {
+    "failure_class": "PORTAL_VISUAL_DENSITY_REGRESSION"
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Replayed overview, csrd-impact and data-ai at 1440x900, 1024x768 and 390x844.",
+      "Original mobile harness defect reproduced because viewportSize did not change Playwright viewport.",
+      "Production replay passed with 9 screenshots, 0px horizontal overflow, CSRD world 320px desktop/tablet and hidden on mobile."
+    ]
   }
 }
