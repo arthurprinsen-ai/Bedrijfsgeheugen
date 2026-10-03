@@ -28,9 +28,15 @@ const aliases: Record<string, string> = {
 function businessSignal(text: string) {
   return /\b(Bedrijfsgeheugen|directeur(?:en)?|eigenaar(?:s)?|mkb|bedrijf(?:ven|s)?|organisatie(?:s)?|omzet|lead(?:s)?|klant(?:en)?|prospect(?:s)?|strategie|management|consultancy|consultant|digitalisering|AI|data|dashboard|frisse blik|scan|afspraak|offerte|sales|business|propositie|dienstverlening|case|cases|opdrachtgever|opdrachtgevers|werkgever|werkgevers|teamlead|stakeholder|roadmap|governance)\b/i.test(text) || /bedrijfsgeheugen\.nl\/g\//i.test(text);
 }
+function firstPersonSignal(text: string) {
+  return /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
+}
+function personalLifeContextSignal(text: string) {
+  return /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|pakket|bezorging|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport|winkel|app|afhaalpunt)\b/i.test(text);
+}
 function concretePersonalLifeSignal(text: string) {
-  const firstPerson = /\b(ik|mijn|mij|me|voor mij|bij mij)\b/i.test(text);
-  const context = /\b(thuis|vanochtend|vanmorgen|vanmiddag|vanavond|vannacht|vandaag|gisteren|weekend|vakantie|hockey|wedstrijd|training|tuin|auto|fiets|trein|school|kind(?:eren)?|dochter|zoon|gezin|boodschappen|supermarkt|printer|telefoon|laptop|robotstofzuiger|file|regen|keuken|straat|buurt|verjaardag|restaurant|wandeling|sport)\b/i.test(text);
+  const firstPerson = firstPersonSignal(text);
+  const context = personalLifeContextSignal(text);
   const action = /\b(stond|zat|liep|reed|ging|kwam|probeerde|vergat|wachtte|zocht|bracht|haalde|belde|sprak|keek|baalde|lachte|schrok|voelde|dacht ineens)\b/i.test(text);
   const ownedConcrete = /\bmijn\s+(kind|dochter|zoon|gezin|auto|fiets|tuin|telefoon|printer|weekend|vakantie|training|wedstrijd)\b/i.test(text);
   return firstPerson && ((context && action) || ownedConcrete);
@@ -48,14 +54,22 @@ function personalViolations(text: string, body: any, finalHash: string) {
   require(body.channel_kind === 'linkedin_personal', 'CHANNEL_KIND_MISMATCH', 'channel_kind moet linkedin_personal zijn.');
   require(body.identity_contract === PERSONAL_CONTRACT, 'IDENTITY_CONTRACT_MISMATCH', 'Persoonlijk identity-contract ontbreekt.');
   require(body.identity_gate_version === PARENT_CONTRACT, 'IDENTITY_GATE_VERSION_MISMATCH', 'Parent identity-gate ontbreekt.');
-  require(body.personal_truth_verified === true, 'PERSONAL_TRUTH_UNVERIFIED', 'De persoonlijke waarheid is niet expliciet geverifieerd.');
+  const observationalMode = body.observational_personal_theme_verified === true;
   require(Array.isArray(body.source_lineage) ? body.source_lineage.length > 0 : !!body.source_lineage, 'SOURCE_LINEAGE_REQUIRED', 'Bron/evidence-lineage ontbreekt.');
-  require(body.arthur_anchor_verified === true, 'ARTHUR_ANCHOR_UNVERIFIED', 'Een geverifieerd Arthur-anker is verplicht.');
-  require(body.first_person_claims_verified === true, 'FIRST_PERSON_CLAIMS_UNVERIFIED', 'Eerste-persoonsclaims zijn niet geverifieerd.');
+  if (observationalMode) {
+    require(body.public_theme_source_verified === true, 'PUBLIC_THEME_SOURCE_UNVERIFIED', 'De publieke bron voor de dagelijkse observatie is niet geverifieerd.');
+    require(body.first_person_claims_present === false, 'OBSERVATIONAL_MODE_FIRST_PERSON_FORBIDDEN', 'Observerende fallback mag geen ik/mijn/mij/me-claims bevatten.');
+    require(!firstPersonSignal(text), 'OBSERVATIONAL_MODE_FINAL_TEXT_FIRST_PERSON_FORBIDDEN', 'Observerende fallback bevat toch eerste-persoonstaal.');
+    require(personalLifeContextSignal(text), 'OBSERVATIONAL_PERSONAL_LIFE_CONTEXT_REQUIRED', 'Observerende fallback moet concreet over dagelijks leven gaan.');
+  } else {
+    require(body.personal_truth_verified === true, 'PERSONAL_TRUTH_UNVERIFIED', 'De persoonlijke waarheid is niet expliciet geverifieerd.');
+    require(body.arthur_anchor_verified === true, 'ARTHUR_ANCHOR_UNVERIFIED', 'Een geverifieerd Arthur-anker is verplicht.');
+    require(body.first_person_claims_verified === true, 'FIRST_PERSON_CLAIMS_UNVERIFIED', 'Eerste-persoonsclaims zijn niet geverifieerd.');
+    require(concretePersonalLifeSignal(text), 'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED', 'De uiteindelijke tekst moet zelf een concrete persoonlijke gebeurtenis of dagelijkse ervaring bevatten; metadata alleen is onvoldoende.');
+  }
   require(body.personal_life_topic === true, 'PERSONAL_LIFE_TOPIC_REQUIRED', 'Persoonlijk onderwerp is niet bewezen.');
   require(body.personal_life_only_policy === PERSONAL_LIFE_ONLY_POLICY, 'PERSONAL_LIFE_ONLY_POLICY_REQUIRED', 'De personal-life-only policy ontbreekt of is verouderd.');
   require(body.personal_life_only_verified === true, 'PERSONAL_LIFE_ONLY_UNVERIFIED', 'De uiteindelijke tekst is niet expliciet als uitsluitend persoonlijk leven geverifieerd.');
-  require(concretePersonalLifeSignal(text), 'FINAL_TEXT_CONCRETE_PERSONAL_EVENT_REQUIRED', 'De uiteindelijke tekst moet zelf een concrete persoonlijke gebeurtenis of dagelijkse ervaring bevatten; metadata alleen is onvoldoende.');
   require(body.business_topic === false, 'BUSINESS_TOPIC_DEFAULT_BLOCK', 'Zakelijk onderwerp is geblokkeerd op Arthur persoonlijk.');
   require(body.corporate_voice === false, 'CORPORATE_VOICE_BLOCKED', 'Corporate/consultantstem is geblokkeerd.');
   require(body.company_page_interchangeable === false, 'COMPANY_PAGE_INTERCHANGEABLE_BLOCKED', 'Tekst mag niet uitwisselbaar zijn met de bedrijfspagina.');
