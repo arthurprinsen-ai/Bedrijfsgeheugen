@@ -9,7 +9,10 @@
     "supabase_registry": "public.powerhouse_loop_assurance_registry_v1",
     "supabase_receipts": "public.powerhouse_loop_assurance_receipts_v1",
     "supabase_quality": "public.powerhouse_quality_events",
-    "notion_state": "Portal V2 visual regression — canonical route authority"
+    "notion_state": "Portal V2 visual regression — canonical route authority",
+    "supabase_runtime_source": null,
+    "supabase_receipt_mode": "explicit_external_test_evidence",
+    "supabase_guard_requires_pass": true
   },
   "cadence": {
     "production": "daily",
