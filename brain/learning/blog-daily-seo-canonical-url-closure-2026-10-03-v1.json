@@ -13,7 +13,6 @@
   },
   "evaluation": {
     "historical_replay": [
-      "Blog Technical SEO Gate",
       "tests/brain-material-writeback-closure-guard.test.mjs"
     ],
     "current_candidate": {
