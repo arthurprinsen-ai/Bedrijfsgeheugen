@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse-website-cross-browser-screenshot-assurance-v1",
+  "observed_at": "2026-10-03T15:30:00Z",
+  "type": "PREVENTION",
+  "problem": "Website browser quality was split across several Chromium-centric checks and did not retain one explicit cross-browser screenshot matrix for mobile/tablet/desktop.",
+  "root_cause": "Existing release checks covered visibility and selected visual geometry, but cross-engine screenshot evidence was not one canonical scheduled contract.",
+  "decision": "Reuse existing website lane and add one daily cross-browser screenshot assurance over the production sitemap and representative route families.",
+  "prevention": [
+    "Every sitemap route gets responsive mobile+desktop DOM checks.",
+    "Critical route families get full screenshots in Chromium, Firefox and WebKit.",
+    "Navigation/language interactions are exercised.",
+    "All failures retain screenshots and report evidence."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_CROSS_BROWSER_VISUAL_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "config/powerhouse-website-cross-browser-assurance-v1.json",
+    ".github/workflows/website-cross-browser-screenshot-assurance.yml",
+    "tools/site-shell/website-cross-browser-assurance.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}
