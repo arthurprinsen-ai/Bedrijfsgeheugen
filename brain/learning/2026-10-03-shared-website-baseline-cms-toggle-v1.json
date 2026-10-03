@@ -1,0 +1,31 @@
+{
+  "fingerprint": "website|baseline|cms-selector-home-toggle|20261003-v1",
+  "observed_at": "2026-10-03T09:55:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The shared website lane was blocked by two unrelated baseline defects: cms-admin overwrote the single-element selector helper with the query-all helper, and the homepage toggle regression depended on physical pointer hit-testing that was intermittently intercepted by unrelated overlays.",
+  "root_cause": "CMS used the same selector variable for querySelector and querySelectorAll, so event binding received arrays. The toggle regression conflated state-transition correctness with pointer-overlay geometry already covered by separate visual/browser contracts.",
+  "decision": "Keep single and multi CMS selector helpers distinct. Test homepage tab state transitions through deterministic DOM activation while leaving overlay and geometry validation to dedicated visual regression contracts.",
+  "prevention": [
+    "CMS single-element event binding always uses querySelector.",
+    "CMS collection iteration always uses querySelectorAll.",
+    "Homepage toggle regression validates state transitions independently from unrelated overlays.",
+    "Dedicated visual regression remains responsible for occlusion and geometry."
+  ],
+  "compiler": {
+    "failure_class": "SHARED_WEBSITE_BASELINE_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "assets/cms-admin.js",
+    "tools/site-shell/homepage-toggle-browser-check.mjs",
+    "tests/brain-shared-website-baseline-cms-toggle.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-shared-website-baseline-cms-toggle.test.mjs"
+    ]
+  }
+}
