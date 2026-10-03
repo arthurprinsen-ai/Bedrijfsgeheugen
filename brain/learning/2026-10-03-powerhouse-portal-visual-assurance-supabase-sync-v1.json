@@ -21,6 +21,9 @@
     ],
     "shadow": [
       "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
     ]
   },
   "evidence": [
