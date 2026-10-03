@@ -1,0 +1,28 @@
+{
+  "fingerprint": "powerhouse-portal-visual-assurance-github-supabase-sync-v1",
+  "problem": "The daily GitHub visual-density workflow produced durable screenshot evidence, but without automatic Supabase writeback the existing Loop Assurance receipts would eventually become stale.",
+  "root_cause": "Execution evidence and assurance authority were connected semantically but lacked an automated provider-to-authority synchronization adapter.",
+  "prevention": [
+    "GitHub remains the test executor and screenshot evidence source.",
+    "Supabase polls only successful completed main runs of portal-visual-density.yml and requires the visual-density job itself to be green.",
+    "The existing Powerhouse scheduler token protects the sync adapter; no new credential or parallel truth store is introduced.",
+    "Successful GitHub evidence refreshes all eight existing loop-assurance stage receipts and the quality event before the canonical assurance refresh runs."
+  ],
+  "compiler": {
+    "failure_class": "CROSS_SYSTEM_EVIDENCE_WRITEBACK_GAP",
+    "scope": "SUPABASE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
+    ]
+  },
+  "evidence": [
+    "supabase/functions/powerhouse-visual-assurance-sync/index.ts",
+    "supabase/migrations/20261003075748_powerhouse_portal_visual_assurance_github_sync_v1.sql",
+    "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs"
+  ]
+}
