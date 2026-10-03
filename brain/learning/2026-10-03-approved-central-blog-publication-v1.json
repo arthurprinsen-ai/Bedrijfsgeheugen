@@ -1,0 +1,17 @@
+{
+  "fingerprint": "approved-central-blog|2026-10-03|wet-dba-zelfstandigen|publication-v1",
+  "scope": "WEBSITE",
+  "machine_enforceable": true,
+  "repeat_count": 1,
+  "security_sensitive": false,
+  "root_cause": "The approved Wet DBA central article was valid but its FAQ separators were serialized by the Notion surface as escaped pipes. The canonical raw publisher recovered after the approved source was resealed; publication still requires deterministic website artifacts and full protected delivery closure.",
+  "prevention_rule": "Every approved-central-blog material candidate must carry exact source/slug/hash lineage plus same-candidate learning, activity-ledger and human change documentation. FAQ validation remains at two or more questions. Production remains unverified until protected merge, exact Netlify production identity and public URL readback succeed.",
+  "evaluation": {"historical_replay": ["tests/brain-content-closed-loop-contract.test.mjs"]},
+  "evidence": [
+    "Approved central blog workflow run 37105270726 rendered the exact due Wet DBA article after canonical source reseal.",
+    "Candidate contains FAQPage structured data with exactly two Question entities.",
+    "Canonical source content id: powerhouse:2026-10-03:blog:be4391e0-8b12-4fa5-a80b-48cab350c77d.",
+    "Approved source hash: 96f7dd9b64198975e3eae97e4e569758ea03fe5e1aa58d7b5d6a4170ae9f533e."
+  ],
+  "compiler": {"failure_class": "CONTENT_DELIVERY"}
+}
