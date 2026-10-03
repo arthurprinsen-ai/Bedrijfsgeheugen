@@ -453,7 +453,7 @@
       "id": "rpc:bg_geheim",
       "type": "rpc",
       "authority": "supabase/functions/powerhouse-social-publisher/index.ts",
-      "evidence_contract": "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs",
+      "evidence_contract": "tests/brain-content-closed-loop-contract.test.mjs",
       "required": true
     },
     {
