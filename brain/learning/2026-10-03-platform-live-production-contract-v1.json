@@ -22,5 +22,20 @@
     "tools/site-shell/live-contract.mjs",
     "tests/platform-live-production-contract.test.mjs",
     "PR #3619"
-  ]
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "The historical failure left desktop Platform on /product while the mobile V18 drawer still emitted /bedrijfsgeheugen.",
+      "The live-production invariant now scans deployed shell HTML for both visible Platform anchors and rejects that exact stale mobile route."
+    ],
+    "production_readback": [
+      "https://www.bedrijfsgeheugen.nl/",
+      "https://www.bedrijfsgeheugen.nl/product"
+    ],
+    "regression_contract": [
+      "Canonical desktop and mobile Platform anchors pass the live route verifier.",
+      "A stale /bedrijfsgeheugen mobile href fails closed.",
+      "A missing desktop/mobile counterpart fails closed."
+    ]
+  }
 }
