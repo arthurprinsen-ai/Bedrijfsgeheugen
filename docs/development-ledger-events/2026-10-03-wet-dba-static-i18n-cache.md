@@ -8,7 +8,7 @@ Observed failure:
 - the broken shared baseline blocked unrelated website recovery work.
 
 Closure:
-- append-only English cache patches cover the 66 source strings and 8 final-build-derived strings;
+- one canonical append-only English cache patch covers all 74 incident strings (66 source + 8 final-build-derived);
 - executable historical replay covers both incident sets;
 - Brain learning records final-build cache completeness as the authority;
 - fail-closed static i18n and exact Netlify parity remain enabled;
