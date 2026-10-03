@@ -21,7 +21,8 @@
   "evidence": [
     "tools/site-shell/visibility-retry-policy.mjs",
     "tools/site-shell/standalone-visibility-check.mjs",
-    "tests/brain-deploy-preview-visibility-retry.test.mjs"
+    "tests/brain-deploy-preview-visibility-retry.test.mjs",
+    "tests/site-shell-website-release-risk.test.mjs"
   ],
   "evaluation": {
     "historical_replay": [
