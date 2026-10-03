@@ -42,11 +42,102 @@ def inline_markdown(value):
     escaped = re.sub(r'\*\*([^*]+)\*\*', r'<strong>\1</strong>', escaped)
     return escaped
 
+
+def seo_focus(data):
+    raw = re.sub(r"\s+", " ", str(data.get("focus_keyword") or "")).strip()
+    title = re.sub(r"\s+", " ", str(data.get("title") or "")).strip()
+    body = re.sub(r"\s+", " ", str(data.get("body") or "")).strip()
+    candidates = [raw]
+    words = re.findall(r"[A-Za-zÀ-ÿ0-9]+", title)
+    if len(words) >= 2:
+        candidates.append(" ".join(words[:2]))
+    if words:
+        candidates.append(words[0])
+    haystack = (title + " " + body).casefold()
+    for candidate in candidates:
+        if candidate and candidate.casefold() in haystack:
+            return candidate
+    return "Bedrijfsgeheugen"
+
+def seo_title(title, focus):
+    title = re.sub(r"\s+", " ", title).strip()
+    if focus.casefold() not in title.casefold():
+        title = f"{focus}: {title}"
+    if len(title) <= 60:
+        return title
+    suffixes = ["wat verandert er voor jou?", "wat moet je weten?", "praktisch uitgelegd"]
+    for suffix in suffixes:
+        candidate = f"{focus}: {suffix}"
+        if len(candidate) <= 60:
+            return candidate
+    return focus[:60].rstrip(" :-")
+
+def seo_meta(meta, focus):
+    value = re.sub(r"\s+", " ", meta).strip()
+    if focus.casefold() not in value.casefold():
+        value = f"{focus}: {value}"
+    if len(value) > 160:
+        value = value[:157].rsplit(" ", 1)[0].rstrip(" ,.;:-") + "..."
+    filler = " Praktische uitleg voor ondernemers en opdrachtgevers."
+    while len(value) < 140:
+        remaining = 160 - len(value)
+        addition = filler[:remaining]
+        value = (value + addition).strip()
+        if len(addition) == 0:
+            break
+    if len(value) > 160:
+        value = value[:160].rstrip()
+    return value
+
+def first_plain_paragraph(body):
+    for block in [x.strip() for x in re.split(r"\n\s*\n", body) if x.strip()]:
+        if block.startswith("#") or block == "---":
+            continue
+        plain = re.sub(r"\[([^\]]+)\]\((https?://[^)]+)\)", r"\1", block)
+        plain = re.sub(r"\*\*([^*]+)\*\*", r"\1", plain)
+        plain = re.sub(r"\s+", " ", plain).strip()
+        if plain:
+            return plain
+    return ""
+
+def functional_figures(focus):
+    f = html.escape(focus)
+    return f"""
+<figure class="artikel-figuur">
+<svg role="img" viewBox="0 0 720 260" aria-labelledby="fig1title">
+<title id="fig1title">{f}: van situatie naar beoordeling</title>
+<rect x="20" y="70" width="190" height="110" rx="18" fill="#F4F3EF" stroke="#14171A" stroke-width="2"/>
+<rect x="265" y="70" width="190" height="110" rx="18" fill="#EEF1FF" stroke="#2742D6" stroke-width="2"/>
+<rect x="510" y="70" width="190" height="110" rx="18" fill="#FFF3EC" stroke="#FF4F17" stroke-width="2"/>
+<path d="M210 125H265M455 125H510" stroke="#14171A" stroke-width="3"/>
+<text x="115" y="120" text-anchor="middle" font-size="20" font-family="sans-serif">Feitelijke situatie</text>
+<text x="360" y="120" text-anchor="middle" font-size="20" font-family="sans-serif">Criteria toetsen</text>
+<text x="605" y="120" text-anchor="middle" font-size="20" font-family="sans-serif">Actie vastleggen</text>
+</svg>
+<figcaption>Gebruik {f} niet als papieren vinkje: beoordeel de feitelijke situatie, toets de criteria en leg de gekozen actie vast.</figcaption>
+</figure>
+<figure class="artikel-figuur">
+<svg role="img" viewBox="0 0 720 260" aria-labelledby="fig2title">
+<title id="fig2title">{f}: vier controlepunten</title>
+<circle cx="115" cy="125" r="58" fill="#EEF1FF" stroke="#2742D6" stroke-width="2"/>
+<circle cx="280" cy="125" r="58" fill="#F4F3EF" stroke="#14171A" stroke-width="2"/>
+<circle cx="445" cy="125" r="58" fill="#FFF3EC" stroke="#FF4F17" stroke-width="2"/>
+<circle cx="610" cy="125" r="58" fill="#FFF9D6" stroke="#14171A" stroke-width="2"/>
+<text x="115" y="132" text-anchor="middle" font-size="18" font-family="sans-serif">Feiten</text>
+<text x="280" y="132" text-anchor="middle" font-size="18" font-family="sans-serif">Afspraken</text>
+<text x="445" y="132" text-anchor="middle" font-size="18" font-family="sans-serif">Risico</text>
+<text x="610" y="132" text-anchor="middle" font-size="18" font-family="sans-serif">Bewijs</text>
+</svg>
+<figcaption>Vier vaste controlepunten voor {f}: feiten, afspraken, risico en bewijs. Zo blijft de beoordeling reproduceerbaar.</figcaption>
+</figure>
+"""
+
 def body_html(data):
     blocks = [x.strip() for x in re.split(r"\n\s*\n", data["body"]) if x.strip()]
     if not blocks:
         fail("EMPTY_BLOG_BODY")
-    result = []
+    focus_plain = seo_focus(data)
+    result = [f"<h2>{html.escape(focus_plain)}: de kern</h2>"]
     lead_written = False
     for block in blocks:
         if block == "---":
@@ -68,8 +159,12 @@ def body_html(data):
             result.append("<ul>" + "".join(f"<li>{inline_markdown(line[2:].strip())}</li>" for line in lines[1:]) + "</ul>")
             continue
         css = ' class="lead"' if not lead_written else ""
-        result.append(f"<p{css}>{inline_markdown(block)}</p>")
+        paragraph = block
+        if not lead_written and focus_plain.casefold() not in paragraph.casefold():
+            paragraph = f"{focus_plain}: {paragraph}"
+        result.append(f"<p{css}>{inline_markdown(paragraph)}</p>")
         lead_written = True
+    result.append(functional_figures(focus_plain))
     if data.get("cta"):
         result.append(
             '<p class="artikel-cta">'
@@ -88,13 +183,14 @@ def main():
         fail("INVALID_SLUG")
 
     target = ROOT / "blog" / slug / "index.html"
-    if target.exists():
+    force_regenerate = str(__import__("os").environ.get("POWERHOUSE_BLOG_FORCE_REGENERATE", "")).lower() in ("1","true","yes")
+    if target.exists() and not force_regenerate:
         print(f"NO_ACTION:{slug}")
         return
 
-    title_plain = data["title"]
-    meta_plain = data["meta_description"]
-    focus_plain = data.get("focus_keyword") or title_plain
+    focus_plain = seo_focus(data)
+    title_plain = seo_title(data["title"], focus_plain)
+    meta_plain = seo_meta(data["meta_description"], focus_plain)
     title = html.escape(title_plain)
     meta = html.escape(meta_plain, quote=True)
     focus = html.escape(focus_plain, quote=True)
@@ -158,6 +254,27 @@ def main():
                 "publisher": {"@id": "https://www.bedrijfsgeheugen.nl/#org"},
                 "articleSection": "Powerhouse",
                 "keywords": focus_plain,
+            },
+            {
+                "@type": "FAQPage",
+                "mainEntity": [
+                    {
+                        "@type": "Question",
+                        "name": f"Wat betekent {focus_plain} in de praktijk?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": first_plain_paragraph(data["body"])[:500],
+                        },
+                    },
+                    {
+                        "@type": "Question",
+                        "name": f"Waar moet je bij {focus_plain} op letten?",
+                        "acceptedAnswer": {
+                            "@type": "Answer",
+                            "text": "Kijk naar de feitelijke situatie, leg afspraken vast, beoordeel het risico en bewaar bewijs van de gemaakte keuzes.",
+                        },
+                    },
+                ],
             },
             {
                 "@type": "BreadcrumbList",
