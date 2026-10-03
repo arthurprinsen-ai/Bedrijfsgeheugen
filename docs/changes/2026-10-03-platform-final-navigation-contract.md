@@ -6,4 +6,4 @@ The final navigation boundary now normalizes every visible **Platform** anchor t
 
 The regression test explicitly contains the historical mobile error and requires both desktop and mobile Platform links to resolve to the product page.
 
-This change is bound to obligation `platform-final-navigation-contract-20261003-v1` and the five-file recovery scope declared on the pull request.
+This change is bound to obligation `platform-navigation-product-route-20261003-v1` and the five-file recovery scope declared on the pull request.
