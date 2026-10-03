@@ -7,11 +7,24 @@
   "prevention_rule": "All registered portal pages must be rendered from PORTAL_SECTIONS through one canonical navigation builder. Desktop uses that tree directly in the sidebar; mobile may only render the same tree responsively. No second desktop drawer, shortcut nav or separately mounted legacy page library may become an active navigation authority.",
   "evidence": {
     "tests": [
+      "tests/brain-portal-single-navigation-end-to-end-v1.test.mjs",
       "tests/portal-next-single-navigation.test.mjs",
       "tests/portal-next-complete-navigation.test.mjs",
       "tests/portal-next-navigation-parity.test.mjs",
       "tests/integration/portal-next-live.spec.js"
     ],
     "expected": "exactly one canonical page registry and navigation authority across desktop and mobile"
+  },
+  "compiler": {
+    "failure_class": "PORTAL_NAVIGATION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-single-navigation-end-to-end-v1.test.mjs"
+    ]
   }
 }
