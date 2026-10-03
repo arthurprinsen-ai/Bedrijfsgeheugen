@@ -4,14 +4,14 @@ import fs from 'node:fs';
 
 const nav=fs.readFileSync('portal-next/portal-navigation-complete.js','utf8');
 const app=fs.readFileSync('portal-next/portal-next.js','utf8');
-const business=fs.readFileSync('portal-next/portal-business-os-navigation.js','utf8');
+const loader=fs.readFileSync('portal-next/portal-flow-state.js','utf8');
 const css=fs.readFileSync('portal-next/portal-next.css','utf8');
 
 test('portal exposes exactly one desktop navigation authority',()=>{
   assert.match(nav,/function mountDesktopPrimaryNav\(\).*buildGroupedNav\(nav\)/s);
   assert.doesNotMatch(nav,/mountDesktopDrawer\(\);/);
   assert.doesNotMatch(app,/bindAi\(\);mountPortalLibrary\(\);/);
-  assert.match(business,/querySelectorAll\('\.sidebar \.nav,#portalMobileNav'\)/);
+  assert.doesNotMatch(loader,/portal-business-os-navigation\.js/);
 });
 
 test('the canonical desktop tree contains all registered portal pages and stays scrollable',()=>{
