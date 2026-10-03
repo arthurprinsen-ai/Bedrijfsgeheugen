@@ -1,5 +1,6 @@
 import { chromium } from 'playwright';
 import { routesFromSitemap } from './public-route-inventory.mjs';
+import { visibilityRetryPolicy } from './visibility-retry-policy.mjs';
 
 const baseUrl = process.env.UI_VR_BASE_URL || process.argv[2];
 if (!baseUrl) throw new Error('UI_VR_BASE_URL/base URL is required');
@@ -50,7 +51,8 @@ function assertBudget(route, viewport) {
 async function openReachable(page, url) {
   let last;
   const transientStatuses = new Set([403, 408, 425, 429, 500, 502, 503, 504]);
-  for (let attempt = 1; attempt <= 3; attempt++) {
+  const retryPolicy = visibilityRetryPolicy(baseUrl);
+  for (let attempt = 1; attempt <= retryPolicy.maxAttempts; attempt++) {
     try {
       const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: navigationTimeoutMs });
       const status = response?.status() ?? null;
@@ -58,7 +60,7 @@ async function openReachable(page, url) {
       last = new Error(`HTTP ${status ?? 'no-response'} ${url}`);
       if (status && !transientStatuses.has(status)) break;
     } catch (error) { last = error; }
-    if (attempt < 3) await sleep(750 * attempt);
+    if (attempt < retryPolicy.maxAttempts) await sleep(retryPolicy.retryDelayMs(attempt));
   }
   throw last || new Error(`Could not load ${url}`);
 }
