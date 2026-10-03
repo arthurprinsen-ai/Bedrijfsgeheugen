@@ -6,6 +6,7 @@ import {
   assertIndexableRouteHtml,
 } from '../tools/site-shell/finalize-site-contracts.mjs';
 import { PUBLIC_PAGE_EXCLUDES } from '../tools/site-shell/contracts.mjs';
+import { verifyPlatformNavigation } from '../tools/site-shell/live-contract.mjs';
 
 const staleHomepage = `<!doctype html><html><head><title>Home</title></head><body>
 <header class="v17-header"><nav>
@@ -22,6 +23,17 @@ assert.ok(finalized.includes('href="https://www.bedrijfsgeheugen.nl/blog/">Blog<
 assert.equal((finalized.match(/href="https:\/\/www\.bedrijfsgeheugen\.nl\/product"[^>]*>Platform<\/a>/g) || []).length, 2, 'desktop en mobiel Platform moeten allebei naar /product wijzen');
 assert.ok(!finalized.includes('href="https://www.bedrijfsgeheugen.nl/bedrijfsgeheugen" data-view="product">Platform</a>'));
 assert.doesNotThrow(() => verifyFinalNavigationHtml(finalized, 'index.html'));
+assert.doesNotThrow(() => verifyPlatformNavigation(finalized, 'index.html'));
+assert.throws(
+  () => verifyPlatformNavigation(staleHomepage, 'index.html'),
+  /Platform verwijst niet naar \/product/,
+  'live productiecontract moet de historische mobiele /bedrijfsgeheugen-drift afwijzen'
+);
+assert.throws(
+  () => verifyPlatformNavigation('<a href="/product">Platform</a>', 'index.html'),
+  /desktop\/mobile Platform-anchors ontbreken live/,
+  'live productiecontract vereist desktop en mobiel'
+);
 assert.throws(() => verifyFinalNavigationHtml(staleHomepage, 'index.html'), /Kennis.*blog|kennis\/|final/i);
 assert.equal(finalizeNavigationHtml(finalized), finalized, 'finalizer moet idempotent zijn');
 
