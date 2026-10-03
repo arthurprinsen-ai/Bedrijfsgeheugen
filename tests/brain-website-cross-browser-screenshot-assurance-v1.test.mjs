@@ -17,11 +17,14 @@ test('website assurance covers all public routes and critical screenshots',()=>{
   assert.ok(contract.rules.includes('failure_screenshot_required'));
 });
 
-test('website assurance checks responsive failures instead of screenshot-only decoration',()=>{
-  for(const marker of ['horizontal overflow','broken images','page errors','failed core requests','CLS','main missing/not visible','h1 missing/not visible','media outside viewport','cards outside viewport','truncated primary controls','navigation covers main heading']) assert.ok(runner.includes(marker),marker);\n  assert.ok(contract.visual_quality_assertions.length>=8);\n  assert.ok(contract.rules.includes('visual_quality_is_a_release_requirement'));\n  assert.ok(contract.rules.includes('visual_failures_must_be_fixed_not_hidden'));
+test('website assurance checks visual quality, not screenshot-only decoration',()=>{
+  for(const marker of ['horizontal overflow','broken images','page errors','failed core requests','CLS','main missing/not visible','h1 missing/not visible','media outside viewport','cards outside viewport','truncated primary controls','navigation covers main heading']) assert.ok(runner.includes(marker),marker);
   assert.ok(runner.includes('page.screenshot'));
   assert.ok(runner.includes('sitemap.xml'));
-  assert.ok(runner.includes("start+=25"));
+  assert.ok(runner.includes('start+=25'));
+  assert.ok(contract.visual_quality_assertions.length>=8);
+  assert.ok(contract.rules.includes('visual_quality_is_a_release_requirement'));
+  assert.ok(contract.rules.includes('visual_failures_must_be_fixed_not_hidden'));
 });
 
 test('website assurance exercises interactions',()=>{
