@@ -2,13 +2,14 @@
   "fingerprint": "website|i18n|wet-dba|static-cache-recovery|20261003-v1",
   "observed_at": "2026-10-03T09:36:00+02:00",
   "type": "PREVENTION",
-  "problem": "The daily Wet DBA blog reached main without the deterministic English cache entries required by the static locale build, causing STATIC_I18N_CACHE_INCOMPLETE and blocking unrelated website delivery.",
-  "root_cause": "The blog publication path committed new translatable Dutch copy without committing the matching append-only static English cache patch before merge.",
-  "decision": "Treat translation-cache completeness as part of the same publication artifact. Recover the 66 missing entries and retain an executable historical replay for this incident dataset.",
+  "problem": "The daily Wet DBA blog reached main without the deterministic English cache entries required by both source validation and the final transformed static locale build, causing STATIC_I18N_CACHE_INCOMPLETE and blocking unrelated website delivery.",
+  "root_cause": "The blog publication path committed new translatable Dutch copy without the matching append-only English cache. In addition, later SEO/build transforms generated eight new Dutch strings that were not visible to the early cache validation.",
+  "decision": "Treat translation-cache completeness as a final-build invariant, not only a source-copy check. Recover the 66 source strings plus 8 build-derived strings and retain an executable historical replay for both layers.",
   "prevention": [
-    "A Dutch public route is not delivery-complete while required static English cache entries are missing.",
-    "The exact historical set of 66 missing Wet DBA strings is retained as an append-only cache patch.",
-    "Executable replay verifies count, representative mappings and non-empty translated values."
+    "A Dutch public route is not delivery-complete while either source or final-build static English cache entries are missing.",
+    "The 66 original source strings and 8 transform-generated strings are retained in append-only cache patches.",
+    "Exact Netlify build parity remains fail-closed and is the terminal cache-completeness authority.",
+    "Executable replay verifies both incident sets and non-empty translated values."
   ],
   "compiler": {
     "failure_class": "STATIC_I18N_CACHE_DRIFT",
@@ -19,6 +20,7 @@
   },
   "evidence": [
     "config/bg-static-i18n-en.d/2026-10-03-wet-dba-blog.json",
+    "config/bg-static-i18n-en.d/2026-10-03-wet-dba-build-derived.json",
     "tests/brain-wet-dba-static-i18n-cache.test.mjs"
   ],
   "evaluation": {
