@@ -329,6 +329,11 @@ function ensureStylesheet(href){
   if([...document.querySelectorAll('link[rel="stylesheet"]')].some(link=>link.getAttribute('href')===href))return;
   const style=document.createElement('link');style.rel='stylesheet';style.href=href;document.head.appendChild(style);
 }
+function ensureStylesheetLast(href){
+  const existing=[...document.querySelectorAll('link[rel="stylesheet"]')].find(link=>link.getAttribute('href')===href);
+  if(existing){document.head.appendChild(existing);return;}
+  const style=document.createElement('link');style.rel='stylesheet';style.href=href;document.head.appendChild(style);
+}
 
 export function enhancePortalShell(){
   ensureShell();
@@ -336,6 +341,8 @@ export function enhancePortalShell(){
   ensureStylesheet('./workspace.css');
   ensureStylesheet('./company-input.css');
   ensureStylesheet('./csrd-impact.css');
+  // Compact SaaS overrides must win after the dynamically loaded CSRD base styles.
+  ensureStylesheetLast('./csrd-mobile-saas.css');
   ensureStylesheet('./entrepreneur-intelligence.css');
   ensureStylesheet('./legacy-external-placements.css');
   ensureStylesheet('./powerhouse-observability.css');

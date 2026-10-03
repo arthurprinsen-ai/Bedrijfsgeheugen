@@ -1,0 +1,41 @@
+name: Portal Visual Density
+
+on:
+  pull_request:
+    paths:
+      - 'portal-v2/**'
+      - 'tools/portal-visual-density.mjs'
+      - 'tests/portal-visual-density-contract.test.mjs'
+      - '.github/workflows/portal-visual-density.yml'
+  workflow_dispatch:
+
+jobs:
+  visual-density:
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Contract test
+        run: node --test tests/portal-visual-density-contract.test.mjs
+      - name: Install screenshot browser
+        run: |
+          npm install --no-save playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Serve repository
+        run: |
+          python3 -m http.server 4173 >/tmp/portal-http.log 2>&1 &
+          echo $! > /tmp/portal-http.pid
+      - name: Capture and measure portal
+        env:
+          BASE_URL: http://127.0.0.1:4173
+        run: node tools/portal-visual-density.mjs
+      - name: Upload visual evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-visual-density
+          path: .artifacts/portal-visual-density
+          if-no-files-found: error
