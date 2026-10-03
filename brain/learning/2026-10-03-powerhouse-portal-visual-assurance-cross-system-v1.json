@@ -9,8 +9,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/portal-visual-density-contract.test.mjs",
-      "tests/portal-visual-density-delivery-classification.test.mjs"
+      "tests/brain-portal-visual-assurance-cross-system-v1.test.mjs"
     ]
   },
   "root_cause": "A screenshot gate can be technically correct but operationally incomplete if GitHub, Supabase assurance state and human-readable Notion architecture do not share one stable identity.",
