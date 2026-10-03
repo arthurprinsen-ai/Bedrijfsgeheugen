@@ -12,3 +12,4 @@ The public website quality gate is now a canonical website-lane capability:
 The workflow, contract and Brain regression are explicitly classified in the website delivery lane. This closes the activity-ledger/writeback requirement missing from the initial merge.
 
 Recovery metadata refresh: predecessor is already merged; this recovery remains the same obligation and does not use a Supersedes pointer.
+Duplicate candidate #3648 closed; #3646 remains the sole canonical recovery for this obligation.
