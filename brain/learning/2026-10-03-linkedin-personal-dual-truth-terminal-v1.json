@@ -20,6 +20,9 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-linkedin-personal-dual-truth-terminal-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-personal-dual-truth-terminal-v1.test.mjs"
     ]
   },
   "compiler": {
