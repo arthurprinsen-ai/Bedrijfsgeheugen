@@ -1,5 +1,4 @@
 import './portal-navigation-complete.js';
-import './portal-business-os-navigation.js';
 
 if (typeof document !== 'undefined') {
   const styles=[
