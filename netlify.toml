@@ -443,3 +443,16 @@
 # production redeploy heartbeat: product-led-home-live-20260930-v1
 
 # production redeploy heartbeat: canonical-cms-live-20261003-v1
+
+# Canonical product/platform aliases. Navigation label "Platform" resolves to /product.
+[[redirects]]
+  from = "/platform"
+  to = "/product"
+  status = 301
+  force = true
+
+[[redirects]]
+  from = "/en/platform"
+  to = "/en/product"
+  status = 301
+  force = true
