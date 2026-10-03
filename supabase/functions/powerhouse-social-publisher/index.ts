@@ -1043,13 +1043,17 @@ Deno.serve(async (req) => {
     let reviewPayload: any = { channel: channelIds[row.channel], post_text: art.body, hook_type: clean(art.generation_evidence?.hook_type) || 'Probleem' };
     if (row.channel === 'linkedin_personal') {
       const evidence = row.delivery_evidence?.identity_gate_evidence || art.generation_evidence?.identity_gate_evidence || {};
-      if (evidence.personal_truth_verified !== true) {
-        const blocked = { ...(row.delivery_evidence || {}), error: 'PERSONAL_TRUTH_UNVERIFIED', provider_truth_verified: false, personal_truth_verified: false };
+      const personalTruthMode = evidence.personal_truth_verified === true;
+      const observationalMode = evidence.observational_personal_theme_verified === true
+        && evidence.public_theme_source_verified === true
+        && evidence.first_person_claims_present === false;
+      if (!personalTruthMode && !observationalMode) {
+        const blocked = { ...(row.delivery_evidence || {}), error: 'PERSONAL_SOURCE_UNVERIFIED', provider_truth_verified: false, personal_truth_verified: false, observational_personal_theme_verified: false };
         await db.from('powerhouse_channel_decisions').update({ state: 'blocked', delivery_evidence: blocked, updated_at: new Date().toISOString() }).eq('run_date', runDate).eq('channel', row.channel);
-        await recordObligation(db, runDate, row.channel, 'BLOCKED', null, blocked, 'Provide an explicitly verified personal truth source; no replacement post is allowed.', 'PERSONAL_TRUTH_UNVERIFIED');
-        results.push({ channel: row.channel, status: 'blocked', reason: 'PERSONAL_TRUTH_UNVERIFIED' }); continue;
+        await recordObligation(db, runDate, row.channel, 'BLOCKED', null, blocked, 'Provide a verified personal truth source or a verified non-first-person daily-life observation source.', 'PERSONAL_SOURCE_UNVERIFIED');
+        results.push({ channel: row.channel, status: 'blocked', reason: 'PERSONAL_SOURCE_UNVERIFIED' }); continue;
       }
-      reviewPayload = { ...evidence, personal_truth_verified: true, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash) };
+      reviewPayload = { ...evidence, personal_truth_verified: personalTruthMode, observational_personal_theme_verified: observationalMode, channel_id: PERSONAL, channel_kind: 'linkedin_personal', identity_contract: CONTRACT, identity_gate_version: GATE, post_text: art.body, final_text_hash: clean(evidence.final_text_hash) };
     } else if (row.channel === 'instagram_company') {
       const proof = row.delivery_evidence?.instagram_media_proof || art.generation_evidence?.instagram_media_proof || {};
       reviewPayload = { ...proof, channel_id: INSTAGRAM, channel_kind: 'instagram_company', post_text: art.body, hook_type: clean(art.generation_evidence?.hook_type) || 'Probleem', mira_gate_passed: proof.mira_gate_passed === true, exact_final_media_proven: proof.exact_final_media_proven === true, final_media_sha256: clean(proof.final_media_sha256), final_asset_url: clean(proof.media_url), media_type: proof.media_type, media_source: proof.media_provider || proof.media_source };
