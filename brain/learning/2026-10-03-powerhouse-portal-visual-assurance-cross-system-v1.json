@@ -1,13 +1,16 @@
 {
   "fingerprint": "powerhouse-portal-visual-assurance-cross-system-v1",
   "compiler": {
-    "failure_class": "VISUAL_ASSURANCE_NOT_CROSS_SYSTEM_DURABLE"
+    "failure_class": "VISUAL_ASSURANCE_NOT_CROSS_SYSTEM_DURABLE",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   },
   "evaluation": {
     "historical_replay": [
-      "Portal density regression passed 9/9 production screenshots on 2026-10-03.",
-      "Prior implementation stored evidence primarily in GitHub artifacts; cross-system authority was then projected into the existing Supabase loop assurance and Notion verified state.",
-      "Daily production execution now prevents a one-time green screenshot from becoming permanent truth."
+      "tests/portal-visual-density-contract.test.mjs",
+      "tests/portal-visual-density-delivery-classification.test.mjs"
     ]
   },
   "root_cause": "A screenshot gate can be technically correct but operationally incomplete if GitHub, Supabase assurance state and human-readable Notion architecture do not share one stable identity.",
