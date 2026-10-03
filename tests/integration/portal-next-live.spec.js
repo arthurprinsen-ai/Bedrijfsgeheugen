@@ -16,11 +16,6 @@ function collectInteractionErrors(page) {
   return errors;
 }
 
-async function openDesktopAllPages(page) {
-  await page.locator('.portal-all-pages-trigger').click();
-  await expect(page.locator('#portalNavigationDrawer')).toHaveClass(/is-open/);
-}
-
 async function openMobileMenu(page) {
   await page.locator('#mobileMenuToggle').click();
   await expect(page.locator('#portalMobileDrawer')).toHaveClass(/is-open/);
@@ -58,10 +53,10 @@ test('complete portal desktop keeps approved overview, all portal pages and Busi
   await page.locator('[data-native-back]').click();
   await expect(page.locator('#overviewView')).toHaveClass(/is-active/);
 
-  await openDesktopAllPages(page);
-  await expect(page.locator('#portalNavigationDrawer [data-portal-page="due-diligence"]')).toBeVisible();
-  await expect(page.locator('#portalNavigationDrawer [data-portal-page="learning-writeback"]')).toBeVisible();
-  await page.locator('#portalNavigationDrawer [data-business-os-route="Trust & Governance"]').click();
+  await expect(page.locator('.sidebar [data-portal-page="due-diligence"]')).toBeVisible();
+  await expect(page.locator('.sidebar [data-portal-page="learning-writeback"]')).toBeVisible();
+  await expect(page.locator('#portalNavigationDrawer')).toHaveCount(0);
+  await page.locator('.sidebar [data-business-os-route="Trust & Governance"]').click();
   await expect(page.getByRole('heading', { name: 'AI die bestuurbaar blijft', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'AI Register', exact: true })).toBeVisible();
   await expect(page.getByRole('heading', { name: 'Agent Team', exact: true })).toBeVisible();
