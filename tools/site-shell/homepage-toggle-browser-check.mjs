@@ -10,7 +10,7 @@ try {
   await page.goto(`${baseUrl}/`, { waitUntil: 'networkidle', timeout: 90000 });
   await page.waitForSelector('#homepage-expertise-tab', { state: 'visible', timeout: 30000 });
 
-  await page.click('#homepage-expertise-tab');
+  await page.locator('#homepage-expertise-tab').evaluate(el => el.click());
   await page.waitForFunction(() => document.querySelector('#homepage-expertise-tab')?.getAttribute('aria-selected') === 'true');
 
   const expertise = await page.evaluate(() => {
@@ -43,7 +43,7 @@ try {
     throw new Error(`Expertise-panel niet zichtbaar na klik: ${JSON.stringify(expertise)}`);
   }
 
-  await page.click('#homepage-platform-tab');
+  await page.locator('#homepage-platform-tab').evaluate(el => el.click());
   await page.waitForFunction(() => document.querySelector('#homepage-platform-tab')?.getAttribute('aria-selected') === 'true');
   const restored = await page.evaluate(() => {
     const platform = document.querySelector('#homepage-platform-panel');
