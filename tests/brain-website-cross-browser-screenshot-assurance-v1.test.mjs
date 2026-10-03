@@ -48,3 +48,9 @@ test('website cross-browser assurance stays classified in website delivery lane'
     'tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs'
   ]) assert.ok(website.paths.some(prefix=>path===prefix||path.startsWith(prefix)),path);
 });
+
+test('platform aliases resolve to canonical product routes',()=>{
+  const netlify=fs.readFileSync('netlify.toml','utf8');
+  assert.match(netlify,/from = "\/platform"[\s\S]*?to = "\/product"[\s\S]*?status = 301/);
+  assert.match(netlify,/from = "\/en\/platform"[\s\S]*?to = "\/en\/product"[\s\S]*?status = 301/);
+});
