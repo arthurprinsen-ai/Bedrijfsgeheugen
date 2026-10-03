@@ -196,6 +196,13 @@ def main():
     focus = html.escape(focus_plain, quote=True)
     canonical = data["canonical_url"]
     template = TEMPLATE.read_text(encoding="utf-8")
+    # Daily blog pages are static-first: no third-party font or analytics requests are needed for render-critical delivery.
+    template = re.sub(r'<!-- Google tag \\(gtag\\.js\\) -->.*?</script>(?=<meta name="viewport")', '', template, count=1, flags=re.S)
+    template = re.sub(r'<link rel="preconnect" href="https://fonts\\.googleapis\\.com">\\n?', '', template)
+    template = re.sub(r'<link rel="preconnect" href="https://fonts\\.gstatic\\.com" crossorigin>\\n?', '', template)
+    template = re.sub(r'<link rel="preload" as="style" href="https://fonts\\.googleapis\\.com[^"]*">\\n?', '', template)
+    template = re.sub(r'<link href="https://fonts\\.googleapis\\.com[^"]*" rel="stylesheet">\\n?', '', template)
+    template = re.sub(r'<script data-goatcounter="[^"]+" async src="https://gc\\.zgo\\.at/count\\.js"></script>\\n?', '', template)
     template = replace_one(template, r"<title>.*?</title>", f"<title>{title}</title>", "title")
     template = replace_one(
         template,
