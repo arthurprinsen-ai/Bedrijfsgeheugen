@@ -21,5 +21,12 @@
     "historical_replay": [
       "tests/brain-linkedin-personal-dual-truth-terminal-v1.test.mjs"
     ]
+  },
+  "compiler": {
+    "failure_class": "LINKEDIN_PERSONAL_TRUTH_MODEL_DRIFT",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
   }
 }
