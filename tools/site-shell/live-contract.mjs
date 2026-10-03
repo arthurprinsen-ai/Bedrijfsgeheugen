@@ -6,11 +6,31 @@ const TRUST = ['Vaste prijs, geen uurtje-factuurtje', 'In twee weken draaiend', 
 const MOBILE = ['Oplossingen', 'Platform', 'Prijzen', 'Kennis', 'Over ons', 'Meer'];
 const CONTACT = ['mailto:arthur@bedrijfsgeheugen.nl', 'tel:+31627483345', 'ma–vr 08:00–18:00'];
 const PRICING = ['bgx-vraagbalk', 'bgx-rekenaar', 'bgx-rol'];
+const PLATFORM_PATH = '/product';
+const CANONICAL_ORIGIN = 'https://www.bedrijfsgeheugen.nl';
 
 function esc(s) { return String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'); }
 function hasClassElement(html, cls) {
   const re = new RegExp(`<[^>]+class=(?:"[^"]*\\b${esc(cls)}\\b[^"]*"|'[^']*\\b${esc(cls)}\\b[^']*')[^>]*>`, 'i');
   return re.test(String(html));
+}
+
+export function verifyPlatformNavigation(html, path = 'page') {
+  const anchors = String(html).match(/<a\b[^>]*>[\s\S]*?<\/a>/gi) || [];
+  const platformAnchors = anchors.filter(anchor => {
+    const label = anchor.replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim().toLowerCase();
+    return label === 'platform';
+  });
+
+  assert.ok(platformAnchors.length >= 2, `${path}: desktop/mobile Platform-anchors ontbreken live`);
+
+  for (const anchor of platformAnchors) {
+    const hrefMatch = anchor.match(/\bhref=(["'])(.*?)\1/i);
+    assert.ok(hrefMatch, `${path}: Platform-anchor mist href`);
+    const target = new URL(hrefMatch[2], CANONICAL_ORIGIN);
+    assert.equal(target.origin, CANONICAL_ORIGIN, `${path}: Platform verwijst buiten canonieke origin`);
+    assert.equal(target.pathname.replace(/\/$/, ''), PLATFORM_PATH, `${path}: Platform verwijst niet naar ${PLATFORM_PATH}`);
+  }
 }
 
 function beforeFooter(html) {
@@ -22,6 +42,7 @@ function verifyOne(html, path, expectedCommit, pricing = false) {
   assert.equal(readReleaseMarker(html), expectedCommit, `${path}: release marker wijkt af van productiecommit`);
   for (const text of TRUST) assert.ok(html.includes(text), `${path}: trustbalk mist “${text}”`);
   for (const text of MOBILE) assert.ok(html.includes(text), `${path}: mobiel menu mist “${text}”`);
+  verifyPlatformNavigation(html, path);
   for (const token of CONTACT) assert.ok(!beforeFooter(html).includes(token), `${path}: contactgegeven staat buiten footer: ${token}`);
 
   if (pricing) {
