@@ -57,7 +57,9 @@ test('social publisher retains identity gate, provider reconciliation, exact rea
   assert.match(publisher, /PROVIDER_RECORD_MISSING/);
   assert.match(publisher, /stale_delivery_ref:\s*true/);
   assert.match(publisher, /FAIL_CLOSED_NO_REPLACEMENT_WITHOUT_PERSONAL_TRUTH/);
-  assert.match(publisher, /personal_truth_verified\s*!==\s*true/);
+  assert.match(publisher, /const personalTruthMode = evidence\.personal_truth_verified === true/);
+  assert.match(publisher, /const observationalMode = evidence\.observational_personal_theme_verified === true/);
+  assert.match(publisher, /PERSONAL_SOURCE_UNVERIFIED/);
   assert.match(publisher, /EXACT_FINAL_MEDIA_PROOF_REQUIRED/);
   assert.match(publisher, /const readback = await getPost\(bufferToken, created\.post\.id\)/);
   assert.match(publisher, /PROVIDER_READBACK_MISMATCH/);
