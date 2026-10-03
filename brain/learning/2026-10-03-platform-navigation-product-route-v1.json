@@ -22,6 +22,10 @@
     "https://www.bedrijfsgeheugen.nl/product"
   ],
   "evaluation": {
+    "historical_replay": [
+      "Platform navigation on the live site previously resolved inconsistently: desktop to /product and mobile/overlay to /bedrijfsgeheugen.",
+      "The shared navigation repair now normalizes a Platform-labelled same-origin /bedrijfsgeheugen anchor to /product, including after later DOM/CMS mutations."
+    ],
     "production_readback": [
       "https://www.bedrijfsgeheugen.nl/",
       "https://www.bedrijfsgeheugen.nl/product"
