@@ -12,12 +12,18 @@
     "security_sensitive": false
   },
   "evaluation": {
-    "gates": [
+    "historical_replay": [
       "Blog Technical SEO Gate",
-      "Canonical brand shell contract",
-      "CodeQL",
-      "Required test"
-    ]
+      "tests/brain-material-writeback-closure-guard.test.mjs"
+    ],
+    "current_candidate": {
+      "obligation_id": "content-publication:2026-10-03:blog",
+      "technical_seo_gate": "SUCCESS",
+      "canonical_brand_shell": "SUCCESS",
+      "codeql": "SUCCESS",
+      "protected_merge": "PENDING_REQUIRED_TEST",
+      "production_readback": "PENDING_PROTECTED_MERGE"
+    }
   },
   "evidence": {
     "obligation_id": "content-publication:2026-10-03:blog",
