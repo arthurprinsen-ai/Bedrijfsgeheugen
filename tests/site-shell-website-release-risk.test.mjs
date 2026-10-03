@@ -2,6 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 import { classifyWebsiteRelease } from '../tools/site-shell/website-release-risk.mjs';
+import { visibilityRetryPolicy } from '../tools/site-shell/visibility-retry-policy.mjs';
 
 const riskConfig = JSON.parse(await readFile('site/website-release-risk.json', 'utf8'));
 const acceptedBaseline = JSON.parse(await readFile('site/accepted-baseline.json', 'utf8'));
@@ -146,7 +147,13 @@ test('governance and delivery policy changes stay control-plane without website 
 
 test('Netlify deploy-preview visibility crawl applies bounded provider backpressure recovery', () => {
   assert.match(visibilityCheck, /new Set\(\[403, 408, 425, 429, 500, 502, 503, 504\]\)/);
-  assert.match(visibilityCheck, /for \(let attempt = 1; attempt <= 3; attempt\+\+\)/);
+  assert.match(visibilityCheck, /visibilityRetryPolicy\(baseUrl\)/);
   assert.match(visibilityCheck, /if \(status && !transientStatuses\.has\(status\)\) break/);
-  assert.match(visibilityCheck, /await sleep\(750 \* attempt\)/);
+  assert.match(visibilityCheck, /retryPolicy\.retryDelayMs\(attempt\)/);
+
+  const preview = visibilityRetryPolicy('https://deploy-preview-3629--bedrijfsgeheugen.netlify.app');
+  const production = visibilityRetryPolicy('https://www.bedrijfsgeheugen.nl');
+  assert.equal(preview.maxAttempts, 5);
+  assert.equal(production.maxAttempts, 3);
+  assert.deepEqual([1, 2, 3, 4].map(n => preview.retryDelayMs(n)), [1000, 2000, 3000, 4000]);
 });
