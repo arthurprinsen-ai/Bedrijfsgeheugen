@@ -1,0 +1,24 @@
+{
+  "fingerprint": "approved-central-blog|2026-10-03|wet-dba|closure-v1",
+  "compiler": {
+    "failure_class": "APPROVED_BLOG_MATERIAL_CLOSURE_MISSING"
+  },
+  "evaluation": {
+    "historical_replay": [
+      {
+        "source": "github-actions",
+        "run_id": 37105316987,
+        "observed": "Required test blocked the approved 2026-10-03 blog candidate because material writeback closure artifacts were missing.",
+        "root_cause_confirmed": true,
+        "prevention_verified": "The same candidate now carries brain learning, activity ledger and human documentation for this exact obligation."
+      }
+    ]
+  },
+  "root_cause": "The approved-blog writer emitted the public artifact files while current delivery governance requires semantic closure evidence for material candidates.",
+  "prevention_rule": "Every material approved-blog candidate must carry the three canonical closure artifact classes before Required test handoff.",
+  "obligation_id": "approved-central-blog|2026-10-03|wet-dba-en-zelfstandigen-wat-verandert-er-en-wat-betekent-dat-voor-jou",
+  "evidence": [
+    "Required test run 37105316987",
+    "PR #3618"
+  ]
+}
