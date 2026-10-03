@@ -27,5 +27,11 @@
     "historical_replay": [
       "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
     ]
+  },
+  "closure": {
+    "recovered_in": "recovery/website-cross-browser-assurance-closure-v1",
+    "delivery_lane": "website",
+    "activity_ledger": "docs/development-ledger-events/2026-10-03-powerhouse-website-cross-browser-screenshot-assurance-v1.md",
+    "classification_guard": "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
   }
 }
