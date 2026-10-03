@@ -1,0 +1,31 @@
+{
+  "fingerprint": "blog-daily-seo-canonical-url-closure-2026-10-03-v1",
+  "date": "2026-10-03",
+  "status": "IMPLEMENTED_CANDIDATE",
+  "root_cause": "The daily blog renderer inherited topic-specific template metadata and render-critical third-party resources, while publication identity could drift when a later SEO title produced a different slug for an already materialized daily blog obligation.",
+  "prevention_rule": "Daily blog title, meta and body may be refined, but an already assigned content_id, slug and canonical_url are immutable. Material renderer changes require technical SEO, performance, Brain learning, human documentation and activity-ledger closure before protected merge.",
+  "compiler": {
+    "failure_class": "DELIVERY",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "gates": [
+      "Blog Technical SEO Gate",
+      "Canonical brand shell contract",
+      "CodeQL",
+      "Required test"
+    ]
+  },
+  "evidence": {
+    "obligation_id": "content-publication:2026-10-03:blog",
+    "canonical_slug": "wet-dba-en-zelfstandigen-wat-verandert-er-en-wat-betekent-dat-voor-jou",
+    "technical_seo_gate": "SUCCESS",
+    "canonical_brand_gate": "SUCCESS",
+    "codeql": "SUCCESS",
+    "production_readback": "PENDING_PROTECTED_MERGE",
+    "no_live_claim": true
+  }
+}
