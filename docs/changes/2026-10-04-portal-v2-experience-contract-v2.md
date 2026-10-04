@@ -16,3 +16,19 @@ Structurele borging:
 - Portal State/backend authority blijft ongewijzigd en fail-closed.
 
 De overlappende PR #3682 wordt door deze lijn vervangen; de bruikbare regels daarvan zijn in deze ene contractlijn geconsolideerd.
+
+
+## Terminale productieproof
+- Status: LIVE_BEWEZEN / LIVE_PROVEN_RUNTIME
+- Delivery PR: #3692
+- Protected main: 392ec658131c01824712d83c83e41d36a3633575
+- Netlify production deploy: 6ac25d5a4e893200088ae19b — ready
+- Productie: https://www.bedrijfsgeheugen.nl/portal-v2/
+- Required Test: 37207574172 — success
+- Portal V2 DOM readback: 37207574039 — success
+- Portal Visual Density: 37207574040 — success
+- CodeQL: 37207574054 — success
+- Skill Projection: 37208029113 — success
+- Terminal closure: 37208029345 — success
+
+Daarmee is de v2 assurance niet langer een candidate. De productie-readback en de machine-governance wijzen naar dezelfde terminale waarheid.
