@@ -30,8 +30,7 @@ for(const [pageName,route] of pages){
       const overflow=document.documentElement.scrollWidth-window.innerWidth;
       const visualOverflow=[...document.querySelectorAll('[data-portal-visual-overflow="true"]')].filter(visible).map(box);
       const critical=[...document.querySelectorAll('.portal-hamburger,.topactions button,.portalview button,.allpages button,[data-nav-target]')].filter(visible).map(box);
-      const undersized=critical.filter(item=>item.height<(contractTouchTarget||44));
-      const contractTouchTarget=44;
+      const undersized=critical.filter(item=>item.height<44);
       const rect=selector=>{const el=document.querySelector(selector);return el&&visible(el)?box(el):null};
       return {
         viewport:{width:innerWidth,height:innerHeight},
