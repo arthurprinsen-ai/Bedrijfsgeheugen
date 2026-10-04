@@ -1,0 +1,35 @@
+{
+  "fingerprint": "powerhouse|blog-generated-to-live-hourly-reconciliation|v1",
+  "observed_at": "2026-10-04T12:10:00+02:00",
+  "type": "PREVENTION",
+  "problem": "A canonical blog artifact could remain GENERATED for hours or indefinitely because the Powerhouse queue persisted the obligation but the GitHub publisher only had two narrow daily schedule windows and its Supabase edge-function sources were not repository-native.",
+  "root_cause": "The queue and publisher were durable but weakly coupled: GENERATED did not itself create an immediate GitHub side effect, a missed scheduled window had no near-term retry, and the production queue/export functions could not be reviewed or recovered from the repository.",
+  "decision": "Make GENERATED-to-LIVE_PROVEN a single resumable lineage: repository-native queue/export functions, durable obligation before downstream mutations, hourly GitHub reconciliation, one active same-date writer, protected auto-merge, Netlify deployment and exact public readback.",
+  "prevention": [
+    "Run the canonical Supabase-first GitHub publisher hourly at minute 11.",
+    "Trigger the publisher after changes to its own executor sources so recovery changes self-activate.",
+    "Never create a second writer while the same date already has an open automation/powerhouse-blog candidate.",
+    "Treat missing approved artifacts as an idempotent no-op rather than a failed scheduled run.",
+    "Keep queue and export Edge Function source in GitHub and deploy the reviewed source to Supabase.",
+    "Preserve content-publication:<date>:blog as the stable obligation/idempotency lineage until LIVE_PROVEN."
+  ],
+  "compiler": {
+    "failure_class": "BLOG_GENERATED_TO_LIVE_DELIVERY_GAP",
+    "scope": "CONTENT_DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 4,
+    "security_sensitive": false
+  },
+  "evidence": [
+    ".github/workflows/powerhouse-daily-blog.yml",
+    "supabase/functions/powerhouse-blog-queue/index.ts",
+    "supabase/functions/powerhouse-blog-export/index.ts",
+    "tools/site-shell/publish_powerhouse_blog_artifact.py",
+    "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"
+    ]
+  }
+}

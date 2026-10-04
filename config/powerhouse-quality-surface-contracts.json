@@ -72,6 +72,20 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-blog-export",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-blog-export/index.ts",
+      "evidence_contract": "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:powerhouse-blog-queue",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-blog-queue/index.ts",
+      "evidence_contract": "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-composio-instagram-setup",
       "type": "function",
       "authority": "supabase/functions/powerhouse-composio-instagram-setup/index.ts",
