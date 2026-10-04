@@ -136,3 +136,11 @@ test('successful final document load suppresses only settled transient document 
   assert.match(runner,/failedCore:settledFailedCore/);
   assert.match(runner,/finalUrl=page\.url\(\)/);
 });
+
+test('transient script and stylesheet failures clear only after same asset succeeds',()=>{
+  assert.match(runner,/successfulCore=new Set\(\)/);
+  assert.match(runner,/page\.on\('response'/);
+  assert.match(runner,/response\.status\(\)>=400/);
+  assert.match(runner,/successful\.has\(\`\$\{type\}:\$\{pathname\}\`\)/);
+  assert.match(runner,/type==='document'/);
+});
