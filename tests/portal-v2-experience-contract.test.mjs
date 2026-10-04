@@ -11,7 +11,7 @@ test('Portal V2 loads one explicit experience contract after the base visual lay
   assert.match(html,/href="\.\/experience\.css\?v=20261004-1"/);
   assert.match(html,/src="\.\/experience\.js\?v=20261004-1"/);
   assert.match(css,/--pv-content-max:1600px/);
-  assert.match(runtime,/__BG_PORTAL_EXPERIENCE__/);
+  assert.match(runtime,/__BG_PORTAL_EXPERIENCE__/);\n  assert.match(runtime,/portal-experience-v2/);\n  assert.match(runtime,/ResizeObserver/);\n  assert.match(runtime,/bg:portal-experience-signal/);
 });
 
 test('responsive contract prevents giant media and horizontal component overflow',()=>{
@@ -26,7 +26,7 @@ test('interaction contract keeps touch targets, focus visibility and reduced-mot
   assert.match(css,/--pv-touch:44px/);
   assert.match(css,/:focus-visible/);
   assert.match(css,/prefers-reduced-motion:reduce/);
-  assert.match(runtime,/data-interactive/);
+  assert.match(runtime,/data-interactive/);\n  assert.match(runtime,/visual_overflow/);\n  assert.match(runtime,/runtime_error/);
 });
 
 test('portal state remains fail-closed and backend writes go through canonical APIs',()=>{
@@ -35,3 +35,6 @@ test('portal state remains fail-closed and backend writes go through canonical A
   assert.match(state,/savePortalBusinessInput\(buildPortalBusinessInput/);
   assert.match(state,/body\?\.stored===false/);
 });
+
+
+test('visual assurance covers six routes across four first-class viewports',()=>{\n  const contract=JSON.parse(fs.readFileSync('config/powerhouse-portal-visual-assurance-v1.json','utf8'));\n  assert.equal(contract.routes.length,6);\n  assert.equal(contract.viewports.length,4);\n  assert.equal(contract.routes.length*contract.viewports.length,24);\n  assert.equal(contract.viewports.find(v=>v.id==='narrow-mobile').width,320);\n  assert.equal(contract.thresholds.critical_touch_target_px,44);\n  assert.equal(contract.thresholds.visual_overflow_px,2);\n});\n
