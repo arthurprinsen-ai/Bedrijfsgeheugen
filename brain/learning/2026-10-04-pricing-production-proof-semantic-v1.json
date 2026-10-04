@@ -1,0 +1,45 @@
+{
+  "learningId": "2026-10-04-pricing-production-proof-semantic-v1",
+  "fingerprint": "pricing-proof-brittle-html-selector-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-04T18:46:00+02:00",
+  "problem": "Production pricing proof reported failure while the live page visibly contained the complete canonical SaaS and consulting offer.",
+  "rootCause": "The workflow asserted exact raw HTML fragments such as >Starter< and >Enterprise<, coupling release truth to incidental heading markup instead of semantic content.",
+  "root_cause": "The workflow asserted exact raw HTML fragments such as >Starter< and >Enterprise<, coupling release truth to incidental heading markup instead of semantic content.",
+  "preventionRule": "Production content gates must validate semantic required content and stable interaction attributes, not incidental tag boundaries.",
+  "prevention": [
+    "Normalize rendered HTML text before validating offer labels.",
+    "Keep stable data-tab attributes as explicit interaction contracts.",
+    "Fail closed when any required offer or tab is missing.",
+    "Do not weaken exact production SHA or browser readback requirements."
+  ],
+  "evidence": {
+    "implementation": [
+      ".github/workflows/production-source-snapshot.yml",
+      "tools/delivery/verify-pricing-production-content.mjs"
+    ],
+    "regression": [
+      "tests/brain-pricing-production-proof-semantic.test.mjs"
+    ],
+    "liveObservation": "https://www.bedrijfsgeheugen.nl/prijzen"
+  },
+  "invariants": {
+    "semanticProof": true,
+    "failClosed": true,
+    "exactShaStillRequired": true,
+    "browserProofStillRequired": true
+  },
+  "compiler": {
+    "failure_class": "BRITTLE_PRODUCTION_HTML_PROOF",
+    "scope": "DELIVERY",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-pricing-production-proof-semantic.test.mjs"
+    ],
+    "expected": "Markup attributes may change without false failure; missing canonical offers must still fail."
+  }
+}
