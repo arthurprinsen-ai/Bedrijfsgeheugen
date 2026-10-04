@@ -1,0 +1,63 @@
+{
+  "learningId": "2026-10-04-portal-v2-experience-contract-v2",
+  "fingerprint": "portal-v2-responsive-end-to-end-v2",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "observedAt": "2026-10-04T15:37:00+02:00",
+  "problem": "Portal V2 v1 established a single responsive experience authority, but release assurance still covered only a smaller visual matrix and did not make dynamic visual overflow/runtime experience failures first-class release signals.",
+  "rootCause": "The baseline experience contract and visual assurance existed as separate strengths. Without consolidating 320px coverage, dynamic visual remeasurement, touch-target enforcement and runtime signals into the same authority, future page modules could regress after mount or at narrow widths without a deterministic fail-closed release signal.",
+  "root_cause": "The baseline experience contract and visual assurance existed as separate strengths. Without consolidating 320px coverage, dynamic visual remeasurement, touch-target enforcement and runtime signals into the same authority, future page modules could regress after mount or at narrow widths without a deterministic fail-closed release signal.",
+  "preventionRule": "Keep portal-v2/experience.css and portal-v2/experience.js as the sole UX authority; dynamically normalize and remeasure visuals; fail assurance on >2px page or visual overflow, missing experience runtime or critical controls below 44px; test six critical routes at 1440, 1024, 390 and 320px; preserve canonical Portal State fail-closed backend authority.",
+  "prevention": [
+    "One canonical portal experience CSS/JS authority; parallel product-experience stacks are forbidden.",
+    "Six critical routes times four viewports must yield 24 screenshot/metric cases.",
+    "320px narrow-mobile and 390px mobile are first-class release surfaces.",
+    "Dynamic visuals are normalized after mount and remeasured with ResizeObserver.",
+    "Visual overflow, runtime errors and route interactions emit Powerhouse experience signals.",
+    "Critical navigation and action controls remain at least 44px.",
+    "Portal State authentication and stored=false behavior remain fail-closed and unchanged."
+  ],
+  "evidence": {
+    "baselineLearning": "brain/learning/2026-10-04-portal-v2-experience-contract-v1.json",
+    "implementation": [
+      "portal-v2/experience.css",
+      "portal-v2/experience.js",
+      "config/powerhouse-portal-experience-v2.json",
+      "config/powerhouse-portal-visual-assurance-v1.json",
+      "tools/portal-visual-density.mjs"
+    ],
+    "regression": [
+      "tests/portal-v2-experience-contract.test.mjs",
+      "tests/portal-visual-density-contract.test.mjs",
+      "tests/portal-v2-navigation-contract.test.mjs"
+    ],
+    "documentation": "docs/changes/2026-10-04-portal-v2-experience-contract-v2.md"
+  },
+  "invariants": {
+    "singleNavigationAuthority": true,
+    "singleExperienceAuthority": true,
+    "minTouchTargetPx": 44,
+    "maxPageOverflowPx": 2,
+    "maxVisualOverflowPx": 2,
+    "screenshotMatrix": 24,
+    "narrowMobile320FirstClass": true,
+    "runtimeExperienceSignals": true,
+    "dynamicVisualRemeasurement": true,
+    "portalStateAuthorityUnchanged": true,
+    "backendWritesFailClosed": true,
+    "productionReadbackRequired": true
+  },
+  "compiler": {
+    "failure_class": "PORTAL_UX_SCALE_DRIFT",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-experience-contract-v1.test.mjs",
+      "tests/portal-v2-experience-contract.test.mjs",
+      "tests/portal-visual-density-contract.test.mjs"
+    ]
+  }
+}
