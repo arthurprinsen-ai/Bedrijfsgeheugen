@@ -16,3 +16,12 @@ test('Portal V2 Future Lens confidence remains evidence-sensitive and below cert
   assert.ok(confidence({value:70,delta:2}) <= 95);
   assert.ok(confidence({value:null,delta:null}) < confidence({value:70,delta:2}));
 });
+
+test('declining trends preserve semantic scenario ordering',()=>{
+  const metric={value:62,delta:-3,label:'Kennisborging'};
+  const stress=project(metric,6,'stress').projected;
+  const base=project(metric,6,'base').projected;
+  const opportunity=project(metric,6,'opportunity').projected;
+  assert.ok(stress < base);
+  assert.ok(base < opportunity);
+});
