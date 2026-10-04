@@ -191,8 +191,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
-      id:'portal-v2-experience-contract-v1',
-      label:'Portal V2 Responsive Experience & Reliability Contract',
+      id:'portal-v2-experience-contract-v2',
+      label:'Portal V2 Responsive Experience & Reliability Contract v2',
       authority:'github+netlify+portal-state-readback',
       owner:'Powerhouse Product / Portal V2',
       status:'CANDIDATE_PROTECTED_DELIVERY',
