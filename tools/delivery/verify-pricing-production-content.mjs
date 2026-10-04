@@ -2,6 +2,7 @@ import fs from 'node:fs';
 
 export const REQUIRED_TEXT=Object.freeze([
   'Powerhouse SaaS',
+  'Consulting & workshops',
   'Starter',
   'Pro',
   'Groei',
@@ -12,8 +13,6 @@ export const REQUIRED_TEXT=Object.freeze([
   'Transformation / Fractional Lead',
   'Combineer zonder dubbel te betalen'
 ]);
-
-export const REQUIRED_TABS=Object.freeze(['saas','consulting']);
 
 export function normalizePricingHtml(html=''){
   return String(html)
@@ -32,8 +31,7 @@ export function verifyPricingProductionContent(html=''){
   const source=String(html);
   const text=normalizePricingHtml(source);
   const missingText=REQUIRED_TEXT.filter(item=>!text.includes(item));
-  const missingTabs=REQUIRED_TABS.filter(tab=>!new RegExp(`data-tab\\s*=\\s*["']${tab}["']`,'i').test(source));
-  return Object.freeze({ok:missingText.length===0&&missingTabs.length===0,missingText,missingTabs});
+  return Object.freeze({ok:missingText.length===0,missingText});
 }
 
 if(import.meta.url===`file://${process.argv[1]}`){
