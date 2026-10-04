@@ -5,6 +5,12 @@ on:
     paths:
       - 'tools/content-growth/**'
       - 'config/content-growth-policy.json'
+      - 'config/linkedin-company-growth-v1.json'
+      - 'supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql'
+      - '.agents/skills/powerhouse-linkedin-company-growth/SKILL.md'
+      - 'brain/learning/2026-10-04-linkedin-company-page-growth-v1.json'
+      - 'docs/development-ledger-events/2026-10-04-linkedin-company-growth-v1.md'
+      - 'docs/architecture/linkedin-company-growth-v1.md'
       - 'data/content-publication-ledger.json'
       - 'data/content-growth-learning.json'
       - 'data/content-growth-events.json'
@@ -18,6 +24,12 @@ on:
     paths:
       - 'tools/content-growth/**'
       - 'config/content-growth-policy.json'
+      - 'config/linkedin-company-growth-v1.json'
+      - 'supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql'
+      - '.agents/skills/powerhouse-linkedin-company-growth/SKILL.md'
+      - 'brain/learning/2026-10-04-linkedin-company-page-growth-v1.json'
+      - 'docs/development-ledger-events/2026-10-04-linkedin-company-growth-v1.md'
+      - 'docs/architecture/linkedin-company-growth-v1.md'
       - 'data/content-publication-ledger.json'
       - 'data/content-growth-learning.json'
       - 'data/content-growth-events.json'
@@ -46,5 +58,7 @@ jobs:
         run: node --test tests/content-growth-*.test.mjs
       - name: Policy validation
         run: node tools/content-growth/validate-policy.mjs
+      - name: LinkedIn company growth regression
+        run: node --test tests/linkedin-company-growth-engine-v1.test.mjs
       - name: Existing SEO growth/order regression
         run: node --test tests/seo-growth-*.test.mjs tests/seo-order-*.test.mjs
