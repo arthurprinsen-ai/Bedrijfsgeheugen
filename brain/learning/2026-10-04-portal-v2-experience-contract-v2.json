@@ -1,7 +1,7 @@
 {
   "learningId": "2026-10-04-portal-v2-experience-contract-v2",
   "fingerprint": "portal-v2-responsive-end-to-end-v2",
-  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "status": "LIVE_PROVEN_RUNTIME",
   "observedAt": "2026-10-04T15:37:00+02:00",
   "problem": "Portal V2 v1 established a single responsive experience authority, but release assurance still covered only a smaller visual matrix and did not make dynamic visual overflow/runtime experience failures first-class release signals.",
   "rootCause": "The baseline experience contract and visual assurance existed as separate strengths. Without consolidating 320px coverage, dynamic visual remeasurement, touch-target enforcement and runtime signals into the same authority, future page modules could regress after mount or at narrow widths without a deterministic fail-closed release signal.",
@@ -58,5 +58,21 @@
     "historical_replay": [
       "tests/brain-portal-v2-experience-contract-v2.test.mjs"
     ]
+  },
+  "terminalProof": {
+    "deliveryPr": 3692,
+    "candidateHead": "f74198342ad38217698c914933e1e81502f518f0",
+    "protectedMain": "392ec658131c01824712d83c83e41d36a3633575",
+    "netlifyProductionDeploy": "6ac25d5a4e893200088ae19b",
+    "productionUrl": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+    "deployedCommit": "392ec658131c01824712d83c83e41d36a3633575",
+    "productionState": "ready",
+    "requiredTestRun": 37207574172,
+    "productionDomReadbackRun": 37207574039,
+    "visualDensityRun": 37207574040,
+    "codeqlRun": 37207574054,
+    "skillProjectionRun": 37208029113,
+    "terminalClosureRun": 37208029345,
+    "terminalState": "LIVE_BEWEZEN"
   }
 }
