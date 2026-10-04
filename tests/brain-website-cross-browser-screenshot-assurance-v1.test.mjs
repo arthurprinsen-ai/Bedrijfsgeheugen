@@ -9,7 +9,7 @@ const runner=fs.readFileSync('tools/site-shell/website-cross-browser-assurance.m
 test('website assurance covers all public routes and critical screenshots',()=>{
   assert.equal(contract.version,'POWERHOUSE-WEBSITE-CROSS-BROWSER-ASSURANCE-v1');
   assert.deepEqual(contract.all_route_sweep.browsers,['chromium']);
-  assert.deepEqual(contract.all_route_sweep.viewports,['small-mobile','mobile','tablet','desktop','wide-desktop']);
+  assert.deepEqual(contract.all_route_sweep.viewports,['small-mobile','desktop']);
   assert.ok(contract.screenshot_matrix.routes.length>=12);
   assert.deepEqual(contract.screenshot_matrix.browsers,['chromium','firefox','webkit']);
   assert.deepEqual(contract.screenshot_matrix.viewports,['small-mobile','mobile','tablet','desktop','wide-desktop']);
@@ -24,7 +24,7 @@ test('website assurance checks visual quality, not screenshot-only decoration',(
   assert.ok(runner.includes('start+=25'));
   assert.ok(contract.visual_quality_assertions.length>=8);
   assert.ok(contract.rules.includes('visual_quality_is_a_release_requirement'));
-  assert.ok(contract.rules.includes('visual_failures_must_be_fixed_not_hidden'));
+  assert.ok(contract.rules.includes('visual_failures_must_be_fixed_not_hidden'));\n  assert.ok(contract.rules.includes('daily_gate_uses_bounded_full_sitemap_plus_deep_critical_matrix'));
 });
 
 test('website assurance exercises interactions',()=>{
