@@ -43,3 +43,6 @@ html,body{font-size:14px}
   .period-control{height:40px!important;min-height:40px!important}
   .topactions .searchrow>.smallbtn{width:40px!important;min-width:40px!important}
 }
+
+/* Mobile menu is the only compact navigation entry: keep a full accessible touch target. */
+@media(max-width:900px){#portalFullMenuToggle{min-height:44px!important;height:44px!important;box-sizing:border-box!important}}
