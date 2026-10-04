@@ -207,7 +207,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         schedulerOwner:'public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)',
         skill:'.agents/skills/powerhouse-linkedin-company-growth/SKILL.md',
         learning:'brain/learning/2026-10-04-linkedin-company-page-growth-v1.json',
-        regression:'tests/linkedin-company-growth-engine-v1.test.mjs'
+        regression:'tests/brain-linkedin-company-growth-engine-v1.test.mjs'
       }),
       productionEvidence:Object.freeze({
         baselineObservedAt:'2026-10-04T13:11:00+02:00',
