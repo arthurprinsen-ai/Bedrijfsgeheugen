@@ -191,6 +191,46 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'linkedin-company-growth-v1',
+      label:'LinkedIn Company Page Growth Loop',
+      authority:'supabase+provider-readback',
+      owner:'Powerhouse Growth & Revenue OS',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['company-page analytics','linkedin_company posts','observed social metrics','owned-site and revenue outcomes']),
+      outputs:Object.freeze(['distribution-gap diagnosis','bounded company-content recommendations','page/follower progress','revenue-learning evidence']),
+      runtime:Object.freeze({
+        policy:'config/linkedin-company-growth-v1.json',
+        refresh:'public.powerhouse_refresh_linkedin_company_growth_v1(date)',
+        pageMetrics:'public.powerhouse_linkedin_company_page_metrics_v1',
+        dailyState:'public.powerhouse_linkedin_company_growth_daily_v1',
+        recommendations:'public.powerhouse_content_recommendations',
+        schedulerOwner:'public.powerhouse_trigger_based_mkb_acquisition_cycle_v1(date)',
+        skill:'.agents/skills/powerhouse-linkedin-company-growth/SKILL.md',
+        learning:'brain/learning/2026-10-04-linkedin-company-page-growth-v1.json',
+        regression:'tests/brain-linkedin-company-growth-engine-v1.test.mjs'
+      }),
+      productionEvidence:Object.freeze({
+        baselineObservedAt:'2026-10-04T13:11:00+02:00',
+        baselinePageViews:12,
+        baselineDesktop:10,
+        baselineMobile:2,
+        targetPageViews30d:300,
+        targetRelevantNewFollowers30d:100
+      }),
+      invariants:Object.freeze({
+        canonicalOrganizationUrn:'urn:li:organization:18234216',
+        oneCommercialScheduler:true,
+        maxCompanyPostsPerDay:1,
+        maxGrowthRecommendationsPerDay:3,
+        personalLinkedinCommercialBridgeForbidden:true,
+        duplicateGateRequired:true,
+        sourceBackedRequired:true,
+        providerReadbackRequired:true,
+        vanityMetricsNotTerminal:true,
+        revenueNorthStar:true
+      })
+    }),
+    Object.freeze({
       id:'source-backed-outbound-loop-v1',
       label:'Powerhouse Source-backed Outbound Loop',
       authority:'supabase+provider-readback',
