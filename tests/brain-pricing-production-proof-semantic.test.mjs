@@ -27,3 +27,9 @@ test('pricing production proof still fails closed when a canonical offer is abse
   assert.equal(result.ok,false);
   assert.ok(result.missingText.includes('Build Sprint'));
 });
+
+test('pricing production proof fails closed when a stable interaction tab is absent',()=>{
+  const result=verifyPricingProductionContent(page().replace("data-tab='consulting'","data-mode='consulting'"));
+  assert.equal(result.ok,false);
+  assert.ok(result.missingTabs.includes('consulting'));
+});
