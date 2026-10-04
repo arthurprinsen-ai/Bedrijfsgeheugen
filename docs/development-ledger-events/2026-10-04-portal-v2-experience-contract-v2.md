@@ -11,3 +11,7 @@ Backend-authority en Portal State blijven ongewijzigd. Productiestatus vereist p
 
 ## CI recovery
 De eerste consolidatie-runs legden twee contractfouten bloot: ongeldige PR-machine metadata en letterlijke newline-escapes in twee testbestanden. Beide zijn op dezelfde obligation hersteld zonder UX-, overflow-, touch- of backenddrempels te verlagen. Nieuwe gates moeten uitsluitend de actuele branch-head beoordelen.
+
+
+## Cache-boundary recovery
+De v2-assets zijn expliciet naar `?v=20261004-2` gezet zodat preview en productie de gewijzigde experience CSS/JS niet uit een v1-cache kunnen hergebruiken. De eerste Required-run na deze wijziging startte vóór de bijgewerkte PR Change-Scope zichtbaar was en classificeerde `portal-v2/index.html` daarom terecht als onverwacht; de canonieke PR-scope bevat dit bestand nu expliciet.
