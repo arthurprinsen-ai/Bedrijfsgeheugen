@@ -2,7 +2,7 @@
 'use strict';
 var items=[],selected=null,activeArea='',picking=false;
 var $=function(s,r){return (r||document).querySelector(s)};
-var $=function(s,r){return [...(r||document).querySelectorAll(s)]};
+var all=function(s,r){return Array.from((r||document).querySelectorAll(s))};
 function on(s,event,handler){var el=$(s);if(el)el.addEventListener(event,handler);return el}
 function toast(msg){var old=$('.toast');if(old)old.remove();var d=document.createElement('div');d.className='toast';d.textContent=msg;document.body.appendChild(d);setTimeout(function(){d.remove()},2600)}
 function user(){try{return window.netlifyIdentity?.currentUser?.()||null}catch{return null}}
@@ -48,7 +48,7 @@ function renderList(){
   $('#itemList').innerHTML=rows.length?rows.map(function(x){
     return '<div class="row '+(selected?.id===x.id?'active':'')+'" data-id="'+x.id+'"><div><strong>'+escapeHtml(x.element_key)+'</strong><div class="meta">'+escapeHtml(x.surface)+' · '+escapeHtml(x.locale)+' · '+escapeHtml(x.route)+' · '+escapeHtml(x.area)+'<br>'+escapeHtml(x.selector||'gestructureerd element')+'</div></div><span class="status '+statusClass(x.status)+'">'+escapeHtml(x.status)+'</span></div>';
   }).join(''):'<div class="row"><div><strong>Geen elementen gevonden</strong><div class="meta">Pas filters aan of voeg een element toe.</div></div></div>';
-  $$('.row[data-id]').forEach(function(r){r.addEventListener('click',function(){selectItem(items.find(function(x){return x.id===r.dataset.id}))})});
+  all('.row[data-id]').forEach(function(r){r.addEventListener('click',function(){selectItem(items.find(function(x){return x.id===r.dataset.id}))})});
 }
 function escapeHtml(v){return String(v??'').replace(/[&<>"']/g,function(c){return({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'})[c]})}
 function selectItem(x){
@@ -129,7 +129,7 @@ function bind(){
   on('#refreshBtn','click',function(){apiList().catch(function(e){toast(e.message)})});on('#editor','submit',save);on('#publishBtn','click',function(){changeStatus('publish')});on('#archiveBtn','click',function(){changeStatus('archive')});
   on('#clearBtn','click',function(){selectItem(null)});on('#newItemBtn','click',function(){selectItem(null);window.scrollTo({top:0,behavior:'smooth'})});
   ['surfaceFilter','localeFilter','statusFilter','searchFilter'].forEach(function(id){on('#'+id,id==='searchFilter'?'input':'change',renderList)});
-  $('[data-area]').forEach(function(b){b.addEventListener('click',function(){$('[data-area]').forEach(function(x){x.classList.remove('active')});b.classList.add('active');activeArea=b.dataset.area||'';renderList()})});
+  all('[data-area]').forEach(function(b){b.addEventListener('click',function(){all('[data-area]').forEach(function(x){x.classList.remove('active')});b.classList.add('active');activeArea=b.dataset.area||'';renderList()})});
   on('#loadPreviewBtn','click',function(){var input=$('#previewUrl'),frame=$('#previewFrame');var raw=input?input.value.trim()||'/':'/';try{var u=new URL(raw,location.origin);if(u.origin!==location.origin||!['http:','https:'].includes(u.protocol))throw new Error('Alleen pagina’s op bedrijfsgeheugen.nl zijn toegestaan.');if(frame?.contentWindow)frame.contentWindow.location.replace(u.pathname+u.search+u.hash)}catch(e){toast(e.message||'Ongeldige previewroute')}});on('#pickBtn','click',startPick);
 }
 async function enter(u){
