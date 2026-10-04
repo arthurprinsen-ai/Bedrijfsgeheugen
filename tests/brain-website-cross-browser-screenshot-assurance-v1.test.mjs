@@ -74,8 +74,8 @@ test('critical screenshot matrix uses canonical product route and real controls'
   assert.ok(contract.screenshot_matrix.routes.includes('/product'));
   assert.ok(!contract.screenshot_matrix.routes.includes('/platform'));
   const byId=Object.fromEntries(contract.interactions.map(item=>[item.id,item]));
-  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#bgkopKnop']);
-  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['.bgkop-trig']);
+  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#mobileToggle']);
+  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['header.v17-header .navitem[data-mega] > .navbtn']);
   assert.deepEqual(byId['language-switch'].selectorCandidates,['button[data-bg-language-current]']);
   assert.ok(runner.includes('#bgkopMob'));
   assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
