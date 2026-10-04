@@ -135,10 +135,51 @@ export function projectGlobalComponents(targetHtml, sourceHtml) {
   return target;
 }
 
+function balancedDivAt(html, start) {
+  const opening = html.slice(start).match(/^<div\b[^>]*>/i);
+  if (!opening) return null;
+  const token = /<div\b[^>]*>|<\/div\s*>/gi;
+  token.lastIndex = start;
+  let depth = 0;
+  let match;
+  while ((match = token.exec(html))) {
+    if (/^<div\b/i.test(match[0])) depth += 1;
+    else depth -= 1;
+    if (depth === 0) {
+      const openEnd = start + opening[0].length;
+      return { inner: html.slice(openEnd, match.index), end: token.lastIndex };
+    }
+  }
+  return null;
+}
+
+export function unwrapCanonicalPageContent(input) {
+  let html = String(input);
+  // Re-running the canonical shell must be idempotent. Historical build passes
+  // could nest #view-inhoud/.page-inhoud multiple times; always recover the
+  // deepest canonical content before projecting the shell again.
+  for (let pass = 0; pass < 8; pass += 1) {
+    const matches = [...html.matchAll(/<div\b[^>]*\bid=(["'])view-inhoud\1[^>]*>/gi)];
+    if (!matches.length) break;
+    const deepest = matches.at(-1);
+    const block = balancedDivAt(html, deepest.index);
+    if (!block) break;
+    html = block.inner.trim();
+
+    const pageOpening = html.match(/^\s*<div\b[^>]*\bclass=(["'])[^"']*\bpage-inhoud\b[^"']*\1[^>]*>/i);
+    if (pageOpening) {
+      const start = html.indexOf(pageOpening[0]);
+      const pageBlock = balancedDivAt(html, start);
+      if (pageBlock && html.slice(pageBlock.end).trim() === '') html = pageBlock.inner.trim();
+    }
+  }
+  return html;
+}
+
 export function extractPageMain(input, pad = '') {
   const html = String(input);
   const main = html.match(/<main[^>]*>([\s\S]*?)<\/main>/i);
-  if (main) return main[1];
+  if (main) return unwrapCanonicalPageContent(main[1]);
   if (pad === 'prijzen.html') {
     const body = html.match(/<body\b[^>]*>/i);
     if (!body) return null;
