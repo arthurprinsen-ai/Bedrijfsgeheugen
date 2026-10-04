@@ -1,7 +1,7 @@
 {
   "learningId": "2026-10-04-portal-v2-experience-contract-v1",
   "fingerprint": "portal-v2|experience|responsive|interaction|backend-contract|v1",
-  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "status": "LIVE_PROVEN_RUNTIME",
   "observedAt": "2026-10-04T15:07:00+02:00",
   "problem": "Portal V2 had strong functional coverage but visual scale, media sizing, chart containment and interaction consistency were still governed by multiple page-specific styles, allowing oversized components and inconsistent responsive behavior.",
   "rootCause": "Responsive behavior existed mainly as local CSS/test fixes rather than one cross-cutting experience contract that every present and dynamically rendered Portal V2 surface inherits.",
@@ -42,5 +42,20 @@
       "tests/brain-portal-v2-experience-contract-v1.test.mjs"
     ]
   },
-  "root_cause": "Responsive behavior existed mainly as local CSS/test fixes rather than one cross-cutting experience contract that every present and dynamically rendered Portal V2 surface inherits."
+  "root_cause": "Responsive behavior existed mainly as local CSS/test fixes rather than one cross-cutting experience contract that every present and dynamically rendered Portal V2 surface inherits.",
+  "terminalProof": {
+    "deliveryPr": 3683,
+    "candidateHead": "a21b9b961bedf9840a69fad5ff9059c8f6643196",
+    "protectedMain": "d5abf46b5f86a65720fd2cf2d454116f696e8c45",
+    "netlifyProductionDeploy": "6ac253953b573d0008e8e31a",
+    "productionUrl": "https://www.bedrijfsgeheugen.nl/portal-v2/",
+    "deployedCommit": "d5abf46b5f86a65720fd2cf2d454116f696e8c45",
+    "productionState": "ready",
+    "requiredTestRun": 37205339277,
+    "productionDomReadbackRun": 37205339123,
+    "visualDensityRun": 37205339124,
+    "codeqlRun": 37205339174,
+    "terminalClosureRun": 37205519609,
+    "terminalState": "LIVE_BEWEZEN"
+  }
 }
