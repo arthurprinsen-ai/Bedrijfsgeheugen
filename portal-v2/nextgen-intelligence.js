@@ -85,9 +85,42 @@ function openInspector(node){
   dialog.innerHTML=inspectorHtml(node);dialog.showModal();
   emit('portal:nextgen-insight',{label:parseMetric(node).label});
 }
+
+function semanticLabel({title='',aria='',text=''}={}){
+  return String(title||aria||text||'Datapunt').replace(/\s+/g,' ').trim().slice(0,180)||'Datapunt';
+}
+function bindSemanticVisual(node){
+  if(!node?.querySelector||node.dataset.ngSemanticBound)return;
+  const svg=node.querySelector('svg');if(!svg)return;
+  const marks=[...svg.querySelectorAll('[tabindex],[role="button"],circle,rect,path')].filter(mark=>mark.querySelector?.('title')||mark.getAttribute?.('aria-label')||mark.hasAttribute?.('tabindex'));
+  if(!marks.length)return;
+  node.dataset.ngSemanticBound='true';
+  marks.forEach(mark=>{
+    const label=semanticLabel({title:mark.querySelector?.('title')?.textContent,aria:mark.getAttribute?.('aria-label'),text:mark.textContent});
+    mark.classList?.add('ng-semantic-point');
+    if(!mark.hasAttribute?.('tabindex'))mark.setAttribute?.('tabindex','0');
+    if(!mark.getAttribute?.('role'))mark.setAttribute?.('role','button');
+    if(!mark.getAttribute?.('aria-label'))mark.setAttribute?.('aria-label',label);
+  });
+  const select=mark=>{
+    marks.forEach(item=>item.classList?.toggle('ng-semantic-selected',item===mark));
+    const label=semanticLabel({title:mark.querySelector?.('title')?.textContent,aria:mark.getAttribute?.('aria-label'),text:mark.textContent});
+    let dock=node.querySelector('.ng-point-dock');
+    if(!dock){dock=document.createElement('div');dock.className='ng-point-dock';dock.setAttribute('aria-live','polite');node.appendChild(dock);}
+    dock.innerHTML=`<div><span>Geselecteerd</span><strong>${esc(label)}</strong></div><div class="ng-point-actions"><button type="button" data-ng-point-context>Context</button><button type="button" data-ng-point-action>Actie →</button></div>`;
+    emit('portal:semantic-point-select',{label,visual:node.querySelector('figcaption')?.textContent||node.getAttribute('aria-label')||'visual'});
+  };
+  svg.addEventListener('click',event=>{const mark=event.target?.closest?.('.ng-semantic-point');if(mark&&svg.contains(mark))select(mark);});
+  svg.addEventListener('keydown',event=>{const mark=event.target?.closest?.('.ng-semantic-point');if(mark&&(event.key==='Enter'||event.key===' ')){event.preventDefault();select(mark);}});
+  node.addEventListener('click',event=>{
+    if(event.target.closest('[data-ng-point-context]'))openInspector(node);
+    if(event.target.closest('[data-ng-point-action]'))document.querySelector('[data-open-page="actieve-acties"],[data-open-page="roadmap"]')?.click();
+  });
+}
+
 function enhanceSurfaces(){
   const selector='.kpi,.glance-card,.v2visual,[data-portal-visual],.company-decision-card,.legacy-insight-card';
-  const apply=root=>root.querySelectorAll?.(selector).forEach(node=>{if(node.dataset.ngEnhanced)return;node.dataset.ngEnhanced='true';node.classList.add('ng-interactive');if(!node.querySelector('[data-ng-inspect]')){const b=document.createElement('button');b.type='button';b.className='ng-inspect';b.dataset.ngInspect='';b.textContent='Inzicht';b.setAttribute('aria-label','Open context en verklaring');node.appendChild(b);}});
+  const apply=root=>root.querySelectorAll?.(selector).forEach(node=>{if(node.dataset.ngEnhanced)return;node.dataset.ngEnhanced='true';node.classList.add('ng-interactive');if(!node.querySelector('[data-ng-inspect]')){const b=document.createElement('button');b.type='button';b.className='ng-inspect';b.dataset.ngInspect='';b.textContent='Inzicht';b.setAttribute('aria-label','Open context en verklaring');node.appendChild(b);}bindSemanticVisual(node);});
   apply(document);
   document.addEventListener('click',e=>{const b=e.target.closest('[data-ng-inspect]');if(b){e.preventDefault();e.stopPropagation();openInspector(b.closest(selector));}});
   new MutationObserver(records=>records.forEach(r=>r.addedNodes.forEach(n=>n.nodeType===1&&apply(n)))).observe(document.body,{childList:true,subtree:true});
@@ -95,4 +128,4 @@ function enhanceSurfaces(){
 function markReady(){document.documentElement.dataset.nextgenIntelligence='ready';}
 function init(){if(document.querySelector('.ng-lens'))return;enhanceSurfaces();initLens();markReady();}
 if(globalThis.document){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();}
-export {parseMetric,confidence,project};
+export {parseMetric,confidence,project,semanticLabel};
