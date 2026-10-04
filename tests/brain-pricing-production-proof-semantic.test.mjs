@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {verifyPricingProductionContent} from '../tools/site-shell/verify-pricing-production-content.mjs';
+import {verifyPricingProductionContent} from '../tools/delivery/verify-pricing-production-content.mjs';
 
 const page=(starter='<h3 class="plan-title">Starter</h3>')=>`
 <html><body>
