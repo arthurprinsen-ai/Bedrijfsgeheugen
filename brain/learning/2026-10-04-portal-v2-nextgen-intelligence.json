@@ -23,6 +23,7 @@
       "portal-v2/index.html"
     ],
     "regression": [
+      "tests/portal-v2-nextgen-intelligence.test.mjs",
       "portal-v2/tests/nextgen-intelligence.test.mjs"
     ],
     "documentation": "docs/changes/2026-10-04-portal-v2-nextgen-intelligence.md",
@@ -51,7 +52,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/nextgen-intelligence.test.mjs"
+      "tests/portal-v2-nextgen-intelligence.test.mjs"
     ],
     "expected": "Positive visible trends preserve scenario ordering stress < base < opportunity; projections stay within the metric domain; confidence never claims certainty."
   }
