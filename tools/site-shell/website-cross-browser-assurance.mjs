@@ -126,7 +126,7 @@ async function checkOne({browserName,browser,viewportName,route,screenshotAlways
   page.on('pageerror',e=>pageErrors.push(String(e?.message||e)));
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
   page.on('requestfailed',request=>{
-    if(['document','script','stylesheet'].includes(request.resourceType())){
+    if(['document','script','stylesheet'].includes(request.resourceType()) && !(request.resourceType()==='document' && request.failure()?.errorText==='net::ERR_ABORTED')){
       let pathname=request.url();try{pathname=new URL(request.url()).pathname}catch{}
       failedCore.push(`${request.resourceType()}:${pathname}:${request.failure()?.errorText||''}`);
     }
