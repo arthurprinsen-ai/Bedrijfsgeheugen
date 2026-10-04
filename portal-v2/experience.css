@@ -40,3 +40,8 @@ dialog,.portal-popover,.sheet{border-radius:18px;box-shadow:0 28px 90px rgba(7,1
   .topactions{gap:4px!important}
   .topactions .searchrow,.topactions .actionrow{gap:4px!important}
 }
+
+/* Canonical mobile menu control keeps a full 44x44 target even when its label collapses. */
+@media(max-width:900px){
+  #portalFullMenuToggle{min-width:44px!important;min-height:44px!important;box-sizing:border-box!important}
+}
