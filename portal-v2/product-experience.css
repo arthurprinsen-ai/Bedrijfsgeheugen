@@ -27,6 +27,9 @@ button:focus-visible,a:focus-visible,[role="button"]:focus-visible,input:focus-v
 button,[role="button"],select{min-height:40px}
 .portalview button,.allpages button,.topactions button,.portal-hamburger,.projecttabs button,.projectcockpit-actions button,button[data-nav-target]{min-height:44px!important}
 .topactions button,.portal-hamburger,button[data-nav-target]{height:auto!important}
+@media(max-width:430px){
+  .topactions .searchrow>.smallbtn,.topactions .actionrow>.smallbtn{height:44px!important;min-height:44px!important}
+}
 .portalview,.pvbody,.sheet,.sidebar{scrollbar-gutter:stable}
 .pvbody{-webkit-overflow-scrolling:touch}
 .pvmodule,.legacy-insight-card,.card{min-width:0}
