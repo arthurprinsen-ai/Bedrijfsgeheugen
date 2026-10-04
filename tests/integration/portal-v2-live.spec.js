@@ -25,7 +25,7 @@ async function openPortalV2(page, preview) {
       const response=await page.goto(`${preview}/portal-v2/?klant=ijsselmonde&bg_live=${Date.now()}-${attempt}`, { waitUntil: 'domcontentloaded', timeout:45_000 });
       expect(response,'portal preview response').not.toBeNull();
       expect(response.status(),'portal preview status').toBeLessThan(400);
-      await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30_000});
+      await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(document.querySelector('.portal-single-navigation [data-nav-target="overzicht"]')),{timeout:30_000});
       return;
     } catch (error) {
       lastError=error;
@@ -80,7 +80,13 @@ test('portal-v2 uses a vertical SaaS brain and card-first CSRD on a phone withou
   await openPortalV2(page, preview);
 
   await expect(page.locator('.sidebar')).toBeHidden();
-  await expect(page.locator('.mobilebar')).toBeVisible();
+  await expect(page.locator('.mobilebar')).toBeHidden();
+  const menuToggle = page.locator('#portalFullMenuToggle');
+  await expect(menuToggle).toBeVisible();
+  const menuToggleBox = await menuToggle.boundingBox();
+  expect(menuToggleBox).toBeTruthy();
+  expect(menuToggleBox.height).toBeGreaterThanOrEqual(44);
+  expect(menuToggleBox.width).toBeGreaterThanOrEqual(44);
   await expect(page.getByRole('heading', { name: /Zo werkt Powerhouse in je bedrijf/ })).toBeVisible();
   await expect(page.locator('.brainflow .brainnode')).toHaveCount(5);
 
@@ -91,10 +97,12 @@ test('portal-v2 uses a vertical SaaS brain and card-first CSRD on a phone withou
   expect(mobileFlow.every((item, index) => index === 0 || item.y > mobileFlow[index - 1].y)).toBeTruthy();
   expect(Math.max(...mobileFlow.map(item => item.x)) - Math.min(...mobileFlow.map(item => item.x))).toBeLessThanOrEqual(2);
 
-  await page.evaluate(() => {
-    const button = [...document.querySelectorAll('.nav button')].find(node => node.textContent.includes('CSRD'));
-    button?.click();
-  });
+  await menuToggle.click();
+  await expect(page.locator('#allPages')).toHaveClass(/open/);
+  await expect(page.locator('#allPages')).toHaveAttribute('data-hub','portal');
+  const csrdButton = page.locator('#allPages #groups button').filter({hasText:'CSRD'}).first();
+  await expect(csrdButton).toBeVisible();
+  await csrdButton.click();
   await expect(page.locator('#portalView')).toHaveClass(/open/);
   await expect(page.locator('.csrd-mobile-summary')).toBeVisible();
   await expect(page.locator('.csrd-world')).toBeHidden();
@@ -111,7 +119,7 @@ test('portal-v2 uses a vertical SaaS brain and card-first CSRD on a phone withou
   expect(errors).toEqual([]);
 });
 
-test('mobile primary navigation routes all five controls on supported phone widths', async ({ page }) => {
+test('mobile uses one complete canonical menu on supported phone widths', async ({ page }) => {
   const preview = process.env.PREVIEW_URL;
   if (!preview) throw new Error('PREVIEW_URL is required');
   await hideNetlifyChrome(page);
@@ -120,37 +128,31 @@ test('mobile primary navigation routes all five controls on supported phone widt
 
   for (const [width,height] of [[320,720],[390,844],[430,932]]) {
     await page.setViewportSize({ width, height });
-    await page.evaluate(()=>{history.replaceState(null,'',location.pathname+location.search.split('&bg_live=')[0]);document.querySelector('[data-mobile-nav="overview"]')?.click();});
-    const bar=page.locator('.mobilebar');
-    await expect(bar).toBeVisible();
-    const buttons=bar.locator('button');
-    await expect(buttons).toHaveCount(5);
-    for(let index=0;index<5;index++){
-      const box=await buttons.nth(index).boundingBox();
-      expect(box, `${width}px button ${index} must have geometry`).toBeTruthy();
-      expect(box.width).toBeGreaterThanOrEqual(44);
-      expect(box.height).toBeGreaterThanOrEqual(44);
-    }
+    await expect(page.locator('.sidebar')).toBeHidden();
+    await expect(page.locator('.mobilebar')).toBeHidden();
+    await expect(page.locator('[data-mobile-nav]')).toHaveCount(0);
 
-    const expected=[
-      ['overview', null, null],
-      ['project', 'hub', 'project'],
-      ['data-ai', 'hub', 'data-ai'],
-      ['tasks', 'hub', 'tasks'],
-      ['more', 'hub', 'portal']
-    ];
-    for(const [id,param,value] of expected){
-      await page.evaluate(({id})=>document.querySelector(`[data-mobile-nav="${id}"]`)?.click(),{id});
-      await expect(page.locator(`[data-mobile-nav="${id}"]`)).toHaveAttribute('aria-current','page');
-      const url=new URL(page.url());
-      if(param) expect(url.searchParams.get(param)).toBe(value); else {
-        expect(url.searchParams.get('hub')).toBeNull();
-        expect(url.searchParams.get('page')).toBeNull();
-      }
-    }
+    const toggle=page.locator('#portalFullMenuToggle');
+    await expect(toggle).toBeVisible();
+    const box=await toggle.boundingBox();
+    expect(box, `${width}px menu toggle must have geometry`).toBeTruthy();
+    expect(box.width).toBeGreaterThanOrEqual(44);
+    expect(box.height).toBeGreaterThanOrEqual(44);
+
+    await toggle.click();
+    const drawer=page.locator('#allPages');
+    await expect(drawer).toHaveClass(/open/);
+    await expect(drawer).toHaveAttribute('data-hub','portal');
+
+    const desktopTargets=await page.locator('.portal-single-navigation [data-nav-target]').evaluateAll(nodes=>nodes.map(node=>node.dataset.navTarget));
+    const drawerTargets=await drawer.locator('#groups .group > button[data-page]').evaluateAll(nodes=>nodes.map(node=>node.dataset.page));
+    expect(drawerTargets).toEqual(desktopTargets);
 
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
+
+    await page.locator('#closePages').click();
+    await expect(drawer).not.toHaveClass(/open/);
   }
 });
 
@@ -187,10 +189,7 @@ test('profile is a real responsive V2 workspace with the protected legacy fields
   const errors = collectPageErrors(page);
   await page.setViewportSize({ width:1440, height:1000 });
   await openPortalV2(page, preview);
-  await page.evaluate(() => {
-    const button=[...document.querySelectorAll('.nav button')].find(node=>node.textContent.includes('Bedrijfsgezondheid'));
-    button?.click();
-  });
+  await page.locator('.portal-single-navigation [data-nav-target="profiel"]').click();
   await expect(page.locator('#portalView')).toHaveClass(/open/);
   await expect(page.locator('#portalView')).toHaveAttribute('data-page-id','profiel');
 

@@ -162,9 +162,11 @@ test('all global capabilities are native, mobile-safe and fail closed without au
  await page.setViewportSize({width:390,height:844});
  const response=await page.goto(`${BASE_URL}/portal-v2/?bg_global_parity=${Date.now()}`,{waitUntil:'domcontentloaded',timeout:45_000});
  expect(response?.status()).toBeLessThan(400);
- const mobile=page.locator('[data-mobile-nav]');await expect(mobile).toHaveCount(5);
- for(let i=0;i<5;i++){const box=await mobile.nth(i).boundingBox();expect(box?.height||0,`mobile nav ${i}`).toBeGreaterThanOrEqual(44)}
- await page.locator('[data-mobile-nav="more"]').evaluate(element=>element.click());
+ const menu=page.locator('#portalFullMenuToggle');
+ await expect(menu).toBeVisible();
+ const menuBox=await menu.boundingBox();expect(menuBox?.height||0,'mobile menu touch target').toBeGreaterThanOrEqual(44);
+ await expect(page.locator('[data-mobile-nav]')).toHaveCount(0);
+ await menu.click();
  await expect(page.locator('#allPages')).toHaveAttribute('data-hub','portal');
  const expected=['export','import','print-permission','feedback','customer-branding','identity-login-logout'];
  await expect(page.locator('#portalFullMenuToggle')).toBeVisible();

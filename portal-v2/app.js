@@ -1,7 +1,7 @@
 import { deriveFlowState, statusLabel } from './flow-state.js';
 import { enhancePortalShell, openPortalPage, closePortalPage, configurePortalShell } from './page-shell.js';
 import { mountLegacyParity } from './legacy-parity.js';
-import { DESKTOP_NAV_GROUPS, PORTAL_NAV_ITEMS } from './navigation-model.js';
+import { DESKTOP_NAV_GROUPS } from './navigation-model.js';
 import { bindPortalNavigation, navigatePortal } from './router.js';
 import { groupedHubPages, hubDefinition } from './hubs.js';
 import { createPortalStateClient, ensureIdentityWidget } from './portal-state.js';
@@ -156,35 +156,20 @@ function renderHubGroups(hubId='portal'){
   groups.appendChild(section);
  }
 }
-function mountDesktopProjectNavigation(){
- const nav=document.querySelector('.sidebar .nav');if(!nav||document.querySelector('.desktop-project-nav'))return;
- const section=document.createElement('section');section.className='desktop-project-nav';
- section.innerHTML='<div class="desktop-project-title">Jouw project</div>';
- for(const group of groupedHubPages('project')){
-   const block=document.createElement('div');block.className='desktop-project-group';
-   const heading=document.createElement('button');heading.type='button';heading.className='desktop-project-heading';heading.textContent=group.label;
-   heading.addEventListener('click',()=>{activeProjectGroup=group.id;navigatePortal('hub:project')});block.appendChild(heading);
-   if(group.id!=='project-overview')for(const page of group.pages){const link=document.createElement('button');link.type='button';link.className='desktop-project-link';link.textContent=page.label;link.addEventListener('click',()=>navigatePortal(page.target||page.id));block.appendChild(link)}
-   section.appendChild(block);
- }
- nav.after(section);
-}
 function mountCanonicalDesktopNavigation(){
  const nav=document.querySelector('.sidebar .nav');if(!nav)return;
- nav.innerHTML='';
- for(const item of DESKTOP_NAV_GROUPS){
-   const button=document.createElement('button');
-   button.type='button';
-   button.dataset.navTarget=item.target;
-   button.dataset.navGroup=item.id;
-   button.innerHTML=`<span class="ico">${item.icon}</span><span>${item.label}</span>`;
-   nav.appendChild(button);
+ nav.innerHTML='';nav.classList.add('portal-single-navigation');nav.setAttribute('aria-label','Portaalnavigatie');
+ for(const group of DESKTOP_NAV_GROUPS){
+   const section=document.createElement('section');section.className='portal-single-nav-group';section.dataset.navSection=group.id;
+   const heading=document.createElement('h2');heading.className='portal-single-nav-heading';heading.textContent=group.label;section.appendChild(heading);
+   for(const page of group.pages){
+     const button=document.createElement('button');button.type='button';
+     button.dataset.navTarget=page.target;button.dataset.navGroup=group.id;button.dataset.navPage=page.id;
+     button.innerHTML=`<span class="ico">${group.icon}</span><span>${page.label}</span>`;
+     section.appendChild(button);
+   }
+   nav.appendChild(section);
  }
-}
-function markNavigationControls(){
- const mobile=[...document.querySelectorAll('.mobilebar button')];
- const icons={overview:'⌂',project:'▣','data-ai':'✦',tasks:'✓',more:'☰'};
- PORTAL_NAV_ITEMS.forEach((item,index)=>{if(mobile[index]){mobile[index].dataset.mobileNav=item.id;mobile[index].innerHTML=`${icons[item.id]||'•'}<br>${item.label}`; }});
 }
 function openHub(hubId){
  const sheet=el('allPages');if(!sheet)return;
@@ -229,7 +214,7 @@ const portalDomainState=createPortalDomainState(portalStateClient);
 configurePortalShell({domainState:portalDomainState});
 portalStateClient.subscribe(snap=>applyCustomerBranding({state:snap.state||{},user:snap.user}));
 portalDomainState.subscribe(snap=>{applyOverviewDashboard(document,snap.state||{});if(el('allPages')?.dataset.hub==='project')renderHubGroups('project')});
-mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();markNavigationControls();mountDesktopProjectNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
+mountSources();mountModules();renderHubGroups('portal');mountPreviewControl();mountCanonicalDesktopNavigation();ensureNavigationStyles();enhancePortalShell();mountLegacyParity({openPage:openPortalPage});mountGlobalActions({stateClient:portalStateClient});
 bindPortalNavigation({
  openPage:gatedOpenPage,
  openHub,

@@ -21,7 +21,8 @@ test('demoAI stays compact after asynchronous Portal V2 hydration', async ({ pag
   // Preserve the fully hydrated browser state on every run, including failures.
   await page.screenshot({ path: 'artifacts/portal-v2-mobile-overview-demoai.png', fullPage: true });
 
-  await expect(page.locator('.mobilebar')).toBeVisible();
+  await expect(page.locator('#portalFullMenuToggle')).toBeVisible();
+  await expect(page.locator('.mobilebar')).toHaveCount(0);
   await expect(page.locator('.v2utilities')).toBeHidden();
   await expect(page.locator('.v2globalstatus')).toBeHidden();
   await expect(page.getByRole('button', { name: 'Export', exact: true })).toBeHidden();
