@@ -20,7 +20,7 @@ function confidence(metric){
 function project(metric,horizon,scenario){
   if(!Number.isFinite(metric.value))return null;
   const monthly=Number.isFinite(metric.delta)?metric.delta:0;
-  const factor=scenario==='opportunity'?1.25:scenario==='stress'?0.55:1;
+  const factor=scenario==='opportunity'?(monthly>=0?1.25:0.55):scenario==='stress'?(monthly>=0?0.55:1.25):1;
   const projected=clamp(metric.value+monthly*horizon*factor,0,100);
   return {projected,change:projected-metric.value,monthly,factor};
 }
