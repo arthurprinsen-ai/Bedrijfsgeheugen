@@ -15,3 +15,7 @@ De eerste consolidatie-runs legden twee contractfouten bloot: ongeldige PR-machi
 
 ## Cache-boundary recovery
 De v2-assets zijn expliciet naar `?v=20261004-2` gezet zodat preview en productie de gewijzigde experience CSS/JS niet uit een v1-cache kunnen hergebruiken. De eerste Required-run na deze wijziging startte vóór de bijgewerkte PR Change-Scope zichtbaar was en classificeerde `portal-v2/index.html` daarom terecht als onverwacht; de canonieke PR-scope bevat dit bestand nu expliciet.
+
+
+## Hydrated mobile readback recovery
+De exact-head browserreadback op 390×844 vond na asynchrone demoAI-hydration een topbar van 263.375px tegenover de harde grens <260px. De herstelmaatregel verkleint uitsluitend verticale shell-spacing in de finale experience authority; kritieke controls blijven minimaal 44px. De CSS-cacheversie is verhoogd zodat preview en productie exact de herstelde authority laden.
