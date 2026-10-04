@@ -1,0 +1,9 @@
+{
+  "fingerprint":"powerhouse|linkedin-channel-role-learning|v1",
+  "date":"2026-10-04",
+  "root_cause":"The legacy content lesson function treated any non-zero reactions/clicks as success and aggregated LinkedIn before preserving personal-vs-company channel identity.",
+  "observed_evidence":{"measured_posts":92,"reactions":2,"impressions":20074,"clicks":3,"linkedin_personal":{"posts":17,"impressions":12545,"reactions":2},"linkedin_company":{"posts":18,"impressions":71,"reactions":0}},
+  "fix":"Normalize weak outcomes, keep personal/company LinkedIn as separate experiment arms, forbid cross-post reuse, keep personal free of commercial CTA optimization and make company revenue/value oriented.",
+  "prevention":["Never call an absolute non-zero metric a winner without a normalized threshold.","Never transfer social learnings across channel identities without explicit evidence.","Company content optimizes for qualified action/revenue; personal content preserves personal identity first."],
+  "runtime_readback":"Supabase bg_content_lessen returned 5 rules and emitted linkedin-channel-role-evidence-v1."
+}
