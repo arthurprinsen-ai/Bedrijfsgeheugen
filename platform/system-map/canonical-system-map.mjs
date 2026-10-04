@@ -248,7 +248,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         documentation:'docs/changes/2026-10-04-portal-v2-nextgen-intelligence.md',
         learning:'brain/learning/2026-10-04-portal-v2-nextgen-intelligence.json',
         ledger:'docs/development-ledger-events/2026-10-04-portal-v2-nextgen-intelligence.md',
-        regression:'portal-v2/tests/nextgen-intelligence.test.mjs'
+        regression:'tests/portal-v2-nextgen-intelligence.test.mjs'
       }),
       invariants:Object.freeze({
         evidenceFirst:true,
