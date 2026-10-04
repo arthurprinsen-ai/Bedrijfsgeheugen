@@ -1,6 +1,6 @@
 {
-  "version": "POWERHOUSE-PORTAL-VISUAL-ASSURANCE-v1",
-  "fingerprint": "portal-visual-density-oversized-responsive-cascade-v1",
+  "version": "POWERHOUSE-PORTAL-VISUAL-ASSURANCE-v2",
+  "fingerprint": "portal-experience-responsive-reliability-v2",
   "loop_key": "portal-visual-density",
   "owner": "powerhouse-terminal-delivery",
   "authority": {
@@ -31,6 +31,18 @@
       "path": "/portal-v2/?page=overview"
     },
     {
+      "id": "roadmap",
+      "path": "/portal-v2/?page=roadmap"
+    },
+    {
+      "id": "koppelingen",
+      "path": "/portal-v2/?page=koppelingen"
+    },
+    {
+      "id": "powerhouse-control-center",
+      "path": "/portal-v2/?page=powerhouse-control-center"
+    },
+    {
       "id": "csrd-impact",
       "path": "/portal-v2/?page=csrd-impact"
     },
@@ -54,6 +66,11 @@
       "id": "mobile",
       "width": 390,
       "height": 844
+    },
+    {
+      "id": "narrow-mobile",
+      "width": 320,
+      "height": 700
     }
   ],
   "thresholds": {
@@ -64,7 +81,9 @@
     "brain_core_max_height_px": 260,
     "brain_image_desktop_tablet_max_height_px": 96,
     "brain_image_mobile_max_height_px": 100,
-    "mobile_csrd_world_must_be_hidden": true
+    "mobile_csrd_world_must_be_hidden": true,
+    "critical_touch_target_px": 44,
+    "visual_overflow_px": 2
   },
   "stages": [
     "input",
@@ -82,6 +101,9 @@
     "production_evidence_expires",
     "screenshots_and_metrics_are_required_evidence",
     "cross_system_authority_refs_are_machine_readable",
-    "removing_github_supabase_or_notion_projection_must_fail_ci"
+    "removing_github_supabase_or_notion_projection_must_fail_ci",
+    "critical_controls_must_keep_44px_touch_targets",
+    "dynamic_visuals_must_fit_or_use_explicit_internal_scroll",
+    "experience_runtime_must_initialize"
   ]
 }
