@@ -25,6 +25,8 @@ test('website assurance checks visual quality, not screenshot-only decoration',(
   assert.ok(contract.visual_quality_assertions.length>=8);
   assert.ok(contract.rules.includes('visual_quality_is_a_release_requirement'));
   assert.ok(contract.rules.includes('visual_failures_must_be_fixed_not_hidden'));
+  assert.deepEqual(contract.pr_all_route_viewports,['mobile','desktop']);
+  assert.deepEqual(contract.daily_all_route_viewports,['small-mobile','mobile','tablet','desktop','wide-desktop']);
   assert.ok(contract.rules.includes('daily_gate_uses_bounded_full_sitemap_plus_deep_critical_matrix'));
 });
 
