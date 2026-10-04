@@ -1,0 +1,93 @@
+{
+  "version": "POWERHOUSE-PORTAL-PRODUCT-EXPERIENCE-v1",
+  "fingerprint": "portal-wow-ux-responsive-end-to-end-v1",
+  "owner": "powerhouse-product-experience",
+  "goal": "customer-facing portal is robust, calm, modern, responsive and reliable end to end",
+  "authority": {
+    "stylesheet": "portal-v2/product-experience.css",
+    "runtime": "portal-v2/product-experience.js",
+    "route_registry": "portal-v2/page-registry.js",
+    "router": "portal-v2/router.js",
+    "visual_assurance": "config/powerhouse-portal-visual-assurance-v1.json",
+    "machine_signal": "bg:portal-experience-signal"
+  },
+  "invariants": [
+    "single_navigation_authority",
+    "all_dynamic_views_inherit_product_experience_runtime",
+    "no_horizontal_page_overflow",
+    "visuals_fit_container_or_use_explicit_internal_scroll",
+    "touch_targets_are_at_least_44px_on portal navigation and actions",
+    "keyboard_focus_is_visible",
+    "reduced_motion_is_respected",
+    "route_changes_emit observable interaction signals",
+    "runtime errors and visual overflow emit powerhouse-consumable signals",
+    "mobile_390px_and_narrow_320px_are_first_class"
+  ],
+  "viewports": [
+    {
+      "id": "desktop",
+      "width": 1440,
+      "height": 900
+    },
+    {
+      "id": "tablet",
+      "width": 1024,
+      "height": 768
+    },
+    {
+      "id": "mobile",
+      "width": 390,
+      "height": 844
+    },
+    {
+      "id": "narrow-mobile",
+      "width": 320,
+      "height": 700
+    }
+  ],
+  "critical_flows": [
+    [
+      "overzicht",
+      "actieve-acties",
+      "roadmap"
+    ],
+    [
+      "overzicht",
+      "koppelingen",
+      "datahubstatus"
+    ],
+    [
+      "overzicht",
+      "ai-scan",
+      "businesscase"
+    ],
+    [
+      "overzicht",
+      "powerhouse-control-center",
+      "outcomes-evidence"
+    ],
+    [
+      "overzicht",
+      "instellingen",
+      "gebruikers"
+    ]
+  ],
+  "acceptance": {
+    "horizontal_overflow_px_max": 2,
+    "visual_overflow_px_max": 2,
+    "critical_navigation_touch_target_px_min": 44,
+    "keyboard_focus_visible": true,
+    "reduced_motion": true,
+    "runtime_error_budget": 0
+  },
+  "powerhouse_loop": [
+    "input",
+    "decision",
+    "action",
+    "readback",
+    "outcome",
+    "measurement",
+    "learning",
+    "guard"
+  ]
+}
