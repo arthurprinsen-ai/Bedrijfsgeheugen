@@ -1,0 +1,65 @@
+{
+  "learningId": "2026-10-04-portal-powerhouse-e2e-runtime-v1",
+  "fingerprint": "portal-powerhouse-e2e-runtime-auth-lineage-derived-projection-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-04T18:18:00+02:00",
+  "problem": "Portal V2 writes already reached canonical Brain authority, but the generic runtime-evidence reader called the authenticated Brain endpoint without the tenant bearer token and attempted to write derived Brain projection back through the mutable domain-state API.",
+  "rootCause": "The portal had separate mature write, cockpit and runtime-readback components without one shared runtime bridge. Authentication and source-vs-derived state semantics were therefore inconsistent across readback paths, while UI intelligence interactions had no universal same-lineage evidence handoff.",
+  "root_cause": "The portal had separate mature write, cockpit and runtime-readback components without one shared runtime bridge. Authentication and source-vs-derived state semantics were therefore inconsistent across readback paths, while UI intelligence interactions had no universal same-lineage evidence handoff.",
+  "preventionRule": "Every Portal V2 to Powerhouse loop must use the authenticated tenant session, preserve the canonical sourceRevision/correlation lineage, project Brain read models into UI state without dirtying source state, and refresh canonical runtime after material writes or decision interactions.",
+  "prevention": [
+    "All /api/brain-operating-loop browser reads and writes use the current portal identity bearer token.",
+    "Derived Brain read models enter Portal Domain State through setDerived/project semantics and may never be persisted as new customer source input.",
+    "Successful portal business-input writes retain PORTAL_INPUT-<sourceRevision> correlation for subsequent evidence.",
+    "Material portal intelligence interactions create bounded Evidence records and then re-read canonical Brain projection.",
+    "No second portal database, second Brain, or browser-only truth authority may be introduced.",
+    "Missing authentication or runtime evidence fails closed instead of showing guessed live state."
+  ],
+  "evidence": {
+    "implementation": [
+      "portal-v2/domain-state.js",
+      "portal-v2/runtime-evidence.js",
+      "portal-v2/powerhouse-runtime-bridge.js",
+      "portal-v2/app.js"
+    ],
+    "regression": [
+      "tests/brain-portal-v2-end-to-end-runtime.test.mjs",
+      "portal-v2/tests/runtime-evidence-wiring.test.mjs",
+      "portal-v2/tests/powerhouse-runtime-bridge.test.mjs"
+    ],
+    "documentation": "docs/changes/2026-10-04-portal-powerhouse-e2e-runtime-v1.md",
+    "activityLedger": "docs/development-ledger-events/2026-10-04-portal-powerhouse-e2e-runtime-v1.md",
+    "systemMap": "platform/system-map/canonical-system-map.mjs"
+  },
+  "invariants": {
+    "authenticatedBrainReadback": true,
+    "canonicalTenantAuthority": true,
+    "derivedProjectionNoWriteback": true,
+    "sameCorrelationLineage": true,
+    "sourceRevisionPreserved": true,
+    "interactionEvidenceBounded": true,
+    "postMutationRuntimeRefresh": true,
+    "noParallelStateStore": true,
+    "failClosedWithoutAuth": true,
+    "productionReadbackRequired": true
+  },
+  "compiler": {
+    "failure_class": "PORTAL_POWERHOUSE_RUNTIME_LINEAGE_FRAGMENTATION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-end-to-end-runtime.test.mjs"
+    ],
+    "expected": "Authenticated Brain readback populates portal.runtime without source persistence; canonical portal write sourceRevision remains the correlation authority for downstream UI evidence.",
+    "shadow": [
+      "tests/brain-portal-v2-end-to-end-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-end-to-end-runtime.test.mjs"
+    ]
+  }
+}

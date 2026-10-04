@@ -218,18 +218,19 @@ export function mapRuntimeProjection(projection) {
   };
 }
 
-export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState } = {}) {
+export async function loadRuntimeEvidence({ fetchImpl = globalThis.fetch, domainState, authHeadersProvider = async () => ({}) } = {}) {
   try {
+    const auth = typeof authHeadersProvider === 'function' ? await authHeadersProvider() : {};
     const response = await fetchImpl('/api/brain-operating-loop', {
-      headers: { accept: 'application/json' }, credentials: 'same-origin'
+      headers: { accept: 'application/json', ...(auth || {}) }, credentials: 'same-origin'
     });
     if (!response.ok) return null;
     const projection = await response.json();
     const runtime = mapRuntimeProjection(projection);
     if (!Object.keys(runtime).length) return null;
-    if (domainState?.get && domainState?.set) {
-      const state = domainState.get() || {};
-      domainState.set({ ...state, portal: { ...state.portal, runtime } });
+    if (typeof domainState?.setDerived === 'function') domainState.setDerived('portal.runtime', runtime);
+    if (typeof globalThis.dispatchEvent === 'function' && typeof globalThis.CustomEvent === 'function') {
+      globalThis.dispatchEvent(new CustomEvent('bg:runtime-evidence',{detail:{source:'brain-operating-loop',updatedAt:runtime?.observability?.updatedAt||null}}));
     }
     return runtime;
   } catch {

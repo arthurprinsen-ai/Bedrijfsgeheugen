@@ -107,13 +107,26 @@ test('een storing of ontbrekende sessie laat de pagina\'s leeg in plaats van te 
   assert.equal(await loadRuntimeEvidence({ fetchImpl: async () => { throw new Error('offline'); } }), null);
 });
 
-test('een geslaagde ophaal landt in portal.runtime van de klantstate', async () => {
-  let opgeslagen = null;
-  const domainState = { get: () => ({ portal: { profile: { headcount: 12 } } }), set: value => { opgeslagen = value; } };
+test('een geslaagde ophaal gebruikt identity auth en projecteert runtime zonder bronstate dirty te maken', async () => {
+  let projectedPath = null;
+  let projectedValue = null;
+  let sourceWrites = 0;
+  let seenAuthorization = '';
+  const domainState = {
+    set: () => { sourceWrites += 1; },
+    setDerived: (path,value) => { projectedPath = path; projectedValue = value; }
+  };
   const runtime = await loadRuntimeEvidence({
-    fetchImpl: async () => ({ ok: true, json: async () => PROJECTIE }), domainState
+    fetchImpl: async (_url,options={}) => {
+      seenAuthorization = options.headers?.authorization || '';
+      return { ok: true, json: async () => PROJECTIE };
+    },
+    domainState,
+    authHeadersProvider: async () => ({ authorization:'Bearer portal-token' })
   });
   assert.ok(runtime.sources.items.length);
-  assert.equal(opgeslagen.portal.runtime.sources.items.length, 2);
-  assert.equal(opgeslagen.portal.profile.headcount, 12, 'de bestaande klantstate mag niet worden overschreven');
+  assert.equal(seenAuthorization,'Bearer portal-token');
+  assert.equal(projectedPath,'portal.runtime');
+  assert.equal(projectedValue.sources.items.length,2);
+  assert.equal(sourceWrites,0,'afgeleide Brain-runtime mag nooit als nieuwe klantbron worden opgeslagen');
 });
