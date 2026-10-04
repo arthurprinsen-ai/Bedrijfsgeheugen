@@ -39,6 +39,7 @@ jobs:
           BASE_URL: https://www.bedrijfsgeheugen.nl
           WEBSITE_ASSURANCE_CONTRACT: config/powerhouse-website-cross-browser-assurance-v1.json
           OUT_DIR: .artifacts/website-cross-browser-assurance
+          ASSURANCE_MODE: ${{ github.event_name == 'schedule' && 'daily' || 'pr' }}
         run: node tools/site-shell/website-cross-browser-assurance.mjs
       - name: Upload screenshots and report
         if: always()
