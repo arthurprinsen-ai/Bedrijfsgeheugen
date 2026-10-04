@@ -8,7 +8,7 @@ const runtime=fs.readFileSync('portal-v2/experience.js','utf8');
 const state=fs.readFileSync('portal-v2/portal-state.js','utf8');
 
 test('Portal V2 loads one explicit experience contract after the base visual layers',()=>{
-  assert.match(html,/href="\.\/experience\.css\?v=20261004-3"/);
+  assert.match(html,/href="\.\/experience\.css\?v=20261004-4"/);
   assert.match(html,/src="\.\/experience\.js\?v=20261004-2"/);
   assert.match(css,/--pv-content-max:1600px/);
   assert.match(runtime,/__BG_PORTAL_EXPERIENCE__/);
@@ -56,4 +56,9 @@ test('hydrated mobile shell compactness preserves 44px controls',()=>{
   assert.match(css,/Hydrated mobile shell stays compact/);
   assert.match(css,/@media\(max-width:430px\)[\s\S]*?\.topbar\{gap:4px!important;padding-top:2px!important;padding-bottom:2px!important/);
   assert.match(css,/--pv-touch:44px/);
+});
+
+
+test('canonical mobile menu target remains at least 44px',()=>{
+  assert.match(css,/#portalFullMenuToggle\{min-width:44px!important;min-height:44px!important/);
 });
