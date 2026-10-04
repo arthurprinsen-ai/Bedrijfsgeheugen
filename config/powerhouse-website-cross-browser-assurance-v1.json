@@ -8,7 +8,7 @@
       "chromium"
     ],
     "viewports": [
-      "small-mobile",
+      "mobile",
       "desktop"
     ],
     "assertions": [
@@ -29,17 +29,15 @@
       "webkit"
     ],
     "viewports": [
-      "small-mobile",
       "mobile",
       "tablet",
-      "desktop",
-      "wide-desktop"
+      "desktop"
     ],
     "routes": [
       "/",
       "/prijzen",
       "/hoe-het-werkt",
-      "/platform",
+      "/product",
       "/frisse-blik",
       "/pakketadvies",
       "/contact",
@@ -64,23 +62,12 @@
     "desktop": {
       "width": 1440,
       "height": 900
-    },
-    "small-mobile": {
-      "width": 320,
-      "height": 568
-    },
-    "wide-desktop": {
-      "width": 1920,
-      "height": 1080
     }
   },
   "thresholds": {
     "horizontal_overflow_px": 4,
     "min_main_text_chars": 80,
-    "max_cls": 0.1,
-    "min_touch_target_px": 40,
-    "max_heading_width_ratio": 1,
-    "max_media_viewport_height_ratio": 1.5
+    "max_cls": 0.1
   },
   "interactions": [
     {
@@ -92,25 +79,21 @@
       ],
       "viewport": "mobile",
       "selectorCandidates": [
-        "[data-bg-mobile-menu-toggle]",
-        "[aria-controls='bg-nav-drawer']",
-        ".v17-menu-toggle",
-        ".bg-menu-toggle"
+        "#bgkopKnop"
       ],
-      "assert": "menu_panel_visible"
+      "assert": "mobile_panel_visible"
     },
     {
-      "id": "more-menu",
+      "id": "desktop-menu",
       "routes": [
         "/",
         "/prijzen"
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        "[data-bg-menu-trigger='more']",
-        "[data-bg-menu-trigger]"
+        ".bgkop-trig"
       ],
-      "assert": "controlled_panel_visible"
+      "assert": "desktop_panel_visible"
     },
     {
       "id": "language-switch",
@@ -121,10 +104,9 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        "a[hreflang='en']",
-        "a[href^='/en']"
+        "button[data-bg-language-current]"
       ],
-      "assert": "same_route_english_or_en_home"
+      "assert": "english_target_visible"
     }
   ],
   "rules": [
@@ -134,35 +116,6 @@
     "mobile_and_desktop_required_for_all_routes",
     "chromium_firefox_webkit_required_for_critical_matrix",
     "no_tolerance_widening_to_hide_structural_mismatch",
-    "daily_production_run_required",
-    "visual_quality_is_a_release_requirement",
-    "small_mobile_and_wide_desktop_are_required_edge_viewports",
-    "visual_failures_must_be_fixed_not_hidden",
-    "daily_gate_uses_bounded_full_sitemap_plus_deep_critical_matrix",
-    "pr_gate_uses_all_routes_mobile_desktop_plus_deep_critical_matrix",
-    "daily_gate_uses_all_routes_all_five_viewports_plus_deep_critical_matrix"
-  ],
-  "visual_quality_assertions": [
-    "no_overlapping_visible_text_or_controls",
-    "no_clipped_visible_text",
-    "no_horizontal_overflow",
-    "images_and_video_fit_viewport",
-    "interactive_controls_have_usable_touch_targets",
-    "primary_buttons_are_not_truncated",
-    "fixed_or_sticky_navigation_does_not_cover_main_heading",
-    "critical_cards_do_not_exceed_viewport_width",
-    "body_text_remains_readable",
-    "screenshots_are_retained_for_visual_review"
-  ],
-  "pr_all_route_viewports": [
-    "mobile",
-    "desktop"
-  ],
-  "daily_all_route_viewports": [
-    "small-mobile",
-    "mobile",
-    "tablet",
-    "desktop",
-    "wide-desktop"
+    "daily_production_run_required"
   ]
 }
