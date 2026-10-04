@@ -14,7 +14,11 @@ const slug=value=>value==='/'?'home':value.replace(/^\/+|\/+$/g,'').replace(/[^a
 await fs.mkdir(out,{recursive:true});
 
 async function readRoutes(){
-  const res=await fetch(base+'/sitemap.xml',{signal:AbortSignal.timeout(15000)});
+  let res=await fetch(base+'/sitemap.xml',{signal:AbortSignal.timeout(15000)});
+  if(!res.ok && base!=='https://www.bedrijfsgeheugen.nl') {
+    console.log(`candidate sitemap HTTP ${res.status}; using production sitemap for route inventory only`);
+    res=await fetch('https://www.bedrijfsgeheugen.nl/sitemap.xml',{signal:AbortSignal.timeout(15000)});
+  }
   if(!res.ok) throw new Error(`sitemap HTTP ${res.status}`);
   const xml=await res.text();
   let routes=[...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)]
