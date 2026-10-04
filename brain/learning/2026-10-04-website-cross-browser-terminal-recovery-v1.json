@@ -1,0 +1,35 @@
+{
+  "fingerprint": "website-cross-browser-terminal-recovery-v1",
+  "observed_at": "2026-10-04T13:20:00Z",
+  "type": "RECOVERY",
+  "problem": "The structural website screenshot assurance reached real browser evidence and exposed nested canonical wrappers, missing mobile navigation ARIA state, Firefox-inoperable desktop mega menus, redirect inspection races and Firefox navigation-abort false positives.",
+  "root_cause": "Canonical shell projection was not fully idempotent and pinned V18 navigation relied on pointer-capability assumptions without a complete machine-readable state contract; the assurance runner also treated redirect/context transitions and browser-specific abort codes as hard failures.",
+  "decision": "Repair the canonical build and the browser evidence semantics without widening CLS or responsive thresholds.",
+  "prevention": [
+    "Canonical shell extraction always unwraps the deepest existing #view-inhoud/page-inhoud before re-projection.",
+    "V18 mobile navigation synchronizes aria-controls and aria-expanded from the drawer state.",
+    "V18 desktop mega navigation supports pointer, focus, click, Escape and outside-click across Chromium, Firefox and WebKit.",
+    "Redirect inspection retries after navigation context replacement.",
+    "Only exact browser navigation-abort codes are excluded from hard resource failures."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_CROSS_BROWSER_STRUCTURAL_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "tools/site-shell/apply-shell.mjs",
+    "tools/bouw-v18-production-core.mjs",
+    "tools/site-shell/website-cross-browser-assurance.mjs",
+    "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+    "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-canonical-shell-idempotency-v1.test.mjs",
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}

@@ -110,11 +110,11 @@ async function gotoSettled(page,url){
 
 async function inspectStable(page){
   let last;
-  for(let attempt=1;attempt<=3;attempt++){
+  for(let attempt=1;attempt<=5;attempt++){
     try{return await inspect(page)}
     catch(error){
       last=error;
-      if(!/Execution context was destroyed|Cannot find context|Target page, context or browser has been closed/i.test(String(error?.message||error)))throw error;
+      if(!/Execution context was destroyed|Cannot find context|Target page, context or browser has been closed|navigation/i.test(String(error?.message||error)))throw error;
       await page.waitForLoadState('domcontentloaded',{timeout:5000}).catch(()=>{});
       await sleep(250);
     }
@@ -182,7 +182,9 @@ async function runInteraction(browserName,browser,interaction,route){
     await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(250);
     const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
+    const controls=await trigger.getAttribute('aria-controls').catch(()=>null);
     if(expanded!=='true')violations.push(`mobile menu did not expand: ${expanded}`);
+    if(controls!=='v18MobileDrawer')violations.push(`mobile menu aria-controls mismatch: ${controls}`);
     const panel=page.locator('#v18MobileDrawer');
     if(await panel.count()===0)violations.push('mobile drawer #v18MobileDrawer missing');
     else{
@@ -192,11 +194,13 @@ async function runInteraction(browserName,browser,interaction,route){
     }
   }else if(interaction.assert==='v18_desktop_mega_visible'){
     const trigger=page.locator(found).first();
-    await trigger.hover().catch(error=>violations.push(`hover failed: ${error.message}`));
+    await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(180);
     const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " navitem ")][1]');
     const panel=group.locator('.mega').first();
-    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop mega not visible after hover');
+    const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
+    if(expanded!=='true')violations.push(`desktop mega did not expand: ${expanded}`);
+    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop mega not visible after click');
   }else if(interaction.assert==='english_target_visible'){
     const trigger=page.locator(found).first();
     await trigger.click().catch(error=>violations.push(`language trigger click failed: ${error.message}`));
@@ -251,7 +255,7 @@ for(const browserName of contract.screenshot_matrix.browsers){
     const browser=await engine.launch({headless:true});
     try{
       for(const route of contract.screenshot_matrix.routes){
-        const already=browserName==='chromium'&&contract.all_route_sweep.viewports.includes(viewportName);
+        const already=browserName==='chromium'&&allRouteViewports.includes(viewportName);
         if(already)continue;
         const result=await checkOne({browserName,browser,viewportName,route,screenshotAlways:true});
         results.push(result);if(result.violations.length)failures.push(result);
