@@ -16,7 +16,7 @@
   "evidence": {
     "implementation": [
       ".github/workflows/production-source-snapshot.yml",
-      "tools/site-shell/verify-pricing-production-content.mjs"
+      "tools/delivery/verify-pricing-production-content.mjs"
     ],
     "regression": [
       "tests/brain-pricing-production-proof-semantic.test.mjs"
