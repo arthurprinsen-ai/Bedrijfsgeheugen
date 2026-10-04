@@ -21,7 +21,9 @@ test('website assurance checks responsive failures instead of screenshot-only de
   for(const marker of ['horizontal overflow','broken images','page errors','failed core requests','CLS','main missing/not visible','h1 missing/not visible']) assert.ok(runner.includes(marker),marker);
   assert.ok(runner.includes('page.screenshot'));
   assert.ok(runner.includes('sitemap.xml'));
-  assert.ok(runner.includes("start+=30"));
+  assert.ok(runner.includes('workerCount'));
+  assert.ok(runner.includes('Promise.all'));
+  assert.ok(runner.includes('ASSURANCE_WORKERS'));
 });
 
 test('website assurance exercises interactions',()=>{
