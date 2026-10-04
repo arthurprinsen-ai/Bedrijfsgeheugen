@@ -13,8 +13,8 @@ function confidence(metric){
   let score=35;
   if(Number.isFinite(metric.value))score+=30;
   if(Number.isFinite(metric.delta))score+=20;
-  if(document.querySelector('[data-company-context],.company-intelligence-context'))score+=10;
-  if(document.querySelector('[data-evidence-id],[data-source]'))score+=5;
+  if(globalThis.document?.querySelector?.('[data-company-context],.company-intelligence-context'))score+=10;
+  if(globalThis.document?.querySelector?.('[data-evidence-id],[data-source]'))score+=5;
   return clamp(score,0,95);
 }
 function project(metric,horizon,scenario){
@@ -94,5 +94,5 @@ function enhanceSurfaces(){
 }
 function markReady(){document.documentElement.dataset.nextgenIntelligence='ready';}
 function init(){if(document.querySelector('.ng-lens'))return;enhanceSurfaces();initLens();markReady();}
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();
+if(globalThis.document){if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});else init();}
 export {parseMetric,confidence,project};
