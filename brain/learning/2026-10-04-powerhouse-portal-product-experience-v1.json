@@ -1,0 +1,20 @@
+{
+  "version": "2026-10-04-powerhouse-portal-product-experience-v1",
+  "kind": "powerhouse_learning",
+  "status": "candidate",
+  "problem": "Portal quality cannot depend on one-off page fixes; dynamic portal views, visualizations and interactions need one inherited responsive and reliability authority.",
+  "decision": "Introduce a final product-experience CSS/runtime layer, automatic visual fitting/overflow detection, interaction/runtime signals, narrow-mobile coverage and a machine-readable Powerhouse experience contract.",
+  "reusable_rules": [
+    "Fix the shared portal experience layer before patching individual pages.",
+    "Any dynamically mounted portal view must inherit the same visual and interaction contract.",
+    "Visual overflow and runtime errors are Powerhouse quality signals, not cosmetic exceptions.",
+    "320px, 390px, tablet and desktop are explicit acceptance surfaces.",
+    "Do not widen visual thresholds to hide structural defects."
+  ],
+  "evidence_paths": [
+    "portal-v2/product-experience.css",
+    "portal-v2/product-experience.js",
+    "config/powerhouse-portal-product-experience-v1.json",
+    "tests/portal-product-experience-contract.test.mjs"
+  ]
+}
