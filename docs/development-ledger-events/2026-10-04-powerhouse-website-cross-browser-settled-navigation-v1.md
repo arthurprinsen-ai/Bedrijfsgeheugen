@@ -1,0 +1,1 @@
+Obligation: website-cross-browser-settled-navigation-20261004-v1\n\nNarrow recovery: successful final document navigation reconciles only transient retry failures for the same path. All visual/browser thresholds remain unchanged.\n
