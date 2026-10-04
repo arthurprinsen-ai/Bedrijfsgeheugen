@@ -20,6 +20,7 @@
       "portal-v2/nextgen-intelligence.css"
     ],
     "regression": [
+      "tests/brain-portal-v2-semantic-interaction.test.mjs",
       "portal-v2/tests/nextgen-intelligence.test.mjs"
     ],
     "documentation": "docs/changes/2026-10-04-portal-v2-semantic-interaction.md",
@@ -45,7 +46,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "portal-v2/tests/nextgen-intelligence.test.mjs"
+      "tests/brain-portal-v2-semantic-interaction.test.mjs"
     ],
     "expected": "Semantic labels prefer explicit visual meaning, remain bounded, and visual points keep one consistent select-understand-act interaction contract."
   }
