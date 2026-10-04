@@ -1,0 +1,33 @@
+{
+  "fingerprint": "website-cross-browser-real-defects-20261004-v1",
+  "observed_at": "2026-10-04T13:42:00Z",
+  "type": "REPAIR",
+  "problem": "Fresh exact-preview cross-browser evidence still showed transient preview 404s, stale header interaction selectors and tablet CLS on ai-modelwijzer.",
+  "root_cause": "The PR workflow considered the preview ready when only / returned 200; the assurance contract still targeted legacy-only navigation controls; the shared tablet trustbar container did not reserve its complete final height before runtime stabilization.",
+  "decision": "Require exact preview sitemap and representative generated routes before the sweep, support both canonical shared-header and legacy V18 controls, correct canonical aria-controls, and reserve fixed tablet trustbar geometry.",
+  "prevention": [
+    "Never use the production sitemap to test an incompletely built pull-request preview.",
+    "Browser interaction contracts must follow canonical semantic controls and keep legacy compatibility only where generated pages still use V18.",
+    "Tablet trustbar outer and inner geometry is reserved before runtime so downstream content cannot jump."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_CROSS_BROWSER_REAL_DEFECTS",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "GitHub Actions run 37205893123",
+    "artifact 11305395176",
+    "components/header/header.html",
+    "tools/site-shell/components.mjs",
+    "tools/site-shell/website-cross-browser-assurance.mjs",
+    ".github/workflows/website-cross-browser-screenshot-assurance.yml"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}
