@@ -870,6 +870,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_channel_capabilities_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261004150000_salesrobot_capability_routing_v1.sql",
+      "evidence_contract": "tests/brain-salesrobot-capability-routing-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_compliance_evidence_v1",
       "type": "table",
       "authority": "supabase/migrations/20260917093000_powerhouse_resource_intelligence_v1.sql",
