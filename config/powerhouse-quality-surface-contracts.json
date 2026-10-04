@@ -933,6 +933,27 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_linkedin_company_growth_daily_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql",
+      "evidence_contract": "tests/brain-linkedin-company-growth-engine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_linkedin_company_growth_policy_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql",
+      "evidence_contract": "tests/brain-linkedin-company-growth-engine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_linkedin_company_page_metrics_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql",
+      "evidence_contract": "tests/brain-linkedin-company-growth-engine-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_loop_assurance_receipts_v1",
       "type": "table",
       "authority": "supabase/migrations/20260929211000_powerhouse_loop_assurance_v2.sql",
