@@ -1527,3 +1527,12 @@ All chats and agents that touch the public website inherit this rule automatical
 Canonical runtime: `assets/js/i18n.js`.
 Regression: `tests/brain-i18n-persistent-navigation-v1.test.mjs`.
 Learning: `brain/learning/2026-09-30-public-i18n-persistent-navigation-v1.json`.
+
+
+## Pre-write obligation recovery
+
+Fingerprint: `powerhouse|prewrite-obligation|external-mutation-recovery|v1`.
+
+Before any GitHub/provider/deploy mutation that owes a business or production outcome, verify that the canonical obligation already exists with a stable idempotency key, expected terminal outcome, evidence, next safe action and resume condition. If the execution surface rejects the write before a side effect, classify the run as RECOVERY_REQUIRED and preserve the same obligation; the next capable node resumes it rather than creating a new lineage.
+
+For daily blogs, the approved content artifact is the immutable input to the existing protected GitHub publisher and remains open until merge, Netlify current-main and public canonical readback are all proven. For LinkedIn company publishing, organization-read/ACL access is corroborative rather than a write prerequisite; the actual organization create call is the capability probe when canonical organization identity is known. A durable provider URN is terminal side-effect evidence and permanently sets republish_forbidden=true.

@@ -36,6 +36,31 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'prewrite-obligation-external-mutation-recovery-v1',
+      fingerprint:'powerhouse|prewrite-obligation|external-mutation-recovery|v1',
+      label:'Pre-write Obligation & External Mutation Recovery',
+      authority:'github+supabase+provider-readback',
+      owner:'whole-brain-reliability',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['expected outcome','canonical obligation','idempotency key','planned external mutation']),
+      outputs:Object.freeze(['durable pre-write checkpoint','same-lineage recovery','terminal readback or hard-boundary evidence']),
+      runtime:Object.freeze({
+        continuityPolicy:'brain/policies/powerhouse-agent-continuity-v1.json',
+        agentContract:'AGENTS.md',
+        skill:'.agents/skills/powerhouse-continuity/SKILL.md',
+        obligationContract:'docs/outcome-obligations.md',
+        contentOrchestrator:'supabase/functions/powerhouse-content-orchestrator/index.ts'
+      }),
+      invariants:Object.freeze({
+        obligationBeforeExternalWrite:true,
+        blockedWriteIsRecoverable:true,
+        sameIdempotencyLineage:true,
+        blogClosesOnProductionReadback:true,
+        linkedinCompanyReadAclNotWritePrerequisite:true,
+        durableProviderUrnStopsRepublish:true
+      })
+    }),
+    Object.freeze({
       id:'powerhouse-product-led-growth-v1',
       label:'Powerhouse Product-led Growth Architecture',
       authority:'github+public-site+growth-evidence',
