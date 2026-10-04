@@ -45,3 +45,4 @@ test('header contract declares its owned files and invariants', () => {
   assert.ok(contract.invariants.includes('navigation-links-preserved'));
   assert.ok(contract.invariants.includes('mobile-menu-keyboard-behavior-preserved'));
 });
+
