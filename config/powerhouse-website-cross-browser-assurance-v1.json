@@ -79,7 +79,7 @@
       ],
       "viewport": "mobile",
       "selectorCandidates": [
-        "#mobileToggle"
+        "#bgkopKnop"
       ],
       "assert": "mobile_panel_visible"
     },
@@ -91,7 +91,7 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        ".navitem[data-mega] > .navbtn"
+        ".bgkop-trig"
       ],
       "assert": "desktop_panel_visible"
     },
@@ -127,6 +127,6 @@
     "mobile",
     "desktop"
   ],
-  "evidence_generation": "2026-10-04-live-recheck-v1",
-  "evidence_reason": "re-run current website candidate through exact Netlify preview after CLS/header/interaction repairs"
+  "evidence_generation": "2026-10-04-current-controls-cls-v2",
+  "evidence_reason": "align assurance with canonical shared header controls and reserve stable announcement/header geometry"
 }
