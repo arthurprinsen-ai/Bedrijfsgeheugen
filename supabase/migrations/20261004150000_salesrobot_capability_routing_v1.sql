@@ -26,7 +26,7 @@ create or replace function public.powerhouse_resolve_commercial_channel_v1(
   p_has_email boolean default false,
   p_has_linkedin_post_context boolean default false
 ) returns jsonb
-language plpgsql stable security definer
+language plpgsql stable security invoker
 set search_path to 'pg_catalog','public'
 as $$
 declare
