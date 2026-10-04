@@ -57,3 +57,11 @@ test('CMS admin route is excluded from public shell projection',()=>{
   assert.match(contracts,/PUBLIC_PAGE_EXCLUDES[\s\S]*'cms\.html'/);
   assert.match(normalizer,/MAG_NIET[\s\S]*'cms\.html'/);
 });
+
+
+test('CMS admin selector helpers remain distinct',()=>{
+  const admin=read('assets/cms-admin.js');
+  assert.match(admin,/var \$=function\(s,r\)\{return \(r\|\|document\)\.querySelector\(s\)\}/);
+  assert.match(admin,/var \$\$=function\(s,r\)\{return \[\.\.\.\(r\|\|document\)\.querySelectorAll\(s\)\]\}/);
+  assert.doesNotMatch(admin,/var \$=function\(s,r\)\{return \[\.\.\.\(r\|\|document\)\.querySelectorAll/);
+});
