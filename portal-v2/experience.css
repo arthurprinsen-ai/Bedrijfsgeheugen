@@ -26,3 +26,10 @@ dialog,.portal-popover,.sheet{border-radius:18px;box-shadow:0 28px 90px rgba(7,1
 @media(max-width:430px){.main{padding:10px}.kpis{grid-template-columns:1fr}.searchrow{grid-template-columns:1fr repeat(3,44px)}.smallbtn.topaction-icon{width:44px;padding:0}[data-portal-visual] svg{max-height:280px}}
 @media(max-width:350px){.main{padding:9px}.portal-hamburger span{display:none}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* V2 screenshot-derived hardening: these override legacy route-specific sizes. */
+.csrd-world{height:340px!important;min-height:300px!important;max-height:340px!important;overflow:hidden!important}
+@media(max-width:760px){
+  .csrd-world{display:none!important}
+  .topactions .searchrow>.smallbtn,.topactions .actionrow>.smallbtn{height:44px!important;min-height:44px!important;max-height:none!important}
+}
