@@ -10,3 +10,5 @@
 - UX: responsive, touch-first, toetsenbord-focus en reduced-motion.
 - Regression: portal-v2/tests/nextgen-intelligence.test.mjs.
 - Terminale status: kandidaat; merge/productie/readback worden alleen na groene gates vastgelegd.
+
+- Canonieke replay: tests/portal-v2-nextgen-intelligence.test.mjs; componentregressie blijft aanvullend onder portal-v2/tests.
