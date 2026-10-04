@@ -8,3 +8,5 @@
 - Regressie: `tests/brain-pricing-production-proof-semantic.test.mjs`.
 
 - Canonical verifier path: `tools/delivery/verify-pricing-production-content.mjs`.
+
+- Contractscheiding: statische proof = zichtbare content/mode-labels; browserproof = daadwerkelijke tabinteractie. Runtime-only `data-tab` is geen vereiste voor de statische HTML-response.
