@@ -79,9 +79,9 @@
       ],
       "viewport": "mobile",
       "selectorCandidates": [
-        "#bgkopKnop"
+        "#mobileToggle"
       ],
-      "assert": "mobile_panel_visible"
+      "assert": "v18_mobile_drawer_visible"
     },
     {
       "id": "desktop-menu",
@@ -91,9 +91,9 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        ".bgkop-trig"
+        "header.v17-header .navitem[data-mega] > .navbtn"
       ],
-      "assert": "desktop_panel_visible"
+      "assert": "v18_desktop_mega_visible"
     },
     {
       "id": "language-switch",

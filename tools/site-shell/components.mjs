@@ -15,7 +15,7 @@ export const BRAND_SHELL_CSS = `<style id="bg-canonical-brand-shell">
 header.v17-header{background:rgba(12,16,20,.98)!important;border-bottom:1px solid rgba(255,255,255,.10)!important}
 header.v17-header a,header.v17-header a:visited,header.v17-header a:hover,header.v17-header .brand,header.v17-header .navbtn,header.v17-header .login{color:#fff}
 header.v17-header .brand{text-decoration:none}
-@media(max-width:640px){.bg-uniform-trust{font-size:12px}.bg-uniform-trust-in{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(3,16px);justify-content:stretch;align-items:center;padding:8px 18px;gap:5px;min-height:64px;box-sizing:border-box}.bg-uniform-trust-in span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:16px}}
+@media(min-width:641px) and (max-width:1024px){.bg-uniform-trust-in{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));min-height:38px;box-sizing:border-box;gap:12px}.bg-uniform-trust-in span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center}}\n@media(max-width:640px){.bg-uniform-trust{font-size:12px}.bg-uniform-trust-in{display:grid;grid-template-columns:1fr;grid-template-rows:repeat(3,16px);justify-content:stretch;align-items:center;padding:8px 18px;gap:5px;min-height:64px;box-sizing:border-box}.bg-uniform-trust-in span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:16px}}
 </style>`;
 
 export function renderFooterContact() {
