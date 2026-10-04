@@ -1,0 +1,55 @@
+{
+  "learningId": "2026-10-04-portal-v2-experience-assurance-v2",
+  "fingerprint": "portal-v2|experience-assurance|responsive|visual|interaction|powerhouse|v2",
+  "status": "CANDIDATE_PROTECTED_DELIVERY",
+  "observedAt": "2026-10-04T15:33:00+02:00",
+  "problem": "Portal V2 had a canonical experience layer, but release assurance still sampled only three routes and three viewports and did not fail on dynamic visual overflow, missing experience runtime or undersized critical interaction targets.",
+  "rootCause": "The visual regression harness measured legacy oversized components but was not yet bound to the full cross-cutting experience runtime and therefore could miss regressions in dynamically mounted views and narrow-mobile interactions.",
+  "root_cause": "The visual regression harness measured legacy oversized components but was not yet bound to the full cross-cutting experience runtime and therefore could miss regressions in dynamically mounted views and narrow-mobile interactions.",
+  "prevention": [
+    "Keep portal-v2/experience.css and portal-v2/experience.js as the single final experience authority.",
+    "Normalize and remeasure dynamically mounted visuals with MutationObserver and ResizeObserver.",
+    "Fail visual assurance on page overflow above 2px, marked visual overflow, missing v2 runtime or critical controls below 44px.",
+    "Exercise six critical routes at 1440px, 1024px, 390px and 320px, producing 24 screenshots per assurance run.",
+    "Do not widen thresholds to conceal structural responsive defects.",
+    "Keep canonical Portal State auth and fail-closed write confirmation unchanged."
+  ],
+  "evidence": {
+    "implementation": [
+      "portal-v2/experience.css",
+      "portal-v2/experience.js",
+      "config/powerhouse-portal-visual-assurance-v1.json",
+      "tools/portal-visual-density.mjs"
+    ],
+    "regression": [
+      "tests/brain-portal-v2-experience-assurance-v2.test.mjs",
+      "tests/portal-v2-experience-contract.test.mjs",
+      "tests/portal-visual-density-contract.test.mjs"
+    ],
+    "outcome": "Visual assurance is release-blocking and emits screenshot plus metric evidence for the 24 route/viewport combinations."
+  },
+  "compiler": {
+    "failure_class": "PORTAL_UX_ASSURANCE_GAP",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-experience-assurance-v2.test.mjs"
+    ]
+  },
+  "invariants": {
+    "singleExperienceAuthority": true,
+    "routeCount": 6,
+    "viewportCount": 4,
+    "screenshotsPerRun": 24,
+    "narrowMobileWidthPx": 320,
+    "minCriticalTouchTargetPx": 44,
+    "horizontalOverflowPxMax": 2,
+    "dynamicVisualOverflowFailClosed": true,
+    "runtimeInitializationFailClosed": true,
+    "backendAuthorityUnchanged": true
+  }
+}
