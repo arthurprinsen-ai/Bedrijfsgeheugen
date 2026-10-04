@@ -1,6 +1,6 @@
 {
   "learningId": "2026-10-04-portal-v2-experience-contract-v1",
-  "fingerprint": "portal-v2|experience|responsive|interaction|backend-contract|v1",
+  "fingerprint": "portal-v2|experience|responsive|interaction|visual-assurance|backend-contract|v2",
   "status": "CANDIDATE_PROTECTED_DELIVERY",
   "observedAt": "2026-10-04T15:07:00+02:00",
   "problem": "Portal V2 had strong functional coverage but visual scale, media sizing, chart containment and interaction consistency were still governed by multiple page-specific styles, allowing oversized components and inconsistent responsive behavior.",
@@ -14,7 +14,9 @@
     ],
     "regression": [
       "tests/portal-v2-experience-contract.test.mjs",
-      "tests/portal-v2-navigation-contract.test.mjs"
+      "tests/portal-visual-density-contract.test.mjs",
+      "tests/portal-v2-navigation-contract.test.mjs",
+      "tools/portal-visual-density.mjs"
     ],
     "documentation": "docs/changes/2026-10-04-portal-v2-experience-contract-v1.md"
   },
@@ -28,7 +30,10 @@
     "reducedMotionSupported": true,
     "portalStateAuthorityUnchanged": true,
     "backendWritesFailClosed": true,
-    "productionReadbackRequired": true
+    "productionReadbackRequired": true,
+    "visualAssuranceScreenshotsPerRun": 24,
+    "narrowMobileWidthPx": 320,
+    "dynamicVisualOverflowSignalRequired": true
   },
   "compiler": {
     "failure_class": "PORTAL_UX_SCALE_DRIFT",
@@ -42,5 +47,12 @@
       "tests/brain-portal-v2-experience-contract-v1.test.mjs"
     ]
   },
-  "root_cause": "Responsive behavior existed mainly as local CSS/test fixes rather than one cross-cutting experience contract that every present and dynamically rendered Portal V2 surface inherits."
+  "root_cause": "Responsive behavior existed mainly as local CSS/test fixes rather than one cross-cutting experience contract that every present and dynamically rendered Portal V2 surface inherits.",
+  "prevention": [
+    "Use portal-v2/experience.css and portal-v2/experience.js as the single final experience authority; do not introduce a parallel page-local UX layer.",
+    "Normalize and remeasure dynamically mounted visuals through MutationObserver and ResizeObserver.",
+    "Fail browser assurance on horizontal page overflow, marked visual overflow, missing experience runtime or critical controls below 44px.",
+    "Run the visual assurance matrix on six critical routes across 1440px, 1024px, 390px and 320px viewports.",
+    "Keep canonical Portal State authentication and stored=false backend failure behavior unchanged and fail-closed."
+  ]
 }
