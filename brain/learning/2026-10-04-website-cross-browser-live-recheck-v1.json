@@ -1,0 +1,29 @@
+{
+  "fingerprint": "website-cross-browser-live-recheck-20261004-v1",
+  "observed_at": "2026-10-04T11:25:00Z",
+  "type": "VERIFICATION",
+  "problem": "After multiple structural website browser fixes, a fresh exact-current candidate run is required before treating the current website as verified.",
+  "root_cause": "Earlier browser evidence belonged to superseded candidate SHAs and cannot prove the current main state.",
+  "decision": "Re-run the canonical cross-browser screenshot assurance on an exact Netlify preview derived from current main and repair any remaining failures in the same lineage.",
+  "prevention": [
+    "Never reuse browser evidence from a superseded candidate.",
+    "Keep thresholds unchanged.",
+    "Use exact preview for PR validation and production for scheduled validation."
+  ],
+  "compiler": {
+    "failure_class": "STALE_BROWSER_EVIDENCE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "config/powerhouse-website-cross-browser-assurance-v1.json",
+    ".github/workflows/website-cross-browser-screenshot-assurance.yml"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}
