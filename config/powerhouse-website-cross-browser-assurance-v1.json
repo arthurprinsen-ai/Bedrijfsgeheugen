@@ -9,10 +9,7 @@
     ],
     "viewports": [
       "small-mobile",
-      "mobile",
-      "tablet",
-      "desktop",
-      "wide-desktop"
+      "desktop"
     ],
     "assertions": [
       "http_ok",
@@ -140,7 +137,8 @@
     "daily_production_run_required",
     "visual_quality_is_a_release_requirement",
     "small_mobile_and_wide_desktop_are_required_edge_viewports",
-    "visual_failures_must_be_fixed_not_hidden"
+    "visual_failures_must_be_fixed_not_hidden",
+    "daily_gate_uses_bounded_full_sitemap_plus_deep_critical_matrix"
   ],
   "visual_quality_assertions": [
     "no_overlapping_visible_text_or_controls",
