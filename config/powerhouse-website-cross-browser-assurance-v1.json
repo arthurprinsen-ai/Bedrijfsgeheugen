@@ -116,6 +116,15 @@
     "mobile_and_desktop_required_for_all_routes",
     "chromium_firefox_webkit_required_for_critical_matrix",
     "no_tolerance_widening_to_hide_structural_mismatch",
-    "daily_production_run_required"
+    "daily_production_run_required",
+    "pull_request_sweep_is_bounded",
+    "daily_production_sweep_covers_mobile_and_desktop"
+  ],
+  "pr_all_route_viewports": [
+    "mobile"
+  ],
+  "daily_all_route_viewports": [
+    "mobile",
+    "desktop"
   ]
 }
