@@ -29,5 +29,19 @@
     "historical_replay": [
       "tests/brain-portal-product-experience-learning.test.mjs"
     ]
-  }
+  },
+  "root_cause": "Portal UX quality was distributed over page-specific CSS and narrow visual checks, so dynamic views could regress in scale, overflow, interaction accessibility or responsive behavior without one shared product-experience invariant.",
+  "prevention": [
+    "All Portal V2 views inherit the final product-experience CSS/runtime authority.",
+    "Dynamic visuals are decorated and remeasured after mount and resize.",
+    "Release assurance covers six critical routes at four viewports including 320px narrow mobile.",
+    "Visual overflow, undersized critical controls and missing experience runtime fail browser assurance."
+  ],
+  "evidence": [
+    "tests/brain-portal-product-experience-learning.test.mjs",
+    "tests/portal-product-experience-contract.test.mjs",
+    "tests/portal-visual-density-contract.test.mjs",
+    "tools/portal-visual-density.mjs",
+    "config/powerhouse-portal-visual-assurance-v1.json"
+  ]
 }
