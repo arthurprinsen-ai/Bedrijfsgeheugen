@@ -156,6 +156,12 @@ Deno.serve(async(req:Request)=>{
       for(const action of dmActions||[]){
         const address=salesRobotAddress(action);
         const message=clean(action.message_draft);
+        if(action?.evidence?.human_approved!==true){
+          const evidence={...(action.evidence||{}),capability_routing:{contract:'powerhouse-capability-routing-v1',preferred:'linkedin_dm',provider:'salesrobot',status:'AWAITING_HUMAN_APPROVAL',fallback_required:false,checked_at:now}};
+          await db.from('powerhouse_sales_actions').update({evidence,updated_at:now}).eq('action_id',action.action_id);
+          dmResults.push({action_id:action.action_id,status:'awaiting_human_approval',reason:'UNSOLICITED_OUTBOUND_APPROVAL_REQUIRED'});
+          continue;
+        }
         if(!message){dmResults.push({action_id:action.action_id,status:'fallback',reason:'MESSAGE_MISSING'});continue;}
         const hasAddress=!!(address.prospect_uuid||address.thread_id||address.unipile_chat_id||address.unipile_sales_nav_chat_id);
         if(!hasAddress){
