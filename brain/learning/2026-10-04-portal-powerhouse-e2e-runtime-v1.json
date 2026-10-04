@@ -54,6 +54,12 @@
     "historical_replay": [
       "tests/brain-portal-v2-end-to-end-runtime.test.mjs"
     ],
-    "expected": "Authenticated Brain readback populates portal.runtime without source persistence; canonical portal write sourceRevision remains the correlation authority for downstream UI evidence."
+    "expected": "Authenticated Brain readback populates portal.runtime without source persistence; canonical portal write sourceRevision remains the correlation authority for downstream UI evidence.",
+    "shadow": [
+      "tests/brain-portal-v2-end-to-end-runtime.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-portal-v2-end-to-end-runtime.test.mjs"
+    ]
   }
 }
