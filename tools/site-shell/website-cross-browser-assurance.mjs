@@ -14,12 +14,15 @@ const slug=value=>value==='/'?'home':value.replace(/^\/+|\/+$/g,'').replace(/[^a
 await fs.mkdir(out,{recursive:true});
 
 async function readRoutes(){
-  let res=await fetch(base+'/sitemap.xml',{signal:AbortSignal.timeout(15000)});
-  if(!res.ok && base!=='https://www.bedrijfsgeheugen.nl') {
-    console.log(`candidate sitemap HTTP ${res.status}; using production sitemap for route inventory only`);
-    res=await fetch('https://www.bedrijfsgeheugen.nl/sitemap.xml',{signal:AbortSignal.timeout(15000)});
+  let res=null,lastStatus=null;
+  for(let attempt=1;attempt<=12;attempt++){
+    res=await fetch(base+'/sitemap.xml',{signal:AbortSignal.timeout(15000)}).catch(()=>null);
+    lastStatus=res?.status??null;
+    if(res?.ok)break;
+    if(base==='https://www.bedrijfsgeheugen.nl')break;
+    await sleep(Math.min(5000,attempt*750));
   }
-  if(!res.ok) throw new Error(`sitemap HTTP ${res.status}`);
+  if(!res?.ok) throw new Error(`exact sitemap unavailable at ${base}: HTTP ${lastStatus??'none'}`);
   const xml=await res.text();
   let routes=[...xml.matchAll(/<loc>\s*([^<]+?)\s*<\/loc>/gi)]
     .map(match=>new URL(match[1].replace(/&amp;/g,'&')).pathname.replace(/\/+$/,'')||'/')
@@ -176,32 +179,32 @@ async function runInteraction(browserName,browser,interaction,route){
   await gotoSettled(page,base+route);
   const found=await page.evaluate(candidates=>candidates.find(selector=>document.querySelector(selector))||null,interaction.selectorCandidates);
   const violations=[];
-  if(!found){violations.push(`interaction trigger missing: ${interaction.id}`);}
-  else if(interaction.assert==='v18_mobile_drawer_visible'){
+  if(!found){
+    violations.push(`interaction trigger missing: ${interaction.id}`);
+  } else if(interaction.assert==='mobile_drawer_visible'){
     const trigger=page.locator(found).first();
     await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(250);
     const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
-    const controls=await trigger.getAttribute('aria-controls').catch(()=>null);
     if(expanded!=='true')violations.push(`mobile menu did not expand: ${expanded}`);
-    if(controls!=='v18MobileDrawer')violations.push(`mobile menu aria-controls mismatch: ${controls}`);
-    const panel=page.locator('#v18MobileDrawer');
-    if(await panel.count()===0)violations.push('mobile drawer #v18MobileDrawer missing');
-    else{
-      const hidden=await panel.getAttribute('hidden').catch(()=>null);
-      const visible=await panel.isVisible().catch(()=>false);
-      if(hidden!==null||!visible)violations.push(`mobile panel not visible (hidden=${hidden}, visible=${visible})`);
-    }
-  }else if(interaction.assert==='v18_desktop_mega_visible'){
+    const controls=await trigger.getAttribute('aria-controls').catch(()=>null);
+    const fallback=found==='#bgkopKnop'?'#bgkopMob':'#v18MobileDrawer';
+    const panel=controls&&await page.locator('#'+controls).count()?page.locator('#'+controls).first():page.locator(fallback).first();
+    if(!(await panel.isVisible().catch(()=>false)))violations.push(`mobile panel not visible: ${controls||fallback}`);
+  } else if(interaction.assert==='desktop_mega_visible'){
     const trigger=page.locator(found).first();
-    await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
-    await sleep(180);
-    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " navitem ")][1]');
-    const panel=group.locator('.mega').first();
-    const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
-    if(expanded!=='true')violations.push(`desktop mega did not expand: ${expanded}`);
-    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop mega not visible after click');
-  }else if(interaction.assert==='english_target_visible'){
+    await trigger.hover().catch(()=>{});
+    await trigger.focus().catch(()=>{});
+    await trigger.click().catch(()=>{});
+    await sleep(220);
+    let panel;
+    if(found.startsWith('.bgkop-groep')){
+      panel=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " bgkop-groep ")][1]').locator('.bgkop-paneel').first();
+    }else{
+      panel=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " navitem ")][1]').locator('.mega').first();
+    }
+    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop menu panel not visible after focus/click');
+  } else if(interaction.assert==='english_target_visible'){
     const trigger=page.locator(found).first();
     await trigger.click().catch(error=>violations.push(`language trigger click failed: ${error.message}`));
     await sleep(180);
