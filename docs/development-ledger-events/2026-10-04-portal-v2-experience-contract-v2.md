@@ -7,3 +7,7 @@ Fingerprint: portal-v2-responsive-end-to-end-v2
 De bestaande Portal V2 Experience Contract is uitgebreid in plaats van een tweede product-experience stack toe te voegen. Visual assurance test voortaan 24 combinaties en bewaakt 320px narrow-mobile, overflow, touch-targets en runtime experience-signalen.
 
 Backend-authority en Portal State blijven ongewijzigd. Productiestatus vereist protected merge, exacte Netlify main-deploy en productie/browser-readback.
+
+
+## CI recovery
+De eerste consolidatie-runs legden twee contractfouten bloot: ongeldige PR-machine metadata en letterlijke newline-escapes in twee testbestanden. Beide zijn op dezelfde obligation hersteld zonder UX-, overflow-, touch- of backenddrempels te verlagen. Nieuwe gates moeten uitsluitend de actuele branch-head beoordelen.
