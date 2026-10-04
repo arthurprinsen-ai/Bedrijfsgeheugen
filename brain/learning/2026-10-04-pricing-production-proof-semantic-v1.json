@@ -6,11 +6,12 @@
   "problem": "Production pricing proof reported failure while the live page visibly contained the complete canonical SaaS and consulting offer.",
   "rootCause": "The workflow asserted exact raw HTML fragments such as >Starter< and >Enterprise<, coupling release truth to incidental heading markup instead of semantic content.",
   "root_cause": "The workflow asserted exact raw HTML fragments such as >Starter< and >Enterprise<, coupling release truth to incidental heading markup instead of semantic content.",
-  "preventionRule": "Production content gates must validate semantic required content and stable interaction attributes, not incidental tag boundaries.",
+  "preventionRule": "Static pricing production proof validates visible semantic content only; interactive tab behavior is proven by the dedicated production browser gate.",
   "prevention": [
     "Normalize rendered HTML text before validating offer labels.",
-    "Keep stable data-tab attributes as explicit interaction contracts.",
-    "Fail closed when any required offer or tab is missing.",
+    "Require both visible pricing mode labels: Powerhouse SaaS and Consulting & workshops.",
+    "Fail closed when any required offer or visible mode label is missing.",
+    "Prove tab interaction separately in the production browser gate.",
     "Do not weaken exact production SHA or browser readback requirements."
   ],
   "evidence": {
@@ -25,6 +26,8 @@
   },
   "invariants": {
     "semanticProof": true,
+    "visibleModeLabelsRequired": true,
+    "runtimeInteractionProvedInBrowser": true,
     "failClosed": true,
     "exactShaStillRequired": true,
     "browserProofStillRequired": true
@@ -40,6 +43,6 @@
     "historical_replay": [
       "tests/brain-pricing-production-proof-semantic.test.mjs"
     ],
-    "expected": "Markup attributes may change without false failure; missing canonical offers must still fail."
+    "expected": "Incidental or runtime-only tab attributes cannot cause a false content failure; missing visible modes or canonical offers still fail, while interaction remains browser-proven."
   }
 }
