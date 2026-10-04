@@ -30,7 +30,7 @@ test('website assurance exercises interactions',()=>{
   const ids=new Set(contract.interactions.map(item=>item.id));
   for(const id of ['mobile-menu','desktop-menu','language-switch'])assert.ok(ids.has(id),id);
   assert.ok(runner.includes('aria-expanded'));
-  assert.ok(runner.includes('#bgSharedMobileNav'));
+  assert.ok(runner.includes('#v18MobileDrawer,#mobileMenu'));
 });
 
 test('website assurance is scheduled daily and keeps evidence',()=>{
@@ -58,7 +58,7 @@ test('platform aliases resolve to canonical product routes',()=>{
 });
 
 
-test('shared header reserves final i18n and mobile menu geometry before JavaScript',()=>{
+test('shared header source reserves final i18n and mobile menu geometry before JavaScript',()=>{
   const header=fs.readFileSync('components/header/header.html','utf8');
   const css=fs.readFileSync('components/header/header.css','utf8');
   assert.match(header,/data-bg-language-switcher="desktop"/);
@@ -72,8 +72,8 @@ test('critical screenshot matrix uses canonical product route and real controls'
   assert.ok(contract.screenshot_matrix.routes.includes('/product'));
   assert.ok(!contract.screenshot_matrix.routes.includes('/platform'));
   const byId=Object.fromEntries(contract.interactions.map(item=>[item.id,item]));
-  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#bgkopKnop']);
-  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['.bgkop-trig']);
+  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#mobileToggle']);
+  assert.ok(byId['desktop-menu'].selectorCandidates.includes('.navitem[data-mega] > .navbtn'));
   assert.deepEqual(byId['language-switch'].selectorCandidates,['button[data-bg-language-current]']);
   assert.ok(runner.includes('#bgSharedMobileNav'));
   assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
