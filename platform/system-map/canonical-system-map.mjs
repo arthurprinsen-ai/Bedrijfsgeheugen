@@ -36,6 +36,19 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   ]),
   runtimeCapabilities:Object.freeze([
     Object.freeze({
+      id:'linkedin-channel-role-learning-v1',
+      fingerprint:'powerhouse|linkedin-channel-role-learning|v1',
+      label:'LinkedIn Channel-role Evidence Learning',
+      authority:'supabase-observed-metrics+channel-identity',
+      owner:'Powerhouse Growth & Revenue OS',
+      status:'ACTIVE_PROVEN_RUNTIME',
+      inputs:Object.freeze(['bg_post_prestatie','social_posts.channel_kind']),
+      outputs:Object.freeze(['normalized writing rules','personal/company role separation','weak-signal downgrade']),
+      runtime:Object.freeze({compiler:'public.bg_content_lessen()',scheduler:'bg-content-lessen',migration:'supabase/migrations/20261004132500_linkedin_channel_role_learning_v1.sql'}),
+      productionEvidence:Object.freeze({measuredPosts:92,personalPosts:17,personalImpressions:12545,personalReactions:2,companyPosts:18,companyImpressions:71,companyReactions:0,observedAt:'2026-10-04T11:22:47Z'}),
+      invariants:Object.freeze({personalCompanySeparated:true,crossPostReuseForbidden:true,absoluteNonZeroIsNotWinner:true,personalCommercialCtaForbidden:true,companyRevenueValueOptimization:true})
+    }),
+    Object.freeze({
       id:'prewrite-obligation-external-mutation-recovery-v1',
       fingerprint:'powerhouse|prewrite-obligation|external-mutation-recovery|v1',
       label:'Pre-write Obligation & External Mutation Recovery',
