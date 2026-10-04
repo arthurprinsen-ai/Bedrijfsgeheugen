@@ -85,4 +85,9 @@ test('pull requests test exact preview while schedule tests production',()=>{
   assert.match(workflow,/github\.event_name == 'pull_request'/);
   assert.match(workflow,/https:\/\/www\.bedrijfsgeheugen\.nl/);
   assert.match(workflow,/Wait for exact candidate preview/);
+  assert.match(workflow,/ASSURANCE_MODE:/);
+  assert.deepEqual(contract.pr_all_route_viewports,['mobile']);
+  assert.deepEqual(contract.daily_all_route_viewports,['mobile','desktop']);
+  assert.ok(contract.rules.includes('pull_request_sweep_is_bounded'));
+  assert.ok(contract.rules.includes('daily_production_sweep_covers_mobile_and_desktop'));
 });
