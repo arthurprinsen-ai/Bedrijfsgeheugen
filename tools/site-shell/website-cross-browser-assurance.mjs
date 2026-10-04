@@ -158,19 +158,19 @@ async function runInteraction(browserName,browser,interaction,route){
     await sleep(250);
     const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
     if(expanded!=='true')violations.push(`mobile menu did not expand: ${expanded}`);
-    const panel=page.locator('#bgSharedMobileNav');
-    if(await panel.count()===0)violations.push('mobile panel #bgSharedMobileNav missing');
+    const panel=page.locator('#bgkopMob');
+    if(await panel.count()===0)violations.push('mobile panel #bgkopMob missing');
     else{
-      const hidden=await panel.getAttribute('aria-hidden').catch(()=>null);
+      const hidden=await panel.getAttribute('hidden').catch(()=>null);
       const visible=await panel.isVisible().catch(()=>false);
-      if(hidden!=='false'||!visible)violations.push(`mobile panel not visible (aria-hidden=${hidden}, visible=${visible})`);
+      if(hidden!==null||!visible)violations.push(`mobile panel not visible (hidden=${hidden}, visible=${visible})`);
     }
   }else if(interaction.assert==='desktop_panel_visible'){
     const trigger=page.locator(found).first();
     await trigger.hover().catch(error=>violations.push(`hover failed: ${error.message}`));
     await sleep(180);
-    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " navitem ")][1]');
-    const panel=group.locator('.mega').first();
+    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " bgkop-groep ")][1]');
+    const panel=group.locator('.bgkop-paneel').first();
     if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop dropdown panel not visible after hover');
   }else if(interaction.assert==='english_target_visible'){
     const trigger=page.locator(found).first();
