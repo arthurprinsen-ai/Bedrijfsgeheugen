@@ -19,7 +19,12 @@ test('pricing production proof is semantic and tolerates heading attributes',()=
   const result=verifyPricingProductionContent(page());
   assert.equal(result.ok,true);
   assert.deepEqual(result.missingText,[]);
-  assert.deepEqual(result.missingTabs,[]);
+});
+
+test('pricing production proof requires both visible mode labels',()=>{
+  const result=verifyPricingProductionContent(page().replace('Consulting & workshops','Consulting'));
+  assert.equal(result.ok,false);
+  assert.ok(result.missingText.includes('Consulting & workshops'));
 });
 
 test('pricing production proof still fails closed when a canonical offer is absent',()=>{
