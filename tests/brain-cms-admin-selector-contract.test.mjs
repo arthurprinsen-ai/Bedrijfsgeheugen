@@ -9,6 +9,8 @@ test('CMS admin keeps separate single and multi selector helpers',()=>{
   assert.match(source,/var all=function\(s,r\)\{return Array\.from\(\(r\|\|document\)\.querySelectorAll\(s\)\)\}/);
   assert.doesNotMatch(source,/var \$=function\(s,r\)\{return \[\.\.\.\(r\|\|document\)\.querySelectorAll/);
   assert.match(source,/all\('\.row\[data-id\]'\)/);
+  assert.match(source,/all\('\[data-area\]'\)\.forEach/);
+  assert.doesNotMatch(source,/\$\('\[data-area\]'\)\.forEach/);
 });
 
 test('CMS event binder resolves one element before addEventListener',()=>{
