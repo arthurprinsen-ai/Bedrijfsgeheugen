@@ -41,5 +41,6 @@
     "historical_replay": [
       "tests/brain-portal-v2-experience-contract-v1.test.mjs"
     ]
-  }
+  },
+  "root_cause": "Responsive behavior existed mainly as local CSS/test fixes rather than one cross-cutting experience contract that every present and dynamically rendered Portal V2 surface inherits."
 }
