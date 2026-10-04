@@ -265,3 +265,19 @@ Hard rules:
 - comments are not the success metric; qualified conversations, meetings, proposals, orders and revenue are;
 - all new asset/post families pass global historical semantic dedupe;
 - campaign learning re-scores audience, hook, language, keyword, completion, reply and revenue outcome.
+
+
+## LinkedIn company-page growth lane — 4 oktober 2026
+Fingerprint: `powerhouse-linkedin-company-growth-v1`.
+
+De LinkedIn-bedrijfspagina is een expliciete acquisition/distribution lane binnen dezelfde Growth Swarm, geen los social-growth systeem. Reuse `.agents/skills/powerhouse-linkedin-company-growth/SKILL.md`, `config/linkedin-company-growth-v1.json` en `public.powerhouse_refresh_linkedin_company_growth_v1(date)`.
+
+Verplicht:
+- organisatie-identiteit `urn:li:organization:18234216`;
+- baseline 4 oktober 2026: 12 paginaweergaven, waarvan 10 desktop en 2 mobiel;
+- eerste operationele target: 300 paginaweergaven/30d en 100 relevante nieuwe volgers/30d;
+- maximaal drie bounded growth-aanbevelingen per dag;
+- dezelfde canonical content-recommendation, dedupe, source, provider-readback en revenue-learning authority;
+- geen commerciële traffic-bridge via het persoonlijke LinkedIn-profiel;
+- views/followers zijn tussenmetingen; paid order en realized revenue blijven terminale north star;
+- dezelfde bestaande commerciële scheduler blijft owner; een parallelle LinkedIn-growth scheduler is verboden.
