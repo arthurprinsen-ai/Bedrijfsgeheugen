@@ -126,5 +126,7 @@
   "daily_all_route_viewports": [
     "mobile",
     "desktop"
-  ]
+  ],
+  "evidence_generation": "2026-10-04-live-recheck-v1",
+  "evidence_reason": "re-run current website candidate through exact Netlify preview after CLS/header/interaction repairs"
 }
