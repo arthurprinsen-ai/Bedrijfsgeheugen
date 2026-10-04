@@ -104,3 +104,5 @@ test('generated English pages receive final font fallback and tablet trustbar ge
   assert.match(components,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
   assert.match(runner,/request\.resourceType\(\)==='document'.*net::ERR_ABORTED/);
 });
+
+// Delivery metadata refresh: exact six-file website recovery scope.
