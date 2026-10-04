@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse-website-cross-browser-visual-quality-v1",
+  "observed_at": "2026-10-04T09:45:00Z",
+  "type": "PREVENTION",
+  "problem": "Website quality needed durable screenshot evidence across responsive edge widths and multiple browser engines, while the visual-quality enhancement initially landed without complete Powerhouse closure evidence.",
+  "root_cause": "The browser assurance existed, but hard oversized/clipped visual assertions and closure lineage were not terminally coupled.",
+  "decision": "Keep one canonical website cross-browser assurance and require visual geometry failures to be fixed rather than hidden by threshold widening.",
+  "prevention": [
+    "Chromium sweeps the public sitemap responsively.",
+    "Critical routes are screenshot-tested in Chromium, Firefox and WebKit.",
+    "Oversized/clipped media/cards, truncated primary controls and navigation-over-heading are hard failures.",
+    "Learning, ledger and documentation are required closure evidence."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_VISUAL_QUALITY_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "config/powerhouse-website-cross-browser-assurance-v1.json",
+    "tools/site-shell/website-cross-browser-assurance.mjs",
+    ".github/workflows/website-cross-browser-screenshot-assurance.yml"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}
