@@ -26,6 +26,7 @@
       "tools/portal-visual-density.mjs"
     ],
     "regression": [
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs",
       "tests/portal-v2-experience-contract.test.mjs",
       "tests/portal-visual-density-contract.test.mjs",
       "tests/portal-v2-navigation-contract.test.mjs"
@@ -55,9 +56,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/brain-portal-v2-experience-contract-v1.test.mjs",
-      "tests/portal-v2-experience-contract.test.mjs",
-      "tests/portal-visual-density-contract.test.mjs"
+      "tests/brain-portal-v2-experience-contract-v2.test.mjs"
     ]
   }
 }
