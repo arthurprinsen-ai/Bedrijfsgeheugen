@@ -41,5 +41,6 @@
     "canary": [
       "tests/brain-linkedin-company-growth-engine-v1.test.mjs"
     ]
-  }
+  },
+  "root_cause": "The system already published and measured social content, but company-page distribution did not have a dedicated closed-loop objective translating page-visit/follower gaps into bounded content actions and revenue learning."
 }
