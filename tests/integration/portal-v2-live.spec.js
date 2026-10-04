@@ -144,9 +144,9 @@ test('mobile uses one complete canonical menu on supported phone widths', async 
     await expect(drawer).toHaveClass(/open/);
     await expect(drawer).toHaveAttribute('data-hub','portal');
 
-    const desktopLabels=await page.locator('.portal-single-navigation [data-nav-target]').allTextContents();
-    const drawerLabels=await drawer.locator('#groups .group button').allTextContents();
-    expect(drawerLabels.map(x=>x.trim())).toEqual(desktopLabels.map(x=>x.trim()));
+    const desktopTargets=await page.locator('.portal-single-navigation [data-nav-target]').evaluateAll(nodes=>nodes.map(node=>node.dataset.navTarget));
+    const drawerTargets=await drawer.locator('#groups .group > button[data-page]').evaluateAll(nodes=>nodes.map(node=>node.dataset.page));
+    expect(drawerTargets).toEqual(desktopTargets);
 
     const overflow=await page.evaluate(()=>document.documentElement.scrollWidth-document.documentElement.clientWidth);
     expect(overflow).toBeLessThanOrEqual(1);
@@ -189,10 +189,7 @@ test('profile is a real responsive V2 workspace with the protected legacy fields
   const errors = collectPageErrors(page);
   await page.setViewportSize({ width:1440, height:1000 });
   await openPortalV2(page, preview);
-  await page.evaluate(() => {
-    const button=[...document.querySelectorAll('.nav button')].find(node=>node.textContent.includes('Bedrijfsgezondheid'));
-    button?.click();
-  });
+  await page.locator('.portal-single-navigation [data-nav-target="profiel"]').click();
   await expect(page.locator('#portalView')).toHaveClass(/open/);
   await expect(page.locator('#portalView')).toHaveAttribute('data-page-id','profiel');
 
