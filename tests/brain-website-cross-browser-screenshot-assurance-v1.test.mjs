@@ -127,3 +127,12 @@ test('canonical V18 navigation exposes machine-readable open state',()=>{
   assert.match(core,/\.v17-navitem\[data-mega\]/);
   assert.match(core,/button\.addEventListener\('click'/);
 });
+
+test('successful final document load suppresses only settled transient document retry failures',()=>{
+  assert.match(runner,/filterSettledCoreFailures/);
+  assert.match(runner,/ERR_CONNECTION_RESET/);
+  assert.match(runner,/pathname===finalPath/);
+  assert.match(runner,/status>=200&&status<400/);
+  assert.match(runner,/failedCore:settledFailedCore/);
+  assert.match(runner,/finalUrl=page\.url\(\)/);
+});

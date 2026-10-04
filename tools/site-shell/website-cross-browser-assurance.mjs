@@ -125,6 +125,20 @@ async function inspectStable(page){
   throw last;
 }
 
+function filterSettledCoreFailures(failedCore,{status,finalUrl}={}){
+  if(!(status>=200&&status<400)||!finalUrl)return [...failedCore];
+  let finalPath=null;
+  try{finalPath=new URL(finalUrl).pathname||'/';}catch{}
+  if(!finalPath)return [...failedCore];
+  const transientDocumentFailure=/^(?:net::ERR_CONNECTION_RESET|net::ERR_ABORTED|NS_ERROR_ABORT|Load request cancelled)$/i;
+  return failedCore.filter(value=>{
+    const match=String(value).match(/^document:([^:]*):(.*)$/);
+    if(!match)return true;
+    const [,pathname,errorText]=match;
+    return !(pathname===finalPath&&transientDocumentFailure.test(errorText));
+  });
+}
+
 function basicViolations(state,status,pageErrors,failedCore){
   const out=[];
   if(!status||status>=400)out.push(`HTTP ${status??'none'}`);
@@ -155,19 +169,21 @@ async function checkOne({browserName,browser,viewportName,route,screenshotAlways
       failedCore.push(`${type}:${pathname}:${errorText}`);
     }
   });
-  let status=null,state=null,navigationError=null;
+  let status=null,state=null,navigationError=null,finalUrl=null;
   try{
     const response=await gotoSettled(page,base+route);
     status=response?.status()??null;
     state=await inspectStable(page);
+    finalUrl=page.url();
   }catch(error){navigationError=String(error?.message||error);}
-  const violations=navigationError?[navigationError]:basicViolations(state,status,[...new Set(pageErrors)],[...new Set(failedCore)]);
+  const settledFailedCore=filterSettledCoreFailures([...new Set(failedCore)],{status,finalUrl});
+  const violations=navigationError?[navigationError]:basicViolations(state,status,[...new Set(pageErrors)],settledFailedCore);
   let screenshotPath=null;
   if(screenshotAlways||violations.length){
     screenshotPath=path.join(out,`${violations.length?'FAIL-':''}${browserName}-${viewportName}-${slug(route)}.png`);
     try{await page.screenshot({path:screenshotPath,fullPage:true})}catch{}
   }
-  const result={browser:browserName,viewport:viewportName,route,status,state,violations,pageErrors:[...new Set(pageErrors)].slice(0,10),consoleErrors:[...new Set(consoleErrors)].slice(0,10),failedCore:[...new Set(failedCore)].slice(0,10),screenshotPath};
+  const result={browser:browserName,viewport:viewportName,route,status,finalUrl,state,violations,pageErrors:[...new Set(pageErrors)].slice(0,10),consoleErrors:[...new Set(consoleErrors)].slice(0,10),failedCore:settledFailedCore.slice(0,10),screenshotPath};
   await context.close();
   return result;
 }
