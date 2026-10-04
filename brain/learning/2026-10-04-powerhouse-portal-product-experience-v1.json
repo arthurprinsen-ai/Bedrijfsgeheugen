@@ -16,5 +16,18 @@
     "portal-v2/product-experience.js",
     "config/powerhouse-portal-product-experience-v1.json",
     "tests/portal-product-experience-contract.test.mjs"
-  ]
+  ],
+  "fingerprint": "portal-wow-ux-responsive-end-to-end-v1",
+  "compiler": {
+    "failure_class": "UX_REGRESSION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-product-experience-learning.test.mjs"
+    ]
+  }
 }
