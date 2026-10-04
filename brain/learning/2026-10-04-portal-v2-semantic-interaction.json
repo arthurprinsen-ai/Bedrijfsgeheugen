@@ -1,0 +1,53 @@
+{
+  "learningId": "2026-10-04-portal-v2-semantic-interaction",
+  "fingerprint": "portal-v2-semantic-point-interaction-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-04T18:01:00+02:00",
+  "problem": "Portal V2 visual models expose rich data, but chart marks can still require interpretation before a user knows what a point means or how to act on it.",
+  "rootCause": "Meaningful SVG marks use local title and focus semantics, while explanation and action handoff live at surface level. Without one semantic-selection contract, touch users and keyboard users cannot consistently pin a datapoint and retain its context.",
+  "root_cause": "Meaningful SVG marks use local title and focus semantics, while explanation and action handoff live at surface level. Without one semantic-selection contract, touch users and keyboard users cannot consistently pin a datapoint and retain its context.",
+  "preventionRule": "Every meaningful portal visual datapoint must support tap/click and keyboard selection, persistent selected context, an explanation path and an action path without inventing source data.",
+  "prevention": [
+    "Derive semantic labels only from existing title, aria-label or visible text.",
+    "Make primary datapoint selection work without hover.",
+    "Persist the selected point until another point is chosen.",
+    "Keep direct Context and Action handoffs next to the selected meaning.",
+    "Preserve reduced-motion and responsive behavior."
+  ],
+  "evidence": {
+    "implementation": [
+      "portal-v2/nextgen-intelligence.js",
+      "portal-v2/nextgen-intelligence.css"
+    ],
+    "regression": [
+      "tests/brain-portal-v2-semantic-interaction.test.mjs",
+      "portal-v2/tests/nextgen-intelligence.test.mjs"
+    ],
+    "documentation": "docs/changes/2026-10-04-portal-v2-semantic-interaction.md",
+    "activityLedger": "docs/development-ledger-events/2026-10-04-portal-v2-semantic-interaction.md",
+    "deliveryPr": 3701
+  },
+  "invariants": {
+    "evidenceFirst": true,
+    "hiddenDataClaimsForbidden": true,
+    "hoverOnlyPrimaryInteractionForbidden": true,
+    "persistentSelection": true,
+    "keyboardAccessible": true,
+    "touchFirst": true,
+    "directActionPath": true,
+    "reducedMotionSupported": true
+  },
+  "compiler": {
+    "failure_class": "PORTAL_VISUAL_SEMANTIC_INTERACTION_FRAGMENTATION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-semantic-interaction.test.mjs"
+    ],
+    "expected": "Semantic labels prefer explicit visual meaning, remain bounded, and visual points keep one consistent select-understand-act interaction contract."
+  }
+}

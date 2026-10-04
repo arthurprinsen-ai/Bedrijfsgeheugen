@@ -1,4 +1,5 @@
-import test from 'node:test';import assert from 'node:assert/strict';import {project,confidence} from '../nextgen-intelligence.js';
+import test from 'node:test';import assert from 'node:assert/strict';import {project,confidence,semanticLabel} from '../nextgen-intelligence.js';
 test('future lens projection is bounded and scenario-sensitive',()=>{const m={value:70,delta:2,label:'Test'};assert.equal(project(m,6,'base').projected,82);assert.ok(project(m,6,'opportunity').projected>project(m,6,'base').projected);assert.ok(project({value:98,delta:8},12,'base').projected<=100);});
 test('confidence never claims certainty',()=>{assert.ok(confidence({value:70,delta:2})<=95);assert.ok(confidence({value:null,delta:null})<confidence({value:70,delta:2}));});
 test('stress scenario stays below base for a positive visible trend',()=>{const m={value:64,delta:3,label:'Proces'};assert.ok(project(m,6,'stress').projected<project(m,6,'base').projected);});
+test('semantic labels prefer explicit chart meaning and stay bounded',()=>{assert.equal(semanticLabel({title:'Omzet: € 240.000',aria:'fallback'}),'Omzet: € 240.000');assert.equal(semanticLabel({aria:'Risico hoog'}),'Risico hoog');assert.ok(semanticLabel({text:'x'.repeat(400)}).length<=180);});
