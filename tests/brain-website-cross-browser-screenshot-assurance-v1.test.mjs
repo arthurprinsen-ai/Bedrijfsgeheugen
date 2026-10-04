@@ -106,3 +106,24 @@ test('generated English pages receive final font fallback and tablet trustbar ge
 });
 
 // Delivery metadata refresh: exact six-file website recovery scope.
+
+test('cross-browser runner retries replaced navigation contexts and preserves browser abort semantics',()=>{
+  assert.match(runner,/inspectStable/);
+  assert.match(runner,/Execution context was destroyed/);
+  assert.match(runner,/Cannot find context/);
+  assert.match(runner,/navigation/);
+  assert.match(runner,/benignAbort=.*net::ERR_ABORTED.*NS_ERROR_ABORT.*Load request cancelled/);
+});
+
+test('critical Chromium screenshots follow the actual active sweep viewports',()=>{
+  assert.match(runner,/allRouteViewports\.includes\(viewportName\)/);
+});
+
+test('canonical V18 navigation exposes machine-readable open state',()=>{
+  const core=fs.readFileSync('tools/bouw-v18-production-core.mjs','utf8');
+  assert.match(core,/v18-navigation-state-contract/);
+  assert.match(core,/aria-controls','v18MobileDrawer'/);
+  assert.match(core,/aria-expanded',open\?'true':'false'/);
+  assert.match(core,/\.v17-navitem\[data-mega\]/);
+  assert.match(core,/button\.addEventListener\('click'/);
+});
