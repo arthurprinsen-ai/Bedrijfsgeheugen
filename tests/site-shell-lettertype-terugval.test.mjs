@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { metLettertypeTerugval, metTerugvalStapel, terugvalCss, LETTERTYPEN } from '../tools/site-shell/lettertype-terugval.mjs';
+import { metLettertypeTerugval, metTerugvalStapel, terugvalCss, LETTERTYPEN, criticalFontPreloadsHtml, CRITICAL_FONT_URLS, FONT_PRELOAD_MARKER } from '../tools/site-shell/lettertype-terugval.mjs';
 
 // Fontwissel zonder verspringen (11 sept 2026): /zelfscan CLS 0,109 en /ai-scan
 // 0,174 op telefoons, weg met Google Fonts geblokkeerd. font-display: swap blijft;
@@ -32,4 +32,23 @@ test('de terugval gebruikt lokale lettertypen met maatcorrectie, en swap blijft'
   assert.match(css, /size-adjust:101\.79%;ascent-override:95\.29%/);
   assert.doesNotMatch(css, /url\(/, 'geen extra downloads');
   assert.doesNotMatch(css, /font-display/, 'de weergaveregel van Google Fonts (swap) blijft ongemoeid');
+});
+
+
+test('kritieke merkfonts worden vroeg gepreload zonder swap uit te schakelen', () => {
+  const preload = criticalFontPreloadsHtml();
+  assert.match(preload, /rel="preload"/);
+  assert.match(preload, /as="font"/);
+  assert.match(preload, /type="font\/woff2"/);
+  assert.match(preload, /crossorigin="anonymous"/);
+  assert.ok(preload.includes(CRITICAL_FONT_URLS.instrumentSans));
+  assert.ok(preload.includes(CRITICAL_FONT_URLS.bricolageGrotesque));
+});
+
+test('preloads worden ook aan reeds gegenereerde fallback-pagina toegevoegd en blijven idempotent', () => {
+  const existing = '<html><head><style id="bg-lettertype-terugval"></style></head><body></body></html>';
+  const once = metLettertypeTerugval(existing);
+  assert.ok(once.includes(FONT_PRELOAD_MARKER));
+  assert.equal((once.match(new RegExp(FONT_PRELOAD_MARKER, 'g')) || []).length, 1);
+  assert.equal(metLettertypeTerugval(once), once);
 });
