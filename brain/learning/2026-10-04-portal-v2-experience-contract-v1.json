@@ -16,7 +16,7 @@
       "tests/portal-v2-experience-contract.test.mjs",
       "tests/portal-v2-navigation-contract.test.mjs"
     ],
-    "documentation": "docs/portal-v2-experience-contract-v1.md"
+    "documentation": "docs/changes/2026-10-04-portal-v2-experience-contract-v1.md"
   },
   "invariants": {
     "singleNavigationAuthority": true,
