@@ -18,7 +18,8 @@ test('header preserves the accepted desktop and mobile navigation surface', () =
   }
   assert.match(html, /id="bgkopKnop"/);
   assert.match(html, /aria-controls="bgSharedMobileNav"/);
-  assert.match(html, /id="bgkopMob" hidden/);\n  assert.match(html, /class="bg-mobile-menu-label">Menu<\\/span>/);
+  assert.match(html, /id="bgkopMob" hidden/);
+  assert.ok(html.includes('class="bg-mobile-menu-label">Menu</span>'));
 });
 
 test('header keeps current mobile menu behavior including Escape and scroll lock', () => {
