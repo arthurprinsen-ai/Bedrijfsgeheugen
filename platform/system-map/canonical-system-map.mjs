@@ -191,6 +191,36 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'portal-v2-experience-contract-v1',
+      label:'Portal V2 Responsive Experience & Reliability Contract',
+      authority:'github+netlify+portal-state-readback',
+      owner:'Powerhouse Product / Portal V2',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      inputs:Object.freeze(['Portal V2 page registry','canonical navigation','dynamic page content','Portal State','runtime evidence']),
+      outputs:Object.freeze(['consistent responsive scale','bounded charts and media','accessible interactions','viewport-safe flows','backend contract regression evidence']),
+      runtime:Object.freeze({
+        css:'portal-v2/experience.css',
+        client:'portal-v2/experience.js',
+        documentation:'docs/portal-v2-experience-contract-v1.md',
+        learning:'brain/learning/2026-10-04-portal-v2-experience-contract-v1.json',
+        regression:'tests/portal-v2-experience-contract.test.mjs',
+        backendAuthority:'portal-v2/portal-state.js'
+      }),
+      invariants:Object.freeze({
+        oneExperienceLayer:true,
+        singleNavigationAuthority:true,
+        minTouchTargetPx:44,
+        horizontalOverflowForbidden:true,
+        responsiveChartContainment:true,
+        responsiveMediaContainment:true,
+        visibleKeyboardFocus:true,
+        reducedMotionSupported:true,
+        portalStateAuthorityUnchanged:true,
+        failClosedWrites:true,
+        productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'linkedin-company-growth-v1',
       label:'LinkedIn Company Page Growth Loop',
       authority:'supabase+provider-readback',
