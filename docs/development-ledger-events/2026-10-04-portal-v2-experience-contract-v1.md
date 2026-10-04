@@ -11,3 +11,7 @@ Backend authority is deliberately unchanged: authenticated Portal State, canonic
 This event is a delivery record, not production proof. Terminal closure requires exact-head CI, visual/live-preview evidence, protected merge, production deploy and production readback.
 
 Canonical documentation authority: `docs/changes/2026-10-04-portal-v2-experience-contract-v1.md`.
+
+
+## Consolidated v2 event
+A parallel Portal product-experience implementation was deliberately retired in favor of this existing canonical `experience.css/js` lineage. The canonical layer now also owns dynamic visual measurement, 44 px legacy override protection and a 24-screenshot release matrix. This prevents duplicate UX authorities and keeps the Powerhouse learning, visual-assurance configuration and browser gate on one obligation.
