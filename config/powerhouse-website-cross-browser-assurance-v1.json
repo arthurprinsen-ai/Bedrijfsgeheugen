@@ -79,7 +79,7 @@
       ],
       "viewport": "mobile",
       "selectorCandidates": [
-        "#bgkopKnop"
+        "#mobileToggle"
       ],
       "assert": "mobile_panel_visible"
     },
@@ -91,7 +91,7 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        ".bgkop-trig"
+        ".navitem[data-mega] > .navbtn"
       ],
       "assert": "desktop_panel_visible"
     },
