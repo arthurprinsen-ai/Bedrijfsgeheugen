@@ -1,0 +1,32 @@
+{
+  "id": "portal-v2-semantic-interaction-20261004",
+  "learned_at": "2026-10-04",
+  "domain": "portal-v2",
+  "capability": "nextgen-intelligence",
+  "rule": "Every meaningful visual datapoint must be operable by tap/click and keyboard, preserve selection context, explain its meaning, and provide a direct path to context or action without inventing data.",
+  "applies_to": [
+    "v2visual",
+    "data-portal-visual",
+    "strategic-models",
+    "charts",
+    "mobile",
+    "desktop"
+  ],
+  "interaction_contract": [
+    "select",
+    "persist",
+    "explain",
+    "act"
+  ],
+  "trust_contract": [
+    "use existing evidence only",
+    "surface uncertainty",
+    "no hidden precision"
+  ],
+  "verification": [
+    "portal-v2/tests/nextgen-intelligence.test.mjs",
+    "Portal V2 Tests",
+    "Portal Visual Density",
+    "Portal parity gate"
+  ]
+}
