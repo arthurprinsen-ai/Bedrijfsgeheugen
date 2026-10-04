@@ -129,6 +129,6 @@
     "mobile",
     "desktop"
   ],
-  "evidence_generation": "2026-10-04-current-controls-cls-v3",
-  "evidence_reason": "wait for exact preview route inventory, support canonical and legacy header controls, and reserve tablet trustbar geometry"
+  "evidence_generation": "2026-10-04-terminal-current-main-v3",
+  "evidence_reason": "terminal rerun on current main after closing header component contract parity"
 }
