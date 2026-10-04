@@ -1,29 +1,14 @@
-const root=document.documentElement;
-root.classList.add('portal-experience-v1');
-
-function markReady(){
-  root.dataset.portalExperience='v1';
-  document.body?.setAttribute('data-ui-ready','true');
-}
-function normalizeDynamicUi(scope=document){
-  for(const el of scope.querySelectorAll?.('button,a,input,select,textarea,[role="button"]')||[]){
-    if(!el.hasAttribute('data-interactive')) el.setAttribute('data-interactive','true');
-  }
-  for(const media of scope.querySelectorAll?.('#portalView img,#portalView canvas,#portalView [data-chart],#portalView .chart-container')||[]){
-    media.setAttribute('data-responsive-media','true');
-  }
-}
-const observer=new MutationObserver(records=>{
-  for(const record of records){
-    for(const node of record.addedNodes){
-      if(node.nodeType===1) normalizeDynamicUi(node);
-    }
-  }
-});
-if(document.body){
-  normalizeDynamicUi();
-  observer.observe(document.body,{subtree:true,childList:true});
-}
-document.addEventListener('DOMContentLoaded',()=>{normalizeDynamicUi();markReady();},{once:true});
-document.addEventListener('bg:runtime-evidence',()=>{root.dataset.runtimeEvidence='received';});
-globalThis.__BG_PORTAL_EXPERIENCE__=Object.freeze({version:'v1',normalizeDynamicUi});
+const EXPERIENCE_VERSION='portal-experience-v2';
+const root=document.documentElement;root.classList.add('portal-experience-v1','portal-experience-v2');
+const visualSelectors=['.v2visualgrid','.pvvisual','.legacy-insight-card','.adoption-card','.csrd-world','[class*="chart"]','[class*="graph"]','[class*="visual"]','#portalView [data-chart]'].join(',');
+function signal(type,detail={}){window.dispatchEvent(new CustomEvent('bg:portal-experience-signal',{detail:{version:EXPERIENCE_VERSION,type,at:new Date().toISOString(),...detail}}))}
+function liveRegion(){let el=document.querySelector('.portal-experience-live');if(el)return el;el=document.createElement('div');el.className='portal-experience-live';el.setAttribute('aria-live','polite');el.setAttribute('aria-atomic','true');document.body.append(el);return el}
+function normalizeDynamicUi(scope=document){const roots=[];if(scope.nodeType===1)roots.push(scope);if(scope.querySelectorAll)roots.push(...scope.querySelectorAll('*'));for(const el of roots){if(el.matches?.('button,a,input,select,textarea,[role="button"]')&&!el.hasAttribute('data-interactive'))el.setAttribute('data-interactive','true')}const visuals=[];if(scope.nodeType===1&&scope.matches?.(visualSelectors))visuals.push(scope);if(scope.querySelectorAll)visuals.push(...scope.querySelectorAll(visualSelectors));for(const node of visuals){if(!node.hasAttribute('data-portal-visual'))node.setAttribute('data-portal-visual',node.querySelector?.('table')||/table|adoption/i.test(String(node.className||''))?'scroll':'fit')}}
+function measureVisual(node){const target=node.querySelector?.('svg,canvas,img,video,table');if(!target)return;const host=node.getBoundingClientRect(),child=target.getBoundingClientRect();const overflow=child.width-host.width>2;node.toggleAttribute('data-portal-visual-overflow',overflow);if(overflow)signal('visual_overflow',{width:Math.round(child.width),containerWidth:Math.round(host.width),className:String(node.className||'').slice(0,160)})}
+function measureAll(){document.querySelectorAll('[data-portal-visual]').forEach(measureVisual)}
+function markReady(){root.dataset.portalExperience='v2';document.body?.setAttribute('data-ui-ready','true');signal('experience_ready',{viewport:{width:innerWidth,height:innerHeight},route:location.pathname+location.search})}
+function bindInteractionSignals(){document.addEventListener('click',event=>{const control=event.target.closest?.('button,a,[role="button"]');if(!control)return;const target=control.dataset?.openPage||control.dataset?.navTarget||control.getAttribute('href')||'';if(!target)return;signal('interaction',{target:String(target).slice(0,220)});if(control.dataset?.openPage||control.dataset?.navTarget){root.classList.add('portal-route-pending');liveRegion().textContent='Onderdeel openen';requestAnimationFrame(()=>requestAnimationFrame(()=>{root.classList.remove('portal-route-pending');liveRegion().textContent='Onderdeel geopend';measureAll()}))}},{passive:true})}
+function bootstrap(){normalizeDynamicUi();markReady();bindInteractionSignals();const resize=new ResizeObserver(entries=>entries.forEach(e=>{const v=e.target.closest?.('[data-portal-visual]')||e.target;if(v?.matches?.('[data-portal-visual]'))measureVisual(v)}));document.querySelectorAll('[data-portal-visual]').forEach(n=>resize.observe(n));const observer=new MutationObserver(records=>{let changed=false;for(const record of records){for(const node of record.addedNodes){if(node.nodeType===1){normalizeDynamicUi(node);changed=true}}}if(changed){document.querySelectorAll('[data-portal-visual]').forEach(n=>resize.observe(n));requestAnimationFrame(measureAll)}});observer.observe(document.body,{subtree:true,childList:true});window.addEventListener('error',e=>signal('runtime_error',{message:String(e.message||'unknown').slice(0,300)}));window.addEventListener('unhandledrejection',e=>signal('runtime_rejection',{message:String(e.reason?.message||e.reason||'unknown').slice(0,300)}));window.addEventListener('resize',()=>requestAnimationFrame(measureAll),{passive:true});window.addEventListener('popstate',()=>requestAnimationFrame(measureAll))}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',bootstrap,{once:true});else bootstrap();
+document.addEventListener('bg:runtime-evidence',()=>{root.dataset.runtimeEvidence='received'});
+globalThis.__BG_PORTAL_EXPERIENCE__=Object.freeze({version:'v2',normalizeDynamicUi,measureAll});

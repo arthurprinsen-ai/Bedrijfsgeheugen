@@ -1,99 +1,47 @@
-/* Portal V2 Experience Contract v1
-   One calm responsive scale for cards, media, charts and interactions. */
-:root{
-  --pv-content-max:1600px;
-  --pv-panel-radius:16px;
-  --pv-control-radius:12px;
-  --pv-touch:44px;
-  --pv-shadow-rest:0 8px 28px rgba(16,24,40,.06);
-  --pv-shadow-hover:0 16px 42px rgba(16,24,40,.10);
-  --pv-focus:0 0 0 3px rgba(23,105,255,.20);
-}
-html{scroll-behavior:smooth}
-body{min-width:320px}
-.main{width:100%;max-width:var(--pv-content-max);margin:0 auto;padding:clamp(14px,1.65vw,24px)}
-.main>*{min-width:0}
-.card,.kpi,.glance-card,.legacy-insight-card,.projectcockpit-grid article,.projectactivity{
-  border-radius:var(--pv-panel-radius);
-  box-shadow:var(--pv-shadow-rest);
-}
+/* Portal V2 Experience Contract v2 — single final UX authority. */
+:root{--pv-content-max:1600px;--pv-panel-radius:16px;--pv-control-radius:12px;--pv-touch:44px;--pv-shadow-rest:0 8px 28px rgba(16,24,40,.06);--pv-shadow-hover:0 16px 42px rgba(16,24,40,.10);--pv-focus:0 0 0 3px rgba(23,105,255,.20);--pv-ease:cubic-bezier(.2,.75,.2,1)}
+html{scroll-behavior:smooth}body{min-width:320px}.main{width:100%;max-width:var(--pv-content-max);margin:0 auto;padding:clamp(14px,1.65vw,24px)}
+.main>*,.executive-glance,.dashboard,.lower,.legacy-overview-insights,.projectcockpit,.pvpage,#portalView,.pvmodule,.card,.kpi,.glance-card{min-width:0}
+.card,.kpi,.glance-card,.legacy-insight-card,.projectcockpit-grid article,.projectactivity{border-radius:var(--pv-panel-radius);box-shadow:var(--pv-shadow-rest)}
 button,a,input,select,textarea,[role="button"]{touch-action:manipulation}
-button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[role="button"]:focus-visible{
-  outline:0;box-shadow:var(--pv-focus);border-color:#1769ff!important;
-}
-button,.smallbtn,.portal-hamburger,.glance-card button,.projecttabs button,.projectcockpit-actions button{
-  min-height:var(--pv-touch);
-}
-button,.card,.kpi,.glance-card,.projectcockpit-grid article{
-  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background-color .16s ease;
-}
-@media(hover:hover) and (pointer:fine){
-  .glance-card:hover,.kpi:hover,.projectcockpit-grid article:hover{transform:translateY(-2px);box-shadow:var(--pv-shadow-hover)}
-  button:hover{filter:brightness(.99)}
-}
-.executive-glance,.dashboard,.lower,.legacy-overview-insights,.projectcockpit,.pvpage,#portalView{min-width:0}
-.kpis{grid-template-columns:repeat(5,minmax(160px,1fr));overflow:visible}
-.kpi{min-width:0}
-.kpi .num{font-size:clamp(26px,2.1vw,34px)}
-.dashboard{grid-template-columns:minmax(0,1fr) minmax(260px,300px)}
-.brainlayout{grid-template-columns:minmax(170px,205px) minmax(0,1fr) minmax(230px,285px)}
-.main img,#portalView img{max-width:100%;height:auto;object-fit:contain}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[role="button"]:focus-visible{outline:2px solid transparent!important;box-shadow:var(--pv-focus)!important;border-color:#1769ff!important}
+button,.smallbtn,.portal-hamburger,.glance-card button,.projecttabs button,.projectcockpit-actions button,.portalview button,.allpages button,[data-nav-target]{min-height:var(--pv-touch)!important}
+button,.card,.kpi,.glance-card,.projectcockpit-grid article,.pvmodule{transition:transform .18s var(--pv-ease),box-shadow .18s var(--pv-ease),border-color .18s var(--pv-ease),background-color .18s var(--pv-ease)}
+@media(hover:hover) and (pointer:fine){.glance-card:hover,.kpi:hover,.projectcockpit-grid article:hover,.pvmodule:hover{transform:translateY(-2px);box-shadow:var(--pv-shadow-hover)}button:hover{filter:brightness(.99)}}
+.kpis{grid-template-columns:repeat(5,minmax(160px,1fr));overflow:visible}.kpi .num{font-size:clamp(26px,2.1vw,34px)}
+.dashboard{grid-template-columns:minmax(0,1fr) minmax(260px,300px)}.brainlayout{grid-template-columns:minmax(170px,205px) minmax(0,1fr) minmax(230px,285px)}
+.main img,#portalView img,.pvmodule img,.pvmodule video,.pvmodule canvas,.pvmodule svg{max-width:100%;height:auto;object-fit:contain}
 #portalView img:not(.avatar):not(.brandmark img){max-height:min(52vh,520px)}
 .main canvas,#portalView canvas{display:block;width:100%!important;max-width:100%!important;height:auto!important;max-height:420px}
-.main .recharts-responsive-container,
-.main .chart-container,
-.main [data-chart],
-#portalView .recharts-responsive-container,
-#portalView .chart-container,
-#portalView [data-chart]{
-  width:100%!important;max-width:100%!important;min-width:0!important;max-height:460px;overflow:hidden;
-}
-.main svg,#portalView svg{max-width:100%}
-table{width:100%;max-width:100%;border-collapse:collapse}
-.pvtablewrap,.table-wrap,[data-table-scroll]{max-width:100%;overflow:auto;overscroll-behavior-inline:contain}
-dialog,.portal-popover,.sheet{
-  border-radius:18px;
-  box-shadow:0 28px 90px rgba(7,18,49,.22);
-}
-dialog{max-width:min(760px,calc(100vw - 28px));max-height:min(86dvh,900px)}
-.allpages .sheet{width:min(920px,calc(100vw - 32px));max-height:min(88dvh,940px)}
-.group button{min-height:40px;font-size:12px;line-height:1.35}
-.glance-card p,.right p,.legacy-insight-card p,#portalView p{line-height:1.55}
-#portalView h1,#portalView h2,#portalView h3{text-wrap:balance}
-#portalView p,#portalView li{overflow-wrap:anywhere}
-[data-ui-state="loading"]{position:relative;overflow:hidden}
-[data-ui-state="loading"]::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:translateX(-100%);animation:pv-shimmer 1.15s linear infinite}
-@keyframes pv-shimmer{to{transform:translateX(100%)}}
-@media(max-width:1180px){
-  .main{max-width:none}
-  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
-  .brainlayout{grid-template-columns:minmax(0,1fr)}
-  .dashboard{grid-template-columns:minmax(0,1fr)}
-}
+.main .recharts-responsive-container,.main .chart-container,.main [data-chart],#portalView .recharts-responsive-container,#portalView .chart-container,#portalView [data-chart],[data-portal-visual]{width:100%!important;max-width:100%!important;min-width:0!important;max-height:460px;overflow:hidden}
+[data-portal-visual="scroll"],.pvtablewrap,.table-wrap,[data-table-scroll]{max-width:100%;overflow:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+[data-portal-visual] svg{display:block;width:100%;max-width:100%;height:auto;max-height:min(54vh,460px);margin-inline:auto}[data-portal-visual-overflow="true"]{outline:2px dashed #d97706;outline-offset:3px}
+.main svg,#portalView svg{max-width:100%}table{width:100%;max-width:100%;border-collapse:collapse}
+dialog,.portal-popover,.sheet{border-radius:18px;box-shadow:0 28px 90px rgba(7,18,49,.22)}dialog{max-width:min(760px,calc(100vw - 28px));max-height:min(86dvh,900px)}.allpages .sheet{width:min(920px,calc(100vw - 32px));max-height:min(88dvh,940px)}
+.group button{min-height:40px;font-size:12px;line-height:1.35}.glance-card p,.right p,.legacy-insight-card p,#portalView p{line-height:1.55}#portalView h1,#portalView h2,#portalView h3{text-wrap:balance}#portalView p,#portalView li,.recs li,.projectcockpit-head p{overflow-wrap:anywhere}
+.portal-experience-live{position:fixed;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.portal-route-pending .portalview.open .pvbody{opacity:.82}
+[data-ui-state="loading"]{position:relative;overflow:hidden}[data-ui-state="loading"]::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:translateX(-100%);animation:pv-shimmer 1.15s linear infinite}@keyframes pv-shimmer{to{transform:translateX(100%)}}
+@media(max-width:1180px){.main{max-width:none}.kpis{grid-template-columns:repeat(3,minmax(0,1fr))}.brainlayout,.dashboard{grid-template-columns:minmax(0,1fr)}}
+@media(max-width:760px){:root{--pv-panel-radius:14px}.main{padding:12px}.topbar{gap:12px}.welcome h1{font-size:clamp(24px,8vw,30px)}.searchrow,.actionrow{display:grid;grid-template-columns:1fr auto auto auto;gap:8px}.actionrow{grid-template-columns:1fr}.search{width:100%;min-width:0}.kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}.kpi{padding:12px}.executive-glance,.glance-grid,.lower,.right,.activities .items{grid-template-columns:1fr!important}.groups{grid-template-columns:1fr!important}.allpages .sheet{width:min(94vw,520px)}#portalView img:not(.avatar):not(.brandmark img){max-height:44vh}.main canvas,#portalView canvas{max-height:320px}.main .recharts-responsive-container,.main .chart-container,.main [data-chart],#portalView .recharts-responsive-container,#portalView .chart-container,#portalView [data-chart],[data-portal-visual]{max-height:340px}}
+@media(max-width:430px){.main{padding:10px}.kpis{grid-template-columns:1fr}.searchrow{grid-template-columns:1fr repeat(3,44px)}.smallbtn.topaction-icon{width:44px;padding:0}[data-portal-visual] svg{max-height:280px}}
+@media(max-width:350px){.main{padding:9px}.portal-hamburger span{display:none}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+/* V2 screenshot-derived hardening: these override legacy route-specific sizes. */
+.csrd-world{height:340px!important;min-height:300px!important;max-height:340px!important;overflow:hidden!important}
 @media(max-width:760px){
-  :root{--pv-panel-radius:14px}
-  .main{padding:12px}
-  .topbar{gap:12px}
-  .welcome h1{font-size:clamp(24px,8vw,30px)}
-  .searchrow,.actionrow{display:grid;grid-template-columns:1fr auto auto auto;gap:8px}
-  .actionrow{grid-template-columns:1fr}
-  .search{width:100%;min-width:0}
-  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .kpi{padding:12px}
-  .executive-glance,.glance-grid,.lower,.right,.activities .items{grid-template-columns:1fr!important}
-  .groups{grid-template-columns:1fr!important}
-  .allpages .sheet{width:min(94vw,520px)}
-  #portalView img:not(.avatar):not(.brandmark img){max-height:44vh}
-  .main canvas,#portalView canvas{max-height:320px}
-  .main .recharts-responsive-container,.main .chart-container,.main [data-chart],
-  #portalView .recharts-responsive-container,#portalView .chart-container,#portalView [data-chart]{max-height:340px}
+  .csrd-world{display:none!important}
+  .topactions .searchrow>.smallbtn,.topactions .actionrow>.smallbtn{height:44px!important;min-height:44px!important;max-height:none!important}
 }
+
+/* Hydrated mobile shell stays compact without shrinking critical 44px controls. */
 @media(max-width:430px){
-  .main{padding:10px}
-  .kpis{grid-template-columns:1fr}
-  .searchrow{grid-template-columns:1fr repeat(3,44px)}
-  .smallbtn.topaction-icon{width:44px;padding:0}
+  .topbar{gap:4px!important;padding-top:2px!important;padding-bottom:2px!important;margin-bottom:8px!important}
+  .topactions{gap:4px!important}
+  .topactions .searchrow,.topactions .actionrow{gap:4px!important}
 }
-@media(prefers-reduced-motion:reduce){
-  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+
+/* Canonical mobile menu control keeps a full 44x44 target even when its label collapses. */
+@media(max-width:900px){
+  #portalFullMenuToggle{min-width:44px!important;min-height:44px!important;box-sizing:border-box!important}
 }
