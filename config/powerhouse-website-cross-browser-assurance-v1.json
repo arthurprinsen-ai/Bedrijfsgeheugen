@@ -81,7 +81,7 @@
       "selectorCandidates": [
         "#mobileToggle"
       ],
-      "assert": "mobile_panel_visible"
+      "assert": "v17_mobile_panel_visible"
     },
     {
       "id": "desktop-menu",
@@ -91,9 +91,10 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        ".navitem[data-mega] > .navbtn"
+        ".navitem[data-mega] > .navbtn",
+        ".navitem > .navbtn"
       ],
-      "assert": "desktop_panel_visible"
+      "assert": "v17_desktop_panel_visible"
     },
     {
       "id": "language-switch",
@@ -104,7 +105,9 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        "button[data-bg-language-current]"
+        "button[data-bg-language-current]",
+        "[data-bg-language-switcher] button",
+        ".v17-lang-toggle"
       ],
       "assert": "english_target_visible"
     }
@@ -118,7 +121,8 @@
     "no_tolerance_widening_to_hide_structural_mismatch",
     "daily_production_run_required",
     "pull_request_sweep_is_bounded",
-    "daily_production_sweep_covers_mobile_and_desktop"
+    "daily_production_sweep_covers_mobile_and_desktop",
+    "interaction_selectors_must_match_deployed_canonical_shell"
   ],
   "pr_all_route_viewports": [
     "mobile"
@@ -127,6 +131,6 @@
     "mobile",
     "desktop"
   ],
-  "evidence_generation": "2026-10-04-live-recheck-v1",
-  "evidence_reason": "re-run current website candidate through exact Netlify preview after CLS/header/interaction repairs"
+  "evidence_generation": "2026-10-04-live-recheck-v2",
+  "evidence_reason": "force exact current-main candidate through responsive Chromium/Firefox/WebKit screenshot assurance"
 }

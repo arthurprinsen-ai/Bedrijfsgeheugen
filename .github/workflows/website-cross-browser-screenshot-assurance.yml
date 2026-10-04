@@ -42,6 +42,7 @@ jobs:
         env:
           EVENT_NAME: ${{ github.event_name }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
           if [ "$EVENT_NAME" = "pull_request" ]; then
             echo "base_url=https://deploy-preview-${PR_NUMBER}--bedrijfsgeheugen.netlify.app" >> "$GITHUB_OUTPUT"
@@ -52,16 +53,20 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           BASE_URL: ${{ steps.target.outputs.base_url }}
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha }}
         run: |
-          for attempt in $(seq 1 40); do
+          for attempt in $(seq 1 60); do
             code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$BASE_URL/" || true)"
-            if [ "$code" = "200" ]; then
-              echo "Candidate preview is reachable."
+            release="$(curl -L -sS "$BASE_URL/release.json" || true)"
+            actual_sha="$(printf '%s' "$release" | node -e "let s='';process.stdin.on('data',d=>s+=d).on('end',()=>{try{const j=JSON.parse(s);process.stdout.write(j.commit_ref||j.commit||j.sha||'')}catch{}})")"
+            if [ "$code" = "200" ] && [ "$actual_sha" = "$EXPECTED_SHA" ]; then
+              echo "Exact candidate preview is reachable: $actual_sha"
               exit 0
             fi
+            echo "Waiting for exact candidate: http=$code actual=$actual_sha expected=$EXPECTED_SHA"
             sleep 5
           done
-          echo "::error::Exact candidate preview did not become reachable."
+          echo "::error::Exact candidate preview SHA did not become reachable."
           exit 1
       - name: Run cross-browser screenshot assurance
         env:

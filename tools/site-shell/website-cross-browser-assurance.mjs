@@ -152,7 +152,20 @@ async function runInteraction(browserName,browser,interaction,route){
   const found=await page.evaluate(candidates=>candidates.find(selector=>document.querySelector(selector))||null,interaction.selectorCandidates);
   const violations=[];
   if(!found){violations.push(`interaction trigger missing: ${interaction.id}`);}
-  else if(interaction.assert==='mobile_panel_visible'){
+  else if(interaction.assert==='v17_mobile_panel_visible'){
+    const trigger=page.locator(found).first();
+    await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
+    await sleep(250);
+    const panel=page.locator('#v18MobileDrawer,#mobileMenu').first();
+    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('deployed mobile drawer not visible after click');
+  }else if(interaction.assert==='v17_desktop_panel_visible'){
+    const trigger=page.locator(found).first();
+    await trigger.click().catch(async()=>{await trigger.hover().catch(()=>{});});
+    await sleep(200);
+    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " navitem ")][1]');
+    const panel=group.locator('.mega').first();
+    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('deployed desktop mega panel not visible');
+  }else if(interaction.assert==='mobile_panel_visible'){
     const trigger=page.locator(found).first();
     await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(250);
@@ -243,5 +256,5 @@ for(const browserName of contract.screenshot_matrix.browsers){
 
 const report={version:contract.version,generatedAt:new Date().toISOString(),baseUrl:base,routeCount:routes.length,resultCount:results.length,interactionCount:interactions.length,failures:failures.length,results,interactions};
 await fs.writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));
-console.log(JSON.stringify({version:report.version,routeCount:report.routeCount,resultCount:report.resultCount,interactionCount:report.interactionCount,failures:failures.length,failed:failures.slice(0,50).map(x=>({browser:x.browser,viewport:x.viewport,route:x.route,interaction:x.interaction||null,violations:x.violations}))},null,2));
+console.log(JSON.stringify({version:report.version,routeCount:report.routeCount,resultCount:report.resultCount,interactionCount:report.interactionCount,failures:failures.length,failed:failures.slice(0,50).map(x=>({browser:x.browser,viewport:x.viewport,route:x.route,interaction:x.interaction||null,violations:x.violations,clsEntries:x.state?.clsEntries||[],failedCore:x.failedCore||[]}))},null,2));
 if(failures.length)process.exitCode=1;

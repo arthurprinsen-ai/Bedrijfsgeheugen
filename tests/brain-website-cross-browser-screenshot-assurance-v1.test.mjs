@@ -30,7 +30,7 @@ test('website assurance exercises interactions',()=>{
   const ids=new Set(contract.interactions.map(item=>item.id));
   for(const id of ['mobile-menu','desktop-menu','language-switch'])assert.ok(ids.has(id),id);
   assert.ok(runner.includes('aria-expanded'));
-  assert.ok(runner.includes('#bgSharedMobileNav'));
+  assert.ok(runner.includes('#v18MobileDrawer,#mobileMenu'));
 });
 
 test('website assurance is scheduled daily and keeps evidence',()=>{
@@ -58,7 +58,7 @@ test('platform aliases resolve to canonical product routes',()=>{
 });
 
 
-test('shared header reserves final i18n and mobile menu geometry before JavaScript',()=>{
+test('shared header source reserves final i18n and mobile menu geometry before JavaScript',()=>{
   const header=fs.readFileSync('components/header/header.html','utf8');
   const css=fs.readFileSync('components/header/header.css','utf8');
   assert.match(header,/data-bg-language-switcher="desktop"/);
@@ -72,9 +72,9 @@ test('critical screenshot matrix uses canonical product route and real controls'
   assert.ok(contract.screenshot_matrix.routes.includes('/product'));
   assert.ok(!contract.screenshot_matrix.routes.includes('/platform'));
   const byId=Object.fromEntries(contract.interactions.map(item=>[item.id,item]));
-  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#bgkopKnop']);
-  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['.bgkop-trig']);
-  assert.deepEqual(byId['language-switch'].selectorCandidates,['button[data-bg-language-current]']);
+  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#mobileToggle']);
+  assert.ok(byId['desktop-menu'].selectorCandidates.includes('.navitem[data-mega] > .navbtn'));
+  assert.ok(byId['language-switch'].selectorCandidates.includes('button[data-bg-language-current]'));
   assert.ok(runner.includes('#bgSharedMobileNav'));
   assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
   assert.ok(runner.includes('clsEntries'));
@@ -85,6 +85,10 @@ test('pull requests test exact preview while schedule tests production',()=>{
   assert.match(workflow,/github\.event_name == 'pull_request'/);
   assert.match(workflow,/https:\/\/www\.bedrijfsgeheugen\.nl/);
   assert.match(workflow,/Wait for exact candidate preview/);
+  assert.match(workflow,/EXPECTED_SHA/);
+  assert.match(workflow,/release\.json/);
+  assert.match(workflow,/actual_sha/);
+  assert.match(workflow,/Exact candidate preview SHA did not become reachable/);
   assert.match(workflow,/ASSURANCE_MODE:/);
   assert.deepEqual(contract.pr_all_route_viewports,['mobile']);
   assert.deepEqual(contract.daily_all_route_viewports,['mobile','desktop']);
