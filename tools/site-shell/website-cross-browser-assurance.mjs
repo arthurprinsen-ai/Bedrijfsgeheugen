@@ -174,7 +174,8 @@ const results=[],interactions=[];
 const failures=[];
 
 // Full sitemap responsive sweep in Chromium. Restart the browser per 25 routes to bound memory.
-for(const viewportName of contract.all_route_sweep.viewports){
+const allRouteViewports=(process.env.ASSURANCE_MODE==='daily'?contract.daily_all_route_viewports:contract.pr_all_route_viewports)||contract.all_route_sweep.viewports;
+for(const viewportName of allRouteViewports){
   for(let start=0;start<routes.length;start+=25){
     const browser=await chromium.launch({headless:true});
     try{
