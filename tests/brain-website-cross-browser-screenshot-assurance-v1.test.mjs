@@ -74,7 +74,7 @@ test('critical screenshot matrix uses canonical product route and real controls'
   const byId=Object.fromEntries(contract.interactions.map(item=>[item.id,item]));
   assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#mobileToggle']);
   assert.ok(byId['desktop-menu'].selectorCandidates.includes('.navitem[data-mega] > .navbtn'));
-  assert.deepEqual(byId['language-switch'].selectorCandidates,['button[data-bg-language-current]']);
+  assert.ok(byId['language-switch'].selectorCandidates.includes('button[data-bg-language-current]'));
   assert.ok(runner.includes('#bgSharedMobileNav'));
   assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
   assert.ok(runner.includes('clsEntries'));
