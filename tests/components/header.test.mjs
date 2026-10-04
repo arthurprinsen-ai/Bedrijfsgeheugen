@@ -17,8 +17,9 @@ test('header preserves the accepted desktop and mobile navigation surface', () =
     assert.ok(html.includes(`href="${href}"`), `missing navigation target: ${href}`);
   }
   assert.match(html, /id="bgkopKnop"/);
-  assert.match(html, /aria-controls="bgkopMob"/);
+  assert.match(html, /aria-controls="bgSharedMobileNav"/);
   assert.match(html, /id="bgkopMob" hidden/);
+  assert.ok(html.includes('class="bg-mobile-menu-label">Menu</span>'));
 });
 
 test('header keeps current mobile menu behavior including Escape and scroll lock', () => {
@@ -44,3 +45,4 @@ test('header contract declares its owned files and invariants', () => {
   assert.ok(contract.invariants.includes('navigation-links-preserved'));
   assert.ok(contract.invariants.includes('mobile-menu-keyboard-behavior-preserved'));
 });
+

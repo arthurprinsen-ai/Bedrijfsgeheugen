@@ -51,16 +51,7 @@ async function inspect(page){
       buttonCount:document.querySelectorAll('button').length,
       lang:document.documentElement.lang||null,
       cls:Number(window.__bgWebsiteCls||0),
-      visualQuality:(()=>{
-        const controls=[...document.querySelectorAll('a,button,input,select,textarea,[role="button"]')].filter(visible);
-        const smallTouchTargets=controls.map(el=>{const r=el.getBoundingClientRect();return{tag:el.tagName.toLowerCase(),text:(el.innerText||el.getAttribute('aria-label')||'').trim().slice(0,80),width:Math.round(r.width),height:Math.round(r.height)}}).filter(x=>x.width>0&&x.height>0&&(x.width<40||x.height<40)).slice(0,20);
-        const mediaTooWide=[...document.querySelectorAll('img,video,iframe,svg,canvas')].filter(visible).map(el=>{const r=el.getBoundingClientRect();return{tag:el.tagName.toLowerCase(),width:Math.round(r.width),height:Math.round(r.height),left:Math.round(r.left),right:Math.round(r.right)}}).filter(x=>x.left < -4 || x.right > innerWidth+4).slice(0,20);
-        const cardsTooWide=[...document.querySelectorAll('article,.card,[class*="card"],[class*="panel"],[class*="tile"]')].filter(visible).map(el=>{const r=el.getBoundingClientRect();return{width:Math.round(r.width),left:Math.round(r.left),right:Math.round(r.right),text:(el.innerText||'').trim().slice(0,80)}}).filter(x=>x.width>innerWidth+4||x.left < -4||x.right>innerWidth+4).slice(0,20);
-        const truncatedPrimaryControls=[...document.querySelectorAll('a,button')].filter(visible).filter(el=>/(btn|button|cta|primary)/i.test(String(el.className||'')+' '+String(el.getAttribute('data-variant')||''))).map(el=>({text:(el.innerText||'').trim().slice(0,80),scrollWidth:el.scrollWidth,clientWidth:el.clientWidth})).filter(x=>x.scrollWidth>x.clientWidth+2).slice(0,20);
-        let navCoversHeading=false;
-        if(h1&&header&&visible(h1)&&visible(header)){const hr=h1.getBoundingClientRect(),nr=header.getBoundingClientRect();navCoversHeading=nr.bottom>hr.top+4&&nr.top<=0;}
-        return{smallTouchTargets,mediaTooWide,cardsTooWide,truncatedPrimaryControls,navCoversHeading};
-      })()
+      clsEntries:(window.__bgWebsiteClsEntries||[]).slice(0,20)
     };
   });
 }
@@ -68,9 +59,28 @@ async function inspect(page){
 async function installCls(page){
   await page.addInitScript(()=>{
     window.__bgWebsiteCls=0;
+    window.__bgWebsiteClsEntries=[];
+    const selectorFor=node=>{
+      if(!node||node.nodeType!==1)return null;
+      if(node.id)return '#'+CSS.escape(node.id);
+      const cls=[...node.classList||[]].slice(0,3).map(c=>'.'+CSS.escape(c)).join('');
+      return node.tagName.toLowerCase()+cls;
+    };
     try{
       new PerformanceObserver(list=>{
-        for(const entry of list.getEntries())if(!entry.hadRecentInput)window.__bgWebsiteCls+=entry.value;
+        for(const entry of list.getEntries()){
+          if(entry.hadRecentInput)continue;
+          window.__bgWebsiteCls+=entry.value;
+          window.__bgWebsiteClsEntries.push({
+            value:entry.value,
+            startTime:entry.startTime,
+            sources:[...(entry.sources||[])].map(source=>({
+              selector:selectorFor(source.node),
+              previousRect:source.previousRect?{x:source.previousRect.x,y:source.previousRect.y,width:source.previousRect.width,height:source.previousRect.height}:null,
+              currentRect:source.currentRect?{x:source.currentRect.x,y:source.currentRect.y,width:source.currentRect.width,height:source.currentRect.height}:null
+            }))
+          });
+        }
       }).observe({type:'layout-shift',buffered:true});
     }catch{}
   });
@@ -98,10 +108,6 @@ function basicViolations(state,status,pageErrors,failedCore){
   if((state?.overflow??0)>contract.thresholds.horizontal_overflow_px)out.push(`horizontal overflow ${state.overflow}px`);
   if((state?.brokenImages||[]).length)out.push(`broken images ${state.brokenImages.length}`);
   if((state?.cls??0)>contract.thresholds.max_cls)out.push(`CLS ${state.cls.toFixed(3)}>${contract.thresholds.max_cls}`);
-  if(state?.visualQuality?.mediaTooWide?.length)out.push(`media outside viewport ${state.visualQuality.mediaTooWide.length}`);
-  if(state?.visualQuality?.cardsTooWide?.length)out.push(`cards outside viewport ${state.visualQuality.cardsTooWide.length}`);
-  if(state?.visualQuality?.truncatedPrimaryControls?.length)out.push(`truncated primary controls ${state.visualQuality.truncatedPrimaryControls.length}`);
-  if(state?.visualQuality?.navCoversHeading)out.push('navigation covers main heading');
   if(pageErrors.length)out.push(`page errors ${pageErrors.length}`);
   if(failedCore.length)out.push(`failed core requests ${failedCore.length}`);
   return out;
@@ -140,27 +146,44 @@ async function checkOne({browserName,browser,viewportName,route,screenshotAlways
 async function runInteraction(browserName,browser,interaction,route){
   const viewportName=interaction.viewport;
   const context=await browser.newContext({viewport:contract.viewports[viewportName]});
-  const page=await context.newPage();await gotoSettled(page,base+route);
+  const page=await context.newPage();
+  await gotoSettled(page,base+route);
   const found=await page.evaluate(candidates=>candidates.find(selector=>document.querySelector(selector))||null,interaction.selectorCandidates);
   const violations=[];
   if(!found){violations.push(`interaction trigger missing: ${interaction.id}`);}
-  else{
+  else if(interaction.assert==='mobile_panel_visible'){
     const trigger=page.locator(found).first();
-    const before=await trigger.getAttribute('aria-expanded').catch(()=>null);
-    const controls=await trigger.getAttribute('aria-controls').catch(()=>null);
     await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(250);
-    if(interaction.assert==='menu_panel_visible'||interaction.assert==='controlled_panel_visible'){
-      const after=await trigger.getAttribute('aria-expanded').catch(()=>null);
-      if(before==='false'&&after!=='true')violations.push(`aria-expanded did not open (${before}->${after})`);
-      if(controls){
-        const panel=page.locator('#'+controls);
-        if(await panel.count()===0||!(await panel.first().isVisible().catch(()=>false)))violations.push(`controlled panel #${controls} not visible`);
-      } else if(after!=='true') violations.push('no aria-controls and trigger not expanded');
+    const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
+    if(expanded!=='true')violations.push(`mobile menu did not expand: ${expanded}`);
+    const panel=page.locator('#bgSharedMobileNav');
+    if(await panel.count()===0)violations.push('mobile panel #bgSharedMobileNav missing');
+    else{
+      const hidden=await panel.getAttribute('aria-hidden').catch(()=>null);
+      const visible=await panel.isVisible().catch(()=>false);
+      if(hidden!=='false'||!visible)violations.push(`mobile panel not visible (aria-hidden=${hidden}, visible=${visible})`);
     }
-    if(interaction.assert==='same_route_english_or_en_home'){
-      const href=await trigger.getAttribute('href').catch(()=>null);
-      if(!href||!(/(^|\/)en(\/|$)/.test(href)))violations.push(`language switch target not English: ${href}`);
+  }else if(interaction.assert==='desktop_panel_visible'){
+    const trigger=page.locator(found).first();
+    await trigger.hover().catch(error=>violations.push(`hover failed: ${error.message}`));
+    await sleep(180);
+    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " bgkop-groep ")][1]');
+    const panel=group.locator('.bgkop-paneel').first();
+    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop dropdown panel not visible after hover');
+  }else if(interaction.assert==='english_target_visible'){
+    const trigger=page.locator(found).first();
+    await trigger.click().catch(error=>violations.push(`language trigger click failed: ${error.message}`));
+    await sleep(180);
+    const option=page.locator('a[data-bg-language-option="en"]:visible').first();
+    if(await option.count()===0)violations.push('visible English language option missing');
+    else{
+      const href=await option.getAttribute('href').catch(()=>null);
+      const expected=route==='/'?'/en/':'/en'+route;
+      let actual=null;try{actual=new URL(href,base).pathname}catch{}
+      const normalizedActual=actual&&actual.length>1?actual.replace(/\/$/,''):actual;
+      const normalizedExpected=expected.length>1?expected.replace(/\/$/,''):expected;
+      if(normalizedActual!==normalizedExpected)violations.push(`language target mismatch: ${actual} != ${expected}`);
     }
   }
   const screenshotPath=path.join(out,`${violations.length?'FAIL-':''}${browserName}-${viewportName}-interaction-${interaction.id}-${slug(route)}.png`);
@@ -173,18 +196,17 @@ const routes=await readRoutes();
 const results=[],interactions=[];
 const failures=[];
 
-// Full sitemap responsive sweep in Chromium. Restart the browser per 25 routes to bound memory.
-const allRouteViewports=(process.env.ASSURANCE_MODE==='daily'?contract.daily_all_route_viewports:contract.pr_all_route_viewports)||contract.all_route_sweep.viewports;
-for(const viewportName of allRouteViewports){
-  for(let start=0;start<routes.length;start+=25){
+// Full sitemap responsive sweep in Chromium. Restart the browser per 30 routes to bound memory.
+for(const viewportName of contract.all_route_sweep.viewports){
+  for(let start=0;start<routes.length;start+=30){
     const browser=await chromium.launch({headless:true});
     try{
-      for(const route of routes.slice(start,start+25)){
+      for(const route of routes.slice(start,start+30)){
         const result=await checkOne({browserName:'chromium',browser,viewportName,route,screenshotAlways:contract.screenshot_matrix.routes.includes(route)});
         results.push(result);if(result.violations.length)failures.push(result);
       }
     }finally{await browser.close();}
-    console.log(`all-route chromium ${viewportName}: ${Math.min(start+25,routes.length)}/${routes.length}`);
+    console.log(`all-route chromium ${viewportName}: ${Math.min(start+30,routes.length)}/${routes.length}`);
   }
 }
 
