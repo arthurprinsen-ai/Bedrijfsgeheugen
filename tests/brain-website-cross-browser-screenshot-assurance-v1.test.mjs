@@ -93,3 +93,14 @@ test('pull requests test exact preview while schedule tests production',()=>{
   assert.ok(contract.rules.includes('pull_request_sweep_is_bounded'));
   assert.ok(contract.rules.includes('daily_production_sweep_covers_mobile_and_desktop'));
 });
+
+
+test('generated English pages receive final font fallback and tablet trustbar geometry is stable',()=>{
+  const cta=fs.readFileSync('tools/site-shell/cta-conversie.mjs','utf8');
+  const components=fs.readFileSync('tools/site-shell/components.mjs','utf8');
+  assert.match(cta,/'en\/\*\*\/\*\.html'/);
+  assert.match(cta,/'pages\/\*\*\/\*\.html'/);
+  assert.match(components,/@media\(min-width:641px\) and \(max-width:1024px\)/);
+  assert.match(components,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(runner,/request\.resourceType\(\)==='document'.*net::ERR_ABORTED/);
+});
