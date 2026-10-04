@@ -1,15 +1,18 @@
 name: Powerhouse daily blog from Supabase
-# Canonical scheduled daily publisher. Protected PR metadata is the delivery authority.
-# Morning delivery plus evening recovery; idempotent per Europe/Amsterdam business date.
+# Canonical Supabase-first publisher. Protected PR metadata is the delivery authority.
+# Reconcile hourly and after executor changes; idempotent per Europe/Amsterdam business date.
 
 on:
   schedule:
-    # DST-safe morning delivery: exactly one of these resolves to 07:35 Europe/Amsterdam.
-    - cron: '35 5 * * *'
-    - cron: '35 6 * * *'
-    # DST-safe recovery delivery: exactly one of these resolves to 19:30 Europe/Amsterdam.
-    - cron: '30 17 * * *'
-    - cron: '30 18 * * *'
+    # Hourly reconciliation avoids a single missed GitHub schedule becoming a daily publication gap.
+    # Minute 11 avoids the top-of-hour scheduler peak.
+    - cron: '11 * * * *'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/powerhouse-daily-blog.yml'
+      - 'supabase/functions/powerhouse-blog-queue/**'
+      - 'supabase/functions/powerhouse-blog-export/**'
   workflow_dispatch:
     inputs:
       business_date:
@@ -33,24 +36,37 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Resolve Europe/Amsterdam delivery window
+      - name: Resolve Europe/Amsterdam business date
         id: day
         env:
           REQUESTED_DATE: ${{ github.event.inputs.business_date || '' }}
         run: |
           set -euo pipefail
-          local_now="$(TZ=Europe/Amsterdam date +'%H:%M')"
-          if [ "${{ github.event_name }}" = "schedule" ] && [ "$local_now" != "07:35" ] && [ "$local_now" != "19:30" ]; then
-            echo "run=false" >> "$GITHUB_OUTPUT"
-            echo "Outside canonical 07:35/19:30 Europe/Amsterdam windows: $local_now"
-            exit 0
-          fi
           date="${REQUESTED_DATE:-$(TZ=Europe/Amsterdam date +%F)}"
+          node -e "if(!/^\\d{4}-\\d{2}-\\d{2}$/.test(process.argv[1])) process.exit(1)" "$date"
           echo "run=true" >> "$GITHUB_OUTPUT"
           echo "date=$date" >> "$GITHUB_OUTPUT"
 
-      - name: Render canonical Powerhouse artifact
+      - name: Reuse the existing writer for this obligation
         if: steps.day.outputs.run == 'true'
+        id: writer
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DATE: ${{ steps.day.outputs.date }}
+        run: |
+          set -euo pipefail
+          branch="automation/powerhouse-blog-$DATE"
+          pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+          if [ -n "$pr" ]; then
+            echo "available=false" >> "$GITHUB_OUTPUT"
+            echo "existing_pr=$pr" >> "$GITHUB_OUTPUT"
+            echo "SAME_OBLIGATION_WRITER_ACTIVE:$DATE:$pr"
+          else
+            echo "available=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Render canonical Powerhouse artifact
+        if: steps.day.outputs.run == 'true' && steps.writer.outputs.available == 'true'
         id: render
         run: |
           set -euo pipefail

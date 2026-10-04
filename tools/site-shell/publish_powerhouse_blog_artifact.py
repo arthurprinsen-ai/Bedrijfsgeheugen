@@ -7,6 +7,7 @@ import pathlib
 import re
 import sys
 import urllib.request
+import urllib.error
 from email.utils import format_datetime
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
@@ -20,9 +21,16 @@ def fail(message):
     raise SystemExit(message)
 
 def fetch(date):
-    with urllib.request.urlopen(f"{EXPORT}?date={date}", timeout=30) as response:
-        data = json.loads(response.read().decode("utf-8"))
+    try:
+        with urllib.request.urlopen(f"{EXPORT}?date={date}", timeout=30) as response:
+            data = json.loads(response.read().decode("utf-8"))
+    except urllib.error.HTTPError as error:
+        if error.code == 404:
+            return None
+        raise
     if not data.get("ok"):
+        if data.get("error") == "NO_APPROVED_BLOG_ARTIFACT":
+            return None
         fail("BLOG_EXPORT_NOT_OK")
     return data
 
@@ -215,6 +223,9 @@ def main():
     if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", business_date):
         fail("INVALID_BUSINESS_DATE")
     data = fetch(business_date)
+    if data is None:
+        print(f"NO_ACTION:NO_APPROVED_BLOG_ARTIFACT:{business_date}")
+        return
     slug = data["slug"]
     if not re.fullmatch(r"[a-z0-9]+(?:-[a-z0-9]+)*", slug):
         fail("INVALID_SLUG")
