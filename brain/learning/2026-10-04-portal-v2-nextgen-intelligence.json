@@ -1,0 +1,59 @@
+{
+  "learningId": "2026-10-04-portal-v2-nextgen-intelligence",
+  "fingerprint": "portal-v2-nextgen-intelligence-future-lens-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-04T17:18:00+02:00",
+  "problem": "Portal V2 contains strong KPI, strategic-model and decision surfaces, but important visuals can still stop at showing a value. Users need one consistent path from signal to explanation, future scenario and action without hidden data or false certainty.",
+  "rootCause": "Visual components, strategic models and action workflows already exist, but they do not share one universal interaction contract for explainability, scenario horizon, uncertainty and action handoff. That makes advanced functionality feel fragmented and forces users to interpret charts before knowing what to do next.",
+  "root_cause": "Visual components, strategic models and action workflows already exist, but they do not share one universal interaction contract for explainability, scenario horizon, uncertainty and action handoff. That makes advanced functionality feel fragmented and forces users to interpret charts before knowing what to do next.",
+  "preventionRule": "Every material portal insight must support understand, trust, look-ahead and act. Forecast-like UX may only derive from available evidence, must expose assumptions and confidence, remain bounded to the metric domain and provide a direct action handoff.",
+  "prevention": [
+    "Reuse one shared next-gen intelligence interaction layer across KPI, glance, visual-model and decision surfaces.",
+    "Do not claim hidden data, causal certainty or exact forecasts when the evidence only supports a visible-trend scenario.",
+    "Show horizon, scenario assumption, confidence and uncertainty together with every future projection.",
+    "Bound score projections to 0..100 and keep confidence below 100%.",
+    "If a numeric source value is unavailable, show insufficient evidence instead of inventing a projection.",
+    "Provide a direct path from insight to an existing action or roadmap flow.",
+    "Keep primary interaction tap/click accessible, responsive and reduced-motion compatible."
+  ],
+  "evidence": {
+    "implementation": [
+      "portal-v2/nextgen-intelligence.js",
+      "portal-v2/nextgen-intelligence.css",
+      "portal-v2/index.html"
+    ],
+    "regression": [
+      "tests/brain-portal-v2-nextgen-intelligence.test.mjs",
+      "portal-v2/tests/nextgen-intelligence.test.mjs"
+    ],
+    "documentation": "docs/changes/2026-10-04-portal-v2-nextgen-intelligence.md",
+    "activityLedger": "docs/development-ledger-events/2026-10-04-portal-v2-nextgen-intelligence.md",
+    "systemMap": "platform/system-map/canonical-system-map.mjs",
+    "deliveryPr": 3700
+  },
+  "invariants": {
+    "evidenceFirst": true,
+    "hiddenDataClaimsForbidden": true,
+    "falsePrecisionForbidden": true,
+    "boundedProjection": true,
+    "confidenceBelowCertainty": true,
+    "directActionPath": true,
+    "touchFirst": true,
+    "reducedMotionSupported": true,
+    "singlePortalExperience": true,
+    "productionReadbackRequired": true
+  },
+  "compiler": {
+    "failure_class": "PORTAL_INSIGHT_TO_ACTION_FRAGMENTATION",
+    "scope": "PORTAL",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-portal-v2-nextgen-intelligence.test.mjs"
+    ],
+    "expected": "Positive visible trends preserve scenario ordering stress < base < opportunity; projections stay within the metric domain; confidence never claims certainty."
+  }
+}

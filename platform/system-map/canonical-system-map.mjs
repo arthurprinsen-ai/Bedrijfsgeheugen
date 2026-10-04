@@ -235,6 +235,38 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'portal-v2-nextgen-intelligence-v1',
+      label:'Portal V2 Next-gen Intelligence & Future Lens',
+      authority:'portal-v2+brain-learning+production-readback',
+      owner:'Powerhouse Product / Portal V2',
+      status:'CANDIDATE',
+      inputs:Object.freeze(['visible portal KPIs','visible trend deltas','Portal V2 visual models','company context and evidence']),
+      outputs:Object.freeze(['explainable Future Lens','bounded scenario projection','confidence and assumptions','context inspector','insight-to-action handoff']),
+      runtime:Object.freeze({
+        css:'portal-v2/nextgen-intelligence.css',
+        client:'portal-v2/nextgen-intelligence.js',
+        documentation:'docs/changes/2026-10-04-portal-v2-nextgen-intelligence.md',
+        learning:'brain/learning/2026-10-04-portal-v2-nextgen-intelligence.json',
+        ledger:'docs/development-ledger-events/2026-10-04-portal-v2-nextgen-intelligence.md',
+        regression:'tests/brain-portal-v2-nextgen-intelligence.test.mjs'
+      }),
+      invariants:Object.freeze({
+        evidenceFirst:true,
+        hiddenDataClaimsForbidden:true,
+        falsePrecisionForbidden:true,
+        confidenceBelowCertainty:true,
+        directActionPath:true,
+        touchFirst:true,
+        reducedMotionSupported:true,
+        singlePortalExperience:true,
+        productionReadbackRequired:true
+      }),
+      productionEvidence:Object.freeze({
+        deliveryPr:3700,
+        terminalState:'CANDIDATE'
+      })
+    }),
+    Object.freeze({
       id:'portal-v2-experience-contract-v2',
       label:'Portal V2 Responsive Experience & Reliability Contract v2',
       authority:'github+netlify+portal-state-readback',
