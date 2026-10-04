@@ -26,7 +26,7 @@
 @media(max-width:1200px){.bgkop-links{gap:.62rem;font-size:.81rem}.bgkop-cta{font-size:.78rem;padding:.42rem .7rem}.bgkop-payoff{display:none}}
 @media(max-width:1120px){.bgkop-links,.bgkop-cta{display:none}.bgkop-knop{display:flex}.bgkop-mob:not([hidden]){display:flex}}
 .bgtop{background:var(--bg-inkt);color:#C8CBD2;font-family:'Instrument Sans',system-ui,sans-serif;font-size:.78rem}
-.bgtop-in{max-width:1120px;margin:0 auto;padding:.45rem 1.5rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
+.bgtop-in{min-height:33px;max-width:1120px;margin:0 auto;padding:.45rem 1.5rem;display:flex;align-items:center;gap:1.4rem;flex-wrap:wrap}
 .bgtop-punten{display:flex;gap:1.2rem;flex-wrap:wrap}
 .bgtop-punten span{display:inline-flex;align-items:center;gap:.35rem}
 .bgtop-punten span::before{content:"\2713";color:var(--bg-geel,#FFE86B);font-weight:700}
