@@ -91,6 +91,7 @@ async function gotoSettled(page,url){
   for(let attempt=1;attempt<=3;attempt++){
     try{
       const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:20000});
+      if(response?.status()===404 && /deploy-preview-/.test(url) && attempt<3){await sleep(attempt*1200);continue;}
       await page.evaluate(async()=>{if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1200))]);});
       await sleep(250);
       return response;
@@ -168,8 +169,8 @@ async function runInteraction(browserName,browser,interaction,route){
     const trigger=page.locator(found).first();
     await trigger.hover().catch(error=>violations.push(`hover failed: ${error.message}`));
     await sleep(180);
-    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " bgkop-groep ")][1]');
-    const panel=group.locator('.bgkop-paneel').first();
+    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " navitem ")][1]');
+    const panel=group.locator('.mega').first();
     if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop dropdown panel not visible after hover');
   }else if(interaction.assert==='english_target_visible'){
     const trigger=page.locator(found).first();

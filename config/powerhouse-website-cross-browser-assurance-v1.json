@@ -79,7 +79,7 @@
       ],
       "viewport": "mobile",
       "selectorCandidates": [
-        "#bgkopKnop"
+        "#mobileToggle"
       ],
       "assert": "mobile_panel_visible"
     },
@@ -91,7 +91,7 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        ".bgkop-trig"
+        ".navitem[data-mega] > .navbtn"
       ],
       "assert": "desktop_panel_visible"
     },
@@ -126,5 +126,7 @@
   "daily_all_route_viewports": [
     "mobile",
     "desktop"
-  ]
+  ],
+  "evidence_generation": "2026-10-04-live-recheck-v1",
+  "evidence_reason": "re-run current website candidate through exact Netlify preview after CLS/header/interaction repairs"
 }
