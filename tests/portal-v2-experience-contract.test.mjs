@@ -8,7 +8,7 @@ const runtime=fs.readFileSync('portal-v2/experience.js','utf8');
 const state=fs.readFileSync('portal-v2/portal-state.js','utf8');
 
 test('Portal V2 loads one explicit experience contract after the base visual layers',()=>{
-  assert.match(html,/href="\.\/experience\.css\?v=20261004-2"/);
+  assert.match(html,/href="\.\/experience\.css\?v=20261004-3"/);
   assert.match(html,/src="\.\/experience\.js\?v=20261004-2"/);
   assert.match(css,/--pv-content-max:1600px/);
   assert.match(runtime,/__BG_PORTAL_EXPERIENCE__/);
@@ -49,4 +49,11 @@ test('visual assurance covers six routes across four first-class viewports',()=>
   assert.equal(contract.viewports.find(v=>v.id==='narrow-mobile').width,320);
   assert.equal(contract.thresholds.critical_touch_target_px,44);
   assert.equal(contract.thresholds.visual_overflow_px,2);
+});
+
+
+test('hydrated mobile shell compactness preserves 44px controls',()=>{
+  assert.match(css,/Hydrated mobile shell stays compact/);
+  assert.match(css,/@media\(max-width:430px\)[\s\S]*?\.topbar\{gap:4px!important;padding-top:2px!important;padding-bottom:2px!important/);
+  assert.match(css,/--pv-touch:44px/);
 });
