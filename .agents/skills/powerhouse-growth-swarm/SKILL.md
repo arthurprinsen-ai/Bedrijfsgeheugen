@@ -281,3 +281,25 @@ Verplicht:
 - geen commerciële traffic-bridge via het persoonlijke LinkedIn-profiel;
 - views/followers zijn tussenmetingen; paid order en realized revenue blijven terminale north star;
 - dezelfde bestaande commerciële scheduler blijft owner; een parallelle LinkedIn-growth scheduler is verboden.
+
+
+## SalesRobot capability routing — 4 oktober 2026
+Fingerprint: `powerhouse-capability-routing-v1`.
+
+SalesRobot is an executor inside the existing Powerhouse Brain, never a parallel sales brain. Powerhouse combines all canonical person, company, relationship, trigger, opportunity, predictive, content and outcome intelligence, then chooses the next-best-action and the safest executable channel.
+
+Runtime authority:
+- capability truth: `public.powerhouse_channel_capabilities_v1`;
+- resolver: `public.powerhouse_resolve_commercial_channel_v1(...)`;
+- SalesRobot executor: `supabase/functions/powerhouse-linkedin-sales-machine/index.ts`;
+- canonical SalesRobot connection alias: `powerhouse-linkedin-dm-direct`;
+- LinkedIn DM provider tool: `SALESROBOT_SEND_MESSAGE`.
+
+Hard rules:
+- a healthy provider connection does not itself authorize a send; recipient addressing, source lineage, identity, dedupe, suppression, cooldown and truth gates remain mandatory;
+- use SalesRobot for LinkedIn DM only when the capability is fresh/AVAILABLE and the selected action has a provider-addressable recipient;
+- if SalesRobot or the recipient route is unavailable, automatically choose the highest-ranked executable fallback (email, contextual LinkedIn comment, research/wait) instead of blocking the commercial cycle;
+- no duplicate prospect database, scoring model, campaign brain, learning loop or scheduler may be created inside SalesRobot;
+- SalesRobot campaigns may only be used when an actual provider campaign exists; zero campaigns is `CONFIG_REQUIRED`, never silently fabricated;
+- every provider acknowledgement and failure writes back to the canonical sales action/evidence so reply -> meeting -> scan -> proposal -> paid order -> realized revenue learning remains cross-channel;
+- LinkedIn company posting remains on the canonical LinkedIn organization publisher; SalesRobot does not replace organization identity controls.
