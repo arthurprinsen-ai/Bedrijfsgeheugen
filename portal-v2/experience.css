@@ -1,0 +1,99 @@
+/* Portal V2 Experience Contract v1
+   One calm responsive scale for cards, media, charts and interactions. */
+:root{
+  --pv-content-max:1600px;
+  --pv-panel-radius:16px;
+  --pv-control-radius:12px;
+  --pv-touch:44px;
+  --pv-shadow-rest:0 8px 28px rgba(16,24,40,.06);
+  --pv-shadow-hover:0 16px 42px rgba(16,24,40,.10);
+  --pv-focus:0 0 0 3px rgba(23,105,255,.20);
+}
+html{scroll-behavior:smooth}
+body{min-width:320px}
+.main{width:100%;max-width:var(--pv-content-max);margin:0 auto;padding:clamp(14px,1.65vw,24px)}
+.main>*{min-width:0}
+.card,.kpi,.glance-card,.legacy-insight-card,.projectcockpit-grid article,.projectactivity{
+  border-radius:var(--pv-panel-radius);
+  box-shadow:var(--pv-shadow-rest);
+}
+button,a,input,select,textarea,[role="button"]{touch-action:manipulation}
+button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,[role="button"]:focus-visible{
+  outline:0;box-shadow:var(--pv-focus);border-color:#1769ff!important;
+}
+button,.smallbtn,.portal-hamburger,.glance-card button,.projecttabs button,.projectcockpit-actions button{
+  min-height:var(--pv-touch);
+}
+button,.card,.kpi,.glance-card,.projectcockpit-grid article{
+  transition:transform .16s ease,box-shadow .16s ease,border-color .16s ease,background-color .16s ease;
+}
+@media(hover:hover) and (pointer:fine){
+  .glance-card:hover,.kpi:hover,.projectcockpit-grid article:hover{transform:translateY(-2px);box-shadow:var(--pv-shadow-hover)}
+  button:hover{filter:brightness(.99)}
+}
+.executive-glance,.dashboard,.lower,.legacy-overview-insights,.projectcockpit,.pvpage,#portalView{min-width:0}
+.kpis{grid-template-columns:repeat(5,minmax(160px,1fr));overflow:visible}
+.kpi{min-width:0}
+.kpi .num{font-size:clamp(26px,2.1vw,34px)}
+.dashboard{grid-template-columns:minmax(0,1fr) minmax(260px,300px)}
+.brainlayout{grid-template-columns:minmax(170px,205px) minmax(0,1fr) minmax(230px,285px)}
+.main img,#portalView img{max-width:100%;height:auto;object-fit:contain}
+#portalView img:not(.avatar):not(.brandmark img){max-height:min(52vh,520px)}
+.main canvas,#portalView canvas{display:block;width:100%!important;max-width:100%!important;height:auto!important;max-height:420px}
+.main .recharts-responsive-container,
+.main .chart-container,
+.main [data-chart],
+#portalView .recharts-responsive-container,
+#portalView .chart-container,
+#portalView [data-chart]{
+  width:100%!important;max-width:100%!important;min-width:0!important;max-height:460px;overflow:hidden;
+}
+.main svg,#portalView svg{max-width:100%}
+table{width:100%;max-width:100%;border-collapse:collapse}
+.pvtablewrap,.table-wrap,[data-table-scroll]{max-width:100%;overflow:auto;overscroll-behavior-inline:contain}
+dialog,.portal-popover,.sheet{
+  border-radius:18px;
+  box-shadow:0 28px 90px rgba(7,18,49,.22);
+}
+dialog{max-width:min(760px,calc(100vw - 28px));max-height:min(86dvh,900px)}
+.allpages .sheet{width:min(920px,calc(100vw - 32px));max-height:min(88dvh,940px)}
+.group button{min-height:40px;font-size:12px;line-height:1.35}
+.glance-card p,.right p,.legacy-insight-card p,#portalView p{line-height:1.55}
+#portalView h1,#portalView h2,#portalView h3{text-wrap:balance}
+#portalView p,#portalView li{overflow-wrap:anywhere}
+[data-ui-state="loading"]{position:relative;overflow:hidden}
+[data-ui-state="loading"]::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent,rgba(255,255,255,.75),transparent);transform:translateX(-100%);animation:pv-shimmer 1.15s linear infinite}
+@keyframes pv-shimmer{to{transform:translateX(100%)}}
+@media(max-width:1180px){
+  .main{max-width:none}
+  .kpis{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .brainlayout{grid-template-columns:minmax(0,1fr)}
+  .dashboard{grid-template-columns:minmax(0,1fr)}
+}
+@media(max-width:760px){
+  :root{--pv-panel-radius:14px}
+  .main{padding:12px}
+  .topbar{gap:12px}
+  .welcome h1{font-size:clamp(24px,8vw,30px)}
+  .searchrow,.actionrow{display:grid;grid-template-columns:1fr auto auto auto;gap:8px}
+  .actionrow{grid-template-columns:1fr}
+  .search{width:100%;min-width:0}
+  .kpis{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .kpi{padding:12px}
+  .executive-glance,.glance-grid,.lower,.right,.activities .items{grid-template-columns:1fr!important}
+  .groups{grid-template-columns:1fr!important}
+  .allpages .sheet{width:min(94vw,520px)}
+  #portalView img:not(.avatar):not(.brandmark img){max-height:44vh}
+  .main canvas,#portalView canvas{max-height:320px}
+  .main .recharts-responsive-container,.main .chart-container,.main [data-chart],
+  #portalView .recharts-responsive-container,#portalView .chart-container,#portalView [data-chart]{max-height:340px}
+}
+@media(max-width:430px){
+  .main{padding:10px}
+  .kpis{grid-template-columns:1fr}
+  .searchrow{grid-template-columns:1fr repeat(3,44px)}
+  .smallbtn.topaction-icon{width:44px;padding:0}
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
