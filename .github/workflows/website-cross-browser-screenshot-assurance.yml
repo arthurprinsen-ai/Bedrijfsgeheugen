@@ -53,15 +53,19 @@ jobs:
         env:
           BASE_URL: ${{ steps.target.outputs.base_url }}
         run: |
-          for attempt in $(seq 1 40); do
-            code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$BASE_URL/" || true)"
-            if [ "$code" = "200" ]; then
-              echo "Candidate preview is reachable."
+          for attempt in $(seq 1 48); do
+            ready=1
+            for route in / /sitemap.xml /afmaakindex /ai-adoptie /ai-modelwijzer; do
+              code="$(curl -L -sS -o /dev/null -w '%{http_code}' "$BASE_URL$route" || true)"
+              if [ "$code" != "200" ]; then ready=0; break; fi
+            done
+            if [ "$ready" = "1" ]; then
+              echo "Exact candidate preview, sitemap and representative generated routes are reachable."
               exit 0
             fi
             sleep 5
           done
-          echo "::error::Exact candidate preview did not become reachable."
+          echo "::error::Exact candidate preview did not become fully route-ready."
           exit 1
       - name: Run cross-browser screenshot assurance
         env:
