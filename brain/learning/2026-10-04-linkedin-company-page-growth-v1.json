@@ -22,11 +22,24 @@
     "Never promote page views or follower count to terminal success; connect them to owned-site and revenue outcomes.",
     "Keep duplicate, source, identity and provider-readback gates intact."
   ],
-  "evidence": {
-    "baselineClassification": "OBSERVED",
-    "baselineSource": "user_admin_screenshot_2026-10-04",
-    "pageViews": 12,
-    "desktop": 10,
-    "mobile": 2
+  "evidence": [
+    "config/linkedin-company-growth-v1.json",
+    "supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql",
+    "tests/brain-linkedin-company-growth-engine-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "GROWTH_DISTRIBUTION_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-growth-engine-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-growth-engine-v1.test.mjs"
+    ]
   }
 }
