@@ -196,18 +196,26 @@ const routes=await readRoutes();
 const results=[],interactions=[];
 const failures=[];
 
-// Full sitemap responsive sweep in Chromium. Restart the browser per 30 routes to bound memory.
-for(const viewportName of contract.all_route_sweep.viewports){
-  for(let start=0;start<routes.length;start+=30){
+// Full sitemap responsive sweep in Chromium using bounded parallel workers.
+const configuredAllRouteViewports=(process.env.ASSURANCE_MODE==='daily'?contract.daily_all_route_viewports:contract.pr_all_route_viewports);
+const allRouteViewports=configuredAllRouteViewports||contract.all_route_sweep.viewports;
+for(const viewportName of allRouteViewports){
+  const workerCount=Math.min(6,Math.max(1,Number(process.env.ASSURANCE_WORKERS||6)));
+  let cursor=0,completed=0;
+  await Promise.all(Array.from({length:workerCount},async()=>{
     const browser=await chromium.launch({headless:true});
     try{
-      for(const route of routes.slice(start,start+30)){
+      while(true){
+        const index=cursor++;
+        if(index>=routes.length)break;
+        const route=routes[index];
         const result=await checkOne({browserName:'chromium',browser,viewportName,route,screenshotAlways:contract.screenshot_matrix.routes.includes(route)});
         results.push(result);if(result.violations.length)failures.push(result);
+        completed++;
+        if(completed%25===0||completed===routes.length)console.log(`all-route chromium ${viewportName}: ${completed}/${routes.length}`);
       }
     }finally{await browser.close();}
-    console.log(`all-route chromium ${viewportName}: ${Math.min(start+30,routes.length)}/${routes.length}`);
-  }
+  }));
 }
 
 // Critical screenshot matrix on all engines and all viewports.
