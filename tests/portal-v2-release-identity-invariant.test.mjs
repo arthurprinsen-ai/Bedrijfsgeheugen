@@ -25,7 +25,7 @@ test('Portal V2 browser boot uses canonical runtime readiness instead of visible
   for(const path of [functionalSpecPath,legacySpecPath]){
     const spec=await text(path);
     assert.match(spec,/globalThis\.__BG_PORTAL_DOMAIN_STATE__/);
-    assert.match(spec,/\[data-mobile-nav="overview"\]/);
+    assert.match(spec,/\.portal-single-navigation \[data-nav-target="overzicht"\]/);
     assert.doesNotMatch(spec,/getByRole\(['"]heading['"].*Welkom terug, Arthur/);
   }
 });
