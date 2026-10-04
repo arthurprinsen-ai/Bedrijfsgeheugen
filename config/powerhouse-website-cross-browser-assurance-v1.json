@@ -138,7 +138,9 @@
     "visual_quality_is_a_release_requirement",
     "small_mobile_and_wide_desktop_are_required_edge_viewports",
     "visual_failures_must_be_fixed_not_hidden",
-    "daily_gate_uses_bounded_full_sitemap_plus_deep_critical_matrix"
+    "daily_gate_uses_bounded_full_sitemap_plus_deep_critical_matrix",
+    "pr_gate_uses_all_routes_mobile_desktop_plus_deep_critical_matrix",
+    "daily_gate_uses_all_routes_all_five_viewports_plus_deep_critical_matrix"
   ],
   "visual_quality_assertions": [
     "no_overlapping_visible_text_or_controls",
@@ -151,5 +153,16 @@
     "critical_cards_do_not_exceed_viewport_width",
     "body_text_remains_readable",
     "screenshots_are_retained_for_visual_review"
+  ],
+  "pr_all_route_viewports": [
+    "mobile",
+    "desktop"
+  ],
+  "daily_all_route_viewports": [
+    "small-mobile",
+    "mobile",
+    "tablet",
+    "desktop",
+    "wide-desktop"
   ]
 }
