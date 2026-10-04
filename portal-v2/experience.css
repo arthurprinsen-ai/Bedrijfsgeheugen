@@ -33,3 +33,10 @@ dialog,.portal-popover,.sheet{border-radius:18px;box-shadow:0 28px 90px rgba(7,1
   .csrd-world{display:none!important}
   .topactions .searchrow>.smallbtn,.topactions .actionrow>.smallbtn{height:44px!important;min-height:44px!important;max-height:none!important}
 }
+
+/* Hydrated mobile shell stays compact without shrinking critical 44px controls. */
+@media(max-width:430px){
+  .topbar{gap:4px!important;padding-top:2px!important;padding-bottom:2px!important;margin-bottom:8px!important}
+  .topactions{gap:4px!important}
+  .topactions .searchrow,.topactions .actionrow{gap:4px!important}
+}
