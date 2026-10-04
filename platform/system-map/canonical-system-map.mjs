@@ -201,7 +201,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       runtime:Object.freeze({
         css:'portal-v2/experience.css',
         client:'portal-v2/experience.js',
-        documentation:'docs/portal-v2-experience-contract-v1.md',
+        documentation:'docs/changes/2026-10-04-portal-v2-experience-contract-v1.md',
         learning:'brain/learning/2026-10-04-portal-v2-experience-contract-v1.json',
         regression:'tests/portal-v2-experience-contract.test.mjs',
         backendAuthority:'portal-v2/portal-state.js'
