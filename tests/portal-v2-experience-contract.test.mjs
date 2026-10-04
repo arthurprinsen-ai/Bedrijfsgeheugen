@@ -8,8 +8,8 @@ const runtime=fs.readFileSync('portal-v2/experience.js','utf8');
 const state=fs.readFileSync('portal-v2/portal-state.js','utf8');
 
 test('Portal V2 loads one explicit experience contract after the base visual layers',()=>{
-  assert.match(html,/href="\.\/experience\.css\?v=20261004-1"/);
-  assert.match(html,/src="\.\/experience\.js\?v=20261004-1"/);
+  assert.match(html,/href="\.\/experience\.css\?v=20261004-2"/);
+  assert.match(html,/src="\.\/experience\.js\?v=20261004-2"/);
   assert.match(css,/--pv-content-max:1600px/);
   assert.match(runtime,/__BG_PORTAL_EXPERIENCE__/);
   assert.match(runtime,/portal-experience-v2/);
