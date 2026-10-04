@@ -1,0 +1,39 @@
+{
+  "fingerprint": "powerhouse|prewrite-obligation|external-mutation-recovery|v1",
+  "observed_at": "2026-10-04",
+  "problem": "A material outcome could disappear when an external GitHub/runtime mutation was rejected before the side effect; blog publication could remain content-ready without terminal repository/deploy/readback closure.",
+  "root_cause": "The durable obligation was not guaranteed to exist before every external mutation attempt. Execution-surface rejection was treated too close to a terminal blocker instead of a resumable execution interruption. Blog execution identity was not explicitly tied from approved artifact to protected GitHub publisher and production readback.",
+  "fix": [
+    "Require canonical pre-write obligation/checkpoint before every material external mutation.",
+    "Classify blocked pre-side-effect writes as RECOVERY_REQUIRED and resume the same idempotency lineage.",
+    "Bind daily blog closure to approved artifact -> protected GitHub publisher -> protected merge -> Netlify current-main -> public canonical readback.",
+    "Keep LinkedIn company fail-closed only for genuine pre-create write-authority/OAuth denial; organization read/ACL is corroborative and durable provider URN is terminal side-effect evidence."
+  ],
+  "prevention": [
+    "No material outcome may rely on a post-failure write to create its own recovery record.",
+    "No replacement lineage after a blocked execution-surface write.",
+    "No blog LIVE claim without public canonical readback.",
+    "No LinkedIn company republish after durable provider URN."
+  ],
+  "type": "PREVENTION",
+  "decision": "Make the recovery obligation durable before any external mutation and force blocked pre-side-effect writes to resume the same lineage until terminal readback or a genuine hard boundary.",
+  "compiler": {
+    "failure_class": "EXTERNAL_MUTATION_PREWRITE_OBLIGATION_GAP",
+    "scope": "POWERHOUSE_DELIVERY_CONTROL_PLANE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "AGENTS.md",
+    "brain/policies/powerhouse-agent-continuity-v1.json",
+    "config/outcome-obligations.json",
+    ".agents/skills/powerhouse-continuity/SKILL.md",
+    "platform/system-map/canonical-system-map.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-prewrite-obligation-external-mutation-recovery.test.mjs"
+    ]
+  }
+}

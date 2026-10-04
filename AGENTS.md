@@ -17,6 +17,20 @@ Iedere chat/agent voorspelt vóór een repository- of providerwrite wat de write
 - nieuwere authoritative main supersedeert stale omkeerbare production snapshot/readback work; nooit onomkeerbare side effects of verplichte security/quality evidence;
 - geen agent vraagt de gebruiker om “ga door” om niet-terminale delivery te vervolgen.
 
+## Pre-side-effect durable obligation — external mutation boundary
+
+Fingerprint: `powerhouse|prewrite-obligation|external-mutation-recovery|v1`.
+
+Voor iedere materiële externe mutatie die een verwacht resultaat moet opleveren, geldt voortaan aanvullend:
+
+- materialiseer of bevestig de canonieke obligation **vóór** de eerste GitHub-, provider-, deploy- of andere externe write; de obligation bevat minimaal lineage/fingerprint, idempotency-key, exact beoogd outcome, huidige evidence, next safe action en resume-conditie;
+- een tool-/policy-/execution-guard die de write blokkeert vóór de side-effect is een `RECOVERY_REQUIRED` / `RECOVERING` toestand, geen verlies van de obligation en geen reden om de taak als afgerond terug te geven;
+- de volgende capabele chat/agent hervat dezelfde obligation en dezelfde idempotency-key; er wordt geen parallelle vervangende lineage gestart;
+- alleen aantoonbaar ontbrekende account-/provider-authority, expliciete menselijke OAuth/consent, security-verzwakking, onherroepelijke/destructieve data, betaalde resource-escalatie of juridisch/financieel bindende handeling mag `BLOCKED_HARD_BOUNDARY` veroorzaken;
+- voor dagelijkse blogs bestaat de publicatie-obligation vóór de repositorywrite; de bestaande protected GitHub daily publisher consumeert exact hetzelfde artifact/id/hash en closure vereist merge → Netlify current-main → publieke canonical readback;
+- voor `linkedin_company` is ontbrekende organization-read/ACL-capability op zichzelf geen publicatieblokker. De bekende canonical organization identity wordt gebruikt en de daadwerkelijke write-call is de capability probe; alleen een echte pre-create providerdenial wegens ontbrekende write authority/OAuth mag fail-closed blijven. Een duurzame provider-URN sluit de side-effect en activeert `republish_forbidden=true`;
+- een chat/tool-run mag nooit eindigen met alleen “geen PR/deploy ontstaan doordat de mutatie werd tegengehouden” wanneer een andere reeds geautoriseerde canonieke execution path beschikbaar is. De open obligation blijft eigenaar tot terminale readback of echte harde grens.
+
 # Bedrijfsgeheugen — Agent Development Contract
 
 Dit bestand is de eerste bron die iedere agent moet lezen voordat code, content, automatisering, connectors, Netlify, GitHub of portalgedrag wordt gewijzigd.
