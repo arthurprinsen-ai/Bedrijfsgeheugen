@@ -30,7 +30,7 @@ test('website assurance exercises interactions',()=>{
   const ids=new Set(contract.interactions.map(item=>item.id));
   for(const id of ['mobile-menu','desktop-menu','language-switch'])assert.ok(ids.has(id),id);
   assert.ok(runner.includes('aria-expanded'));
-  assert.ok(runner.includes('#bgSharedMobileNav'));
+  assert.ok(runner.includes('#v18MobileDrawer'));
 });
 
 test('website assurance is scheduled daily and keeps evidence',()=>{
@@ -38,6 +38,8 @@ test('website assurance is scheduled daily and keeps evidence',()=>{
   assert.match(workflow,/cron: '20 6 \* \* \*'/);
   assert.match(workflow,/chromium firefox webkit/);
   assert.match(workflow,/retention-days: 30/);
+  assert.match(workflow,/include-hidden-files: true/);
+  assert.match(runner,/using production sitemap for route inventory only/);
 });
 
 test('website cross-browser assurance stays classified in website delivery lane',()=>{
@@ -72,10 +74,10 @@ test('critical screenshot matrix uses canonical product route and real controls'
   assert.ok(contract.screenshot_matrix.routes.includes('/product'));
   assert.ok(!contract.screenshot_matrix.routes.includes('/platform'));
   const byId=Object.fromEntries(contract.interactions.map(item=>[item.id,item]));
-  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#bgkopKnop']);
-  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['.bgkop-trig']);
+  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#mobileToggle']);
+  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['header.v17-header .navitem[data-mega] > .navbtn']);
   assert.deepEqual(byId['language-switch'].selectorCandidates,['button[data-bg-language-current]']);
-  assert.ok(runner.includes('#bgSharedMobileNav'));
+  assert.ok(runner.includes('#v18MobileDrawer'));
   assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
   assert.ok(runner.includes('clsEntries'));
 });
@@ -91,3 +93,16 @@ test('pull requests test exact preview while schedule tests production',()=>{
   assert.ok(contract.rules.includes('pull_request_sweep_is_bounded'));
   assert.ok(contract.rules.includes('daily_production_sweep_covers_mobile_and_desktop'));
 });
+
+
+test('generated English pages receive final font fallback and tablet trustbar geometry is stable',()=>{
+  const cta=fs.readFileSync('tools/site-shell/cta-conversie.mjs','utf8');
+  const components=fs.readFileSync('tools/site-shell/components.mjs','utf8');
+  assert.match(cta,/'en\/\*\*\/\*\.html'/);
+  assert.match(cta,/'pages\/\*\*\/\*\.html'/);
+  assert.match(components,/@media\(min-width:641px\) and \(max-width:1024px\)/);
+  assert.match(components,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(runner,/request\.resourceType\(\)==='document'.*net::ERR_ABORTED/);
+});
+
+// Delivery metadata refresh: exact six-file website recovery scope.

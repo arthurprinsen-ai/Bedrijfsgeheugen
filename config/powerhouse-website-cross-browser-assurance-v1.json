@@ -79,9 +79,9 @@
       ],
       "viewport": "mobile",
       "selectorCandidates": [
-        "#bgkopKnop"
+        "#mobileToggle"
       ],
-      "assert": "mobile_panel_visible"
+      "assert": "v18_mobile_drawer_visible"
     },
     {
       "id": "desktop-menu",
@@ -91,9 +91,9 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
-        ".bgkop-trig"
+        "header.v17-header .navitem[data-mega] > .navbtn"
       ],
-      "assert": "desktop_panel_visible"
+      "assert": "v18_desktop_mega_visible"
     },
     {
       "id": "language-switch",
@@ -126,5 +126,7 @@
   "daily_all_route_viewports": [
     "mobile",
     "desktop"
-  ]
+  ],
+  "evidence_generation": "2026-10-04-current-controls-cls-v2",
+  "evidence_reason": "align assurance with canonical shared header controls and reserve stable announcement/header geometry"
 }

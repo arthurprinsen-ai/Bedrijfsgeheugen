@@ -19,7 +19,7 @@ export function metConversieknop(input) {
 
 export async function publiekePaginas() {
   const uit = [];
-  for (const patroon of ['*.html', 'blog/**/*.html', 'kennis/**/*.html']) {
+  for (const patroon of ['*.html', 'blog/**/*.html', 'kennis/**/*.html', 'en/**/*.html', 'pages/**/*.html']) {
     for await (const p of glob(patroon)) if (!PORTAAL.has(p)) uit.push(p);
   }
   return [...new Set(uit)].sort();

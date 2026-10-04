@@ -1,0 +1,71 @@
+{
+  "learningId": "2026-10-04-linkedin-company-page-growth-v1",
+  "fingerprint": "powerhouse-linkedin-company-growth-v1",
+  "status": "LIVE_PROVEN_RUNTIME",
+  "observedAt": "2026-10-04T13:11:00+02:00",
+  "problem": "The Bedrijfsgeheugen LinkedIn company page had only 12 observed page views in the shown analytics period: 10 desktop and 2 mobile.",
+  "rootCause": "The system already published and measured social content, but company-page distribution did not have a dedicated closed-loop objective translating page-visit/follower gaps into bounded content actions and revenue learning.",
+  "change": {
+    "singleScheduler": "powerhouse_trigger_based_mkb_acquisition_cycle_v1",
+    "runtimeFunction": "public.powerhouse_refresh_linkedin_company_growth_v1(date)",
+    "pageMetrics": "public.powerhouse_linkedin_company_page_metrics_v1",
+    "dailyState": "public.powerhouse_linkedin_company_growth_daily_v1",
+    "targets": {
+      "pageViews30d": 300,
+      "relevantNewFollowers30d": 100
+    }
+  },
+  "prevention": [
+    "Never treat company-page posting as sufficient without a distribution objective and measured page/follower outcomes.",
+    "Never create a parallel scheduler for LinkedIn company growth.",
+    "Never use the personal LinkedIn identity as a commercial bridge to repair company-page distribution.",
+    "Never promote page views or follower count to terminal success; connect them to owned-site and revenue outcomes.",
+    "Keep duplicate, source, identity and provider-readback gates intact."
+  ],
+  "evidence": [
+    "config/linkedin-company-growth-v1.json",
+    "supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql",
+    "tests/brain-linkedin-company-growth-engine-v1.test.mjs"
+  ],
+  "compiler": {
+    "failure_class": "GROWTH_DISTRIBUTION_GAP",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-linkedin-company-growth-engine-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-linkedin-company-growth-engine-v1.test.mjs"
+    ]
+  },
+  "root_cause": "The system already published and measured social content, but company-page distribution did not have a dedicated closed-loop objective translating page-visit/follower gaps into bounded content actions and revenue learning.",
+  "terminalProof": {
+    "protectedMain": "6d9770aad32289d000f209d9ea54c72ed5511b73",
+    "deliveryPr": 3674,
+    "migrationApplied": true,
+    "runtimeObservedAt": "2026-10-04T11:46:48.64111Z",
+    "status": "GROW",
+    "diagnosis": "critical_distribution_gap",
+    "pageViews30d": 12,
+    "targetPageViews30d": 300,
+    "targetProgress": 0.04,
+    "companyPosts30d": 12,
+    "observedImpressions30d": 31,
+    "observedReach30d": 21,
+    "recommendationsTouched": 3,
+    "canonicalScheduler": {
+      "jobId": 116,
+      "schedule": "27 * * * *",
+      "parallelScheduler": false
+    },
+    "notionReadback": {
+      "systemMap": "3dcda36a-ac8a-8152-be3d-edbb32b06239",
+      "humanHandbook": "3dcda36a-ac8a-81ac-aad1-c88751e9e814",
+      "masterRegister": "3c3da36a-ac8a-81dd-a3fe-c4fc12bba5df"
+    }
+  }
+}

@@ -456,3 +456,5 @@
   to = "/en/product"
   status = 301
   force = true
+
+# production redeploy heartbeat: website-cross-browser-clean-current-main-20261004-v1

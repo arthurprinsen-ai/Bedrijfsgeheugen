@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "fingerprint": "powerhouse-linkedin-company-growth-v1",
+  "canonicalOrganizationUrn": "urn:li:organization:18234216",
+  "canonicalChannel": "linkedin_company",
+  "timeZone": "Europe/Amsterdam",
+  "targets": {
+    "pageViews30d": 300,
+    "relevantNewFollowers30d": 100
+  },
+  "limits": {
+    "maxCompanyPostsPerDay": 1,
+    "maxGrowthRecommendationsPerDay": 3
+  },
+  "baseline": {
+    "observedDate": "2026-10-04",
+    "pageViews": 12,
+    "desktopPageViews": 10,
+    "mobilePageViews": 2,
+    "source": "user_admin_screenshot"
+  },
+  "northStar": [
+    "paid_order",
+    "realized_revenue"
+  ],
+  "intermediateSignals": [
+    "company_page_view",
+    "relevant_follower",
+    "post_impression",
+    "post_reach",
+    "post_engagement",
+    "website_visit",
+    "scan_start",
+    "qualified_lead"
+  ],
+  "rules": {
+    "reuseExistingContentRevenueLineage": true,
+    "reuseExistingCommercialScheduler": true,
+    "createParallelScheduler": false,
+    "personalLinkedInCommercialBridgeForbidden": true,
+    "companyPageContentMustBeSourceBacked": true,
+    "duplicateContentForbidden": true,
+    "providerReadbackRequiredForPublication": true,
+    "vanityMetricsAreNotTerminal": true
+  }
+}

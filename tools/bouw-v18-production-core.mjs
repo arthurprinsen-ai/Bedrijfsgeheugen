@@ -198,6 +198,9 @@ header.v17-header .mega{
     max-width:min(1190px,calc(100vw - 32px))!important;
   }
 }
+@media(max-width:1024px){
+  .announcement{height:41px!important;min-height:41px!important;max-height:41px!important;overflow:hidden!important}
+}
 @media(max-width:680px){
   :root{--bg-shell-gutter:12px}
 }
