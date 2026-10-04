@@ -50,7 +50,17 @@ async function inspect(page){
       linkCount:document.querySelectorAll('a[href]').length,
       buttonCount:document.querySelectorAll('button').length,
       lang:document.documentElement.lang||null,
-      cls:Number(window.__bgWebsiteCls||0)
+      cls:Number(window.__bgWebsiteCls||0),
+      visualQuality:(()=>{
+        const controls=[...document.querySelectorAll('a,button,input,select,textarea,[role="button"]')].filter(visible);
+        const smallTouchTargets=controls.map(el=>{const r=el.getBoundingClientRect();return{tag:el.tagName.toLowerCase(),text:(el.innerText||el.getAttribute('aria-label')||'').trim().slice(0,80),width:Math.round(r.width),height:Math.round(r.height)}}).filter(x=>x.width>0&&x.height>0&&(x.width<40||x.height<40)).slice(0,20);
+        const mediaTooWide=[...document.querySelectorAll('img,video,iframe,svg,canvas')].filter(visible).map(el=>{const r=el.getBoundingClientRect();return{tag:el.tagName.toLowerCase(),width:Math.round(r.width),height:Math.round(r.height),left:Math.round(r.left),right:Math.round(r.right)}}).filter(x=>x.left < -4 || x.right > innerWidth+4).slice(0,20);
+        const cardsTooWide=[...document.querySelectorAll('article,.card,[class*="card"],[class*="panel"],[class*="tile"]')].filter(visible).map(el=>{const r=el.getBoundingClientRect();return{width:Math.round(r.width),left:Math.round(r.left),right:Math.round(r.right),text:(el.innerText||'').trim().slice(0,80)}}).filter(x=>x.width>innerWidth+4||x.left < -4||x.right>innerWidth+4).slice(0,20);
+        const truncatedPrimaryControls=[...document.querySelectorAll('a,button')].filter(visible).filter(el=>/(btn|button|cta|primary)/i.test(String(el.className||'')+' '+String(el.getAttribute('data-variant')||''))).map(el=>({text:(el.innerText||'').trim().slice(0,80),scrollWidth:el.scrollWidth,clientWidth:el.clientWidth})).filter(x=>x.scrollWidth>x.clientWidth+2).slice(0,20);
+        let navCoversHeading=false;
+        if(h1&&header&&visible(h1)&&visible(header)){const hr=h1.getBoundingClientRect(),nr=header.getBoundingClientRect();navCoversHeading=nr.bottom>hr.top+4&&nr.top<=0;}
+        return{smallTouchTargets,mediaTooWide,cardsTooWide,truncatedPrimaryControls,navCoversHeading};
+      })()
     };
   });
 }
@@ -88,6 +98,10 @@ function basicViolations(state,status,pageErrors,failedCore){
   if((state?.overflow??0)>contract.thresholds.horizontal_overflow_px)out.push(`horizontal overflow ${state.overflow}px`);
   if((state?.brokenImages||[]).length)out.push(`broken images ${state.brokenImages.length}`);
   if((state?.cls??0)>contract.thresholds.max_cls)out.push(`CLS ${state.cls.toFixed(3)}>${contract.thresholds.max_cls}`);
+  if(state?.visualQuality?.mediaTooWide?.length)out.push(`media outside viewport ${state.visualQuality.mediaTooWide.length}`);
+  if(state?.visualQuality?.cardsTooWide?.length)out.push(`cards outside viewport ${state.visualQuality.cardsTooWide.length}`);
+  if(state?.visualQuality?.truncatedPrimaryControls?.length)out.push(`truncated primary controls ${state.visualQuality.truncatedPrimaryControls.length}`);
+  if(state?.visualQuality?.navCoversHeading)out.push('navigation covers main heading');
   if(pageErrors.length)out.push(`page errors ${pageErrors.length}`);
   if(failedCore.length)out.push(`failed core requests ${failedCore.length}`);
   return out;
@@ -159,17 +173,17 @@ const routes=await readRoutes();
 const results=[],interactions=[];
 const failures=[];
 
-// Full sitemap responsive sweep in Chromium. Restart the browser per 30 routes to bound memory.
+// Full sitemap responsive sweep in Chromium. Restart the browser per 25 routes to bound memory.
 for(const viewportName of contract.all_route_sweep.viewports){
-  for(let start=0;start<routes.length;start+=30){
+  for(let start=0;start<routes.length;start+=25){
     const browser=await chromium.launch({headless:true});
     try{
-      for(const route of routes.slice(start,start+30)){
+      for(const route of routes.slice(start,start+25)){
         const result=await checkOne({browserName:'chromium',browser,viewportName,route,screenshotAlways:contract.screenshot_matrix.routes.includes(route)});
         results.push(result);if(result.violations.length)failures.push(result);
       }
     }finally{await browser.close();}
-    console.log(`all-route chromium ${viewportName}: ${Math.min(start+30,routes.length)}/${routes.length}`);
+    console.log(`all-route chromium ${viewportName}: ${Math.min(start+25,routes.length)}/${routes.length}`);
   }
 }
 
