@@ -6,6 +6,8 @@ on:
       - 'tools/content-growth/**'
       - 'config/content-growth-policy.json'
       - 'config/linkedin-company-growth-v1.json'
+      - 'config/powerhouse-quality-surface-contracts.json'
+      - 'tests/brain-linkedin-company-growth-engine-v1.test.mjs'
       - 'supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql'
       - '.agents/skills/powerhouse-linkedin-company-growth/SKILL.md'
       - 'brain/learning/2026-10-04-linkedin-company-page-growth-v1.json'
@@ -25,6 +27,8 @@ on:
       - 'tools/content-growth/**'
       - 'config/content-growth-policy.json'
       - 'config/linkedin-company-growth-v1.json'
+      - 'config/powerhouse-quality-surface-contracts.json'
+      - 'tests/brain-linkedin-company-growth-engine-v1.test.mjs'
       - 'supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql'
       - '.agents/skills/powerhouse-linkedin-company-growth/SKILL.md'
       - 'brain/learning/2026-10-04-linkedin-company-page-growth-v1.json'
@@ -59,6 +63,6 @@ jobs:
       - name: Policy validation
         run: node tools/content-growth/validate-policy.mjs
       - name: LinkedIn company growth regression
-        run: node --test tests/linkedin-company-growth-engine-v1.test.mjs
+        run: node --test tests/brain-linkedin-company-growth-engine-v1.test.mjs
       - name: Existing SEO growth/order regression
         run: node --test tests/seo-growth-*.test.mjs tests/seo-order-*.test.mjs
