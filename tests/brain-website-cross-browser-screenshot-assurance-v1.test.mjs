@@ -30,7 +30,7 @@ test('website assurance exercises interactions',()=>{
   const ids=new Set(contract.interactions.map(item=>item.id));
   for(const id of ['mobile-menu','desktop-menu','language-switch'])assert.ok(ids.has(id),id);
   assert.ok(runner.includes('aria-expanded'));
-  assert.ok(runner.includes('#v18MobileDrawer'));
+  assert.ok(runner.includes('#bgkopMob')); assert.ok(runner.includes('#v18MobileDrawer'));
 });
 
 test('website assurance is scheduled daily and keeps evidence',()=>{
@@ -39,7 +39,7 @@ test('website assurance is scheduled daily and keeps evidence',()=>{
   assert.match(workflow,/chromium firefox webkit/);
   assert.match(workflow,/retention-days: 30/);
   assert.match(workflow,/include-hidden-files: true/);
-  assert.match(runner,/using production sitemap for route inventory only/);
+  assert.match(runner,/exact sitemap unavailable/);
 });
 
 test('website cross-browser assurance stays classified in website delivery lane',()=>{
@@ -64,7 +64,7 @@ test('shared header reserves final i18n and mobile menu geometry before JavaScri
   const header=fs.readFileSync('components/header/header.html','utf8');
   const css=fs.readFileSync('components/header/header.css','utf8');
   assert.match(header,/data-bg-language-switcher="desktop"/);
-  assert.match(header,/id="bgkopKnop"[^>]*aria-controls="bgSharedMobileNav"/);
+  assert.match(header,/id="bgkopKnop"[^>]*aria-controls="bgkopMob"/);
   assert.match(header,/bg-mobile-menu-label">Menu</);
   assert.match(header,/bg-mobile-menu-icon/);
   assert.match(css,/\.bgkop-knop\{[^}]*min-width:72px;[^}]*height:44px/);
@@ -74,8 +74,8 @@ test('critical screenshot matrix uses canonical product route and real controls'
   assert.ok(contract.screenshot_matrix.routes.includes('/product'));
   assert.ok(!contract.screenshot_matrix.routes.includes('/platform'));
   const byId=Object.fromEntries(contract.interactions.map(item=>[item.id,item]));
-  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#mobileToggle']);
-  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['header.v17-header .navitem[data-mega] > .navbtn']);
+  assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#bgkopKnop','#mobileToggle']);
+  assert.deepEqual(byId['desktop-menu'].selectorCandidates,['.bgkop-groep > .bgkop-trig','header.v17-header .navitem[data-mega] > .navbtn']);
   assert.deepEqual(byId['language-switch'].selectorCandidates,['button[data-bg-language-current]']);
   assert.ok(runner.includes('#v18MobileDrawer'));
   assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
@@ -101,7 +101,7 @@ test('generated English pages receive final font fallback and tablet trustbar ge
   assert.match(cta,/'en\/\*\*\/\*\.html'/);
   assert.match(cta,/'pages\/\*\*\/\*\.html'/);
   assert.match(components,/@media\(min-width:641px\) and \(max-width:1024px\)/);
-  assert.match(components,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
+  assert.match(components,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/); assert.match(components,/\.bg-uniform-trust\{height:39px;min-height:39px;max-height:39px/);
   assert.match(runner,/benignAbort=.*net::ERR_ABORTED.*NS_ERROR_ABORT/);
 });
 
