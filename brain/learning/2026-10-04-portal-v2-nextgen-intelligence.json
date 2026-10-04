@@ -1,0 +1,30 @@
+{
+  "version": "PORTAL-V2-NEXTGEN-INTELLIGENCE-v1",
+  "observed_at": "2026-10-04T17:14:00+02:00",
+  "obligation_id": "portal-v2-nextgen-intelligence-20261004",
+  "capability": "portal-nextgen-intelligence",
+  "intent": "Make every important portal visual understandable, explorable and actionable without inventing evidence.",
+  "learned": [
+    "A chart is incomplete until the user can understand what changed, why it matters and what action follows.",
+    "Forecast UX must expose assumptions, horizon and uncertainty; false precision is forbidden.",
+    "The safest first forecast layer derives only from already-visible portal values and trends.",
+    "The same interaction contract should enhance KPI cards, strategic visuals and decision surfaces instead of creating isolated widgets."
+  ],
+  "invariants": {
+    "evidence_first": true,
+    "hidden_data_claims_forbidden": true,
+    "bounded_projection": true,
+    "confidence_below_certainty": true,
+    "direct_action_path": true,
+    "touch_first": true,
+    "reduced_motion": true,
+    "one_portal_experience": true
+  },
+  "runtime": [
+    "portal-v2/nextgen-intelligence.js",
+    "portal-v2/nextgen-intelligence.css"
+  ],
+  "regression": [
+    "portal-v2/tests/nextgen-intelligence.test.mjs"
+  ]
+}
