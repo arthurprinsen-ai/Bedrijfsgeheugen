@@ -1,0 +1,29 @@
+{
+  "fingerprint": "powerhouse-website-cross-browser-bounded-daily-gate-v1",
+  "observed_at": "2026-10-04T09:52:00Z",
+  "type": "PREVENTION",
+  "problem": "A five-viewport sweep across every sitemap route makes the daily screenshot gate unnecessarily long and risks runner timeout.",
+  "root_cause": "Deep responsive coverage and full-route coverage were multiplied instead of layered.",
+  "decision": "Use a bounded two-layer gate: every route at 320px and 1440px, while critical route families retain all five widths and Chromium/Firefox/WebKit.",
+  "prevention": [
+    "No assertion thresholds are widened.",
+    "All sitemap routes still receive mobile+desktop responsive verification.",
+    "Critical routes retain 320/390/768/1440/1920 and three engines."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_ASSURANCE_RUNTIME_BUDGET",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "config/powerhouse-website-cross-browser-assurance-v1.json",
+    "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}
