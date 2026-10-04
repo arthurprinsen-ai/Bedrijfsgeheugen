@@ -23,3 +23,19 @@ De exact-head browserreadback op 390×844 vond na asynchrone demoAI-hydration ee
 
 ## Narrow-phone menu target recovery
 De exact-head browserpariteit vond op een ondersteunde telefoonbreedte een menutoggle van 43px breed. De finale experience authority forceert daarom de canonieke mobiele menuknop op minimaal 44×44px, ook wanneer het tekstlabel op narrow-mobile wordt ingeklapt. Dit verhoogt de touch target zonder de compacte topbar opnieuw groter te maken.
+
+
+## Terminale productieproof
+- Status: LIVE_BEWEZEN / LIVE_PROVEN_RUNTIME
+- Delivery PR: #3692
+- Protected main: 392ec658131c01824712d83c83e41d36a3633575
+- Netlify production deploy: 6ac25d5a4e893200088ae19b — ready
+- Productie: https://www.bedrijfsgeheugen.nl/portal-v2/
+- Required Test: 37207574172 — success
+- Portal V2 DOM readback: 37207574039 — success
+- Portal Visual Density: 37207574040 — success
+- CodeQL: 37207574054 — success
+- Skill Projection: 37208029113 — success
+- Terminal closure: 37208029345 — success
+
+Daarmee is de v2 assurance niet langer een candidate. De productie-readback en de machine-governance wijzen naar dezelfde terminale waarheid.
