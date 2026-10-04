@@ -239,7 +239,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'Portal V2 Responsive Experience & Reliability Contract v2',
       authority:'github+netlify+portal-state-readback',
       owner:'Powerhouse Product / Portal V2',
-      status:'CANDIDATE_PROTECTED_DELIVERY',
+      status:'LIVE_PROVEN_RUNTIME',
       supersedes:'portal-v2-experience-contract-v1',
       inputs:Object.freeze(['live v1 experience authority','Portal V2 page registry','dynamic visuals','browser metrics','Portal State']),
       outputs:Object.freeze(['24-case responsive evidence','320px narrow-mobile coverage','runtime interaction/error signals','visual overflow evidence','touch-target evidence']),
@@ -266,6 +266,21 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         portalStateAuthorityUnchanged:true,
         failClosedWrites:true,
         productionReadbackRequired:true
+      }),
+      productionEvidence:Object.freeze({
+        deliveryPr:3692,
+        candidateHead:'f74198342ad38217698c914933e1e81502f518f0',
+        protectedMain:'392ec658131c01824712d83c83e41d36a3633575',
+        netlifyDeploy:'6ac25d5a4e893200088ae19b',
+        productionUrl:'https://www.bedrijfsgeheugen.nl/portal-v2/',
+        productionState:'ready',
+        requiredTestRun:37207574172,
+        productionDomReadbackRun:37207574039,
+        visualDensityRun:37207574040,
+        codeqlRun:37207574054,
+        skillProjectionRun:37208029113,
+        terminalClosureRun:37208029345,
+        terminalState:'LIVE_BEWEZEN'
       })
     }),
     Object.freeze({
