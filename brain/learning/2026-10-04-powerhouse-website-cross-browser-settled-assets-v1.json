@@ -1,0 +1,31 @@
+{
+  "fingerprint": "powerhouse-website-cross-browser-settled-assets-v1",
+  "observed_at": "2026-10-04T15:05:00Z",
+  "type": "PREVENTION",
+  "problem": "Cross-browser assurance remained red on a blog page because transient ERR_CONNECTION_RESET events for core CSS/JS were retained even when the same assets later loaded successfully.",
+  "root_cause": "The runner tracked failed core requests but did not correlate retry failures with later successful responses for the same resource path and type.",
+  "decision": "A transient script/stylesheet failure is reconciled only when the same resource type+pathname subsequently returns a successful response in the same page. Non-transient failures and unrecovered assets remain hard failures.",
+  "prevention": [
+    "Track successful script and stylesheet responses by type+pathname.",
+    "Suppress only transient retry failures with matching successful evidence.",
+    "Never suppress HTTP>=400 resource responses.",
+    "Keep all visual, CLS, overflow and broken-image thresholds unchanged."
+  ],
+  "compiler": {
+    "failure_class": "BROWSER_SETTLED_ASSET_RETRY_FALSE_FAILURE",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "GitHub run 37210742038: five CSS/JS ERR_CONNECTION_RESET failures on /blog/aanzet-2026-emissieloze-trucks after final page render",
+    "tools/site-shell/website-cross-browser-assurance.mjs",
+    "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+    ]
+  }
+}
