@@ -125,17 +125,20 @@ async function inspectStable(page){
   throw last;
 }
 
-function filterSettledCoreFailures(failedCore,{status,finalUrl}={}){
+function filterSettledCoreFailures(failedCore,{status,finalUrl,successfulCore=[]}={}){
   if(!(status>=200&&status<400)||!finalUrl)return [...failedCore];
   let finalPath=null;
   try{finalPath=new URL(finalUrl).pathname||'/';}catch{}
   if(!finalPath)return [...failedCore];
-  const transientDocumentFailure=/^(?:net::ERR_CONNECTION_RESET|net::ERR_ABORTED|NS_ERROR_ABORT|Load request cancelled)$/i;
+  const successful=new Set(successfulCore);
+  const transientFailure=/^(?:net::ERR_CONNECTION_RESET|net::ERR_ABORTED|NS_ERROR_ABORT|Load request cancelled)$/i;
   return failedCore.filter(value=>{
-    const match=String(value).match(/^document:([^:]*):(.*)$/);
+    const match=String(value).match(/^(document|script|stylesheet):([^:]*):(.*)$/);
     if(!match)return true;
-    const [,pathname,errorText]=match;
-    return !(pathname===finalPath&&transientDocumentFailure.test(errorText));
+    const [,type,pathname,errorText]=match;
+    if(!transientFailure.test(errorText))return true;
+    if(type==='document')return pathname!==finalPath;
+    return !successful.has(`${type}:${pathname}`);
   });
 }
 
@@ -157,9 +160,17 @@ async function checkOne({browserName,browser,viewportName,route,screenshotAlways
   const context=await browser.newContext({viewport:contract.viewports[viewportName]});
   const page=await context.newPage();
   await installCls(page);
-  const pageErrors=[],failedCore=[],consoleErrors=[];
+  const pageErrors=[],failedCore=[],consoleErrors=[],successfulCore=new Set();
   page.on('pageerror',e=>pageErrors.push(String(e?.message||e)));
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
+  page.on('response',response=>{
+    const request=response.request();
+    const type=request.resourceType();
+    if(!['script','stylesheet'].includes(type))return;
+    if(response.status()>=400)return;
+    let pathname=request.url();try{pathname=new URL(request.url()).pathname}catch{}
+    successfulCore.add(`${type}:${pathname}`);
+  });
   page.on('requestfailed',request=>{
     const type=request.resourceType();
     const errorText=request.failure()?.errorText||'';
@@ -176,7 +187,7 @@ async function checkOne({browserName,browser,viewportName,route,screenshotAlways
     state=await inspectStable(page);
     finalUrl=page.url();
   }catch(error){navigationError=String(error?.message||error);}
-  const settledFailedCore=filterSettledCoreFailures([...new Set(failedCore)],{status,finalUrl});
+  const settledFailedCore=filterSettledCoreFailures([...new Set(failedCore)],{status,finalUrl,successfulCore:[...successfulCore]});
   const violations=navigationError?[navigationError]:basicViolations(state,status,[...new Set(pageErrors)],settledFailedCore);
   let screenshotPath=null;
   if(screenshotAlways||violations.length){
