@@ -210,8 +210,62 @@ header.v17-header .mega{
 // tekst erop (contrast ±2,9:1). Tekst en knop op die kaart worden wit.
 const productkaartContrast = `<style id="bg-productkaart-contrast">.service-product-card.cyan{color:#fff}.service-product-card.cyan p{color:rgba(255,255,255,.86)}</style>`;
 
+const navigationStateContract = `<script id="v18-navigation-state-contract">
+(function(){
+  var mobileToggle=document.getElementById('mobileToggle');
+  var mobileDrawer=document.getElementById('v18MobileDrawer');
+  function syncMobileState(){
+    if(!mobileToggle||!mobileDrawer)return;
+    var open=mobileDrawer.classList.contains('open')||mobileDrawer.getAttribute('aria-hidden')==='false';
+    mobileToggle.setAttribute('aria-controls','v18MobileDrawer');
+    mobileToggle.setAttribute('aria-expanded',open?'true':'false');
+    mobileToggle.setAttribute('aria-label',open?'Sluit menu':'Open menu');
+  }
+  if(mobileToggle&&mobileDrawer){
+    syncMobileState();
+    new MutationObserver(syncMobileState).observe(mobileDrawer,{attributes:true,attributeFilter:['class','aria-hidden']});
+  }
+
+  var groups=[].slice.call(document.querySelectorAll('.v17-navitem[data-mega]'));
+  function syncMega(group,open,pinned){
+    if(!group)return;
+    group.classList.toggle('open',!!open);
+    group.dataset.megaPinned=pinned?'1':'0';
+    var button=group.querySelector(':scope > .navbtn');
+    if(button){
+      button.setAttribute('aria-haspopup','true');
+      button.setAttribute('aria-expanded',open?'true':'false');
+    }
+  }
+  function closeOthers(except){
+    groups.forEach(function(group){if(group!==except)syncMega(group,false,false);});
+  }
+  groups.forEach(function(group){
+    var button=group.querySelector(':scope > .navbtn');
+    if(!button)return;
+    syncMega(group,group.classList.contains('open'),group.dataset.megaPinned==='1');
+    group.addEventListener('pointerenter',function(){closeOthers(group);syncMega(group,true,false);});
+    group.addEventListener('pointerleave',function(){if(group.dataset.megaPinned!=='1')syncMega(group,false,false);});
+    group.addEventListener('focusin',function(){closeOthers(group);syncMega(group,true,false);});
+    button.addEventListener('click',function(event){
+      event.preventDefault();
+      event.stopPropagation();
+      var opening=!group.classList.contains('open')||group.dataset.megaPinned!=='1';
+      closeOthers(group);
+      syncMega(group,opening,opening);
+    });
+  });
+  document.addEventListener('click',function(event){
+    if(!event.target.closest('.v17-navitem[data-mega]'))groups.forEach(function(group){syncMega(group,false,false);});
+  });
+  document.addEventListener('keydown',function(event){
+    if(event.key==='Escape')groups.forEach(function(group){syncMega(group,false,false);});
+  });
+})();
+<\/script>`;
+
 html = html.replace('</head>', `${canonicalChromeGeometryContract}\n</head>`);
-html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${productkaartContrast}\n</body>`);
+html = html.replace('</body>', `${style}\n${megaMenuContrastContract}\n${productkaartContrast}\n${navigationStateContract}\n</body>`);
 
 await writeFile('prototype-v18-stable.html', html, 'utf8');
 await writeFile('index.html', html, 'utf8');
