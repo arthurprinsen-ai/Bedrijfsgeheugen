@@ -79,9 +79,10 @@
       ],
       "viewport": "mobile",
       "selectorCandidates": [
+        "#bgkopKnop",
         "#mobileToggle"
       ],
-      "assert": "v18_mobile_drawer_visible"
+      "assert": "mobile_drawer_visible"
     },
     {
       "id": "desktop-menu",
@@ -91,9 +92,10 @@
       ],
       "viewport": "desktop",
       "selectorCandidates": [
+        ".bgkop-groep > .bgkop-trig",
         "header.v17-header .navitem[data-mega] > .navbtn"
       ],
-      "assert": "v18_desktop_mega_visible"
+      "assert": "desktop_mega_visible"
     },
     {
       "id": "language-switch",
@@ -127,6 +129,6 @@
     "mobile",
     "desktop"
   ],
-  "evidence_generation": "2026-10-04-current-controls-cls-v2",
-  "evidence_reason": "align assurance with canonical shared header controls and reserve stable announcement/header geometry"
+  "evidence_generation": "2026-10-04-current-controls-cls-v3",
+  "evidence_reason": "wait for exact preview route inventory, support canonical and legacy header controls, and reserve tablet trustbar geometry"
 }
