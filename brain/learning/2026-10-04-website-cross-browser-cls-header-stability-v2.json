@@ -1,0 +1,33 @@
+{
+  "fingerprint": "website-cross-browser-cls-header-stability-20261004-v2",
+  "observed_at": "2026-10-04T10:08:00Z",
+  "type": "FIX",
+  "problem": "Production cross-browser baseline found 73 failures across 247 public routes, dominated by CLS above 0.1 and stale interaction selectors.",
+  "root_cause": "Shared header controls changed geometry after first paint and the browser harness targeted obsolete navigation selectors.",
+  "decision": "Reserve final desktop language/mobile menu geometry in shared header, target canonical product route and actual controls, preserve CLS threshold 0.1, and test PRs on exact Netlify preview.",
+  "prevention": [
+    "Shared header geometry is regression-tested before JavaScript.",
+    "Browser assurance uses real navigation controls.",
+    "No CLS threshold widening is allowed.",
+    "Daily production and PR preview screenshot assurance remain enabled."
+  ],
+  "compiler": {
+    "failure_class": "WEBSITE_CROSS_BROWSER_CLS_AND_INTERACTION_REGRESSION",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "PR #3660",
+    "main 570fa09f8309c7685bd52b12f3d369d3cd952f40",
+    "tests/components/header.test.mjs",
+    "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs",
+      "tests/components/header.test.mjs"
+    ]
+  }
+}
