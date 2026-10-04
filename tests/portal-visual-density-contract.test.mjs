@@ -27,7 +27,9 @@ test('canonical visual assurance contract spans GitHub Supabase and Notion',()=>
   assert.equal(contract.routes.length,6);
   assert.equal(contract.viewports.length,4);
   assert.equal(contract.routes.length*contract.viewports.length,24);
-  assert.equal(contract.thresholds.mobile_csrd_world_must_be_hidden,true);\n  assert.equal(contract.thresholds.critical_touch_target_px,44);\n  assert.equal(contract.viewports.find(v=>v.id==='narrow-mobile').width,320);
+  assert.equal(contract.thresholds.mobile_csrd_world_must_be_hidden,true);
+  assert.equal(contract.thresholds.critical_touch_target_px,44);
+  assert.equal(contract.viewports.find(v=>v.id==='narrow-mobile').width,320);
 });
 
 test('visual regression harness is config-driven and emits assurance evidence',()=>{
