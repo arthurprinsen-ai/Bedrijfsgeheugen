@@ -13,6 +13,7 @@ on:
       - 'kennis/**'
       - 'site/**'
       - 'config/powerhouse-website-cross-browser-assurance-v1.json'
+      - 'config/bg-static-i18n-en.d/**'
       - 'tools/site-shell/**'
       - '.github/workflows/website-cross-browser-screenshot-assurance.yml'
   schedule:
