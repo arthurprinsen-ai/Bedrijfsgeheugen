@@ -102,19 +102,20 @@ test('generated English pages receive final font fallback and tablet trustbar ge
   assert.match(cta,/'pages\/\*\*\/\*\.html'/);
   assert.match(components,/@media\(min-width:641px\) and \(max-width:1024px\)/);
   assert.match(components,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
-  assert.match(runner,/navigationAbort=errorText==='net::ERR_ABORTED'\|\|errorText==='NS_ERROR_ABORT'/);
+  assert.match(runner,/benignAbort=.*net::ERR_ABORTED.*NS_ERROR_ABORT/);
 });
 
 // Delivery metadata refresh: exact six-file website recovery scope.
 
-test('cross-browser runner distinguishes navigation aborts from real asset failures',()=>{
-  assert.match(runner,/NS_ERROR_ABORT/);
-  assert.match(runner,/net::ERR_ABORTED/);
-  assert.match(runner,/inspectSettled/);
+test('cross-browser runner retries replaced navigation contexts and preserves browser abort semantics',()=>{
+  assert.match(runner,/inspectStable/);
   assert.match(runner,/Execution context was destroyed/);
+  assert.match(runner,/Cannot find context/);
+  assert.match(runner,/navigation/);
+  assert.match(runner,/benignAbort=.*net::ERR_ABORTED.*NS_ERROR_ABORT.*Load request cancelled/);
 });
 
-test('critical Chromium screenshots follow the actual PR sweep viewports',()=>{
+test('critical Chromium screenshots follow the actual active sweep viewports',()=>{
   assert.match(runner,/allRouteViewports\.includes\(viewportName\)/);
 });
 
