@@ -24,7 +24,8 @@ test('website assurance checks visual quality, not screenshot-only decoration',(
   assert.ok(runner.includes('start+=25'));
   assert.ok(contract.visual_quality_assertions.length>=8);
   assert.ok(contract.rules.includes('visual_quality_is_a_release_requirement'));
-  assert.ok(contract.rules.includes('visual_failures_must_be_fixed_not_hidden'));\n  assert.ok(contract.rules.includes('daily_gate_uses_bounded_full_sitemap_plus_deep_critical_matrix'));
+  assert.ok(contract.rules.includes('visual_failures_must_be_fixed_not_hidden'));
+  assert.ok(contract.rules.includes('daily_gate_uses_bounded_full_sitemap_plus_deep_critical_matrix'));
 });
 
 test('website assurance exercises interactions',()=>{
