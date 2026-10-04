@@ -30,7 +30,7 @@ test('website assurance exercises interactions',()=>{
   const ids=new Set(contract.interactions.map(item=>item.id));
   for(const id of ['mobile-menu','desktop-menu','language-switch'])assert.ok(ids.has(id),id);
   assert.ok(runner.includes('aria-expanded'));
-  assert.ok(runner.includes('#bgkopMob'));
+  assert.ok(runner.includes('#v18MobileDrawer'));
 });
 
 test('website assurance is scheduled daily and keeps evidence',()=>{
@@ -77,7 +77,7 @@ test('critical screenshot matrix uses canonical product route and real controls'
   assert.deepEqual(byId['mobile-menu'].selectorCandidates,['#mobileToggle']);
   assert.deepEqual(byId['desktop-menu'].selectorCandidates,['header.v17-header .navitem[data-mega] > .navbtn']);
   assert.deepEqual(byId['language-switch'].selectorCandidates,['button[data-bg-language-current]']);
-  assert.ok(runner.includes('#bgkopMob'));
+  assert.ok(runner.includes('#v18MobileDrawer'));
   assert.ok(runner.includes('a[data-bg-language-option="en"]:visible'));
   assert.ok(runner.includes('clsEntries'));
 });
