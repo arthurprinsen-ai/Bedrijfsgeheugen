@@ -38,6 +38,8 @@ test('website assurance is scheduled daily and keeps evidence',()=>{
   assert.match(workflow,/cron: '20 6 \* \* \*'/);
   assert.match(workflow,/chromium firefox webkit/);
   assert.match(workflow,/retention-days: 30/);
+  assert.match(workflow,/include-hidden-files: true/);
+  assert.match(runner,/using production sitemap for route inventory only/);
 });
 
 test('website cross-browser assurance stays classified in website delivery lane',()=>{
