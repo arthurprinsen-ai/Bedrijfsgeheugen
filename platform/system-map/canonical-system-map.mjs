@@ -195,7 +195,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       label:'LinkedIn Company Page Growth Loop',
       authority:'supabase+provider-readback',
       owner:'Powerhouse Growth & Revenue OS',
-      status:'CANDIDATE_PROTECTED_DELIVERY',
+      status:'LIVE_PROVEN_RUNTIME',
       inputs:Object.freeze(['company-page analytics','linkedin_company posts','observed social metrics','owned-site and revenue outcomes']),
       outputs:Object.freeze(['distribution-gap diagnosis','bounded company-content recommendations','page/follower progress','revenue-learning evidence']),
       runtime:Object.freeze({
@@ -215,7 +215,22 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         baselineDesktop:10,
         baselineMobile:2,
         targetPageViews30d:300,
-        targetRelevantNewFollowers30d:100
+        targetRelevantNewFollowers30d:100,
+        protectedMain:'6d9770aad32289d000f209d9ea54c72ed5511b73',
+        deliveryPr:3674,
+        runtimeObservedAt:'2026-10-04T11:46:48.64111Z',
+        runtimeStatus:'GROW',
+        diagnosis:'critical_distribution_gap',
+        targetProgress:0.04,
+        companyPosts30d:12,
+        observedImpressions30d:31,
+        observedReach30d:21,
+        recommendationsTouched:3,
+        canonicalCronJobId:116,
+        canonicalCronSchedule:'27 * * * *',
+        notionSystemMapReadback:true,
+        notionHumanHandbookReadback:true,
+        notionMasterRegisterReadback:true
       }),
       invariants:Object.freeze({
         canonicalOrganizationUrn:'urn:li:organization:18234216',
