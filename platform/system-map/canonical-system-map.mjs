@@ -241,7 +241,7 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       owner:'Powerhouse Product / Portal V2 / Whole Brain',
       status:'CANDIDATE_PROTECTED_DELIVERY',
       inputs:Object.freeze(['authenticated Portal V2 session','customer source mutations','Brain operating projection','decision and intelligence interactions']),
-      outputs:Object.freeze(['canonical tenant-scoped Brain records','same-lineage interaction evidence','derived portal.runtime projection','post-mutation runtime refresh']),
+      outputs:Object.freeze(['canonical tenant-scoped Brain records','same-lineage interaction evidence','canonical REQUESTED action intents','derived portal.runtime projection','post-mutation runtime refresh']),
       runtime:Object.freeze({
         portalState:'portal-v2/portal-state.js',
         domainState:'portal-v2/domain-state.js',
@@ -252,7 +252,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         canonicalAuthority:'supabase/functions/brain-operating-authority',
         portalProjection:'supabase/functions/portal-state-eu',
         learning:'brain/learning/2026-10-04-portal-powerhouse-e2e-runtime-v1.json',
-        regression:'tests/brain-portal-v2-end-to-end-runtime.test.mjs'
+        regression:'tests/brain-portal-v2-end-to-end-runtime.test.mjs',
+        actionIntentRegression:'tests/brain-portal-action-intent-e2e.test.mjs'
       }),
       invariants:Object.freeze({
         authenticatedBrainReadback:true,
@@ -261,6 +262,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         sourceRevisionCorrelationAuthority:true,
         derivedRuntimeNeverPersistsAsSource:true,
         interactionEvidenceBounded:true,
+        actionIntentBecomesCanonicalBrainAction:true,
+        requestedActionIsNotExecution:true,
         refreshAfterMaterialMutation:true,
         noParallelBrain:true,
         noParallelPortalStore:true,

@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { buildPortalEvidence, portalCorrelationFromStored, createPowerhouseRuntimeBridge } from '../powerhouse-runtime-bridge.js';
+import { buildPortalEvidence, buildPortalAction, portalCorrelationFromStored, createPowerhouseRuntimeBridge } from '../powerhouse-runtime-bridge.js';
 
 class FakeBus {
   constructor(){this.listeners=new Map();}
@@ -71,5 +71,55 @@ test('runtime bridge authenticates readback, writes same-lineage evidence and re
   assert.equal(body.payload.event,'portal_projection_synced');
   assert.equal(post.options.headers.authorization,'Bearer identity-token');
   assert.ok(requests.filter(item=>!item.options.method).length>=2,'na mutatie werd runtime niet teruggelezen');
+  bridge.destroy();
+});
+
+test('portal action intent becomes a canonical requested Brain Action',()=>{
+  const action=buildPortalAction({
+    detail:{label:'Marge verbeteren',sourceType:'future_lens',scenario:'base',horizon:6,action:'create_action'},
+    correlationId:'PORTAL_INPUT-rev-42',
+    predecessorIds:['evidence-1'],
+    id:'intent-1',
+    idempotencyKey:'intent-key'
+  });
+  assert.equal(action.type,'Action');
+  assert.equal(action.status,'REQUESTED');
+  assert.equal(action.executed,false);
+  assert.equal(action.correlationId,'PORTAL_INPUT-rev-42');
+  assert.deepEqual(action.predecessorIds,['evidence-1']);
+  assert.equal(action.payload.intent,'create_action');
+  assert.equal(action.payload.sourceType,'future_lens');
+});
+
+test('runtime bridge persists action intents and reads the Brain projection back',async()=>{
+  const bus=new FakeBus();
+  const requests=[];
+  const stateClient={
+    authHeaders:async()=>({authorization:'Bearer identity-token'}),
+    subscribe(){return()=>{};},
+    getSnapshot:()=>({mode:'authenticated'})
+  };
+  const domainState={get:()=>({portal:{}}),setDerived:()=>{}};
+  const fetchImpl=async(url,options={})=>{
+    requests.push({url,options});
+    if(options.method==='POST'){
+      const record=JSON.parse(options.body);
+      return {ok:true,json:async()=>({duplicate:false,record:{id:record.id,correlationId:record.correlationId}})};
+    }
+    return {ok:true,json:async()=>projection};
+  };
+  const bridge=createPowerhouseRuntimeBridge({stateClient,domainState,fetchImpl,eventTarget:bus,intervalMs:0});
+  bus.emit('bg:portal-brain-synced',{stored:[{sourceRevision:'rev-action',brainRecordId:'brain-1',currentStateRecordId:'state-1'}]});
+  await new Promise(resolve=>setTimeout(resolve,90));
+  bus.emit('portal:action-intent',{label:'Marge verbeteren',sourceType:'future_lens',action:'create_action'});
+  await new Promise(resolve=>setTimeout(resolve,90));
+  const posts=requests.filter(item=>item.options.method==='POST').map(item=>JSON.parse(item.options.body));
+  const action=posts.find(item=>item.type==='Action');
+  assert.ok(action,'actie-intentie werd niet canoniek opgeslagen');
+  assert.equal(action.status,'REQUESTED');
+  assert.equal(action.correlationId,'PORTAL_INPUT-rev-action');
+  assert.equal(action.payload.label,'Marge verbeteren');
+  assert.equal(action.payload.sourceType,'future_lens');
+  assert.equal(requests.at(-1).options.method,undefined,'na Action-write moet canonical Brain readback volgen');
   bridge.destroy();
 });

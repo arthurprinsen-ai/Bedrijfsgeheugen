@@ -55,6 +55,7 @@ function initLens(){
   const host=buildLens(),select=host.querySelector('#ngMetric'),chart=host.querySelector('#ngChart'),story=host.querySelector('#ngStory'),horizon=host.querySelector('#ngHorizon');
   cards.forEach(({metric,index})=>select.insertAdjacentHTML('beforeend',`<option value="${index}">${esc(metric.label)}</option>`));
   let scenario='base';
+  let currentLensDetail=null;
   const render=()=>{
     const metric=cards[Number(select.value)||0]?.metric||cards[0].metric,h=Number(horizon.value)||6,p=project(metric,h,scenario),conf=confidence(metric);
     chart.innerHTML=forecastSvg(metric,h,scenario);
@@ -64,11 +65,12 @@ function initLens(){
       <p><b>Wat dit betekent:</b> het huidige patroon is <strong>${direction}</strong>. Dit is een rule-based projectie van de zichtbare trend, geen voorspelling met verborgen data.</p>
       <p><b>Aanname:</b> het maandtempo blijft gelijk; scenario “${scenario==='stress'?'Tegenvallend':scenario==='opportunity'?'Versnellen':'Basispad'}” past alleen de gevoeligheid aan.</p>
       <div class="ng-actions"><button type="button" data-ng-action="explain">Waarom?</button><button type="button" data-ng-action="plan">Maak er een actie van →</button></div>`;
-    emit('portal:future-lens-change',{metric:metric.label,horizon:h,scenario,confidence:conf,projection:p});
+    currentLensDetail={metric:metric.label,label:metric.label,horizon:h,scenario,confidence:conf,sourceType:'future_lens'};
+    emit('portal:future-lens-change',{...currentLensDetail,projection:p});
   };
   select.addEventListener('change',render); horizon.addEventListener('change',render);
   host.querySelectorAll('[data-scenario]').forEach(btn=>btn.addEventListener('click',()=>{scenario=btn.dataset.scenario;host.querySelectorAll('[data-scenario]').forEach(x=>x.classList.toggle('active',x===btn));render();}));
-  host.addEventListener('click',e=>{const a=e.target.closest('[data-ng-action]');if(!a)return;if(a.dataset.ngAction==='plan'){document.querySelector('[data-open-page="actieve-acties"],[data-open-page="roadmap"]')?.click();}else openInspector(cards[Number(select.value)||0]?.node);});
+  host.addEventListener('click',e=>{const a=e.target.closest('[data-ng-action]');if(!a)return;if(a.dataset.ngAction==='plan'){emit('portal:action-intent',{...(currentLensDetail||{}),action:'create_action'});document.querySelector('[data-open-page="actieve-acties"],[data-open-page="roadmap"]')?.click();}else openInspector(cards[Number(select.value)||0]?.node);});
   render();
 }
 function inspectorHtml(node){
@@ -114,7 +116,7 @@ function bindSemanticVisual(node){
   svg.addEventListener('keydown',event=>{const mark=event.target?.closest?.('.ng-semantic-point');if(mark&&(event.key==='Enter'||event.key===' ')){event.preventDefault();select(mark);}});
   node.addEventListener('click',event=>{
     if(event.target.closest('[data-ng-point-context]'))openInspector(node);
-    if(event.target.closest('[data-ng-point-action]'))document.querySelector('[data-open-page="actieve-acties"],[data-open-page="roadmap"]')?.click();
+    if(event.target.closest('[data-ng-point-action]')){const selected=marks.find(item=>item.classList?.contains('ng-semantic-selected'));const label=selected?semanticLabel({title:selected.querySelector?.('title')?.textContent,aria:selected.getAttribute?.('aria-label'),text:selected.textContent}):'Datapunt';emit('portal:action-intent',{label,visual:node.querySelector('figcaption')?.textContent||node.getAttribute('aria-label')||'visual',sourceType:'semantic_visual',action:'create_action'});document.querySelector('[data-open-page="actieve-acties"],[data-open-page="roadmap"]')?.click();}
   });
 }
 
