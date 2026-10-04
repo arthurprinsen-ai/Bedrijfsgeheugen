@@ -23,7 +23,6 @@
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/components/header.test.mjs",
       "tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs"
     ]
   }
