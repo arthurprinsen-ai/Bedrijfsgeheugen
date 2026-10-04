@@ -16,7 +16,7 @@ async function boot(page,preview,width=1440,height=1000){
    const response=await page.goto(`${preview}/portal-v2/?bg_preview=${Date.now()}-${attempt}`,{waitUntil:'domcontentloaded',timeout:45000});
    expect(response,'portal preview response').not.toBeNull();
    expect(response.status(),'portal preview status').toBeLessThan(400);
-   await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('[data-mobile-nav="overview"]')),{timeout:30000});
+   await page.waitForFunction(()=>Boolean(document.querySelector('.app'))&&Boolean(globalThis.__BG_PORTAL_DOMAIN_STATE__)&&Boolean(document.querySelector('.portal-single-navigation [data-nav-target="overzicht"]')),{timeout:30000});
    return;
   }catch(error){lastError=error;}
  }
