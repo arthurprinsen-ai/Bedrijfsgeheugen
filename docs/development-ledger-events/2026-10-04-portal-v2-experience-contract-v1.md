@@ -9,3 +9,5 @@ Portal V2 receives one cross-cutting responsive and interaction contract instead
 Backend authority is deliberately unchanged: authenticated Portal State, canonical business-input write ordering, Supabase/Netlify store behavior and fail-closed write confirmation remain authoritative.
 
 This event is a delivery record, not production proof. Terminal closure requires exact-head CI, visual/live-preview evidence, protected merge, production deploy and production readback.
+
+Canonical documentation authority: `docs/changes/2026-10-04-portal-v2-experience-contract-v1.md`.
