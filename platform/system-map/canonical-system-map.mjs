@@ -235,6 +235,40 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'portal-v2-experience-contract-v2',
+      label:'Portal V2 Responsive Experience & Reliability Contract v2',
+      authority:'github+netlify+portal-state-readback',
+      owner:'Powerhouse Product / Portal V2',
+      status:'CANDIDATE_PROTECTED_DELIVERY',
+      supersedes:'portal-v2-experience-contract-v1',
+      inputs:Object.freeze(['live v1 experience authority','Portal V2 page registry','dynamic visuals','browser metrics','Portal State']),
+      outputs:Object.freeze(['24-case responsive evidence','320px narrow-mobile coverage','runtime interaction/error signals','visual overflow evidence','touch-target evidence']),
+      runtime:Object.freeze({
+        css:'portal-v2/experience.css',
+        client:'portal-v2/experience.js',
+        contract:'config/powerhouse-portal-experience-v2.json',
+        visualAssurance:'config/powerhouse-portal-visual-assurance-v1.json',
+        harness:'tools/portal-visual-density.mjs',
+        learning:'brain/learning/2026-10-04-portal-v2-experience-contract-v2.json',
+        regression:'tests/portal-v2-experience-contract.test.mjs',
+        backendAuthority:'portal-v2/portal-state.js'
+      }),
+      invariants:Object.freeze({
+        singleExperienceAuthority:true,
+        parallelExperienceStackForbidden:true,
+        minTouchTargetPx:44,
+        maxHorizontalOverflowPx:2,
+        maxVisualOverflowPx:2,
+        narrowMobile320FirstClass:true,
+        screenshotMatrix:24,
+        runtimeExperienceSignals:true,
+        dynamicVisualRemeasurement:true,
+        portalStateAuthorityUnchanged:true,
+        failClosedWrites:true,
+        productionReadbackRequired:true
+      })
+    }),
+    Object.freeze({
       id:'linkedin-company-growth-v1',
       label:'LinkedIn Company Page Growth Loop',
       authority:'supabase+provider-readback',
