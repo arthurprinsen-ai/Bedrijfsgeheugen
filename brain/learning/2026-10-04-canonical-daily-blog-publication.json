@@ -1,0 +1,15 @@
+{
+  "fingerprint": "powerhouse|daily-blog-canonical-publication|2026-10-04",
+  "observed_at": "2026-10-04",
+  "type": "DELIVERY_CLOSURE",
+  "obligation_id": "content-publication:2026-10-04:blog",
+  "content_id": "blog:subsidie-circular-plastics-nl-cpnl-wat-het-is-voor-wie-en-hoe-aanvrage",
+  "decision": "Publish exactly the canonical Supabase artifact through protected GitHub delivery and require production readback before LIVE_PROVEN.",
+  "enforcement": [
+    "blog/",
+    "sitemap.xml"
+  ],
+  "test_evidence": [
+    "tests/brain-blog-generated-to-live-closed-loop-v1.test.mjs"
+  ]
+}
