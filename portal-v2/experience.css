@@ -97,3 +97,22 @@ dialog{max-width:min(760px,calc(100vw - 28px));max-height:min(86dvh,900px)}
 @media(prefers-reduced-motion:reduce){
   *,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
 }
+
+/* Experience assurance hardening v2: final authority over legacy responsive rules. */
+button[data-nav-target]{min-height:var(--pv-touch)!important}
+[data-portal-visual]{min-width:0;max-width:100%;overflow:hidden}
+[data-portal-visual="scroll"]{overflow-x:auto;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch}
+[data-portal-visual] img,[data-portal-visual] video,[data-portal-visual] canvas,[data-portal-visual] svg{max-inline-size:100%;height:auto}
+[data-portal-visual] svg{display:block;width:100%;max-width:100%;max-height:min(54vh,460px);margin-inline:auto}
+.pvmetricgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))!important}
+.v2visualgrid{grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));max-width:100%}
+.v2visualgrid>*{min-width:0}
+@media(max-width:760px){
+  [data-portal-visual] svg{max-height:320px}
+  .pvmetricgrid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+}
+@media(max-width:430px){
+  .topactions .searchrow>.smallbtn,.topactions .actionrow>.smallbtn{height:44px!important;min-height:44px!important}
+  .pvmetricgrid{grid-template-columns:1fr!important}
+  [data-portal-visual] svg{max-height:280px}
+}
