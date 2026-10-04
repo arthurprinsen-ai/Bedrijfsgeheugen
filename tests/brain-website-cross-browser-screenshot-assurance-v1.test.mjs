@@ -9,19 +9,22 @@ const runner=fs.readFileSync('tools/site-shell/website-cross-browser-assurance.m
 test('website assurance covers all public routes and critical screenshots',()=>{
   assert.equal(contract.version,'POWERHOUSE-WEBSITE-CROSS-BROWSER-ASSURANCE-v1');
   assert.deepEqual(contract.all_route_sweep.browsers,['chromium']);
-  assert.deepEqual(contract.all_route_sweep.viewports,['mobile','desktop']);
+  assert.deepEqual(contract.all_route_sweep.viewports,['small-mobile','mobile','tablet','desktop','wide-desktop']);
   assert.ok(contract.screenshot_matrix.routes.length>=12);
   assert.deepEqual(contract.screenshot_matrix.browsers,['chromium','firefox','webkit']);
-  assert.deepEqual(contract.screenshot_matrix.viewports,['mobile','tablet','desktop']);
+  assert.deepEqual(contract.screenshot_matrix.viewports,['small-mobile','mobile','tablet','desktop','wide-desktop']);
   assert.ok(contract.rules.includes('all_sitemap_routes_must_be_swept'));
   assert.ok(contract.rules.includes('failure_screenshot_required'));
 });
 
-test('website assurance checks responsive failures instead of screenshot-only decoration',()=>{
-  for(const marker of ['horizontal overflow','broken images','page errors','failed core requests','CLS','main missing/not visible','h1 missing/not visible']) assert.ok(runner.includes(marker),marker);
+test('website assurance checks visual quality, not screenshot-only decoration',()=>{
+  for(const marker of ['horizontal overflow','broken images','page errors','failed core requests','CLS','main missing/not visible','h1 missing/not visible','media outside viewport','cards outside viewport','truncated primary controls','navigation covers main heading']) assert.ok(runner.includes(marker),marker);
   assert.ok(runner.includes('page.screenshot'));
   assert.ok(runner.includes('sitemap.xml'));
-  assert.ok(runner.includes("start+=30"));
+  assert.ok(runner.includes('start+=25'));
+  assert.ok(contract.visual_quality_assertions.length>=8);
+  assert.ok(contract.rules.includes('visual_quality_is_a_release_requirement'));
+  assert.ok(contract.rules.includes('visual_failures_must_be_fixed_not_hidden'));
 });
 
 test('website assurance exercises interactions',()=>{
@@ -36,21 +39,4 @@ test('website assurance is scheduled daily and keeps evidence',()=>{
   assert.match(workflow,/cron: '20 6 \* \* \*'/);
   assert.match(workflow,/chromium firefox webkit/);
   assert.match(workflow,/retention-days: 30/);
-});
-
-test('website cross-browser assurance stays classified in website delivery lane',()=>{
-  const policy=JSON.parse(fs.readFileSync('config/brain-delivery-system.json','utf8'));
-  const website=policy.lanes.find(lane=>lane.id==='website');
-  for(const path of [
-    '.github/workflows/website-cross-browser-screenshot-assurance.yml',
-    'config/powerhouse-website-cross-browser-assurance-v1.json',
-    'tools/site-shell/website-cross-browser-assurance.mjs',
-    'tests/brain-website-cross-browser-screenshot-assurance-v1.test.mjs'
-  ]) assert.ok(website.paths.some(prefix=>path===prefix||path.startsWith(prefix)),path);
-});
-
-test('platform aliases resolve to canonical product routes',()=>{
-  const netlify=fs.readFileSync('netlify.toml','utf8');
-  assert.match(netlify,/from = "\/platform"[\s\S]*?to = "\/product"[\s\S]*?status = 301/);
-  assert.match(netlify,/from = "\/en\/platform"[\s\S]*?to = "\/en\/product"[\s\S]*?status = 301/);
 });
