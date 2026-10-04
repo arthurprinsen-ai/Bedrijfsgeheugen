@@ -8,17 +8,23 @@
     "When the linked Netlify integration is available, a bounded website-source trigger may activate the Git-linked build without relying on the failed upload proxy.",
     "Keep exact production commit_ref and browser state-change proof mandatory after any fallback.",
     "Never mark LIVE from a ready stale deployment.",
-    "Persist the 401 transport failure and recovery path in Brain, ledger, docs and continuity skill."
+    "Persist the 401 transport failure and recovery path in Brain, ledger, docs and continuity skill.",
+    "Reacquire GitHub OIDC and a fresh Netlify bridge proxy inside every bounded exact-source upload attempt.",
+    "Retry only an explicit provider 401 Unauthorized; all non-auth transport failures remain fail-closed.",
+    "A successful retry must still prove exact production commit_ref and browser readback before LIVE."
   ],
   "evaluation": {
     "historical_replay": [
-      "tests/brain-netlify-oidc-proxy-401-fallback-v1.test.mjs"
+      "tests/brain-netlify-oidc-proxy-401-fallback-v1.test.mjs",
+      "tests/brain-netlify-proxy-auth-self-heal-v2.test.mjs"
     ],
     "shadow": [
-      "tests/brain-netlify-oidc-proxy-401-fallback-v1.test.mjs"
+      "tests/brain-netlify-oidc-proxy-401-fallback-v1.test.mjs",
+      "tests/brain-netlify-proxy-auth-self-heal-v2.test.mjs"
     ],
     "canary": [
-      "tests/brain-netlify-oidc-proxy-401-fallback-v1.test.mjs"
+      "tests/brain-netlify-oidc-proxy-401-fallback-v1.test.mjs",
+      "tests/brain-netlify-proxy-auth-self-heal-v2.test.mjs"
     ]
   },
   "test_evidence": [
@@ -39,10 +45,10 @@
     "failure_class": "NETLIFY_DEPLOY_TRANSPORT_AUTH_401",
     "scope": "WEBSITE_PRODUCTION_DELIVERY",
     "machine_enforceable": true,
-    "repeat_count": 1,
+    "repeat_count": 4,
     "security_sensitive": false
   },
-  "revision": 2,
+  "revision": 3,
   "repeat_evidence_2026_09_29": {
     "failed_run": "36532201004",
     "failed_attempts": 2,
@@ -50,5 +56,16 @@
     "affected_obligation": "money-pages-order-production-v1",
     "recovery": "bounded Git-linked website-source trigger",
     "expected_source_ancestor": "7ffef9742bc900491a07de070e157b726e2ad579"
+  },
+  "repeat_evidence_2026_10_04": {
+    "failed_runs": [
+      "37215498776",
+      "37216870647"
+    ],
+    "provider_error": "401 Unauthorized",
+    "repeated_same_day": true,
+    "previous_prevention_gap": "Proxy refresh occurred only once immediately before upload; first upload still failed and required a separate workflow retry.",
+    "structural_fix": "Acquire fresh GitHub OIDC token and Netlify bridge proxy inside each bounded exact-source upload attempt; retry only provider 401; fail closed for other transport errors.",
+    "exact_source_unchanged": true
   }
 }
