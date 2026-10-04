@@ -96,10 +96,28 @@ async function gotoSettled(page,url){
     try{
       const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:20000});
       if(response?.status()===404 && /deploy-preview-/.test(url) && attempt<8){await sleep(2000);continue;}
-      await page.evaluate(async()=>{if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1200))]);});
-      await sleep(250);
+      await page.waitForLoadState('domcontentloaded',{timeout:8000}).catch(()=>{});
+      await page.evaluate(async()=>{if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1200))]);}).catch(()=>{});
+      // Give shared-shell/i18n canonical redirects one short quiet window, then re-check
+      // on the final document instead of measuring a context that is being replaced.
+      await sleep(450);
+      await page.waitForLoadState('domcontentloaded',{timeout:5000}).catch(()=>{});
       return response;
-    }catch(error){last=error;if(attempt<3)await sleep(attempt*700);}
+    }catch(error){last=error;if(attempt<8)await sleep(Math.min(1800,attempt*500));}
+  }
+  throw last;
+}
+
+async function inspectStable(page){
+  let last;
+  for(let attempt=1;attempt<=3;attempt++){
+    try{return await inspect(page)}
+    catch(error){
+      last=error;
+      if(!/Execution context was destroyed|Cannot find context|Target page, context or browser has been closed/i.test(String(error?.message||error)))throw error;
+      await page.waitForLoadState('domcontentloaded',{timeout:5000}).catch(()=>{});
+      await sleep(250);
+    }
   }
   throw last;
 }
@@ -126,16 +144,19 @@ async function checkOne({browserName,browser,viewportName,route,screenshotAlways
   page.on('pageerror',e=>pageErrors.push(String(e?.message||e)));
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
   page.on('requestfailed',request=>{
-    if(['document','script','stylesheet'].includes(request.resourceType()) && !(request.resourceType()==='document' && request.failure()?.errorText==='net::ERR_ABORTED')){
+    const type=request.resourceType();
+    const errorText=request.failure()?.errorText||'';
+    const benignAbort=/^(?:net::ERR_ABORTED|NS_ERROR_ABORT|Load request cancelled)$/i.test(errorText);
+    if(['document','script','stylesheet'].includes(type) && !benignAbort){
       let pathname=request.url();try{pathname=new URL(request.url()).pathname}catch{}
-      failedCore.push(`${request.resourceType()}:${pathname}:${request.failure()?.errorText||''}`);
+      failedCore.push(`${type}:${pathname}:${errorText}`);
     }
   });
   let status=null,state=null,navigationError=null;
   try{
     const response=await gotoSettled(page,base+route);
     status=response?.status()??null;
-    state=await inspect(page);
+    state=await inspectStable(page);
   }catch(error){navigationError=String(error?.message||error);}
   const violations=navigationError?[navigationError]:basicViolations(state,status,[...new Set(pageErrors)],[...new Set(failedCore)]);
   let screenshotPath=null;
