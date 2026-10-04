@@ -96,6 +96,8 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         agentContract:'AGENTS.md',
         skill:'.agents/skills/powerhouse-continuity/SKILL.md',
         productionSnapshot:'.github/workflows/production-source-snapshot.yml',
+        productionTransportLearning:'brain/learning/netlify-oidc-proxy-401-git-source-fallback-20260925-v1.json',
+        productionTransportRegression:'tests/brain-netlify-proxy-auth-self-heal-v2.test.mjs',
         requiredGate:'.github/workflows/required-test.yml',
         recoverySupervisor:'.github/workflows/powerhouse-delivery-recovery-supervisor.yml',
         learning:'brain/learning/2026-09-30-async-workflow-continuation-v1.json'
@@ -106,7 +108,11 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
         boundedPollingRequired:true,
         checkpointBeforeWait:true,
         requiredOnlyOpenPrRecovery:true,
-        staleReversibleProductionWaitSupersededByNewerMain:true
+        staleReversibleProductionWaitSupersededByNewerMain:true,
+        netlify401ReacquiresFreshOidcAndProxy:true,
+        netlifyAuthRetryBounded:true,
+        nonAuthTransportFailureFailClosed:true,
+        exactShaReadbackAfterRecovery:true
       })
     }),
     Object.freeze({
