@@ -19,3 +19,7 @@ De v2-assets zijn expliciet naar `?v=20261004-2` gezet zodat preview en producti
 
 ## Hydrated mobile readback recovery
 De exact-head browserreadback op 390×844 vond na asynchrone demoAI-hydration een topbar van 263.375px tegenover de harde grens <260px. De herstelmaatregel verkleint uitsluitend verticale shell-spacing in de finale experience authority; kritieke controls blijven minimaal 44px. De CSS-cacheversie is verhoogd zodat preview en productie exact de herstelde authority laden.
+
+
+## Narrow-phone menu target recovery
+De exact-head browserpariteit vond op een ondersteunde telefoonbreedte een menutoggle van 43px breed. De finale experience authority forceert daarom de canonieke mobiele menuknop op minimaal 44×44px, ook wanneer het tekstlabel op narrow-mobile wordt ingeklapt. Dit verhoogt de touch target zonder de compacte topbar opnieuw groter te maken.
