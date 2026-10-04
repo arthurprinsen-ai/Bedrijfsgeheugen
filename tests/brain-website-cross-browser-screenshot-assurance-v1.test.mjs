@@ -102,7 +102,7 @@ test('generated English pages receive final font fallback and tablet trustbar ge
   assert.match(cta,/'pages\/\*\*\/\*\.html'/);
   assert.match(components,/@media\(min-width:641px\) and \(max-width:1024px\)/);
   assert.match(components,/grid-template-columns:repeat\(3,minmax\(0,1fr\)\)/);
-  assert.match(runner,/request\.resourceType\(\)==='document'.*net::ERR_ABORTED/);
+  assert.match(runner,/benignAbort=.*net::ERR_ABORTED.*NS_ERROR_ABORT/);
 });
 
 // Delivery metadata refresh: exact six-file website recovery scope.
