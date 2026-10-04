@@ -29,5 +29,5 @@ De Context Inspector wordt herbruikbaar toegevoegd aan KPI-, glance-, visual-mod
 ## Technische borging
 
 Runtime: `portal-v2/nextgen-intelligence.js` en `portal-v2/nextgen-intelligence.css`.  
-Regressie: `portal-v2/tests/nextgen-intelligence.test.mjs`.  
+Canonieke regressie: `tests/portal-v2-nextgen-intelligence.test.mjs`; portal-lokale componenttest: `portal-v2/tests/nextgen-intelligence.test.mjs`.  
 Bestaande Portal State-, Brain- en backend-authoriteiten blijven ongewijzigd.
