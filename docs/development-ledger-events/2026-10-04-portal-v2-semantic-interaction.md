@@ -9,3 +9,5 @@
 - Regressie: `portal-v2/tests/nextgen-intelligence.test.mjs`
 - Veiligheidsregel: geen nieuwe brondata, geen verzonnen precisie, geen hover-only primaire interactie
 - Verwachte gates: Required test, Portal V2 Tests, Portal parity gate, Portal Visual Density, Powerhouse Assurance, CodeQL, Live Preview
+
+- Closure: Brain learning, human documentation en development-ledger evidence zijn in dezelfde candidate opgenomen.
