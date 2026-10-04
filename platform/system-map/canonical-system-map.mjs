@@ -191,6 +191,42 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
       })
     }),
     Object.freeze({
+      id:'salesrobot-capability-routing-v1',
+      label:'SalesRobot Capability Routing',
+      authority:'supabase+composio-provider-readback',
+      owner:'Powerhouse Growth & Revenue OS',
+      status:'ACTIVE_PROVEN',
+      inputs:Object.freeze(['canonical person/company intelligence','next-best-action','provider capability truth','recipient addressing','cross-channel outcomes']),
+      outputs:Object.freeze(['executable LinkedIn DM','automatic safe fallback','provider acknowledgement','cross-channel learning evidence']),
+      runtime:Object.freeze({
+        capabilityRegistry:'public.powerhouse_channel_capabilities_v1',
+        resolver:'public.powerhouse_resolve_commercial_channel_v1(...)',
+        executor:'supabase/functions/powerhouse-linkedin-sales-machine/index.ts',
+        provider:'SalesRobot via Composio',
+        providerAlias:'powerhouse-linkedin-dm-direct',
+        regression:'tests/brain-salesrobot-capability-routing-v1.test.mjs'
+      }),
+      productionEvidence:Object.freeze({
+        observedAt:'2026-10-04T12:48:32Z',
+        salesrobotConnection:'ACTIVE',
+        linkedinAccountHealth:'HEALTHY',
+        dmTool:'SALESROBOT_SEND_MESSAGE',
+        campaignsObserved:0,
+        campaignCapability:'CONFIG_REQUIRED'
+      }),
+      invariants:Object.freeze({
+        powerhouseIsDecisionAuthority:true,
+        salesrobotIsExecutorOnly:true,
+        recipientAddressRequired:true,
+        sourceAndIdentityGatesRequired:true,
+        dedupeSuppressionCooldownRequired:true,
+        noParallelScheduler:true,
+        automaticExecutableFallback:true,
+        providerReadbackRequired:true,
+        revenueLearningCrossChannel:true
+      })
+    }),
+    Object.freeze({
       id:'linkedin-company-growth-v1',
       label:'LinkedIn Company Page Growth Loop',
       authority:'supabase+provider-readback',
