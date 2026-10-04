@@ -1,0 +1,30 @@
+{
+  "fingerprint": "website|cms|selector-runtime-contract|20261003-v1",
+  "observed_at": "2026-10-03T10:00:00+02:00",
+  "type": "PREVENTION",
+  "problem": "The CMS admin runtime failed because the single-element selector helper was overwritten by the collection selector helper, and a data-area collection binding also used the single-element helper.",
+  "root_cause": "Selector helper responsibilities were not separated: querySelector and querySelectorAll shared one variable name and collection consumers were not contract-checked.",
+  "decision": "Maintain distinct selector helpers and enforce that collection bindings use the querySelectorAll helper. The public /cms page-check remains the runtime acceptance layer.",
+  "prevention": [
+    "Single-element CMS bindings use the querySelector helper.",
+    "Collection CMS bindings use the querySelectorAll helper.",
+    "Historical replay proves the two helpers resolve to different identifiers and the data-area binding uses the collection helper.",
+    "The /cms runtime page-check must remain free of JavaScript exceptions."
+  ],
+  "compiler": {
+    "failure_class": "CMS_RUNTIME_SELECTOR_DRIFT",
+    "scope": "WEBSITE",
+    "machine_enforceable": true,
+    "repeat_count": 2,
+    "security_sensitive": false
+  },
+  "evidence": [
+    "assets/cms-admin.js",
+    "tests/brain-cms-admin-selector-contract.test.mjs"
+  ],
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-cms-admin-selector-contract.test.mjs"
+    ]
+  }
+}
