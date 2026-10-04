@@ -92,10 +92,10 @@ async function installCls(page){
 
 async function gotoSettled(page,url){
   let last;
-  for(let attempt=1;attempt<=3;attempt++){
+  for(let attempt=1;attempt<=8;attempt++){
     try{
       const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:20000});
-      if(response?.status()===404 && /deploy-preview-/.test(url) && attempt<3){await sleep(attempt*1200);continue;}
+      if(response?.status()===404 && /deploy-preview-/.test(url) && attempt<8){await sleep(2000);continue;}
       await page.evaluate(async()=>{if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1200))]);});
       await sleep(250);
       return response;
@@ -156,26 +156,26 @@ async function runInteraction(browserName,browser,interaction,route){
   const found=await page.evaluate(candidates=>candidates.find(selector=>document.querySelector(selector))||null,interaction.selectorCandidates);
   const violations=[];
   if(!found){violations.push(`interaction trigger missing: ${interaction.id}`);}
-  else if(interaction.assert==='mobile_panel_visible'){
+  else if(interaction.assert==='v18_mobile_drawer_visible'){
     const trigger=page.locator(found).first();
     await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(250);
     const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
     if(expanded!=='true')violations.push(`mobile menu did not expand: ${expanded}`);
-    const panel=page.locator('#bgkopMob');
-    if(await panel.count()===0)violations.push('mobile panel #bgkopMob missing');
+    const panel=page.locator('#v18MobileDrawer');
+    if(await panel.count()===0)violations.push('mobile drawer #v18MobileDrawer missing');
     else{
       const hidden=await panel.getAttribute('hidden').catch(()=>null);
       const visible=await panel.isVisible().catch(()=>false);
       if(hidden!==null||!visible)violations.push(`mobile panel not visible (hidden=${hidden}, visible=${visible})`);
     }
-  }else if(interaction.assert==='desktop_panel_visible'){
+  }else if(interaction.assert==='v18_desktop_mega_visible'){
     const trigger=page.locator(found).first();
     await trigger.hover().catch(error=>violations.push(`hover failed: ${error.message}`));
     await sleep(180);
-    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " bgkop-groep ")][1]');
-    const panel=group.locator('.bgkop-paneel').first();
-    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop dropdown panel not visible after hover');
+    const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " navitem ")][1]');
+    const panel=group.locator('.mega').first();
+    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop mega not visible after hover');
   }else if(interaction.assert==='english_target_visible'){
     const trigger=page.locator(found).first();
     await trigger.click().catch(error=>violations.push(`language trigger click failed: ${error.message}`));
@@ -247,5 +247,5 @@ for(const browserName of contract.screenshot_matrix.browsers){
 
 const report={version:contract.version,generatedAt:new Date().toISOString(),baseUrl:base,routeCount:routes.length,resultCount:results.length,interactionCount:interactions.length,failures:failures.length,results,interactions};
 await fs.writeFile(path.join(out,'report.json'),JSON.stringify(report,null,2));
-console.log(JSON.stringify({version:report.version,routeCount:report.routeCount,resultCount:report.resultCount,interactionCount:report.interactionCount,failures:failures.length,failed:failures.slice(0,50).map(x=>({browser:x.browser,viewport:x.viewport,route:x.route,interaction:x.interaction||null,violations:x.violations}))},null,2));
+console.log(JSON.stringify({version:report.version,routeCount:report.routeCount,resultCount:report.resultCount,interactionCount:report.interactionCount,failures:failures.length,failed:failures.slice(0,50).map(x=>({browser:x.browser,viewport:x.viewport,route:x.route,interaction:x.interaction||null,violations:x.violations,failedCore:x.failedCore||[],clsEntries:x.state?.clsEntries||[]}))},null,2));
 if(failures.length)process.exitCode=1;
