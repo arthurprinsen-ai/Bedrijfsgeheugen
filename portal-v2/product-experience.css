@@ -25,7 +25,8 @@ button:focus-visible,a:focus-visible,[role="button"]:focus-visible,input:focus-v
   box-shadow:var(--px-focus)!important;outline:2px solid transparent!important;
 }
 button,[role="button"],select{min-height:40px}
-.portalview button,.allpages button,.topactions button,.portal-hamburger,.projecttabs button,.projectcockpit-actions button{min-height:44px}
+.portalview button,.allpages button,.topactions button,.portal-hamburger,.projecttabs button,.projectcockpit-actions button,button[data-nav-target]{min-height:44px!important}
+.topactions button,.portal-hamburger,button[data-nav-target]{height:auto!important}
 .portalview,.pvbody,.sheet,.sidebar{scrollbar-gutter:stable}
 .pvbody{-webkit-overflow-scrolling:touch}
 .pvmodule,.legacy-insight-card,.card{min-width:0}
