@@ -129,6 +129,6 @@
     "mobile",
     "desktop"
   ],
-  "evidence_generation": "2026-10-04-terminal-current-main-v3",
-  "evidence_reason": "terminal rerun on current main after closing header component contract parity"
+  "evidence_generation": "2026-10-04-font-preload-cls-terminal-v1",
+  "evidence_reason": "rerun after proven critical-font preload fix for ai-modelwijzer tablet and Wet-DBA desktop CLS"
 }
