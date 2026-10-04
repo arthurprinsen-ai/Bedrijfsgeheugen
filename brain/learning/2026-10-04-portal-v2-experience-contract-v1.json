@@ -1,22 +1,25 @@
 {
   "learningId": "2026-10-04-portal-v2-experience-contract-v1",
-  "fingerprint": "portal-v2|experience|responsive|interaction|backend-contract|v1",
+  "fingerprint": "portal-v2-responsive-end-to-end-v2",
   "status": "CANDIDATE_PROTECTED_DELIVERY",
   "observedAt": "2026-10-04T15:07:00+02:00",
   "problem": "Portal V2 had strong functional coverage but visual scale, media sizing, chart containment and interaction consistency were still governed by multiple page-specific styles, allowing oversized components and inconsistent responsive behavior.",
-  "rootCause": "Responsive behavior existed mainly as local CSS/test fixes rather than one cross-cutting experience contract that every present and dynamically rendered Portal V2 surface inherits.",
-  "preventionRule": "Portal V2 must load one final experience contract that bounds content/media/chart scale, enforces 44px controls, visible keyboard focus, reduced-motion support, viewport-safe dialogs and no horizontal page overflow while preserving the canonical Portal State backend authority.",
+  "rootCause": "Portal UX quality had been distributed across page-specific styles and separate candidate experience ideas. Consolidating those controls into the existing experience authority prevents parallel UI stacks and makes responsive/runtime regressions machine-detectable.",
+  "preventionRule": "Portal V2 has one shared experience authority. Every current and dynamic view inherits responsive sizing, 44px critical touch targets, visible focus, reduced-motion support, overflow measurement, runtime signaling and the 24-case visual assurance matrix while Portal State remains the backend authority.",
   "evidence": {
     "implementation": [
       "portal-v2/experience.css",
       "portal-v2/experience.js",
-      "portal-v2/index.html"
+      "config/powerhouse-portal-experience-v2.json",
+      "config/powerhouse-portal-visual-assurance-v1.json",
+      "tools/portal-visual-density.mjs"
     ],
     "regression": [
       "tests/portal-v2-experience-contract.test.mjs",
-      "tests/portal-v2-navigation-contract.test.mjs"
+      "tests/portal-v2-navigation-contract.test.mjs",
+      "tests/portal-visual-density-contract.test.mjs"
     ],
-    "documentation": "docs/changes/2026-10-04-portal-v2-experience-contract-v1.md"
+    "documentation": "docs/changes/2026-10-04-portal-v2-experience-contract-v2.md"
   },
   "invariants": {
     "singleNavigationAuthority": true,
@@ -28,7 +31,10 @@
     "reducedMotionSupported": true,
     "portalStateAuthorityUnchanged": true,
     "backendWritesFailClosed": true,
-    "productionReadbackRequired": true
+    "productionReadbackRequired": true,
+    "narrowMobile320FirstClass": true,
+    "screenshotMatrix": 24,
+    "runtimeExperienceSignals": true
   },
   "compiler": {
     "failure_class": "PORTAL_UX_SCALE_DRIFT",
@@ -42,5 +48,5 @@
       "tests/brain-portal-v2-experience-contract-v1.test.mjs"
     ]
   },
-  "root_cause": "Responsive behavior existed mainly as local CSS/test fixes rather than one cross-cutting experience contract that every present and dynamically rendered Portal V2 surface inherits."
+  "root_cause": "Portal UX quality had been distributed across page-specific styles and separate candidate experience ideas. Consolidating those controls into the existing experience authority prevents parallel UI stacks and makes responsive/runtime regressions machine-detectable."
 }
