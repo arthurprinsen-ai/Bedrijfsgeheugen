@@ -96,10 +96,25 @@ async function gotoSettled(page,url){
     try{
       const response=await page.goto(url,{waitUntil:'domcontentloaded',timeout:20000});
       if(response?.status()===404 && /deploy-preview-/.test(url) && attempt<8){await sleep(2000);continue;}
+      await page.waitForLoadState('domcontentloaded',{timeout:5000}).catch(()=>{});
       await page.evaluate(async()=>{if(document.fonts?.ready)await Promise.race([document.fonts.ready,new Promise(r=>setTimeout(r,1200))]);});
       await sleep(250);
       return response;
-    }catch(error){last=error;if(attempt<3)await sleep(attempt*700);}
+    }catch(error){last=error;if(attempt<8)await sleep(Math.min(2000,attempt*350));}
+  }
+  throw last;
+}
+
+async function inspectSettled(page){
+  let last;
+  for(let attempt=1;attempt<=5;attempt++){
+    try{return await inspect(page);}
+    catch(error){
+      last=error;
+      if(!/Execution context was destroyed|navigation/i.test(String(error?.message||error)))throw error;
+      await page.waitForLoadState('domcontentloaded',{timeout:5000}).catch(()=>{});
+      await sleep(attempt*180);
+    }
   }
   throw last;
 }
@@ -126,16 +141,19 @@ async function checkOne({browserName,browser,viewportName,route,screenshotAlways
   page.on('pageerror',e=>pageErrors.push(String(e?.message||e)));
   page.on('console',m=>{if(m.type()==='error')consoleErrors.push(m.text())});
   page.on('requestfailed',request=>{
-    if(['document','script','stylesheet'].includes(request.resourceType()) && !(request.resourceType()==='document' && request.failure()?.errorText==='net::ERR_ABORTED')){
+    const type=request.resourceType();
+    const errorText=request.failure()?.errorText||'';
+    const navigationAbort=errorText==='net::ERR_ABORTED'||errorText==='NS_ERROR_ABORT';
+    if(['document','script','stylesheet'].includes(type) && !navigationAbort){
       let pathname=request.url();try{pathname=new URL(request.url()).pathname}catch{}
-      failedCore.push(`${request.resourceType()}:${pathname}:${request.failure()?.errorText||''}`);
+      failedCore.push(`${type}:${pathname}:${errorText}`);
     }
   });
   let status=null,state=null,navigationError=null;
   try{
     const response=await gotoSettled(page,base+route);
     status=response?.status()??null;
-    state=await inspect(page);
+    state=await inspectSettled(page);
   }catch(error){navigationError=String(error?.message||error);}
   const violations=navigationError?[navigationError]:basicViolations(state,status,[...new Set(pageErrors)],[...new Set(failedCore)]);
   let screenshotPath=null;
@@ -161,7 +179,9 @@ async function runInteraction(browserName,browser,interaction,route){
     await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(250);
     const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
+    const controls=await trigger.getAttribute('aria-controls').catch(()=>null);
     if(expanded!=='true')violations.push(`mobile menu did not expand: ${expanded}`);
+    if(controls!=='v18MobileDrawer')violations.push(`mobile menu aria-controls mismatch: ${controls}`);
     const panel=page.locator('#v18MobileDrawer');
     if(await panel.count()===0)violations.push('mobile drawer #v18MobileDrawer missing');
     else{
@@ -171,11 +191,13 @@ async function runInteraction(browserName,browser,interaction,route){
     }
   }else if(interaction.assert==='v18_desktop_mega_visible'){
     const trigger=page.locator(found).first();
-    await trigger.hover().catch(error=>violations.push(`hover failed: ${error.message}`));
+    await trigger.click().catch(error=>violations.push(`click failed: ${error.message}`));
     await sleep(180);
     const group=trigger.locator('xpath=ancestor::*[contains(concat(" ", normalize-space(@class), " "), " navitem ")][1]');
     const panel=group.locator('.mega').first();
-    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop mega not visible after hover');
+    const expanded=await trigger.getAttribute('aria-expanded').catch(()=>null);
+    if(expanded!=='true')violations.push(`desktop mega did not expand: ${expanded}`);
+    if(await panel.count()===0||!(await panel.isVisible().catch(()=>false)))violations.push('desktop mega not visible after click');
   }else if(interaction.assert==='english_target_visible'){
     const trigger=page.locator(found).first();
     await trigger.click().catch(error=>violations.push(`language trigger click failed: ${error.message}`));
@@ -230,7 +252,7 @@ for(const browserName of contract.screenshot_matrix.browsers){
     const browser=await engine.launch({headless:true});
     try{
       for(const route of contract.screenshot_matrix.routes){
-        const already=browserName==='chromium'&&contract.all_route_sweep.viewports.includes(viewportName);
+        const already=browserName==='chromium'&&allRouteViewports.includes(viewportName);
         if(already)continue;
         const result=await checkOne({browserName,browser,viewportName,route,screenshotAlways:true});
         results.push(result);if(result.violations.length)failures.push(result);
