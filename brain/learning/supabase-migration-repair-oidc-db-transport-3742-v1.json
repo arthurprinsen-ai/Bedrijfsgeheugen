@@ -1,0 +1,16 @@
+{
+  "id": "supabase-migration-repair-oidc-db-transport-3742-v1",
+  "issue": 3742,
+  "failure_class": "trusted-main-supabase-cli-credentials-absent",
+  "observed": "The supported migration-repair workflow reached the exact allowlist/effect-evidence gate but failed before any provider mutation because GitHub exposed neither SUPABASE_ACCESS_TOKEN nor a production database password.",
+  "root_cause": "The workflow depended on repository/environment secrets that are not configured. Supabase hosted Edge Functions already receive SUPABASE_DB_URL as a default server-side secret.",
+  "structural_resolution": "Use GitHub Actions OIDC bound to repository, refs/heads/main, exact repair workflow_ref and dedicated audience. A Supabase Edge Function returns the database URL only to that verified workflow. The runner masks it immediately and passes it only to official Supabase CLI migration list/repair --db-url commands.",
+  "safety_invariants": [
+    "No database credential is committed to Git or copied into GitHub secrets.",
+    "No pull_request-controlled workflow can obtain the database URL.",
+    "No direct SQL writes to supabase_migrations are introduced.",
+    "Repair remains allowlisted to four effect-verified versions and zero unexpected drift.",
+    "The returned database URL is Cache-Control no-store and GitHub-masked before use."
+  ],
+  "regression": "tests/supabase-supported-migration-repair-3742.test.mjs"
+}
