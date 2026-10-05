@@ -23,6 +23,8 @@ jobs:
           node-version: 22
       - name: Canonical loop contract
         run: node --test tests/whole-brain-canonical-loop-v2.test.mjs
+      - name: One-loop scheduler and terminal-lineage regression
+        run: node --test tests/powerhouse-one-loop-terminal-lineage-v1.test.mjs
       - name: Canonical Business Graph
         run: node --test tests/whole-brain-business-graph.test.mjs
       - name: Executive cockpit projection
