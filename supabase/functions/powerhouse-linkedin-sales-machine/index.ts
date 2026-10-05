@@ -161,20 +161,20 @@ Deno.serve(async(req:Request)=>{
       dmCapability='AVAILABLE';
       await recordCapability(db,'salesrobot.linkedin_dm','AVAILABLE',{health_status:sr.healthStatus,subscription:sr.subscription,verified_at:now,tool:'SALESROBOT_SEND_MESSAGE'});
       for(const action of dmActions||[]){
-        const composer=action?.evidence?.commercial_intelligence?.composer||{};
+        const composerProof=action?.evidence?.commercial_intelligence?.composer||{};
         const strategy=clean(action?.evidence?.commercial_intelligence?.message_strategy);
-        if(composer?.quality_passed!==true||!strategy||!clean(action.message_draft)){
-          const evidence={...(action.evidence||{}),execution_gate:{contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN',message_strategy:strategy||null,quality_passed:composer?.quality_passed===true}};
+        if(composerProof?.quality_passed!==true||!strategy||!clean(action.message_draft)){
+          const evidence={...(action.evidence||{}),execution_gate:{contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN',message_strategy:strategy||null,quality_passed:composerProof?.quality_passed===true}};
           await db.from('powerhouse_sales_actions').update({evidence,updated_at:now}).eq('action_id',action.action_id);
           dmResults.push({action_id:action.action_id,status:'held',reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN'});
           continue;
         }
         const address=salesRobotAddress(action);
         const message=clean(action.message_draft);
-        const composer=action?.evidence?.commercial_intelligence?.composer||{};
+        const composerProof=action?.evidence?.commercial_intelligence?.composer||{};
         const strategy=clean(action?.evidence?.commercial_intelligence?.message_strategy);
-        if(composer?.quality_passed!==true||!strategy){
-          const evidence={...(action.evidence||{}),execution_gate:{contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN',message_strategy:strategy||null,quality_passed:composer?.quality_passed===true}};
+        if(composerProof?.quality_passed!==true||!strategy){
+          const evidence={...(action.evidence||{}),execution_gate:{contract:'powerhouse-human-commercial-message-gate-v1',blocked_at:now,reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN',message_strategy:strategy||null,quality_passed:composerProof?.quality_passed===true}};
           await db.from('powerhouse_sales_actions').update({evidence,updated_at:now}).eq('action_id',action.action_id);
           dmResults.push({action_id:action.action_id,status:'held',reason:'HUMAN_MESSAGE_QUALITY_NOT_PROVEN'});
           continue;
