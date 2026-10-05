@@ -25,6 +25,12 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-resource-intelligence-tenant-isolation-recovery-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-resource-intelligence-tenant-isolation-recovery-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-resource-intelligence-tenant-isolation-recovery-v1.test.mjs"
     ]
   },
   "evidence": {
