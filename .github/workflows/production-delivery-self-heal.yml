@@ -1,0 +1,49 @@
+name: Production Delivery Self-Heal
+
+on:
+  workflow_run:
+    workflows:
+      - Production Source Snapshot
+      - Production Release Readback
+    types: [completed]
+
+permissions:
+  actions: write
+  contents: read
+
+concurrency:
+  group: production-delivery-self-heal-${{ github.event.workflow_run.id }}
+  cancel-in-progress: false
+
+jobs:
+  recover:
+    if: github.event.workflow_run.conclusion == 'failure' && github.event.workflow_run.run_attempt < 3
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      GH_TOKEN: ${{ github.token }}
+      RUN_ID: ${{ github.event.workflow_run.id }}
+      RUN_ATTEMPT: ${{ github.event.workflow_run.run_attempt }}
+      HEAD_SHA: ${{ github.event.workflow_run.head_sha }}
+      WORKFLOW_NAME: ${{ github.event.workflow_run.name }}
+    steps:
+      - name: Reconcile immutable production state before retry
+        id: reconcile
+        run: |
+          set -euo pipefail
+          observed="$(curl -fsSL -H 'Cache-Control: no-cache' "https://www.bedrijfsgeheugen.nl/release.json?self_heal=$HEAD_SHA-$RUN_ATTEMPT" || true)"
+          live_sha="$(node -e 'try{const x=JSON.parse(process.argv[1]);process.stdout.write(String(x.commit_ref||""))}catch{}' "$observed")"
+          if [ "$WORKFLOW_NAME" = "Production Source Snapshot" ] && [ "$live_sha" = "$HEAD_SHA" ]; then
+            echo "retry=false" >> "$GITHUB_OUTPUT"
+            echo "EXACT_SHA_ALREADY_LIVE:$HEAD_SHA"
+          else
+            echo "retry=true" >> "$GITHUB_OUTPUT"
+            echo "BOUNDED_RECOVERY_REQUIRED:$WORKFLOW_NAME:$RUN_ID:attempt=$RUN_ATTEMPT:live=${live_sha:-unknown}"
+          fi
+
+      - name: Re-run only failed jobs
+        if: steps.reconcile.outputs.retry == 'true'
+        run: |
+          set -euo pipefail
+          gh api --method POST "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID/rerun-failed-jobs"
+          echo "RECOVERY_DISPATCHED:$WORKFLOW_NAME:$RUN_ID:next_attempt=$((RUN_ATTEMPT + 1))"
