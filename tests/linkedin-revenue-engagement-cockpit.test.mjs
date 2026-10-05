@@ -1,9 +1,10 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { readMigrationHistorySync } from './helpers/read-supabase-migration-history.mjs';
 
 const runtimePath = new URL('../platform/linkedin-revenue-cockpit.mjs', import.meta.url);
-const migrationPath = new URL('../supabase/migrations/20260912160957_linkedin_engagement_to_cockpit_v1.sql', import.meta.url);
+
 
 async function loadRuntime() {
   return import(runtimePath.href);
@@ -28,8 +29,7 @@ test('next action never turns a single like into an unsolicited DM', async () =>
 });
 
 test('database contract ingests actor engagement idempotently into existing cockpit layers', () => {
-  assert.equal(fs.existsSync(migrationPath), true, 'LinkedIn engagement migration must exist');
-  const sql = fs.readFileSync(migrationPath, 'utf8');
+  const sql = readMigrationHistorySync('20260912160957_linkedin_engagement_to_cockpit_v1.sql');
   assert.match(sql, /create table if not exists public\.linkedin_engagement_events/i);
   assert.match(sql, /event_key text not null unique/i);
   assert.match(sql, /create or replace function public\.bg_linkedin_engagement_ingest/i);
