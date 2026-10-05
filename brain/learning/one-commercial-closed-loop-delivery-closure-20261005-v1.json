@@ -17,7 +17,8 @@
   "evaluation": {
     "historical_replay": [
       "tests/brain-integration-bundle-compiler-v1.test.mjs",
-      "tests/brain-terminal-provider-durable-evidence.test.mjs"
+      "tests/brain-terminal-provider-durable-evidence.test.mjs",
+      "tests/brain-powerhouse-closed-loop-evidence-first-v1.test.mjs"
     ],
     "shadow": [
       "tests/brain-human-commercial-message-os-v1.test.mjs",
@@ -31,7 +32,8 @@
   "test_evidence": [
     "tests/brain-integration-bundle-compiler-v1.test.mjs",
     "tests/brain-adaptive-delivery-engine-v1.test.mjs",
-    "tests/brain-terminal-provider-durable-evidence.test.mjs"
+    "tests/brain-terminal-provider-durable-evidence.test.mjs",
+    "tests/brain-powerhouse-closed-loop-evidence-first-v1.test.mjs"
   ],
   "evidence": {
     "pull_request": 3739,
