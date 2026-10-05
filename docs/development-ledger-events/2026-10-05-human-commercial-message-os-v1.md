@@ -15,3 +15,5 @@
 - Runtime proof: human message health and technique-performance views.
 
 - Canonical delivery lane: `backend`; immutable base: `aa863705e1fbe2d843aa3dfce146ff74011f25ee`.
+
+- Runtime drift closure: live `powerhouse-commercial-message-composer` synced back to GitHub and `powerhouse_persuasion_revenue_optimizer_v1` persisted as a migration with service-role-only execution.
