@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "fingerprint": "powerhouse|rocket-revenue-event-spine|v1",
+  "observed_at": "2026-10-05T09:45:00Z",
+  "type": "REVENUE_INTELLIGENCE",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Powerhouse already contained growth events, sales outcomes, attribution, opportunities, experiments and NBA, but lacked one explicit canonical connecting contract for identity resolution, continuous intent scoring, multi-touch revenue attribution and non-blocking orchestration.",
+  "decision": "Reuse the existing Powerhouse stores and engines, add only the missing canonical revenue spine, and keep heavy existing engines on their own idempotent schedulers to avoid duplicate execution and lock contention.",
+  "prevention": [
+    "no parallel CRM or second commercial event store",
+    "identity graph stores normalized hashes plus canonical person/company keys instead of duplicating raw identifiers",
+    "observed multi-touch attribution is explicitly non-causal and revenue-balanced",
+    "continuous intent scoring combines behavioral events, opportunity probability/confidence and recency",
+    "next-best-action extends existing NBA v5 and preserves consent, pressure, dedupe, identity, capability and provider gates",
+    "heavy commercial-learning and relationship engines remain independently scheduled; the spine unifies data contracts without blocking on them",
+    "material revenue/outcome signals continue to feed existing learning and experiment layers"
+  ],
+  "canonical_authorities": [
+    "public.growth_events",
+    "public.growth_outcomes",
+    "public.powerhouse_opportunities",
+    "public.powerhouse_sales_actions",
+    "public.powerhouse_sales_outcomes",
+    "public.powerhouse_commercial_next_best_action_v5",
+    "public.powerhouse_revenue_event_spine_v1",
+    "public.powerhouse_identity_graph_v1",
+    "public.powerhouse_prospect_intent_score_v1",
+    "public.powerhouse_revenue_attribution_snapshot_v1",
+    "supabase/functions/powerhouse-revenue-intelligence/index.ts"
+  ],
+  "id": "rocket-revenue-event-spine-20261005-v1",
+  "date": "2026-10-05",
+  "source": "user-request+rocket-internet-deck+existing-state-audit+production-readback",
+  "failure_class": "REVENUE_INTELLIGENCE_LINEAGE_FRAGMENTATION",
+  "symptom": [
+    "Commercial intelligence existed across multiple mature tables/views but the identity, intent, attribution and orchestration contract was implicit.",
+    "A synchronous attempt to chain all heavy engines exposed database timeout and runtime-event lock contention."
+  ],
+  "failed_approaches": [
+    "Create a separate CRM/event store for the Rocket concepts.",
+    "Call every heavy revenue/learning engine synchronously inside one master cycle.",
+    "Use historical non-send or stale state as evidence for current commercial execution."
+  ],
+  "evidence": {
+    "migration": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+    "edge_function": "supabase/functions/powerhouse-revenue-intelligence/index.ts",
+    "regression": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+    "production_readback": {
+      "identity_entities": 23784,
+      "identity_identifiers": 47725,
+      "attribution_touches": 33,
+      "next_best_action_snapshot_rows": 422,
+      "runtime_state": "actioned",
+      "data_quality": "VERIFIED",
+      "confidence": 1
+    }
+  },
+  "compiler": {
+    "failure_class": "REVENUE_INTELLIGENCE_LINEAGE_FRAGMENTATION",
+    "scope": "GROWTH_REVENUE_OS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs"
+    ]
+  },
+  "delivery_closure": {
+    "pr": 3719,
+    "declared_scope_budget": 8,
+    "required_evidence": [
+      "brain_learning",
+      "activity_ledger",
+      "human_documentation"
+    ],
+    "runtime_readback": "actioned/VERIFIED/confidence=1",
+    "rule": "Material revenue-intelligence changes must carry all three closure artifacts in the same candidate before merge."
+  }
+}

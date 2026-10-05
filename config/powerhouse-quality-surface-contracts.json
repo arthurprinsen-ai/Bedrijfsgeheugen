@@ -177,6 +177,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-revenue-intelligence",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-revenue-intelligence/index.ts",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-runtime",
       "type": "function",
       "authority": "supabase/functions/powerhouse-runtime/index.ts",
@@ -419,6 +426,27 @@
       "type": "netlify_function",
       "authority": "netlify/functions/stripe-webhook.mjs",
       "evidence_contract": "tests/saas-pricing-entitlements.test.mjs",
+      "required": true
+    },
+    {
+      "id": "permission:powerhouse_identity_graph_service_v1",
+      "type": "permission",
+      "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "permission:powerhouse_revenue_attribution_snapshot_service_v1",
+      "type": "permission",
+      "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "permission:powerhouse_revenue_event_types_service_v1",
+      "type": "permission",
+      "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
@@ -905,6 +933,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_identity_graph_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_instagram_daily_winners_v1",
       "type": "table",
       "authority": "supabase/migrations/20260920110000_instagram_daily_winner_lineage_v1.sql",
@@ -1049,6 +1084,20 @@
       "type": "table",
       "authority": "supabase/migrations/20260916220000_powerhouse_closure_a_f.sql",
       "evidence_contract": "tests/supabase-powerhouse-closure-db-contract.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_revenue_attribution_snapshot_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_revenue_event_types_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
+      "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
       "required": true
     },
     {
