@@ -20,6 +20,9 @@ test('terminal landing is exact-head main-epoch CAS and branch name is secondary
   assert.match(unified,/Writer-Lease-Main-Epoch/);
   assert.match(unified,/Writer-Lease-Obligation/);
   assert.match(unified,/terminal-guard --input/);
+  assert.match(unified,/fullCheckRuns:runs\.map/);
+  assert.match(unified,/legacyStatuses:statuses\.map/);
+  assert.match(unified,/x\.app\?\.slug/);
   assert.match(unified,/BG169_MAIN_EPOCH_DRIFT/);
   assert.match(unified,/-f sha="\$HEAD_SHA"/);
   assert.doesNotMatch(unified,/PR_HEAD_REF_DRIFT/);
