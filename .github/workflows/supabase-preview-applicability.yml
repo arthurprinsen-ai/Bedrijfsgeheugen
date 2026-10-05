@@ -1,4 +1,5 @@
 name: Supabase Preview Applicability
+# Required branch-protection producer for conditional hosted Supabase preview.
 
 on:
   pull_request:
