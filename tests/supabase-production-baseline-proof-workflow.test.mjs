@@ -11,7 +11,7 @@ test('production baseline proof is trusted-main-only and read-only', () => {
 });
 
 test('production schema authority is official Supabase CLI rather than pg_catalog synthesis', () => {
-  assert.match(workflow, /supabase db dump --linked --file \.\.\/evidence\/production-schema\.sql/);
+  assert.match(workflow, /supabase db dump --linked -f \.\.\/evidence\/production-schema\.sql/);
   assert.match(workflow, /supabase migration list --linked/);
   assert.doesNotMatch(workflow, /pg_catalog/i);
   assert.doesNotMatch(workflow, /information_schema/i);
