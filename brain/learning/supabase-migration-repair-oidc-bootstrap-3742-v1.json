@@ -11,7 +11,7 @@
   "invariant": "No direct supabase_migrations write; only pinned Supabase CLI migration repair --status applied --db-url after exact allowlist and effect-evidence checks.",
   "failure_class": "delivery-bootstrap-cycle",
   "root_cause": "A prerequisite that changed supabase/** was itself forced through the hosted fresh-replay gate whose failure the prerequisite existed to repair.",
-  "prevention_rule": "Separate trusted control-plane bootstrap from provider-source canonicalization whenever the latter depends on the recovery enabled by the former; keep the runtime bridge exact-main/SHA OIDC locked and canonicalize provider source only after replay recovery.",
+  "prevention_rule": "Separate trusted control-plane bootstrap from provider-source canonicalization whenever the latter depends on the recovery enabled by the former; keep the runtime bridge exact-main/SHA OIDC locked and canonicalize provider source only after replay recovery. Parse Supabase CLI migration-list cells only after removing presentation backticks; an empty parsed drift set is never accepted unless the remote ledger independently proves the expected repaired versions.",
   "regression_test": "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs",
   "evaluation": {
     "historical_replay": [
@@ -35,6 +35,9 @@
     "regression_tests": [
       "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs",
       "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs"
-    ]
+    ],
+    "pooler_transport_run": 37354534547,
+    "parser_failure": "Supabase CLI migration list renders versions with backticks; pre-repair parser filtered every row before normalization and produced a false empty drift set.",
+    "parser_regression_test": "tests/supabase-migration-repair-oidc-bootstrap-3742.test.mjs"
   }
 }
