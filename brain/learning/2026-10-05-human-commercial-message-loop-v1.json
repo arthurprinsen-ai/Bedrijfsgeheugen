@@ -31,7 +31,7 @@
   "source": "user-request+notion-sales-playbook+runtime-audit+production-readback",
   "failure_class": "SALES_COPY_INTELLIGENCE_NOT_RUNTIME_MANDATORY",
   "evidence": {
-    "migration": "supabase/migrations/20261005125100_powerhouse_human_commercial_message_loop_v1.sql",
+    "migration": "supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql",
     "regression": "tests/brain-human-commercial-message-loop-v1.test.mjs",
     "production_readback": {
       "closed_loop_healthy": true,
