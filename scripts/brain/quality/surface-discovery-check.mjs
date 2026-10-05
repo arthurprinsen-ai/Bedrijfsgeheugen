@@ -29,6 +29,7 @@ function exactHistoricalMirror(file, reviewed) {
 function loadFiles(paths) {
   const reviewed = reviewedHistoricalMirrors();
   return paths
+    .filter(file => !file.startsWith('supabase/migration-history/'))
     .filter(file => PRODUCT_PREFIXES.some(prefix => file.startsWith(prefix)))
     .filter(file => fs.existsSync(file) && fs.statSync(file).isFile())
     .filter(file => !exactHistoricalMirror(file, reviewed))
