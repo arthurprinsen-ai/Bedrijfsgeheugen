@@ -21,6 +21,7 @@ on:
         default: ''
 
 permissions:
+  actions: write
   contents: write
   pull-requests: write
 
@@ -116,3 +117,36 @@ jobs:
           fi
           gh pr merge "$pr" --auto --squash
           echo "PR=$pr slug=$SLUG auto-merge enabled"
+
+      - name: Self-heal required checks for the canonical daily candidate
+        if: always() && steps.day.outputs.run == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DATE: ${{ steps.day.outputs.date }}
+        run: |
+          set -euo pipefail
+          branch="automation/powerhouse-blog-$DATE"
+          pr="$(gh pr list --head "$branch" --base main --state open --json number --jq '.[0].number // empty')"
+          if [ -z "$pr" ]; then
+            echo "No open daily candidate remains; publication either completed or produced no action."
+            exit 0
+          fi
+          pr_json="$(gh api "repos/$GITHUB_REPOSITORY/pulls/$pr")"
+          base_sha="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(x.base.sha)' "$pr_json")"
+          head_sha="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(x.head.sha)' "$pr_json")"
+          body="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(x.body||"")' "$pr_json")"
+          labels="$(node -e 'const x=JSON.parse(process.argv[1]);process.stdout.write(JSON.stringify((x.labels||[]).map(v=>v.name)))' "$pr_json")"
+          test_state="$(gh api "repos/$GITHUB_REPOSITORY/commits/$head_sha/check-runs" --jq '[.check_runs[] | select(.name=="test")] | sort_by(.started_at) | last | (.conclusion // .status // "missing")' 2>/dev/null || echo missing)"
+          case "$test_state" in
+            success)
+              echo "REQUIRED_TEST_ALREADY_GREEN:$pr:$head_sha"
+              ;;
+            queued|in_progress)
+              echo "REQUIRED_TEST_ACTIVE:$pr:$head_sha:$test_state"
+              ;;
+            *)
+              echo "REQUIRED_TEST_SELF_HEAL_DISPATCH:$pr:$head_sha:from=$test_state"
+              gh workflow run required-test.yml --ref "$branch"                 -f pr_number="$pr"                 -f base_sha="$base_sha"                 -f head_sha="$head_sha"                 -f candidate_branch="$branch"                 -f pr_body="$body"                 -f pr_labels_json="$labels"
+              ;;
+          esac
+          gh pr merge "$pr" --auto --squash
