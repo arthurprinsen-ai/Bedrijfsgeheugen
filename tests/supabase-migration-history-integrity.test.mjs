@@ -17,9 +17,29 @@ test('known timestamp-rewritten migration variants never return', () => {
   assert.deepEqual(rewritten, [], `Timestamp-rewritten migration versions must be removed: ${rewritten.join(', ')}`);
 });
 
-test('repository-only historical variants stay outside executable migration lane', () => {
-  const leaked = (lock.repository_only_archived || []).filter(item => versions.has(item.version));
+test('repository-only historical variants stay outside executable migration lane except approved replay baselines', () => {
+  const approvedReplay = new Set((lock.repair_required_replay_baselines || []).map(item => item.version));
+  const leaked = (lock.repository_only_archived || [])
+    .filter(item => !approvedReplay.has(item.version))
+    .filter(item => versions.has(item.version));
   assert.deepEqual(leaked, [], `Repository-only migration history leaked back into supabase/migrations:\n${leaked.map(item => `${item.version} ${item.path}`).join('\n')}`);
+});
+
+test('repair-required replay baselines are explicit, executable, and not falsely marked applied', () => {
+  const repair = lock.repair_required_replay_baselines || [];
+  assert.deepEqual(
+    repair.map(item => item.version).sort(),
+    ['20260920101150','20260920102450','20260925080500']
+  );
+  const applied = new Set(lock.applied.map(item => item.version));
+  for (const item of repair) {
+    assert.equal(item.repair_status, 'APPLIED_REQUIRED');
+    assert.equal(item.sql_execution_required, false);
+    assert.equal(item.production_effect_verified, true);
+    assert.ok(versions.has(item.version), `Replay baseline must be executable for clean reset: ${item.version}`);
+    assert.equal(applied.has(item.version), false, `Repair-required version must not be claimed applied before provider readback: ${item.version}`);
+  }
+  assert.equal(lock.recovery_governance?.merge_blocked_until_repair_readback, true);
 });
 
 
