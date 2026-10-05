@@ -26,8 +26,14 @@ test('baseline write is exact-head leased and fail-closed', () => {
   assert.match(workflow, /EXPECTED_HEAD/);
   assert.match(workflow, /Recovery branch moved before baseline write/);
   assert.match(workflow, /--force-with-lease="refs\/heads\/\$TARGET_BRANCH:\$EXPECTED_HEAD"/);
-  assert.match(workflow, /production_write:false/);
-  assert.match(workflow, /hand_built_catalog_dump:false/);
+    assert.match(workflow, /hand_built_catalog_dump:false/);
+  assert.match(workflow, /supabase migration repair/);
+  assert.match(workflow, /20260920101150/);
+  assert.match(workflow, /20260920102450/);
+  assert.match(workflow, /20260925080500/);
+  assert.match(workflow, /PRE_REPAIR_PARITY_NOT_EXACT/);
+  assert.match(workflow, /POST_REPAIR_PARITY_DRIFT/);
+  assert.match(workflow, /sql_reexecuted:false/);
 });
 
 test('production credentials are scoped only to the official capture step', () => {
@@ -45,4 +51,11 @@ test('canonical recovery selection is unique and baseline write advances writer 
   assert.match(workflow, /Multiple open canonical recoveries share highest version/);
   assert.match(workflow, /Writer-Lease-Head/);
   assert.match(workflow, /--method PATCH/);
+});
+
+
+test('baseline capture dynamically selects one highest canonical recovery and pins CLI', () => {
+  assert.match(workflow, /supabase-migration-history-canonical-v/);
+  assert.match(workflow, /Multiple open canonical recoveries share highest version/);
+  assert.match(workflow, /version: 2\.119\.0/);
 });
