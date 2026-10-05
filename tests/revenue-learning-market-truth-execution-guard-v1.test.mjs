@@ -1,11 +1,11 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { readFile } from 'node:fs/promises';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
-const migrationPath = 'supabase/migrations/20260915170207_powerhouse_market_truth_economics_execution_guard_v1.sql';
+const migrationName = '20260915170207_powerhouse_market_truth_economics_execution_guard_v1.sql';
 
 test('observed economics can only be recorded for executed actions', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /powerhouse_record_action_economics_v1/i);
   assert.match(sql, /executed_at/i);
   assert.match(sql, /status/i);
@@ -13,7 +13,7 @@ test('observed economics can only be recorded for executed actions', async () =>
 });
 
 test('execution guard remains server-only', async () => {
-  const sql = await readFile(migrationPath, 'utf8');
+  const sql = await readMigrationHistory(migrationName);
   assert.match(sql, /security\s+definer/i);
   assert.match(sql, /set\s+search_path\s*=\s*public/i);
   assert.match(sql, /revoke\s+execute\s+on\s+function[\s\S]*from\s+public\s*,\s*anon\s*,\s*authenticated/i);
