@@ -1,2 +1,0 @@
-alter table public.bg_bedrijfsnieuws add column if not exists dm text, add column if not exists afgewezen_reden text;
-delete from public.bg_bedrijf_gecheckt where bedrijf ilike 'Ockto%' or bedrijf ilike 'TommyTomato%';

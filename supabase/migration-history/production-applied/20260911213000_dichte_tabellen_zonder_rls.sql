@@ -1,0 +1,1 @@
+-- exact supabase/migrations/20260911213000_dichte_tabellen_zonder_rls.sql (main b2fcb27)

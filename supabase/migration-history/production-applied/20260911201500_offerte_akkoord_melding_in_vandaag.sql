@@ -1,0 +1,1 @@
+-- exact supabase/migrations/20260911201500_offerte_akkoord_melding_in_vandaag.sql (main 2d90d63)

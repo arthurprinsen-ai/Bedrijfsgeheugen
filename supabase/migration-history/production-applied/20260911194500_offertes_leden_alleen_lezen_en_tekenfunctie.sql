@@ -1,0 +1,1 @@
+-- exact supabase/migrations/20260911194500_offertes_leden_alleen_lezen_en_tekenfunctie.sql (main 05cd298)
