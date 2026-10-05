@@ -137,7 +137,7 @@ jobs:
           import fs from 'node:fs';
           const text=fs.readFileSync('../repair-evidence/before.txt','utf8');
           const rows=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
-            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .map(line=>line.split(/[|│]/).map(x=>x.replaceAll('`','').trim()))
             .filter(x=>x.length>=2 && (/^\d{14}$/.test(x[0]) || /^\d{14}$/.test(x[1])))
             .map(x=>({local:x[0]||'',remote:x[1]||''}));
           const drift=rows.filter(x=>x.local!==x.remote);
@@ -157,7 +157,7 @@ jobs:
           import fs from 'node:fs';
           const text=fs.readFileSync('../repair-evidence/after.txt','utf8');
           const rows=text.split(/\r?\n/).map(line=>line.trim()).filter(Boolean)
-            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .map(line=>line.split(/[|│]/).map(x=>x.replaceAll('`','').trim()))
             .filter(x=>x.length>=2 && (/^\d{14}$/.test(x[0]) || /^\d{14}$/.test(x[1])))
             .map(x=>({local:x[0]||'',remote:x[1]||''}));
           const drift=rows.filter(x=>x.local!==x.remote);
