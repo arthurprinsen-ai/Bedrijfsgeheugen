@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "fingerprint": "powerhouse|one-commercial-closed-loop|v2",
+  "observed_at": "2026-10-05T14:25:00Z",
+  "type": "COMMERCIAL_CLOSED_LOOP",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Commercial execution already had mature identity, intent, NBA, pressure, message, provider, outcome, attribution and learning capabilities, but their delivery truth could still fragment across scheduler ownership, stale provider context, and incomplete repository closure evidence.",
+  "decision": "Canonicalize one lineage from signal through learning, keep heavyweight intelligence bounded outside the latency-critical path, require current source context and exact message proof before provider execution, and require outcome/readback before an action can become terminal.",
+  "prevention": [
+    "one canonical commercial candidate/action materializer and one execution-owner",
+    "no external outreach without current source URL/context, pressure/cooldown eligibility, consent/capability eligibility, dedupe proof and exact-message-hash quality proof",
+    "HTTP success alone is never provider success; provider acknowledgement and terminal outcome are required",
+    "CONCRETE_POST_CONTEXT_REQUIRED remains fail-closed and cannot mark an action done",
+    "heavy intelligence is bounded or independently scheduled and cannot block the heartbeat",
+    "terminal no-response may feed learning only as observation, never as fabricated rejection",
+    "material backend changes must carry brain learning, development ledger and human documentation in the same candidate"
+  ],
+  "canonical_authority": "supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql",
+  "id": "one-commercial-closed-loop-20261005-v2",
+  "date": "2026-10-05",
+  "source": "existing-state-audit+provider-failure-readback+delivery-gate-readback",
+  "failure_class": "COMMERCIAL_LINEAGE_FRAGMENTATION_AND_FALSE_TERMINAL_SUCCESS",
+  "symptom": [
+    "A LinkedIn provider call returned HTTP 200 while the semantic response was CONCRETE_POST_CONTEXT_REQUIRED.",
+    "The action correctly remained non-terminal with provider acknowledgement count 0.",
+    "Required-test preflight correctly rejected the candidate when repository closure evidence was missing."
+  ],
+  "failed_approaches": [
+    "Treat HTTP 200 as sufficient evidence of external execution.",
+    "Allow a provider action to become done without concrete source context and exact message identity.",
+    "Treat runtime parity alone as sufficient closure for a material Supabase change."
+  ],
+  "evidence": {
+    "migration": "supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql",
+    "delivery_gate": "Required test / integration bundle closure",
+    "provider_boundary": "semantic provider acknowledgement required; HTTP status alone is insufficient",
+    "external_execution_state": "NOT_CLAIMED_TERMINAL"
+  },
+  "delivery_closure": {
+    "pr": 3739,
+    "required_evidence": ["brain_learning", "activity_ledger", "human_documentation"],
+    "rule": "Material one-loop changes may merge only on exact-head checks plus repository closure evidence; production/live status requires post-merge runtime readback."
+  }
+}
