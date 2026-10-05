@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-const migration = fs.readFileSync('supabase/migrations/20261004133000_linkedin_company_growth_engine_v1.sql','utf8');
+const migration = fs.readFileSync('supabase/migrations/20261004114640_linkedin_company_growth_engine_v1.sql','utf8');
 const policy = JSON.parse(fs.readFileSync('config/linkedin-company-growth-v1.json','utf8'));
 const skill = fs.readFileSync('.agents/skills/powerhouse-linkedin-company-growth/SKILL.md','utf8');
 const learning = JSON.parse(fs.readFileSync('brain/learning/2026-10-04-linkedin-company-page-growth-v1.json','utf8'));
