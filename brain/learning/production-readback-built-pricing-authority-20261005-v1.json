@@ -1,0 +1,41 @@
+{
+  "learningId": "production-readback-built-pricing-authority-20261005-v1",
+  "fingerprint": "production-readback-source-vs-built-pricing-dom-drift-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-05T20:13:00+02:00",
+  "problem": "Production Release Readback validated pricing source-authoring attributes instead of the canonical DOM emitted by the production build, causing false failure even when the exact release SHA was live.",
+  "rootCause": "The live pricing verifier expected data-tab/data-panel and fit* controls, but the production build canonically emits #saas/#expertise navigation and pkgSize/pkgGoal/pkgMode/pkgGo controls.",
+  "root_cause": "The live pricing verifier expected data-tab/data-panel and fit* controls, but the production build canonically emits #saas/#expertise navigation and pkgSize/pkgGoal/pkgMode/pkgGo controls.",
+  "preventionRule": "Production readback contracts must verify the built production surface, not pre-build authoring markup, while preserving exact-SHA and business-semantic assertions.",
+  "prevention": [
+    "Verify href=#saas and href=#expertise with matching section ids.",
+    "Verify Starter, Pro, Groei and Enterprise plus current consulting services.",
+    "Verify pkgSize, pkgGoal, pkgMode and pkgGo as the built package-advice controls.",
+    "Retain exact release marker, shell parity and retired pricing-contract rejection."
+  ],
+  "evidence": {
+    "productionSha": "47ad59de1694409902bedc4d2395a80296b7a375",
+    "failingRun": 37353088570,
+    "implementation": [
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/test-live-contract.mjs"
+    ],
+    "predecessorPr": 3783
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tools/site-shell/test-live-contract.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/test-live-contract.mjs"
+    ],
+    "expected": "Exact production SHA passes only when the built pricing DOM preserves canonical packages, expertise propositions and package-advice routing."
+  }
+}
