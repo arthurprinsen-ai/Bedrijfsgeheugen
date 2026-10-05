@@ -82,7 +82,7 @@ test('compatibility aliases can replay before the later canonical implementation
 
 test('commercial health replay defines the exact content-bound quality gate before its view',async()=>{
   const source=await readFile('supabase/migrations/20261005160500_powerhouse_one_commercial_closed_loop_v1.sql','utf8');
-  const canonical=await readFile('supabase/migrations/20261005161500_powerhouse_one_commercial_closed_loop_v2.sql','utf8');
+  const canonical=await readFile('supabase/migrations/20261005144606_powerhouse_one_commercial_closed_loop_v2.sql','utf8');
   const start='CREATE OR REPLACE FUNCTION public.powerhouse_outbound_message_quality_ready_v1';
   const end='GRANT EXECUTE ON FUNCTION public.powerhouse_outbound_message_quality_ready_v1(p_action_id uuid) TO service_role;';
   assert.ok(source.indexOf(start)>=0,'fresh replay requires the actual quality function, not a stub');
