@@ -54,3 +54,13 @@ test('live persuasion optimizer and semantic copy guards remain canonical',()=>{
   assert.match(composer,/canonicalNumber/);
   assert.match(composer,/persuasion_authority/);
 });
+
+
+test('human commercial composer v2 requires source-specific personalization',()=>{
+  assert.match(composer,/powerhouse-human-commercial-message-composer-v2/);
+  assert.match(composer,/sourceSpecificContext/);
+  assert.match(composer,/sourceContext\.length>20/);
+  assert.match(composer,/inspirerend\|indrukwekkend\|geweldig/);
+  assert.match(composer,/veel \(bedrijven\|organisaties\|founders/);
+  assert.match(composer,/forceer dan geen persoonlijke boodschap/);
+});
