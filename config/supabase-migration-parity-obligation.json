@@ -1,0 +1,26 @@
+{
+  "contract": "supabase-migration-history-parity-v1",
+  "issue": 3742,
+  "project_ref": "adhjwmvyoixzjtmiroln",
+  "authority": "supabase_migrations.schema_migrations",
+  "invariant": {
+    "exact_version_parity": true,
+    "exact_name_parity": true,
+    "unique_versions": true,
+    "non_empty_sql": true,
+    "fresh_replay_required": true,
+    "placeholders_forbidden": true,
+    "production_history_repair_without_replayable_baseline_forbidden": true
+  },
+  "closure": {
+    "state": "OPEN",
+    "terminal_green_requires": [
+      "exact source parity",
+      "non-empty migration SQL",
+      "fresh replay",
+      "required checks",
+      "merge",
+      "post-merge production readback"
+    ]
+  }
+}
