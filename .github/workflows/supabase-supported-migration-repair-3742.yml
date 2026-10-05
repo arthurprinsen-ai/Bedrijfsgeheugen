@@ -2,6 +2,8 @@ name: Supabase Supported Migration Repair #3742
 
 on:
   workflow_dispatch:
+  issues:
+    types: [reopened]
   push:
     branches: [main]
     paths:
@@ -18,6 +20,7 @@ concurrency:
 
 jobs:
   repair:
+    if: github.event_name != 'issues' || github.event.issue.number == 3742
     runs-on: ubuntu-latest
     timeout-minutes: 20
     environment: production
