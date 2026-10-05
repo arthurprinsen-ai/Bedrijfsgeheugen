@@ -117,6 +117,7 @@ GEEN_KRUIMEL = {'index', '404'}
 GEEN_CANONICAL = {'404'}
 GEEN_H2 = {'404'}
 GEEN_SCHEMA = {'404', 'bedankt', 'zelfscan'}
+GEEN_SITEMAP = {'404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt', 'cms'}
 # -- merktaal --
 # Woorden uit de bouwsteen "Hoe Arthur overkomt" die niet klinken als iemand die
 # het aan tafel zegt. Per woord staat erbij op welke pagina's het wel mag, omdat
@@ -394,7 +395,7 @@ def main():
             in_sitemap.add(pad)
         for url, p in sorted(P.items()):
             naam = os.path.basename(p['bestand'])[:-5]
-            if naam in ('404', 'index-oud', 'klantportaal', 'klantportaal-demo', 'bedankt'):
+            if naam in GEEN_SITEMAP:
                 continue
             if 'noindex' in p['ruw']:
                 continue
