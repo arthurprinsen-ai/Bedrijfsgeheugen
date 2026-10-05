@@ -274,3 +274,10 @@ test('auxiliary workflow definitions stay on owned control-plane lanes', () => {
     shared:true, backend:false, portal:false, website:false, automation:true
   });
 });
+
+
+test('Supabase migration-history helper is backend-classified', () => {
+  assert.deepEqual(suitesFor(['tests/helpers/read-supabase-migration-history.mjs']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
