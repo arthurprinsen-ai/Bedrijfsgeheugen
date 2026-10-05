@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 
-const migrationPath='supabase/migrations/20260915090000_powerhouse_revenue_calibration_closure.sql';
+const migrationPath='supabase/migrations/20260915142504_powerhouse_revenue_calibration_projection_v1.sql';
 const sql=await readFile(migrationPath,'utf8');
 
 test('canonical Brain revenue learning projects into existing Powerhouse tables only',()=>{
