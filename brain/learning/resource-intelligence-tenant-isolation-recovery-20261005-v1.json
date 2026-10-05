@@ -35,7 +35,7 @@
   },
   "evidence": {
     "source_pr": 3749,
-    "migration": "supabase/migrations/20261005154500_resource_intelligence_tenant_isolation_recovery_v1.sql",
+    "migration": "supabase/migrations/20261005160410_resource_intelligence_tenant_isolation_recovery_v1.sql",
     "pre_fix_production_tenant_columns": 0
   },
   "status": "ACTIVE_PREVENTION",
