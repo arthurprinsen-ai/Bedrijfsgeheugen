@@ -66,6 +66,9 @@
     "historical_replay": [
       "tests/brain-rocket-revenue-event-spine-v1.test.mjs"
     ],
+    "shadow": [
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs"
+    ],
     "canary": [
       "tests/brain-rocket-revenue-event-spine-v1.test.mjs"
     ]
