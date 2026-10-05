@@ -8,3 +8,7 @@
 - Root cause: verifier coupled a user-visible state transition to a classical navigation event.
 - Structural fix: after activating the visible language control, poll for the expected pathname and `html[lang]`; retain all content and round-trip assertions.
 - Scope: verifier only; no production pricing or locale feature behavior is relaxed.
+
+## Cookie overlay follow-up
+
+Live production proved that the canonical cookie dialog can intercept the mobile language link. The verifier now closes the visible dialog through the public `#bgCookieDeny` control before testing locale navigation; it does not force-click through an overlay.
