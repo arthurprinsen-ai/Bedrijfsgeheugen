@@ -1,0 +1,45 @@
+{
+  "learningId": "production-readback-terminal-authority-20261005-v1",
+  "fingerprint": "production-readback-verifier-authority-split-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-05T20:31:00+02:00",
+  "problem": "After #3788 merged, Production Release Readback passed but Canonical brand shell live readback still failed because two verification authorities disagreed: production-supersession treated canonical verifier-only paths as runtime-affecting, and pricing heading checks compared raw HTML rather than decoded visible text.",
+  "rootCause": "Runtime applicability was canonicalized in brain/contracts/production-readback-v1.json, but production-supersession.mjs retained an independent narrower allowlist. Separately, live-contract.mjs used raw HTML string equality for headings containing encoded entities.",
+  "root_cause": "Runtime applicability was canonicalized in brain/contracts/production-readback-v1.json, but production-supersession.mjs retained an independent narrower allowlist. Separately, live-contract.mjs used raw HTML string equality for headings containing encoded entities.",
+  "preventionRule": "All production supersession decisions must consume the canonical verifierOnlyPaths contract, and visible production text must be validated as parsed HTML semantics rather than raw entity encoding.",
+  "prevention": [
+    "Read verifier-only supersession paths from brain/contracts/production-readback-v1.json.",
+    "Keep real HTML, asset and Netlify runtime changes unsafe for ancestor supersession.",
+    "Parse built pricing HTML before comparing heading text so HTML entities cannot create false negatives.",
+    "Regression-test both safe control-plane descendants and unsafe runtime descendants."
+  ],
+  "evidence": {
+    "predecessorPr": 3788,
+    "failingBrandReadbackRun": 37355455178,
+    "successfulProductionReleaseReadbackRun": 37355455197,
+    "implementation": [
+      "tools/site-shell/production-supersession.mjs",
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/test-live-contract.mjs"
+    ],
+    "regression": [
+      "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+    ]
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-readback-terminal-authority-v1.test.mjs"
+    ],
+    "expected": "Verifier-only descendants are accepted only when every changed path is canonical non-runtime, while built pricing visible text is entity-normalized and real runtime changes remain fail-closed."
+  }
+}
