@@ -36,3 +36,11 @@ test('recovery branch advancement is exact-head leased and remains pre-terminal'
   assert.match(workflow, /REPAIRED_APPLIED_VERIFIED/);
   assert.match(workflow, /does not itself prove fresh replay, exact-HEAD gates, protected merge, or post-merge production readback/);
 });
+
+
+test('repair evidence exists even when credentials fail before provider mutation',()=>{
+  assert.match(workflow,/repair-evidence\/preflight\.json/);
+  assert.match(workflow,/production_effect_evidence_verified:true/);
+  assert.match(workflow,/direct_schema_migrations_writes_forbidden:true/);
+  assert.match(workflow,/Record immutable repair evidence/);
+});
