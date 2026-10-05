@@ -39,3 +39,18 @@ test('external executors fail closed on unproven human copy',()=>{
     assert.match(src,/quality_passed/);
   }
 });
+
+
+test('live persuasion optimizer and semantic copy guards remain canonical',()=>{
+  const persuasion=fs.readFileSync('supabase/migrations/20261005151500_powerhouse_persuasion_revenue_optimizer_v1.sql','utf8');
+  assert.match(persuasion,/powerhouse_persuasion_revenue_optimizer_v1/);
+  assert.match(persuasion,/reciprocity_value_first/);
+  assert.match(persuasion,/autonomy_reverse_sell/);
+  assert.match(persuasion,/sensitive-trait targeting/);
+  assert.match(persuasion,/revoke all on function/);
+  assert.match(composer,/powerhouse_persuasion_revenue_optimizer_v1/);
+  assert.match(composer,/semantic_topic_leak_free/);
+  assert.match(composer,/followup_evidence_match/);
+  assert.match(composer,/canonicalNumber/);
+  assert.match(composer,/persuasion_authority/);
+});
