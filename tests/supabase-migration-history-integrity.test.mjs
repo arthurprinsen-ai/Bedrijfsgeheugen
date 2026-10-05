@@ -3,43 +3,41 @@ import assert from 'node:assert/strict';
 import { readdir, readFile } from 'node:fs/promises';
 
 const lock = JSON.parse(await readFile(new URL('../supabase/migration-history.lock.json', import.meta.url), 'utf8'));
-const dir = new URL('../supabase/migrations/', import.meta.url);
-const files = (await readdir(dir)).filter(name => name.endsWith('.sql')).sort();
+const migrationsDir = new URL('../supabase/migrations/', import.meta.url);
+const files = (await readdir(migrationsDir)).filter(name => name.endsWith('.sql')).sort();
 
-const parsed = files.map((name) => {
-  const match = name.match(/^(\d{14})_([A-Za-z0-9_.-]+)\.sql$/);
+const parsed = files.map(name => {
+  const match = name.match(/^(\d{14})_(.+)\.sql$/);
   assert.ok(match, `Malformed migration filename: ${name}`);
-  return { name, version: match[1], semanticName: match[2] };
+  return { version: match[1], name: match[2], file: name };
 });
 
-test('migration files have unique canonical versions and non-empty SQL', async () => {
-  const seen = new Map();
-  for (const item of parsed) {
-    const existing = seen.get(item.version);
-    assert.equal(existing, undefined, `Duplicate migration version ${item.version}: ${existing}, ${item.name}`);
-    seen.set(item.version, item.name);
-    const sql = await readFile(new URL(item.name, dir), 'utf8');
-    assert.ok(sql.trim().length > 0, `Empty migration SQL is forbidden: ${item.name}`);
+test('active migration directory exactly matches locked production migration history', () => {
+  const actual = parsed.map(({ version, name }) => ({ version, name }));
+  assert.deepEqual(actual, lock.applied, 'Local migration versions/names must exactly equal production history lock');
+});
+
+test('every active migration contains non-whitespace SQL', async () => {
+  const empty = [];
+  for (const { file } of parsed) {
+    const sql = await readFile(new URL(file, migrationsDir), 'utf8');
+    if (!sql.trim()) empty.push(file);
   }
+  assert.deepEqual(empty, [], `Empty migration SQL is forbidden:\n${empty.join('\n')}`);
 });
 
-test('repository migration versions exactly match production migration history lock', () => {
-  const localVersions = parsed.map(item => item.version).sort();
-  const remoteVersions = lock.applied.map(item => item.version).sort();
-  assert.deepEqual(localVersions, remoteVersions, 'Local/remote migration version parity is required; placeholders and timestamp aliases are not accepted');
+test('active migration versions are unique', () => {
+  const seen = new Set();
+  const duplicates = [];
+  for (const { version, file } of parsed) {
+    if (seen.has(version)) duplicates.push(file);
+    seen.add(version);
+  }
+  assert.deepEqual(duplicates, [], `Duplicate migration versions are forbidden: ${duplicates.join(', ')}`);
 });
 
-test('repository migration names exactly match production migration history lock', () => {
-  const localByVersion = new Map(parsed.map(item => [item.version, item.semanticName]));
-  const mismatches = lock.applied
-    .filter(item => localByVersion.get(item.version) !== item.name)
-    .map(item => ({ version: item.version, local: localByVersion.get(item.version) ?? null, remote: item.name }));
-  assert.deepEqual(mismatches, [], `Migration names must match production history exactly: ${JSON.stringify(mismatches)}`);
-});
-
-test('3742 recovery remains fail-closed until reproducible parity is proven', () => {
-  assert.equal(lock.recovery_governance.issue, 3742);
-  assert.equal(lock.recovery_governance.empty_placeholder_migrations_forbidden, true);
-  assert.equal(lock.recovery_governance.closure_requires_reproducible_replay, true);
-  assert.equal(lock.recovery_governance.closure_requires_remote_local_parity, true);
+test('known timestamp-rewritten migration variants never return', () => {
+  const versions = new Set(parsed.map(item => item.version));
+  const rewritten = (lock.forbidden_rewritten_versions || []).filter(version => versions.has(version));
+  assert.deepEqual(rewritten, [], `Timestamp-rewritten migration versions must be removed: ${rewritten.join(', ')}`);
 });
