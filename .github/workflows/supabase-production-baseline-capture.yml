@@ -75,7 +75,7 @@ jobs:
           echo "canonical_version=$top_version" >> "$GITHUB_OUTPUT"
           echo "CANONICAL_RECOVERY pr=$pr version=v$top_version ref=$head_ref sha=$head_sha"
 
-      - name: Capture official production baseline with Supabase CLI
+      - name: Capture, repair and prove official production baseline with Supabase CLI
         shell: bash
         env:
           SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
@@ -88,26 +88,87 @@ jobs:
           : "${SUPABASE_ACCESS_TOKEN:?SUPABASE_ACCESS_TOKEN missing}"
           : "${SUPABASE_DB_PASSWORD:?PRODUCTION_DB_PASSWORD or SUPABASE_DB_PASSWORD missing}"
           test "$SUPABASE_PROJECT_ID" = "adhjwmvyoixzjtmiroln"
-          rm -rf /tmp/bg3742-baseline
-          mkdir -p /tmp/bg3742-baseline
 
+          rm -rf /tmp/bg3742-baseline /tmp/bg3742-candidate
+          mkdir -p /tmp/bg3742-baseline /tmp/bg3742-candidate/supabase
+          cp supabase/config.toml /tmp/bg3742-candidate/supabase/config.toml
+          git archive "$CANDIDATE_HEAD_SHA" supabase/migrations | tar -x -C /tmp/bg3742-candidate
+
+          cd /tmp/bg3742-candidate
           supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+          supabase migration list --linked > /tmp/bg3742-baseline/migration-list.pre-repair.txt
+
+          node --input-type=module - <<'NODE'
+          import { readFile } from 'node:fs/promises';
+          const expected=['20260920101150','20260920102450','20260925080500'];
+          const text=await readFile('/tmp/bg3742-baseline/migration-list.pre-repair.txt','utf8');
+          const rows=text.split(/\r?\n/)
+            .map(line=>line.trim())
+            .filter(line=>line && !/^[-─┼┬┴]+$/.test(line) && !/^LOCAL\s*[|│]/i.test(line))
+            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .filter(c=>c.length>=2)
+            .map(c=>({local:c[0]||'',remote:c[1]||''}))
+            .filter(r=>/^\d{14}$/.test(r.local)||/^\d{14}$/.test(r.remote));
+          const localOnly=rows.filter(r=>/^\d{14}$/.test(r.local)&&!/^\d{14}$/.test(r.remote)).map(r=>r.local).sort();
+          const remoteOnly=rows.filter(r=>!/^\d{14}$/.test(r.local)&&/^\d{14}$/.test(r.remote)).map(r=>r.remote).sort();
+          const want=[...expected].sort();
+          if(JSON.stringify(localOnly)!==JSON.stringify(want) || remoteOnly.length){
+            console.error(JSON.stringify({error:'PRE_REPAIR_PARITY_NOT_EXACT',localOnly,remoteOnly,expected:want},null,2));
+            process.exit(78);
+          }
+          console.log(JSON.stringify({pre_repair_exact:true,localOnly,remoteOnly},null,2));
+          NODE
+
+          supabase migration repair \
+            20260920101150 \
+            20260920102450 \
+            20260925080500 \
+            --status applied
+
+          supabase migration list --linked > /tmp/bg3742-baseline/migration-list.txt
+
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const text=await readFile('/tmp/bg3742-baseline/migration-list.txt','utf8');
+          const rows=text.split(/\r?\n/)
+            .map(line=>line.trim())
+            .filter(line=>line && !/^[-─┼┬┴]+$/.test(line) && !/^LOCAL\s*[|│]/i.test(line))
+            .map(line=>line.split(/[|│]/).map(x=>x.trim()))
+            .filter(c=>c.length>=2)
+            .map(c=>({local:c[0]||'',remote:c[1]||''}))
+            .filter(r=>/^\d{14}$/.test(r.local)||/^\d{14}$/.test(r.remote));
+          const drift=rows.filter(r=>r.local!==r.remote);
+          await writeFile('/tmp/bg3742-baseline/migration-parity.json',JSON.stringify({rows:rows.length,drift},null,2)+'\n');
+          if(!rows.length || drift.length){
+            console.error(JSON.stringify({error:'POST_REPAIR_PARITY_DRIFT',drift},null,2));
+            process.exit(78);
+          }
+          console.log(JSON.stringify({post_repair_exact:true,rows:rows.length},null,2));
+          NODE
 
           supabase db dump --linked -f /tmp/bg3742-baseline/schema.sql
           supabase db dump --linked -f /tmp/bg3742-baseline/history-schema.sql --schema supabase_migrations
           supabase db dump --linked -f /tmp/bg3742-baseline/history-data.sql --use-copy --data-only --schema supabase_migrations
-          supabase migration list --linked > /tmp/bg3742-baseline/migration-list.txt
 
           test -s /tmp/bg3742-baseline/schema.sql
           test -s /tmp/bg3742-baseline/history-schema.sql
           test -s /tmp/bg3742-baseline/history-data.sql
           test -s /tmp/bg3742-baseline/migration-list.txt
+          test -s /tmp/bg3742-baseline/migration-parity.json
 
-          sha256sum /tmp/bg3742-baseline/schema.sql                     /tmp/bg3742-baseline/history-schema.sql                     /tmp/bg3742-baseline/history-data.sql                     /tmp/bg3742-baseline/migration-list.txt             > /tmp/bg3742-baseline/SHA256SUMS
+          sha256sum \
+            /tmp/bg3742-baseline/schema.sql \
+            /tmp/bg3742-baseline/history-schema.sql \
+            /tmp/bg3742-baseline/history-data.sql \
+            /tmp/bg3742-baseline/migration-list.pre-repair.txt \
+            /tmp/bg3742-baseline/migration-list.txt \
+            /tmp/bg3742-baseline/migration-parity.json \
+            > /tmp/bg3742-baseline/SHA256SUMS
 
+          cd "$GITHUB_WORKSPACE"
           node --input-type=module - <<'NODE'
           import { readFile, writeFile } from 'node:fs/promises';
-          import { execFileSync } from 'node:child_process';
           const sums=(await readFile('/tmp/bg3742-baseline/SHA256SUMS','utf8'))
             .trim().split(/\r?\n/).filter(Boolean)
             .map(line => {
@@ -115,7 +176,7 @@ jobs:
               return { sha256, file: file.replace('/tmp/bg3742-baseline/','') };
             });
           const manifest={
-            contract:'supabase-production-baseline-v1',
+            contract:'supabase-production-baseline-v2',
             obligation_issue:3742,
             source:'official-supabase-cli',
             project_ref:process.env.SUPABASE_PROJECT_ID,
@@ -124,19 +185,27 @@ jobs:
             candidate_head_sha:process.env.CANDIDATE_HEAD_SHA,
             captured_at:new Date().toISOString(),
             files:sums,
+            migration_history_repair:{
+              status:'applied',
+              versions:['20260920101150','20260920102450','20260925080500'],
+              sql_reexecuted:false,
+              precondition:'exactly these three local-only and zero remote-only',
+              postcondition:'zero migration-list drift'
+            },
             commands:[
+              'supabase migration list --linked',
+              'supabase migration repair <3 exact versions> --status applied',
+              'supabase migration list --linked',
               'supabase db dump --linked',
               'supabase db dump --linked --schema supabase_migrations',
-              'supabase db dump --linked --data-only --schema supabase_migrations',
-              'supabase migration list --linked'
+              'supabase db dump --linked --data-only --schema supabase_migrations'
             ],
             hand_built_catalog_dump:false,
-            production_write:false
+            production_schema_write:false
           };
           await writeFile('/tmp/bg3742-baseline/manifest.json', JSON.stringify(manifest,null,2)+'\n');
           NODE
 
-          # Do not carry linked-project state into the later recovery-branch checkout.
           rm -rf supabase/.temp .supabase
 
       - name: Write immutable baseline to exact recovery branch head
@@ -163,7 +232,9 @@ jobs:
           cp /tmp/bg3742-baseline/schema.sql supabase/production-baseline/schema.sql
           cp /tmp/bg3742-baseline/history-schema.sql supabase/production-baseline/history-schema.sql
           cp /tmp/bg3742-baseline/history-data.sql supabase/production-baseline/history-data.sql
+          cp /tmp/bg3742-baseline/migration-list.pre-repair.txt supabase/production-baseline/migration-list.pre-repair.txt
           cp /tmp/bg3742-baseline/migration-list.txt supabase/production-baseline/migration-list.txt
+          cp /tmp/bg3742-baseline/migration-parity.json supabase/production-baseline/migration-parity.json
           cp /tmp/bg3742-baseline/SHA256SUMS supabase/production-baseline/SHA256SUMS
           cp /tmp/bg3742-baseline/manifest.json supabase/production-baseline/manifest.json
 
@@ -196,4 +267,4 @@ jobs:
           new_head="$(git rev-parse HEAD)"
           schema_sha="$(sha256sum supabase/production-baseline/schema.sql | awk '{print $1}')"
           history_sha="$(sha256sum supabase/production-baseline/history-data.sql | awk '{print $1}')"
-          gh pr comment "$TARGET_PR" --body "Official production baseline captured by trusted default-branch workflow. Source: Supabase CLI db dump + migration list. Candidate advanced from \`${{ steps.candidate.outputs.head_sha }}\` to \`$new_head\`. schema.sql SHA-256: \`$schema_sha\`; migration-history data SHA-256: \`$history_sha\`. This is baseline evidence only: #3742 remains fail-closed until fresh replay, exact-head gates, protected merge, and post-merge production readback are green."
+          gh pr comment "$TARGET_PR" --body "Official production baseline captured after supported Supabase migration-history repair of exactly 20260920101150, 20260920102450 and 20260925080500. Precondition: exactly these three local-only and zero remote-only. Postcondition: zero migration-list drift. No migration SQL was re-executed. Candidate advanced from \`${{ steps.candidate.outputs.head_sha }}\` to \`$new_head\`. schema.sql SHA-256: \`$schema_sha\`; migration-history data SHA-256: \`$history_sha\`. This is baseline evidence only: #3742 remains fail-closed until fresh replay, exact-head gates, protected merge, and post-merge production readback are green."
