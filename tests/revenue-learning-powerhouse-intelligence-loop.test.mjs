@@ -3,19 +3,24 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { readMigrationHistorySync } from './helpers/read-supabase-migration-history.mjs';
 
-const migrationPath = new URL('../supabase/migrations/20260915143908_powerhouse_revenue_intelligence_loop_v1.sql', import.meta.url);
-const healthPerfPath = new URL('../supabase/migrations/20260915144916_powerhouse_revenue_intelligence_health_perf_v2.sql', import.meta.url);
-const snapshotPath = new URL('../supabase/migrations/20260915145138_powerhouse_revenue_intelligence_snapshot_v1.sql', import.meta.url);
-const snapshotFastPath = new URL('../supabase/migrations/20260915145749_powerhouse_revenue_intelligence_snapshot_fast_v2.sql', import.meta.url);
+const migrationName = '20260915143908_powerhouse_revenue_intelligence_loop_v1.sql';
+const healthPerfName = '20260915144916_powerhouse_revenue_intelligence_health_perf_v2.sql';
+const snapshotName = '20260915145138_powerhouse_revenue_intelligence_snapshot_v1.sql';
+const snapshotFastName = '20260915145749_powerhouse_revenue_intelligence_snapshot_fast_v2.sql';
 const intelligencePath = new URL('../supabase/functions/powerhouse-revenue-intelligence/index.ts', import.meta.url);
-const migrationsDir = fileURLToPath(new URL('../supabase/migrations/', import.meta.url));
+const migrationDirs = [
+  fileURLToPath(new URL('../supabase/migrations/', import.meta.url)),
+  fileURLToPath(new URL('../supabase/migration-history/production-applied/', import.meta.url)),
+  fileURLToPath(new URL('../supabase/migration-history/repository-only/', import.meta.url)),
+];
 
 function read(p) { return fs.readFileSync(p, 'utf8'); }
-function allMigrations() { return fs.readdirSync(migrationsDir).filter(f => f.endsWith('.sql')).map(f => read(path.join(migrationsDir, f))).join('\n'); }
+function allMigrations() { return migrationDirs.filter(dir => fs.existsSync(dir)).flatMap(dir => fs.readdirSync(dir).filter(f => f.endsWith('.sql')).map(f => read(path.join(dir, f)))).join('\n'); }
 
 test('migration creates canonical revenue intelligence views', () => {
-  const sql = read(migrationPath);
+  const sql = readMigrationHistorySync(migrationName);
   for (const view of [
     'powerhouse_contact_pressure_v1','powerhouse_account_strategy_v1','powerhouse_research_queue_v1',
     'powerhouse_commercial_next_best_action_v3','powerhouse_revenue_attribution_v1','powerhouse_model_health_v1',
@@ -24,41 +29,41 @@ test('migration creates canonical revenue intelligence views', () => {
 });
 
 test('contact pressure and NBA are fail closed', () => {
-  const sql = read(migrationPath);
+  const sql = readMigrationHistorySync(migrationName);
   assert.match(sql, /cooldown_until/i); assert.match(sql, /pressure_state/i); assert.match(sql, /no_response/i);
   assert.match(sql, /recommended_action/i); assert.match(sql, /'wait'/i); assert.match(sql, /'research'/i); assert.match(sql, /asset_ready/i);
 });
 
 test('account strategy includes committee and account thesis', () => {
-  const sql = read(migrationPath);
+  const sql = readMigrationHistorySync(migrationName);
   assert.match(sql, /account_thesis/i); assert.match(sql, /recommended_account_move/i);
   assert.match(sql, /powerhouse_buying_committee_v1/i); assert.match(sql, /powerhouse_company_intelligence_v1/i);
 });
 
 test('research queue names missing evidence and reason', () => {
-  const sql = read(migrationPath);
+  const sql = readMigrationHistorySync(migrationName);
   assert.match(sql, /research_reason/i); assert.match(sql, /missing_evidence/i);
   assert.match(sql, /contradiction_detected/i); assert.match(sql, /freshness_state/i);
 });
 
 test('attribution distinguishes observed lineage from correlation', () => {
-  const sql = read(migrationPath);
+  const sql = readMigrationHistorySync(migrationName);
   assert.match(sql, /attribution_type/i); assert.match(sql, /'observed'/i); assert.match(sql, /'correlated'/i); assert.match(sql, /attribution_confidence/i);
 });
 
 test('model health exposes calibration and classification metrics', () => {
-  const sql = read(migrationPath);
+  const sql = readMigrationHistorySync(migrationName);
   for (const field of ['brier_score','calibration_error','false_positives','false_negatives','sample_size','probability_drift']) assert.match(sql, new RegExp(field, 'i'), field);
   assert.match(sql, /insufficient_evidence/i);
 });
 
 test('experiment learning cannot prove itself from vanity metrics only', () => {
-  const sql = read(migrationPath);
+  const sql = readMigrationHistorySync(migrationName);
   assert.match(sql, /commercial_outcomes/i); assert.match(sql, /min_steekproef/i); assert.match(sql, /proven/i);
 });
 
 test('health performance fix uses canonical forecast lineage without heavyweight research view', () => {
-  const sql = read(healthPerfPath);
+  const sql = readMigrationHistorySync(healthPerfName);
   assert.match(sql, /evidence\s*->>\s*'opportunity_key'/i);
   assert.match(sql, /scope\s*=\s*'person'/i);
   assert.match(sql, /scope_key/i);
@@ -67,12 +72,12 @@ test('health performance fix uses canonical forecast lineage without heavyweight
 });
 
 test('health excludes research enrichment from executable forecast lineage', () => {
-  const sql = read(healthPerfPath);
+  const sql = readMigrationHistorySync(healthPerfName);
   assert.match(sql, /research_enrichment/i);
 });
 
 test('health counts only unresolved latest runtime errors', () => {
-  const sql = read(healthPerfPath);
+  const sql = readMigrationHistorySync(healthPerfName);
   assert.match(sql, /row_number\(\)\s+over\s*\(/i);
   assert.match(sql, /partition\s+by\s+(?:e\.)?event_type\s*,\s*(?:e\.)?source\s*,\s*(?:e\.)?subject_key/i);
   assert.match(sql, /rn\s*=\s*1/i);
@@ -89,7 +94,7 @@ test('daily intelligence ensures canonical commercial progression forecasts befo
 });
 
 test('snapshot migration makes the command-center derivation rebuildable and scheduled', () => {
-  const sql = read(snapshotPath);
+  const sql = readMigrationHistorySync(snapshotName);
   assert.match(sql, /powerhouse_revenue_command_center_snapshot_v1/i);
   assert.match(sql, /powerhouse_refresh_revenue_intelligence_snapshot_v1/i);
   assert.match(sql, /cron\.schedule/i);
@@ -98,7 +103,7 @@ test('snapshot migration makes the command-center derivation rebuildable and sch
 });
 
 test('fast snapshot refresh reuses v2 once and never executes the heavyweight v3 command view', () => {
-  const sql = read(snapshotFastPath);
+  const sql = readMigrationHistorySync(snapshotFastName);
   assert.match(sql, /powerhouse_commercial_next_best_action_v2/i);
   assert.match(sql, /powerhouse_sales_actions/i);
   assert.match(sql, /powerhouse_sales_outcomes/i);
