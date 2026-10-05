@@ -1,4 +1,5 @@
 name: Supabase Canonical Baseline Recovery
+# #3742 official read-only baseline evidence
 
 on:
   pull_request:
