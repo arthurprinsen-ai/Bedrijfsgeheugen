@@ -2,16 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-async function readMigrationEvidence(name) {
-  try {
-    return await readFile(new URL('../supabase/migrations/' + name, import.meta.url), 'utf8');
-  } catch (error) {
-    if (error?.code !== 'ENOENT') throw error;
-    return await readFile(new URL('../supabase/migration-history/' + name, import.meta.url), 'utf8');
-  }
-}
-
-const sql = await readMigrationEvidence('20260916144500_autonomous_improvement_production_cycle_v1.sql');
+const sql = await readFile(new URL('../supabase/migrations/20260916131217_autonomous_improvement_production_cycle_v1.sql', import.meta.url), 'utf8');
 
 test('production cycle reuses canonical Brain authority and existing scheduler', () => {
   assert.match(sql, /powerhouse_autonomous_improvement_cycle_v1/);

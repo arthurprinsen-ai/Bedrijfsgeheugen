@@ -2,7 +2,7 @@ create or replace function public.powerhouse_record_flywheel_health_v1()
 returns uuid
 language plpgsql
 security definer
-set search_path=public
+set search_path = public, pg_catalog
 as $$
 declare v_id uuid;
 begin
@@ -34,5 +34,5 @@ begin
   return v_id;
 end $$;
 
-revoke all on function public.powerhouse_record_flywheel_health_v1() from public, anon, authenticated;
+revoke execute on function public.powerhouse_record_flywheel_health_v1() from public, anon, authenticated;
 grant execute on function public.powerhouse_record_flywheel_health_v1() to service_role;

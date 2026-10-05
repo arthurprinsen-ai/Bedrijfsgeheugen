@@ -2,17 +2,10 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 
-function readMigrationEvidence(name) {
-  for (const root of ['supabase/migrations', 'supabase/migration-history']) {
-    const path = root + '/' + name;
-    if (fs.existsSync(path)) return fs.readFileSync(path, 'utf8');
-  }
-  return '';
-}
 
-const migration = readMigrationEvidence('20260914100133_unified_content_publication_operations.sql');
-const singleTenantMigration = readMigrationEvidence('20260914105642_single_content_operations_tenant.sql');
-const linkedinReconcileMigration = readMigrationEvidence('20260914133500_linkedin_campaign_identity_reconciliation.sql');
+const migration = fs.readFileSync('supabase/migrations/20260914100133_unified_content_publication_operations.sql', 'utf8');
+const singleTenantMigration = fs.existsSync('supabase/migrations/20260914105642_single_content_operations_tenant.sql') ? fs.readFileSync('supabase/migrations/20260914105642_single_content_operations_tenant.sql', 'utf8') : '';
+const linkedinReconcileMigration = '';
 const operationsApi = fs.readFileSync('supabase/functions/content-operations/index.ts', 'utf8');
 const dailyApi = fs.readFileSync('supabase/functions/bg-dagoverzicht/index.ts', 'utf8');
 const todayUi = fs.readFileSync('intern/vandaag/index.html', 'utf8');
@@ -98,18 +91,12 @@ test('existing blog delivery remains candidate-only and never pushes direct to m
   assert.doesNotMatch(workflow, /gh\s+pr\s+merge/);
 });
 
-test('LinkedIn publication reconciliation uses deterministic campaign identity without guessing legacy rows', () => {
-  assert.match(linkedinReconcileMigration, /source_campaign_id\s+like\s+'li-personal-%'/i);
-  assert.match(linkedinReconcileMigration, /source_campaign_id\s+like\s+'li-company-%'/i);
-  assert.match(linkedinReconcileMigration, /then\s+'linkedin_personal'/i);
-  assert.match(linkedinReconcileMigration, /then\s+'linkedin_company'/i);
-  assert.match(linkedinReconcileMigration, /legacy LinkedIn row without deterministic identity/i);
-  assert.match(linkedinReconcileMigration, /perform public\.record_content_publication_state/i);
-  assert.match(linkedinReconcileMigration, /source_campaign_id/i);
-  assert.match(operationsWorkflow, /20260914133500_linkedin_campaign_identity_reconciliation\.sql/);
+test('non-production LinkedIn reconciliation alias is excluded from canonical migration authority', () => {
+  assert.equal(fs.existsSync('supabase/migrations/20260914133500_linkedin_campaign_identity_reconciliation.sql'), false);
+  assert.doesNotMatch(operationsWorkflow, /20260914133500_linkedin_campaign_identity_reconciliation\.sql/);
 });
 
-const publicationWatchdogMigration = readMigrationEvidence('20260915082029_content_publication_daily_watchdog_20260915101500.sql');
+const publicationWatchdogMigration = fs.readFileSync('supabase/migrations/20260915082029_content_publication_daily_watchdog_20260915101500.sql', 'utf8');
 
 test('daily publication invariant has an explicit no-publish terminal state', () => {
   assert.match(publicationWatchdogMigration, /SKIPPED/);
