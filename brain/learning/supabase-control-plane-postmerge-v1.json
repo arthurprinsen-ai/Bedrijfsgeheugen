@@ -15,5 +15,28 @@
       "prevention": "Materialize immutable repair preflight evidence before credential validation."
     }
   ],
-  "terminal_truth": "Neither control-plane fix bypasses provider proof or migration repair; #3742 remains fail-closed until supported tracking repair and production readback succeed."
+  "terminal_truth": "Neither control-plane fix bypasses provider proof or migration repair; #3742 remains fail-closed until supported tracking repair and production readback succeed.",
+  "fingerprint": "supabase-control-plane-postmerge-v1",
+  "compiler": {
+    "failure_class": "DELIVERY_CONTROL_PLANE",
+    "scope": "DELIVERY",
+    "machine_enforceable": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "Trusted-main repair run 37350898932 resolved canonical PR #3766, validated the exact four-version allowlist and production-effect evidence, then failed before provider mutation because production credentials were empty.",
+      "Supabase Preview Applicability run 37350462739 failed before provider-state evaluation with OS Argument list too long while passing full check-runs JSON via an environment variable."
+    ]
+  },
+  "evidence": {
+    "tests": [
+      "tests/supabase-preview-applicability-bounded-payload.test.mjs",
+      "tests/supabase-supported-migration-repair-3742.test.mjs"
+    ],
+    "provider_runs": [
+      "github-run:37350898932",
+      "github-run:37350462739"
+    ],
+    "outcome": "Control-plane failures are now bounded and auditable; provider proof and supported repair remain fail-closed."
+  }
 }
