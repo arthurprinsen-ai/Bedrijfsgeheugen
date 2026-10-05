@@ -1,0 +1,34 @@
+{
+  "id": "supabase-preview-fail-closed-20261005-v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "post-merge-readback-pr-3740",
+  "failure_class": "SUPABASE_MIGRATION_HISTORY_PARITY",
+  "root_cause": "The source-side Supabase preview contract validated migration filenames and duplicate versions but allowed empty SQL files, so placeholder migrations could mask remote/local migration-history drift.",
+  "prevention": [
+    "Reject empty Supabase migration files in the PR preview contract.",
+    "Keep Supabase Preview as a required protected-branch status check.",
+    "Require unique timestamped migration versions and non-empty SQL content before merge.",
+    "Never use empty placeholder migrations to satisfy remote/local parity."
+  ],
+  "evidence": {
+    "source_pr": 3740,
+    "workflow": ".github/workflows/supabase-pr-preview.yml",
+    "regression_test": "tests/brain-supabase-preview-fail-closed-v1.test.mjs"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1,
+  "fingerprint": "powerhouse|supabase-preview|migration-history-parity|fail-closed|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-preview-fail-closed-v1.test.mjs"
+    ]
+  }
+}
