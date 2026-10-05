@@ -39,3 +39,10 @@ test('production credentials are scoped only to the official capture step', () =
   assert.match(capture, /secrets\.PRODUCTION_DB_PASSWORD/);
   assert.match(capture, /rm -rf supabase\/\.temp \.supabase/);
 });
+
+test('canonical recovery selection is unique and baseline write advances writer lease metadata', () => {
+  assert.match(workflow, /Resolve unique highest-version canonical recovery/);
+  assert.match(workflow, /Multiple open canonical recoveries share highest version/);
+  assert.match(workflow, /Writer-Lease-Head/);
+  assert.match(workflow, /--method PATCH/);
+});
