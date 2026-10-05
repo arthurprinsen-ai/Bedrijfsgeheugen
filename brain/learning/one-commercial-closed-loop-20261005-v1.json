@@ -1,0 +1,34 @@
+{
+  "id": "one-commercial-closed-loop-20261005-v1",
+  "fingerprint": "powerhouse|commercial-loop|single-owner|terminal-lineage|v1",
+  "date": "2026-10-05",
+  "type": "incident_prevention",
+  "source": "pr-3737+production-readback",
+  "failure_class": "COMMERCIAL_LOOP_FRAGMENTATION_AND_DELIVERY_GAP",
+  "symptom": [
+    "Commercial intelligence, candidate materialization, provider execution, outcomes and learning could be individually healthy without one terminally proven lineage.",
+    "Heavy intelligence refresh on the latency-critical heartbeat could block or time out unrelated commercial execution.",
+    "GitHub delivery could be blocked by missing closure evidence, missing PR machine metadata, unsafe SECURITY DEFINER execute defaults, or leaked Supabase preview branches."
+  ],
+  "root_cause": [
+    "Runtime ownership and delivery ownership were not expressed as one canonical closed-loop contract.",
+    "SECURITY DEFINER functions were created in public without explicit fail-closed EXECUTE revocation.",
+    "Closed PR preview branches were not reliably reclaimed, exhausting Supabase branch capacity."
+  ],
+  "prevention": [
+    "Keep one canonical candidate materializer and one commercial closed-loop owner.",
+    "Run heavy enrichment asynchronously and consume bounded read models on the critical path.",
+    "Require provider acknowledgment before executed actions become terminal outcome evidence.",
+    "Materialize no-response as an observed outcome after the defined window rather than treating silence as success or rejection.",
+    "Revoke PUBLIC, anon and authenticated EXECUTE on every privileged function and grant only trusted server execution.",
+    "Treat exact-head full checkset plus production/readback closure as the only terminal delivery authority.",
+    "Reclaim preview branches for merged/closed PRs so branch capacity cannot silently block future delivery."
+  ],
+  "evidence": {
+    "migration": "supabase/migrations/20261005160500_powerhouse_one_commercial_closed_loop_v1.sql",
+    "pr": 3737,
+    "runtime_contract": "powerhouse-one-commercial-closed-loop-v2"
+  },
+  "status": "ACTIVE_PREVENTION",
+  "revision": 1
+}
