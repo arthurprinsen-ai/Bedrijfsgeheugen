@@ -25,7 +25,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-supported-migration-repair-3742.test.mjs"
+      "tests/brain-supabase-supported-migration-repair-3742-v1.test.mjs"
     ]
   },
   "fingerprint": "powerhouse|supabase-repair-cli-output-parser|backtick-normalization|3742|v2",
