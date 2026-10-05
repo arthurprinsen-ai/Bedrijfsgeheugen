@@ -36,6 +36,27 @@
     "provider_boundary": "semantic provider acknowledgement required; HTTP status alone is insufficient",
     "external_execution_state": "NOT_CLAIMED_TERMINAL"
   },
+  "compiler": {
+    "failure_class": "COMMERCIAL_LINEAGE_FRAGMENTATION_AND_FALSE_TERMINAL_SUCCESS",
+    "scope": "GROWTH_REVENUE_OS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/supabase-powerhouse-commercial-closed-loop.test.mjs",
+      "tests/brain-terminal-provider-durable-evidence.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-human-commercial-message-os-v1.test.mjs",
+      "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-social-provider-health-preflight-v1.test.mjs",
+      "tests/brain-powerhouse-closed-loop-evidence-first-v1.test.mjs"
+    ]
+  },
   "delivery_closure": {
     "pr": 3739,
     "required_evidence": ["brain_learning", "activity_ledger", "human_documentation"],
