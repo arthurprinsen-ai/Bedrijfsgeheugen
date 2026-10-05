@@ -1,0 +1,30 @@
+{
+  "obligation_id": "commercial-heartbeat-terminal-lineage-v1",
+  "learned_at": "2026-10-05",
+  "lesson": "Commercial delivery changes must classify regression-test paths and carry terminal closure evidence before merge.",
+  "invariant": [
+    "one canonical commercial scheduler owner",
+    "no forbidden parallel v2 loop",
+    "100% terminal action-to-outcome lineage",
+    "exact-head delivery metadata",
+    "material changes require activity ledger, brain learning and human documentation"
+  ],
+  "failure_patterns_closed": [
+    "unclassified delivery path",
+    "writer lease head drift after commit",
+    "integration bundle closure incomplete"
+  ],
+  "fingerprint": "commercial-heartbeat-terminal-lineage-v1",
+  "compiler": {
+    "failure_class": "CLASSIFIER_GAP",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ]
+  }
+}

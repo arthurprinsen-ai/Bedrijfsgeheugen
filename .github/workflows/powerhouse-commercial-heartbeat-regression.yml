@@ -1,0 +1,29 @@
+name: Powerhouse Commercial Heartbeat Regression
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'tests/powerhouse-one-commercial-heartbeat-regression.test.mjs'
+      - '.github/workflows/powerhouse-commercial-heartbeat-regression.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'supabase/migrations/**'
+      - 'tests/powerhouse-one-commercial-heartbeat-regression.test.mjs'
+
+permissions:
+  contents: read
+
+jobs:
+  commercial-heartbeat-regression:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+      - name: Enforce one owner and terminal lineage
+        run: node --test tests/powerhouse-one-commercial-heartbeat-regression.test.mjs
