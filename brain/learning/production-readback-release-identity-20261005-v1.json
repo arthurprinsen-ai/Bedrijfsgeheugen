@@ -20,7 +20,8 @@
       "tools/site-shell/check-live-production.mjs"
     ],
     "regression": [
-      "tools/site-shell/test-live-contract.mjs"
+      "tools/site-shell/test-live-contract.mjs",
+      "tests/production-readback-release-identity-v1.test.mjs"
     ],
     "liveObservation": {
       "merge_sha": "6a9452fa905073290c9274c2364d2aaaa52ad492",
@@ -45,7 +46,7 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tools/site-shell/test-live-contract.mjs"
+      "tests/production-readback-release-identity-v1.test.mjs"
     ],
     "expected": "A valid exact production release can clear identity polling independently of pricing semantics, while the default pricing contract still fails closed when its required semantics are absent."
   }
