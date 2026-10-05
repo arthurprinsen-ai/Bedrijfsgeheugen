@@ -86,6 +86,13 @@
       "required": true
     },
     {
+      "id": "function:powerhouse-commercial-message-composer",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "function:powerhouse-composio-instagram-setup",
       "type": "function",
       "authority": "supabase/functions/powerhouse-composio-instagram-setup/index.ts",
@@ -125,6 +132,13 @@
       "type": "function",
       "authority": "supabase/functions/powerhouse-growth-tools/index.ts",
       "evidence_contract": "tests/supabase-powerhouse-growth-swarm-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "function:powerhouse-human-sales-composer",
+      "type": "function",
+      "authority": "supabase/functions/powerhouse-human-sales-composer/index.ts",
+      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
       "required": true
     },
     {
@@ -436,6 +450,13 @@
       "required": true
     },
     {
+      "id": "permission:powerhouse_message_quality_service_v1",
+      "type": "permission",
+      "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "permission:powerhouse_revenue_attribution_snapshot_service_v1",
       "type": "permission",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
@@ -447,6 +468,13 @@
       "type": "permission",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "permission:powerhouse_sales_playbook_service_v1",
+      "type": "permission",
+      "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
       "required": true
     },
     {
@@ -573,6 +601,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260930202000_powerhouse_need_discovery_v1.sql",
       "evidence_contract": "tests/brain-powerhouse-need-discovery-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_commercial_message_candidates_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
       "required": true
     },
     {
@@ -727,6 +762,13 @@
       "type": "rpc",
       "authority": "supabase/migrations/20260929212500_powerhouse_loop_assurance_v3.sql",
       "evidence_contract": "tests/brain-portal-visual-assurance-supabase-sync-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "rpc:powerhouse_refresh_message_plans_v1",
+      "type": "rpc",
+      "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
       "required": true
     },
     {
@@ -1010,6 +1052,13 @@
       "required": true
     },
     {
+      "id": "table:public.powerhouse_message_quality_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
+      "required": true
+    },
+    {
       "id": "table:public.powerhouse_mira_problem_lineage_v1",
       "type": "table",
       "authority": "supabase/migrations/20260929201000_powerhouse_mira_public_complaint_source_loop_v1.sql",
@@ -1098,6 +1147,13 @@
       "type": "table",
       "authority": "supabase/migrations/20261005113000_powerhouse_rocket_revenue_event_spine_v1.sql",
       "evidence_contract": "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
+      "required": true
+    },
+    {
+      "id": "table:public.powerhouse_sales_playbook_v1",
+      "type": "table",
+      "authority": "supabase/migrations/20261005135000_powerhouse_human_commercial_orchestrator_v1.sql",
+      "evidence_contract": "tests/brain-human-commercial-orchestrator-v1.test.mjs",
       "required": true
     },
     {
