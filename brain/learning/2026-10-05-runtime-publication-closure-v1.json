@@ -25,5 +25,21 @@
     "repeat_count": 1,
     "security_sensitive": false
   },
-  "revision": 1
+  "revision": 1,
+  "evaluation": {
+    "method": "regression_and_historical_replay",
+    "tests": [
+      "tests/brain-integration-bundle-compiler-v1.test.mjs"
+    ],
+    "historical_replay": "Replay the 2026-10-05 content-publication obligation: generated blog paths are material, closure authority is canonical-runtime-obligation, missing repository closure artifacts are not required for that runtime obligation; ordinary material engineering changes remain repository-artifact closed.",
+    "expected": "Daily content publication passes closure without creating a second source of truth; engineering changes remain fail-closed."
+  },
+  "prevention": {
+    "invariant": "Exactly one canonical closure authority per obligation class.",
+    "mechanisms": [
+      "content-publication:* uses canonical runtime obligation closure",
+      "all other material repository changes retain repository learning, ledger and documentation requirements",
+      "regression test prevents widening the runtime allowlist silently"
+    ]
+  }
 }
