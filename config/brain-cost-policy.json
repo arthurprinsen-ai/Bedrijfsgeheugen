@@ -1,6 +1,6 @@
 {
-  "schemaVersion": 2,
-  "policyId": "BRAIN-RESOURCE-SUSTAINABILITY-v1",
+  "schemaVersion": 3,
+  "policyId": "BRAIN-RESOURCE-SUSTAINABILITY-v2",
   "authority": "ONE_BRAIN",
   "timezone": "Europe/Amsterdam",
   "monthlyLimitCredits": 10000,
@@ -14,9 +14,9 @@
     "emergency_reserve": 500
   },
   "states": {
-    "greenBelow": 0.70,
-    "orangeBelow": 0.90,
-    "redBelow": 1.00
+    "greenBelow": 0.7,
+    "orangeBelow": 0.9,
+    "redBelow": 1
   },
   "governance": {
     "preflightRequired": true,
@@ -30,32 +30,233 @@
   },
   "platforms": {
     "supabase": {
-      "meters": ["database_compute", "storage_bytes", "egress_bytes", "edge_function_invocations", "realtime_messages"],
-      "optimizations": ["indexed_queries", "bounded_selects", "incremental_processing", "retention_ttl", "cache_reuse", "batch_writes"]
+      "meters": [
+        "database_compute",
+        "storage_bytes",
+        "egress_bytes",
+        "edge_function_invocations",
+        "realtime_messages"
+      ],
+      "optimizations": [
+        "indexed_queries",
+        "bounded_selects",
+        "incremental_processing",
+        "retention_ttl",
+        "cache_reuse",
+        "batch_writes"
+      ]
     },
     "netlify": {
-      "meters": ["build_minutes", "function_invocations", "bandwidth_bytes", "deploy_count"],
-      "optimizations": ["skip_unchanged_builds", "scoped_builds", "artifact_reuse", "preview_dedupe", "compressed_assets"]
+      "meters": [
+        "build_minutes",
+        "function_invocations",
+        "bandwidth_bytes",
+        "deploy_count"
+      ],
+      "optimizations": [
+        "skip_unchanged_builds",
+        "scoped_builds",
+        "artifact_reuse",
+        "preview_dedupe",
+        "compressed_assets"
+      ]
     },
     "notion": {
-      "meters": ["api_calls", "pages_read", "pages_written"],
-      "optimizations": ["existing_view_first", "targeted_reads", "batched_updates", "dedupe", "no_full_workspace_scans_without_need"]
+      "meters": [
+        "api_calls",
+        "pages_read",
+        "pages_written"
+      ],
+      "optimizations": [
+        "existing_view_first",
+        "targeted_reads",
+        "batched_updates",
+        "dedupe",
+        "no_full_workspace_scans_without_need"
+      ]
     },
     "github": {
-      "meters": ["actions_minutes", "workflow_runs", "artifact_bytes", "api_calls"],
-      "optimizations": ["cheap_gates_first", "path_scoped_ci", "cancel_superseded_runs", "artifact_reuse", "bounded_retries"]
+      "meters": [
+        "actions_minutes",
+        "workflow_runs",
+        "artifact_bytes",
+        "api_calls"
+      ],
+      "optimizations": [
+        "cheap_gates_first",
+        "path_scoped_ci",
+        "cancel_superseded_runs",
+        "artifact_reuse",
+        "bounded_retries"
+      ]
     },
     "composio": {
-      "meters": ["connector_calls", "task_runs", "provider_calls"],
-      "optimizations": ["direct_specialist_connector_first", "batching", "readback_once", "dedupe", "idempotency"]
+      "meters": [
+        "connector_calls",
+        "task_runs",
+        "provider_calls"
+      ],
+      "optimizations": [
+        "direct_specialist_connector_first",
+        "batching",
+        "readback_once",
+        "dedupe",
+        "idempotency"
+      ]
     },
     "openart": {
-      "meters": ["generation_credits", "render_seconds", "outputs_generated"],
-      "optimizations": ["reuse_existing_assets", "draft_low_cost_first", "single_best_candidate", "no_duplicate_regeneration"]
+      "meters": [
+        "generation_credits",
+        "render_seconds",
+        "outputs_generated"
+      ],
+      "optimizations": [
+        "reuse_existing_assets",
+        "draft_low_cost_first",
+        "single_best_candidate",
+        "no_duplicate_regeneration"
+      ]
     },
     "placid": {
-      "meters": ["render_credits", "renders"],
-      "optimizations": ["template_reuse", "batch_renders", "no_rerender_if_input_hash_unchanged"]
+      "meters": [
+        "render_credits",
+        "renders"
+      ],
+      "optimizations": [
+        "template_reuse",
+        "batch_renders",
+        "no_rerender_if_input_hash_unchanged"
+      ]
+    },
+    "tavily": {
+      "meters": [
+        "search_calls",
+        "extract_calls",
+        "credits"
+      ],
+      "optimizations": [
+        "cache_reuse",
+        "query_dedupe",
+        "batch_related_research",
+        "targeted_domains",
+        "avoid_repeat_fetch"
+      ]
+    },
+    "dataforseo": {
+      "meters": [
+        "api_calls",
+        "task_cost",
+        "rows_returned"
+      ],
+      "optimizations": [
+        "batch_tasks",
+        "reuse_recent_results",
+        "narrow_scope",
+        "dedupe",
+        "avoid_duplicate_serp_calls"
+      ]
+    },
+    "google_search": {
+      "meters": [
+        "queries",
+        "results_fetched"
+      ],
+      "optimizations": [
+        "query_dedupe",
+        "cache_reuse",
+        "targeted_queries",
+        "avoid_repeat_search"
+      ]
+    },
+    "google_analytics": {
+      "meters": [
+        "api_calls",
+        "rows_scanned"
+      ],
+      "optimizations": [
+        "bounded_date_ranges",
+        "aggregate_first",
+        "cache_reuse",
+        "incremental_refresh"
+      ]
+    },
+    "gmail": {
+      "meters": [
+        "api_calls",
+        "messages_read",
+        "messages_written"
+      ],
+      "optimizations": [
+        "targeted_search",
+        "thread_reuse",
+        "batch_label_ops",
+        "avoid_full_mailbox_scan"
+      ]
+    },
+    "google_calendar": {
+      "meters": [
+        "api_calls",
+        "events_read",
+        "events_written"
+      ],
+      "optimizations": [
+        "bounded_windows",
+        "freebusy_first",
+        "batch_reads",
+        "avoid_repeat_lookup"
+      ]
+    },
+    "google_drive": {
+      "meters": [
+        "api_calls",
+        "bytes_read",
+        "bytes_written"
+      ],
+      "optimizations": [
+        "targeted_file_reads",
+        "range_reads",
+        "metadata_first",
+        "avoid_duplicate_downloads"
+      ]
+    },
+    "linkedin": {
+      "meters": [
+        "provider_calls",
+        "posts_or_messages_written",
+        "reads"
+      ],
+      "optimizations": [
+        "dedupe",
+        "idempotency",
+        "targeted_readback",
+        "no_duplicate_publish"
+      ]
+    },
+    "instagram": {
+      "meters": [
+        "provider_calls",
+        "media_upload_bytes",
+        "publishes"
+      ],
+      "optimizations": [
+        "asset_reuse",
+        "dedupe",
+        "single_publish",
+        "targeted_readback"
+      ]
+    },
+    "salesrobot": {
+      "meters": [
+        "provider_calls",
+        "prospects_processed",
+        "messages"
+      ],
+      "optimizations": [
+        "qualified_targets_only",
+        "dedupe",
+        "batch_enrichment",
+        "stop_on_reply_or_suppression"
+      ]
     }
   },
   "decisionOrder": [
@@ -87,7 +288,12 @@
     "storage_delta_bytes",
     "egress_bytes",
     "outcome_value",
-    "cost_per_verified_outcome"
+    "cost_per_verified_outcome",
+    "provider_plan_or_pricing_tier",
+    "currency_cost_when_available",
+    "capability_alternatives_considered",
+    "selected_route_reason",
+    "subscription_utilization_signal"
   ],
   "sustainability": {
     "mode": "proxy_when_provider_exact_data_unavailable",
@@ -102,9 +308,20 @@
       "higher_batch_efficiency"
     ],
     "proxies": {
-      "energy": ["compute_seconds", "build_minutes", "render_seconds", "bytes_processed"],
-      "carbon": ["energy_proxy", "provider_region_factor_if_known"],
-      "water": ["energy_proxy", "provider_water_factor_if_published"]
+      "energy": [
+        "compute_seconds",
+        "build_minutes",
+        "render_seconds",
+        "bytes_processed"
+      ],
+      "carbon": [
+        "energy_proxy",
+        "provider_region_factor_if_known"
+      ],
+      "water": [
+        "energy_proxy",
+        "provider_water_factor_if_published"
+      ]
     },
     "reportingRule": "label_as_measured_estimated_or_unknown"
   },
@@ -132,5 +349,88 @@
     ],
     "updateRelevantSkills": true,
     "updateSharedContext": true
+  },
+  "scope": {
+    "inheritance": "ALL_CURRENT_AND_FUTURE_CHATS_AGENTS_WORKFLOWS_CONNECTORS_APPS",
+    "appliesTo": [
+      "supabase",
+      "notion",
+      "netlify",
+      "github",
+      "composio",
+      "dataforseo",
+      "tavily",
+      "google_search",
+      "google_analytics",
+      "gmail",
+      "google_calendar",
+      "google_drive",
+      "openart",
+      "placid",
+      "linkedin",
+      "instagram",
+      "salesrobot",
+      "all_future_connectors"
+    ],
+    "autoEnrollNewConnectedApps": true,
+    "unregisteredConnectorDecision": "APPLY_UNIVERSAL_DEFAULT_AND_REGISTER",
+    "bypassAllowed": false
+  },
+  "connectedAppGovernance": {
+    "objective": "MINIMIZE_TOTAL_RESOURCE_COST_PER_VERIFIED_OUTCOME",
+    "qualityFloor": "EQUAL_OR_BETTER",
+    "reliabilityFloor": "EQUAL_OR_BETTER",
+    "securityAndEvidenceMayNotBeWeakened": true,
+    "cheapestSufficientRouteRequired": true,
+    "compareEquivalentCapabilitiesBeforePaidCall": true,
+    "detectDuplicateSubscriptionsAndCapabilities": true,
+    "detectIdleOrOverprovisionedPlans": true,
+    "autonomousUsageOptimizationAllowed": true,
+    "autonomousPaidPlanChangeAllowed": false,
+    "autonomousSubscriptionCancellationAllowed": false,
+    "requireHumanApprovalForBillingContractChange": true,
+    "newConnectorRegistrationRequired": true,
+    "newConnectorMustDeclareMeters": true,
+    "newConnectorMustDeclareOptimizationLevers": true,
+    "newConnectorMustWriteUsageWhenMeasurable": true
+  },
+  "universalPlatformDefault": {
+    "meters": [
+      "api_calls",
+      "provider_calls",
+      "compute_seconds",
+      "storage_delta_bytes",
+      "egress_bytes",
+      "credits_or_currency_when_available",
+      "retries"
+    ],
+    "optimizations": [
+      "reuse_existing_result",
+      "cache_readback_first",
+      "dedupe",
+      "batch",
+      "delta_or_incremental",
+      "bounded_reads",
+      "bounded_retries",
+      "avoid_full_scans",
+      "avoid_unchanged_rebuilds",
+      "compress_payloads",
+      "retention_rightsizing",
+      "cheapest_sufficient_capability"
+    ],
+    "unknownPricingDecision": "MEASURE_USAGE_AND_AVOID_OPTIONAL_EXPENSIVE_ACTION",
+    "unknownUsageDecision": "MEASURE_OR_DEFER_OPTIONAL_EXPENSIVE_ACTION"
+  },
+  "subscriptionOptimization": {
+    "scanCadence": "DAILY_WHEN_USAGE_DATA_AVAILABLE",
+    "checks": [
+      "unused_or_idle_paid_plan",
+      "duplicate_capability_across_apps",
+      "overprovisioned_plan_or_quota",
+      "avoidable_egress_or_storage_growth",
+      "avoidable_repeated_calls_or_builds",
+      "cheaper_equivalent_route_with_same_or_better_outcome"
+    ],
+    "actionPolicy": "AUTO_OPTIMIZE_USAGE; HUMAN_APPROVAL_FOR_PLAN_BILLING_OR_CONTRACT_CHANGES"
   }
 }

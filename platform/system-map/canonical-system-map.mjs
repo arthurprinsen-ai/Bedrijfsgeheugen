@@ -1,7 +1,7 @@
 export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
   version:'powerhouse-live-system-map-v2',
   fingerprint:'powerhouse-canonical-system-map-agent-update-contract-v1',
-  observedAt:'2026-09-30T19:24:00Z',
+  observedAt:'2026-10-05T04:19:00Z',
   notionAuthority:Object.freeze({
     workspaceId:'950da36a-ac8a-816b-ac6e-0003f91dfb3d',
     systemMapPageId:'3dcda36a-ac8a-8152-be3d-edbb32b06239',
@@ -35,6 +35,34 @@ export const POWERHOUSE_SYSTEM_MAP = Object.freeze({
     Object.freeze({id:'resource',label:'Resource & sustainability',purpose:'Costs, credits, compute, storage, bandwidth, energy/CO2e/water proxies and efficiency'})
   ]),
   runtimeCapabilities:Object.freeze([
+    Object.freeze({
+      id:'universal-connected-app-cost-governor-v1',
+      label:'Universal Connected-App Cost Governor',
+      authority:'github-policy+supabase-resource-intelligence',
+      owner:'ONE BRAIN / Resource & Sustainability Governor',
+      status:'ACTIVE_FAIL_CLOSED',
+      inputs:Object.freeze(['all current and future chats','agents','workflows','connected apps','provider usage/pricing evidence']),
+      outputs:Object.freeze(['cheapest sufficient route','usage/cost observations','resource optimization candidates','subscription efficiency signals','learning writeback']),
+      runtime:Object.freeze({
+        policy:'config/brain-cost-policy.json',
+        skill:'.agents/skills/powerhouse-resource-sustainability/SKILL.md',
+        budgetUsage:'public.brain_budget_usage',
+        operationCost:'public.brain_cost_by_operation',
+        resourceDaily:'public.powerhouse_resource_intelligence_daily_v1',
+        optimizationQueue:'public.powerhouse_resource_optimization_queue_v1',
+        resourceImpact:'public.powerhouse_resource_impact_v1'
+      }),
+      invariants:Object.freeze({
+        allConnectorsAutoEnrolled:true,
+        universalDefaultForUnknownApps:true,
+        cheapestSufficientRoute:true,
+        qualityReliabilitySecurityEvidenceFloor:true,
+        usageOptimizationAutonomous:true,
+        paidPlanChangesRequireHumanApproval:true,
+        duplicateCostTruthForbidden:true,
+        costPerVerifiedOutcome:true
+      })
+    }),
     Object.freeze({
       id:'prewrite-obligation-external-mutation-recovery-v1',
       fingerprint:'powerhouse|prewrite-obligation|external-mutation-recovery|v1',
