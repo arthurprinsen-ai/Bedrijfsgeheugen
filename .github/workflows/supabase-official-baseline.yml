@@ -1,0 +1,91 @@
+name: Supabase Official Production Baseline
+
+on:
+  push:
+    branches:
+      - fix/3742-official-baseline-v1
+    paths:
+      - .github/workflows/supabase-official-baseline.yml
+
+permissions:
+  contents: write
+
+concurrency:
+  group: supabase-official-baseline-3742
+  cancel-in-progress: false
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: adhjwmvyoixzjtmiroln
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Require official Supabase CI credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${SUPABASE_ACCESS_TOKEN:-}" || { echo "SUPABASE_ACCESS_TOKEN is not configured"; exit 1; }
+          test -n "${SUPABASE_DB_PASSWORD:-}" || { echo "SUPABASE_DB_PASSWORD is not configured"; exit 1; }
+          test "$SUPABASE_PROJECT_ID" = "adhjwmvyoixzjtmiroln"
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      - name: Capture tool version
+        run: supabase --version
+
+      - name: Link read-only recovery workspace to production
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase link --project-ref "$SUPABASE_PROJECT_ID"
+
+      - name: Generate official production schema baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p supabase/baseline
+          supabase db dump --linked -f supabase/baseline/current-production-schema.sql
+          test -s supabase/baseline/current-production-schema.sql
+
+      - name: Capture managed-schema customizations
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase db diff --linked --schema auth,storage > supabase/baseline/auth-storage-customizations.sql
+          test -s supabase/baseline/auth-storage-customizations.sql
+
+      - name: Capture migration-list parity evidence
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase migration list --linked > supabase/baseline/migration-list.txt
+          test -s supabase/baseline/migration-list.txt
+          {
+            echo "cli_version=$(supabase --version)"
+            echo "project_ref=$SUPABASE_PROJECT_ID"
+            echo "source=official_supabase_cli"
+            echo "schema_dump_sha256=$(sha256sum supabase/baseline/current-production-schema.sql | awk '{print $1}')"
+            echo "managed_diff_sha256=$(sha256sum supabase/baseline/auth-storage-customizations.sql | awk '{print $1}')"
+            echo "migration_list_sha256=$(sha256sum supabase/baseline/migration-list.txt | awk '{print $1}')"
+          } > supabase/baseline/evidence.txt
+
+      - name: Commit baseline evidence to recovery branch
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add supabase/baseline/current-production-schema.sql \
+                  supabase/baseline/auth-storage-customizations.sql \
+                  supabase/baseline/migration-list.txt \
+                  supabase/baseline/evidence.txt
+          git diff --cached --quiet && { echo "No baseline changes produced"; exit 1; }
+          git commit -m "chore(supabase): capture official production baseline evidence"
+          git push origin HEAD:fix/3742-official-baseline-v1
