@@ -1,0 +1,33 @@
+{
+  "id": "supabase-migration-history-canonical-v4",
+  "date": "2026-10-05",
+  "issue": 3742,
+  "finding": {
+    "production_migrations": 564,
+    "repository_migrations_before": 720,
+    "repository_only_aliases_removed": 156,
+    "version_name_mismatches_corrected": 2,
+    "remote_only_after": 0,
+    "repository_only_after": 0,
+    "name_mismatches_after": 0
+  },
+  "rule": "The executable Supabase migration lane must be an exact version+name projection of the live production migration ledger. Repository-only timestamp aliases are immutable evidence outside supabase/migrations.",
+  "prevention": [
+    "lock exact production version+name pairs",
+    "reject repository-only executable versions",
+    "reject version/name drift",
+    "reject empty migration SQL",
+    "require hosted Supabase Preview fresh replay before merge"
+  ],
+  "terminal_green_requires": [
+    "exact-head checks",
+    "hosted Supabase Preview fresh replay",
+    "protected merge",
+    "post-merge production ledger readback"
+  ],
+  "compiler": {
+    "failure_class": "DATABASE_INTEGRITY",
+    "scope": "DATABASE",
+    "machine_enforceable": true
+  }
+}
