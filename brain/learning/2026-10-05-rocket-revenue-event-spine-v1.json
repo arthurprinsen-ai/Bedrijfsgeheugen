@@ -64,12 +64,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tests/supabase-powerhouse-rocket-revenue-event-spine-v1.test.mjs",
-      "tests/revenue-learning-market-truth-ingress-v1.test.mjs"
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs"
     ],
     "canary": [
-      "public.powerhouse_revenue_event_spine_health_v1",
-      "public.powerhouse_runtime_events:rocket-revenue-spine:2026-10-05"
+      "tests/brain-rocket-revenue-event-spine-v1.test.mjs"
     ]
   },
   "delivery_closure": {
