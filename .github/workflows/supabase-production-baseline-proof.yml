@@ -97,7 +97,7 @@ jobs:
           : "${SUPABASE_ACCESS_TOKEN:?SUPABASE_ACCESS_TOKEN secret is required}"
           : "${SUPABASE_DB_PASSWORD:?PRODUCTION_DB_PASSWORD or SUPABASE_DB_PASSWORD secret is required}"
           supabase link --project-ref "$SUPABASE_PROJECT_ID"
-          supabase db dump --linked --file ../evidence/production-schema.sql
+          supabase db dump --linked -f ../evidence/production-schema.sql
           sha256sum ../evidence/production-schema.sql | tee ../evidence/production-schema.sha256
 
       - name: Compare candidate migration history to production ledger
@@ -123,7 +123,7 @@ jobs:
           trap cleanup EXIT
           supabase db start
           supabase db reset --local
-          supabase db dump --local --file ../evidence/replay-schema.sql
+          supabase db dump --local -f ../evidence/replay-schema.sql
           sha256sum ../evidence/replay-schema.sql | tee ../evidence/replay-schema.sha256
 
       - name: Prove official baseline parity
