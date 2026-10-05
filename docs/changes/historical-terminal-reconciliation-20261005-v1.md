@@ -7,3 +7,7 @@ PR #3758 corrected the forward path by routing production proof by runtime autho
 The lane is fail-closed. It only reconciles registry-pinned merged pull requests, validates the exact merge SHA and obligation identity, proves the merge is contained in current main, re-derives changed paths from Git history, and applies the current authority classification. Runtime changes without a wired authority are rejected.
 
 Legacy workflow state is retained as historical evidence but is no longer authoritative. The superseding artifact records the stale run id and invalid legacy terminalizer run id explicitly, while never converting not-applicable proof into runtime-function or outcome proof.
+
+## Superseded delivery note
+
+PR #3785 is retired as terminal writer in favour of clean successor PR #3793. This note exists to trigger the PR-scoped cancel-in-progress contract so the stale Required-test execution cannot retain a runner indefinitely.
