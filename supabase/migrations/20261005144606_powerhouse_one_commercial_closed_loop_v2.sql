@@ -3,6 +3,38 @@
 -- Existing-state-first: reuses NBA v5 snapshot, existing message composer, provider executors,
 -- revenue attribution and learning stores. Heavy graph/research work is bounded or asynchronous.
 
+CREATE OR REPLACE FUNCTION public.powerhouse_outbound_message_quality_ready_v1(p_action_id uuid)
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE
+ SET search_path TO 'public', 'pg_catalog', 'extensions'
+AS $function$
+  select coalesce((
+    select case
+      when nullif(trim(coalesce(a.message_draft,'')),'') is null then false
+      when lower(replace(coalesce(a.channel,''),' ','_')) in ('email','e-mail','linkedin_dm')
+        or (a.channel='linkedin_personal' and a.action_type='reply_post')
+      then
+        coalesce(a.evidence#>>'{commercial_intelligence,quality_passed}','false')='true'
+        and coalesce(a.evidence#>>'{commercial_intelligence,message_hash}','')<>''
+        and a.evidence#>>'{commercial_intelligence,message_hash}'
+              = encode(extensions.digest(a.message_draft::bytea,'sha256'),'hex')
+        and exists(
+          select 1
+          from public.powerhouse_message_quality_v1 q
+          where q.action_id=a.action_id
+            and q.message_hash=a.evidence#>>'{commercial_intelligence,message_hash}'
+            and q.passed=true
+        )
+      else false
+    end
+    from public.powerhouse_sales_actions a
+    where a.action_id=p_action_id
+  ),false)
+$function$;
+REVOKE EXECUTE ON FUNCTION public.powerhouse_outbound_message_quality_ready_v1(p_action_id uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_outbound_message_quality_ready_v1(p_action_id uuid) TO service_role;
+
 CREATE OR REPLACE FUNCTION public.powerhouse_commercial_intelligence_heartbeat_v1(p_run_date date DEFAULT ((now() AT TIME ZONE 'Europe/Amsterdam'::text))::date)
  RETURNS jsonb
  LANGUAGE plpgsql
@@ -62,6 +94,59 @@ end $function$;
 
 REVOKE EXECUTE ON FUNCTION public.powerhouse_commercial_intelligence_heartbeat_v1(p_run_date date) FROM PUBLIC, anon, authenticated;
 GRANT EXECUTE ON FUNCTION public.powerhouse_commercial_intelligence_heartbeat_v1(p_run_date date) TO service_role;
+
+-- Fresh-preview bootstrap for production quality evidence dependency.
+-- The production table/function predate this consolidation but were historically remote-only.
+-- Keep this bootstrap idempotent so fresh hosted previews can replay the canonical forward lane.
+
+CREATE TABLE IF NOT EXISTS public.powerhouse_message_quality_v1 (
+  quality_id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  action_id uuid NOT NULL REFERENCES public.powerhouse_sales_actions(action_id) ON DELETE CASCADE,
+  composer_version text NOT NULL,
+  play_key text NOT NULL,
+  channel text NOT NULL,
+  message_hash text NOT NULL,
+  passed boolean NOT NULL,
+  score numeric NOT NULL CHECK (score >= 0 AND score <= 1),
+  checks jsonb NOT NULL DEFAULT '{}'::jsonb,
+  evidence jsonb NOT NULL DEFAULT '{}'::jsonb,
+  evaluated_at timestamptz NOT NULL DEFAULT now(),
+  UNIQUE (action_id, message_hash)
+);
+ALTER TABLE public.powerhouse_message_quality_v1 ENABLE ROW LEVEL SECURITY;
+REVOKE ALL ON TABLE public.powerhouse_message_quality_v1 FROM PUBLIC, anon, authenticated;
+
+CREATE OR REPLACE FUNCTION public.powerhouse_outbound_message_quality_ready_v1(p_action_id uuid)
+ RETURNS boolean
+ LANGUAGE sql
+ STABLE
+ SET search_path TO 'public', 'pg_catalog', 'extensions'
+AS $function$
+  select coalesce((
+    select case
+      when nullif(trim(coalesce(a.message_draft,'')),'') is null then false
+      when lower(replace(coalesce(a.channel,''),' ','_')) in ('email','e-mail','linkedin_dm')
+        or (a.channel='linkedin_personal' and a.action_type='reply_post')
+      then
+        coalesce(a.evidence#>>'{commercial_intelligence,quality_passed}','false')='true'
+        and coalesce(a.evidence#>>'{commercial_intelligence,message_hash}','')<>''
+        and a.evidence#>>'{commercial_intelligence,message_hash}'
+              = encode(extensions.digest(a.message_draft::bytea,'sha256'),'hex')
+        and exists(
+          select 1
+          from public.powerhouse_message_quality_v1 q
+          where q.action_id=a.action_id
+            and q.message_hash=a.evidence#>>'{commercial_intelligence,message_hash}'
+            and q.passed=true
+        )
+      else false
+    end
+    from public.powerhouse_sales_actions a
+    where a.action_id=p_action_id
+  ),false)
+$function$;
+REVOKE EXECUTE ON FUNCTION public.powerhouse_outbound_message_quality_ready_v1(uuid) FROM PUBLIC, anon, authenticated;
+GRANT EXECUTE ON FUNCTION public.powerhouse_outbound_message_quality_ready_v1(uuid) TO service_role;
 
 CREATE OR REPLACE FUNCTION public.powerhouse_dispatch_linkedin_comment_autopilot_v1(p_run_date date DEFAULT ((now() AT TIME ZONE 'Europe/Amsterdam'::text))::date)
  RETURNS jsonb
