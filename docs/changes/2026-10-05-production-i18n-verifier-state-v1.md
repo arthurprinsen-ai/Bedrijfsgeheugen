@@ -7,3 +7,7 @@ The production pricing/i18n verifier previously coupled locale proof to Playwrig
 The verifier now activates the same visible mobile language control and proves the resulting canonical pathname together with `document.documentElement.lang`. Existing translated-content, pricing, route round-trip and deprecated-`/nl/*` assertions remain in place.
 
 This changes only the verification mechanism; it does not weaken the production contract or alter the public language behavior.
+
+## Cookie overlay follow-up
+
+Live production proved that the canonical cookie dialog can intercept the mobile language link. The verifier now closes the visible dialog through the public `#bgCookieDeny` control before testing locale navigation; it does not force-click through an overlay.
