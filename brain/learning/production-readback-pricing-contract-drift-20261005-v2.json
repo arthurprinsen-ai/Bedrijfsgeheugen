@@ -1,0 +1,53 @@
+{
+  "learningId": "production-readback-pricing-contract-drift-20261005-v2",
+  "fingerprint": "production-readback-pricing-oracle-drift-v2",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-05T19:45:00+02:00",
+  "problem": "The post-merge production readback for PR #3741 could not become authoritative because its pricing oracle still required a retired Build/Transform and billing-toggle surface while production used the canonical Starter/Pro/Groei/Enterprise model.",
+  "rootCause": "Production verification drifted behind the commercial pricing contract. The same exact-head recovery also exposed SEO authority gaps for noindex CMS handling, package-advice discoverability and AFAS cluster reciprocity.",
+  "root_cause": "Production verification drifted behind the commercial pricing contract. The same exact-head recovery also exposed SEO authority gaps for noindex CMS handling, package-advice discoverability and AFAS cluster reciprocity.",
+  "preventionRule": "Production readback must validate the current canonical commercial contract, exact release identity and live shell while SEO gates distinguish noindex utility routes from crawl-authority pages and preserve reciprocal cluster links.",
+  "prevention": [
+    "Verify Starter, Pro, Groei and Enterprise plus current consulting propositions.",
+    "Reject retired Build/Transform and billing-toggle oracle tokens.",
+    "Keep exact release SHA, shell parity and live production readback fail closed.",
+    "Exclude noindex CMS from SEO orphan authority requirements.",
+    "Require a real internal entry link to package advice.",
+    "Require reciprocal AFAS cluster linkage."
+  ],
+  "evidence": {
+    "canonicalChangeDoc": "docs/changes/2026-10-01-commercial-pricing-portal-v1.md",
+    "implementation": [
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/test-live-contract.mjs",
+      "tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs",
+      ".github/scripts/seocontrole.py",
+      "prijzen.html",
+      "blog/systemen-koppelen-mkb/index.html"
+    ],
+    "regression": [
+      "tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "originatingPr": 3741,
+    "retiredRecoveryPr": 3759
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-production-readback-pricing-i18n-gate-v1.test.mjs",
+      "tests/brain-production-release-readback-scope.test.mjs"
+    ],
+    "expected": "Current pricing semantics and routing are verified without weakening exact-SHA production truth; control-plane-only maintenance remains non-deployment and manual readback remains explicit."
+  }
+}
