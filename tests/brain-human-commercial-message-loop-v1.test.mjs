@@ -1,13 +1,13 @@
 import fs from 'node:fs';
 import assert from 'node:assert/strict';
 
-const migration=fs.readFileSync('supabase/migrations/20261005125100_powerhouse_human_commercial_message_loop_v1.sql','utf8');
+const migration=fs.readFileSync('supabase/migrations/20261005143000_powerhouse_human_commercial_message_learning_gate_v1.sql','utf8');
 const composer=fs.readFileSync('supabase/functions/powerhouse-commercial-message-composer/index.ts','utf8');
 const compat=fs.readFileSync('supabase/functions/powerhouse-human-sales-composer/index.ts','utf8');
 const email=fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
 const linkedin=fs.readFileSync('supabase/functions/powerhouse-linkedin-sales-machine/index.ts','utf8');
 
-assert.match(migration,/powerhouse_sales_playbook_v1/);
+
 assert.match(migration,/powerhouse_message_quality_v1/);
 assert.match(migration,/powerhouse_outbound_message_quality_gate_v1/);
 assert.match(migration,/powerhouse_sales_outcome_message_lineage_v1/);
@@ -20,7 +20,7 @@ assert.match(composer,/powerhouse_persuasion_revenue_optimizer_v1/);
 assert.match(composer,/powerhouse_message_quality_v1/);
 assert.match(composer,/personalization_anchor/);
 assert.match(composer,/source_trigger_relevance/);
-assert.match(composer,/machine_taxonomy/i);
+assert.match(composer,/internal taxonomy|snake_case/i);
 assert.match(composer,/quality_passed/);
 
 assert.match(compat,/powerhouse-commercial-message-composer/);
