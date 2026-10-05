@@ -48,3 +48,11 @@ test('built pricing readback regression contains encoded ampersand fixture', () 
     (/encodeHtmlText/.test(contractSource) && /hasHeadingText/.test(contractSource));
   assert.equal(semanticEntityHandling,true,'live pricing verifier must normalize visible heading entity encoding semantically');
 });
+
+
+test('obligation terminalizer consumes canonical verifier-only path authority', () => {
+  const workflow=fs.readFileSync('.github/workflows/powerhouse-obligation-terminalizer.yml','utf8');
+  assert.match(workflow,/brain\/contracts\/production-readback-v1\.json/);
+  assert.match(workflow,/productionTruth\?\.verifierOnlyPaths/);
+  assert.match(workflow,/grep -Fxq -- "\$1"/);
+});
