@@ -43,6 +43,7 @@ const SCOPED_WORKFLOW_LANES = Object.freeze({
   '.github/workflows/regelgeving-bijwerken.yml': 'automation',
   '.github/workflows/regulatory-source-watch.yml': 'automation',
   '.github/workflows/required-test.yml': 'backend',
+  '.github/workflows/historical-terminal-reconciliation.yml': 'backend',
   '.github/workflows/powerhouse-daily-self-evolution.yml': 'automation',
   '.github/workflows/powerhouse-autonomous-engineering-optimizer.yml': 'automation'
 });
