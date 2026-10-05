@@ -32,3 +32,20 @@ test('migration persists one commercial runtime',()=>{
   assert.match(migration,/powerhouse_human_commercial_end_to_end_health_v1/);
   assert.match(migration,/powerhouse_persuasion_revenue_optimizer_v1/);
 });
+
+
+test('composer v2 requires source-specific evidence and executors require v2 proof',()=>{
+  const email=fs.readFileSync('supabase/functions/powerhouse-autonomous-outreach/index.ts','utf8');
+  const linkedin=fs.readFileSync('supabase/functions/powerhouse-linkedin-sales-machine/index.ts','utf8');
+  assert.match(composer,/powerhouse-human-commercial-message-composer-v2/);
+  assert.match(composer,/sourceSpecificContext/);
+  assert.match(composer,/sourceContext\.length>20/);
+  assert.match(composer,/inspirerend\|indrukwekkend\|geweldig/);
+  assert.match(composer,/veel \(bedrijven\|organisaties\|founders/);
+  assert.match(composer,/forceer dan geen persoonlijke boodschap/);
+  for(const executor of [email,linkedin]){
+    assert.match(executor,/powerhouse-human-commercial-message-composer-v2/);
+    assert.match(executor,/HUMAN_MESSAGE_QUALITY_NOT_PROVEN/);
+    assert.match(executor,/composer_contract/);
+  }
+});

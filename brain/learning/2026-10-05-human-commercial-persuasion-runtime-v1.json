@@ -13,7 +13,9 @@
     "follow-up must introduce a new evidence-backed angle and may not guilt the prospect",
     "one primary problem and at most one CTA per message",
     "channel executors keep consent, pressure, dedupe, identity, capability and provider acknowledgement gates authoritative",
-    "strategy, psychology, CTA and quality evidence are persisted with the action so observed outcomes can train later decisions"
+    "strategy, psychology, CTA and quality evidence are persisted with the action so observed outcomes can train later decisions",
+    "composer v2 requires a source-specific personalization anchor from readable prospect evidence before outbound copy can pass",
+    "Gmail and SalesRobot must reject drafts whose composer proof is not the current powerhouse-human-commercial-message-composer-v2 contract"
   ],
   "canonical_authorities": [
     "public.powerhouse_persuasion_revenue_optimizer_v1",
@@ -49,7 +51,10 @@
       "executed_actions_30d": 31,
       "observed_outcomes_30d": 24,
       "provider_acknowledgements_30d": 14
-    }
+    },
+    "composer_v2": true,
+    "source_specific_personalization": true,
+    "executor_contract_pin": true
   },
   "compiler": {
     "failure_class": "COMMERCIAL_PERSUASION_RUNTIME_FRAGMENTATION",
@@ -78,6 +83,7 @@
       "human_documentation"
     ],
     "runtime_readback": "17/17 strategy; 17/17 persuasion; 15 quality-passed drafts; 14 provider acknowledgements/30d",
-    "rule": "Commercial persuasion runtime changes must preserve evidence truth, pre-send quality gating and provider/outcome lineage in one candidate."
+    "rule": "Commercial persuasion runtime changes must preserve evidence truth, pre-send quality gating and provider/outcome lineage in one candidate.",
+    "v2_followup": "live composer v18 plus Gmail v16 plus LinkedIn sales machine v13 synchronized to source control"
   }
 }
