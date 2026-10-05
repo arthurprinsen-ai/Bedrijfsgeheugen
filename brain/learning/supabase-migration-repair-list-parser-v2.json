@@ -1,0 +1,22 @@
+{
+  "id": "supabase-migration-repair-list-parser-v2",
+  "date": "2026-10-05",
+  "issue": 3742,
+  "failure_class": "DELIVERY_CONTROL_PLANE",
+  "finding": "Supabase CLI migration-list table cells can contain presentation backticks; matching raw cells against /^\\d{14}$/ can silently discard valid migration rows and produce false empty drift.",
+  "rule": "Provider CLI table output must be normalized before machine identity comparison; presentation delimiters are not part of migration identity.",
+  "prevention": [
+    "normalize backticks and whitespace before migration version validation",
+    "apply identical normalization to pre-repair and post-repair parity parsers",
+    "regression-test parser normalization",
+    "remain fail-closed on unexpected drift"
+  ],
+  "production_mutation": "none in parser fix",
+  "terminal_green_requires": [
+    "trusted repair success",
+    "production ledger readback",
+    "canonical recovery exact-head green",
+    "protected merge",
+    "post-merge production readback"
+  ]
+}
