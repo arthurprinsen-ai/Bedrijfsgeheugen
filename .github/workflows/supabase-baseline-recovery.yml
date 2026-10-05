@@ -1,0 +1,90 @@
+name: Supabase Canonical Baseline Recovery
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - '.github/workflows/supabase-baseline-recovery.yml'
+      - 'config/supabase-migration-parity-obligation.json'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: supabase-canonical-baseline-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  baseline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    env:
+      SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+      SUPABASE_DB_PASSWORD: ${{ secrets.SUPABASE_DB_PASSWORD }}
+      SUPABASE_PROJECT_ID: adhjwmvyoixzjtmiroln
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Fail closed if production credentials are unavailable
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "${SUPABASE_ACCESS_TOKEN:-}" || { echo "SUPABASE_ACCESS_TOKEN_MISSING"; exit 42; }
+          test -n "${SUPABASE_DB_PASSWORD:-}" || { echo "SUPABASE_DB_PASSWORD_MISSING"; exit 43; }
+          test "${SUPABASE_PROJECT_ID}" = "adhjwmvyoixzjtmiroln" || { echo "WRONG_PROJECT"; exit 44; }
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Link read-only recovery context
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase link --project-ref "${SUPABASE_PROJECT_ID}" --password "${SUPABASE_DB_PASSWORD}"
+
+      - name: Generate official current-production schema baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p .artifacts/supabase-baseline
+          supabase db dump --linked > .artifacts/supabase-baseline/current-production-schema.sql
+          test -s .artifacts/supabase-baseline/current-production-schema.sql
+
+      - name: Capture authoritative migration ledger
+        shell: bash
+        run: |
+          set -euo pipefail
+          supabase migration list --linked > .artifacts/supabase-baseline/migration-list.txt
+          test -s .artifacts/supabase-baseline/migration-list.txt
+
+      - name: Baseline safety contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          BASE=.artifacts/supabase-baseline/current-production-schema.sql
+          ! grep -Eiq 'COPY[[:space:]]+auth\.users|INSERT[[:space:]]+INTO[[:space:]]+auth\.users' "$BASE"
+          ! grep -Eiq '(service_role_key|anon_key|jwt_secret|smtp_pass|secret_access_key)[[:space:]]*=' "$BASE"
+          grep -Eiq 'CREATE|ALTER|COMMENT|GRANT|REVOKE' "$BASE"
+
+      - name: Evidence manifest
+        shell: bash
+        run: |
+          set -euo pipefail
+          cd .artifacts/supabase-baseline
+          sha256sum current-production-schema.sql migration-list.txt > SHA256SUMS
+          {
+            echo "project_ref=adhjwmvyoixzjtmiroln"
+            echo "source=official_supabase_cli_db_dump"
+            echo "data_included=false"
+            echo "history_mutated=false"
+            echo "head_sha=${GITHUB_SHA}"
+          } > manifest.txt
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: supabase-canonical-baseline-${{ github.sha }}
+          path: .artifacts/supabase-baseline/
+          if-no-files-found: error
+          retention-days: 1
