@@ -8,7 +8,7 @@ Exact-head backend validation faalde omdat regressietests naar verwijderde migra
 
 ## Structural correction
 
-- Forward migration: `20261005154500_resource_intelligence_tenant_isolation_recovery_v1.sql`.
+- Forward migration: `20261005160410_resource_intelligence_tenant_isolation_recovery_v1.sql`.
 - Canonical migration references voor Resource Intelligence en content cockpit.
 - Tenant columns, backfill en indexes.
 - Candidate generation bindt business-value evidence alleen bij `cardinality(tenant_ids)=1`; observed resource intelligence gebruikt zijn eigen tenant.

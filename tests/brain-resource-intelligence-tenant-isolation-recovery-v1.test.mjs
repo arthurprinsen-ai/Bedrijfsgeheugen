@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFile } from 'node:fs/promises';
 
-const migrationPath = 'supabase/migrations/20261005154500_resource_intelligence_tenant_isolation_recovery_v1.sql';
+const migrationPath = 'supabase/migrations/20261005160410_resource_intelligence_tenant_isolation_recovery_v1.sql';
 
 test('resource intelligence tenant isolation recovery adds database tenant authority and bounded generation', async () => {
   const sql = await readFile(migrationPath, 'utf8');
@@ -19,7 +19,7 @@ test('resource intelligence regressions bind to canonical production migration a
   const cockpit = await readFile('tests/supabase-powerhouse-content-edge-surface-contract.test.mjs', 'utf8');
 
   assert.match(resource, /20260917094812_powerhouse_resource_intelligence_v1\.sql/);
-  assert.match(tenant, /20261005154500_resource_intelligence_tenant_isolation_recovery_v1\.sql/);
+  assert.match(tenant, /20261005160410_resource_intelligence_tenant_isolation_recovery_v1\.sql/);
   assert.match(cockpit, /20260916172554_content_operations_cockpit_projection_repair_v1\.sql/);
 
   assert.doesNotMatch(resource, /20260917093000_powerhouse_resource_intelligence_v1\.sql/);
