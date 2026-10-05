@@ -7,7 +7,7 @@ const publisher = readFileSync('supabase/functions/powerhouse-social-publisher/i
 const prePublishReview = readFileSync('supabase/functions/bg-pre-publish-review/index.ts', 'utf8');
 const instagramRouter = readFileSync('supabase/functions/powerhouse-instagram-media-router/index.ts', 'utf8');
 const registry = JSON.parse(readFileSync('config/powerhouse-quality-surface-contracts.json', 'utf8'));
-const cockpitMigration = 'supabase/migrations/20260916163500_content_operations_cockpit_projection_repair_v1.sql';
+const cockpitMigration = 'supabase/migrations/20260916172554_content_operations_cockpit_projection_repair_v1.sql';
 
 const edgeEvidenceContract = 'tests/supabase-powerhouse-content-edge-surface-contract.test.mjs';
 const closedLoopEvidenceContract = 'tests/brain-content-closed-loop-contract.test.mjs';
