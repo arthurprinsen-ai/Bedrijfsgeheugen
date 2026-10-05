@@ -354,13 +354,23 @@ select cron.schedule(
   $cron$
 );
 
--- Keep split-stage legacy owners explicitly disabled if they still exist.
-update cron.job
-set active=false
-where jobname in (
-  'powerhouse-commercial-context-daily-v1',
-  'powerhouse-commercial-actions-daily-v1'
-);
+-- Remove split-stage legacy owners entirely; bounded components keep their own
+-- schedules, but these former full-stage owners may not compete with the canonical loop.
+do $
+declare r record;
+begin
+  for r in
+    select jobid
+    from cron.job
+    where jobname in (
+      'powerhouse-commercial-context-daily-v1',
+      'powerhouse-commercial-actions-daily-v1'
+    )
+  loop
+    perform cron.unschedule(r.jobid);
+  end loop;
+end
+$;
 
 -- 5. Initial readback is persisted through the existing health spine.
 select public.powerhouse_one_loop_regression_gate_v1(true);
