@@ -53,6 +53,21 @@ test('material delta exposes missing closure evidence before writer handoff', ()
   assert.deepEqual(closure.missing, ['activity_ledger','brain_learning','human_documentation']);
 });
 
+test('canonical content publication obligation closes through runtime authority without duplicate repository learning', () => {
+  const bundle = compileIntegrationBundle({
+    changedPaths:['blog/example/index.html','blog/index.html','blog/rss.xml','sitemap.xml'],
+    metadata:{ obligationId:'content-publication:2026-10-05:blog', deliveryLane:'website', candidateType:'implementation', baseSha:base, supersedes:null },
+    baseSha:base,
+    headSha:head,
+    adaptivePolicy,
+    integrationPolicy
+  });
+  assert.equal(bundle.closure.material, true);
+  assert.equal(bundle.closure.ready, true);
+  assert.equal(bundle.closure.authority, 'canonical-runtime-obligation');
+  assert.deepEqual(bundle.closure.missing, []);
+});
+
 test('closure-only learning and docs remain non-material', () => {
   const closure = compileClosurePlan({
     changedPaths:['brain/learning/a.json','docs/changes/a.md','docs/development-ledger-events/a.md'],

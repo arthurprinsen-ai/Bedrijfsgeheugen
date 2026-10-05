@@ -7,9 +7,17 @@
     "mainEpoch": "LATE_BOUND_AT_HANDOFF"
   },
   "closureArtifacts": {
-    "brain_learning": ["brain/learning/"],
-    "activity_ledger": ["docs/development-ledger-events/", "docs/development-ledger/"],
-    "human_documentation": ["docs/changes/", "docs/learning/"]
+    "brain_learning": [
+      "brain/learning/"
+    ],
+    "activity_ledger": [
+      "docs/development-ledger-events/",
+      "docs/development-ledger/"
+    ],
+    "human_documentation": [
+      "docs/changes/",
+      "docs/learning/"
+    ]
   },
   "closureOnly": [
     "brain/learning/",
@@ -26,5 +34,8 @@
     "Base-SHA",
     "Change-Scope",
     "Scope-Budget"
+  ],
+  "runtimeClosureObligationPrefixes": [
+    "content-publication:"
   ]
 }
