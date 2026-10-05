@@ -274,3 +274,9 @@ test('auxiliary workflow definitions stay on owned control-plane lanes', () => {
     shared:true, backend:false, portal:false, website:false, automation:true
   });
 });
+
+test('historical terminal reconciliation stays backend-only and never fans out into website browser gates', () => {
+  assert.deepEqual(suitesFor(['.github/workflows/historical-terminal-reconciliation.yml']), {
+    shared:true, backend:true, portal:false, website:false, automation:false
+  });
+});
