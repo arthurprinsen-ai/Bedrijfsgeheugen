@@ -1,0 +1,80 @@
+name: Supabase Preview Applicability
+
+on:
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+  checks: read
+  pull-requests: read
+
+concurrency:
+  group: supabase-preview-applicability-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  applicability:
+    name: Supabase Preview Applicability
+    runs-on: ubuntu-latest
+    timeout-minutes: 12
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+      - name: Decide applicability and verify provider-owned preview
+        env:
+          GH_TOKEN: ${{ github.token }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          git fetch origin "$BASE_SHA" "$HEAD_SHA" --no-tags
+          changed="$(git diff --name-only "$BASE_SHA" "$HEAD_SHA")"
+          if ! grep -q '^supabase/' <<< "$changed"; then
+            echo "SUPABASE_PREVIEW_NOT_APPLICABLE: no supabase/** changes on exact head $HEAD_SHA"
+            exit 0
+          fi
+
+          echo "Supabase source changed; waiting for the provider-owned Supabase Preview check on exact head $HEAD_SHA."
+          for attempt in $(seq 1 48); do
+            payload="$(curl --fail --silent --show-error               -H "Authorization: Bearer $GH_TOKEN"               -H "Accept: application/vnd.github+json"               -H "X-GitHub-Api-Version: 2022-11-28"               "https://api.github.com/repos/$REPO/commits/$HEAD_SHA/check-runs?per_page=100")"
+
+            state="$(PAYLOAD="$payload" node --input-type=module - <<'NODE'
+          const payload=JSON.parse(process.env.PAYLOAD||'{}');
+          const checks=Array.isArray(payload.check_runs)?payload.check_runs:[];
+          const provider=checks.filter(c => c?.name==='Supabase Preview' && c?.app?.slug==='supabase');
+          if(provider.length===0){ process.stdout.write('missing'); process.exit(0); }
+          provider.sort((a,b)=>String(b.completed_at||b.started_at||'').localeCompare(String(a.completed_at||a.started_at||'')));
+          const check=provider[0];
+          if(check.status!=='completed'){ process.stdout.write('pending'); process.exit(0); }
+          process.stdout.write(String(check.conclusion||'unknown'));
+          NODE
+            )"
+
+            case "$state" in
+              success)
+                echo "SUPABASE_PREVIEW_PROVIDER_VERIFIED:$HEAD_SHA"
+                exit 0
+                ;;
+              failure|cancelled|timed_out|action_required|stale|startup_failure)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_FAILED:$state:$HEAD_SHA"
+                exit 1
+                ;;
+              skipped|neutral)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_NON_PROOF:$state:$HEAD_SHA"
+                exit 1
+                ;;
+              missing|pending)
+                sleep 10
+                ;;
+              *)
+                echo "::error::SUPABASE_PREVIEW_PROVIDER_UNKNOWN_STATE:$state:$HEAD_SHA"
+                exit 1
+                ;;
+            esac
+          done
+
+          echo "::error::SUPABASE_PREVIEW_PROVIDER_TIMEOUT:$HEAD_SHA"
+          exit 1
