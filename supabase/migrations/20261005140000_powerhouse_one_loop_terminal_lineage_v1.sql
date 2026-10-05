@@ -356,7 +356,7 @@ select cron.schedule(
 
 -- Remove split-stage legacy owners entirely; bounded components keep their own
 -- schedules, but these former full-stage owners may not compete with the canonical loop.
-do $
+do $split$
 declare r record;
 begin
   for r in
@@ -370,7 +370,7 @@ begin
     perform cron.unschedule(r.jobid);
   end loop;
 end
-$;
+$split$;
 
 -- 5. Initial readback is persisted through the existing health spine.
 select public.powerhouse_one_loop_regression_gate_v1(true);
