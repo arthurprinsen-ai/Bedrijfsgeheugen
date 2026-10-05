@@ -20,7 +20,10 @@
       "tools/site-shell/live-contract.mjs",
       "tools/site-shell/test-live-contract.mjs"
     ],
-    "predecessorPr": 3783
+    "predecessorPr": 3783,
+    "regression": [
+      "tests/brain-production-readback-built-pricing-authority-v1.test.mjs"
+    ]
   },
   "compiler": {
     "failure_class": "PRODUCTION_READBACK",
@@ -31,10 +34,10 @@
   },
   "evaluation": {
     "historical_replay": [
-      "tools/site-shell/test-live-contract.mjs"
+      "tests/brain-production-readback-built-pricing-authority-v1.test.mjs"
     ],
     "canary": [
-      "tools/site-shell/test-live-contract.mjs"
+      "tests/brain-production-readback-built-pricing-authority-v1.test.mjs"
     ],
     "expected": "Exact production SHA passes only when the built pricing DOM preserves canonical packages, expertise propositions and package-advice routing."
   }
