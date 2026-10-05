@@ -31,6 +31,11 @@ test('terminal landing is exact-head main-epoch CAS and branch name is secondary
 
 test('post-merge terminalization is lineage-driven and independent of branch naming',()=>{
   assert.match(terminalizer,/Writer-Lease-State: TERMINAL_DELIVERY/);
+  assert.match(terminalizer,/Re-verify exact candidate full commit check set/);
+  assert.match(terminalizer,/evaluateFullCommitCheckSet/);
+  assert.match(terminalizer,/EXACT_HEAD_CHECKSET_GREEN/);
+  assert.match(terminalizer,/exact_head_full_checkset:true/);
+  assert.match(terminalizer,/security_checkset:true/);
   assert.match(terminalizer,/powerhouse-skill-projection\.mjs/);
   assert.match(terminalizer,/chat-learning-preflight\.mjs/);
   assert.match(terminalizer,/terminal_status:'LIVE_BEWEZEN'/);
