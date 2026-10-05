@@ -3,15 +3,6 @@ name: Powerhouse CodeQL
 on:
   pull_request:
     branches: [main]
-    paths:
-      - '**/*.js'
-      - '**/*.mjs'
-      - '**/*.cjs'
-      - '**/*.ts'
-      - '**/*.tsx'
-      - 'package.json'
-      - 'package-lock.json'
-      - '.github/workflows/powerhouse-codeql.yml'
   push:
     branches: [main]
     paths:
