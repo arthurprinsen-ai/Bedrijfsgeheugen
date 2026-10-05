@@ -1,17 +1,83 @@
 {
-  "contract": "brain-learning-v1",
-  "obligation_id": "human-commercial-persuasion-runtime-20261005-v1",
-  "title": "Human commercial persuasion runtime",
-  "problem": "Commercial knowledge existed across persuasion, sales and copy layers, but was not consistently runtime-decisive before outbound execution.",
-  "decision": "Reuse the existing persuasion optimizer as the canonical psychology authority, combine it with channel-specific sales plays, evidence-bound human copy generation, deterministic quality gates, executor fail-closed behavior and outcome performance learning.",
-  "invariant": "No outbound message may rely on fabricated evidence, fake urgency, hidden commitment, sensitive-trait profiling or generic bot copy. Persuasion changes framing, never truth.",
-  "evidence": [
-    "17/17 pending commercial actions strategy-labeled",
-    "17/17 pending commercial actions persuasion-labeled after backfill",
-    "representative trigger DM quality score 1.0",
-    "representative follow-up quality score 1.0"
+  "schema_version": 1,
+  "fingerprint": "powerhouse|human-commercial-persuasion-runtime|v1",
+  "observed_at": "2026-10-05T12:30:00Z",
+  "type": "COMMERCIAL_EXECUTION",
+  "status": "ACTIVE_PREVENTION",
+  "root_cause": "Powerhouse had mature sales techniques, persuasion rules, relationship intelligence, copy guidance and channel executors, but the selected strategy and psychology were not consistently runtime-decisive before message generation and provider execution.",
+  "decision": "Keep the existing persuasion optimizer as psychology authority and make one evidence-bound runtime chain from sales action to channel play, human copy, deterministic quality gate, provider acknowledgement, outcome and revenue learning.",
+  "prevention": [
+    "no outbound execution without a current strategy, persuasion decision and quality pass",
+    "persuasion may change framing but never fabricate evidence, urgency, scarcity or personal facts",
+    "trigger outreach requires human-readable source context; irrelevant predicted triggers are ignored",
+    "follow-up must introduce a new evidence-backed angle and may not guilt the prospect",
+    "one primary problem and at most one CTA per message",
+    "channel executors keep consent, pressure, dedupe, identity, capability and provider acknowledgement gates authoritative",
+    "strategy, psychology, CTA and quality evidence are persisted with the action so observed outcomes can train later decisions"
   ],
-  "historical_replay": [
-    "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs"
-  ]
+  "canonical_authorities": [
+    "public.powerhouse_persuasion_revenue_optimizer_v1",
+    "public.powerhouse_sales_actions",
+    "public.powerhouse_sales_outcomes",
+    "public.powerhouse_sales_playbook_v1",
+    "public.powerhouse_message_quality_v1",
+    "supabase/functions/powerhouse-commercial-message-composer/index.ts",
+    "supabase/functions/powerhouse-human-sales-composer/index.ts"
+  ],
+  "id": "human-commercial-persuasion-runtime-20261005-v1",
+  "date": "2026-10-05",
+  "source": "user-request+existing-state-audit+production-readback",
+  "failure_class": "COMMERCIAL_PERSUASION_RUNTIME_FRAGMENTATION",
+  "symptom": [
+    "Planner strategy labels existed but generic outbound copy could still bypass their full behavioral intent.",
+    "Sales and copy psychology existed in documentation and optimizer layers without one deterministic pre-send runtime contract."
+  ],
+  "failed_approaches": [
+    "Treat sales psychology as documentation-only guidance.",
+    "Generate generic channel templates first and apply strategy only as metadata afterward.",
+    "Create a second persuasion authority instead of reusing the existing optimizer."
+  ],
+  "evidence": {
+    "regression": "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs",
+    "production_readback": {
+      "pending_commercial_actions": 17,
+      "strategy_labeled": 17,
+      "persuasion_labeled": 17,
+      "quality_passed_drafts": 15,
+      "representative_trigger_dm_quality": 1,
+      "representative_followup_quality": 1,
+      "executed_actions_30d": 31,
+      "observed_outcomes_30d": 24,
+      "provider_acknowledgements_30d": 14
+    }
+  },
+  "compiler": {
+    "failure_class": "COMMERCIAL_PERSUASION_RUNTIME_FRAGMENTATION",
+    "scope": "GROWTH_REVENUE_OS",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": true
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs"
+    ],
+    "shadow": [
+      "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs"
+    ],
+    "canary": [
+      "tests/brain-human-commercial-persuasion-runtime-v1.test.mjs"
+    ]
+  },
+  "delivery_closure": {
+    "pr": 3729,
+    "declared_scope_budget": 8,
+    "required_evidence": [
+      "brain_learning",
+      "activity_ledger",
+      "human_documentation"
+    ],
+    "runtime_readback": "17/17 strategy; 17/17 persuasion; 15 quality-passed drafts; 14 provider acknowledgements/30d",
+    "rule": "Commercial persuasion runtime changes must preserve evidence truth, pre-send quality gating and provider/outcome lineage in one candidate."
+  }
 }
