@@ -1,0 +1,235 @@
+name: Supabase Production Baseline Proof
+
+on:
+  workflow_dispatch:
+    inputs:
+      candidate_ref:
+        description: 'Exact recovery candidate SHA or ref; blank auto-selects the open #3742 recovery PR'
+        required: false
+        type: string
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/supabase-production-baseline-proof.yml'
+      - 'tests/supabase-production-baseline-proof-workflow.test.mjs'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: supabase-production-baseline-proof
+  cancel-in-progress: true
+
+jobs:
+  prove:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - name: Enforce trusted default-branch execution
+        shell: bash
+        run: |
+          set -euo pipefail
+          if [ "${GITHUB_REF}" != "refs/heads/main" ]; then
+            echo "::error::Production baseline proof must execute from trusted main, never from PR-controlled workflow code."
+            exit 78
+          fi
+
+      - name: Checkout trusted control plane
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 0
+          path: trusted
+
+      - id: candidate
+        name: Resolve immutable #3742 candidate
+        shell: bash
+        working-directory: trusted
+        env:
+          GH_TOKEN: ${{ github.token }}
+          INPUT_REF: ${{ inputs.candidate_ref || '' }}
+        run: |
+          set -euo pipefail
+          pr=""
+          if [ -n "$INPUT_REF" ]; then
+            sha="$(gh api "repos/${GITHUB_REPOSITORY}/commits/$INPUT_REF" --jq '.sha')"
+          else
+            pr="$(gh api "repos/${GITHUB_REPOSITORY}/pulls?state=open&per_page=100" --jq '[.[] | select((.title | contains("#3742")) or ((.body // "") | contains("supabase-migration-history-parity")))][0].number // empty')"
+            test -n "$pr" || { echo "::error::No open #3742 recovery candidate found"; exit 78; }
+            sha="$(gh api "repos/${GITHUB_REPOSITORY}/pulls/$pr" --jq '.head.sha')"
+          fi
+          [[ "$sha" =~ ^[0-9a-f]{40}$ ]] || { echo "::error::Candidate did not resolve to an immutable SHA: $sha"; exit 78; }
+          echo "sha=$sha" >> "$GITHUB_OUTPUT"
+          echo "pr=$pr" >> "$GITHUB_OUTPUT"
+          echo "CANDIDATE_SHA=$sha"
+          echo "CANDIDATE_PR=${pr:-explicit}"
+
+      - name: Checkout candidate without production credentials
+        uses: actions/checkout@v5
+        with:
+          ref: ${{ steps.candidate.outputs.sha }}
+          fetch-depth: 0
+          path: candidate
+
+      - name: Install pinned Supabase CLI
+        uses: supabase/setup-cli@v1
+        with:
+          version: 2.119.0
+
+      - name: Prepare isolated parity input
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p parity/supabase evidence
+          cp trusted/supabase/config.toml parity/supabase/config.toml
+          cp -R candidate/supabase/migrations parity/supabase/migrations
+
+      - name: Capture official production schema and migration ledger
+        working-directory: trusted
+        shell: bash
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_ID: adhjwmvyoixzjtmiroln
+        run: |
+          set -euo pipefail
+          : "${SUPABASE_ACCESS_TOKEN:?SUPABASE_ACCESS_TOKEN secret is required}"
+          : "${SUPABASE_DB_PASSWORD:?PRODUCTION_DB_PASSWORD or SUPABASE_DB_PASSWORD secret is required}"
+          supabase link --project-ref "$SUPABASE_PROJECT_ID"
+          supabase db dump --linked --file ../evidence/production-schema.sql
+          sha256sum ../evidence/production-schema.sql | tee ../evidence/production-schema.sha256
+
+      - name: Compare candidate migration history to production ledger
+        working-directory: parity
+        shell: bash
+        env:
+          SUPABASE_ACCESS_TOKEN: ${{ secrets.SUPABASE_ACCESS_TOKEN }}
+          SUPABASE_DB_PASSWORD: ${{ secrets.PRODUCTION_DB_PASSWORD || secrets.SUPABASE_DB_PASSWORD }}
+          SUPABASE_PROJECT_ID: adhjwmvyoixzjtmiroln
+        run: |
+          set -euo pipefail
+          : "${SUPABASE_ACCESS_TOKEN:?SUPABASE_ACCESS_TOKEN secret is required}"
+          : "${SUPABASE_DB_PASSWORD:?PRODUCTION_DB_PASSWORD or SUPABASE_DB_PASSWORD secret is required}"
+          supabase link --project-ref "$SUPABASE_PROJECT_ID"
+          supabase migration list --linked | tee ../evidence/migration-list.txt
+
+      - name: Fresh replay candidate from repository state
+        shell: bash
+        working-directory: candidate
+        run: |
+          set -euo pipefail
+          cleanup() { supabase stop --no-backup >/dev/null 2>&1 || true; }
+          trap cleanup EXIT
+          supabase db start
+          supabase db reset --local
+          supabase db dump --local --file ../evidence/replay-schema.sql
+          sha256sum ../evidence/replay-schema.sql | tee ../evidence/replay-schema.sha256
+
+      - name: Prove official baseline parity
+        shell: bash
+        env:
+          CANDIDATE_SHA: ${{ steps.candidate.outputs.sha }}
+          CANDIDATE_PR: ${{ steps.candidate.outputs.pr }}
+          CONTROL_PLANE_SHA: ${{ github.sha }}
+          RUN_ID: ${{ github.run_id }}
+        run: |
+          set -euo pipefail
+          node --input-type=module - <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          import { createHash } from 'node:crypto';
+
+          const normalizeDump = (text) => text
+            .replace(/\r\n/g, '\n')
+            .split('\n')
+            .filter(line => !/^--/.test(line))
+            .filter(line => !/^\\(restrict|unrestrict)\b/.test(line))
+            .map(line => line.replace(/[ \t]+$/g, ''))
+            .join('\n')
+            .replace(/\n{3,}/g, '\n\n')
+            .trim() + '\n';
+
+          const productionRaw = await readFile('evidence/production-schema.sql', 'utf8');
+          const replayRaw = await readFile('evidence/replay-schema.sql', 'utf8');
+          const production = normalizeDump(productionRaw);
+          const replay = normalizeDump(replayRaw);
+          await writeFile('evidence/production-schema.normalized.sql', production);
+          await writeFile('evidence/replay-schema.normalized.sql', replay);
+
+          const digest = text => createHash('sha256').update(text).digest('hex');
+          const productionHash = digest(production);
+          const replayHash = digest(replay);
+          const schemaParity = productionHash === replayHash;
+
+          const migrationText = await readFile('evidence/migration-list.txt', 'utf8');
+          const rows = migrationText.split(/\r?\n/)
+            .map(line => line.trim())
+            .filter(line => line && !/^[-─┼┬┴]+$/.test(line) && !/^LOCAL\s*[|│]/i.test(line))
+            .map(line => line.split(/[|│]/).map(cell => cell.trim()))
+            .filter(cells => cells.length >= 2)
+            .map(cells => ({ local: cells[0] || '', remote: cells[1] || '' }))
+            .filter(row => /^\d{14}$/.test(row.local) || /^\d{14}$/.test(row.remote));
+
+          const migrationDrift = rows.filter(row => row.local !== row.remote);
+          const migrationParity = rows.length > 0 && migrationDrift.length === 0;
+
+          const evidence = {
+            contract: 'supabase-production-baseline-proof-v1',
+            issue: 3742,
+            project_ref: 'adhjwmvyoixzjtmiroln',
+            candidate_pr: process.env.CANDIDATE_PR || null,
+            candidate_sha: process.env.CANDIDATE_SHA,
+            trusted_control_plane_sha: process.env.CONTROL_PLANE_SHA,
+            github_run_id: process.env.RUN_ID,
+            production_baseline_source: 'supabase db dump --linked',
+            replay_source: 'supabase db reset --local + supabase db dump --local',
+            migration_parity_source: 'supabase migration list --linked',
+            production_schema_sha256: productionHash,
+            replay_schema_sha256: replayHash,
+            schema_parity: schemaParity,
+            migration_parity: migrationParity,
+            migration_rows: rows.length,
+            migration_drift: migrationDrift,
+            terminal_for_issue_3742: false,
+            note: 'This proof is a pre-merge baseline/replay gate only. #3742 still requires exact-head checks, protected merge, and post-merge production readback.'
+          };
+          await writeFile('evidence/proof.json', JSON.stringify(evidence, null, 2) + '\n');
+          console.log(JSON.stringify(evidence, null, 2));
+          if (!schemaParity) {
+            console.error('OFFICIAL_PRODUCTION_BASELINE_SCHEMA_DRIFT');
+            process.exitCode = 78;
+          }
+          if (!migrationParity) {
+            console.error('OFFICIAL_PRODUCTION_MIGRATION_HISTORY_DRIFT');
+            process.exitCode = 78;
+          }
+          NODE
+
+          diff -u evidence/production-schema.normalized.sql evidence/replay-schema.normalized.sql > evidence/schema.diff || true
+          cat evidence/proof.json
+
+          node -e 'const fs=require("fs");const x=JSON.parse(fs.readFileSync("evidence/proof.json","utf8"));if(!x.schema_parity||!x.migration_parity)process.exit(78)'
+
+      - name: Upload immutable proof artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: supabase-production-baseline-proof-${{ steps.candidate.outputs.sha }}
+          path: evidence/
+          if-no-files-found: error
+          retention-days: 90
+
+      - name: Write proof summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '### Supabase production baseline proof'
+            echo "- issue: #3742"
+            echo "- candidate_sha: ${{ steps.candidate.outputs.sha }}"
+            echo "- trusted_control_plane_sha: ${{ github.sha }}"
+            echo "- provider baseline: official Supabase CLI db dump"
+            echo "- fresh replay: official Supabase local db reset + dump"
+            echo "- migration parity: official Supabase migration list"
+            echo "- terminal closure: false until protected merge + post-merge production readback"
+          } >> "$GITHUB_STEP_SUMMARY"
