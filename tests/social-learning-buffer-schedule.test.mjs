@@ -4,6 +4,7 @@ import { readFile } from 'node:fs/promises';
 import bufferCollect, { config, runBufferCollection } from '../netlify/functions/buffer-social-collect.mjs';
 import { localDayWindow, providerReconciliationState } from '../netlify/functions/social-publication-delivery.mjs';
 import { hasProviderCoverage, selectDeliverySource, deliveryDecision } from '../platform/social-delivery-guarantee.mjs';
+import { readMigrationHistory } from './helpers/read-supabase-migration-history.mjs';
 
 test('Buffer collector is scheduled natively and not through Make', () => {
   assert.equal(config.schedule, '15 */6 * * *');
@@ -122,7 +123,7 @@ test('Instagram provider coverage fails closed unless canonical readback is boun
 });
 
 test('identity-sensitive social_posts reconciliation is transport-only and cannot mint LIVE_PROVEN', async () => {
-  const sql = await readFile(new URL('../supabase/migrations/20260916124000_social_delivery_identity_readback_guard_v1.sql', import.meta.url), 'utf8');
+  const sql = await readMigrationHistory('20260916124000_social_delivery_identity_readback_guard_v1.sql');
   assert.match(sql, /reconcile_social_post_publication_obligation/i);
   assert.match(sql, /transport_only/i);
   assert.match(sql, /identity_guard_required/i);
