@@ -1,0 +1,29 @@
+{
+  "id": "supabase-migration-repair-cli-output-parser-3742-v1",
+  "issue": 3742,
+  "failure_class": "provider-output-format-drift",
+  "root_cause": "Supabase CLI 2.119.0 renders migration versions inside Markdown backticks; the fail-closed drift parser required bare 14-digit cells and therefore discarded every row.",
+  "invariant": "Migration repair may proceed only when parsed pre-repair drift equals the exact four-version allowlist and post-repair drift is zero.",
+  "prevention_rule": "Normalize presentation-only backticks from each migration-list cell before validating 14-digit version identities; never weaken the exact drift allowlist.",
+  "regression_test": "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs",
+  "evaluation": {
+    "historical_replay": [
+      "tests/brain-supabase-migration-repair-oidc-bootstrap-3742-v1.test.mjs"
+    ]
+  },
+  "fingerprint": "supabase-cli|migration-list|markdown-backticks|fail-closed-parser|v1",
+  "compiler": {
+    "failure_class": "GITHUB_DELIVERY",
+    "scope": "CI",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evidence": {
+    "trusted_run_id": 37354534547,
+    "attempt": 2,
+    "provider_connection_succeeded": true,
+    "provider_mutation_started": false,
+    "observed_row": "`20260920101150` | ` ` | `2026-09-20 10:11:50`"
+  }
+}
