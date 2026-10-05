@@ -1,0 +1,28 @@
+{
+  "fingerprint": "human-commercial-message-os-v1",
+  "category": "revenue-sales-copy-learning",
+  "status": "VERIFIED",
+  "problem": "Commercial techniques, psychology, copy rules, research evidence and revenue outcomes existed but were not consistently joined into one runtime decision lineage.",
+  "root_cause": [
+    "message_strategy labels missing from most sales actions",
+    "research evidence not copied to outbound action lineage",
+    "semantic source-to-trigger relevance not enforced",
+    "composer/executor quality proof paths diverged"
+  ],
+  "mitigation": [
+    "canonical sales playbook with psychology and CTA metadata",
+    "research-to-outreach evidence linkage",
+    "human-readable and semantic relevance gates",
+    "canonical human commercial composer",
+    "fail-closed Gmail and SalesRobot copy quality gate",
+    "outcome/revenue performance by sales technique"
+  ],
+  "historical_replay": "tests/brain-human-commercial-message-os-v1.test.mjs",
+  "source_of_truth": [
+    "public.powerhouse_sales_actions",
+    "public.powerhouse_sales_outcomes",
+    "public.powerhouse_sales_playbook_v1",
+    "public.powerhouse_message_quality_v1",
+    "public.powerhouse_sales_technique_performance_v1"
+  ]
+}
