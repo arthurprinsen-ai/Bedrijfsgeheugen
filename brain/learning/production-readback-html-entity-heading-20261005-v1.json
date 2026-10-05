@@ -1,0 +1,41 @@
+{
+  "learningId": "production-readback-html-entity-heading-20261005-v1",
+  "fingerprint": "production-readback-raw-html-entity-heading-v1",
+  "status": "CANDIDATE",
+  "observedAt": "2026-10-05T20:27:00+02:00",
+  "problem": "Canonical brand shell live readback stayed in retry even though production was on the exact merge SHA and all pricing semantics were present.",
+  "rootCause": "The verifier compared raw HTML heading markup literally. Production correctly serialized '&' as '&amp;' in 'Directie & AI Workshop', so semantic content matched while the raw-string assertion failed.",
+  "root_cause": "The verifier compared raw HTML heading markup literally. Production correctly serialized '&' as '&amp;' in 'Directie & AI Workshop', so semantic content matched while the raw-string assertion failed.",
+  "preventionRule": "Live HTML contract checks for human-visible text containing reserved HTML characters must accept the semantically equivalent encoded representation without weakening the required heading, pricing or route invariants.",
+  "prevention": [
+    "Keep exact release-SHA and Netlify deploy identity checks unchanged.",
+    "Keep the consulting proposition itself mandatory.",
+    "Match raw and correctly entity-encoded heading text.",
+    "Retain a regression fixture for '&amp;' serialization."
+  ],
+  "evidence": {
+    "mergeSha": "eb51760dc95db37b8e2ee1f02b30134dbc035782",
+    "deployId": "6ac3eae7a5a0b8000855de71",
+    "implementation": [
+      "tools/site-shell/live-contract.mjs",
+      "tools/site-shell/test-live-contract.mjs"
+    ],
+    "observedProduction": "<h3>Directie &amp; AI Workshop</h3>"
+  },
+  "compiler": {
+    "failure_class": "PRODUCTION_READBACK",
+    "scope": "RUNTIME",
+    "machine_enforceable": true,
+    "repeat_count": 1,
+    "security_sensitive": false
+  },
+  "evaluation": {
+    "historical_replay": [
+      "tools/site-shell/test-live-contract.mjs"
+    ],
+    "canary": [
+      "tools/site-shell/test-live-contract.mjs"
+    ],
+    "expected": "Encoded and unencoded semantic heading text both satisfy the same required consulting-proposition invariant."
+  }
+}
