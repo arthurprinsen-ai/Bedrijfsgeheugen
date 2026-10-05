@@ -1,0 +1,19 @@
+{
+  "id": "supabase-control-plane-postmerge-v1",
+  "date": "2026-10-05",
+  "obligation_id": "supabase-control-plane-postmerge-v1",
+  "issue": 3742,
+  "failures": [
+    {
+      "fingerprint": "supabase-preview-checkruns-argmax-v1",
+      "cause": "Full check-runs JSON was injected into a process environment variable and exceeded OS argument/environment limits.",
+      "prevention": "Transport provider check payload through a temporary file."
+    },
+    {
+      "fingerprint": "supabase-repair-missing-credentials-evidence-v1",
+      "cause": "Repair stopped before any output artifact existed when production credentials were absent.",
+      "prevention": "Materialize immutable repair preflight evidence before credential validation."
+    }
+  ],
+  "terminal_truth": "Neither control-plane fix bypasses provider proof or migration repair; #3742 remains fail-closed until supported tracking repair and production readback succeed."
+}
