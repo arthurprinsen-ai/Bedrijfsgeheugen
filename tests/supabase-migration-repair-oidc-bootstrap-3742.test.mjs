@@ -35,3 +35,9 @@ test('repair remains exactly allowlisted and fail-closed', () => {
   assert.match(workflow, /POST_REPAIR_PARITY_FAILED/);
   assert.match(workflow, /--force-with-lease="refs\/heads\/\$TARGET_BRANCH:\$EXPECTED_HEAD"/);
 });
+
+
+test('repair parser normalizes Supabase CLI migration-list backticks before version matching', () => {
+  const marker = ".map(line=>line.replace(/`/g,'').split(/[|│]/).map(x=>x.trim()))";
+  assert.equal(workflow.split(marker).length - 1, 2, 'both before/after parsers must normalize CLI backticks');
+});
